@@ -78,8 +78,8 @@ namespace eval ::audace {
    proc ::audace::showHelpItem { { folderRelativeFileName "" } { relativeFileName "" } { tag "" } } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
@@ -140,8 +140,8 @@ namespace eval ::audace {
    proc ::audace::showHelpPlugin { { pluginType } { pluginName } { relativeFileName "" } { tag "" } } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
@@ -205,8 +205,8 @@ namespace eval ::audace {
    proc ::audace::showHelpScript { scriptDirectory  { relativeFileName "" } { tag "" } } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
@@ -261,8 +261,8 @@ namespace eval ::audace {
    proc ::audace::showMain { } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
@@ -303,8 +303,8 @@ namespace eval ::audace {
    proc ::audace::showFunctions { } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
@@ -344,8 +344,8 @@ namespace eval ::audace {
    proc ::audace::showMenus { } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
@@ -385,8 +385,8 @@ namespace eval ::audace {
    proc ::audace::showTutorials { tutorial } {
       global audace help
 
-      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
-      if { $::tcl_platform(platform) == "unix" } {
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
          #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
          if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
             set audace(help_langage) "english"
