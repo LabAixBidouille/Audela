@@ -78,6 +78,26 @@ namespace eval ::audace {
    proc ::audace::showHelpItem { { folderRelativeFileName "" } { relativeFileName "" } { tag "" } } {
       global audace help
 
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         if { $relativeFileName != "" } {
+            #--- J'affiche le fichier d'aide avec le navigateur selectionne
+            ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+               $folderRelativeFileName $relativeFileName ] ]#$tag
+         } else {
+            #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
+            ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+               $help(dir,intro) "1010presentation.htm" ] ]
+         }
+         return
+      }
+
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
          ::audace::initHelp
@@ -119,6 +139,27 @@ namespace eval ::audace {
    #----------------------------------------------------------------------------------------
    proc ::audace::showHelpPlugin { { pluginType } { pluginName } { relativeFileName "" } { tag "" } } {
       global audace help
+
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         if { $relativeFileName != "" } {
+            #--- J'affiche le fichier d'aide avec le navigateur selectionne
+            ::audace::Lance_Site_htm [ file join file:///[ file join $::audace(rep_plugin) \
+               $pluginType $pluginName $::audace(help_langage) $relativeFileName ] ]#$tag
+         } else {
+            #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
+            ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+               $help(dir,intro) "1010presentation.htm" ] ]
+         }
+         return
+      }
 
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
@@ -164,6 +205,27 @@ namespace eval ::audace {
    proc ::audace::showHelpScript { scriptDirectory  { relativeFileName "" } { tag "" } } {
       global audace help
 
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         if { $relativeFileName != "" } {
+            #--- J'affiche le fichier d'aide avec le navigateur selectionne
+            ::audace::Lance_Site_htm [ file join file:///[ file join $scriptDirectory \
+               $audace(help_langage) $relativeFileName ] ]#$tag
+         } else {
+            #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
+            ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+               $help(dir,intro) "1010presentation.htm" ] ]
+         }
+         return
+      }
+
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
          ::audace::initHelp
@@ -199,6 +261,20 @@ namespace eval ::audace {
    proc ::audace::showMain { } {
       global audace help
 
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+            $help(dir,intro) "1010presentation.htm" ] ]
+         return
+      }
+
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
          ::audace::initHelp
@@ -227,6 +303,20 @@ namespace eval ::audace {
    proc ::audace::showFunctions { } {
       global audace help
 
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+            $help(dir,prog) "interfa5c.htm" ] ]
+         return
+      }
+
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
          ::audace::initHelp
@@ -254,6 +344,20 @@ namespace eval ::audace {
    proc ::audace::showMenus { } {
       global audace help
 
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+            $help(dir,aide) "1020menus.htm" ] ]
+         return
+      }
+
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
          ::audace::initHelp
@@ -280,6 +384,20 @@ namespace eval ::audace {
    #------------------------------------------------------------
    proc ::audace::showTutorials { tutorial } {
       global audace help
+
+      #--- J'affiche l'aide avec le navigateur selectionne uniquement pour Linux
+      if { $::tcl_platform(platform) == "unix" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+            $help(dir,tutoriel) "$tutorial" ] ]
+         return
+      }
 
       #--- J'affiche la fenetre si ce n'est pas deja fait
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
