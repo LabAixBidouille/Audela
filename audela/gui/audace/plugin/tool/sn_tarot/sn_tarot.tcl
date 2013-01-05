@@ -59,6 +59,30 @@ proc ::sn_tarot::bindjoystick { } {
    }
 }
 
+proc ::sn_tarot::SiteChosen { site_name } {
+   global panneau rep snconfvisu conf
+   set typetel [lindex [split $site_name _] 0]
+   set rep(name2) "$panneau(sn_tarot,references)" ; # chemin du repertoire images de reference refgaltarot
+   if {$typetel=="Zadko"} {
+      set rep(name2) "$panneau(sn_tarot,references_zadko)" ; # chemin du repertoire images de reference refgaltarot
+   }   
+   set rep(name3)    "[ file join $panneau(init_dir) dss ]" ; # chemin du repertoire images de reference dss
+   if {$typetel=="Zadko"} {
+      set rep(name3)    "[ file join $panneau(init_dir) dss_zadko ]" ; # chemin du repertoire images de reference dss
+   }
+   set err [catch {
+      #--   liste les fichiers presents dans night, references et dss
+      for { set i 1 } { $i <=3 } { incr i } {
+         set rep(x$i) [ lsort -dictionary [ glob -nocomplain -type f -dir $rep(name$i) *$conf(extension,defaut) ] ]
+         set rep(sum$i) [ llength $rep(x$i) ]
+         if { $rep(sum$i) != 0 } {
+            set rep(index$i) 0
+         }
+      }
+   } msg]
+   
+}
+
 proc ::sn_tarot::confTarotVisu { } {
    # =======================================
    # === Initialisation of the variables
@@ -94,8 +118,8 @@ proc ::sn_tarot::confTarotVisu { } {
    set snvisu(afflog) 1 ; #--- Pour un affichage des images en mode logarithme
    set snvisu(dss) 0 ; #-- pour signaler le telechargement
 
-   set rep(name2) "$panneau(sn_tarot,references)" ; # chemin du repertoire images de reference refgaltarot
-
+   ::sn_tarot::SiteChosen $snconfvisu(archive)
+   
    #--   lancee au démarage et au changement de fichier images de la nuit
    set rep(index1) -1  ; #--indice de l'image affichee dans night ; -1 si pas d'image
    set rep(index2) -1  ; #--indice de l'image dans references ; -1 si pas d'image
@@ -560,6 +584,7 @@ proc ::sn_tarot::displayImages { {subsky 0} {fname_img1 ""} } {
 
    set result ""
    set a [catch { buf$num(buffer2) load $filename } result]
+   
    if { $a == 1 } {
       if { $a == 1 } {
          #--   Met a jour la ligne de titre
@@ -930,7 +955,7 @@ proc ::sn_tarot::saveImage { {redisp 1} } {
 #  Commande de la combobox de selection du dossier a traiter
 #-----------------------------------------------------
 proc ::sn_tarot::snSelect { } {
-   global audace caption conf snconfvisu rep snvisu
+   global audace caption conf snconfvisu rep snvisu panneau
 
    set w $audace(base).snvisu.fr4
 
@@ -970,6 +995,7 @@ proc ::sn_tarot::snSelect { } {
          ::sn_tarot::listRequest $file_to_load
 
          #--   met a jour la liste des fichiers et leur nombre
+         
          set rep(x3) [ lsort -dictionary [ glob -nocomplain -type f -dir $rep(name3) *$conf(extension,defaut) ] ]
          set rep(sum3) [ llength $rep(x3) ]
 
@@ -986,6 +1012,7 @@ proc ::sn_tarot::snSelect { } {
    }
 
    #--   affiche le nom de l'archive dans le titre
+   ::sn_tarot::SiteChosen $snconfvisu(night)
    set snconfvisu(archive) $snconfvisu(night)
    $audace(base).snvisu.lab configure -text [ format $caption(sn_tarot,title) $snconfvisu(archive) ]
 
@@ -1556,7 +1583,7 @@ proc ::sn_tarot::unzipFile { fullfile_zip path } {
    global audace conf caption
 
    set ext $conf(extension,defaut)
-
+   
    #--   nettoie le dossier de destination
    set fics [ glob -nocomplain -type f -tails -dir $path *$ext ]
    set nb [ llength $fics ]
@@ -1573,6 +1600,7 @@ proc ::sn_tarot::unzipFile { fullfile_zip path } {
    #--   decompresse les images vers le dossier de destination
    exec $tarot_unzip -d $path $fullfile_zip
 
+   ::sn_tarot::SiteChosen [ file tail $fullfile_zip ]
    #--   informe utilisateur
    set nb [ llength [ glob -nocomplain -type f -tails -dir $path *$ext ] ]
    set raccourci [ ::sn_tarot::shortPath $path 3 ]

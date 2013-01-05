@@ -281,6 +281,7 @@ proc ::sn_tarot::snCreateCandidateId { } {
    set telescop [lindex [buf$bufNo getkwd TELESCOP] 1]
    if {$telescop=="TAROT CALERN"} { set telescop "TAROT Calern observatory, France" ; set codmpc 910 }
    if {$telescop=="TAROT CHILI"} { set telescop "TAROT La Silla observatory, Chile" ; set codmpc 809 }
+   if {$telescop=="Zadko Australia"} { set telescop "Zadko observatory, Australia " ; set codmpc D20 }
    #
    set ra [mc_angle2hms $ra_sn 360 zero 2 auto list]
    set dec [mc_angle2dms $dec_sn 90 zero 1 + list]
