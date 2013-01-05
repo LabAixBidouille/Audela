@@ -95,7 +95,7 @@ proc ::getdss::createPluginInstance { { in "" } { visuNo 1 } } {
    package require base64
 
    #--- Inititalisation de variables de configuration
-   if { ! [ info exists ::conf(getdss,$visuNo,geometry) ] } { set ::conf(getdss,$visuNo,geometry) "500x635+50+50" }
+   if { ! [ info exists ::conf(getdss,$visuNo,geometry) ] } { set ::conf(getdss,$visuNo,geometry) "500x552+135+60" }
 
    #--- Initialisation du nom de la fenetre
    set private($visuNo,This) $in.getdss
@@ -181,12 +181,6 @@ proc ::getdss::createPanel { visuNo } {
 
    #--- Si la connexion internet passe par un proxy, mettre a yes sinon a no
    set private($visuNo,proxy) no
-
-   #--- Initialisation de variables du Proxy
-   set private($visuNo,proxyname)     NomServeurProxy_ou_IP
-   set private($visuNo,proxyport)     8080
-   set private($visuNo,proxyuser)     user_du_proxy
-   set private($visuNo,proxypassword) password_du_proxy
 
    # --- Initialisation
    ::getdss::confToWidget $visuNo
@@ -441,56 +435,19 @@ proc ::getdss::createPanel { visuNo } {
    frame $private($visuNo,This).f4 -borderwidth 5
    pack $private($visuNo,This).f4 -side top -fill x
 
-   checkbutton $private($visuNo,This).f4.cbcompresse -text $caption(getdss,compression) -variable ::getdss::private($visuNo,compresse) -onvalue yes -offvalue no
+   checkbutton $private($visuNo,This).f4.cbcompresse -text $caption(getdss,compression) \
+      -variable ::getdss::private($visuNo,compresse) -onvalue yes -offvalue no
    pack $private($visuNo,This).f4.cbcompresse -side left
 
    #--- Proxy
    frame $private($visuNo,This).f5 -borderwidth 5
    pack $private($visuNo,This).f5 -side top -fill x
 
-   checkbutton $private($visuNo,This).f5.cbproxy -text $caption(getdss,proxy) -variable ::getdss::private($visuNo,proxy) -onvalue yes -offvalue no
+   checkbutton $private($visuNo,This).f5.cbproxy -text $caption(getdss,proxy) \
+      -variable ::getdss::private($visuNo,proxy) -onvalue yes -offvalue no \
+      -command "::confProxyInternet::run $::audace(base).confProxyInternet"
    pack $private($visuNo,This).f5.cbproxy -side left
-   $private($visuNo,This).f5.cbproxy configure -command "::getdss::activeProxy $visuNo"
    set private($visuNo,proxy) no
-
-   #--- Frames pour les donnees du Proxy
-   frame $private($visuNo,This).f6
-   pack $private($visuNo,This).f6 -side top -fill x
-
-   frame $private($visuNo,This).f6.f7
-   pack $private($visuNo,This).f6.f7 -side left -fill x
-
-   frame $private($visuNo,This).f6.f8
-   pack $private($visuNo,This).f6.f8 -side left -fill x
-
-   #--- Proxy : Nom
-   label $private($visuNo,This).f6.f7.l7 -text $caption(getdss,nom)
-   pack $private($visuNo,This).f6.f7.l7 -side top -anchor w -padx 5
-
-   entry $private($visuNo,This).f6.f8.e7 -textvariable ::getdss::private($visuNo,proxyname) -width 30
-   pack $private($visuNo,This).f6.f8.e7 -side top
-
-   #--- Proxy : Port
-   label $private($visuNo,This).f6.f7.l8 -text $caption(getdss,port)
-   pack $private($visuNo,This).f6.f7.l8 -side top -anchor w -padx 5
-
-   entry $private($visuNo,This).f6.f8.e8 -textvariable ::getdss::private($visuNo,proxyport) -width 30 \
-      -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
-   pack $private($visuNo,This).f6.f8.e8 -side top
-
-   #--- Proxy : Utilisateur
-   label $private($visuNo,This).f6.f7.l9 -text $caption(getdss,user)
-   pack $private($visuNo,This).f6.f7.l9 -side top -anchor w -padx 5
-
-   entry $private($visuNo,This).f6.f8.e9 -textvariable ::getdss::private($visuNo,proxyuser) -width 30
-   pack $private($visuNo,This).f6.f8.e9 -side top
-
-   #--- Proxy : Mot de passe
-   label $private($visuNo,This).f6.f7.l10 -text $caption(getdss,password)
-   pack $private($visuNo,This).f6.f7.l10 -side top -anchor w -padx 5
-
-   entry $private($visuNo,This).f6.f8.e10 -textvariable ::getdss::private($visuNo,proxypassword) -width 30
-   pack $private($visuNo,This).f6.f8.e10 -side top
 
    #--- Boutons
    frame $private($visuNo,This).f9 -borderwidth 5
@@ -534,7 +491,6 @@ proc ::getdss::createPanel { visuNo } {
    wm protocol  .dialog($visuNo) WM_DELETE_WINDOW "::getdss::quitter $visuNo"
 
    ::getdss::activeObjet $visuNo
-   ::getdss::activeProxy $visuNo
 
    #--- Cache la fenetre wish par defaut
    wm withdraw .
@@ -570,8 +526,8 @@ proc ::getdss::chargeObjetSIMBAD { visuNo objet } {
    #--- Identification du browser, pas indispensable
    ::http::config -useragent "Mozilla/4.75 (X11; U; Linux 2.2.17; i586; Nav)"
    if { $private($visuNo,proxy) == "yes" } {
-      ::http::config -proxyhost $private($visuNo,proxyname) -proxyport $private($visuNo,proxyport)
-      ::http::ProxyRequired $private($visuNo,proxyname)
+      ::http::config -proxyhost $::conf(proxy,host) -proxyport $::conf(proxy,port)
+      ::http::ProxyRequired $::conf(proxy,host)
    } else {
       ::http::ProxyRequired ""
    }
@@ -588,7 +544,7 @@ proc ::getdss::chargeObjetSIMBAD { visuNo objet } {
 
       #--- Lance la requete 1
       if { $private($visuNo,proxy) == "yes" } {
-         set token1 [::http::geturl $BASE_URL -query $query -headers [::getdss::buildProxyHeaders $private($visuNo,proxyuser) $private($visuNo,proxypassword)] ]
+         set token1 [::http::geturl $BASE_URL -query $query -headers [::getdss::buildProxyHeaders $::conf(proxy,user) $::conf(proxy,password)] ]
       } else {
          set token1 [::http::geturl $BASE_URL -query $query]
       }
@@ -657,7 +613,7 @@ proc ::getdss::chargeObjetSIMBAD { visuNo objet } {
 
       #--- Lance la requete 2
       if { $private($visuNo,proxy) == "yes" } {
-         set token2 [::http::geturl ${BASE_URL} -query $query -headers [::getdss::buildProxyHeaders $private($visuNo,proxyuser) $private($visuNo,proxypassword)] ]
+         set token2 [::http::geturl ${BASE_URL} -query $query -headers [::getdss::buildProxyHeaders $::conf(proxy,user) $::conf(proxy,password)] ]
       } else {
          set token2 [::http::geturl ${BASE_URL} -query $query]
       }
@@ -830,26 +786,6 @@ proc ::getdss::recuperation { visuNo } {
    }
 
    focus -force $private($visuNo,This).f9.b1
-}
-
-#------------------------------------------------------------
-# activeProxy
-#    active et desactive les widgets du proxy
-#------------------------------------------------------------
-proc ::getdss::activeProxy { visuNo } {
-   variable private
-
-   if { $private($visuNo,proxy) == "yes" } {
-      $private($visuNo,This).f6.f8.e7 configure -state normal
-      $private($visuNo,This).f6.f8.e8 configure -state normal
-      $private($visuNo,This).f6.f8.e9 configure -state normal
-      $private($visuNo,This).f6.f8.e10 configure -state normal
-   } else {
-      $private($visuNo,This).f6.f8.e7 configure -state disabled
-      $private($visuNo,This).f6.f8.e8 configure -state disabled
-      $private($visuNo,This).f6.f8.e9 configure -state disabled
-      $private($visuNo,This).f6.f8.e10 configure -state disabled
-   }
 }
 
 #------------------------------------------------------------
@@ -1077,8 +1013,6 @@ proc ::getdss::ouvrir { visuNo } {
 
    #--- Charge dans private de l'interpreteur courant les valeur du private_temp
    array set private [array get private_temp]
-
-   activeProxy $visuNo
 }
 
 #------------------------------------------------------------

@@ -1791,6 +1791,187 @@ namespace eval ::confAlarmeFinPose {
 }
 
 #
+# ProxyInternet
+# Description : Configuration d'un Proxy pour Internet
+#
+
+namespace eval ::confProxyInternet {
+
+   #
+   # confProxyInternet::run this
+   # Cree la fenetre de configuration du Proxy pour Internet
+   # this = chemin de la fenetre
+   #
+   proc run { this } {
+      variable This
+
+      set This $this
+      createDialog
+      tkwait visibility $This
+   }
+
+   #
+   # confProxyInternet::ok
+   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
+   # et fermer la fenetre de configuration du Proxy pour Internet
+   #
+   proc ok { } {
+      appliquer
+      fermer
+   }
+
+   #
+   # confProxyInternet::appliquer
+   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
+   #
+   proc appliquer { } {
+      widgetToConf
+   }
+
+   #
+   # confProxyInternet::afficheAide
+   # Fonction appellee lors de l'appui sur le bouton 'Aide'
+   #
+   proc afficheAide { } {
+      global help
+
+      #---
+      ::audace::showHelpItem "$help(dir,config)" "1110proxy.htm"
+   }
+
+   #
+   # confProxyInternet::fermer
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc fermer { } {
+      variable This
+
+      destroy $This
+   }
+
+   proc createDialog { } {
+      variable This
+      global caption conf confgene
+
+      #--- initConf
+      if { ! [ info exists conf(proxy,host) ] }     { set conf(proxy,host)     "NomServeurProxy_ou_IP" }
+      if { ! [ info exists conf(proxy,port) ] }     { set conf(proxy,port)     "8080" }
+      if { ! [ info exists conf(proxy,user) ] }     { set conf(proxy,user)     "user_du_proxy" }
+      if { ! [ info exists conf(proxy,password) ] } { set conf(proxy,password) "password_du_proxy" }
+
+      #--- confToWidget
+      set confgene(proxy,host)     $conf(proxy,host)
+      set confgene(proxy,port)     $conf(proxy,port)
+      set confgene(proxy,user)     $conf(proxy,user)
+      set confgene(proxy,password) $conf(proxy,password)
+
+      #---
+      if { [winfo exists $This] } {
+         wm withdraw $This
+         wm deiconify $This
+         focus $This
+         return
+      }
+
+      #--- Cree la fenetre $This de niveau le plus haut
+      toplevel $This -class Toplevel
+      wm geometry $This +180+50
+      wm resizable $This 0 0
+      wm title $This $caption(confgene,proxy)
+
+      #--- Creation des differents frames
+      frame $This.frame1 -borderwidth 1 -relief raised
+      pack $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame2 -borderwidth 1 -relief raised
+      pack $This.frame2 -side top -fill x
+
+      frame $This.frame3 -borderwidth 0 -relief raised
+      pack $This.frame3 -in $This.frame1 -side left -fill x
+
+      frame $This.frame4 -borderwidth 0 -relief raised
+      pack $This.frame4 -in $This.frame1 -side left -fill x
+
+      #--- Proxy : Nom
+      label $This.labelNom -text $caption(confgene,nom)
+      pack $This.labelNom -in $This.frame3 -side top -anchor w -padx 5
+
+      entry $This.entryNom -textvariable confgene(proxy,host) -width 30
+      pack $This.entryNom -in $This.frame4 -side top
+
+      #--- Proxy : Port
+      label $This.labelPort -text $caption(confgene,port)
+      pack $This.labelPort -in $This.frame3 -side top -anchor w -padx 5
+
+      entry $This.entryPort -textvariable confgene(proxy,port) -width 30 \
+         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 9999 }
+      pack $This.entryPort -in $This.frame4 -side top
+
+      #--- Proxy : Utilisateur
+      label $This.labelUtilisateur -text $caption(confgene,user)
+      pack $This.labelUtilisateur -in $This.frame3 -side top -anchor w -padx 5
+
+      entry $This.entryUtilisateur -textvariable confgene(proxy,user) -width 30
+      pack $This.entryUtilisateur -in $This.frame4 -side top
+
+      #--- Proxy : Mot de passe
+      label $This.labelMotDePasse -text $caption(confgene,password)
+      pack $This.labelMotDePasse -in $This.frame3 -side top -anchor w -padx 5
+
+      entry $This.entryMotDePasse -textvariable confgene(proxy,password) -width 30
+      pack $This.entryMotDePasse -in $This.frame4 -side top
+
+      #--- Cree le bouton 'OK'
+      button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
+         -command { ::confProxyInternet::ok }
+      if { $conf(ok+appliquer) == "1" } {
+         pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+      }
+
+      #--- Cree le bouton 'Appliquer'
+      button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
+         -command { ::confProxyInternet::appliquer }
+      pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree un label 'Invisible' pour simuler un espacement
+      label $This.lab_invisible -width 10
+      pack $This.lab_invisible -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Fermer'
+      button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
+         -command { ::confProxyInternet::fermer }
+      pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Aide'
+      button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
+         -command { ::confProxyInternet::afficheAide }
+      pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- La fenetre est active
+      focus $This
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+   #
+   # confProxyInternet::widgetToConf
+   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+   #
+   proc widgetToConf { } {
+      global conf confgene
+
+      set conf(proxy,host)     $confgene(proxy,host)
+      set conf(proxy,port)     $confgene(proxy,port)
+      set conf(proxy,user)     $confgene(proxy,user)
+      set conf(proxy,password) $confgene(proxy,password)
+   }
+}
+
+#
 # confChoixOutil
 # Description : Choisir les plugins a afficher dans les menus
 #

@@ -35,6 +35,12 @@ set caption(confgene,alarme)                                "Aural warning when 
 set caption(confgene,alarme_active)                         "Enable Aural Warning"
 set caption(confgene,alarme_delai)                          "sec. before end of exposure"
 
+set caption(confgene,proxy)                                 "Internet (Proxy)"
+set caption(confgene,nom)                                   "Proxy Name:"
+set caption(confgene,port)                                  "Proxy Port:"
+set caption(confgene,user)                                  "Proxy User:"
+set caption(confgene,password)                              "Proxy Password:"
+
 set caption(confgene,position)                              "Observer Location"
 set caption(confgene,nom_organisation)                      "Organization Name (70 characters max.):"
 set caption(confgene,nom_observateur)                       "Observers Names (70 characters max.):"
@@ -115,6 +121,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Alarme sonore de fin de pose"
    set caption(confgene,alarme_active)                      "Active l'alarme sonore"
    set caption(confgene,alarme_delai)                       "sec. avant la fin de la pose"
+
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Nom du Proxy :"
+   set caption(confgene,port)                               "Port du Proxy :"
+   set caption(confgene,user)                               "Utilisateur du Proxy :"
+   set caption(confgene,password)                           "Mot de passe du Proxy :"
 
    set caption(confgene,position)                           "Position de l'observateur"
    set caption(confgene,nom_organisation)                   "Nom de l'organisation (maximum 70 caractères) :"
@@ -197,6 +209,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Segnale acustico attivo"
    set caption(confgene,alarme_delai)                       "sec. alla fine della posa"
 
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "# Nom du Proxy :"
+   set caption(confgene,port)                               "# Port du Proxy :"
+   set caption(confgene,user)                               "# Utilisateur du Proxy :"
+   set caption(confgene,password)                           "# Mot de passe du Proxy :"
+
    set caption(confgene,position)                           "Posizione dell'osservatore"
    set caption(confgene,nom_organisation)                   "Nome dell'organizzazione (max. 70 caratteri):"
    set caption(confgene,nom_observateur)                    "Nomi degli osservatori (max. 70 caratteri):"
@@ -277,6 +295,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Alarma sonora en fin de exposición"
    set caption(confgene,alarme_active)                      "Activar alarma sonora"
    set caption(confgene,alarme_delai)                       "seg. antes del fin de exposición"
+
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Nombre del Proxy:"
+   set caption(confgene,port)                               "Puerto del Proxy:"
+   set caption(confgene,user)                               "Usuario del Proxy:"
+   set caption(confgene,password)                           "Password del Proxy:"
 
    set caption(confgene,position)                           "Posición del observador"
    set caption(confgene,nom_organisation)                   "Nombre de la organización (max. 70 caracteres):"
@@ -359,6 +383,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Aktiviert die Ton Alarm"
    set caption(confgene,alarme_delai)                       "Sek. vor dem Ende der Exposition"
 
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Proxy Nahmen:"
+   set caption(confgene,port)                               "Proxy Port:"
+   set caption(confgene,user)                               "Proxy Benutzer:"
+   set caption(confgene,password)                           "Proxy Passwort:"
+
    set caption(confgene,position)                           "Beobachter-Position"
    set caption(confgene,nom_organisation)                   "Name der Organisation (70 Zeichen max.):"
    set caption(confgene,nom_observateur)                    "Namen der Beobachters (70 Zeichen max.):"
@@ -439,6 +469,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Alarme sonoro no fim da exposição"
    set caption(confgene,alarme_active)                      "Activar alarme sonoro"
    set caption(confgene,alarme_delai)                       "seg. antes do fim de exposição"
+
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Nome do proxy:"
+   set caption(confgene,port)                               "Porto do proxy:"
+   set caption(confgene,user)                               "Utilizador do proxy:"
+   set caption(confgene,password)                           "Senha do proxy:"
 
    set caption(confgene,position)                           "Posição do observador"
    set caption(confgene,nom_organisation)                   "Nome da organização (máximo 70 caracteres):"
@@ -521,6 +557,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Aktiver lydadvarsel"
    set caption(confgene,alarme_delai)                       "sek. før eksponering slutter"
 
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Proxy Name:"
+   set caption(confgene,port)                               "Proxy Port:"
+   set caption(confgene,user)                               "Proxy User:"
+   set caption(confgene,password)                           "Proxy Password:"
+
    set caption(confgene,position)                           "Observators position"
    set caption(confgene,nom_organisation)                   "Organisationens navn (højst 70 karakterer):"
    set caption(confgene,nom_observateur)                    "Observatører navne (højst 70 karakterer):"
@@ -602,6 +644,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Enable Aural Warning"
    set caption(confgene,alarme_delai)                       "sec. before end of exposure"
 
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Proxy Name:"
+   set caption(confgene,port)                               "Proxy Port:"
+   set caption(confgene,user)                               "Proxy User:"
+   set caption(confgene,password)                           "Proxy Password:"
+
    set caption(confgene,position)                           "Observer Location"
    set caption(confgene,nom_organisation)                   "Organization Name (70 characters max.):"
    set caption(confgene,nom_observateur)                    "Observers Names (70 characters max.):"
@@ -682,6 +730,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Aural warning when exposure ends"
    set caption(confgene,alarme_active)                      "Enable Aural Warning"
    set caption(confgene,alarme_delai)                       "sec. before end of exposure"
+
+   set caption(confgene,proxy)                              "Internet (Proxy)"
+   set caption(confgene,nom)                                "Proxy Name:"
+   set caption(confgene,port)                               "Proxy Port:"
+   set caption(confgene,user)                               "Proxy User:"
+   set caption(confgene,password)                           "Proxy Password:"
 
    set caption(confgene,position)                           "Observer Location"
    set caption(confgene,nom_organisation)                   "Organization Name (70 characters max.):"
