@@ -672,10 +672,14 @@ namespace eval ::confEditScript {
       variable This
       global audace caption conf confgene
 
+      #--- Initialisation
+      if { ! [ info exists conf(editsite_htm,selectHelp) ] } { set conf(editsite_htm,selectHelp) "0" }
       #--- Recuperation de la police par defaut des entry
       set confgene(EditScript,edit_font)        "$audace(font,Entry)"
       #--- Transformation de la police en italique
       set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+      #--- Changement de variable
+      set confgene(EditScript,selectHelp)       "$conf(editsite_htm,selectHelp)"
 
       if { [ winfo exists $This ] } {
          wm withdraw $This
@@ -782,37 +786,44 @@ namespace eval ::confEditScript {
 
       #--- Cree un frame pour y mettre le bouton ... et la zone a renseigner - Navigateur de pages htm
       frame $This.usr3 -borderwidth 1 -relief raised
-         #--- Positionne le bouton ... et la zone a renseigner
-         if { $confgene(EditScript,error_htm) == "1" } {
-            set font $confgene(EditScript,edit_font)
-            set relief "sunken"
-         } else {
-            set font $confgene(EditScript,edit_font_italic)
-            set relief "solid"
-         }
-         label $This.usr3.lab3 -text "$caption(confeditscript,navigateur_htm)"
-         pack $This.usr3.lab3 -side left -padx 5 -pady 5
-         button $This.usr3.explore3 -text "$caption(aud_menu_7,parcourir)" -width 1 \
-            -command {
-               #--- Recuperation de la police par defaut des entry
-               set confgene(EditScript,edit_font)        "$audace(font,Entry)"
-               #--- Transformation de la police en italique
-               set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
-               #---
-               $::confEditScript::This.usr3.ent3 configure -font $confgene(EditScript,edit_font_italic) -relief solid
-               set fenetre "$::confEditScript::This"
-               set confgene(EditScript,edit_htm) \
-                  [ ::tkutil::box_load $fenetre ${confgene(EditScript,path)} $audace(bufNo) "8" ]
-               if { $confgene(EditScript,edit_htm) == "" } {
-                  set confgene(EditScript,edit_htm) $conf(editsite_htm)
-               }
-               focus $::confEditScript::This.usr3
-               $::confEditScript::This.usr3.ent3 configure -font $confgene(EditScript,edit_font) -relief sunken
+         frame $This.usr3.top -borderwidth 0 -relief raised
+            #--- Positionne le bouton ... et la zone a renseigner
+            if { $confgene(EditScript,error_htm) == "1" } {
+               set font $confgene(EditScript,edit_font)
+               set relief "sunken"
+            } else {
+               set font $confgene(EditScript,edit_font_italic)
+               set relief "solid"
             }
-         pack $This.usr3.explore3 -side right -padx 5 -pady 5 -ipady 5
-         entry $This.usr3.ent3 -textvariable confgene(EditScript,edit_htm) -width $confgene(EditScript,long) \
-            -font $font -relief $relief
-         pack $This.usr3.ent3 -side right -padx 5 -pady 5
+            label $This.usr3.top.lab3 -text "$caption(confeditscript,navigateur_htm)"
+            pack $This.usr3.top.lab3 -side left -padx 5 -pady 5
+            button $This.usr3.top.explore3 -text "$caption(aud_menu_7,parcourir)" -width 1 \
+               -command {
+                  #--- Recuperation de la police par defaut des entry
+                  set confgene(EditScript,edit_font)        "$audace(font,Entry)"
+                  #--- Transformation de la police en italique
+                  set confgene(EditScript,edit_font_italic) [ lreplace $confgene(EditScript,edit_font) 2 2 italic ]
+                  #---
+                  $::confEditScript::This.usr3.top.ent3 configure -font $confgene(EditScript,edit_font_italic) -relief solid
+                  set fenetre "$::confEditScript::This"
+                  set confgene(EditScript,edit_htm) \
+                     [ ::tkutil::box_load $fenetre ${confgene(EditScript,path)} $audace(bufNo) "8" ]
+                  if { $confgene(EditScript,edit_htm) == "" } {
+                     set confgene(EditScript,edit_htm) $conf(editsite_htm)
+                  }
+                  focus $::confEditScript::This.usr3
+                  $::confEditScript::This.usr3.top.ent3 configure -font $confgene(EditScript,edit_font) -relief sunken
+               }
+            pack $This.usr3.top.explore3 -side right -padx 5 -pady 5 -ipady 5
+            entry $This.usr3.top.ent3 -textvariable confgene(EditScript,edit_htm) -width $confgene(EditScript,long) \
+               -font $font -relief $relief
+            pack $This.usr3.top.ent3 -side right -padx 5 -pady 5
+         pack $This.usr3.top -side top -fill x -expand 1
+         frame $This.usr3.bottom -borderwidth 0 -relief raised
+            checkbutton $This.usr3.bottom.selectHelp -text "$caption(confeditscript,selectHelp)" \
+               -highlightthickness 0 -variable confgene(EditScript,selectHelp)
+            pack $This.usr3.bottom.selectHelp -anchor w -side bottom -padx 20 -pady 5
+         pack $This.usr3.bottom -side top -fill x -expand 1
       pack $This.usr3 -side top -fill both -expand 1
 
       #--- Cree un frame pour y mettre le bouton ... et la zone a renseigner - Visualiseur d'images
@@ -1020,6 +1031,7 @@ namespace eval ::confEditScript {
       set conf(editscript)                  "$confgene(EditScript,edit_script)"
       set conf(editnotice_pdf)              "$confgene(EditScript,edit_pdf)"
       set conf(editsite_htm)                "$confgene(EditScript,edit_htm)"
+      set conf(editsite_htm,selectHelp)     "$confgene(EditScript,selectHelp)"
       set conf(edit_viewer)                 "$confgene(EditScript,edit_viewer)"
       set conf(exec_java)                   "$confgene(EditScript,exec_java)"
       set conf(exec_aladin)                 "$confgene(EditScript,exec_aladin)"
