@@ -210,10 +210,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_delai)                       "sec. alla fine della posa"
 
    set caption(confgene,proxy)                              "Internet (Proxy)"
-   set caption(confgene,nom)                                "# Nom du Proxy :"
-   set caption(confgene,port)                               "# Port du Proxy :"
-   set caption(confgene,user)                               "# Utilisateur du Proxy :"
-   set caption(confgene,password)                           "# Mot de passe du Proxy :"
+   set caption(confgene,nom)                                "Nome Proxy:"
+   set caption(confgene,port)                               "Porta Proxy:"
+   set caption(confgene,user)                               "Utente Proxy:"
+   set caption(confgene,password)                           "Proxy Password:"
 
    set caption(confgene,position)                           "Posizione dell'osservatore"
    set caption(confgene,nom_organisation)                   "Nome dell'organizzazione (max. 70 caratteri):"
