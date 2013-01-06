@@ -168,11 +168,11 @@ proc ::atik::fillConfigPage { frm camItem } {
             #--- Miroirs en x et en y
             checkbutton $frm.frame1.frame3.frame4.mirx -text "$caption(atik,miroir_x)" -highlightthickness 0 \
                -variable ::atik::private($camItem,mirh)
-            pack $frm.frame1.frame3.frame4.mirx -anchor w -side top -padx 20 -pady 10
+            pack $frm.frame1.frame3.frame4.mirx -anchor w -side top -padx 20 -pady 15
 
             checkbutton $frm.frame1.frame3.frame4.miry -text "$caption(atik,miroir_y)" -highlightthickness 0 \
                -variable ::atik::private($camItem,mirv)
-            pack $frm.frame1.frame3.frame4.miry -anchor w -side top -padx 20 -pady 10
+            pack $frm.frame1.frame3.frame4.miry -anchor w -side top -padx 20 -pady 15
 
          pack $frm.frame1.frame3.frame4 -anchor n -side left -fill x -padx 20
 
@@ -196,7 +196,7 @@ proc ::atik::fillConfigPage { frm camItem } {
                   -text "$caption(atik,refroidissement_1)"
                pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
 
-            pack $frm.frame1.frame3.frame5.frame6 -side top -fill x -padx 10
+            pack $frm.frame1.frame3.frame5.frame6 -anchor nw -side top -fill x -padx 10
 
             #--- Frame de la puissance de refroidissement
             frame $frm.frame1.frame3.frame5.frame7 -borderwidth 0 -relief raised
@@ -215,7 +215,7 @@ proc ::atik::fillConfigPage { frm camItem } {
 
             pack $frm.frame1.frame3.frame5.frame8 -side top -fill x -padx 30
 
-         pack $frm.frame1.frame3.frame5 -side left -fill x -expand 0
+         pack $frm.frame1.frame3.frame5 -anchor nw -side left -fill x -expand 0
 
       pack $frm.frame1.frame3 -side top -fill x -expand 0
 
@@ -320,9 +320,17 @@ proc ::atik::configureCamera { camItem bufNo } {
       cam$camNo mirrorh $conf(atik,$camItem,mirh)
       cam$camNo mirrorv $conf(atik,$camItem,mirv)
       #--- Je mesure la temperature du capteur CCD et la puissance du Peltier
-      if { [ info exists private(aftertemp) ] == "0" } {
-         ::atik::dispTempAtik $camItem
+      if { [ ::atik::getPluginProperty $camItem hasTempSensor ] == "1" } {
+         if { [ info exists private(aftertemp) ] == "0" } {
+            ::atik::dispTempAtik $camItem
+         }
       }
+      #--- Gestion des widgets actifs/inactifs
+      if { [ ::atik::getPluginProperty $camItem hasTempSensor ] == "0" } {
+         set ::atik::private($camItem,cool) "0"
+         set conf(atik,$camItem,cool)       $private($camItem,cool)
+      }
+      ::atik::checkConfigRefroidissement $camItem
    } ]
 
    if { $catchResult == "1" } {
@@ -390,13 +398,18 @@ proc ::atik::checkConfigRefroidissement { camItem } {
          if { $::atik::private($camItem,cool) == "1" } {
             pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
             pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
-            $frm.frame1.frame3.frame5.frame7.power configure -state normal
-            $frm.frame1.frame3.frame5.frame8.ccdtemp configure -state normal
+            if { [ ::atik::getPluginProperty $camItem hasTempSensor ] == "1" } {
+               pack $frm.frame1.frame3.frame5.frame7.power -side left -fill x -padx 20 -pady 5
+               pack $frm.frame1.frame3.frame5.frame8.ccdtemp -side left -fill x -padx 20 -pady 5
+            } else {
+               pack forget $frm.frame1.frame3.frame5.frame7.power
+               pack forget $frm.frame1.frame3.frame5.frame8.ccdtemp
+            }
          } else {
             pack forget $frm.frame1.frame3.frame5.frame6.temp
             pack forget $frm.frame1.frame3.frame5.frame6.tempdeg
-            $frm.frame1.frame3.frame5.frame7.power configure -state disabled
-            $frm.frame1.frame3.frame5.frame8.ccdtemp configure -state disabled
+            pack forget $frm.frame1.frame3.frame5.frame7.power
+            pack forget $frm.frame1.frame3.frame5.frame8.ccdtemp
          }
       }
    }
@@ -480,8 +493,20 @@ proc ::atik::getPluginProperty { camItem propertyName } {
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
       hasShutter       { return 1 }
-      hasTempSensor    { return 1 }
-      hasSetTemp       { return 1 }
+      hasTempSensor    {
+         if { $private($camItem,camNo) != "0" } {
+            return [ lindex [ lindex [ cam$private($camItem,camNo) coolerinformations ] 0 ] 1 ]
+         } else {
+            return ""
+         }
+      }
+      hasSetTemp       {
+         if { $private($camItem,camNo) != "0" } {
+            return [ lindex [ lindex [ cam$private($camItem,camNo) coolerinformations ] 0 ] 1 ]
+         } else {
+            return ""
+         }
+      }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
