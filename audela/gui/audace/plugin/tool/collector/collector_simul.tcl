@@ -145,9 +145,11 @@
          airpress tempair temprose hygro winddir windsp \
          observer sitename origin iau_code imagetyp objname] {
          set $var $private($var)
-         ::console::affiche_resultat "$var \"$private($var)\"\n"
+         #::console::affiche_resultat "$var \"$private($var)\"\n"
       }
 
+      set ra [mc_angle2deg $ra]
+      set dec [mc_angle2deg $dec]
       set airpress [expr { $airpress / 100. }]
 
       #--   passe de arcsec en degres
@@ -223,7 +225,7 @@
       dict set dicokwd CRVAL1    {CRVAL1 %s double {Reference coordinate for Naxis1} deg}
       dict set dicokwd CRVAL2    {CRVAL2 %s double {Reference coordinate for Naxis2} deg}
       dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {ISO 8601}}
-      dict set dicokwd DEC       {DEC %s string {Expected DEC asked to telescope} {}}
+      dict set dicokwd DEC       {DEC %s float {Expected DEC asked to telescope} {deg}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
       dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
@@ -254,7 +256,7 @@
       dict set dicokwd PEDESTAL  {PEDESTAL %s int {add this value to each pixel value} {}}
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
-      dict set dicokwd RA        {RA %s string {Expected RA asked to telescope} {}}
+      dict set dicokwd RA        {RA %s float {Expected RA asked to telescope} {deg}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd SEING     {SEING %s double {Average FWHM} pixels}
       dict set dicokwd SITENAME  {SITENAME %s string {Observatory Name} {}}
