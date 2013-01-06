@@ -2748,7 +2748,7 @@ proc ::acqt1m::get_filename { visuNo } {
    #buf$bufNo setkwd [list "FOCLEN" 12.662879 float "Focal length" "meter"]
    #buf$bufNo setkwd [list "CROTA2" 0 float "Position angle" "deg"]
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
-      set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra)" h]
+      set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
       buf$bufNo setkwd [list "RA" $ra float "Right Ascension" "degrees"]
    }
    if {$panneau(acqt1m,$visuNo,dec)!=""} {
