@@ -20,19 +20,21 @@ proc ::confCam::init { } {
    source [ file join "$audace(rep_caption)" confcam.cap ]
 
    #--- initConf
-   if { ! [ info exists conf(camera,A,camName) ] } { set conf(camera,A,camName) "" }
-   if { ! [ info exists conf(camera,A,start) ] }   { set conf(camera,A,start)   "0" }
-   if { ! [ info exists conf(camera,B,camName) ] } { set conf(camera,B,camName) "" }
-   if { ! [ info exists conf(camera,B,start) ] }   { set conf(camera,B,start)   "0" }
-   if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
-   if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
-   if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "605x440+15+15" }
+   if { ! [ info exists conf(camera,A,camName) ] }  { set conf(camera,A,camName)  "" }
+   if { ! [ info exists conf(camera,A,start) ] }    { set conf(camera,A,start)    "0" }
+   if { ! [ info exists conf(camera,B,camName) ] }  { set conf(camera,B,camName)  "" }
+   if { ! [ info exists conf(camera,B,start) ] }    { set conf(camera,B,start)    "0" }
+   if { ! [ info exists conf(camera,C,camName) ] }  { set conf(camera,C,camName)  "" }
+   if { ! [ info exists conf(camera,C,start) ] }    { set conf(camera,C,start)    "0" }
+   if { ! [ info exists conf(camera,geometry) ] }   { set conf(camera,geometry)   "730x506+15+15" }
+   if { ! [ info exists conf(camera,configStop) ] } { set conf(camera,configStop) "1" }
 
    #--- Initalise le numero de camera a nul
    set audace(camNo) "0"
 
    #--- Item par defaut
    set private(currentCamItem) "A"
+   set private(configStop)     "0"
 
    #--- Initialisation des variables d'echange avec les widgets
    set private(geometry)     "$conf(camera,geometry)"
@@ -48,6 +50,7 @@ proc ::confCam::init { } {
    set private(A,camName)    ""
    set private(B,camName)    ""
    set private(C,camName)    ""
+   set private(configStop)   "$conf(camera,configStop)"
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -347,6 +350,22 @@ proc ::confCam::createDialog { } {
       pack $private(frm).startA.chk -side left -padx 3 -pady 3 -expand true
 
    pack $private(frm).startA -side bottom -fill x
+
+   #--- Frame pour la configuration de l'arret des acquisitions
+   frame $private(frm).configStop -borderwidth 1 -relief raised
+
+      label $private(frm).configStop.label -text "$caption(confcam,labelArret)"
+      pack $private(frm).configStop.label -side left -padx 3 -pady 3 -fill x
+
+      radiobutton $private(frm).configStop.avec -anchor w -highlightthickness 0 \
+         -text "$caption(confcam,avecLecture)" -value "0" -variable ::confCam::private(configStop)
+      pack $private(frm).configStop.avec -side left -padx 3 -pady 3 -fill x
+
+      radiobutton $private(frm).configStop.sans -anchor w -highlightthickness 0 \
+         -text "$caption(confcam,sansLecture)" -value "1" -variable ::confCam::private(configStop)
+      pack $private(frm).configStop.sans -side left -padx 3 -pady 3 -fill x
+
+   pack $private(frm).configStop -side bottom -fill x
 
    #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
@@ -870,6 +889,9 @@ proc ::confCam::configureCamera { camItem } {
       #--- je recupere camNo
       set private($camItem,camNo) [ ::$private($camItem,camName)::getCamNo $camItem ]
 
+      #--- je configure l'arret des acquisitions (avec ou sans lecture du CCD)
+      cam$private($camItem,camNo) stopmode $private(configStop)
+
       #--- Je cree la camera
       ::camera::create $camItem
 
@@ -943,6 +965,7 @@ proc ::confCam::widgetToConf { camItem } {
    set camName                       [ $private(frm).usr.onglet raise ]
    set private($camItem,camName)     $camName
    set conf(camera,$camItem,camName) $camName
+   set conf(camera,configStop)       $private(configStop)
 
    ::$private($camItem,camName)::widgetToConf $camItem
 }

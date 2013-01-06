@@ -25,6 +25,9 @@ set caption(confcam,obtu_ferme)                 "Closed"
 set caption(confcam,obtu_synchro)               "Synchro"
 
 set caption(confcam,camera)                     "Camera:"
+set caption(confcam,labelArret)                 "Stop acquisitions"
+set caption(confcam,avecLecture)                "with or"
+set caption(confcam,sansLecture)                "without CCD reading"
 
 set caption(confcam,attention)                  "Warning"
 set caption(confcam,connexion_texte1)           "Camera Connection in Progress..."
@@ -54,6 +57,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
 
    set caption(confcam,camera)                  "Caméra :"
+   set caption(confcam,labelArret)              "Arrêter les acquisitions"
+   set caption(confcam,avecLecture)             "avec ou"
+   set caption(confcam,sansLecture)             "sans lecture du CCD"
 
    set caption(confcam,attention)               "Attention"
    set caption(confcam,connexion_texte1)        "Veuillez patienter quelques secondes"
@@ -83,6 +89,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Sincronizza"
 
    set caption(confcam,camera)                  "Camera:"
+   set caption(confcam,labelArret)              "Smettere di acquisizioni"
+   set caption(confcam,avecLecture)             "con o"
+   set caption(confcam,sansLecture)             "senza lettura CCD"
 
    set caption(confcam,attention)               "Attenzione"
    set caption(confcam,connexion_texte1)        "Attendere qualche secondo per"
@@ -112,6 +121,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Sincro"
 
    set caption(confcam,camera)                  "Cámara:"
+   set caption(confcam,labelArret)              "Detener las adquisiciones"
+   set caption(confcam,avecLecture)             "con o"
+   set caption(confcam,sansLecture)             "sin lectura CCD"
 
    set caption(confcam,attention)               "!Cuidado¡"
    set caption(confcam,connexion_texte1)        "Conectando con la cámara..."
@@ -141,6 +153,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
 
    set caption(confcam,camera)                  "Kamera:"
+   set caption(confcam,labelArret)              "Stoppen Belichtungen"
+   set caption(confcam,avecLecture)             "mit oder"
+   set caption(confcam,sansLecture)             "ohne CCD Lesung"
 
    set caption(confcam,attention)               "Achtung"
    set caption(confcam,connexion_texte1)        "Bitte, einige Sekunden warten"
@@ -170,6 +185,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Sincro"
 
    set caption(confcam,camera)                  "Câmara:"
+   set caption(confcam,labelArret)              "Parar de aquisições"
+   set caption(confcam,avecLecture)             "com ou"
+   set caption(confcam,sansLecture)             "sem leitura CCD"
 
    set caption(confcam,attention)               "Aviso"
    set caption(confcam,connexion_texte1)        "Conexão da câmara em curso..."
@@ -199,6 +217,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
 
    set caption(confcam,camera)                  "Camera:"
+   set caption(confcam,labelArret)              "Stop acquisitions"
+   set caption(confcam,avecLecture)             "with or"
+   set caption(confcam,sansLecture)             "without CCD reading"
 
    set caption(confcam,attention)               "Warning"
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
@@ -228,6 +249,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
 
    set caption(confcam,camera)                  "Camera:"
+   set caption(confcam,labelArret)              "Stop acquisitions"
+   set caption(confcam,avecLecture)             "with or"
+   set caption(confcam,sansLecture)             "without CCD reading"
 
    set caption(confcam,attention)               "Warning"
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
@@ -257,6 +281,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
 
    set caption(confcam,camera)                  "Camera:"
+   set caption(confcam,labelArret)              "Stop acquisitions"
+   set caption(confcam,avecLecture)             "with or"
+   set caption(confcam,sansLecture)             "without CCD reading"
 
    set caption(confcam,attention)               "Warning"
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
