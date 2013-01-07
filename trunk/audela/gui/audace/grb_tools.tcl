@@ -982,6 +982,7 @@ proc grb_gcnc { args } {
    {"PI OF THE SKY" "PI-OF-THE-SKY" 8.5} \
    {"PI-OF-THE-SKY" "PI-OF-THE-SKY" 8.5} \
    {"RAPTOR" "RAPTOR" 40} \
+   {"RATIR" "RATIR" 150} \
    {" REM " "REM" 60} \
    {"ROTSE" "ROTSE" 45} \
    {"RTT150" "RTT150" 150} \
@@ -1144,7 +1145,7 @@ proc grb_gcnc { args } {
       }
       ::console::affiche_resultat "GCN circulars ever downloaded until $gcncfin\n"
       set gcncdeb 1
-      #set gcncdeb 12000
+      #set gcncdeb 10307
       #set gcncfin 12100
       #
       set textes ""
