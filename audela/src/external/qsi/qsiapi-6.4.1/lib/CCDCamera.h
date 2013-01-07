@@ -12,6 +12,8 @@ REVISION HISTORY
  DRC 12.19.06 Original Version
 *****************************************************************************************/
 
+
+
 #pragma once
 #include "QSI_Global.h"
 #include "QSI_Interface.h"
@@ -40,7 +42,7 @@ public:
 		CameraDownload 	= 4,	//Downloading data to PC
 		CameraError 	= 5		//Camera error condition serious enough to prevent further operations (link fail, etc.).
 	};
-	
+
 	enum GuideDirections
 	{
 		guideNorth 		= 0,
@@ -73,9 +75,9 @@ public:
 
 	enum PreExposureFlush
 	{
-		FlushNone = 0,		
+		FlushNone = 0,
 		FlushModest = 1,
-		FlushNormal = 2,	
+		FlushNormal = 2,
 		FlushAggressive = 3,
 		FlushVeryAggressive = 4
 	};
@@ -86,25 +88,25 @@ public:
 		ShutterPriorityElectronic = 1
 	};
 
-	enum CameraGain 
+	enum CameraGain
 	{
 		CameraGainHigh = 0,
 		CameraGainLow = 1
 	};
 
-	enum AntiBloom 
+	enum AntiBloom
 	{
 		AntiBloomNormal = 0,
 		AntiBloomHigh = 1
 	};
-	
-		
+
+
 	enum ReadoutSpeed
 	{
 		HighImageQuality = 0,
 		FastReadout = 1
 	};
-	
+
 	enum TriggerModeEnum
 	{
 		ShortWait = 4,
@@ -137,7 +139,7 @@ public:
 	int get_CanSetCCDTemperature(bool* pVal);
 	int get_CanStopExposure(bool* pVal);
 	int get_CCDTemperature(double* pVal);
-	int get_Connected(bool* pVal);	
+	int get_Connected(bool* pVal);
 	int put_Connected(bool newVal);
 	int get_CoolerOn(bool* pVal);
 	int put_CoolerOn(bool newVal);
@@ -216,7 +218,7 @@ public:
 
 	// Custom Controls
 	int put_EnableShutterStatusOutput(bool newVal);
-	int get_EnableShutterStatusOutput(bool* pVal);	
+	int get_EnableShutterStatusOutput(bool* pVal);
 	int get_ManualShutterMode(bool * pVal);
 	int put_ManualShutterMode(bool newVal);
 	int put_ManualShutterOpen(bool newVal);
@@ -272,7 +274,7 @@ public:
 	int EnableTriggerMode(TriggerModeEnum newVal1, TriggerPolarityEnum newVal2);
 	int TerminatePendingTrigger(void);
 	int CancelTriggerMode(void);
-	
+
 private:
 	//////////////////////////////////////////////////////////////////////////////////////
 	// Private methods
@@ -323,7 +325,10 @@ private:
 	USHORT						m_usOverScanPixels[8192];
 	USHORT						m_usLastOverscanMean;
 	double						m_dLastOverscanMean;
-	int							m_usOverscanAdjustment;
+/***
+Modifications pour corriger un bug reconnu par QSI
+**/
+//	int							m_usOverscanAdjustment;
 	double						m_dOverscanAdjustment;
 	int							m_iOverscanAdjustment;
 	bool						m_bImageValid;
