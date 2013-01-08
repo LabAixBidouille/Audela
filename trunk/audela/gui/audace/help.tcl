@@ -337,6 +337,47 @@ namespace eval ::audace {
    }
 
    #------------------------------------------------------------
+   #  ::audace::showProgramming
+   #
+   #  ouvre la fenetre de l'inventaire des pages de programmation
+   #------------------------------------------------------------
+   proc ::audace::showProgramming { } {
+      global audace help
+
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         #--- Je lance l'aide avec le navigateur selectionne
+         ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+            $help(dir,prog) "1000programmation.htm" ] ]
+         return
+      }
+
+      #--- J'affiche la fenetre si ce n'est pas deja fait
+      if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
+         ::audace::initHelp
+      }
+
+      if { [ winfo exists $audace(base).help ] } {
+         wm deiconify $audace(base).help
+      }
+
+      #--- J'attends que la fenetre d'aide soit creee
+      update
+
+      ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,prog) "1000programmation.htm" ] 1 ""
+
+      #--- Focus
+      focus $audace(help_window)
+
+   }
+
+   #------------------------------------------------------------
    #  ::audace::showMenus
    #
    #  ouvre la fenetre de l'inventaire des menus
