@@ -2581,6 +2581,8 @@ namespace eval ::confVisu {
             "::audace::showMenus"
          Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" \
             "::audace::showFunctions"
+         Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,programmation)" \
+            "::audace::showProgramming"
          Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,tutorial)"
          Menu_Command   $visuNo "$caption(audace,menu,tutorial)" "$caption(audace,menu,tutorial1)" \
             "::audace::Lance_Tutorial"
