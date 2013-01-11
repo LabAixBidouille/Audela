@@ -441,7 +441,7 @@ proc ::audine::configureCamera { camItem bufNo } {
                -ledsettings $conf(oscadine,ledsettings) \
                -overscansettings $conf(oscadine,overscansettings) ]
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
-            set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
+            # set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
          }
          ethernaude {
             #--- Je verifie si la camera 500 du tutorial EthernAude est connectee, si oui je la deconnecte

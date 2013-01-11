@@ -5397,7 +5397,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl tkhtml"
+EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl tkhtml oscadine"
 if test -f /usr/bin/mysql_config ; then
     EXTERNAL="$EXTERNAL mysqltcl"
 fi
@@ -5440,7 +5440,7 @@ if test x"$GSL_FOUND" = x"1" ; then
     AUDELA="$AUDELA libak libgsltcl libjm libml libros libyd libcatalog"
 fi
 
-LIBCAMS="libaudinet libethernaude"
+LIBCAMS="libaudinet libethernaude liboscadine"
 if test x"$TARGET" = x"Linux" ; then
     LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
 fi
