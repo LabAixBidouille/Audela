@@ -405,6 +405,9 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_FITELLIP) {
       msg=tt_ima_series_fitellip_1(pseries);
       fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_RESIZE) {
+      msg=tt_ima_series_resize_1(pseries);
+      fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_DELETE) {
       msg=OK_DLL;
       fct_found=TT_YES;
@@ -518,6 +521,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"FITELLIP")==0) { pseries->numfct=TT_IMASERIES_FITELLIP; }
    else if (strcmp(keys[10],"HOTPIXEL")==0) { pseries->numfct=TT_IMASERIES_REPAIR_HOTPIXEL; }
    else if (strcmp(keys[10],"COSMIC")==0)   { pseries->numfct=TT_IMASERIES_REPAIR_COSMIC; }
+   else if (strcmp(keys[10],"RESIZE")==0)   { pseries->numfct=TT_IMASERIES_RESIZE; }
    
    tt_user1_ima_series_builder1(keys[10],pseries);
    tt_user2_ima_series_builder1(keys[10],pseries);

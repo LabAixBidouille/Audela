@@ -51,6 +51,39 @@ int tt_ima_series_test_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+int tt_ima_series_resize_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Coupe ou agrandit le cadre de l'image                                   */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out;
+   int naxis1,naxis2,x,y,index;
+	int naxis11,naxis22;
+
+   /* --- fin pour assurer la compatibilite avec IMA/SERIES ---*/
+   index=pseries->index;
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   naxis1=p_in->naxis1;
+   naxis2=p_in->naxis2;
+   naxis11=pseries->width;
+   naxis22=pseries->height;
+   tt_imacreater(p_out,naxis11,naxis22);
+   for(x=0;x<naxis11;x++) {
+      for(y=0;y<naxis22;y++) {
+			if ((x>=naxis1)||(y>=naxis2)) {
+	         p_out->p[y*naxis11+x]=(TT_PTYPE)(pseries->nullpix_value);
+			} else {
+	         p_out->p[y*naxis11+x]=(TT_PTYPE)(p_in->p[y*naxis1+x]);
+			}
+      }
+   }
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+   return(OK_DLL);
+}
+
 int tt_ima_series_tilt_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* Translation de 'trans_y' pixels par colonne                             */
