@@ -1152,7 +1152,7 @@ namespace eval bddimages_recherche {
               -command { ::bddimages_imgcorrection::somme }
 
            $popupTbl.geometrie add command -label "Crop" \
-              -command { ::bddimages_imgcorrection::crop $audace(base).bddimages_imgcorrection }
+              -command { ::bddimages_recherche::bddimages_crop $audace(base).bddimages_imgcorrection }
 
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
@@ -1609,6 +1609,15 @@ namespace eval bddimages_recherche {
       
    }
 
+
+   proc ::bddimages_recherche::bddimages_crop { this } {
+      
+      ::bddimages_imgcorrection::crop $this
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+      
+   }
 
 
 
