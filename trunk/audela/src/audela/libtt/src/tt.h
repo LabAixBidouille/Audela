@@ -164,6 +164,7 @@
 #define TT_IMASERIES_FITELLIP 40
 #define TT_IMASERIES_REPAIR_HOTPIXEL 41
 #define TT_IMASERIES_REPAIR_COSMIC   42
+#define TT_IMASERIES_RESIZE 43
 
 #define TT_KERNELTYPE_FH 0
 #define TT_KERNELTYPE_FB 1
@@ -1023,6 +1024,7 @@ int tt_ima_series_prod_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_fitellip_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_hotpixel_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_cosmic_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_resize_1(TT_IMA_SERIES *pseries);
 
 int tt_ima_series_tilt_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries);
