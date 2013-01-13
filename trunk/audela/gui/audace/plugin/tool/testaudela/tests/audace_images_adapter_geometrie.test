@@ -116,6 +116,37 @@ test rotation180 {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -bo
    return $result
  } -cleanup $CLEANUP -result "1"
 
+#--   test de redimensionnement en x et en y
+test resize {redimensionnement de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
+   #--   clic sur le menu "Images/Adapter la géométrie/Redimensionner"
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,taille)..."
+
+   #--saisit les entrees
+   set width 300
+   set height 300
+   ::testaudela::putLabelEntry $z.funoptions.width $width
+   ::testaudela::putLabelEntry $z.funoptions.height $height
+
+   #-- saisit le nom de sortie
+   set name_out "resize"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #--   controle
+   set result 0
+   #--   verifie les naxis de l'image
+   if {[lindex [buf$bufNo getkwd NAXIS1] 1] == $width} {
+      incr result
+   }
+   if {[lindex [buf$bufNo getkwd NAXIS2] 1] == $height} {
+      incr result
+   }
+   set liste [list rz_rgbr_8 $name_out]
+   return $result
+ } -cleanup $CLEANUP -result "2"
+
+
 #--   test rotation -90°
 test rotation-90_ligne_de_commande {rotation de rz_rgbr_8} -constraints {AUDACE} -setup $SETUP -body {
    set data "rz_rgbr_8 . rotation-90 .fit ROT-90"
@@ -141,6 +172,7 @@ test rotation-90_ligne_de_commande {rotation de rz_rgbr_8} -constraints {AUDACE}
    ::confVisu::deleteImage $visuNo
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
  } -result "2"
+
 
 #-----------------------------------------------------------------------------
 #--   chaque test INVERT a pour entree trois images RGB a traiter
