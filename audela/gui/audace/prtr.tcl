@@ -21,6 +21,7 @@
    #  ::prtr::analyseFitsHeader file
    #  ::prtr::configOutName
    #  ::prtr::configTableState w  etat
+   #  ::prtr::getWidthHeight visuNo
    #  ::prtr::getCenterCoord
    #  ::prtr::updateBox visuNo args
    #  ::prtr::getFileName w nom_de_variable
@@ -414,6 +415,9 @@ namespace eval ::prtr {
                #--   affiche les coordonnees de la box
                ::prtr::updateBox $visuNo
             }
+         }
+         if {$private(function) == "RESIZE"} {
+            ::prtr::getWidthHeight $visuNo
          }
       }
 
@@ -899,6 +903,22 @@ namespace eval ::prtr {
       }
       $private(table).cmd.appliquer configure -state $etat
       $private(table).cmd.fermer configure -state $etat
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::getWidthHeight
+   #  Affiche les dimensions d el'image
+   #  Lancee lors de la construction de l'activation de RESIZE
+   #--------------------------------------------------------------------------
+   proc getWidthHeight { $visuNo } {
+      variable private
+      variable bd
+
+      #--   cherche les info dans bd
+      lassign [lindex [array get bd [lindex $private(todo) 0]] 1] -> -> width height
+
+      set ::prtr::width  $width
+      set ::prtr::height $height
    }
 
    #--------------------------------------------------------------------------
@@ -1671,6 +1691,10 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,window1)"             hlp "$help(dir,prog) ttus1-fr.htm WINDOW"
       dict set SERIES "$caption(audace,menu,window1)"             par "x1 1 y1 1 x2 2 y2 2"
       dict set SERIES "$caption(audace,menu,window1)"             opt $options
+      dict set SERIES "$caption(audace,menu,taille)"              fun RESIZE
+      dict set SERIES "$caption(audace,menu,taille)"              hlp "$help(dir,prog) ttus1-fr.htm RESIZE"
+      dict set SERIES "$caption(audace,menu,taille)"              par "width 100 height 100"
+      dict set SERIES "$caption(audace,menu,taille)"              opt $options
       dict set SERIES "$caption(audace,menu,scale)"               fun RESAMPLE
       dict set SERIES "$caption(audace,menu,scale)"               hlp "$help(dir,prog) ttus1-fr.htm RESAMPLE"
       dict set SERIES "$caption(audace,menu,scale)"               par "paramresample \"$conf(prtr,resample,paramresample)\" normaflux 1."
@@ -2078,8 +2102,8 @@ namespace eval ::prtr {
       dict set Var   y1                "integer naxis2 labelentry"   ;#WINDOW BINY MATRIX MEDIANY SORTY
       dict set Var   x2                "integer naxis1 labelentry"   ;#WINDOW BINX MATRIX MEDIANX SORTX
       dict set Var   y2                "integer naxis2 labelentry"   ;#WINDOW BINY MATRIX MEDIANY SORTY
-      dict set Var   width             "integer naxis1 labelentry"   ;#BINX POL2REC MEDIANX SORTX
-      dict set Var   height            "integer naxis2 labelentry"   ;#BINY POL2REC MEDIANY SORTY
+      dict set Var   width             "integer naxis1 labelentry"   ;#BINX POL2REC MEDIANX SORTX RESIZE
+      dict set Var   height            "integer naxis2 labelentry"   ;#BINY POL2REC MEDIANY SORTY RESIZE
       dict set Var   normaflux         "double labelentry"           ;#RESAMPLE REGISTER
       dict set Var   paramresample     "liste labelentry"            ;#RESAMPLE
       dict set Var   filename          "filename labelentry"         ;#PROFILE
@@ -2252,7 +2276,7 @@ namespace eval ::prtr {
                switch $seuil "naxis1" "set seuil $naxis1" "naxis2" "set seuil $naxis2" "default" ""
                set mini "1"
             }
-            if {$value < $mini || $value > $seuil && $private(function) ne "POL2REC"}  {
+            if {$value < $mini || $value > $seuil && $private(function) ni [list POL2REC RESIZE]}  {
                return [::prtr::avertiUser err_par_bornes $parametre]
             } else {
                return "$parametre=$value"
