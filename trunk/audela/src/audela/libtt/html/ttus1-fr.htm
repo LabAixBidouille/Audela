@@ -5,7 +5,7 @@
   <title>Librairie TT : Manuel Utilisateur</title>
 </head>
 <body>
-<p class="date">Date de mise &agrave; jour : 12 janvier 2013</p>
+<p class="date">Date de mise &agrave; jour : 13 janvier 2013</p>
 <h1>LIB TT - Librairie de pr&eacute;traitement d'images
 astronomiques</h1>
 <h1>Manuel Utilisateur</h1>
@@ -917,7 +917,12 @@ avion, etc.).</p>
     <h3><a name="RESIZE" />Fonction RESIZE</h3>
 Redimensionne le nombre de pixels de l'image. Ce nombre peut &ecirc;tre
 plus petit ou plus grand que la dimension initiale. [width] et [height]
-sont les dimensions de l'image de sortie.</li>
+sont les dimensions de l'image de sortie. Si [width] est plus grand que 
+naxis1, la fonction ajoute des pixels noirs entre naxis1 et [width]; 
+si [width] est plus petit que naxis1, la fonction supprime les colonnes 
+entre [width] et naxis1 ; il en va de m&#234;me pour [height] et naxis2. 
+Le pixel de coordonn&#233;es 1,1 est le coin inf&#233;rieur gauche de 
+l'image.</li>
 </ol>
 <h2>3.6. Les fonctions pour 'Extraire des informations'</h2>
 <ol>
@@ -1564,3 +1569,4 @@ IMA/SERIES ./prt/ c$sky . . .fit . . . .fit DELETE<br />
 </p>
 </body>
 </html>
+ê
