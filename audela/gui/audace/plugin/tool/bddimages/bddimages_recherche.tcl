@@ -1154,11 +1154,20 @@ namespace eval bddimages_recherche {
            $popupTbl.geometrie add command -label "Crop" \
               -command { ::bddimages_recherche::bddimages_crop $audace(base).bddimages_imgcorrection }
 
+      menu $popupTbl.cata -tearoff 0
+      $popupTbl add cascade -label "Catalogue" -menu $popupTbl.cata
+
+           $popupTbl.cata add command -label "Voir le Cata" \
+              -command { ::bddimages_recherche::bddimages_creation_cata }
+
+           $popupTbl.cata add command -label "Gerer le Cata" \
+              -command { ::bddimages_recherche::bddimages_gestion_cata }
+
+           $popupTbl.cata add command -label "Creer le Cata" \
+              -command { ::bddimages_recherche::bddimages_creation_cata }
+
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
-
-           $popupTbl.analyse add command -label "Creer le Cata" \
-              -command { ::bddimages_recherche::bddimages_creation_cata }
 
            $popupTbl.analyse add command -label "CdL" \
               -command { ::bddimages_cdl::run}
