@@ -2202,7 +2202,10 @@ namespace eval gui_cata {
       global bddconf
 
       ::gui_cata::inittoconf
+      set uncosmic_status $::gui_cata::use_uncosmic
+      set ::gui_cata::use_uncosmic 0
       ::gui_cata::charge_list $img_list
+      set ::gui_cata::use_uncosmic $uncosmic_status
 
       # Update nb sources du cata
       set ::tools_cata::nb_img [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources IMG]
@@ -2367,9 +2370,13 @@ namespace eval gui_cata {
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
         pack $boutonpied -in $frm -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
 
+             set ::gui_cata::gui_refresh [button $boutonpied.refresh -text "Refresh" -borderwidth 2 -takefocus 1 \
+                -command "::gui_cata::affiche_cata"]
+             pack $boutonpied.refresh -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
              set ::gui_cata::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                -command {cleanmark
-                          destroy $::gui_cata::fenv}]
+                -command {cleanmark; destroy $::gui_cata::fenv}]
              pack $boutonpied.fermer -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
