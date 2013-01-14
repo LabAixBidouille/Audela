@@ -1664,6 +1664,19 @@ namespace eval bddimages_recherche {
    }
 
 
+   proc ::bddimages_recherche::bddimages_gestion_cata { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+      ::gui_cata::gestion_cata $imglist
+
+   }
+
+
    proc ::bddimages_recherche::bddimages_creation_cata { } {
 
       variable This
