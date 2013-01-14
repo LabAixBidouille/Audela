@@ -276,6 +276,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
+	printf("\n\n\n$$$$$$$ cam_stop_exp\n\n\n");
 }
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
