@@ -1158,7 +1158,7 @@ namespace eval bddimages_recherche {
       $popupTbl add cascade -label "Catalogue" -menu $popupTbl.cata
 
            $popupTbl.cata add command -label "Voir le Cata" \
-              -command { ::bddimages_recherche::bddimages_creation_cata }
+              -command { ::bddimages_recherche::bddimages_voir_cata }
 
            $popupTbl.cata add command -label "Gerer le Cata" \
               -command { ::bddimages_recherche::bddimages_gestion_cata }
@@ -1648,6 +1648,20 @@ namespace eval bddimages_recherche {
 
    }
 
+
+   proc ::bddimages_recherche::bddimages_voir_cata { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+      # Liste d'1 image = img chargee
+      set imglist [list [lindex $imglist 0]]
+      ::gui_cata::voir_cata $imglist
+
+   }
 
 
    proc ::bddimages_recherche::bddimages_creation_cata { } {
