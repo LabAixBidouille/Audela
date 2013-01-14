@@ -273,10 +273,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	// So we launch the capture now 
 	// This is done this way to let Audela show the progress bar (even it's not precise)
 	// When cam_read_ccd will be called, it will just retrive the image pointer already available
-	capture();
-	
-	// To avoid waiting the exposure time at the end of the capture
-	cam->exptimeTimer = 0;
+	launch_capture_thread();
 
 }
 
@@ -285,6 +282,12 @@ void cam_stop_exp(struct camprop *cam)
 	///////////////////////////////////////////////////
 	printf("@@@@@@@@ OSCADINE  cam_stop_exp\n");
 	///////////////////////////////////////////////////
+
+	// On arrête l'exposition si la capture n'a pas commencé.
+	if(cam->exptimeTimer > 0) {
+		stop_exp();
+	}
+		
 }
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)

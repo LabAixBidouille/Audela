@@ -32,11 +32,13 @@ extern "C" {
 	int close_usb(void);
     void setLedModeOff();
 	void setLedModeOn();
-    void capture();
+    void *capture(void * threadid);
 	void get_image(unsigned short *image);
 	void open_shutter();
 	void close_shutter();
     void init_cam_parameters(struct camera_struct *cam);
+	void stop_exp();
+	void launch_capture_thread()
 	
 #ifdef __cplusplus
 }
