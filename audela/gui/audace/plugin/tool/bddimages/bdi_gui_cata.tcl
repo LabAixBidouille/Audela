@@ -2377,12 +2377,38 @@ namespace eval gui_cata {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::gui_cata::gestion_cata { img_list } {
 
       global audace
       global bddconf
 
       ::gui_cata::inittoconf
+      
+      set ::gui_cata::directaccess 1
+      
       ::gui_cata::charge_list $img_list
       catch { 
          ::gui_cata::set_aladin_script_params
@@ -2416,48 +2442,7 @@ namespace eval gui_cata {
          pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
 
-             set ::gui_cata::gui_back [button $actions.back -text "Precedent" -borderwidth 2 -takefocus 1 \
-                -command "::gui_cata::back" -state $::gui_cata::stateback]
-             pack $actions.back -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             set ::gui_cata::gui_next [button $actions.next -text "Next" -borderwidth 2 -takefocus 1 \
-                -command "::gui_cata::next" -state $::gui_cata::statenext]
-             pack $actions.next -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             set ::gui_cata::gui_create [button $actions.go -text "Create" -borderwidth 2 -takefocus 1 \
-                -command "::gui_cata::get_cata" -state normal]
-             pack $actions.go -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             #--- Cree un label 
-             set ::gui_cata::gui_stimage [label $actions.stimage -text "$::tools_cata::id_current_image / $::tools_cata::nb_img_list"]
-             pack $::gui_cata::gui_stimage -side left -padx 3 -pady 3
-
-             #--- Cree un frame pour afficher boucle
-             set bouc [frame $actions.bouc -borderwidth 0 -cursor arrow -relief groove]
-             pack $bouc -in $actions -side left -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un checkbutton
-                  checkbutton $bouc.check -highlightthickness 0 -text "Analyse continue" -variable ::tools_cata::boucle
-                  pack $bouc.check -in $bouc -side left -padx 5 -pady 0
-
-
-             #--- Cree un frame general
-             set lampions [frame $actions.actions -borderwidth 0 -cursor arrow -relief groove]
-             pack $lampions -in $actions -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
-
-                  set ::gui_cata::gui_wcs [button $lampions.wcs -text "WCS" \
-                     -borderwidth 1 -takefocus 0 -command "" \
-                     -bg $::gui_cata::color_wcs -relief sunken -state disabled]
-                  pack $lampions.wcs -side top -anchor e -expand 0 -padx 0 -pady 0 -ipadx 0 -ipady 0
-
-                  set ::gui_cata::gui_cata [button $lampions.cata -text "CATA" -borderwidth 1 -takefocus 0 -command "" \
-                     -bg $::gui_cata::color_cata -relief sunken -state disabled]
-                  pack $lampions.cata -side top -anchor e -expand 0 -padx 0 -pady 0 -ipadx 0 -ipady 0
-
-
+ 
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand 0 -fill x -padx 10 -pady 5
  
@@ -2471,82 +2456,15 @@ namespace eval gui_cata {
             set f7 [frame $onglets.nb.f7]
             set f8 [frame $onglets.nb.f8]
             
-            $onglets.nb add $f1 -text "Catalogues"
-            $onglets.nb add $f2 -text "Variables"
-            $onglets.nb add $f3 -text "Entete"
-            $onglets.nb add $f4 -text "Couleurs"
-            $onglets.nb add $f5 -text "Sextractor"
-            $onglets.nb add $f6 -text "Interop"
-            $onglets.nb add $f7 -text "Manuel"
-            $onglets.nb add $f8 -text "Develop"
-            $onglets.nb select $f3
+            $onglets.nb add $f1 -text "IMG"
+            $onglets.nb add $f2 -text "USNOA2"
+            $onglets.nb add $f3 -text "UCAC2"
+            $onglets.nb select $f1
             ttk::notebook::enableTraversal $onglets.nb
 
 
-        #--- Cree un frame pour afficher ucac2
-        set usnoa2 [frame $f1.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
-        pack $usnoa2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             #--- Cree un checkbutton
-             checkbutton $usnoa2.check -highlightthickness 0 -text "USNO-A2" \
-                              -variable ::tools_cata::use_usnoa2 -state disabled
-             pack $usnoa2.check -in $usnoa2 -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $usnoa2.dir -relief sunken -textvariable ::tools_cata::catalog_usnoa2 -width 30
-             pack $usnoa2.dir -in $usnoa2 -side right -pady 1 -anchor w
-  
-        #--- Cree un frame pour afficher ucac2
-        set tycho2 [frame $f1.tycho2 -borderwidth 0 -cursor arrow -relief groove]
-        pack $tycho2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $tycho2.check -highlightthickness 0 -text "TYCHO-2" -variable ::tools_cata::use_tycho2
-             pack $tycho2.check -in $tycho2 -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $tycho2.dir -relief sunken -textvariable ::tools_cata::catalog_tycho2 -width 30
-             pack $tycho2.dir -in $tycho2 -side right -pady 1 -anchor w
-  
-        #--- Cree un frame pour afficher ucac2
-        set ucac2 [frame $f1.ucac2 -borderwidth 0 -cursor arrow -relief groove]
-        pack $ucac2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $ucac2.check -highlightthickness 0 -text "UCAC2" -variable ::tools_cata::use_ucac2
-             pack $ucac2.check -in $ucac2 -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $ucac2.dir -relief sunken -textvariable ::tools_cata::catalog_ucac2 -width 30
-             pack $ucac2.dir -in $ucac2 -side right -pady 1 -anchor w
-  
-        #--- Cree un frame pour afficher ucac3
-        set ucac3 [frame $f1.ucac3 -borderwidth 0 -cursor arrow -relief groove]
-        pack $ucac3 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $ucac3.check -highlightthickness 0 -text "UCAC3" -variable ::tools_cata::use_ucac3
-             pack $ucac3.check -in $ucac3 -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $ucac3.dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 30
-             pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
-  
-        #--- Cree un frame pour afficher nomad1
-        set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove]
-        pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $nomad1.check -highlightthickness 0 -text "NOMAD1" -variable ::tools_cata::use_nomad1 -state disabled
-             pack $nomad1.check -in $nomad1 -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $nomad1.dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 30
-             pack $nomad1.dir -in $nomad1 -side right -pady 1 -anchor w
-  
-        #--- Cree un frame pour afficher boucle
-        set skybot [frame $f1.skybot -borderwidth 0 -cursor arrow -relief groove]
-        pack $skybot -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBoT" -variable ::tools_cata::use_skybot
-             pack $skybot.check -in $skybot -side left -padx 5 -pady 0
-  
+        #--- les 3 tables
 
 
         #--- Cree un frame pour afficher delkwd PV
@@ -2556,607 +2474,66 @@ namespace eval gui_cata {
              #--- Cree un checkbutton
              checkbutton $deuxpasses.check -highlightthickness 0 -text "Faire 2 passes pour calibrer" -variable ::tools_cata::deuxpasses
              pack $deuxpasses.check -in $deuxpasses -side left -padx 5 -pady 0
-  
-        #--- Cree un frame pour afficher "utiliser les RA/DEC precedent
-        set keepradec [frame $f2.keepradec -borderwidth 0 -cursor arrow -relief groove]
-        pack $keepradec -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+
+
+
+
+        #--- Cree un frame pour afficher les boutons
+        set navigation [frame $frm.navigation -borderwidth 0 -cursor arrow -relief groove]
+        pack $navigation -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $navigation.back -text "Precedent" -borderwidth 2 -takefocus 1 \
+                   -command "" 
+             pack $navigation.back -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $navigation.next -text "Suivant" -borderwidth 2 -takefocus 1 \
+                   -command "" 
+             pack $navigation.next -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              #--- Cree un checkbutton
-             checkbutton $keepradec.check -highlightthickness 0 -text "Utiliser RADEC precedent" -variable ::tools_cata::keep_radec
-             pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
-  
-        #--- Cree un frame pour afficher delkwd PV
-        set delpv [frame $f2.delpv -borderwidth 0 -cursor arrow -relief groove]
-        pack $delpv -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $delpv.check -highlightthickness 0 -text "Suppression des PV(1,2)_0" -variable ::tools_cata::delpv
-             pack $delpv.check -in $delpv -side left -padx 5 -pady 0
-  
-        #--- Cree un frame pour afficher creation du cata
-        set create_cata [frame $f2.create_cata -borderwidth 0 -cursor arrow -relief groove]
-        pack $create_cata -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $create_cata.check -highlightthickness 0 -text "Inserer le fichier CATA" -variable ::tools_cata::create_cata
-             pack $create_cata.check -in $create_cata -side left -padx 5 -pady 0
-  
-  
-
-        #--- Cree un frame pour afficher boucle
-        set limit_nbstars [frame $f2.limit_nbstars -borderwidth 0 -cursor arrow -relief groove]
-        pack $limit_nbstars -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             label $limit_nbstars.lab -text "Limite acceptable du nb d'etoiles identifiees : " 
-             pack $limit_nbstars.lab -in $limit_nbstars -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $limit_nbstars.val -relief sunken -textvariable ::tools_cata::limit_nbstars_accepted
-             pack $limit_nbstars.val -in $limit_nbstars -side right -pady 1 -anchor w
-
-        #--- Cree un frame pour afficher boucle
-        set log [frame $f2.log -borderwidth 0 -cursor arrow -relief groove]
-        pack $log -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $log.check -highlightthickness 0 -text "Activation du log" -variable ::tools_cata::log
-             pack $log.check -in $log -side left -padx 5 -pady 0
-
-        #--- Cree un frame pour afficher boucle
-        set treshold_ident [frame $f2.treshold_ident_star -borderwidth 0 -cursor arrow -relief groove]
-        pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             label $treshold_ident.lab1 -text "Seuil d'indentification stellaire : En position :" 
-             pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_star -width 5
-             pack $treshold_ident.val1 -in $treshold_ident -side left -pady 1 -anchor w
-             #--- Cree un checkbutton
-             label $treshold_ident.lab2 -text "En magnitude :"
-             pack $treshold_ident.lab2 -in $treshold_ident -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_star -width 5
-             pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
-
-        #--- Cree un frame pour afficher boucle
-        set treshold_ident [frame $f2.treshold_ident_ast -borderwidth 0 -cursor arrow -relief groove]
-        pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             label $treshold_ident.lab1 -text "Seuil d'indentification planetaire : En position :" 
-             pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_ast -width 5
-             pack $treshold_ident.val1 -in $treshold_ident -side left -pady 1 -anchor w
-             #--- Cree un checkbutton
-             label $treshold_ident.lab2 -text "En magnitude :" 
-             pack $treshold_ident.lab2 -in $treshold_ident -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_ast -width 5
-             pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
-
-        #--- Cree un frame pour afficher boucle
-        set myuncosm [frame $f2.myuncosm -borderwidth 0 -cursor arrow -relief groove]
-        pack $myuncosm -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             #--- Cree un checkbutton
-             checkbutton $myuncosm.check -highlightthickness 0 -text "Supprimer les cosmiques :" -variable ::gui_cata::use_uncosmic
-             pack $myuncosm.check -in $myuncosm -side left -padx 5 -pady 0
-  
-             #--- Cree un checkbutton
-             label $myuncosm.lab1 -text "coef :" 
-             pack $myuncosm.lab1 -in $myuncosm -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $myuncosm.val1 -relief sunken -textvariable ::tools_cdl::uncosm_param1 -width 5
-             pack $myuncosm.val1 -in $myuncosm -side left -pady 1 -anchor w
-             #--- Cree un checkbutton
-             label $myuncosm.lab2 -text "clipmax :" 
-             pack $myuncosm.lab2 -in $myuncosm -side left -padx 5 -pady 0
-             #--- Cree un entry
-             entry $myuncosm.val2 -relief sunken -textvariable ::tools_cdl::uncosm_param2 -width 5
-             pack $myuncosm.val2 -in $myuncosm -side left -pady 1 -anchor w
-
-
-        #--- Cree un frame pour afficher info image
-        set infoimage [frame $f3.infoimage -borderwidth 0 -cursor arrow -relief groove]
-        pack $infoimage -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 
-
-            #--- Cree un label pour le Nom de l image
-            set ::gui_cata::gui_nomimage [label $infoimage.nomimage -text $::tools_cata::current_image_name]
-            pack $infoimage.nomimage -in $infoimage -side top -padx 3 -pady 3
-
-            set ::gui_cata::gui_dateimage [label $infoimage.dateimage -text $::tools_cata::current_image_date]
-            pack $infoimage.dateimage -in $infoimage -side top -padx 3 -pady 3
-
-
-        #--- Cree un frame pour afficher les champs du header
-        set keys [frame $f3.keys -borderwidth 0 -cursor arrow -relief groove]
-        pack $keys -in $f3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-            #--- RA
-            set ra [frame $keys.ra -borderwidth 0 -cursor arrow -relief groove]
-            pack $ra -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                label $ra.name -text "RA : "
-                pack $ra.name -in $ra -side left -padx 3 -pady 3
-                entry $ra.val -relief sunken -textvariable ::tools_cata::ra
-                pack $ra.val -in $ra -side right -pady 1 -anchor w
-
-            #--- DEC
-            set dec [frame $keys.dec -borderwidth 0 -cursor arrow -relief groove]
-            pack $dec -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                label $dec.name -text "DEC : "
-                pack $dec.name -in $dec -side left -padx 3 -pady 3
-                entry $dec.val -relief sunken -textvariable ::tools_cata::dec
-                pack $dec.val -in $dec -side right -pady 1 -anchor w
-
-            #--- pixsize1
-            set pixsize1 [frame $keys.pixsize1 -borderwidth 0 -cursor arrow -relief groove]
-            pack $pixsize1 -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                label $pixsize1.name -text "PIXSIZE1 : "
-                pack $pixsize1.name -in $pixsize1 -side left -padx 3 -pady 3
-                entry $pixsize1.val -relief sunken -textvariable ::tools_cata::pixsize1
-                pack $pixsize1.val -in $pixsize1 -side right -pady 1 -anchor w
-
-            #--- pixsize2
-            set pixsize2 [frame $keys.pixsize2 -borderwidth 0 -cursor arrow -relief groove]
-            pack $pixsize2 -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                label $pixsize2.name -text "PIXSIZE2 : "
-                pack $pixsize2.name -in $pixsize2 -side left -padx 3 -pady 3
-                entry $pixsize2.val -relief sunken -textvariable ::tools_cata::pixsize2
-                pack $pixsize2.val -in $pixsize2 -side right -pady 1 -anchor w
-
-            #--- foclen
-            set foclen [frame $keys.foclen -borderwidth 0 -cursor arrow -relief groove]
-            pack $foclen -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                label $foclen.name -text "FOCLEN : "
-                pack $foclen.name -in $foclen -side left -padx 3 -pady 3
-                entry $foclen.val -relief sunken -textvariable ::tools_cata::foclen
-                pack $foclen.val -in $foclen -side right -pady 1 -anchor w
-
-            #--- set and reset center
-            set setbut [frame $f3.setbut -borderwidth 0 -cursor arrow -relief groove]
-            pack $setbut -in $f3 -anchor s -side top -expand 0 -padx 5 -pady 5
-               #--- set val
-               button $setbut.setval -text "Set Center" -borderwidth 2 -takefocus 1 -command "::gui_cata::setval"
-               pack $setbut.setval -side left -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-               #--- reset center
-               button $setbut.resetval -text "Reset Center" -borderwidth 2 -takefocus 1 -command "::gui_cata::resetcenter"
-               pack $setbut.resetval -side left -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Cree un frame pour afficher 
-        set count [frame $f4.count -borderwidth 0 -cursor arrow -relief groove]
-        pack $count -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-           #--- Cree un frame pour afficher 
-           set img [frame $count.img -borderwidth 0 -cursor arrow -relief groove]
-           pack $img -in $count -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
-
-                #--- Cree un label pour le titre
-                checkbutton $img.check -highlightthickness 0 \
-                      -variable ::gui_cata::gui_img -state normal \
-                      -command "::gui_cata::affiche_cata"
-                pack $img.check -in $img -side left -padx 3 -pady 3 -anchor w 
-                label $img.name -text "SOURCES (IMG) :" -width 14 -anchor e
-                pack $img.name -in $img -side left -padx 3 -pady 3 -anchor w 
-                label $img.val -textvariable ::tools_cata::nb_img -width 4
-                pack $img.val -in $img -side left -padx 3 -pady 3
-                button $img.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_img -command ""
-                pack $img.color -side left -anchor e -expand 0 
-                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_img -command "::gui_cata::affiche_cata" -width 3
-                pack  $img.radius -in $img -side left -anchor w
-
-           #--- Cree un frame pour afficher USNOA2
-           set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
-           pack $usnoa2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                checkbutton $usnoa2.check -highlightthickness 0 \
-                      -variable ::gui_cata::gui_usnoa2 -state normal \
-                      -command "::gui_cata::affiche_cata"
-                pack $usnoa2.check -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
-                label $usnoa2.name -text "USNOA2 :" -width 14 -anchor e
-                pack $usnoa2.name -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
-                label $usnoa2.val -textvariable ::tools_cata::nb_usnoa2 -width 4
-                pack $usnoa2.val -in $usnoa2 -side left -padx 3 -pady 3
-                button $usnoa2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_usnoa2 -command ""
-                pack $usnoa2.color -side left -anchor e -expand 0 
-                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_usnoa2 -command "::gui_cata::affiche_cata" -width 3
-                pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
-
-           #--- Cree un frame pour afficher UCAC2
-           set ucac2 [frame $count.ucac2 -borderwidth 0 -cursor arrow -relief groove]
-           pack $ucac2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                checkbutton $ucac2.check -highlightthickness 0  \
-                      -variable ::gui_cata::gui_ucac2 -state normal  \
-                      -command "::gui_cata::affiche_cata"
-                pack $ucac2.check -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac2.name -text "UCAC2 :" -width 14 -anchor e
-                pack $ucac2.name -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac2.val -textvariable ::tools_cata::nb_ucac2 -width 4
-                pack $ucac2.val -in $ucac2 -side left -padx 3 -pady 3
-                button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac2 -command ""
-                pack $ucac2.color -side left -anchor e -expand 0 
-                spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata" -width 3
-                pack  $ucac2.radius -in $ucac2 -side left -anchor w
-
-           #--- Cree un frame pour afficher UCAC3
-           set ucac3 [frame $count.ucac3 -borderwidth 0 -cursor arrow -relief groove]
-           pack $ucac3 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                checkbutton $ucac3.check -highlightthickness 0 \
-                      -variable ::gui_cata::gui_ucac3 -state normal  \
-                      -command "::gui_cata::affiche_cata"
-                pack $ucac3.check -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac3.name -text "UCAC3 :" -width 14 -anchor e
-                pack $ucac3.name -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac3.val -textvariable ::tools_cata::nb_ucac3 -width 4
-                pack $ucac3.val -in $ucac3 -side left -padx 3 -pady 3
-                button $ucac3.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac3 -command ""
-                pack $ucac3.color -side left -anchor e -expand 0 
-                spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
-                pack  $ucac3.radius -in $ucac3 -side left -anchor w
-
-           #--- Cree un frame pour afficher TYCHO2
-           set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
-           pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                checkbutton $tycho2.check -highlightthickness 0 \
-                      -variable ::gui_cata::gui_tycho2 -state normal \
-                      -command "::gui_cata::affiche_cata"
-                pack $tycho2.check -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
-                label $tycho2.name -text "TYCHO2 :" -width 14 -anchor e
-                pack $tycho2.name -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
-                label $tycho2.val -textvariable ::tools_cata::nb_tycho2 -width 4
-                pack $tycho2.val -in $tycho2 -side left -padx 3 -pady 3
-                button $tycho2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_tycho2 -command ""
-                pack $tycho2.color -side left -anchor e -expand 0 
-                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_tycho2 -command "::gui_cata::affiche_cata" -width 3
-                pack  $tycho2.radius -in $tycho2 -side left -anchor w
-
-           #--- Cree un frame pour afficher NOMAD1
-           set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
-           pack $nomad1 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                checkbutton $nomad1.check -highlightthickness 0 \
-                      -variable ::gui_cata::gui_nomad1 -state normal  \
-                      -command "::gui_cata::affiche_cata"
-                pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
-                label $nomad1.name -text "NOMAD1 :" -width 14 -anchor e
-                pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
-                label $nomad1.val -textvariable ::tools_cata::nb_nomad1 -width 4
-                pack $nomad1.val -in $nomad1 -side left -padx 3 -pady 3
-                button $nomad1.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_nomad1 -command ""
-                pack $nomad1.color -side left -anchor e -expand 0 
-                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
-                pack  $nomad1.radius -in $nomad1 -side left -anchor w
-
-           #--- Cree un frame pour afficher SKYBOT
-           set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
-           pack $skybot -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                checkbutton $skybot.check -highlightthickness 0 \
-                      -variable ::gui_cata::gui_skybot -state normal  \
-                      -command "::gui_cata::affiche_cata"
-                pack $skybot.check -in $skybot -side left -padx 3 -pady 3 -anchor w 
-                label $skybot.name -text "SKYBOT :" -width 14 -anchor e
-                pack $skybot.name -in $skybot -side left -padx 3 -pady 3 -anchor w 
-                label $skybot.val -textvariable ::tools_cata::nb_skybot -width 4
-                pack $skybot.val -in $skybot -side left -padx 3 -pady 3
-                button $skybot.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_skybot -command ""
-                pack $skybot.color -side left -anchor e -expand 0 
-                spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
-                pack  $skybot.radius -in $skybot -side left -anchor w
-
-        #--- Cree un frame pour afficher 
-        set confsex [frame $f5.confsex -borderwidth 0 -cursor arrow -relief groove]
-        pack $confsex -in $f5 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                frame $confsex.buttons -borderwidth 0 -cursor arrow -relief groove
-                pack $confsex.buttons  -in $confsex  -side top -anchor e -expand 0 
-                
-                     button  $confsex.buttons.clean  -borderwidth 1  \
-                         -command "cleanmark" -text "Clean"
-                     pack    $confsex.buttons.clean  -side left -anchor e -expand 0 
-                     button  $confsex.buttons.test  -borderwidth 1  \
-                         -command "::gui_cata::test_confsex" -text "Test"
-                     pack    $confsex.buttons.test  -side left -anchor e -expand 0 
-                     button  $confsex.buttons.save  -borderwidth 1  \
-                         -command "::gui_cata::set_confsex" -text "Save"
-                     pack    $confsex.buttons.save  -side left -anchor e -expand 0 
-
-                #--- Cree un label pour le titre
-                text $confsex.file 
-                pack $confsex.file -in $confsex -side top -padx 3 -pady 3 -anchor w 
-
-                ::gui_cata::get_confsex
-
-        #--- Cree un frame pour afficher les actions Interop
-        set interop [frame $f6.interop -borderwidth 0 -cursor arrow -relief groove]
-        pack $interop -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-  
-           # Bouton pour envoyer les plans courants (image,table) vers Aladin
-           set plan [frame $interop.plan -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
-           pack $plan -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-              label $plan.lab -text "Envoyer le plan vers "
-              pack $plan.lab -in $plan -side left -padx 3 -pady 3
-              button $plan.aladin -text "Aladin" -borderwidth 2 -takefocus 1 -command "::gui_cata::sendImageAndTable" 
-              pack $plan.aladin -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-           # 
-           set dss [frame $interop.dss -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
-           pack $dss -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              set l [frame $dss.l -borderwidth 0 -cursor arrow  -borderwidth 0]
-              pack $l -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-                 label $l.date -justify right -text "Epoque (UTC) : "
-                 pack $l.date -in $l -side top -padx 3 -pady 3
-                 label $l.coord -justify right -text "Coordonnees (RA DEC) : "
-                 pack $l.coord -in $l -side top -padx 3 -pady 3
-                 label $l.radius -justify right -text "Rayon (arcmin) : "
-                 pack $l.radius -in $l -side top -padx 3 -pady 3
-                 label $l.uaicode -justify right -text "UAI Code : "
-                 pack $l.uaicode -in $l -side top -padx 3 -pady 3
- 
-              set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
-              pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-                 entry $m.date -relief sunken -width 26 -textvariable ::tools_cata::current_image_date
-                 pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
-                 entry $m.coord -relief sunken -width 26 -textvariable ::tools_cata::coord
-                 pack $m.coord -in $m -side top -padx 3 -pady 3 -anchor w
-                 entry $m.radius -relief sunken -width 26 -textvariable ::tools_cata::radius
-                 pack $m.radius -in $m -side top -padx 3 -pady 3 -anchor w
-                 entry $m.uaicode -relief sunken -width 26 -textvariable ::tools_cata::uaicode
-                 pack $m.uaicode -in $m -side top -padx 3 -pady 3 -anchor w
-
-              set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
-              pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
-                 button $r.resolve -text "Resolve Sso" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
-                        -command "::gui_cata::skybotResolver"
-                 pack $r.resolve -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
-                 button $r.setcenter -text "Set Center" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
-                        -command "::gui_cata::setCenterFromRADEC"
-                 pack $r.setcenter -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
-                 button $r.aladin -text "Show in Aladin" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
-                        -command "::gui_cata::sendAladinScript" 
-                 pack $r.aladin -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
-
-              #--- Cree un frame pour afficher la GUI du Mode Manuel
-              set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
-              pack $manuel -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                 frame $manuel.entr -borderwidth 0 -cursor arrow -relief groove
-                 pack $manuel.entr  -in $manuel  -side top 
-
-                     set dss [frame $manuel.entr.dss -borderwidth 0 -cursor arrow]
-                     pack $dss -in $manuel.entr -side top 
-
-                          button  $dss.lab  -borderwidth 1 -command "::gui_cata::getDSS" -text "Obtenir une image DSS"
-                          pack   $dss.lab   -in $dss -side top -padx 3 -pady 3 -anchor c
-
-                          set basic [frame $dss.basic -borderwidth 0 -cursor arrow  -borderwidth 0]
-                          pack $basic -in $dss -side top 
-
-                               frame  $basic.alpha -borderwidth 0 -cursor arrow -relief groove
-                               pack   $basic.alpha  -in $basic  -side left 
-                                      label  $basic.alpha.lab   -text "Alpha (deg)" -borderwidth 1
-                                      pack   $basic.alpha.lab   -in $basic.alpha -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.alpha.val -relief sunken -textvariable ::tools_cata::ra -width 10
-                                      pack   $basic.alpha.val -in $basic.alpha -side top -padx 3 -pady 3 -anchor w
-
-                               frame  $basic.delta -borderwidth 0 -cursor arrow -relief groove
-                               pack   $basic.delta  -in $basic  -side left 
-                                      label  $basic.delta.lab   -text "Delta (deg)" -borderwidth 1
-                                      pack   $basic.delta.lab   -in $basic.delta -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.delta.val -relief sunken -textvariable ::tools_cata::dec -width 10
-                                      pack   $basic.delta.val -in $basic.delta -side top -padx 3 -pady 3 -anchor w
-
-                               frame  $basic.fov -borderwidth 0 -cursor arrow -relief groove
-                               pack   $basic.fov  -in $basic  -side left 
-                                      label  $basic.fov.lab   -text "Fov (arcmin)" -borderwidth 1
-                                      pack   $basic.fov.lab   -in $basic.fov -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.fov.val -relief sunken -textvariable ::tools_cata::radius -width 10
-                                      pack   $basic.fov.val -in $basic.fov -side top -padx 3 -pady 3 -anchor w
-
-                               frame  $basic.crota -borderwidth 0 -cursor arrow -relief groove
-                               pack   $basic.crota  -in $basic  -side left 
-                                      label  $basic.crota.lab   -text "Orientation (deg)" -borderwidth 1
-                                      pack   $basic.crota.lab   -in $basic.crota -side top -padx 3 -pady 3 -anchor c
-                                      entry  $basic.crota.val -relief sunken -textvariable ::tools_cata::crota -width 10
-                                      pack   $basic.crota.val -in $basic.crota -side top -padx 3 -pady 3 -anchor w
-
-                     #set minfo [frame $manuel.entr.info -borderwidth 1 -cursor arrow]
-                     #pack $minfo -in $manuel.entr -side top -pady 5
-                     
-                          #set mode_manuel "Selectionner une source en dessinant un carre dans l'image a reduire, et selectionner de meme l'etoile correspondante dans l'image DSS, puis cliquer sur le bouton GRAB.\n"
-                          #text $minfo.txt -wrap word -width 70 -height 4 -relief groove
-                          #$minfo.txt insert 1.0 $mode_manuel
-                          #pack  $minfo.txt -in $minfo -side left -expand 0 -fill both -padx 10
-
-                     set coord [frame $manuel.entr.coord -borderwidth 0 -cursor arrow]
-                     pack $coord -in $manuel.entr 
-
-                          image create photo icon_clean
-                          icon_clean configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
-            
-                          set img [frame $coord.l -borderwidth 0 -cursor arrow  -borderwidth 0]
-                          pack $img -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-
-                                frame $img.title -borderwidth 0 -cursor arrow -relief groove
-                                pack $img.title  -in $img  -side top  -anchor c
-                                   label $img.title.xy  -text "X Y (pixel)" -borderwidth 0 -relief groove  -width 25
-                                   pack  $img.title.xy -in $img.title -side left -padx 3 -pady 3 -anchor w
-                                   label $img.title.ad  -text "Alpha Delta (deg)" -borderwidth 0  -relief groove  -width 25
-                                   pack  $img.title.ad -in $img.title -side right -padx 3 -pady 3 -anchor e
-
-                                frame $img.v1 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v1  -in $img  -side top 
-                                   entry $img.v1.xy -relief sunken -textvariable ::gui_cata::man_xy_star(1)
-                                   pack  $img.v1.xy -in $img.v1 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v1.grab  -borderwidth 1 -command "::gui_cata::grab 1" -text "Grab"
-                                   pack    $img.v1.grab -in $img.v1 -side left -anchor e -expand 0 
-                                   entry $img.v1.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(1)
-                                   pack  $img.v1.ad -in $img.v1 -side left -padx 3 -pady 3 -anchor w
-                                   button $img.v1.clean  -borderwidth 1 -image icon_clean -command {
-                                      set ::gui_cata::man_xy_star(1) ""
-                                      set ::gui_cata::man_ad_star(1) ""
-                                   }
-                                   pack   $img.v1.clean -in $img.v1 -side left -anchor e -expand 0 
-
-                                frame $img.v2 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v2  -in $img  -side top 
-                                   entry $img.v2.xy -relief sunken -textvariable ::gui_cata::man_xy_star(2)
-                                   pack  $img.v2.xy -in $img.v2 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v2.grab  -borderwidth 1 -command "::gui_cata::grab 2" -text "Grab"
-                                   pack    $img.v2.grab -in $img.v2 -side left -anchor e -expand 0 
-                                   entry $img.v2.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(2)
-                                   pack  $img.v2.ad -in $img.v2 -side left -padx 3 -pady 3 -anchor w
-                                   button $img.v2.clean  -borderwidth 1 -image icon_clean -command {
-                                     set ::gui_cata::man_xy_star(2) ""
-                                     set ::gui_cata::man_ad_star(2) ""
-                                   }
-                                   pack   $img.v2.clean -in $img.v2 -side left -anchor e -expand 0 
-
-                                frame $img.v3 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v3  -in $img  -side top 
-                                   entry $img.v3.xy -relief sunken -textvariable ::gui_cata::man_xy_star(3)
-                                   pack  $img.v3.xy -in $img.v3 -side left -padx 3 -pady 3 -anchor w
-                                   button $img.v3.grab  -borderwidth 1 -command "::gui_cata::grab 3" -text "Grab"
-                                   pack   $img.v3.grab -in $img.v3 -side left -anchor e -expand 0 
-                                   entry $img.v3.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(3)
-                                   pack  $img.v3.ad -in $img.v3 -side left -padx 3 -pady 3 -anchor w
-                                   button $img.v3.clean  -borderwidth 1 -image icon_clean -command {
-                                      set ::gui_cata::man_xy_star(3) ""
-                                      set ::gui_cata::man_ad_star(3) ""
-                                   }
-                                   pack   $img.v3.clean -in $img.v3 -side left -anchor e -expand 0 
-
-                                frame $img.v4 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v4  -in $img  -side top 
-                                   entry $img.v4.xy -relief sunken -textvariable ::gui_cata::man_xy_star(4)
-                                   pack  $img.v4.xy -in $img.v4 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v4.grab  -borderwidth 1 -command "::gui_cata::grab 4" -text "Grab"
-                                   pack    $img.v4.grab -in $img.v4 -side left -anchor e -expand 0 
-                                   entry $img.v4.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(4)
-                                   pack  $img.v4.ad -in $img.v4 -side left -padx 3 -pady 3 -anchor w
-                                    button $img.v4.clean  -borderwidth 1 -image icon_clean -command {
-                                       set ::gui_cata::man_xy_star(4) ""
-                                       set ::gui_cata::man_ad_star(4) ""
-                                    }
-                                    pack   $img.v4.clean -in $img.v4 -side left -anchor e -expand 0 
-
-                                frame $img.v5 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v5  -in $img  -side top 
-                                   entry $img.v5.xy -relief sunken -textvariable ::gui_cata::man_xy_star(5)
-                                   pack  $img.v5.xy -in $img.v5 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v5.grab  -borderwidth 1 -command "::gui_cata::grab 5" -text "Grab"
-                                   pack    $img.v5.grab -in $img.v5 -side left -anchor e -expand 0 
-                                   entry $img.v5.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(5)
-                                   pack  $img.v5.ad -in $img.v5 -side left -padx 3 -pady 3 -anchor w
-                                    button $img.v5.clean  -borderwidth 1 -image icon_clean -command {
-                                       set ::gui_cata::man_xy_star(5) ""
-                                       set ::gui_cata::man_ad_star(5) ""
-                                    }
-                                    pack   $img.v5.clean -in $img.v5 -side left -anchor e -expand 0 
-
-                                frame $img.v6 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v6  -in $img  -side top 
-                                   entry $img.v6.xy -relief sunken -textvariable ::gui_cata::man_xy_star(6)
-                                   pack  $img.v6.xy -in $img.v6 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v6.grab  -borderwidth 1 -command "::gui_cata::grab 6" -text "Grab"
-                                   pack    $img.v6.grab -in $img.v6 -side left -anchor e -expand 0 
-                                   entry $img.v6.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(6)
-                                   pack  $img.v6.ad -in $img.v6 -side left -padx 3 -pady 3 -anchor w
-                                    button $img.v6.clean  -borderwidth 1 -image icon_clean -command {
-                                       set ::gui_cata::man_xy_star(6) ""
-                                       set ::gui_cata::man_ad_star(6) ""
-                                    }
-                                    pack   $img.v6.clean -in $img.v6 -side left -anchor e -expand 0 
-
-                                frame $img.v7 -borderwidth 1 -cursor arrow -relief groove
-                                pack $img.v7  -in $img  -side top 
-                                   entry $img.v7.xy -relief sunken -textvariable ::gui_cata::man_xy_star(7)
-                                   pack  $img.v7.xy -in $img.v7 -side left -padx 3 -pady 3 -anchor w
-                                   button  $img.v7.grab  -borderwidth 1 -command "::gui_cata::grab 7" -text "Grab"
-                                   pack    $img.v7.grab -in $img.v7 -side left -anchor e -expand 0 
-                                   entry $img.v7.ad -relief sunken  -textvariable ::gui_cata::man_ad_star(7)
-                                   pack  $img.v7.ad -in $img.v7 -side left -padx 3 -pady 3 -anchor w
-                                    button $img.v7.clean  -borderwidth 1 -image icon_clean -command {
-                                       set ::gui_cata::man_xy_star(7) ""
-                                       set ::gui_cata::man_ad_star(7) ""
-                                    }
-                                    pack   $img.v7.clean -in $img.v7 -side left -anchor e -expand 0 
-
-
-                frame $manuel.entr.buttonsvisu -borderwidth 0 -cursor arrow -relief groove
-                pack $manuel.entr.buttonsvisu  -in $manuel.entr  -side top 
-                
-                     button  $manuel.entr.buttonsvisu.clean  -borderwidth 1  \
-                         -command "cleanmark" -text "Clean"
-                     pack    $manuel.entr.buttonsvisu.clean -in $manuel.entr.buttonsvisu -side left -anchor e -expand 0 
-                     button  $manuel.entr.buttonsvisu.voir  -borderwidth 1  \
-                         -command "::gui_cata::manual_view" -text "Voir XY"
-                     pack    $manuel.entr.buttonsvisu.voir -in $manuel.entr.buttonsvisu -side left -anchor e -expand 0 
-                     button  $manuel.entr.buttonsvisu.fit  -borderwidth 1  \
-                         -command "::gui_cata::manual_fit" -text "Fit XY"
-                     pack    $manuel.entr.buttonsvisu.fit -in $manuel.entr.buttonsvisu -side left -anchor e -expand 0 
-
-                frame $manuel.entr.buttons -borderwidth 0 -cursor arrow -relief groove
-                pack $manuel.entr.buttons  -in $manuel.entr  -side top 
-                
-                     button  $manuel.entr.buttons.efface  -borderwidth 1  \
-                         -command "::gui_cata::manual_clean" -text "Effacer tout"
-                     pack    $manuel.entr.buttons.efface -in $manuel.entr.buttons -side left -anchor e -expand 0 
-                     button  $manuel.entr.buttons.creerwcs  -borderwidth 1  \
-                         -command "::gui_cata::manual_create_wcs" -text "Creer WCS"
-                     pack    $manuel.entr.buttons.creerwcs -in $manuel.entr.buttons -side left -anchor e -expand 0 
-                     set ::gui_cata::gui_creercata [button  $manuel.entr.buttons.creercata -borderwidth 1  \
-                         -command "::gui_cata::manual_create_cata" -text "Creer Cata" -state disabled]
-                     pack    $manuel.entr.buttons.creercata -in $manuel.entr.buttons -side left -anchor e -expand 0 
-
-
-                frame $manuel.entr.buttonsins -borderwidth 0 -cursor arrow -relief groove
-                pack $manuel.entr.buttonsins  -in $manuel.entr  -side top 
-                
-                     set ::gui_cata::gui_enrimg [button  $manuel.entr.buttonsins.enrimg  -borderwidth 1  \
-                         -command "::gui_cata::manual_insert_img" -text "Insertion Image" -state disabled]
-                     pack    $manuel.entr.buttonsins.enrimg -in $manuel.entr.buttonsins -side left -anchor e -expand 0 
-
-        #--- Cree un frame pour afficher l onglet develop
-        set develop [frame $f8.develop -borderwidth 0 -cursor arrow -relief groove]
-        pack $develop -in $f8 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                frame $develop.entr -borderwidth 0 -cursor arrow -relief groove
-                pack $develop.entr  -in $develop  -side top 
-                
-
-                     set affsource [frame $develop.entr.affsource -borderwidth 0 -cursor arrow  -borderwidth 0]
-                     pack $affsource -in $develop.entr -side top 
-
-                          button  $affsource.lab  -borderwidth 1 -command "::gui_cata::getsource" -text "Obtenir les sources d'une fenetre"
-                          pack   $affsource.lab   -in $affsource -side top -padx 3 -pady 3 -anchor c
-
-
-
-
+             label $navigation.lab -text "Access direct a l image : "
+             pack $navigation.lab -in $navigation -side left -padx 5 -pady 0
+             entry $navigation.val -relief sunken \
+                -textvariable ::gui_cata::directaccess -width 6 \
+                -justify center
+             pack $navigation.val -in $navigation -side left -pady 1 -anchor w
+             button $navigation.go -text "Go" -borderwidth 1 -takefocus 1 \
+                   -command "" 
+             pack $navigation.go -side left -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
 
         #--- Cree un frame pour afficher bouton fermeture
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
         pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             set ::gui_cata::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                -command "::gui_cata::fermer"]
-             pack $boutonpied.fermer -side left -anchor e \
+             button $boutonpied.annuler -text "Annuler" -borderwidth 2 -takefocus 1 \
+                -command "cleanmark ; destroy $::gui_cata::feng"
+             pack $boutonpied.annuler -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-            set ::gui_cata::gui_info [label $boutonpied.info -text ""]
-            pack $boutonpied.info -in $boutonpied -side top -padx 3 -pady 3
-            set ::gui_cata::gui_info2 [label $boutonpied.info2 -text ""]
-            pack $::gui_cata::gui_info2 -in $boutonpied -side top -padx 3 -pady 3
+             set ::gui_cata::gui_info [label $boutonpied.info -text ""]
+             pack $boutonpied.info -in $boutonpied -side top -padx 3 -pady 3
+             set ::gui_cata::gui_info2 [label $boutonpied.info2 -text ""]
+             pack $::gui_cata::gui_info2 -in $boutonpied -side top -padx 3 -pady 3
 
 
    }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
    
    

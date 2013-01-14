@@ -161,6 +161,8 @@ namespace eval tools_cdl {
 
    proc ::tools_cdl::myuncosmic_2 { bufNo } {
 
+         ::console::affiche_erreur "ERRERU [pwd]\n" 
+      
       buf$bufNo save a
       set bf    [buf::create]
       buf$bf load a
