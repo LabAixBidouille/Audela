@@ -710,7 +710,6 @@ namespace eval gui_cata {
                   # TODO gerer l'erreur le  cata a echou?
                   set ::gui_cata::color_cata $::gui_cata::color_button_bad
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-                  
                   #return false
                } else {
                   set ::gui_cata::color_cata $::gui_cata::color_button_good
@@ -743,7 +742,7 @@ namespace eval gui_cata {
       set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
       set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
-      
+
       buf$::audace(bufNo) load $file
       if {$::gui_cata::use_uncosmic} {
          ::tools_cdl::myuncosmic $::audace(bufNo)
@@ -788,6 +787,7 @@ namespace eval gui_cata {
             set ::gui_cata::color_wcs $::gui_cata::color_button_bad
             $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
             cleanmark
+            ::gui_cata::affiche_current_image
             break
          }
          if {$::tools_cata::id_current_image == $::tools_cata::nb_img_list} { break }
@@ -1272,7 +1272,7 @@ namespace eval gui_cata {
       } else {
          set ::gui_cata::color_cata $::gui_cata::color_button_bad
       }
-      
+
       set ::tools_cata::nb_img     0
       set ::tools_cata::nb_usnoa2  0
       set ::tools_cata::nb_tycho2  0
@@ -2196,6 +2196,187 @@ namespace eval gui_cata {
 
 
 
+   proc ::gui_cata::voir_cata { img_list } {
+
+      global audace
+      global bddconf
+
+      ::gui_cata::inittoconf
+      ::gui_cata::charge_list $img_list
+
+      # Update nb sources du cata
+      set ::tools_cata::nb_img [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources IMG]
+      set ::tools_cata::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources USNOA2]
+      set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources TYCHO2]
+      set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC2]
+      set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC3]
+      set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources NOMAD1]
+      set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources SKYBOT]
+
+      #--- Creation de la fenetre
+      set ::gui_cata::fenv .new
+      if { [winfo exists $::gui_cata::fenv] } {
+         wm withdraw $::gui_cata::fenv
+         wm deiconify $::gui_cata::fenv
+         focus $::gui_cata::fenv
+         return
+      }
+      toplevel $::gui_cata::fenv -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::gui_cata::fenv ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::gui_cata::fenv ] "+" ] 2 ]
+      wm geometry $::gui_cata::fenv +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::gui_cata::fenv 1 1
+      wm title $::gui_cata::fenv "Voir le CATA"
+      wm protocol $::gui_cata::fenv WM_DELETE_WINDOW "destroy $::gui_cata::fenv"
+
+      set frm $::gui_cata::fenv.frm_creation_cata
+      set ::gui_cata::current_appli $frm
+
+      #--- Cree un frame general
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::gui_cata::fenv -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+      set f4 [frame $frm.f4]
+      pack $f4 -in $frm
+
+              #--- Cree un frame pour afficher 
+        set count [frame $f4.count -borderwidth 0 -cursor arrow -relief groove]
+        pack $count -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+           #--- Cree un frame pour afficher 
+           set img [frame $count.img -borderwidth 0 -cursor arrow -relief groove]
+           pack $img -in $count -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
+
+                #--- Cree un label pour le titre
+                checkbutton $img.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_img -state normal \
+                      -command "::gui_cata::affiche_cata"
+                pack $img.check -in $img -side left -padx 3 -pady 3 -anchor w 
+                label $img.name -text "SOURCES (IMG) :" -width 14 -anchor e
+                pack $img.name -in $img -side left -padx 3 -pady 3 -anchor w 
+                label $img.val -textvariable ::tools_cata::nb_img -width 4
+                pack $img.val -in $img -side left -padx 3 -pady 3
+                button $img.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_img -command ""
+                pack $img.color -side left -anchor e -expand 0 
+                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_img -command "::gui_cata::affiche_cata" -width 3
+                pack  $img.radius -in $img -side left -anchor w
+
+           #--- Cree un frame pour afficher USNOA2
+           set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
+           pack $usnoa2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $usnoa2.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_usnoa2 -state normal \
+                      -command "::gui_cata::affiche_cata"
+                pack $usnoa2.check -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
+                label $usnoa2.name -text "USNOA2 :" -width 14 -anchor e
+                pack $usnoa2.name -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
+                label $usnoa2.val -textvariable ::tools_cata::nb_usnoa2 -width 4
+                pack $usnoa2.val -in $usnoa2 -side left -padx 3 -pady 3
+                button $usnoa2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_usnoa2 -command ""
+                pack $usnoa2.color -side left -anchor e -expand 0 
+                spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_usnoa2 -command "::gui_cata::affiche_cata" -width 3
+                pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
+
+           #--- Cree un frame pour afficher UCAC2
+           set ucac2 [frame $count.ucac2 -borderwidth 0 -cursor arrow -relief groove]
+           pack $ucac2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ucac2.check -highlightthickness 0  \
+                      -variable ::gui_cata::gui_ucac2 -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $ucac2.check -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac2.name -text "UCAC2 :" -width 14 -anchor e
+                pack $ucac2.name -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac2.val -textvariable ::tools_cata::nb_ucac2 -width 4
+                pack $ucac2.val -in $ucac2 -side left -padx 3 -pady 3
+                button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac2 -command ""
+                pack $ucac2.color -side left -anchor e -expand 0 
+                spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata" -width 3
+                pack  $ucac2.radius -in $ucac2 -side left -anchor w
+
+           #--- Cree un frame pour afficher UCAC3
+           set ucac3 [frame $count.ucac3 -borderwidth 0 -cursor arrow -relief groove]
+           pack $ucac3 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ucac3.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ucac3 -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $ucac3.check -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac3.name -text "UCAC3 :" -width 14 -anchor e
+                pack $ucac3.name -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac3.val -textvariable ::tools_cata::nb_ucac3 -width 4
+                pack $ucac3.val -in $ucac3 -side left -padx 3 -pady 3
+                button $ucac3.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac3 -command ""
+                pack $ucac3.color -side left -anchor e -expand 0 
+                spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
+                pack  $ucac3.radius -in $ucac3 -side left -anchor w
+
+           #--- Cree un frame pour afficher TYCHO2
+           set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
+           pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $tycho2.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_tycho2 -state normal \
+                      -command "::gui_cata::affiche_cata"
+                pack $tycho2.check -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
+                label $tycho2.name -text "TYCHO2 :" -width 14 -anchor e
+                pack $tycho2.name -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
+                label $tycho2.val -textvariable ::tools_cata::nb_tycho2 -width 4
+                pack $tycho2.val -in $tycho2 -side left -padx 3 -pady 3
+                button $tycho2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_tycho2 -command ""
+                pack $tycho2.color -side left -anchor e -expand 0 
+                spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_tycho2 -command "::gui_cata::affiche_cata" -width 3
+                pack  $tycho2.radius -in $tycho2 -side left -anchor w
+
+           #--- Cree un frame pour afficher NOMAD1
+           set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
+           pack $nomad1 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $nomad1.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_nomad1 -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
+                label $nomad1.name -text "NOMAD1 :" -width 14 -anchor e
+                pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
+                label $nomad1.val -textvariable ::tools_cata::nb_nomad1 -width 4
+                pack $nomad1.val -in $nomad1 -side left -padx 3 -pady 3
+                button $nomad1.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_nomad1 -command ""
+                pack $nomad1.color -side left -anchor e -expand 0 
+                spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
+                pack  $nomad1.radius -in $nomad1 -side left -anchor w
+
+           #--- Cree un frame pour afficher SKYBOT
+           set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
+           pack $skybot -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $skybot.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_skybot -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $skybot.check -in $skybot -side left -padx 3 -pady 3 -anchor w 
+                label $skybot.name -text "SKYBOT :" -width 14 -anchor e
+                pack $skybot.name -in $skybot -side left -padx 3 -pady 3 -anchor w 
+                label $skybot.val -textvariable ::tools_cata::nb_skybot -width 4
+                pack $skybot.val -in $skybot -side left -padx 3 -pady 3
+                button $skybot.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_skybot -command ""
+                pack $skybot.color -side left -anchor e -expand 0 
+                spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
+                pack  $skybot.radius -in $skybot -side left -anchor w
+
+        #--- Cree un frame pour afficher bouton fermeture
+        set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
+        pack $boutonpied -in $frm -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
+
+             set ::gui_cata::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+                -command {cleanmark
+                          destroy $::gui_cata::fenv}]
+             pack $boutonpied.fermer -side left -anchor e \
+                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+   }
+
+
+
    proc ::gui_cata::creation_cata { img_list } {
 
       global audace
@@ -2556,14 +2737,13 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_img -state normal \
                       -command "::gui_cata::affiche_cata"
                 pack $img.check -in $img -side left -padx 3 -pady 3 -anchor w 
-                label $img.name -text "IMG : " -width 7
+                label $img.name -text "SOURCES (IMG) :" -width 14 -anchor e
                 pack $img.name -in $img -side left -padx 3 -pady 3 -anchor w 
-                label $img.val -textvariable ::tools_cata::nb_img
+                label $img.val -textvariable ::tools_cata::nb_img -width 4
                 pack $img.val -in $img -side left -padx 3 -pady 3
                 button $img.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_img -command ""
                 pack $img.color -side left -anchor e -expand 0 
-                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -command "::gui_cata::affiche_cata" -width 3 \
-                      -textvariable ::tools_cata::size_img
+                spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_img -command "::gui_cata::affiche_cata" -width 3
                 pack  $img.radius -in $img -side left -anchor w
 
            #--- Cree un frame pour afficher USNOA2
@@ -2574,9 +2754,9 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_usnoa2 -state normal \
                       -command "::gui_cata::affiche_cata"
                 pack $usnoa2.check -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
-                label $usnoa2.name -text "USNOA2 : " -width 7
+                label $usnoa2.name -text "USNOA2 :" -width 14 -anchor e
                 pack $usnoa2.name -in $usnoa2 -side left -padx 3 -pady 3 -anchor w 
-                label $usnoa2.val -textvariable ::tools_cata::nb_usnoa2
+                label $usnoa2.val -textvariable ::tools_cata::nb_usnoa2 -width 4
                 pack $usnoa2.val -in $usnoa2 -side left -padx 3 -pady 3
                 button $usnoa2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_usnoa2 -command ""
                 pack $usnoa2.color -side left -anchor e -expand 0 
@@ -2591,9 +2771,9 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_ucac2 -state normal  \
                       -command "::gui_cata::affiche_cata"
                 pack $ucac2.check -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac2.name -text "UCAC2 : " -width 7
+                label $ucac2.name -text "UCAC2 :" -width 14 -anchor e
                 pack $ucac2.name -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac2.val -textvariable ::tools_cata::nb_ucac2
+                label $ucac2.val -textvariable ::tools_cata::nb_ucac2 -width 4
                 pack $ucac2.val -in $ucac2 -side left -padx 3 -pady 3
                 button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac2 -command ""
                 pack $ucac2.color -side left -anchor e -expand 0 
@@ -2608,9 +2788,9 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_ucac3 -state normal  \
                       -command "::gui_cata::affiche_cata"
                 pack $ucac3.check -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac3.name -text "UCAC3 : " -width 7
+                label $ucac3.name -text "UCAC3 :" -width 14 -anchor e
                 pack $ucac3.name -in $ucac3 -side left -padx 3 -pady 3 -anchor w 
-                label $ucac3.val -textvariable ::tools_cata::nb_ucac3
+                label $ucac3.val -textvariable ::tools_cata::nb_ucac3 -width 4
                 pack $ucac3.val -in $ucac3 -side left -padx 3 -pady 3
                 button $ucac3.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac3 -command ""
                 pack $ucac3.color -side left -anchor e -expand 0 
@@ -2625,9 +2805,9 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_tycho2 -state normal \
                       -command "::gui_cata::affiche_cata"
                 pack $tycho2.check -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
-                label $tycho2.name -text "TYCHO2 : " -width 7
+                label $tycho2.name -text "TYCHO2 :" -width 14 -anchor e
                 pack $tycho2.name -in $tycho2 -side left -padx 3 -pady 3 -anchor w 
-                label $tycho2.val -textvariable ::tools_cata::nb_tycho2
+                label $tycho2.val -textvariable ::tools_cata::nb_tycho2 -width 4
                 pack $tycho2.val -in $tycho2 -side left -padx 3 -pady 3
                 button $tycho2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_tycho2 -command ""
                 pack $tycho2.color -side left -anchor e -expand 0 
@@ -2642,9 +2822,9 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_nomad1 -state normal  \
                       -command "::gui_cata::affiche_cata"
                 pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
-                label $nomad1.name -text "NOMAD1 : " -width 7
+                label $nomad1.name -text "NOMAD1 :" -width 14 -anchor e
                 pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
-                label $nomad1.val -textvariable ::tools_cata::nb_nomad1
+                label $nomad1.val -textvariable ::tools_cata::nb_nomad1 -width 4
                 pack $nomad1.val -in $nomad1 -side left -padx 3 -pady 3
                 button $nomad1.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_nomad1 -command ""
                 pack $nomad1.color -side left -anchor e -expand 0 
@@ -2659,9 +2839,9 @@ namespace eval gui_cata {
                       -variable ::gui_cata::gui_skybot -state normal  \
                       -command "::gui_cata::affiche_cata"
                 pack $skybot.check -in $skybot -side left -padx 3 -pady 3 -anchor w 
-                label $skybot.name -text "SKYBOT : " -width 7
+                label $skybot.name -text "SKYBOT :" -width 14 -anchor e
                 pack $skybot.name -in $skybot -side left -padx 3 -pady 3 -anchor w 
-                label $skybot.val -textvariable ::tools_cata::nb_skybot
+                label $skybot.val -textvariable ::tools_cata::nb_skybot -width 4
                 pack $skybot.val -in $skybot -side left -padx 3 -pady 3
                 button $skybot.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_skybot -command ""
                 pack $skybot.color -side left -anchor e -expand 0 
