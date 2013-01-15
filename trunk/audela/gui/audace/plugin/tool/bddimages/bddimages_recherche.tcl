@@ -759,6 +759,9 @@ namespace eval bddimages_recherche {
             pack $This.frame6.liste.hsb \
                -in $This.frame6.liste -side bottom -fill x
 
+
+
+
             #--- Creation de la table
             ::bddimages_recherche::createTbl2 $This.frame6.liste
             pack $This.frame6.liste.tbl -in $This.frame6.liste -expand yes -fill both
