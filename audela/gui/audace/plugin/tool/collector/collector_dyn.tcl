@@ -281,7 +281,7 @@
 
       set result [readCumulus]
 
-      if {$result eq "cumulus.exe not alive" || $result eq ""} {
+      if {[llength $result] != 7} {
          onchangeCumulus stop
          return
       }

@@ -219,7 +219,7 @@
       dict set dicokwd CDELT1    {CDELT1 %s double {Scale along naxis1} deg/pixel}
       dict set dicokwd CDELT2    {CDELT2 %s double {Scale along naxis2} deg/pixel}
       dict set dicokwd CONFNAME  {CONFNAME %s string {Instrument Setup} {}}
-      dict set dicokwd CROTA2    {CROTA2 %s double {Position angle of North} deg}
+      dict set dicokwd CROTA2    {CROTA2 %s float {Position angle of North} deg}
       dict set dicokwd CRPIX1    {CRPIX1 %s float {Reference pixel for Naxis1} pixel}
       dict set dicokwd CRPIX2    {CRPIX2 %s float {Reference pixel for Naxis2} pixel}
       dict set dicokwd CRVAL1    {CRVAL1 %s double {Reference coordinate for Naxis1} deg}
@@ -233,7 +233,7 @@
       dict set dicokwd EXPTIME   {EXPTIME %s float {Exposure Time} s}
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K z} {}}
       dict set dicokwd FILTERNU  {FILTERNU %s int {Filter number} {}}
-      dict set dicokwd FOCLEN    {FOCLEN %s double {Resulting Focal length} m}
+      dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
       dict set dicokwd FWHM      {FWHM %s float {Full Width at Half Maximum} pixels}
       dict set dicokwd GEODSYS   {GEODSYS %s string {Geodetic datum for observatory position} {}}
       dict set dicokwd HYGRO     {HYGRO %s int {Hydrometry} percent}
