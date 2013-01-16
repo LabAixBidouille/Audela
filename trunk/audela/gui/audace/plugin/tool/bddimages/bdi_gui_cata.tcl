@@ -2629,7 +2629,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
 
       # Chargement premiere image sans GUI
-      set ::tools_cata::id_current_image 0
+      set ::tools_cata::id_current_image 1
       set ::tools_cata::current_image [lindex $::tools_cata::img_list 0]
 
       set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -2676,6 +2676,7 @@ namespace eval gui_cata {
 
       global bddconf
  
+         gren_info "charge_current_cata ::tools_cata::id_current_image = $::tools_cata::id_current_image\n"
  
          set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -2693,6 +2694,7 @@ namespace eval gui_cata {
 
          
          gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+         gren_info "charge_current_catas ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
 
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
 
@@ -2718,7 +2720,7 @@ namespace eval gui_cata {
       $::gui_cata::current_appli.actions.charge configure -text "Annuler"
       
 
-      for {set ::tools_cata::id_current_image 0} {$::tools_cata::id_current_image<$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image<=$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
          
          if {$::gui_cata::annul==1} {
             gren_info "Chargement annulé...\n"
@@ -2908,6 +2910,8 @@ namespace eval gui_cata {
 
       set ::tools_cata::id_current_image $::gui_cata::directaccess
 
+      gren_info "go ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
+
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
       set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
       set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
@@ -2951,7 +2955,6 @@ namespace eval gui_cata {
       
       ::gui_cata::charge_gestion_cata $img_list 
 
-      if {[info exists ::gui_cata::cata_list]} { unset ::gui_cata::cata_list }
 
 
       #--- Creation de la fenetre
