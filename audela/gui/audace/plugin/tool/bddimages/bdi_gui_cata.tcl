@@ -564,28 +564,28 @@ namespace eval gui_cata {
       # Astroid
       if {! [info exists ::gui_cata::gui_astroid_create] } {
          if {[info exists conf(astrometry,cata,astroid,create)]} {
-            set ::gui_cata::gui_astroid_create $conf(bddimages,cata,astroid,create)
+            set ::gui_cata::gui_astroid_create $conf(astrometry,cata,astroid,create)
          } else {
             set ::gui_cata::gui_astroid_create 0
          }
       }
       if {! [info exists ::gui_cata::gui_astroid_saturation] } {
          if {[info exists conf(astrometry,cata,astroid,saturation)]} {
-            set ::gui_cata::gui_astroid_saturation $conf(bddimages,cata,astroid,saturation)
+            set ::gui_cata::gui_astroid_saturation $conf(astrometry,cata,astroid,saturation)
          } else {
             set ::gui_cata::gui_astroid_saturation 50000
          }
       }
       if {! [info exists ::gui_cata::gui_astroid_delta] } {
          if {[info exists conf(astrometry,cata,astroid,delta)]} {
-            set ::gui_cata::gui_astroid_delta $conf(bddimages,cata,astroid,delta)
+            set ::gui_cata::gui_astroid_delta $conf(astrometry,cata,astroid,delta)
          } else {
             set ::gui_cata::gui_astroid_delta 15
          }
       }
       if {! [info exists ::gui_cata::gui_astroid_threshold] } {
          if {[info exists conf(astrometry,cata,astroid,threshold)]} {
-            set ::gui_cata::gui_astroid_threshold $conf(bddimages,cata,astroid,threshold)
+            set ::gui_cata::gui_astroid_threshold $conf(astrometry,cata,astroid,threshold)
          } else {
             set ::gui_cata::gui_astroid_threshold 5
          }
