@@ -2572,21 +2572,93 @@ namespace eval gui_cata {
    }
 
 
+   proc ::gui_cata::charge_gestion_cata { img_list } {
+
+      global audace
+      global bddconf
+
+     catch {
+         if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+         if { [ info exists $::tools_cata::nb_img_list ] }        {unset ::tools_cata::nb_img_list}
+         if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+         if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+      }
+      
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+
+      # Chargement premiere image sans GUI
+      set ::tools_cata::id_current_image 1
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list 0]
+
+      set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+
+      set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+      set filename    [::bddimages_liste::lget $::tools_cata::current_image filename   ]
+      set file        [file join $bddconf(dirbase) $dirfilename $filename]
+
+
+      set ::tools_cata::current_image_name $filename
+      set ::tools_cata::current_image_date $date
+
+      #?Charge l image a l ecran
+      buf$::audace(bufNo) load $file
+      cleanmark
+
+      set ::gui_cata::stateback disabled
+      set ::tools_cata::nb_img     0
+      set ::tools_cata::nb_usnoa2  0
+      set ::tools_cata::nb_tycho2  0
+      set ::tools_cata::nb_ucac2   0
+      set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_skybot  0
+
+      affich_un_rond_xy $xcent $ycent red 2 2
+
+      ::gui_cata::affiche_current_image
+      ::gui_cata::affiche_cata
+
+   }
+
+ 
+ 
+
+   proc ::gui_cata::charge_memory {  } {
+
+      for {set i 0} {$i<100} {incr i} {
+         ::gui_cata::set_progress $i 100
+         after 10
+      }
+      ::gui_cata::set_progress 0 100
+   
+   }
+
+   proc ::gui_cata::set_progress { cur max } {
+      set ::gui_cata::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+   }
+
+
+
 
    proc ::gui_cata::gestion_cata { img_list } {
 
       global audace
       global bddconf
 
+      set ::gui_cata::directaccess 1
+      set ::gui_cata::progress 0
+
       ::gui_cata::inittoconf
       
-      set ::gui_cata::directaccess 1
-      
-      ::gui_cata::charge_list $img_list
-      catch { 
-         ::gui_cata::set_aladin_script_params
-      }
       ::gui_cata::load_cata
+ 
+      ::gui_cata::charge_gestion_cata $img_list
 
       #--- Creation de la fenetre
       set ::gui_cata::feng .new
@@ -2635,6 +2707,13 @@ namespace eval gui_cata {
          #--- Cree un frame general
          set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
          pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #----- 
+             button $actions.charge -state active -text "Charge" -relief "raised" -command "::gui_cata::charge_memory"
+             pack $actions.charge -in $actions -side left -anchor w -padx 0
+
+             set pf [ ttk::progressbar $actions.p -variable ::gui_cata::progress -orient horizontal -length 300 -mode determinate]
+             pack $pf -in $actions -side left
 
 
  

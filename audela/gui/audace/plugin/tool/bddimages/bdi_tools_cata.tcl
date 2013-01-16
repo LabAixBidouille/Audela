@@ -139,6 +139,7 @@ namespace eval tools_cata {
    variable current_image
    variable current_cata
    variable current_image_name
+   variable current_cata_name
    variable current_image_date
    variable img_list
    variable img_list_sav
