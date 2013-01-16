@@ -51,8 +51,42 @@ namespace eval ::analyse_source {
 
 
 
+   #
+   # Get Astroid fields
+   #    xsm         : Position x du photocentre (px)
+   #    ysm         : Position y du photocentre (px)
+   #    fwhmx       : FWHM le long de l'axe x (px)
+   #    fwhmy       : FWHM le long de l'axe y (px) 
+   #    fwhm        : FWHM totale (px)
+   #    fluxintegre : Flux integre 
+   #    errflux     : Incertitude sur le flux integre
+   #    pixmax      : 
+   #    intensite   : 
+   #    sigmafond   : 
+   #    snint       : 
+   #    snpx        : 
+   #    delta       : 
+   #    rdiff       : 
+   #    ra          : RA de la source (deg)
+   #    dec         : DEC de la source (deg)
+   #    res_ra      : Residu en RA (arcsec)
+   #    res_dec     : Residu en DEC (arcsec)
+   #    omc_ra      : O-C(RA) (arcsec)
+   #    omc_dec     : O-C(DEC) (arcsec)
+   #    flagastrom  : 
+   #    mag         : Magnitude mesuree (mag)
+   #    err_mag     : Incertitude sur la magnitude mesuree (mag)
+   #    name        : 
+   #    flagastrom  : 
+   #
+   proc ::analyse_source::get_fieldastroid { } {
 
+      return [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+                                      "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
+                                      "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
+                                      "mag" "err_mag" "name"] ]
 
+   }
 
 
 
@@ -81,12 +115,7 @@ namespace eval ::analyse_source {
       set nbs [::manage_source::get_nb_sources_by_cata $listsources "IMG"]
       if {$log} {gren_info "nb sources to work : $nbs \n"}
 
-      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
-                                           "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
-                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
-                                           "mag" "err_mag" "name"] ]
-
-      lappend fields $fieldsastroid
+      lappend fields [::analyse_source::get_fieldastroid]
       set newsources {}
 
       set cpts 0

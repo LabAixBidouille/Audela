@@ -532,6 +532,11 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
       }
 
+      if {$::tools_cata::use_astroid} {
+         set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta]
+         set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
+      }
+
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Creation de la VOTable en memoire
