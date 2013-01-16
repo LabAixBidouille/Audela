@@ -2451,7 +2451,6 @@ namespace eval gui_cata {
          set list_of_columns [list  [list "visible"              "V"] \
                                     [list "astrom_reference"     "R"] \
                                     [list "astrom_mesure"        "M"] \
-                                    [list "delete"               "E"] \
                                     ]
          set commonfields ""
          set otherfields ""
@@ -2556,7 +2555,7 @@ namespace eval gui_cata {
          if { [ $::gui_cata::frmtable($idcata).tbl columncount ] != "0" } {
             $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
          }
-         foreach col {4 5 6 7 8} {
+         foreach col {3 4 5 6 7} {
              $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory
          }
 
@@ -2611,6 +2610,27 @@ namespace eval gui_cata {
       #--- Cree un frame general
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_cata::feng -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+         #--- Cree un frame general
+         set menubar [frame $frm.menubar -cursor arrow -borderwidth 1 -relief raised]
+         pack $menubar -in $frm -side top -fill x
+
+           #--- menu Fichier
+           menubutton $menubar.catalog -text "Catalogue" -underline 0 -menu $menubar.catalog.menu
+           menu $menubar.catalog.menu
+             $menubar.catalog.menu add command -label "Personnel" \
+                -command ""
+             $menubar.catalog.menu add command -label "Astroid" \
+                -command ""
+             $menubar.catalog.menu add command -label "Astrometrie" \
+                -command ""
+             $menubar.catalog.menu add command -label "Photometrie" \
+                -command ""
+             $menubar.catalog.menu add separator
+             $menubar.catalog.menu add command -label "Supprimer" \
+                -command ""
+             #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
+           pack $menubar.catalog -side left
 
          #--- Cree un frame general
          set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
@@ -2688,7 +2708,7 @@ namespace eval gui_cata {
         pack $navigation -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              button $navigation.union -text "Union" -borderwidth 2 -takefocus 1 \
-                   -command "::gui_cata::affiche_Tbl_sources $nbcata" 
+                   -command "" 
              pack $navigation.union -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $navigation.back -text "Precedent" -borderwidth 2 -takefocus 1 \
@@ -2707,7 +2727,7 @@ namespace eval gui_cata {
                 -justify center
              pack $navigation.val -in $navigation -side left -pady 1 -anchor w
              button $navigation.go -text "Go" -borderwidth 1 -takefocus 1 \
-                   -command "" 
+                   -command "::gui_cata::affiche_Tbl_sources $nbcata" 
              pack $navigation.go -side left -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
 
@@ -2717,8 +2737,15 @@ namespace eval gui_cata {
 
              button $boutonpied.annuler -text "Annuler" -borderwidth 2 -takefocus 1 \
                 -command "cleanmark ; destroy $::gui_cata::feng"
-             pack $boutonpied.annuler -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+             pack $boutonpied.annuler -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $boutonpied.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 \
+                -command ""
+             pack $boutonpied.enregistrer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+             button $boutonpied.aide -text "Aide" -borderwidth 2 -takefocus 1 \
+                -command ""
+             pack $boutonpied.aide -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              set ::gui_cata::gui_info [label $boutonpied.info -text ""]
              pack $boutonpied.info -in $boutonpied -side top -padx 3 -pady 3
