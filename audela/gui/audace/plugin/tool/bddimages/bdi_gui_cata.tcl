@@ -2733,7 +2733,8 @@ namespace eval gui_cata {
 
       }
       ::gui_cata::set_progress 0 $::tools_cata::nb_img_list
-   
+      set ::tools_cata::id_current_image 1
+      
       $::gui_cata::current_appli.actions.charge configure -text "Charge"
    }
 
@@ -2911,6 +2912,7 @@ namespace eval gui_cata {
       set ::tools_cata::id_current_image $::gui_cata::directaccess
 
       gren_info "go ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
+      ::gui_cata::set_progress 0 100      
 
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
       set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -2919,7 +2921,9 @@ namespace eval gui_cata {
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
       ::gui_cata::current_listsources_to_tklist
+      ::gui_cata::set_progress 50 100      
       ::gui_cata::affich_current_tklist
+      ::gui_cata::set_progress 100 100      
       gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
    }
