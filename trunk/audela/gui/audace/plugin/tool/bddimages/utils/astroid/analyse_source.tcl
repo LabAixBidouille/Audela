@@ -78,6 +78,7 @@ namespace eval ::analyse_source {
    #    name        : Designation de la source
    #    flagastrom  : 'r'eference ou 's'cience ou '' rien
    #    flagphotom  : 'r'eference ou 's'cience ou '' rien
+   #    cataname    : Nom du catalogue de reference associe a la source
    #
    proc ::analyse_source::get_fieldastroid { } {
 
@@ -85,7 +86,7 @@ namespace eval ::analyse_source {
                              [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
                                    "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
                                    "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" \
-                                   "mag" "err_mag" "name" "flagastrom" "flagphotom"] ]
+                                   "mag" "err_mag" "name" "flagastrom" "flagphotom" "cataname"] ]
 
    }
 
