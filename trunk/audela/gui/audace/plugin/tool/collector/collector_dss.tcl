@@ -139,7 +139,7 @@
       if { $ok == 1 } {
          #--   detruit une image de meme nom pre-existante
          if {[file exists $filename] == 1} {file delete $filename}
-         #--   sauve la nouvelle iamge
+         #--   sauve la nouvelle image
          set f [open $filename w]
          fconfigure $f -translation binary
          puts -nonewline $f [::http::data $tok]
