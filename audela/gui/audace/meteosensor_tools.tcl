@@ -1731,15 +1731,12 @@ proc readCumulus { } {
    if {$dir ne ""} {
       set fileName [file join $dir realtime.txt]
    } else {
-      #--   cumulus.exe not alive
-      ::console::affiche_resultat "cumulus.exe not alive\n"
-      return ""
+      return "cumulus.exe not alive"
    }
 
    set msg [list answer example {27/11/12 10:47:27} {5.8 °C} {89 %} {4.1 °C} {1.0 m/s} {315 °} {99970.0 Pa}]
    if {[catch {set fileID [open $fileName r]} ErrInfo]} {
-      ::console::affiche_erreur "$ErrInfo\n"
-      return $msg
+      return "$ErrInfo"
    }
    gets $fileID realTimeData
    close $fileID
