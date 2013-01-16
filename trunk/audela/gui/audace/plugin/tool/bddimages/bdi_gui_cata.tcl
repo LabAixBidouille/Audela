@@ -922,6 +922,9 @@ namespace eval gui_cata {
 
 
 
+
+
+
    proc ::gui_cata::get_one_wcs { } {
 
          set tabkey         [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -2672,6 +2675,13 @@ namespace eval gui_cata {
    }
 
 
+
+
+
+
+
+
+
    proc ::gui_cata::charge_current_cata { } {
 
       global bddconf
@@ -2691,11 +2701,19 @@ namespace eval gui_cata {
 
          ::gui_cata::load_cata
 
-         set ::gui_cata::cata_list($::tools_cata::id_current_image) ::tools_cata::current_listsources
+         
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
 
 
  
    }
+
+
+
+
+
 
    proc ::gui_cata::charge_memory {  } {
 
@@ -2732,9 +2750,183 @@ namespace eval gui_cata {
 
 
 
+
+
+
    proc ::gui_cata::set_progress { cur max } {
       set ::gui_cata::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
       update
+   }
+
+
+
+
+
+
+
+   proc ::gui_cata::current_listsources_to_tklist { } {
+
+      set listsources $::tools_cata::current_listsources
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+
+      set ::gui_cata::tklist_nbcata  [llength $fields]
+
+      for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
+      
+
+         set list_of_columns [list  [list "visible"              "V"] \
+                                    [list "astrom_reference"     "R"] \
+                                    [list "astrom_mesure"        "M"] \
+                                    ]
+         set commonfields ""
+         set otherfields ""
+         
+         foreach f $fields {
+            if {[lindex $f 0]=="IMG"} {
+               foreach cc [lindex $f 1] {
+                  lappend list_of_columns [list $cc $cc]
+                  lappend commonfields $cc
+                  
+               }
+            }
+         }
+         
+         foreach f $fields {
+            if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
+               foreach cc [lindex $f 2] {
+                  lappend list_of_columns [list $cc $cc]
+                   lappend otherfields $cc
+                }
+            }
+         }
+         
+         #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
+  
+         set table ""
+         set cpts 0
+         foreach s $sources {
+            incr cpts
+            set line ""
+            foreach cata $s {
+               #gren_info "$::gui_cata::cataname($idcata) == [lindex $cata 0]\n"
+               if { [lindex $cata 0]==$::gui_cata::cataname($idcata) } {
+                  
+                  # valeur des common
+                  set i 0
+                  foreach field $commonfields {
+                     set line [::bddimages_liste::ladd $line $field [lindex [lindex $cata 1] $i] ]
+                     incr i
+                  }
+                  # valeur des other field
+                  
+                  set i 0
+                  foreach field $otherfields {
+                     set line [::bddimages_liste::ladd $line $field [lindex [lindex $cata 2] $i] ]
+                     incr i
+                  }
+                  
+               }
+            }
+            lappend table $line
+         }
+
+         # -- nb de ligne de la table
+         set nbobj [llength $table]
+         # -- nb colonne de la table
+         set nbcol [llength $list_of_columns]
+         #-- lignes a afficher
+         set affich_table ""
+
+         foreach line $table {
+
+            #gren_info "line : $line\n"
+
+            if {$line==""} {continue}
+
+            set lign_affich ""
+
+            for { set i 0 } { $i < $nbcol} { incr i } {
+               set current_columns [lindex [lindex $list_of_columns $i] 0]
+               set val [::bddimages_liste::lget $line $current_columns]
+               if {$val=="" || [lindex $val 0]=="" } {
+                 #gren_info "meuh\n"
+                 set val "-"
+               }
+               lappend lign_affich $val
+               #gren_info "mycol : ($i) ($val) $lign_affich\n"
+            }
+
+            lappend affich_table $lign_affich
+
+         }
+         set ::gui_cata::tklist_list_of_columns($idcata) $list_of_columns
+         set ::gui_cata::tklist($idcata) $affich_table
+      }
+      
+   }
+
+
+
+
+
+   proc ::gui_cata::affich_current_tklist { } {
+
+
+         # Entete des colonnes
+         
+          
+      gren_info "nb catalog : $::gui_cata::tklist_nbcata\n"
+        
+      for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
+
+      $::gui_cata::frmtable($idcata).tbl delete 0 end
+      $::gui_cata::frmtable($idcata).tbl deletecolumns 0 end  
+         
+         set nbcol [llength $::gui_cata::tklist_list_of_columns($idcata)]
+         for { set j 0 } { $j < $nbcol} { incr j } {
+            set current_columns [lindex $::gui_cata::tklist_list_of_columns($idcata) $j]
+            $::gui_cata::frmtable($idcata).tbl insertcolumns end 0 [lindex $current_columns 1] left
+         }
+
+         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
+         if { [ $::gui_cata::frmtable($idcata).tbl columncount ] != "0" } {
+            $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
+         }
+         foreach col {3 4 5 6 7} {
+             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory
+         }
+
+         foreach line $::gui_cata::tklist($idcata) {
+            $::gui_cata::frmtable($idcata).tbl insert end $line
+         }
+         
+         gren_info "$::gui_cata::cataname($idcata) : [llength $::gui_cata::tklist($idcata)]\n"
+         gren_info "onglets : [$::gui_cata::current_appli.onglets.nb tabs]\n"
+         
+         $::gui_cata::current_appli.onglets.nb tab [expr $idcata - 1] -text "([llength $::gui_cata::tklist($idcata)])$::gui_cata::cataname($idcata)"
+         
+      }
+   }
+
+
+   proc ::gui_cata::gestion_go { } {
+
+
+
+
+      set ::tools_cata::id_current_image $::gui_cata::directaccess
+
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+      set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+      ::gui_cata::current_listsources_to_tklist
+      ::gui_cata::affich_current_tklist
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
    }
 
 
@@ -2753,6 +2945,9 @@ namespace eval gui_cata {
       ::gui_cata::inittoconf
       
       ::gui_cata::charge_gestion_cata $img_list 
+
+      if {[info exists ::gui_cata::cata_list]} { unset ::gui_cata::cata_list }
+
 
       #--- Creation de la fenetre
       set ::gui_cata::feng .new
@@ -2820,18 +3015,6 @@ namespace eval gui_cata {
              label $actions.lab5 -text ")"
              pack  $actions.lab5 -in $actions -side left -padx 5 -pady 0
 
-             label $actions.mlab1 -text "Memory ("
-             pack  $actions.mlab1 -in $actions -side left -padx 5 -pady 0
-             label $actions.mlab2 -textvariable ::tools_cata::mem_use
-             pack  $actions.mlab2 -in $actions -side left -padx 5 -pady 0
-             label $actions.mlab3 -text "/"
-             pack  $actions.mlab3 -in $actions -side left -padx 5 -pady 0
-             label $actions.mlab4 -textvariable ::tools_cata::mem_total
-             pack  $actions.mlab4 -in $actions -side left -padx 5 -pady 0
-             label $actions.mlab5 -text ")"
-             pack  $actions.mlab5 -in $actions -side left -padx 5 -pady 0
-
-
  
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
@@ -2869,7 +3052,7 @@ namespace eval gui_cata {
 
          #unset ::gui_cata::frmtable
 
-         for { set idcata 1 } { $idcata < $nbcata } { incr idcata } {
+         for { set idcata 1 } { $idcata <= $nbcata } { incr idcata } {
 
 
 
@@ -2896,6 +3079,19 @@ namespace eval gui_cata {
         
 
 
+        #--- Cree un frame pour afficher les boutons
+        set infoimg [frame $frm.infoimg -borderwidth 0 -cursor arrow -relief groove]
+        pack $infoimg -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             label $infoimg.lab1 -textvariable ::tools_cata::id_current_image
+             pack  $infoimg.lab1 -in $infoimg -side left -padx 5 -pady 0
+             #--- Cree un checkbutton
+             label $infoimg.lab2 -textvariable ::tools_cata::current_image_name
+             pack  $infoimg.lab2 -in $infoimg -side left -padx 5 -pady 0
+             #--- Cree un checkbutton
+             label $infoimg.lab3 -textvariable ::tools_cata::current_image_date
+             pack  $infoimg.lab3 -in $infoimg -side left -padx 5 -pady 0
 
 
         #--- Cree un frame pour afficher les boutons
@@ -2922,7 +3118,7 @@ namespace eval gui_cata {
                 -justify center
              pack $navigation.val -in $navigation -side left -pady 1 -anchor w
              button $navigation.go -text "Go" -borderwidth 1 -takefocus 1 \
-                   -command "::gui_cata::affiche_Tbl_sources $nbcata" 
+                   -command "::gui_cata::gestion_go" 
              pack $navigation.go -side left -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
 
