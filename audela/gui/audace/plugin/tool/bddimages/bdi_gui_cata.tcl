@@ -2452,7 +2452,7 @@ namespace eval gui_cata {
 
       #--- Table des objets
       tablelist::tablelist $tbl \
-         -labelcommand ::gui_cata::cmdSortColumn \
+         -labelcommand tablelist::sortByColumn \
          -xscrollcommand [ list $::gui_cata::frmtable($idcata).hsb set ] -yscrollcommand [ list $::gui_cata::frmtable($idcata).vsb set ] \
          -selectmode extended \
          -activestyle none \
@@ -2463,16 +2463,23 @@ namespace eval gui_cata {
       $::gui_cata::frmtable($idcata).vsb configure -command [ list $tbl yview ]
       $::gui_cata::frmtable($idcata).hsb configure -command [ list $tbl xview ]
 
-
+#
+# TODO, pas ici mais necessaire pour configurer les colonnes en fonction
+# de leur type et ainsi assurer un tri correct. Sinon le tri se fait par
+# comparaison de string
+#
+      #--- Options de tri sur les colonnes
+      #foreach col {3 4 5 6 7} {
+      #   $tbl columnconfigure $col -sortmode real
+      #}
+      
       #--- Gestion des evenements
       bind [$tbl bodypath] <Control-Key-a> [ list $tbl selection set 0 end ]
       bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
       
    }
 
-
-
-
+   
 
    proc ::gui_cata::affiche_Tbl_sources { nbcata } {
 
