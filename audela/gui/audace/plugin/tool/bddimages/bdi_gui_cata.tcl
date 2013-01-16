@@ -223,10 +223,7 @@ namespace eval gui_cata {
 
    variable use_uncosmic
 
-
-
-
-
+   variable gui_astroid_bestdelta
 
 
 
@@ -564,6 +561,36 @@ namespace eval gui_cata {
          }
       }
 
+      # Astroid
+      if {! [info exists ::gui_cata::gui_astroid_create] } {
+         if {[info exists conf(astrometry,cata,astroid,create)]} {
+            set ::gui_cata::gui_astroid_create $conf(bddimages,cata,astroid,create)
+         } else {
+            set ::gui_cata::gui_astroid_create 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_astroid_saturation] } {
+         if {[info exists conf(astrometry,cata,astroid,saturation)]} {
+            set ::gui_cata::gui_astroid_saturation $conf(bddimages,cata,astroid,saturation)
+         } else {
+            set ::gui_cata::gui_astroid_saturation 50000
+         }
+      }
+      if {! [info exists ::gui_cata::gui_astroid_delta] } {
+         if {[info exists conf(astrometry,cata,astroid,delta)]} {
+            set ::gui_cata::gui_astroid_delta $conf(bddimages,cata,astroid,delta)
+         } else {
+            set ::gui_cata::gui_astroid_delta 15
+         }
+      }
+      if {! [info exists ::gui_cata::gui_astroid_threshold] } {
+         if {[info exists conf(astrometry,cata,astroid,threshold)]} {
+            set ::gui_cata::gui_astroid_threshold $conf(bddimages,cata,astroid,threshold)
+         } else {
+            set ::gui_cata::gui_astroid_threshold 5
+         }
+      }
+
    }
 
 
@@ -661,6 +688,11 @@ namespace eval gui_cata {
       set conf(astrometry,cata,treshold_ident_pos_ast)  $::tools_cata::treshold_ident_pos_ast
       set conf(astrometry,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
 
+      # Conf cata Astroid
+      set conf(astrometry,cata,astroid,create)          $::gui_cata::gui_astroid_create
+      set conf(astrometry,cata,astroid,saturation)      $::gui_cata::gui_astroid_saturation
+      set conf(astrometry,cata,astroid,delta)           $::gui_cata::gui_astroid_delta
+      set conf(astrometry,cata,astroid,threshold)       $::gui_cata::gui_astroid_threshold
 
       destroy $::gui_cata::fen
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -698,7 +730,9 @@ namespace eval gui_cata {
          $::gui_cata::gui_fermer configure -state disabled
 
          if { $::tools_cata::boucle == 1 } {
+
             ::gui_cata::get_all_cata
+
          }  else {
             cleanmark
             if {[::gui_cata::get_one_wcs] == true} {
@@ -715,6 +749,13 @@ namespace eval gui_cata {
                   set ::gui_cata::color_cata $::gui_cata::color_button_good
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
 
+                  # Cree le cata Astroid si demande
+                  if {$::gui_cata::gui_astroid_create == 1} {
+                     set ::tools_cata::current_listsources \
+                        [::analyse_source::psf $::tools_cata::current_listsources $::gui_cata::gui_astroid_threshold $::gui_cata::gui_astroid_delta]
+                  }
+
+                  # Affiche le cata
                   ::gui_cata::affiche_cata
 
                }
@@ -777,8 +818,13 @@ namespace eval gui_cata {
                $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                update
                
+               # Cree le cata Astroid si demande
+               if {$::gui_cata::gui_astroid_create == 1} {
+                  set ::tools_cata::current_listsources \
+                     [::analyse_source::psf $::tools_cata::current_listsources $::gui_cata::gui_astroid_threshold $::gui_cata::gui_astroid_delta]
+               }
+
                cleanmark
-               
                ::gui_cata::affiche_current_image
                ::gui_cata::affiche_cata
             }
@@ -2293,7 +2339,8 @@ namespace eval gui_cata {
                 pack $ucac2.name -in $ucac2 -side left -padx 3 -pady 3 -anchor w 
                 label $ucac2.val -textvariable ::tools_cata::nb_ucac2 -width 4
                 pack $ucac2.val -in $ucac2 -side left -padx 3 -pady 3
-                button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac2 -command ""
+                button $ucac2.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac2 \
+                        -command {set ::gui_cata::color_ucac2 [tk_chooseColor -initialcolor $::gui_cata::color_ucac2 -title "Choose color"]; wm withdraw}
                 pack $ucac2.color -side left -anchor e -expand 0 
                 spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac2.radius -in $ucac2 -side left -anchor w
@@ -3023,18 +3070,20 @@ namespace eval gui_cata {
             set f6 [frame $onglets.nb.f6]
             set f7 [frame $onglets.nb.f7]
             set f8 [frame $onglets.nb.f8]
+            set f9 [frame $onglets.nb.f9]
             
             $onglets.nb add $f1 -text "Catalogues"
             $onglets.nb add $f2 -text "Variables"
             $onglets.nb add $f3 -text "Entete"
             $onglets.nb add $f4 -text "Couleurs"
             $onglets.nb add $f5 -text "Sextractor"
-            $onglets.nb add $f6 -text "Interop"
-            $onglets.nb add $f7 -text "Manuel"
-            $onglets.nb add $f8 -text "Develop"
+            $onglets.nb add $f6 -text "Astroid"
+            $onglets.nb add $f7 -text "Interop"
+            $onglets.nb add $f8 -text "Manuel"
+            $onglets.nb add $f9 -text "Develop"
+
             $onglets.nb select $f3
             ttk::notebook::enableTraversal $onglets.nb
-
 
         #--- Cree un frame pour afficher ucac2
         set usnoa2 [frame $f1.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
@@ -3401,13 +3450,13 @@ namespace eval gui_cata {
                 spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
 
-        #--- Cree un frame pour afficher 
+        #--- Cree un frame pour la conf Sextractor
         set confsex [frame $f5.confsex -borderwidth 0 -cursor arrow -relief groove]
         pack $confsex -in $f5 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                 frame $confsex.buttons -borderwidth 0 -cursor arrow -relief groove
                 pack $confsex.buttons  -in $confsex  -side top -anchor e -expand 0 
-                
+
                      button  $confsex.buttons.clean  -borderwidth 1  \
                          -command "cleanmark" -text "Clean"
                      pack    $confsex.buttons.clean  -side left -anchor e -expand 0 
@@ -3424,9 +3473,57 @@ namespace eval gui_cata {
 
                 ::gui_cata::get_confsex
 
+        #--- Cree un frame pour la conf Astroid
+        set astroid [frame $f6.confsex -borderwidth 0 -cursor arrow -relief groove]
+        pack $astroid -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               #--- Creation du cata Astroid
+               set creer [frame $astroid.creer -borderwidth 1 -cursor arrow -relief groove]
+               pack $creer -in $astroid -side top -anchor w -expand 0 -fill x -pady 5
+                  checkbutton $creer.check -highlightthickness 0 -text "Creer le cata Astroid" \
+                        -variable ::gui_cata::gui_astroid_create -state normal
+                  pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w 
+
+               #--- Options de creation du cata Asttroid
+               set opts [frame $astroid.opts -borderwidth 1 -cursor arrow -relief sunken]
+               pack $opts -in $astroid  -side top -anchor e -expand 0 -fill x 
+        
+                  #--- Niveau de saturation (ADU)
+                  set saturation [frame $opts.saturation]
+                  pack $saturation -in $opts -side top -anchor e -expand 0 -fill x -pady 5
+                       label $saturation.lab -text "Niveau de saturation (ADU)" -width 24 -anchor e
+                       pack $saturation.lab -in $saturation -side left -padx 5 -pady 0 -anchor e
+                       entry $saturation.val -relief sunken -textvariable ::gui_cata::gui_astroid_saturation -width 6
+                       pack $saturation.val -in $saturation -side left -pady 1 -anchor w
+
+                  #--- Delta
+                  set delta [frame $opts.delta]
+                  pack $delta -in $opts -side top -anchor e -expand 0 -fill x -pady 5
+                       label $delta.lab -text "Delta (pixel)" -width 24 -anchor e
+                       pack $delta.lab -in $delta -side left -padx 5 -pady 0 -anchor e
+                       entry $delta.val -relief sunken -textvariable ::gui_cata::gui_astroid_delta -width 3
+                       pack $delta.val -in $delta -side left -pady 1 -anchor w
+
+                     #--- Recherche du best delta
+                     set best [frame $delta.best]
+                     pack $best -in $delta -side top -anchor e -expand 0 -fill x -pady 5
+                        button $best.cherche  -borderwidth 1 -command "" -text "Rechercher le meilleur delta" -state disabled
+                        pack $best.cherche -in $best -side left -anchor e -expand 0 -padx 10
+                        label $best.sol -textvariable ::gui_cata::gui_astroid_bestdelta -anchor e
+                        pack $best.sol -in $best -side left -padx 5 -pady 0 -anchor e
+
+                  #--- Threshold
+                  set threshold [frame $opts.threshold]
+                  pack $threshold -in $opts -side top -anchor e -expand 0 -fill x -pady 5
+                       label $threshold.lab -text "Threshold (pixel)" -width 24 -anchor e
+                       pack $threshold.lab -in $threshold -side left -padx 5 -pady 0 -anchor e
+                       entry $threshold.val -relief sunken -textvariable ::gui_cata::gui_astroid_threshold -width 3
+                       pack $threshold.val -in $threshold -side left -pady 1 -anchor w
+
+
         #--- Cree un frame pour afficher les actions Interop
-        set interop [frame $f6.interop -borderwidth 0 -cursor arrow -relief groove]
-        pack $interop -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set interop [frame $f7.interop -borderwidth 0 -cursor arrow -relief groove]
+        pack $interop -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
   
            # Bouton pour envoyer les plans courants (image,table) vers Aladin
            set plan [frame $interop.plan -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
@@ -3475,8 +3572,8 @@ namespace eval gui_cata {
                  pack $r.aladin -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0
 
               #--- Cree un frame pour afficher la GUI du Mode Manuel
-              set manuel [frame $f7.manuel -borderwidth 0 -cursor arrow -relief groove]
-              pack $manuel -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+              set manuel [frame $f8.manuel -borderwidth 0 -cursor arrow -relief groove]
+              pack $manuel -in $f8 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                  frame $manuel.entr -borderwidth 0 -cursor arrow -relief groove
                  pack $manuel.entr  -in $manuel  -side top 
@@ -3676,8 +3773,8 @@ namespace eval gui_cata {
                      pack    $manuel.entr.buttonsins.enrimg -in $manuel.entr.buttonsins -side left -anchor e -expand 0 
 
         #--- Cree un frame pour afficher l onglet develop
-        set develop [frame $f8.develop -borderwidth 0 -cursor arrow -relief groove]
-        pack $develop -in $f8 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set develop [frame $f9.develop -borderwidth 0 -cursor arrow -relief groove]
+        pack $develop -in $f9 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                 frame $develop.entr -borderwidth 0 -cursor arrow -relief groove
                 pack $develop.entr  -in $develop  -side top 
