@@ -2589,7 +2589,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
 
       # Chargement premiere image sans GUI
-      set ::tools_cata::id_current_image 1
+      set ::tools_cata::id_current_image 0
       set ::tools_cata::current_image [lindex $::tools_cata::img_list 0]
 
       set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -2618,25 +2618,72 @@ namespace eval gui_cata {
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_skybot  0
 
-      affich_un_rond_xy $xcent $ycent red 2 2
 
       ::gui_cata::affiche_current_image
       ::gui_cata::affiche_cata
 
    }
 
+
+   proc ::gui_cata::charge_current_cata { } {
+
+      global bddconf
  
  
+         set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+
+         set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+         set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+         set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
+         set file        [file join $bddconf(dirbase) $dirfilename $::tools_cata::current_image_name]
+         
+         after 10
+
+         ::gui_cata::load_cata
+
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) ::tools_cata::current_listsources
+
+
+ 
+   }
 
    proc ::gui_cata::charge_memory {  } {
 
-      for {set i 0} {$i<100} {incr i} {
-         ::gui_cata::set_progress $i 100
-         after 10
+      set state [$::gui_cata::current_appli.actions.charge cget -text]
+
+      if  {$state =="Annuler"} {
+          set ::gui_cata::annul 1
+          return
       }
-      ::gui_cata::set_progress 0 100
+
+      set ::gui_cata::annul 0
+      $::gui_cata::current_appli.actions.charge configure -text "Annuler"
+      
+
+      for {set ::tools_cata::id_current_image 0} {$::tools_cata::id_current_image<$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
+         
+         if {$::gui_cata::annul==1} {
+            gren_info "Chargement annulé...\n"
+            break
+         }
+         
+         ::gui_cata::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
+
+         ::gui_cata::charge_current_cata
+
+      }
+      ::gui_cata::set_progress 0 $::tools_cata::nb_img_list
    
+      $::gui_cata::current_appli.actions.charge configure -text "Charge"
    }
+
+
+
+
+
 
    proc ::gui_cata::set_progress { cur max } {
       set ::gui_cata::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
@@ -2653,12 +2700,12 @@ namespace eval gui_cata {
 
       set ::gui_cata::directaccess 1
       set ::gui_cata::progress 0
+      set ::tools_cata::mem_use 0
+      set ::tools_cata::mem_total 0
 
       ::gui_cata::inittoconf
       
-      ::gui_cata::load_cata
- 
-      ::gui_cata::charge_gestion_cata $img_list
+      ::gui_cata::charge_gestion_cata $img_list 
 
       #--- Creation de la fenetre
       set ::gui_cata::feng .new
@@ -2712,8 +2759,30 @@ namespace eval gui_cata {
              button $actions.charge -state active -text "Charge" -relief "raised" -command "::gui_cata::charge_memory"
              pack $actions.charge -in $actions -side left -anchor w -padx 0
 
-             set pf [ ttk::progressbar $actions.p -variable ::gui_cata::progress -orient horizontal -length 300 -mode determinate]
+             set pf [ ttk::progressbar $actions.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
              pack $pf -in $actions -side left
+
+             label $actions.lab1 -text "Img ("
+             pack  $actions.lab1 -in $actions -side left -padx 5 -pady 0
+             label $actions.lab2 -textvariable ::tools_cata::id_current_image
+             pack  $actions.lab2 -in $actions -side left -padx 5 -pady 0
+             label $actions.lab3 -text "/"
+             pack  $actions.lab3 -in $actions -side left -padx 5 -pady 0
+             label $actions.lab4 -textvariable ::tools_cata::nb_img_list
+             pack  $actions.lab4 -in $actions -side left -padx 5 -pady 0
+             label $actions.lab5 -text ")"
+             pack  $actions.lab5 -in $actions -side left -padx 5 -pady 0
+
+             label $actions.mlab1 -text "Memory ("
+             pack  $actions.mlab1 -in $actions -side left -padx 5 -pady 0
+             label $actions.mlab2 -textvariable ::tools_cata::mem_use
+             pack  $actions.mlab2 -in $actions -side left -padx 5 -pady 0
+             label $actions.mlab3 -text "/"
+             pack  $actions.mlab3 -in $actions -side left -padx 5 -pady 0
+             label $actions.mlab4 -textvariable ::tools_cata::mem_total
+             pack  $actions.mlab4 -in $actions -side left -padx 5 -pady 0
+             label $actions.mlab5 -text ")"
+             pack  $actions.mlab5 -in $actions -side left -padx 5 -pady 0
 
 
  
