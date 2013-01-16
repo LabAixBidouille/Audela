@@ -1163,10 +1163,10 @@ namespace eval bddimages_recherche {
            $popupTbl.cata add command -label "Voir le Cata" \
               -command { ::bddimages_recherche::bddimages_voir_cata }
 
-           $popupTbl.cata add command -label "Gerer le Cata" \
+           $popupTbl.cata add command -label "(g) Gerer le Cata" \
               -command { ::bddimages_recherche::bddimages_gestion_cata }
 
-           $popupTbl.cata add command -label "Creer le Cata" \
+           $popupTbl.cata add command -label "(c) Creer le Cata" \
               -command { ::bddimages_recherche::bddimages_creation_cata }
 
       menu $popupTbl.analyse -tearoff 0
@@ -1217,6 +1217,8 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
       bind [$tbl bodypath] <Control-Key-a> [ list $tbl selection set 0 end ]
       bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
+      bind [$tbl bodypath] <Key-g> { ::bddimages_recherche::bddimages_gestion_cata }
+      bind [$tbl bodypath] <Key-c> { ::bddimages_recherche::bddimages_creation_cata }
 
    }
 
