@@ -2870,9 +2870,10 @@ namespace eval gui_cata {
         
       for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
 
-      $::gui_cata::frmtable($idcata).tbl delete 0 end
-      $::gui_cata::frmtable($idcata).tbl deletecolumns 0 end  
-         
+         catch { $::gui_cata::frmtable($idcata).tbl delete 0 end
+                 $::gui_cata::frmtable($idcata).tbl deletecolumns 0 end  
+         }
+        
          set nbcol [llength $::gui_cata::tklist_list_of_columns($idcata)]
          for { set j 0 } { $j < $nbcol} { incr j } {
             set current_columns [lindex $::gui_cata::tklist_list_of_columns($idcata) $j]
@@ -2919,6 +2920,20 @@ namespace eval gui_cata {
 
    }
 
+   proc ::gui_cata::gestion_next { } {
+
+      if {$::gui_cata::directaccess==$::tools_cata::nb_img_list } {return}
+      incr ::gui_cata::directaccess 
+      ::gui_cata::gestion_go
+
+   }
+   proc ::gui_cata::gestion_back { } {
+
+      if {$::gui_cata::directaccess==1 } {return}
+      incr ::gui_cata::directaccess -1
+      ::gui_cata::gestion_go
+
+   }
 
 
 
@@ -3093,11 +3108,11 @@ namespace eval gui_cata {
              pack $navigation.union -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $navigation.back -text "Precedent" -borderwidth 2 -takefocus 1 \
-                   -command "" 
+                   -command "::gui_cata::gestion_back" 
              pack $navigation.back -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $navigation.next -text "Suivant" -borderwidth 2 -takefocus 1 \
-                   -command "" 
+                   -command "::gui_cata::gestion_next" 
              pack $navigation.next -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              #--- Cree un checkbutton
