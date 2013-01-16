@@ -562,32 +562,32 @@ namespace eval gui_cata {
       }
 
       # Astroid
-      if {! [info exists ::gui_cata::gui_astroid_create] } {
+      if {! [info exists ::tools_cata::use_astroid] } {
          if {[info exists conf(astrometry,cata,astroid,create)]} {
-            set ::gui_cata::gui_astroid_create $conf(astrometry,cata,astroid,create)
+            set ::tools_cata::use_astroid $conf(astrometry,cata,astroid,create)
          } else {
-            set ::gui_cata::gui_astroid_create 0
+            set ::tools_cata::use_astroid 0
          }
       }
-      if {! [info exists ::gui_cata::gui_astroid_saturation] } {
+      if {! [info exists ::tools_cata::astroid_saturation] } {
          if {[info exists conf(astrometry,cata,astroid,saturation)]} {
-            set ::gui_cata::gui_astroid_saturation $conf(astrometry,cata,astroid,saturation)
+            set ::tools_cata::astroid_saturation $conf(astrometry,cata,astroid,saturation)
          } else {
-            set ::gui_cata::gui_astroid_saturation 50000
+            set ::tools_cata::astroid_saturation 50000
          }
       }
-      if {! [info exists ::gui_cata::gui_astroid_delta] } {
+      if {! [info exists ::tools_cata::astroid_delta] } {
          if {[info exists conf(astrometry,cata,astroid,delta)]} {
-            set ::gui_cata::gui_astroid_delta $conf(astrometry,cata,astroid,delta)
+            set ::tools_cata::astroid_delta $conf(astrometry,cata,astroid,delta)
          } else {
-            set ::gui_cata::gui_astroid_delta 15
+            set ::tools_cata::astroid_delta 15
          }
       }
-      if {! [info exists ::gui_cata::gui_astroid_threshold] } {
+      if {! [info exists ::tools_cata::astroid_threshold] } {
          if {[info exists conf(astrometry,cata,astroid,threshold)]} {
-            set ::gui_cata::gui_astroid_threshold $conf(astrometry,cata,astroid,threshold)
+            set ::tools_cata::astroid_threshold $conf(astrometry,cata,astroid,threshold)
          } else {
-            set ::gui_cata::gui_astroid_threshold 5
+            set ::tools_cata::astroid_threshold 5
          }
       }
 
@@ -689,10 +689,10 @@ namespace eval gui_cata {
       set conf(astrometry,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
 
       # Conf cata Astroid
-      set conf(astrometry,cata,astroid,create)          $::gui_cata::gui_astroid_create
-      set conf(astrometry,cata,astroid,saturation)      $::gui_cata::gui_astroid_saturation
-      set conf(astrometry,cata,astroid,delta)           $::gui_cata::gui_astroid_delta
-      set conf(astrometry,cata,astroid,threshold)       $::gui_cata::gui_astroid_threshold
+      set conf(astrometry,cata,astroid,create)          $::tools_cata::use_astroid
+      set conf(astrometry,cata,astroid,saturation)      $::tools_cata::astroid_saturation
+      set conf(astrometry,cata,astroid,delta)           $::tools_cata::astroid_delta
+      set conf(astrometry,cata,astroid,threshold)       $::tools_cata::astroid_threshold
 
       destroy $::gui_cata::fen
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -748,12 +748,6 @@ namespace eval gui_cata {
                } else {
                   set ::gui_cata::color_cata $::gui_cata::color_button_good
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-
-                  # Cree le cata Astroid si demande
-                  if {$::gui_cata::gui_astroid_create == 1} {
-                     set ::tools_cata::current_listsources \
-                        [::analyse_source::psf $::tools_cata::current_listsources $::gui_cata::gui_astroid_threshold $::gui_cata::gui_astroid_delta]
-                  }
 
                   # Affiche le cata
                   ::gui_cata::affiche_cata
@@ -817,12 +811,6 @@ namespace eval gui_cata {
                set ::gui_cata::color_cata $::gui_cata::color_button_good
                $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                update
-               
-               # Cree le cata Astroid si demande
-               if {$::gui_cata::gui_astroid_create == 1} {
-                  set ::tools_cata::current_listsources \
-                     [::analyse_source::psf $::tools_cata::current_listsources $::gui_cata::gui_astroid_threshold $::gui_cata::gui_astroid_delta]
-               }
 
                cleanmark
                ::gui_cata::affiche_current_image
@@ -1329,6 +1317,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_ucac3   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_skybot  0
+      set ::tools_cata::nb_astroid 0
       affich_un_rond_xy $xcent $ycent red 2 2
       ::gui_cata::affiche_current_image
       ::gui_cata::affiche_cata
@@ -2264,6 +2253,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC3]
       set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources NOMAD1]
       set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources SKYBOT]
+      set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources ASTROID]
 
       #--- Creation de la fenetre
       set ::gui_cata::fenv .new
@@ -2667,7 +2657,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_ucac3   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_skybot  0
-
+      set ::tools_cata::nb_astroid 0
 
       ::gui_cata::affiche_current_image
       ::gui_cata::affiche_cata
@@ -3676,8 +3666,8 @@ namespace eval gui_cata {
                #--- Creation du cata Astroid
                set creer [frame $astroid.creer -borderwidth 1 -cursor arrow -relief groove]
                pack $creer -in $astroid -side top -anchor w -expand 0 -fill x -pady 5
-                  checkbutton $creer.check -highlightthickness 0 -text "Creer le cata Astroid" \
-                        -variable ::gui_cata::gui_astroid_create -state normal
+                  checkbutton $creer.check -highlightthickness 0 -text " Creer le cata Astroid" \
+                        -variable ::tools_cata::use_astroid -state normal
                   pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w 
 
                #--- Options de creation du cata Asttroid
@@ -3689,7 +3679,7 @@ namespace eval gui_cata {
                   pack $saturation -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $saturation.lab -text "Niveau de saturation (ADU)" -width 24 -anchor e
                        pack $saturation.lab -in $saturation -side left -padx 5 -pady 0 -anchor e
-                       entry $saturation.val -relief sunken -textvariable ::gui_cata::gui_astroid_saturation -width 6
+                       entry $saturation.val -relief sunken -textvariable ::tools_cata::astroid_saturation -width 6
                        pack $saturation.val -in $saturation -side left -pady 1 -anchor w
 
                   #--- Delta
@@ -3697,7 +3687,7 @@ namespace eval gui_cata {
                   pack $delta -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $delta.lab -text "Delta (pixel)" -width 24 -anchor e
                        pack $delta.lab -in $delta -side left -padx 5 -pady 0 -anchor e
-                       entry $delta.val -relief sunken -textvariable ::gui_cata::gui_astroid_delta -width 3
+                       entry $delta.val -relief sunken -textvariable ::tools_cata::astroid_delta -width 3
                        pack $delta.val -in $delta -side left -pady 1 -anchor w
 
                      #--- Recherche du best delta
@@ -3713,7 +3703,7 @@ namespace eval gui_cata {
                   pack $threshold -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $threshold.lab -text "Threshold (pixel)" -width 24 -anchor e
                        pack $threshold.lab -in $threshold -side left -padx 5 -pady 0 -anchor e
-                       entry $threshold.val -relief sunken -textvariable ::gui_cata::gui_astroid_threshold -width 3
+                       entry $threshold.val -relief sunken -textvariable ::tools_cata::astroid_threshold -width 3
                        pack $threshold.val -in $threshold -side left -pady 1 -anchor w
 
 
