@@ -3092,6 +3092,7 @@ namespace eval gui_cata {
          for { set j 0 } { $j < $nbcol} { incr j } {
             set current_columns [lindex $::gui_cata::tklist_list_of_columns($idcata) $j]
             $::gui_cata::frmtable($idcata).tbl insertcolumns end 0 [lindex $current_columns 1] left
+            $::gui_cata::frmtable($idcata).tbl columnconfigure $j -sortmode dictionary
          }
 
          #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
