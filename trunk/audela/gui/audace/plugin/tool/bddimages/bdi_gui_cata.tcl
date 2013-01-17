@@ -2434,26 +2434,248 @@ namespace eval gui_cata {
 
 
 
+   #--------------------------------------------------
+   #  ::gui_cata::cmdButton1Click { frame }
+   #--------------------------------------------------
+   #
+   #    fonction  : 
+   #    
+   #
+   #    variables en entree :
+   #        frame = reference de l'objet graphique de la selection
+   #
+   #    variables en sortie : void
+   #
+   #--------------------------------------------------
+   proc ::gui_cata::cmdButton1Click { w args } {
+
+      set color red
+      set width 2
+      
+      cleanmark
+
+      foreach select [$w curselection] {
+         
+         set id [lindex [$w get $select] 0]
+         set ra [lindex [$w get $select] 7]
+         set dec [lindex [$w get $select] 8]
+         affich_un_rond $ra $dec $color $width
+
+      }
+      return
+
+   }
 
 
 
 
+   proc ::gui_cata::selectall { tbl } {
+      
+      gren_info "select all $tbl\n"
+      $tbl selection set 0 end
+
+      
+      return
+
+   }
+
+
+   proc ::gui_cata::is_astrometric_catalog { c } {
+
+      return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2] $c] + 1]
+   }
+
+
+   proc ::gui_cata::is_photometric_catalog { c } {
+
+      return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2] $c] + 1]
+   }
+
+
+
+
+
+   proc ::gui_cata::set_astrom_ref { tbl } {
+
+      set onglets $::gui_cata::current_appli.onglets
+
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      if {![::gui_cata::is_astrometric_catalog $cataselect]} {
+         tk_messageBox -message "Le catalogue selectionné $cataselect n'est pas astrometrique" -type ok
+         return
+      }
+
+      foreach select [$tbl curselection] {
+         
+         set id [lindex [$tbl get $select] 0]
+         gren_info "select = $id ($select)\n"
+         gren_info "tbl = $tbl\n"
+         foreach t [$onglets.nb tabs] {
+            if {"$tbl" == "$t.frmtable.tbl"} {
+               gren_info "on est ici $t\n"
+               $t.frmtable.tbl cellconfigure $select,1 -text "R"
+               $t.frmtable.tbl cellconfigure $select,3 -text $cataselect
+               continue
+            }
+            
+            set u 0
+            foreach x [$t.frmtable.tbl get 0 end] {
+               set idx [lindex $x 0]
+               if {$idx == $id} {
+                  gren_info "$id -> $u sur $t\n"
+                  $t.frmtable.tbl cellconfigure $u,1 -text "R"
+                  $t.frmtable.tbl cellconfigure $u,3 -text $cataselect
+               }
+               incr u
+            }
+            
+         }
+         
+      }
+      return
+   }
+
+   proc ::gui_cata::set_astrom_mes { tbl } {
+
+      set onglets $::gui_cata::current_appli.onglets
+
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+
+      foreach select [$tbl curselection] {
+         
+         set id [lindex [$tbl get $select] 0]
+         gren_info "select = $id ($select)\n"
+         gren_info "tbl = $tbl\n"
+         foreach t [$onglets.nb tabs] {
+            if {"$tbl" == "$t.frmtable.tbl"} {
+               gren_info "on est ici $t\n"
+               $t.frmtable.tbl cellconfigure $select,1 -text "M"
+               $t.frmtable.tbl cellconfigure $select,3 -text $cataselect
+               continue
+            }
+            
+            set u 0
+            foreach x [$t.frmtable.tbl get 0 end] {
+               set idx [lindex $x 0]
+               if {$idx == $id} {
+                  gren_info "$id -> $u sur $t\n"
+                  $t.frmtable.tbl cellconfigure $u,1 -text "M"
+                  $t.frmtable.tbl cellconfigure $u,3 -text $cataselect
+               }
+               incr u
+            }
+            
+         }
+         
+      }
+      return
+   }
+ 
+   proc ::gui_cata::unset_flag { tbl } {
+
+      set onglets $::gui_cata::current_appli.onglets
+
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+
+      foreach select [$tbl curselection] {
+         
+         set id [lindex [$tbl get $select] 0]
+         gren_info "select = $id ($select)\n"
+         gren_info "tbl = $tbl\n"
+         foreach t [$onglets.nb tabs] {
+            if {"$tbl" == "$t.frmtable.tbl"} {
+               gren_info "on est ici $t\n"
+               $t.frmtable.tbl cellconfigure $select,1 -text "-"
+               $t.frmtable.tbl cellconfigure $select,3 -text "-"
+               $t.frmtable.tbl cellconfigure $select,4 -text "-"
+               $t.frmtable.tbl cellconfigure $select,6 -text "-"
+               continue
+            }
+            
+            set u 0
+            foreach x [$t.frmtable.tbl get 0 end] {
+               set idx [lindex $x 0]
+               if {$idx == $id} {
+                  gren_info "$id -> $u sur $t\n"
+                  $t.frmtable.tbl cellconfigure $u,1 -text "-"
+                  $t.frmtable.tbl cellconfigure $u,3 -text "-"
+                  $t.frmtable.tbl cellconfigure $u,4 -text "-"
+                  $t.frmtable.tbl cellconfigure $u,6 -text "-"
+               }
+               incr u
+            }
+            
+         }
+         
+      }
+      return
+   }
+ 
+   proc ::gui_cata::set_photom_ref { tbl } {
+
+      set onglets $::gui_cata::current_appli.onglets
+
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      if {![::gui_cata::is_photometric_catalog $cataselect]} {
+         tk_messageBox -message "Le catalogue selectionné $cataselect n'est pas photometrique" -type ok
+         return
+      }
+
+      foreach select [$tbl curselection] {
+         
+         set id [lindex [$tbl get $select] 0]
+         gren_info "select = $id ($select)\n"
+         gren_info "tbl = $tbl\n"
+         foreach t [$onglets.nb tabs] {
+            if {"$tbl" == "$t.frmtable.tbl"} {
+               gren_info "on est ici $t\n"
+               $t.frmtable.tbl cellconfigure $select,4 -text "R"
+               $t.frmtable.tbl cellconfigure $select,6 -text $cataselect
+               continue
+            }
+            
+            set u 0
+            foreach x [$t.frmtable.tbl get 0 end] {
+               set idx [lindex $x 0]
+               if {$idx == $id} {
+                  gren_info "$id -> $u sur $t\n"
+                  $t.frmtable.tbl cellconfigure $u,4 -text "R"
+                  $t.frmtable.tbl cellconfigure $u,6 -text $cataselect
+               }
+               incr u
+            }
+            
+         }
+         
+      }
+      return
+   }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
    proc ::gui_cata::create_Tbl_sources { idcata } {
 
       variable This
       global audace
       global caption
       global bddconf
-      global popupTbl
 
             
       #--- Quelques raccourcis utiles
       set tbl $::gui_cata::frmtable($idcata).tbl
+      set popupTbl $::gui_cata::frmtable($idcata).popupTbl
 
       #--- Table des objets
       tablelist::tablelist $tbl \
          -labelcommand tablelist::sortByColumn \
-         -xscrollcommand [ list $::gui_cata::frmtable($idcata).hsb set ] -yscrollcommand [ list $::gui_cata::frmtable($idcata).vsb set ] \
+         -xscrollcommand [ list $::gui_cata::frmtable($idcata).hsb set ] \
+         -yscrollcommand [ list $::gui_cata::frmtable($idcata).vsb set ] \
          -selectmode extended \
          -activestyle none \
          -stripebackground #e0e8f0 \
@@ -2463,160 +2685,57 @@ namespace eval gui_cata {
       $::gui_cata::frmtable($idcata).vsb configure -command [ list $tbl yview ]
       $::gui_cata::frmtable($idcata).hsb configure -command [ list $tbl xview ]
 
-#
-# TODO, pas ici mais necessaire pour configurer les colonnes en fonction
-# de leur type et ainsi assurer un tri correct. Sinon le tri se fait par
-# comparaison de string
-#
+      #
+      # TODO, pas ici mais necessaire pour configurer les colonnes en fonction
+      # de leur type et ainsi assurer un tri correct. Sinon le tri se fait par
+      # comparaison de string
+      #
       #--- Options de tri sur les colonnes
       #foreach col {3 4 5 6 7} {
       #   $tbl columnconfigure $col -sortmode real
       #}
       
+      #--- Gestion des popup
+
+      #--- Menu pop-up associe a la table
+      menu $popupTbl -title "Selection"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Unset" \
+           -command "::gui_cata::unset_flag $tbl"
+
+        # Separateur
+        $popupTbl add separator
+        
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Set photometric reference" \
+           -command "::gui_cata::set_photom_ref $tbl"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Set astrometric reference" \
+           -command "::gui_cata::set_astrom_ref $tbl"
+
+        # Supprime la liste selectionnee
+        $popupTbl add command -label "Set astrometric mesure" \
+           -command "::gui_cata::set_astrom_mes $tbl"
+
+
+
+
+
       #--- Gestion des evenements
-      bind [$tbl bodypath] <Control-Key-a> [ list $tbl selection set 0 end ]
-      bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
+      bind [$tbl bodypath] <Control-Key-a> [ list ::gui_cata::selectall $tbl ]
+      bind $tbl <<ListboxSelect>> [ list ::gui_cata::cmdButton1Click %W ]
+      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
       
    }
 
-   
-
-   proc ::gui_cata::affiche_Tbl_sources { nbcata } {
-
-      set listsources $::tools_cata::current_listsources
-
-
-      set fields  [lindex $listsources 0]
-      set sources [lindex $listsources 1]
-
-      #gren_info "fields : $fields\n"
-      #gren_info "nbcata : $nbcata\n\n\n\n\n\n"
-      
-      for { set idcata 1 } { $idcata < $nbcata} { incr idcata } {
-      
-
-         set list_of_columns [list  [list "visible"              "V"] \
-                                    [list "astrom_reference"     "R"] \
-                                    [list "astrom_mesure"        "M"] \
-                                    ]
-         set commonfields ""
-         set otherfields ""
-         
-         foreach f $fields {
-            if {[lindex $f 0]=="IMG"} {
-               foreach cc [lindex $f 1] {
-                  lappend list_of_columns [list $cc $cc]
-                  lappend commonfields $cc
-               }
-            }
-         }
-         foreach f $fields {
-            if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
-               foreach cc [lindex $f 2] {
-                  lappend list_of_columns [list $cc $cc]
-                   lappend otherfields $cc
-                }
-            }
-         }
-         #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
-
-  
-         set table ""
-         set cpts 0
-         foreach s $sources {
-            incr cpts
-            set line ""
-            foreach cata $s {
-               #gren_info "$::gui_cata::cataname($idcata) == [lindex $cata 0]\n"
-               if { [lindex $cata 0]==$::gui_cata::cataname($idcata) } {
-                  
-                  # valeur des common
-                  set i 0
-                  foreach field $commonfields {
-                     set line [::bddimages_liste::ladd $line $field [lindex [lindex $cata 1] $i] ]
-                     incr i
-                  }
-                  # valeur des other field
-                  
-                  set i 0
-                  foreach field $otherfields {
-                     set line [::bddimages_liste::ladd $line $field [lindex [lindex $cata 2] $i] ]
-                     incr i
-                  }
-                  
-               }
-            }
-            lappend table $line
-         }
 
 
 
-         #gren_info "table = $table\n"
-
-
-         # -- nb de ligne de la table
-         set nbobj [llength $table]
-         # -- nb colonne de la table
-         set nbcol [llength $list_of_columns]
-         #-- lignes a afficher
-         set affich_table ""
 
 
 
-         foreach line $table {
-
-            #gren_info "line : $line\n"
-
-            if {$line==""} {continue}
-
-            set lign_affich ""
-
-            for { set i 0 } { $i < $nbcol} { incr i } {
-               set current_columns [lindex [lindex $list_of_columns $i] 0]
-               set val [::bddimages_liste::lget $line $current_columns]
-               if {$val=="" || [lindex $val 0]=="" } {
-                 #gren_info "meuh\n"
-                 set val "-"
-               }
-               lappend lign_affich $val
-               #gren_info "mycol : ($i) ($val) $lign_affich\n"
-            }
-
-            lappend affich_table $lign_affich
-
-        }
-        #gren_info "affich_table : $affich_table\n"
-
-
-
-         catch { $::gui_cata::frmtable($idcata).tbl delete 0 end
-                  $::gui_cata::frmtable($idcata).tbl deletecolumns 0 end  }
-
-         # Entete des colonnes
-         for { set j 0 } { $j < $nbcol} { incr j } {
-            set current_columns [lindex $list_of_columns $j]
-            $::gui_cata::frmtable($idcata).tbl insertcolumns end 0 [lindex $current_columns 1] left
-         }
-
-         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
-         if { [ $::gui_cata::frmtable($idcata).tbl columncount ] != "0" } {
-            $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
-         }
-         foreach col {3 4 5 6 7} {
-             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory
-         }
-
-         foreach line $affich_table {
-            $::gui_cata::frmtable($idcata).tbl insert end $line
-
-         }
-
-
-      }
-
-
-
-   }
 
 
    proc ::gui_cata::charge_gestion_cata { img_list } {
@@ -2743,6 +2862,10 @@ namespace eval gui_cata {
       set ::tools_cata::id_current_image 1
       
       $::gui_cata::current_appli.actions.charge configure -text "Charge"
+
+      set ::gui_cata::directaccess 1
+      ::gui_cata::gestion_go
+
    }
 
 
@@ -2772,35 +2895,52 @@ namespace eval gui_cata {
 
       set ::gui_cata::tklist_nbcata  [llength $fields]
 
+
+      catch {unset ::gui_cata::cataname
+             unset ::gui_cata::cataid
+      }
+
+      set commonfields ""
+      set idcata 0
+      foreach f $fields {
+         incr idcata
+         set c [lindex $f 0]
+         set ::gui_cata::cataname($idcata) $c
+         set ::gui_cata::cataid($c) $idcata
+         if {$c=="IMG"} {
+            foreach cc [lindex $f 1] {
+               lappend commonfields $cc
+            }
+         }
+      }
+
       for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
       
 
-         set list_of_columns [list  [list "visible"              "V"] \
-                                    [list "astrom_reference"     "R"] \
-                                    [list "astrom_mesure"        "M"] \
+         set list_of_columns [list  [list "bdi_idc_lock"                        "Id"] \
+                                    [list "astrom_reference"                    "AR"] \
+                                    [list "astrom_mesure"                       "AM"] \
+                                    [list "astrom_catalog"                      "AC"] \
+                                    [list "photom_reference"                    "PR"] \
+                                    [list "photom_mesure"                       "PM"] \
+                                    [list "photom_catalog"                      "PC"] \
                                     ]
-         set commonfields ""
-         set otherfields ""
-         
-         foreach f $fields {
-            if {[lindex $f 0]=="IMG"} {
-               foreach cc [lindex $f 1] {
-                  lappend list_of_columns [list $cc $cc]
-                  lappend commonfields $cc
-                  
-               }
-            }
+         gren_info "list_of_columns = $list_of_columns \n"
+
+         foreach cc $commonfields {
+            lappend list_of_columns [list $cc $cc]
          }
-         
+         set otherfields ""
          foreach f $fields {
             if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
                foreach cc [lindex $f 2] {
                   lappend list_of_columns [list $cc $cc]
-                   lappend otherfields $cc
+                  lappend otherfields $cc
                 }
             }
          }
          
+         gren_info "m list_of_columns = $list_of_columns \n"
          #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
   
          set table ""
@@ -2808,9 +2948,15 @@ namespace eval gui_cata {
          foreach s $sources {
             incr cpts
             set line ""
+            set a 0
             foreach cata $s {
                #gren_info "$::gui_cata::cataname($idcata) == [lindex $cata 0]\n"
                if { [lindex $cata 0]==$::gui_cata::cataname($idcata) } {
+               
+                  if {$a==0} {
+                     set a 1
+                     set line [::bddimages_liste::ladd $line "bdi_idc_lock" $cpts ]
+                  }
                   
                   # valeur des common
                   set i 0
@@ -2860,6 +3006,7 @@ namespace eval gui_cata {
             lappend affich_table $lign_affich
 
          }
+         gren_info "f $idcata list_of_columns = $list_of_columns \n"
          set ::gui_cata::tklist_list_of_columns($idcata) $list_of_columns
          set ::gui_cata::tklist($idcata) $affich_table
       }
@@ -2867,18 +3014,75 @@ namespace eval gui_cata {
    }
 
 
+   proc ::gui_cata::destroy_tklist { } {
 
+   }
 
 
    proc ::gui_cata::affich_current_tklist { } {
 
 
-         # Entete des colonnes
+            set onglets $::gui_cata::current_appli.onglets
+
+            set listsources $::tools_cata::current_listsources
+            set fields [lindex $listsources 0]
+
+            set nbcatadel [expr [llength [array get ::gui_cata::cataname]]/2]
+            gren_info "nbcatadel = $nbcatadel \n"
+ 
+            foreach t [$onglets.nb tabs] {
+               $onglets.nb hide $t
+               destroy $t
+            }
+             
+                   
+            set idcata 0
+            set select 0
+            foreach field $fields {
+               incr idcata
+               
+               set fc($idcata) [frame $onglets.nb.f$idcata]
+               
+               set c [lindex $field 0]
+               
+               $onglets.nb add $fc($idcata) -text $c
+               if {$c=="IMG"} {
+                  set select $idcata
+               }
+            }
+            set nbcata $idcata
+            gren_info "nbcata : $nbcata\n"
+
+            if {$select >0} {$onglets.nb select $fc($select)}
+            ttk::notebook::enableTraversal $onglets.nb
+
+
+
+
          
           
-      gren_info "nb catalog : $::gui_cata::tklist_nbcata\n"
+      #gren_info "nb catalog : $::gui_cata::tklist_nbcata\n"
         
       for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
+
+
+         set ::gui_cata::frmtable($idcata) [frame $fc($idcata).frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
+         pack $::gui_cata::frmtable($idcata) -expand yes -fill both -padx 3 -pady 6 -in $fc($idcata) -side right -anchor e
+
+         #--- Cree un acsenseur vertical
+         scrollbar $::gui_cata::frmtable($idcata).vsb -orient vertical \
+            -command { $::gui_cata::frmtable($idcata).lst1 yview } -takefocus 1 -borderwidth 1
+         pack $::gui_cata::frmtable($idcata).vsb -in $::gui_cata::frmtable($idcata) -side right -fill y
+
+         #--- Cree un acsenseur horizontal
+         scrollbar $::gui_cata::frmtable($idcata).hsb -orient horizontal \
+            -command { $::gui_cata::frmtable($idcata).lst1 xview } -takefocus 1 -borderwidth 1
+         pack $::gui_cata::frmtable($idcata).hsb -in $::gui_cata::frmtable($idcata) -side bottom -fill x
+
+         #--- Creation de la table
+         ::gui_cata::create_Tbl_sources $idcata
+         pack  $::gui_cata::frmtable($idcata).tbl -in  $::gui_cata::frmtable($idcata) -expand yes -fill both
+
 
          catch { $::gui_cata::frmtable($idcata).tbl delete 0 end
                  $::gui_cata::frmtable($idcata).tbl deletecolumns 0 end  
@@ -2894,16 +3098,16 @@ namespace eval gui_cata {
          if { [ $::gui_cata::frmtable($idcata).tbl columncount ] != "0" } {
             $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
          }
-         foreach col {3 4 5 6 7} {
-             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory
+         foreach col {7 8 9 10 11} {
+             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary
          }
 
          foreach line $::gui_cata::tklist($idcata) {
             $::gui_cata::frmtable($idcata).tbl insert end $line
          }
          
-         gren_info "$::gui_cata::cataname($idcata) : [llength $::gui_cata::tklist($idcata)]\n"
-         gren_info "onglets : [$::gui_cata::current_appli.onglets.nb tabs]\n"
+         #gren_info "$::gui_cata::cataname($idcata) : [llength $::gui_cata::tklist($idcata)]\n"
+         #gren_info "onglets : [$::gui_cata::current_appli.onglets.nb tabs]\n"
          
          $::gui_cata::current_appli.onglets.nb tab [expr $idcata - 1] -text "([llength $::gui_cata::tklist($idcata)])$::gui_cata::cataname($idcata)"
          
@@ -2911,10 +3115,14 @@ namespace eval gui_cata {
    }
 
 
+
+
+
+
+
+
+
    proc ::gui_cata::gestion_go { } {
-
-
-
 
       set ::tools_cata::id_current_image $::gui_cata::directaccess
 
@@ -2927,6 +3135,7 @@ namespace eval gui_cata {
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
+      ::gui_cata::destroy_tklist
       ::gui_cata::current_listsources_to_tklist
       ::gui_cata::set_progress 50 100      
       ::gui_cata::affich_current_tklist
@@ -2935,6 +3144,11 @@ namespace eval gui_cata {
 
    }
 
+
+
+
+
+
    proc ::gui_cata::gestion_next { } {
 
       if {$::gui_cata::directaccess==$::tools_cata::nb_img_list } {return}
@@ -2942,6 +3156,12 @@ namespace eval gui_cata {
       ::gui_cata::gestion_go
 
    }
+   
+   
+   
+   
+   
+   
    proc ::gui_cata::gestion_back { } {
 
       if {$::gui_cata::directaccess==1 } {return}
@@ -2949,6 +3169,9 @@ namespace eval gui_cata {
       ::gui_cata::gestion_go
 
    }
+
+
+
 
 
 
@@ -2965,8 +3188,6 @@ namespace eval gui_cata {
       ::gui_cata::inittoconf
       
       ::gui_cata::charge_gestion_cata $img_list 
-
-
 
       #--- Creation de la fenetre
       set ::gui_cata::feng .new
@@ -3041,58 +3262,6 @@ namespace eval gui_cata {
             pack [ttk::notebook $onglets.nb] -expand yes -fill both 
  
  
-            set listsources $::tools_cata::current_listsources
-            set fields [lindex $listsources 0]
-
-
-            set idcata 0
-            set select 0
-            foreach field $fields {
-               incr idcata
-               set fc($idcata) [frame $onglets.nb.f$idcata]
-               
-               set c [lindex $field 0]
-               set ::gui_cata::cataname($idcata) $c
-               set ::gui_cata::cataid($c) $idcata
-               
-               $onglets.nb add $fc($idcata) -text $c
-               if {$c=="IMG"} {
-                  set select $idcata
-               }
-            }
-            set nbcata $idcata
-            gren_info "nbcata : $nbcata\n"
-            
-            
-            if {$select >0} {$onglets.nb select $fc($select)}
-            ttk::notebook::enableTraversal $onglets.nb
-
-         
-
-         #unset ::gui_cata::frmtable
-
-         for { set idcata 1 } { $idcata <= $nbcata } { incr idcata } {
-
-
-
-           set ::gui_cata::frmtable($idcata) [frame $fc($idcata).frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
-           pack $::gui_cata::frmtable($idcata) -expand yes -fill both -padx 3 -pady 6 -in $fc($idcata) -side right -anchor e
-
-           #--- Cree un acsenseur vertical
-            scrollbar $::gui_cata::frmtable($idcata).vsb -orient vertical \
-               -command { $::gui_cata::frmtable($idcata).lst1 yview } -takefocus 1 -borderwidth 1
-            pack $::gui_cata::frmtable($idcata).vsb -in $::gui_cata::frmtable($idcata) -side right -fill y
-
-            #--- Cree un acsenseur horizontal
-            scrollbar $::gui_cata::frmtable($idcata).hsb -orient horizontal \
-               -command { $::gui_cata::frmtable($idcata).lst1 xview } -takefocus 1 -borderwidth 1
-            pack $::gui_cata::frmtable($idcata).hsb -in $::gui_cata::frmtable($idcata) -side bottom -fill x
-
-            #--- Creation de la table
-            ::gui_cata::create_Tbl_sources $idcata
-            pack  $::gui_cata::frmtable($idcata).tbl -in  $::gui_cata::frmtable($idcata) -expand yes -fill both
-
-         }
 
 #      ::gui_cata::affiche_Tbl_sources $nbcata   
         

@@ -957,6 +957,7 @@ namespace eval bddimages_recherche {
    #
    #--------------------------------------------------
    proc ::bddimages_recherche::createTbl2 { frame } {
+
       variable This
       global audace
       global caption
