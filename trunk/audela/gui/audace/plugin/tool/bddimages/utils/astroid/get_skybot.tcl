@@ -88,14 +88,6 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    }
    set voconf(fields) $skybot_fields
 
-   set skybot_list { }
-   foreach tr [::dom::selectNode $votable {descendant::TR}] {
-      set row {}
-      foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
-         lappend row [::dom::node stringValue $td]
-      }
-      lappend skybot_list $row
-   }
 
    set skybot_list2 {}
    set common_fields [list ra dec poserr mag magerr]
