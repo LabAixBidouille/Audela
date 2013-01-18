@@ -2,11 +2,9 @@
 # radius   = rayon du FOV en arcsec
 proc get_skybot { dateobs ra dec radius uaicode } {
 
-
- global voconf
- global skybot_list
- global skybot_list2
-
+   global voconf
+   global skybot_list
+   global skybot_list2
 
    set voconf(date_image)          $dateobs
    set voconf(centre_ad_image)     $ra
@@ -36,85 +34,68 @@ proc get_skybot { dateobs ra dec radius uaicode } {
     }
    }
    if { ! $uptodate } {
-    #gren_info "SKYBOT-STATUS not up to date"
-    # TODO if not up to date skip image
+      #gren_info "SKYBOT-STATUS not up to date"
+      # TODO if not up to date skip image
    }
 
    set skybot_answered 0
    set no_answer 0
    while { ! $skybot_answered } {
    
-       #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel au conesearch"
-
+      #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel au conesearch"
       # gren_info "$voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) $voconf(observer)"
 
       set err [ catch { vo_skybotconesearch $voconf(date_image) $voconf(centre_ad_image)   \
-                         $voconf(centre_dec_image) $voconf(taille_champ_calcul)            \
-                         "votable" "object" $voconf(observer) $voconf(filter) $voconf(objfilter) } msg ]
+                                            $voconf(centre_dec_image) $voconf(taille_champ_calcul) \
+                                            "votable" "object" $voconf(observer) $voconf(filter) $voconf(objfilter) } msg ]
 
-          gren_info ""
-       if {$err} {
-          gren_info "get_skybot: ERREUR 7"
-          gren_info "get_skybot:        NUM : <$err>" 
-          gren_info "get_skybot:        MSG : <$msg>"
-          incr no_answer
-          if {$no_answer>10} {
-             break
-          }
-          } else {
+      if {$err} {
+         gren_info "get_skybot: ERREUR 7"
+         gren_info "get_skybot:        NUM : <$err>" 
+         gren_info "get_skybot:        MSG : <$msg>"
+         incr no_answer
+         if {$no_answer>10} {
+            break
+         }
+      } else {
 
-      #   gren_info "MSG-SKYBOT : <$msg>"
+         if { $msg eq "failed" } {
+            gren_info "solarsystemprocess->get_skybot: failed"
+         } else {
+            set skybot_answered 1
+            set err [ catch { ::dom::parse $msg } votable ]
+            if { $err } {
+               gren_info "  => Erreur d'analyse de la votable Skybot"
+               set skybot_answered 0
+               after 10000
+            }
+         }
 
-             if { $msg eq "failed" } {
-                gren_info "solarsystemprocess: skybot failed"
-             } else {
-                set skybot_answered 1
-                set err [ catch { ::dom::parse $msg } votable ]
-                if { $err } {
-                   gren_info "    erreur d analyse de la votable"
-                   set skybot_answered 0
-                   after 10000
-                   }
-             }
+      }
 
-          }
-                 
-       }
+   }
 
-   # gren_info " msg = $msg\n"
-
-       set err [ catch { ::dom::parse $msg } votable ]
-       if { $err } {
-          gren_info "    erreur d analyse de la votable"
-          after 10000
-       } else {
-
-
-       }
+   set err [ catch { ::dom::parse $msg } votable ]
+   if { $err } {
+      gren_info "  => Erreur d'analyse de la votable Skybot"
+      after 10000
+   }
 
    # -- Parse the votable and extract solar system objects from the parsed votable
-   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Parse le msg"
-
    set skybot_fields {}
    foreach n [::dom::selectNode $votable {descendant::FIELD/attribute::ID}] {
-    lappend skybot_fields "[::dom::node stringValue $n]"
+      lappend skybot_fields "[::dom::node stringValue $n]"
    }
    set voconf(fields) $skybot_fields
 
-
-
-
    set skybot_list { }
-
    foreach tr [::dom::selectNode $votable {descendant::TR}] {
-    set row {}
-    foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
-     lappend row [::dom::node stringValue $td]
-    }
-    lappend skybot_list $row
+      set row {}
+      foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
+         lappend row [::dom::node stringValue $td]
+      }
+      lappend skybot_list $row
    }
-   
-
 
    set skybot_list2 {}
    set common_fields [list ra dec poserr mag magerr]
@@ -125,21 +106,24 @@ proc get_skybot { dateobs ra dec radius uaicode } {
       set row {}
       foreach td [::dom::selectNode $tr {descendant::TD/text()}] {
          lappend row [::dom::node stringValue $td]
-         }
-
-      set sra_h [mc_angle2deg [lindex $row 2]]
-      set sra [expr $sra_h * 15.0]
-      set sdec [lindex [mc_angle2deg [lindex $row 3]] 0]
+      }
+      # Conversion RA,DEC sexadec -> dec en degres
+      set ra_d [expr [mc_angle2deg [lindex $row 2]] * 15.0]
+      set dec_d [lindex [mc_angle2deg [lindex $row 3]] 0]
+      set row [lreplace $row 2 3 $ra_d $dec_d]
+      
+      # Data pour le champ common
+      set sra [lindex $row 2]
+      set sdec [lindex $row 3]
       set sradialerrpos [expr abs([lindex $row 6])]
       set srmag [lindex $row 5]
       set srmagerr 1
-
       set common [list $sra $sdec $sradialerrpos $srmag $srmagerr ]
       
       set row [list [list "SKYBOT" $common $row ] ]
-      incr cpt
       lappend skybot_list2 $row
-      }
+      incr cpt
+   }
    
    set skybot_list2 [list $fields $skybot_list2]
    
@@ -150,5 +134,5 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    } else {
       return $skybot_list2
    }
- }
 
+}

@@ -78,21 +78,18 @@ namespace eval ::analyse_source {
    #    name        : Designation de la source
    #    flagastrom  : 'r'eference ou 's'cience ou '' rien
    #    flagphotom  : 'r'eference ou 's'cience ou '' rien
-   #    cataname    : Nom du catalogue de reference associe a la source
+   #    cataastrom  : Nom du catalogue de reference astrometrique associe a la source
+   #    cataphotom  : Nom du catalogue de reference photometrique associe a la source
    #
    proc ::analyse_source::get_fieldastroid { } {
 
       return [list "ASTROID" [list "ra" "dec" "poserr" "mag" "magerr"] \
                              [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
                                    "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
-                                   "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" \
-                                   "mag" "err_mag" "name" "flagastrom" "flagphotom" "cataname"] ]
+                                   "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" \
+                                   "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"] ]
 
    }
-
-
-
-
 
 
 
@@ -103,7 +100,7 @@ namespace eval ::analyse_source {
    # xsm         ysm        fwhmx    fwhmy    fwhm     fluxintegre errflux  pixmax  intensite sigmafond snint         snpx          delta
    # 1936.447981 844.076965 3.510291 1.861599 2.685945 799.000000  0        1310    246.0     33.616402 23.7681593646 7.31785632502 3.21
 
-   proc ::analyse_source::psf { listsources radius_threshold delta } {
+   proc ::analyse_source::psf { listsources radius_threshold delta {mc_fields ""} } {
 
       global bddconf
 
@@ -118,9 +115,10 @@ namespace eval ::analyse_source {
       if {$log} {gren_info "nb sources to work : $nbs \n"}
 
       lappend fields [::analyse_source::get_fieldastroid]
-      set newsources {}
 
       set cpts 0
+      set newsources {}
+
       foreach s $sources {
          incr cpts
          if {$log} {gren_info "source : $cpts\n"}
@@ -163,17 +161,24 @@ namespace eval ::analyse_source {
                      lappend newsources $s
                      incr doute
                   } else {
-                     #affich_un_rond $ra $dec green 5
+                     # Prepare les resultats
                      lappend results $rdiff
                      for {set i 0} {$i<9} {incr i} { lappend results 0 }
                      lappend results ""
+                     # Prepare les champs common pour ASTROID
+                     set common {}
+                     if { [llength $mc_fields] > 0 } {
+                        set radec [mc_xy2radec [lindex $results 0] [lindex $results 1] $mc_fields]
+                        set common [list [lindex $radec 0] [lindex $radec 1] $rdiff 0.0 0.0]
+                     }
+                     # Reconstruit la liste des sources en ajoutant la source ASTROID
                      set ns {}
                      foreach cata $s {
                         if { [lindex $cata 0]!="ASTROID" } {
                            lappend ns $cata
                         }
                      }
-                     lappend ns [list "ASTROID" {} $results]
+                     lappend ns [list "ASTROID" $common $results]
                      lappend newsources $ns
                   }
 

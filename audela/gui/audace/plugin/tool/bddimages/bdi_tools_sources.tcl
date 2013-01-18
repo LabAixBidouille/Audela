@@ -372,8 +372,6 @@ namespace eval tools_sources {
 
    proc ::tools_sources::set_common_fields_skybot { listsources } {
       
-               #gren_info "set_common_fields_skybot\n"
-
       set fields [lindex $listsources 0]
       set sources [lindex $listsources 1]
 

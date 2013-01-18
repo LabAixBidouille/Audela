@@ -458,6 +458,15 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       set radius [::tools_cata::get_radius $naxis1 $naxis2 $mscale $mscale]
 
+      # Defini la liste des champs FIELD pour mc_xy2radec pour remplir
+      # les champs common du cata ASTROID
+      set foclen [lindex [::bddimages_liste::lget $tabkey FOCLEN] 1]
+      set pixsize1 [expr [lindex [::bddimages_liste::lget $tabkey PIXSIZE1] 1] *1.0e-9]
+      set pixsize2 [expr [lindex [::bddimages_liste::lget $tabkey PIXSIZE2] 1] *1.0e-9]
+      set crota2 [lindex [::bddimages_liste::lget $tabkey CROTA2] 1]
+
+      set mc_fields [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 $crota2 RA $ra DEC $dec]
+      
       if {1==0} {
          gren_info "naxis1  = $naxis1\n"
          gren_info "naxis2  = $naxis2\n"
@@ -467,6 +476,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          gren_info "ra      = $ra\n"
          gren_info "dec     = $dec\n"
          gren_info "radius  = $radius\n"
+         gren_info "mc_fields = $mc_fields\n"
       }
 
       if {$::tools_cata::use_tycho2} {
@@ -506,34 +516,26 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       }
    
       if {$::tools_cata::use_skybot} {
-         set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
-         set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
-         set datejd  [ mc_date2jd $dateobs ]
-         set datejd  [ expr $datejd + $exposure/86400.0/2.0 ]
+         set dateobs [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
+         set exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+         set datejd [ mc_date2jd $dateobs ]
+         set datejd [ expr $datejd + $exposure/86400.0/2.0 ]
          set dateiso [ mc_date2iso8601 $datejd ]
-         set radius  [format "%0.0f" [expr $radius*60.0] ]
+         set radius [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
          #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
-         #gren_info "skybot = $skybot\n"
          #set listsources [::tools_sources::set_common_fields_skybot $listsources]
 
-#         ::manage_source::imprim_3_sources $listsources
-#         gren_info "DELrollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
-         set listsources [ ::manage_source::delete_catalog $listsources "SKYBOT"]
-#         gren_info "DELrollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
-
-         #gren_info "nb_skybot = [::manage_source::get_nb_sources_by_cata $skybot SKYBOT]\n"
-         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} 0] 
+         set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
+         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} 0 ] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
-         #affich_rond $listsources "SKYBOT" "magenta" 4
-         #after 1000
-         #gren_info "nb_skybot ident = $::tools_cata::nb_skybot\n"
       }
 
       if {$::tools_cata::use_astroid} {
-         set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta]
+         set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta $mc_fields]
+#::console::affiche_erreur "LISTSOURCES = $listsources\n"
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
       }
 

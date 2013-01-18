@@ -76,18 +76,13 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
 
    set decoupe 16
    set delta [expr 10./3600.]
-
    
    set resultlist {}
-   
-   #gren_info "rollup skybot= [::manage_source::get_nb_sources_rollup $catalist1]\n"
    
    set fields1  [lindex $catalist1 0]
    set sources1 [lindex $catalist1 1]
    set fields2  [lindex $catalist2 0]
    set sources2 [lindex $catalist2 1]
-
-
 
    set fa0l [lindex $f 0]
    set fd0l [lindex $f 1]
