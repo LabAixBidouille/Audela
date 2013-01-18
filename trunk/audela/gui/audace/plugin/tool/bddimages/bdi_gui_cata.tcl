@@ -2517,33 +2517,51 @@ namespace eval gui_cata {
 
    proc ::gui_cata::set_astrom_ref { tbl } {
 
+      set flag "R"
       set onglets $::gui_cata::current_appli.onglets
-
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
+
       if {![::gui_cata::is_astrometric_catalog $cataselect]} {
          tk_messageBox -message "Le catalogue selectionné $cataselect n'est pas astrometrique" -type ok
          return
       }
 
+      # On boucle sur les selections (indice de la table affichée de 0 a end)
       foreach select [$tbl curselection] {
          
          set id [lindex [$tbl get $select] 0]
-         gren_info "select = $id ($select)\n"
-         gren_info "tbl = $tbl\n"
+
+         # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
+
+            set idcata [string index [lindex [split $t .] 5] 1]
+         
+            # modification de la tklist
+            set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
+            if {$x != -1} {
+               set a [lindex $::gui_cata::tklist($idcata) $x]
+               set b [lreplace $a [::gui_cata::get_pos_col astrom_reference] [::gui_cata::get_pos_col astrom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog] [::gui_cata::get_pos_col astrom_catalog] $cataselect]
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+            }
+         
+            # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
                gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text "R"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text $flag
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                continue
             }
             
+            # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+            # l indice de la table.
             set u 0
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
                   gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text "R"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                }
                incr u
@@ -2552,34 +2570,57 @@ namespace eval gui_cata {
          }
          
       }
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
 
+
+
+
+
+
+
+
    proc ::gui_cata::set_astrom_mes { tbl } {
 
+      set flag "M"
       set onglets $::gui_cata::current_appli.onglets
-
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
 
+      # On boucle sur les selections (indice de la table affichée de 0 a end)
       foreach select [$tbl curselection] {
          
          set id [lindex [$tbl get $select] 0]
-         gren_info "select = $id ($select)\n"
-         gren_info "tbl = $tbl\n"
+
+         # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
+
+            set idcata [string index [lindex [split $t .] 5] 1]
+         
+            # modification de la tklist
+            set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
+            if {$x != -1} {
+               set a [lindex $::gui_cata::tklist($idcata) $x]
+               set b [lreplace $a [::gui_cata::get_pos_col astrom_reference] [::gui_cata::get_pos_col astrom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog]   [::gui_cata::get_pos_col astrom_catalog] $cataselect]
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+            }
+
+            # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
-               gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text "M"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text $flag
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                continue
             }
             
+            # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+            # l indice de la table.
             set u 0
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
-                  gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text "M"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                }
                incr u
@@ -2588,6 +2629,7 @@ namespace eval gui_cata {
          }
          
       }
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
  
@@ -2601,34 +2643,51 @@ namespace eval gui_cata {
  
    proc ::gui_cata::unset_flag { tbl } {
 
+      set flag "-"
       set onglets $::gui_cata::current_appli.onglets
-
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
 
+      # On boucle sur les selections (indice de la table affichée de 0 a end)
       foreach select [$tbl curselection] {
          
          set id [lindex [$tbl get $select] 0]
-         gren_info "select = $id ($select)\n"
-         gren_info "tbl = $tbl\n"
+
+         # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
+
+            set idcata [string index [lindex [split $t .] 5] 1]
+         
+            # modification de la tklist
+            set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
+            if {$x != -1} {
+               set a [lindex $::gui_cata::tklist($idcata) $x]
+               set b [lreplace $a [::gui_cata::get_pos_col astrom_reference] [::gui_cata::get_pos_col astrom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog]   [::gui_cata::get_pos_col astrom_catalog]   $flag]
+               set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col photom_catalog]   [::gui_cata::get_pos_col photom_catalog]   $flag]
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+            }
+
+            # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
-               gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text "-"
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text "-"
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text "-"
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_catalog]   -text "-"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text $flag
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $flag
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text $flag
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_catalog]   -text $flag
                continue
             }
             
+            # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+            # l indice de la table.
             set u 0
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
-                  gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text "-"
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text "-"
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text "-"
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text "-"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $flag
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text $flag
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $flag
                }
                incr u
             }
@@ -2636,6 +2695,7 @@ namespace eval gui_cata {
          }
          
       }
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
 
@@ -2685,7 +2745,7 @@ namespace eval gui_cata {
          
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
-               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text "R"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text $flag
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
                continue
             }
@@ -2696,7 +2756,7 @@ namespace eval gui_cata {
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
-                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text "R"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
                }
                incr u
