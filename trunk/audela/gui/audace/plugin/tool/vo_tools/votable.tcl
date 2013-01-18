@@ -1472,7 +1472,7 @@ proc ::votable::getFieldFromKey_UCAC3 { key } {
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"9\"" \
                        "$::votable::Field::PRECISION \"5\"" \
-                       "$::votable::Field::UNIT \"mas\""
+                       "$::votable::Field::UNIT \"deg\""
       }
       im1_mag -
       im2_mag {
@@ -1943,13 +1943,6 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"arcsec\""
       }
-      flagastrom {
-         set description "Astrometric flag: R for reference, S for science"
-         lappend field "$::votable::Field::UCD \"meta.code\"" \
-                       "$::votable::Field::DATATYPE \"char\"" \
-                       "$::votable::Field::ARRAYSIZE \"2\"" \
-                       "$::votable::Field::WIDTH \"2\""
-      }
       mag {
          set description "Apparent magnitude measured by Bddimages"
          lappend field "$::votable::Field::UCD \"phot.mag\"" \
@@ -1970,6 +1963,34 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
          set description "Source name or designation"
          set ucd "meta.id;meta.main"
          lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
+      }
+      flagastrom {
+         set description "Astrometric flag: R for reference, S for science"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"2\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      flagphotom {
+         set description "Photometric flag: R for reference, S for science"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"2\"" \
+                       "$::votable::Field::WIDTH \"2\""
+      }
+      cataastrom {
+         set description "Astrometric reference catalogue name"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
+      }
+      cataphotom {
+         set description "Photometric reference catalogue name"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
                        "$::votable::Field::DATATYPE \"char\"" \
                        "$::votable::Field::ARRAYSIZE \"32\"" \
                        "$::votable::Field::WIDTH \"32\""
