@@ -590,6 +590,7 @@ namespace eval gui_cata {
             set ::tools_cata::astroid_threshold 5
          }
       }
+      
 
    }
 
@@ -2457,8 +2458,8 @@ namespace eval gui_cata {
       foreach select [$w curselection] {
          
          set id [lindex [$w get $select] 0]
-         set ra [lindex [$w get $select] 7]
-         set dec [lindex [$w get $select] 8]
+         set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]
+         set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
          affich_un_rond $ra $dec $color $width
 
       }
@@ -2466,7 +2467,26 @@ namespace eval gui_cata {
 
    }
 
+   proc ::gui_cata::get_pos_col { name { idcata 1 } } {
 
+      if {![info exists idcata]} {set idcata 1}
+      
+      set list_of_columns $::gui_cata::tklist_list_of_columns($idcata)
+
+      set cpt 0
+      foreach { c } $list_of_columns {
+         set a [split $c " "]
+         set b [lindex $a 1]
+         set a [lindex $a 0]
+         if {$a==$name} {
+            return $cpt
+         }
+         incr cpt
+      }
+      
+      return -1
+
+   }
 
 
    proc ::gui_cata::selectall { tbl } {
@@ -2513,8 +2533,8 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
             if {"$tbl" == "$t.frmtable.tbl"} {
                gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,1 -text "R"
-               $t.frmtable.tbl cellconfigure $select,3 -text $cataselect
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text "R"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                continue
             }
             
@@ -2523,8 +2543,8 @@ namespace eval gui_cata {
                set idx [lindex $x 0]
                if {$idx == $id} {
                   gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,1 -text "R"
-                  $t.frmtable.tbl cellconfigure $u,3 -text $cataselect
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text "R"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                }
                incr u
             }
@@ -2549,8 +2569,8 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
             if {"$tbl" == "$t.frmtable.tbl"} {
                gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,1 -text "M"
-               $t.frmtable.tbl cellconfigure $select,3 -text $cataselect
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text "M"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                continue
             }
             
@@ -2559,8 +2579,8 @@ namespace eval gui_cata {
                set idx [lindex $x 0]
                if {$idx == $id} {
                   gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,1 -text "M"
-                  $t.frmtable.tbl cellconfigure $u,3 -text $cataselect
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text "M"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                }
                incr u
             }
@@ -2570,6 +2590,14 @@ namespace eval gui_cata {
       }
       return
    }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
    proc ::gui_cata::unset_flag { tbl } {
 
@@ -2585,10 +2613,10 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
             if {"$tbl" == "$t.frmtable.tbl"} {
                gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,1 -text "-"
-               $t.frmtable.tbl cellconfigure $select,3 -text "-"
-               $t.frmtable.tbl cellconfigure $select,4 -text "-"
-               $t.frmtable.tbl cellconfigure $select,6 -text "-"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text "-"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text "-"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text "-"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_catalog]   -text "-"
                continue
             }
             
@@ -2597,10 +2625,10 @@ namespace eval gui_cata {
                set idx [lindex $x 0]
                if {$idx == $id} {
                   gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,1 -text "-"
-                  $t.frmtable.tbl cellconfigure $u,3 -text "-"
-                  $t.frmtable.tbl cellconfigure $u,4 -text "-"
-                  $t.frmtable.tbl cellconfigure $u,6 -text "-"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text "-"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text "-"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text "-"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text "-"
                }
                incr u
             }
@@ -2610,37 +2638,66 @@ namespace eval gui_cata {
       }
       return
    }
- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::gui_cata::set_photom_ref { tbl } {
 
+      set flag "R"
       set onglets $::gui_cata::current_appli.onglets
-
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
+
       if {![::gui_cata::is_photometric_catalog $cataselect]} {
          tk_messageBox -message "Le catalogue selectionné $cataselect n'est pas photometrique" -type ok
          return
       }
 
+      # On boucle sur les selections (indice de la table affichée de 0 a end)
       foreach select [$tbl curselection] {
          
          set id [lindex [$tbl get $select] 0]
-         gren_info "select = $id ($select)\n"
-         gren_info "tbl = $tbl\n"
+
+         # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
+         
+            set idcata [string index [lindex [split $t .] 5] 1]
+         
+            # modification de la tklist
+            set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
+            if {$x != -1} {
+               set a [lindex $::gui_cata::tklist($idcata) $x]
+               set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+            }
+         
+            # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
-               gren_info "on est ici $t\n"
-               $t.frmtable.tbl cellconfigure $select,4 -text "R"
-               $t.frmtable.tbl cellconfigure $select,6 -text $cataselect
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text "R"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
                continue
             }
             
+            # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+            # l indice de la table.
             set u 0
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
-                  gren_info "$id -> $u sur $t\n"
-                  $t.frmtable.tbl cellconfigure $u,4 -text "R"
-                  $t.frmtable.tbl cellconfigure $u,6 -text $cataselect
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text "R"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
                }
                incr u
             }
@@ -2648,10 +2705,84 @@ namespace eval gui_cata {
          }
          
       }
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
  
  
+ 
+ 
+   proc ::gui_cata::set_photom_mes { tbl } {
+
+      set flag "M"
+      set onglets $::gui_cata::current_appli.onglets
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
+
+      #gren_info "Cata select = $cataselect\n"
+      #gren_info "idCata select = $idcata\n"
+      #gren_info "flag = $flag\n"
+
+      # On boucle sur les selections (indice de la table affichée de 0 a end)
+      foreach select [$tbl curselection] {
+         
+         set id [lindex [$tbl get $select] 0]
+
+         #gren_info "select = $id ($select)\n"
+         #gren_info "tbl = $tbl\n"
+         
+         # On boucle sur les onglets
+         foreach t [$onglets.nb tabs] {
+
+            set idcata [string index [lindex [split $t .] 5] 1]
+            set cata   $::gui_cata::cataname($idcata)
+            #gren_info "Cata   = $cata\n"
+            #gren_info "idCata = $idcata\n"
+
+
+            # modification de la tklist
+            set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
+            #gren_info "indice tklist($idcata)  =  $x\n"
+            if {$x != -1} {
+               set a [lindex $::gui_cata::tklist($idcata) $x]
+               #gren_info "a =  $a\n"
+               set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
+               #gren_info "photom_reference pos = [::gui_cata::get_pos_col photom_reference]\n"
+               #gren_info "val = [lindex $b 3]\n"
+               #gren_info "b =  $b\n"
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               #gren_info "tklist($idcata)  = $::gui_cata::tklist($idcata)\n"
+            }
+
+            # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
+            if {"$tbl" == "$t.frmtable.tbl"} {
+               #gren_info "on est ici $t\n"
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text $flag
+               $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
+               continue
+            }
+            
+            set u 0
+            # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+            # l indice de la table.
+            foreach x [$t.frmtable.tbl get 0 end] {
+               set idx [lindex $x 0]
+               if {$idx == $id} {
+                  #gren_info "$id -> $u sur $t\n"
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text $flag
+                  $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
+               }
+               incr u
+            }
+            
+         }
+         
+      }
+      
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
+      return
+   }
  
  
  
@@ -2701,15 +2832,18 @@ namespace eval gui_cata {
       menu $popupTbl -title "Selection"
 
         # Edite la liste selectionnee
+        $popupTbl add command -label "Suppimer la source" \
+           -command "::gui_cata::delete_source $tbl"
+
+        # Separateur
+        $popupTbl add separator
+
+        # Edite la liste selectionnee
         $popupTbl add command -label "Unset" \
            -command "::gui_cata::unset_flag $tbl"
 
         # Separateur
         $popupTbl add separator
-        
-        # Edite la liste selectionnee
-        $popupTbl add command -label "Set photometric reference" \
-           -command "::gui_cata::set_photom_ref $tbl"
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Set astrometric reference" \
@@ -2719,8 +2853,16 @@ namespace eval gui_cata {
         $popupTbl add command -label "Set astrometric mesure" \
            -command "::gui_cata::set_astrom_mes $tbl"
 
+        # Separateur
+        $popupTbl add separator
 
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Set photometric reference" \
+           -command "::gui_cata::set_photom_ref $tbl"
 
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Set photometric mesure" \
+           -command "::gui_cata::set_photom_mes $tbl"
 
 
       #--- Gestion des evenements
@@ -2798,11 +2940,13 @@ namespace eval gui_cata {
 
 
 
+
+
    proc ::gui_cata::charge_current_cata { } {
 
       global bddconf
  
-         gren_info "charge_current_cata ::tools_cata::id_current_image = $::tools_cata::id_current_image\n"
+         #gren_info "charge_current_cata ::tools_cata::id_current_image = $::tools_cata::id_current_image\n"
  
          set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -2818,15 +2962,25 @@ namespace eval gui_cata {
 
          ::gui_cata::load_cata
 
-         
          gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-         gren_info "charge_current_catas ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
+         #gren_info "charge_current_catas ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
 
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+         
 
+         # chargement de la tklist sous forme de liste tcl. (pour affichage)
+         ::gui_cata::current_listsources_to_tklist
 
- 
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+
    }
+
+
+
+
+
 
 
 
@@ -2857,6 +3011,9 @@ namespace eval gui_cata {
 
          ::gui_cata::charge_current_cata
 
+
+
+
       }
       ::gui_cata::set_progress 0 $::tools_cata::nb_img_list
       set ::tools_cata::id_current_image 1
@@ -2867,6 +3024,10 @@ namespace eval gui_cata {
       ::gui_cata::gestion_go
 
    }
+
+
+
+
 
 
 
@@ -2887,13 +3048,19 @@ namespace eval gui_cata {
 
 
 
+
+
+
+
+
+
    proc ::gui_cata::current_listsources_to_tklist { } {
 
       set listsources $::tools_cata::current_listsources
       set fields  [lindex $listsources 0]
       set sources [lindex $listsources 1]
 
-      set ::gui_cata::tklist_nbcata  [llength $fields]
+      set nbcata  [llength $fields]
 
 
       catch {unset ::gui_cata::cataname
@@ -2914,18 +3081,16 @@ namespace eval gui_cata {
          }
       }
 
-      for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
+      for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
       
 
          set list_of_columns [list  [list "bdi_idc_lock"                        "Id"] \
                                     [list "astrom_reference"                    "AR"] \
-                                    [list "astrom_mesure"                       "AM"] \
                                     [list "astrom_catalog"                      "AC"] \
                                     [list "photom_reference"                    "PR"] \
-                                    [list "photom_mesure"                       "PM"] \
                                     [list "photom_catalog"                      "PC"] \
                                     ]
-         gren_info "list_of_columns = $list_of_columns \n"
+         #gren_info "list_of_columns = $list_of_columns \n"
 
          foreach cc $commonfields {
             lappend list_of_columns [list $cc $cc]
@@ -2940,7 +3105,7 @@ namespace eval gui_cata {
             }
          }
          
-         gren_info "m list_of_columns = $list_of_columns \n"
+         #gren_info "m list_of_columns = $list_of_columns \n"
          #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
   
          set table ""
@@ -3006,7 +3171,7 @@ namespace eval gui_cata {
             lappend affich_table $lign_affich
 
          }
-         gren_info "f $idcata list_of_columns = $list_of_columns \n"
+         #gren_info "f $idcata list_of_columns = $list_of_columns \n"
          set ::gui_cata::tklist_list_of_columns($idcata) $list_of_columns
          set ::gui_cata::tklist($idcata) $affich_table
       }
@@ -3014,9 +3179,14 @@ namespace eval gui_cata {
    }
 
 
-   proc ::gui_cata::destroy_tklist { } {
 
-   }
+
+
+
+
+
+
+
 
 
    proc ::gui_cata::affich_current_tklist { } {
@@ -3028,10 +3198,10 @@ namespace eval gui_cata {
             set fields [lindex $listsources 0]
 
             set nbcatadel [expr [llength [array get ::gui_cata::cataname]]/2]
+            gren_info "cataname = [array get ::gui_cata::cataname] \n"
             gren_info "nbcatadel = $nbcatadel \n"
  
             foreach t [$onglets.nb tabs] {
-               $onglets.nb hide $t
                destroy $t
             }
              
@@ -3058,12 +3228,8 @@ namespace eval gui_cata {
 
 
 
-
-         
-          
-      #gren_info "nb catalog : $::gui_cata::tklist_nbcata\n"
         
-      for { set idcata 1 } { $idcata <= $::gui_cata::tklist_nbcata} { incr idcata } {
+      for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
 
 
          set ::gui_cata::frmtable($idcata) [frame $fc($idcata).frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
@@ -3099,7 +3265,7 @@ namespace eval gui_cata {
          if { [ $::gui_cata::frmtable($idcata).tbl columncount ] != "0" } {
             $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
          }
-         foreach col {7 8 9 10 11} {
+         foreach col {5 6 7 8 9} {
              $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary
          }
 
@@ -3123,11 +3289,14 @@ namespace eval gui_cata {
 
 
 
+
+
+
    proc ::gui_cata::gestion_go { } {
 
       set ::tools_cata::id_current_image $::gui_cata::directaccess
 
-      gren_info "go ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
+      gren_info "image = $::tools_cata::id_current_image / $::tools_cata::nb_img_list\n"
       ::gui_cata::set_progress 0 100      
 
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
@@ -3136,14 +3305,23 @@ namespace eval gui_cata {
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
-      ::gui_cata::destroy_tklist
-      ::gui_cata::current_listsources_to_tklist
-      ::gui_cata::set_progress 50 100      
+      ::gui_cata::set_progress 33 100      
+      #::gui_cata::current_listsources_to_tklist
+      array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns)
+      array set ::gui_cata::tklist                 $::gui_cata::tk_list($::tools_cata::id_current_image,tklist)
+      array set ::gui_cata::cataname               $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+
+      ::gui_cata::set_progress 66 100      
       ::gui_cata::affich_current_tklist
       ::gui_cata::set_progress 100 100      
       gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
    }
+
+
+
+
+
 
 
 
@@ -3157,6 +3335,10 @@ namespace eval gui_cata {
       ::gui_cata::gestion_go
 
    }
+   
+   
+   
+   
    
    
    
