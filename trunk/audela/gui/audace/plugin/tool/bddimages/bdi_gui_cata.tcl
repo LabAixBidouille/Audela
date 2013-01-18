@@ -689,10 +689,10 @@ namespace eval gui_cata {
       set conf(astrometry,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
 
       # Conf cata Astroid
-      set conf(astrometry,cata,astroid,create)          $::tools_cata::use_astroid
-      set conf(astrometry,cata,astroid,saturation)      $::tools_cata::astroid_saturation
-      set conf(astrometry,cata,astroid,delta)           $::tools_cata::astroid_delta
-      set conf(astrometry,cata,astroid,threshold)       $::tools_cata::astroid_threshold
+      set conf(astrometry,cata,astroid,create)     $::tools_cata::use_astroid
+      set conf(astrometry,cata,astroid,saturation) $::tools_cata::astroid_saturation
+      set conf(astrometry,cata,astroid,delta)      $::tools_cata::astroid_delta
+      set conf(astrometry,cata,astroid,threshold)  $::tools_cata::astroid_threshold
 
       destroy $::gui_cata::fen
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
