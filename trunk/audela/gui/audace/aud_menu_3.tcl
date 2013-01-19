@@ -3955,7 +3955,7 @@ namespace eval ::ser2fits {
       if {$PixelDepth == 8} {
          set BytePerPixel 1
          set bitpix 8
-      } elseif {$PixelDepth == 12} {
+      } elseif {$PixelDepth == 12 || $PixelDepth == 16} {
          set BytePerPixel 2
          set bitpix "+16"
       }
