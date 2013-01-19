@@ -2569,7 +2569,7 @@ namespace eval gui_cata {
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                continue
             }
-            
+
             # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
             # l indice de la table.
             set u 0
@@ -2588,9 +2588,9 @@ namespace eval gui_cata {
                }
                incr u
             }
-            
+
          }
-         
+
       }
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
@@ -2781,7 +2781,7 @@ namespace eval gui_cata {
 
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
-         
+
             set idcata [string index [lindex [split $t .] 5] 1]
             set cata   $::gui_cata::cataname($idcata)
 
@@ -2791,16 +2791,14 @@ namespace eval gui_cata {
                set a [lindex $::gui_cata::tklist($idcata) $x]
                set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
-               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
                # Rempli les champs correspondants dans le cata ASTROID
                if {[string compare -nocase $cata "ASTROID"] == 0} {
-                  set a [lindex $::gui_cata::tklist($idcata) $x]
-                  set b [lreplace $a 23 23 $flag]
-                  set b [lreplace $a 25 25 $cataselect]
-                  set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+                  set b [lreplace $b 23 23 $flag]
+                  set b [lreplace $b 25 25 $cataselect]
                }
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
             }
-         
+
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col photom_reference] -text $flag
