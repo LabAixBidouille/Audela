@@ -2544,6 +2544,7 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
 
             set idcata [string index [lindex [split $t .] 5] 1]
+            set cata   $::gui_cata::cataname($idcata)
          
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
@@ -2552,8 +2553,15 @@ namespace eval gui_cata {
                set b [lreplace $a [::gui_cata::get_pos_col astrom_reference] [::gui_cata::get_pos_col astrom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog] [::gui_cata::get_pos_col astrom_catalog] $cataselect]
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               # Rempli les champs correspondants dans le cata ASTROID
+               if {[string compare -nocase $cata "ASTROID"] == 0} {
+                  set a [lindex $::gui_cata::tklist($idcata) $x]
+                  set b [lreplace $a 23 23 $flag]
+                  set b [lreplace $a 25 25 $cataselect]
+                  set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               }
             }
-         
+
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
                gren_info "on est ici $t\n"
@@ -2571,6 +2579,12 @@ namespace eval gui_cata {
                   gren_info "$id -> $u sur $t\n"
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
+                  # Rempli les champs correspondants dans le cata ASTROID
+                  if {[string compare -nocase $cata "ASTROID"] == 0} {
+                     $t.frmtable.tbl cellconfigure $u,33 -text $flag
+                     $t.frmtable.tbl cellconfigure $u,35 -text $cataselect
+                  }
+                  break
                }
                incr u
             }
@@ -2591,7 +2605,7 @@ namespace eval gui_cata {
 
    proc ::gui_cata::set_astrom_mes { tbl } {
 
-      set flag "M"
+      set flag "S"
       set onglets $::gui_cata::current_appli.onglets
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
       set idcata [string index [lindex [split $tbl .] 5] 1]
@@ -2605,7 +2619,8 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
 
             set idcata [string index [lindex [split $t .] 5] 1]
-         
+            set cata   $::gui_cata::cataname($idcata)
+
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
             if {$x != -1} {
@@ -2613,6 +2628,13 @@ namespace eval gui_cata {
                set b [lreplace $a [::gui_cata::get_pos_col astrom_reference] [::gui_cata::get_pos_col astrom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog]   [::gui_cata::get_pos_col astrom_catalog] $cataselect]
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               # Rempli les champs correspondants dans le cata ASTROID
+               if {[string compare -nocase $cata "ASTROID"] == 0} {
+                  set a [lindex $::gui_cata::tklist($idcata) $x]
+                  set b [lreplace $a 23 23 $flag]
+                  set b [lreplace $a 25 25 $cataselect]
+                  set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               }
             }
 
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
@@ -2630,6 +2652,11 @@ namespace eval gui_cata {
                if {$idx == $id} {
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
+                  # Rempli les champs correspondants dans le cata ASTROID
+                  if {[string compare -nocase $cata "ASTROID"] == 0} {
+                     $t.frmtable.tbl cellconfigure $u,33 -text $flag
+                     $t.frmtable.tbl cellconfigure $u,35 -text $cataselect
+                  }
                   break
                }
                incr u
@@ -2666,7 +2693,8 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
 
             set idcata [string index [lindex [split $t .] 5] 1]
-         
+            set cata   $::gui_cata::cataname($idcata)
+
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
             if {$x != -1} {
@@ -2676,6 +2704,13 @@ namespace eval gui_cata {
                set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog]   [::gui_cata::get_pos_col photom_catalog]   $flag]
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               # Rempli les champs correspondants dans le cata ASTROID
+               if {[string compare -nocase $cata "ASTROID"] == 0} {
+                  set a [lindex $::gui_cata::tklist($idcata) $x]
+                  set b [lreplace $a 23 23 $flag]
+                  set b [lreplace $a 25 25 $flag]
+                  set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               }
             }
 
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
@@ -2697,6 +2732,12 @@ namespace eval gui_cata {
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $flag
+                  # Rempli les champs correspondants dans le cata ASTROID
+                  if {[string compare -nocase $cata "ASTROID"] == 0} {
+                     $t.frmtable.tbl cellconfigure $u,33 -text $flag
+                     $t.frmtable.tbl cellconfigure $u,35 -text $flag
+                  }
+                  break
                }
                incr u
             }
@@ -2742,7 +2783,8 @@ namespace eval gui_cata {
          foreach t [$onglets.nb tabs] {
          
             set idcata [string index [lindex [split $t .] 5] 1]
-         
+            set cata   $::gui_cata::cataname($idcata)
+
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
             if {$x != -1} {
@@ -2750,6 +2792,13 @@ namespace eval gui_cata {
                set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               # Rempli les champs correspondants dans le cata ASTROID
+               if {[string compare -nocase $cata "ASTROID"] == 0} {
+                  set a [lindex $::gui_cata::tklist($idcata) $x]
+                  set b [lreplace $a 23 23 $flag]
+                  set b [lreplace $a 25 25 $cataselect]
+                  set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               }
             }
          
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
@@ -2767,6 +2816,12 @@ namespace eval gui_cata {
                if {$idx == $id} {
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
+                  # Rempli les champs correspondants dans le cata ASTROID
+                  if {[string compare -nocase $cata "ASTROID"] == 0} {
+                     $t.frmtable.tbl cellconfigure $u,33 -text $flag
+                     $t.frmtable.tbl cellconfigure $u,35 -text $cataselect
+                  }
+                  break
                }
                incr u
             }
@@ -2817,11 +2872,14 @@ namespace eval gui_cata {
                #gren_info "a =  $a\n"
                set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
-               #gren_info "photom_reference pos = [::gui_cata::get_pos_col photom_reference]\n"
-               #gren_info "val = [lindex $b 3]\n"
-               #gren_info "b =  $b\n"
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
-               #gren_info "tklist($idcata)  = $::gui_cata::tklist($idcata)\n"
+               # Rempli les champs correspondants dans le cata ASTROID
+               if {[string compare -nocase $cata "ASTROID"] == 0} {
+                  set a [lindex $::gui_cata::tklist($idcata) $x]
+                  set b [lreplace $a 23 23 $flag]
+                  set b [lreplace $a 25 25 $cataselect]
+                  set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
+               }
             }
 
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
@@ -2841,6 +2899,12 @@ namespace eval gui_cata {
                   #gren_info "$id -> $u sur $t\n"
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col photom_catalog]   -text $cataselect
+                  # Rempli les champs correspondants dans le cata ASTROID
+                  if {[string compare -nocase $cata "ASTROID"] == 0} {
+                     $t.frmtable.tbl cellconfigure $u,33 -text $flag
+                     $t.frmtable.tbl cellconfigure $u,35 -text $cataselect
+                  }
+                  break
                }
                incr u
             }
@@ -3136,11 +3200,11 @@ namespace eval gui_cata {
 
       for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
 
-         set list_of_columns [list  [list "bdi_idc_lock"                        "Id"] \
-                                    [list "astrom_reference"                    "AR"] \
-                                    [list "astrom_catalog"                      "AC"] \
-                                    [list "photom_reference"                    "PR"] \
-                                    [list "photom_catalog"                      "PC"] \
+         set list_of_columns [list  [list "bdi_idc_lock"      "Id"] \
+                                    [list "astrom_reference"  "AR"] \
+                                    [list "astrom_catalog"    "AC"] \
+                                    [list "photom_reference"  "PR"] \
+                                    [list "photom_catalog"    "PC"] \
                                     ]
          #gren_info "list_of_columns = $list_of_columns \n"
 
