@@ -1740,10 +1740,10 @@ proc ::votable::getFieldFromKey_SKYBOT { key } {
       de {
          if {[string equal -nocase $key "ra"]} {
             set description "Astrometric J2000 right ascension"
-            set unit "h:m:s"
+            set unit "deg"
          } else {
             set description "Astrometric J2000 declination"
-            set unit "d:m:s"
+            set unit "deg"
          }
          lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -1886,7 +1886,7 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::UNIT \"-\""
       }
       delta {
-         set description "Radius of the window used to measure the photocenter"
+         set description "Radius of the window used to measure the photocenter (pix)"
          lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
@@ -1894,7 +1894,7 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::UNIT \"px\""
       }
       rdiff {
-         set description "Distance between the requested and the measured photocenter"
+         set description "Distance between the requested and the measured photocenter (pix)"
          lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
@@ -1905,10 +1905,10 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
       dec {
          if {[string equal -nocase $key "ra"]} {
             set description "Astrometric J2000 right ascension"
-            set unit "h:m:s"
+            set unit "deg"
          } else {
             set description "Astrometric J2000 declination"
-            set unit "d:m:s"
+            set unit "deg"
          }
          lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
