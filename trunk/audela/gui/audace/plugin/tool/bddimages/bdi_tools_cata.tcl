@@ -294,12 +294,11 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
 
-
-
-
    proc ::tools_cata::get_cata_xml { catafile } {
 
       global bddconf
+
+      gren_info "Chargement du cata xml: $catafile \n"
 
       set fields ""
       set fxml [open $catafile "r"]
@@ -352,9 +351,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          }
          incr cpt
       }
-      
-      #gren_info "FIELDS => $fields  \n"
-      #gren_info "SOURCES => $lso  \n"
       
       return [list $fields $lso]
 
@@ -445,6 +441,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set dec $::tools_cata::dec
       set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
       set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
 
       set lcd ""
       lappend lcd [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
@@ -452,21 +450,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       lappend lcd [lindex [::bddimages_liste::lget $tabkey CD2_1] 1]
       lappend lcd [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
       set mscale [::math::statistics::max $lcd]
-      
-      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
-      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-
       set radius [::tools_cata::get_radius $naxis1 $naxis2 $mscale $mscale]
 
-      # Defini la liste des champs FIELD pour mc_xy2radec pour remplir
-      # les champs common du cata ASTROID
-      set foclen [lindex [::bddimages_liste::lget $tabkey FOCLEN] 1]
-      set pixsize1 [expr [lindex [::bddimages_liste::lget $tabkey PIXSIZE1] 1] *1.0e-9]
-      set pixsize2 [expr [lindex [::bddimages_liste::lget $tabkey PIXSIZE2] 1] *1.0e-9]
-      set crota2 [lindex [::bddimages_liste::lget $tabkey CROTA2] 1]
-
-      set mc_fields [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 $crota2 RA $ra DEC $dec]
-      
       if {1==0} {
          gren_info "naxis1  = $naxis1\n"
          gren_info "naxis2  = $naxis2\n"
@@ -476,7 +461,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          gren_info "ra      = $ra\n"
          gren_info "dec     = $dec\n"
          gren_info "radius  = $radius\n"
-         gren_info "mc_fields = $mc_fields\n"
       }
 
       if {$::tools_cata::use_tycho2} {
@@ -534,7 +518,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       }
 
       if {$::tools_cata::use_astroid} {
-         set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta $mc_fields]
+         set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta]
 #::console::affiche_erreur "LISTSOURCES = $listsources\n"
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
       }

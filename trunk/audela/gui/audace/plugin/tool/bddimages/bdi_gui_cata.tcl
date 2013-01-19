@@ -851,12 +851,13 @@ namespace eval gui_cata {
       }
       
       set listsources [::tools_cata::get_cata_xml $catafile]
-      set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
-      set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC3  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag calib_mag_ss1}]
+      set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra dec poserr mag magerr }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 0.0 0.0 0.0 }]
       set ::tools_cata::current_listsources $listsources
 
    }
@@ -2235,6 +2236,9 @@ namespace eval gui_cata {
 
 
 
+
+
+
    proc ::gui_cata::voir_cata { img_list } {
 
       global audace
@@ -2452,16 +2456,12 @@ namespace eval gui_cata {
 
       set color red
       set width 2
-      
       cleanmark
-
       foreach select [$w curselection] {
-         
          set id [lindex [$w get $select] 0]
          set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]
          set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
          affich_un_rond $ra $dec $color $width
-
       }
       return
 
@@ -2491,10 +2491,18 @@ namespace eval gui_cata {
 
    proc ::gui_cata::selectall { tbl } {
       
-      gren_info "select all $tbl\n"
+      # Selectionne toutes les sources
       $tbl selection set 0 end
 
-      
+      # Affiche les sources selectionnees
+      cleanmark
+      set selected [$tbl get 0 end]
+      foreach s $selected {
+         set id [lindex $s 0]
+         set ra [lindex $s [::gui_cata::get_pos_col ra]]
+         set dec [lindex $s [::gui_cata::get_pos_col dec]]
+         affich_un_rond $ra $dec red 2
+      }
       return
 
    }
@@ -2622,6 +2630,7 @@ namespace eval gui_cata {
                if {$idx == $id} {
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
+                  break
                }
                incr u
             }
@@ -2857,7 +2866,6 @@ namespace eval gui_cata {
       global caption
       global bddconf
 
-            
       #--- Quelques raccourcis utiles
       set tbl $::gui_cata::frmtable($idcata).tbl
       set popupTbl $::gui_cata::frmtable($idcata).popupTbl
@@ -2876,16 +2884,6 @@ namespace eval gui_cata {
       $::gui_cata::frmtable($idcata).vsb configure -command [ list $tbl yview ]
       $::gui_cata::frmtable($idcata).hsb configure -command [ list $tbl xview ]
 
-      #
-      # TODO, pas ici mais necessaire pour configurer les colonnes en fonction
-      # de leur type et ainsi assurer un tri correct. Sinon le tri se fait par
-      # comparaison de string
-      #
-      #--- Options de tri sur les colonnes
-      #foreach col {3 4 5 6 7} {
-      #   $tbl columnconfigure $col -sortmode real
-      #}
-      
       #--- Gestion des popup
 
       #--- Menu pop-up associe a la table
@@ -2969,7 +2967,6 @@ namespace eval gui_cata {
       set filename    [::bddimages_liste::lget $::tools_cata::current_image filename   ]
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-
       set ::tools_cata::current_image_name $filename
       set ::tools_cata::current_image_date $date
 
@@ -3006,34 +3003,33 @@ namespace eval gui_cata {
 
       global bddconf
  
-         #gren_info "charge_current_cata ::tools_cata::id_current_image = $::tools_cata::id_current_image\n"
- 
-         set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
-         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-         set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+      #gren_info "charge_current_cata ::tools_cata::id_current_image = $::tools_cata::id_current_image\n"
 
-         set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
-         set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-         set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
-         set file        [file join $bddconf(dirbase) $dirfilename $::tools_cata::current_image_name]
-         
-         after 10
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+      set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
 
-         ::gui_cata::load_cata
+      set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+      set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
+      set file        [file join $bddconf(dirbase) $dirfilename $::tools_cata::current_image_name]
+      
+      after 10
 
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-         #gren_info "charge_current_catas ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
+      ::gui_cata::load_cata
 
-         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-         
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      #gren_info "charge_current_catas ::tools_cata::id_current_image=$::tools_cata::id_current_image\n"
 
-         # chargement de la tklist sous forme de liste tcl. (pour affichage)
-         ::gui_cata::current_listsources_to_tklist
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
 
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+      # chargement de la tklist sous forme de liste tcl. (pour affichage)
+      ::gui_cata::current_listsources_to_tklist
+
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
 
    }
 
@@ -3051,7 +3047,7 @@ namespace eval gui_cata {
 
       set state [$::gui_cata::current_appli.actions.charge cget -text]
 
-      if  {$state =="Annuler"} {
+      if  {$state == "Annuler"} {
           set ::gui_cata::annul 1
           return
       }
@@ -3062,7 +3058,7 @@ namespace eval gui_cata {
 
       for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image<=$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
          
-         if {$::gui_cata::annul==1} {
+         if {$::gui_cata::annul == 1} {
             gren_info "Chargement annulé...\n"
             break
          }
@@ -3070,9 +3066,6 @@ namespace eval gui_cata {
          ::gui_cata::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
 
          ::gui_cata::charge_current_cata
-
-
-
 
       }
       ::gui_cata::set_progress 0 $::tools_cata::nb_img_list
@@ -3122,9 +3115,9 @@ namespace eval gui_cata {
 
       set nbcata  [llength $fields]
 
-
-      catch {unset ::gui_cata::cataname
-             unset ::gui_cata::cataid
+      catch {
+         unset ::gui_cata::cataname
+         unset ::gui_cata::cataid
       }
 
       set commonfields ""
@@ -3142,7 +3135,6 @@ namespace eval gui_cata {
       }
 
       for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
-      
 
          set list_of_columns [list  [list "bdi_idc_lock"                        "Id"] \
                                     [list "astrom_reference"                    "AR"] \
@@ -3252,45 +3244,40 @@ namespace eval gui_cata {
    proc ::gui_cata::affich_current_tklist { } {
 
 
-            set onglets $::gui_cata::current_appli.onglets
+      set onglets $::gui_cata::current_appli.onglets
+   
+      set listsources $::tools_cata::current_listsources
+      set fields [lindex $listsources 0]
+   
+      set nbcatadel [expr [llength [array get ::gui_cata::cataname]]/2]
+      gren_info "cataname = [array get ::gui_cata::cataname] \n"
+      gren_info "nbcatadel = $nbcatadel \n"
+   
+      foreach t [$onglets.nb tabs] {
+         destroy $t
+      }
 
-            set listsources $::tools_cata::current_listsources
-            set fields [lindex $listsources 0]
+      set idcata 0
+      set select 0
+      foreach field $fields {
+         incr idcata
+         
+         set fc($idcata) [frame $onglets.nb.f$idcata]
+         
+         set c [lindex $field 0]
+         
+         $onglets.nb add $fc($idcata) -text $c
+         if {$c=="IMG"} {
+            set select $idcata
+         }
+      }
+      set nbcata $idcata
+      gren_info "nbcata : $nbcata\n"
+   
+      if {$select >0} {$onglets.nb select $fc($select)}
+      ttk::notebook::enableTraversal $onglets.nb
 
-            set nbcatadel [expr [llength [array get ::gui_cata::cataname]]/2]
-            gren_info "cataname = [array get ::gui_cata::cataname] \n"
-            gren_info "nbcatadel = $nbcatadel \n"
- 
-            foreach t [$onglets.nb tabs] {
-               destroy $t
-            }
-             
-                   
-            set idcata 0
-            set select 0
-            foreach field $fields {
-               incr idcata
-               
-               set fc($idcata) [frame $onglets.nb.f$idcata]
-               
-               set c [lindex $field 0]
-               
-               $onglets.nb add $fc($idcata) -text $c
-               if {$c=="IMG"} {
-                  set select $idcata
-               }
-            }
-            set nbcata $idcata
-            gren_info "nbcata : $nbcata\n"
-
-            if {$select >0} {$onglets.nb select $fc($select)}
-            ttk::notebook::enableTraversal $onglets.nb
-
-
-
-        
       for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
-
 
          set ::gui_cata::frmtable($idcata) [frame $fc($idcata).frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
          pack $::gui_cata::frmtable($idcata) -expand yes -fill both -padx 3 -pady 6 -in $fc($idcata) -side right -anchor e

@@ -95,12 +95,9 @@ namespace eval ::analyse_source {
 
    #
    # ::analyse_source::psf
+   # Mesure de PSF d'une source
    #
-   # photom_methode
-   # xsm         ysm        fwhmx    fwhmy    fwhm     fluxintegre errflux  pixmax  intensite sigmafond snint         snpx          delta
-   # 1936.447981 844.076965 3.510291 1.861599 2.685945 799.000000  0        1310    246.0     33.616402 23.7681593646 7.31785632502 3.21
-
-   proc ::analyse_source::psf { listsources radius_threshold delta {mc_fields ""} } {
+   proc ::analyse_source::psf { listsources radius_threshold delta } {
 
       global bddconf
 
@@ -121,34 +118,39 @@ namespace eval ::analyse_source {
 
       foreach s $sources {
          incr cpts
-         if {$log} {gren_info "source : $cpts\n"}
+         if {$log} {gren_info "source #$cpts : "}
          
          set cptc 0
          foreach cata $s {
             incr cptc
-            if {$log} {gren_info "cata : $cptc [lindex $cata 0]\n"}
+            if {$log} {
+               gren_info " -> cata : $cptc [lindex $cata 0] "
+            }
             if { [lindex $cata 0]=="ASTROID" } { break }
 
             if { [lindex $cata 0]=="IMG" } {
 
-               set ra   [lindex [lindex [lindex $s 0] 1] 0]
-               set dec  [lindex [lindex [lindex $s 0] 1] 1]
-               set x    [lindex [lindex [lindex $s 0] 2] 2]
-               set y    [lindex [lindex [lindex $s 0] 2] 3]
-               set fwhm [lindex [lindex [lindex $s 0] 2] 24]
+               set ra     [lindex [lindex [lindex $s 0] 1] 0]
+               set dec    [lindex [lindex [lindex $s 0] 1] 1]
+               set poserr [lindex [lindex [lindex $s 0] 1] 2]
+               set mag    [lindex [lindex [lindex $s 0] 1] 3]
+               set magerr [lindex [lindex [lindex $s 0] 1] 4]
+               set x      [lindex [lindex [lindex $s 0] 2] 2]
+               set y      [lindex [lindex [lindex $s 0] 2] 3]
+               set fwhm   [lindex [lindex [lindex $s 0] 2] 24]
 
-               if {$log} {gren_info "source : $ra $dec $x $y\n"}
-               #affich_un_rond $ra $dec red 5
+               if {$log} {
+                  affich_un_rond $ra $dec red 4
+                  gren_info " -> RA,DEC,x,y : $ra $dec $x $y\n"
+               }
 
-               #set results [::tools_cdl::photom_methode $x $y $fwhm $bddconf(bufno) ]
-
-               set err [catch {set results [::tools_cdl::photom_methode $x $y $delta $bddconf(bufno) ]} msg]
+               # Mesure de PSF de la source: 
+               # result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+               set err [catch {set results [::tools_cdl::photom_methode $x $y $delta $bddconf(bufno)]} msg]
                if {$err} { 
                   gren_info "photom error ($err) ($msg)\n" 
                   set results -1
                } 
-
-               if {$log} { gren_info "photom done ($results)\n" }
 
                if { $results == -1 } {
                   lappend newsources $s
@@ -161,16 +163,8 @@ namespace eval ::analyse_source {
                      lappend newsources $s
                      incr doute
                   } else {
-                     # Prepare les resultats
-                     lappend results $rdiff
-                     for {set i 0} {$i<9} {incr i} { lappend results 0 }
-                     lappend results ""
-                     # Prepare les champs common pour ASTROID
-                     set common {}
-                     if { [llength $mc_fields] > 0 } {
-                        set radec [mc_xy2radec [lindex $results 0] [lindex $results 1] $mc_fields]
-                        set common [list [lindex $radec 0] [lindex $radec 1] $rdiff 0.0 0.0]
-                     }
+                     # Ajoute rdiff, RA, DEC, res_ra, res_dec, omc_ra, omc_dec, mag, err_mag, name, flag*, cata* aux resultats
+                     lappend results $rdiff $ra $dec $poserr $poserr 0.0 0.0 $mag $magerr "" "" "" "" ""
                      # Reconstruit la liste des sources en ajoutant la source ASTROID
                      set ns {}
                      foreach cata $s {
@@ -178,7 +172,7 @@ namespace eval ::analyse_source {
                            lappend ns $cata
                         }
                      }
-                     lappend ns [list "ASTROID" $common $results]
+                     lappend ns [list "ASTROID" {} $results]
                      lappend newsources $ns
                   }
 
