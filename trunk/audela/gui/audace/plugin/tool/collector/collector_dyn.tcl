@@ -198,8 +198,6 @@
       variable private
       global audace caption
 
-      etc_preliminary_computations
-
       switch -exact [lsearch $caption(collector,prior_combo) $private(prior)] {
         0   {  #--   priorite au temps --> calcule la magnitude et snr
                etc_t2snr_computations
