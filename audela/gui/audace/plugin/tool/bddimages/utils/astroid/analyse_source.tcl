@@ -164,7 +164,7 @@ namespace eval ::analyse_source {
                      incr doute
                   } else {
                      # Ajoute rdiff, RA, DEC, res_ra, res_dec, omc_ra, omc_dec, mag, err_mag, name, flag*, cata* aux resultats
-                     lappend results $rdiff $ra $dec $poserr $poserr 0.0 0.0 $mag $magerr "" "" "" "" ""
+                     lappend results $rdiff $ra $dec $poserr $poserr 0.0 0.0 $mag $magerr "-" "-" "-" "-" "-"
                      # Reconstruit la liste des sources en ajoutant la source ASTROID
                      set ns {}
                      foreach cata $s {

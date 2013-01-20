@@ -2860,6 +2860,8 @@ namespace eval gui_cata {
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
       set idcata [string index [lindex [split $tbl .] 5] 1]
 
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
       #gren_info "Cata select = $cataselect\n"
       #gren_info "idCata select = $idcata\n"
       #gren_info "flag = $flag\n"
@@ -2929,10 +2931,39 @@ namespace eval gui_cata {
                incr u
             }
             
+            
+            # Modification du cata_list_source
+            if {[string compare -nocase $cata "ASTROID"] == 0} {
+
+               set fields [lindex $::tools_cata::current_listsources 0]
+               set sources [lindex $::tools_cata::current_listsources 1]
+
+               set a [lindex $sources [expr $id - 1]]
+               set change "no"
+               set cpt 0
+               foreach c $a {
+                  if {[lindex $c 0]=="ASTROID"} {
+                     set b [lindex $c 2]
+                     set pos [expr [::gui_cata::get_pos_col flagphotom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col cataphotom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $cataselect]
+                     set c [lreplace $c 2 2 $b]
+                     set a [lreplace $a $cpt $cpt $c]
+                     set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
+                     set ::tools_cata::current_listsources [list $fields $sources]
+                     break
+                  }
+                  incr cpt
+               }
+               
+            }
+            
          }
          
       }
-      
+      #set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] 0] 
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
