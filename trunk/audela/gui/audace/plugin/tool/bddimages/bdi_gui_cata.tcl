@@ -3083,7 +3083,57 @@ namespace eval gui_cata {
  
  
  
- 
+   proc ::gui_cata::grab_sources { tbl } {
+
+      set color red
+      set width 2
+      cleanmark
+      $tbl selection clear 0 end
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect==""} {
+         tk_messageBox -message "Veuillez dessiner un carre dans l'image (avec un clic gauche)" -type ok
+         return
+      }
+
+      set sources [lindex $::tools_cata::current_listsources 1]
+      set id 1
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "IMG"} {
+               set x [lindex [lindex $cata 2] 2]
+               set y [lindex [lindex $cata 2] 3]
+               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+                  # selection de la source
+                  set u 0
+                  # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+                  # l indice de la table.
+                  foreach l [$tbl get 0 end] {
+                     set idx [lindex $l 0]
+                     if {$idx == $id} {
+                        $tbl selection set $u
+                        set ra  [lindex [lindex $cata 1] 0]
+                        set dec [lindex [lindex $cata 1] 1]
+                        affich_un_rond $ra $dec $color $width
+                        break
+                     }
+                     incr u
+                  }
+               }
+            }
+         }
+         incr id
+      }
+   }
+
+
+
+
+
+   proc ::gui_cata::propagation {  } {
+
+
+   }
  
  
  
@@ -3116,6 +3166,10 @@ namespace eval gui_cata {
 
       #--- Menu pop-up associe a la table
       menu $popupTbl -title "Selection"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Grab sources" \
+           -command "::gui_cata::grab_sources $tbl"
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Suppimer la source" \
@@ -3744,10 +3798,6 @@ namespace eval gui_cata {
         set navigation [frame $frm.navigation -borderwidth 0 -cursor arrow -relief groove]
         pack $navigation -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             button $navigation.union -text "Union" -borderwidth 2 -takefocus 1 \
-                   -command "" 
-             pack $navigation.union -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
              button $navigation.back -text "Precedent" -borderwidth 2 -takefocus 1 \
                    -command "::gui_cata::gestion_back" 
              pack $navigation.back -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -3766,6 +3816,14 @@ namespace eval gui_cata {
              button $navigation.go -text "Go" -borderwidth 1 -takefocus 1 \
                    -command "::gui_cata::gestion_go" 
              pack $navigation.go -side left -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
+
+        #--- Cree un frame pour afficher les boutons
+        set tools [frame $frm.tools -borderwidth 0 -cursor arrow -relief groove]
+        pack $tools -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $tools.propagation -text "Propagation" -borderwidth 2 -takefocus 1 \
+                   -command "::gui_cata::propagation" 
+             pack $tools.propagation -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
         #--- Cree un frame pour afficher bouton fermeture
