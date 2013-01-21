@@ -2554,7 +2554,7 @@ namespace eval gui_cata {
                set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog] [::gui_cata::get_pos_col astrom_catalog] $cataselect]
                # Rempli les champs correspondants dans le cata ASTROID
                if {[string compare -nocase $cata "ASTROID"] == 0} {
-                  set b [lreplace $a [::gui_cata::get_pos_col flagastrom $idcata] [::gui_cata::get_pos_col flagastrom $idcata] $flag]
+                  set b [lreplace $b [::gui_cata::get_pos_col flagastrom $idcata] [::gui_cata::get_pos_col flagastrom $idcata] $flag]
                   set b [lreplace $b [::gui_cata::get_pos_col cataastrom $idcata] [::gui_cata::get_pos_col cataastrom $idcata] $cataselect]
                }
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
@@ -2592,9 +2592,37 @@ namespace eval gui_cata {
                incr u
             }
 
+            # Modification du cata_list_source
+            if {[string compare -nocase $cata "ASTROID"] == 0} {
+
+               set fields [lindex $::tools_cata::current_listsources 0]
+               set sources [lindex $::tools_cata::current_listsources 1]
+
+               set a [lindex $sources [expr $id - 1]]
+               set cpt 0
+               foreach c $a {
+                  if {[lindex $c 0]=="ASTROID"} {
+                     set b [lindex $c 2]
+                     set pos [expr [::gui_cata::get_pos_col flagastrom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col cataastrom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $cataselect]
+                     set c [lreplace $c 2 2 $b]
+                     set a [lreplace $a $cpt $cpt $c]
+                     set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
+                     set ::tools_cata::current_listsources [list $fields $sources]
+                     break
+                  }
+                  incr cpt
+               }
+               
+            }
+
+
          }
 
       }
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
@@ -2632,7 +2660,7 @@ namespace eval gui_cata {
                set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog]   [::gui_cata::get_pos_col astrom_catalog] $cataselect]
                # Rempli les champs correspondants dans le cata ASTROID
                if {[string compare -nocase $cata "ASTROID"] == 0} {
-                  set b [lreplace $a [::gui_cata::get_pos_col flagastrom $idcata] [::gui_cata::get_pos_col flagastrom $idcata] $flag]
+                  set b [lreplace $b [::gui_cata::get_pos_col flagastrom $idcata] [::gui_cata::get_pos_col flagastrom $idcata] $flag]
                   set b [lreplace $b [::gui_cata::get_pos_col cataastrom $idcata] [::gui_cata::get_pos_col cataastrom $idcata] $cataselect]
                }
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
@@ -2668,9 +2696,37 @@ namespace eval gui_cata {
                incr u
             }
             
+            # Modification du cata_list_source
+            if {[string compare -nocase $cata "ASTROID"] == 0} {
+
+               set fields [lindex $::tools_cata::current_listsources 0]
+               set sources [lindex $::tools_cata::current_listsources 1]
+
+               set a [lindex $sources [expr $id - 1]]
+               set cpt 0
+               foreach c $a {
+                  if {[lindex $c 0]=="ASTROID"} {
+                     set b [lindex $c 2]
+                     set pos [expr [::gui_cata::get_pos_col flagastrom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col cataastrom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $cataselect]
+                     set c [lreplace $c 2 2 $b]
+                     set a [lreplace $a $cpt $cpt $c]
+                     set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
+                     set ::tools_cata::current_listsources [list $fields $sources]
+                     break
+                  }
+                  incr cpt
+               }
+               
+            }
+            
+            
          }
          
       }
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
@@ -2707,13 +2763,13 @@ namespace eval gui_cata {
                set a [lindex $::gui_cata::tklist($idcata) $x]
                set b [lreplace $a [::gui_cata::get_pos_col astrom_reference] [::gui_cata::get_pos_col astrom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col astrom_catalog]   [::gui_cata::get_pos_col astrom_catalog]   $flag]
-               set b [lreplace $a [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
+               set b [lreplace $b [::gui_cata::get_pos_col photom_reference] [::gui_cata::get_pos_col photom_reference] $flag]
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog]   [::gui_cata::get_pos_col photom_catalog]   $flag]
                # Rempli les champs correspondants dans le cata ASTROID
                if {[string compare -nocase $cata "ASTROID"] == 0} {
-                  set b [lreplace $a [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagastrom $idcata] $flag]
+                  set b [lreplace $b [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagastrom $idcata] $flag]
                   set b [lreplace $b [::gui_cata::get_pos_col cataphotom $idcata] [::gui_cata::get_pos_col cataastrom $idcata] $flag]
-                  set b [lreplace $a [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagphotom $idcata] $flag]
+                  set b [lreplace $b [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagphotom $idcata] $flag]
                   set b [lreplace $b [::gui_cata::get_pos_col cataphotom $idcata] [::gui_cata::get_pos_col cataphotom $idcata] $flag]
                }
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
@@ -2755,10 +2811,41 @@ namespace eval gui_cata {
                }
                incr u
             }
-            
+
+            # Modification du cata_list_source
+            if {[string compare -nocase $cata "ASTROID"] == 0} {
+
+               set fields [lindex $::tools_cata::current_listsources 0]
+               set sources [lindex $::tools_cata::current_listsources 1]
+
+               set a [lindex $sources [expr $id - 1]]
+               set cpt 0
+               foreach c $a {
+                  if {[lindex $c 0]=="ASTROID"} {
+                     set b [lindex $c 2]
+                     set pos [expr [::gui_cata::get_pos_col flagphotom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col cataphotom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col flagastrom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col cataastrom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set c [lreplace $c 2 2 $b]
+                     set a [lreplace $a $cpt $cpt $c]
+                     set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
+                     set ::tools_cata::current_listsources [list $fields $sources]
+                     break
+                  }
+                  incr cpt
+               }
+               
+            }
+
          }
          
       }
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
@@ -2807,7 +2894,7 @@ namespace eval gui_cata {
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
                # Rempli les champs correspondants dans le cata ASTROID
                if {[string compare -nocase $cata "ASTROID"] == 0} {
-                  set b [lreplace $a [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagphotom $idcata] $flag]
+                  set b [lreplace $b [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagphotom $idcata] $flag]
                   set b [lreplace $b [::gui_cata::get_pos_col cataphotom $idcata] [::gui_cata::get_pos_col cataphotom $idcata] $cataselect]
                }
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
@@ -2843,9 +2930,36 @@ namespace eval gui_cata {
                incr u
             }
             
+            # Modification du cata_list_source
+            if {[string compare -nocase $cata "ASTROID"] == 0} {
+
+               set fields [lindex $::tools_cata::current_listsources 0]
+               set sources [lindex $::tools_cata::current_listsources 1]
+
+               set a [lindex $sources [expr $id - 1]]
+               set cpt 0
+               foreach c $a {
+                  if {[lindex $c 0]=="ASTROID"} {
+                     set b [lindex $c 2]
+                     set pos [expr [::gui_cata::get_pos_col flagphotom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $flag]
+                     set pos [expr [::gui_cata::get_pos_col cataphotom $idcata] - 10]
+                     set b [lreplace $b $pos $pos $cataselect]
+                     set c [lreplace $c 2 2 $b]
+                     set a [lreplace $a $cpt $cpt $c]
+                     set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
+                     set ::tools_cata::current_listsources [list $fields $sources]
+                     break
+                  }
+                  incr cpt
+               }
+               
+            }
+            
          }
          
       }
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return
    }
@@ -2893,7 +3007,7 @@ namespace eval gui_cata {
                set b [lreplace $b [::gui_cata::get_pos_col photom_catalog] [::gui_cata::get_pos_col photom_catalog] $cataselect]
                # Rempli les champs correspondants dans le cata ASTROID
                if {[string compare -nocase $cata "ASTROID"] == 0} {
-                  set b [lreplace $a [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagphotom $idcata] $flag]
+                  set b [lreplace $b [::gui_cata::get_pos_col flagphotom $idcata] [::gui_cata::get_pos_col flagphotom $idcata] $flag]
                   set b [lreplace $b [::gui_cata::get_pos_col cataphotom $idcata] [::gui_cata::get_pos_col cataphotom $idcata] $cataselect]
                }
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
@@ -2939,7 +3053,6 @@ namespace eval gui_cata {
                set sources [lindex $::tools_cata::current_listsources 1]
 
                set a [lindex $sources [expr $id - 1]]
-               set change "no"
                set cpt 0
                foreach c $a {
                   if {[lindex $c 0]=="ASTROID"} {
