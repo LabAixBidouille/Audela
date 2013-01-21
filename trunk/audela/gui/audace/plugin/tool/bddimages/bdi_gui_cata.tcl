@@ -862,6 +862,34 @@ namespace eval gui_cata {
 
    }
 
+   
+   
+   
+   
+   proc ::gui_cata::save_cata {  } {
+
+      global bddconf
+
+      set id_current_image 0
+      foreach current_image $::tools_cata::img_list {
+
+         # Tabkey
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         # Liste des sources
+         incr id_current_image
+         set listsources $::gui_cata::cata_list($id_current_image)
+         # Noms du fichier cata
+         set imgfilename [::bddimages_liste::lget $current_image filename]
+         set imgdirfilename [::bddimages_liste::lget $current_image dirfilename]
+         set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+         set cataxml "${f}_cata.xml"
+
+         ::tools_cata::save_cata $listsources $tabkey $cataxml
+
+      }
+
+   }
+
 
 
 
@@ -1104,7 +1132,7 @@ namespace eval gui_cata {
 
    proc ::gui_cata::watch_tabkey { } {
 
-      set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
 
       set cpt 0
       foreach v $tabkey {
@@ -1895,18 +1923,18 @@ namespace eval gui_cata {
 
 # Modification de la liste
 
-      set tabkey    [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
-      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
-      set xcent       [expr $naxis1/2.0]
-      set ycent       [expr $naxis2/2.0]
-      set scale_x     [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
-      set scale_y     [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
+      set tabkey  [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
+      set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
+      set xcent   [expr $naxis1/2.0]
+      set ycent   [expr $naxis2/2.0]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
 
-      set a      [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-      set ra     [lindex $a 0]
-      set dec    [lindex $a 1]
-      set radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+      set a       [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+      set ra      [lindex $a 0]
+      set dec     [lindex $a 1]
+      set radius  [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
 
       #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
       #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources USNOA2 { ra dec poserr mag magerr }]
@@ -3168,8 +3196,23 @@ namespace eval gui_cata {
       menu $popupTbl -title "Selection"
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Grab sources" \
+        $popupTbl add command -label "Grab les sources" \
            -command "::gui_cata::grab_sources $tbl"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Propager les sources" \
+           -command "::gui_cata::propagation $tbl"
+
+        # Separateur
+        $popupTbl add separator
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Editer la source" \
+           -command "::gui_cata::propagation $tbl"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Sauver la source" \
+           -command "::gui_cata::propagation $tbl"
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Suppimer la source" \
@@ -3204,6 +3247,16 @@ namespace eval gui_cata {
         $popupTbl add command -label "Set photometric mesure" \
            -command "::gui_cata::set_photom_mes $tbl"
 
+        # Separateur
+        $popupTbl add separator
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Cataloguer la source" \
+           -command "::gui_cata::propagation $tbl"
+
+ 
+           
+           
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <Control-Key-a> [ list ::gui_cata::selectall $tbl ]
@@ -3595,7 +3648,7 @@ namespace eval gui_cata {
             $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
          }
          foreach col {5 6 7 8 9} {
-             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary
+             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary -editable yes
          }
 
          foreach line $::gui_cata::tklist($idcata) {
@@ -3807,7 +3860,7 @@ namespace eval gui_cata {
              pack $navigation.next -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              #--- Cree un checkbutton
-             label $navigation.lab -text "Access direct a l image : "
+             label $navigation.lab -text "Access direct a l'image : "
              pack $navigation.lab -in $navigation -side left -padx 5 -pady 0
              entry $navigation.val -relief sunken \
                 -textvariable ::gui_cata::directaccess -width 6 \
@@ -3816,14 +3869,6 @@ namespace eval gui_cata {
              button $navigation.go -text "Go" -borderwidth 1 -takefocus 1 \
                    -command "::gui_cata::gestion_go" 
              pack $navigation.go -side left -anchor e -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
-
-        #--- Cree un frame pour afficher les boutons
-        set tools [frame $frm.tools -borderwidth 0 -cursor arrow -relief groove]
-        pack $tools -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             button $tools.propagation -text "Propagation" -borderwidth 2 -takefocus 1 \
-                   -command "::gui_cata::propagation" 
-             pack $tools.propagation -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
         #--- Cree un frame pour afficher bouton fermeture
@@ -3835,7 +3880,7 @@ namespace eval gui_cata {
              pack $boutonpied.annuler -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $boutonpied.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 \
-                -command ""
+                -command "::gui_cata::save_cata"
              pack $boutonpied.enregistrer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $boutonpied.aide -text "Aide" -borderwidth 2 -takefocus 1 \

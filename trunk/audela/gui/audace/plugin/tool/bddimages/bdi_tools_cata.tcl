@@ -519,33 +519,17 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       if {$::tools_cata::use_astroid} {
          set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta]
-#::console::affiche_erreur "LISTSOURCES = $listsources\n"
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
       }
 
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
-      # Creation de la VOTable en memoire
-      set votable [::votableUtil::list2votable $listsources $tabkey]
-      
       # Sauvegarde du cata XML
       gren_info "Enregistrement du cata XML: $cataxml\n"
-      set fxml [open $cataxml "w"]
-      puts $fxml $votable
-      close $fxml
-
-      if {$::tools_cata::create_cata} {
-         set err [ catch { insertion_solo $cataxml } msg ]
-         gren_info "** INSERTION_SOLO = $err $msg\n"
-
-         set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-         if {$cataexist==0} {
-            set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]
-         } else {
-            set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "cataexist" 1]
-         }
+      if {$::tools_cata::create_cata == 1} {
+         ::tools_cata::save_cata $listsources $tabkey $cataxml
       }
-
+      
       set ::tools_cata::current_listsources $listsources
 
       return true
@@ -560,6 +544,42 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
    }
 
+
+
+
+   #
+   # Sauvegarde du cata XML et insertion dans la bdd si demande (insertcata=1)
+   #   listsources liste des sources des cata
+   #   tabkey      liste des tabkey
+   #   cataxml     nom du fichier du cata xml
+   #   insertcata  1|0 pour inserer ou non le cata xml dans la bdd
+   #
+   proc ::tools_cata::save_cata { listsources tabkey cataxml } {
+
+      global bddconf
+
+      # Creation de la VOTable en memoire
+      set votable [::votableUtil::list2votable $listsources $tabkey]
+      
+      # Sauvegarde du cata XML
+      set fxml [open $cataxml "w"]
+      puts $fxml $votable
+      close $fxml
+
+      # Insertion du cata dans bdi
+      set err [ catch { insertion_solo $cataxml } msg ]
+      gren_info "** INSERTION_SOLO = $err $msg\n"
+      set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
+      if {$cataexist==0} {
+         set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]
+      } else {
+         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "cataexist" 1]
+      }
+
+   }
+   
+   
+   
 
 
 
@@ -581,12 +601,12 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
       
-      set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
-      set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
-      set datejd  [ mc_date2jd $dateobs ]
-      set datejd  [ expr $datejd + $exposure/86400.0/2.0 ]
-      set dateiso [ mc_date2iso8601 $datejd ]
-      set radius  [format "%0.0f" [expr 10.*60.0] ]
+      set dateobs  [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
+      set exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+      set datejd   [ mc_date2jd $dateobs ]
+      set datejd   [ expr $datejd + $exposure/86400.0/2.0 ]
+      set dateiso  [ mc_date2iso8601 $datejd ]
+      set radius   [format "%0.0f" [expr 10.*60.0] ]
       set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
 
       gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
