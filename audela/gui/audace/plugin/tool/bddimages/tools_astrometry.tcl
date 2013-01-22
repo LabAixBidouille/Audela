@@ -101,72 +101,101 @@ variable imagelimit
    }
 
 
-
-   proc ::tools_astrometry::init_priam {  } {
-
-     global bddconf
-
-      gren_info "\nMesure PSF et Creation des Fichiers Priam\n"
-      set ::tools_cata::id_current_image 0
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
  
-         if {$::tools_cata::id_current_image==0} {
-            set tag "new"
-         } else {
-            set tag "add"
+   proc ::tools_astrometry::modif_array { sent_array } {
+         upvar $sent_array a
+         
+         set a [list 4 3 2 ]
+         
+   }
+   proc ::tools_astrometry::modif_array2 { u } {
+      array set b $u 
+      set b(1,1) 1
+      return [array get b]
+   }
+
+   proc ::tools_astrometry::create_array { sent_array } {
+
+      upvar $sent_array a
+
+      set tt0 [clock clicks -milliseconds]
+      for {set i 0} {$i<2000} {incr i} {
+         for {set j 0} {$j<2000} {incr j} {
+            set a($i,$j) 0
          }
-
-         set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-         set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
-         set file        [file join $bddconf(dirbase) $dirfilename $filename]
-         buf$bddconf(bufno) load $file
-         #::confVisu::setFileName $::audace(visuNo) $file
-         #::audace::autovisu $::audace(visuNo)
-         set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
-
-         set ::tools_cata::current_listsources [::analyse_source::psf $::tools_cata::current_listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
-
-         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources ]\n"
-
-
-         set sources [lindex $::tools_cata::current_listsources 1]
-         foreach s $sources {
-            foreach cata $s {
-               if {[lindex $cata 0] == "SKYBOT"} {
-                  #gren_info "s1=[lindex $cata 2]\n"
-                        #gren_info "C=$cata\n"
-                  foreach u $s {
-                     if {[lindex $u 0] == "ASTROID"} {
-                        #gren_info "U=$u\n"
-                        gren_info "Found : ([lindex [lindex $cata 2] 0]) [lindex [lindex $cata 2] 1]\n"
-                        
-                     }
-                  }
-               }
-            }
-         }
-
-
-
-
-         # On reinsere dans img_list les resultats qui se trouvent dans list_source
-         if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
-            #gren_info "Listesource n existe pas\n"
-            set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $::tools_cata::current_listsources ]
-         } else {
-            #gren_info "Listesource existe\n"
-            set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "listsources" $::tools_cata::current_listsources ]
-         }
-
-         ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list $::tools_cata::current_image $::tools_astrometry::science $::tools_astrometry::reference 
-
-         set ::tools_cata::img_list [lreplace $::tools_cata::img_list $::tools_cata::id_current_image $::tools_cata::id_current_image $::tools_cata::current_image]
-
-         incr ::tools_cata::id_current_image
-
       }
+      set tt1 [clock clicks -milliseconds]
+      set tt [expr ($tt1 - $tt0)/1000.]
+      gren_info "Creation array duration $tt sec \n"
+         
 
    }
+
+   proc ::tools_astrometry::mytest { } {
+
+      gren_info "TEST\n"
+      set a [list 1 2 4]
+      
+      ::tools_astrometry::modif_array a
+         gren_info "$a\n"
+return
+
+      set tt0 [clock clicks -milliseconds]
+      for {set i 0} {$i<2000} {incr i} {
+         for {set j 0} {$j<2000} {incr j} {
+            set a($i,$j) 0
+         }
+      }
+      set tt1 [clock clicks -milliseconds]
+      set tt [expr ($tt1 - $tt0)/1000.]
+      gren_info "Creation array duration $tt sec \n"
+      gren_info "size(a)= [array size a]\n"
+
+      ::tools_astrometry::create_array ::tools_astrometry::myarray
+      gren_info "size(b)= [array size ::tools_astrometry::myarray]\n"
+
+      set tt0 [clock clicks -milliseconds]
+      ::tools_astrometry::modif_array a
+      gren_info "a(1,1) = $a(1,1) \n"
+      set tt1 [clock clicks -milliseconds]
+      set tt [expr ($tt1 - $tt0)/1000.]
+      gren_info "Modif array duration $tt sec \n"
+
+      set tt0 [clock clicks -milliseconds]
+      set ::tools_astrometry::myarray [::tools_astrometry::modif_array2 [array get ::tools_astrometry::myarray]]
+      gren_info "::tools_astrometry::myarray(1,1) = $::tools_astrometry::myarray(1,1) \n"
+      set tt1 [clock clicks -milliseconds]
+      set tt [expr ($tt1 - $tt0)/1000.]
+      gren_info "Modif array duration $tt sec \n"
+
+   }
+
+
+
+
+
+   proc ::tools_astrometry::init_priam { } {
+
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+
+      ::gui_cata::charge_memory 0
+
+      set ::tools_cata::id_current_image 1
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         if {$::tools_cata::id_current_image==1} {set tag "new"} else {set tag "add"}
+         gren_info "$::tools_cata::current_image\n"
+         ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list ::tools_cata::current_image ::gui_cata::cata_list($::tools_cata::id_current_image)
+         incr ::tools_cata::id_current_image
+      }
+      set ::tools_cata::id_current_image 1
+
+   }
+
+
+
+
+
+
 
 
 
@@ -178,7 +207,7 @@ variable imagelimit
 
    proc ::tools_astrometry::go_priam {  } {
 
-      ::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam]
+      ::tools_astrometry::extract_priam_result [::priam::launch_priam]
       
    }
 
@@ -188,49 +217,6 @@ variable imagelimit
 
 
 
-
-
-# Mesure les PSF
-# Cree les fichiers d entree de priam
-# Lance le programme Priam
-   proc ::tools_astrometry::launch_priam {  } {
-       
-      global bddconf
-      
-      #set err [catch {exec pwd} msg]
-      #gren_info "launch_priam:  PWD : <$msg>\n"
-      set err [catch {exec sh ./cmd.priam} msg]
-      
-      if {$err} {
-         gren_info "launch_priam ERREUR d\n"
-         gren_info "launch_priam:  NUM : <$err>\n" 
-      }   
-      #gren_info "launch_priam:  MSG : <$msg>\n"
-      
-      set tab [split $msg "\0"]
-      set pass "no"
-      foreach l $tab {
-         #gren_info "ligne=$l n"
-         set exs [string first "writing results in the file:" $l]
-         if {$exs>=0} {
-            set r [string last "writing results in the file:" $l ]
-            #gren_info "r=$r ***\n"
-            set file [string trim [string range $l [expr 29+$r] end] ]
-            #gren_info "file=$file\n"
-            set pass "yes"
-         }
-
-      }
-    
-      if {$pass=="yes"} {
-        #gren_info "PRIAMRESULT: =$file\n"
-        return -code 0 $file
-      } else {
-        return -code -1 $msg
-      }
-
-   }
-   
 
 
 
@@ -374,7 +360,7 @@ variable imagelimit
 
    # A FAIRE  : nettoyage des astrometrie de current_listsources
 
-      ::tools_astrometry::clean_astrom 
+   #   ::tools_astrometry::clean_astrom 
 
    # Insertion des resultats dans current_listsources
 
@@ -493,6 +479,13 @@ variable imagelimit
       
 
    }
+
+
+
+
+
+
+
    
 # ASTROID --   
 # "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
@@ -529,9 +522,6 @@ variable imagelimit
    
    
    
-   proc ::tools_astrometry::clean_astrom {  } {
-   
-   }
    
 
 

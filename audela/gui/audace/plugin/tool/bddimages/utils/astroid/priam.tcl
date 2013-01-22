@@ -11,6 +11,58 @@
 namespace eval ::priam {
 
 
+
+
+
+
+
+
+
+# Lance le programme Priam
+   proc ::priam::launch_priam {  } {
+       
+      global bddconf
+      
+      #set err [catch {exec pwd} msg]
+      #gren_info "launch_priam:  PWD : <$msg>\n"
+      set err [catch {exec sh ./cmd.priam} msg]
+      
+      if {$err} {
+         gren_info "launch_priam ERREUR d\n"
+         gren_info "launch_priam:  NUM : <$err>\n" 
+      }   
+      #gren_info "launch_priam:  MSG : <$msg>\n"
+      
+      set tab [split $msg "\0"]
+      set pass "no"
+      foreach l $tab {
+         #gren_info "ligne=$l n"
+         set exs [string first "writing results in the file:" $l]
+         if {$exs>=0} {
+            set r [string last "writing results in the file:" $l ]
+            #gren_info "r=$r ***\n"
+            set file [string trim [string range $l [expr 29+$r] end] ]
+            #gren_info "file=$file\n"
+            set pass "yes"
+         }
+
+      }
+    
+      if {$pass=="yes"} {
+        #gren_info "PRIAMRESULT: =$file\n"
+        return -code 0 $file
+      } else {
+        return -code -1 $msg
+      }
+
+   }
+   
+
+
+
+
+
+
 # ** Exemple du fichier science.mes
 
 # #? Centroid measures formatted for Priam
@@ -67,27 +119,18 @@ namespace eval ::priam {
 
 # Constante a modifier dans le futur bandwith 0.57000
 
-proc ::priam::create_file_oldformat { tag nb img science stars } {
+proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
+
+      upvar $sent_img img
+      upvar $sent_list_source listsources
+
 
    global bddconf audace
 
-   if {[::bddimages_liste::lexist $img "listsources" ]==0} {
-      return -code 1 "Pas de Listesources" 
-   } 
-
-   set listsources [::bddimages_liste::lget $img "listsources"]
-   #gren_info "listsources : $listsources\n"
 
    set imagefilename [::bddimages_liste::lget $img "filename"]
 
    set tabkey [::bddimages_liste::lget $img "tabkey"]
-   foreach l $tabkey {
-      set k [lindex $l 0]
-      set v [lindex $l 1]
-      #gren_info "p $k = $v\n"
-      #gren_info "$k = [lindex $v 1 ]\n"
-      
-   }
 
    # Constantes provisoires
    set bandwith 0.57000
@@ -266,7 +309,7 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
       set chan0 [open $filemes w] 
       puts $chan0 "#? Centroid measures formatted for Priam"
       puts $chan0 "#?   Source: Astroid - jan. 2012"
-      puts $chan0 "#? Object: $science"
+      puts $chan0 "#? Object: science"
       puts $chan0 "#"
       puts $chan0 "#> orientation: $axes"
       puts $chan0 "#"
@@ -285,67 +328,55 @@ proc ::priam::create_file_oldformat { tag nb img science stars } {
    if {$tag=="new"} { set chan1 [open $filelocal w] }
    if {$tag=="add"} { set chan1 [open $filelocal a+] }
 
-   set index 0
-   set indexsc 0
-   set newsources {}
-   set sources [lindex $listsources 1]
-   
-   #foreach s $sources {
-   #     gren_info "***** s=$s\n"
-   #}
    
    
-   foreach s $sources {
-      foreach cata $s {
-         #gren_info "CATA = [lindex $cata 0]\n"
-         if {[lindex $cata 0] == $stars} {
-            set name [::manage_source::naming $s ${stars}]
-            foreach u $s {
-               #gren_info "ASTROID ? = $u\n"
-               if {[lindex $u 0] == "ASTROID"} {
-                  set odata [lindex $u 2]
-                  incr index
-                  set xsm [lindex $odata 0]
-                  set ysm [lindex $odata 1]
-                  set xsmerr 0.01
-                  set ysmerr 0.01
-                  set fwhmx [lindex $odata 2]
-                  set fwhmy [lindex $odata 3]
-                  set fluxintegre [lindex $odata 5]
-                  puts $chan0 "R $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
+      foreach s [lindex $listsources 1] {
 
-                  set data [lindex $cata 2]
-                  set ra  [mc_angle2hms [lindex $data 0]] 
-                  set dec [mc_angle2dms [lindex $data 1] 90]
-                  set mag [lindex $data 3]
+         set x  [lsearch -index 0 $s "ASTROID"]
+         if {$x>=0} {
+            set b  [lindex [lindex $s $x] 2]           
+            set ar [lindex $b 23]
+            set ac [lindex $b 25]
+            
+            # cas d une reference ou d une science
+            if  {$ar=="R" || $ar=="S"} {
+               set name [::manage_source::naming $s $ac]
+               set xsm [lindex $b 0]
+               set ysm [lindex $b 1]
+               set xsmerr 0.01
+               set ysmerr 0.01
+               set fwhmx [lindex $b 2]
+               set fwhmy [lindex $b 3]
+               set fluxintegre [lindex $b 5]
+               puts $chan0 "$ar $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
+            }
+            
+            # cas particulier d une reference
+            if  {$ar=="R"} {
+               set x [lsearch -index 0 $s $ac]
+               if {$x>=0} {
+                  set b  [lindex [lindex $s $x] 1]           
+                  set ra  [mc_angle2hms [lindex $b 0]]
+                  set dec [mc_angle2dms [lindex $b 1] 90]
+                  set mag [lindex $b 3]
                   puts $chan1 "$name $ra $dec 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  $mag ?    0.00 0.0"
+               } else {
+                  ::console::affiche_erreur "ERREUR DE REFERENCE\n"
                }
             }
-         }
-         if {[lindex $cata 0] == $science} {
-            set name [::manage_source::naming $s ${science}]
-            foreach u $s {
-               if {[lindex $u 0] == "ASTROID"} {
-                  set odata [lindex $u 2]
-                  incr indexsc
-                  set xsm [lindex $odata 0]
-                  set ysm [lindex $odata 1]
-                  set xsmerr 0.01
-                  set ysmerr 0.01
-                  set fwhmx [lindex $odata 2]
-                  set fwhmy [lindex $odata 3]
-                  set fluxintegre [lindex $odata 5]
-                  puts $chan0 "S $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
-               }
-            }
+            
          }
          
       }
+
+      close $chan0
+      close $chan1
    }
 
-   close $chan0
-   close $chan1
-}
+
+
+
+
 
 
 }
