@@ -268,6 +268,22 @@ namespace eval ::manage_source {
       ::console::affiche_resultat "$listsources\n"
    }
    
+
+
+
+
+   proc ::manage_source::namable { mysource } {
+
+      set list_of_cata [list UCAC4 UCAC3 UCAC2 TYCHO2 2MASS USNOA2 SKYBOT]
+      foreach cata $list_of_cata {
+          foreach mycata $mysource {
+             if {[lindex $mycata 0] == $cata} {
+                return $cata
+             }
+          }
+      }
+      return ""
+   }
    #
    # manage_source::naming
    # Fournit une denomination selon le type de catalogue
@@ -301,10 +317,10 @@ namespace eval ::manage_source {
             }
 
             if {$mycata=="IMG"} {
-               set dec [lindex [lindex $cata 2] 1]
+               set dec [lindex [lindex $cata 2] 9]
                set dec [regsub {\-} $dec "m"]
                set dec [regsub {\+} $dec "p"]
-               return "IMG_[lindex [lindex $cata 2] 0]$dec"
+               return "IMG_[lindex [lindex $cata 2] 8]_$dec"
             }
 
 
