@@ -132,7 +132,6 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       source [ file join $dir instrumentgui.tcl ]
       source [ file join $dir session.tcl ]
       source [ file join $dir acquisition.tcl ]
-      source [ file join $dir makeseries.tcl ]
       source [ file join $dir wizard.tcl ]
       source [ file join $dir eshelfile.tcl]
       source [ file join $dir visu.tcl]
