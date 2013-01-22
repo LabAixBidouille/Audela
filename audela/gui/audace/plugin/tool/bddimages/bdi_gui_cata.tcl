@@ -2590,7 +2590,7 @@ namespace eval gui_cata {
 
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
-               gren_info "on est ici $t\n"
+               #gren_info "on est ici $t\n"
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text $flag
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                # Rempli les champs correspondants dans le cata ASTROID
@@ -2607,7 +2607,7 @@ namespace eval gui_cata {
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
-                  gren_info "$id -> $u sur $t\n"
+                  #gren_info "$id -> $u sur $t\n"
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                   # Rempli les champs correspondants dans le cata ASTROID
@@ -3158,10 +3158,224 @@ namespace eval gui_cata {
 
 
 
-   proc ::gui_cata::propagation {  } {
+   proc ::gui_cata::propagation { tbl } {
 
+      set onglets $::gui_cata::current_appli.onglets
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
+      if {[string compare -nocase $cataselect "ASTROID"] == 0} {
+         
+         set propalist ""
+         foreach select [$tbl curselection] {
+
+            set id   [lindex [$tbl get $select] [::gui_cata::get_pos_col bdi_idc_lock $idcata]]
+            set ar   [lindex [$tbl get $select] [::gui_cata::get_pos_col astrom_reference $idcata]]
+            set ac   [lindex [$tbl get $select] [::gui_cata::get_pos_col astrom_catalog $idcata]]
+            set pr   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_reference $idcata]]
+            set pc   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_catalog $idcata]]
+            set name [lindex [$tbl get $select] [::gui_cata::get_pos_col name $idcata]]
+            set cata ""
+            if {$ac != "-"} {
+               set cata $ac
+            } elseif {$pc != "-"} {
+               set cata $pc
+            }
+
+            set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+            set namable [::manage_source::namable $s]
+
+            #gren_info "namable = $namable\n"
+            if {$namable==""} {
+               set res [tk_messageBox -message "La source dont l'ID est $id ne peut pas etre propagee vers d'autres images car elle n est referencee dans aucun catalogue. Continuer quand meme ?" -type yesno]
+               #gren_info "res = $res\n"
+               if {$res=="no"} {
+                  return
+               } else {
+                  continue
+               }
+            }
+            
+            if {$cata!=""} {
+               set name [::manage_source::naming $s $cata]
+            } else {
+               #gren_info "\n*** s = $s \n\n"
+               set cata $namable
+               set name [::manage_source::naming $s $cata]
+            }
+            #gren_info "$id :: $ar $ac :: $pr $pc :: $name :: $cata\n"
+            lappend propalist [list $cata $name $ar $ac $pr $pc]
+         }
+         
+         if {[llength $propalist] > 0} {
+            #gren_info "propalist =$propalist\n"
+         } else {
+            gren_info "Rien a faire ...\n"
+            return
+         }
+
+         # on sauve les variables courantes
+         set tklist_list_of_columns_sav [array get ::gui_cata::tklist_list_of_columns]
+         
+         # on boucle sur les images (sauf celle qui est courrante car rien a propager)
+         for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
+
+            if {$i == $::tools_cata::id_current_image} { continue }
+               
+            gren_info "Image =$i / $::tools_cata::nb_img_list\n"
+
+            array set tklist                             $::gui_cata::tk_list($i,tklist)
+            array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($i,list_of_columns)
+            array set cataname                           $::gui_cata::tk_list($i,cataname)
+            set current_listsources                      $::gui_cata::cata_list($i)
+            set sources [lindex $current_listsources 1]
+
+            #array set ::gui_cata::tklist                 $::gui_cata::tk_list($::tools_cata::id_current_image,tklist)
+            #array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns)
+            #array set ::gui_cata::cataname               $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+            #set ::tools_cata::current_listsources        $::gui_cata::cata_list($::tools_cata::id_current_image)
+            
+#             gren_info "::gui_cata::cataname =[array get ::::gui_cata::cataname]\n"
+            foreach {x y} [array get cataname] {
+               #gren_info "getid=$x $y\n"
+               set getid($y) $x
+            }
+
+            set nbcol [array size ::gui_cata::tklist_list_of_columns]
+#            gren_info "nbcol =$nbcol\n"
+
+            # Ob boucle sur les sources a propager
+            foreach c $propalist {
+            
+               set cata [lindex $c 0]
+               set name [lindex $c 1]
+               set ar   [lindex $c 2]
+               set ac   [lindex $c 3]
+               set pr   [lindex $c 4]
+               set pc   [lindex $c 5]
+
+               set idcata $getid($cata)
+               
+#               gren_info "$cata ($idcata) :: $name :: $ar $ac :: $pr $pc\n"
+
+               # on boucle sur les sources du cata
+               set cpt 1
+               set pass "no"
+               foreach s $sources {
+               
+                  foreach c $s {
+                     if {[lindex $c 0]==$cata} {
+                        set namesou [::manage_source::naming $s $cata]
+                        if {$namesou==$name} {
+                           set pass "ok"
+                           break
+                        }
+                     }
+                  }
+                  
+                  if {$pass=="ok"} {break}
+                  incr cpt
+               }
+
+               if {$pass=="ok"} {
+
+                  #gren_info "source retrouvee $cpt $name\n"
+
+                  # Modif TKLIST
+                  foreach {idcata cata} [array get cataname] {
+
+                     set pos [lsearch -index 0 $tklist($idcata) $cpt]
+                     if {$pos != -1} {
+                        set b [lindex $tklist($idcata) $pos]
+                        #gren_info "*** $idcata $cata\n"
+                        #gren_info "b = $b\n"
+                        set col [::gui_cata::get_pos_col astrom_reference $idcata]
+                        #gren_info "     ar = $ar , $col, [lindex $b $col]\n"
+                        set b [lreplace $b $col $col $ar]
+                        set col [::gui_cata::get_pos_col astrom_catalog $idcata]
+                        #gren_info "     ac = $ac , $col, [lindex $b $col]\n"
+                        set b [lreplace $b $col $col $ac]
+                        set col [::gui_cata::get_pos_col photom_reference $idcata]
+                        #gren_info "     pr = $pr , $col, [lindex $b $col]\n"
+                        set b [lreplace $b $col $col $pr]
+                        set col [::gui_cata::get_pos_col photom_catalog $idcata]
+                        #gren_info "     pc = $pc , $col, [lindex $b $col]\n"
+                        set b [lreplace $b $col $col $pc]
+                        if {[string compare -nocase $cata "ASTROID"] == 0} {
+
+                           #gren_info "tklist_list_of_columns =  $::gui_cata::tklist_list_of_columns($idcata)\n"
+
+                           set col [::gui_cata::get_pos_col flagastrom $idcata]
+                           #gren_info "     aar = $ar , $col, [lindex $b $col]\n"
+                           set b [lreplace $b $col $col $ar]
+
+                           set col [::gui_cata::get_pos_col cataastrom $idcata]
+                           #gren_info "     aac = $ac , $col, [lindex $b $col]\n"
+                           set b [lreplace $b $col $col $ac]
+
+                           set col [::gui_cata::get_pos_col flagphotom $idcata]
+                           #gren_info "     apr = $pr , $col, [lindex $b $col]\n"
+                           set b [lreplace $b $col $col $pr]
+
+                           set col [::gui_cata::get_pos_col cataphotom $idcata]
+                           #gren_info "     apc = $pc , $col, [lindex $b $col]\n"
+                           set b [lreplace $b $col $col $pc]
+                        }
+                        set tklist($idcata) [lreplace $tklist($idcata) $pos $pos $b]
+                        #gren_info "a modif = [lindex $tklist($idcata) $pos]\n"
+
+
+
+                     }
+                     
+                  }
+                  
+                  # Modif CATALIST
+                  set s [lindex $sources [expr $cpt -1]]
+                  #gren_info "S = $s\n"
+                  set x  [lsearch -index 0 $s "ASTROID"]
+                  if {$x>=0} {
+                     set a [lindex $s $x]
+                     set b [lindex $a 2]
+                     set b [lreplace $b 23 23 $ar]
+                     set b [lreplace $b 25 25 $ac]
+                     set b [lreplace $b 24 24 $pr]
+                     set b [lreplace $b 26 26 $pc]
+                     set a [lreplace $a 2 2 $b]
+                     #gren_info "a modif = $a\n"
+                     set s [lreplace $s $x $x $a]
+                     #gren_info "S modif = $s\n"
+                     set sources [lreplace $sources [expr $cpt -1] [expr $cpt -1] $s]
+                  }
+               }
+               
+            }
+
+            # Modification du tk_list
+            set ::gui_cata::tk_list($i,tklist) [array get tklist]
+
+            # Modification du cata_list
+            set ::gui_cata::cata_list($i) [list [lindex $current_listsources 0] $sources]
+             
+            # break
+
+         }
+         
+         
+         # on recupere les variables courantes
+         array set ::gui_cata::tklist_list_of_columns $tklist_list_of_columns_sav
+         
+                   
+
+
+      } else {
+         tk_messageBox -message "Le catalogue selectionné doit etre ASTROID" -type ok
+      }
 
    }
+ 
+ 
+ 
+ 
  
  
  
@@ -3208,11 +3422,11 @@ namespace eval gui_cata {
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Editer la source" \
-           -command "::gui_cata::propagation $tbl"
+           -command ""
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Sauver la source" \
-           -command "::gui_cata::propagation $tbl"
+           -command ""
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Suppimer la source" \
@@ -3252,7 +3466,7 @@ namespace eval gui_cata {
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Cataloguer la source" \
-           -command "::gui_cata::propagation $tbl"
+           -command ""
 
  
            
@@ -3457,19 +3671,147 @@ namespace eval gui_cata {
 
       set commonfields ""
       set idcata 0
+      set list_id ""
       foreach f $fields {
          incr idcata
          set c [lindex $f 0]
          set ::gui_cata::cataname($idcata) $c
          set ::gui_cata::cataid($c) $idcata
+         if {$c=="ASTROID"} {
+            set idcata_astroid $idcata
+            set list_id [linsert $list_id 0 $idcata]
+         } else {
+            set list_id [linsert $list_id end $idcata]
+         }
          if {$c=="IMG"} {
             foreach cc [lindex $f 1] {
                lappend commonfields $cc
             }
          }
       }
+      
+      foreach idcata $list_id {
 
-      for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
+         set ::gui_cata::tklist($idcata) ""
+         set ::gui_cata::tklist_list_of_columns($idcata) [list  \
+                                    [list "bdi_idc_lock"      "Id"] \
+                                    [list "astrom_reference"  "AR"] \
+                                    [list "astrom_catalog"    "AC"] \
+                                    [list "photom_reference"  "PR"] \
+                                    [list "photom_catalog"    "PC"] \
+                                    ]
+         foreach cc $commonfields {
+            lappend ::gui_cata::tklist_list_of_columns($idcata) [list $cc $cc]
+         }
+         set otherfields ""
+         foreach f $fields {
+            if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
+               foreach cc [lindex $f 2] {
+                  lappend ::gui_cata::tklist_list_of_columns($idcata) [list $cc $cc]
+                  lappend otherfields $cc
+                }
+            }
+         }
+      }
+         
+      #gren_info "m list_of_columns = $list_of_columns \n"
+      #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
+  
+      set cpts 0
+
+      foreach s $sources {
+
+         incr cpts
+
+         set ar "-"
+         set ac "-"
+         set pr "-"
+         set pc "-"
+
+         set x  [lsearch -index 0 $s "ASTROID"]
+         if {$x>=0} {
+            set b  [lindex [lindex $s $x] 2]           
+            set ar [lindex $b 23]
+            set ac [lindex $b 25]
+            set pr [lindex $b 24]
+            set pc [lindex $b 26]   
+            #gren_info "AR = $ar $ac $pr $pc\n"
+         }
+
+         foreach cata $s {
+            set idcata $::gui_cata::cataid([lindex $cata 0])
+            set line ""
+            # ID
+            lappend line $cpts
+            # valeur des Flag ASTROID
+            lappend line $ar
+            lappend line $ac
+            lappend line $pr
+            lappend line $pc
+            # valeur des common
+            foreach field [lindex $cata 1] {
+               lappend line $field
+            }
+            # valeur des other field
+            foreach field [lindex $cata 2] {
+               lappend line $field
+            }
+            lappend ::gui_cata::tklist($idcata) $line
+         }
+
+
+      }
+
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+   proc ::gui_cata::current_listsources_to_tklist2 { } {
+
+      set listsources $::tools_cata::current_listsources
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+
+      set nbcata  [llength $fields]
+
+      catch {
+         unset ::gui_cata::cataname
+         unset ::gui_cata::cataid
+      }
+
+      set commonfields ""
+      set idcata 0
+      set list_id ""
+      foreach f $fields {
+         incr idcata
+         set c [lindex $f 0]
+         set ::gui_cata::cataname($idcata) $c
+         set ::gui_cata::cataid($c) $idcata
+         if {$c=="ASTROID"} {
+            set idcata_astroid $idcata
+            set list_id [linsert $list_id 0 $idcata]
+         } else {
+            set list_id [linsert $list_id end $idcata]
+         }
+         if {$c=="IMG"} {
+            foreach cc [lindex $f 1] {
+               lappend commonfields $cc
+            }
+         }
+      }
+      
+      set passastroid 0
+
+      foreach idcata $list_id {
 
          set list_of_columns [list  [list "bdi_idc_lock"      "Id"] \
                                     [list "astrom_reference"  "AR"] \
@@ -3497,10 +3839,12 @@ namespace eval gui_cata {
   
          set table ""
          set cpts 0
+
          foreach s $sources {
             incr cpts
             set line ""
             set a 0
+            
             foreach cata $s {
                #gren_info "$::gui_cata::cataname($idcata) == [lindex $cata 0]\n"
                if { [lindex $cata 0]==$::gui_cata::cataname($idcata) } {
@@ -3510,6 +3854,8 @@ namespace eval gui_cata {
                      set line [::bddimages_liste::ladd $line "bdi_idc_lock" $cpts ]
                   }
                   
+                  # valeur des Flag ASTROID
+
                   # valeur des common
                   set i 0
                   foreach field $commonfields {
@@ -3526,6 +3872,8 @@ namespace eval gui_cata {
                   
                }
             }
+            
+            
             lappend table $line
          }
 
@@ -3548,7 +3896,7 @@ namespace eval gui_cata {
                set current_columns [lindex [lindex $list_of_columns $i] 0]
                set val [::bddimages_liste::lget $line $current_columns]
                if {$val=="" || [lindex $val 0]=="" } {
-                 #gren_info "meuh\n"
+                 #gren_info "meuh $current_columns\n"
                  set val "-"
                }
                lappend lign_affich $val
@@ -3569,24 +3917,19 @@ namespace eval gui_cata {
 
 
 
-
-
-
-
-
-
-
    proc ::gui_cata::affich_current_tklist { } {
 
 
       set onglets $::gui_cata::current_appli.onglets
    
+      # TODO afficher l image ici
+   
       set listsources $::tools_cata::current_listsources
       set fields [lindex $listsources 0]
    
       set nbcatadel [expr [llength [array get ::gui_cata::cataname]]/2]
-      gren_info "cataname = [array get ::gui_cata::cataname] \n"
-      gren_info "nbcatadel = $nbcatadel \n"
+      #gren_info "cataname = [array get ::gui_cata::cataname] \n"
+      #gren_info "nbcatadel = $nbcatadel \n"
    
       foreach t [$onglets.nb tabs] {
          destroy $t
@@ -3607,7 +3950,7 @@ namespace eval gui_cata {
          }
       }
       set nbcata $idcata
-      gren_info "nbcata : $nbcata\n"
+      #gren_info "nbcata : $nbcata\n"
    
       if {$select >0} {$onglets.nb select $fc($select)}
       ttk::notebook::enableTraversal $onglets.nb
@@ -3687,15 +4030,14 @@ namespace eval gui_cata {
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
-      ::gui_cata::set_progress 33 100      
-      #::gui_cata::current_listsources_to_tklist
+      ::gui_cata::set_progress 33 100
       array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns)
       array set ::gui_cata::tklist                 $::gui_cata::tk_list($::tools_cata::id_current_image,tklist)
       array set ::gui_cata::cataname               $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
 
-      ::gui_cata::set_progress 66 100      
+      ::gui_cata::set_progress 66 100
       ::gui_cata::affich_current_tklist
-      ::gui_cata::set_progress 100 100      
+      ::gui_cata::set_progress 100 100
       gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
    }
