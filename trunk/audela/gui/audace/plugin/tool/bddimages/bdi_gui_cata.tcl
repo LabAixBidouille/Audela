@@ -3564,8 +3564,6 @@ namespace eval gui_cata {
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set file        [file join $bddconf(dirbase) $dirfilename $::tools_cata::current_image_name]
       
-      after 10
-
       ::gui_cata::load_cata
 
       #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
@@ -3592,38 +3590,43 @@ namespace eval gui_cata {
 
 
 
-   proc ::gui_cata::charge_memory {  } {
+   proc ::gui_cata::charge_memory { { gui 1 } } {
 
-      set state [$::gui_cata::current_appli.actions.charge cget -text]
+      if {$gui} {
+      
+         set state [$::gui_cata::current_appli.actions.charge cget -text]
 
-      if  {$state == "Annuler"} {
-          set ::gui_cata::annul 1
-          return
+         if  {$state == "Annuler"} {
+             set ::gui_cata::annul 1
+             return
+         }
+
+         set ::gui_cata::annul 0
+         $::gui_cata::current_appli.actions.charge configure -text "Annuler"
       }
-
-      set ::gui_cata::annul 0
-      $::gui_cata::current_appli.actions.charge configure -text "Annuler"
       
 
       for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image<=$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
          
-         if {$::gui_cata::annul == 1} {
-            gren_info "Chargement annulé...\n"
-            break
-         }
-         
+         if {$gui} {
+            if {$::gui_cata::annul == 1} {
+               gren_info "Chargement annulé...\n"
+               break
+            }
          ::gui_cata::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
+         }
 
          ::gui_cata::charge_current_cata
 
       }
-      ::gui_cata::set_progress 0 $::tools_cata::nb_img_list
-      set ::tools_cata::id_current_image 1
-      
-      $::gui_cata::current_appli.actions.charge configure -text "Charge"
 
-      set ::gui_cata::directaccess 1
-      ::gui_cata::gestion_go
+      if {$gui} { ::gui_cata::set_progress 0 $::tools_cata::nb_img_list 
+
+         $::gui_cata::current_appli.actions.charge configure -text "Charge"
+
+         set ::gui_cata::directaccess 1
+         ::gui_cata::gestion_go
+      }
 
    }
 
@@ -3773,145 +3776,6 @@ namespace eval gui_cata {
 
 
 
-
-
-   proc ::gui_cata::current_listsources_to_tklist2 { } {
-
-      set listsources $::tools_cata::current_listsources
-      set fields  [lindex $listsources 0]
-      set sources [lindex $listsources 1]
-
-      set nbcata  [llength $fields]
-
-      catch {
-         unset ::gui_cata::cataname
-         unset ::gui_cata::cataid
-      }
-
-      set commonfields ""
-      set idcata 0
-      set list_id ""
-      foreach f $fields {
-         incr idcata
-         set c [lindex $f 0]
-         set ::gui_cata::cataname($idcata) $c
-         set ::gui_cata::cataid($c) $idcata
-         if {$c=="ASTROID"} {
-            set idcata_astroid $idcata
-            set list_id [linsert $list_id 0 $idcata]
-         } else {
-            set list_id [linsert $list_id end $idcata]
-         }
-         if {$c=="IMG"} {
-            foreach cc [lindex $f 1] {
-               lappend commonfields $cc
-            }
-         }
-      }
-      
-      set passastroid 0
-
-      foreach idcata $list_id {
-
-         set list_of_columns [list  [list "bdi_idc_lock"      "Id"] \
-                                    [list "astrom_reference"  "AR"] \
-                                    [list "astrom_catalog"    "AC"] \
-                                    [list "photom_reference"  "PR"] \
-                                    [list "photom_catalog"    "PC"] \
-                                    ]
-         #gren_info "list_of_columns = $list_of_columns \n"
-
-         foreach cc $commonfields {
-            lappend list_of_columns [list $cc $cc]
-         }
-         set otherfields ""
-         foreach f $fields {
-            if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
-               foreach cc [lindex $f 2] {
-                  lappend list_of_columns [list $cc $cc]
-                  lappend otherfields $cc
-                }
-            }
-         }
-         
-         #gren_info "m list_of_columns = $list_of_columns \n"
-         #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
-  
-         set table ""
-         set cpts 0
-
-         foreach s $sources {
-            incr cpts
-            set line ""
-            set a 0
-            
-            foreach cata $s {
-               #gren_info "$::gui_cata::cataname($idcata) == [lindex $cata 0]\n"
-               if { [lindex $cata 0]==$::gui_cata::cataname($idcata) } {
-               
-                  if {$a==0} {
-                     set a 1
-                     set line [::bddimages_liste::ladd $line "bdi_idc_lock" $cpts ]
-                  }
-                  
-                  # valeur des Flag ASTROID
-
-                  # valeur des common
-                  set i 0
-                  foreach field $commonfields {
-                     set line [::bddimages_liste::ladd $line $field [lindex [lindex $cata 1] $i] ]
-                     incr i
-                  }
-                  # valeur des other field
-                  
-                  set i 0
-                  foreach field $otherfields {
-                     set line [::bddimages_liste::ladd $line $field [lindex [lindex $cata 2] $i] ]
-                     incr i
-                  }
-                  
-               }
-            }
-            
-            
-            lappend table $line
-         }
-
-         # -- nb de ligne de la table
-         set nbobj [llength $table]
-         # -- nb colonne de la table
-         set nbcol [llength $list_of_columns]
-         #-- lignes a afficher
-         set affich_table ""
-
-         foreach line $table {
-
-            #gren_info "line : $line\n"
-
-            if {$line==""} {continue}
-
-            set lign_affich ""
-
-            for { set i 0 } { $i < $nbcol} { incr i } {
-               set current_columns [lindex [lindex $list_of_columns $i] 0]
-               set val [::bddimages_liste::lget $line $current_columns]
-               if {$val=="" || [lindex $val 0]=="" } {
-                 #gren_info "meuh $current_columns\n"
-                 set val "-"
-               }
-               lappend lign_affich $val
-               #gren_info "mycol : ($i) ($val) $lign_affich\n"
-            }
-
-            lappend affich_table $lign_affich
-
-         }
-         #gren_info "f $idcata list_of_columns = $list_of_columns \n"
-         set ::gui_cata::tklist_list_of_columns($idcata) $list_of_columns
-         set ::gui_cata::tklist($idcata) $affich_table
-      }
-      
-   }
 
 
 
@@ -4097,7 +3961,7 @@ namespace eval gui_cata {
       ::gui_cata::charge_gestion_cata $img_list 
 
       #--- Creation de la fenetre
-      set ::gui_cata::feng .new
+      set ::gui_cata::feng .gestion_cata
       if { [winfo exists $::gui_cata::feng] } {
          wm withdraw $::gui_cata::feng
          wm deiconify $::gui_cata::feng
@@ -4112,7 +3976,7 @@ namespace eval gui_cata {
       wm title $::gui_cata::feng "Gestion du CATA"
       wm protocol $::gui_cata::feng WM_DELETE_WINDOW "destroy $::gui_cata::feng"
 
-      set frm $::gui_cata::feng.frm_gestion_cata
+      set frm $::gui_cata::feng.appli
       set ::gui_cata::current_appli $frm
 
       #--- Cree un frame general

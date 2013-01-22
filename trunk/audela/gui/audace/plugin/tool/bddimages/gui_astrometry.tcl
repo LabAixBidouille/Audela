@@ -154,7 +154,7 @@ namespace eval gui_astrometry {
       ::gui_astrometry::inittoconf
 
 
-      set ::gui_astrometry::fen .new
+      set ::gui_astrometry::fen .astrometry
       if { [winfo exists $::gui_astrometry::fen] } {
          wm withdraw $::gui_astrometry::fen
          wm deiconify $::gui_astrometry::fen
@@ -166,34 +166,16 @@ namespace eval gui_astrometry {
       set posy_config [ lindex [ split [ wm geometry $::gui_astrometry::fen ] "+" ] 2 ]
       wm geometry $::gui_astrometry::fen +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $::gui_astrometry::fen 1 1
-      wm title $::gui_astrometry::fen "Creation du CATA"
+      wm title $::gui_astrometry::fen "Astrometrie"
       wm protocol $::gui_astrometry::fen WM_DELETE_WINDOW "destroy $::gui_astrometry::fen"
 
-      set frm $::gui_astrometry::fen.frm_creation_cata
+      set frm $::gui_astrometry::fen.appli
       set ::gui_astrometry::current_appli $frm
 
 
       #--- Cree un frame general
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_astrometry::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-         #--- Cree un frame science
-         set science [frame $frm.science -borderwidth 0 -cursor arrow -relief groove]
-         pack $science -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              label  $science.lab -text "Science" -borderwidth 1
-              pack   $science.lab -in $science -side left -padx 3 -pady 3 -anchor c
-              entry  $science.val -relief sunken -textvariable ::tools_astrometry::science -width 10
-              pack   $science.val -in $science -side left -padx 3 -pady 3 -anchor w
-
-         #--- Cree un frame science
-         set reference [frame $frm.reference -borderwidth 0 -cursor arrow -relief groove]
-         pack $reference -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
- 
-              label  $reference.lab -text "Reference" -borderwidth 1
-              pack   $reference.lab -in $reference -side left -padx 3 -pady 3 -anchor c
-              entry  $reference.val -relief sunken -textvariable ::tools_astrometry::reference -width 10
-              pack   $reference.val -in $reference -side left -padx 3 -pady 3 -anchor w
 
          #--- Cree un frame ifort
          set ifortlib [frame $frm.ifortlib -borderwidth 0 -cursor arrow -relief groove]
@@ -203,24 +185,6 @@ namespace eval gui_astrometry {
               pack   $ifortlib.lab -in $ifortlib -side left -padx 3 -pady 3 -anchor c
               entry  $ifortlib.val -relief sunken -textvariable ::tools_astrometry::ifortlib -width 30
               pack   $ifortlib.val -in $ifortlib -side left -padx 3 -pady 3 -anchor w
-
-         #--- Cree un frame ifort
-         set delta [frame $frm.delta -borderwidth 0 -cursor arrow -relief groove]
-         pack $delta -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
- 
-              label  $delta.lab -text "Rayon de la fenetre pour la psf :" -borderwidth 1
-              pack   $delta.lab -in $delta -side left -padx 3 -pady 3 -anchor c
-              entry  $delta.val -relief sunken -textvariable ::tools_astrometry::delta -width 5
-              pack   $delta.val -in $delta -side left -padx 3 -pady 3 -anchor w
-
-         #--- Cree un frame ifort
-         set treshold [frame $frm.treshold -borderwidth 0 -cursor arrow -relief groove]
-         pack $treshold -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
- 
-              label  $treshold.lab -text "threshold rdiff :" -borderwidth 1
-              pack   $treshold.lab -in $treshold -side left -padx 3 -pady 3 -anchor c
-              entry  $treshold.val -relief sunken -textvariable ::tools_astrometry::treshold -width 5
-              pack   $treshold.val -in $treshold -side left -padx 3 -pady 3 -anchor w
 
          #--- Cree un frame pour afficher bouton fermeture
          set enregistrer [frame $frm.enregistrer  -borderwidth 0 -cursor arrow -relief groove]
