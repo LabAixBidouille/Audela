@@ -1392,9 +1392,6 @@ proc startdebug { } {
 #------------------------------------------------------------
 #  stackTrace
 #     affiche la pile d'appel des procedures
-#
-#     RamDebugger doit etre installe dans le repertoire
-#     audace/lib/RamDebugger
 #------------------------------------------------------------
 proc stackTrace { {procedureFullName "" } } {
 
