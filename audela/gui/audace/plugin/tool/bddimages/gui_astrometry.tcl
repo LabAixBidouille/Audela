@@ -73,6 +73,40 @@ namespace eval gui_astrometry {
    }
 
 
+   proc ::gui_astrometry::results_priam {  } {
+
+      ::tools_astrometry::results_priam
+
+
+      $::gui_astrometry::sret delete 0 end
+      $::gui_astrometry::sset delete 0 end
+      $::gui_astrometry::dspt delete 0 end
+      $::gui_astrometry::dwpt delete 0 end
+
+      for {set i 1} {$i<=$::tools_astrometry::nb_dates} {incr i} {
+
+         set  table_dates $::tools_astrometry::dates($i,dateiso)
+         lappend table_dates "toto"
+
+         $::gui_astrometry::sret insert end $table_dates
+         $::gui_astrometry::sset insert end $table_dates
+         $::gui_astrometry::dspt insert end $table_dates
+         $::gui_astrometry::dwpt insert end $table_dates
+
+      }
+
+
+
+   #gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+   #gren_info "ASTROIDS=[::manage_source::extract_sources_by_catalog $::tools_cata::current_listsources ASTROID]\n"
+   #gren_info "LISTSOURCES=$::tools_cata::current_listsources\n"
+
+   # Ecriture des resultats dans un fichier 
+      
+
+
+   }
+
 
 
 
@@ -152,6 +186,8 @@ namespace eval gui_astrometry {
 
       ::gui_astrometry::charge_list $img_list
       ::gui_astrometry::inittoconf
+      
+      set loc_dates [list 0 "Mid-Date" 0 "TOTO"]
 
 
       set ::gui_astrometry::fen .astrometry
@@ -186,85 +222,290 @@ namespace eval gui_astrometry {
               entry  $ifortlib.val -relief sunken -textvariable ::tools_astrometry::ifortlib -width 30
               pack   $ifortlib.val -in $ifortlib -side left -padx 3 -pady 3 -anchor w
 
-         #--- Cree un frame pour afficher bouton fermeture
-         set enregistrer [frame $frm.enregistrer  -borderwidth 0 -cursor arrow -relief groove]
-         pack $enregistrer  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              label  $enregistrer.lab -text "Enregistrer : " -borderwidth 1
-              pack   $enregistrer.lab -in $enregistrer -side left -padx 3 -pady 3 -anchor c
-
-              button $enregistrer.txt -text "TXT" -borderwidth 2 -takefocus 1 \
-                      -command "::tools_astrometry::save TXT"
-              pack   $enregistrer.txt -side left -anchor e -expand 0
-
-              button $enregistrer.mpc -text "MPC" -borderwidth 2 -takefocus 1 \
-                      -command "::tools_astrometry::save MPC"
-              pack   $enregistrer.mpc -side left -anchor e -expand 0
-
-              button $enregistrer.cata -text "CATA" -borderwidth 2 -takefocus 1 \
-                      -command "::tools_astrometry::save CATA"
-              pack   $enregistrer.cata -side left -anchor e -expand 0
 
          #--- Cree un frame pour afficher bouton fermeture
-         set voir [frame $frm.voir  -borderwidth 0 -cursor arrow -relief groove]
-         pack $voir  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         set actions [frame $frm.actions  -borderwidth 0 -cursor arrow -relief groove]
+         pack $actions  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              label  $voir.lab -text "Voir : " -borderwidth 1
-              pack   $voir.lab -in $voir -side left -padx 3 -pady 3 -anchor c
+              set ::gui_astrometry::gui_init_priam [button $actions.init_priam -text "Init" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::init_priam"]
+              pack $actions.init_priam -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-              button $voir.clean -text "Clean" -borderwidth 2 -takefocus 1 \
+              set ::gui_astrometry::gui_go_priam [button $actions.go_priam -text "Priam" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::go_priam"]
+              pack $actions.go_priam -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+              set ::gui_astrometry::gui_go_priam [button $actions.results_priam -text "Resultats" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::results_priam"]
+              pack $actions.results_priam -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+              label  $actions.labv -text "Voir : " -borderwidth 1
+              pack   $actions.labv -in $actions -side left -padx 3 -pady 3 -anchor c
+
+              button $actions.clean -text "Clean" -borderwidth 2 -takefocus 1 \
                       -command "cleanmark"
-              pack   $voir.clean -side left -anchor e -expand 0
+              pack   $actions.clean -side left -anchor e -expand 0
 
-              button $voir.residus -text "Residus" -borderwidth 2 -takefocus 1 \
+              button $actions.residus -text "Residus" -borderwidth 2 -takefocus 1 \
                       -command "::gui_astrometry::see_residus"
-              pack   $voir.residus -side left -anchor e -expand 0
+              pack   $actions.residus -side left -anchor e -expand 0
 
-              label  $voir.lab2 -text "facteur : " -borderwidth 1
-              pack   $voir.lab2 -in $voir -side left -padx 3 -pady 3 -anchor c
+              label  $actions.labf -text "facteur : " -borderwidth 1
+              pack   $actions.labf -in $actions -side left -padx 3 -pady 3 -anchor c
 
-              entry  $voir.factor -relief sunken -textvariable ::gui_astrometry::factor -width 5
-              pack   $voir.factor -in $voir -side left -padx 3 -pady 3 -anchor w
+              entry  $actions.factor -relief sunken -textvariable ::gui_astrometry::factor -width 5
+              pack   $actions.factor -in $actions -side left -padx 3 -pady 3 -anchor w
+
+              label  $actions.labe -text "Enregistrer : " -borderwidth 1
+              pack   $actions.labe -in $actions -side left -padx 3 -pady 3 -anchor c
+
+              button $actions.txt -text "TXT" -borderwidth 2 -takefocus 1 \
+                      -command "::tools_astrometry::save TXT"
+              pack   $actions.txt -side left -anchor e -expand 0
+
+              button $actions.mpc -text "MPC" -borderwidth 2 -takefocus 1 \
+                      -command "::tools_astrometry::save MPC"
+              pack   $actions.mpc -side left -anchor e -expand 0
+
+              button $actions.cata -text "CATA" -borderwidth 2 -takefocus 1 \
+                      -command "::tools_astrometry::save CATA"
+              pack   $actions.cata -side left -anchor e -expand 0
+
+
+
+
+
+              set ::gui_astrometry::gui_fermer [button $actions.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::fermer"]
+              pack $actions.fermer -side right -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
+         #--- Cree un frame pour afficher bouton fermeture
+         set tables [frame $frm.tables  -borderwidth 0 -cursor arrow -relief groove]
+         pack $tables  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+         set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
+         pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
+ 
+            
+            pack [ttk::notebook $onglets.list] -expand yes -fill both 
+ 
+            set sources [frame $onglets.list.sources]
+            pack $sources -in $onglets.list
+            $onglets.list add $sources -text "Sources"
+            
+            set dates [frame $onglets.list.dates]
+            pack $dates -in $onglets.list
+            $onglets.list add $dates -text "Dates"
+
+            set graphes [frame $onglets.list.graphes]
+            pack $graphes -in $onglets.list
+            $onglets.list add $graphes -text "Graphes"
+
+            set onglets_sources [frame $sources.onglets -borderwidth 1 -cursor arrow -relief groove]
+            pack $onglets_sources -in $sources -side top -expand yes -fill both -padx 10 -pady 5
+ 
+                 pack [ttk::notebook $onglets_sources.list] -expand yes -fill both 
+ 
+                 set references [frame $onglets_sources.list.references -borderwidth 1]
+                 pack $references -in $onglets_sources.list -expand yes -fill both 
+                 $onglets_sources.list add $references -text "References"
+
+                 set sciences [frame $onglets_sources.list.sciences -borderwidth 1]
+                 pack $sciences -in $onglets_sources.list -expand yes -fill both 
+                 $onglets_sources.list add $sciences -text "Sciences"
+
+            set onglets_dates [frame $dates.onglets -borderwidth 1 -cursor arrow -relief groove]
+            pack $onglets_dates -in $dates -side top -expand yes -fill both -padx 10 -pady 5
+ 
+                 pack [ttk::notebook $onglets_dates.list] -expand yes -fill both 
+ 
+                 set sour [frame $onglets_dates.list.sources -borderwidth 1]
+                 pack $sour -in $onglets_dates.list -expand yes -fill both 
+                 $onglets_dates.list add $sour -text "Sources"
+
+                 set wcs [frame $onglets_dates.list.wcs -borderwidth 1]
+                 pack $wcs -in $onglets_dates.list -expand yes -fill both 
+                 $onglets_dates.list add $wcs -text "WCS"
+
+
+
+            set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+            pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
+
+                 set ::gui_astrometry::srpt $onglets_sources.list.references.parent.table
+
+                 tablelist::tablelist $::gui_astrometry::srpt \
+                  -labelcommand tablelist::sortByColumn \
+                  -selectmode extended \
+                  -activestyle none \
+                  -stripebackground #e0e8f0 \
+                  -showseparators 1
+
+                 $::gui_astrometry::srpt insertcolumns end 0 "References" left
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::srpt insert end $j
+                 }
+
+                 pack $::gui_astrometry::srpt -in $srp -expand yes -fill both 
+
+            set sre [frame $onglets_sources.list.references.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
+            pack $sre -in $onglets_sources.list.references -expand yes -fill both -side left
+
+                 set ::gui_astrometry::sret $onglets_sources.list.references.enfant.table
+
+                 tablelist::tablelist $::gui_astrometry::sret \
+                   -columns $loc_dates \
+                   -labelcommand tablelist::sortByColumn \
+                   -selectmode extended \
+                   -activestyle none \
+                   -stripebackground #e0e8f0 \
+                   -showseparators 1
+
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::sret insert end $j
+                 }
+
+                 pack $::gui_astrometry::sret -in $sre -expand yes -fill both
+
+
+            set ssp [frame $onglets_sources.list.sciences.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+            pack $ssp -in $onglets_sources.list.sciences -expand yes -fill both -side left
+
+                 set ::gui_astrometry::sspt $onglets_sources.list.sciences.parent.table
+
+                 tablelist::tablelist $::gui_astrometry::sspt \
+                  -labelcommand tablelist::sortByColumn \
+                  -selectmode extended \
+                  -activestyle none \
+                  -stripebackground #e0e8f0 \
+                  -showseparators 1
+
+                 $::gui_astrometry::sspt insertcolumns end 0 "Sciences" left
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::sspt insert end $j
+                 }
+
+                 pack $::gui_astrometry::sspt -in $ssp -expand yes -fill both 
+
+            set sse [frame $onglets_sources.list.sciences.enfant -borderwidth 1 -cursor arrow -relief groove -background white]
+            pack $sse -in $onglets_sources.list.sciences -expand yes -fill both -side left
+
+                 set ::gui_astrometry::sset $onglets_sources.list.sciences.enfant.table
+
+                 tablelist::tablelist $::gui_astrometry::sset \
+                   -columns $loc_dates \
+                   -labelcommand tablelist::sortByColumn \
+                   -selectmode extended \
+                   -activestyle none \
+                   -stripebackground #e0e8f0 \
+                   -showseparators 1
+
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::sset insert end $j
+                 }
+
+                 pack $::gui_astrometry::sset -in $sse -expand yes -fill both
+
+
+
+
+
+            set dsp [frame $onglets_dates.list.sources.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+            pack $dsp -in $onglets_dates.list.sources -expand yes -fill both -side left
+
+                 set ::gui_astrometry::dspt $onglets_dates.list.sources.parent.table
+
+                 tablelist::tablelist $::gui_astrometry::dspt \
+                   -columns $loc_dates \
+                   -labelcommand tablelist::sortByColumn \
+                   -selectmode extended \
+                   -activestyle none \
+                   -stripebackground #e0e8f0 \
+                   -showseparators 1
+
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::dspt insert end $j
+                 }
+
+                 pack $::gui_astrometry::dspt -in $dsp -expand yes -fill both 
+
+            set dse [frame $onglets_dates.list.sources.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
+            pack $dse -in $onglets_dates.list.sources -expand yes -fill both -side left
+
+                 set ::gui_astrometry::dset $onglets_dates.list.sources.enfant.table
+
+                 tablelist::tablelist $::gui_astrometry::dset \
+                  -labelcommand tablelist::sortByColumn \
+                  -selectmode extended \
+                  -activestyle none \
+                  -stripebackground #e0e8f0 \
+                  -showseparators 1
+
+                 $::gui_astrometry::dset insertcolumns end 0 "Sources" left
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::dset insert end $j
+                 }
+
+                 pack $::gui_astrometry::dset -in $dse -expand yes -fill both
+
+            set dwp [frame $onglets_dates.list.wcs.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+            pack $dwp -in $onglets_dates.list.wcs -expand yes -fill both -side left
+
+                 set ::gui_astrometry::dwpt $onglets_dates.list.wcs.parent.table
+
+                 tablelist::tablelist $::gui_astrometry::dwpt \
+                   -columns $loc_dates \
+                   -labelcommand tablelist::sortByColumn \
+                   -selectmode extended \
+                   -activestyle none \
+                   -stripebackground #e0e8f0 \
+                   -showseparators 1
+
+                 for { set j 0 } { $j < 10} { incr j } {
+                    $::gui_astrometry::dwpt insert end $j
+                 }
+
+                 pack $::gui_astrometry::dwpt -in $dwp -expand yes -fill both 
+
+            set dwe [frame $onglets_dates.list.wcs.enfant -borderwidth 1 -cursor arrow -relief groove -background ivory]
+            pack $dwe -in $onglets_dates.list.wcs -expand yes -fill both -side left
+
+              label  $dwe.titre -text "Solution astrometrique" -borderwidth 1
+              pack   $dwe.titre -in $dwe -side top -padx 3 -pady 3 -anchor c
+
+
+         #  set ps [frame $onglets_sources.list.sciences.table_par -borderwidth 0 -cursor arrow -relief groove -background white]
+         #  pack $ps -in $onglets_sources.list.sciences
+            
+
+
+
+
+#            frame $onglets0.list.sources.table_enf -borderwidth 0 -cursor arrow -relief groove -background white
+
+
+
+
+
 
 
          #--- Cree un frame pour afficher bouton fermeture
          set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
          pack $info  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              label  $info.lab1 -text "Image " -borderwidth 1
-              pack   $info.lab1 -in $info -side left -padx 3 -pady 3 -anchor c
-              label  $info.id -textvariable ::tools_cata::id_current_image -borderwidth 1
-              pack   $info.id -in $info -side left -padx 3 -pady 3 -anchor c
-              label  $info.lab2 -text " / " -borderwidth 1
-              pack   $info.lab2 -in $info -side left -padx 3 -pady 3 -anchor c
-              label  $info.nb -textvariable ::tools_cata::nb_img_list -borderwidth 1
-              pack   $info.nb -in $info -side left -padx 3 -pady 3 -anchor c
+              label  $info.labf -text "Fichier resultats : " -borderwidth 1
+              pack   $info.labf -in $info -side left -padx 3 -pady 3 -anchor c
+              label  $info.lastres -textvariable ::tools_astrometry::last_results_file -borderwidth 1
+              pack   $info.lastres -in $info -side left -padx 3 -pady 3 -anchor c
 
 
 
-         #--- Cree un frame pour afficher bouton fermeture
-         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
-         pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              set ::gui_astrometry::gui_init_priam [button $boutonpied.init_priam -text "Init" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::init_priam"]
-              pack $boutonpied.init_priam -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-              set ::gui_astrometry::gui_go_priam [button $boutonpied.go_priam -text "Priam" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::go_priam"]
-              pack $boutonpied.go_priam -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-              set ::gui_astrometry::gui_xtrip [button $boutonpied.xtrip -text "Xtrip" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::xtrip"]
-              pack $boutonpied.xtrip -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-              set ::gui_astrometry::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::fermer"]
-              pack $boutonpied.fermer -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
       ::tools_astrometry::load_all_cata
@@ -273,10 +514,16 @@ namespace eval gui_astrometry {
    
 
    
-
-   proc ::gui_astrometry::xtrip {  } {
    
-   }
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
 
 
