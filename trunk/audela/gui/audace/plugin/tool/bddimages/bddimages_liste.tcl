@@ -200,6 +200,15 @@ proc ::bddimages_liste::lexist { tabkey inkey } {
 }
 
 
+# Remove an element from a list
+# source: 
+#proc ::bddimages_liste::lremove {listVariable value} {
+#
+#   upvar 1 $listVariable var
+#   set idx [lsearch -exact $var $value]
+#   set var [lreplace $var $idx $idx]
+#
+#}
 
 
 
