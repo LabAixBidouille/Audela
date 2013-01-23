@@ -1185,7 +1185,7 @@ namespace eval bddimages_recherche {
            $popupTbl.analyse add command -label $caption(bddimages_recherche,photom) -state disabled \
               -command { ::gui_cata::run_photom}
 
-           $popupTbl.analyse add command -label $caption(bddimages_recherche,astrom) \
+           $popupTbl.analyse add command -label "(a) $caption(bddimages_recherche,astrom)" \
               -command { ::bddimages_recherche::bddimages_astrometrie}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,binast) \
@@ -1220,6 +1220,7 @@ namespace eval bddimages_recherche {
       bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
       bind [$tbl bodypath] <Key-g> { ::bddimages_recherche::bddimages_gestion_cata }
       bind [$tbl bodypath] <Key-c> { ::bddimages_recherche::bddimages_creation_cata }
+      bind [$tbl bodypath] <Key-a> { ::bddimages_recherche::bddimages_astrometrie }
 
    }
 

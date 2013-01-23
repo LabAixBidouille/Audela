@@ -207,13 +207,219 @@ return
 
    proc ::tools_astrometry::go_priam {  } {
 
-      ::tools_astrometry::extract_priam_result [::priam::launch_priam]
-      
+
+      set ::tools_astrometry::last_results_file [::priam::launch_priam]
+      gren_info "new file : <$::tools_astrometry::last_results_file>\n"
+      ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
+
    }
 
 
 
 
+
+   proc ::tools_astrometry::results_priam {  } {
+
+
+      set file $::tools_astrometry::last_results_file
+      gren_info "affiche tklist:  file : <$file>\n"
+   
+      set chan [open $file r]
+
+      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2                        CATA_PVALUE                       EQUINOX                            CTYPE1                CTYPE2                LONPOLE                                        CUNIT1                       CUNIT2                       }
+      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um                              percent                           no                                 no                    no                    deg                                            no                           no                           }
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double                          double                            string                             string                string                double                                         string                       string                       }
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
+      set n [llength $astrom(kwds)]
+
+
+
+      
+      set ::tools_cata::id_current_image 0
+
+      # Lecture du fichier en continue
+
+      while {[gets $chan line] >= 0} {
+
+         set a [split $line "="]
+         set key [lindex $a 0]
+         set val [lindex $a 1]
+         #gren_info "$key=$val\n"
+          
+         if {$key=="BEGIN"} {
+            # Debut image
+            set filename $val
+            set catascience($::tools_cata::id_current_image) ""
+            set cataref($::tools_cata::id_current_image) ""
+            
+            gets $chan success
+            #gren_info "$success\n"
+            if {$success!="SUCCESS"} {
+               continue
+            }
+            incr ::tools_cata::id_current_image
+
+         }
+
+         if {$key=="END"} {
+         }
+         
+         for {set k 0 } { $k<$n } {incr k} {
+            set kwd [lindex $astrom(kwds) $k]
+            if {$kwd==$key} {
+               set type [lindex $astrom(types) $k]
+               set unit [lindex $astrom(units) $k]
+               set comment [lindex $astrom(comments) $k]
+               #gren_info "KWD: $key \n"
+            }
+         }
+         
+         if {$key=="CATA_VALUES"} {
+            set name  [lindex $val 0]
+            set sour  [lindex $val 1]
+            lappend catascience($::tools_cata::id_current_image) [list $name $sour]
+         }
+         if {$key=="CATA_REF"} {
+            set name  [lindex $val 0]
+            set sour  [lindex $val 1]
+         }
+                  
+      }
+      close $chan
+
+      gren_info "nb image: $::tools_cata::nb_img_list - $::tools_cata::id_current_image\n"
+      #gren_info "NB IMG EXTRACTED FROM PRIAM RESULTS: [expr $::tools_cata::id_current_image +1 ] \n"
+      #gren_info "NB IMG LIST: [llength $::tools_cata::img_list] \n"
+
+   # sur une seule image -> current_listsources
+
+      #gren_info "[::manage_source::get_fields_from_sources $::tools_cata::current_listsources] \n"
+
+   # A FAIRE  : nettoyage des astrometrie de current_listsources
+
+   #   ::tools_astrometry::clean_astrom 
+
+   # Nettoyage des tables
+
+         gren_info "cATA SCIENCE: [array get catascience] \n"
+
+
+      set ::tools_astrometry::nb_dates [llength $::tools_cata::img_list]
+
+
+
+   # Insertion des resultats dans current_listsources
+
+      set ::tools_cata::id_current_image 0
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+
+         incr ::tools_cata::id_current_image
+         gren_info "id_current_image=$::tools_cata::id_current_image \n"
+         
+         set commundatejj [::bddimages_liste::lget $::tools_cata::current_image "commundatejj"]
+         gren_info "commundatejj=$commundatejj \n"
+        
+#         $::gui_astrometry::sret insert end $commundatejj
+#         $::gui_astrometry::sset insert end $commundatejj
+#         $::gui_astrometry::dspt insert end $commundatejj
+         set ::tools_astrometry::dates($::tools_cata::id_current_image,dateiso) [ mc_date2iso8601 $commundatejj ]
+
+        # set ::tools_astrometry::all_references($::tools_cata::id_current_image,dateiso) 
+
+
+
+
+
+
+
+
+
+
+
+         set n [llength $catascience($::tools_cata::id_current_image)]
+         gren_info "NB SCIENCE: ($n) \n"
+                  
+         if {$n>0} {
+
+            #gren_info "NB SCIENCE2:$n $::tools_cata::id_current_image\n"
+            foreach l $catascience($::tools_cata::id_current_image) {
+
+               set n [lindex $l 0]
+               set val [lindex $l 1]
+               set cpt 0
+               set sources [lindex $::tools_cata::current_listsources 1]
+               foreach s $sources {
+
+                  foreach cata $s {
+                  
+                     if {[lindex $cata 0] == $::tools_astrometry::science} {
+                        set name [::manage_source::naming $s $::tools_astrometry::science]
+                        if {$n==$name} {
+                           #gren_info "NAME=$name\n"
+                           set ra      [expr [lindex $val 0] ]
+                           set dec     [lindex $val 1]
+                           set res_ra  [lindex $val 2]
+                           set res_dec [lindex $val 3]
+                           set omc_ra  [expr ($ra - [lindex [lindex $cata 1] 0])*3600.0]
+                           set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
+                           set flag    "S"
+
+                           #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"
+                           set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag $name]
+                           set sources [lreplace $sources $cpt $cpt $s]
+                           set ::tools_cata::current_listsources [list $fields $sources]
+                        }
+                     }
+                  }
+                  incr cpt
+               }
+            }
+         }
+         #gren_info "SRolref=[ ::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
+         set n [llength $cataref($::tools_cata::id_current_image)]
+
+         if {$n>=3} {
+            foreach l $cataref($::tools_cata::id_current_image) {
+               set n [lindex $l 0]
+               set val [lindex $l 1]
+               set cpt 0
+               set sources [lindex $::tools_cata::current_listsources 1]
+               foreach s $sources {
+                  foreach cata $s {
+                     #gren_info "CATA = [lindex $cata 0]\n"
+                     if {[lindex $cata 0] == $::tools_astrometry::reference} {
+                        set name [::manage_source::naming $s $::tools_astrometry::reference]
+                        #gren_info "NAME=$name\n"                     
+                        if {$n==$name} {
+                           #gren_info "NAME=$name\n"                     
+                           set ra      [lindex [lindex $cata 1] 0]
+                           set dec     [lindex [lindex $cata 1] 1]
+                           set res_ra  [lindex $val 0]
+                           set res_dec [lindex $val 1]
+                           set omc_ra  [expr ($ra - [lindex [lindex $cata 1] 0])*3600.0]
+                           set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
+                           set flag    "R"
+
+                           #gren_info "NAME=$name $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag\n"                     
+                           set s [::tools_astrometry::set_astrom_to_source $s $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag $name]
+                           set sources [lreplace $sources $cpt $cpt $s]
+                           set ::tools_cata::current_listsources [list $fields $sources]
+                        }
+                     }
+                  }
+                  incr cpt
+               }
+            }
+         } else {
+            #return -code 5 "il faut obligatoirement un minimum de 3 sources"
+         }
+
+      }
+
+
+
+   }
 
 
 

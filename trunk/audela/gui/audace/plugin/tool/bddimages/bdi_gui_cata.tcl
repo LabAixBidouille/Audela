@@ -725,6 +725,11 @@ namespace eval gui_cata {
 
 
 
+
+
+
+
+
    proc ::gui_cata::get_cata { } {
 
          $::gui_cata::gui_create configure -state disabled
@@ -771,6 +776,13 @@ namespace eval gui_cata {
 
 
 
+
+
+
+
+
+
+
    proc ::gui_cata::affiche_current_image { } {
 
       global bddconf
@@ -786,6 +798,18 @@ namespace eval gui_cata {
       ::audace::autovisu $::audace(visuNo)
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -830,6 +854,21 @@ namespace eval gui_cata {
       }
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
