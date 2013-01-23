@@ -4042,6 +4042,9 @@ namespace eval gui_cata {
       
       ::gui_cata::charge_gestion_cata $img_list 
 
+
+
+
       #--- Creation de la fenetre
       set ::gui_cata::feng .gestion_cata
       if { [winfo exists $::gui_cata::feng] } {
@@ -4181,8 +4184,8 @@ namespace eval gui_cata {
              pack $::gui_cata::gui_info2 -in $boutonpied -side top -padx 3 -pady 3
 
 
+      ::gui_cata::charge_memory
    }
-   
    
    
    
