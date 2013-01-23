@@ -3111,8 +3111,7 @@ namespace eval gui_cata {
                }
                incr u
             }
-            
-            
+
             # Modification du cata_list_source
             if {[string compare -nocase $cata "ASTROID"] == 0} {
 
@@ -3138,9 +3137,9 @@ namespace eval gui_cata {
                }
                
             }
-            
+
          }
-         
+
       }
       #set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] 0] 
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
@@ -3398,19 +3397,69 @@ namespace eval gui_cata {
             # break
 
          }
-         
-         
+
          # on recupere les variables courantes
          array set ::gui_cata::tklist_list_of_columns $tklist_list_of_columns_sav
-         
-                   
-
 
       } else {
          tk_messageBox -message "Le catalogue selectionné doit etre ASTROID" -type ok
       }
 
    }
+ 
+ 
+   proc ::gui_cata::edit_source { tbl } {
+# 
+#      foreach select [$tbl curselection] {
+#         $tbl cellconfigure $select, -text $flag
+#      }
+#      $tbl rowconfigure -editable yes
+#
+#   
+   }
+
+
+
+
+ 
+   proc ::gui_cata::delete_source { tbl } {
+
+      set onglets $::gui_cata::current_appli.onglets
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+      # On boucle sur les selections (indice de la table affichée de 0 a end)
+      set cpt 0
+      foreach select [$tbl curselection] {
+         
+         set id [lindex [$tbl get $select] 0]
+         # On boucle sur les onglets
+         foreach t [$onglets.nb tabs] {
+            set idcata [string index [lindex [split $t .] 5] 1]
+            # modification de la tklist
+            set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
+            if {$x != -1} {
+               set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x]
+            }
+         }
+
+         # Modification du cata_list_source
+         set fields [lindex $::tools_cata::current_listsources 0]
+         set sources [lindex $::tools_cata::current_listsources 1]
+         set sources [lreplace $sources [expr $select-$cpt] [expr $select-$cpt]]
+         set ::tools_cata::current_listsources [list $fields $sources]
+
+         # Compteur de sources effacees
+         incr cpt
+      }
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
+      ::gui_cata::gestion_go
+      return
+ 
+   }
+
+ 
+ 
  
  
  
@@ -3461,11 +3510,11 @@ namespace eval gui_cata {
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Editer la source" \
-           -command ""
+           -command "::gui_cata::edit_source $tbl" -state disable
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Sauver la source" \
-           -command ""
+           -command "" -state disable
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Suppimer la source" \
@@ -3505,11 +3554,8 @@ namespace eval gui_cata {
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Cataloguer la source" \
-           -command ""
+           -command "" -state disable
 
- 
-           
-           
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <Control-Key-a> [ list ::gui_cata::selectall $tbl ]
@@ -3643,7 +3689,6 @@ namespace eval gui_cata {
          set ::gui_cata::annul 0
          $::gui_cata::current_appli.actions.charge configure -text "Annuler"
       }
-      
 
       for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image<=$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
          
@@ -3745,6 +3790,7 @@ namespace eval gui_cata {
          foreach cc $commonfields {
             lappend ::gui_cata::tklist_list_of_columns($idcata) [list $cc $cc]
          }
+
          set otherfields ""
          foreach f $fields {
             if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
@@ -3806,9 +3852,6 @@ namespace eval gui_cata {
 
 
    }
-
-
-
 
 
 
@@ -3894,7 +3937,7 @@ namespace eval gui_cata {
             $::gui_cata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
          }
          foreach col {5 6 7 8 9} {
-             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary -editable yes
+             $::gui_cata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary
          }
 
          foreach line $::gui_cata::tklist($idcata) {
@@ -3928,7 +3971,7 @@ namespace eval gui_cata {
       ::gui_cata::set_progress 0 100      
 
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
-      set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
       set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
