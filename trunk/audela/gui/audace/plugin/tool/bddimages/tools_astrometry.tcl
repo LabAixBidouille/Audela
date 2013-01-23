@@ -338,7 +338,7 @@ return
 
          set n [llength $catascience($::tools_cata::id_current_image)]
          gren_info "NB SCIENCE: ($n) \n"
-                  
+ continue                 
          if {$n>0} {
 
             #gren_info "NB SCIENCE2:$n $::tools_cata::id_current_image\n"
