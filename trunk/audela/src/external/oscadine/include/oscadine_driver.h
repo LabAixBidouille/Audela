@@ -38,7 +38,7 @@ extern "C" {
 	void close_shutter();
     void init_cam_parameters(struct camera_struct *cam);
 	void stop_exp();
-	void launch_capture_thread()
+	void launch_capture_thread();
 	
 #ifdef __cplusplus
 }
