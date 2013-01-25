@@ -300,6 +300,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liboscadine", "libcam\libos
 		{B69AB115-89F5-4F66-93BE-6141A400BAE5} = {B69AB115-89F5-4F66-93BE-6141A400BAE5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeteltcl", "contrib\libeteltcl\vc90\libeteltcl.vcproj", "{B6E22B50-3B88-4AC2-B4CA-2D7B40A787B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
