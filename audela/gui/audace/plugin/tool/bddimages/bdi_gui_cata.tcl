@@ -631,11 +631,13 @@ namespace eval gui_cata {
 
 
 
-
    proc ::gui_cata::fermer { } {
 
       global conf
       global action_label
+
+
+
 
       # Repertoires 
       set conf(astrometry,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
@@ -4025,6 +4027,13 @@ namespace eval gui_cata {
 
 
 
+   proc ::gui_cata::fermer_feng { } {
+
+      set ::gui_cata::state_gestion 0
+      cleanmark
+      destroy $::gui_cata::feng
+
+   }
 
 
 
@@ -4038,6 +4047,8 @@ namespace eval gui_cata {
       set ::tools_cata::mem_use 0
       set ::tools_cata::mem_total 0
 
+      set ::gui_cata::state_gestion 1
+      
       ::gui_cata::inittoconf
       
       ::gui_cata::charge_gestion_cata $img_list 
@@ -4059,7 +4070,7 @@ namespace eval gui_cata {
       wm geometry $::gui_cata::feng +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $::gui_cata::feng 1 1
       wm title $::gui_cata::feng "Gestion du CATA"
-      wm protocol $::gui_cata::feng WM_DELETE_WINDOW "destroy $::gui_cata::feng"
+      wm protocol $::gui_cata::feng WM_DELETE_WINDOW "::gui_cata::fermer_feng"
 
       set frm $::gui_cata::feng.appli
       set ::gui_cata::current_appli $frm
@@ -4166,8 +4177,8 @@ namespace eval gui_cata {
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
         pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             button $boutonpied.annuler -text "Annuler" -borderwidth 2 -takefocus 1 \
-                -command "cleanmark ; destroy $::gui_cata::feng"
+             button $boutonpied.annuler -text "Fermer" -borderwidth 2 -takefocus 1 \
+                -command "::gui_cata::fermer_feng"
              pack $boutonpied.annuler -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              button $boutonpied.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 \

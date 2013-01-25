@@ -102,73 +102,7 @@ variable imagelimit
 
 
  
-   proc ::tools_astrometry::modif_array { sent_array } {
-         upvar $sent_array a
-         
-         set a [list 4 3 2 ]
-         
-   }
-   proc ::tools_astrometry::modif_array2 { u } {
-      array set b $u 
-      set b(1,1) 1
-      return [array get b]
-   }
 
-   proc ::tools_astrometry::create_array { sent_array } {
-
-      upvar $sent_array a
-
-      set tt0 [clock clicks -milliseconds]
-      for {set i 0} {$i<2000} {incr i} {
-         for {set j 0} {$j<2000} {incr j} {
-            set a($i,$j) 0
-         }
-      }
-      set tt1 [clock clicks -milliseconds]
-      set tt [expr ($tt1 - $tt0)/1000.]
-      gren_info "Creation array duration $tt sec \n"
-         
-
-   }
-
-   proc ::tools_astrometry::mytest { } {
-
-      gren_info "TEST\n"
-      set a [list 1 2 4]
-      
-      ::tools_astrometry::modif_array a
-         gren_info "$a\n"
-return
-
-      set tt0 [clock clicks -milliseconds]
-      for {set i 0} {$i<2000} {incr i} {
-         for {set j 0} {$j<2000} {incr j} {
-            set a($i,$j) 0
-         }
-      }
-      set tt1 [clock clicks -milliseconds]
-      set tt [expr ($tt1 - $tt0)/1000.]
-      gren_info "Creation array duration $tt sec \n"
-      gren_info "size(a)= [array size a]\n"
-
-      ::tools_astrometry::create_array ::tools_astrometry::myarray
-      gren_info "size(b)= [array size ::tools_astrometry::myarray]\n"
-
-      set tt0 [clock clicks -milliseconds]
-      ::tools_astrometry::modif_array a
-      gren_info "a(1,1) = $a(1,1) \n"
-      set tt1 [clock clicks -milliseconds]
-      set tt [expr ($tt1 - $tt0)/1000.]
-      gren_info "Modif array duration $tt sec \n"
-
-      set tt0 [clock clicks -milliseconds]
-      set ::tools_astrometry::myarray [::tools_astrometry::modif_array2 [array get ::tools_astrometry::myarray]]
-      gren_info "::tools_astrometry::myarray(1,1) = $::tools_astrometry::myarray(1,1) \n"
-      set tt1 [clock clicks -milliseconds]
-      set tt [expr ($tt1 - $tt0)/1000.]
-      gren_info "Modif array duration $tt sec \n"
-
-   }
 
 
 
@@ -183,7 +117,7 @@ return
       set ::tools_cata::id_current_image 1
       foreach ::tools_cata::current_image $::tools_cata::img_list {
          if {$::tools_cata::id_current_image==1} {set tag "new"} else {set tag "add"}
-         gren_info "$::tools_cata::current_image\n"
+         #gren_info "$::tools_cata::current_image\n"
          ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list ::tools_cata::current_image ::gui_cata::cata_list($::tools_cata::id_current_image)
          incr ::tools_cata::id_current_image
       }
@@ -252,6 +186,45 @@ return
          set commundatejj [::bddimages_liste::lget $::tools_cata::current_image "commundatejj"]
          set dateiso [ mc_date2iso8601 $commundatejj ]
 
+         gren_info "-- img : $::tools_cata::id_current_image / [llength $::tools_cata::img_list]\n"
+
+
+
+         # REFERENCES
+
+         set list_id_ref [::tools_cata::get_id_astrometric "R" ::tools_cata::current_listsources]
+         foreach l $list_id_ref {
+
+            set id     [lindex $l 0]
+            set idcata [lindex $l 1]
+            set ar     [lindex $l 2]
+            set ac     [lindex $l 3]
+            set name   [string trim [lindex $l 4] ]
+
+            if {$name == ""} {
+               gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
+            }
+            
+            set s       [lindex [lindex $::tools_cata::current_listsources 1] $id]
+            set astroid [lindex $s $idcata]
+            set b       [lindex $astroid 2]
+            #gren_info "b = $b\n"
+
+            set ra      [lindex $b 14]
+            set dec     [lindex $b 15]
+            set res_ra  [format  "%.4f" [lindex $b 16] ]
+            set res_dec [format  "%.4f" [lindex $b 17] ]
+            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
+            set omc_ra  [lindex $b 18]
+            set omc_dec [lindex $b 19]
+            set mag     "-"
+            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
+            set ::tools_astrometry::tabval($name,$dateiso) [list $ar $rho $res_ra $res_dec $ra $dec $mag]
+
+            lappend ::tools_astrometry::listref($name)     $dateiso
+            lappend ::tools_astrometry::listdate($dateiso) $name
+            
+         }
 
 
 
@@ -259,6 +232,12 @@ return
 
 
 
+
+
+
+
+
+         # SCIENCES
 
 
          set list_id_science [::tools_cata::get_id_astrometric "S" ::tools_cata::current_listsources]
@@ -269,7 +248,10 @@ return
             set ar     [lindex $l 2]
             set ac     [lindex $l 3]
             set name   [lindex $l 4]
-            #gren_info "Lect = $id $idcata $ar $ac $name\n"
+
+            if {$name == ""} {
+               gren_info "Lect Science = $id $idcata $ar $ac $name\n"
+            }
             
             set s       [lindex [lindex $::tools_cata::current_listsources 1] $id]
             set astroid [lindex $s $idcata]
@@ -299,42 +281,16 @@ return
 
 
 
-
-
-
-
-         set list_id_ref [::tools_cata::get_id_astrometric "R" ::tools_cata::current_listsources]
-         foreach l $list_id_ref {
-
-            set id     [lindex $l 0]
-            set idcata [lindex $l 1]
-            set ar     [lindex $l 2]
-            set ac     [lindex $l 3]
-            set name   [lindex $l 4]
-            #gren_info "Lect = $id $idcata $ar $ac $name\n"
-            
-            set s       [lindex [lindex $::tools_cata::current_listsources 1] $id]
-            set astroid [lindex $s $idcata]
-            set b       [lindex $astroid 2]
-            #gren_info "b = $b\n"
-
-            set ra      [lindex $b 14]
-            set dec     [lindex $b 15]
-            set res_ra  [format  "%.4f" [lindex $b 16] ]
-            set res_dec [format  "%.4f" [lindex $b 17] ]
-            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
-            set omc_ra  [lindex $b 18]
-            set omc_dec [lindex $b 19]
-            set mag     "-"
-            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
-            set ::tools_astrometry::tabval($name,$dateiso) [list $ar $rho $res_ra $res_dec $ra $dec $mag]
-
-            lappend ::tools_astrometry::listref($name)     $dateiso
-            lappend ::tools_astrometry::listdate($dateiso) $name
-            
-         }
+         
+         
+         gren_info "date = $dateiso "
+         gren_info "nb science = [llength $list_id_science] "
+         gren_info "nb ref = [llength $list_id_ref] \n "
+         
          
       }
+
+
 # loc_sources_par Name Nb mrho stdev_rho mra mrd sra srd ma md sa sd mm sm   
    
    
@@ -477,18 +433,7 @@ return
 
 
 
-
-
-
-
-
-
-   proc ::tools_astrometry::results_priam {  } {
-
-      set tt0 [clock clicks -milliseconds]
-      ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
-      gren_info "Extraction des resultats Priam in $tt sec \n"
+   proc ::tools_astrometry::affich_catalist {  } {
 
       set tt0 [clock clicks -milliseconds]
       ::tools_astrometry::create_vartab  
@@ -499,6 +444,20 @@ return
       ::tools_astrometry::calcul_statistique  
       set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
       gren_info "Calculs statistiques in $tt sec \n"
+
+      return
+
+   }
+
+
+
+
+   proc ::tools_astrometry::extract_priam {  } {
+
+      set tt0 [clock clicks -milliseconds]
+      ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
+      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      gren_info "Extraction des resultats Priam in $tt sec \n"
 
       return
 

@@ -58,19 +58,6 @@ namespace eval gui_astrometry {
 
 
 
-   proc ::gui_astrometry::go_priam {  } {
-
-      ::tools_astrometry::go_priam
-
-   }
-
-
-
-   proc ::gui_astrometry::init_priam {  } {
-
-      ::tools_astrometry::init_priam
-
-   }
 
 
 #tabval($name,$dateiso) [list $ar $ra $dec $res_ra $res_dec $ecart $mag]
@@ -78,40 +65,6 @@ namespace eval gui_astrometry {
 #tabfield(science,$name) $dateiso
 #tabfield(ref,$name) $dateiso
 #tabfield(date,$dateiso) $name
-
-   proc ::gui_astrometry::results_priam {  } {
-
-
-      ::tools_astrometry::results_priam
-
-      set tt0 [clock clicks -milliseconds]
-
-      $::gui_astrometry::srpt delete 0 end
-      $::gui_astrometry::sret delete 0 end
-      $::gui_astrometry::sspt delete 0 end
-      $::gui_astrometry::sset delete 0 end
-      $::gui_astrometry::dspt delete 0 end
-      $::gui_astrometry::dset delete 0 end
-      $::gui_astrometry::dwpt delete 0 end
- 
-      foreach name [array names ::tools_astrometry::listref] {
-         $::gui_astrometry::srpt insert end $::tools_astrometry::tabref($name)
-      }
-
-      foreach name [array names ::tools_astrometry::listscience] {
-         $::gui_astrometry::sspt insert end $::tools_astrometry::tabscience($name)
-      }
-
-      foreach date [array names ::tools_astrometry::listdate] {
-         $::gui_astrometry::dspt insert end $::tools_astrometry::tabdate($date)
-         $::gui_astrometry::dwpt insert end $::tools_astrometry::tabdate($date)
-      }
-
-      
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
-      gren_info "Affichage des resultats in $tt sec \n"
-
-   }
 
 
 
@@ -186,10 +139,15 @@ namespace eval gui_astrometry {
          foreach date $::tools_astrometry::listref($name) {
             $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 0 0 $date]
          }
+         
+         
+        # on selectionne la source dans la gui de gestion si elle existe
 
          break
       }
    }
+
+
 
    proc ::gui_astrometry::cmdButton1Click_sspt { w args } {
 
@@ -240,6 +198,129 @@ namespace eval gui_astrometry {
 
 
 
+
+
+
+
+   proc ::gui_astrometry::affich_gestion {  } {
+       
+         gren_info "\n\n\n-----------\n"
+      set tt0 [clock clicks -milliseconds]
+
+      if {$::gui_astrometry::state_gestion == 0} {
+         catch {destroy .gestion_cata}
+         gren_info "Chargement des fichiers XML\n"
+         ::gui_cata::gestion_cata $::tools_cata::img_list
+         set ::gui_astrometry::state_gestion 1
+      }
+      if {[info exists ::gui_cata::state_gestion] && $::gui_cata::state_gestion == 1} {
+         gren_info "Chargement depuis la fenetre de gestion des sources\n"
+         ::gui_astrometry::affich_catalist
+      } else {
+         catch {destroy .gestion_cata}
+         gren_info "Chargement des fichiers XML\n"
+         ::gui_cata::gestion_cata $::tools_cata::img_list
+      }
+
+      focus .astrometry
+
+      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      gren_info "TOTAL Bouton Charge in $tt sec \n"
+
+      return
+
+   }
+
+
+   proc ::gui_astrometry::affich_catalist {  } {
+
+      ::tools_astrometry::affich_catalist
+
+      set tt0 [clock clicks -milliseconds]
+
+      $::gui_astrometry::srpt delete 0 end
+      $::gui_astrometry::sret delete 0 end
+      $::gui_astrometry::sspt delete 0 end
+      $::gui_astrometry::sset delete 0 end
+      $::gui_astrometry::dspt delete 0 end
+      $::gui_astrometry::dset delete 0 end
+      $::gui_astrometry::dwpt delete 0 end
+ 
+      foreach name [array names ::tools_astrometry::listref] {
+         $::gui_astrometry::srpt insert end $::tools_astrometry::tabref($name)
+      }
+
+      foreach name [array names ::tools_astrometry::listscience] {
+         $::gui_astrometry::sspt insert end $::tools_astrometry::tabscience($name)
+      }
+
+      foreach date [array names ::tools_astrometry::listdate] {
+         $::gui_astrometry::dspt insert end $::tools_astrometry::tabdate($date)
+         $::gui_astrometry::dwpt insert end $::tools_astrometry::tabdate($date)
+      }
+
+      
+      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      gren_info "Affichage des resultats in $tt sec \n"
+
+
+   }
+
+
+   proc ::gui_astrometry::go_priam {  } {
+
+      ::tools_astrometry::init_priam
+      ::tools_astrometry::go_priam
+      ::tools_astrometry::extract_priam
+      ::gui_astrometry::affich_catalist
+   }
+
+
+
+   proc ::gui_astrometry::priam_to_catalist {  } {
+
+      ::tools_astrometry::affich_priam
+
+      set tt0 [clock clicks -milliseconds]
+
+      $::gui_astrometry::srpt delete 0 end
+      $::gui_astrometry::sret delete 0 end
+      $::gui_astrometry::sspt delete 0 end
+      $::gui_astrometry::sset delete 0 end
+      $::gui_astrometry::dspt delete 0 end
+      $::gui_astrometry::dset delete 0 end
+      $::gui_astrometry::dwpt delete 0 end
+ 
+      foreach name [array names ::tools_astrometry::listref] {
+         $::gui_astrometry::srpt insert end $::tools_astrometry::tabref($name)
+      }
+
+      foreach name [array names ::tools_astrometry::listscience] {
+         $::gui_astrometry::sspt insert end $::tools_astrometry::tabscience($name)
+      }
+
+      foreach date [array names ::tools_astrometry::listdate] {
+         $::gui_astrometry::dspt insert end $::tools_astrometry::tabdate($date)
+         $::gui_astrometry::dwpt insert end $::tools_astrometry::tabdate($date)
+      }
+
+      
+      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      gren_info "Affichage des resultats in $tt sec \n"
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::gui_astrometry::setup { img_list } {
 
       global audace
@@ -247,6 +328,9 @@ namespace eval gui_astrometry {
 
       ::gui_astrometry::charge_list $img_list
       ::gui_astrometry::inittoconf
+      
+      
+      set ::gui_astrometry::state_gestion 0
       
       set loc_sources_par [list 0 "Name"              left  \
                                 0 "Nb img"            right \
@@ -313,7 +397,7 @@ namespace eval gui_astrometry {
 
       #--- Cree un frame general
       frame $frm -borderwidth 0 -cursor arrow -relief groove
-      pack $frm -in $::gui_astrometry::fen -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+      pack $frm -in $::gui_astrometry::fen -anchor s -side top -expand yes -fill both  -padx 10 -pady 5
 
          #--- Cree un frame ifort
          set ifortlib [frame $frm.ifortlib -borderwidth 0 -cursor arrow -relief groove]
@@ -329,19 +413,15 @@ namespace eval gui_astrometry {
          set actions [frame $frm.actions  -borderwidth 0 -cursor arrow -relief groove]
          pack $actions  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              set ::gui_astrometry::gui_init_priam [button $actions.init_priam -text "Init" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::init_priam"]
-              pack $actions.init_priam -side left -anchor e \
+              set ::gui_astrometry::gui_affich_gestion [button $actions.affich_gestion -text "Charge" -borderwidth 2 -takefocus 1 \
+                 -relief "raised" \
+                 -command "::gui_astrometry::affich_gestion"]
+              pack $actions.affich_gestion -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
               set ::gui_astrometry::gui_go_priam [button $actions.go_priam -text "Priam" -borderwidth 2 -takefocus 1 \
                  -command "::gui_astrometry::go_priam"]
               pack $actions.go_priam -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-              set ::gui_astrometry::gui_go_priam [button $actions.results_priam -text "Resultats" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::results_priam"]
-              pack $actions.results_priam -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
               label  $actions.labv -text "Voir : " -borderwidth 1
@@ -388,7 +468,7 @@ namespace eval gui_astrometry {
 
          #--- Cree un frame pour afficher bouton fermeture
          set tables [frame $frm.tables  -borderwidth 0 -cursor arrow -relief groove]
-         pack $tables  -in $frm -anchor s -side top -expand yes -fill both -padx 10 -pady 5
+         pack $tables  -in $frm -anchor s -side top -expand 0  -padx 10 -pady 5
 
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5

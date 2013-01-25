@@ -303,17 +303,13 @@ namespace eval ::manage_source {
             
             
             if {$mycata=="UCAC3"} {
-               set dec [lindex [lindex $cata 2] 1]
-               set dec [regsub {\-} $dec "m"]
-               set dec [regsub {\+} $dec "p"]
-               return "UCAC3_[lindex [lindex $cata 2] 0]$dec"
+               set id [lindex [lindex $cata 2] 0]
+               return "UCAC3_$id"
             }
 
             if {$mycata=="UCAC2"} {
-               set dec [lindex [lindex $cata 2] 1]
-               set dec [regsub {\-} $dec "m"]
-               set dec [regsub {\+} $dec "p"]
-               return "UCAC2_[lindex [lindex $cata 2] 0]$dec"
+               set id [lindex [lindex $cata 2] 0]
+               return "UCAC2_$id"
             }
 
             if {$mycata=="IMG"} {
