@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libgsltcl"
 	ProjectGUID="{7A600ABA-E38E-4406-AFCC-3D51983B6941}"
 	TargetFrameworkVersion="0"
@@ -291,6 +291,14 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
+			<File
+				RelativePath="..\src\gsltcl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\gsltcltcl.h"
+				>
+			</File>
 			<File
 				RelativePath="..\src\libgsltcl.h"
 				>
