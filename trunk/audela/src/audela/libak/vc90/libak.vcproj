@@ -365,6 +365,30 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+			<File
+				RelativePath="..\src\ak.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\ak_2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\ak_3.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\ak_4.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\aktcl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libak.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
