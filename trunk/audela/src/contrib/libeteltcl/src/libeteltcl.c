@@ -58,7 +58,7 @@
    Tcl_PkgProvide(interp,"Eteltcl","1.0");
 
    Tcl_CreateCommand(interp,"etel_open",(Tcl_CmdProc *)Cmd_eteltcltcl_open,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   Tcl_CreateCommand(interp,"etel_close",(Tcl_CmdProc *)Cmd_eteltcltcl_open,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"etel_close",(Tcl_CmdProc *)Cmd_eteltcltcl_close,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"etel_status",(Tcl_CmdProc *)Cmd_eteltcltcl_status,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"etel_execute_command_x_s",(Tcl_CmdProc *)Cmd_eteltcltcl_ExecuteCommandXS,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"etel_get_register_s",(Tcl_CmdProc *)Cmd_eteltcltcl_GetRegisterS,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);

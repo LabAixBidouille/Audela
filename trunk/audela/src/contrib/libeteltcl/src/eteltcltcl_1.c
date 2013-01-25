@@ -32,8 +32,7 @@
 
 /*
 load libeteltcl.dll
-etel_open 
-etel_open -driver DSTEB3 -axis 0 -axis 1
+etel_open -driver DSTEB3 -axis 0 -axis 2
 etel_close
 
 etel_open -driver DSTEB3 -axis 0 -axis 1
@@ -66,9 +65,6 @@ int Cmd_eteltcltcl_open(ClientData clientData, Tcl_Interp *interp, int argc, cha
 			etel.axis[k]=AXIS_STATE_CLOSED;
 			etel.drv[k]=NULL;
 		}
-		etel.axis[0]=0;
-		etel.axis[1]=1;
-		etel.axis[2]=2;
 		strcpy(etel.etel_driver,"DSTEB3");
 		if (argc >= 1) {
 			for (kk = 0; kk < argc-1; kk++) {
