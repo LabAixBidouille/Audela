@@ -47,7 +47,7 @@ categories | folders
 
 BASE       = libaudela libgzip libmc libtt main
 LIBCAMS    = libaudine libcagire libcookbook libethernaude libhisis libkitty libstarlight libwebcam libsbig libaudinet libcamth libsynonyme
-LIBTELS    = liblx200 libcompad liblxnet libaudecom libavrcom libouranos libtemma libmcmt
+LIBTELS    = liblx200 libcompad liblxnet libaudecom libavrcom libouranos libtemma libmcmt libtelscript
 EXTRA      = librgb libgsltcl libjm libak
 DRVCAMS    = ethernaude
 
