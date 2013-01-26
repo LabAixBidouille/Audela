@@ -711,7 +711,7 @@
    #  obsCoord2SiteCoord
    #  Retourne les valeurs des mots cles SITExxxx
    #  Parametre : position GPS
-  #------------------------------------------------------------
+   #------------------------------------------------------------
    proc obsCoord2SiteCoord { home } {
 
       lassign $home -> obs-long sens obs-lat siteelev
