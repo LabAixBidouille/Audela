@@ -25,16 +25,29 @@ variable imagelimit
 
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
 
-      ::gui_cata::charge_memory 0
-
-      set id_current_image 1
+      set id_current_image 0
       foreach current_image $::tools_cata::img_list {
-         if {$id_current_image==1} {set tag "new"} else {set tag "add"}
-         #gren_info "$current_image\n"
-         ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list current_image ::gui_cata::cata_list($id_current_image)
          incr id_current_image
+         if {$id_current_image==1} {set tag "new"} else {set tag "add"}
+         
+         # LOG
+         gren_info "init_priam : $id_current_image / $::tools_cata::nb_img_list \n"
+
+         foreach s [lindex $::gui_cata::cata_list($id_current_image) 1] {
+            set pos [lsearch -index 0 $s "ASTROID"]
+            if {$pos != -1} {
+               set a [lindex [lindex $s $pos] 2]
+               set ar [lindex $a 23]
+               set ac [lindex $a 25]
+               if  { $ar == "R" } {
+                  gren_info "-> $ar $ac\n"
+               }
+            }            
+         }
+         ##
+         
+         ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list current_image ::gui_cata::cata_list($id_current_image)
       }
-      set id_current_image 1
 
    }
 
@@ -109,7 +122,7 @@ variable imagelimit
             if {$name == ""} {
                gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
             }
-            #gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
+            gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
 
             #set a [lindex [lindex $current_listsources 1] $id]
             #gren_info "ASTROM UNSET $a\n"
@@ -362,12 +375,12 @@ variable imagelimit
 
       set tt0 [clock clicks -milliseconds]
       ::tools_astrometry::create_vartab  
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Creation de la structure de variable in $tt sec \n"
       
       set tt0 [clock clicks -milliseconds]
       ::tools_astrometry::calcul_statistique  
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Calculs statistiques in $tt sec \n"
 
       return

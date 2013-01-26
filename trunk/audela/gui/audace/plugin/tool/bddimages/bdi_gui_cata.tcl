@@ -2691,8 +2691,19 @@ namespace eval gui_cata {
          }
 
       }
+      set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+      set x [lsearch -index 0 $a "ASTROID"]
+      set a [lindex [lindex $a $x] 2]
+      gren_info "AV REF $a\n"
+
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
+
+      set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+      set x [lsearch -index 0 $a "ASTROID"]
+      set a [lindex [lindex $a $x] 2]
+      gren_info "SET REF $a\n"
+
       return
    }
 
