@@ -218,6 +218,15 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                }
             }
 
+			// --- Importe les procs de libmc dans le thread
+			sprintf(s,"foreach mc_proc [info commands mc_*] { thread::copycommand %s $mc_proc }", telThreadId);
+            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
+               sprintf(s, "cmdTelCreate: %s",interp->result);
+               Tcl_SetResult(interp, s, TCL_VOLATILE);
+               return TCL_ERROR;
+            }
+
+			/*
             // je duplique la commande "mc_refraction_difradec" dans la thread du telescope
             sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_refraction_difradec");
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
@@ -373,6 +382,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
+			*/
 
             // je prepare la commande de creation du telescope dans la thread du telescope :
             // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
