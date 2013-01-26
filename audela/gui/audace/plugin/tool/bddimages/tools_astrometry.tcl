@@ -127,7 +127,7 @@ variable imagelimit
             set omc_ra  [lindex $b 18]
             set omc_dec [lindex $b 19]
             set mag     "-"
-            gren_info "rho = $rho :: $res_ra $res_dec \n"
+            #gren_info "rho = $rho :: $res_ra $res_dec \n"
             #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
             set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag]
 
@@ -164,7 +164,7 @@ variable imagelimit
             set omc_ra  [lindex $b 18]
             set omc_dec [lindex $b 19]
             set mag     "-"
-            gren_info "Rho = $rho :: $res_ra $res_dec \n"
+            #gren_info "Rho = $rho :: $res_ra $res_dec \n"
             #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
 
             set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag]
@@ -214,9 +214,11 @@ variable imagelimit
       #
       # STAT sur la liste des references
       #
-
+      set cpt 0
       foreach name [array names ::tools_astrometry::listref] {
-
+         
+         incr cpt 
+         
          set rho ""
          set a   ""
          set d   ""
@@ -231,18 +233,25 @@ variable imagelimit
             lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
          }
 
-
          set nb   [llength $::tools_astrometry::listref($name)]
          set mrho [format "%.3f" [::math::statistics::mean  $rho]]
-         set srho [format "%.3f" [::math::statistics::stdev $rho]]
          set mra  [format "%.3f" [::math::statistics::mean  $ra ]]
          set mrd  [format "%.3f" [::math::statistics::mean  $rd ]]
-         set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
-         set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
          set ma   [format "%.6f" [::math::statistics::mean  $a  ]]
          set md   [format "%.5f" [::math::statistics::mean  $d  ]]
-         set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
-         set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+         if {$nb>1} {
+            set srho [format "%.3f" [::math::statistics::stdev $rho]]
+            set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
+            set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
+            set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
+            set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+         } else {
+            set srho 0
+            set sra  0
+            set srd  0
+            set sa   0
+            set sd   0
+         }
          set mm   "-"
          set sm   "-"
 
@@ -271,15 +280,23 @@ variable imagelimit
          
          set nb   [llength $::tools_astrometry::listscience($name)]
          set mrho [format "%.3f" [::math::statistics::mean  $rho]]
-         set srho [format "%.3f" [::math::statistics::stdev $rho]]
          set mra  [format "%.3f" [::math::statistics::mean  $ra ]]
          set mrd  [format "%.3f" [::math::statistics::mean  $rd ]]
-         set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
-         set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
          set ma   [format "%.6f" [::math::statistics::mean  $a  ]]
          set md   [format "%.5f" [::math::statistics::mean  $d  ]]
-         set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
-         set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+         if {$nb>1} {
+            set srho [format "%.3f" [::math::statistics::stdev $rho]]
+            set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
+            set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
+            set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
+            set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+         } else {
+            set srho 0
+            set sra  0
+            set srd  0
+            set sa   0
+            set sd   0
+         }
          set mm   "-"
          set sm   "-"
 
@@ -309,15 +326,23 @@ variable imagelimit
          }
 
          set mrho [format "%.3f" [::math::statistics::mean  $rho]]
-         set srho [format "%.3f" [::math::statistics::stdev $rho]]
          set mra  [format "%.3f" [::math::statistics::mean  $ra ]]
          set mrd  [format "%.3f" [::math::statistics::mean  $rd ]]
-         set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
-         set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
          set ma   [format "%.6f" [::math::statistics::mean  $a  ]]
          set md   [format "%.5f" [::math::statistics::mean  $d  ]]
-         set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
-         set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+         if {$nb>1} {
+            set srho [format "%.3f" [::math::statistics::stdev $rho]]
+            set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
+            set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
+            set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
+            set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+         } else {
+            set srho 0
+            set sra  0
+            set srd  0
+            set sa   0
+            set sd   0
+         }
          set mm   "-"
          set sm   "-"
 

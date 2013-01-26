@@ -145,7 +145,7 @@ namespace eval gui_astrometry {
 
          $::gui_astrometry::sret delete 0 end
          foreach date $::tools_astrometry::listref($name) {
-            $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $date]
+            $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
          
          
@@ -165,7 +165,7 @@ namespace eval gui_astrometry {
 
          $::gui_astrometry::sset delete 0 end
          foreach date $::tools_astrometry::listscience($name) {
-            $::gui_astrometry::sset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $date]
+            $::gui_astrometry::sset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
 
          break
