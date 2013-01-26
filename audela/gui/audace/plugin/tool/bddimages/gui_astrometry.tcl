@@ -10,7 +10,7 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::delta 15
       set ::tools_astrometry::treshold 5
       set ::gui_astrometry::factor 1000
-      set ::tools_cata::id_current_image 0
+
 
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
@@ -76,7 +76,7 @@ namespace eval gui_astrometry {
 # "mag" "err_mag" "name"
    proc ::gui_astrometry::see_residus {  } {
 
-      set ::tools_cata::id_current_image 0
+      set id_current_image 1
       foreach ::tools_cata::current_image $::tools_cata::img_list {
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
 
@@ -121,7 +121,7 @@ namespace eval gui_astrometry {
             }
          }
          
-         incr ::tools_cata::id_current_image
+         incr id_current_image
       }
 
    
@@ -141,7 +141,7 @@ namespace eval gui_astrometry {
 
       foreach select [$w curselection] {
          set name [lindex [$w get $select] 0]
-         gren_info "name = $name \n"
+         gren_info "srpt name = $name \n"
 
          $::gui_astrometry::sret delete 0 end
          foreach date $::tools_astrometry::listref($name) {
@@ -176,17 +176,26 @@ namespace eval gui_astrometry {
 
       foreach select [$w curselection] {
          set date [lindex [$w get $select] 0]
-         gren_info "date = $date \n"
+         gren_info "dspt date = $date \n"
 
          $::gui_astrometry::dset delete 0 end
-
-         foreach name [array names ::tools_astrometry::listscience] {
+         foreach name $::tools_astrometry::listdate($date) {
             $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
          }
 
-         foreach name [array names ::tools_astrometry::listref] {
-            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
-         }
+#         foreach name [array names ::tools_astrometry::listscience] {
+#            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
+#         }
+
+#         foreach name [array names ::tools_astrometry::listref] {
+#            gren_info "dspt name = $name \n"
+#            gren_info "dspt name = $::tools_astrometry::listref($name) \n"
+#            gren_info "dspt DATE = [array names ::tools_astrometry::listdate] \n"
+            
+#            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
+#         }
+
+
 
          break
       }
@@ -232,7 +241,7 @@ namespace eval gui_astrometry {
 
       focus .astrometry
 
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "TOTAL Bouton Charge in $tt sec \n"
 
       return
@@ -268,7 +277,7 @@ namespace eval gui_astrometry {
       }
 
       
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage des resultats in $tt sec \n"
 
 
@@ -279,7 +288,6 @@ namespace eval gui_astrometry {
 
       ::tools_astrometry::init_priam
       ::tools_astrometry::go_priam
-      ::tools_astrometry::extract_priam_result 
       ::gui_astrometry::affich_catalist
    }
 
@@ -313,7 +321,7 @@ namespace eval gui_astrometry {
       }
 
       
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage des resultats in $tt sec \n"
 
    }
