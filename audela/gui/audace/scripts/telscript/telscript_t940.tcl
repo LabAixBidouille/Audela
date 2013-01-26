@@ -20,7 +20,7 @@
 # The telscript_template.tcl script simulates a basic telescope driver. 
 # To test this driver, type the following terminal command:
 #
-# tel::create telscript -telname mytel -script $audace(rep_install)/gui/audace/scripts/telscript/telscript_t940.tcl -home \{$audace(posobs,observateur,gps)\}
+# tel::create telscript -telname t940 -script $audace(rep_install)/gui/audace/scripts/telscript/telscript_t940.tcl -home \{$audace(posobs,observateur,gps)\}
 #
 # During the creation of tel1, firstly the script telscript_template.tcl is
 # sourced. This script must contains at less two procs: setup and loop
@@ -118,6 +118,7 @@ proc loop { } {
    # === Compute current apparent coordinates for "tel1 radec coord"
    if {$telscript($telname,mode)=="real"} {
       set m7 [etel_get_register_s $AXE_AZ M 7]
+	   append telscript($telname,message) "m7=$m7\n"   
       set az [expr 1.*($m7-$telscript(def,AXI_AZ,adu))/$telscript(def,AXIS_AZ,adu2deg)+$telscript(def,AXI_AZ,deg)]
       set m7 [etel_get_register_s $AXE_EL M 7]
       set el [expr 1.*($m7-$telscript(def,AXI_EL,adu))/$telscript(def,AXIS_EL,adu2deg)+$telscript(def,AXI_EL,deg)]
