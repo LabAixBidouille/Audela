@@ -40,6 +40,11 @@
 #include <libtel/util.h>
 #include <libtel/util.h>
 
+// MOTION !
+#define MOTOR_TYPE_STOPED 0
+#define MOTOR_TYPE_INFINITE 1
+#define MOTOR_TYPE_GOTO 2
+
 /*
 Definition of multitelescope supported by the open loop code
 Please use only one of these define before compiling
@@ -587,7 +592,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->action_next, "motor_off");
 	strcpy(telthread->action_cur, "undefined");
 	telthread->status = STATUS_MOTOR_OFF;
-	telthread->motor = MOTION_TYPE_STOPED;
+	telthread->motor = MOTOR_TYPE_STOPED;
 	telthread->compteur = 0;
 	telthread->exit=0;
 
@@ -825,7 +830,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			mytel_motor_stop(telthread);
 			mytel_motor_off(telthread);
 		}
-		telthread->motor=MOTOR_STOPED;
+		telthread->motor=MOTOR_TYPE_STOPED;
 		telthread->status=STATUS_MOTOR_OFF;
 		telthread->speed_app_sim_adu_ha=0;
 		telthread->speed_app_sim_adu_dec=0;
@@ -864,7 +869,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			// --- start motors
 			mytel_motor_on(telthread);
 		}
-		telthread->motor=MOTOR_INFINITE;
+		telthread->motor=MOTOR_TYPE_INFINITE;
 		telthread->status=STATUS_MOTOR_ON;
 		telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
 		telthread->speed_app_sim_adu_dec=0;
@@ -956,7 +961,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		telthread->speed_app_sim_adu_elev=0; // a calculer
 		telthread->speed_app_sim_adu_rot=0; // a calculer
 		// --- goto
-		telthread->motor=MOTION_TYPE_GOTO;
+		telthread->motor=MOTOR_TYPE_GOTO;
 		telthread->status=STATUS_RADEC_SLEWING;
 		if (telthread->mode==MODE_REEL) {
 			// --- coversion (ra0,dec0) J2000 cat en (ha0,dec0) app
@@ -1426,10 +1431,7 @@ int mytel_app_sim_getadu(struct telprop *tel) {
 		tel->utcjd_app_sim_adu_ha=jd;			
 		tel->utcjd_app_sim_adu_dec=jd;	
 	} else {
-#define MOTION_TYPE_STOPED 0
-#define MOTION_TYPE_INFINITE 1
-#define MOTION_TYPE_GOTO 2
-
+      /*
 		dsec=(jd-tel->utcjd_app_sim_adu_ha)*86400.;
 		// --- compute the new HA position
 		pos1=tel->coord_app_sim_adu_ha;
@@ -1469,6 +1471,7 @@ int mytel_app_sim_getadu(struct telprop *tel) {
 		tel->utcjd_app_sim_adu_az=jd;
 		tel->utcjd_app_sim_adu_elev=jd;
 		tel->utcjd_app_sim_adu_rot=jd;
+		*/
 	}
 	return 0;
 }
@@ -1967,15 +1970,15 @@ int mytel_motor_move_start(struct telprop *tel) {
 int mytel_motor_move_stop(struct telprop *tel) {
 	//char s[1024];
 	if ((tel->move_direction[0]=='n')||(tel->move_direction[0]=='N')||(tel->move_direction[0]=='s')||(tel->move_direction[0]=='S')) {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_STOPED)) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_TYPE_STOPED)) {
 		} else {
 		}
 	} else if ((tel->move_direction[0]=='e')||(tel->move_direction[0]=='E')||(tel->move_direction[0]=='w')||(tel->move_direction[0]=='W')) {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_STOPED)) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_TYPE_STOPED)) {
 		} else {
 		}
 	} else {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_STOPED)) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_TYPE_STOPED)) {
 		} else {
 		}
 	}
