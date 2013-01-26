@@ -689,8 +689,8 @@
 
    #------------------------------------------------------------
    #  getCD
-   #  Retourne les coefficients CD
-   #  Parametres : crota2, cdelt1 et cdelt2
+   #  Retourne les coefficients CD en degre/pixel
+   #  Parametres : crota2 (degres), cdelt1 et cdelt2 (degres/pixel)
    #  Derive de sn_tarot_macros.tcl/getImgCenterRaDec
    #------------------------------------------------------------
    proc getCD { cdelt1 cdelt2 crota2 } {
@@ -711,7 +711,7 @@
    #  obsCoord2SiteCoord
    #  Retourne les valeurs des mots cles SITExxxx
    #  Parametre : position GPS
-   #------------------------------------------------------------
+  #------------------------------------------------------------
    proc obsCoord2SiteCoord { home } {
 
       lassign $home -> obs-long sens obs-lat siteelev
