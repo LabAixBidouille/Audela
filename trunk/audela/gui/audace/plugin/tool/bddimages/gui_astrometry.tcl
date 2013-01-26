@@ -129,6 +129,14 @@ namespace eval gui_astrometry {
 
 
 
+
+
+
+
+
+
+
+
    proc ::gui_astrometry::cmdButton1Click_srpt { w args } {
 
       foreach select [$w curselection] {
@@ -137,7 +145,7 @@ namespace eval gui_astrometry {
 
          $::gui_astrometry::sret delete 0 end
          foreach date $::tools_astrometry::listref($name) {
-            $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 0 0 $date]
+            $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $date]
          }
          
          
@@ -157,7 +165,7 @@ namespace eval gui_astrometry {
 
          $::gui_astrometry::sset delete 0 end
          foreach date $::tools_astrometry::listscience($name) {
-            $::gui_astrometry::sset insert end [lreplace $::tools_astrometry::tabval($name,$date) 0 0 $date]
+            $::gui_astrometry::sset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $date]
          }
 
          break
@@ -173,11 +181,11 @@ namespace eval gui_astrometry {
          $::gui_astrometry::dset delete 0 end
 
          foreach name [array names ::tools_astrometry::listscience] {
-            $::gui_astrometry::dset insert end [linsert $::tools_astrometry::tabval($name,$date) 0 $name]
+            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
          }
 
          foreach name [array names ::tools_astrometry::listref] {
-            $::gui_astrometry::dset insert end [linsert $::tools_astrometry::tabval($name,$date) 0 $name]
+            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
          }
 
          break
@@ -271,7 +279,7 @@ namespace eval gui_astrometry {
 
       ::tools_astrometry::init_priam
       ::tools_astrometry::go_priam
-      ::tools_astrometry::extract_priam
+      ::tools_astrometry::extract_priam_result 
       ::gui_astrometry::affich_catalist
    }
 
@@ -346,7 +354,8 @@ namespace eval gui_astrometry {
                                 0 "stdev \u03B4"      right \
                                 0 "moy Mag"           right \
                                 0 "stdev Mag"         right ]
-      set loc_dates_enf   [list 0 "Mid-Date"          left  \
+      set loc_dates_enf   [list 0 "Id"                right \
+                                0 "Mid-Date"          left  \
                                 0 "\u03C1"            right \
                                 0 "res \u03B1"        right \
                                 0 "res \u03B4"        right \
@@ -367,7 +376,8 @@ namespace eval gui_astrometry {
                                 0 "stdev \u03B4"      right \
                                 0 "moy Mag"           right \
                                 0 "stdev Mag"         right ]
-      set loc_sources_enf [list 0 "Name"              left  \
+      set loc_sources_enf [list 0 "Id"                right \
+                                0 "Name"              left  \
                                 0 "type"              center \
                                 0 "\u03C1"            right \
                                 0 "res \u03B1"        right \
@@ -789,8 +799,6 @@ namespace eval gui_astrometry {
 
 
 
-
-      ::tools_astrometry::load_all_cata
 
    }
    

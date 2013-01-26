@@ -9,96 +9,9 @@ variable ifortlib
 variable imagelimit
 
 
-   proc ::tools_astrometry::load_cata {  } {
-
-      global bddconf
-
-      set catafilenameexist [::bddimages_liste::lexist $::tools_cata::current_image "catafilename"]
-      if {$catafilenameexist==0} {return}
-
-      set catafilename [::bddimages_liste::lget $::tools_cata::current_image "catafilename"]
-      set catadirfilename [::bddimages_liste::lget $::tools_cata::current_image "catadirfilename"]
-      set catafile [file join $bddconf(dirbase) $catadirfilename $catafilename]
-      #gren_info "catafile = $catafile\n"
-      set errnum [catch {set catafile [::tools_cata::extract_cata_xml $catafile]} msg ]
-      if {$errnum} {
-         return -code $errnum $msg
-      }
-      
-      gren_info "READ catafile = $catafile\n"
-      set listsources [::tools_cata::get_cata_xml $catafile]
-      
-      set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
-      #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
-      set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-      #set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg 0 0 0}]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC3  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
-      set listsources [::tools_sources::set_common_fields_skybot $listsources]
-      #set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
-      set ::tools_cata::current_listsources $listsources
-
-      set errnum [catch {file delete -force $catafile} msg ]
-
-   }
 
 
 
-   proc ::tools_astrometry::load_all_cata {  } {
-
-      global bddconf
-
-      set ::tools_astrometry::imagelimit 250
-
-      gren_info "Science = $::tools_astrometry::science\n"
-      gren_info "Reference = $::tools_astrometry::reference\n"
-      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
-      gren_info "nb img = $::tools_cata::nb_img_list\n"
-      
-      set imgtmp {}
-      set ::tools_cata::id_current_image 0
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-
-         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
-         gren_info "date : $date  idbddimg : $idbddimg\n"
-         # gren_info "CURRENT_IMAGE :  $::tools_cata::current_image\n"
-
-         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
-
-            set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-            set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
-            set file        [file join $bddconf(dirbase) $dirfilename $filename]
-            set ::tools_cata::current_image_name $filename
-            set ::tools_cata::current_image_date $date
-
-            set ra             [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
-            set dec            [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
-            set pixsize1       [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
-            set pixsize2       [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
-            set foclen         [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
-            set exposure       [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
-            set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
-            set naxis1         [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-            set naxis2         [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
-
-            ::tools_astrometry::load_cata
-
-            lappend imgtmp [::bddimages_liste::ladd $::tools_cata::current_image listsources $::tools_cata::current_listsources ]
-            
-            incr ::tools_cata::id_current_image
-            if {$::tools_cata::id_current_image>=$::tools_astrometry::imagelimit} {break}
-         }
-         
-      }
-
-      set ::tools_cata::img_list $imgtmp
-      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
-      gren_info "nb img = $::tools_cata::nb_img_list\n"
-
-   }
 
 
  
@@ -114,14 +27,14 @@ variable imagelimit
 
       ::gui_cata::charge_memory 0
 
-      set ::tools_cata::id_current_image 1
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-         if {$::tools_cata::id_current_image==1} {set tag "new"} else {set tag "add"}
-         #gren_info "$::tools_cata::current_image\n"
-         ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list ::tools_cata::current_image ::gui_cata::cata_list($::tools_cata::id_current_image)
-         incr ::tools_cata::id_current_image
+      set id_current_image 1
+      foreach current_image $::tools_cata::img_list {
+         if {$id_current_image==1} {set tag "new"} else {set tag "add"}
+         #gren_info "$current_image\n"
+         ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list current_image ::gui_cata::cata_list($id_current_image)
+         incr id_current_image
       }
-      set ::tools_cata::id_current_image 1
+      set id_current_image 1
 
    }
 
@@ -149,6 +62,132 @@ variable imagelimit
    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::tools_astrometry::create_vartab { } {
+         
+      if {[info exists ::tools_astrometry::tabval]}        {unset ::tools_astrometry::tabval}
+      if {[info exists ::tools_astrometry::listref]}       {unset ::tools_astrometry::listref}
+      if {[info exists ::tools_astrometry::listscience]}   {unset ::tools_astrometry::listscience}
+      if {[info exists ::tools_astrometry::listdate]}      {unset ::tools_astrometry::listdate}
+
+            
+      set id_current_image 0
+
+      foreach current_image $::tools_cata::img_list {
+
+         incr id_current_image
+         set current_listsources $::gui_cata::cata_list($id_current_image)
+         set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
+         set dateiso [ mc_date2iso8601 $commundatejj ]
+
+         gren_info "-- img : $id_current_image / [llength $::tools_cata::img_list]\n"
+
+         # REFERENCES
+
+         set list_id_ref [::tools_cata::get_id_astrometric "R" current_listsources]
+         foreach l $list_id_ref {
+
+            set id     [lindex $l 0]
+            set idcata [lindex $l 1]
+            set ar     [lindex $l 2]
+            set ac     [lindex $l 3]
+            set name   [string trim [lindex $l 4] ]
+
+            if {$name == ""} {
+               gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
+            }
+            #gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
+
+            #set a [lindex [lindex $current_listsources 1] $id]
+            #gren_info "ASTROM UNSET $a\n"
+            
+            set s       [lindex [lindex $current_listsources 1] $id]
+            set astroid [lindex $s $idcata]
+            set b       [lindex $astroid 2]
+            #gren_info "b = $b\n"
+
+            set ra      [lindex $b 14]
+            set dec     [lindex $b 15]
+            set res_ra  [format  "%.4f" [lindex $b 16] ]
+            set res_dec [format  "%.4f" [lindex $b 17] ]
+            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
+            set omc_ra  [lindex $b 18]
+            set omc_dec [lindex $b 19]
+            set mag     "-"
+            gren_info "rho = $rho :: $res_ra $res_dec \n"
+            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
+            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag]
+
+            lappend ::tools_astrometry::listref($name)     $dateiso
+            lappend ::tools_astrometry::listdate($dateiso) $name
+            
+         }
+
+         # SCIENCES
+
+         set list_id_science [::tools_cata::get_id_astrometric "S" current_listsources]
+         foreach l $list_id_science {
+
+            set id     [lindex $l 0]
+            set idcata [lindex $l 1]
+            set ar     [lindex $l 2]
+            set ac     [lindex $l 3]
+            set name   [lindex $l 4]
+
+            if {$name == ""} {
+               gren_info "Lect Science = $id $idcata $ar $ac $name\n"
+            }
+            
+            set s       [lindex [lindex $current_listsources 1] $id]
+            set astroid [lindex $s $idcata]
+            set b       [lindex $astroid 2]
+            #gren_info "b = $b\n"
+
+            set ra      [lindex $b 14]
+            set dec     [lindex $b 15]
+            set res_ra  [format  "%.4f" [lindex $b 16] ]
+            set res_dec [format  "%.4f" [lindex $b 17] ]
+            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
+            set omc_ra  [lindex $b 18]
+            set omc_dec [lindex $b 19]
+            set mag     "-"
+            gren_info "Rho = $rho :: $res_ra $res_dec \n"
+            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
+
+            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag]
+
+            lappend ::tools_astrometry::listscience($name) $dateiso
+            lappend ::tools_astrometry::listdate($dateiso) $name
+         }
+         
+         gren_info "date = $dateiso "
+         gren_info "nb science = [llength $list_id_science] "
+         gren_info "nb ref = [llength $list_id_ref] \n "
+
+
+      }
+   
+   }
+
+
+
+
+
+
+
 #0  nb            : nb d element 
 #1  mrho          : moyenne sur rho =  rayon des residu
 #2  stdev_rho     : stdev sur rho
@@ -162,146 +201,6 @@ variable imagelimit
 #10 sd            : stdev sur delta
 #11 mm            : moyenne sur la magnitude
 #12 sm            : stdev sur la magnitude
-   proc ::tools_astrometry::get_cols {} {
-      return [list nb mrho stdev_rho mra mrd sra srd ma md sa sd mm sm]
-   }
-
-
-
-
-   proc ::tools_astrometry::create_vartab { } {
-         
-      if {[info exists ::tools_astrometry::tabval]}        {unset ::tools_astrometry::tabval}
-      if {[info exists ::tools_astrometry::listref]}       {unset ::tools_astrometry::listref}
-      if {[info exists ::tools_astrometry::listscience]}   {unset ::tools_astrometry::listscience}
-      if {[info exists ::tools_astrometry::listdate]}      {unset ::tools_astrometry::listdate}
-
-            
-      set ::tools_cata::id_current_image 0
-
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-
-         incr ::tools_cata::id_current_image
-         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-         set commundatejj [::bddimages_liste::lget $::tools_cata::current_image "commundatejj"]
-         set dateiso [ mc_date2iso8601 $commundatejj ]
-
-         gren_info "-- img : $::tools_cata::id_current_image / [llength $::tools_cata::img_list]\n"
-
-
-
-         # REFERENCES
-
-         set list_id_ref [::tools_cata::get_id_astrometric "R" ::tools_cata::current_listsources]
-         foreach l $list_id_ref {
-
-            set id     [lindex $l 0]
-            set idcata [lindex $l 1]
-            set ar     [lindex $l 2]
-            set ac     [lindex $l 3]
-            set name   [string trim [lindex $l 4] ]
-
-            if {$name == ""} {
-               gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
-            }
-            
-            set s       [lindex [lindex $::tools_cata::current_listsources 1] $id]
-            set astroid [lindex $s $idcata]
-            set b       [lindex $astroid 2]
-            #gren_info "b = $b\n"
-
-            set ra      [lindex $b 14]
-            set dec     [lindex $b 15]
-            set res_ra  [format  "%.4f" [lindex $b 16] ]
-            set res_dec [format  "%.4f" [lindex $b 17] ]
-            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
-            set omc_ra  [lindex $b 18]
-            set omc_dec [lindex $b 19]
-            set mag     "-"
-            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
-            set ::tools_astrometry::tabval($name,$dateiso) [list $ar $rho $res_ra $res_dec $ra $dec $mag]
-
-            lappend ::tools_astrometry::listref($name)     $dateiso
-            lappend ::tools_astrometry::listdate($dateiso) $name
-            
-         }
-
-
-
-
-
-
-
-
-
-
-
-
-         # SCIENCES
-
-
-         set list_id_science [::tools_cata::get_id_astrometric "S" ::tools_cata::current_listsources]
-         foreach l $list_id_science {
-
-            set id     [lindex $l 0]
-            set idcata [lindex $l 1]
-            set ar     [lindex $l 2]
-            set ac     [lindex $l 3]
-            set name   [lindex $l 4]
-
-            if {$name == ""} {
-               gren_info "Lect Science = $id $idcata $ar $ac $name\n"
-            }
-            
-            set s       [lindex [lindex $::tools_cata::current_listsources 1] $id]
-            set astroid [lindex $s $idcata]
-            set b       [lindex $astroid 2]
-            #gren_info "b = $b\n"
-
-            set ra      [lindex $b 14]
-            set dec     [lindex $b 15]
-            set res_ra  [format  "%.4f" [lindex $b 16] ]
-            set res_dec [format  "%.4f" [lindex $b 17] ]
-            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
-            set omc_ra  [lindex $b 18]
-            set omc_dec [lindex $b 19]
-            set mag     "-"
-            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
-
-            set ::tools_astrometry::tabval($name,$dateiso) [list $ar $rho $res_ra $res_dec $ra $dec $mag]
-
-            lappend ::tools_astrometry::listscience($name) $dateiso
-            lappend ::tools_astrometry::listdate($dateiso) $name
-         }
-         
-         
- 
-
-
-
-
-
-         
-         
-         gren_info "date = $dateiso "
-         gren_info "nb science = [llength $list_id_science] "
-         gren_info "nb ref = [llength $list_id_ref] \n "
-         
-         
-      }
-
-
-# loc_sources_par Name Nb mrho stdev_rho mra mrd sra srd ma md sa sd mm sm   
-   
-   
-   }
-
-
-
-
-
-
-
 
    proc ::tools_astrometry::calcul_statistique { } {
    
@@ -311,9 +210,10 @@ variable imagelimit
       if {[info exists ::tools_astrometry::tabdate]}       {unset ::tools_astrometry::tabdate}
       if {[info exists ::tools_astrometry::tabref]}        {unset ::tools_astrometry::tabref}
       if {[info exists ::tools_astrometry::tabscience]}    {unset ::tools_astrometry::tabscience}
-#
-# STAT sur la liste des references
-#
+
+      #
+      # STAT sur la liste des references
+      #
 
       foreach name [array names ::tools_astrometry::listref] {
 
@@ -324,11 +224,11 @@ variable imagelimit
          set rd  ""
 
          foreach date $::tools_astrometry::listref($name) {
-            lappend rho [lindex $::tools_astrometry::tabval($name,$date) 1]
-            lappend ra  [lindex $::tools_astrometry::tabval($name,$date) 2]
-            lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 3]
-            lappend a   [lindex $::tools_astrometry::tabval($name,$date) 4]
-            lappend d   [lindex $::tools_astrometry::tabval($name,$date) 5]
+            lappend rho [lindex $::tools_astrometry::tabval($name,$date) 3]
+            lappend ra  [lindex $::tools_astrometry::tabval($name,$date) 4]
+            lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 5]
+            lappend a   [lindex $::tools_astrometry::tabval($name,$date) 6]
+            lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
          }
 
 
@@ -349,8 +249,8 @@ variable imagelimit
          set ::tools_astrometry::tabref($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
       }
    
-#
-# STAT sur la liste des sciences
+      #
+      # STAT sur la liste des sciences
 #
 
       foreach name [array names ::tools_astrometry::listscience] {
@@ -362,11 +262,11 @@ variable imagelimit
          set rd ""
 
          foreach date $::tools_astrometry::listscience($name) {
-            lappend rho [lindex $::tools_astrometry::tabval($name,$date) 1]
-            lappend ra  [lindex $::tools_astrometry::tabval($name,$date) 2]
-            lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 3]
-            lappend a   [lindex $::tools_astrometry::tabval($name,$date) 4]
-            lappend d   [lindex $::tools_astrometry::tabval($name,$date) 5]
+            lappend rho [lindex $::tools_astrometry::tabval($name,$date) 3]
+            lappend ra  [lindex $::tools_astrometry::tabval($name,$date) 4]
+            lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 5]
+            lappend a   [lindex $::tools_astrometry::tabval($name,$date) 6]
+            lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
          }
          
          set nb   [llength $::tools_astrometry::listscience($name)]
@@ -401,11 +301,11 @@ variable imagelimit
          foreach name $::tools_astrometry::listdate($date) {
             if {[lindex $::tools_astrometry::tabval($name,$date) 0]=="S"} { continue }
             incr nb
-            lappend rho [lindex $::tools_astrometry::tabval($name,$date) 1]
-            lappend ra  [lindex $::tools_astrometry::tabval($name,$date) 2]
-            lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 3]
-            lappend a   [lindex $::tools_astrometry::tabval($name,$date) 4]
-            lappend d   [lindex $::tools_astrometry::tabval($name,$date) 5]
+            lappend rho [lindex $::tools_astrometry::tabval($name,$date) 3]
+            lappend ra  [lindex $::tools_astrometry::tabval($name,$date) 4]
+            lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 5]
+            lappend a   [lindex $::tools_astrometry::tabval($name,$date) 6]
+            lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
          }
 
          set mrho [format "%.3f" [::math::statistics::mean  $rho]]
@@ -452,71 +352,6 @@ variable imagelimit
 
 
 
-   proc ::tools_astrometry::extract_priam {  } {
-
-      set tt0 [clock clicks -milliseconds]
-      ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
-      set tt [expr ([clock clicks -milliseconds] - $tt0)/1000.]
-      gren_info "Extraction des resultats Priam in $tt sec \n"
-
-      return
-
-   }
-
-
-
-
-
-
-
-
-
- # Obsolete ?
-
-   proc ::tools_astrometry::test {  } {
-
-      set r [buf1 fitgauss [list 222 193 269 234 ]]
-      set radec [ buf1 xy2radec [ list [lindex $r 1] [lindex $r 5] ] ]
-      gren_info "\nRADEC=$radec\n\n"
-      
-  }
-  
-  
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -545,7 +380,7 @@ variable imagelimit
 
 
       
-      set ::tools_cata::id_current_image 0
+      set id_current_image 0
 
       # Lecture du fichier en continue
 
@@ -559,9 +394,9 @@ variable imagelimit
          if {$key=="BEGIN"} {
             # Debut image
             set filename $val
-            incr ::tools_cata::id_current_image
-            set catascience($::tools_cata::id_current_image) ""
-            set cataref($::tools_cata::id_current_image) ""
+            incr id_current_image
+            set catascience($id_current_image) ""
+            set cataref($id_current_image) ""
 
             gets $chan success
             #gren_info "$success\n"
@@ -590,23 +425,23 @@ variable imagelimit
          if {$key=="CATA_VALUES"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
-            lappend catascience($::tools_cata::id_current_image) [list $name $sour]
+            lappend catascience($id_current_image) [list $name $sour]
          }
          if {$key=="CATA_REF"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
-            lappend cataref($::tools_cata::id_current_image) [list $name $sour]
+            lappend cataref($id_current_image) [list $name $sour]
          }
                   
       }
       close $chan
 
-      #gren_info "NB IMG EXTRACTED FROM PRIAM RESULTS: [expr $::tools_cata::id_current_image +1 ] \n"
+      #gren_info "NB IMG EXTRACTED FROM PRIAM RESULTS: [expr $id_current_image +1 ] \n"
       #gren_info "NB IMG LIST: [llength $::tools_cata::img_list] \n"
 
    # sur une seule image -> current_listsources
 
-      #gren_info "[::manage_source::get_fields_from_sources $::tools_cata::current_listsources] \n"
+      #gren_info "[::manage_source::get_fields_from_sources $current_listsources] \n"
 
    # A FAIRE  : nettoyage des astrometrie de current_listsources
 
@@ -621,28 +456,28 @@ variable imagelimit
 #                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
 #                                           "mag" "err_mag" "name"] ]
                                            
-      set ::tools_cata::id_current_image 0
+      set id_current_image 0
 
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
+      foreach current_image $::tools_cata::img_list {
 
-         incr ::tools_cata::id_current_image
+         incr id_current_image
          
-         set ex [::bddimages_liste::lexist $::tools_cata::current_image "listsources"]
+         set ex [::bddimages_liste::lexist $current_image "listsources"]
          if {$ex != 0} {
             ::console::affiche_erreur "Attention listsources existe dans img_list et ce n est plus necessaire\n"
          } 
          
-         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+         set current_listsources $::gui_cata::cata_list($id_current_image)
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $current_listsources]\n"
 
-         #gren_info "LISTSOURCES: ($::tools_cata::current_listsources) \n"
-         set n [llength $catascience($::tools_cata::id_current_image)]
+         #gren_info "LISTSOURCES: ($current_listsources) \n"
+         set n [llength $catascience($id_current_image)]
          #gren_info "NB SCIENCE: ($n) \n"
 
-         set fields [lindex $::tools_cata::current_listsources 0]
-         set sources [lindex $::tools_cata::current_listsources 1]
+         set fields [lindex $current_listsources 0]
+         set sources [lindex $current_listsources 1]
          
-         set list_id_science [::tools_cata::get_id_astrometric "S" ::tools_cata::current_listsources]
+         set list_id_science [::tools_cata::get_id_astrometric "S" current_listsources]
          
          #gren_info "list_id_science = $list_id_science\n"
 
@@ -653,12 +488,12 @@ variable imagelimit
             set ac     [lindex $l 3]
             set name   [lindex $l 4]
             #gren_info "Lect = $id $idcata $ar $ac $name\n"
-            #gren_info "catascience = $catascience($::tools_cata::id_current_image)\n"
+            #gren_info "catascience = $catascience($id_current_image)\n"
 
 
-            set x  [lsearch -index 0 $catascience($::tools_cata::id_current_image) $name]
+            set x  [lsearch -index 0 $catascience($id_current_image) $name]
             if {$x>=0} {
-               set data [lindex [lindex $catascience($::tools_cata::id_current_image) $x] 1]
+               set data [lindex [lindex $catascience($id_current_image) $x] 1]
                set ra      [lindex $data 0]
                set dec     [lindex $data 1]
                set res_ra  [lindex $data 2]
@@ -686,7 +521,7 @@ variable imagelimit
             }
          }
 
-         set list_id_ref [::tools_cata::get_id_astrometric "R" ::tools_cata::current_listsources]
+         set list_id_ref [::tools_cata::get_id_astrometric "R" current_listsources]
          
          #gren_info "list_id_ref = $list_id_ref\n"
 
@@ -697,11 +532,11 @@ variable imagelimit
             set ac     [lindex $l 3]
             set name   [lindex $l 4]
             #gren_info "Lect = $id $idcata $ar $ac $name\n"
-            #gren_info "cataref = $cataref($::tools_cata::id_current_image)\n"
+            #gren_info "cataref = $cataref($id_current_image)\n"
 
-            set x  [lsearch -index 0 $cataref($::tools_cata::id_current_image) $name]
+            set x  [lsearch -index 0 $cataref($id_current_image) $name]
             if {$x>=0} {
-               set data [lindex [lindex $cataref($::tools_cata::id_current_image) $x] 1]
+               set data [lindex [lindex $cataref($id_current_image) $x] 1]
                set res_ra  [lindex $data 0]
                set res_dec [lindex $data 1]
 
@@ -729,14 +564,14 @@ variable imagelimit
             }
          }
  
-      set ::gui_cata::cata_list($::tools_cata::id_current_image) [list $fields $sources]
+      set ::gui_cata::cata_list($id_current_image) [list $fields $sources]
 
       }
 
 
-   #gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-   #gren_info "ASTROIDS=[::manage_source::extract_sources_by_catalog $::tools_cata::current_listsources ASTROID]\n"
-   #gren_info "LISTSOURCES=$::tools_cata::current_listsources\n"
+   #gren_info "SRol=[ ::manage_source::get_nb_sources_rollup $current_listsources]\n"
+   #gren_info "ASTROIDS=[::manage_source::extract_sources_by_catalog $current_listsources ASTROID]\n"
+   #gren_info "LISTSOURCES=$current_listsources\n"
 
    # Ecriture des resultats dans un fichier 
       
@@ -814,17 +649,17 @@ variable imagelimit
       if {$form=="TXT"} {
 
          if {[info exists tag]} {unset tag}
-         set ::tools_cata::id_current_image 0
-         foreach ::tools_cata::current_image $::tools_cata::img_list {
+         set id_current_image 0
+         foreach current_image $::tools_cata::img_list {
 
-            set idbddimg [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
-            set commundatejj [::bddimages_liste::lget $::tools_cata::current_image "commundatejj"]
-            set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
-            set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+            set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
+            set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
+            set current_listsources [::bddimages_liste::lget $current_image "listsources"]
+            set tabkey      [::bddimages_liste::lget $current_image "tabkey"]
             set pvalue [string trim [lindex [::bddimages_liste::lget $tabkey "CATA_PVALUE"] 1] ]
             set pvalue 0
 
-            foreach s [lindex $::tools_cata::current_listsources 1] {
+            foreach s [lindex $current_listsources 1] {
                foreach cata $s {
 
                   if {[lindex $cata 0] == "ASTROID"} {
@@ -882,7 +717,7 @@ variable imagelimit
                
             }
 
-            incr ::tools_cata::id_current_image
+            incr id_current_image
          }
          
          gren_info "s $s\n"
@@ -902,16 +737,16 @@ variable imagelimit
 
          set fileres [ file join $audace(rep_travail) priam.txt ]
          set chan0 [open $fileres w]
-         foreach ::tools_cata::current_image $::tools_cata::img_list {
-            set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-            set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
+         foreach current_image $::tools_cata::img_list {
+            set tabkey      [::bddimages_liste::lget $current_image "tabkey"]
+            set current_listsources [::bddimages_liste::lget $current_image "listsources"]
 
-            set cataxml [::tools_cata::get_catafilename $::tools_cata::current_image "TMP" ]
+            set cataxml [::tools_cata::get_catafilename $current_image "TMP" ]
             
             gren_info "cataxml = $cataxml\n"
 
-            gren_info "Rol=[ ::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-            set votable [::votableUtil::list2votable $::tools_cata::current_listsources $tabkey]
+            gren_info "Rol=[ ::manage_source::get_nb_sources_rollup $current_listsources]\n"
+            set votable [::votableUtil::list2votable $current_listsources $tabkey]
 
 #            gren_info "votable = $votable\n"
 
@@ -927,11 +762,11 @@ variable imagelimit
             set err [ catch { insertion_solo $cataxml } msg ]
             gren_info "** INSERTION_SOLO = $err $msg\n"
 
-            set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
+            set cataexist [::bddimages_liste::lexist $current_image "cataexist"]
             if {$cataexist==0} {
-               set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]
+               set current_image [::bddimages_liste::ladd $current_image "cataexist" 1]
             } else {
-               set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "cataexist" 1]
+               set current_image [::bddimages_liste::lupdate $current_image "cataexist" 1]
             }
          }
 
