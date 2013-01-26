@@ -587,7 +587,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->action_next, "motor_off");
 	strcpy(telthread->action_cur, "undefined");
 	telthread->status = STATUS_MOTOR_OFF;
-	telthread->motor=MOTOR_OFF;
+	telthread->motor = MOTION_TYPE_STOPED;
 	telthread->compteur = 0;
 	telthread->exit=0;
 
@@ -825,7 +825,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			mytel_motor_stop(telthread);
 			mytel_motor_off(telthread);
 		}
-		telthread->motor=MOTOR_OFF;
+		telthread->motor=MOTOR_STOPED;
 		telthread->status=STATUS_MOTOR_OFF;
 		telthread->speed_app_sim_adu_ha=0;
 		telthread->speed_app_sim_adu_dec=0;
@@ -864,7 +864,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			// --- start motors
 			mytel_motor_on(telthread);
 		}
-		telthread->motor=MOTOR_ON;
+		telthread->motor=MOTOR_INFINITE;
 		telthread->status=STATUS_MOTOR_ON;
 		telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
 		telthread->speed_app_sim_adu_dec=0;
@@ -956,6 +956,7 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		telthread->speed_app_sim_adu_elev=0; // a calculer
 		telthread->speed_app_sim_adu_rot=0; // a calculer
 		// --- goto
+		telthread->motor=MOTION_TYPE_GOTO;
 		telthread->status=STATUS_RADEC_SLEWING;
 		if (telthread->mode==MODE_REEL) {
 			// --- coversion (ra0,dec0) J2000 cat en (ha0,dec0) app
@@ -1425,14 +1426,43 @@ int mytel_app_sim_getadu(struct telprop *tel) {
 		tel->utcjd_app_sim_adu_ha=jd;			
 		tel->utcjd_app_sim_adu_dec=jd;	
 	} else {
+#define MOTION_TYPE_STOPED 0
+#define MOTION_TYPE_INFINITE 1
+#define MOTION_TYPE_GOTO 2
+
 		dsec=(jd-tel->utcjd_app_sim_adu_ha)*86400.;
-		tel->coord_app_sim_adu_ha=tel->coord_app_sim_adu_ha+tel->speed_app_sim_adu_ha*dsec*tel->N0/360.;
-		tel->coord_app_sim_adu_dec=tel->coord_app_sim_adu_dec+tel->speed_app_sim_adu_dec*dsec*tel->N1/360.;
+		// --- compute the new HA position
+		pos1=tel->coord_app_sim_adu_ha;
+		pos2=pos1+tel->speed_app_sim_adu_ha*dsec*tel->N0/360.;
+		if (tel->motor=MOTION_TYPE_GOTO) {
+			test=(pos1-tel1->coord_cat_sim_deg_ra0)*(pos2-tel1->coord_cat_sim_deg_ra0);
+			if (test<0) {
+				// --- GOTO arrived in HA position
+				pos2=pos1;
+				telthread->speed_app_sim_adu_ha=0;
+				telthread->speed_app_sim_adu_ra=telthread->sideral_deg_per_sec;
+			}
+		}
+		tel->coord_app_sim_adu_ha=pos2;
 		tel->utcjd_app_sim_adu_ha=jd;
-		tel->utcjd_app_sim_adu_dec=jd;	
-		//
+
+
 		tel->coord_app_sim_adu_hapec=(int)(fmod(telthread->coord_app_sim_adu_hapec+25600*dsec/480.,25600));
 		tel->utcjd_app_sim_adu_hapec=jd;
+		// --- compute the new DEC position
+		pos1=tel->coord_app_sim_adu_dec;
+		pos2=pos1+tel->speed_app_sim_adu_dec*dsec*tel->N1/360.;
+		if (tel->motor=MOTION_TYPE_GOTO) {
+			test=(pos1-tel1->coord_cat_sim_deg_dec0)*(pos2-tel1->coord_cat_sim_deg_dec0);
+			if (test<0) {
+				// --- GOTO arrived in DEC position
+				pos2=pos1;
+				telthread->speed_app_sim_adu_dec=0;
+			}
+		}
+		tel->coord_app_sim_adu_dec=pos2;
+		tel->utcjd_app_sim_adu_dec=jd;	
+		//
 		tel->coord_app_sim_adu_az=0;
 		tel->coord_app_sim_adu_elev=0;
 		tel->coord_app_sim_adu_rot=0;
@@ -1937,15 +1967,15 @@ int mytel_motor_move_start(struct telprop *tel) {
 int mytel_motor_move_stop(struct telprop *tel) {
 	//char s[1024];
 	if ((tel->move_direction[0]=='n')||(tel->move_direction[0]=='N')||(tel->move_direction[0]=='s')||(tel->move_direction[0]=='S')) {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_STOPED)) {
 		} else {
 		}
 	} else if ((tel->move_direction[0]=='e')||(tel->move_direction[0]=='E')||(tel->move_direction[0]=='w')||(tel->move_direction[0]=='W')) {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_STOPED)) {
 		} else {
 		}
 	} else {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
+		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor!=MOTOR_STOPED)) {
 		} else {
 		}
 	}

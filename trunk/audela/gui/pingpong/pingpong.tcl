@@ -5,6 +5,8 @@
 # =============================================================================
 
 package require mkLibsdl
+global key_axis0
+set key_axis0 0
 
 # =======================================
 # === Initialisation of the variables.
@@ -53,6 +55,9 @@ place .pingpong.ball -x 100 -y 100
 #--- destroy the toplevel window with the upper right cross
 #--- detruit la fenetre principale avec la croix en haut a droite
 bind .pingpong <Destroy> { destroy .pingpong; exit }
+bind .pingpong <Key-Right> { global axis0 ; set key_axis0 10000 }
+bind .pingpong <Key-Left> { global axis0 ; set key_axis0 -10000 }
+bind .pingpong <Key-F1> { global axis0 ; set key_axis0 0 }
 
 set point1his 0
 set megasortie 0
@@ -99,14 +104,22 @@ while {$megasortie==0} {
 		after 10
 		
 		# --- Lecture des evenements du joystick: Sortie de la boucle et du jeu
-		set res [joystick get 0 button 6]
-		if {$res==1} { exit }
+      catch {
+         set res [joystick get 0 button 6]
+         if {$res==1} { exit }
+      }
 		
 		# --- Recupere la position X du joueur
 		set xplayer [lindex [place configure .pingpong.player -x] 4]
 		
+		# --- Lecture des evenements des fleches du clavier: Deplacement du joueur
+      set axis0 $key_axis0
+      
 		# --- Lecture des evenements du joystick: Deplacement du joueur
-		set axis0 [joystick get 0 axis 0]
+      set axis0 $key_axis0
+      catch {
+         set axis0 [joystick get 0 axis 0]
+      }
 	 	set dxp [expr round($axis0/2000.0)]
 	 		 	
 		# --- Recupere la position X,Y de la balle
