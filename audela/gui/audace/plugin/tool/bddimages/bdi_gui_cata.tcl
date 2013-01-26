@@ -3465,7 +3465,7 @@ namespace eval gui_cata {
 
 
  
-   proc ::gui_cata::delete_source { tbl } {
+   proc ::gui_cata::delete_sources { tbl } {
 
       set onglets $::gui_cata::current_appli.onglets
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
@@ -3485,7 +3485,7 @@ namespace eval gui_cata {
             }
          }
 
-         # Modification du cata_list_source
+         # Modification du current_listsources
          set fields [lindex $::tools_cata::current_listsources 0]
          set sources [lindex $::tools_cata::current_listsources 1]
          set sources [lreplace $sources [expr $select-$cpt] [expr $select-$cpt]]
@@ -3501,8 +3501,100 @@ namespace eval gui_cata {
  
    }
 
+
  
+   proc ::gui_cata::delete_sources_allimg { tbl } {
+
+      set onglets $::gui_cata::current_appli.onglets
+      set idcata [string index [lindex [split $tbl .] 5] 1]
+         
+      set dellist ""
+      foreach select [$tbl curselection] {
+         set id [lindex [$tbl get $select] [::gui_cata::get_pos_col bdi_idc_lock $idcata]]
+         set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+         set sname [::manage_source::naming $s "IMG"]
+         lappend dellist $sname
+      }
+gren_info "ListToDel: $dellist\n"
+
+      # Si la liste est vide, rien a faire
+      if {[llength $dellist] < 1} {
+         return
+      }
+
+      # On boucle sur les images (sauf celle qui est courrante car rien a propager)
+      for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
+
+::console::affiche_erreur "Image #$i / $::tools_cata::nb_img_list\n"
+
+         array set tklist $::gui_cata::tk_list($i,tklist)
+         array set cataname $::gui_cata::tk_list($i,cataname)
+gren_info "cataname = [array get ::gui_cata::cataname]\n"
+         set current_listsources $::gui_cata::cata_list($i)
+         set sources [lindex $current_listsources 1]
+#gren_info "sources = $sources \n"
+
+            foreach {x y} [array get cataname] {
+               set getid($y) $x
+            }
+
+         # On boucle sur les sources a effacer
+         foreach dl $dellist {
+
+gren_info "DL = $dl\n"
+
+            # on boucle sur les sources du cata
+            set cpt 1
+            set pass "no"
+            foreach s $sources {
+               foreach c $s {
+                  if {[lindex $c 0] == "IMG"} {
+                     set namesou [::manage_source::naming $s "IMG"]
+                     if {$namesou == $dl} {
+                        set pass "ok"
+                        break
+                     }
+                  }
+               }
+               if {$pass == "ok"} { break }
+               incr cpt
+            }
+
+gren_info "PASS? $pass \n"
+
+            if {$pass == "ok"} {
+
+gren_info " => source retrouvee $cpt $dl\n"
+
+               # Modif TKLIST
+               foreach {idcata cata} [array get cataname] {
+                  set x [lsearch -index 0 $tklist($idcata) $cpt]
+                  if {$x != -1} {
+                     set tklist($idcata) [lreplace $tklist($idcata) $x $x]
+                  }
+               }
  
+               # Modif current_listsources
+               set fields [lindex $::tools_cata::current_listsources 0]
+               set sources [lindex $::tools_cata::current_listsources 1]
+               set sources [lreplace $sources $cpt $cpt]
+               set ::tools_cata::current_listsources [list $fields $sources]
+
+            }
+               
+         }
+
+         # Modification du tk_list
+         set ::gui_cata::tk_list($i,tklist) [array get tklist]
+         # Modification du cata_list
+         set ::gui_cata::cata_list($i) [list [lindex $current_listsources 0] $sources]
+
+      }
+
+      ::gui_cata::gestion_go
+      return
+
+   } 
  
  
  
@@ -3559,9 +3651,13 @@ namespace eval gui_cata {
         $popupTbl add command -label "Sauver la source" \
            -command "" -state disable
 
-        # Edite la liste selectionnee
-        $popupTbl add command -label "Suppimer la source" \
-           -command "::gui_cata::delete_source $tbl"
+        # Supprime les sources selectionnees dans l'image courante
+        $popupTbl add command -label "Supprimer dans l'image courante" \
+           -command "::gui_cata::delete_sources $tbl"
+
+        # Supprime les sources selectionnees dans toutes les images
+        $popupTbl add command -label "Supprimer dans toutes les images" \
+           -command "::gui_cata::delete_sources_allimg $tbl"
 
         # Separateur
         $popupTbl add separator
