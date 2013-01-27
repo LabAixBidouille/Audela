@@ -47,7 +47,7 @@ int cmdTelAction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 	}
    my_pthread_mutex_lock(&mutex);
 	if (argc==2) {
-		sprintf(ligne,"%s %d",telthread->action_cur,telthread->compteur);
+		sprintf(ligne,"%s %d",telthread->action_next,telthread->compteur);
 		Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	} else {
 		strcpy(telthread->action_next,argv[2]);
@@ -78,6 +78,19 @@ int cmdTelTelName(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    my_pthread_mutex_lock(&mutex);
 	Tcl_SetResult(interp,telthread->telname,TCL_VOLATILE);
 	my_pthread_mutex_unlock(&mutex);
+	return TCL_OK;
+}
+
+int cmdTelSource(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   my_pthread_mutex_lock(&mutex);
+	telthread->source=1;
+	//Tcl_SetResult(interp,"",TCL_VOLATILE);
+	my_pthread_mutex_unlock(&mutex);
+	libtel_sleep(telthread->after+500); // risqué !
+	my_pthread_mutex_lock(&mutex);
+	Tcl_SetResult(interp,telthread->loop_error,TCL_VOLATILE);
+   my_pthread_mutex_unlock(&mutex);
+
 	return TCL_OK;
 }
 
@@ -130,6 +143,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 				sprintf(ligne2,"mc_angle2deg [lindex {%s} 1] 90",argv[3]);
 				Tcl_Eval(interp,ligne2);
 				tel->dec0=atof(interp->result);
+				tel->hadec_goto_blocking=0;
 				result=mytel_hadec_init(tel);
 				Tcl_SetResult(interp,"",TCL_VOLATILE);
             result = TCL_OK;

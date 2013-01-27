@@ -36,6 +36,7 @@ static struct cmditem cmdlist[] = {
    {"loopeval", (Tcl_CmdProc *)cmdTelLoopEval},\
    {"loopresult", (Tcl_CmdProc *)cmdTelLoopResult},\
    {"looperror", (Tcl_CmdProc *)cmdTelLoopError},\
+   {"source", (Tcl_CmdProc *)cmdTelSource},\
    {"hadec", (Tcl_CmdProc *)cmdTelHaDec},\
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}

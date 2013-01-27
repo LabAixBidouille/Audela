@@ -61,15 +61,20 @@ struct telprop {
 	char variables[4096];
 	//
 	int exit;
+	int after;
 	char action_next[100];
-	char action_cur[100];
+	char action_prev[100];
+	char motion_next[100];
+	char motion_prev[100];
 	int compteur;
+	int source;
 	//
 	double coord_app_cod_deg_dec;
 	double coord_app_cod_deg_ha;
 	double coord_app_cod_deg_ra;
 	double ha0;
 	//
+	int hadec_goto_blocking;
 	char move_direction[5];
 
 };
