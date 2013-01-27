@@ -319,6 +319,14 @@ namespace eval ::manage_source {
                return "IMG_[lindex [lindex $cata 2] 8]_$dec"
             }
 
+            if {$mycata=="USNOA2"} {
+               set ra [lindex [lindex $cata 2] 0]
+               set dec [lindex [lindex $cata 2] 1]
+               set dec [regsub {\-} $dec "m"]
+               set dec [regsub {\+} $dec "p"]
+               return "USNOA2_${ra}_$dec"
+            }
+
 
          }
       }
