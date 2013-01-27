@@ -1,0 +1,3 @@
+Scripts located in this folder must not be used alone.
+They must be used by the telescope driver named libtelscript.
+Read the comments in the scripts...
