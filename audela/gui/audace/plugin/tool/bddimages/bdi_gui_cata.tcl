@@ -4231,13 +4231,6 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
 
-
-
-
-
-
-
-
    proc ::gui_cata::gestion_go { } {
 
       set ::tools_cata::id_current_image $::gui_cata::directaccess
@@ -4379,10 +4372,10 @@ gren_info " => source retrouvee $cpt $dl\n"
 
              #----- 
              button $actions.charge -state active -text "Charge" -relief "raised" -command "::gui_cata::charge_memory"
-             pack $actions.charge -in $actions -side left -anchor w -padx 0
+             pack   $actions.charge -in $actions -side left -anchor w -padx 0
 
-             set pf [ ttk::progressbar $actions.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
-             pack $pf -in $actions -side left
+             set    pf [ ttk::progressbar $actions.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
+             pack   $pf -in $actions -side left
 
              label $actions.lab1 -text "Img ("
              pack  $actions.lab1 -in $actions -side left -padx 5 -pady 0
@@ -4395,6 +4388,8 @@ gren_info " => source retrouvee $cpt $dl\n"
              label $actions.lab5 -text ")"
              pack  $actions.lab5 -in $actions -side left -padx 5 -pady 0
 
+             button $actions.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf"
+             pack   $actions.psf -in $actions -side left -anchor w -padx 0
  
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
@@ -5328,6 +5323,135 @@ gren_info " => source retrouvee $cpt $dl\n"
 
    }
    
+
+
+
+
+
+
+
+
+   proc ::gui_cata::psf_box_to_result { } {
+
+      global bddconf
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect ==""} {
+         gren_info "SET CENTER : $::tools_cata::ra_save $::tools_cata::dec_save\n"
+         return
+      }
+      set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]   
+      set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]   
+      
+      set delta 15
+      
+      
+      set err [catch {set results [::tools_cdl::photom_methode $xcent $ycent $delta $bddconf(bufno)]} msg]
+      if {$err} { 
+         gren_info "photom error ($err) ($msg)\n" 
+         set results -1
+      } 
+      gren_info "photom results = $results\n" 
+      set ::gui_cata::current_psf(xsm) [lindex $results 0]
+      set ::gui_cata::current_psf(ysm) [lindex $results 1]
+      set ::gui_cata::current_psf(fwhmx) [lindex $results 2]
+      set ::gui_cata::current_psf(fwhmy) [lindex $results 3]
+      set ::gui_cata::current_psf(fwhm) [lindex $results 4]
+      set ::gui_cata::current_psf(fluxintegre) [lindex $results 5]
+      set ::gui_cata::current_psf(errflux) [lindex $results 6]
+      set ::gui_cata::current_psf(pixmax) [lindex $results 7]
+      set ::gui_cata::current_psf(intensite) [lindex $results 8]
+      set ::gui_cata::current_psf(sigmafond) [lindex $results 9]
+      set ::gui_cata::current_psf(snint) [lindex $results 10]
+      set ::gui_cata::current_psf(snpx) [lindex $results 11]
+      set ::gui_cata::current_psf(delta) [lindex $results 12]
+
+# result = {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
+# result = 
+#   xsm 
+#   ysm 
+#   fwhmx 
+#   fwhmy 
+#   fwhm 
+#   fluxintegre 
+#   errflux 
+#   pixmax 
+#   intensite 
+#   sigmafond 
+#   snint 
+#   snpx
+#   delta
+
+
+
+# result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+
+   }
+   
+   proc ::gui_cata::init_psf { } {
+      if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
+      foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
+         set ::gui_cata::current_psf($key) "-"
+      }
+
+   }
+
+
+   proc ::gui_cata::psf { } {
+
+     ::gui_cata::init_psf 
+
+      set ::gui_cata::fenpsf .psf
+      if { [winfo exists $::gui_cata::fenpsf] } {
+         wm withdraw $::gui_cata::fenpsf
+         wm deiconify $::gui_cata::fenpsf
+         focus $::gui_cata::fenpsf
+         return
+      }
+      toplevel $::gui_cata::fenpsf -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::gui_cata::fenpsf ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::gui_cata::fenpsf ] "+" ] 2 ]
+      wm geometry $::gui_cata::fenpsf +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::gui_cata::fenpsf 1 1
+      wm title $::gui_cata::fenpsf "PSF"
+      wm protocol $::gui_cata::fenpsf WM_DELETE_WINDOW "destroy $::gui_cata::fenpsf"
+
+      set frm $::gui_cata::fenpsf.appli
+
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::gui_cata::fenpsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+         set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $actions.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_box_to_result"
+             pack   $actions.psf -in $actions -side top -anchor w -padx 0
+ 
+             button $actions.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
+             pack   $actions.res -in $actions -side top -anchor w -padx 0
+ 
+             label $actions.lab1 -text "Astroid :"
+             pack  $actions.lab1 -in $actions -side top -padx 5 -pady 0
+
+             set astroid [ frame $frm.astroid -borderwidth 0 -cursor arrow -relief groove ]
+             pack $astroid -in $frm -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+                    foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
+
+                         set value [ frame $astroid.$key -borderwidth 0 -cursor arrow -relief groove ]
+                         pack $value -in $astroid -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+                              label $value.lab1 -text "$key = " 
+                              pack  $value.lab1 -side left -padx 5 -pady 0
+                              label $value.lab2 -textvariable ::gui_cata::current_psf($key)
+                              pack  $value.lab2 -side left -padx 5 -pady 0
+                    }
+
+
+      button $actions.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::gui_cata::fenpsf"
+      pack   $actions.fermer -in $actions -side top -anchor w -padx 0
+
+   }
 
 
 # Fin Classe
