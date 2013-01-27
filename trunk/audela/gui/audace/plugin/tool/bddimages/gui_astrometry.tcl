@@ -329,7 +329,47 @@ namespace eval gui_astrometry {
 
 
 
+   proc ::gui_astrometry::unset_flag { one sent_table } {
+   
+   upvar $sent_table table
+   
+      foreach select [$table curselection] {
+         
+         set data [$table get $select]
+         set id [lindex $data 0]
+         set date [lindex $data 1]
+         gren_info "Id = $id $date\n"
+         gren_info "gestion date = $::tools_cata::current_image_date\n"
+         if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+            return
+         }
+         set onglets [.gestion_cata.appli.onglets.nb tabs]
+         gren_info "gestion onglets = $onglets\n"
+         foreach f $onglets {
+             gren_info "f = $f.frmtable.tbl\n"
+             set idcata [string index [lindex [split $f .] 5] 1]
+             gren_info "idcata = $idcata\n"
+             array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+             gren_info "cataname = $cataname($idcata)\n"
+             if { $cataname($idcata) == "ASTROID"} {
+                .gestion_cata.appli.onglets.nb select $f
+                set u 0
+                foreach x [$f.frmtable.tbl get 0 end] {
+                   set idx [lindex $x 0]
+                   if {$idx == $id} {
+                      gren_info "ok= $u\n"
+                      $f.frmtable.tbl selection set $u
+                   }
+                   incr u
+                }
+                
+             }
 
+         }
+         
+      }
+   
+   }
 
 
 
@@ -596,7 +636,7 @@ namespace eval gui_astrometry {
                  menu $sre.popupTbl -title "Tools"
 
                      $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
-                        -command ""
+                        -command "::gui_astrometry::unset_flag one ::gui_astrometry::sret"
 
                  bind [$::gui_astrometry::sret bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
 
