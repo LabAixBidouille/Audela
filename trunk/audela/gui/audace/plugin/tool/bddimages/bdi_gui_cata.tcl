@@ -3411,14 +3411,15 @@ namespace eval gui_cata {
                }
             }
             
+            gren_info "\n*** s = $s \n\n"
             if {$cata!=""} {
                set name [::manage_source::naming $s $cata]
             } else {
-               #gren_info "\n*** s = $s \n\n"
+               gren_info "\n***"
                set cata $namable
                set name [::manage_source::naming $s $cata]
             }
-            #gren_info "$id :: $ar $ac :: $pr $pc :: $name :: $cata\n"
+            gren_info "$id :: $ar $ac :: $pr $pc :: $name :: $cata\n"
             lappend propalist [list $cata $name $ar $ac $pr $pc]
          }
          
