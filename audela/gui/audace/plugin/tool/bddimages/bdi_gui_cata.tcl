@@ -5471,46 +5471,63 @@ gren_info " => source retrouvee $cpt $dl\n"
          pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              button $actions.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::gui_cata::fenpsf"
-             pack   $actions.fermer -in $actions -side top -anchor w -padx 0
+             pack   $actions.fermer -in $actions -side left -anchor w -padx 0
 
              spinbox $actions.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius  -width 3 \
                  -command "::gui_cata::psf_box_to_result"
-             pack  $actions.radius -in $actions -side top -anchor w
-
+             pack  $actions.radius -in $actions -side left -anchor w
 
              button $actions.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_box_to_result"
-             pack   $actions.psf -in $actions -side top -anchor w -padx 0
+             pack   $actions.psf -in $actions -side left -anchor w -padx 0
  
              button $actions.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
-             pack   $actions.res -in $actions -side top -anchor w -padx 0
+             pack   $actions.res -in $actions -side left -anchor w -padx 0
  
-             label $actions.lab1 -text "PhotomMethode :"
-             pack  $actions.lab1 -in $actions -side top -padx 5 -pady 0
+             button $actions.res -state active -text "Grab" -relief "raised" -command "::bddimages::ressource"
+             pack   $actions.res -in $actions -side left -anchor w -padx 0
+ 
+             button $actions.res -state active -text "New" -relief "raised" -command "::bddimages::ressource"
+             pack   $actions.res -in $actions -side left -anchor w -padx 0
+ 
+             button $actions.res -state active -text "Save" -relief "raised" -command "::bddimages::ressource"
+             pack   $actions.res -in $actions -side left -anchor w -padx 0
+ 
+         set results [frame $frm.results -borderwidth 0 -cursor arrow -relief groove]
+         pack $results -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             set astroid [ frame $frm.astroid -borderwidth 0 -cursor arrow -relief groove ]
-             pack $astroid -in $frm -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+         set photommethode [frame $results.photommethode -borderwidth 0 -cursor arrow -relief groove]
+         pack $photommethode -in $results -anchor n -side left -expand 0 -fill x -padx 10 -pady 5
+
+             label $photommethode.lab1 -text "PhotomMethode :"
+             pack  $photommethode.lab1 -in $photommethode -side top -padx 2 -pady 0
+
+             set values [ frame $photommethode.values -borderwidth 0 -cursor arrow -relief groove ]
+             pack $values -in $photommethode -anchor n -side top -expand 1 -fill both -padx 10 -pady 2
 
                     foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
 
-                         set value [ frame $astroid.$key -borderwidth 0 -cursor arrow -relief groove ]
-                         pack $value -in $astroid -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+                         set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                         pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
 
                               label $value.lab1 -text "$key = " 
-                              pack  $value.lab1 -side left -padx 5 -pady 0
+                              pack  $value.lab1 -side left -padx 2 -pady 0
                               label $value.lab2 -textvariable ::gui_cata::current_psf($key)
-                              pack  $value.lab2 -side left -padx 5 -pady 0
+                              pack  $value.lab2 -side left -padx 2 -pady 0
                     }
 
-             label $actions.labfitgauss -text "FitGauss :"
-             pack  $actions.labfitgauss -in $actions -side top -padx 5 -pady 0
+         set fitgauss [frame $results.fitgauss -borderwidth 0 -cursor arrow -relief groove]
+         pack $fitgauss -in $results -anchor n -side left -expand 0 -fill x -padx 2 -pady 2
 
-             set fitgauss [ frame $frm.fitgauss -borderwidth 0 -cursor arrow -relief groove ]
-             pack $fitgauss -in $frm -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+             label $fitgauss.labfitgauss -text "FitGauss :"
+             pack  $fitgauss.labfitgauss -in $fitgauss -side top -padx 2 -pady 0
+
+             set values [ frame $fitgauss.values -borderwidth 0 -cursor arrow -relief groove ]
+             pack $values -in $fitgauss -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
 
                     foreach key [list xflux xcent xfwhm xfond yflux ycent yfwhm yfond] {
 
-                         set value [ frame $fitgauss.$key -borderwidth 0 -cursor arrow -relief groove ]
-                         pack $value -in $fitgauss -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+                         set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                         pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
 
                               label $value.lab1 -text "$key = " 
                               pack  $value.lab1 -side left -padx 5 -pady 0
