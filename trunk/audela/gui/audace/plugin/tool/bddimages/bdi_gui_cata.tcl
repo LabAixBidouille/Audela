@@ -5337,37 +5337,68 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
       if {$err>0 || $rect ==""} {
-         gren_info "SET CENTER : $::tools_cata::ra_save $::tools_cata::dec_save\n"
+         cleanmark
          return
       }
       set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]   
       set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]   
       
-      set delta 15
       
+#     photom_methode
       
-      set err [catch {set results [::tools_cdl::photom_methode $xcent $ycent $delta $bddconf(bufno)]} msg]
+      set err [catch {set result [::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $bddconf(bufno)]} msg]
       if {$err} { 
          gren_info "photom error ($err) ($msg)\n" 
-         set results -1
+         set result -1
       } 
-      gren_info "photom results = $results\n" 
-      set ::gui_cata::current_psf(xsm) [lindex $results 0]
-      set ::gui_cata::current_psf(ysm) [lindex $results 1]
-      set ::gui_cata::current_psf(fwhmx) [lindex $results 2]
-      set ::gui_cata::current_psf(fwhmy) [lindex $results 3]
-      set ::gui_cata::current_psf(fwhm) [lindex $results 4]
-      set ::gui_cata::current_psf(fluxintegre) [lindex $results 5]
-      set ::gui_cata::current_psf(errflux) [lindex $results 6]
-      set ::gui_cata::current_psf(pixmax) [lindex $results 7]
-      set ::gui_cata::current_psf(intensite) [lindex $results 8]
-      set ::gui_cata::current_psf(sigmafond) [lindex $results 9]
-      set ::gui_cata::current_psf(snint) [lindex $results 10]
-      set ::gui_cata::current_psf(snpx) [lindex $results 11]
-      set ::gui_cata::current_psf(delta) [lindex $results 12]
+      gren_info "photom results = $result\n" 
 
-# result = {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
-# result = 
+#     fit gauss
+
+      set result_fitgauss [buf$bddconf(bufno) fitgauss $rect]
+      gren_info "fitgauss = $result_fitgauss\n"
+
+#     Init des variables
+
+      set ::gui_cata::current_psf(xsm)         [lindex $result 0]
+      set ::gui_cata::current_psf(ysm)         [lindex $result 1]
+      set ::gui_cata::current_psf(fwhmx)       [lindex $result 2]
+      set ::gui_cata::current_psf(fwhmy)       [lindex $result 3]
+      set ::gui_cata::current_psf(fwhm)        [lindex $result 4]
+      set ::gui_cata::current_psf(fluxintegre) [lindex $result 5]
+      set ::gui_cata::current_psf(errflux)     [lindex $result 6]
+      set ::gui_cata::current_psf(pixmax)      [lindex $result 7]
+      set ::gui_cata::current_psf(intensite)   [lindex $result 8]
+      set ::gui_cata::current_psf(sigmafond)   [lindex $result 9]
+      set ::gui_cata::current_psf(snint)       [lindex $result 10]
+      set ::gui_cata::current_psf(snpx)        [lindex $result 11]
+      set ::gui_cata::current_psf(delta)       [lindex $result 12]
+
+      set ::gui_cata::current_psf(xflux) [lindex $result_fitgauss 0]
+      set ::gui_cata::current_psf(xcent) [lindex $result_fitgauss 1]
+      set ::gui_cata::current_psf(xfwhm) [lindex $result_fitgauss 2]
+      set ::gui_cata::current_psf(xfond) [lindex $result_fitgauss 3]
+      set ::gui_cata::current_psf(yflux) [lindex $result_fitgauss 4]
+      set ::gui_cata::current_psf(ycent) [lindex $result_fitgauss 5]
+      set ::gui_cata::current_psf(yfwhm) [lindex $result_fitgauss 6]
+      set ::gui_cata::current_psf(yfond) [lindex $result_fitgauss 7]
+
+#     AFFICHAGE DES RONDS
+
+      cleanmark
+      
+      # photom_methode
+      set r $::gui_cata::current_psf(delta)
+      affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green 0 1
+      affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green $r 2
+
+      affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) red 0 1
+      affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue 30 2
+
+
+# photom_methode = 
+#   {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+#   {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
 #   xsm 
 #   ysm 
 #   fwhmx 
@@ -5382,9 +5413,18 @@ gren_info " => source retrouvee $cpt $dl\n"
 #   snpx
 #   delta
 
+# fit gauss = 
+#   xflux
+#   xcent
+#   xfwhm
+#   xfond
+#   yflux
+#   ycent 
+#   yfwhm
+#   yfond
 
 
-# result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+
 
    }
    
@@ -5393,13 +5433,19 @@ gren_info " => source retrouvee $cpt $dl\n"
       foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
          set ::gui_cata::current_psf($key) "-"
       }
-
+      foreach key [ list xflux xcent xfwhm xfond yflux ycent yfwhm yfond ] {
+         set ::gui_cata::current_psf($key) "-"
+      }
+      set ::gui_cata::psf_radius 15
    }
 
 
    proc ::gui_cata::psf { } {
 
      ::gui_cata::init_psf 
+
+      set spinlist ""
+      for {set i 1} {$i<100} {incr i} {lappend spinlist $i}
 
       set ::gui_cata::fenpsf .psf
       if { [winfo exists $::gui_cata::fenpsf] } {
@@ -5424,13 +5470,21 @@ gren_info " => source retrouvee $cpt $dl\n"
          set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
          pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
+             button $actions.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::gui_cata::fenpsf"
+             pack   $actions.fermer -in $actions -side top -anchor w -padx 0
+
+             spinbox $actions.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius  -width 3 \
+                 -command "::gui_cata::psf_box_to_result"
+             pack  $actions.radius -in $actions -side top -anchor w
+
+
              button $actions.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_box_to_result"
              pack   $actions.psf -in $actions -side top -anchor w -padx 0
  
              button $actions.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
              pack   $actions.res -in $actions -side top -anchor w -padx 0
  
-             label $actions.lab1 -text "Astroid :"
+             label $actions.lab1 -text "PhotomMethode :"
              pack  $actions.lab1 -in $actions -side top -padx 5 -pady 0
 
              set astroid [ frame $frm.astroid -borderwidth 0 -cursor arrow -relief groove ]
@@ -5447,9 +5501,23 @@ gren_info " => source retrouvee $cpt $dl\n"
                               pack  $value.lab2 -side left -padx 5 -pady 0
                     }
 
+             label $actions.labfitgauss -text "FitGauss :"
+             pack  $actions.labfitgauss -in $actions -side top -padx 5 -pady 0
 
-      button $actions.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::gui_cata::fenpsf"
-      pack   $actions.fermer -in $actions -side top -anchor w -padx 0
+             set fitgauss [ frame $frm.fitgauss -borderwidth 0 -cursor arrow -relief groove ]
+             pack $fitgauss -in $frm -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+                    foreach key [list xflux xcent xfwhm xfond yflux ycent yfwhm yfond] {
+
+                         set value [ frame $fitgauss.$key -borderwidth 0 -cursor arrow -relief groove ]
+                         pack $value -in $fitgauss -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+                              label $value.lab1 -text "$key = " 
+                              pack  $value.lab1 -side left -padx 5 -pady 0
+                              label $value.lab2 -textvariable ::gui_cata::current_psf($key)
+                              pack  $value.lab2 -side left -padx 5 -pady 0
+                    }
+
 
    }
 
