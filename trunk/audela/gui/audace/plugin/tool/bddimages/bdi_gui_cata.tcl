@@ -2501,10 +2501,144 @@ namespace eval gui_cata {
 
 
 
+   proc ::gui_cata::unset_srpt {  } {
+      
+      set color red
+      set width 2
+      cleanmark
+
+      foreach select [$::gui_astrometry::srpt curselection] {
+         
+         set data [$::gui_astrometry::srpt get $select]
+         set name [lindex $data 0]
+         set date $::tools_cata::current_image_date
+         gren_info "gestion name = $name\n"
+         gren_info "gestion date = $date\n"
+         
+         set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+         gren_info "gestion Id = $id\n"
+         
+         
+         if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+            return
+         }
+         set onglets [.gestion_cata.appli.onglets.nb tabs]
+         set f [.gestion_cata.appli.onglets.nb select]
+         set idcata [string index [lindex [split $f .] 5] 1]
+         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+         gren_info "cataname = $cataname($idcata)\n"
+
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               $f.frmtable.tbl selection set $u
+               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+               set dec [lindex $x [::gui_cata::get_pos_col dec]]
+               affich_un_rond $ra $dec $color $width
+            }
+            incr u
+         }
+         
+      }
+      
+      ::gui_cata::unset_flag $f.frmtable.tbl
+
+      ::gui_cata::propagation $f.frmtable.tbl
+   
+   }
 
 
+   proc ::gui_cata::voir_srpt {  } {
+      
+      set color red
+      set width 2
+      cleanmark
+
+      foreach select [$::gui_astrometry::srpt curselection] {
+         
+         set data [$::gui_astrometry::srpt get $select]
+         set name [lindex $data 0]
+         set date $::tools_cata::current_image_date
+         gren_info "gestion name = $name\n"
+         gren_info "gestion date = $date\n"
+         
+         set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+         gren_info "gestion Id = $id\n"
+         
+         
+         if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+            return
+         }
+         set onglets [.gestion_cata.appli.onglets.nb tabs]
+         set f [.gestion_cata.appli.onglets.nb select]
+         set idcata [string index [lindex [split $f .] 5] 1]
+         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+         gren_info "cataname = $cataname($idcata)\n"
+
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               $f.frmtable.tbl selection set $u
+               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+               set dec [lindex $x [::gui_cata::get_pos_col dec]]
+               affich_un_rond $ra $dec $color $width
+            }
+            incr u
+         }
+         
+      }
+   
+   }
 
 
+   proc ::gui_cata::voir_sret {  } {
+      
+      set color red
+      set width 2
+      cleanmark
+
+      foreach select [$::gui_astrometry::sret curselection] {
+         
+         set data [$::gui_astrometry::sret get $select]
+         set id [lindex $data 0]
+         set date [lindex $data 1]
+         #gren_info "Id = $id $date\n"
+         #gren_info "gestion date = $::tools_cata::current_image_date\n"
+         if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+            return
+         }
+         set onglets [.gestion_cata.appli.onglets.nb tabs]
+         #gren_info "gestion onglets = $onglets\n"
+         foreach f $onglets {
+             #gren_info "f = $f.frmtable.tbl\n"
+             set idcata [string index [lindex [split $f .] 5] 1]
+             #gren_info "idcata = $idcata\n"
+             array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+             #gren_info "cataname = $cataname($idcata)\n"
+             if { $cataname($idcata) == "ASTROID"} {
+                .gestion_cata.appli.onglets.nb select $f
+                set u 0
+                foreach x [$f.frmtable.tbl get 0 end] {
+                   set idx [lindex $x 0]
+                   if {$idx == $id} {
+                      #gren_info "ok= $u\n"
+                      $f.frmtable.tbl selection set $u
+                      set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+                      set dec [lindex $x [::gui_cata::get_pos_col dec]]
+                      affich_un_rond $ra $dec $color $width
+                   }
+                   incr u
+                }
+                
+             }
+
+         }
+         
+      }
+   
+   }
 
 
 
