@@ -3327,12 +3327,15 @@ namespace eval gui_cata {
  
  
  
-   proc ::gui_cata::grab_sources { tbl } {
+   proc ::gui_cata::grab_sources { { tbl "" } } {
 
       set color red
       set width 2
       cleanmark
-      $tbl selection clear 0 end
+      if {$tbl!=""} {
+         gren_info "GUI\n"
+         $tbl selection clear 0 end
+      }
 
       set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
       if {$err>0 || $rect==""} {
@@ -3343,15 +3346,24 @@ namespace eval gui_cata {
       set sources [lindex $::tools_cata::current_listsources 1]
       set id 1
       foreach s $sources {
+         set x -100
+         set y -100
          foreach cata $s {
             if {[lindex $cata 0] == "IMG"} {
                set x [lindex [lindex $cata 2] 2]
                set y [lindex [lindex $cata 2] 3]
-               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
-                  # selection de la source
-                  set u 0
-                  # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
-                  # l indice de la table.
+            }
+            if {[lindex $cata 0] == "ASTROID"} {
+               set x [lindex [lindex $cata 2] 0]
+               set y [lindex [lindex $cata 2] 1]
+            }
+            
+            if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+               # selection de la source
+               set u 0
+               # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
+               # l indice de la table.
+               if {$tbl!=""} {
                   foreach l [$tbl get 0 end] {
                      set idx [lindex $l 0]
                      if {$idx == $id} {
@@ -3363,11 +3375,15 @@ namespace eval gui_cata {
                      }
                      incr u
                   }
+
+               } else {
+                  gren_info "source = $s\n"
                }
+            break
             }
          }
-         incr id
       }
+      incr id
    }
 
 
@@ -5383,6 +5399,13 @@ gren_info " => source retrouvee $cpt $dl\n"
       set ::gui_cata::current_psf(yfwhm) [lindex $result_fitgauss 6]
       set ::gui_cata::current_psf(yfond) [lindex $result_fitgauss 7]
 
+      set xd [expr abs([lindex $result 0]-$xcent)]
+      set yd [expr abs([lindex $result 1]-$ycent)]
+      set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+      set ::gui_cata::current_psf(rdiff) $rdiff
+
+
+
 #     AFFICHAGE DES RONDS
 
       cleanmark
@@ -5392,8 +5415,10 @@ gren_info " => source retrouvee $cpt $dl\n"
       affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green 0 1
       affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green $r 2
 
+      set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
+
       affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) red 0 1
-      affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue 30 2
+      affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue $r 2
 
 
 # photom_methode = 
@@ -5428,6 +5453,50 @@ gren_info " => source retrouvee $cpt $dl\n"
 
    }
    
+   proc ::gui_cata::psf_new { } {
+
+      # "ra" "dec" "poserr" "mag" "magerr"
+      # "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
+      # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+      # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" 
+      # "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"
+      set ol ""
+      lappend ol $::gui_cata::current_psf(xsm)        
+      lappend ol $::gui_cata::current_psf(ysm)        
+      lappend ol $::gui_cata::current_psf(fwhmx)      
+      lappend ol $::gui_cata::current_psf(fwhmy)      
+      lappend ol $::gui_cata::current_psf(fwhm)       
+      lappend ol $::gui_cata::current_psf(fluxintegre)
+      lappend ol $::gui_cata::current_psf(errflux)    
+      lappend ol $::gui_cata::current_psf(pixmax)     
+      lappend ol $::gui_cata::current_psf(intensite)  
+      lappend ol $::gui_cata::current_psf(sigmafond)  
+      lappend ol $::gui_cata::current_psf(snint)      
+      lappend ol $::gui_cata::current_psf(snpx)       
+      lappend ol $::gui_cata::current_psf(delta)             
+      lappend ol $::gui_cata::current_psf(rdiff)             
+      lappend ol ra dec poserr poserr 0.0 0.0 mag magerr "-" "-" "-" "-" "-"       
+       
+       #$::gui_cata::cata_list($::tools_cata::id_current_image)
+       gren_info "id_current_image = $::tools_cata::id_current_image\n"
+       set current_image [ lindex  $::tools_cata::img_list [expr $::tools_cata::id_current_image -1] ]
+       set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
+       set dateiso [ mc_date2iso8601 $commundatejj ]
+       gren_info "date = $dateiso\n"
+       set ls [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]
+       set ns [ list [ list "ASTROID" [list "" "" "" "" "" ] $ol ]]
+       lappend ls $ns
+       gren_info "new source = $ns\n"
+       set ::gui_cata::cata_list($::tools_cata::id_current_image) [lreplace $::gui_cata::cata_list($::tools_cata::id_current_image) 1 1 $ls]
+       
+   }
+
+   proc ::gui_cata::psf_grab { } {
+
+       ::gui_cata::grab_sources
+       
+   }
+
    proc ::gui_cata::init_psf { } {
       if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
       foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
@@ -5483,14 +5552,14 @@ gren_info " => source retrouvee $cpt $dl\n"
              button $actions.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
              pack   $actions.res -in $actions -side left -anchor w -padx 0
  
-             button $actions.res -state active -text "Grab" -relief "raised" -command "::bddimages::ressource"
-             pack   $actions.res -in $actions -side left -anchor w -padx 0
+             button $actions.grab -state active -text "Grab" -relief "raised" -command "::gui_cata::psf_grab"
+             pack   $actions.grab -in $actions -side left -anchor w -padx 0
  
-             button $actions.res -state active -text "New" -relief "raised" -command "::bddimages::ressource"
-             pack   $actions.res -in $actions -side left -anchor w -padx 0
+             button $actions.new -state active -text "New" -relief "raised" -command "::gui_cata::psf_new"
+             pack   $actions.new -in $actions -side left -anchor w -padx 0
  
-             button $actions.res -state active -text "Save" -relief "raised" -command "::bddimages::ressource"
-             pack   $actions.res -in $actions -side left -anchor w -padx 0
+             button $actions.save -state active -text "Save" -relief "raised" -command "::bddimages::ressource"
+             pack   $actions.save -in $actions -side left -anchor w -padx 0
  
          set results [frame $frm.results -borderwidth 0 -cursor arrow -relief groove]
          pack $results -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
