@@ -35,6 +35,7 @@ int cmdTelMessage(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 int cmdTelVariables(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTelName(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelLoopError(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelSource(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelAdu(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 

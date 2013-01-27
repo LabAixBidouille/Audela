@@ -305,23 +305,20 @@ int mytel_radec_state(struct telprop *tel,char *result)
 
 int mytel_radec_goto(struct telprop *tel)
 {
-	/*
 	int sortie,t0,dt,time_out=300;
 	time_t ltime;
-	*/
    my_pthread_mutex_lock(&mutex);
 	telthread->ra0=tel->ra0;
 	telthread->dec0=tel->dec0;
 	strcpy(telthread->action_next,"radec_goto");
    my_pthread_mutex_unlock(&mutex);
-	/*
    if (tel->radec_goto_blocking==1) {
 		sortie=0;
 		t0=(int)time(&ltime);
 		while (sortie=0) {
-			libtel_sleep(500);
+			libtel_sleep(telthread->after+500);
 			my_pthread_mutex_lock(&mutex);
-			if (telthread->status!=STATUS_RADEC_SLEWING) {
+			if (strcmp(telthread->motion_next,"radec_slewing")!=0) {
 				sortie=1;
 			}
 		   my_pthread_mutex_unlock(&mutex);
@@ -331,17 +328,34 @@ int mytel_radec_goto(struct telprop *tel)
 			}
 		}
 	}
-	*/
    return 0;
 }
 
 int mytel_hadec_goto(struct telprop *tel)
 {
+	int sortie,t0,dt,time_out=300;
+	time_t ltime;
    my_pthread_mutex_lock(&mutex);
 	telthread->ha0=tel->ha0;
 	telthread->dec0=tel->dec0;
 	strcpy(telthread->action_next,"hadec_goto");
    my_pthread_mutex_unlock(&mutex);
+   if (tel->hadec_goto_blocking==1) {
+		sortie=0;
+		t0=(int)time(&ltime);
+		while (sortie=0) {
+			libtel_sleep(telthread->after+500);
+			my_pthread_mutex_lock(&mutex);
+			if (strcmp(telthread->motion_next,"hadec_slewing")!=0) {
+				sortie=1;
+			}
+		   my_pthread_mutex_unlock(&mutex);
+			dt=(int)time(&ltime);
+			if (dt>time_out) {
+				sortie=2;
+			}
+		}
+	}
    return 0;
 }
 
@@ -368,10 +382,8 @@ int mytel_radec_motor(struct telprop *tel)
 {
    my_pthread_mutex_lock(&mutex);
    if (tel->radec_motor==1) {
-      /* stop the motor */
 		strcpy(telthread->action_next,"motor_off");
    } else {
-      /* start the motor */
 		strcpy(telthread->action_next,"motor_on");
    }
    my_pthread_mutex_unlock(&mutex);
@@ -447,6 +459,9 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
 int mytel_home_get(struct telprop *tel,char *ligne)
 {
    /* Get the longitude */
+   my_pthread_mutex_lock(&mutex);
+   strcpy(tel->home,telthread->home);
+   my_pthread_mutex_unlock(&mutex);
    strcpy(ligne,tel->home);
    return 0;
 }
@@ -455,6 +470,9 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 {
    /* Set the longitude */
    sprintf(tel->home,"GPS %f %s %f %f",longitude,ew,latitude,altitude);
+   my_pthread_mutex_lock(&mutex);
+   strcpy(telthread->home,tel->home);
+   my_pthread_mutex_unlock(&mutex);
    return 0;
 }
 
@@ -491,6 +509,8 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	sprintf(telthread->script_loop,"[pwd]/%s_loop.tcl",telthread->telname);
 	strcpy(telthread->proc_setup,"setup");
 	strcpy(telthread->proc_loop,"loop");
+	telthread->after=250;
+	strcpy(telthread->home,"GPS 2 E 43 148");
 	if (argc >= 1) {
 		for (kk = 0; kk < argc-1; kk++) {
 			if (strcmp(argv[kk], "-script") == 0) {
@@ -506,15 +526,24 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			}
 			if (strcmp(argv[kk], "-telname") == 0) {
 				strcpy(telthread->telname,argv[kk + 1]);
+				strcpy(tel_ini[0].name,telthread->telname);
 			}
 			if (strcmp(argv[kk], "-home") == 0) {
 				strcpy(telthread->home,argv[kk + 1]);
+			}
+			if (strcmp(argv[kk], "-after") == 0) {
+				telthread->after=atoi(argv[kk + 1]);
+				if (telthread->after<1) { telthread->after=1; }
+				if (telthread->after>10000) { telthread->after=10000; }
 			}
 		}
 	}
 
 	// initialise les variables avant d'entrer dans la boucle
 	strcpy(telthread->action_next,"motor_off");
+	strcpy(telthread->action_prev,telthread->action_next);
+	strcpy(telthread->motion_next,"stopped");
+	strcpy(telthread->motion_prev,telthread->motion_next);
 	telthread->coord_app_cod_deg_ra=0;
 	telthread->coord_app_cod_deg_dec=0;
 	telthread->coord_app_cod_deg_ha=0;
@@ -524,20 +553,20 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	strcpy(telthread->eval_command_line,"");
 	telthread->compteur=0;
 	strcpy(telthread->loop_error,"");
+	telthread->source=0;
+	telthread->radec_move_rate=0;
+	strcpy(telthread->move_direction,"N");
 
-	// charge le script general s'il existe
-	sprintf(s,"source \"%s\"",telthread->script);
-	if (mytel_tcleval(telthread,s)==TCL_ERROR) {
-		// --- le script general n'existe pas
-		// charge le script du setup
-		sprintf(s,"source \"%s\"",telthread->script_setup);
-		mytel_tcleval(telthread,s);
+	sprintf(s,"file exists \"%s\"",telthread->script);
+	mytel_tcleval(telthread,s);
+	if (strcmp(telthread->interp->result,"1")==0) {
+		// charge le script general puisqu'il existe
+		sprintf(s,"source \"%s\"",telthread->script);
 		if (mytel_tcleval(telthread,s)==TCL_ERROR) {
+			sprintf(s,"Error in the script %s : %s",telthread->script,telthread->interp->result);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
 		}
-		telthread->script_type=SCRIPT_TYPE_FILE;
-	} else {
-		// --- le script general existe
 		// verifie la presence de la proc setup
 		sprintf(s,"info procs %s",telthread->proc_setup);
 		mytel_tcleval(telthread,s);
@@ -560,14 +589,30 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			return TCL_ERROR;
 		}
 		telthread->script_type=SCRIPT_TYPE_PROC;
+	} else {
+		// --- le script general n'existe pas
+		sprintf(s,"file exists \"%s\"",telthread->script_setup);
+		mytel_tcleval(telthread,s);
+		if (strcmp(telthread->interp->result,"1")==0) {
+			sprintf(s,"Error, the script %s does not exist.",telthread->script_setup);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		// charge le script du setup
+		sprintf(s,"source \"%s\"",telthread->script_setup);
+		mytel_tcleval(telthread,s);
+		if (mytel_tcleval(telthread,s)==TCL_ERROR) {
+			sprintf(s,"Error in the script %s. %s",telthread->script_setup,telthread->interp->result);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		telthread->script_type=SCRIPT_TYPE_FILE;
 	}
-
-	// Creation des commandes effectuees a la fin d'une action de la grande boucle
-	//Tcl_CreateCommand(telthread->interp,"CmdThreadTel_loopeval", (Tcl_CmdProc *)CmdThreadTel_loopeval, (ClientData)telthread, NULL);
 
 	// initialisation des commandes tcl necessaires au fonctionnement en boucle.
 	Tcl_CreateCommand(telthread->interp,"ThreadTel_loop", (Tcl_CmdProc *)ThreadTel_loop, (ClientData)telthread, NULL);
-	mytel_tcleval(telthread,"global telscript ; proc TTel_Loop {} { global telscript ; ThreadTel_loop ; after 250 TTel_Loop }");
+	sprintf(s,"proc TTel_Loop {} { global telscript ; ThreadTel_loop ; after %d TTel_Loop }",telthread->after);
+	mytel_tcleval(telthread,s);
 
 	// Lance le fonctionnement en boucle.
 	mytel_tcleval(telthread,"TTel_Loop");
@@ -590,14 +635,13 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    my_pthread_mutex_lock(&mutex);
 
 	telthread->compteur++;
-	strcpy(telthread->action_cur,telthread->action_next);
 
 	/********************************************/
    /*** update variables from tel1 functions ***/
 	/********************************************/
 	sprintf(s,"set telscript(%s,action_next) %s",telthread->telname,telthread->action_next);
 	mytel_tcleval(telthread,s);
-	sprintf(s,"set telscript(%s,action_cur) %s",telthread->telname,telthread->action_cur);
+	sprintf(s,"set telscript(%s,action_prev) %s",telthread->telname,telthread->action_prev);
 	mytel_tcleval(telthread,s);
 	sprintf(s,"set telscript(%s,ra0) %f",telthread->telname,telthread->ra0);
 	mytel_tcleval(telthread,s);
@@ -607,7 +651,10 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	mytel_tcleval(telthread,s);
 	sprintf(s,"set telscript(%s,home) {%s}",telthread->telname,telthread->home);
 	mytel_tcleval(telthread,s);
-
+	sprintf(s,"set telscript(%s,radec_move_rate) %f",telthread->telname,telthread->radec_move_rate);
+	mytel_tcleval(telthread,s);
+	sprintf(s,"set telscript(%s,move_direction) {%s}",telthread->telname,telthread->move_direction);
+	mytel_tcleval(telthread,s);
 
 	/****************************************/
    /*** check and execute a command line ***/
@@ -622,7 +669,18 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	/**************************/
    /*** call the proc loop ***/
 	/**************************/
+	strcpy(telthread->loop_error,"");
 	if (telthread->script_type==SCRIPT_TYPE_PROC) {
+		if (telthread->source==1) {
+			// recharge eventuellement le script de la boucle
+			sprintf(s,"source \"%s\"",telthread->script);
+			mytel_tcleval(telthread,s);
+			if (mytel_tcleval(telthread,s)==TCL_ERROR) {
+				strcat(telthread->loop_error,telthread->interp->result);
+				strcat(telthread->loop_error,". ");
+			}
+		}
+		telthread->source=0;
 		// execute la proc de la boucle
 		strcpy(s,telthread->proc_loop);
 		mytel_tcleval(telthread,s);
@@ -632,14 +690,22 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		mytel_tcleval(telthread,s);
 	}
 	if (mytel_tcleval(telthread,s)==TCL_ERROR) {
-		strcpy(telthread->loop_error,telthread->interp->result);
-	} else {
-		strcpy(telthread->loop_error,"");
+		strcat(telthread->loop_error,telthread->interp->result);
 	}
 
 	/*******************************************/
    /*** commit variables for tel1 functions ***/
 	/*******************************************/
+	sprintf(s,"set telscript(%s,action_next)",telthread->telname);
+	mytel_tcleval(telthread,s);
+	strcpy(telthread->action_next,telthread->interp->result);
+	strcpy(telthread->action_prev,telthread->interp->result);
+
+	sprintf(s,"set telscript(%s,motion_next)",telthread->telname);
+	mytel_tcleval(telthread,s);
+	strcpy(telthread->motion_next,telthread->interp->result);
+	strcpy(telthread->motion_prev,telthread->interp->result);
+
 	sprintf(s,"set telscript(%s,message)",telthread->telname);
 	mytel_tcleval(telthread,s);
 	strcpy(telthread->message,telthread->interp->result);
@@ -666,17 +732,6 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	return TCL_OK;
 }
-
-/******************************
- *** CmdThreadTel_loopeval ***
- ******************************/
-/*
-int CmdThreadTel_loopeval(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-	char result;	
-	result=mytel_tcleval(telthread,argv[1]);
-	return result;
-}
-*/
 
 int tel_testcom(struct telprop *tel)
 /* -------------------------------- */
