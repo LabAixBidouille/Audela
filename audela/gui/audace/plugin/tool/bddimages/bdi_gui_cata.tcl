@@ -2822,6 +2822,7 @@ namespace eval gui_cata {
    proc ::gui_cata::unset_flag { tbl } {
 
       set flag "-"
+      gren_info "tbl=$tbl\n"
       set onglets $::gui_cata::current_appli.onglets
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
       set idcata [string index [lindex [split $tbl .] 5] 1]
