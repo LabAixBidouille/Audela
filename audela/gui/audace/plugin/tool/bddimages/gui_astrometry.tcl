@@ -148,7 +148,7 @@ namespace eval gui_astrometry {
             $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
          
-         ::gui_cata::voir_srpt
+         ::gui_cata::voir_sxpt $::gui_astrometry::srpt
 
          break
       }
@@ -166,6 +166,8 @@ namespace eval gui_astrometry {
          foreach date $::tools_astrometry::listscience($name) {
             $::gui_astrometry::sset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
+
+         ::gui_cata::voir_sxpt $::gui_astrometry::sspt
 
          break
       }
