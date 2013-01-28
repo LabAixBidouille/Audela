@@ -3344,11 +3344,13 @@ namespace eval gui_cata {
       }
 
       set sources [lindex $::tools_cata::current_listsources 1]
-      set id 1
+      set id 0
+      set cpt_grab 0
       foreach s $sources {
          set x -100
          set y -100
          foreach cata $s {
+         
             if {[lindex $cata 0] == "IMG"} {
                set x [lindex [lindex $cata 2] 2]
                set y [lindex [lindex $cata 2] 3]
@@ -3377,13 +3379,18 @@ namespace eval gui_cata {
                   }
 
                } else {
+                  incr cpt_grab
+                  if {$cpt_grab>1}  { return [list 1 "Ambigue"]}
                   gren_info "source = $s\n"
+                  set result [list 0 "" $id $s]
                }
             break
             }
          }
+         incr id
       }
-      incr id
+      if {$cpt_grab==0} { return [list 1 "Unknown"] }
+      return $result
    }
 
 
@@ -5342,7 +5349,20 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
 
+   proc ::gui_cata::psf_box_auto { } {
+   
+      ::gui_cata::psf_source
+      ::gui_cata::psf_name_source
+      ::gui_cata::psf_id_source 
 
+       foreach mycata $s {
+          if {[lindex $mycata 0] == "TYCHO2" } {
+             set ra [lindex [lindex $mycata 1] 0]
+             set dec [lindex [lindex $mycata 1] 1]
+       }
+      
+      
+   }
 
 
 
@@ -5358,6 +5378,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
       set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]   
       set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]   
+      
       
       
 #     photom_methode
@@ -5452,7 +5473,35 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
    }
+
+
+
+
+   proc ::gui_cata::psf_popup { tbl } {
    
+      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
+      set idcata [string index [lindex [split $tbl .] 5] 1]
+      if {[string compare -nocase $cataselect "ASTROID"] == 0} {
+         
+         set propalist ""
+         foreach select [$tbl curselection] {
+
+            set id   [lindex [$tbl get $select] [::gui_cata::get_pos_col bdi_idc_lock $idcata]]
+            set ar   [lindex [$tbl get $select] [::gui_cata::get_pos_col astrom_reference $idcata]]
+            set ac   [lindex [$tbl get $select] [::gui_cata::get_pos_col astrom_catalog $idcata]]
+            set pr   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_reference $idcata]]
+            set pc   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_catalog $idcata]]
+            set name [lindex [$tbl get $select] [::gui_cata::get_pos_col name $idcata]]
+
+            ::gui_cata::psf
+         }
+         
+      }
+            
+   }
+
+
+
    proc ::gui_cata::psf_new { } {
 
       # "ra" "dec" "poserr" "mag" "magerr"
@@ -5488,16 +5537,53 @@ gren_info " => source retrouvee $cpt $dl\n"
        lappend ls $ns
        gren_info "new source = $ns\n"
        set ::gui_cata::cata_list($::tools_cata::id_current_image) [lreplace $::gui_cata::cata_list($::tools_cata::id_current_image) 1 1 $ls]
+
+
        
    }
+   
+   
+   
+   
 
    proc ::gui_cata::psf_grab { } {
 
-       ::gui_cata::grab_sources
+       set ::gui_cata::psf_id_source ""
+       set ::gui_cata::list_of_cata ""
+       set r [::gui_cata::grab_sources]
+
+       set err [lindex $r 0]
+       set aff [lindex $r 1]
+       set id  [lindex $r 2]
+       set s   [lindex $r 3]
+       
+       if {$aff=="Unknown" || $aff=="Ambigue"} {
+          set ::gui_cata::psf_name_source $aff
+          return
+       }
+
+       set d [::manage_source::namable $s]
+       if {$d==""} {
+          gren_info "s=$s\n"
+          set ::gui_cata::psf_name_source "Unnamable"
+          return
+       }
+       set ::gui_cata::psf_source $s
+       set ::gui_cata::psf_name_source [::manage_source::naming $s $d]
+       set ::gui_cata::psf_id_source $id
+            
+       foreach mycata $s {
+          append ::gui_cata::list_of_cata " " [lindex $mycata 0]
+       }
        
    }
 
-   proc ::gui_cata::init_psf { } {
+
+
+
+
+   proc ::gui_cata::init_psf { sou } {
+
       if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
       foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
          set ::gui_cata::current_psf($key) "-"
@@ -5505,13 +5591,25 @@ gren_info " => source retrouvee $cpt $dl\n"
       foreach key [ list xflux xcent xfwhm xfond yflux ycent yfwhm yfond ] {
          set ::gui_cata::current_psf($key) "-"
       }
-      set ::gui_cata::psf_radius 15
+
+
+      if { $sou == "" } {
+         set ::gui_cata::psf_radius 15
+         set ::gui_cata::psf_name_source "Unknown"
+         set ::gui_cata::list_of_cata ""
+      } else {
+         
+      }
+
+      
+
+
    }
 
 
-   proc ::gui_cata::psf { } {
+   proc ::gui_cata::psf { { sou "" } } {
 
-     ::gui_cata::init_psf 
+      ::gui_cata::init_psf $sou
 
       set spinlist ""
       for {set i 1} {$i<100} {incr i} {lappend spinlist $i}
@@ -5536,19 +5634,31 @@ gren_info " => source retrouvee $cpt $dl\n"
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_cata::fenpsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
 
+
+         set info  [frame $frm.info -borderwidth 0 -cursor arrow -relief groove]
+         pack $info -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $info.lab1 -text "Source : " 
+             pack  $info.lab1 -side left -padx 2 -pady 0
+             
+             label $info.labv -textvariable ::gui_cata::psf_name_source
+             pack  $info.labv -side left -padx 2 -pady 0
+
+             label $info.op -text "(" 
+             pack  $info.op -side left -padx 2 -pady 0
+
+             label $info.loc -textvariable ::gui_cata::list_of_cata
+             pack  $info.loc -side left -padx 2 -pady 0
+
+             label $info.fp -text ")" 
+             pack  $info.fp -side left -padx 2 -pady 0
+
          set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
          pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              button $actions.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::gui_cata::fenpsf"
              pack   $actions.fermer -in $actions -side left -anchor w -padx 0
 
-             spinbox $actions.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius  -width 3 \
-                 -command "::gui_cata::psf_box_to_result"
-             pack  $actions.radius -in $actions -side left -anchor w
-
-             button $actions.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_box_to_result"
-             pack   $actions.psf -in $actions -side left -anchor w -padx 0
- 
              button $actions.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
              pack   $actions.res -in $actions -side left -anchor w -padx 0
  
@@ -5560,6 +5670,19 @@ gren_info " => source retrouvee $cpt $dl\n"
  
              button $actions.save -state active -text "Save" -relief "raised" -command "::bddimages::ressource"
              pack   $actions.save -in $actions -side left -anchor w -padx 0
+ 
+         set actions2 [frame $frm.actions2 -borderwidth 0 -cursor arrow -relief groove]
+         pack $actions2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $actions2.psfauto -state active -text "Auto" -relief "raised" -command "::gui_cata::psf_box_auto"
+             pack   $actions2.psfauto -side left -anchor w -padx 0
+ 
+             spinbox $actions2.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius  -width 3 \
+                 -command "::gui_cata::psf_box_to_result"
+             pack  $actions2.radius -side left -anchor w
+
+             button $actions2.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_box_to_result"
+             pack   $actions2.psf -side left -anchor w -padx 0
  
          set results [frame $frm.results -borderwidth 0 -cursor arrow -relief groove]
          pack $results -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5

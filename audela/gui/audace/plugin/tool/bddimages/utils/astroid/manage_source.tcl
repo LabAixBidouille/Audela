@@ -274,7 +274,7 @@ namespace eval ::manage_source {
 
    proc ::manage_source::namable { mysource } {
 
-      set list_of_cata [list UCAC4 UCAC3 UCAC2 TYCHO2 2MASS USNOA2 SKYBOT]
+      set list_of_cata [list TYCHO2 UCAC4 UCAC3 UCAC2 2MASS USNOA2 SKYBOT]
       foreach cata $list_of_cata {
           foreach mycata $mysource {
              if {[lindex $mycata 0] == $cata} {
@@ -284,6 +284,8 @@ namespace eval ::manage_source {
       }
       return ""
    }
+
+
    #
    # manage_source::naming
    # Fournit une denomination selon le type de catalogue
@@ -325,6 +327,12 @@ namespace eval ::manage_source {
                set dec [regsub {\-} $dec "m"]
                set dec [regsub {\+} $dec "p"]
                return "USNOA2_${ra}_$dec"
+            }
+            if {$mycata=="TYCHO2"} {
+               set id1 [lindex [lindex $cata 2] 1]
+               set id2 [lindex [lindex $cata 2] 2]
+               set id3 [lindex [lindex $cata 2] 3]
+               return "TYCHO2_${id1}_${id2}_${id3}"
             }
 
 
