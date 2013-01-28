@@ -2580,7 +2580,7 @@ namespace eval gui_cata {
          foreach x [$f.frmtable.tbl get 0 end] {
             set idx [lindex $x 0]
             if {$idx == $id} {
-               $f.frmtable.tbl selection set $u
+               #$f.frmtable.tbl selection set $u
                set ra  [lindex $x [::gui_cata::get_pos_col ra]]
                set dec [lindex $x [::gui_cata::get_pos_col dec]]
                affich_un_rond $ra $dec $color $width

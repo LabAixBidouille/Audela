@@ -148,8 +148,8 @@ namespace eval gui_astrometry {
             $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
          
-         
-        # on selectionne la source dans la gui de gestion si elle existe
+         ::gui_cata::voir_srpt
+         $::gui_astrometry::srpt rowconfigure $select -bg green
 
          break
       }
@@ -563,6 +563,7 @@ namespace eval gui_astrometry {
                      $srp.popupTbl add command -label "Supprimer de toutes les images" \
                          -command "::gui_cata::unset_srpt"
                  
+                 #--- bindings
                  bind $::gui_astrometry::srpt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_srpt %W ]
                  bind [$::gui_astrometry::srpt bodypath] <ButtonPress-3> [ list tk_popup $srp.popupTbl %X %Y ]
 
@@ -805,6 +806,7 @@ namespace eval gui_astrometry {
               pack   $info.labf -in $info -side left -padx 3 -pady 3 -anchor c
               label  $info.lastres -textvariable ::tools_astrometry::last_results_file -borderwidth 1
               pack   $info.lastres -in $info -side left -padx 3 -pady 3 -anchor c
+
 
 
 
