@@ -2549,15 +2549,15 @@ namespace eval gui_cata {
    }
 
 
-   proc ::gui_cata::voir_srpt {  } {
+   proc ::gui_cata::voir_sxpt { w } {
       
       set color red
       set width 2
       cleanmark
 
-      foreach select [$::gui_astrometry::srpt curselection] {
+      foreach select [$w curselection] {
          
-         set data [$::gui_astrometry::srpt get $select]
+         set data [$w get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
          gren_info "gestion name = $name\n"
@@ -2593,6 +2593,11 @@ namespace eval gui_cata {
    }
 
 
+
+
+   
+   
+   
    proc ::gui_cata::voir_sret {  } {
       
       set color red
