@@ -3351,16 +3351,35 @@ namespace eval gui_cata {
          set y -100
          foreach cata $s {
          
+            set x -100
+            set y -100
+            
             if {[lindex $cata 0] == "IMG"} {
                set x [lindex [lindex $cata 2] 2]
                set y [lindex [lindex $cata 2] 3]
+               set ra [lindex [lindex $cata 1] 0]
+               set dec [lindex [lindex $cata 1] 1]
+               affich_un_rond $ra $dec green 1 
+               affich_un_rond_xy  $x $y green 1 1
             }
             if {[lindex $cata 0] == "ASTROID"} {
                set x [lindex [lindex $cata 2] 0]
                set y [lindex [lindex $cata 2] 1]
+               affich_un_rond_xy  $x $y blue 1 1
+            }
+            if {[lindex $cata 0] == "UCAC3"} {
+               set ra [lindex [lindex $cata 1] 0]
+               set dec [lindex [lindex $cata 1] 1]
+               affich_un_rond $ra $dec red 1 
             }
             
             if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+
+               set pos [lsearch -exact $s "ASTROID"]         
+
+
+               gren_info "x y  = $x $y\n"
+               gren_info "rect = $rect\n"
                # selection de la source
                set u 0
                # On boucle sur les sources de l onglet courant. on est obligé de boucler sur les sources pour retrouver
@@ -3373,6 +3392,19 @@ namespace eval gui_cata {
                         set ra  [lindex [lindex $cata 1] 0]
                         set dec [lindex [lindex $cata 1] 1]
                         affich_un_rond $ra $dec $color $width
+
+                        set namable [::manage_source::namable $s]
+                        if {$namable==""} {
+                           set name ""
+                        } else {
+                           set name [::manage_source::naming $s $namable]
+                        } 
+                        
+                        gren_info "NAME = $name "
+                        foreach cata $s {
+                           gren_info "[lindex $cata 0] "
+                        }
+                        gren_info "\n"
                         break
                      }
                      incr u
@@ -3381,7 +3413,26 @@ namespace eval gui_cata {
                } else {
                   incr cpt_grab
                   if {$cpt_grab>1}  { return [list 1 "Ambigue"]}
-                  gren_info "source = $s\n"
+#                  gren_info "source = $s\n"
+
+                        set namable [::manage_source::namable $s]
+                        if {$namable==""} {
+                           set name ""
+                        } else {
+                           set name [::manage_source::naming $s $namable]
+                        } 
+                        
+                        gren_info "NAME = $name "
+                        foreach cata $s {
+                           gren_info "[lindex $cata 0] "
+                           if {[lindex $cata 0]==$namable} {
+                              set ra  [lindex [lindex $cata 1] 0]
+                              set dec [lindex [lindex $cata 1] 1]
+                              affich_un_rond $ra $dec $color $width
+                           }
+                        }
+                        gren_info "\n"
+
                   set result [list 0 "" $id $s]
                }
             break
@@ -4267,13 +4318,17 @@ gren_info " => source retrouvee $cpt $dl\n"
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
-      ::gui_cata::set_progress 33 100
+      ::gui_cata::set_progress 25 100
       array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns)
       array set ::gui_cata::tklist                 $::gui_cata::tk_list($::tools_cata::id_current_image,tklist)
       array set ::gui_cata::cataname               $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
 
-      ::gui_cata::set_progress 66 100
+      ::gui_cata::set_progress 50 100
       ::gui_cata::affich_current_tklist
+
+      ::gui_cata::set_progress 75 100
+      ::gui_cata::affiche_current_image
+
       ::gui_cata::set_progress 100 100
       gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
@@ -5601,6 +5656,8 @@ gren_info " => source retrouvee $cpt $dl\n"
          
       }
 
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
       
 
 
