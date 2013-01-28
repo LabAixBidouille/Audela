@@ -369,7 +369,8 @@ namespace eval gui_astrometry {
                                 0 "res \u03B4"        right \
                                 0 "\u03B1"            right \
                                 0 "\u03B4"            right \
-                                0 Mag                 right ]
+                                0 Mag                 right \
+                                0 err_Mag             right ]
       set loc_dates_par   [list 0 "Mid-Date"          left  \
                                 0 "Nb ref"            right \
                                 0 "\u03C1"            right \
@@ -392,7 +393,8 @@ namespace eval gui_astrometry {
                                 0 "res \u03B4"        right \
                                 0 "\u03B1"            right \
                                 0 "\u03B4"            right \
-                                0 Mag                 right ]
+                                0 Mag                 right \
+                                0 err_Mag             right ]
       
       set ::gui_astrometry::fen .astrometry
       if { [winfo exists $::gui_astrometry::fen] } {

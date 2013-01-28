@@ -96,7 +96,6 @@ variable imagelimit
       if {[info exists ::tools_astrometry::listscience]}   {unset ::tools_astrometry::listscience}
       if {[info exists ::tools_astrometry::listdate]}      {unset ::tools_astrometry::listdate}
 
-            
       set id_current_image 0
 
       foreach current_image $::tools_cata::img_list {
@@ -139,10 +138,11 @@ variable imagelimit
             set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
             set omc_ra  [lindex $b 18]
             set omc_dec [lindex $b 19]
-            set mag     "-"
+            set mag     [lindex $b 20]
+            set err_mag [lindex $b 21]
             #gren_info "rho = $rho :: $res_ra $res_dec \n"
             #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
-            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag]
+            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag]
 
             lappend ::tools_astrometry::listref($name)     $dateiso
             lappend ::tools_astrometry::listdate($dateiso) $name
@@ -176,11 +176,12 @@ variable imagelimit
             set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
             set omc_ra  [lindex $b 18]
             set omc_dec [lindex $b 19]
-            set mag     "-"
+            set mag     [lindex $b 20]
+            set err_mag [lindex $b 21]
             #gren_info "Rho = $rho :: $res_ra $res_dec \n"
             #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
 
-            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag]
+            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag]
 
             lappend ::tools_astrometry::listscience($name) $dateiso
             lappend ::tools_astrometry::listdate($dateiso) $name
@@ -237,6 +238,7 @@ variable imagelimit
          set d   ""
          set ra  ""
          set rd  ""
+         set m   ""
 
          foreach date $::tools_astrometry::listref($name) {
             lappend rho [lindex $::tools_astrometry::tabval($name,$date) 3]
@@ -244,6 +246,7 @@ variable imagelimit
             lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 5]
             lappend a   [lindex $::tools_astrometry::tabval($name,$date) 6]
             lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
+            lappend m   [lindex $::tools_astrometry::tabval($name,$date) 8]
          }
 
          set nb   [llength $::tools_astrometry::listref($name)]
@@ -252,21 +255,22 @@ variable imagelimit
          set mrd  [format "%.3f" [::math::statistics::mean  $rd ]]
          set ma   [format "%.6f" [::math::statistics::mean  $a  ]]
          set md   [format "%.5f" [::math::statistics::mean  $d  ]]
+         set mm   [format "%.3f" [::math::statistics::mean  $m  ]]
          if {$nb>1} {
             set srho [format "%.3f" [::math::statistics::stdev $rho]]
             set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
             set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
             set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
             set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+            set sm   [format "%.3f" [::math::statistics::stdev $m  ]]
          } else {
             set srho 0
             set sra  0
             set srd  0
             set sa   0
             set sd   0
+            set sm   0
          }
-         set mm   "-"
-         set sm   "-"
 
          set ::tools_astrometry::tabref($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
       }
@@ -282,6 +286,7 @@ variable imagelimit
          set d ""
          set ra ""
          set rd ""
+         set m ""
 
          foreach date $::tools_astrometry::listscience($name) {
             lappend rho [lindex $::tools_astrometry::tabval($name,$date) 3]
@@ -289,6 +294,7 @@ variable imagelimit
             lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 5]
             lappend a   [lindex $::tools_astrometry::tabval($name,$date) 6]
             lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
+            lappend m   [lindex $::tools_astrometry::tabval($name,$date) 8]
          }
          
          set nb   [llength $::tools_astrometry::listscience($name)]
@@ -297,21 +303,22 @@ variable imagelimit
          set mrd  [format "%.3f" [::math::statistics::mean  $rd ]]
          set ma   [format "%.6f" [::math::statistics::mean  $a  ]]
          set md   [format "%.5f" [::math::statistics::mean  $d  ]]
+         set mm   [format "%.3f" [::math::statistics::mean  $m  ]]
          if {$nb>1} {
             set srho [format "%.3f" [::math::statistics::stdev $rho]]
             set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
             set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
             set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
             set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+            set sm   [format "%.3f" [::math::statistics::stdev $m  ]]
          } else {
             set srho 0
             set sra  0
             set srd  0
             set sa   0
             set sd   0
+            set sm   0
          }
-         set mm   "-"
-         set sm   "-"
 
          set ::tools_astrometry::tabscience($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
       }
@@ -326,6 +333,7 @@ variable imagelimit
          set d ""
          set ra ""
          set rd ""
+         set m ""
 
          set nb 0
          foreach name $::tools_astrometry::listdate($date) {
@@ -336,6 +344,7 @@ variable imagelimit
             lappend rd  [lindex $::tools_astrometry::tabval($name,$date) 5]
             lappend a   [lindex $::tools_astrometry::tabval($name,$date) 6]
             lappend d   [lindex $::tools_astrometry::tabval($name,$date) 7]
+            lappend m   [lindex $::tools_astrometry::tabval($name,$date) 8]
          }
 
          set mrho [format "%.3f" [::math::statistics::mean  $rho]]
@@ -343,21 +352,22 @@ variable imagelimit
          set mrd  [format "%.3f" [::math::statistics::mean  $rd ]]
          set ma   [format "%.6f" [::math::statistics::mean  $a  ]]
          set md   [format "%.5f" [::math::statistics::mean  $d  ]]
+         set mm   [format "%.3f" [::math::statistics::mean  $m  ]]
          if {$nb>1} {
             set srho [format "%.3f" [::math::statistics::stdev $rho]]
             set sra  [format "%.3f" [::math::statistics::stdev $ra ]]
             set srd  [format "%.3f" [::math::statistics::stdev $rd ]]
             set sa   [format "%.3f" [::math::statistics::stdev $a  ]]
             set sd   [format "%.3f" [::math::statistics::stdev $d  ]]
+            set sm   [format "%.3f" [::math::statistics::stdev $m  ]]
          } else {
             set srho 0
             set sra  0
             set srd  0
             set sa   0
             set sd   0
+            set sm   0
          }
-         set mm   "-"
-         set sm   "-"
 
          set ::tools_astrometry::tabdate($date)  [list $date $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
       }
