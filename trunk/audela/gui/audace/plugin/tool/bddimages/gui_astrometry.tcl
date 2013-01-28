@@ -149,7 +149,6 @@ namespace eval gui_astrometry {
          }
          
          ::gui_cata::voir_srpt
-         $::gui_astrometry::srpt rowconfigure $select -bg green
 
          break
       }
