@@ -892,13 +892,13 @@ namespace eval gui_cata {
       }
       
       set listsources [::tools_cata::get_cata_xml $catafile]
-      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag calib_mag_ss1}]
+      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag err_mag}]
       set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra dec poserr mag magerr }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
       set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
-      set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 0.0 0.0 0.0 }]
+      set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
       set ::tools_cata::current_listsources $listsources
 
    }
@@ -1344,17 +1344,17 @@ namespace eval gui_cata {
       set filename    [::bddimages_liste::lget $::tools_cata::current_image filename   ]
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-      set ::tools_cata::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
-      set ::tools_cata::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
-      set ::tools_cata::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
-      set ::tools_cata::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
-      set ::tools_cata::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
-      set ::tools_cata::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+      set ::tools_cata::ra       [lindex [::bddimages_liste::lget $tabkey ra      ] 1]
+      set ::tools_cata::dec      [lindex [::bddimages_liste::lget $tabkey dec     ] 1]
+      set ::tools_cata::pixsize1 [lindex [::bddimages_liste::lget $tabkey pixsize1] 1]
+      set ::tools_cata::pixsize2 [lindex [::bddimages_liste::lget $tabkey pixsize2] 1]
+      set ::tools_cata::foclen   [lindex [::bddimages_liste::lget $tabkey foclen  ] 1]
+      set ::tools_cata::exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE] 1]
       set ::tools_cata::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
-      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
-      set xcent    [expr $naxis1/2.0]
-      set ycent    [expr $naxis2/2.0]
+      set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
+      set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
+      set xcent [expr $naxis1/2.0]
+      set ycent [expr $naxis2/2.0]
 
       set ::tools_cata::current_image_name $filename
       set ::tools_cata::current_image_date $date
@@ -3012,14 +3012,6 @@ namespace eval gui_cata {
                
             }
 
-
-
-
-
-
-
-
-
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
             if {$x != -1} {
@@ -3037,12 +3029,6 @@ namespace eval gui_cata {
                }
                set ::gui_cata::tklist($idcata) [lreplace $::gui_cata::tklist($idcata) $x $x $b]
             }
-
-
-
-
-
-
 
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
