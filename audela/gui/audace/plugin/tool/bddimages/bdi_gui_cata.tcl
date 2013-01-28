@@ -5359,8 +5359,8 @@ gren_info " => source retrouvee $cpt $dl\n"
           if {[lindex $mycata 0] == "TYCHO2" } {
              set ra [lindex [lindex $mycata 1] 0]
              set dec [lindex [lindex $mycata 1] 1]
+          }
        }
-      
       
    }
 
