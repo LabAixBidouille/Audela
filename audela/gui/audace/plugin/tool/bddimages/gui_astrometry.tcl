@@ -143,11 +143,13 @@ namespace eval gui_astrometry {
          set name [lindex [$w get $select] 0]
          gren_info "srpt name = $name \n"
 
+         # Construit la table enfant
          $::gui_astrometry::sret delete 0 end
          foreach date $::tools_astrometry::listref($name) {
             $::gui_astrometry::sret insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
          
+         # Affiche un rond sur la source
          ::gui_cata::voir_sxpt $::gui_astrometry::srpt
 
          break
@@ -160,13 +162,15 @@ namespace eval gui_astrometry {
 
       foreach select [$w curselection] {
          set name [lindex [$w get $select] 0]
-         gren_info "name = $name \n"
+         gren_info "sspt name = $name \n"
 
+         # Construit la table enfant
          $::gui_astrometry::sset delete 0 end
          foreach date $::tools_astrometry::listscience($name) {
             $::gui_astrometry::sset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 2 $date]
          }
 
+         # Affiche un rond sur la source
          ::gui_cata::voir_sxpt $::gui_astrometry::sspt
 
          break
@@ -179,30 +183,32 @@ namespace eval gui_astrometry {
          set date [lindex [$w get $select] 0]
          gren_info "dspt date = $date \n"
 
+         # Construit la table enfant
          $::gui_astrometry::dset delete 0 end
          foreach name $::tools_astrometry::listdate($date) {
             $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
          }
-
-#         foreach name [array names ::tools_astrometry::listscience] {
-#            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
-#         }
-
-#         foreach name [array names ::tools_astrometry::listref] {
-#            gren_info "dspt name = $name \n"
-#            gren_info "dspt name = $::tools_astrometry::listref($name) \n"
-#            gren_info "dspt DATE = [array names ::tools_astrometry::listdate] \n"
-            
-#            $::gui_astrometry::dset insert end [lreplace $::tools_astrometry::tabval($name,$date) 1 1 $name]
-#         }
-
-
 
          break
       }
    }
 
 
+   proc ::gui_astrometry::cmdButton1Click_dset { w args } {
+
+      foreach select [$w curselection] {
+         set name [lindex [$w get $select] 1]
+         gren_info "dset name = $name \n"
+
+         # Affiche un rond sur la source
+         ::gui_cata::voir_dset $::gui_astrometry::dset
+
+         break
+      }
+   }
+
+   
+   
    proc ::gui_astrometry::cmdButton1Click_dwpt { w args } {
 
       foreach select [$w curselection] {
@@ -222,7 +228,7 @@ namespace eval gui_astrometry {
 
    proc ::gui_astrometry::affich_gestion {  } {
        
-         gren_info "\n\n\n-----------\n"
+      gren_info "\n\n\n-----------\n"
       set tt0 [clock clicks -milliseconds]
 
       if {$::gui_astrometry::state_gestion == 0} {
@@ -243,7 +249,7 @@ namespace eval gui_astrometry {
       focus .astrometry
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "TOTAL Bouton Charge in $tt sec \n"
+      gren_info "Chargement complet en $tt sec \n"
 
       return
 
@@ -344,8 +350,7 @@ namespace eval gui_astrometry {
 
       ::gui_astrometry::charge_list $img_list
       ::gui_astrometry::inittoconf
-      
-      
+
       set ::gui_astrometry::state_gestion 0
       
       set loc_sources_par [list 0 "Name"              left  \
@@ -477,16 +482,7 @@ namespace eval gui_astrometry {
               pack   $actions.cata -side left -anchor e -expand 0
 
 
-
-
-
-              set ::gui_astrometry::gui_fermer [button $actions.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::fermer"]
-              pack $actions.fermer -side right -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-
-         #--- Cree un frame pour afficher bouton fermeture
+         #--- Cree un frame pour afficher les tables
          set tables [frame $frm.tables  -borderwidth 0 -cursor arrow -relief groove]
          pack $tables  -in $frm -anchor s -side top -expand 0  -padx 10 -pady 5
 
@@ -559,10 +555,7 @@ namespace eval gui_astrometry {
                  scrollbar $srp.vsb -orient vertical -command [list $::gui_astrometry::srpt yview]
                  pack $srp.vsb -in $srp -side left -fill y
 
-                 menu $srp.popupTbl -title "Tools"
-
-                     $srp.popupTbl add command -label "Voir" \
-                        -command "::gui_cata::voir_srpt"
+                 menu $srp.popupTbl -title "Actions"
                      $srp.popupTbl add command -label "Supprimer de toutes les images" \
                          -command "::gui_cata::unset_srpt"
                  
@@ -598,10 +591,7 @@ namespace eval gui_astrometry {
                  scrollbar $sre.vsb -orient vertical -command [list $::gui_astrometry::sret yview]
                  pack $sre.vsb -in $sre -side right -fill y
 
-                 menu $sre.popupTbl -title "Tools"
-
-                     $sre.popupTbl add command -label "Voir" \
-                        -command "::gui_cata::voir_sret"
+                 menu $sre.popupTbl -title "Actions"
                      $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command ""
 
@@ -632,8 +622,7 @@ namespace eval gui_astrometry {
                  scrollbar $ssp.vsb -orient vertical -command [list $::gui_astrometry::sspt yview]
                  pack $ssp.vsb -in $ssp -side left -fill y
 
-                 menu $ssp.popupTbl -title "Tools"
-
+                 menu $ssp.popupTbl -title "Actions"
                      $ssp.popupTbl add command -label "Supprimer de toutes les images" \
                          -command ""
 
@@ -667,8 +656,7 @@ namespace eval gui_astrometry {
                  scrollbar $sse.vsb -orient vertical -command [list $::gui_astrometry::sset yview]
                  pack $sse.vsb -in $sse -side right -fill y
 
-                 menu $sse.popupTbl -title "Tools"
-
+                 menu $sse.popupTbl -title "Actions"
                      $sse.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command ""
 
@@ -702,11 +690,9 @@ namespace eval gui_astrometry {
                  scrollbar $dsp.vsb -orient vertical -command [list $::gui_astrometry::dspt yview]
                  pack $dsp.vsb -in $dsp -side left -fill y
 
-                 menu $dsp.popupTbl -title "Tools"
-
+                 menu $dsp.popupTbl -title "Actions"
                      $dsp.popupTbl add command -label "Supprimer l'image" \
                          -command ""
-                 
 
                  bind $::gui_astrometry::dspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dspt %W ]
                  bind [$::gui_astrometry::dspt bodypath] <ButtonPress-3> [ list tk_popup $dsp.popupTbl %X %Y ]
@@ -738,11 +724,12 @@ namespace eval gui_astrometry {
                  scrollbar $dse.vsb -orient vertical -command [list $::gui_astrometry::dset yview]
                  pack $dse.vsb -in $dse -side right -fill y
 
-                 menu $dse.popupTbl -title "Tools"
+                 menu $dse.popupTbl -title "Actions"
 
                      $dse.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command ""
 
+                 bind $::gui_astrometry::dset <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dset %W ]
                  bind [$::gui_astrometry::dset bodypath] <ButtonPress-3> [ list tk_popup $dse.popupTbl %X %Y ]
 
                  pack $::gui_astrometry::dset -in $dse -expand yes -fill both
@@ -796,11 +783,6 @@ namespace eval gui_astrometry {
 #            frame $onglets0.list.sources.table_enf -borderwidth 0 -cursor arrow -relief groove -background white
 
 
-
-
-
-
-
          #--- Cree un frame pour afficher bouton fermeture
          set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
          pack $info  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
@@ -810,10 +792,16 @@ namespace eval gui_astrometry {
               label  $info.lastres -textvariable ::tools_astrometry::last_results_file -borderwidth 1
               pack   $info.lastres -in $info -side left -padx 3 -pady 3 -anchor c
 
+              set ::gui_astrometry::gui_fermer [button $info.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::fermer"]
+              pack $info.fermer -side right -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
 
 
+      # Au lancement, charge les donnees
+      ::gui_astrometry::affich_gestion
 
 
    }
