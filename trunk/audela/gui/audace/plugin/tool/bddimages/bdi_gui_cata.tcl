@@ -892,11 +892,11 @@ namespace eval gui_cata {
       }
       
       set listsources [::tools_cata::get_cata_xml $catafile]
-      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag err_mag}]
+      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag_ss2 err_calib_mag_ss2}]
       set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra dec poserr mag magerr }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5 VT e_VT }]
+      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
       set ::tools_cata::current_listsources $listsources
@@ -2556,20 +2556,15 @@ namespace eval gui_cata {
       cleanmark
 
       foreach select [$w curselection] {
-         
          set data [$w get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
-         gren_info "gestion name = $name\n"
-         gren_info "gestion date = $date\n"
-         
          set id [lindex $::tools_astrometry::tabval($name,$date) 0]
-         gren_info "gestion Id = $id\n"
-         
-         
+
          if {![winfo exists .gestion_cata.appli.onglets.nb]} {
             return
          }
+
          set onglets [.gestion_cata.appli.onglets.nb tabs]
          set f [.gestion_cata.appli.onglets.nb select]
          set idcata [string index [lindex [split $f .] 5] 1]
@@ -2596,55 +2591,49 @@ namespace eval gui_cata {
 
 
    
-   
-   
-   proc ::gui_cata::voir_sret {  } {
+      proc ::gui_cata::voir_dset { w } {
       
       set color red
       set width 2
       cleanmark
 
-      foreach select [$::gui_astrometry::sret curselection] {
-         
-         set data [$::gui_astrometry::sret get $select]
-         set id [lindex $data 0]
-         set date [lindex $data 1]
-         #gren_info "Id = $id $date\n"
-         #gren_info "gestion date = $::tools_cata::current_image_date\n"
+      foreach select [$w curselection] {
+         set data [$w get $select]
+         set name [lindex $data 1]
+         set date $::tools_cata::current_image_date
+         set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+
          if {![winfo exists .gestion_cata.appli.onglets.nb]} {
             return
          }
-         set onglets [.gestion_cata.appli.onglets.nb tabs]
-         #gren_info "gestion onglets = $onglets\n"
-         foreach f $onglets {
-             #gren_info "f = $f.frmtable.tbl\n"
-             set idcata [string index [lindex [split $f .] 5] 1]
-             #gren_info "idcata = $idcata\n"
-             array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
-             #gren_info "cataname = $cataname($idcata)\n"
-             if { $cataname($idcata) == "ASTROID"} {
-                .gestion_cata.appli.onglets.nb select $f
-                set u 0
-                foreach x [$f.frmtable.tbl get 0 end] {
-                   set idx [lindex $x 0]
-                   if {$idx == $id} {
-                      #gren_info "ok= $u\n"
-                      $f.frmtable.tbl selection set $u
-                      set ra  [lindex $x [::gui_cata::get_pos_col ra]]
-                      set dec [lindex $x [::gui_cata::get_pos_col dec]]
-                      affich_un_rond $ra $dec $color $width
-                   }
-                   incr u
-                }
-                
-             }
 
+         set onglets [.gestion_cata.appli.onglets.nb tabs]
+         set f [.gestion_cata.appli.onglets.nb select]
+         set idcata [string index [lindex [split $f .] 5] 1]
+         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+         gren_info "cataname = $cataname($idcata)\n"
+
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               #$f.frmtable.tbl selection set $u
+               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+               set dec [lindex $x [::gui_cata::get_pos_col dec]]
+               affich_un_rond $ra $dec $color $width
+            }
+            incr u
          }
          
       }
    
    }
 
+   
+   
+   
+   
+   
 
 
    #--------------------------------------------------
@@ -4387,9 +4376,6 @@ gren_info " => source retrouvee $cpt $dl\n"
       ::gui_cata::inittoconf
       
       ::gui_cata::charge_gestion_cata $img_list 
-
-
-
 
       #--- Creation de la fenetre
       set ::gui_cata::feng .gestion_cata
