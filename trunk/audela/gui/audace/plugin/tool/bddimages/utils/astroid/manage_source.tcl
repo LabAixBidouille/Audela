@@ -274,7 +274,7 @@ namespace eval ::manage_source {
 
    proc ::manage_source::namable { mysource } {
 
-      set list_of_cata [list TYCHO2 UCAC4 UCAC3 UCAC2 2MASS USNOA2 SKYBOT]
+      set list_of_cata [list TYCHO2 UCAC4 UCAC3 UCAC2 2MASS USNOA2 SKYBOT ASTROID IMG]
       foreach cata $list_of_cata {
           foreach mycata $mysource {
              if {[lindex $mycata 0] == $cata} {
@@ -319,6 +319,13 @@ namespace eval ::manage_source {
                set dec [regsub {\-} $dec "m"]
                set dec [regsub {\+} $dec "p"]
                return "IMG_[lindex [lindex $cata 2] 8]_$dec"
+            }
+
+            if {$mycata=="ASTROID"} {
+               set dec [lindex [lindex $cata 1] 1]
+               set dec [regsub {\-} $dec "m"]
+               set dec [regsub {\+} $dec "p"]
+               return "IMG_[lindex [lindex $cata 1] 0]_$dec"
             }
 
             if {$mycata=="USNOA2"} {
