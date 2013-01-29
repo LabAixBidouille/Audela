@@ -5818,6 +5818,10 @@ gren_info " => source retrouvee $cpt $dl\n"
       
       upvar $sent_s s
 
+
+      global bddconf
+      
+      
       #gren_info "OK\n"
       #gren_info "S AVANT = $s\n"
    
@@ -5860,11 +5864,12 @@ gren_info " => source retrouvee $cpt $dl\n"
          set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
          if {$result==-1} {set results($radius,err) 10}
          if {$results($radius,err)==0} {
-            set xsm [expr int([lindex $result 0])]
-            set ysm [expr int([lindex $result 1])]
+            set xsm [lindex $result 0]
+            set ysm [lindex $result 1]
             set radec [ buf$::audace(bufNo) xy2radec [list $xsm $ysm ] ]
             set pra [lindex $radec 0] 
             set pdec [lindex $radec 1]
+            
             set radiff [expr ($ra - $pra ) * cos ($dec)]
             set decdiff [expr $dec - $pdec ]
             set rsecdiff [expr sqrt ( pow($radiff,2) + pow($decdiff,2) ) * 3600.0]
@@ -5878,11 +5883,27 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
       }
 
+
+      # Sauve fichier
+      set file [file join $bddconf(dirtmp) "psf.csv"]
+      gren_info "Sauve Fichier = $file\n"
+      set chan [open $file w]
+      #   {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
+      puts $chan "#xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+             puts $chan $results($radius)
+         }
+      }
+
+
+
       # statistiques
       set rdiff ""
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            lappend rdiff  [lindex $results($radius) 15]
+            lappend rdiff  [lindex $results($radius) 13]
          }
       }
       set nb  [llength $rdiff]
@@ -5891,9 +5912,9 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       set diffmin 1000000000
       set deltasav 0
-      for {set radius 1} {$radius < 100} {incr radius} {
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            set rdiff  [lindex $results($radius) 15]
+            set rdiff  [lindex $results($radius) 13]
             set diff [expr abs($rdiff - $median)]
             if {$diff < $diffmin } {
                set deltasav [lindex $radius]
@@ -5903,8 +5924,29 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
 
 
+
+
+      # statistiques
+      set intensitemax  0
+      set radiussav 0
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            set intensite  [lindex $results($radius) 8]
+            if {$intensitemax < $intensite } {
+               set intensitemax $intensite
+               set radiussav $radius
+            }
+         }
+      }
+      
+
+
+
+
+
       # Choix du bon delta
-      set delta $deltasav
+      set delta $radiussav
+      gren_info "radius = $delta\n"
 
       set xsm [lindex $results($delta) 0]
       set ysm [lindex $results($delta) 1]
