@@ -2658,6 +2658,9 @@ namespace eval gui_cata {
          set id [lindex [$w get $select] 0]
          set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]
          set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
+         gren_info "line = [$w get $select]\n"
+         gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
+         gren_info "ra dec = $ra $dec\n"
          affich_un_rond $ra $dec $color $width
       }
       return
@@ -3314,24 +3317,55 @@ namespace eval gui_cata {
 
 
 
-   proc ::gui_cata::psf_popup_auto_go { tbl } {
+   proc ::gui_cata::psf_popup_auto_go { l } {
 
-      set onglets $::gui_cata::current_appli.onglets
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      gren_info "id_current_image = $::tools_cata::id_current_image \n"
+      gren_info "list_id = $l \n"
+      set list_id $l
+     
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
- 
-      gren_info "Sources selectionnees : \n"
-      foreach select [$tbl curselection] {
-         set id [lindex [$tbl get $select] 0]
+
+      set fields  [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+      set nd_sources [llength $list_id]
+
+      gren_info "Sources selectionnees ($nd_sources): \n"
+      set pass "no"
+
+      set cpt 0      
+      foreach id $list_id {
+         incr cpt
+         ::gui_cata::set_progress $cpt $nd_sources
          gren_info "ID = $id\n"
+         set s [lindex $sources [expr $id - 1 ]]
+         #gren_info "S=$s\n"
+         set err [ catch {::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius} msg ]
+         if {$err} {
+            ::console::affiche_erreur "ERREUR PSF : $msg\n"
+         } else {
+            gren_info "NEW PSF ($id) \n"
+            set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
+            set pass "yes"
+         }
 
       }
-   
-      gren_info "OK\n"
 
+      if {$pass=="no"} { return }
 
-
+      set pos [lsearch -index 0 $fields "ASTROID"]
+      if {$pos!=-1} {
+         set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
+      } else {
+         set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
+      }
+      
+      set ::tools_cata::current_listsources [list $fields $sources]
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      ::gui_cata::current_listsources_to_tklist
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+      ::gui_cata::gestion_go
 
    }
    
@@ -3339,9 +3373,19 @@ namespace eval gui_cata {
    
    
    
-   
 
    proc ::gui_cata::psf_popup_auto { tbl } {
+
+      gren_info "psf_popup_auto tbl = $tbl \n"
+
+      set list_id ""
+      foreach select [$tbl curselection] {
+         set list_id [linsert $list_id end [lindex [$tbl get $select] 0] ]
+      }
+      set list_id [list $list_id]
+      gren_info "list_id = $list_id \n"
+
+
 
       set ::gui_cata::progress 0
       set ::gui_cata::psf_limitradius 100
@@ -3398,13 +3442,14 @@ namespace eval gui_cata {
                 -command "::bddimages::ressource"
              pack   $data.ress -side left -anchor c -padx 0 -padx 10 -pady 5
 
-             button $data.go -state active -text "Go" -relief "raised" \
-                -command "::gui_cata::psf_popup_auto_go $tbl"
-             pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
-
              button $data.fermer -state active -text "Fermer" -relief "raised" \
                 -command "destroy $::gui_cata::fenpopuppsf"
              pack   $data.fermer -side right -anchor c -padx 0 -padx 10 -pady 5
+
+             button $data.go -state active -text "Go" -relief "raised" \
+                -command "::gui_cata::psf_popup_auto_go $list_id ; destroy $::gui_cata::fenpopuppsf"
+             pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
+
 
    }
 
@@ -4467,6 +4512,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
 
          foreach cata $s {
+            if {![info exists ::gui_cata::cataid([lindex $cata 0])]} { continue }
             set idcata $::gui_cata::cataid([lindex $cata 0])
             set line ""
             # ID
@@ -5688,6 +5734,179 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::gui_cata::psf_box_auto_no_gui { sent_s threshold radiuslimit } {
+      
+      upvar $sent_s s
+
+      #gren_info "OK\n"
+      #gren_info "S AVANT = $s\n"
+   
+      set name_cata [::manage_source::namable $s]
+      if {$name_cata==""} {
+         gren_info "s=$s\n"
+         set ::gui_cata::psf_name_source "Unnamable"
+         return -code 1
+      }
+      set name_source [::manage_source::naming $s $name_cata]
+      
+      set pass "no"
+      foreach mycata $s {
+      
+         if {[lindex $mycata 0] == $name_cata } {
+            
+            #gren_info "name_cata = $name_cata\n"
+            #gren_info "common = [lindex $mycata 1]\n"
+            
+            #gren_info "ra dec [lindex [lindex $mycata 1] 0] [lindex [lindex $mycata 1] 1]\n"
+            set ra  [lindex [lindex $mycata 1] 0]
+            set dec [lindex [lindex $mycata 1] 1]
+            #gren_info "ra dec $ra $dec\n"
+            
+            set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
+            set x [lindex $xy 0]
+            set y [lindex $xy 1]
+            set pass "yes"
+         }
+      }
+      if {$pass=="no"} {
+         return -code 2
+      }
+
+
+      #gren_info "$radiuslimit $threshold"
+      # Calcul des psf
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         #gren_info "x y = $x $y \n"
+         set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
+         if {$result==-1} {set results($radius,err) 10}
+         if {$results($radius,err)==0} {
+            set xsm [expr int([lindex $result 0])]
+            set ysm [expr int([lindex $result 1])]
+            set radec [ buf$::audace(bufNo) xy2radec [list $xsm $ysm ] ]
+            set pra [lindex $radec 0] 
+            set pdec [lindex $radec 1]
+            set radiff [expr ($ra - $pra ) * cos ($dec)]
+            set decdiff [expr $dec - $pdec ]
+            set rsecdiff [expr sqrt ( pow($radiff,2) + pow($decdiff,2) ) * 3600.0]
+            if {$rsecdiff > $threshold} {
+               set results($radius,err) 1
+               continue
+               }
+            set result [linsert $result end $rsecdiff $pra $pdec]
+            set results($radius) $result
+            #gren_info "$radius\n"
+         }
+      }
+
+      # statistiques
+      set rdiff ""
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            lappend rdiff  [lindex $results($radius) 15]
+         }
+      }
+      set nb  [llength $rdiff]
+      # gren_info "nbrdiff $nb\n"
+      set median [::math::statistics::median $rdiff]
+
+      set diffmin 1000000000
+      set deltasav 0
+      for {set radius 1} {$radius < 100} {incr radius} {
+         if {$results($radius,err)==0} {
+            set rdiff  [lindex $results($radius) 15]
+            set diff [expr abs($rdiff - $median)]
+            if {$diff < $diffmin } {
+               set deltasav [lindex $radius]
+               set diffmin $diff 
+            }
+         }
+      }
+
+
+      # Choix du bon delta
+      set delta $deltasav
+
+      set xsm [lindex $results($delta) 0]
+      set ysm [lindex $results($delta) 1]
+
+      #gren_info "xsm = $xsm\n"
+      #gren_info "ysm = $ysm\n"
+      #gren_info "radius = $delta\n"
+      #gren_info "rdiff = [lindex $results($delta) 15]\n"
+
+      #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
+      #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
+      ##gren_info "ASTROID OTHERF = [lindex $astroid 2]\n"
+      
+      set pos [lsearch -index 0 $s "ASTROID"]
+      if {$pos!=-1} {
+         set astroid [lindex $s $pos]
+
+         set comf   [lindex $astroid 1]
+         set comf   [lreplace $comf 0 1 $pra $pdec]
+
+         set otherf  [lindex $astroid 2]
+         set en [expr [llength $results($delta)] -1]
+         set i 0
+         foreach val $results($delta) {
+            set otherf [lreplace $otherf $i $i $val]
+            incr i
+         }
+         set astroid [ list "ASTROID" $comf $otherf]
+         set s [lreplace $s $pos $pos $astroid]
+
+      } else {
+         set cata "ASTROID"
+         set comf [list $pra $pdec 5 0 0]
+         set othf [linsert $results($delta) end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
+         set astroid [list "ASTROID" $comf $othf]
+         set s [linsert $s end $astroid]
+      }
+      
+
+         #set field [linsert $field [::analyse_source::get_fieldastroid] ]
+         
+#      return [list "ASTROID" [list "ra" "dec" "poserr" "mag" "magerr"] \
+#                             [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+#                                   "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
+#                                   "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" \
+#                                   "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"] ]
+
+#    459.650415 245.682162 3.179304 4.009941 3.5946225000000003 4683.000000 0       9104.000000 2561.0    806.214999 5.8086242575598623 3.1765720101667321 2     194.127106 2.201661 0.47884649992695094
+#    {xsm       ysm        fwhmx    fwhmy    fwhm               fluxintegre errflux pixmax      intensite sigmafond  snint             snpx                delta alpha      delta    rdiff}
+
+
+
+       
+   
+       
+      #gren_info "S APRES = $s\n"
+      return -code 0
+       
+      
+   }
+
+
+
+
+
+
+
+
+
 
 
 
