@@ -3544,7 +3544,7 @@ namespace eval gui_cata {
       }
 
       set sources [lindex $::tools_cata::current_listsources 1]
-      set id 0
+      set id 1
       set cpt_grab 0
       foreach s $sources {
          set x -100
@@ -3626,7 +3626,7 @@ namespace eval gui_cata {
 
                # gren_info "cpt_grab = $cpt_grab\n"
 
-               gren_info "NAME = $name CATAS = "
+               gren_info "pNAME = $name CATAS = "
                foreach cata $s {
                   gren_info "[lindex $cata 0] "
                   if {[lindex $cata 0]==$namable} {
@@ -3689,7 +3689,7 @@ namespace eval gui_cata {
       set width 2
       cleanmark
       if {$tbl!=""} {
-         gren_info "GUI\n"
+         gren_info "grab_sources GUI\n"
          $tbl selection clear 0 end
       }
 
@@ -3700,7 +3700,7 @@ namespace eval gui_cata {
       }
 
       set sources [lindex $::tools_cata::current_listsources 1]
-      set id 0
+      set id 1
       set cpt_grab 0
       foreach s $sources {
 
@@ -3782,7 +3782,7 @@ namespace eval gui_cata {
                            set name [::manage_source::naming $s $namable]
                         } 
                         
-                        gren_info "NAME = $name "
+                        gren_info "NAME ($id) = $name "
                         foreach cata $s {
                            gren_info "[lindex $cata 0] "
                         }
@@ -5823,8 +5823,10 @@ gren_info " => source retrouvee $cpt $dl\n"
       #gren_info "$radiuslimit $threshold"
       # Calcul des psf
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
-         #gren_info "x y = $x $y \n"
+          #gren_info "x y = $x $y \n"
          set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
+          gren_info "$radius = $result\n"
+          #gren_info "x y = $x $y \n"
          if {$result==-1} {set results($radius,err) 10}
          if {$results($radius,err)==0} {
             set xsm [lindex $result 0]
@@ -5842,8 +5844,8 @@ gren_info " => source retrouvee $cpt $dl\n"
                }
             set result [linsert $result end $rsecdiff $pra $pdec]
             set results($radius) $result
-            #gren_info "$radius\n"
          }
+
       }
 
 
@@ -5859,7 +5861,7 @@ gren_info " => source retrouvee $cpt $dl\n"
              puts $chan $results($radius)
          }
       }
-
+      close $chan
 
 
       # statistiques
