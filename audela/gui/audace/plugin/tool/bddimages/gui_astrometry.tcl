@@ -561,8 +561,8 @@ namespace eval gui_astrometry {
 
                  menu $srp.popupTbl -title "Actions"
                      $srp.popupTbl add command -label "Supprimer de toutes les images" \
-                         -command "::gui_cata::unset_srpt"
-                 
+                         -command {::gui_cata::unset_srpt; ::gui_astrometry::affich_gestion}
+
                  #--- bindings
                  bind $::gui_astrometry::srpt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_srpt %W ]
                  bind [$::gui_astrometry::srpt bodypath] <ButtonPress-3> [ list tk_popup $srp.popupTbl %X %Y ]
@@ -597,7 +597,7 @@ namespace eval gui_astrometry {
 
                  menu $sre.popupTbl -title "Actions"
                      $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
-                        -command ""
+                        -command {::gui_cata::unset_sret; ::gui_astrometry::affich_gestion}
 
                  bind [$::gui_astrometry::sret bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
 
