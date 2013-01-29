@@ -3409,7 +3409,9 @@ namespace eval gui_cata {
             ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
          } else {
             gren_info "NEW PSF ($id) \n"
+            gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
             set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
+            gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
             set pass "yes"
          }
 
@@ -3454,7 +3456,7 @@ namespace eval gui_cata {
 
       set ::gui_cata::progress 0
       set ::gui_cata::psf_limitradius 100
-      set ::gui_cata::psf_threshold 1
+      set ::gui_cata::psf_threshold 2
 
       set ::gui_cata::fenpopuppsf .popuppsf
       if { [winfo exists $::gui_cata::fenpopuppsf] } {
@@ -3782,7 +3784,7 @@ namespace eval gui_cata {
                            set name [::manage_source::naming $s $namable]
                         } 
                         
-                        gren_info "NAME ($id) = $name "
+                        gren_info "mNAME ($id) = $name "
                         foreach cata $s {
                            gren_info "[lindex $cata 0] "
                         }
@@ -3793,7 +3795,7 @@ namespace eval gui_cata {
                   }
 
                }
-            
+               break
             }
          }
          incr id
@@ -5824,13 +5826,14 @@ gren_info " => source retrouvee $cpt $dl\n"
       # Calcul des psf
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
           #gren_info "x y = $x $y \n"
+          
          set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
-          gren_info "$radius = $result\n"
           #gren_info "x y = $x $y \n"
          if {$result==-1} {set results($radius,err) 10}
          if {$results($radius,err)==0} {
             set xsm [lindex $result 0]
             set ysm [lindex $result 1]
+            
             set radec [ buf$::audace(bufNo) xy2radec [list $xsm $ysm ] ]
             set pra [lindex $radec 0] 
             set pdec [lindex $radec 1]
@@ -5838,10 +5841,15 @@ gren_info " => source retrouvee $cpt $dl\n"
             set radiff [expr ($ra - $pra ) * cos ($dec)]
             set decdiff [expr $dec - $pdec ]
             set rsecdiff [expr sqrt ( pow($radiff,2) + pow($decdiff,2) ) * 3600.0]
+            # gren_info "$radius = $rsecdiff > $threshold\n"
+            
             if {$rsecdiff > $threshold} {
                set results($radius,err) 1
                continue
                }
+            #affich_un_rond_xy $xsm $ysm green $radius 1
+            #affich_un_rond $ra $dec green $radius
+
             set result [linsert $result end $rsecdiff $pra $pdec]
             set results($radius) $result
          }
@@ -5853,7 +5861,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       set file [file join $bddconf(dirtmp) "psf.csv"]
       gren_info "Sauve Fichier = $file\n"
       set chan [open $file w]
-      #   {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
+      #   {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
       puts $chan "#xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
 
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
@@ -5910,17 +5918,17 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       # Choix du bon delta
-      set delta $radiussav
       set radius $radiussav
       gren_info "radius = $radius\n"
 
-      set xsm [lindex $results($delta) 0]
-      set ysm [lindex $results($delta) 1]
+      set xsm [lindex $results($radius) 0]
+      set ysm [lindex $results($radius) 1]
+      set pra [lindex $results($radius) 14]
+      set pdec [lindex $results($radius) 15]
 
-      #gren_info "xsm = $xsm\n"
-      #gren_info "ysm = $ysm\n"
-      #gren_info "radius = $delta\n"
-      #gren_info "rdiff = [lindex $results($delta) 15]\n"
+      gren_info "xsm = $xsm\n"
+      gren_info "ysm = $ysm\n"
+      gren_info "rdiff = [lindex $results($radius) 13]\n"
 
       #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
       #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
@@ -5934,9 +5942,9 @@ gren_info " => source retrouvee $cpt $dl\n"
          set comf   [lreplace $comf 0 1 $pra $pdec]
 
          set otherf  [lindex $astroid 2]
-         set en [expr [llength $results($delta)] -1]
+         set en [expr [llength $results($radius)] -1]
          set i 0
-         foreach val $results($delta) {
+         foreach val $results($radius) {
             set otherf [lreplace $otherf $i $i $val]
             incr i
          }
@@ -5946,7 +5954,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       } else {
          set cata "ASTROID"
          set comf [list $pra $pdec 5 0 0]
-         set othf [linsert $results($delta) end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
+         set othf [linsert $results($radius) end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
          set astroid [list "ASTROID" $comf $othf]
          set s [linsert $s end $astroid]
       }
@@ -5966,10 +5974,11 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
        
+         gren_info "result = $radius ::  $results($radius)   \n"
    
        
       #gren_info "S APRES = $s\n"
-      return -code 0 [list $result $radius]
+      return -code 0 [list $results($radius) $radius]
        
       
    }
@@ -5992,24 +6001,23 @@ gren_info " => source retrouvee $cpt $dl\n"
       #::gui_cata::psf_name_source
       #::gui_cata::psf_id_source 
       
-       
-     set ::gui_cata::psf_threshold 1
-     set ::gui_cata::psf_limitradius 100
       set pass "no"
       
-         set err [ catch {set r [::gui_cata::psf_box_auto_no_gui ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]} msg ]
-         if {$err} {
-            ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
-         } else {
-            set pass "yes"
-         }
-      if {$pass=="no"} { return }
+      set err [ catch {set r [::gui_cata::psf_box_auto_no_gui ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]} msg ]
+      if {$err} {
+         ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
+      } else {
+         set pass "yes"
+      }
+      if { $pass=="no" } { return }
       
-        gren_info "*best PSF pour ($::gui_cata::psf_id_source) $::gui_cata::psf_name_source \n"
-        set ::gui_cata::psf_best_sol [lindex $r 0]
-        set ::gui_cata::psf_radius [lindex $r 1]
-        ::gui_cata::psf_box_to_result         
-
+         gren_info "*best PSF pour ($::gui_cata::psf_id_source) $::gui_cata::psf_name_source \n"
+         set ::gui_cata::psf_best_sol [lindex $r 0]
+         set ::gui_cata::psf_radius   [lindex $r 1]
+         gren_info "psf_radius   = $::gui_cata::psf_radius \n"
+         gren_info "psf_best_sol = $::gui_cata::psf_best_sol   \n"
+         
+         ::gui_cata::psf_box_to_result         
 
 
 #    set pos [lsearch -index 0 $fields "ASTROID"]
@@ -6294,6 +6302,8 @@ gren_info " => source retrouvee $cpt $dl\n"
    proc ::gui_cata::psf { { sou "" } } {
 
       ::gui_cata::init_psf $sou
+      set ::gui_cata::psf_limitradius 100
+      set ::gui_cata::psf_threshold 2
 
       set spinlist ""
       for {set i 1} {$i<100} {incr i} {lappend spinlist $i}
@@ -6355,6 +6365,27 @@ gren_info " => source retrouvee $cpt $dl\n"
              button $actions.save -state active -text "Save" -relief "raised" -command "::bddimages::ressource"
              pack   $actions.save -in $actions -side left -anchor w -padx 0
  
+         set config [frame $frm.config -borderwidth 0 -cursor arrow -relief groove]
+         pack $config -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             set data  [frame $config.threshold -borderwidth 0 -cursor arrow -relief groove]
+             pack $data -in $config -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                 label $data.l -text "Threshold : " 
+                 pack  $data.l -side left -padx 2 -pady 0
+
+                 entry $data.v -textvariable ::gui_cata::psf_threshold -relief sunken -width 5
+                 pack  $data.v -side left -padx 2 -pady 0
+
+             set data  [frame $config.limitradius -borderwidth 0 -cursor arrow -relief groove]
+             pack $data -in $config -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                 label $data.l -text "Limite du Rayon : " 
+                 pack  $data.l -side left -padx 2 -pady 0
+
+                 entry $data.v -textvariable ::gui_cata::psf_limitradius -relief sunken -width 5
+                 pack  $data.v -side left -padx 2 -pady 0
+
          set actions2 [frame $frm.actions2 -borderwidth 0 -cursor arrow -relief groove]
          pack $actions2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
