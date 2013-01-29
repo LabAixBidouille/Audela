@@ -3383,11 +3383,9 @@ namespace eval gui_cata {
 
 
 
-   proc ::gui_cata::psf_popup_auto_go { l } {
+   proc ::gui_cata::psf_popup_auto_go { list_id } {
 
       gren_info "id_current_image = $::tools_cata::id_current_image \n"
-      gren_info "list_id = $l \n"
-      set list_id $l
      
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -3405,9 +3403,10 @@ namespace eval gui_cata {
          gren_info "ID = $id\n"
          set s [lindex $sources [expr $id - 1 ]]
          #gren_info "S=$s\n"
-         set err [ catch {::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius result radius} msg ]
+         set err [ catch {set r [::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
          if {$err} {
-            ::console::affiche_erreur "ERREUR PSF : $msg\n"
+            ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
+            ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
          } else {
             gren_info "NEW PSF ($id) \n"
             set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
@@ -3589,19 +3588,6 @@ namespace eval gui_cata {
                }
             }
             
-            if {[lindex $cata 0] == "UCAC3" || [lindex $cata 0] == "TYCHO2" || [lindex $cata 0] == "UCAC2" || [lindex $cata 0] == "USNOA2" } {
-               set ra [lindex [lindex $cata 1] 0]
-               set dec [lindex [lindex $cata 1] 1]
-               set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
-               set x [lindex $xy 0]
-               set y [lindex $xy 1]
-               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
-                  set pass "yes"
-                  set xpass $x
-                  set ypass $y
-               }
-            }
-            
             if {$pass=="yes"} {
 
                gren_info "**NAME = $name \n"
@@ -3626,33 +3612,17 @@ namespace eval gui_cata {
 
                set pos [lsearch -index 0 $s "ASTROID"]         
                if {$pos != -1} {
-                 set cata [lindex $s $pos]
-                   
-                   affich_un_rond_xy  [lindex [lindex $cata 2] 0] [lindex [lindex $cata 2] 1] red 30 1
-
-#gren_info "**** TOTO = [lindex [lindex $cata 2] 0] [lindex [lindex $cata 2] 1]\n"
-
-                   set ra [lindex [lindex $cata 1] 0]
-                   set dec [lindex [lindex $cata 1] 1]
-                   set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
-                   set x [lindex $xy 0]
-                   set y [lindex $xy 1]
-                   affich_un_rond $ra $dec blue 2
-                   affich_un_rond_xy $x $y blue 1 5
+                  set cata [lindex $s $pos]
+                  affich_un_rond_xy  [lindex [lindex $cata 2] 0] [lindex [lindex $cata 2] 1] red 30 1
+                  set ra [lindex [lindex $cata 1] 0]
+                  set dec [lindex [lindex $cata 1] 1]
+                  set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                  set x [lindex $xy 0]
+                  set y [lindex $xy 1]
+                  affich_un_rond $ra $dec blue 2
+                  affich_un_rond_xy $x $y blue 1 5
                }
 
-               set pos [lsearch -index 0 $s "UCAC3"]         
-               if {$pos != -1} {
-                   set ra [lindex [lindex [lindex $s $pos] 1] 0]
-                   set dec [lindex [lindex [lindex $s $pos] 1] 1]
-#                   affich_un_rond $ra $dec blue 3 
-                   set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
-                   set x [lindex $xy 0]
-                   set y [lindex $xy 1]
-               #    gren_info "UCAC3 x y  = $x $y\n"
-               }
-               
-               # selection de la source
 
                # gren_info "cpt_grab = $cpt_grab\n"
 
@@ -3733,6 +3703,7 @@ namespace eval gui_cata {
       set id 0
       set cpt_grab 0
       foreach s $sources {
+
          set x -100
          set y -100
          foreach cata $s {
@@ -3742,36 +3713,56 @@ namespace eval gui_cata {
             set pass "no"
                         
             if {[lindex $cata 0] == "IMG"} {
-               set x [lindex [lindex $cata 2] 2]
-               set y [lindex [lindex $cata 2] 3]
-               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {set pass "yes"}
+               set ra [lindex [lindex $cata 1] 0]
+               set dec [lindex [lindex $cata 1] 1]
+               set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+               set x [lindex $xy 0]
+               set y [lindex $xy 1]
+               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+                  set pass "yes"
+                  set xpass $x
+                  set ypass $y
+               }
             }
             if {[lindex $cata 0] == "ASTROID"} {
-               set x [lindex [lindex $cata 2] 2]
-               set y [lindex [lindex $cata 2] 3]
-               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {set pass "yes"}
+               set ra [lindex [lindex $cata 1] 0]
+               set dec [lindex [lindex $cata 1] 1]
+               set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+               set x [lindex $xy 0]
+               set y [lindex $xy 1]
+               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+                  set pass "yes"
+                  set xpass $x
+                  set ypass $y
+               }
             }
             
-            if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+            if {$pass=="yes"} {
 
-               set pos [lsearch -exact $s "IMG"]         
+               incr cpt_grab
+
+               set pos [lsearch -index 0 $s "IMG"]
                if {$pos != -1} {
-                   set x [lindex [lindex $cata 2] 2]
-                   set y [lindex [lindex $cata 2] 3]
                    set ra [lindex [lindex $cata 1] 0]
                    set dec [lindex [lindex $cata 1] 1]
-                   affich_un_rond $ra $dec green 1 
-                   affich_un_rond_xy  $x $y green 1 1
+                   set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                   set x [lindex $xy 0]
+                   set y [lindex $xy 1]
+                   affich_un_rond $ra $dec green 3 
+                   affich_un_rond_xy $x $y green 1 10
                }
 
-               set pos [lsearch -exact $s "ASTROID"]         
+               set pos [lsearch -index 0 $s "ASTROID"]         
                if {$pos != -1} {
-                   set x [lindex [lindex [lindex $s $pos] 2] 0]
-                   set y [lindex [lindex [lindex $s $pos] 2] 1]
-                   set ra [lindex [lindex [lindex $s $pos] 1] 0]
-                   set dec [lindex [lindex [lindex $s $pos] 1] 1]
-                   affich_un_rond $ra $dec red 1 
-                   affich_un_rond_xy  $x $y red 1 5
+                  set cata [lindex $s $pos]
+                  affich_un_rond_xy  [lindex [lindex $cata 2] 0] [lindex [lindex $cata 2] 1] red 30 1
+                  set ra [lindex [lindex $cata 1] 0]
+                  set dec [lindex [lindex $cata 1] 1]
+                  set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                  set x [lindex $xy 0]
+                  set y [lindex $xy 1]
+                  affich_un_rond $ra $dec blue 2
+                  affich_un_rond_xy $x $y blue 1 5
                }
 
                # selection de la source
@@ -3783,10 +3774,7 @@ namespace eval gui_cata {
                      set idx [lindex $l 0]
                      if {$idx == $id} {
                         $tbl selection set $u
-                        set ra  [lindex [lindex $cata 1] 0]
-                        set dec [lindex [lindex $cata 1] 1]
-                        affich_un_rond $ra $dec $color $width
-
+                        
                         set namable [::manage_source::namable $s]
                         if {$namable==""} {
                            set name ""
@@ -3804,38 +3792,14 @@ namespace eval gui_cata {
                      incr u
                   }
 
-               } else {
-                  incr cpt_grab
-                  if {$cpt_grab>1}  { return [list 1 "Ambigue"]}
-#                  gren_info "source = $s\n"
-
-                        set namable [::manage_source::namable $s]
-                        if {$namable==""} {
-                           set name ""
-                        } else {
-                           set name [::manage_source::naming $s $namable]
-                        } 
-                        
-                        gren_info "NAME = $name "
-                        foreach cata $s {
-                           gren_info "[lindex $cata 0] "
-                           if {[lindex $cata 0]==$namable} {
-                              set ra  [lindex [lindex $cata 1] 0]
-                              set dec [lindex [lindex $cata 1] 1]
-                              affich_un_rond $ra $dec $color $width
-                           }
-                        }
-                        gren_info "\n"
-
-                  set result [list 0 "" $id $s]
                }
-            break
+            
             }
          }
          incr id
       }
       if {$cpt_grab==0} { return [list 1 "Unknown"] }
-      return $result
+      return 
    }
 
 
@@ -5813,11 +5777,9 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
 
-   proc ::gui_cata::psf_box_auto_no_gui { sent_s threshold radiuslimit sent_result sent_radius } {
+   proc ::gui_cata::psf_box_auto_no_gui { sent_s threshold radiuslimit } {
       
-      upvar $sent_s s
-     upvar $sent_result result
-     upvar $sent_radius radius
+     upvar $sent_s s
 
 
       global bddconf
@@ -6005,7 +5967,7 @@ gren_info " => source retrouvee $cpt $dl\n"
    
        
       #gren_info "S APRES = $s\n"
-      return -code 0
+      return -code 0 [list $result $radius]
        
       
    }
@@ -6032,16 +5994,18 @@ gren_info " => source retrouvee $cpt $dl\n"
      set ::gui_cata::psf_threshold 1
      set ::gui_cata::psf_limitradius 100
       set pass "no"
-         set err [ catch {::gui_cata::psf_box_auto_no_gui ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius result radius} msg ]
+      
+         set err [ catch {set r [::gui_cata::psf_box_auto_no_gui ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]} msg ]
          if {$err} {
             ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
          } else {
             set pass "yes"
          }
       if {$pass=="no"} { return }
-
-        set ::gui_cata::psf_best_sol $result
-        set ::gui_cata::psf_radius $radius
+      
+        gren_info "*best PSF pour ($::gui_cata::psf_id_source) $::gui_cata::psf_name_source \n"
+        set ::gui_cata::psf_best_sol [lindex $r 0]
+        set ::gui_cata::psf_radius [lindex $r 1]
         ::gui_cata::psf_box_to_result         
 
 
@@ -6268,7 +6232,10 @@ gren_info " => source retrouvee $cpt $dl\n"
        set aff [lindex $r 1]
        set id  [lindex $r 2]
        set s   [lindex $r 3]
+       gren_info "Grab ID = $id\n"
        
+       
+   
        if {$aff=="Unknown" || $aff=="Ambigue"} {
           set ::gui_cata::psf_name_source $aff
           return
