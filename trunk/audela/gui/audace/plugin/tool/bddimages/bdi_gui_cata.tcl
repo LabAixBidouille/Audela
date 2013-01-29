@@ -2499,34 +2499,92 @@ namespace eval gui_cata {
 
 
 
-
-
+   #
+   # Astrometrie: supprime une source de reference (de la table srpt) dans toutes les images
+   #
    proc ::gui_cata::unset_srpt {  } {
       
       set color red
       set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
       cleanmark
 
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      set idcata_astroid $tabid(ASTROID)
+      $onglets select $onglets.f$idcata_astroid
+      set f [$onglets select]
+
+      # Selectionne chaque source
       foreach select [$::gui_astrometry::srpt curselection] {
          
          set data [$::gui_astrometry::srpt get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
-         gren_info "gestion name = $name\n"
-         gren_info "gestion date = $date\n"
-         
          set id [lindex $::tools_astrometry::tabval($name,$date) 0]
-         gren_info "gestion Id = $id\n"
-         
-         
-         if {![winfo exists .gestion_cata.appli.onglets.nb]} {
-            return
+
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               $f.frmtable.tbl selection set $u
+               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+               set dec [lindex $x [::gui_cata::get_pos_col dec]]
+               affich_un_rond $ra $dec $color $width
+            }
+            incr u
          }
-         set onglets [.gestion_cata.appli.onglets.nb tabs]
-         set f [.gestion_cata.appli.onglets.nb select]
-         set idcata [string index [lindex [split $f .] 5] 1]
-         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
-         gren_info "cataname = $cataname($idcata)\n"
+         
+      }
+
+      # Unset les sources
+      ::gui_cata::unset_flag $f.frmtable.tbl
+      # Propage les sources
+      ::gui_cata::propagation $f.frmtable.tbl
+
+   }
+
+
+   #
+   # Astrometrie: supprime une source de reference (de la table srpt) dans l'image selectionnee
+   #
+   proc ::gui_cata::unset_sret {  } {
+      
+      set color red
+
+      set width 2
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      set idcata_astroid $tabid(ASTROID)
+      $onglets select $onglets.f$idcata_astroid
+      set f [$onglets select]
+
+      # Selectionne chaque source
+      foreach select [$::gui_astrometry::sret curselection] {
+         
+         set data [$::gui_astrometry::sret get $select]
+         set id [lindex $data 0]
+         set date [lindex $data 1]
 
          set u 0
          foreach x [$f.frmtable.tbl get 0 end] {
@@ -2542,18 +2600,29 @@ namespace eval gui_cata {
          
       }
       
+      # Unset les sources
       ::gui_cata::unset_flag $f.frmtable.tbl
 
-      ::gui_cata::propagation $f.frmtable.tbl
-   
    }
+
+
+
 
 
    proc ::gui_cata::voir_sxpt { w } {
       
       set color red
       set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
       cleanmark
+
+      set onglets [.gestion_cata.appli.onglets.nb tabs]
+      set f [.gestion_cata.appli.onglets.nb select]
 
       foreach select [$w curselection] {
          set data [$w get $select]
@@ -2561,15 +2630,10 @@ namespace eval gui_cata {
          set date $::tools_cata::current_image_date
          set id [lindex $::tools_astrometry::tabval($name,$date) 0]
 
-         if {![winfo exists .gestion_cata.appli.onglets.nb]} {
-            return
-         }
+         gren_info "voir_sxpt name = $name\n"
+         gren_info "voir_sxpt date = $date\n"
+         gren_info "voir_sxpt id   = $id\n"
 
-         set onglets [.gestion_cata.appli.onglets.nb tabs]
-         set f [.gestion_cata.appli.onglets.nb select]
-         set idcata [string index [lindex [split $f .] 5] 1]
-         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
-         gren_info "cataname = $cataname($idcata)\n"
 
          set u 0
          foreach x [$f.frmtable.tbl get 0 end] {
@@ -2591,11 +2655,19 @@ namespace eval gui_cata {
 
 
    
-      proc ::gui_cata::voir_dset { w } {
+   proc ::gui_cata::voir_dset { w } {
       
       set color red
       set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
       cleanmark
+      set onglets [.gestion_cata.appli.onglets.nb tabs]
+      set f [.gestion_cata.appli.onglets.nb select]
 
       foreach select [$w curselection] {
          set data [$w get $select]
@@ -2606,12 +2678,6 @@ namespace eval gui_cata {
          if {![winfo exists .gestion_cata.appli.onglets.nb]} {
             return
          }
-
-         set onglets [.gestion_cata.appli.onglets.nb tabs]
-         set f [.gestion_cata.appli.onglets.nb select]
-         set idcata [string index [lindex [split $f .] 5] 1]
-         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
-         gren_info "cataname = $cataname($idcata)\n"
 
          set u 0
          foreach x [$f.frmtable.tbl get 0 end] {
@@ -3780,6 +3846,7 @@ namespace eval gui_cata {
    proc ::gui_cata::propagation { tbl } {
 
       set onglets $::gui_cata::current_appli.onglets
+::console::affiche_erreur "ONGLETS = $onglets\n"
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
       set idcata [string index [lindex [split $tbl .] 5] 1]
       if {[string compare -nocase $cataselect "ASTROID"] == 0} {
