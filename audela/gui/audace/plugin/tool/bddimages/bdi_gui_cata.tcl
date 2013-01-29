@@ -3455,44 +3455,37 @@ namespace eval gui_cata {
             if {[lindex $cata 0] == "IMG"} {
                set ra [lindex [lindex $cata 1] 0]
                set dec [lindex [lindex $cata 1] 1]
-               #gren_info "IMG ra dec = $ra $dec\n"
-               set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
-               set can_xy [ ::audace::picture2Canvas $img_xy ]
-               set x [lindex $can_xy 0]
-               set y [lindex $can_xy 1]
+               set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+               set x [lindex $xy 0]
+               set y [lindex $xy 1]
                if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
                   set pass "yes"
-                  #gren_info "$name cata = [lindex $cata 0]\n"
                   set xpass $x
                   set ypass $y
                }
             }
+            
             if {[lindex $cata 0] == "ASTROID"} {
                set ra [lindex [lindex $cata 1] 0]
                set dec [lindex [lindex $cata 1] 1]
-               #gren_info "ASTROID ra dec = $ra $dec\n"
-               
-               set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
-               set can_xy [ ::audace::picture2Canvas $img_xy ]
-               set x [lindex $can_xy 0]
-               set y [lindex $can_xy 1]
+               set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+               set x [lindex $xy 0]
+               set y [lindex $xy 1]
                if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
                   set pass "yes"
-                  #gren_info "$name cata = [lindex $cata 0]\n"
                   set xpass $x
                   set ypass $y
                }
             }
-            if {[lindex $cata 0] == "UCAC3" || [lindex $cata 0] == "TYCHO2" ||[lindex $cata 0] == "UCAC2" ||[lindex $cata 0] == "USNOA2" } {
+            
+            if {[lindex $cata 0] == "UCAC3" || [lindex $cata 0] == "TYCHO2" || [lindex $cata 0] == "UCAC2" || [lindex $cata 0] == "USNOA2" } {
                set ra [lindex [lindex $cata 1] 0]
                set dec [lindex [lindex $cata 1] 1]
                set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
                set x [lindex $xy 0]
                set y [lindex $xy 1]
-               
                if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
                   set pass "yes"
-                  #gren_info "$name cata = [lindex $cata 0]\n"
                   set xpass $x
                   set ypass $y
                }
@@ -3507,19 +3500,17 @@ namespace eval gui_cata {
                #gren_info "NAME = $name \n"
                #gren_info "xpass ypass  = $xpass $ypass\n"
                #gren_info "rect = $rect\n"
-               affich_un_rond_xy  $xpass $ypass green 30 1
+               affich_un_rond_xy $xpass $ypass green 60 1
 
                set pos [lsearch -index 0 $s "IMG"]
                if {$pos != -1} {
                    set ra [lindex [lindex $cata 1] 0]
                    set dec [lindex [lindex $cata 1] 1]
-                   set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
-                   set can_xy [ ::audace::picture2Canvas $img_xy ]
-                   set x [lindex $can_xy 0]
-                   set y [lindex $can_xy 1]
-              #     gren_info "IMG x y  = $x $y\n"
+                   set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                   set x [lindex $xy 0]
+                   set y [lindex $xy 1]
                    affich_un_rond $ra $dec green 3 
-                   affich_un_rond_xy  $x $y green 1 10
+                   affich_un_rond_xy $x $y green 1 10
                }
 
                set pos [lsearch -index 0 $s "ASTROID"]         
@@ -3532,14 +3523,13 @@ namespace eval gui_cata {
 
                    set ra [lindex [lindex $cata 1] 0]
                    set dec [lindex [lindex $cata 1] 1]
-                   set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
-                   set can_xy [ ::audace::picture2Canvas $img_xy ]
-                   set x [lindex $can_xy 0]
-                   set y [lindex $can_xy 1]
-               #    gren_info "ASTROID x y  = $x $y\n"
+                   set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                   set x [lindex $xy 0]
+                   set y [lindex $xy 1]
                    affich_un_rond $ra $dec blue 2
-                   affich_un_rond_xy  $x $y blue 1 5
+                   affich_un_rond_xy $x $y blue 1 5
                }
+
                set pos [lsearch -index 0 $s "UCAC3"]         
                if {$pos != -1} {
                    set ra [lindex [lindex [lindex $s $pos] 1] 0]
