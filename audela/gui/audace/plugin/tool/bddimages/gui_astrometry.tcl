@@ -283,7 +283,10 @@ namespace eval gui_astrometry {
          $::gui_astrometry::dwpt insert end $::tools_astrometry::tabdate($date)
       }
 
-      
+      # Tri les resultats en fonction de la colonne Rho
+      $::gui_astrometry::srpt sortbycolumn 2 -decreasing
+      $::gui_astrometry::sspt sortbycolumn 2 -decreasing
+
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage des resultats in $tt sec \n"
 
@@ -296,6 +299,7 @@ namespace eval gui_astrometry {
       ::tools_astrometry::init_priam
       ::tools_astrometry::go_priam
       ::gui_astrometry::affich_catalist
+
    }
 
 
