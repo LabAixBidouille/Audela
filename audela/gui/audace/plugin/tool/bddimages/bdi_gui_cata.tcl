@@ -3405,7 +3405,7 @@ namespace eval gui_cata {
          gren_info "ID = $id\n"
          set s [lindex $sources [expr $id - 1 ]]
          #gren_info "S=$s\n"
-         set err [ catch {::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius} msg ]
+         set err [ catch {::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius result radius} msg ]
          if {$err} {
             ::console::affiche_erreur "ERREUR PSF : $msg\n"
          } else {
@@ -3753,7 +3753,6 @@ namespace eval gui_cata {
             }
             
             if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
-
 
                set pos [lsearch -exact $s "IMG"]         
                if {$pos != -1} {
@@ -5814,9 +5813,11 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
 
-   proc ::gui_cata::psf_box_auto_no_gui { sent_s threshold radiuslimit } {
+   proc ::gui_cata::psf_box_auto_no_gui { sent_s threshold radiuslimit sent_result sent_radius } {
       
       upvar $sent_s s
+     upvar $sent_result result
+     upvar $sent_radius radius
 
 
       global bddconf
@@ -5946,7 +5947,8 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       # Choix du bon delta
       set delta $radiussav
-      gren_info "radius = $delta\n"
+      set radius $radiussav
+      gren_info "radius = $radius\n"
 
       set xsm [lindex $results($delta) 0]
       set ysm [lindex $results($delta) 1]
@@ -6026,94 +6028,41 @@ gren_info " => source retrouvee $cpt $dl\n"
       #::gui_cata::psf_name_source
       #::gui_cata::psf_id_source 
       
+       
+     set ::gui_cata::psf_threshold 1
+     set ::gui_cata::psf_limitradius 100
       set pass "no"
-      foreach mycata $::gui_cata::psf_source {
-      
-         if {[lindex $mycata 0] == $::gui_cata::psf_name_cata } {
-            set ra  [lindex [lindex $mycata 1] 0]
-            set dec [lindex [lindex $mycata 1] 1]
-            set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
-            set x [lindex $xy 0]
-            set y [lindex $xy 1]
+         set err [ catch {::gui_cata::psf_box_auto_no_gui ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius result radius} msg ]
+         if {$err} {
+            ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
+         } else {
             set pass "yes"
          }
-      }
-      
-      if {$pass=="yes"} {
-      
-         cleanmark
-         
-         if {[info exists results]} {unset results}
-         
-         
-         for {set radius 1} {$radius < 100} {incr radius} {
-            set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
-            #gren_info "err = $err $msg\n"
-            if {$result==-1} {set results($radius,err) 10}
-            if {$results($radius,err)==0} {
-               #gren_info "result = $result\n"
-               set xsm [expr int([lindex $result 0])]
-               set ysm [expr int([lindex $result 1])]
-               set radec [ buf$::audace(bufNo) xy2radec [list $xsm $ysm ] ]
-               set pra [lindex $radec 0] 
-               set pdec [lindex $radec 1]
-               set radiff [expr ($ra - $pra ) * cos ($dec)]
-               set decdiff [expr $dec - $pdec ]
-               set rsecdiff [expr sqrt ( pow($radiff,2) + pow($decdiff,2) ) * 3600000.0]
-               if {$rsecdiff > 1000} {
-                  set results($radius,err) 1
-                  continue
-                  }
-               set result [linsert $result end $pra $pdec $rsecdiff]
-               #gren_info "$result\n"
-               set results($radius) $result
-               affich_un_rond_xy $xsm $ysm green $radius 1
-            }
-         }
+      if {$pass=="no"} { return }
 
-         # stat intensite
-         set rdiff ""
-         for {set radius 1} {$radius < 100} {incr radius} {
-            if {$results($radius,err)==0} {
-               lappend rdiff  [lindex $results($radius) 15]
-            }
-         }
-         set median [::math::statistics::median $rdiff]
-         gren_info "median = $median\n"
+        set ::gui_cata::psf_best_sol $result
+        set ::gui_cata::psf_radius $radius
+        ::gui_cata::psf_box_to_result         
 
 
-         set diffmin 1000000000
-         set deltasav 0
-         for {set radius 1} {$radius < 100} {incr radius} {
-            if {$results($radius,err)==0} {
-               set rdiff  [lindex $results($radius) 15]
-               set diff [expr abs($rdiff - $median)]
-               if {$diff < $diffmin } {
-                  set deltasav [lindex $radius]
-                  set diffmin $diff 
-               }
-            }
-         }
-         
-        
-         set delta $deltasav
 
-         gren_info "delta = $delta\n"
-         set xsm [lindex $results($delta) 0]
-         set ysm [lindex $results($delta) 1]
-
-         gren_info "xsm = $xsm\n"
-         gren_info "ysm = $ysm\n"
-         gren_info "rdiff = [lindex $results($delta) 15]\n"
-         
-         cleanmark
-         affich_un_rond_xy $xsm $ysm green $delta 1
-         set ::gui_cata::psf_best_sol $results($delta)
-         set ::gui_cata::psf_radius $delta
-         ::gui_cata::psf_box_to_result         
-      }
-       
-       
+#    set pos [lsearch -index 0 $fields "ASTROID"]
+#    if {$pos!=-1} {
+#       set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
+#    } else {
+#       set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
+#    }
+#    
+#    set ::tools_cata::current_listsources [list $fields $sources]
+#    set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+#    ::gui_cata::current_listsources_to_tklist
+#
+#
+#      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+#      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+#      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+#      ::gui_cata::gestion_go
+#
        
       
    }
