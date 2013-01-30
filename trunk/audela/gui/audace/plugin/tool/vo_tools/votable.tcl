@@ -1813,6 +1813,15 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::PRECISION \"2\"" \
                        "$::votable::Field::UNIT \"pixel\""
       }
+      err_xsm -
+      err_ysm {
+         set description "Uncertainty on the cartesian coordinate of the source in the image"
+         lappend field "$::votable::Field::UCD \"stat.error;pos.cartesian.[string index $key 4]\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"pixel\""
+      }
       fwhmx -
       fwhmy -
       fwhm {
