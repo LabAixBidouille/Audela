@@ -115,7 +115,8 @@ namespace eval bddimages_sql {
    global sql
    global audace
    #--- extension MySQL
-   set err [catch {load [concat $audace(rep_install) "/bin/libmysqltcl[info sharedlibextension]"]} msg]
+   set lib [file join $audace(rep_install) bin "libmysqltcl[info sharedlibextension]"]
+   set err [catch {load $lib} msg]
    if {$err==1} {
       set err [catch {package require mysqltcl} msg]
    }
