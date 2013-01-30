@@ -121,12 +121,10 @@ namespace eval ::priam {
 
 proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
 
-      upvar $sent_img img
-      upvar $sent_list_source listsources
-
+   upvar $sent_img img
+   upvar $sent_list_source listsources
 
    global bddconf audace
-
 
    set imagefilename [::bddimages_liste::lget $img "filename"]
 
@@ -335,19 +333,19 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
             set b  [lindex [lindex $s $x] 2]           
-            set ar [lindex $b 23]
-            set ac [lindex $b 25]
+            set ar [lindex $b 25]
+            set ac [lindex $b 27]
             
             # cas d une reference ou d une science
             if  {$ar=="R" || $ar=="S"} {
                set name [::manage_source::naming $s $ac]
                set xsm [lindex $b 0]
                set ysm [lindex $b 1]
-               set xsmerr 0.01
-               set ysmerr 0.01
-               set fwhmx [lindex $b 2]
-               set fwhmy [lindex $b 3]
-               set fluxintegre [lindex $b 5]
+               set xsmerr [lindex $b 2]
+               set ysmerr [lindex $b 3]
+               set fwhmx [lindex $b 4]
+               set fwhmy [lindex $b 5]
+               set fluxintegre [lindex $b 6]
                puts $chan0 "$ar $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
             }
             
