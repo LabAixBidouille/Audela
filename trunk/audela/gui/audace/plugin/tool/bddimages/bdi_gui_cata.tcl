@@ -5860,7 +5860,7 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       # Sauve fichier
-      set file [file join $bddconf(dirtmp) "psf.csv"]
+      set file [file join $bddconf(dirtmp) "psf_all.csv"]
       gren_info "Sauve Fichier = $file\n"
       set chan [open $file w]
       #   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
@@ -5875,92 +5875,269 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       # statistiques
+      gren_info "statistiques\n"
+      gren_info "NB POP $radiuslimit : start\n"
       set rdiff ""
+      set fluxintegre ""
+      set intensite ""
+      set fwhm ""
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            lappend rdiff  [lindex $results($radius) 15]
+            lappend fwhm         [lindex $results($radius) 6]
+            lappend fluxintegre  [lindex $results($radius) 7]
+            lappend intensite    [lindex $results($radius) 10]
+            lappend rdiff        [lindex $results($radius) 15]
          }
       }
       set nb  [llength $rdiff]
-      # gren_info "nbrdiff $nb\n"
-      set median [::math::statistics::median $rdiff]
+      gren_info "NB POP $nb : tri erreur\n"
+      
+      set max_fwhm           [::math::statistics::max $fwhm       ]
+
+      set median_fwhm        [::math::statistics::median $fwhm       ]
+      set median_fluxintegre [::math::statistics::median $fluxintegre]
+      set median_intensite   [::math::statistics::median $intensite  ]
+      set median_rdiff       [::math::statistics::median $rdiff      ]
+
+      set stdev_fluxintegre  [::math::statistics::stdev $fluxintegre]
+      set stdev_intensite    [::math::statistics::stdev $intensite  ]
 
       set diffmin 1000000000
-      set deltasav 0
+      set radius_rdiff 0
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
             set rdiff  [lindex $results($radius) 15]
-            set diff [expr abs($rdiff - $median)]
+            set diff [expr abs($rdiff - $max_fwhm)]
             if {$diff < $diffmin } {
-               set deltasav [lindex $radius]
+               set radius_rdiff [lindex $radius]
                set diffmin $diff 
             }
          }
       }
 
 
+                      ###               ###
+
+                      #    fluxintegre    #  
+
+                      ###               ###
 
 
-      # statistiques
-      set intensitemax  0
-      set radiussav 0
+      for {set i 0} {$i<1} {incr i} {
+         # statistiques on selectionne tous les radius dont le flux est superieur a une limite
+         # CROP autour des plus hautes valeur de flux
+         set fluxintegre ""
+         set fluxmin  [expr  $median_fluxintegre - $stdev_fluxintegre]
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+               set flux  [lindex $results($radius) 7]
+               if {$flux < $fluxmin } {
+                  set results($radius,err) 2
+               } else {
+                  lappend fluxintegre  $flux
+               }
+            }
+         }
+         set median_fluxintegre [::math::statistics::median $fluxintegre]
+         set stdev_fluxintegre  [::math::statistics::stdev $fluxintegre]
+
+      }
+
+      # Sauve fichier
+      set file [file join $bddconf(dirtmp) "psf_crop_flux_$i.csv"]
+      gren_info "Sauve Fichier = $file\n"
+      set chan [open $file w]
+      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            set intensite  [lindex $results($radius) 10]
-            if {$intensitemax < $intensite } {
-               set intensitemax $intensite
-               set radiussav $radius
+             puts $chan $results($radius)
+         }
+      }
+      close $chan
+
+
+
+                      ###        ###
+
+                      #    FWHM    #  
+
+                      ###        ###
+
+      # CROP autour des plus hautes valeur de fwhm
+      set fwhm ""
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            lappend fwhm  [lindex $results($radius) 6]
+         }
+      }
+      # Stat FWHM
+      set median_fwhm [::math::statistics::median $fwhm]
+      set stdev_fwhm  [::math::statistics::stdev  $fwhm]
+
+      for {set i 0} {$i<1} {incr i} {
+
+         # CROP FWHM
+         set fwhmmin  [expr  $median_fwhm - $stdev_fwhm]
+         set fwhmmax  [expr  $median_fwhm + $stdev_fwhm]
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+               set fwhm [lindex $results($radius) 6]
+               if {$fwhm < $fwhmmin || $fwhm > $fwhmmax} {
+                  set results($radius,err) 3
+               }
+            }
+         }
+
+         # Charge FWHM
+         set fwhm ""
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+               lappend fwhm  [lindex $results($radius) 6]
+            }
+         }
+         # Stat FWHM
+         set median_fwhm [::math::statistics::median $fwhm]
+         set stdev_fwhm  [::math::statistics::stdev $fwhm]
+      }
+
+      # recherche de valeur key,val -> delta
+      # pour fwhm
+      set myidval 6           
+      # Valeur a retrouver
+      set valeur  $median_fwhm 
+
+      set dmin 1000000000
+      set myfwhm  0
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            set r  [lindex $results($radius) $myidval]
+            set d [expr abs($r - $valeur)]
+            if {$d < $dmin } {
+               set myfwhm $radius
+               set dmin $d 
             }
          }
       }
-      
+      # Sauve fichier
+      set file [file join $bddconf(dirtmp) "psf_crop_radius_fwhm_$i.csv"]
+      gren_info "Sauve Fichier = $file\n"
+      set chan [open $file w]
+      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+             puts $chan $results($radius)
+         }
+      }
+      close $chan
+
+   ###                       ###
+  
+      set radius_fwhm $myfwhm
+
+   ###                       ###
+
+      set xsm_fwhm       [lindex $results($radius_fwhm) 0]
+      set ysm_fwhm       [lindex $results($radius_fwhm) 1]
+      set stdev_xsm_fwhm [lindex $results($radius_fwhm) 2]
+      set stdev_ysm_fwhm [lindex $results($radius_fwhm) 3]
+      gren_info "xsm_fwhm = $xsm_fwhm +- $stdev_xsm_fwhm\n"
+      gren_info "ysm_fwhm = $ysm_fwhm +- $stdev_ysm_fwhm\n"
 
 
 
+
+
+
+      set diffmin 1000000000
+      set radius_fluxintegre 0
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            set rdiff  [lindex $results($radius) 7]
+            set diff [expr abs($rdiff - $median_fluxintegre)]
+            if {$diff < $diffmin } {
+               set radius_fluxintegre [lindex $radius]
+               set diffmin $diff 
+            }
+         }
+      }
+
+      set xsm_fluxintegre       [lindex $results($radius_fluxintegre) 0]
+      set ysm_fluxintegre       [lindex $results($radius_fluxintegre) 1]
+      set stdev_xsm_fluxintegre [lindex $results($radius_fluxintegre) 2]
+      set stdev_ysm_fluxintegre [lindex $results($radius_fluxintegre) 3]
+      gren_info "xsm_fluxintegre = $xsm_fluxintegre +- $stdev_xsm_fluxintegre\n"
+      gren_info "ysm_fluxintegre = $ysm_fluxintegre +- $stdev_ysm_fluxintegre\n"
+
+
+
+                      ###                ###
+
+                      #     XSM et YSM     #  
+
+                      ###                ###
+
+
+      # Moyenne sur les positions 
+      set tabxsm ""
+      set tabysm ""
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            lappend tabxsm [lindex $results($radius) 0]
+            lappend tabysm [lindex $results($radius) 1]
+         }
+      }
+      set nb  [llength $tabxsm]
+      gren_info "NB POP $nb : tri crop flux\n"
+
+
+      set mean_xsm [::math::statistics::mean $tabxsm]
+      set mean_ysm [::math::statistics::mean $tabysm]
+      set mean_diff [expr sqrt(pow($mean_xsm,2)+pow($mean_ysm,2))]
+
+      set stdev_xsm [::math::statistics::stdev $tabxsm]
+      set stdev_ysm [::math::statistics::stdev $tabysm]
+
+      set diffmin 1000000000
+      set radius_posmean 0
+      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+         if {$results($radius,err)==0} {
+            set eachdiff [expr sqrt((pow([lindex $results($radius) 0],2)+pow([lindex $results($radius) 1],2))/2.0)]
+            set diff [expr abs($eachdiff - $mean_diff)]
+            if {$diff < $diffmin } {
+               set radius_posmean [lindex $radius]
+               set diffmin $diff 
+            }
+         }
+      }
+
+      set xsm_posmean       [lindex $results($radius_posmean) 0]
+      set ysm_posmean       [lindex $results($radius_posmean) 1]
+      set stdev_xsm_posmean [lindex $results($radius_posmean) 2]
+      set stdev_ysm_posmean [lindex $results($radius_posmean) 3]
+      gren_info "xsm_posmean = $xsm_posmean +- $stdev_xsm_posmean\n"
+      gren_info "ysm_posmean = $ysm_posmean +- $stdev_ysm_posmean\n"
+
+
+                      ###         ###
+
+                      #    FINAL    #  
+
+                      ###         ###
 
 
       # Choix du bon delta
-      set radius $radiussav
-      gren_info "radius = $radius\n"
+      set best_radius $radius_fluxintegre
 
-      set xsm [lindex $results($radius) 0]
-      set ysm [lindex $results($radius) 1]
-      set pra [lindex $results($radius) 16]
-      set pdec [lindex $results($radius) 17]
 
-      gren_info "xsm = $xsm\n"
-      gren_info "ysm = $ysm\n"
-      gren_info "rdiff = [lindex $results($radius) 15]\n"
+      gren_info "-----\n"
+      gren_info "radius_rdiff       = $radius_rdiff\n"
+      gren_info "radius_fwhm        = $radius_fwhm\n"
+      gren_info "radius_fluxintegre = $radius_fluxintegre\n"
+      gren_info "radius_posmean     = $radius_posmean\n"
+      gren_info "-----\n"
 
-      #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
-      #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
-      ##gren_info "ASTROID OTHERF = [lindex $astroid 2]\n"
-      
-      set pos [lsearch -index 0 $s "ASTROID"]
-      if {$pos!=-1} {
-         set astroid [lindex $s $pos]
 
-         set comf   [lindex $astroid 1]
-         set comf   [lreplace $comf 0 1 $pra $pdec]
-
-         set otherf  [lindex $astroid 2]
-         set en [expr [llength $results($radius)] -1]
-         set i 0
-         foreach val $results($radius) {
-            set otherf [lreplace $otherf $i $i $val]
-            incr i
-         }
-         set astroid [ list "ASTROID" $comf $otherf]
-         set s [lreplace $s $pos $pos $astroid]
-
-      } else {
-         set cata "ASTROID"
-         set comf [list $pra $pdec 5 0 0]
-         set othf [linsert $results($radius) end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
-         set astroid [list "ASTROID" $comf $othf]
-         set s [linsert $s end $astroid]
-      }
-      
+      # gren_info "result = $best_radius :: $result   \n"
 
          #set field [linsert $field [::analyse_source::get_fieldastroid] ]
          
@@ -5974,13 +6151,159 @@ gren_info " => source retrouvee $cpt $dl\n"
 #    {xsm       ysm        fwhmx    fwhmy    fwhm               fluxintegre errflux pixmax      intensite sigmafond  snint             snpx                delta alpha      delta    rdiff}
 
 
-
        
-         gren_info "result = $radius ::  $results($radius)   \n"
    
+           ###                         ###
+
+           #      Solution globale     #  
+
+           ###                         ###
+
+      gren_info "-----\n"
+      gren_info "METHODE GLOBALE \n"
+
+      set listfield [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec]
+      set i 0
+      foreach field $listfield {
+         set tab ""
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+               lappend tab [lindex $results($radius) $i]
+            }
+         }
+         # Stat FWHM
+         set st($field,mean)   [::math::statistics::mean $tab]
+         set st($field,median) [::math::statistics::median $tab]
+         set st($field,stdev)  [::math::statistics::stdev  $tab]
+         set st($field,err1s)  $st($field,stdev)
+         set st($field,err3s)  [ expr 3.0 * $st($field,stdev) ]
+         incr i
+      }
+
+      set result [list $st(xsm,mean) \
+                       $st(ysm,mean) \
+                       $st(xsm,err3s) \
+                       $st(ysm,err3s) \
+                       $st(fwhmx,mean) \
+                       $st(fwhmy,mean) \
+                       $st(fwhm,mean) \
+                       $st(fluxintegre,mean) \
+                       $st(fluxintegre,err1s) \
+                       $st(pixmax,mean) \
+                       $st(intensite,mean) \
+                       $st(sigmafond,mean) \
+                       $st(snint,mean) \
+                       $st(snpx,mean) \
+                       $st(delta,mean) \
+                       $st(rdiff,mean) \
+                       $st(ra,mean) \
+                       $st(dec,mean) \
+                  ]
+      
+
+      # Sauve fichier
+      set file [file join $bddconf(dirtmp) "psf_crop_radius_soluce.csv"]
+      gren_info "Sauve Fichier = $file\n"
+      set chan [open $file w]
+      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+      puts $chan $result
+      close $chan
+
+      set xsm       [lindex $result 0]
+      set ysm       [lindex $result 1]
+      set stdev_xsm [lindex $result 2]
+      set stdev_ysm [lindex $result 3]
+      set pra       [lindex $result 16]
+      set pdec      [lindex $result 17]
+
+      gren_info "xsm = $xsm +- $stdev_xsm\n"
+      gren_info "ysm = $ysm +- $stdev_ysm\n"
+
+
+      set dx [expr abs( $xsm - $xsm_fwhm)]
+      set dy [expr abs( $ysm - $ysm_fwhm)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      gren_info "diff_fwhm ($radius_fwhm) = $diff\n"
+      set diffmin $diff
+      set best_radius $radius_fwhm
+
+      set dx [expr abs( $xsm - $xsm_fluxintegre)]
+      set dy [expr abs( $ysm - $ysm_fluxintegre)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      gren_info "diff_fluxintegre ($radius_fluxintegre) = $diff\n"
+      if {$diff<$diffmin} {
+         set diffmin $diff
+         set best_radius $radius_fluxintegre
+      }
+
+      set dx [expr abs( $xsm - $xsm_posmean)]
+      set dy [expr abs( $ysm - $ysm_posmean)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      gren_info "diff_posmean ($radius_posmean) = $diff\n"
+      if {$diff<$diffmin} {
+         set diffmin $diff
+         set best_radius $radius_posmean
+      }
+
+
+      gren_info "-----\n"
+      gren_info "RADIUS SELECTED    = $best_radius\n"
+      set result [lreplace $results($best_radius) 2 3 $stdev_xsm $stdev_ysm]
+      set xsm_selected       [lindex $result 0]
+      set ysm_selected       [lindex $result 1]
+      set stdev_xsm_selected [lindex $result 2]
+      set stdev_ysm_selected [lindex $result 3]
+      gren_info "xsm_selected = $xsm_selected +- $stdev_xsm_selected\n"
+      gren_info "ysm_selected = $ysm_selected +- $stdev_ysm_selected\n"
+
+      set dx [expr abs( $xsm - $xsm_selected)]
+      set dy [expr abs( $ysm - $ysm_selected)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      gren_info "diff_selected ($best_radius) = $diff\n"
+
+      gren_info "-----\n"
+
+#      if {$dxsm>$stdev_xsm||$dysm>$stdev_ysm} {
+#         ::console::affiche_erreur "WARNING = incertitude sur la position X et Y fournit\n"
+#      }
+
+           ###                         ###
+
+           #    Ajout du cata ASTROID    #  
+
+           ###                         ###
+
+
+      #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
+      #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
+      ##gren_info "ASTROID OTHERF = [lindex $astroid 2]\n"
+      
+      set pos [lsearch -index 0 $s "ASTROID"]
+      if {$pos!=-1} {
+         set astroid [lindex $s $pos]
+
+         set comf   [lindex $astroid 1]
+         set comf   [lreplace $comf 0 1 $pra $pdec]
+
+         set otherf  [lindex $astroid 2]
+         set en [expr [llength $result] -1]
+         set i 0
+         foreach val $result {
+            set otherf [lreplace $otherf $i $i $val]
+            incr i
+         }
+         set astroid [ list "ASTROID" $comf $otherf]
+         set s [lreplace $s $pos $pos $astroid]
+      } else {
+         set cata "ASTROID"
+         set comf [list $pra $pdec 5 0 0]
+         set othf [linsert $result end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
+         set astroid [list "ASTROID" $comf $othf]
+         set s [linsert $s end $astroid]
+      }
        
       #gren_info "S APRES = $s\n"
-      return -code 0 [list $results($radius) $radius]
+      return -code 0 [list $result $best_radius]
        
       
    }
@@ -6018,7 +6341,8 @@ gren_info " => source retrouvee $cpt $dl\n"
          set ::gui_cata::psf_radius   [lindex $r 1]
          gren_info "psf_radius   = $::gui_cata::psf_radius \n"
          gren_info "psf_best_sol = $::gui_cata::psf_best_sol   \n"
-         
+
+         # TODO ici afficher $::gui_cata::psf_best_sol dans la GUI
          ::gui_cata::psf_box_to_result         
 
 
