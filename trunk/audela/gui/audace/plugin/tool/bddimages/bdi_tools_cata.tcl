@@ -911,8 +911,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
             set b  [lindex [lindex $s $x] 2]           
-            set ar [lindex $b 23]
-            set ac [lindex $b 25]
+            set ar [lindex $b 25]
+            set ac [lindex $b 27]
             if {$ar==$tag} {
                set name [::manage_source::naming $s $ac]
                lappend result [list $cpt $x $ar $ac $name]

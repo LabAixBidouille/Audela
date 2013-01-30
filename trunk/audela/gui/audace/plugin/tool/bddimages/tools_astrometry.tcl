@@ -37,15 +37,14 @@ variable imagelimit
             set pos [lsearch -index 0 $s "ASTROID"]
             if {$pos != -1} {
                set a [lindex [lindex $s $pos] 2]
-               set ar [lindex $a 23]
-               set ac [lindex $a 25]
+               set ar [lindex $a 25]
+               set ac [lindex $a 27]
                if  { $ar == "R" } {
                   gren_info "-> $ar $ac\n"
                }
-            }            
+            }
          }
-         ##
-         
+
          ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list current_image ::gui_cata::cata_list($id_current_image)
       }
 
@@ -105,18 +104,19 @@ variable imagelimit
          set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
          set dateiso [ mc_date2iso8601 $commundatejj ]
 
-         gren_info "-- img : $id_current_image / [llength $::tools_cata::img_list]\n"
+         gren_info "-- IMG : $id_current_image / [llength $::tools_cata::img_list]\n"
 
          # REFERENCES
 
          set list_id_ref [::tools_cata::get_id_astrometric "R" current_listsources]
+
          foreach l $list_id_ref {
 
             set id     [lindex $l 0]
             set idcata [lindex $l 1]
             set ar     [lindex $l 2]
             set ac     [lindex $l 3]
-            set name   [string trim [lindex $l 4] ]
+            set name   [string trim [lindex $l 4]]
 
             if {$name == ""} {
                gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
@@ -131,15 +131,15 @@ variable imagelimit
             set b       [lindex $astroid 2]
             #gren_info "b = $b\n"
 
-            set ra      [lindex $b 14]
-            set dec     [lindex $b 15]
-            set res_ra  [format  "%.4f" [lindex $b 16] ]
-            set res_dec [format  "%.4f" [lindex $b 17] ]
+            set ra      [lindex $b 16]
+            set dec     [lindex $b 17]
+            set res_ra  [format  "%.4f" [lindex $b 18]]
+            set res_dec [format  "%.4f" [lindex $b 19]]
             set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
-            set omc_ra  [lindex $b 18]
-            set omc_dec [lindex $b 19]
-            set mag     [lindex $b 20]
-            set err_mag [lindex $b 21]
+            set omc_ra  [lindex $b 20]
+            set omc_dec [lindex $b 21]
+            set mag     [lindex $b 22]
+            set err_mag [lindex $b 23]
             #gren_info "rho = $rho :: $res_ra $res_dec \n"
             #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
             set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag]
@@ -163,21 +163,22 @@ variable imagelimit
             if {$name == ""} {
                gren_info "Lect Science = $id $idcata $ar $ac $name\n"
             }
+            gren_info "Lect Science = $id $idcata $ar $ac $name\n"
             
             set s       [lindex [lindex $current_listsources 1] $id]
             set astroid [lindex $s $idcata]
             set b       [lindex $astroid 2]
             #gren_info "b = $b\n"
 
-            set ra      [lindex $b 14]
-            set dec     [lindex $b 15]
-            set res_ra  [format  "%.4f" [lindex $b 16] ]
-            set res_dec [format  "%.4f" [lindex $b 17] ]
+            set ra      [lindex $b 16]
+            set dec     [lindex $b 17]
+            set res_ra  [format  "%.4f" [lindex $b 18] ]
+            set res_dec [format  "%.4f" [lindex $b 19] ]
             set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
-            set omc_ra  [lindex $b 18]
-            set omc_dec [lindex $b 19]
-            set mag     [lindex $b 20]
-            set err_mag [lindex $b 21]
+            set omc_ra  [lindex $b 20]
+            set omc_dec [lindex $b 21]
+            set mag     [lindex $b 22]
+            set err_mag [lindex $b 23]
             #gren_info "Rho = $rho :: $res_ra $res_dec \n"
             #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
 
@@ -369,7 +370,7 @@ variable imagelimit
             set sm   0
          }
 
-         set ::tools_astrometry::tabdate($date)  [list $date $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
+         set ::tools_astrometry::tabdate($date) [list $date $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
       }
       
    }
@@ -425,9 +426,6 @@ variable imagelimit
       set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
       set n [llength $astrom(kwds)]
 
-
-
-      
       set id_current_image 0
 
       # Lecture du fichier en continue
@@ -498,12 +496,12 @@ variable imagelimit
    # Insertion des resultats dans current_listsources
 
       set fieldsastroid [::analyse_source::get_fieldastroid]
-  
-#      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
- #                                          "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
-#                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" \
-#                                           "mag" "err_mag" "name"] ]
-                                           
+
+#      set fieldsastroid [list "ASTROID" {} [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+#                                           "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
+#                                           "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" \
+#                                           "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"] ]
+
       set id_current_image 0
 
       foreach current_image $::tools_cata::img_list {
@@ -561,7 +559,7 @@ variable imagelimit
                set astroid [lindex $s $idcata]
                #gren_info "astroid = $astroid\n"
                set b [lindex $astroid 2]
-               set b [lreplace $b 14 19 $ra $dec $res_ra $res_dec $omc_ra $omc_dec]
+               set b [lreplace $b 16 21 $ra $dec $res_ra $res_dec $omc_ra $omc_dec]
                set astroid [lreplace $astroid 2 2 $b]
                #gren_info "astroid = $astroid\n"
                set s [lreplace $s $idcata $idcata $astroid]
@@ -604,7 +602,7 @@ variable imagelimit
                set astroid [lindex $s $idcata]
                #gren_info "astroid = $astroid\n"
                set b [lindex $astroid 2]
-               set b [lreplace $b 14 17 $ra $dec $res_ra $res_dec]
+               set b [lreplace $b 16 19 $ra $dec $res_ra $res_dec]
                set astroid [lreplace $astroid 2 2 $b]
                #gren_info "astroid = $astroid\n"
                set s [lreplace $s $idcata $idcata $astroid]
@@ -612,7 +610,7 @@ variable imagelimit
             }
          }
  
-      set ::gui_cata::cata_list($id_current_image) [list $fields $sources]
+         set ::gui_cata::cata_list($id_current_image) [list $fields $sources]
 
       }
 
@@ -640,11 +638,12 @@ variable imagelimit
 
    
 # ASTROID --   
-# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
 # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
-# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
-# "mag" "err_mag" "name"
-   proc ::tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec flag name} {
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
+# "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
+
+   proc ::tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec name} {
    
       set pass "no"
       
@@ -653,8 +652,8 @@ variable imagelimit
          if {[lindex $cata 0] == "ASTROID"} {
             set pass "yes"
             set astroid [lindex $cata 2]
-            set astroid [lreplace $astroid 14 20 $ra $dec $res_ra $res_dec $omc_ra $omc_dec $flag]
-            set astroid [lreplace $astroid 23 23 $name]
+            set astroid [lreplace $astroid 16 21 $ra $dec $res_ra $res_dec $omc_ra $omc_dec]
+            set astroid [lreplace $astroid 24 24 $name]
             
             lappend stmp [list "ASTROID" {} $astroid]
          } else {
@@ -681,10 +680,10 @@ variable imagelimit
 
 
 # ASTROID --   
-# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
 # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
-# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
-# "mag" "err_mag" "name" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
+# "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
 
    proc ::tools_astrometry::save { form } {
 
@@ -703,7 +702,7 @@ variable imagelimit
             set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
             set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
             set current_listsources [::bddimages_liste::lget $current_image "listsources"]
-            set tabkey      [::bddimages_liste::lget $current_image "tabkey"]
+            set tabkey [::bddimages_liste::lget $current_image "tabkey"]
             set pvalue [string trim [lindex [::bddimages_liste::lget $tabkey "CATA_PVALUE"] 1] ]
             set pvalue 0
 
@@ -714,36 +713,40 @@ variable imagelimit
                      set astroid [lindex $cata 2]
 
 # ASTROID --   
-# ASTROID --   
-# "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
+# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
 # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
-# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
-# "mag" "err_mag" "name" 
+# "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
+# "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
 
-                     set xsm         [lindex $astroid  0]  
-                     set ysm         [lindex $astroid  1]  
-                     set fwhmx       [lindex $astroid  2]  
-                     set fwhmy       [lindex $astroid  3]  
-                     set fwhm        [lindex $astroid  4]  
-                     set fluxintegre [lindex $astroid  5]  
-                     set errflux     [lindex $astroid  6]  
-                     set pixmax      [lindex $astroid  7]  
-                     set intensite   [lindex $astroid  8]  
-                     set sigmafond   [lindex $astroid  9]  
-                     set snint       [lindex $astroid 10]  
-                     set snpx        [lindex $astroid 11]  
-                     set delta       [lindex $astroid 12]  
-                     set rdiff       [lindex $astroid 13]  
-                     set ra          [lindex $astroid 14]  
-                     set dec         [lindex $astroid 15]   
-                     set res_ra      [lindex $astroid 16]  
-                     set res_dec     [lindex $astroid 17]  
-                     set omc_ra      [lindex $astroid 18]   
-                     set omc_dec     [lindex $astroid 19]  
-                     set flagastrom  [lindex $astroid 20]  
-                     set mag         [lindex $astroid 21]  
-                     set err_mag     [lindex $astroid 22]  
-                     set name        [lindex $astroid 23]  
+                     set xsm         [lindex $astroid  0]
+                     set ysm         [lindex $astroid  1]
+                     set err_xsm     [lindex $astroid  2]
+                     set err_ysm     [lindex $astroid  3]
+                     set fwhmx       [lindex $astroid  4]
+                     set fwhmy       [lindex $astroid  5]
+                     set fwhm        [lindex $astroid  6]
+                     set fluxintegre [lindex $astroid  7]
+                     set errflux     [lindex $astroid  8]
+                     set pixmax      [lindex $astroid  9]
+                     set intensite   [lindex $astroid 10]
+                     set sigmafond   [lindex $astroid 11]
+                     set snint       [lindex $astroid 12]
+                     set snpx        [lindex $astroid 13]
+                     set delta       [lindex $astroid 14]
+                     set rdiff       [lindex $astroid 15]
+                     set ra          [lindex $astroid 16]
+                     set dec         [lindex $astroid 17]
+                     set res_ra      [lindex $astroid 18]
+                     set res_dec     [lindex $astroid 19]
+                     set omc_ra      [lindex $astroid 20]
+                     set omc_dec     [lindex $astroid 21]
+                     set mag         [lindex $astroid 22]
+                     set err_mag     [lindex $astroid 23]
+                     set name        [lindex $astroid 24]
+                     set flagastrom  [lindex $astroid 25]
+                     set flagphotom  [lindex $astroid 26]
+                     set cataastrom  [lindex $astroid 27]
+                     set cataphotom  [lindex $astroid 28]
 
                      if {$flagastrom!="S"&&$flagastrom!="R"} {break}
                      gren_info "$idbddimg name:$name $ra $dec\n"
@@ -754,9 +757,9 @@ variable imagelimit
                      } else {
                         set tag($name) "ok"
                         set chan0 [open $fileres w]
-                        puts $chan0 "idbddimg,commundatejj,ra,dec,res_ra,res_dec,omc_ra,omc_dec,name,pvalue,xsm,ysm,fwhmx,fwhmy,fwhm,fluxintegre,errflux,pixmax,intensite,sigmafond,snint,snpx,delta,rdiff"
+                        puts $chan0 "idbddimg,commundatejj,ra,dec,res_ra,res_dec,omc_ra,omc_dec,name,pvalue,xsm,ysm,err_xsm,err_ysm,fwhmx,fwhmy,fwhm,fluxintegre,errflux,pixmax,intensite,sigmafond,snint,snpx,delta,rdiff"
                      }
-                     puts $chan0 "$idbddimg,$commundatejj,$ra,$dec,$res_ra,$res_dec,$omc_ra,$omc_dec,$name,$pvalue,$xsm,$ysm,$fwhmx,$fwhmy,$fwhm,$fluxintegre,$errflux,$pixmax,$intensite,$sigmafond,$snint,$snpx,$delta,$rdiff"
+                     puts $chan0 "$idbddimg,$commundatejj,$ra,$dec,$res_ra,$res_dec,$omc_ra,$omc_dec,$name,$pvalue,$xsm,$ysm,$err_xsm,$err_ysm,$fwhmx,$fwhmy,$fwhm,$fluxintegre,$errflux,$pixmax,$intensite,$sigmafond,$snint,$snpx,$delta,$rdiff"
                      close $chan0
                      break
                   }

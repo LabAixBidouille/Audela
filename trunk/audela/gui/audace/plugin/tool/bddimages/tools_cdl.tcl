@@ -91,6 +91,8 @@ namespace eval tools_cdl {
          set fwhm        [expr ($fwhmx + $fwhmy)/2.]
          set xsm         [lindex $valeurs 1]
          set ysm         [lindex $valeurs 5]
+         set err_xsm     0.0
+         set err_ysm     0.0
 
          set xs0         [expr int($xsm - $delta)]
          set ys0         [expr int($ysm - $delta)]
@@ -134,7 +136,7 @@ namespace eval tools_cdl {
          set snint       [expr $fluxintegre / $sigmafond]
          set snpx        [expr $intensite / $sigmafond]
 
-         return [ list $xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
+         return [ list $xsm $ysm $err_xsm $err_ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
 
 
          # Calcul du signal sur bruit : 

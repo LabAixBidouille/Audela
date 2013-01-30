@@ -55,6 +55,8 @@ namespace eval ::analyse_source {
    # Get Astroid fields
    #    xsm         : Position x du photocentre (px)
    #    ysm         : Position y du photocentre (px)
+   #    err_xsm     : Incertitude sur la position x du photocentre (px)
+   #    err_ysm     : Incertitude sur la position y du photocentre (px)
    #    fwhmx       : FWHM le long de l'axe x (px)
    #    fwhmy       : FWHM le long de l'axe y (px) 
    #    fwhm        : FWHM totale (px)
@@ -84,7 +86,7 @@ namespace eval ::analyse_source {
    proc ::analyse_source::get_fieldastroid { } {
 
       return [list "ASTROID" [list "ra" "dec" "poserr" "mag" "magerr"] \
-                             [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+                             [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
                                    "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
                                    "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" \
                                    "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"] ]

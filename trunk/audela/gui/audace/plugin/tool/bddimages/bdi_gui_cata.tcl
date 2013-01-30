@@ -3988,10 +3988,10 @@ namespace eval gui_cata {
                   if {$x>=0} {
                      set a [lindex $s $x]
                      set b [lindex $a 2]
-                     set b [lreplace $b 23 23 $ar]
-                     set b [lreplace $b 25 25 $ac]
-                     set b [lreplace $b 24 24 $pr]
-                     set b [lreplace $b 26 26 $pc]
+                     set b [lreplace $b 25 25 $ar]
+                     set b [lreplace $b 27 27 $ac]
+                     set b [lreplace $b 26 26 $pr]
+                     set b [lreplace $b 28 28 $pc]
                      set a [lreplace $a 2 2 $b]
                      #gren_info "a modif = $a\n"
                      set s [lreplace $s $x $x $a]
@@ -4536,10 +4536,10 @@ gren_info " => source retrouvee $cpt $dl\n"
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
             set b  [lindex [lindex $s $x] 2]           
-            set ar [lindex $b 23]
-            set ac [lindex $b 25]
-            set pr [lindex $b 24]
-            set pc [lindex $b 26]   
+            set ar [lindex $b 25]
+            set ac [lindex $b 27]
+            set pr [lindex $b 26]
+            set pc [lindex $b 28]   
             #gren_info "AR = $ar $ac $pr $pc\n"
          }
 
@@ -4683,7 +4683,7 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-      set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set ::tools_cata::current_image_date [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -5829,7 +5829,9 @@ gren_info " => source retrouvee $cpt $dl\n"
           
          set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
           #gren_info "x y = $x $y \n"
-         if {$result==-1} {set results($radius,err) 10}
+         if {$result==-1} {
+            set results($radius,err) 10
+         }
          if {$results($radius,err)==0} {
             set xsm [lindex $result 0]
             set ysm [lindex $result 1]
@@ -5861,8 +5863,8 @@ gren_info " => source retrouvee $cpt $dl\n"
       set file [file join $bddconf(dirtmp) "psf.csv"]
       gren_info "Sauve Fichier = $file\n"
       set chan [open $file w]
-      #   {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
-      puts $chan "#xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+      #   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
+      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
 
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
@@ -5876,7 +5878,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       set rdiff ""
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            lappend rdiff  [lindex $results($radius) 13]
+            lappend rdiff  [lindex $results($radius) 15]
          }
       }
       set nb  [llength $rdiff]
@@ -5887,7 +5889,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       set deltasav 0
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            set rdiff  [lindex $results($radius) 13]
+            set rdiff  [lindex $results($radius) 15]
             set diff [expr abs($rdiff - $median)]
             if {$diff < $diffmin } {
                set deltasav [lindex $radius]
@@ -5904,7 +5906,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       set radiussav 0
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
          if {$results($radius,err)==0} {
-            set intensite  [lindex $results($radius) 8]
+            set intensite  [lindex $results($radius) 10]
             if {$intensitemax < $intensite } {
                set intensitemax $intensite
                set radiussav $radius
@@ -5923,12 +5925,12 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       set xsm [lindex $results($radius) 0]
       set ysm [lindex $results($radius) 1]
-      set pra [lindex $results($radius) 14]
-      set pdec [lindex $results($radius) 15]
+      set pra [lindex $results($radius) 16]
+      set pdec [lindex $results($radius) 17]
 
       gren_info "xsm = $xsm\n"
       gren_info "ysm = $ysm\n"
-      gren_info "rdiff = [lindex $results($radius) 13]\n"
+      gren_info "rdiff = [lindex $results($radius) 15]\n"
 
       #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
       #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
@@ -5963,7 +5965,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          #set field [linsert $field [::analyse_source::get_fieldastroid] ]
          
 #      return [list "ASTROID" [list "ra" "dec" "poserr" "mag" "magerr"] \
-#                             [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
+#                             [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" \
 #                                   "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" \
 #                                   "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" \
 #                                   "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"] ]
@@ -6083,17 +6085,19 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       set ::gui_cata::current_psf(xsm)         [lindex $result 0]
       set ::gui_cata::current_psf(ysm)         [lindex $result 1]
-      set ::gui_cata::current_psf(fwhmx)       [lindex $result 2]
-      set ::gui_cata::current_psf(fwhmy)       [lindex $result 3]
-      set ::gui_cata::current_psf(fwhm)        [lindex $result 4]
-      set ::gui_cata::current_psf(fluxintegre) [lindex $result 5]
-      set ::gui_cata::current_psf(errflux)     [lindex $result 6]
-      set ::gui_cata::current_psf(pixmax)      [lindex $result 7]
-      set ::gui_cata::current_psf(intensite)   [lindex $result 8]
-      set ::gui_cata::current_psf(sigmafond)   [lindex $result 9]
-      set ::gui_cata::current_psf(snint)       [lindex $result 10]
-      set ::gui_cata::current_psf(snpx)        [lindex $result 11]
-      set ::gui_cata::current_psf(delta)       [lindex $result 12]
+      set ::gui_cata::current_psf(err_xsm)     [lindex $result 2]
+      set ::gui_cata::current_psf(err_ysm)     [lindex $result 3]
+      set ::gui_cata::current_psf(fwhmx)       [lindex $result 4]
+      set ::gui_cata::current_psf(fwhmy)       [lindex $result 5]
+      set ::gui_cata::current_psf(fwhm)        [lindex $result 6]
+      set ::gui_cata::current_psf(fluxintegre) [lindex $result 7]
+      set ::gui_cata::current_psf(errflux)     [lindex $result 8]
+      set ::gui_cata::current_psf(pixmax)      [lindex $result 9]
+      set ::gui_cata::current_psf(intensite)   [lindex $result 10]
+      set ::gui_cata::current_psf(sigmafond)   [lindex $result 11]
+      set ::gui_cata::current_psf(snint)       [lindex $result 12]
+      set ::gui_cata::current_psf(snpx)        [lindex $result 13]
+      set ::gui_cata::current_psf(delta)       [lindex $result 14]
 
       set ::gui_cata::current_psf(xflux) [lindex $result_fitgauss 0]
       set ::gui_cata::current_psf(xcent) [lindex $result_fitgauss 1]
@@ -6127,10 +6131,12 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
 # photom_methode = 
-#   {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
-#   {xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
+#   {$xsm $ysm $err_xsm $err_ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+#   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
 #   xsm 
 #   ysm 
+#   err_xsm 
+#   err_ysm 
 #   fwhmx 
 #   fwhmy 
 #   fwhm 
@@ -6189,25 +6195,27 @@ gren_info " => source retrouvee $cpt $dl\n"
    proc ::gui_cata::psf_new { } {
 
       # "ra" "dec" "poserr" "mag" "magerr"
-      # "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
+      # "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
       # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
       # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" 
       # "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"
       set ol ""
-      lappend ol $::gui_cata::current_psf(xsm)        
-      lappend ol $::gui_cata::current_psf(ysm)        
-      lappend ol $::gui_cata::current_psf(fwhmx)      
-      lappend ol $::gui_cata::current_psf(fwhmy)      
-      lappend ol $::gui_cata::current_psf(fwhm)       
+      lappend ol $::gui_cata::current_psf(xsm)
+      lappend ol $::gui_cata::current_psf(ysm)
+      lappend ol $::gui_cata::current_psf(err_xsm)
+      lappend ol $::gui_cata::current_psf(err_ysm)
+      lappend ol $::gui_cata::current_psf(fwhmx)
+      lappend ol $::gui_cata::current_psf(fwhmy)
+      lappend ol $::gui_cata::current_psf(fwhm)
       lappend ol $::gui_cata::current_psf(fluxintegre)
-      lappend ol $::gui_cata::current_psf(errflux)    
-      lappend ol $::gui_cata::current_psf(pixmax)     
-      lappend ol $::gui_cata::current_psf(intensite)  
-      lappend ol $::gui_cata::current_psf(sigmafond)  
-      lappend ol $::gui_cata::current_psf(snint)      
-      lappend ol $::gui_cata::current_psf(snpx)       
-      lappend ol $::gui_cata::current_psf(delta)             
-      lappend ol $::gui_cata::current_psf(rdiff)             
+      lappend ol $::gui_cata::current_psf(errflux)
+      lappend ol $::gui_cata::current_psf(pixmax)
+      lappend ol $::gui_cata::current_psf(intensite)
+      lappend ol $::gui_cata::current_psf(sigmafond)
+      lappend ol $::gui_cata::current_psf(snint)
+      lappend ol $::gui_cata::current_psf(snpx)
+      lappend ol $::gui_cata::current_psf(delta)
+      lappend ol $::gui_cata::current_psf(rdiff)
       lappend ol ra dec poserr poserr 0.0 0.0 mag magerr "-" "-" "-" "-" "-"       
        
        #$::gui_cata::cata_list($::tools_cata::id_current_image)
