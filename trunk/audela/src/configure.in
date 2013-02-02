@@ -242,7 +242,7 @@ if test $ARCHITECTURE != "x86_64"; then
 fi
 
 
-LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libouranos libtemma libtelscript"
+LIBTELS="libaudecom libcelestron libcombit libdeltatau libdfm libeqmod liblx200 liblxnet libmcmt libouranos libtemma libtelscript"
 
 LIBLINKS="libparallelport libserialport libquickremote"
 
