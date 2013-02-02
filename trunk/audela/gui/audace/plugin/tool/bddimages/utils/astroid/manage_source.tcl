@@ -315,17 +315,23 @@ namespace eval ::manage_source {
             }
 
             if {$mycata=="IMG"} {
-               set dec [lindex [lindex $cata 2] 9]
-               set dec [regsub {\-} $dec "m"]
-               set dec [regsub {\+} $dec "p"]
-               return "IMG_[lindex [lindex $cata 2] 8]_$dec"
+               set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
+               set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]
+               if {$dec > 0} {
+                  set dec [regsub {\+} $dec ""]
+                  set dec "+$dec"
+                }
+               return "IMG_${ra}${dec}"
             }
 
             if {$mycata=="ASTROID"} {
-               set dec [lindex [lindex $cata 1] 1]
-               set dec [regsub {\-} $dec "m"]
-               set dec [regsub {\+} $dec "p"]
-               return "IMG_[lindex [lindex $cata 1] 0]_$dec"
+               set ra  [format "%.6f" [lindex [lindex $cata 2] 16] ]
+               set dec [format "%.6f" [lindex [lindex $cata 2] 17] ]
+               if {$dec > 0} {
+                  set dec [regsub {\+} $dec ""]
+                  set dec "+$dec"
+                }
+               return "ASTROID_${ra}${dec}"
             }
 
             if {$mycata=="USNOA2"} {

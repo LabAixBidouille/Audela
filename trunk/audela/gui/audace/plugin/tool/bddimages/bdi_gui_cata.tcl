@@ -2724,9 +2724,9 @@ namespace eval gui_cata {
          set id [lindex [$w get $select] 0]
          set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]
          set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
-         gren_info "line = [$w get $select]\n"
-         gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
-         gren_info "ra dec = $ra $dec\n"
+         #gren_info "line = [$w get $select]\n"
+         #gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
+         #gren_info "ra dec = $ra $dec\n"
          affich_un_rond $ra $dec $color $width
       }
       return
@@ -3385,7 +3385,7 @@ namespace eval gui_cata {
 
    proc ::gui_cata::psf_popup_auto_go { list_id } {
 
-      gren_info "id_current_image = $::tools_cata::id_current_image \n"
+      #gren_info "id_current_image = $::tools_cata::id_current_image \n"
      
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -3393,14 +3393,14 @@ namespace eval gui_cata {
       set sources [lindex $::tools_cata::current_listsources 1]
       set nd_sources [llength $list_id]
 
-      gren_info "Sources selectionnees ($nd_sources): \n"
+      #gren_info "Sources selectionnees ($nd_sources): \n"
       set pass "no"
 
       set cpt 0      
       foreach id $list_id {
          incr cpt
          ::gui_cata::set_progress $cpt $nd_sources
-         gren_info "ID = $id\n"
+         #gren_info "ID = $id\n"
          set s [lindex $sources [expr $id - 1 ]]
          #gren_info "S=$s\n"
          set err [ catch {set r [::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
@@ -3408,10 +3408,12 @@ namespace eval gui_cata {
             ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
             ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
          } else {
-            gren_info "NEW PSF ($id) \n"
-            gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
+            set pos [lsearch -index 0 $s "ASTROID"]
+            if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
+            gren_info "NEW PSF ($id) $name\n"
+            #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
             set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
-            gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
+            #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
             set pass "yes"
          }
 
@@ -3443,14 +3445,14 @@ namespace eval gui_cata {
 
    proc ::gui_cata::psf_popup_auto { tbl } {
 
-      gren_info "psf_popup_auto tbl = $tbl \n"
+      #gren_info "psf_popup_auto tbl = $tbl \n"
 
       set list_id ""
       foreach select [$tbl curselection] {
          set list_id [linsert $list_id end [lindex [$tbl get $select] 0] ]
       }
       set list_id [list $list_id]
-      gren_info "list_id = $list_id \n"
+      #gren_info "list_id = $list_id \n"
 
 
 
@@ -3523,8 +3525,246 @@ namespace eval gui_cata {
 
 
 
+      
 
 
+   proc ::gui_cata::psf_auto_go { type list_id } {
+
+      if {$type == "one"} {
+         ::gui_cata::psf_auto_go_one
+      }
+      if {$type == "popup"} {
+      }
+      if {$type == "all"} {
+         ::gui_cata::psf_auto_go_all
+      }
+
+   }
+   
+
+   proc ::gui_cata::psf_auto_go_one { } {
+
+      #gren_info "id_current_image = $::tools_cata::id_current_image \n"
+     
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+      set fields  [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+      set nd_sources [llength $sources]
+
+      #gren_info "Sources selectionnees ($nd_sources): \n"
+      set pass "no"
+
+      set id 0     
+      foreach s $sources {
+         incr id
+         ::gui_cata::set_progress $id $nd_sources
+         #gren_info "ID = $id\n"
+         #gren_info "S=$s\n"
+         set err [ catch {set r [::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
+         if {$err} {
+            ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
+            ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
+         } else {
+            set pos [lsearch -index 0 $s "ASTROID"]
+            if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
+            gren_info "NEW PSF ($id) $name\n"
+            #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
+            set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
+            #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
+            set pass "yes"
+         }
+      }
+
+      if {$pass=="no"} { return }
+
+      set pos [lsearch -index 0 $fields "ASTROID"]
+      if {$pos!=-1} {
+         set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
+      } else {
+         set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
+      }
+      
+      set ::tools_cata::current_listsources [list $fields $sources]
+      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      ::gui_cata::current_listsources_to_tklist
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+      ::gui_cata::gestion_go
+
+   }
+   
+
+
+
+
+
+
+
+   proc ::gui_cata::psf_auto_go_all { } {
+
+      #gren_info "id_current_image = $::tools_cata::id_current_image \n"
+      set nd_sources 0
+      for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
+         incr nd_sources [llength [lindex $::gui_cata::cata_list($i) 1]]
+      }
+      set cpt 0
+
+
+     
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image<=$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
+
+         set ::gui_cata::directaccess $::tools_cata::id_current_image
+         ::gui_cata::gestion_go
+
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+         set fields  [lindex $::tools_cata::current_listsources 0]
+         set sources [lindex $::tools_cata::current_listsources 1]
+
+         #gren_info "Sources selectionnees ($nd_sources): \n"
+         set pass "no"
+
+         set id 0     
+         foreach s $sources {
+            incr id
+            incr cpt
+            ::gui_cata::set_progress $cpt $nd_sources
+            #gren_info "ID = $id\n"
+            #gren_info "S=$s\n"
+            set err [ catch {set r [::gui_cata::psf_box_auto_no_gui s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
+            if {$err} {
+               ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
+               ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
+            } else {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
+               gren_info "NEW PSF ($id) $name\n"
+               #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
+               set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
+               #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
+               set pass "yes"
+            }
+         }
+
+         if {$pass=="no"} { return }
+
+         set pos [lsearch -index 0 $fields "ASTROID"]
+         if {$pos!=-1} {
+            set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
+         } else {
+            set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
+         }
+
+         set ::tools_cata::current_listsources [list $fields $sources]
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+         ::gui_cata::current_listsources_to_tklist
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+
+      }
+
+
+      set ::gui_cata::directaccess 1
+      ::gui_cata::gestion_go
+
+
+   }
+   
+   
+   
+   
+
+   proc ::gui_cata::psf_auto { type { tbl ""} } {
+
+      set list_id [list "nothing"]
+      if {$type == "one"} {
+         set nd_sources [llength [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]]
+      }
+      if {$type == "popup"} {
+         set list_id ""
+         foreach select [$tbl curselection] {
+            set list_id [linsert $list_id end [lindex [$tbl get $select] 0] ]
+         }
+         set list_id [list $list_id]
+         #gren_info "psf_popup_auto tbl = $tbl \n"
+      }
+      if {$type == "all"} {
+         set nd_sources 0
+         for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
+            incr nd_sources [llength [lindex $::gui_cata::cata_list($i) 1]]
+         }
+      }
+
+      set ::gui_cata::progress 0
+      set ::gui_cata::psf_limitradius 100
+      set ::gui_cata::psf_threshold 2
+
+      set ::gui_cata::fenpopuppsf .popuppsf
+      if { [winfo exists $::gui_cata::fenpopuppsf] } {
+         wm withdraw $::gui_cata::fenpopuppsf
+         wm deiconify $::gui_cata::fenpopuppsf
+         focus $::gui_cata::fenpopuppsf
+         return
+      }
+      toplevel $::gui_cata::fenpopuppsf -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::gui_cata::fenpopuppsf ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::gui_cata::fenpopuppsf ] "+" ] 2 ]
+      wm geometry $::gui_cata::fenpopuppsf +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::gui_cata::fenpopuppsf 1 1
+      wm title $::gui_cata::fenpopuppsf "PSF"
+      wm protocol $::gui_cata::fenpopuppsf WM_DELETE_WINDOW "destroy $::gui_cata::fenpopuppsf"
+
+      set frm $::gui_cata::fenpopuppsf.appli
+
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::gui_cata::fenpopuppsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+         set data  [frame $frm.threshold -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $data.l -text "Threshold : " 
+             pack  $data.l -side left -padx 2 -pady 0
+             
+             entry $data.v -textvariable ::gui_cata::psf_threshold -relief sunken -width 5
+             pack  $data.v -side left -padx 2 -pady 0
+
+         set data  [frame $frm.limitradius -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $data.l -text "Limite du Rayon : " 
+             pack  $data.l -side left -padx 2 -pady 0
+             
+             entry $data.v -textvariable ::gui_cata::psf_limitradius -relief sunken -width 5
+             pack  $data.v -side left -padx 2 -pady 0
+
+         set info  [frame $frm.info -borderwidth 0 -cursor arrow -relief groove]
+         pack $info -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $info.l -text "Nb sources = $nd_sources" 
+             pack  $info.l -side left -padx 2 -pady 0
+
+         set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             set    pf [ ttk::progressbar $data.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
+             pack   $pf -in $data -side top
+
+         set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $data.fermer -state active -text "Fermer" -relief "raised" \
+                -command "destroy $::gui_cata::fenpopuppsf"
+             pack   $data.fermer -side right -anchor c -padx 0 -padx 10 -pady 5
+
+             button $data.go -state active -text "Go" -relief "raised" \
+                -command "::gui_cata::psf_auto_go $type $list_id  ; destroy $::gui_cata::fenpopuppsf"
+             pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
+
+
+   }
 
 
 
@@ -3538,6 +3778,7 @@ namespace eval gui_cata {
       set width 2
       cleanmark
 
+      set ambigue "no"
 
       set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
       if {$err>0 || $rect==""} {
@@ -3567,6 +3808,7 @@ namespace eval gui_cata {
             if {[lindex $cata 0] == "IMG"} {
                set ra [lindex [lindex $cata 1] 0]
                set dec [lindex [lindex $cata 1] 1]
+               #gren_info "IMG ra dec : $ra $dec \n"
                set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
                set x [lindex $xy 0]
                set y [lindex $xy 1]
@@ -3580,6 +3822,7 @@ namespace eval gui_cata {
             if {[lindex $cata 0] == "ASTROID"} {
                set ra [lindex [lindex $cata 1] 0]
                set dec [lindex [lindex $cata 1] 1]
+               #gren_info "ASTROID ra dec ($id) : $ra $dec \n"
                set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
                set x [lindex $xy 0]
                set y [lindex $xy 1]
@@ -3592,9 +3835,9 @@ namespace eval gui_cata {
             
             if {$pass=="yes"} {
 
-               gren_info "**NAME = $name \n"
+               #gren_info "**NAME = $name \n"
                incr cpt_grab
-               if {$cpt_grab>1}  { return [list 1 "Ambigue"]}
+               if {$cpt_grab>1}  { set ambigue "yes"}
 
                #gren_info "NAME = $name \n"
                #gren_info "xpass ypass  = $xpass $ypass\n"
@@ -3628,7 +3871,7 @@ namespace eval gui_cata {
 
                # gren_info "cpt_grab = $cpt_grab\n"
 
-               gren_info "pNAME = $name CATAS = "
+               gren_info "SOURCE FOUND : ID = $id NAME = $name CATAS = "
                foreach cata $s {
                   gren_info "[lindex $cata 0] "
                   if {[lindex $cata 0]==$namable} {
@@ -3639,8 +3882,11 @@ namespace eval gui_cata {
                }
                gren_info "\n"
 
-               set result [list 0 "" $id $s]
-               set ::gui_cata::psf_best_sol [list $xpass $ypass]
+               if {$ambigue == "yes" } {
+                  set result [list 1 "Ambigue" $id $xpass $ypass $s]
+               } else {
+                  set result [list 0 "" $id $xpass $ypass $s]
+               }
                break
             }
          }
@@ -3811,7 +4057,7 @@ namespace eval gui_cata {
    proc ::gui_cata::propagation { tbl } {
 
       set onglets $::gui_cata::current_appli.onglets
-::console::affiche_erreur "ONGLETS = $onglets\n"
+
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
       set idcata [string index [lindex [split $tbl .] 5] 1]
       if {[string compare -nocase $cataselect "ASTROID"] == 0} {
@@ -4796,6 +5042,7 @@ gren_info " => source retrouvee $cpt $dl\n"
            #--- menu Fichier
            menubutton $menubar.catalog -text "Catalogue" -underline 0 -menu $menubar.catalog.menu
            menu $menubar.catalog.menu
+
              $menubar.catalog.menu add command -label "Personnel" \
                 -command ""
              $menubar.catalog.menu add command -label "Astroid" \
@@ -4807,8 +5054,26 @@ gren_info " => source retrouvee $cpt $dl\n"
              $menubar.catalog.menu add separator
              $menubar.catalog.menu add command -label "Supprimer" \
                 -command ""
+
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
-           pack $menubar.catalog -side left
+             pack $menubar.catalog -side left
+
+           #--- menu Fichier
+           menubutton $menubar.psf -text "PSF" -underline 0 -menu $menubar.psf.menu
+           menu $menubar.psf.menu
+
+             $menubar.psf.menu add command -label "Manuel sur l'image" \
+                -command "::gui_cata::psf"
+             $menubar.psf.menu add command -label "Auto sur l'image" \
+                -command "::gui_cata::psf_auto one"
+             $menubar.psf.menu add command -label "Auto toutes images" \
+                -command "::gui_cata::psf_auto all"
+
+             #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
+             pack $menubar.psf -side left
+
+
+
 
          #--- Cree un frame general
          set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
@@ -4832,9 +5097,6 @@ gren_info " => source retrouvee $cpt $dl\n"
              label $actions.lab5 -text ")"
              pack  $actions.lab5 -in $actions -side left -padx 5 -pady 0
 
-             button $actions.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf"
-             pack   $actions.psf -in $actions -side left -anchor w -padx 0
- 
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
  
@@ -5786,13 +6048,14 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       global bddconf
       
+      set log 0
+
+      if {$log} { gren_info "entree dans ::gui_cata::psf_box_auto_no_gui \n"}
       
-      #gren_info "OK\n"
-      #gren_info "S AVANT = $s\n"
-   
+            
       set name_cata [::manage_source::namable $s]
       if {$name_cata==""} {
-         gren_info "s=$s\n"
+         if {$log} { gren_info "s=$s\n" }
          set ::gui_cata::psf_name_source "Unnamable"
          return -code 1
       }
@@ -5803,13 +6066,13 @@ gren_info " => source retrouvee $cpt $dl\n"
       
          if {[lindex $mycata 0] == $name_cata } {
             
-            #gren_info "name_cata = $name_cata\n"
-            #gren_info "common = [lindex $mycata 1]\n"
+            if {$log} { gren_info "name_cata = $name_cata\n" }
+            if {$log} { gren_info "common = [lindex $mycata 1]\n" }
             
             #gren_info "ra dec [lindex [lindex $mycata 1] 0] [lindex [lindex $mycata 1] 1]\n"
             set ra  [lindex [lindex $mycata 1] 0]
             set dec [lindex [lindex $mycata 1] 1]
-            #gren_info "ra dec $ra $dec\n"
+            if {$log} { gren_info "ra dec $ra $dec\n" }
             
             set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
             set x [lindex $xy 0]
@@ -5861,7 +6124,7 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       # Sauve fichier
       set file [file join $bddconf(dirtmp) "psf_all.csv"]
-      gren_info "Sauve Fichier = $file\n"
+      if {$log} { gren_info "Sauve Fichier = $file\n" }
       set chan [open $file w]
       #   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
       puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
@@ -5875,8 +6138,8 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       # statistiques
-      gren_info "statistiques\n"
-      gren_info "NB POP $radiuslimit : start\n"
+      if {$log} { gren_info "statistiques\n" }
+      if {$log} { gren_info "NB POP $radiuslimit : start\n" }
       set rdiff ""
       set fluxintegre ""
       set intensite ""
@@ -5890,7 +6153,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
       }
       set nb  [llength $rdiff]
-      gren_info "NB POP $nb : tri erreur\n"
+      if {$log} { gren_info "NB POP $nb : tri erreur\n" }
       
       set max_fwhm           [::math::statistics::max $fwhm       ]
 
@@ -5945,7 +6208,7 @@ gren_info " => source retrouvee $cpt $dl\n"
 
       # Sauve fichier
       set file [file join $bddconf(dirtmp) "psf_crop_flux_$i.csv"]
-      gren_info "Sauve Fichier = $file\n"
+      if {$log} { gren_info "Sauve Fichier = $file\n" }
       set chan [open $file w]
       puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
@@ -6020,7 +6283,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
       # Sauve fichier
       set file [file join $bddconf(dirtmp) "psf_crop_radius_fwhm_$i.csv"]
-      gren_info "Sauve Fichier = $file\n"
+      if {$log} { gren_info "Sauve Fichier = $file\n" }
       set chan [open $file w]
       puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
@@ -6040,8 +6303,8 @@ gren_info " => source retrouvee $cpt $dl\n"
       set ysm_fwhm       [lindex $results($radius_fwhm) 1]
       set stdev_xsm_fwhm [lindex $results($radius_fwhm) 2]
       set stdev_ysm_fwhm [lindex $results($radius_fwhm) 3]
-      gren_info "xsm_fwhm = $xsm_fwhm +- $stdev_xsm_fwhm\n"
-      gren_info "ysm_fwhm = $ysm_fwhm +- $stdev_ysm_fwhm\n"
+      if {$log} { gren_info "xsm_fwhm = $xsm_fwhm +- $stdev_xsm_fwhm\n" }
+      if {$log} { gren_info "ysm_fwhm = $ysm_fwhm +- $stdev_ysm_fwhm\n" }
 
 
 
@@ -6065,8 +6328,8 @@ gren_info " => source retrouvee $cpt $dl\n"
       set ysm_fluxintegre       [lindex $results($radius_fluxintegre) 1]
       set stdev_xsm_fluxintegre [lindex $results($radius_fluxintegre) 2]
       set stdev_ysm_fluxintegre [lindex $results($radius_fluxintegre) 3]
-      gren_info "xsm_fluxintegre = $xsm_fluxintegre +- $stdev_xsm_fluxintegre\n"
-      gren_info "ysm_fluxintegre = $ysm_fluxintegre +- $stdev_ysm_fluxintegre\n"
+      if {$log} { gren_info "xsm_fluxintegre = $xsm_fluxintegre +- $stdev_xsm_fluxintegre\n" }
+      if {$log} { gren_info "ysm_fluxintegre = $ysm_fluxintegre +- $stdev_ysm_fluxintegre\n" }
 
 
 
@@ -6087,7 +6350,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
       }
       set nb  [llength $tabxsm]
-      gren_info "NB POP $nb : tri crop flux\n"
+      if {$log} { gren_info "NB POP $nb : tri crop flux\n" }
 
 
       set mean_xsm [::math::statistics::mean $tabxsm]
@@ -6114,8 +6377,8 @@ gren_info " => source retrouvee $cpt $dl\n"
       set ysm_posmean       [lindex $results($radius_posmean) 1]
       set stdev_xsm_posmean [lindex $results($radius_posmean) 2]
       set stdev_ysm_posmean [lindex $results($radius_posmean) 3]
-      gren_info "xsm_posmean = $xsm_posmean +- $stdev_xsm_posmean\n"
-      gren_info "ysm_posmean = $ysm_posmean +- $stdev_ysm_posmean\n"
+      if {$log} { gren_info "xsm_posmean = $xsm_posmean +- $stdev_xsm_posmean\n" }
+      if {$log} { gren_info "ysm_posmean = $ysm_posmean +- $stdev_ysm_posmean\n" }
 
 
                       ###         ###
@@ -6129,12 +6392,12 @@ gren_info " => source retrouvee $cpt $dl\n"
       set best_radius $radius_fluxintegre
 
 
-      gren_info "-----\n"
-      gren_info "radius_rdiff       = $radius_rdiff\n"
-      gren_info "radius_fwhm        = $radius_fwhm\n"
-      gren_info "radius_fluxintegre = $radius_fluxintegre\n"
-      gren_info "radius_posmean     = $radius_posmean\n"
-      gren_info "-----\n"
+      if {$log} { gren_info "-----\n" }
+      if {$log} { gren_info "radius_rdiff       = $radius_rdiff\n" }
+      if {$log} { gren_info "radius_fwhm        = $radius_fwhm\n" }
+      if {$log} { gren_info "radius_fluxintegre = $radius_fluxintegre\n" }
+      if {$log} { gren_info "radius_posmean     = $radius_posmean\n" }
+      if {$log} { gren_info "-----\n" }
 
 
       # gren_info "result = $best_radius :: $result   \n"
@@ -6159,8 +6422,8 @@ gren_info " => source retrouvee $cpt $dl\n"
 
            ###                         ###
 
-      gren_info "-----\n"
-      gren_info "METHODE GLOBALE \n"
+      if {$log} { gren_info "-----\n" }
+      if {$log} { gren_info "METHODE GLOBALE \n" }
 
       set listfield [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec]
       set i 0
@@ -6180,57 +6443,57 @@ gren_info " => source retrouvee $cpt $dl\n"
          incr i
       }
 
-      set result [list $st(xsm,mean) \
-                       $st(ysm,mean) \
-                       $st(xsm,err3s) \
-                       $st(ysm,err3s) \
-                       $st(fwhmx,mean) \
-                       $st(fwhmy,mean) \
-                       $st(fwhm,mean) \
-                       $st(fluxintegre,mean) \
-                       $st(fluxintegre,err1s) \
-                       $st(pixmax,mean) \
-                       $st(intensite,mean) \
-                       $st(sigmafond,mean) \
-                       $st(snint,mean) \
-                       $st(snpx,mean) \
-                       $st(delta,mean) \
-                       $st(rdiff,mean) \
-                       $st(ra,mean) \
-                       $st(dec,mean) \
-                  ]
+      set result_global [list $st(xsm,mean) \
+                              $st(ysm,mean) \
+                              $st(xsm,err3s) \
+                              $st(ysm,err3s) \
+                              $st(fwhmx,mean) \
+                              $st(fwhmy,mean) \
+                              $st(fwhm,mean) \
+                              $st(fluxintegre,mean) \
+                              $st(fluxintegre,err3s) \
+                              $st(pixmax,mean) \
+                              $st(intensite,mean) \
+                              $st(sigmafond,mean) \
+                              $st(snint,mean) \
+                              $st(snpx,mean) \
+                              $st(delta,mean) \
+                              $st(rdiff,mean) \
+                              $st(ra,mean) \
+                              $st(dec,mean) \
+                         ]
       
 
       # Sauve fichier
-      set file [file join $bddconf(dirtmp) "psf_crop_radius_soluce.csv"]
-      gren_info "Sauve Fichier = $file\n"
+      set file [file join $bddconf(dirtmp) "psf_global_soluce.csv"]
+      if {$log} { gren_info "Sauve Fichier = $file\n" }
       set chan [open $file w]
       puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
-      puts $chan $result
+      puts $chan $result_global
       close $chan
 
-      set xsm       [lindex $result 0]
-      set ysm       [lindex $result 1]
-      set stdev_xsm [lindex $result 2]
-      set stdev_ysm [lindex $result 3]
-      set pra       [lindex $result 16]
-      set pdec      [lindex $result 17]
+      set xsm       [lindex $result_global 0]
+      set ysm       [lindex $result_global 1]
+      set stdev_xsm [lindex $result_global 2]
+      set stdev_ysm [lindex $result_global 3]
+      set pra       [lindex $result_global 16]
+      set pdec      [lindex $result_global 17]
 
-      gren_info "xsm = $xsm +- $stdev_xsm\n"
-      gren_info "ysm = $ysm +- $stdev_ysm\n"
+      if {$log} { gren_info "xsm = $xsm +- $stdev_xsm\n" }
+      if {$log} { gren_info "ysm = $ysm +- $stdev_ysm\n" }
 
 
       set dx [expr abs( $xsm - $xsm_fwhm)]
       set dy [expr abs( $ysm - $ysm_fwhm)]
       set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      gren_info "diff_fwhm ($radius_fwhm) = $diff\n"
+      if {$log} { gren_info "diff_fwhm ($radius_fwhm) = $diff\n" }
       set diffmin $diff
       set best_radius $radius_fwhm
 
       set dx [expr abs( $xsm - $xsm_fluxintegre)]
       set dy [expr abs( $ysm - $ysm_fluxintegre)]
       set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      gren_info "diff_fluxintegre ($radius_fluxintegre) = $diff\n"
+      if {$log} { gren_info "diff_fluxintegre ($radius_fluxintegre) = $diff\n" }
       if {$diff<$diffmin} {
          set diffmin $diff
          set best_radius $radius_fluxintegre
@@ -6239,46 +6502,55 @@ gren_info " => source retrouvee $cpt $dl\n"
       set dx [expr abs( $xsm - $xsm_posmean)]
       set dy [expr abs( $ysm - $ysm_posmean)]
       set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      gren_info "diff_posmean ($radius_posmean) = $diff\n"
+      if {$log} { gren_info "diff_posmean ($radius_posmean) = $diff\n" }
       if {$diff<$diffmin} {
          set diffmin $diff
          set best_radius $radius_posmean
       }
 
 
-      gren_info "-----\n"
-      gren_info "RADIUS SELECTED    = $best_radius\n"
-      set result [lreplace $results($best_radius) 2 3 $stdev_xsm $stdev_ysm]
-      set xsm_selected       [lindex $result 0]
-      set ysm_selected       [lindex $result 1]
-      set stdev_xsm_selected [lindex $result 2]
-      set stdev_ysm_selected [lindex $result 3]
-      gren_info "xsm_selected = $xsm_selected +- $stdev_xsm_selected\n"
-      gren_info "ysm_selected = $ysm_selected +- $stdev_ysm_selected\n"
+      if {$log} { gren_info "-----\n" }
+      if {$log} { gren_info "RADIUS SELECTED    = $best_radius\n" }
+      set result_selected    [lreplace $results($best_radius) 2 3 $stdev_xsm $stdev_ysm]
+      set xsm_selected       [lindex $result_selected 0]
+      set ysm_selected       [lindex $result_selected 1]
+      set stdev_xsm_selected [lindex $result_selected 2]
+      set stdev_ysm_selected [lindex $result_selected 3]
+      if {$log} { gren_info "xsm_selected = $xsm_selected +- $stdev_xsm_selected\n" }
+      if {$log} { gren_info "ysm_selected = $ysm_selected +- $stdev_ysm_selected\n" }
 
       set dx [expr abs( $xsm - $xsm_selected)]
       set dy [expr abs( $ysm - $ysm_selected)]
       set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      gren_info "diff_selected ($best_radius) = $diff\n"
+      if {$log} { gren_info "diff_selected ($best_radius) = $diff\n" }
 
-      gren_info "-----\n"
+      if {$log} { gren_info "-----\n" }
 
 #      if {$dxsm>$stdev_xsm||$dysm>$stdev_ysm} {
 #         ::console::affiche_erreur "WARNING = incertitude sur la position X et Y fournit\n"
 #      }
 
-           ###                         ###
 
-           #    Ajout du cata ASTROID    #  
 
-           ###                         ###
+
+
+
+
+
+           ###                                ###
+
+           #    Ajout de ASTROID dans le cata   #  
+
+           ###                                ###
 
 
       #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
       #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
       ##gren_info "ASTROID OTHERF = [lindex $astroid 2]\n"
-      
+
+      set flagastroid "Failure"
       set pos [lsearch -index 0 $s "ASTROID"]
+         set flagastroid "pos=$pos"
       if {$pos!=-1} {
          set astroid [lindex $s $pos]
 
@@ -6286,27 +6558,47 @@ gren_info " => source retrouvee $cpt $dl\n"
          set comf   [lreplace $comf 0 1 $pra $pdec]
 
          set otherf  [lindex $astroid 2]
-         set en [expr [llength $result] -1]
          set i 0
-         foreach val $result {
+         foreach val $result_global {
             set otherf [lreplace $otherf $i $i $val]
             incr i
          }
+         set otherf [lreplace $otherf 24 24 $name_source]
          set astroid [ list "ASTROID" $comf $otherf]
          set s [lreplace $s $pos $pos $astroid]
+         set flagastroid "Modif Success"
       } else {
          set cata "ASTROID"
          set comf [list $pra $pdec 5 0 0]
-         set othf [linsert $result end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
+         set othf [linsert $result_global end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
          set astroid [list "ASTROID" $comf $othf]
          set s [linsert $s end $astroid]
+         set flagastroid "Add Success"
       }
-       
+
+      if {$log} { gren_info "sortie de ::gui_cata::psf_box_auto_no_gui \n"}
       #gren_info "S APRES = $s\n"
-      return -code 0 [list $result $best_radius]
-       
+      return -code 0 [list $result_global $best_radius $flagastroid]
       
+
    }
+
+
+
+
+
+
+
+
+
+
+   proc ::gui_cata::get_img_null { } {
+    
+      return [list "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" ]
+   }
+
+
+
 
 
 
@@ -6321,31 +6613,115 @@ gren_info " => source retrouvee $cpt $dl\n"
 
    proc ::gui_cata::psf_box_auto { } {
    
+      global bddconf
+
       #::gui_cata::psf_cataname
       #::gui_cata::psf_source
       #::gui_cata::psf_name_source
       #::gui_cata::psf_id_source 
-      
+
+
+      if {$::gui_cata::psf_name_source == "Unknown" } {
+         set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+         if {$err>0 || $rect ==""} {
+            cleanmark
+            return
+         }
+         set result_fitgauss [buf$bddconf(bufno) fitgauss $rect]
+         ::gui_cata::psf_gui_results_fg $result_fitgauss
+         set xcent  [lindex $result_fitgauss 1]  
+         set ycent  [lindex $result_fitgauss 5]  
+
+         set err [ catch {set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]} msg ]
+         if {$err} {
+            ::console::affiche_erreur "$err $msg\n"
+            return
+         }
+         set ra  [lindex $a 0]
+         set dec [lindex $a 1]
+
+         set othf [::gui_cata::get_img_null]
+         set othf [lreplace $othf 0 3 0 1 $xcent $ycent]
+         set othf [lreplace $othf 8 9 $ra $dec]
+         set img_source [ list "IMG" [list $ra $dec 5 0 0] $othf ]
+         set astroid_source [list "ASTROID" [list $ra $dec 5 0 0] [::analyse_source::get_astroid_null] ]
+         set ::gui_cata::psf_source [list $img_source ]
+      }
+
       set pass "no"
-      
+
       set err [ catch {set r [::gui_cata::psf_box_auto_no_gui ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]} msg ]
       if {$err} {
          ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
       } else {
          set pass "yes"
       }
+
+      switch $::gui_cata::psf_name_source {
+         "Erreur" {
+            $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+            $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+         }
+         "Unknown" {
+            $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+            $::gui_cata::fenpsf.appli.actions.new  configure -state normal
+         }
+         "Ambigue" {
+            $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+            $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+         }
+         default {
+            $::gui_cata::fenpsf.appli.actions.save configure -state normal
+            $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+         }
+      }
+      
       if { $pass=="no" } { return }
       
-         gren_info "*best PSF pour ($::gui_cata::psf_id_source) $::gui_cata::psf_name_source \n"
-         set ::gui_cata::psf_best_sol [lindex $r 0]
-         set ::gui_cata::psf_radius   [lindex $r 1]
-         gren_info "psf_radius   = $::gui_cata::psf_radius \n"
-         gren_info "psf_best_sol = $::gui_cata::psf_best_sol   \n"
+      #gren_info "::gui_cata::psf_source = $::gui_cata::psf_source\n"
 
-         # TODO ici afficher $::gui_cata::psf_best_sol dans la GUI
-         ::gui_cata::psf_box_to_result         
+      #gren_info "*best PSF pour ($::gui_cata::psf_id_source) $::gui_cata::psf_name_source \n"
+      set ::gui_cata::psf_best_sol        [lindex $r 0]
+      set ::gui_cata::psf_radius          [lindex $r 1]
+      set ::gui_cata::psf_add_astroid     [lindex $r 2]
 
+      if {$::gui_cata::psf_name_source == "Unknown" } {
+         gren_info "NEW SOURCE : ADD IMG = Success, ASTROID = $::gui_cata::psf_add_astroid \n"
+      }
+      #gren_info "psf_radius   = $::gui_cata::psf_radius \n"
+      #gren_info "psf_best_sol = $::gui_cata::psf_best_sol   \n"
 
+      set result [lindex $r 0]
+      ::gui_cata::psf_gui_results_pm $result
+
+      set xcent [expr int([lindex $result 0])]
+      set ycent [expr int([lindex $result 1])]
+      set delta [lindex $r 1]
+      set rect [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
+
+      #     fit gauss
+      set result_fitgauss [buf$bddconf(bufno) fitgauss $rect]
+      ::gui_cata::psf_gui_results_fg $result_fitgauss
+ 
+      set xd [expr abs($::gui_cata::current_psf(xsm)-$::gui_cata::current_psf(xcent))]
+      set yd [expr abs($::gui_cata::current_psf(ysm)-$::gui_cata::current_psf(ycent))]
+      set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+      set ::gui_cata::current_psf(rdiff) [format "%.4f" $rdiff ]
+
+      catch {
+
+         cleanmark
+      
+         set r $::gui_cata::current_psf(delta)
+         affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green 0 1
+         affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green $r 2
+
+         set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
+
+         affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) red 0 1
+         affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue $r 2
+      
+      }
 #    set pos [lsearch -index 0 $fields "ASTROID"]
 #    if {$pos!=-1} {
 #       set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
@@ -6363,140 +6739,251 @@ gren_info " => source retrouvee $cpt $dl\n"
 #      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
 #      ::gui_cata::gestion_go
 #
+
+
+
+
+
        
       
    }
 
+# photom_methode = 
+#   {$xsm $ysm $err_xsm $err_ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+#   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
+#    0   xsm 
+#    1   ysm 
+#    2   err_xsm 
+#    3   err_ysm 
+#    4   fwhmx 
+#    5   fwhmy 
+#    6   fwhm 
+#    7   fluxintegre 
+#    8   errflux 
+#    9   pixmax 
+#   10   intensite 
+#   11   sigmafond 
+#   12   snint 
+#   13   snpx
+#   14   delta
+   proc ::gui_cata::psf_gui_results_pm { result } {
+   
+      if {$result=="err"} {
+         set ::gui_cata::current_psf(xsm)         "Nan"
+         set ::gui_cata::current_psf(ysm)         "Nan"
+         set ::gui_cata::current_psf(err_xsm)     "Nan"
+         set ::gui_cata::current_psf(err_ysm)     "Nan"
+         set ::gui_cata::current_psf(fwhmx)       "Nan"
+         set ::gui_cata::current_psf(fwhmy)       "Nan"
+         set ::gui_cata::current_psf(fwhm)        "Nan"
+         set ::gui_cata::current_psf(fluxintegre) "Nan"
+         set ::gui_cata::current_psf(errflux)     "Nan"
+         set ::gui_cata::current_psf(pixmax)      "Nan"
+         set ::gui_cata::current_psf(intensite)   "Nan"
+         set ::gui_cata::current_psf(sigmafond)   "Nan"
+         set ::gui_cata::current_psf(snint)       "Nan"
+         set ::gui_cata::current_psf(snpx)        "Nan"
+         set ::gui_cata::current_psf(delta)       "Nan"
+         set ::gui_cata::current_psf(rdiff)       "Nan"
+      } else {
+         set ::gui_cata::current_psf(xsm)         [format "%.4f" [lindex $result  0] ]
+         set ::gui_cata::current_psf(ysm)         [format "%.4f" [lindex $result  1] ]
+         set ::gui_cata::current_psf(err_xsm)     [format "%.4f" [lindex $result  2] ]
+         set ::gui_cata::current_psf(err_ysm)     [format "%.4f" [lindex $result  3] ]
+         set ::gui_cata::current_psf(fwhmx)       [format "%.4f" [lindex $result  4] ]
+         set ::gui_cata::current_psf(fwhmy)       [format "%.4f" [lindex $result  5] ]
+         set ::gui_cata::current_psf(fwhm)        [format "%.4f" [lindex $result  6] ]
+         set ::gui_cata::current_psf(fluxintegre) [format "%.4f" [lindex $result  7] ]
+         set ::gui_cata::current_psf(errflux)     [format "%.4f" [lindex $result  8] ]
+         set ::gui_cata::current_psf(pixmax)      [format "%.4f" [lindex $result  9] ]
+         set ::gui_cata::current_psf(intensite)   [format "%.4f" [lindex $result 10] ]
+         set ::gui_cata::current_psf(sigmafond)   [format "%.4f" [lindex $result 11] ]
+         set ::gui_cata::current_psf(snint)       [format "%.4f" [lindex $result 12] ]
+         set ::gui_cata::current_psf(snpx)        [format "%.4f" [lindex $result 13] ]
+         set ::gui_cata::current_psf(delta)       [format "%.4f" [lindex $result 14] ]
+      }
+   }
+
+
+# fit gauss = 
+#  0   xflux
+#  1   xcent
+#  2   xfwhm
+#  3   xfond
+#  4   yflux
+#  5   ycent 
+#  6   yfwhm
+#  7   yfond
+   proc ::gui_cata::psf_gui_results_fg { result } {
+   
+      if {$result=="err"} {
+         set ::gui_cata::current_psf(xflux) "Nan"
+         set ::gui_cata::current_psf(xcent) "Nan"
+         set ::gui_cata::current_psf(xfwhm) "Nan"
+         set ::gui_cata::current_psf(xfond) "Nan"
+         set ::gui_cata::current_psf(yflux) "Nan"
+         set ::gui_cata::current_psf(ycent) "Nan"
+         set ::gui_cata::current_psf(yfwhm) "Nan"
+         set ::gui_cata::current_psf(yfond) "Nan"
+      } else {
+         set ::gui_cata::current_psf(xflux) [lindex $result 0]
+         set ::gui_cata::current_psf(xcent) [lindex $result 1]
+         set ::gui_cata::current_psf(xfwhm) [lindex $result 2]
+         set ::gui_cata::current_psf(xfond) [lindex $result 3]
+         set ::gui_cata::current_psf(yflux) [lindex $result 4]
+         set ::gui_cata::current_psf(ycent) [lindex $result 5]
+         set ::gui_cata::current_psf(yfwhm) [lindex $result 6]
+         set ::gui_cata::current_psf(yfond) [lindex $result 7]
+      }
+
+   }
 
 
 
-   proc ::gui_cata::psf_box_to_result { } {
+
+
+
+
+
+
+   proc ::gui_cata::psf_box { { a "" } { b "" } } {
 
       global bddconf
 
+      if { $a == "" && $b==""} { 
+         ::gui_cata::psf_gui_results_pm "err" 
+         ::gui_cata::psf_gui_results_fg "err" 
+         return -code 1
+      }
+
+      if { $b == "" } {
+
+         #     fit gauss
+         set result_fitgauss [buf$bddconf(bufno) fitgauss $a]
+         ::gui_cata::psf_gui_results_fg $result_fitgauss
+         set xcent  [lindex $result_fitgauss 1]  
+         set ycent  [lindex $result_fitgauss 5]  
+
+         #     photom_methode
+         set err [catch {set result [::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $bddconf(bufno)]} msg]
+         if {$err} {
+            ::console::affiche_erreur "PSF_BUTTON_PSF : Photom error ($err) ($msg)\n" 
+            ::gui_cata::psf_gui_results_pm "err" 
+         } else {
+            ::gui_cata::psf_gui_results_pm $result
+            set xd [expr abs($::gui_cata::current_psf(xsm)-$::gui_cata::current_psf(xcent))]
+            set yd [expr abs($::gui_cata::current_psf(ysm)-$::gui_cata::current_psf(ycent))]
+            set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+            set ::gui_cata::current_psf(rdiff) [format "%.4f" $rdiff ]
+         }
+         
+      } else {
+         set xcent  $a 
+         set ycent  $b 
+
+         #     photom_methode
+         set err [catch {set result [::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $bddconf(bufno)]} msg]
+         if {$err} {
+            ::console::affiche_erreur "PSF_BUTTON_PSF : Photom error ($err) ($msg)\n" 
+            ::gui_cata::psf_gui_results_pm "err" 
+         
+         } else {
+            ::gui_cata::psf_gui_results_pm $result
+
+            set xcent [expr int([lindex $result 0])]
+            set ycent [expr int([lindex $result 1])]
+            set delta [expr int([lindex $result 14])]
+            set rect [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
+            
+            set result_fitgauss [buf$bddconf(bufno) fitgauss $rect]
+            ::gui_cata::psf_gui_results_fg $result_fitgauss
+            
+            set xd [expr abs($::gui_cata::current_psf(xsm)-$::gui_cata::current_psf(xcent))]
+            set yd [expr abs($::gui_cata::current_psf(ysm)-$::gui_cata::current_psf(ycent))]
+            set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+            set ::gui_cata::current_psf(rdiff) [format "%.4f" $rdiff ]
+         
+         }
+      
+      }
+      
+   }
+
+
+
+   proc ::gui_cata::psf_button_psf { } {
+
+      global bddconf
+
+      if {$::gui_cata::psf_name_source=="Unknown"&&[info exists ::gui_cata::psf_best_sol]} {
+         unset ::gui_cata::psf_best_sol
+      }
+
       if {[info exists ::gui_cata::psf_best_sol]} {
-          set xcent [expr int([lindex $::gui_cata::psf_best_sol 0])]
-          set ycent [expr int([lindex $::gui_cata::psf_best_sol 1])]
-          set delta 15
-          set rect [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
-          #gren_info "rect = $rect\n"
+
+         set xcent [expr int([lindex $::gui_cata::psf_best_sol 0])]
+         set ycent [expr int([lindex $::gui_cata::psf_best_sol 1])]
+         ::gui_cata::psf_box $xcent $ycent
+
       } else {
          set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
          if {$err>0 || $rect ==""} {
             cleanmark
-            return
+            return -code 2
          }
-         set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]   
-         set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]   
+         ::gui_cata::psf_box $rect
       }
-      
-      
-#     photom_methode
-      
-      set err [catch {set result [::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $bddconf(bufno)]} msg]
-      if {$err} { 
-         gren_info "photom error ($err) ($msg)\n" 
-         set result -1
-      } 
-      #gren_info "photom results = $result\n" 
-
-#     fit gauss
-
-      set result_fitgauss [buf$bddconf(bufno) fitgauss $rect]
-      #gren_info "fitgauss = $result_fitgauss\n"
-
-#     Init des variables
-
-      set ::gui_cata::current_psf(xsm)         [lindex $result 0]
-      set ::gui_cata::current_psf(ysm)         [lindex $result 1]
-      set ::gui_cata::current_psf(err_xsm)     [lindex $result 2]
-      set ::gui_cata::current_psf(err_ysm)     [lindex $result 3]
-      set ::gui_cata::current_psf(fwhmx)       [lindex $result 4]
-      set ::gui_cata::current_psf(fwhmy)       [lindex $result 5]
-      set ::gui_cata::current_psf(fwhm)        [lindex $result 6]
-      set ::gui_cata::current_psf(fluxintegre) [lindex $result 7]
-      set ::gui_cata::current_psf(errflux)     [lindex $result 8]
-      set ::gui_cata::current_psf(pixmax)      [lindex $result 9]
-      set ::gui_cata::current_psf(intensite)   [lindex $result 10]
-      set ::gui_cata::current_psf(sigmafond)   [lindex $result 11]
-      set ::gui_cata::current_psf(snint)       [lindex $result 12]
-      set ::gui_cata::current_psf(snpx)        [lindex $result 13]
-      set ::gui_cata::current_psf(delta)       [lindex $result 14]
-
-      set ::gui_cata::current_psf(xflux) [lindex $result_fitgauss 0]
-      set ::gui_cata::current_psf(xcent) [lindex $result_fitgauss 1]
-      set ::gui_cata::current_psf(xfwhm) [lindex $result_fitgauss 2]
-      set ::gui_cata::current_psf(xfond) [lindex $result_fitgauss 3]
-      set ::gui_cata::current_psf(yflux) [lindex $result_fitgauss 4]
-      set ::gui_cata::current_psf(ycent) [lindex $result_fitgauss 5]
-      set ::gui_cata::current_psf(yfwhm) [lindex $result_fitgauss 6]
-      set ::gui_cata::current_psf(yfond) [lindex $result_fitgauss 7]
-
-      set xd [expr abs([lindex $result 0]-$xcent)]
-      set yd [expr abs([lindex $result 1]-$ycent)]
-      set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
-      set ::gui_cata::current_psf(rdiff) $rdiff
-
-
+      switch $::gui_cata::psf_name_source {
+         "Erreur" {
+            $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+            $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+         }
+         "Unknown" {
+            $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+            $::gui_cata::fenpsf.appli.actions.new  configure -state normal
+         }
+         "Ambigue" {
+            $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+            $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+         }
+         default {
+            $::gui_cata::fenpsf.appli.actions.save configure -state normal
+            $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+         }
+      }
 
 #     AFFICHAGE DES RONDS
 
-      cleanmark
+      catch {
+
+         cleanmark
       
-      # photom_methode
-      set r $::gui_cata::current_psf(delta)
-      affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green 0 1
-      affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green $r 2
+         set r $::gui_cata::current_psf(delta)
+         affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green 0 1
+         affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green $r 2
 
-      set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
+         set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
 
-      affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) red 0 1
-      affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue $r 2
-
-
-# photom_methode = 
-#   {$xsm $ysm $err_xsm $err_ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
-#   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta}
-#   xsm 
-#   ysm 
-#   err_xsm 
-#   err_ysm 
-#   fwhmx 
-#   fwhmy 
-#   fwhm 
-#   fluxintegre 
-#   errflux 
-#   pixmax 
-#   intensite 
-#   sigmafond 
-#   snint 
-#   snpx
-#   delta
-
-# fit gauss = 
-#   xflux
-#   xcent
-#   xfwhm
-#   xfond
-#   yflux
-#   ycent 
-#   yfwhm
-#   yfond
-
-
-
-
+         affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) red 0 1
+         affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue $r 2
+      
+      }
    }
+
+
+
+
+
 
 
 
 
    proc ::gui_cata::psf_popup { tbl } {
-   
+
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
       set idcata [string index [lindex [split $tbl .] 5] 1]
       if {[string compare -nocase $cataselect "ASTROID"] == 0} {
-         
+
          set propalist ""
          foreach select [$tbl curselection] {
 
@@ -6509,9 +6996,9 @@ gren_info " => source retrouvee $cpt $dl\n"
 
             ::gui_cata::psf
          }
-         
+
       }
-            
+
    }
 
 
@@ -6523,46 +7010,65 @@ gren_info " => source retrouvee $cpt $dl\n"
       # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
       # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" 
       # "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"
-      set ol ""
-      lappend ol $::gui_cata::current_psf(xsm)
-      lappend ol $::gui_cata::current_psf(ysm)
-      lappend ol $::gui_cata::current_psf(err_xsm)
-      lappend ol $::gui_cata::current_psf(err_ysm)
-      lappend ol $::gui_cata::current_psf(fwhmx)
-      lappend ol $::gui_cata::current_psf(fwhmy)
-      lappend ol $::gui_cata::current_psf(fwhm)
-      lappend ol $::gui_cata::current_psf(fluxintegre)
-      lappend ol $::gui_cata::current_psf(errflux)
-      lappend ol $::gui_cata::current_psf(pixmax)
-      lappend ol $::gui_cata::current_psf(intensite)
-      lappend ol $::gui_cata::current_psf(sigmafond)
-      lappend ol $::gui_cata::current_psf(snint)
-      lappend ol $::gui_cata::current_psf(snpx)
-      lappend ol $::gui_cata::current_psf(delta)
-      lappend ol $::gui_cata::current_psf(rdiff)
-      lappend ol ra dec poserr poserr 0.0 0.0 mag magerr "-" "-" "-" "-" "-"       
-       
+
        #$::gui_cata::cata_list($::tools_cata::id_current_image)
-       gren_info "id_current_image = $::tools_cata::id_current_image\n"
+
        set current_image [ lindex  $::tools_cata::img_list [expr $::tools_cata::id_current_image -1] ]
-       set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
-       set dateiso [ mc_date2iso8601 $commundatejj ]
-       gren_info "date = $dateiso\n"
-       set ls [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]
-       set ns [ list [ list "ASTROID" [list "" "" "" "" "" ] $ol ]]
-       lappend ls $ns
-       gren_info "new source = $ns\n"
+       set commundatejj  [::bddimages_liste::lget $current_image "commundatejj"]
+       set dateiso       [ mc_date2iso8601 $commundatejj ]
+       set ls            [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]
+       lappend ls $::gui_cata::psf_source
+
+       #gren_info "id_current_image = $::tools_cata::id_current_image\n"
+       #gren_info "date = $dateiso\n"
+       #gren_info "new source = $::gui_cata::psf_source\n"
+
+       set ::gui_cata::cata_list($::tools_cata::id_current_image) [lreplace $::gui_cata::cata_list($::tools_cata::id_current_image) 1 1 $ls]
+       gren_info "New id = [llength [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]]\n"
+
+       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+       ::gui_cata::current_listsources_to_tklist
+
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+
+       $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
+
+
+   }
+
+   proc ::gui_cata::psf_save { } {
+
+       gren_info "Maj id = $::gui_cata::psf_id_source \n"
+
+       set current_image [ lindex  $::tools_cata::img_list [expr $::tools_cata::id_current_image -1] ]
+       set commundatejj  [::bddimages_liste::lget $current_image "commundatejj"]
+       set dateiso       [ mc_date2iso8601 $commundatejj ]
+       set ls            [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]
+
+       set ls [lreplace $ls [expr $::gui_cata::psf_id_source - 1] [expr $::gui_cata::psf_id_source - 1] $::gui_cata::psf_source]
        set ::gui_cata::cata_list($::tools_cata::id_current_image) [lreplace $::gui_cata::cata_list($::tools_cata::id_current_image) 1 1 $ls]
 
+       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+       gren_info "new source = $::gui_cata::psf_source\n"
 
-       
+       ::gui_cata::current_listsources_to_tklist
+
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+
+       $::gui_cata::fenpsf.appli.actions.save  configure -state disabled
+   
    }
-   
-   
-   
-   
+
 
    proc ::gui_cata::psf_grab { } {
+
+       $::gui_cata::fenpsf.appli.actions.save configure -state disabled
+       $::gui_cata::fenpsf.appli.actions.new  configure -state disabled
 
        set ::gui_cata::psf_id_source ""
        set ::gui_cata::list_of_cata ""
@@ -6570,18 +7076,29 @@ gren_info " => source retrouvee $cpt $dl\n"
 
        #gren_info "r=$r\n"
 
-       set err [lindex $r 0]
-       set aff [lindex $r 1]
-       set id  [lindex $r 2]
-       set s   [lindex $r 3]
-       gren_info "Grab ID = $id\n"
-       
-       
-   
-       if {$aff=="Unknown" || $aff=="Ambigue"} {
-          set ::gui_cata::psf_name_source $aff
-          return
+       set err   [lindex $r 0]
+       set aff   [lindex $r 1]
+       set id    [lindex $r 2]
+       set xpass [lindex $r 3]
+       set ypass [lindex $r 4]
+       set s     [lindex $r 5]
+
+       set ::gui_cata::psf_best_sol [list $xpass $ypass]
+
+       if {$err!=0} {
+           set ::gui_cata::psf_name_source "Erreur"
+           if { $aff=="Unknown" || $aff=="Ambigue" } {
+              set ::gui_cata::psf_name_source $aff
+              if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
+           }
+           if { $aff=="Ambigue" } {
+              set ::gui_cata::psf_name_source $aff
+              if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
+           }
+           return
        }
+       ::gui_cata::psf_gui_results_pm "err" 
+       ::gui_cata::psf_gui_results_fg "err" 
 
        set d [::manage_source::namable $s]
        if {$d==""} {
@@ -6597,7 +7114,7 @@ gren_info " => source retrouvee $cpt $dl\n"
        foreach mycata $s {
           append ::gui_cata::list_of_cata " " [lindex $mycata 0]
        }
-       
+
    }
 
 
@@ -6636,7 +7153,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       ::gui_cata::init_psf $sou
       set ::gui_cata::psf_limitradius 100
       set ::gui_cata::psf_threshold 2
-
+      
       set spinlist ""
       for {set i 1} {$i<100} {incr i} {lappend spinlist $i}
 
@@ -6667,35 +7184,29 @@ gren_info " => source retrouvee $cpt $dl\n"
              label $info.lab1 -text "Source : " 
              pack  $info.lab1 -side left -padx 2 -pady 0
              
-             label $info.labv -textvariable ::gui_cata::psf_name_source
+             label $info.labv -textvariable ::gui_cata::psf_name_source 
              pack  $info.labv -side left -padx 2 -pady 0
 
-             label $info.op -text "(" 
-             pack  $info.op -side left -padx 2 -pady 0
+             #label $info.op -text "(" 
+             #pack  $info.op -side left -padx 2 -pady 0
 
-             label $info.loc -textvariable ::gui_cata::list_of_cata
+             label $info.loc -textvariable ::gui_cata::list_of_cata -fg darkblue
              pack  $info.loc -side left -padx 2 -pady 0
 
-             label $info.fp -text ")" 
-             pack  $info.fp -side left -padx 2 -pady 0
+             #label $info.fp -text ")" 
+             #pack  $info.fp -side left -padx 2 -pady 0
 
-         set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
-         pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         set actions [frame $frm.actions -borderwidth 1 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor c -side top -expand 1 
 
-             button $actions.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::gui_cata::fenpsf"
-             pack   $actions.fermer -in $actions -side left -anchor w -padx 0
+                 button $actions.grab -state active -text "Grab" -relief "raised" -command "::gui_cata::psf_grab"
+                 pack   $actions.grab -side left -padx 0
 
-             button $actions.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
-             pack   $actions.res -in $actions -side left -anchor w -padx 0
- 
-             button $actions.grab -state active -text "Grab" -relief "raised" -command "::gui_cata::psf_grab"
-             pack   $actions.grab -in $actions -side left -anchor w -padx 0
- 
-             button $actions.new -state active -text "New" -relief "raised" -command "::gui_cata::psf_new"
-             pack   $actions.new -in $actions -side left -anchor w -padx 0
- 
-             button $actions.save -state active -text "Save" -relief "raised" -command "::bddimages::ressource"
-             pack   $actions.save -in $actions -side left -anchor w -padx 0
+                 button $actions.new -state disabled -text "New" -relief "raised" -command "::gui_cata::psf_new"
+                 pack   $actions.new -side left -padx 0
+
+                 button $actions.save -state disabled -text "Save" -relief "raised" -command "::gui_cata::psf_save"
+                 pack   $actions.save -side left -padx 0
  
          set config [frame $frm.config -borderwidth 0 -cursor arrow -relief groove]
          pack $config -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -6718,18 +7229,19 @@ gren_info " => source retrouvee $cpt $dl\n"
                  entry $data.v -textvariable ::gui_cata::psf_limitradius -relief sunken -width 5
                  pack  $data.v -side left -padx 2 -pady 0
 
-         set actions2 [frame $frm.actions2 -borderwidth 0 -cursor arrow -relief groove]
-         pack $actions2 -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         set actions2 [frame $frm.actions2 -borderwidth 1 -cursor arrow -relief groove]
+         pack $actions2 -in $frm -anchor c -side top
 
-             button $actions2.psfauto -state active -text "Auto" -relief "raised" -command "::gui_cata::psf_box_auto"
-             pack   $actions2.psfauto -side left -anchor w -padx 0
+             spinbox $actions2.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius -width 3 \
+                 -command "::gui_cata::psf_button_psf"
+             pack  $actions2.radius -side left 
+             $actions2.radius set 15
+
+             button $actions2.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_button_psf"
+             pack   $actions2.psf -side left 
  
-             spinbox $actions2.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius  -width 3 \
-                 -command "::gui_cata::psf_box_to_result"
-             pack  $actions2.radius -side left -anchor w
-
-             button $actions2.psf -state active -text "PSF" -relief "raised" -command "::gui_cata::psf_box_to_result"
-             pack   $actions2.psf -side left -anchor w -padx 0
+             button $actions2.psfauto -state active -text "Auto" -relief "raised" -command "::gui_cata::psf_box_auto"
+             pack   $actions2.psfauto -side left 
  
          set results [frame $frm.results -borderwidth 0 -cursor arrow -relief groove]
          pack $results -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -6743,15 +7255,15 @@ gren_info " => source retrouvee $cpt $dl\n"
              set values [ frame $photommethode.values -borderwidth 0 -cursor arrow -relief groove ]
              pack $values -in $photommethode -anchor n -side top -expand 1 -fill both -padx 10 -pady 2
 
-                    foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
+                    foreach key [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff] {
 
                          set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                          pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
 
-                              label $value.lab1 -text "$key = " 
+                              label $value.lab1 -text "$key =" 
                               pack  $value.lab1 -side left -padx 2 -pady 0
                               label $value.lab2 -textvariable ::gui_cata::current_psf($key)
-                              pack  $value.lab2 -side left -padx 2 -pady 0
+                              pack  $value.lab2 -side right -padx 2 -pady 0
                     }
 
          set fitgauss [frame $results.fitgauss -borderwidth 0 -cursor arrow -relief groove]
@@ -6768,15 +7280,30 @@ gren_info " => source retrouvee $cpt $dl\n"
                          set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                          pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
 
-                              label $value.lab1 -text "$key = " 
-                              pack  $value.lab1 -side left -padx 5 -pady 0
+                              label $value.lab1 -text "$key =" 
+                              pack  $value.lab1 -side left -anchor sw -padx 5 -pady 0
                               label $value.lab2 -textvariable ::gui_cata::current_psf($key)
-                              pack  $value.lab2 -side left -padx 5 -pady 0
+                              pack  $value.lab2 -side right -padx 5 -pady 0 -anchor se 
                     }
+
+         set actionspied [frame $frm.actionspied -borderwidth 0 -cursor arrow -relief groove]
+         pack $actionspied -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $actionspied.fermer -state active -text "Fermer" -relief "raised" -command "::gui_cata::psf_fermer"
+             pack   $actionspied.fermer -in $actionspied -side right -anchor w -padx 0
+
+             button $actionspied.res -state active -text "Ressource" -relief "raised" -command "::bddimages::ressource"
+             pack   $actionspied.res -in $actionspied -side right -anchor w -padx 0
 
 
    }
-
+proc ::gui_cata::psf_fermer { } {
+      
+      
+      destroy $::gui_cata::fenpsf 
+      ::gui_cata::gestion_go
+   
+   }
 
 # Fin Classe
 }

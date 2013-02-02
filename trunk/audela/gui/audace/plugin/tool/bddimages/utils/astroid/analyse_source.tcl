@@ -78,8 +78,8 @@ namespace eval ::analyse_source {
    #    mag         : Magnitude mesuree (mag)
    #    err_mag     : Incertitude sur la magnitude mesuree (mag)
    #    name        : Designation de la source
-   #    flagastrom  : 'r'eference ou 's'cience ou '' rien
-   #    flagphotom  : 'r'eference ou 's'cience ou '' rien
+   #    flagastrom  : 'r'eference ou 's'cience ou '-'
+   #    flagphotom  : 'r'eference ou 's'cience ou '-'
    #    cataastrom  : Nom du catalogue de reference astrometrique associe a la source
    #    cataphotom  : Nom du catalogue de reference photometrique associe a la source
    #
@@ -92,6 +92,72 @@ namespace eval ::analyse_source {
                                    "name" "flagastrom" "flagphotom" "cataastrom" "cataphotom"] ]
 
    }
+
+#  0   xsm             "0"
+#  1   ysm             "0"
+#  2   err_xsm         "0"
+#  3   err_ysm         "0"
+#  4   fwhmx           "0"
+#  5   fwhmy           "0"
+#  6   fwhm            "0"
+#  7   fluxintegre     "0"
+#  8   errflux         "0"
+#  9   pixmax          "0"
+# 10   intensite       "0"
+# 11   sigmafond       "0"
+# 12   snint           "0"
+# 13   snpx            "0"
+# 14   delta           "0"
+# 15   rdiff           "0"
+# 16   ra              "0"
+# 17   dec             "0"
+# 18   res_ra          "0"
+# 19   res_dec         "0"
+# 20   omc_ra          "0"
+# 21   omc_dec         "0"
+# 22   mag             "0"
+# 23   err_mag         "0"
+# 24   name            "0"
+# 25   flagastrom      "-"
+# 26   flagphotom      "-"
+# 27   cataastrom      "-"
+# 28   cataphotom      "-"
+   proc ::analyse_source::get_astroid_null { } {
+
+      return [list "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "-" \
+                   "-" \
+                   "-" \
+                   "-" \
+                   ]
+   }
+
+
+
 
 
 
