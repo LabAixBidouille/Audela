@@ -38,6 +38,9 @@
 # The Tcl array telscript is used to exhange data between the Tcl script
 # and the C code of libtelscript. For this reason, don't forget to write
 # global telscript as the first line of the procs of the script.
+# Anyway, the variable telscript(def,telname) contains the name defined
+# by the -telname option (=telscript_template_equatorial by default).
+# Herafter we designed telname the value of telscript(def,telname).
 #
 # Before calling the loop proc, the following variables are updated
 # from tel1 functions:
@@ -109,7 +112,7 @@
 # ============================================================================================
 
 # --- common defined variables
-set telscript(def,telname) mytel
+# telscript(def,telname) is ever defined before the source of this script
 set telscript(def,speed_diurnal) [expr 360./(23*3600+56*60+4)] ; # diurnal motion (deg/sec)
 set telscript(def,goto,speed) 1 ; # GOTO speed (deg/sec)
 

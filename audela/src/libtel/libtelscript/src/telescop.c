@@ -503,7 +503,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	// decode les arguments
 	telthread->script_type=SCRIPT_TYPE_FILE;
-	strcpy(telthread->telname,"telscript_default");
+	strcpy(telthread->telname,"telscript_template_equatorial");
 	sprintf(telthread->script,"[pwd]/%s.tcl",telthread->telname);
 	sprintf(telthread->script_setup,"[pwd]/%s_setup.tcl",telthread->telname);
 	sprintf(telthread->script_loop,"[pwd]/%s_loop.tcl",telthread->telname);
@@ -557,6 +557,8 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	telthread->radec_move_rate=0;
 	strcpy(telthread->move_direction,"N");
 
+	sprintf(s,"set telscript(def,telname) \"%s\"",telthread->telname);
+	mytel_tcleval(telthread,s);
 	sprintf(s,"file exists \"%s\"",telthread->script);
 	mytel_tcleval(telthread,s);
 	if (strcmp(telthread->interp->result,"1")==0) {
