@@ -216,6 +216,12 @@ namespace eval ::audace {
 
          ::confVisu::close $audace(visuNo)
 
+         #--   si prepCgi.tcl est present dans le repertoire CGI
+         #--   il sauve les chemins essentiels dans cgi/cg_bin/audela/cgi_param.tcl
+         if {[file exists [file join $::audace(rep_gui) cgi prepCgi.tcl]]} {
+            source [file join $::audace(rep_gui) cgi prepCgi.tcl]
+         }
+
          if {[ini_fileNeedWritten file_conf conf]} {
             set old_focus [focus]
             set choice [tk_messageBox -message "$caption(audace,enregistrer_config_1)\n$caption(audace,enregistrer_config_2)" \
@@ -258,7 +264,6 @@ namespace eval ::audace {
       set audace(quitterEnCours) "0"
       menustate normal
    }
-
 }
 ############################# Fin du namespace audace #############################
 
