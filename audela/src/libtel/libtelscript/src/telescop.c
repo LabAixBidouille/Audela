@@ -596,7 +596,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		sprintf(s,"file exists \"%s\"",telthread->script_setup);
 		mytel_tcleval(telthread,s);
 		if (strcmp(telthread->interp->result,"1")==0) {
-			sprintf(s,"Error, the script %s does not exist.",telthread->script_setup);
+			sprintf(s,"Error, the script %s does not exist.",telthread->script);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
 		}
