@@ -1,3 +1,10 @@
+#
+# Fichier : telscript_template_equatorial.tcl
+# Description : Driver de monture en TCL
+# Auteur : Alain KLOTZ
+# Mise à jour $Id$
+#
+
 # === Script to test and to develop a scripted telescope driver for AudeLA ===
 #
 # INTRODUCTION
@@ -6,7 +13,7 @@
 # an AudeLA object called tel1. The driver itself is wriiten in C/C++
 # code (source codes in audela/src/libtel).
 #
-# As a consequence, an astronomer interested to develop a new telescope 
+# As a consequence, an astronomer interested to develop a new telescope
 # driver for AudeLA must program the corresponding C/C++ code that is
 # not easy for most astronomers.
 #
@@ -17,12 +24,12 @@
 #
 # AN EXAMPLE
 # ----------
-# The telscript_template_equatorial.tcl script simulates a basic equatorial telescope driver. 
+# The telscript_template_equatorial.tcl script simulates a basic equatorial telescope driver.
 # To test this driver, type the following terminal command:
 #
 # tel::create telscript -telname mytel -script $audace(rep_install)/gui/audace/scripts/telscript/telscript_template_equatorial.tcl -home \{$audace(posobs,observateur,gps)\}
 #
-# During the creation of tel1, firstly the script telscript_template_equatorial.tcl 
+# During the creation of tel1, firstly the script telscript_template_equatorial.tcl
 # is sourced. This script must contains at less two procs: setup and loop
 # (with no input paramters). Secondly, the proc setup is called. The
 # contents of the setup proc should establish the physical connections
@@ -51,25 +58,25 @@
 #    = previous action before moving by the move or by a goto
 # telscript($telname,ha0)
 #    = Hour angle position to reach for the next GOTO or for the next MATCH
-#    Provided by "tel1 hadec init" "tel1 hadec goto" 
+#    Provided by "tel1 hadec init" "tel1 hadec goto"
 # telscript($telname,ra0)
 #    = Right Ascension position to reach for the next GOTO or for the next MATCH
-#    Provided by "tel1 radec init" "tel1 radec goto" 
+#    Provided by "tel1 radec init" "tel1 radec goto"
 # telscript($telname,dec0)
 #    = Declination position to reach for the next GOTO or for the next MATCH
-#    Provided by "tel1 radec init" "tel1 radec goto" "tel1 hadec init" "tel1 hadec goto" 
+#    Provided by "tel1 radec init" "tel1 radec goto" "tel1 hadec init" "tel1 hadec goto"
 # telscript($telname,radec_move_rate)
 #    = Speed (0 to 1) for moving
-#    Provided by "tel1 radec move" 
+#    Provided by "tel1 radec move"
 # telscript($telname,move_direction)
 #    = Direction (n,s,e,w) for moving
-#    Provided by "tel1 radec move" 
+#    Provided by "tel1 radec move"
 #
 # After calling the loop proc, the following variables are commited
 # to the C code to be used by tel1 functions:
 # telscript($telname,coord_app_cod_deg_ra)
 #    = Current Right Ascension position
-#    Used by "tel1 radec coord" 
+#    Used by "tel1 radec coord"
 # telscript($telname,coord_app_cod_deg_dec)
 #    = Current Declination position
 #    Used by "tel1 radec coord" "tel1 hadec coord"
@@ -120,18 +127,18 @@ set telscript(def,goto,speed) 1 ; # GOTO speed (deg/sec)
 proc setup { } {
    global telscript
    # --- Get useful variables
-   set telname $telscript(def,telname)   
-   
+   set telname $telscript(def,telname)
+
    # --- The initial telescope position is HA=0 et Dec=0
    set telscript($telname,coord_app_cod_deg_ha)  0
    set telscript($telname,coord_app_cod_deg_dec) 0
    set telscript($telname,jdutc_app_cod) [mc_date2jd now]
-   
+
    # --- The initial telescope motion is "motor off"
    set telscript($telname,speed_app_cod_deg_ha) 0
    set telscript($telname,speed_app_cod_deg_dec) 0
    set telscript($telname,motion_next) "stopped"
-   
+
    # --- Set a comment that the setup is OK
    set telscript($telname,status) "setup OK"
    #catch {set f [open "log.txt" w] ; close $f}
@@ -145,7 +152,7 @@ proc loop { } {
    set home $telscript($telname,home)
    set telscript($telname,message) ""
    #catch {append telscript($telname,message) "DEBUG 0: telscript($telname,action_next)=$telscript($telname,action_next)\n"}
-  
+
    # === Compute current apparent coordinates for "tel1 radec coord"
    set jd1 $telscript($telname,jdutc_app_cod)
    set jd2 [mc_date2jd now]
@@ -160,7 +167,7 @@ proc loop { } {
             } else {
                # --- second GOTO to take acount for the slewing duration
                set telscript($telname,action_next) "radec_goto"
-            }         
+            }
          } else {
             set telscript($telname,motion_next) "stopped"
          }
@@ -191,16 +198,16 @@ proc loop { } {
       set ha [expr fmod(720+$ha,360)]
       set dec [expr $telscript($telname,coord_app_cod_deg_dec)+$dsec*$telscript($telname,speed_app_cod_deg_dec)]
    }
-   set ra [expr fmod(720+$lst-$ha,360)]   
+   set ra [expr fmod(720+$lst-$ha,360)]
    set telscript($telname,jdutc_app_cod) $jd2
    # --- variables used to commit "tel1 radec coord" and "tel1 hadec coord" after this proc
    set telscript($telname,coord_app_cod_deg_ha) $ha
    set telscript($telname,coord_app_cod_deg_dec) $dec
    set telscript($telname,coord_app_cod_deg_ra) $ra
-   
+
    # === Process actions (actions are set by tel1 commands)
    if {$telscript($telname,action_next)=="motor_on"} {
-   
+
       # --- Action = motor_on
       # (don't change telscript($telname,motion_next))
       if {$telscript($telname,motion_next)!="correction"} {
@@ -208,9 +215,9 @@ proc loop { } {
          set telscript($telname,speed_app_cod_deg_dec) 0
          set telscript($telname,motion_prev) "tracking"
       }
-      
+
    } elseif {$telscript($telname,action_next)=="motor_off"} {
-   
+
       # --- Action = motor_off
       # (don't change telscript($telname,motion_next))
       if {$telscript($telname,motion_next)!="correction"} {
@@ -218,9 +225,9 @@ proc loop { } {
          set telscript($telname,speed_app_cod_deg_dec) 0
          set telscript($telname,motion_prev) "stopped"
       }
-      
+
    } elseif {$telscript($telname,action_next)=="motor_stop"} {
-   
+
       # --- Action = motor_stop
       if {$telscript($telname,motion_next)!="correction"} {
          set telscript($telname,speed_app_cod_deg_ha) 0
@@ -228,7 +235,7 @@ proc loop { } {
          set telscript($telname,motion_next) "stopped"
          set telscript($telname,action_next) "motor_off"
       } else {
-         set direction [string toupper $telscript($telname,move_direction)]         
+         set direction [string toupper $telscript($telname,move_direction)]
          if {$telscript($telname,motion_prev)=="tracking"} {
             if {($direction=="N")||($direction=="S")} {
                set telscript($telname,speed_app_cod_deg_dec) 0
@@ -250,18 +257,18 @@ proc loop { } {
                set telscript($telname,motion_next) "$telscript($telname,motion_prev)"
             }
          }
-      }      
-      
+      }
+
    } elseif {$telscript($telname,action_next)=="radec_init"} {
-   
+
       # --- Action = radec_init
       set telscript($telname,coord_app_cod_deg_ra) $telscript($telname,ra0)
-      set telscript($telname,coord_app_cod_deg_ha) [expr fmod(720+$lst-$telscript($telname,coord_app_cod_deg_ra),360)]      
+      set telscript($telname,coord_app_cod_deg_ha) [expr fmod(720+$lst-$telscript($telname,coord_app_cod_deg_ra),360)]
       set telscript($telname,coord_app_cod_deg_dec) $telscript($telname,dec0)
       set telscript($telname,action_next) "motor_on"
-      
+
    } elseif {$telscript($telname,action_next)=="radec_goto"} {
-   
+
       # --- Action = radec_goto
       set ra0 $telscript($telname,ra0)
       set dec0 $telscript($telname,dec0)
@@ -283,17 +290,17 @@ proc loop { } {
       set telscript($telname,goto,jd_start) $telscript($telname,jdutc_app_cod)
       set telscript($telname,motion_next) "radec_slewing"
       set telscript($telname,action_next) "motor_on"
-      
+
    } elseif {$telscript($telname,action_next)=="hadec_init"} {
-   
+
       # --- Action = radec_init
       set telscript($telname,coord_app_cod_deg_ha) $telscript($telname,ha0)
       set telscript($telname,coord_app_cod_deg_ra) [expr fmod(720+$lst-$telscript($telname,coord_app_cod_deg_ha),360)]
       set telscript($telname,coord_app_cod_deg_dec) $telscript($telname,dec0)
       set telscript($telname,action_next) "motor_off"
-      
+
    } elseif {$telscript($telname,action_next)=="hadec_goto"} {
-   
+
       # --- Action = hadec_goto
       set ha0 $telscript($telname,ha0)
       set dec0 $telscript($telname,dec0)
@@ -314,9 +321,9 @@ proc loop { } {
       set telscript($telname,goto,jd_start) $telscript($telname,jdutc_app_cod)
       set telscript($telname,motion_next) "hadec_slewing"
       set telscript($telname,action_next) "motor_off"
-      
+
    } elseif {$telscript($telname,action_next)=="move_start"} {
-   
+
       # --- Action = move_start
       set rate $telscript($telname,radec_move_rate)
       if {$rate<=0.25} {
@@ -346,11 +353,12 @@ proc loop { } {
          set telscript($telname,speed_app_cod_deg_ha) [expr $cur_speed_ha-$speed]
       }
       set telscript($telname,motion_next) "correction"
-      
-   }       
-       
+
+   }
+
    # --- Set a comment that the loop is OK
    set telscript($telname,status) "loop OK"
-   
+
    # set f [open "log.txt" a] ; puts "============================\n$telscript($telname,message)" ; close $f
 }
+
