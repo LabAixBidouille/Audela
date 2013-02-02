@@ -79,13 +79,13 @@ proc ::telscript::isReady { } {
 #
 proc ::telscript::initPlugin { } {
    variable private
-   global conf
+   global audace conf
 
    #--- Initialisation
    set private(telNo) "0"
 
    #--- Initialise les variables de la monture TelScript
-   if { ! [ info exists conf(telscript,script) ] }  { set conf(telscript,script)  [ file join $conf(rep_scripts) telscript telscript_template_equatorial.tcl ] }
+   if { ! [ info exists conf(telscript,script) ] }  { set conf(telscript,script)  [ file join $audace(rep_plugin) mount telscript telscript_template_equatorial.tcl ] }
    if { ! [ info exists conf(telscript,telname) ] } { set conf(telscript,telname) "mount_name" }
 }
 
