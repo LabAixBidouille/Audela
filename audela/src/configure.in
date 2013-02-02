@@ -189,7 +189,7 @@ dnl
 dnl Configure the modules to be compiled.
 dnl
 
-EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl tkhtml"
+EXTERNAL="andor blt cfitsio fitstcl gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb oscadine porttalk sbig sextractor tcl tkhtml"
 if test -f /usr/bin/mysql_config ; then
     EXTERNAL="$EXTERNAL mysqltcl"
 fi
@@ -226,7 +226,7 @@ fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-    LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 libquicka libstarlight libsynonyme"
+    LIBCAMS="$LIBCAMS libaudine libcagire libcamth libcookbook libhisis libk2 liboscadine libquicka libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
     LIBCAMS="$LIBCAMS libwebcam"
