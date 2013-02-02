@@ -51,7 +51,7 @@
 #define SIZEOF_VOID_P 4
 #endif
 #ifndef HAVE_INTTYPES_H
-#if 0
+#if 1
 #define HAVE_INTTYPES_H 1
 #endif
 #endif

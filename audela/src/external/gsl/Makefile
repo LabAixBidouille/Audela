@@ -1,6 +1,6 @@
 .PHONY: build install clean
 
-DIR = gsl-1.4
+DIR = gsl-1.8
 
 build:
 	( cd $(DIR) ; ./configure --prefix=`pwd`/../.. )
