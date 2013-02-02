@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Cr&eacute;ation et utilisation d'un mod&egrave;le de pointage avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20110218<br>
+version 20130202<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -263,13 +263,14 @@ de coordonn&eacute;es t&eacute;lescope vers coordonn&eacute;es
 catalogue.</li>
 </ul>
 <p>D&eacute;finition :</p>
-<p>mc_hip2tel Coords TypeObs Date_UTC Home Pressure Temperature
-?List_ModelSymbols List_ModelValues?<br>
+<p>mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type
+List_ModelSymbols List_ModelValues? ?-model_only 0|1?&nbsp;
+?-refraction 0|1?<br>
 <br>
 Coords : Liste {ra dec} ou {az elev} ou {hour_angle dec}
 t&eacute;lescope, selon TypeObs<br>
 TypeObs : EQUATORIAL ou ALTAZ ou HADEC<br>
-Date : Date UTC du pointage<br>
+Date_UTC : Date UTC du pointage<br>
 Home : Localisation du t&eacute;lescope<br>
 Pressure : Pression atmosph&eacute;rique (Pa). Utiliser 101325 Pa par
 d&eacute;faut.<br>
@@ -278,7 +279,11 @@ d&eacute;faut.<br>
 List_ModelSymbols : Symbols des coeffcicients du mod&egrave;le de
 pointage<br>
 List_ModelValues : Valeurs des coeffcients du mod&egrave;le de pointage.<br>
-</p>
+-model_only&nbsp; 0|1,&nbsp; 1=calculer impact modele seulement
+0=calculer impact modele et changement equinoxe (valeur par
+defaut)&nbsp; <br>
+-refraction 0|1, 1=corriger la refraction (valeur par defaut) , 0= ne
+pas corriger la refraction (cas des LX200)</p>
 <p>Sorties :&nbsp;</p>
 <p>Liste de 2 &eacute;l&eacute;ments :</p>
 RA : Acsension droite catalogue (deg) J2000<br>
