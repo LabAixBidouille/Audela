@@ -488,6 +488,13 @@ proc ::telescope::decodeSpeedDlgShift { namespace } {
             "2" { setSpeed "2" }
             "3" { setSpeed "3" }
          }
+      } elseif { $conf(telescope) == "telscript" } {
+         switch $panneau($namespace,shiftSpeed) {
+            "1" { setSpeed "1" }
+            "2" { setSpeed "2" }
+            "3" { setSpeed "3" }
+            "4" { setSpeed "4" }
+         }
       } else {
          #--- Inactif pour les autres telescopes
          setSpeed "0"
@@ -550,6 +557,14 @@ proc ::telescope::incrementSpeed { } {
          switch $audace(telescope,speed) {
             "1"     { setSpeed "2" }
             "2"     { setSpeed "3" }
+            default { setSpeed "1" }
+         }
+      } elseif { $conf(telescope) == "telscript" } {
+         #--- Pour telscript, l'increment peut prendre 4 valeurs ( 1 2 3 4 )
+         switch $audace(telescope,speed) {
+            "1"     { setSpeed "2" }
+            "2"     { setSpeed "3" }
+            "3"     { setSpeed "4" }
             default { setSpeed "1" }
          }
       } elseif { $conf(telescope) == "ascom" } {
@@ -700,6 +715,29 @@ proc ::telescope::setSpeed { { value "2" } } {
             "3" {
                set audace(telescope,speed) "3"
                set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) "1"
+            }
+         }
+      } elseif { $conf(telescope) == "telscript" } {
+         switch $value {
+            "1" {
+               set audace(telescope,speed) "1"
+               set audace(telescope,labelspeed) "1"
+               set audace(telescope,rate) "0.25"
+            }
+            "2" {
+               set audace(telescope,speed) "2"
+               set audace(telescope,labelspeed) "2"
+               set audace(telescope,rate) "0.5"
+            }
+            "3" {
+               set audace(telescope,speed) "3"
+               set audace(telescope,labelspeed) "3"
+               set audace(telescope,rate) "0.75"
+            }
+            "4" {
+               set audace(telescope,speed) "4"
+               set audace(telescope,labelspeed) "4"
                set audace(telescope,rate) "1"
             }
          }
