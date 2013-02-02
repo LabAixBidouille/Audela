@@ -3,6 +3,7 @@ partie 0 : Faire aparaitre la roadmap et todolist dans doxygen
 
 
 ** partie : Configuration 
+
     boutoun clicable : "Mode Expert" 
     si la variable est active alors apparait les id, les boutons ressources/tests etc...
 
@@ -27,21 +28,12 @@ partie 2 : Gestion fenetre Recherche
    Ajouter champs date :
       depuis les X derniers jours
 
-- Dans la fenetre recherche : 
-
-- Dans la fenetre recherche : 
-
 - Dans la fenetre recherche :
      finir de faire des boutons de filtres suivant: ASTROID
 
-- Dans la fenetre recherche
-
-- Nouvelle fenetre liste pour exprimer le cata
-     chaque clic sur une entree de la liste met un rond vert dans l image.
-          
-- Dans la fenetre liste
-     faire les onglets suivant asteroide, usnoa2, ucac2, nomad1
-     qui affichent la liste pour chaque source identifiee.
+- photom auto dans creation cata
+- xerr yerr dans astrometrie
+- usnao2 dans creation cata
 
      
  
