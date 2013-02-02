@@ -244,7 +244,7 @@ proc ::telscript::explore { } {
 
    #--- Ouvre la fenetre de choix des scripts
    set fenetre "$audace(base)"
-   set private(script) [ ::tkutil::box_load $fenetre $audace(rep_scripts) $audace(bufNo) "3" ]
+   set private(script) [ ::tkutil::box_load $fenetre [ file join $audace(rep_plugin) mount telscript ] $audace(bufNo) "3" ]
 }
 
 #
@@ -292,7 +292,7 @@ proc ::telscript::getPluginProperty { propertyName } {
       hasGoto                 { return 1 }
       hasMatch                { return 1 }
       hasManualMotion         { return 1 }
-      hasControlSuivi         { return 0 }
+      hasControlSuivi         { return 1 }
       hasModel                { return 0 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }
