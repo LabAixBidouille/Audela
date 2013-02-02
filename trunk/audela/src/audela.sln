@@ -289,8 +289,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "contrib_av4l", "contrib\av4
 		{7202F949-E8C5-427C-A7BD-FA2D31564E73} = {7202F949-E8C5-427C-A7BD-FA2D31564E73}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtelsimu", "libtel\libtelsimu\vc90\libtelsimu.vcproj", "{3ACAC348-D28D-4855-A842-8ECDB000BF2F}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libatik", "libcam\libatik\vc90\libatik.vcproj", "{627780D7-8F17-48D4-8781-500E4F36F59D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_oscadine", "external\oscadine\vc90\external_oscadine.vcproj", "{B69AB115-89F5-4F66-93BE-6141A400BAE5}"
