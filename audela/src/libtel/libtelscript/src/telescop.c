@@ -114,7 +114,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		sprintf(s,"thread::send %s {ThreadTel_Init", tel->loopThreadId);
 		for (k=0;k<argc;k++) {
 			strcat(s," ");
+			strcat(s,"\"");
 			strcat(s,argv[k]);
+			strcat(s,"\"");
 		}
 		strcat(s,"}");
       if ( Tcl_Eval(tel->interp, s) == TCL_ERROR ) {
@@ -595,7 +597,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		// --- le script general n'existe pas
 		sprintf(s,"file exists \"%s\"",telthread->script_setup);
 		mytel_tcleval(telthread,s);
-		if (strcmp(telthread->interp->result,"1")==0) {
+		if (strcmp(telthread->interp->result,"0")==0) {
 			sprintf(s,"Error, the script %s does not exist.",telthread->script);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
