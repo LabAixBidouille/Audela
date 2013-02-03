@@ -9,8 +9,8 @@
 #
 # INTRODUCTION
 # ------------
-# Driving a telescope with AudeLA is based on a Tcl instanciation of
-# an AudeLA object called tel1. The driver itself is wriiten in C/C++
+# Driving a telescope with AudeLA is based on a Tcl instantiation of
+# an AudeLA object called tel1. The driver itself is written in C/C++
 # code (source codes in audela/src/libtel).
 #
 # As a consequence, an astronomer interested to develop a new telescope
@@ -27,11 +27,11 @@
 # The telscript_template_equatorial.tcl script simulates a basic equatorial telescope driver.
 # To test this driver, type the following terminal command:
 #
-# tel::create telscript -telname mytel -script $audace(rep_install)/gui/audace/scripts/telscript/telscript_template_equatorial.tcl -home \{$audace(posobs,observateur,gps)\}
+# tel::create telscript -telname mytel -script $audace(rep_install)/gui/audace/plugin/mount/telscript/telscript_template_equatorial.tcl -home \{$audace(posobs,observateur,gps)\}
 #
 # During the creation of tel1, firstly the script telscript_template_equatorial.tcl
 # is sourced. This script must contains at less two procs: setup and loop
-# (with no input paramters). Secondly, the proc setup is called. The
+# (with no input parameters). Secondly, the proc setup is called. The
 # contents of the setup proc should establish the physical connections
 # with the telescope controller. Thirdly, the proc loop is called inside
 # an infinite loop. The proc loop should contain the code to process the
@@ -42,7 +42,7 @@
 #
 # VARIABLE EXHANGE BETWEEN C AND TCL
 # ----------------------------------
-# The Tcl array telscript is used to exhange data between the Tcl script
+# The Tcl array telscript is used to exchange data between the Tcl script
 # and the C code of libtelscript. For this reason, don't forget to write
 # global telscript as the first line of the procs of the script.
 # Anyway, the variable telscript(def,telname) contains the name defined
