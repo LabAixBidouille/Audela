@@ -67,7 +67,7 @@
  *    attention : c'est une methode statique !
  */
 
-int CParallel::getAvailableLinks(unsigned long *pnumDevices, char **list) {
+int CParallel::getAvailableLinks(LPDWORD pnumDevices, char **list) {
    int result;
 
 #ifdef OS_WIN

@@ -28,6 +28,10 @@
 #include "libname.h"
 #include <liblink/liblink.h>
 
+#if defined(OS_WIN)
+   #include <windows.h>
+#endif
+
 /**
  * If you define OS_WIN_USE_LPT_OLD_STYLE, you will use
  * libcam_out function with your lpt port,
@@ -56,7 +60,7 @@ public:
    int getBit(int bitNum, int *value);
 
    static char * getGenericName();
-   static int getAvailableLinks(unsigned long *pnumDevices, char **list);
+   static int getAvailableLinks(LPDWORD pnumDevices, char **list);
    
 protected :
    unsigned long lastStatus;
