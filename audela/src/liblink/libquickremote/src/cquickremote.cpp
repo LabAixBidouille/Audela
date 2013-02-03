@@ -52,7 +52,7 @@
 
 // ============= methodes statiques ====================================
 //  appel au construteur local
-int CQuickremote::getAvailableLinks(unsigned long *pnumDevices, char **list) {
+int CQuickremote::getAvailableLinks(LPDWORD pnumDevices, char **list) {
    FT_HANDLE ftHandleTemp;
    DWORD Flags;
    DWORD ID;
@@ -80,7 +80,7 @@ int CQuickremote::getAvailableLinks(unsigned long *pnumDevices, char **list) {
    for( i=0; i< (int) *pnumDevices; i++ ) {
       ftStatus = FT_GetDeviceInfoDetail(i, &Flags, &Type, &ID, &LocId, SerialNumber, Description, &ftHandleTemp);
       if (ftStatus == FT_OK) {         
-         sprintf(ligne, "{ %d %ld %ld %ld \"%s\" \"%s\" } ", i, Type, ID, LocId, SerialNumber, Description );
+         sprintf(ligne, "{ %d %d %d %d \"%s\" \"%s\" } ", i, Type, ID, LocId, SerialNumber, Description );
          strcat(*list, ligne);
       } else  {
          result = LINK_ERROR;
@@ -167,7 +167,7 @@ int CQuickremote::closeLink()
 */
 int CQuickremote::setChar(char c)
 {
-   unsigned long  bytesWritten = 0;
+   DWORD bytesWritten = 0;
    
    lastStatus = FT_Write(ftHandle, &c, 1, &bytesWritten);
    if (lastStatus != FT_OK && bytesWritten !=1 ) {
@@ -196,7 +196,7 @@ int CQuickremote::getChar(char *c) {
  */
 int CQuickremote::setBit(int numbit, int value)
 {
-   unsigned long  bytesWritten = 0;
+   DWORD bytesWritten = 0;
    char mask; 
    char tempValue;
    
@@ -238,7 +238,7 @@ int CQuickremote::setBit(int numbit, int value)
  */
 int CQuickremote::setBit(int numbit, int value, double duration)
 {
-   unsigned long  bytesWritten = 0;
+   DWORD bytesWritten = 0;
    char mask; 
    char tempValue, previousValue;
    

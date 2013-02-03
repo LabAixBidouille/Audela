@@ -181,7 +181,7 @@ static int cmdLinkCreate(ClientData clientData, Tcl_Interp * interp, int argc, c
       return TCL_ERROR;
    } else if (argc == 2 && strcmp(argv[1], "available") ==0) {
       char * ligne = NULL;
-      unsigned long numDevices;
+      DWORD numDevices;
       // ligne is allocated by available()
      if( LINK_CLASS::getAvailableLinks(&numDevices, &ligne) == LINK_OK) {
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);

@@ -532,7 +532,7 @@ short usb_start(short KAF,short x1,short y1,short x2,short y2,
    short Y1_H_1,Y1_L_2,Y1_L_1;
    short Y2_H_1,Y2_L_2,Y2_L_1;
    unsigned char tx[2],rx[2];
-   unsigned long Nb_RxOctets;
+   DWORD Nb_RxOctets;
    short nx=0;
    
    if (KAF==4) 
@@ -738,7 +738,8 @@ int v1,v2,v3,v4,v;
 int nb_pixel;
 int longueur_buffer=1024,deltat;  
 char ReadBuffer[1024];
-unsigned long Nb_RxOctets,i;
+DWORD Nb_RxOctets;
+unsigned long i;
 time_t ltime0,ltime;
 
 nb_pixel=(unsigned long)imax*jmax;
@@ -806,7 +807,7 @@ nb_pixel=(unsigned long)imax*jmax;
 /**********************************/
 short usb_write(short v) {
    unsigned char tx[2];
-   unsigned long Nb_RxOctets;
+   DWORD Nb_RxOctets;
    FT_STATUS status;
  
    tx[0]=0;

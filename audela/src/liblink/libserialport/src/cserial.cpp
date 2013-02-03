@@ -93,7 +93,7 @@ char * errorMessage = "";
  *    attention : c'est une methode statique !
  */
 
-int CSerial::getAvailableLinks(unsigned long *pnumDevices, char **list) {
+int CSerial::getAvailableLinks(LPDWORD pnumDevices, char **list) {
    int result;
 
 #ifdef OS_WIN

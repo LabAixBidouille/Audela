@@ -43,7 +43,7 @@ public:
    void getLastError(char *message);
 
    static const char * getGenericName();
-   static int getAvailableLinks(unsigned long *pnumDevices, char **list);
+   static int getAvailableLinks(LPDWORD pnumDevices, char **list);
    
 protected :
    FT_HANDLE ftHandle ;
