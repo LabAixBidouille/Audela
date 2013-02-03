@@ -30,6 +30,7 @@
 
 #if defined(OS_WIN)
    #include <windows.h>
+#else
 #endif
 
 /**
