@@ -31,6 +31,8 @@
 #if defined(OS_WIN)
    #include <windows.h>
 #else
+   typedef unsigned int			DWORD;
+   typedef DWORD					*LPDWORD;
 #endif
 
 /**
