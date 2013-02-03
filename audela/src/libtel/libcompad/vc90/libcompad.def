@@ -1,2 +1,0 @@
-LIBRARY libcompad
-EXPORTS Compad_Init @1
