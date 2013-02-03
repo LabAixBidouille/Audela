@@ -274,8 +274,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_libgslcblas", "ext
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_meinberg", "external\meinberg\vc90\external_meinberg.vcproj", "{43D31802-AFAF-4640-841F-2F3D159DF02C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libt940", "libtel\libt940\vc90\libt940.vcproj", "{FB585FAE-CCD8-4407-B778-7DA4FEF70E04}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmcmt", "libtel\libmcmt\vc90\libmcmt.vcproj", "{A915ACA1-C9A4-4965-A52C-0EA3E890737D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_fly", "external\fly\vc90\external_fly.vcproj", "{077BFDED-F9EA-43AF-B34C-C7A2C7D46455}"
@@ -648,10 +646,6 @@ Global
 		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Debug|Win32.Build.0 = Debug|Win32
 		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Release|Win32.ActiveCfg = Release|Win32
 		{43D31802-AFAF-4640-841F-2F3D159DF02C}.Release|Win32.Build.0 = Release|Win32
-		{FB585FAE-CCD8-4407-B778-7DA4FEF70E04}.Debug|Win32.ActiveCfg = Debug|Win32
-		{FB585FAE-CCD8-4407-B778-7DA4FEF70E04}.Debug|Win32.Build.0 = Debug|Win32
-		{FB585FAE-CCD8-4407-B778-7DA4FEF70E04}.Release|Win32.ActiveCfg = Release|Win32
-		{FB585FAE-CCD8-4407-B778-7DA4FEF70E04}.Release|Win32.Build.0 = Release|Win32
 		{A915ACA1-C9A4-4965-A52C-0EA3E890737D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A915ACA1-C9A4-4965-A52C-0EA3E890737D}.Debug|Win32.Build.0 = Debug|Win32
 		{A915ACA1-C9A4-4965-A52C-0EA3E890737D}.Release|Win32.ActiveCfg = Release|Win32
