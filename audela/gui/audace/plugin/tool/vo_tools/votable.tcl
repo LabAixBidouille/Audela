@@ -913,11 +913,18 @@ proc ::votable::getFieldFromKey_IMG { key } {
 proc ::votable::getFieldFromKey_USNOA2 { key } {
    # Id et Nom du champ
    set field [list "$::votable::Field::ID USNOA2.${key}" "$::votable::Field::NAME $key"]
-   # Autres infos 
+   # Autres infos  ID ra_deg dec_deg sign qflag field magB magR
    switch $key {
-      ra -
-      dec {
-         if {[string equal -nocase $key "ra"]} {
+      ID {
+         set description "USNOA2 identifier"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"13\"" \
+                       "$::votable::Field::WIDTH \"13\""
+      }
+      ra_deg -
+      dec_deg {
+         if {[string equal -nocase $key "ra_deg"]} {
             set description "Astrometric J2000 right ascension"
          } else {
             set description "Astrometric J2000 declination"
@@ -928,26 +935,31 @@ proc ::votable::getFieldFromKey_USNOA2 { key } {
                        "$::votable::Field::PRECISION \"5\"" \
                        "$::votable::Field::UNIT \"deg\""
       }
-      poserr {
-         set description "Uncertainty of the celestial coordinates"
-         set ucd "stat.error;pos"
-         lappend field "$::votable::Field::UCD \"$ucd\"" \
-                       "$::votable::Field::DATATYPE \"float\"" \
-                       "$::votable::Field::WIDTH \"6\"" \
-                       "$::votable::Field::PRECISION \"2\"" \
-                       "$::votable::Field::UNIT \"arcsec\""
+      sign {
+         set description "Sign is 1 if this entry is correlated with an ACT star"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"2\"" \
+                       "$::votable::Field::UNIT \"-\""
       }
-      mag {
-         set description "Catalogue magnitude"
-         lappend field "$::votable::Field::UCD \"phot.mag\"" \
-                       "$::votable::Field::DATATYPE \"float\"" \
-                       "$::votable::Field::WIDTH \"8\"" \
-                       "$::votable::Field::PRECISION \"3\"" \
-                       "$::votable::Field::UNIT \"mag\""
+      qflag {
+         set description "Indicates that the magnitude(s) might be in error (0 if things looked OK)"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"3\"" \
+                       "$::votable::Field::UNIT \"-\""
       }
-      magerr {
-         set description "Uncertainty of the catalogue magnitude"
-         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+      field {
+         set description "Field on which this object was detected."
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"3\"" \
+                       "$::votable::Field::UNIT \"-\""
+      }
+      magB -
+      magR {
+         set description "[string range $key end end] magnitude"
+         lappend field "$::votable::Field::UCD \"phot.mag;em.opt.[string range $key end end]\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"3\"" \
