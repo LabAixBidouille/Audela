@@ -180,14 +180,97 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 /* cam::create quicka usb */
 {
-   FT_STATUS status;
-   int index;
+   FT_STATUS status,ftStatus;
+   int index,i;
+	char ss[256],s[2048];
+   #ifdef __linux__
+		DWORD pdwVID,pdwPID;
+   #endif
+	DWORD lpdwNumDevs,numDevs;
+	FT_DEVICE_LIST_INFO_NODE *devInfo;
+	FT_HANDLE ftHandleTemp; 
+	DWORD Flags; 
+	DWORD ID; 
+	DWORD Type; 
+	DWORD LocId; 
+	char SerialNumber[16]; 
+	char Description[64];
 
    // je recupere l'index de la quickaudine
+	strcpy(s,"");
    sscanf(cam->portname,"quickaudine%d",&index);
+   #ifdef __linux__
+		status=FT_GetVIDPID(&pdwVID,&pdwPID);
+		sprintf(ss,"{FT_GetVIDPID: status=%d pdwVID=%d pdwPID=%d} ",status,pdwVID,pdwPID);
+		strcat(s,ss);
+   #endif
+	status=FT_CreateDeviceInfoList(&lpdwNumDevs);
+	sprintf(ss,"{FT_CreateDeviceInfoList: status=%d lpdwNumDevs=%d} ",status,lpdwNumDevs);
+	strcat(s,ss);
+	//status=FT_GetDeviceInfoList(&pDest,&lpdwNumDevs);
+	//sprintf(ss,"{FT_GetDeviceInfoList: status=%p lpdwNumDevs=%d} ",&pDest,lpdwNumDevs);
+	//strcat(s,ss);
+	numDevs=lpdwNumDevs;
+	if (numDevs > 0) { 
+		// allocate storage for list based on numDevs 
+		devInfo = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numDevs); 
+		// get the device information list 
+		ftStatus = FT_GetDeviceInfoList(devInfo,&numDevs); 
+		sprintf(ss,"{FT_GetDeviceInfoList: status=%d numDevs=%d  ",ftStatus,numDevs);
+		strcat(s,ss);
+		if (ftStatus == FT_OK) { 
+			for (i = 0; i < (int)numDevs; i++) { 
+				sprintf(ss," {Dev=%d ",i); 
+				strcat(s,ss);
+				sprintf(ss," Flags=0x%x ",devInfo[i].Flags); 
+				strcat(s,ss);
+				sprintf(ss," Type=0x%x ",devInfo[i].Type); 
+				strcat(s,ss);
+				sprintf(ss," ID=0x%x ",devInfo[i].ID); 
+				strcat(s,ss);
+				sprintf(ss," LocId=0x%x ",devInfo[i].LocId); 
+				strcat(s,ss);
+				sprintf(ss," SerialNumber=%s ",devInfo[i].SerialNumber); 
+				strcat(s,ss);
+				sprintf(ss," Description=%s ",devInfo[i].Description); 
+				strcat(s,ss);
+				sprintf(ss," ftHandle=0x%x} ",devInfo[i].ftHandle); 
+				strcat(s,ss);
+			} 
+		} 
+		sprintf(ss,"} ");
+		strcat(s,ss);
+	}
+	if (numDevs > 0) { 
+		// get information for device 0 
+		ftStatus = FT_GetDeviceInfoDetail(0, &Flags, &Type, &ID, &LocId, SerialNumber, Description, &ftHandleTemp); 
+		sprintf(ss,"{FT_GetDeviceInfoDetail: ");
+		strcat(s,ss);
+		if (ftStatus == FT_OK) { 
+			sprintf(ss," {Dev=0:"); 
+			strcat(s,ss);
+			sprintf(ss," Flags=0x%x",Flags); 
+			strcat(s,ss);
+			sprintf(ss," Type=0x%x",Type);
+			strcat(s,ss);
+			sprintf(ss," ID=0x%x",ID); 
+			strcat(s,ss);
+			sprintf(ss," LocId=0x%x",LocId); 
+			strcat(s,ss);
+			sprintf(ss," SerialNumber=%s",SerialNumber); 
+			strcat(s,ss);
+			sprintf(ss," Description=%s",Description); 
+			strcat(s,ss);
+			sprintf(ss," ftHandle=0x%x} ",ftHandleTemp); 
+			strcat(s,ss);
+		} 
+		sprintf(ss,"} ");
+		strcat(s,ss);
+	}
+
    status = FT_Open(index,&ftHandle);
    if (status != FT_OK) {
-      sprintf(cam->msg, "Can't open FTDI device %s on port index=%d : Error number %ld", cam->portname, index, status);
+      sprintf(cam->msg, "Can't open FTDI device %s on port index=%d : Error number %ld. %s", cam->portname, index, status,s);
       return -1;
    }
 
