@@ -776,45 +776,6 @@ namespace eval gui_cata {
    }
 
 
-
-
-
-
-
-
-
-
-
-   proc ::gui_cata::affiche_current_image { } {
-
-      global bddconf
-
-      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-      set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
-      set file        [file join $bddconf(dirbase) $dirfilename $filename]
-
-      buf$::audace(bufNo) load $file
-      if {$::gui_cata::use_uncosmic} {
-         ::tools_cdl::myuncosmic $::audace(bufNo)
-      }
-      ::audace::autovisu $::audace(visuNo)
-
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::gui_cata::get_all_cata { } {
 
       cleanmark
@@ -861,11 +822,21 @@ namespace eval gui_cata {
 
 
 
+   proc ::gui_cata::affiche_current_image { } {
 
+      global bddconf
 
+      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+      set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
+      set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
+      buf$::audace(bufNo) load $file
+      if {$::gui_cata::use_uncosmic} {
+         ::tools_cdl::myuncosmic $::audace(bufNo)
+      }
+      ::audace::autovisu $::audace(visuNo)
 
-
+   }
 
 
 
@@ -893,7 +864,7 @@ namespace eval gui_cata {
       
       set listsources [::tools_cata::get_cata_xml $catafile]
       set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag_ss2 err_calib_mag_ss2}]
-      set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra dec poserr mag magerr }]
+      set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra_deg dec_deg 5.0 magR 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
       set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
@@ -959,7 +930,7 @@ namespace eval gui_cata {
          if {$::gui_cata::gui_img} {
             affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img 
          }
-            
+
          if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
          if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
          if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
@@ -986,12 +957,12 @@ namespace eval gui_cata {
 
    proc ::gui_cata::get_one_wcs { } {
 
-         set tabkey         [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-         set date           [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs" ] 1] ]
-         set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
-         set idbddimg       [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
-         set filename       [::bddimages_liste::lget $::tools_cata::current_image filename   ]
-         set dirfilename    [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+         set tabkey        [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set date          [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs" ] 1] ]
+         set bddimages_wcs [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
+         set idbddimg      [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+         set filename      [::bddimages_liste::lget $::tools_cata::current_image filename   ]
+         set dirfilename   [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
 
          set err [catch {::tools_cata::get_wcs} msg]
          
@@ -1000,9 +971,9 @@ namespace eval gui_cata {
             
             set ::tools_cata::img_list [lreplace $::tools_cata::img_list [expr $::tools_cata::id_current_image -1] [expr $::tools_cata::id_current_image-1] $newimg]
             
-            set idbddimg    [::bddimages_liste::lget $newimg idbddimg]
-            set tabkey      [::bddimages_liste::lget $newimg "tabkey"]
-            set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
+            set idbddimg      [::bddimages_liste::lget $newimg idbddimg]
+            set tabkey        [::bddimages_liste::lget $newimg "tabkey"]
+            set bddimages_wcs [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
 
             set ::gui_cata::color_wcs $::gui_cata::color_button_good
 
@@ -1959,7 +1930,7 @@ namespace eval gui_cata {
          
       }
       set ::tools_cata::current_listsources [list $fields $sources]
-      set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
+      set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
 
 # Modification de la liste
@@ -1977,15 +1948,15 @@ namespace eval gui_cata {
       set dec     [lindex $a 1]
       set radius  [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
 
-      #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra dec poserr mag magerr }]
-      #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources USNOA2 { ra dec poserr mag magerr }]
+      #set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
+      #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
 
       # 1ere identification sur l USNOA2
 
       #   gren_info "csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius\n"
       #   return
       #   set usnoa2 [csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius]
-      #   set usnoa2 [::tools_sources::set_common_fields $usnoa2 USNOA2 { ra dec poserr mag magerr }]
+      #   set usnoa2 [::tools_sources::set_common_fields $usnoa2 USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
       #   set log 0
       #   set ::tools_cata::current_listsources [ identification $::tools_cata::current_listsources IMG $usnoa2 USNOA2 30.0 -30.0 {} $log]
       #   gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
@@ -4132,7 +4103,7 @@ namespace eval gui_cata {
             #array set ::gui_cata::cataname               $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
             #set ::tools_cata::current_listsources        $::gui_cata::cata_list($::tools_cata::id_current_image)
             
-#             gren_info "::gui_cata::cataname =[array get ::::gui_cata::cataname]\n"
+            #gren_info "cataname = [array get cataname]\n"
             foreach {x y} [array get cataname] {
                #gren_info "getid=$x $y\n"
                set getid($y) $x
@@ -4151,7 +4122,10 @@ namespace eval gui_cata {
                set pr   [lindex $c 4]
                set pc   [lindex $c 5]
 
-               set idcata $getid($cata)
+               set err [catch {set idcata $getid($cata)} msg]
+               if {$err} {
+                  continue
+               }
                
 #               gren_info "$cata ($idcata) :: $name :: $ar $ac :: $pr $pc\n"
 

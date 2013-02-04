@@ -463,11 +463,24 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          gren_info "radius  = $radius\n"
       }
 
+      if {$::tools_cata::use_usnoa2} {
+         #gren_info "*** CMD: csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius\n"
+         set usnoa2 [csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius]
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $usnoa2]\n"
+         set usnoa2 [::manage_source::set_common_fields $usnoa2 USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
+         #::manage_source::imprim_3_sources $usnoa2
+         #gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources USNOA2CALIB $usnoa2 USNOA2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ ::manage_source::delete_catalog $listsources USNOA2CALIB ]
+         set ::tools_cata::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $listsources USNOA2]
+      }
+
       if {$::tools_cata::use_tycho2} {
          #gren_info "CMD: cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius\n"
          set tycho2 [cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
-         set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
+         set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5.0 VT e_VT }]
          #::manage_source::imprim_3_sources $tycho2
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
@@ -507,11 +520,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set dateiso [ mc_date2iso8601 $datejd ]
          set radius [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
-
          #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
          #set listsources [::tools_sources::set_common_fields_skybot $listsources]
-
          set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
          set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} 0 ] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
@@ -650,219 +661,182 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       global audace
       global bddconf
 
+      set img $::tools_cata::current_image
 
-         set img $::tools_cata::current_image
- 
-         set wcs_ok false
+      set wcs_ok false
 
-         # Infos sur l'image a traiter
-         set tabkey [::bddimages_liste::lget $img "tabkey"]
+      # Infos sur l'image a traiter
+      set tabkey [::bddimages_liste::lget $img "tabkey"]
 
-         set ra         $::tools_cata::ra       
-         set dec        $::tools_cata::dec      
-         set pixsize1   $::tools_cata::pixsize1 
-         set pixsize2   $::tools_cata::pixsize2 
-         set foclen     $::tools_cata::foclen   
-         set exposure   $::tools_cata::exposure 
+      set ra        $::tools_cata::ra       
+      set dec       $::tools_cata::dec      
+      set pixsize1  $::tools_cata::pixsize1 
+      set pixsize2  $::tools_cata::pixsize2 
+      set foclen    $::tools_cata::foclen   
+      set exposure  $::tools_cata::exposure 
 
-#         set ra          [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
-#         set dec         [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
-#         set pixsize1    [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
-#         set pixsize2    [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
-#         set foclen      [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
-#         set exposure    [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+      set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
+      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
+      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
+      set filename    [::bddimages_liste::lget $img filename   ]
+      set dirfilename [::bddimages_liste::lget $img dirfilename]
+      set idbddimg    [::bddimages_liste::lget $img idbddimg]
+      set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-         set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
-         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
-         set filename    [::bddimages_liste::lget $img filename   ]
-         set dirfilename [::bddimages_liste::lget $img dirfilename]
-         set idbddimg    [::bddimages_liste::lget $img idbddimg]
-         set file        [file join $bddconf(dirbase) $dirfilename $filename]
+      set xcent [expr $naxis1/2.0]
+      set ycent [expr $naxis2/2.0]
 
-         #gren_info "idbddimg    $idbddimg\n"
-         #gren_info "ra          $ra\n"
-         #gren_info "dec         $dec\n"
-         #gren_info "pixsize1    $pixsize1\n"
-         #gren_info "pixsize2    $pixsize2\n"
-         #gren_info "foclen      $foclen\n"
-         #gren_info "dateobs     $dateobs \n"
-         #gren_info "exposure    $exposure\n"
-         #gren_info "naxis1      $naxis1  \n"
-         #gren_info "naxis2      $naxis2  \n"
-         #gren_info "filename    $filename\n"
-         #gren_info "dirfilename $dirfilename\n"
-         #gren_info "file        $file\n"
+      if {$::tools_cata::log} {
+         gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"
+      }
 
-         set xcent [expr $naxis1/2.0]
-         set ycent [expr $naxis2/2.0]
-         #gren_info "xcent ycent = $xcent $ycent\n"
+      set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
 
-         #gren_info "****************************************************\n"
-         #gren_info "** Calibration de l image\n"
-         #gren_info "****************************************************\n"
-         #gren_info "param : $ra $dec $pixsize1 $pixsize2 $foclen\n"
-         #gren_info "catalog_usnoa2 : $::tools_cata::catalog_usnoa2\n"
-         #gren_info "DEBUT WCS ra dec : $ra  $dec \n"
-         #gren_info "CMD: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"
-
-         if {$::tools_cata::log} {gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
-         set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
-         if {$erreur} {
-            #gren_info "1 ERR NBSTARS=$nbstars ($msg)"
-            if {[info exists nbstars]} {
-               gren_info "existe"
-               if {[string is integer -strict $nbstars]} {
-                  return -code 1 "ERR NBSTARS=$nbstars ($msg)"
-               } else {
-                  return -code 1 "ERR = $erreur ($msg)"
-               }
+      if {$erreur} {
+         if {[info exists nbstars]} {
+            gren_info "existe"
+            if {[string is integer -strict $nbstars]} {
+               return -code 1 "ERR NBSTARS=$nbstars ($msg)"
             } else {
-               gren_info "Erreur interne de calibwcs, voir l erreur de la libtt"
                return -code 1 "ERR = $erreur ($msg)"
             }
+         } else {
+            gren_info "Erreur interne de calibwcs, voir l erreur de la libtt"
+            return -code 1 "ERR = $erreur ($msg)"
+         }
+      }
+
+      set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+      set ra  [lindex $a 0]
+      set dec [lindex $a 1]
+      if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
+
+      if {$::tools_cata::deuxpasses} {
+         if {$::tools_cata::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
+         if {$erreur} {
+            return -code 2 "ERR NBSTARS=$nbstars ($msg)"
          }
 
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
          set ra  [lindex $a 0]
          set dec [lindex $a 1]
-         if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
+         if {$::tools_cata::log} {
+            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+         }
+      }
 
+      gren_info "nbstars/limit  = $nbstars / $::tools_cata::limit_nbstars_accepted \n"
+
+      if { $::tools_cata::keep_radec==1 && $nbstars<$::tools_cata::limit_nbstars_accepted && [info exists ::tools_cata::ra_save] && [info exists ::tools_cata::dec_save] } {
+         set ra  $::tools_cata::ra_save
+         set dec $::tools_cata::dec_save
+         if {$::tools_cata::log} {gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
+         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
+         if {$erreur} {
+            return -code 3 "ERR NBSTARS=$nbstars ($msg)"
+         }
+         set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+         set ra  [lindex $a 0]
+         set dec [lindex $a 1]
+         if {$::tools_cata::log} {
+            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+         }
          if {$::tools_cata::deuxpasses} {
-            if {$::tools_cata::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
-            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
-            if {$erreur} {
-                  #gren_info "2 ERR NBSTARS=$nbstars ($msg)"
-               return -code 2 "ERR NBSTARS=$nbstars ($msg)"
-               }
-
-            set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-            set ra  [lindex $a 0]
-            set dec [lindex $a 1]
-            if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
+            if {$::tools_cata::log} {gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"
          }
-
-         gren_info "nbstars/limit  = $nbstars / $::tools_cata::limit_nbstars_accepted \n"
-         if { $::tools_cata::keep_radec==1 && $nbstars<$::tools_cata::limit_nbstars_accepted && [info exists ::tools_cata::ra_save] && [info exists ::tools_cata::dec_save] } {
-            set ra  $::tools_cata::ra_save
-            set dec $::tools_cata::dec_save
-            if {$::tools_cata::log} {gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
-            set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
-            if {$erreur} {
-#                  gren_info "3 ERR NBSTARS=$nbstars ($msg)"
-               return -code 3 "ERR NBSTARS=$nbstars ($msg)"
-               }
-            set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-            set ra  [lindex $a 0]
-            set dec [lindex $a 1]
-            if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
-#            gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
-
-            if {$::tools_cata::deuxpasses} {
-               if {$::tools_cata::log} {gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
-               set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
-               if {$erreur} {
-#                  gren_info "4 ERR NBSTARS=$nbstars ($msg)"
-                  return -code 4 "ERR NBSTARS=$nbstars ($msg)"
-                  }
-               set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-               set ra  [lindex $a 0]
-               set dec [lindex $a 1]
-            if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
-               gren_info "RETRY nbstars : $nbstars | ra : [mc_angle2hms $ra 360 zero 1 auto string] | dec : [mc_angle2dms $dec 90 zero 1 + string]\n"
-            }
+         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
+         if {$erreur} {
+            return -code 4 "ERR NBSTARS=$nbstars ($msg)"
          }
-
-         set ::tools_cata::nb_usnoa2 $nbstars
-         set ::tools_cata::current_listsources [get_ascii_txt]
-         set ::tools_cata::nb_img    [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources IMG   ]
-         set ::tools_cata::nb_ovni   [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources OVNI  ]
-         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
-
-         if {$nbstars > $::tools_cata::limit_nbstars_accepted} {
-             set wcs_ok true
+         set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+         set ra  [lindex $a 0]
+         set dec [lindex $a 1]
+         if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
+            gren_info "RETRY nbstars : $nbstars | ra : [mc_angle2hms $ra 360 zero 1 auto string] | dec : [mc_angle2dms $dec 90 zero 1 + string]\n"
          }
-          
+      }
+
+      set ::tools_cata::nb_usnoa2 $nbstars
+      set ::tools_cata::current_listsources [get_ascii_txt]
+      set ::tools_cata::nb_img  [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources IMG   ]
+      set ::tools_cata::nb_ovni [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources OVNI  ]
+
+      if {$nbstars > $::tools_cata::limit_nbstars_accepted} {
+         set wcs_ok true
+      }
+
 #   gren_info "Chargement de la liste des sources\n"
 #   set listsources [get_ascii_txt]
 #   gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
  
-         if {$wcs_ok} {
-              #gren_info "WCS_OK $wcs_ok\n"
+      if {$wcs_ok} {
+         set ::tools_cata::ra_save $ra 
+         set ::tools_cata::dec_save $dec
 
-             set ::tools_cata::ra_save $ra 
-             set ::tools_cata::dec_save $dec
-
-             set ident [bddimages_image_identification $idbddimg]
-             #gren_info "** ident = $ident $idbddimg\n"
-             set fileimg  [lindex $ident 1]
-             set filecata [lindex $ident 3]
-             if {$fileimg == -1} {
-                if {$erreur} {
-                   #gren_info "5 Fichier image inexistant ($idbddimg) \n"
-                   return -code 5 "Fichier image inexistant ($idbddimg) \n"
-                   }
-             }
-
-             # Efface les cles PV1_0 et PV2_0 car pas bon
-             if {$::tools_cata::delpv} {
-                set err [catch {buf$::audace(bufNo) delkwd PV1_0} msg]
-                set err [catch {buf$::audace(bufNo) delkwd PV2_0} msg]
-             }
-
-             # Modifie le champs BDI
-             set key [buf$::audace(bufNo) getkwd "BDDIMAGES WCS"]
-             set key [lreplace $key 1 1 "Y"]
-             buf$::audace(bufNo) setkwd $key
-
-             set fichtmpunzip [unzipedfilename $fileimg]
-             set filetmp      [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
-             set filefinal    [file join $::bddconf(dirinco) [file tail $fileimg]]
-
-             createdir_ifnot_exist $bddconf(dirtmp)
-             buf$::audace(bufNo) save $filetmp
-            lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
-            #set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
-
-
-             # efface l image dans la base et le disque
-             bddimages_image_delete_fromsql $ident
-             bddimages_image_delete_fromdisk $ident
-
-             #gren_info "av idbddimg : $idbddimg \n"
-             # insere l image et le cata dans la base filecata
-             set errnum [catch {set r [insertion_solo $filefinal]} msg ]
-             #catch {gren_info "$errnum : $msg : $r"}
-             if {$errnum==0} {
-                set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image idbddimg $r]
-             }
-
-             set errnum [catch {file delete -force $filetmp} msg ]
-
-             set errnum [catch {set list_keys [buf$::audace(bufNo) getkwds]} msg ]
-             set tabkey {}
-             foreach key $list_keys {
-                set garde "ok"
-                if {$key==""} {set garde "no"}
-                foreach rekey $tabkey {
-                   if {$key==$rekey} {set garde "no"}
-                }
-                if {$garde=="ok"} {
-                   lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
-                }
-             }
-
-             set result  [bddimages_entete_preminforecon $tabkey]
-             set err     [lindex $result 0]
-             set $tabkey [lindex $result 1]
-             set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image tabkey $tabkey]
-             set idbddimg   [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
-             #gren_info "fin idbddimg : $idbddimg \n"
-
-             return -code 0 "WCS OK"
+         set ident [bddimages_image_identification $idbddimg]
+         set fileimg  [lindex $ident 1]
+         set filecata [lindex $ident 3]
+         if {$fileimg == -1} {
+            if {$erreur} {
+               return -code 5 "Fichier image inexistant ($idbddimg) \n"
+            }
          }
-         
-         return -code 10 "Sources non identifiees"
+
+         # Efface les cles PV1_0 et PV2_0 car pas bon
+         if {$::tools_cata::delpv} {
+            set err [catch {buf$::audace(bufNo) delkwd PV1_0} msg]
+            set err [catch {buf$::audace(bufNo) delkwd PV2_0} msg]
+         }
+
+         # Modifie le champs BDI
+         set key [buf$::audace(bufNo) getkwd "BDDIMAGES WCS"]
+         set key [lreplace $key 1 1 "Y"]
+         buf$::audace(bufNo) setkwd $key
+
+         set fichtmpunzip [unzipedfilename $fileimg]
+         set filetmp      [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
+         set filefinal    [file join $::bddconf(dirinco) [file tail $fileimg]]
+
+         createdir_ifnot_exist $bddconf(dirtmp)
+         buf$::audace(bufNo) save $filetmp
+         lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+
+         # efface l image dans la base et le disque
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         # insere l image et le cata dans la base filecata
+         set errnum [catch {set r [insertion_solo $filefinal]} msg ]
+         if {$errnum==0} {
+            set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image idbddimg $r]
+         }
+
+         set errnum [catch {file delete -force $filetmp} msg ]
+
+         set errnum [catch {set list_keys [buf$::audace(bufNo) getkwds]} msg ]
+         set tabkey {}
+         foreach key $list_keys {
+            set garde "ok"
+            if {$key==""} {set garde "no"}
+            foreach rekey $tabkey {
+               if {$key==$rekey} {set garde "no"}
+            }
+            if {$garde=="ok"} {
+               lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+            }
+         }
+
+         set result  [bddimages_entete_preminforecon $tabkey]
+         set err     [lindex $result 0]
+         set $tabkey [lindex $result 1]
+         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image tabkey $tabkey]
+         set idbddimg   [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
+
+         return -code 0 "WCS OK"
+      }
+
+      return -code 10 "Sources non identifiees"
    }
 
 
