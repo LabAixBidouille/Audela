@@ -151,34 +151,35 @@ proc get_ascii_txt { } {
    set cmfields  [list ra dec poserr mag magerr]
    set allfields [list id flag xpos ypos instr_mag err_mag flux_sex err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex minor_axis_sex position_angle_sex fwhm_sex flag_sex]
 
-   set list_fields [list [list "IMG" $cmfields $allfields] [list "USNOA2" $cmfields {}]]
+   set list_fields [list [list "IMG" $cmfields $allfields] [list "USNOA2CALIB" $cmfields {}]]
+#   set list_fields [list [list "IMG" $cmfields $allfields]]
 
    set list_sources {}
    set chan [open $filenametmp r]
    set lineCount 0
    set littab "no"
    while {[gets $chan line] >= 0} {
-         incr lineCount
-         set zlist [split $line " "]
-         set xlist {}
-         foreach value $zlist {
+        incr lineCount
+        set zlist [split $line " "]
+        set xlist {}
+        foreach value $zlist {
             if {$value!={}} {
                set xlist [linsert $xlist end $value]
-               }
-            }
-         set row {}
-         set cmval [list [lindex $xlist 8] [lindex $xlist 9] 5.0 [lindex $xlist 10] [lindex $xlist 12] ] 
-         if {[lindex $xlist 1]==1} {
+            } 
+        }
+        set row {}
+        set cmval [list [lindex $xlist 8] [lindex $xlist 9] 5.0 [lindex $xlist 10] [lindex $xlist 12] ] 
+        if {[lindex $xlist 1]==1} {
             lappend row [list "IMG" $cmval $xlist ]
             lappend row [list "OVNI" $cmval {} ]
-            }
-         if {[lindex $xlist 1]==3} {
+        }
+        if {[lindex $xlist 1]==3} {
             lappend row [list "IMG" $cmval $xlist ]
-            lappend row [list "USNOA2" $cmval {} ]
-            }
-         if {[llength $row] > 0} {
+            lappend row [list "USNOA2CALIB" $cmval {} ]
+        }
+        if {[llength $row] > 0} {
             lappend list_sources $row
-            }
+        }
       }
 
    if {[catch {close $chan} err]} {

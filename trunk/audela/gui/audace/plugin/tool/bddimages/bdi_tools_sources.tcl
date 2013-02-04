@@ -262,6 +262,7 @@ namespace eval tools_sources {
 
       #gren_info "idlist $catalog= $idlist \n"
       if {[llength $idlist] != 5} {
+::console::affiche_erreur "listsources = $listsources \n"
           gren_info "erreur nom des champs ...\n"
           gren_info "IDLIST $idlist\n"
           gren_info "CATALOG $catalog\n"

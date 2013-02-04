@@ -151,44 +151,34 @@ namespace eval ::manage_source {
    #
    proc ::manage_source::delete_catalog { listsources catadem } {
 
-       set fields  [lindex $listsources 0]
-       set sources [lindex $listsources 1]
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
 
-       set newsources {}
-       foreach s $sources {
+      set cpt 0
+      set newsources {}
+      foreach s $sources {
           set news {}
           foreach cata $s {
              if {[lindex $cata 0] != $catadem} {
                lappend news $cata
+                incr cpt
              }
           }
           lappend newsources $news
-       }
+      }
 
-       set cpt 0
-       foreach s $newsources {
-          foreach cata $s {
-             if {[lindex $cata 0] != $catadem} {
-                incr cpt
-             }   
-          }
-       }
-
-       if {$cpt==0} {
+      if {$cpt!=0} {
           set newfields {}
           foreach f $fields { 
              if { [lindex $f 0] != $catadem } {
                lappend newfields $f 
              }
           }
-       } else {
+      } else {
           set newfields $fields
-       }
+      }
 
-
-
-
-   return [list $newfields $newsources]
+      return [list $newfields $newsources]
    }
 
 
@@ -302,8 +292,7 @@ namespace eval ::manage_source {
                set name "SKYBOT_[lindex [lindex $cata 2] 0]_$name"
                return $name
             }
-            
-            
+
             if {$mycata=="UCAC3"} {
                set id [lindex [lindex $cata 2] 0]
                return "UCAC3_$id"
@@ -335,11 +324,8 @@ namespace eval ::manage_source {
             }
 
             if {$mycata=="USNOA2"} {
-               set ra [lindex [lindex $cata 2] 0]
-               set dec [lindex [lindex $cata 2] 1]
-               set dec [regsub {\-} $dec "m"]
-               set dec [regsub {\+} $dec "p"]
-               return "USNOA2_${ra}_$dec"
+               set id [lindex [lindex $cata 2] 0]
+               return "USNOA2_${id}"
             }
             if {$mycata=="TYCHO2"} {
                set id1 [lindex [lindex $cata 2] 1]
@@ -397,6 +383,13 @@ namespace eval ::manage_source {
          }
       }
 
+      set cmfields [list ra dec poserr mag magerr]
+      set newfields {}
+      foreach cata $fields {
+         set cata [lreplace $cata 1 1 $cmfields]
+         lappend newfields $cata
+      }
+      
       #gren_info "idlist = $idlist \n"
       if {[llength $idlist]!=5} {
           gren_info "erreur nom des champs\n"
@@ -486,7 +479,7 @@ namespace eval ::manage_source {
 
       #gren_info "fin\n"
       
-      return  [list $fields $sources]
+      return [list $newfields $sources]
 
    }
 
