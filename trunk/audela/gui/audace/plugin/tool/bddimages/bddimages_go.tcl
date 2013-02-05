@@ -137,13 +137,21 @@ proc ::bddimages::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdicalendar.tcl ]\""
 
-   # Nouvelle facon de nomage des routines (separation gui et ligne de commande)
+   # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
+
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_gui.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_tools.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_gestion_gui.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_creation_gui.tcl ]\""
+
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_popup.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_ihm.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_tools.tcl ]\""
 
 
+   # Anciennes facon de nommage des routines
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages gui_astrometry.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages tools_astrometry.tcl ]\""

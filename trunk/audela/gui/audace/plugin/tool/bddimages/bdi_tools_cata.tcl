@@ -194,6 +194,23 @@ namespace eval tools_cata {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::tools_cata::get_catafilename { img type } {
 
       global bddconf
@@ -897,6 +914,203 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       
       return $result
    }
+
+
+
+# Anciennement ::gui_cata::get_img_null
+# return une ligne de champ nul pour la creation d'une entree IMG dans le catalogue
+   proc ::tools_cata::get_img_null { } {
+    
+      return [list "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" ]
+   }
+
+
+# Anciennement ::gui_cata::is_astrometric_catalog
+# renvoit le nom d'un catalogue consideré comme astrometrique
+   proc ::tools_cata::is_astrometric_catalog { c } {
+
+      return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2] $c] + 1]
+   }
+
+
+# Anciennement ::gui_cata::is_photometric_catalog 
+# renvoit le nom d'un catalogue consideré comme photometrique
+   proc ::tools_cata::is_photometric_catalog { c } {
+
+      return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2] $c] + 1]
+   }
+
+
+
+
+
+
+
+
+
+
+
+# Anciennement ::gui_cata::push_img_list
+
+   proc ::tools_cata::push_img_list {  } {
+      set ::tools_cata::img_list_sav         $::tools_cata::img_list
+      set ::tools_cata::current_image_sav    $::tools_cata::current_image
+      set ::tools_cata::id_current_image_sav $::tools_cata::id_current_image
+      set ::tools_cata::create_cata_sav      $::tools_cata::create_cata
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Anciennement ::gui_cata::pop_img_list
+
+   proc ::tools_cata::pop_img_list {  } {
+      set ::tools_cata::img_list         $::tools_cata::img_list_sav
+      set ::tools_cata::current_image    $::tools_cata::current_image_sav
+      set ::tools_cata::id_current_image $::tools_cata::id_current_image_sav
+      set ::tools_cata::create_cata      $::tools_cata::create_cata_sav
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Anciennement ::gui_cata::current_listsources_to_tklist
+
+
+
+   proc ::tools_cata::current_listsources_to_tklist { } {
+
+      set listsources $::tools_cata::current_listsources
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+
+      set nbcata  [llength $fields]
+
+      catch {
+         unset ::gui_cata::cataname
+         unset ::gui_cata::cataid
+      }
+
+      set commonfields ""
+      set idcata 0
+      set list_id ""
+      foreach f $fields {
+         incr idcata
+         set c [lindex $f 0]
+         set ::gui_cata::cataname($idcata) $c
+         set ::gui_cata::cataid($c) $idcata
+         if {$c=="ASTROID"} {
+            set idcata_astroid $idcata
+            set list_id [linsert $list_id 0 $idcata]
+         } else {
+            set list_id [linsert $list_id end $idcata]
+         }
+         if {$c=="IMG"} {
+            foreach cc [lindex $f 1] {
+               lappend commonfields $cc
+            }
+         }
+      }
+      
+      foreach idcata $list_id {
+
+         set ::gui_cata::tklist($idcata) ""
+         set ::gui_cata::tklist_list_of_columns($idcata) [list  \
+                                    [list "bdi_idc_lock"      "Id"] \
+                                    [list "astrom_reference"  "AR"] \
+                                    [list "astrom_catalog"    "AC"] \
+                                    [list "photom_reference"  "PR"] \
+                                    [list "photom_catalog"    "PC"] \
+                                    ]
+         foreach cc $commonfields {
+            lappend ::gui_cata::tklist_list_of_columns($idcata) [list $cc $cc]
+         }
+
+         set otherfields ""
+         foreach f $fields {
+            if {[lindex $f 0]==$::gui_cata::cataname($idcata)} {
+               foreach cc [lindex $f 2] {
+                  lappend ::gui_cata::tklist_list_of_columns($idcata) [list $cc $cc]
+                  lappend otherfields $cc
+                }
+            }
+         }
+      }
+         
+      #gren_info "m list_of_columns = $list_of_columns \n"
+      #gren_info "$::gui_cata::cataname($idcata) => fields : $otherfields\n"
+  
+      set cpts 0
+
+      foreach s $sources {
+
+         incr cpts
+
+         set ar "-"
+         set ac "-"
+         set pr "-"
+         set pc "-"
+
+         set x  [lsearch -index 0 $s "ASTROID"]
+         if {$x>=0} {
+            set b  [lindex [lindex $s $x] 2]           
+            set ar [lindex $b 25]
+            set ac [lindex $b 27]
+            set pr [lindex $b 26]
+            set pc [lindex $b 28]   
+            #gren_info "AR = $ar $ac $pr $pc\n"
+         }
+
+         foreach cata $s {
+            if {![info exists ::gui_cata::cataid([lindex $cata 0])]} { continue }
+            set idcata $::gui_cata::cataid([lindex $cata 0])
+            set line ""
+            # ID
+            lappend line $cpts
+            # valeur des Flag ASTROID
+            lappend line $ar
+            lappend line $ac
+            lappend line $pr
+            lappend line $pc
+            # valeur des common
+            foreach field [lindex $cata 1] {
+               lappend line $field
+            }
+            # valeur des other field
+            foreach field [lindex $cata 2] {
+               lappend line $field
+            }
+            lappend ::gui_cata::tklist($idcata) $line
+         }
+
+
+      }
+
+
+   }
+
+
+
 
 
 

@@ -234,7 +234,7 @@ namespace eval gui_astrometry {
       if {$::gui_astrometry::state_gestion == 0} {
          catch {destroy .gestion_cata}
          gren_info "Chargement des fichiers XML\n"
-         ::gui_cata::gestion_cata $::tools_cata::img_list
+         ::cata_gestion_gui::go $::tools_cata::img_list
          set ::gui_astrometry::state_gestion 1
       }
       if {[info exists ::gui_cata::state_gestion] && $::gui_cata::state_gestion == 1} {
@@ -243,7 +243,7 @@ namespace eval gui_astrometry {
       } else {
          catch {destroy .gestion_cata}
          gren_info "Chargement des fichiers XML\n"
-         ::gui_cata::gestion_cata $::tools_cata::img_list
+         ::cata_gestion_gui::go $::tools_cata::img_list
       }
 
       focus .astrometry
