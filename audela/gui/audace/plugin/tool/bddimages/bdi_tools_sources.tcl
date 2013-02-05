@@ -262,15 +262,14 @@ namespace eval tools_sources {
 
       #gren_info "idlist $catalog= $idlist \n"
       if {[llength $idlist] != 5} {
-::console::affiche_erreur "listsources = $listsources \n"
-          gren_info "erreur nom des champs ...\n"
-          gren_info "IDLIST $idlist\n"
-          gren_info "CATALOG $catalog\n"
-          gren_info "FIELDLIST demande = $fieldlist\n"
-          gren_info "cst = $cst\n"
-          gren_info "FIELDLIST existe = $cols\n"
-          gren_info "FIELDLIST existe = $cols\n"
-          gren_info "CATA = $cata\n"
+          #::console::affiche_erreur "listsources = $listsources \n"
+          ::console::affiche_erreur "erreur nom des champs ...\n"
+          ::console::affiche_erreur "IDLIST $idlist\n"
+          ::console::affiche_erreur "CATALOG $catalog\n"
+          ::console::affiche_erreur "FIELDLIST demande = $fieldlist\n"
+          ::console::affiche_erreur "cst = $cst\n"
+          ::console::affiche_erreur "FIELDLIST existe = $cols\n"
+          ::console::affiche_erreur "CATA = $cata\n"
           
           return $listsources
       }
