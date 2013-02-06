@@ -10,7 +10,7 @@
 # proc        : name2coord { }
 # Description : Resolveur de noms et retourne les coordonnees J2000.0
 # Auteur      : Alain KLOTZ
-# Update      : 01 September 2009
+# Update      : 06 February 2013
 #
 # ------------------------------------------------------------------------------------
 
@@ -37,6 +37,19 @@ proc name2coord { args } {
       }
    }
    set found 0
+   # --- special names
+   if {$found==0} {
+      set name0 [string tolower $name0]
+      set ra ""
+      set dec ""
+      if {$name0=="crab"} { set ra 05h42m38.56s ; set dec +22d01m19.7s}
+      if {$name0=="dztau"} { set ra 05h34m31.94s ; set dec +22h00m52.2s}
+      if {$ra!=""} {
+         set ra  [string trim [mc_angle2hms $ra 360 zero 2 auto string]]
+         set dec [string trim [mc_angle2dms $dec 90 zero 1 + string]]
+         set found 1
+      }      
+   }
    # --- star names
    if {$found==0} {
       set f [open [file join $audace(rep_gui) audace catalogues catagoto etoiles_brillantes.txt] r]
