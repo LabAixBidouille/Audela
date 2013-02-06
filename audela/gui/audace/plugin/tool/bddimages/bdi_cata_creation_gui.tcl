@@ -41,6 +41,14 @@ namespace eval cata_creation_gui {
 #/srv/astrodata/Catalog/UCAC3/
 #/srv/astrodata/Catalog/NOMAD1/
 
+      # Affichage des ronds dans l image
+      ::gui_cata::inittoconf
+
+      # Mesure des PSF
+      ::psf_tools::inittoconf
+      
+
+
       # Check button Use
       if {! [info exists ::tools_cata::use_usnoa2] } {
          if {[info exists conf(astrometry,cata,use_usnoa2)]} {
@@ -85,57 +93,6 @@ namespace eval cata_creation_gui {
          }
       }
 
-      # Check button GUI
-
-      if {! [info exists ::gui_cata::gui_img] } {
-         if {[info exists conf(astrometry,cata,gui_img)]} {
-            set ::gui_cata::gui_img $conf(astrometry,cata,gui_img)
-         } else {
-            set ::gui_cata::gui_img 1
-         }
-      }
-      if {! [info exists ::gui_cata::gui_usnoa2] } {
-         if {[info exists conf(astrometry,cata,gui_usnoa2)]} {
-            set ::gui_cata::gui_usnoa2 $conf(astrometry,cata,gui_usnoa2)
-         } else {
-            set ::gui_cata::gui_usnoa2 1
-         }
-      }
-      if {! [info exists ::gui_cata::gui_ucac2] } {
-         if {[info exists conf(astrometry,cata,gui_ucac2)]} {
-            set ::gui_cata::gui_ucac2 $conf(astrometry,cata,gui_ucac2)
-         } else {
-            set ::gui_cata::gui_ucac2 0
-         }
-      }
-      if {! [info exists ::gui_cata::gui_ucac3] } {
-         if {[info exists conf(astrometry,cata,gui_ucac3)]} {
-            set ::gui_cata::gui_ucac3 $conf(astrometry,cata,gui_ucac3)
-         } else {
-            set ::gui_cata::gui_ucac3 0
-         }
-      }
-      if {! [info exists ::gui_cata::gui_tycho2] } {
-         if {[info exists conf(astrometry,cata,gui_tycho2)]} {
-            set ::gui_cata::gui_tycho2 $conf(astrometry,cata,gui_tycho2)
-         } else {
-            set ::gui_cata::gui_tycho2 0
-         }
-      }
-      if {! [info exists ::gui_cata::gui_nomad1] } {
-         if {[info exists conf(astrometry,cata,gui_nomad1)]} {
-            set ::gui_cata::gui_nomad1 $conf(astrometry,cata,gui_nomad1)
-         } else {
-            set ::gui_cata::gui_nomad1 0
-         }
-      }
-      if {! [info exists ::gui_cata::gui_skybot] } {
-         if {[info exists conf(astrometry,cata,gui_skybot)]} {
-            set ::gui_cata::gui_skybot $conf(astrometry,cata,gui_skybot)
-         } else {
-            set ::gui_cata::gui_skybot 0
-         }
-      }
 
       # Uncosmic or not
       if {! [info exists ::gui_cata::use_uncosmic] } {
@@ -197,63 +154,6 @@ namespace eval cata_creation_gui {
          }
       }
 
-      # Taille des ronds
-      if {! [info exists ::gui_cata::size_img] } {
-         if {[info exists conf(astrometry,cata,size_img)]} {
-            set ::gui_cata::size_img $conf(astrometry,cata,size_img)
-         } else {
-            set ::gui_cata::size_img 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_usnoa2] } {
-         if {[info exists conf(astrometry,cata,size_usnoa2)]} {
-            set ::gui_cata::size_usnoa2 $conf(astrometry,cata,size_usnoa2)
-         } else {
-            set ::gui_cata::size_usnoa2 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_ucac2] } {
-         if {[info exists conf(astrometry,cata,size_ucac2)]} {
-            set ::gui_cata::size_ucac2 $conf(astrometry,cata,size_ucac2)
-         } else {
-            set ::gui_cata::size_ucac2 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_ucac3] } {
-         if {[info exists conf(astrometry,cata,size_ucac3)]} {
-            set ::gui_cata::size_ucac3 $conf(astrometry,cata,size_ucac3)
-         } else {
-            set ::gui_cata::size_ucac3 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_nomad1] } {
-         if {[info exists conf(astrometry,cata,size_nomad1)]} {
-            set ::gui_cata::size_nomad1 $conf(astrometry,cata,size_nomad1)
-         } else {
-            set ::gui_cata::size_nomad1 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_tycho2] } {
-         if {[info exists conf(astrometry,cata,size_tycho2)]} {
-            set ::gui_cata::size_tycho2 $conf(astrometry,cata,size_tycho2)
-         } else {
-            set ::gui_cata::size_tycho2 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_skybot] } {
-         if {[info exists conf(astrometry,cata,size_skybot)]} {
-            set ::gui_cata::size_skybot $conf(astrometry,cata,size_skybot)
-         } else {
-            set ::gui_cata::size_skybot 1
-         }
-      }
-      if {! [info exists ::gui_cata::size_ovni] } {
-         if {[info exists conf(astrometry,cata,size_ovni)]} {
-            set ::gui_cata::size_ovni $conf(astrometry,cata,size_ovni)
-         } else {
-            set ::gui_cata::size_ovni 1
-         }
-      }
 
       # Autres utilitaires
       if {! [info exists ::tools_cata::keep_radec] } {
@@ -359,36 +259,7 @@ namespace eval cata_creation_gui {
          }
       }
 
-      # Astroid
-      if {! [info exists ::tools_cata::use_astroid] } {
-         if {[info exists conf(astrometry,cata,astroid,create)]} {
-            set ::tools_cata::use_astroid $conf(astrometry,cata,astroid,create)
-         } else {
-            set ::tools_cata::use_astroid 0
-         }
-      }
-      if {! [info exists ::tools_cata::astroid_saturation] } {
-         if {[info exists conf(astrometry,cata,astroid,saturation)]} {
-            set ::tools_cata::astroid_saturation $conf(astrometry,cata,astroid,saturation)
-         } else {
-            set ::tools_cata::astroid_saturation 50000
-         }
-      }
-      if {! [info exists ::tools_cata::astroid_delta] } {
-         if {[info exists conf(astrometry,cata,astroid,delta)]} {
-            set ::tools_cata::astroid_delta $conf(astrometry,cata,astroid,delta)
-         } else {
-            set ::tools_cata::astroid_delta 15
-         }
-      }
-      if {! [info exists ::tools_cata::astroid_threshold] } {
-         if {[info exists conf(astrometry,cata,astroid,threshold)]} {
-            set ::tools_cata::astroid_threshold $conf(astrometry,cata,astroid,threshold)
-         } else {
-            set ::tools_cata::astroid_threshold 5
-         }
-      }
-      
+
 
    }
 
@@ -473,7 +344,6 @@ namespace eval cata_creation_gui {
 
 
 
-
 # Anciennement ::gui_cata::fermer
 
    proc ::cata_creation_gui::fermer { } {
@@ -482,7 +352,10 @@ namespace eval cata_creation_gui {
       global action_label
 
 
-
+      # Affichage des ronds dans l image
+      ::gui_cata::closetoconf
+      # Mesure des PSF
+      ::psf_tools::closetoconf
 
       # Repertoires 
       set conf(astrometry,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
@@ -499,29 +372,10 @@ namespace eval cata_creation_gui {
       set conf(astrometry,cata,use_nomad1) $::tools_cata::use_nomad1
       set conf(astrometry,cata,use_skybot) $::tools_cata::use_skybot
             
-      # Check button GUI
-      set conf(astrometry,cata,gui_img)    $::gui_cata::gui_img
-      set conf(astrometry,cata,gui_usnoa2) $::gui_cata::gui_usnoa2
-      set conf(astrometry,cata,gui_ucac2)  $::gui_cata::gui_ucac2
-      set conf(astrometry,cata,gui_ucac3)  $::gui_cata::gui_ucac3
-      set conf(astrometry,cata,gui_tycho2) $::gui_cata::gui_tycho2
-      set conf(astrometry,cata,gui_nomad1) $::gui_cata::gui_nomad1
-      set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
-      
       # Uncosmic or not!
       set conf(astrometry,cata,use_uncosmic) $::gui_cata::use_uncosmic
       set conf(astrometry,cata,uncosm_param1) $::tools_cdl::uncosm_param1
       set conf(astrometry,cata,uncosm_param2) $::tools_cdl::uncosm_param2
-
-      # Taille des ronds
-      set conf(astrometry,cata,size_img)    $::gui_cata::size_img
-      set conf(astrometry,cata,size_usnoa2) $::gui_cata::size_usnoa2
-      set conf(astrometry,cata,size_ucac2)  $::gui_cata::size_ucac2
-      set conf(astrometry,cata,size_ucac3)  $::gui_cata::size_ucac3
-      set conf(astrometry,cata,size_nomad1) $::gui_cata::size_nomad1
-      set conf(astrometry,cata,size_tycho2) $::gui_cata::size_tycho2
-      set conf(astrometry,cata,size_skybot) $::gui_cata::size_skybot
-      set conf(astrometry,cata,size_ovni)   $::gui_cata::size_ovni
 
       # Autres utilitaires
       set conf(astrometry,cata,keep_radec)              $::tools_cata::keep_radec
@@ -536,11 +390,6 @@ namespace eval cata_creation_gui {
       set conf(astrometry,cata,treshold_ident_pos_ast)  $::tools_cata::treshold_ident_pos_ast
       set conf(astrometry,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
 
-      # Conf cata Astroid
-      set conf(astrometry,cata,astroid,create)     $::tools_cata::use_astroid
-      set conf(astrometry,cata,astroid,saturation) $::tools_cata::astroid_saturation
-      set conf(astrometry,cata,astroid,delta)      $::tools_cata::astroid_delta
-      set conf(astrometry,cata,astroid,threshold)  $::tools_cata::astroid_threshold
 
       destroy $::cata_creation_gui::fen
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -1761,7 +1610,7 @@ namespace eval cata_creation_gui {
       set ::tools_astrometry::reference ""
 
       set sources {}
-      set fieldimgshort [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [list "x1" "y2" "xsm" "ysm"] ]
+      set fieldimg [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [::tools_cata::get_img_fields] ]
 
       # Liste des etoiles pointees a la mano
       gren_info "     Preparation des sources\n"
@@ -1773,19 +1622,21 @@ namespace eval cata_creation_gui {
             set x [split $::gui_cata::man_ad_star($i) " "]
             set ra [lindex $x 0]
             set dec [lindex $x 1]
-            lappend sources [list [list "IMG" [list $ra $dec 0 0 0] [list $ra $dec $xsm $ysm]] ]
+            set b [::tools_cata::get_img_null]
+            set b [lreplace $b 2 3 $xsm $ysm]
+            set b [lreplace $b 8 9 $ra $dec]
+            lappend sources [list [list "IMG" [list $ra $dec 0 0 0] $b ] ]
          }
       }
-      set listsources [list [list $fieldimgshort] $sources ]
+      set fields  [list $fieldimg]
+      set listsources [list $fields $sources ]
       #gren_info "listsources : $listsources\n"
       
-      set fields  [lindex $listsources 0]
-      set sources [lindex $listsources 1]
       #gren_info "fields : $fields\n"
       #gren_info "sources : $sources\n"
       
       gren_info "     Mesure des PSF\n"
-      set listsources [::analyse_source::psf $listsources $::tools_astrometry::treshold $::tools_astrometry::delta]
+      ::psf_gui::psf_listsources_no_auto listsources $::tools_astrometry::treshold $::tools_astrometry::delta
       #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
@@ -1804,8 +1655,33 @@ namespace eval cata_creation_gui {
       gren_info "     Creation des fichiers et lancement de Priam\n"
       set ::tools_astrometry::reference ""
 
-      set err [catch {::priam::create_file_oldformat "new" 1 \
-                 $::tools_cata::current_image "" "IMG" } msg ]
+      # Nouvel appel
+      # ::priam::create_file_oldformat  tag nb sent_img sent_list_source
+      # ::priam::create_file_oldformat $tag $::tools_cata::nb_img_list current_image ::gui_cata::cata_list($id_current_image)
+      # ::priam::create_file_oldformat "new" 1 ::tools_cata::current_image listsources
+
+      #set err [catch {::priam::create_file_oldformat "new" 1 $::tools_cata::current_image "" "IMG" } msg ]
+      gren_info "**listsources : $listsources\n"
+      set id 0
+      set ls [lindex $listsources 1]
+      foreach s $ls {
+         set x  [lsearch -index 0 $s "ASTROID"]
+         if {$x>=0} {
+            set a [lindex $s $x]
+            set b [lindex $a 2]
+            set b [lreplace $b 25 25 "R"]
+            set b [lreplace $b 27 27 "IMG"]
+            set a [lreplace $a 2 2 $b] 
+            set s [lreplace $s $x $x $a]
+            set ls [lreplace $ls $id $id $s]
+         }
+         incr id
+      }
+      set listsources [lreplace $listsources 1 1 $ls]
+      gren_info "**listsources : $listsources\n"
+
+      set err [catch {::priam::create_file_oldformat "new" 1 ::tools_cata::current_image listsources } msg ]
+
       if {$err} {
          ::console::affiche_erreur "WCS Impossible :($err) $msg \n"
          set ::gui_cata::color_wcs $::gui_cata::color_button_bad
@@ -1813,12 +1689,26 @@ namespace eval cata_creation_gui {
          ::tools_cata::pop_img_list
          return
       }
-      
+
       #gren_info "current_image : $::tools_cata::current_image\n"
 
       set ::tools_cata::img_list [list $::tools_cata::current_image]
 
-      set err [catch {::tools_astrometry::extract_priam_result [::tools_astrometry::launch_priam] } msg ]
+
+      # Nouvel appel
+      # set ::tools_astrometry::last_results_file [::priam::launch_priam]
+      # gren_info "new file : <$::tools_astrometry::last_results_file>\n"
+      # ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
+
+
+      set err [catch {
+
+          set ::tools_astrometry::last_results_file [::priam::launch_priam]
+          gren_info "new file : <$::tools_astrometry::last_results_file>\n"
+          ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
+      
+      } msg ]
+      
       if {$err} {
          ::console::affiche_erreur "WCS Impossible :($err)  $msg \n"
          set ::gui_cata::color_wcs $::gui_cata::color_button_bad
@@ -1827,18 +1717,8 @@ namespace eval cata_creation_gui {
          return
       }
 
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-         #gren_info "current_image : $::tools_cata::current_image\n"
-
-         if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
-            ::console::affiche_erreur "WCS Impossible :(4) listesources n existe pas dans l image courante \n"
-            ::tools_cata::pop_img_list
-            return
-         } 
-
-         set ::tools_cata::current_listsources [::bddimages_liste::lget $::tools_cata::current_image "listsources"]
-         #::manage_source::imprim_3_sources $::tools_cata::current_listsources
-      }
+      set ::tools_cata::current_listsources $::gui_cata::cata_list(1)
+      ::manage_source::imprim_3_sources $::tools_cata::current_listsources
 
       #gren_info "current_image : $::tools_cata::current_image\n"
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
@@ -2345,15 +2225,35 @@ namespace eval cata_creation_gui {
          return
       }
       set l [::manage_source::extract_sources_by_array $rect $::tools_cata::current_listsources]
-      ::manage_source::imprim_3_sources $l
+      ::manage_source::imprim_all_sources $l
    }
 
 
+   proc ::cata_creation_gui::develop { tag } {
 
+      if {$tag == 1 } {
 
+         set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+         if {$err>0 || $rect ==""} {
+            tk_messageBox -message "Veuillez selectionner un carre dans l'image" -type ok
+            return
+         }
+         set l [::manage_source::extract_sources_by_array $rect $::tools_cata::current_listsources]
+         ::manage_source::imprim_all_sources $l
+         return
+      }
 
+      if {$tag == 2 } {
+         ::manage_source::imprim_all_sources $::tools_cata::current_listsources
+         return
+      }
 
+      if {$tag == 3 } {
+         ::manage_source::imprim_3_sources $::tools_cata::current_listsources
+         return
+      }
 
+   }
 
 
 
@@ -2416,10 +2316,40 @@ namespace eval cata_creation_gui {
 
 
 
+   proc ::cata_creation_gui::cata_psf { } {
+   
+      set psf $::cata_creation_gui::fen.frm_creation_cata.onglets.nb.f6.psf
+      gren_info "use_psf = $::psf_tools::use_psf \n"
+      if {$::psf_tools::use_psf} {
+         gren_info "pass\n"
+         $psf.opts.saturation.val configure -state normal
+         $psf.opts.delta.val      configure -state normal
+         $psf.methglobale.check   configure -state normal
+      } else {
+         $psf.opts.saturation.val configure -state disabled
+         $psf.opts.delta.val      configure -state disabled
+         $psf.methglobale.check   configure -state disabled
+      }
+   
+   }
 
 
+   proc ::cata_creation_gui::psf_auto { } {
 
-
+      set psf $::cata_creation_gui::fen.frm_creation_cata.onglets.nb.f6.psf
+      gren_info "use_global = $::psf_tools::use_global \n"
+      if {$::psf_tools::use_global} {
+         gren_info "pass\n"
+         $psf.opts2.threshold.val   configure -state normal
+         $psf.opts2.limitradius.val configure -state normal
+         $psf.opts.delta.val        configure -state disabled
+      } else {
+         $psf.opts2.threshold.val   configure -state disabled
+         $psf.opts2.limitradius.val configure -state disabled
+         $psf.opts.delta.val        configure -state normal
+      }
+   
+   }
 
 
 
@@ -2551,7 +2481,7 @@ namespace eval cata_creation_gui {
             $onglets.nb add $f3 -text "Entete"
             $onglets.nb add $f4 -text "Couleurs"
             $onglets.nb add $f5 -text "Sextractor"
-            $onglets.nb add $f6 -text "Astroid"
+            $onglets.nb add $f6 -text "PSF"
             $onglets.nb add $f7 -text "Interop"
             $onglets.nb add $f8 -text "Manuel"
             $onglets.nb add $f9 -text "Develop"
@@ -2821,6 +2751,7 @@ namespace eval cata_creation_gui {
                 pack $img.color -side left -anchor e -expand 0 
                 spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_img -command "::gui_cata::affiche_cata" -width 3
                 pack  $img.radius -in $img -side left -anchor w
+                $img.radius set $::gui_cata::size_img_sav
 
            #--- Cree un frame pour afficher USNOA2
            set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
@@ -2838,6 +2769,7 @@ namespace eval cata_creation_gui {
                 pack $usnoa2.color -side left -anchor e -expand 0 
                 spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_usnoa2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
+                $usnoa2.radius set $::gui_cata::size_usnoa2_sav
 
            #--- Cree un frame pour afficher UCAC2
            set ucac2 [frame $count.ucac2 -borderwidth 0 -cursor arrow -relief groove]
@@ -2855,6 +2787,7 @@ namespace eval cata_creation_gui {
                 pack $ucac2.color -side left -anchor e -expand 0 
                 spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac2.radius -in $ucac2 -side left -anchor w
+                $ucac2.radius set $::gui_cata::size_ucac2_sav
 
            #--- Cree un frame pour afficher UCAC3
            set ucac3 [frame $count.ucac3 -borderwidth 0 -cursor arrow -relief groove]
@@ -2872,6 +2805,7 @@ namespace eval cata_creation_gui {
                 pack $ucac3.color -side left -anchor e -expand 0 
                 spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
+                $ucac3.radius set $::gui_cata::size_ucac3_sav
 
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
@@ -2889,6 +2823,7 @@ namespace eval cata_creation_gui {
                 pack $tycho2.color -side left -anchor e -expand 0 
                 spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_tycho2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $tycho2.radius -in $tycho2 -side left -anchor w
+                $tycho2.radius set $::gui_cata::size_tycho2_sav
 
            #--- Cree un frame pour afficher NOMAD1
            set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
@@ -2906,6 +2841,7 @@ namespace eval cata_creation_gui {
                 pack $nomad1.color -side left -anchor e -expand 0 
                 spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
+                $nomad1.radius set $::gui_cata::size_nomad1_sav
 
            #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
@@ -2923,6 +2859,7 @@ namespace eval cata_creation_gui {
                 pack $skybot.color -side left -anchor e -expand 0 
                 spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
+                $skybot.radius set $::gui_cata::size_skybot_sav
 
         #--- Cree un frame pour la conf Sextractor
         set confsex [frame $f5.confsex -borderwidth 0 -cursor arrow -relief groove]
@@ -2947,27 +2884,27 @@ namespace eval cata_creation_gui {
 
                 ::cata_creation_gui::get_confsex
 
-        #--- Cree un frame pour la conf Astroid
-        set astroid [frame $f6.confsex -borderwidth 0 -cursor arrow -relief groove]
-        pack $astroid -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        #--- Cree un frame pour la conf PSF
+        set psf [frame $f6.psf -borderwidth 0 -cursor arrow -relief groove]
+        pack $psf -in $f6 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-               #--- Creation du cata Astroid
-               set creer [frame $astroid.creer -borderwidth 1 -cursor arrow -relief groove]
-               pack $creer -in $astroid -side top -anchor w -expand 0 -fill x -pady 5
-                  checkbutton $creer.check -highlightthickness 0 -text " Creer le cata Astroid" \
-                        -variable ::tools_cata::use_astroid -state normal
+               #--- Creation du cata psf
+               set creer [frame $psf.creer -borderwidth 1 -cursor arrow -relief groove]
+               pack $creer -in $psf -side top -anchor w -expand 0 -fill x -pady 5
+                  checkbutton $creer.check -highlightthickness 0 -text " Creer le cata psf" \
+                        -variable ::psf_tools::use_psf -state normal -command "::cata_creation_gui::cata_psf"
                   pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w 
 
                #--- Options de creation du cata Asttroid
-               set opts [frame $astroid.opts -borderwidth 1 -cursor arrow -relief sunken]
-               pack $opts -in $astroid  -side top -anchor e -expand 0 -fill x 
+               set opts [frame $psf.opts -borderwidth 1 -cursor arrow -relief sunken]
+               pack $opts -in $psf  -side top -anchor e -expand 0 -fill x 
         
                   #--- Niveau de saturation (ADU)
                   set saturation [frame $opts.saturation]
                   pack $saturation -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $saturation.lab -text "Niveau de saturation (ADU)" -width 24 -anchor e
                        pack $saturation.lab -in $saturation -side left -padx 5 -pady 0 -anchor e
-                       entry $saturation.val -relief sunken -textvariable ::tools_cata::astroid_saturation -width 6
+                       entry $saturation.val -relief sunken -textvariable ::psf_tools::psf_saturation -width 6
                        pack $saturation.val -in $saturation -side left -pady 1 -anchor w
 
                   #--- Delta
@@ -2975,25 +2912,53 @@ namespace eval cata_creation_gui {
                   pack $delta -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $delta.lab -text "Delta (pixel)" -width 24 -anchor e
                        pack $delta.lab -in $delta -side left -padx 5 -pady 0 -anchor e
-                       entry $delta.val -relief sunken -textvariable ::tools_cata::astroid_delta -width 3
+                       entry $delta.val -relief sunken -textvariable ::psf_tools::psf_delta -width 3
                        pack $delta.val -in $delta -side left -pady 1 -anchor w
 
-                     #--- Recherche du best delta
-                     set best [frame $delta.best]
-                     pack $best -in $delta -side top -anchor e -expand 0 -fill x -pady 5
-                        button $best.cherche  -borderwidth 1 -command "" -text "Rechercher le meilleur delta" -state disabled
-                        pack $best.cherche -in $best -side left -anchor e -expand 0 -padx 10
-                        label $best.sol -textvariable ::gui_cata::gui_astroid_bestdelta -anchor e
-                        pack $best.sol -in $best -side left -padx 5 -pady 0 -anchor e
+               #--- Creation du cata psf
+               set methglobale [frame $psf.methglobale -borderwidth 1 -cursor arrow -relief groove]
+               pack $methglobale -in $psf -side top -anchor w -expand 0 -fill x -pady 5
+                  checkbutton $methglobale.check -highlightthickness 0 -text "Mesure Automatique" \
+                        -variable ::psf_tools::use_global -state normal \
+                        -command "::cata_creation_gui::psf_auto"
+                  pack $methglobale.check -in $methglobale -side left -padx 3 -pady 3 -anchor w 
 
+               #--- Options de creation du cata Asttroid
+               set opts [frame $psf.opts2 -borderwidth 1 -cursor arrow -relief sunken]
+               pack $opts -in $psf  -side top -anchor e -expand 0 -fill x 
+        
                   #--- Threshold
                   set threshold [frame $opts.threshold]
                   pack $threshold -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $threshold.lab -text "Threshold (pixel)" -width 24 -anchor e
-                       pack $threshold.lab -in $threshold -side left -padx 5 -pady 0 -anchor e
-                       entry $threshold.val -relief sunken -textvariable ::tools_cata::astroid_threshold -width 3
-                       pack $threshold.val -in $threshold -side left -pady 1 -anchor w
+                       pack  $threshold.lab -side left -padx 5 -pady 0 -anchor e
+                       entry $threshold.val -relief sunken -textvariable ::psf_tools::psf_threshold -width 3
+                       pack  $threshold.val -side left -pady 1 -anchor w
 
+                  #--- Threshold
+                  set limitradius [frame $opts.limitradius]
+                  pack $limitradius -in $opts -side top -anchor e -expand 0 -fill x -pady 5
+                       label $limitradius.lab -text "Rayon max (pixel)" -width 24 -anchor e
+                       pack  $limitradius.lab -side left -padx 5 -pady 0 -anchor e
+                       entry $limitradius.val -relief sunken -textvariable ::psf_tools::psf_limitradius -width 3
+                       pack  $limitradius.val -side left -pady 1 -anchor w
+
+               if { $::psf_tools::use_psf == 0 } {
+                  $saturation.val      configure -state disabled
+                  $delta.val           configure -state disabled
+                  $methglobale.check   configure -state disabled
+                  $threshold.val       configure -state disabled
+                  $limitradius.val     configure -state disabled
+               } else {
+                  if { $::psf_tools::use_global == 0 } {
+                     $delta.val           configure -state normal
+                     $threshold.val    configure -state disabled
+                     $limitradius.val  configure -state disabled
+                  } else {
+                     $delta.val           configure -state disabled
+                  }
+               }
+ 
 
         #--- Cree un frame pour afficher les actions Interop
         set interop [frame $f7.interop -borderwidth 0 -cursor arrow -relief groove]
@@ -3254,11 +3219,24 @@ namespace eval cata_creation_gui {
                 pack $develop.entr  -in $develop  -side top 
                 
 
-                     set affsource [frame $develop.entr.affsource -borderwidth 0 -cursor arrow  -borderwidth 0]
-                     pack $affsource -in $develop.entr -side top 
+                     set inf [frame $develop.entr.affsourcegrab -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     pack $inf -side top 
 
-                          button  $affsource.lab  -borderwidth 1 -command "::cata_creation_gui::getsource" -text "Obtenir les sources d'une fenetre"
-                          pack   $affsource.lab   -in $affsource -side top -padx 3 -pady 3 -anchor c
+                          button $inf.lab -borderwidth 1 -command "::cata_creation_gui::getsource" -text "Voir dans la console : les sources d'une fenetre"
+                          pack   $inf.lab -side top -padx 3 -pady 3 -anchor c
+
+                     set inf [frame $develop.entr.affsourceall -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     pack $inf -side top 
+
+                          button $inf.lab -borderwidth 1 -command "::cata_creation_gui::develop 2" -text "Voir dans la console : toutes les sources"
+                          pack   $inf.lab -side top -padx 3 -pady 3 -anchor c
+
+                     set inf [frame $develop.entr.affsource3 -borderwidth 0 -cursor arrow  -borderwidth 0]
+                     pack $inf -side top 
+
+                          button $inf.lab -borderwidth 1 -command "::cata_creation_gui::develop 3" -text "Voir dans la console : 3 sources"
+                          pack   $inf.lab -side top -padx 3 -pady 3 -anchor c
+
 
 
 

@@ -427,6 +427,7 @@ variable imagelimit
       set n [llength $astrom(kwds)]
 
       set id_current_image 0
+      set nberr 0
 
       # Lecture du fichier en continue
 
@@ -436,7 +437,7 @@ variable imagelimit
          set key [lindex $a 0]
          set val [lindex $a 1]
          #gren_info "$key=$val\n"
-          
+
          if {$key=="BEGIN"} {
             # Debut image
             set filename $val
@@ -445,8 +446,10 @@ variable imagelimit
             set cataref($id_current_image) ""
 
             gets $chan success
-            #gren_info "$success\n"
+
             if {$success!="SUCCESS"} {
+               incr nberr
+               gren_info "ASTROMETRY FAILED : $file\n"
                continue
             }
 
@@ -454,7 +457,7 @@ variable imagelimit
 
          if {$key=="END"} {
          }
-         
+
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
             if {$kwd==$key} {
@@ -481,6 +484,11 @@ variable imagelimit
                   
       }
       close $chan
+      
+      if {$id_current_image == $nberr } {
+         return -code 1 "ASTROMETRY FAILURE"
+      }
+
 
       #gren_info "NB IMG EXTRACTED FROM PRIAM RESULTS: [expr $id_current_image +1 ] \n"
       #gren_info "NB IMG LIST: [llength $::tools_cata::img_list] \n"

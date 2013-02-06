@@ -17,6 +17,108 @@
 namespace eval psf_tools {
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::psf_tools::inittoconf { } {
+
+      global conf
+
+      if {! [info exists ::psf_tools::use_psf] } {
+         if {[info exists conf(astrometry,cata,psf,create)]} {
+            set ::psf_tools::use_psf $conf(astrometry,cata,psf,create)
+         } else {
+            set ::psf_tools::use_psf 0
+         }
+      }
+      if {! [info exists ::psf_tools::use_global] } {
+         if {[info exists conf(astrometry,cata,psf,globale)]} {
+            set ::psf_tools::use_global $conf(astrometry,cata,psf,globale)
+         } else {
+            set ::psf_tools::use_global 0
+         }
+      }
+      if {! [info exists ::psf_tools::psf_saturation] } {
+         if {[info exists conf(astrometry,cata,psf,saturation)]} {
+            set ::psf_tools::psf_saturation $conf(astrometry,cata,psf,saturation)
+         } else {
+            set ::psf_tools::psf_saturation 50000
+         }
+      }
+      if {! [info exists ::psf_tools::psf_delta] } {
+         if {[info exists conf(astrometry,cata,psf,delta)]} {
+            set ::psf_tools::psf_delta $conf(astrometry,cata,psf,delta)
+         } else {
+            set ::psf_tools::psf_delta 15
+         }
+      }
+      if {! [info exists ::psf_tools::psf_threshold] } {
+         if {[info exists conf(astrometry,cata,psf,threshold)]} {
+            set ::psf_tools::psf_threshold $conf(astrometry,cata,psf,threshold)
+         } else {
+            set ::psf_tools::psf_threshold 2
+         }
+      }
+      if {! [info exists ::psf_tools::psf_limitradius] } {
+         if {[info exists conf(astrometry,cata,psf,limitradius)]} {
+            set ::psf_tools::psf_limitradius $conf(astrometry,cata,psf,limitradius)
+         } else {
+            set ::psf_tools::psf_limitradius 50
+         }
+      }
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::psf_tools::closetoconf { } {
+
+      global conf
+   
+      # Conf cata psf
+      set conf(astrometry,cata,psf,create)       $::psf_tools::use_psf
+      set conf(astrometry,cata,psf,globale)      $::psf_tools::use_global
+      set conf(astrometry,cata,psf,saturation)   $::psf_tools::psf_saturation
+      set conf(astrometry,cata,psf,delta)        $::psf_tools::psf_delta
+      set conf(astrometry,cata,psf,threshold)    $::psf_tools::psf_threshold
+      set conf(astrometry,cata,psf,limitradius)  $::psf_tools::psf_limitradius
+   }
+   
+
+
+
+
+
+
+
+
+
 # Anciennement ::gui_cata::psf_box 
 # Effectue l analyse d'une psf pour un rayon donné 
 # en entrée :

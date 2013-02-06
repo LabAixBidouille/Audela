@@ -231,6 +231,175 @@ namespace eval gui_cata {
 
 
 
+
+   proc ::gui_cata::inittoconf { } {
+
+
+      global conf
+
+
+      # Check button GUI
+
+      if {! [info exists ::gui_cata::gui_img] } {
+         if {[info exists conf(astrometry,cata,gui_img)]} {
+            set ::gui_cata::gui_img $conf(astrometry,cata,gui_img)
+         } else {
+            set ::gui_cata::gui_img 1
+         }
+      }
+      if {! [info exists ::gui_cata::gui_usnoa2] } {
+         if {[info exists conf(astrometry,cata,gui_usnoa2)]} {
+            set ::gui_cata::gui_usnoa2 $conf(astrometry,cata,gui_usnoa2)
+         } else {
+            set ::gui_cata::gui_usnoa2 1
+         }
+      }
+      if {! [info exists ::gui_cata::gui_ucac2] } {
+         if {[info exists conf(astrometry,cata,gui_ucac2)]} {
+            set ::gui_cata::gui_ucac2 $conf(astrometry,cata,gui_ucac2)
+         } else {
+            set ::gui_cata::gui_ucac2 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_ucac3] } {
+         if {[info exists conf(astrometry,cata,gui_ucac3)]} {
+            set ::gui_cata::gui_ucac3 $conf(astrometry,cata,gui_ucac3)
+         } else {
+            set ::gui_cata::gui_ucac3 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_tycho2] } {
+         if {[info exists conf(astrometry,cata,gui_tycho2)]} {
+            set ::gui_cata::gui_tycho2 $conf(astrometry,cata,gui_tycho2)
+         } else {
+            set ::gui_cata::gui_tycho2 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_nomad1] } {
+         if {[info exists conf(astrometry,cata,gui_nomad1)]} {
+            set ::gui_cata::gui_nomad1 $conf(astrometry,cata,gui_nomad1)
+         } else {
+            set ::gui_cata::gui_nomad1 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_skybot] } {
+         if {[info exists conf(astrometry,cata,gui_skybot)]} {
+            set ::gui_cata::gui_skybot $conf(astrometry,cata,gui_skybot)
+         } else {
+            set ::gui_cata::gui_skybot 0
+         }
+      }
+
+      # Taille des ronds
+      if {! [info exists ::gui_cata::size_img] } {
+         if {[info exists conf(astrometry,cata,size_img)]} {
+            set ::gui_cata::size_img $conf(astrometry,cata,size_img)
+         } else {
+            set ::gui_cata::size_img 1
+         }
+      }
+      set ::gui_cata::size_img_sav $::gui_cata::size_img
+      
+      if {! [info exists ::gui_cata::size_usnoa2] } {
+         if {[info exists conf(astrometry,cata,size_usnoa2)]} {
+            set ::gui_cata::size_usnoa2 $conf(astrometry,cata,size_usnoa2)
+         } else {
+            set ::gui_cata::size_usnoa2 1
+         }
+      }
+      set ::gui_cata::size_usnoa2_sav $::gui_cata::size_usnoa2
+      
+      if {! [info exists ::gui_cata::size_ucac2] } {
+         if {[info exists conf(astrometry,cata,size_ucac2)]} {
+            set ::gui_cata::size_ucac2 $conf(astrometry,cata,size_ucac2)
+         } else {
+            set ::gui_cata::size_ucac2 1
+         }
+      }
+      set ::gui_cata::size_ucac2_sav $::gui_cata::size_ucac2
+      
+      if {! [info exists ::gui_cata::size_ucac3] } {
+         if {[info exists conf(astrometry,cata,size_ucac3)]} {
+            set ::gui_cata::size_ucac3 $conf(astrometry,cata,size_ucac3)
+         } else {
+            set ::gui_cata::size_ucac3 1
+         }
+      }
+      set ::gui_cata::size_ucac3_sav $::gui_cata::size_ucac3
+      
+      if {! [info exists ::gui_cata::size_nomad1] } {
+         if {[info exists conf(astrometry,cata,size_nomad1)]} {
+            set ::gui_cata::size_nomad1 $conf(astrometry,cata,size_nomad1)
+         } else {
+            set ::gui_cata::size_nomad1 1
+         }
+      }
+      set ::gui_cata::size_nomad1_sav $::gui_cata::size_nomad1
+      
+      if {! [info exists ::gui_cata::size_tycho2] } {
+         if {[info exists conf(astrometry,cata,size_tycho2)]} {
+            set ::gui_cata::size_tycho2 $conf(astrometry,cata,size_tycho2)
+         } else {
+            set ::gui_cata::size_tycho2 1
+         }
+      }
+      set ::gui_cata::size_tycho2_sav $::gui_cata::size_tycho2
+      
+      if {! [info exists ::gui_cata::size_skybot] } {
+         if {[info exists conf(astrometry,cata,size_skybot)]} {
+            set ::gui_cata::size_skybot $conf(astrometry,cata,size_skybot)
+         } else {
+            set ::gui_cata::size_skybot 1
+         }
+      }
+      set ::gui_cata::size_skybot_sav $::gui_cata::size_skybot
+      
+      if {! [info exists ::gui_cata::size_ovni] } {
+         if {[info exists conf(astrometry,cata,size_ovni)]} {
+            set ::gui_cata::size_ovni $conf(astrometry,cata,size_ovni)
+         } else {
+            set ::gui_cata::size_ovni 1
+         }
+      }
+
+
+
+
+   }
+
+
+   proc ::gui_cata::closetoconf { } {
+
+      global conf
+
+      set conf(astrometry,cata,gui_img)    $::gui_cata::gui_img
+      set conf(astrometry,cata,gui_usnoa2) $::gui_cata::gui_usnoa2
+      set conf(astrometry,cata,gui_ucac2)  $::gui_cata::gui_ucac2
+      set conf(astrometry,cata,gui_ucac3)  $::gui_cata::gui_ucac3
+      set conf(astrometry,cata,gui_tycho2) $::gui_cata::gui_tycho2
+      set conf(astrometry,cata,gui_nomad1) $::gui_cata::gui_nomad1
+      set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
+      
+      # Uncosmic or not!
+      set conf(astrometry,cata,use_uncosmic) $::gui_cata::use_uncosmic
+      set conf(astrometry,cata,uncosm_param1) $::tools_cdl::uncosm_param1
+      set conf(astrometry,cata,uncosm_param2) $::tools_cdl::uncosm_param2
+
+      # Taille des ronds
+      set conf(astrometry,cata,size_img)    $::gui_cata::size_img
+      set conf(astrometry,cata,size_usnoa2) $::gui_cata::size_usnoa2
+      set conf(astrometry,cata,size_ucac2)  $::gui_cata::size_ucac2
+      set conf(astrometry,cata,size_ucac3)  $::gui_cata::size_ucac3
+      set conf(astrometry,cata,size_nomad1) $::gui_cata::size_nomad1
+      set conf(astrometry,cata,size_tycho2) $::gui_cata::size_tycho2
+      set conf(astrometry,cata,size_skybot) $::gui_cata::size_skybot
+      set conf(astrometry,cata,size_ovni)   $::gui_cata::size_ovni
+
+   }
+
+
+
+
    proc ::gui_cata::affiche_current_image { } {
 
       global bddconf
@@ -620,7 +789,7 @@ namespace eval gui_cata {
                 pack $skybot.color -side left -anchor e -expand 0 
                 spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
-
+                $skybot.radius set $::gui_cata::size_skybot
         #--- Cree un frame pour afficher bouton fermeture
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
         pack $boutonpied -in $frm -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
