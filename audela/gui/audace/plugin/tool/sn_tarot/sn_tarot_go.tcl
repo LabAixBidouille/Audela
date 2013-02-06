@@ -131,7 +131,7 @@ proc ::sn_tarot::createPanel { this } {
    
    set audace(sn_tarot,ok_zadko) 0
    set hostname [lindex [hostaddress] end]
-   if {($hostname=="astrostar")||($hostname=="PC-de-Manue")||($hostname=="HUSNE-HUSNE")||($hostname=="dhcp3-45")||($hostname=="Onelda-PC")} {
+   if {($hostname=="astrostar")||($hostname=="PC-de-Manue")||([string compare $hostname "HÜSNE-HÜSNE"])||($hostname=="dhcp3-45")||($hostname=="Onelda-PC")} {
       set audace(sn_tarot,ok_zadko) 1
    }
    
