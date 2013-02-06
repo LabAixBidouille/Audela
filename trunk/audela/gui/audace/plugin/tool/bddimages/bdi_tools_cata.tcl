@@ -545,9 +545,15 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
       }
 
-      if {$::tools_cata::use_astroid} {
-         set listsources [::analyse_source::psf $listsources $::tools_cata::astroid_threshold $::tools_cata::astroid_delta]
+      if {$::psf_tools::use_psf} {
+         
+         if {$::psf_tools::use_global} {
+            ::psf_gui::psf_listsources_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation
+         } else {
+            ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_delta $::psf_tools::psf_saturation
+         }
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
+
       }
 
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
@@ -919,6 +925,11 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 # Anciennement ::gui_cata::get_img_null
 # return une ligne de champ nul pour la creation d'une entree IMG dans le catalogue
+   proc ::tools_cata::get_img_fields { } {
+      return [list id flag xpos ypos instr_mag err_mag flux_sex err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex minor_axis_sex position_angle_sex fwhm_sex flag_sex]
+
+   }
+
    proc ::tools_cata::get_img_null { } {
     
       return [list "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" ]

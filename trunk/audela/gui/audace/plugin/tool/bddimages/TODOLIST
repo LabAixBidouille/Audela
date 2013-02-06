@@ -1,3 +1,27 @@
+TODOLIGHT
+
+création cata :
+
+    - "Manuel" Fov et Orientation parfois vide, du coup ca fait planter l appel au DSS.
+      il faut ajouter un test a appel au dss en cas de champs vide.
+    - "Manuel" Fov et Orientation parfois vide, comprendre pourquoi car le wcs est ok.
+    - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
+    - Ajouter UCAC4 (csucac4 existe)
+    - Ajouter ppmx et ppmxl (pour l instant seulement des boutons cochables en grisé)
+
+Gestion cata :
+    - renommage du champ "name" de astroid
+    - Effacement d une source dans toutes les images selectionnées
+
+Astrométrie :
+
+    - enregistrement des images et des cata a la sortie du programme.
+    - sortie mpc
+    - "voir" bug quand source non visible dans l image.
+    - page solution astrometrique.
+
+
+
 TODOLIST
 partie 0 : Faire aparaitre la roadmap et todolist dans doxygen
 

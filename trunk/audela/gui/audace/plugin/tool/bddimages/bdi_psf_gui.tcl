@@ -703,5 +703,172 @@ namespace eval psf_gui {
 
 
 
+
+
+
+
+
+
+   #
+   # ::analyse_source::psf
+   # Mesure de PSF d'une source
+   #
+   proc ::psf_gui::psf_listsources_no_auto { sent_listsources radius_threshold delta saturation} {
+   
+      upvar $sent_listsources listsources
+
+      global bddconf
+
+      set log 0
+      set cpt 0
+      set doute 0
+
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+
+      set nbs [::manage_source::get_nb_sources_by_cata $listsources "IMG"]
+      if {$log} {gren_info "nb sources to work : $nbs \n"}
+
+      lappend fields [::analyse_source::get_fieldastroid]
+
+      set cpts 0
+      set newsources {}
+
+      foreach s $sources {
+         incr cpts
+         if {$log} {gren_info "source #$cpts : "}
+         
+         set cptc 0
+         foreach cata $s {
+            incr cptc
+            if {$log} {
+               gren_info " -> cata : $cptc [lindex $cata 0] "
+            }
+            if { [lindex $cata 0]=="ASTROID" } { break }
+
+            if { [lindex $cata 0]=="IMG" } {
+
+               set ra     [lindex [lindex [lindex $s 0] 1] 0]
+               set dec    [lindex [lindex [lindex $s 0] 1] 1]
+               set poserr [lindex [lindex [lindex $s 0] 1] 2]
+               set mag    [lindex [lindex [lindex $s 0] 1] 3]
+               set magerr [lindex [lindex [lindex $s 0] 1] 4]
+               set x      [lindex [lindex [lindex $s 0] 2] 2]
+               set y      [lindex [lindex [lindex $s 0] 2] 3]
+               set fwhm   [lindex [lindex [lindex $s 0] 2] 24]
+
+               if {$log} {
+                  affich_un_rond $ra $dec red 4
+                  gren_info " -> RA,DEC,x,y : $ra $dec $x $y\n"
+               }
+
+               # Mesure de PSF de la source: 
+               # result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+               set err [catch {set results [::tools_cdl::photom_methode $x $y $delta $bddconf(bufno)]} msg]
+               if {$err} { 
+                  gren_info "photom error ($err) ($msg)\n" 
+                  set results -1
+               } 
+
+               if { $results == -1 } {
+                  lappend newsources $s
+               } else {
+                  incr cpt
+                  set xd [expr abs([lindex $results 0]-$x)]
+                  set yd [expr abs([lindex $results 1]-$y)]
+                  set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+                  if {$rdiff > $radius_threshold } {
+                     lappend newsources $s
+                     incr doute
+                  } else {
+                     # Ajoute rdiff, RA, DEC, res_ra, res_dec, omc_ra, omc_dec, mag, err_mag, name, flag*, cata* aux resultats
+                     lappend results $rdiff $ra $dec $poserr $poserr 0.0 0.0 $mag $magerr "-" "-" "-" "-" "-"
+                     # Reconstruit la liste des sources en ajoutant la source ASTROID
+                     set ns {}
+                     foreach cata $s {
+                        if { [lindex $cata 0]!="ASTROID" } {
+                           lappend ns $cata
+                        }
+                     }
+                     lappend ns [list "ASTROID" {} $results]
+                     lappend newsources $ns
+                  }
+
+               }
+               break
+
+            }
+
+         }
+         
+      }
+
+      if {$log} {gren_info "nb doute : $doute \n"}
+
+   set listsources [list $fields $newsources]
+   }
+# source $audace(rep_install)/gui/audace/plugin/tool/bddimages/utils/ssp_sex/main.tcl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   #
+   # ::analyse_source::psf
+   # Mesure de PSF d'une source
+   #
+   proc ::psf_gui::psf_listsources_auto { sent_listsources threshold limitradius saturation} {
+   
+      upvar $sent_listsources listsources
+
+      global bddconf
+
+      set log 0
+      set cpt 0
+      set doute 0
+
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+
+      set nbs [::manage_source::get_nb_sources_by_cata $listsources "IMG"]
+      if {$log} {gren_info "nb sources to work : $nbs \n"}
+
+      lappend fields [::analyse_source::get_fieldastroid]
+
+      set cpts 0
+      set newsources {}
+
+      foreach s $sources {
+         incr cpts
+         if {$log} {gren_info "source #$cpts : "}
+         
+         # Mesure de PSF de la source: 
+         # result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
+
+         set err [ catch {set r [::psf_tools::method_global s $threshold $limitradius ]} msg ]
+         if {$err} {
+            ::console::affiche_erreur "ERREUR PSF psf_listsources_auto: $msg\n"
+         }
+         lappend newsources $s
+
+      }
+
+      if {$log} {gren_info "nb doute : $doute \n"}
+
+      set listsources [list $fields $newsources]
+   }
+
 #- Fin du namespace -------------------------------------------------
 }

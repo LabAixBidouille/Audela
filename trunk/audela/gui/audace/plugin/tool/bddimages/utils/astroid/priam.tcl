@@ -335,10 +335,14 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
             set b  [lindex [lindex $s $x] 2]           
             set ar [lindex $b 25]
             set ac [lindex $b 27]
+            gren_info "ASTROID $b\n"
+            gren_info "ASTROID $ar $ac\n"
             
             # cas d une reference ou d une science
             if  {$ar=="R" || $ar=="S"} {
+               gren_info "yop\n"
                set name [::manage_source::naming $s $ac]
+               gren_info "yop\n"
                set xsm [lindex $b 0]
                set ysm [lindex $b 1]
                set xsmerr [lindex $b 2]
@@ -346,7 +350,11 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
                set fwhmx [lindex $b 4]
                set fwhmy [lindex $b 5]
                set fluxintegre [lindex $b 6]
+               gren_info "insert science.mes $ar $xsm $ysm\n"
                puts $chan0 "$ar $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
+            } else {
+               gren_info "not ($ar)\n"
+            
             }
             
             # cas particulier d une reference
