@@ -11,7 +11,6 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::treshold 5
       set ::gui_astrometry::factor 1000
 
-
       if {! [info exists ::tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
             set ::tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
@@ -35,7 +34,7 @@ namespace eval gui_astrometry {
          if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
          if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
       }
-      
+
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
@@ -430,7 +429,6 @@ namespace eval gui_astrometry {
 
       set frm $::gui_astrometry::fen.appli
 
-
       #--- Cree un frame general
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_astrometry::fen -anchor s -side top -expand yes -fill both  -padx 10 -pady 5
@@ -542,9 +540,6 @@ namespace eval gui_astrometry {
                  $onglets_dates.list add $wcs -text "WCS"
 
 
-
-
-
             # Sources - References Parent (par liste de source et moyenne)
             set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
             pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
@@ -577,9 +572,6 @@ namespace eval gui_astrometry {
                  pack $::gui_astrometry::srpt -in $srp -expand yes -fill both 
 
 
-
-
-
             # Sources - References Enfant (par liste de date chaque mesure)
             set sre [frame $onglets_sources.list.references.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
             pack $sre -in $onglets_sources.list.references -expand yes -fill both -side left
@@ -609,7 +601,6 @@ namespace eval gui_astrometry {
                  bind [$::gui_astrometry::sret bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
 
                  pack $::gui_astrometry::sret -in $sre -expand yes -fill both
-
 
 
             # Sources - Science Parent (par liste de source et moyenne)
@@ -644,8 +635,6 @@ namespace eval gui_astrometry {
 
 
 
-
-
             # Sources - Science Enfant (par liste de date chaque mesure)
             set sse [frame $onglets_sources.list.sciences.enfant -borderwidth 1 -cursor arrow -relief groove -background white]
             pack $sse -in $onglets_sources.list.sciences -expand yes -fill both -side left
@@ -674,8 +663,6 @@ namespace eval gui_astrometry {
                  bind [$::gui_astrometry::sset bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
 
                  pack $::gui_astrometry::sset -in $sse -expand yes -fill both
-
-
 
 
 
@@ -711,8 +698,6 @@ namespace eval gui_astrometry {
                  pack $::gui_astrometry::dspt -in $dsp -expand yes -fill both 
 
 
-
-
             # Dates - Sources Enfant (par liste de sources chaque mesure)
             set dse [frame $onglets_dates.list.sources.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
             pack $dse -in $onglets_dates.list.sources -expand yes -fill both -side left
@@ -746,9 +731,6 @@ namespace eval gui_astrometry {
                  pack $::gui_astrometry::dset -in $dse -expand yes -fill both
 
 
-
-
-
             # Dates - WCS Parent (par liste de dates et moyenne)
             set dwp [frame $onglets_dates.list.wcs.parent -borderwidth 1 -cursor arrow -relief groove -background white]
             pack $dwp -in $onglets_dates.list.wcs -expand yes -fill both -side left
@@ -774,21 +756,16 @@ namespace eval gui_astrometry {
 
                  pack $::gui_astrometry::dwpt -in $dwp -expand yes -fill both 
 
-
-
             # Dates - WCS Enfant (Solution astrometrique)
             set dwe [frame $onglets_dates.list.wcs.enfant -borderwidth 1 -cursor arrow -relief groove -background ivory]
             pack $dwe -in $onglets_dates.list.wcs -expand yes -fill both -side left
 
-              label  $dwe.titre -text "Solution astrometrique" -borderwidth 1
-              pack   $dwe.titre -in $dwe -side top -padx 3 -pady 3 -anchor c
+               label  $dwe.titre -text "Solution astrometrique" -borderwidth 1
+               pack   $dwe.titre -in $dwe -side top -padx 3 -pady 3 -anchor c
 
 
          #  set ps [frame $onglets_sources.list.sciences.table_par -borderwidth 0 -cursor arrow -relief groove -background white]
          #  pack $ps -in $onglets_sources.list.sciences
-            
-
-
 
 
 #            frame $onglets0.list.sources.table_enf -borderwidth 0 -cursor arrow -relief groove -background white
@@ -803,12 +780,11 @@ namespace eval gui_astrometry {
               label  $info.lastres -textvariable ::tools_astrometry::last_results_file -borderwidth 1
               pack   $info.lastres -in $info -side left -padx 3 -pady 3 -anchor c
 
-              set ::gui_astrometry::gui_fermer [button $info.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_astrometry::fermer"]
-              pack $info.fermer -side right -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+              set ::gui_astrometry::gui_fermer [button $info.fermer -text "Fermer" -borderwidth 2 -takefocus 1 -command "::gui_astrometry::fermer"]
+              pack $info.fermer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
+              button $info.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 -command "::gui_cata::save_cata"
+              pack $info.enregistrer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
       # Au lancement, charge les donnees
