@@ -5,10 +5,6 @@ recherche : Gestion -> modification
 
     - si demande de compatibilite, alors verfier les champs bddimages et les mettre a plat.
 
-voir le cata
-
-    - ajouter binding sur la touche 'v'
-
 création cata :
 
     - "Manuel" Fov et Orientation parfois vide, du coup ca fait planter l appel au DSS.

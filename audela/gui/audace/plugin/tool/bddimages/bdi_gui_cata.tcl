@@ -362,8 +362,38 @@ namespace eval gui_cata {
          }
       }
 
+      # Uncosmic or not
+      if {! [info exists ::gui_cata::use_uncosmic] } {
+         if {[info exists conf(astrometry,cata,use_uncosmic)]} {
+            set ::gui_cata::use_uncosmic $conf(astrometry,cata,use_uncosmic)
+         } else {
+            set ::gui_cata::use_uncosmic 1
+         }
+      }
+      if {! [info exists ::tools_cdl::uncosm_param1] } {
+         if {[info exists conf(astrometry,cata,uncosm_param1)]} {
+            set ::tools_cdl::uncosm_param1 $conf(astrometry,cata,uncosm_param1)
+         } else {
+            set ::tools_cdl::uncosm_param1 0.8
+         }
+      }
+      if {! [info exists ::tools_cdl::uncosm_param2] } {
+         if {[info exists conf(astrometry,cata,uncosm_param2)]} {
+            set ::tools_cdl::uncosm_param2 $conf(astrometry,cata,uncosm_param2)
+         } else {
+            set ::tools_cdl::uncosm_param2 100
+         }
+      }
 
 
+      set ::tools_cata::nb_img     0
+      set ::tools_cata::nb_usnoa2  0
+      set ::tools_cata::nb_tycho2  0
+      set ::tools_cata::nb_ucac2   0
+      set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_skybot  0
+      set ::tools_cata::nb_astroid 0
 
    }
 
@@ -476,6 +506,21 @@ namespace eval gui_cata {
 
 
 
+
+
+
+   proc ::gui_cata::charge_list { img_list } {
+
+      ::tools_cata::charge_list $img_list
+
+      #?Charge l image a l ecran
+      buf$::audace(bufNo) load $::tools_cata::file
+      cleanmark
+      affich_un_rond_xy $::tools_cata::xcent $::tools_cata::ycent red 2 2
+
+      ::gui_cata::affiche_current_image
+      ::gui_cata::affiche_cata
+   }
 
 
 
