@@ -18,13 +18,6 @@ namespace eval cata_creation_gui {
 
 
 
-
-
-
-
-
-
-
 # Anciennement ::gui_cata::inittoconf
 
    #
@@ -569,58 +562,6 @@ namespace eval cata_creation_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-   
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Anciennement ::gui_cata::get_one_wcs
 
    proc ::cata_creation_gui::get_one_wcs { } {
@@ -651,6 +592,13 @@ namespace eval cata_creation_gui {
             set ::tools_cata::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
             set ::tools_cata::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
             set ::tools_cata::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+            set ::tools_cata::crota     [lindex [::bddimages_liste::lget $tabkey crota1     ] 1]
+
+            set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+            set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+            set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+            set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+            set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
             
             return true
 
@@ -755,8 +703,7 @@ namespace eval cata_creation_gui {
       set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
       set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
       set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-      set radius  [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-      set ::tools_cata::radius "$radius"
+      set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
 
    }
 
@@ -1021,16 +968,21 @@ namespace eval cata_creation_gui {
          set ::tools_cata::current_image_date $date
          set ::tools_cata::ra        [lindex [::bddimages_liste::lget $tabkey ra         ] 1]
          set ::tools_cata::dec       [lindex [::bddimages_liste::lget $tabkey dec        ] 1]
+         set ::tools_cata::crota     [lindex [::bddimages_liste::lget $tabkey crota1     ] 1]
          set ::tools_cata::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1   ] 1]
          set ::tools_cata::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2   ] 1]
          set ::tools_cata::foclen    [lindex [::bddimages_liste::lget $tabkey foclen     ] 1]
          set ::tools_cata::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
          set ::tools_cata::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
-         set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-         set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
-         set xcent    [expr $naxis1/2.0]
-         set ycent    [expr $naxis2/2.0]
 
+         set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+         set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+         set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+         set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+         set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
+         set xcent [expr $naxis1/2.0]
+         set ycent [expr $naxis2/2.0]
 
          if {$log} {
             gren_info "---------------------------\n"
@@ -1150,13 +1102,19 @@ namespace eval cata_creation_gui {
 
       set ::tools_cata::ra       [lindex [::bddimages_liste::lget $tabkey ra      ] 1]
       set ::tools_cata::dec      [lindex [::bddimages_liste::lget $tabkey dec     ] 1]
+      set ::tools_cata::crota    [lindex [::bddimages_liste::lget $tabkey crota1  ] 1]
       set ::tools_cata::pixsize1 [lindex [::bddimages_liste::lget $tabkey pixsize1] 1]
       set ::tools_cata::pixsize2 [lindex [::bddimages_liste::lget $tabkey pixsize2] 1]
       set ::tools_cata::foclen   [lindex [::bddimages_liste::lget $tabkey foclen  ] 1]
       set ::tools_cata::exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE] 1]
       set ::tools_cata::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
-      set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-      set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
+
+      set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
       set xcent [expr $naxis1/2.0]
       set ycent [expr $naxis2/2.0]
 
@@ -1539,8 +1497,7 @@ namespace eval cata_creation_gui {
       set y2 [lindex $rect 3]
       set xradius [expr $x2 - $x1]
       set yradius [expr $y2 - $y1]
-      
-      
+
       set id 0
       for {set i 1} {$i<=7} {incr i} {
          if {$::gui_cata::man_xy_star($i) != "" && $::gui_cata::man_ad_star($i) != ""} {
@@ -1838,28 +1795,21 @@ namespace eval cata_creation_gui {
 
       ::tools_cata::push_img_list
       set ::tools_cata::create_cata 0
-
       $::gui_cata::gui_enrimg configure -state disabled
 
-# Lancement Sextractor
-         gren_info "     Lancement Sextractor\n"
+      # Lancement Sextractor
+      set ext $::conf(extension,defaut)
+      set mypath "."
+      set sky0 dummy0
+      set sky dummy
+      catch {buf$::audace(bufNo) delkwd CATASTAR}
+      buf$::audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
+      createFileConfigSextractor
+      buf$::audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
+      ::cata_creation_gui::set_confsex
+      sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
 
-         set ext $::conf(extension,defaut)
-         set mypath "."
-         set sky0 dummy0
-         set sky dummy
-         catch {buf$::audace(bufNo) delkwd CATASTAR}
-         buf$::audace(bufNo) save [ file join ${mypath} ${sky0}$ext ]
-         createFileConfigSextractor
-         buf$::audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
-         ::cata_creation_gui::set_confsex
-         sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
-         
-
-# Extraction Resultat Sextractor
-# et Creation de la liste
-         gren_info "     Extraction Resultat\n"
-
+      # Extraction Resultat Sextractor et Creation de la liste
       set fields [list [list IMG [list ra dec poserr mag magerr] \
                  [list id flag xpos ypos instr_mag err_mag flux_sex \
                  err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 \
@@ -1907,15 +1857,14 @@ namespace eval cata_creation_gui {
       set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
 
-# Modification de la liste
-
+      # Modification de la liste
       set tabkey  [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
       set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
       set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
       set xcent   [expr $naxis1/2.0]
       set ycent   [expr $naxis2/2.0]
-      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
-      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
 
       set a       [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
       set ra      [lindex $a 0]
@@ -2356,16 +2305,6 @@ namespace eval cata_creation_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
    proc ::cata_creation_gui::cata_psf { } {
    
       set psf $::cata_creation_gui::fen.frm_creation_cata.onglets.nb.f6.psf
@@ -2400,19 +2339,6 @@ namespace eval cata_creation_gui {
       }
    
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2635,8 +2561,6 @@ namespace eval cata_creation_gui {
              #--- Cree un checkbutton
              checkbutton $skybot.check -highlightthickness 0 -text "Utiliser SkyBoT" -variable ::tools_cata::use_skybot
              pack $skybot.check -in $skybot -side left -padx 5 -pady 0
-  
-
 
         #--- Cree un frame pour afficher delkwd PV
         set deuxpasses [frame $f2.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
@@ -3099,7 +3023,6 @@ namespace eval cata_creation_gui {
                   }
                }
  
-
         #--- Cree un frame pour afficher les actions Interop
         set interop [frame $f7.interop -borderwidth 0 -cursor arrow -relief groove]
         pack $interop -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -3113,11 +3036,11 @@ namespace eval cata_creation_gui {
               pack $plan.aladin -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            # 
-           set dss [frame $interop.dss -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
-           pack $dss -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+           set resolver [frame $interop.resolver -borderwidth 0 -cursor arrow -relief solid -borderwidth 1]
+           pack $resolver -in $interop -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              set l [frame $dss.l -borderwidth 0 -cursor arrow  -borderwidth 0]
-              pack $l -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+              set l [frame $resolver.l -borderwidth 0 -cursor arrow  -borderwidth 0]
+              pack $l -in $resolver -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
                  label $l.date -justify right -text "Epoque (UTC) : "
                  pack $l.date -in $l -side top -padx 3 -pady 3
                  label $l.coord -justify right -text "Coordonnees (RA DEC) : "
@@ -3127,8 +3050,8 @@ namespace eval cata_creation_gui {
                  label $l.uaicode -justify right -text "UAI Code : "
                  pack $l.uaicode -in $l -side top -padx 3 -pady 3
  
-              set m [frame $dss.m -borderwidth 0 -cursor arrow  -borderwidth 0]
-              pack $m -in $dss -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+              set m [frame $resolver.m -borderwidth 0 -cursor arrow  -borderwidth 0]
+              pack $m -in $resolver -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
                  entry $m.date -relief sunken -width 26 -textvariable ::tools_cata::current_image_date
                  pack $m.date -in $m -side top -padx 3 -pady 3 -anchor w
                  entry $m.coord -relief sunken -width 26 -textvariable ::tools_cata::coord
@@ -3138,8 +3061,8 @@ namespace eval cata_creation_gui {
                  entry $m.uaicode -relief sunken -width 26 -textvariable ::tools_cata::uaicode
                  pack $m.uaicode -in $m -side top -padx 3 -pady 3 -anchor w
 
-              set r [frame $dss.r -borderwidth 0 -cursor arrow  -borderwidth 0]
-              pack $r -in $dss -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
+              set r [frame $resolver.r -borderwidth 0 -cursor arrow  -borderwidth 0]
+              pack $r -in $resolver -anchor s -side left -expand 0 -fill x -padx 3 -pady 3
                  button $r.resolve -text "Resolve Sso" -borderwidth 0 -takefocus 1 -relief groove -borderwidth 1 \
                         -command "::cata_creation_gui::skybotResolver"
                  pack $r.resolve -side top -anchor e -padx 3 -pady 1 -ipadx 2 -ipady 2 -expand 0

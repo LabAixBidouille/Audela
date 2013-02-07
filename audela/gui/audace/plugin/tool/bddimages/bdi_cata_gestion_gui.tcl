@@ -45,6 +45,29 @@ namespace eval cata_gestion_gui {
          }
       }
 
+      # Uncosmic or not
+      if {! [info exists ::gui_cata::use_uncosmic] } {
+         if {[info exists conf(astrometry,cata,use_uncosmic)]} {
+            set ::gui_cata::use_uncosmic $conf(astrometry,cata,use_uncosmic)
+         } else {
+            set ::gui_cata::use_uncosmic 1
+         }
+      }
+      if {! [info exists ::tools_cdl::uncosm_param1] } {
+         if {[info exists conf(astrometry,cata,uncosm_param1)]} {
+            set ::tools_cdl::uncosm_param1 $conf(astrometry,cata,uncosm_param1)
+         } else {
+            set ::tools_cdl::uncosm_param1 0.8
+         }
+      }
+      if {! [info exists ::tools_cdl::uncosm_param2] } {
+         if {[info exists conf(astrometry,cata,uncosm_param2)]} {
+            set ::tools_cdl::uncosm_param2 $conf(astrometry,cata,uncosm_param2)
+         } else {
+            set ::tools_cdl::uncosm_param2 100
+         }
+      }
+
    }
 
 
@@ -292,7 +315,7 @@ namespace eval cata_gestion_gui {
                gren_info "Chargement annulé...\n"
                break
             }
-         ::cata_gestion_gui::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
+            ::cata_gestion_gui::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
          }
 
          ::cata_gestion_gui::charge_current_cata

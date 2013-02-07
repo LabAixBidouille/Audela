@@ -474,7 +474,7 @@ namespace eval gui_cata {
       set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
       
       # Uncosmic or not!
-      set conf(astrometry,cata,use_uncosmic) $::gui_cata::use_uncosmic
+      set conf(astrometry,cata,use_uncosmic)  $::gui_cata::use_uncosmic
       set conf(astrometry,cata,uncosm_param1) $::tools_cdl::uncosm_param1
       set conf(astrometry,cata,uncosm_param2) $::tools_cdl::uncosm_param2
 
@@ -550,15 +550,14 @@ namespace eval gui_cata {
 
    proc ::gui_cata::getDSS { } {
 
-      #gren_info "RA (deg): $::tools_cata::ra\n"
-      #gren_info "DEC (deg): $::tools_cata::dec\n"
-      #gren_info "RADIUS (arcmin): $::tools_cata::radius\n"
-      set fov_x_deg [expr $::tools_cata::radius/60.]
-      set fov_y_deg [expr $::tools_cata::radius/60.]
+      if {$::tools_cata::radius == ""} { set ::tools_cata::radius 15.0 }
+      if {$::tools_cata::crota == ""} { set ::tools_cata::crota 0.0 }
+
       set naxis1 600
       set naxis2 600
-      set crota2 $::tools_cata::crota
-      ::gui_cata::loadDSS dss.fit $::tools_cata::ra $::tools_cata::dec $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 
+      set fov_x_deg [expr $::tools_cata::radius/60.]
+      set fov_y_deg [expr $::tools_cata::radius/60.]
+      ::gui_cata::loadDSS dss.fit $::tools_cata::ra $::tools_cata::dec $fov_x_deg $fov_y_deg $naxis1 $naxis2 $::tools_cata::crota
 
       set ::gui_cata::dssvisu [ ::confVisu::create ]
       set ::gui_cata::dssbuf  [ visu$::gui_cata::dssvisu buf   ]

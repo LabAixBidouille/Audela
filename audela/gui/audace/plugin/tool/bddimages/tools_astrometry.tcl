@@ -1,24 +1,11 @@
 namespace eval tools_astrometry {
 
-
-variable science
-variable reference
-variable treshold
-variable delta
-variable ifortlib
-variable imagelimit
-
-
-
-
-
-
-
- 
-
-
-
-
+   variable science
+   variable reference
+   variable treshold
+   variable delta
+   variable ifortlib
+   variable imagelimit
 
 
    proc ::tools_astrometry::init_priam { } {
@@ -54,16 +41,6 @@ variable imagelimit
 
 
 
-
-
-
-
-
-
-
-
-
-
    proc ::tools_astrometry::go_priam {  } {
 
 
@@ -72,15 +49,6 @@ variable imagelimit
       ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
 
    }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -420,9 +388,9 @@ variable imagelimit
    
       set chan [open $file r]
 
-      set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2                        CATA_PVALUE                       EQUINOX                            CTYPE1                CTYPE2                LONPOLE                                        CUNIT1                       CUNIT2                       }
-      set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              um                              um                              percent                           no                                 no                    no                    deg                                            no                           no                           }
-      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double                          double                            string                             string                string                double                                         string                       string                       }
+      set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
+      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+      set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
       set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
       set n [llength $astrom(kwds)]
 
@@ -470,7 +438,7 @@ variable imagelimit
                # TODO Modif du tabkey de chaque image de img_list
             }
          }
-         
+
          if {$key=="CATA_VALUES"} {
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
@@ -481,7 +449,7 @@ variable imagelimit
             set sour  [lindex $val 1]
             lappend cataref($id_current_image) [list $name $sour]
          }
-                  
+
       }
       close $chan
       
@@ -628,7 +596,7 @@ variable imagelimit
    #gren_info "LISTSOURCES=$current_listsources\n"
 
    # Ecriture des resultats dans un fichier 
-      
+
 
    }
 
