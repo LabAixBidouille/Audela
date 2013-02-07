@@ -71,6 +71,13 @@ namespace eval cata_creation_gui {
             set ::tools_cata::use_ucac3 0
          }
       }
+      if {! [info exists ::tools_cata::use_ucac4] } {
+         if {[info exists conf(astrometry,cata,use_ucac4)]} {
+            set ::tools_cata::use_ucac4 $conf(astrometry,cata,use_ucac4)
+         } else {
+            set ::tools_cata::use_ucac4 0
+         }
+      }
       if {! [info exists ::tools_cata::use_tycho2] } {
          if {[info exists conf(astrometry,cata,use_tycho2)]} {
             set ::tools_cata::use_tycho2 $conf(astrometry,cata,use_tycho2)
@@ -136,6 +143,13 @@ namespace eval cata_creation_gui {
             set ::tools_cata::catalog_ucac3 $conf(astrometry,catfolder,ucac3)
          } else {
             set ::tools_cata::catalog_ucac3 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ucac4] } {
+         if {[info exists conf(astrometry,catfolder,ucac4)]} {
+            set ::tools_cata::catalog_ucac4 $conf(astrometry,catfolder,ucac4)
+         } else {
+            set ::tools_cata::catalog_ucac4 ""
          }
       }
       if {! [info exists ::tools_cata::catalog_tycho2] } {
@@ -360,6 +374,7 @@ namespace eval cata_creation_gui {
       set conf(astrometry,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
       set conf(astrometry,catfolder,ucac2)  $::tools_cata::catalog_ucac2  
       set conf(astrometry,catfolder,ucac3)  $::tools_cata::catalog_ucac3  
+      set conf(astrometry,catfolder,ucac4)  $::tools_cata::catalog_ucac4  
       set conf(astrometry,catfolder,tycho2) $::tools_cata::catalog_tycho2 
       set conf(astrometry,catfolder,nomad1) $::tools_cata::catalog_nomad1 
 
@@ -367,6 +382,7 @@ namespace eval cata_creation_gui {
       set conf(astrometry,cata,use_usnoa2) $::tools_cata::use_usnoa2
       set conf(astrometry,cata,use_ucac2)  $::tools_cata::use_ucac2
       set conf(astrometry,cata,use_ucac3)  $::tools_cata::use_ucac3
+      set conf(astrometry,cata,use_ucac4)  $::tools_cata::use_ucac4
       set conf(astrometry,cata,use_tycho2) $::tools_cata::use_tycho2
       set conf(astrometry,cata,use_nomad1) $::tools_cata::use_nomad1
       set conf(astrometry,cata,use_skybot) $::tools_cata::use_skybot
@@ -1142,6 +1158,7 @@ namespace eval cata_creation_gui {
       set ::tools_cata::nb_tycho2  0
       set ::tools_cata::nb_ucac2   0
       set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_ucac4   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
@@ -2533,6 +2550,17 @@ namespace eval cata_creation_gui {
              entry $ucac3.dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 30
              pack $ucac3.dir -in $ucac3 -side right -pady 1 -anchor w
   
+        #--- Cree un frame pour afficher ucac4
+        set ucac4 [frame $f1.ucac4 -borderwidth 0 -cursor arrow -relief groove]
+        pack $ucac4 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $ucac4.check -highlightthickness 0 -text "UCAC4" -variable ::tools_cata::use_ucac4
+             pack $ucac4.check -in $ucac4 -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $ucac4.dir -relief sunken -textvariable ::tools_cata::catalog_ucac4 -width 30
+             pack $ucac4.dir -in $ucac4 -side right -pady 1 -anchor w
+
         #--- Cree un frame pour afficher nomad1
         set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove]
         pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2805,6 +2833,24 @@ namespace eval cata_creation_gui {
                 spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
                 $ucac3.radius set $::gui_cata::size_ucac3_sav
+
+           #--- Cree un frame pour afficher UCAC4
+           set ucac4 [frame $count.ucac4 -borderwidth 0 -cursor arrow -relief groove]
+           pack $ucac4 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ucac4.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ucac4 -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $ucac4.check -in $ucac4 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac4.name -text "UCAC4 :" -width 14 -anchor e
+                pack $ucac4.name -in $ucac4 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac4.val -textvariable ::tools_cata::nb_ucac4 -width 4
+                pack $ucac4.val -in $ucac4 -side left -padx 3 -pady 3
+                button $ucac4.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac4 -command ""
+                pack $ucac4.color -side left -anchor e -expand 0 
+                spinbox $ucac4.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac4 -command "::gui_cata::affiche_cata" -width 3
+                pack  $ucac4.radius -in $ucac4 -side left -anchor w
+                $ucac4.radius set $::gui_cata::size_ucac4_sav
 
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
