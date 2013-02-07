@@ -78,6 +78,20 @@ namespace eval cata_creation_gui {
             set ::tools_cata::use_ucac4 0
          }
       }
+      if {! [info exists ::tools_cata::use_ppmx] } {
+         if {[info exists conf(astrometry,cata,use_ppmx)]} {
+            set ::tools_cata::use_ppmx $conf(astrometry,cata,use_ppmx)
+         } else {
+            set ::tools_cata::use_ppmx 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_ppmxl] } {
+         if {[info exists conf(astrometry,cata,use_ppmxl)]} {
+            set ::tools_cata::use_ppmxl $conf(astrometry,cata,use_ppmxl)
+         } else {
+            set ::tools_cata::use_ppmxl 0
+         }
+      }
       if {! [info exists ::tools_cata::use_tycho2] } {
          if {[info exists conf(astrometry,cata,use_tycho2)]} {
             set ::tools_cata::use_tycho2 $conf(astrometry,cata,use_tycho2)
@@ -150,6 +164,20 @@ namespace eval cata_creation_gui {
             set ::tools_cata::catalog_ucac4 $conf(astrometry,catfolder,ucac4)
          } else {
             set ::tools_cata::catalog_ucac4 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ppmx] } {
+         if {[info exists conf(astrometry,catfolder,ppmx)]} {
+            set ::tools_cata::catalog_ppmx $conf(astrometry,catfolder,ppmx)
+         } else {
+            set ::tools_cata::catalog_ppmx ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ppmxl] } {
+         if {[info exists conf(astrometry,catfolder,ppmxl)]} {
+            set ::tools_cata::catalog_ppmxl $conf(astrometry,catfolder,ppmxl)
+         } else {
+            set ::tools_cata::catalog_ppmxl ""
          }
       }
       if {! [info exists ::tools_cata::catalog_tycho2] } {
@@ -375,6 +403,8 @@ namespace eval cata_creation_gui {
       set conf(astrometry,catfolder,ucac2)  $::tools_cata::catalog_ucac2  
       set conf(astrometry,catfolder,ucac3)  $::tools_cata::catalog_ucac3  
       set conf(astrometry,catfolder,ucac4)  $::tools_cata::catalog_ucac4  
+      set conf(astrometry,catfolder,ppmx)   $::tools_cata::catalog_ppmx  
+      set conf(astrometry,catfolder,ppmxl)  $::tools_cata::catalog_ppmxl
       set conf(astrometry,catfolder,tycho2) $::tools_cata::catalog_tycho2 
       set conf(astrometry,catfolder,nomad1) $::tools_cata::catalog_nomad1 
 
@@ -383,6 +413,8 @@ namespace eval cata_creation_gui {
       set conf(astrometry,cata,use_ucac2)  $::tools_cata::use_ucac2
       set conf(astrometry,cata,use_ucac3)  $::tools_cata::use_ucac3
       set conf(astrometry,cata,use_ucac4)  $::tools_cata::use_ucac4
+      set conf(astrometry,cata,use_ppmx)   $::tools_cata::use_ppmx
+      set conf(astrometry,cata,use_ppmxl)  $::tools_cata::use_ppmxl
       set conf(astrometry,cata,use_tycho2) $::tools_cata::use_tycho2
       set conf(astrometry,cata,use_nomad1) $::tools_cata::use_nomad1
       set conf(astrometry,cata,use_skybot) $::tools_cata::use_skybot
@@ -1159,6 +1191,8 @@ namespace eval cata_creation_gui {
       set ::tools_cata::nb_ucac2   0
       set ::tools_cata::nb_ucac3   0
       set ::tools_cata::nb_ucac4   0
+      set ::tools_cata::nb_ppmx    0
+      set ::tools_cata::nb_ppmxl   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
@@ -2561,6 +2595,28 @@ namespace eval cata_creation_gui {
              entry $ucac4.dir -relief sunken -textvariable ::tools_cata::catalog_ucac4 -width 30
              pack $ucac4.dir -in $ucac4 -side right -pady 1 -anchor w
 
+        #--- Cree un frame pour afficher ppmx
+        set ppmx [frame $f1.ppmx -borderwidth 0 -cursor arrow -relief groove]
+        pack $ppmx -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $ppmx.check -highlightthickness 0 -text "PPMX" -variable ::tools_cata::use_ppmx -state disabled
+             pack $ppmx.check -in $ppmx -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $ppmx.dir -relief sunken -textvariable ::tools_cata::catalog_ppmx -width 30
+             pack $ppmx.dir -in $ppmx -side right -pady 1 -anchor w
+
+        #--- Cree un frame pour afficher ppmxl
+        set ppmxl [frame $f1.ppmxl -borderwidth 0 -cursor arrow -relief groove]
+        pack $ppmxl -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $ppmxl.check -highlightthickness 0 -text "PPMXL" -variable ::tools_cata::use_ppmxl -state disabled
+             pack $ppmxl.check -in $ppmxl -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $ppmxl.dir -relief sunken -textvariable ::tools_cata::catalog_ppmxl -width 30
+             pack $ppmxl.dir -in $ppmxl -side right -pady 1 -anchor w
+
         #--- Cree un frame pour afficher nomad1
         set nomad1 [frame $f1.nomad1 -borderwidth 0 -cursor arrow -relief groove]
         pack $nomad1 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2852,6 +2908,44 @@ namespace eval cata_creation_gui {
                 pack  $ucac4.radius -in $ucac4 -side left -anchor w
                 $ucac4.radius set $::gui_cata::size_ucac4_sav
 
+           #--- Cree un frame pour afficher PPMX
+           set ppmx [frame $count.ppmx -borderwidth 0 -cursor arrow -relief groove]
+           pack $ppmx -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ppmx.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ppmx -state normal  \
+                      -command "::gui_cata::affiche_cata" \
+                      -state disable
+                pack $ppmx.check -in $ppmx -side left -padx 3 -pady 3 -anchor w 
+                label $ppmx.name -text "PPMX :" -width 14 -anchor e
+                pack $ppmx.name -in $ppmx -side left -padx 3 -pady 3 -anchor w 
+                label $ppmx.val -textvariable ::tools_cata::nb_ppmx -width 4
+                pack $ppmx.val -in $ppmx -side left -padx 3 -pady 3
+                button $ppmx.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ppmx -command ""
+                pack $ppmx.color -side left -anchor e -expand 0 
+                spinbox $ppmx.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmx -command "::gui_cata::affiche_cata" -width 3
+                pack  $ppmx.radius -in $ppmx -side left -anchor w
+                $ppmx.radius set $::gui_cata::size_ppmx_sav
+
+           #--- Cree un frame pour afficher PPMXL
+           set ppmxl [frame $count.ppmxl -borderwidth 0 -cursor arrow -relief groove]
+           pack $ppmxl -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ppmxl.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ppmxl -state normal  \
+                      -command "::gui_cata::affiche_cata" \
+                      -state disable
+                pack $ppmxl.check -in $ppmxl -side left -padx 3 -pady 3 -anchor w 
+                label $ppmxl.name -text "PPMXL :" -width 14 -anchor e
+                pack $ppmxl.name -in $ppmxl -side left -padx 3 -pady 3 -anchor w 
+                label $ppmxl.val -textvariable ::tools_cata::nb_ppmxl -width 4
+                pack $ppmxl.val -in $ppmxl -side left -padx 3 -pady 3
+                button $ppmxl.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ppmxl -command ""
+                pack $ppmxl.color -side left -anchor e -expand 0 
+                spinbox $ppmxl.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmxl -command "::gui_cata::affiche_cata" -width 3
+                pack  $ppmxl.radius -in $ppmxl -side left -anchor w
+                $ppmxl.radius set $::gui_cata::size_ppmxl_sav
+
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
            pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2876,7 +2970,8 @@ namespace eval cata_creation_gui {
 
                 checkbutton $nomad1.check -highlightthickness 0 \
                       -variable ::gui_cata::gui_nomad1 -state normal  \
-                      -command "::gui_cata::affiche_cata"
+                      -command "::gui_cata::affiche_cata" \
+                      -state disable
                 pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
                 label $nomad1.name -text "NOMAD1 :" -width 14 -anchor e
                 pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
