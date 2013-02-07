@@ -580,14 +580,14 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set listsources [ identification $listsources IMG $ucac3 UCAC3 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
       }
-   
+
       if {$::tools_cata::use_ucac4} {
-gren_info "CMD: csucac4 $::tools_cata::catalog_ucac4 $ra $dec $radius\n"
+         #gren_info "CMD: csucac4 $::tools_cata::catalog_ucac4 $ra $dec $radius\n"
          set ucac4 [csucac4 $::tools_cata::catalog_ucac4 $ra $dec $radius]
-gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac4]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac4]\n"
          set ucac4 [::manage_source::set_common_fields $ucac4 UCAC4 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-::manage_source::imprim_3_sources $ucac4
-gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #::manage_source::imprim_3_sources $ucac4
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac4 UCAC4 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac4 [::manage_source::get_nb_sources_by_cata $listsources UCAC4]

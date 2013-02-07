@@ -293,6 +293,11 @@ namespace eval ::manage_source {
                return $name
             }
 
+            if {$mycata=="UCAC4"} {
+               set id [lindex [lindex $cata 2] 0]
+               return "UCAC4_$id"
+            }
+
             if {$mycata=="UCAC3"} {
                set id [lindex [lindex $cata 2] 0]
                return "UCAC3_$id"
@@ -327,6 +332,7 @@ namespace eval ::manage_source {
                set id [lindex [lindex $cata 2] 0]
                return "USNOA2_${id}"
             }
+
             if {$mycata=="TYCHO2"} {
                set id1 [lindex [lindex $cata 2] 1]
                set id2 [lindex [lindex $cata 2] 2]

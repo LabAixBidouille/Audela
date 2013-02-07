@@ -194,6 +194,8 @@ namespace eval gui_cata {
    variable gui_ucac2
    variable gui_ucac3
    variable gui_ucac4
+   variable gui_ppmx
+   variable gui_ppmxl
    variable gui_tycho2
    variable gui_nomad1
    variable gui_skybot
@@ -203,6 +205,8 @@ namespace eval gui_cata {
    variable size_ucac2
    variable size_ucac3
    variable size_ucac4
+   variable size_ppmx
+   variable size_ppmxl
    variable size_nomad1
    variable size_tycho2
    variable size_skybot
@@ -213,6 +217,8 @@ namespace eval gui_cata {
    variable color_ucac2   "cyan"
    variable color_ucac3   "#006cc0"
    variable color_ucac4   "#0000ff"
+   variable color_ppmx    "orange"
+   variable color_ppmxl   "orange"
    variable color_nomad1  "#b4b308"
    variable color_tycho2  "orange"
    variable color_skybot  "magenta"
@@ -276,6 +282,20 @@ namespace eval gui_cata {
             set ::gui_cata::gui_ucac4 $conf(astrometry,cata,gui_ucac4)
          } else {
             set ::gui_cata::gui_ucac4 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_ppmx] } {
+         if {[info exists conf(astrometry,cata,gui_ppmx)]} {
+            set ::gui_cata::gui_ppmx $conf(astrometry,cata,gui_ppmx)
+         } else {
+            set ::gui_cata::gui_ppmx 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_ppmxl] } {
+         if {[info exists conf(astrometry,cata,gui_ppmxl)]} {
+            set ::gui_cata::gui_ppmxl $conf(astrometry,cata,gui_ppmxl)
+         } else {
+            set ::gui_cata::gui_ppmxl 0
          }
       }
       if {! [info exists ::gui_cata::gui_tycho2] } {
@@ -346,6 +366,24 @@ namespace eval gui_cata {
       }
       set ::gui_cata::size_ucac4_sav $::gui_cata::size_ucac4
 
+      if {! [info exists ::gui_cata::size_ppmx] } {
+         if {[info exists conf(astrometry,cata,size_ppmx)]} {
+            set ::gui_cata::size_ppmx $conf(astrometry,cata,size_ppmx)
+         } else {
+            set ::gui_cata::size_ppmx 1
+         }
+      }
+      set ::gui_cata::size_ppmx_sav $::gui_cata::size_ppmx
+
+      if {! [info exists ::gui_cata::size_ppmxl] } {
+         if {[info exists conf(astrometry,cata,size_ppmxl)]} {
+            set ::gui_cata::size_ppmxl $conf(astrometry,cata,size_ppmxl)
+         } else {
+            set ::gui_cata::size_ppmxl 1
+         }
+      }
+      set ::gui_cata::size_ppmxl_sav $::gui_cata::size_ppmxl
+
       if {! [info exists ::gui_cata::size_nomad1] } {
          if {[info exists conf(astrometry,cata,size_nomad1)]} {
             set ::gui_cata::size_nomad1 $conf(astrometry,cata,size_nomad1)
@@ -408,6 +446,8 @@ namespace eval gui_cata {
       set ::tools_cata::nb_img     0
       set ::tools_cata::nb_usnoa2  0
       set ::tools_cata::nb_tycho2  0
+      set ::tools_cata::nb_ppmx    0
+      set ::tools_cata::nb_ppmxl   0
       set ::tools_cata::nb_ucac2   0
       set ::tools_cata::nb_ucac3   0
       set ::tools_cata::nb_ucac4   0
@@ -427,6 +467,8 @@ namespace eval gui_cata {
       set conf(astrometry,cata,gui_ucac2)  $::gui_cata::gui_ucac2
       set conf(astrometry,cata,gui_ucac3)  $::gui_cata::gui_ucac3
       set conf(astrometry,cata,gui_ucac4)  $::gui_cata::gui_ucac4
+      set conf(astrometry,cata,gui_ppmx)   $::gui_cata::gui_ppmx
+      set conf(astrometry,cata,gui_ppmxl)  $::gui_cata::gui_ppmxl
       set conf(astrometry,cata,gui_tycho2) $::gui_cata::gui_tycho2
       set conf(astrometry,cata,gui_nomad1) $::gui_cata::gui_nomad1
       set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
@@ -442,6 +484,8 @@ namespace eval gui_cata {
       set conf(astrometry,cata,size_ucac2)  $::gui_cata::size_ucac2
       set conf(astrometry,cata,size_ucac3)  $::gui_cata::size_ucac3
       set conf(astrometry,cata,size_ucac4)  $::gui_cata::size_ucac4
+      set conf(astrometry,cata,size_ppmx)   $::gui_cata::size_ppmx
+      set conf(astrometry,cata,size_ppmxl)   $::gui_cata::size_ppmxl
       set conf(astrometry,cata,size_nomad1) $::gui_cata::size_nomad1
       set conf(astrometry,cata,size_tycho2) $::gui_cata::size_tycho2
       set conf(astrometry,cata,size_skybot) $::gui_cata::size_skybot
@@ -581,8 +625,10 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra_deg dec_deg 5.0 magR 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
 #### TODO
-#      set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+#      set listsources [::tools_sources::set_common_fields $listsources PPMX   {  }]
+#      set listsources [::tools_sources::set_common_fields $listsources PPMXL  {  }]
       set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
@@ -659,6 +705,8 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
          if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
          if { $::gui_cata::gui_ucac4  } { affich_rond $::tools_cata::current_listsources UCAC4  $::gui_cata::color_ucac4  $::gui_cata::size_ucac4  }
+         if { $::gui_cata::gui_ppmx   } { affich_rond $::tools_cata::current_listsources PPMX   $::gui_cata::color_ppmx   $::gui_cata::size_ppmx   }
+         if { $::gui_cata::gui_ppmxl  } { affich_rond $::tools_cata::current_listsources PPMXL  $::gui_cata::color_ppmxl  $::gui_cata::size_ppmxl  }
          if { $::gui_cata::gui_tycho2 } { affich_rond $::tools_cata::current_listsources TYCHO2 $::gui_cata::color_tycho2 $::gui_cata::size_tycho2 }
          if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
@@ -706,6 +754,8 @@ namespace eval gui_cata {
       set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC2]
       set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC3]
       set ::tools_cata::nb_ucac4 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC4]
+      set ::tools_cata::nb_ppmx [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources PPMX]
+      set ::tools_cata::nb_ppmxl [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources PPMXL]
       set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources NOMAD1]
       set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources SKYBOT]
       set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources ASTROID]
@@ -832,6 +882,42 @@ namespace eval gui_cata {
                 spinbox $ucac4.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac4 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac4.radius -in $ucac4 -side left -anchor w
 
+           #--- Cree un frame pour afficher PPMX
+           set ppmx [frame $count.ppmx -borderwidth 0 -cursor arrow -relief groove]
+           pack $ppmx -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ppmx.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ppmx -state normal  \
+                      -command "::gui_cata::affiche_cata"\
+                      -state disable
+                pack $ppmx.check -in $ppmx -side left -padx 3 -pady 3 -anchor w 
+                label $ppmx.name -text "PPMX :" -width 14 -anchor e
+                pack $ppmx.name -in $ppmx -side left -padx 3 -pady 3 -anchor w 
+                label $ppmx.val -textvariable ::tools_cata::nb_ppmx -width 4
+                pack $ppmx.val -in $ppmx -side left -padx 3 -pady 3
+                button $ppmx.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ppmx -command ""
+                pack $ppmx.color -side left -anchor e -expand 0 
+                spinbox $ppmx.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmx -command "::gui_cata::affiche_cata" -width 3
+                pack  $ppmx.radius -in $ppmx -side left -anchor w
+
+           #--- Cree un frame pour afficher PPMXL
+           set ppmxl [frame $count.ppmxl -borderwidth 0 -cursor arrow -relief groove]
+           pack $ppmxl -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ppmxl.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ppmxl -state normal  \
+                      -command "::gui_cata::affiche_cata" \
+                      -state disable
+                pack $ppmxl.check -in $ppmxl -side left -padx 3 -pady 3 -anchor w 
+                label $ppmxl.name -text "PPMXL :" -width 14 -anchor e
+                pack $ppmxl.name -in $ppmxl -side left -padx 3 -pady 3 -anchor w 
+                label $ppmxl.val -textvariable ::tools_cata::nb_ppmxl -width 4
+                pack $ppmxl.val -in $ppmxl -side left -padx 3 -pady 3
+                button $ppmxl.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ppmxl -command ""
+                pack $ppmxl.color -side left -anchor e -expand 0 
+                spinbox $ppmxl.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmxl -command "::gui_cata::affiche_cata" -width 3
+                pack  $ppmxl.radius -in $ppmxl -side left -anchor w
+
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
            pack $tycho2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -856,7 +942,8 @@ namespace eval gui_cata {
 
                 checkbutton $nomad1.check -highlightthickness 0 \
                       -variable ::gui_cata::gui_nomad1 -state normal  \
-                      -command "::gui_cata::affiche_cata"
+                      -command "::gui_cata::affiche_cata"\
+                      -state disable
                 pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
                 label $nomad1.name -text "NOMAD1 :" -width 14 -anchor e
                 pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
