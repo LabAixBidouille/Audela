@@ -1,5 +1,14 @@
 TODOLIGHT
 
+
+recherche : Gestion -> modification
+
+    - si demande de compatibilite, alors verfier les champs bddimages et les mettre a plat.
+
+voir le cata
+
+    - ajouter binding sur la touche 'v'
+
 création cata :
 
     - "Manuel" Fov et Orientation parfois vide, du coup ca fait planter l appel au DSS.
@@ -10,6 +19,7 @@ création cata :
     - Ajouter ppmx et ppmxl (pour l instant seulement des boutons cochables en grisé)
 
 Gestion cata :
+
     - renommage du champ "name" de astroid
     - Effacement d une source dans toutes les images selectionnées
 

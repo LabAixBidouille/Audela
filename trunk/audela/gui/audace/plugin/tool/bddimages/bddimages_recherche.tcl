@@ -1161,7 +1161,7 @@ namespace eval bddimages_recherche {
       menu $popupTbl.cata -tearoff 0
       $popupTbl add cascade -label "Catalogue" -menu $popupTbl.cata
 
-           $popupTbl.cata add command -label "Voir le Cata" \
+           $popupTbl.cata add command -label "(v) Voir le Cata" \
               -command { ::bddimages_recherche::bddimages_voir_cata }
 
            $popupTbl.cata add command -label "(g) Gerer le Cata" \
@@ -1221,6 +1221,7 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Key-g> { ::bddimages_recherche::bddimages_gestion_cata }
       bind [$tbl bodypath] <Key-c> { ::bddimages_recherche::bddimages_creation_cata }
       bind [$tbl bodypath] <Key-a> { ::bddimages_recherche::bddimages_astrometrie }
+      bind [$tbl bodypath] <Key-v> { ::bddimages_recherche::bddimages_voir_cata }
 
    }
 
