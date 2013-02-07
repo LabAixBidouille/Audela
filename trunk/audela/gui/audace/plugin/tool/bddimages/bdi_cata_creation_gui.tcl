@@ -93,7 +93,6 @@ namespace eval cata_creation_gui {
          }
       }
 
-
       # Uncosmic or not
       if {! [info exists ::gui_cata::use_uncosmic] } {
          if {[info exists conf(astrometry,cata,use_uncosmic)]} {

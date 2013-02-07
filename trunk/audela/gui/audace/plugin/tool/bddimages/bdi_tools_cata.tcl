@@ -200,6 +200,58 @@ namespace eval tools_cata {
 
 
 
+   proc ::tools_cata::charge_list { img_list } {
+
+      global audace
+      global bddconf
+
+      catch {
+         if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+         if { [ info exists $::tools_cata::nb_img_list ] }        {unset ::tools_cata::nb_img_list}
+         if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+         if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+      }
+      
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+      }
+
+      # Chargement premiere image sans GUI
+      set ::tools_cata::id_current_image 1
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list 0]
+
+      set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+
+      set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+      set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+      set filename    [::bddimages_liste::lget $::tools_cata::current_image filename   ]
+
+      set ::tools_cata::file [file join $bddconf(dirbase) $dirfilename $filename]
+      set ::tools_cata::ra       [lindex [::bddimages_liste::lget $tabkey ra      ] 1]
+      set ::tools_cata::dec      [lindex [::bddimages_liste::lget $tabkey dec     ] 1]
+      set ::tools_cata::pixsize1 [lindex [::bddimages_liste::lget $tabkey pixsize1] 1]
+      set ::tools_cata::pixsize2 [lindex [::bddimages_liste::lget $tabkey pixsize2] 1]
+      set ::tools_cata::foclen   [lindex [::bddimages_liste::lget $tabkey foclen  ] 1]
+      set ::tools_cata::exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE] 1]
+      set ::tools_cata::naxis1   [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set ::tools_cata::naxis2   [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set ::tools_cata::xcent    [expr $::tools_cata::naxis1/2.0]
+      set ::tools_cata::ycent    [expr $::tools_cata::naxis2/2.0]
+
+      set ::tools_cata::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
+
+      set ::tools_cata::current_image_name $filename
+      set ::tools_cata::current_image_date $date
+   }
+
 
 
 
