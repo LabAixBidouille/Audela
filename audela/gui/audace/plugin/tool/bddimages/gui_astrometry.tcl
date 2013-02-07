@@ -20,6 +20,11 @@ namespace eval gui_astrometry {
          }
       }
 
+
+
+
+
+
    }
 
 
@@ -232,21 +237,22 @@ namespace eval gui_astrometry {
       set tt0 [clock clicks -milliseconds]
 
       if {$::gui_astrometry::state_gestion == 0} {
-         catch {destroy .gestion_cata}
+         catch {destroy $::cata_gestion_gui::fen}
          gren_info "Chargement des fichiers XML\n"
          ::cata_gestion_gui::go $::tools_cata::img_list
          set ::gui_astrometry::state_gestion 1
       }
-      if {[info exists ::gui_cata::state_gestion] && $::gui_cata::state_gestion == 1} {
+
+      if {[info exists ::cata_gestion_gui::state_gestion] && $::cata_gestion_gui::state_gestion == 1} {
          gren_info "Chargement depuis la fenetre de gestion des sources\n"
          ::gui_astrometry::affich_catalist
       } else {
-         catch {destroy .gestion_cata}
+         catch {destroy $::cata_gestion_gui::fen}
          gren_info "Chargement des fichiers XML\n"
          ::cata_gestion_gui::go $::tools_cata::img_list
       }
 
-      focus .astrometry
+      focus $::gui_astrometry::fen
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Chargement complet en $tt sec \n"
@@ -352,8 +358,10 @@ namespace eval gui_astrometry {
       global audace
       global bddconf
 
-      ::gui_astrometry::charge_list $img_list
+
       ::gui_astrometry::inittoconf
+
+      ::gui_astrometry::charge_list $img_list
 
       set ::gui_astrometry::state_gestion 0
       
@@ -421,7 +429,6 @@ namespace eval gui_astrometry {
       wm protocol $::gui_astrometry::fen WM_DELETE_WINDOW "destroy $::gui_astrometry::fen"
 
       set frm $::gui_astrometry::fen.appli
-      set ::gui_astrometry::current_appli $frm
 
 
       #--- Cree un frame general
