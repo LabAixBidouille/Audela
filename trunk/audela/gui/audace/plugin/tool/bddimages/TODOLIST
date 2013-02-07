@@ -11,8 +11,6 @@ création cata :
       il faut ajouter un test a appel au dss en cas de champs vide.
     - "Manuel" Fov et Orientation parfois vide, comprendre pourquoi car le wcs est ok.
     - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
-    - Ajouter UCAC4 (csucac4 existe)
-    - Ajouter ppmx et ppmxl (pour l instant seulement des boutons cochables en grisé)
 
 Gestion cata :
 
