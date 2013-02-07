@@ -731,7 +731,9 @@ namespace eval gui_cata {
                 pack $img.color -side left -anchor e -expand 0 
                 spinbox $img.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_img -command "::gui_cata::affiche_cata" -width 3
                 pack  $img.radius -in $img -side left -anchor w
-
+                $img.radius set $::gui_cata::size_img_sav
+                
+                
            #--- Cree un frame pour afficher USNOA2
            set usnoa2 [frame $count.usnoa2 -borderwidth 0 -cursor arrow -relief groove]
            pack $usnoa2 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -748,6 +750,7 @@ namespace eval gui_cata {
                 pack $usnoa2.color -side left -anchor e -expand 0 
                 spinbox $usnoa2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_usnoa2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $usnoa2.radius -in $usnoa2 -side left -anchor w
+                $usnoa2.radius set $::gui_cata::size_usnoa2_sav
 
            #--- Cree un frame pour afficher UCAC2
            set ucac2 [frame $count.ucac2 -borderwidth 0 -cursor arrow -relief groove]
@@ -766,6 +769,7 @@ namespace eval gui_cata {
                 pack $ucac2.color -side left -anchor e -expand 0 
                 spinbox $ucac2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac2.radius -in $ucac2 -side left -anchor w
+                $ucac2.radius set $::gui_cata::size_ucac2_sav
 
            #--- Cree un frame pour afficher UCAC3
            set ucac3 [frame $count.ucac3 -borderwidth 0 -cursor arrow -relief groove]
@@ -783,6 +787,7 @@ namespace eval gui_cata {
                 pack $ucac3.color -side left -anchor e -expand 0 
                 spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
+                $ucac3.radius set $::gui_cata::size_ucac3_sav
 
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
@@ -800,6 +805,7 @@ namespace eval gui_cata {
                 pack $tycho2.color -side left -anchor e -expand 0 
                 spinbox $tycho2.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_tycho2 -command "::gui_cata::affiche_cata" -width 3
                 pack  $tycho2.radius -in $tycho2 -side left -anchor w
+                $tycho2.radius set $::gui_cata::size_tycho2_sav
 
            #--- Cree un frame pour afficher NOMAD1
            set nomad1 [frame $count.nomad1 -borderwidth 0 -cursor arrow -relief groove]
@@ -817,6 +823,7 @@ namespace eval gui_cata {
                 pack $nomad1.color -side left -anchor e -expand 0 
                 spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
+                $nomad1.radius set $::gui_cata::size_nomad1_sav
 
            #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]
@@ -835,6 +842,7 @@ namespace eval gui_cata {
                 spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
                 $skybot.radius set $::gui_cata::size_skybot
+                
         #--- Cree un frame pour afficher bouton fermeture
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
         pack $boutonpied -in $frm -anchor s -side right -expand 0 -fill x -padx 10 -pady 5
