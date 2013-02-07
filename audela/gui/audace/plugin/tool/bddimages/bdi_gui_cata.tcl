@@ -193,6 +193,7 @@ namespace eval gui_cata {
    variable gui_usnoa2
    variable gui_ucac2
    variable gui_ucac3
+   variable gui_ucac4
    variable gui_tycho2
    variable gui_nomad1
    variable gui_skybot
@@ -201,15 +202,17 @@ namespace eval gui_cata {
    variable size_usnoa2
    variable size_ucac2
    variable size_ucac3
+   variable size_ucac4
    variable size_nomad1
    variable size_tycho2
    variable size_skybot
    variable size_ovni
 
-   variable color_img     "blue"
+   variable color_img     "red"
    variable color_usnoa2  "green"
    variable color_ucac2   "cyan"
-   variable color_ucac3   "red"
+   variable color_ucac3   "#006cc0"
+   variable color_ucac4   "#0000ff"
    variable color_nomad1  "#b4b308"
    variable color_tycho2  "orange"
    variable color_skybot  "magenta"
@@ -266,6 +269,13 @@ namespace eval gui_cata {
             set ::gui_cata::gui_ucac3 $conf(astrometry,cata,gui_ucac3)
          } else {
             set ::gui_cata::gui_ucac3 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_ucac4] } {
+         if {[info exists conf(astrometry,cata,gui_ucac4)]} {
+            set ::gui_cata::gui_ucac4 $conf(astrometry,cata,gui_ucac4)
+         } else {
+            set ::gui_cata::gui_ucac4 0
          }
       }
       if {! [info exists ::gui_cata::gui_tycho2] } {
@@ -327,6 +337,15 @@ namespace eval gui_cata {
       }
       set ::gui_cata::size_ucac3_sav $::gui_cata::size_ucac3
       
+      if {! [info exists ::gui_cata::size_ucac4] } {
+         if {[info exists conf(astrometry,cata,size_ucac4)]} {
+            set ::gui_cata::size_ucac4 $conf(astrometry,cata,size_ucac4)
+         } else {
+            set ::gui_cata::size_ucac4 1
+         }
+      }
+      set ::gui_cata::size_ucac4_sav $::gui_cata::size_ucac4
+
       if {! [info exists ::gui_cata::size_nomad1] } {
          if {[info exists conf(astrometry,cata,size_nomad1)]} {
             set ::gui_cata::size_nomad1 $conf(astrometry,cata,size_nomad1)
@@ -391,6 +410,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_tycho2  0
       set ::tools_cata::nb_ucac2   0
       set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_ucac4   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
@@ -406,6 +426,7 @@ namespace eval gui_cata {
       set conf(astrometry,cata,gui_usnoa2) $::gui_cata::gui_usnoa2
       set conf(astrometry,cata,gui_ucac2)  $::gui_cata::gui_ucac2
       set conf(astrometry,cata,gui_ucac3)  $::gui_cata::gui_ucac3
+      set conf(astrometry,cata,gui_ucac4)  $::gui_cata::gui_ucac4
       set conf(astrometry,cata,gui_tycho2) $::gui_cata::gui_tycho2
       set conf(astrometry,cata,gui_nomad1) $::gui_cata::gui_nomad1
       set conf(astrometry,cata,gui_skybot) $::gui_cata::gui_skybot
@@ -420,6 +441,7 @@ namespace eval gui_cata {
       set conf(astrometry,cata,size_usnoa2) $::gui_cata::size_usnoa2
       set conf(astrometry,cata,size_ucac2)  $::gui_cata::size_ucac2
       set conf(astrometry,cata,size_ucac3)  $::gui_cata::size_ucac3
+      set conf(astrometry,cata,size_ucac4)  $::gui_cata::size_ucac4
       set conf(astrometry,cata,size_nomad1) $::gui_cata::size_nomad1
       set conf(astrometry,cata,size_tycho2) $::gui_cata::size_tycho2
       set conf(astrometry,cata,size_skybot) $::gui_cata::size_skybot
@@ -559,6 +581,8 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra_deg dec_deg 5.0 magR 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+#### TODO
+#      set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
       set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
@@ -634,6 +658,7 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
          if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
          if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
+         if { $::gui_cata::gui_ucac4  } { affich_rond $::tools_cata::current_listsources UCAC4  $::gui_cata::color_ucac4  $::gui_cata::size_ucac4  }
          if { $::gui_cata::gui_tycho2 } { affich_rond $::tools_cata::current_listsources TYCHO2 $::gui_cata::color_tycho2 $::gui_cata::size_tycho2 }
          if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
@@ -680,6 +705,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources TYCHO2]
       set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC2]
       set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC3]
+      set ::tools_cata::nb_ucac4 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources UCAC4]
       set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources NOMAD1]
       set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources SKYBOT]
       set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources ASTROID]
@@ -788,6 +814,23 @@ namespace eval gui_cata {
                 spinbox $ucac3.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac3.radius -in $ucac3 -side left -anchor w
                 $ucac3.radius set $::gui_cata::size_ucac3_sav
+
+           #--- Cree un frame pour afficher UCAC4
+           set ucac4 [frame $count.ucac4 -borderwidth 0 -cursor arrow -relief groove]
+           pack $ucac4 -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $ucac4.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_ucac4 -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $ucac4.check -in $ucac4 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac4.name -text "UCAC4 :" -width 14 -anchor e
+                pack $ucac4.name -in $ucac4 -side left -padx 3 -pady 3 -anchor w 
+                label $ucac4.val -textvariable ::tools_cata::nb_ucac4 -width 4
+                pack $ucac4.val -in $ucac4 -side left -padx 3 -pady 3
+                button $ucac4.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_ucac4 -command ""
+                pack $ucac4.color -side left -anchor e -expand 0 
+                spinbox $ucac4.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac4 -command "::gui_cata::affiche_cata" -width 3
+                pack  $ucac4.radius -in $ucac4 -side left -anchor w
 
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
