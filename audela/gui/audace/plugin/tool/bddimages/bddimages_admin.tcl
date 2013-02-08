@@ -579,7 +579,14 @@ proc ::bddimagesAdmin::bdi_setcompat { bufno } {
 #      lappend dellist "BDDIMAGES CATAASTROM"
 #      lappend dellist "BDDIMAGES PHOTOMETRY"
 #      lappend dellist "BDDIMAGES CATAPHOTOM"
-   
+
+   for {set i 1} {$i < 250} {incr i} {
+      set key [buf$bufno getkwd "TT$i"]
+      if {[lindex $key 0] != "" } {
+         lappend dellist [lindex $key 0]
+      }
+   }
+
    foreach del $dellist {
       set key [buf$bufno getkwd $del]
       if {[lindex $key 0] != "" } {
