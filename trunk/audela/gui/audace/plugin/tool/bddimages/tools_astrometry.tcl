@@ -114,6 +114,7 @@ namespace eval tools_astrometry {
 
             lappend ::tools_astrometry::listref($name)     $dateiso
             lappend ::tools_astrometry::listdate($dateiso) $name
+            set ::tools_astrometry::date_to_id($dateiso) $id_current_image
             
          }
 
@@ -412,7 +413,8 @@ namespace eval tools_astrometry {
             incr id_current_image
             set catascience($id_current_image) ""
             set cataref($id_current_image) ""
-
+            set ::tools_cata::new_astrometry($id_current_image) ""
+            
             gets $chan success
 
             if {$success!="SUCCESS"} {
@@ -436,6 +438,8 @@ namespace eval tools_astrometry {
                # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
                
                # TODO Modif du tabkey de chaque image de img_list
+               lappend ::tools_cata::new_astrometry($id_current_image) [list $kwd $val $type $unit $comment]
+               
             }
          }
 
