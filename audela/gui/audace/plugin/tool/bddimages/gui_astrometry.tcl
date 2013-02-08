@@ -217,11 +217,47 @@ namespace eval gui_astrometry {
 
       foreach select [$w curselection] {
          set date [lindex [$w get $select] 0]
+         
          gren_info "date = $date \n"
+         gren_info "Id img = $::tools_astrometry::date_to_id($date) \n"
+         set id $::tools_astrometry::date_to_id($date)
+         set tabkey [::bddimages_liste::lget [lindex $::tools_cata::img_list [expr $id -1] ] "tabkey"]
+         set datei   [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+         gren_info "date = $datei \n"
+         #gren_info "tabkey = $::tools_cata::new_astrometry($id) \n"
 
+         ::gui_astrometry::voir_dwet %w
+         
+         $::gui_astrometry::dwet delete 0 end
+         foreach val $::tools_cata::new_astrometry($id) {
+            gren_info "val = $val\n"
+            $::gui_astrometry::dwet insert end $val
+         }
+         
          break
       }
    }
+
+
+
+
+
+
+
+   proc ::gui_astrometry::voir_dwet { w } {
+      
+      
+   
+   }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -411,6 +447,11 @@ namespace eval gui_astrometry {
                                 0 "\u03B4"            right \
                                 0 Mag                 right \
                                 0 err_Mag             right ]
+      set loc_wcs_enf     [list 0 "Clés"              left \
+                                0 "Valeur"            center  \
+                                0 "type"              center \
+                                0 "unité"             center \
+                                0 "commentaire"       left ]
       
       set ::gui_astrometry::fen .astrometry
       if { [winfo exists $::gui_astrometry::fen] } {
@@ -762,6 +803,25 @@ namespace eval gui_astrometry {
 
                label  $dwe.titre -text "Solution astrometrique" -borderwidth 1
                pack   $dwe.titre -in $dwe -side top -padx 3 -pady 3 -anchor c
+
+                 set ::gui_astrometry::dwet $onglets_dates.list.wcs.enfant.table
+
+                 tablelist::tablelist $::gui_astrometry::dwet \
+                   -columns $loc_wcs_enf \
+                   -labelcommand tablelist::sortByColumn \
+                   -xscrollcommand [ list $dwe.hsb set ] \
+                   -yscrollcommand [ list $dwe.vsb set ] \
+                   -selectmode extended \
+                   -activestyle none \
+                   -stripebackground #e0e8f0 \
+                   -showseparators 1
+
+                 scrollbar $dwe.hsb -orient horizontal -command [list $::gui_astrometry::dwet xview]
+                 pack $dwe.hsb -in $dwe -side bottom -fill x
+                 scrollbar $dwe.vsb -orient vertical -command [list $::gui_astrometry::dwet yview]
+                 pack $dwe.vsb -in $dwe -side left -fill y
+
+                 pack $::gui_astrometry::dwet -in $dwe -expand yes -fill both 
 
 
          #  set ps [frame $onglets_sources.list.sciences.table_par -borderwidth 0 -cursor arrow -relief groove -background white]
