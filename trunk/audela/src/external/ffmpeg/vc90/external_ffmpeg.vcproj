@@ -43,9 +43,9 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="install.bat"
-				ReBuildCommandLine="install.bat"
-				CleanCommandLine=""
+				BuildCommandLine="cd .. &#x0D;&#x0A;nmake /f Makefile.vc build"
+				ReBuildCommandLine="cd .. &#x0D;&#x0A;nmake /f Makefile.vc clean build"
+				CleanCommandLine="cd .. &#x0D;&#x0A;nmake /f Makefile.vc clean"
 				Output="external_ffmpeg.exe"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				IncludeSearchPath=""
@@ -60,7 +60,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\install.bat"
+			RelativePath="..\Makefile.vc"
 			>
 		</File>
 	</Files>
