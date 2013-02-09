@@ -838,6 +838,9 @@ namespace eval ::audace {
       }
       update
 
+      #--- Recherche des ports COMs disponibles dans un thread
+      ::serialport::searchPortsThread
+
       #--- Connexion au demarrage des cameras
       ::confCam::startPlugin
 
@@ -889,7 +892,7 @@ namespace eval ::audace {
       set tsl_zenith [format "%02dh%02dm%02d" [lindex $tsl 0] [lindex $tsl 1] [expr int($tslsec)]]
       set audace(tsl,format,zenith) $tsl_zenith
       #--- Formatage et affichage de la date et de l'heure TU dans l'interface Aude'ACE
-      set audace(tu,format,dmy)  [ clock format [ clock seconds ] -format "%d/%m/%Y" -timezone :UTC ]
+      set audace(tu,format,dmy) [ clock format [ clock seconds ] -format "%d/%m/%Y" -timezone :UTC ]
       set audace(tu,format,dmyhmsint) [ clock format [ clock seconds ] -format "%d/%m/%Y %H:%M:%S $caption(audace,temps_universel)" -timezone :UTC ]
       #--- Formatage heure HL pour timer
       set secondes [ clock seconds ]
