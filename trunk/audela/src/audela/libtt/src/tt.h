@@ -1145,6 +1145,7 @@ int tt_imadelnewkey(TT_IMA *p,char *keyname);
 int tt_imareturnkeyvalue(TT_IMA *p,char *keyname,char *value,int *datatype,char *comment,char *unit);
 int tt_imacreater3d(TT_IMA *p,int naxis1,int naxis2,int naxis3);
 int tt_imacreater1d(TT_IMA *p,int naxis1);
+int tt_imareallocnewkey(TT_IMA *p,int nbkeys2add);
 
 int tt_tblobjloader(TT_IMA *p_ima,char *fullname);
 int tt_tblobjbuilder(TT_TBL_OBJELIST *p);

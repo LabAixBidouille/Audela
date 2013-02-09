@@ -425,6 +425,120 @@ int tt_imadelnewkey(TT_IMA *p,char *keyname)
    return(OK_DLL);
 }
 
+int tt_imareallocnewkey(TT_IMA *p,int nbkeys2add)
+/***************************************************************************/
+/* redimensionne les pointeurs newkeys avec nbkeys2add nouveaux mots       */
+/***************************************************************************/
+{
+	int k;
+   int len,msg;
+   int nombre,taille;
+	TT_IMA pp_tmp,*p_tmp;
+	p_tmp=&pp_tmp;
+	if ((msg=tt_imabuilder(p_tmp))!=OK_DLL) {
+		return(msg);
+	}
+	/* --- on libere les pointeurs temporaires ---*/
+	tt_util_free_ptrptr2((void***)&p_tmp->new_keynames,"p_tmp->new_keynames");
+	tt_util_free_ptrptr2((void***)&p_tmp->new_values,"p_tmp->new_values");
+	tt_util_free_ptrptr2((void***)&p_tmp->new_comments,"p_tmp->new_comments");
+	tt_util_free_ptrptr2((void***)&p_tmp->new_units,"p_tmp->new_units");
+	tt_free2((void**)&p_tmp->new_datatypes,"p_tmp->new_datatypes");
+	/* --- On alloue la memoire des pointeurs temporaires --- */
+	p_tmp->new_nbkeys=p->new_nbkeys;
+	len=(int)(FLEN_KEYWORD);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p_tmp->new_keynames,&p_tmp->new_nbkeys,&len,"p_tmp->new_keynames"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_keynames");
+		tt_imadestroyer(p_tmp);
+		return(TT_ERR_PB_MALLOC);
+	}
+	len=(int)(FLEN_VALUE);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p_tmp->new_values,&p_tmp->new_nbkeys,&len,"p_tmp->new_values"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_values");
+		tt_imadestroyer(p_tmp);
+		return(TT_ERR_PB_MALLOC);
+	}
+	len=(int)(FLEN_COMMENT);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p_tmp->new_comments,&p_tmp->new_nbkeys,&len,"p_tmp->new_comments"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_comments");
+		tt_imadestroyer(p_tmp);
+		return(TT_ERR_PB_MALLOC);
+	}
+	len=(int)(FLEN_COMMENT);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p_tmp->new_units,&p_tmp->new_nbkeys,&len,"p_tmp->new_units"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_units");
+		tt_imadestroyer(p_tmp);
+		return(TT_ERR_PB_MALLOC);
+	}
+	nombre=p_tmp->new_nbkeys;
+	taille=sizeof(int);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_tmp->new_datatypes,&nombre,&taille,"p_tmp->new_datatypes"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_datatypes");
+		tt_imadestroyer(p_tmp);
+		return(TT_ERR_PB_MALLOC);
+	}
+	/* --- copie les valeurs vers le pointeur temporaire ---*/
+	for (k=0;k<p_tmp->new_nbkeys;k++) {
+		strcpy(p_tmp->new_keynames[k],p->new_keynames[k]);
+		strcpy(p_tmp->new_keynames[k],p->new_values[k]);
+		strcpy(p_tmp->new_keynames[k],p->new_comments[k]);
+		strcpy(p_tmp->new_keynames[k],p->new_keynames[k]);
+		strcpy(p_tmp->new_keynames[k],p->new_units[k]);
+		p_tmp->new_datatypes[k]=p->new_datatypes[k];
+	}
+	/* --- libere les pointeurs du pointeur de l'image ---*/
+	tt_util_free_ptrptr2((void***)&p->new_keynames,"p->new_keynames");
+	tt_util_free_ptrptr2((void***)&p->new_values,"p->new_values");
+	tt_util_free_ptrptr2((void***)&p->new_comments,"p->new_comments");
+	tt_util_free_ptrptr2((void***)&p->new_units,"p->new_units");
+	tt_free2((void**)&p->new_datatypes,"p->new_datatypes");
+	/* --- On alloue une memoire plus grande pour les pointeurs image --- */
+	p->new_nbkeys+=nbkeys2add;
+	len=(int)(FLEN_KEYWORD);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p->new_keynames,&p->new_nbkeys,&len,"p->new_keynames"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_keynames");
+		tt_imadestroyer(p);
+		return(TT_ERR_PB_MALLOC);
+	}
+	len=(int)(FLEN_VALUE);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p->new_values,&p->new_nbkeys,&len,"p->new_values"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_values");
+		tt_imadestroyer(p);
+		return(TT_ERR_PB_MALLOC);
+	}
+	len=(int)(FLEN_COMMENT);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p->new_comments,&p->new_nbkeys,&len,"p->new_comments"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_comments");
+		tt_imadestroyer(p);
+		return(TT_ERR_PB_MALLOC);
+	}
+	len=(int)(FLEN_COMMENT);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTRPTR_CHAR,4,&p->new_units,&p->new_nbkeys,&len,"p->new_units"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_units");
+		tt_imadestroyer(p);
+		return(TT_ERR_PB_MALLOC);
+	}
+	nombre=p->new_nbkeys;
+	taille=sizeof(int);
+	if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p->new_datatypes,&nombre,&taille,"p->new_datatypes"))!=0) {
+		tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_imanewkeychar for pointer new_datatypes");
+		tt_imadestroyer(p);
+		return(TT_ERR_PB_MALLOC);
+	}
+	/* --- copie les valeurs temporaires vers le pointeur image ---*/
+	for (k=0;k<p_tmp->new_nbkeys;k++) {
+		strcpy(p->new_keynames[k],p_tmp->new_keynames[k]);
+		strcpy(p->new_keynames[k],p_tmp->new_values[k]);
+		strcpy(p->new_keynames[k],p_tmp->new_comments[k]);
+		strcpy(p->new_keynames[k],p_tmp->new_keynames[k]);
+		strcpy(p->new_keynames[k],p_tmp->new_units[k]);
+		p->new_datatypes[k]=p_tmp->new_datatypes[k];
+	}
+	/* --- on libere les pointeurs temporaires ---*/
+	tt_imadestroyer(p_tmp);
+	return(OK_DLL);
+}
+
 int tt_imanewkeychar(TT_IMA *p,char *keyname,char *value,int datatype,char *comment,char *unit)
 /***************************************************************************/
 /* ajoute une nouvelle entree a la liste des new_* dans l'entete.          */
@@ -432,14 +546,24 @@ int tt_imanewkeychar(TT_IMA *p,char *keyname,char *value,int datatype,char *comm
 /* ici, values est un char **                                              */
 /***************************************************************************/
 {
-   int knew,k;
+   int knew,k,msg;
+	/* Traite le cas ou l'on a atteind la limite des p->new_nbkeys */
+	/* Il faut alors redimensionner les pointeurs avec 250 mots clés de plus */
+	k=(p->new_nbkeys)-1;
+	if (strcmp(p->new_keynames[k],"")!=0) {
+		if ((msg=tt_imareallocnewkey(p,250))!=OK_DLL) {
+			return(msg);
+		}
+	}
+	/* recherche le dernier indice vide */
    p->new_keyused=TT_YES;
    for (knew=(p->new_nbkeys)-1,k=0;k<(p->new_nbkeys);k++) {
-      if (strcmp(p->new_keynames[k],"")==0) {
-	 knew=k;
-	 break;
+		if (strcmp(p->new_keynames[k],"")==0) {
+			knew=k;
+			break;
       }
    }
+	/* Effectue l'ajout de la card */
    if (((int)strlen(keyname))>((int)(FLEN_KEYWORD-1))) {
       keyname[(int)(FLEN_KEYWORD-1)]='\0';
    }
@@ -552,51 +676,56 @@ int tt_imanewkeytt(TT_IMA *p,char *value,char *comment,char *unit)
    char c0,c1,*reste;
    char keyname[FLEN_KEYWORD];
    nmax=0;
-
    if ((p->keyused==TT_YES)&&(p->nbkeys>0)) {
       for (k=0;k<(p->nbkeys);k++) {
-	 if (strlen(p->keynames[k])>=3) {
-	    c0=p->keynames[k][0];c1=p->keynames[k][1];
-	    if ((c0=='T')&&(c1=='T')) {
-	       reste=(p->keynames[k]+(int)(2));
-	       n=atoi(reste);if (n>nmax) {nmax=n;}
-	    }
-	 }
+			if (strlen(p->keynames[k])>=3) {
+				c0=p->keynames[k][0];c1=p->keynames[k][1];
+				if ((c0=='T')&&(c1=='T')) {
+					reste=(p->keynames[k]+(int)(2));
+					n=atoi(reste);if (n>nmax) {nmax=n;}
+				}
+			}
       }
    }
    if ((p->ref_keyused==TT_YES)&&(p->ref_nbkeys>0)) {
       for (k=0;k<(p->ref_nbkeys);k++) {
-	 if (strlen(p->ref_keynames[k])>=3) {
-	    c0=p->ref_keynames[k][0];c1=p->ref_keynames[k][1];
-	    if ((c0=='T')&&(c1=='T')) {
-	       reste=(p->ref_keynames[k])+(int)(2);n=atoi(reste);if (n>nmax) {nmax=n;}
-	    }
-	 }
+			if (strlen(p->ref_keynames[k])>=3) {
+				c0=p->ref_keynames[k][0];c1=p->ref_keynames[k][1];
+				if ((c0=='T')&&(c1=='T')) {
+					reste=(p->ref_keynames[k])+(int)(2);n=atoi(reste);if (n>nmax) {nmax=n;}
+				}
+			}
       }
    }
    knew=0;
    if ((p->new_keyused==TT_YES)&&(p->new_nbkeys>0)) {
       for (k=0;k<(p->new_nbkeys);k++) {
-	 if (strlen(p->new_keynames[k])>=3) {
-	    c0=p->new_keynames[k][0];c1=p->new_keynames[k][1];
-	    if ((c0=='T')&&(c1=='T')) {
-	       reste=(p->new_keynames[k])+(int)(2);n=atoi(reste);if (n>nmax) {nmax=n;}
-	    }
-	 }
-	 if (strcmp(p->new_keynames[k],"")==0) {
-	    knew=k;
-	    break;
-	 }
+			if (strlen(p->new_keynames[k])>=3) {
+				c0=p->new_keynames[k][0];
+				c1=p->new_keynames[k][1];
+				if ((c0=='T')&&(c1=='T')) {
+					reste=(p->new_keynames[k])+(int)(2);
+					n=atoi(reste);
+					if (n>nmax) {nmax=n;}
+				}
+			}
+			if (strcmp(p->new_keynames[k],"")==0) {
+				knew=k;
+				break;
+			}
       }
    }
    p->new_keyused=TT_YES;
    n=nmax+1;
    sprintf(keyname,"TT%d",n);
+   tt_imanewkeychar(p,keyname,value,TSTRING,comment,unit);
+	/*
    strcpy(p->new_keynames[knew],keyname);
    strcpy(p->new_values[knew],value);
    strcpy(p->new_comments[knew],comment);
    strcpy(p->new_units[knew],unit);
    p->new_datatypes[knew]=TSTRING;
+	*/
    return(OK_DLL);
 }
 
