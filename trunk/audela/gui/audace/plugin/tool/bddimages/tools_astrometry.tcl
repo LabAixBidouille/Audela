@@ -26,9 +26,6 @@ namespace eval tools_astrometry {
                set a [lindex [lindex $s $pos] 2]
                set ar [lindex $a 25]
                set ac [lindex $a 27]
-               if  { $ar == "R" } {
-                  gren_info "-> $ar $ac\n"
-               }
             }
          }
 
@@ -72,7 +69,7 @@ namespace eval tools_astrometry {
          set commundatejj [::bddimages_liste::lget $current_image "commundatejj"]
          set dateiso [ mc_date2iso8601 $commundatejj ]
 
-         gren_info "-- IMG : $id_current_image / [llength $::tools_cata::img_list]\n"
+         gren_info "-- IMG : $id_current_image / [llength $::tools_cata::img_list] :: "
 
          # REFERENCES
 
@@ -89,7 +86,7 @@ namespace eval tools_astrometry {
             if {$name == ""} {
                gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
             }
-            gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
+            #gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
 
             #set a [lindex [lindex $current_listsources 1] $id]
             #gren_info "ASTROM UNSET $a\n"
@@ -109,7 +106,7 @@ namespace eval tools_astrometry {
             set mag     [lindex $b 22]
             set err_mag [lindex $b 23]
             #gren_info "rho = $rho :: $res_ra $res_dec \n"
-            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
+            gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $mag)\n"
             set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag]
 
             lappend ::tools_astrometry::listref($name)     $dateiso
@@ -132,7 +129,7 @@ namespace eval tools_astrometry {
             if {$name == ""} {
                gren_info "Lect Science = $id $idcata $ar $ac $name\n"
             }
-            gren_info "Lect Science = $id $idcata $ar $ac $name\n"
+            #gren_info "Lect Science = $id $idcata $ar $ac $name\n"
             
             set s       [lindex [lindex $current_listsources 1] $id]
             set astroid [lindex $s $idcata]
@@ -159,7 +156,7 @@ namespace eval tools_astrometry {
          
          gren_info "date = $dateiso "
          gren_info "nb science = [llength $list_id_science] "
-         gren_info "nb ref = [llength $list_id_ref] \n "
+         gren_info "nb ref = [llength $list_id_ref] \n"
 
 
       }
@@ -371,7 +368,16 @@ namespace eval tools_astrometry {
 
 
 
-
+   proc ::tools_astrometry::set_fields_astrom { send_astrom } {
+   
+      upvar $send_astrom astrom
+      
+      set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
+      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+      set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
+      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
+      return
+   }
 
 
 
@@ -385,14 +391,11 @@ namespace eval tools_astrometry {
   
    proc ::tools_astrometry::extract_priam_result { file } {
    
-      gren_info "extract_priam_result:  file : <$file>\n"
+      #gren_info "extract_priam_result:  file : <$file>\n"
    
       set chan [open $file r]
-
-      set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
-      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
-      set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
-      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
+      
+      ::tools_astrometry::set_fields_astrom astrom
       set n [llength $astrom(kwds)]
 
       set id_current_image 0
@@ -494,7 +497,7 @@ namespace eval tools_astrometry {
          } 
          
          set current_listsources $::gui_cata::cata_list($id_current_image)
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $current_listsources]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $current_listsources]\n"
 
          #gren_info "LISTSOURCES: ($current_listsources) \n"
          set n [llength $catascience($id_current_image)]
@@ -804,6 +807,99 @@ namespace eval tools_astrometry {
       }
    
    }
+
+
+
+   proc ::tools_astrometry::set_savprogress { cur max } {
+      set ::tools_astrometry::savprogress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+   }
+   proc ::tools_astrometry::annul_save_images { } {
+      set ::tools_astrometry::savannul 1
+   }
+
+
+
+
+   proc ::tools_astrometry::save_images { } {
+
+
+      global audace
+      global bddconf
+
+      set id_current_image 0
+      ::tools_astrometry::set_fields_astrom astrom
+      set n [llength $astrom(kwds)]
+
+      foreach current_image $::tools_cata::img_list {
+
+         incr id_current_image
+
+         # Progression
+         ::tools_astrometry::set_savprogress $id_current_image $::tools_cata::nb_img_list
+         if { $::tools_astrometry::savannul } { break }
+         
+         # Tabkey
+         set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
+         set tabkey   [::bddimages_liste::lget $current_image "tabkey"]
+
+         # Liste des sources
+         set listsources $::gui_cata::cata_list($id_current_image)
+
+         # Noms des fichiers
+         set imgfilename    [::bddimages_liste::lget $current_image filename]
+         set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+         set cataxml "${f}_cata.xml"
+
+         # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
+         
+         set ident [bddimages_image_identification $idbddimg]
+         set fileimg  [lindex $ident 1]
+         set filecata [lindex $ident 3]
+ 
+         # Maj du buffer
+         buf$::audace(bufNo) load $fileimg
+         foreach vals $::tools_cata::new_astrometry($id_current_image) {
+            buf$::audace(bufNo) setkwd $vals
+         }
+         set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
+         
+         # Creation de l image temporaire
+         set fichtmpunzip [unzipedfilename $fileimg]
+         set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
+         set filefinal [file join $::bddconf(dirinco) [file tail $fileimg]]
+         createdir_ifnot_exist $bddconf(dirtmp)
+         buf$::audace(bufNo) save $filetmp
+         lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+
+         # efface l image dans la base et le disque
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+         
+         # insere l image dans la base
+         set err [catch {set idbddimg [insertion_solo $filefinal]} msg]
+         if {$err} {
+            gren_info "Erreur Insertion (ERR=$err) (MSG=$msg) (RESULT=$idbddimg) \n"
+         }
+
+         # Effacement de l image du repertoire tmp
+         set errnum [catch {file delete $filetmp} msg]
+
+         # insere le cata dans la base
+         ::tools_cata::save_cata $listsources $tabkey $cataxml
+
+         # Maj  ::tools_cata::img_list
+         set current_image [::bddimages_liste::lupdate $current_image idbddimg $idbddimg]
+         set current_image [::bddimages_liste::lupdate $current_image tabkey $tabkey]
+         set ::tools_cata::img_list [lreplace $::tools_cata::img_list [expr $id_current_image - 1] [expr $id_current_image - 1] $current_image]
+      }
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+
+
+   }
+
 
 # Fin de Classe
 }

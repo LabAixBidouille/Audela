@@ -669,7 +669,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       # Insertion du cata dans bdi
       set err [ catch { insertion_solo $cataxml } msg ]
-      gren_info "** INSERTION_SOLO = $err $msg\n"
+      #gren_info "** INSERTION_SOLO = $err $msg\n"
       set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
       if {$cataexist==0} {
          set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]

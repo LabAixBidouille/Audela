@@ -27,6 +27,8 @@ namespace eval gui_astrometry {
    }
 
 
+
+
    proc ::gui_astrometry::charge_list { img_list } {
 
      catch {
@@ -38,8 +40,64 @@ namespace eval gui_astrometry {
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      
+      ::gui_astrometry::charge_solution_astrometrique
+      
 
    }
+
+
+
+
+
+
+
+
+
+
+
+#      set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
+#      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+#      set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
+#      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
+
+   proc ::gui_astrometry::charge_solution_astrometrique {  } {
+
+      set id_current_image 0
+      ::tools_astrometry::set_fields_astrom astrom
+      set n [llength $astrom(kwds)]
+
+      foreach current_image $::tools_cata::img_list {
+         
+         incr id_current_image
+
+         set ::tools_cata::new_astrometry($id_current_image) ""
+         
+         # Tabkey
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         
+         for {set k 0 } { $k<$n } {incr k} {
+
+            set kwd [lindex $astrom(kwds) $k]
+            foreach key $tabkey {
+            
+               if {[string equal -nocase [lindex $key 0] $kwd] } {
+                  set type [lindex $astrom(types) $k]
+                  set unit [lindex $astrom(units) $k]
+                  set comment [lindex $astrom(comments) $k]
+                  set val [lindex [lindex $key 1] 1]
+                  lappend ::tools_cata::new_astrometry($id_current_image) [list $kwd $val $type $unit $comment]
+               }
+            }
+         }
+      }
+
+   }
+
+
+
+
+
 
 
 
@@ -230,7 +288,6 @@ namespace eval gui_astrometry {
          
          $::gui_astrometry::dwet delete 0 end
          foreach val $::tools_cata::new_astrometry($id) {
-            gren_info "val = $val\n"
             $::gui_astrometry::dwet insert end $val
          }
          
@@ -383,6 +440,73 @@ namespace eval gui_astrometry {
 
 
 
+   proc ::gui_astrometry::annul_save_images { } {
+      $::gui_astrometry::fensav.appli.boutons.annul configure -state disabled
+      set ::tools_astrometry::savannul 1
+   }
+
+
+
+   proc ::gui_astrometry::save_images { } {
+
+      $::gui_astrometry::fen.appli.info.fermer configure -state disabled
+      $::gui_astrometry::fen.appli.info.enregistrer configure -state disabled
+
+
+      set ::tools_astrometry::savprogress 0
+      set ::tools_astrometry::savannul 0
+
+      set ::gui_astrometry::fensav .savprogress
+      if { [winfo exists $::gui_astrometry::fensav] } {
+         wm withdraw $::gui_astrometry::fensav
+         wm deiconify $::gui_astrometry::fensav
+         focus $::gui_astrometry::fensav
+         return
+      }
+      
+      toplevel $::gui_astrometry::fensav -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::gui_astrometry::fensav ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::gui_astrometry::fensav ] "+" ] 2 ]
+      wm geometry $::gui_astrometry::fensav +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::gui_astrometry::fensav 1 1
+      wm title $::gui_astrometry::fensav "Enregistrement"
+      wm protocol $::gui_astrometry::fensav WM_DELETE_WINDOW ""
+
+      set frm $::gui_astrometry::fensav.appli
+      
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::gui_astrometry::fensav -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+      
+         set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             set    pf [ ttk::progressbar $data.p -variable ::tools_astrometry::savprogress -orient horizontal -length 200 -mode determinate]
+             pack   $pf -in $data -side top
+
+         set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $data.annul -state active -text "Annuler" -relief "raised" \
+                -command "::gui_astrometry::annul_save_images"
+             pack   $data.annul -side top -anchor c -padx 0 -padx 10 -pady 5
+
+
+      update
+      ::tools_astrometry::save_images   
+
+      destroy $::gui_astrometry::fensav
+
+      $::gui_astrometry::fen.appli.info.fermer configure -state normal
+      $::gui_astrometry::fen.appli.info.enregistrer configure -state normal
+   
+   } 
+   
+
+
+
+
+
+
 
 
 
@@ -415,7 +539,7 @@ namespace eval gui_astrometry {
                                 0 "moy Mag"           right \
                                 0 "stdev Mag"         right ]
       set loc_dates_enf   [list 0 "Id"                right \
-                                0 "Mid-Date"          left  \
+                                0 "Date-obs"          left  \
                                 0 "\u03C1"            right \
                                 0 "res \u03B1"        right \
                                 0 "res \u03B4"        right \
@@ -423,7 +547,7 @@ namespace eval gui_astrometry {
                                 0 "\u03B4"            right \
                                 0 Mag                 right \
                                 0 err_Mag             right ]
-      set loc_dates_par   [list 0 "Mid-Date"          left  \
+      set loc_dates_par   [list 0 "Date-obs"          left  \
                                 0 "Nb ref"            right \
                                 0 "\u03C1"            right \
                                 0 "stdev \u03C1"      right \
@@ -843,7 +967,7 @@ namespace eval gui_astrometry {
               set ::gui_astrometry::gui_fermer [button $info.fermer -text "Fermer" -borderwidth 2 -takefocus 1 -command "::gui_astrometry::fermer"]
               pack $info.fermer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-              button $info.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 -command "::gui_cata::save_cata"
+              button $info.enregistrer -text "Enregistrer" -borderwidth 2 -takefocus 1 -command "::gui_astrometry::save_images"
               pack $info.enregistrer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
@@ -854,10 +978,6 @@ namespace eval gui_astrometry {
    }
    
 
-   
-   
-   
-   
    
    
    
