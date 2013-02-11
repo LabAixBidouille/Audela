@@ -142,6 +142,7 @@ namespace eval cata_gestion_gui {
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
       set ::tools_cata::current_image_date [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+
       set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -283,6 +284,10 @@ namespace eval cata_gestion_gui {
       set ::cata_gestion_gui::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
       update
    }
+   proc ::cata_gestion_gui::set_popupprogress { cur max } {
+      set ::cata_gestion_gui::popupprogress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+   }
 
 
 
@@ -392,7 +397,7 @@ namespace eval cata_gestion_gui {
          if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
          if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
       }
-      
+
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
@@ -1786,7 +1791,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       set cpt 0      
       foreach id $list_id {
          incr cpt
-         ::cata_gestion_gui::set_progress $cpt $nd_sources
+         ::cata_gestion_gui::set_popupprogress $cpt $nd_sources
          #gren_info "ID = $id\n"
          set s [lindex $sources [expr $id - 1 ]]
          #gren_info "S=$s\n"
@@ -1854,7 +1859,7 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
 
-      set ::gui_cata::progress 0
+      set ::cata_gestion_gui::popupprogress 0
       set ::gui_cata::psf_limitradius 100
       set ::gui_cata::psf_threshold 2
 
@@ -1899,7 +1904,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             set    pf [ ttk::progressbar $data.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
+             set    pf [ ttk::progressbar $data.p -variable ::cata_gestion_gui::popupprogress -orient horizontal -length 200 -mode determinate]
              pack   $pf -in $data -side top
 
          set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
@@ -1984,7 +1989,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       set id 0     
       foreach s $sources {
          incr id
-         ::cata_gestion_gui::set_progress $id $nd_sources
+         ::cata_gestion_gui::set_popupprogress $id $nd_sources
          #gren_info "ID = $id\n"
          #gren_info "S=$s\n"
          set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
@@ -2066,7 +2071,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          foreach s $sources {
             incr id
             incr cpt
-            ::cata_gestion_gui::set_progress $cpt $nd_sources
+            ::cata_gestion_gui::set_popupprogress $cpt $nd_sources
             #gren_info "ID = $id\n"
             #gren_info "S=$s\n"
             set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
@@ -2146,7 +2151,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
       }
 
-      set ::gui_cata::progress 0
+      set ::cata_gestion_gui::popupprogress 0
       set ::gui_cata::psf_limitradius 100
       set ::gui_cata::psf_threshold 2
 
@@ -2197,7 +2202,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             set    pf [ ttk::progressbar $data.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
+             set    pf [ ttk::progressbar $data.p -variable ::cata_gestion_gui::popupprogress -orient horizontal -length 200 -mode determinate]
              pack   $pf -in $data -side top
 
          set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
@@ -2336,7 +2341,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       global bddconf
 
       set ::cata_gestion_gui::directaccess 1
-      set ::gui_cata::progress 0
+      set ::cata_gestion_gui::progress 0
       set ::tools_cata::mem_use 0
       set ::tools_cata::mem_total 0
 
@@ -2416,7 +2421,7 @@ gren_info " => source retrouvee $cpt $dl\n"
              button $actions.charge -state active -text "Charge" -relief "raised" -command "::cata_gestion_gui::charge_memory"
              pack   $actions.charge -in $actions -side left -anchor w -padx 0
 
-             set    pf [ ttk::progressbar $actions.p -variable ::gui_cata::progress -orient horizontal -length 200 -mode determinate]
+             set    pf [ ttk::progressbar $actions.p -variable ::cata_gestion_gui::progress -orient horizontal -length 200 -mode determinate]
              pack   $pf -in $actions -side left
 
              label $actions.lab1 -text "Img ("

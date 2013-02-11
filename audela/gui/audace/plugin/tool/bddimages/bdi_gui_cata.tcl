@@ -1034,6 +1034,41 @@ namespace eval gui_cata {
          set data [$::gui_astrometry::srpt get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
+         
+         if {![info exists ::tools_astrometry::tabval($name,$date)]} {
+
+            set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
+            if {$r=="no"} {return}
+            
+            foreach dateok $::tools_astrometry::listref($name) {
+               break
+            }
+            gren_info "dateok = $dateok\n"
+            
+            set id 0
+            set idok -1
+            foreach current_image  $::tools_cata::img_list {
+               incr id
+               set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+               set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+               if { $locdate == $dateok } {
+                  set idok $id
+                  break
+               }
+            }
+            if {$idok != -1} {
+               set ::cata_gestion_gui::directaccess $idok
+               ::cata_gestion_gui::charge_image_directaccess
+               set date $::tools_cata::current_image_date
+               if {![info exists ::tools_astrometry::tabval($name,$date)]} {
+                  tk_messageBox -message "Chargement de l'image impossible" -type ok
+                  return
+               }
+
+            }
+
+         }
+         
          set id [lindex $::tools_astrometry::tabval($name,$date) 0]
 
          set u 0
@@ -1176,26 +1211,33 @@ namespace eval gui_cata {
 
       foreach select [$w curselection] {
          set data [$w get $select]
+
          set name [lindex $data 0]
-         set date $::tools_cata::current_image_date
-         set id [lindex $::tools_astrometry::tabval($name,$date) 0]
-
          gren_info "voir_sxpt name = $name\n"
+
+         set date $::tools_cata::current_image_date
          gren_info "voir_sxpt date = $date\n"
-         gren_info "voir_sxpt id   = $id\n"
+         
+         if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+
+            set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+            gren_info "voir_sxpt id   = $id\n"
 
 
-         set u 0
-         foreach x [$f.frmtable.tbl get 0 end] {
-            set idx [lindex $x 0]
-            if {$idx == $id} {
-               #$f.frmtable.tbl selection set $u
-               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
-               set dec [lindex $x [::gui_cata::get_pos_col dec]]
-               affich_un_rond $ra $dec $color $width
+            set u 0
+            foreach x [$f.frmtable.tbl get 0 end] {
+               set idx [lindex $x 0]
+               if {$idx == $id} {
+                  #$f.frmtable.tbl selection set $u
+                  set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+                  set dec [lindex $x [::gui_cata::get_pos_col dec]]
+                  affich_un_rond $ra $dec $color $width
+               }
+               incr u
             }
-            incr u
+
          }
+
          
       }
    
