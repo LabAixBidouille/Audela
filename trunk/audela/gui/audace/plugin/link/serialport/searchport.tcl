@@ -17,7 +17,6 @@ proc ::searchPorts { mainThreadNo { port_exclus "" } } {
 
    #--- Recherche le ou les ports COM exclus
    set kd ""
-   set port_exclus ""
    set nbr_port_exclus [ llength $port_exclus ]
    if { $nbr_port_exclus == "1" } {
       set kd [string index $port_exclus [expr [string length $port_exclus]-1]]
