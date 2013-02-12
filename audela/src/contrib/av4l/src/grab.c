@@ -255,7 +255,7 @@ make \endverbatim
 #include "libavformat/url.h"
 #include "libswscale/swscale.h"
 
-const char * g_version_string = "20120201-1";
+const char * g_version_string = "20121231-1";
 
 //! The threads will finish their job on this value
 volatile int request_exit = 0;
@@ -891,6 +891,7 @@ int video_open(struct video_context_s *vc, const char *path)
                 perror("VIDIOC_S_FMT");
             }
 
+
         }
     } else {
         struct v4l2_pix_format *p = (struct v4l2_pix_format *)&fmt.fmt;
@@ -1516,7 +1517,69 @@ char * g_output_dir = NULL;
 char * g_outfilepath = NULL;
 char * g_logfilepath = NULL;
 
-int one_shot(int argc, char *argv[])
+
+void do_list_devices1(char *path)
+{
+    int fd = -1;
+    int rc;
+    int i,ninputs;
+    int index;
+    struct v4l2_capability cap;
+    struct v4l2_input input;
+
+    if(access(path,R_OK|W_OK) != 0) return;
+    fd = open(path, O_RDWR);
+    if(fd<0) return;
+
+    memset(&cap,0,sizeof(cap));
+
+    do {
+        if ( ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0 ) {
+            break;
+        }
+
+        if ( ioctl (fd, VIDIOC_G_INPUT, &index) < 0 ) {
+            break;
+        }
+
+        memset(&input,0,sizeof(input));
+        for(i=0;;i++) {
+            input.index = i;
+            if ( (rc = ioctl(fd, VIDIOC_ENUMINPUT, &input)) < 0 ) break;
+            printf("%s;%d;%s;%s;%s\n",
+                    path,
+                    input.index,
+                    (input.index == index ? "y" : "n"),
+                    cap.card,
+                    input.name
+                  );
+//            printf("video_input;%d;%s;%d;%d;%d;%08llX;%d\n",
+  //                  input.index, input.name, input.type, input.audioset, input.tuner, input.std, input.status);
+        }
+
+    } while(0);
+
+
+   if(fd>=0) {
+       close(fd);
+   }
+
+}
+
+// lists all v4l2 devices on stdout
+int do_list_devices()
+{
+    int i;
+    char path[100];
+    for(i=0;i<9;i++) {
+        sprintf(path,"/dev/video%d",i);
+        do_list_devices1(path);
+    }
+    return 0;
+}
+
+
+int one_shot(int argc, char *argv[], int one_shot_mode)
 {
     int ret;
 
@@ -1544,6 +1607,9 @@ int one_shot(int argc, char *argv[])
     shared_rawimage_size = vc.sizeimage;
     shared_rawimage = malloc(shared_rawimage_size);
     if(shared_rawimage==NULL) { perror(""); xabort(); }
+
+    unlink("/dev/shm/pict.yuv422");
+    unlink("/dev/shm/pict.yuv422.tmp");
 
     // Video Output Init
     av_register_all();
@@ -1593,7 +1659,19 @@ int one_shot(int argc, char *argv[])
 
             memcpy(shared_rawimage, vc.bufs[buf.index].map, shared_rawimage_size);
             frame_count++;
-            if(frame_count >= 10) request_exit = 1;
+
+            if ( (one_shot_mode == 1) && (frame_count >= 10) ) request_exit = 1;
+
+            if ( frame_count > 10 ) {
+                if ( ! fexist("/dev/shm/pict.yuv422") ) {
+                    int fd = open("/dev/shm/pict.yuv422.tmp",O_WRONLY|O_CREAT,0644);
+                    if(fd >= 0) {
+                        write(fd, shared_rawimage, shared_rawimage_size);
+                        close(fd);
+                        rename("/dev/shm/pict.yuv422.tmp","/dev/shm/pict.yuv422");
+                    }
+                }
+            }
 
             if (ioctl(vc.fd, VIDIOC_QBUF, &buf) < 0) {
                 perror("E: VIDIOC_QBUF");
@@ -1660,7 +1738,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:y:s:z01")) != -1) {
+    while((opt=getopt(argc, argv, "ab:h:w:i:o:d:p:c:y:s:zl012")) != -1) {
         switch(opt) {
             case 'a':
                 g_auto = 1;
@@ -1749,14 +1827,20 @@ int main(int argc, char *argv[])
                     }
                 }
                 break;
-	    case 'z':
-		g_realtime = 0;
-		break;
-        case '0':
-        do_print_info = 1;
-        case '1':
-        do_one_shot = 1;
-        break;
+            case 'z':
+                g_realtime = 0;
+                break;
+            case '0':
+                do_print_info = 1;
+            case '1':
+                do_one_shot = 1;
+                break;
+            case '2':
+                do_one_shot = 2;
+                break;
+            case 'l':
+                return do_list_devices();
+                break;
             default:
                 printf("E: Argument parsing error\n");
                 print_usage();
@@ -1778,8 +1862,8 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if(do_one_shot) {
-        return one_shot(argc,argv);
+    if(do_one_shot != 0) {
+        return one_shot(argc,argv,do_one_shot);
     }
 
     

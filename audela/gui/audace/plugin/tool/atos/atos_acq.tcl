@@ -199,44 +199,123 @@ namespace eval ::atos_acq {
 
 
   #--- Cree un frame pour le peripherique d'entree
-
-        #--- Cree un frame
+ 
+        #--- Cree un frame pour le titre
         frame $frm.tformin -borderwidth 1
         pack $frm.tformin -in $frm -side top -anchor w
 
         #---Titre
         label $frm.tformin.title -font $atosconf(font,arial_10_b) -text "Peripherique de capture video4linux2"
-        pack  $frm.tformin.title -in $frm.tformin -side top -anchor w
+        pack  $frm.tformin.title -in $frm.tformin -side left -anchor n -expand 0
+
+	#-- Cree le bouton de configuration
+        button $frm.tformin.sel -text "Choisir..." -padx 1 -pady 1 \
+         	-command "::atos_acq::forminlist $visuNo $frm"
+        pack  $frm.tformin.sel -in $frm.tformin -side left -anchor n -expand 0
+
+
+        #--- Cree un frame pour le choix du peripherique
+        frame $frm.cformin -borderwidth 0 -relief raised -cursor arrow
+        pack $frm.cformin -in $frm -side top -expand 0 -fill x -padx 0 -pady 0
+
+	    #--- Cree un frame pour
+	    frame $frm.cformin.top -borderwidth 0 -relief flat -cursor arrow
+            pack $frm.cformin.top -side top -expand 0 -fill x -padx 0 -pady 0
+
+	    #--- Cree un frame pour la liste des periph
+	    frame $frm.cformin.ldev -borderwidth 1 -relief raised -cursor arrow
+            #pack $frm.cformin.ldev -side top -expand 0 -fill x -padx 1 -pady 1
+
+
+            set ::atos_acq::frmdevpath ?
+            set ::atos_acq::frmdevmodel ?
+            set ::atos_acq::frmdevinput ?
+            set ::atos_acq::frmdevwidth ?
+            set ::atos_acq::frmdevheight ?
+            set ::atos_acq::frmdevdimen ?
+
+
+	    proc ::atos_acq::forminlist { visuNo frm } {
+                global audace
+
+		set test [lsearch -exact [pack slaves $frm.cformin] $frm.cformin.ldev]
+
+		if [list [lsearch -exact [pack slaves $frm.cformin] $frm.cformin.ldev] != -1 ] {
+                    # On referme le cadre
+                    pack forget $frm.cformin.ldev
+		} else {
+		    set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -l 2>&1" } msg ]
+		    if { $err != 0 } {
+			    ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
+			    ::console::affiche_erreur "Code d'erreur : $err\n"
+			    ::console::affiche_erreur "=== Messages retournes par av4l-grab :\n"
+			    foreach line [split $msg "\n"] {
+				    ::console::affiche_erreur "$line\n"
+                            }
+	            } else {
+		            foreach widget [grid slaves $frm.cformin.ldev] {
+				    destroy $widget
+			    }
+
+			    set i 0
+			    foreach line [split $msg "\n"] {
+				    ::console::affiche_resultat "$line\n"
+				    set t [split $line ";"]
+                                    set devicepath [lindex $t 0]
+                                    set inputnum [lindex $t 1]
+                                    set dfltinput [lindex $t 2]
+
+				    label $frm.cformin.ldev.$i -text $line
+				    grid configure $frm.cformin.ldev.$i -row $i -column 2
+
+                                    if { $inputnum == 0 } {
+				        button $frm.cformin.ldev.i$i -text "I" -command "::atos_acq::devinit $visuNo $frm $devicepath auto"
+				        grid configure $frm.cformin.ldev.i$i -row $i -column 0
+                                    } else {
+				        button $frm.cformin.ldev.i$i -text "I" -state disabled -command "::atos_acq::devinit $visuNo $frm $devicepath auto"
+				        grid configure $frm.cformin.ldev.i$i -row $i -column 0
+                                    }
+
+                                    if { [string equal "y" $dfltinput] } {
+                                       #button $frm.cformin.ldev.u$i -text "U" -command "::atos_acq::devinit $visuNo $frm $devicepath noauto"
+				       #grid configure $frm.cformin.ldev.u$i -row $i -column 1
+                                    }
+
+				    incr i
+                            }
+		    }
+
+		    pack $frm.cformin.ldev -side top -expand 0 -fill x -padx 1 -pady 1
+
+	       }
+	    }
+	    proc ::atos_acq::forminunlist { visuNo frm } {
+		    pack forget $frm.cformin.ldev
+
+	    }
+	    proc ::atos_acq::devinit { visuNo frm devicepath auto } {
+		    ::console::affiche_resultat "initialisation de $devicepath\n"
+
+                    set ::atos_acq::frmdevmodel ?
+                    set ::atos_acq::frmdevinput ?
+                    set ::atos_acq::frmdevwidth ?
+                    set ::atos_acq::frmdevheight ?
+                    set ::atos_acq::frmdevdimen ?
+
+                    set ::atos_acq::frmdevpath $devicepath
+		    pack forget $frm.cformin.ldev
+                    ::atos_tools_avi::acq_getdevinfo $visuNo $frm $auto
+	    }
+
+
+  #--- Cree un frame pour les parametres du peripherique d'entree
+
+        #--- Cree un frame
+        frame $frm.formin -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.formin -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
         #--- Cree un frame pour le peripherique d'entree
-        set periph [frame $frm.tformin.periph -borderwidth 1 -relief raised -cursor arrow]
-        pack $frm.tformin.periph -in $frm.tformin -side top -expand 1 -fill x -padx 1 -pady 1
-
-        
-            #--- Cree un label pour
-            label $periph.intitle -font $atosconf(font,courier_10) -padx 3 \
-                  -text "Chemin du periph."
-            pack $periph.intitle -in $periph -side left -padx 3 -pady 1 -anchor w
-
-            #--- Cree un label pour le chemin du peripherique
-            entry $periph.devpath -fg $color(blue) -width 20
-            pack $periph.devpath -in $periph -side left -pady 1 -anchor w
-
-          #--- Cree un frame pour afficher les boutons
-          set inbutton [frame $periph.bout -borderwidth 0]
-          pack $inbutton -in $periph -side left -expand 0 -fill x
-
-            #--- Cree un button
-            button $inbutton.getinfo \
-             -text "Detection" -borderwidth 2 \
-             -command "::atos_tools_avi::acq_getdevinfo $visuNo $frm noauto"
-            pack $inbutton.getinfo -in $inbutton -side top -pady 0 -anchor w
-
-            #--- Cree un button
-            button $inbutton.initdev \
-             -text "Reconfiguration" -borderwidth 2 \
-             -command "::atos_tools_avi::acq_getdevinfo $visuNo $frm auto"
-            pack $inbutton.initdev -in $inbutton -side top -pady 0 -anchor w
+        set periph $frm.formin
 
 
           #--- Cree un frame pour les info
@@ -245,11 +324,11 @@ namespace eval ::atos_acq {
 
           #--- Cree un frame pour colonne de gauche
           set ivl [frame $periph.infodev.left -borderwidth 1]
-          pack $ivl -in $periph.infodev -side left -padx 30 -pady 1
+          pack $ivl -in $periph.infodev -side left -padx 30 -pady 1 -anchor n
 
           #--- Cree un frame pour colonne de droite
           set ivr [frame $periph.infodev.right -borderwidth 1]
-          pack $ivr -in $periph.infodev -side left -padx 30 -pady 1
+          pack $ivr -in $periph.infodev -side left -padx 30 -pady 1 -anchor n
 
           #--- Cree un frame pour les labels
           set ivll [frame $periph.infodev.left.lab -borderwidth 0]
@@ -269,29 +348,42 @@ namespace eval ::atos_acq {
 
            #- Colonne de gauche
 
+              #---Chemin
+              label $ivll.devpath -font $atosconf(font,courier_10) -text "Chemin"
+              pack  $ivll.devpath -in $ivll -side top -anchor w
+              label $ivlv.devpath -font $atosconf(font,courier_10) -fg $color(blue) -textvariable ::atos_acq::frmdevpath
+              pack  $ivlv.devpath -in $ivlv -side top -anchor w
+
               #---Nom
               label $ivll.modele -font $atosconf(font,courier_10) -text "Modele"
               pack  $ivll.modele -in $ivll -side top -anchor w
-              label $ivlv.modele -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+              label $ivlv.modele -font $atosconf(font,courier_10) -fg $color(blue) -textvariable ::atos_acq::frmdevmodel
               pack  $ivlv.modele -in $ivlv -side top -anchor w
 
               #---Entree
               label $ivll.input -font $atosconf(font,courier_10) -text "Entree"
               pack  $ivll.input -in $ivll -side top -anchor w
-              label $ivlv.input -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+              label $ivlv.input -font $atosconf(font,courier_10) -fg $color(blue) -textvariable ::atos_acq::frmdevinput
               pack  $ivlv.input -in $ivlv -side top -anchor w
+
+              #---Dimensions
+              label $ivrl.dimen -font $atosconf(font,courier_10) -text "Dimensions"
+              pack  $ivrl.dimen -in $ivrl -side top -anchor w
+              label $ivrv.dimen -font $atosconf(font,courier_10) -fg $color(blue) -textvariable ::atos_acq::frmdevdimen
+              pack  $ivrv.dimen -in $ivrv -side top -anchor w
 
               #---Width
               label $ivll.width -font $atosconf(font,courier_10) -text "Width"
-              pack  $ivll.width -in $ivll -side top -anchor w
-              label $ivlv.width -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-              pack  $ivlv.width -in $ivlv -side top -anchor w
+              #pack  $ivll.width -in $ivll -side top -anchor w
+              label $ivlv.width -font $atosconf(font,courier_10) -fg $color(blue) -textvariable ::atos_acq::frmdevwidth
+              #pack  $ivlv.width -in $ivlv -side top -anchor w
 
               #---Height
               label $ivll.height -font $atosconf(font,courier_10) -text "Height"
-              pack  $ivll.height -in $ivll -side top -anchor w
-              label $ivlv.height -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-              pack  $ivlv.height -in $ivlv -side top -anchor w
+              #pack  $ivll.height -in $ivll -side top -anchor w
+              label $ivlv.height -font $atosconf(font,courier_10) -fg $color(blue) -textvariable ::atos_acq::frmdevheight
+              #pack  $ivlv.height -in $ivlv -side top -anchor w
+
 
 
   #--- Cree un frame pour afficher la gestion des fichiers generes
@@ -375,6 +467,18 @@ namespace eval ::atos_acq {
               -side left -anchor w \
               -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.oneshot -text "$caption(atos_acq,btn_oneshot)"
+
+           #--- Creation du bouton one shot perpetuel
+           image create photo .oneshot2 -format PNG -file [ file join $audace(rep_plugin) tool atos img oneshot.png ]
+           button $frm.oneshot2 -image .oneshot2\
+              -borderwidth 2 -width 30 -height 30 -compound center \
+              -state disabled \
+              -command "::atos_tools_avi::acq_oneshotcontinuous $visuNo $frm"
+           pack $frm.oneshot2 \
+              -in $frm.btnav \
+              -side left -anchor w \
+              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
+           DynamicHelp::add $frm.oneshot2 -text "$caption(atos_acq,btn_oneshot) TODO"
 
            #--- Creation du bouton start acquisition
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool atos img demarre.png ]
