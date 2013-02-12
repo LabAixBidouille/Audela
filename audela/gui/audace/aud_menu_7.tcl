@@ -665,6 +665,17 @@ namespace eval ::confEditScript {
    }
 
    #
+   # ::confEditScript::initConf
+   # Initialisation de variables dans aud.tcl (::audace::loadSetup) pour le lancement d'Aud'ACE
+   #
+   proc initConf { } {
+      global conf
+
+      #--- Initialisation
+      if { ! [ info exists conf(editsite_htm,selectHelp) ] } { set conf(editsite_htm,selectHelp) "0" }
+   }
+
+   #
    # ::confEditScript::createDialog
    # Creation de l'interface graphique
    #
@@ -672,8 +683,6 @@ namespace eval ::confEditScript {
       variable This
       global audace caption conf confgene
 
-      #--- Initialisation
-      if { ! [ info exists conf(editsite_htm,selectHelp) ] } { set conf(editsite_htm,selectHelp) "0" }
       #--- Recuperation de la police par defaut des entry
       set confgene(EditScript,edit_font)        "$audace(font,Entry)"
       #--- Transformation de la police en italique

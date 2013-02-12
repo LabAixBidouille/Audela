@@ -722,6 +722,7 @@ namespace eval ::audace {
       ::confFichierIma::initConf
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
+      ::confEditScript::initConf
 
       #--- Initialisation des executables
       ::audace::defaultExeUtils
