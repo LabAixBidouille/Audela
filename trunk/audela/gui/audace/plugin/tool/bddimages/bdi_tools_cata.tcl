@@ -195,11 +195,6 @@ namespace eval tools_cata {
 
 
 
-
-
-
-
-
    proc ::tools_cata::charge_list { img_list } {
 
       global audace
@@ -216,11 +211,11 @@ namespace eval tools_cata {
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
 
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
-         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
-      }
+      #foreach ::tools_cata::current_image $::tools_cata::img_list {
+      #   set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      #   set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+      #   set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+      #}
 
       # Chargement premiere image sans GUI
       set ::tools_cata::id_current_image 1
@@ -233,13 +228,12 @@ namespace eval tools_cata {
       set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
       set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
       set filename    [::bddimages_liste::lget $::tools_cata::current_image filename   ]
-::console::affiche_erreur "$tabkey\n"
 
       set ::tools_cata::file [file join $bddconf(dirbase) $dirfilename $filename]
       set ::tools_cata::ra       [lindex [::bddimages_liste::lget $tabkey ra] 1]
       set ::tools_cata::dec      [lindex [::bddimages_liste::lget $tabkey dec] 1]
 #      set ::tools_cata::radius   [lindex [::bddimages_liste::lget $tabkey dec] 1]
-      set ::tools_cata::crota   [lindex [::bddimages_liste::lget $tabkey CROTA] 1]
+      set ::tools_cata::crota    [lindex [::bddimages_liste::lget $tabkey CROTA] 1]
       set ::tools_cata::pixsize1 [lindex [::bddimages_liste::lget $tabkey pixsize1] 1]
       set ::tools_cata::pixsize2 [lindex [::bddimages_liste::lget $tabkey pixsize2] 1]
       set ::tools_cata::foclen   [lindex [::bddimages_liste::lget $tabkey foclen] 1]
@@ -253,7 +247,22 @@ namespace eval tools_cata {
 
       set ::tools_cata::current_image_name $filename
       set ::tools_cata::current_image_date $date
-   }
+
+      gren_info "::tools_cata::file = $::tools_cata::file \n"
+      gren_info "date = $date \n"
+      gren_info "::tools_cata::bddimages_wcs = $::tools_cata::bddimages_wcs \n"
+      gren_info " = [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"] \n"
+      set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
+      if {$cataexist==0} {
+          gren_info "cata n existe pas\n"
+      }
+      if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
+         gren_info "cata existe\n"
+      } else {
+         gren_info "cata n existe t pas\n"
+      }
+      
+  }
 
 
 
@@ -658,6 +667,10 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
    proc ::tools_cata::save_cata { listsources tabkey cataxml } {
 
       global bddconf
+
+      set dateobs  [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
+      gren_info "date = $dateobs\n"
+      gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Creation de la VOTable en memoire
       set votable [::votableUtil::list2votable $listsources $tabkey]
