@@ -463,7 +463,7 @@ namespace eval ::atos_tools_avi {
            }
 
         }
-        after 1000 " ::atos_tools_avi::acq_display $visuNo $frm"
+        after 100 " ::atos_tools_avi::acq_display $visuNo $frm"
 
 
    }
@@ -479,8 +479,8 @@ namespace eval ::atos_tools_avi {
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "Get device info\n"
         
-        set dev [$frm.tformin.periph.devpath get]
-        set infodev $frm.tformin.periph.infodev
+        set dev $::atos_acq::frmdevpath
+        # set infodev $frm.tformin.periph.infodev
         
         if { [ string equal $dev ""] } {
          set options "-0"
@@ -493,8 +493,10 @@ namespace eval ::atos_tools_avi {
         }
 
         set devparams { }
-        
-        set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" } msg ]
+       
+        set commandline "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" 
+        ::console::affiche_resultat "Appel de : $commandline\n"
+        set err [ catch { exec sh -c $commandline } msg ]
         if { $err != 0 } {
             ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
             ::console::affiche_erreur "Code d'erreur : $err\n"
@@ -504,11 +506,13 @@ namespace eval ::atos_tools_avi {
             }
             ::console::affiche_erreur "=== Fin des messages\n"
             $frm.oneshot configure -state disabled
+            $frm.oneshot2 configure -state disabled
             $frm.demarre configure -state disabled
-            $infodev.left.val.modele configure -text ?
-            $infodev.left.val.input configure -text ?
-            $infodev.left.val.width configure -text ?
-            $infodev.left.val.height configure -text ?
+	    set ::atos_acq::frmdevmodel ?
+	    set ::atos_acq::frmdevinput ?
+	    set ::atos_acq::frmdevwidth ?
+	    set ::atos_acq::frmdevheight ?
+	    set ::atos_acq::frmdevdimen ?
             return $err
         } else {
             ::console::affiche_resultat "=== Messages retournes par av4l-grab :\n"
@@ -522,15 +526,16 @@ namespace eval ::atos_tools_avi {
             ::console::affiche_resultat "=== Fin des messages\n"
 
             $frm.oneshot configure -state normal
+            $frm.oneshot2 configure -state normal
             $frm.demarre configure -state normal
 
-            $infodev.left.val.modele configure -text [lindex [lsearch -index 0 -inline $devparams cap_card] 1]
-            $infodev.left.val.input configure -text [lindex [lsearch -index 0 -inline $devparams video_input_index] 1]
-            $infodev.left.val.width configure -text [lindex [lsearch -index 0 -inline $devparams format_width] 1]
-            $infodev.left.val.height configure -text [lindex [lsearch -index 0 -inline $devparams format_height] 1]
+            set ::atos_acq::frmdevmodel [lindex [lsearch -index 0 -inline $devparams cap_card] 1]
+            set ::atos_acq::frmdevinput [lindex [lsearch -index 0 -inline $devparams video_input_index] 1]
+            set ::atos_acq::frmdevwidth [lindex [lsearch -index 0 -inline $devparams format_width] 1]
+            set ::atos_acq::frmdevheight [lindex [lsearch -index 0 -inline $devparams format_height] 1]
+            set ::atos_acq::frmdevdimen "$::atos_acq::frmdevwidth X $::atos_acq::frmdevheight"
             if { [ string equal $dev ""] } {
-                $frm.tformin.periph.devpath delete 0 end
-                $frm.tformin.periph.devpath insert 0 [lindex [lsearch -index 0 -inline $devparams video_device] 1]
+                set ::atos_acq::frmdevpath [lindex [lsearch -index 0 -inline $devparams video_device] 1]
             }
 	    }
 
@@ -552,7 +557,7 @@ namespace eval ::atos_tools_avi {
 
         ::console::affiche_resultat "One Shot !\n"
 
-        set dev [$frm.tformin.periph.devpath get]
+        set dev $::atos_acq::frmdevpath
         if { [ string equal $dev ""] } {
          set options ""
          return
@@ -609,6 +614,75 @@ namespace eval ::atos_tools_avi {
 
 
 
+   proc ::atos_tools_avi::acq_oneshotcontinuous { visuNo frm } {
+        global audace
+
+        set bufNo [ visu$visuNo buf ]
+
+        if { [acq_is_running] } {
+            ::console::affiche_resultat "Acquisition en cours.\n"
+            return
+        }
+
+        ::console::affiche_resultat "One Shot Continous !\n"
+
+        set dev $::atos_acq::frmdevpath
+        if { [ string equal $dev ""] } {
+         set options ""
+         return
+        } else {
+         set options "-2 -i $dev"
+        }
+
+        #set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" } msg ]
+        set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options > /dev/null 2>&1\"" r+] } msg ]
+        if { $err != 0 } {
+            ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
+            ::console::affiche_erreur "Code d'erreur : $err\n"
+            ::console::affiche_erreur "=== Messages retournes par av4l-grab :\n"
+            foreach line [split $msg "\n"] {
+                ::console::affiche_erreur "$line\n"
+            }
+            ::console::affiche_erreur "=== Fin des messages\n"
+            return $err
+        } else {
+            ::console::affiche_resultat "=== Messages retournes par av4l-grab :\n"
+            foreach line [split $msg "\n"] {
+                ::console::affiche_resultat "$line\n"
+            }
+            ::console::affiche_resultat "=== Fin des messages\n"
+	}
+
+        if { $err == 0 } {
+            if {[file exists /dev/shm/pict.yuv422 ]} {
+                ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
+                visu$visuNo disp
+                file delete -force /dev/shm/pict.yuv422
+            } else {
+                ::console::affiche_erreur "Image inexistante \n"
+            }
+        }
+
+       set statebutton [ $frm.photom.values.object.t.select cget -relief]
+       if { $statebutton=="sunken" } {
+          set delta [ $frm.photom.values.object.v.r.delta get]
+          ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+       }
+       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+       if { $statebutton=="sunken" } {
+          set delta [ $frm.photom.values.reference.v.r.delta get]
+          ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+       }
+       set statebutton [ $frm.photom.values.image.t.select cget -relief]
+       if { $statebutton=="sunken" } {
+       ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+       }
+
+
+        after 100 " ::atos_tools_avi::acq_display $visuNo $frm"
+
+   }
+
 
 
 
@@ -655,7 +729,7 @@ namespace eval ::atos_tools_avi {
    proc ::atos_tools_avi::acq_start { visuNo frm } {
         global audace
 
-        set dev [$frm.tformin.periph.devpath get]
+        set dev $::atos_acq::frmdevpath
         set destdir [$frm.form.v.destdir get]
         set prefix  [$frm.form.v.prefix get]
 
