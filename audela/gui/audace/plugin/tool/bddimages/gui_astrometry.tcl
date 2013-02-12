@@ -295,20 +295,144 @@ namespace eval gui_astrometry {
       }
    }
 
+#"                        residus residus residus                                  Erreur"
+#"Mid Date                rho     alpha   delta   alpha        delta       mag     mag"
+# 2011-04-12T20:18:36.320 0.1077  0.1421  0.0550  194.15552700 2.19477127  00.000  00.000
+# 2011-04-12T20:20:08.330 0.1151  0.1452  0.0735  194.15465232 2.19597952  00.000  00.000
+# 2011-04-12T20:21:40.360 0.1895  0.2579  0.0727  194.15377966 2.19709127  00.000  00.000
+#2011-04-12T20:18:36.320
+#SKYBOT_274138_2008_FU6
+#::bddimages::ressource ; ::gui_astrometry::rapport
+   proc ::gui_astrometry::rapport {  } {
+
+      ::gui_astrometry::create_rapport_txt
+      ::gui_astrometry::create_rapport_mpc
+
+   }
+#         1         2         3         4         5         6         7         8
+#12345678901234567890123456789012345678901234567890123456789012345678901234567890
+#
+#     .        C2011 04 12.85103012 56 30.490+02 12 06.10         -06.90      586
+
+#COD 586
+#CON F.Vachier, IMCCE, Obs de Paris,77 Av Denfert Rochereau 75014 Paris France
+#CON [vachier@imcce.fr]
+#OBS F.Vachier, A.Kryszczynska
+#MEA F.Vachier
+#TEL 1.05-m f/12 reflector + CCD
+#NET USNO-A2
+#ACK Batch 003
+#AC2 vachier@imcce.fr
+#NUM 9
 
 
+#::bddimages::ressource ; ::gui_astrometry::create_rapport_mpc
+   proc ::gui_astrometry::create_rapport_mpc {  } {
 
+      $::gui_astrometry::rapport_mpc delete 0.0 end 
+      $::gui_astrometry::rapport_mpc insert end  "         1         2         3         4         5         6         7         8\n"
+      $::gui_astrometry::rapport_mpc insert end  "12345678901234567890123456789012345678901234567890123456789012345678901234567890\n"
 
+      set form "%14s%s%17s%12s%12s         %5s       %3s\n"
 
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name y} $l {
+         gren_info "$name = $y\n"
+         foreach date $::tools_astrometry::listscience($name) {
 
-   proc ::gui_astrometry::voir_dwet { w } {
+            set object_name "274138 "
+            set flag "C"
+            set obsuai "586"
+
+            set alpha   [lindex $::tools_astrometry::tabval($name,$date) 6]
+            set delta   [lindex $::tools_astrometry::tabval($name,$date) 7]
+            set mag     [lindex $::tools_astrometry::tabval($name,$date) 8]
+            if {$mag <10.0} {set mag "0$mag"}
+            set mag     [format "%+.2f" $mag ]
+            set ra_hms  [::tools_astrometry::convert_mpc_hms $alpha]
+            set dec_dms [::tools_astrometry::convert_mpc_dms $delta]
+            set datempc [::tools_astrometry::convert_mpc_date $date]
+            
+            
+            set txt [format $form $object_name $flag $datempc $ra_hms $dec_dms $mag $obsuai]
+            $::gui_astrometry::rapport_mpc insert end  $txt
+         }
+      }
       
-      
-   
+
+
    }
 
 
 
+
+
+
+   proc ::gui_astrometry::create_rapport_txt {  } {
+
+      # ::bddimages::ressource
+      $::gui_astrometry::rapport_txt delete 0.0 end 
+
+      set l [array get ::tools_astrometry::listscience]
+      set nummax 0
+      foreach {name y} $l {
+         set num [string length $name]
+         if {$num>$nummax} {set nummax $num}
+      }
+
+      set form "%-${nummax}s  %-23s  %-10s  %-11s  %-6s  %-6s  %-11s  %-12s  %-6s  %-6s\n"
+
+      set name    "Object"
+      set date    "Mid-Date"
+      set ra_hms  "Right Asc."
+      set dec_dms "Declination"
+      set res_a   "Err RA"
+      set res_d   "Err De"
+      set alpha   "Right Asc."
+      set delta   " Declination"
+      set mag     " Mag"
+      set err_mag " ErrMag"
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag ]
+      $::gui_astrometry::rapport_txt insert end  $txt
+      set name    ""
+      set date    "iso"
+      set ra_hms  "hms"
+      set dec_dms "dms"
+      set rho     "arcsec"
+      set res_a   "arcsec"
+      set res_d   "arcsec"
+      set alpha   "deg"
+      set delta   " deg"
+      set mag     ""
+      set err_mag ""
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag]
+      $::gui_astrometry::rapport_txt insert end  $txt
+
+      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
+
+      foreach {name y} $l {
+         gren_info "$name = $y\n"
+         foreach date $::tools_astrometry::listscience($name) {
+            gren_info "tabval $nummax = $::tools_astrometry::tabval($name,$date)\n"
+
+            set rho     [format "%.4f" [lindex $::tools_astrometry::tabval($name,$date) 3] ]
+            set res_a   [format "%.4f" [lindex $::tools_astrometry::tabval($name,$date) 4] ]
+            set res_d   [format "%.4f" [lindex $::tools_astrometry::tabval($name,$date) 5] ]
+            set alpha   [format "%.8f" [lindex $::tools_astrometry::tabval($name,$date) 6] ]
+            set delta   [format "%+.8f" [lindex $::tools_astrometry::tabval($name,$date) 7] ]
+            set mag     [format "%.3f" [lindex $::tools_astrometry::tabval($name,$date) 8] ]
+            set err_mag [format "%.3f" [lindex $::tools_astrometry::tabval($name,$date) 9] ]
+            set ra_hms  [mc_angle2hms [lindex $::tools_astrometry::tabval($name,$date) 6] 360 zero 1 auto string]
+            set dec_dms [mc_angle2dms [lindex $::tools_astrometry::tabval($name,$date) 7] 90 zero 1 + string]
+
+            set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag]
+            $::gui_astrometry::rapport_txt insert end  $txt
+         }
+      }
+
+      return
+
+   }
 
 
 
@@ -678,6 +802,10 @@ namespace eval gui_astrometry {
             pack $graphes -in $onglets.list -expand yes -fill both 
             $onglets.list add $graphes -text "Graphes"
 
+            set rapports [frame $onglets.list.rapports]
+            pack $rapports -in $onglets.list -expand yes -fill both 
+            $onglets.list add $rapports -text "Rapports"
+
             set onglets_sources [frame $sources.onglets -borderwidth 1 -cursor arrow -relief groove]
             pack $onglets_sources -in $sources -side top -expand yes -fill both -padx 10 -pady 5
  
@@ -703,6 +831,23 @@ namespace eval gui_astrometry {
                  set wcs [frame $onglets_dates.list.wcs -borderwidth 1]
                  pack $wcs -in $onglets_dates.list -expand yes -fill both 
                  $onglets_dates.list add $wcs -text "WCS"
+
+            set onglets_rapports [frame $rapports.onglets -borderwidth 1 -cursor arrow -relief groove]
+            pack $onglets_rapports -in $rapports -side top -expand yes -fill both -padx 10 -pady 5
+ 
+                 pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both 
+ 
+                 set entetes [frame $onglets_rapports.list.entetes -borderwidth 1]
+                 pack $entetes -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $entetes -text "Entetes"
+
+                 set mpc [frame $onglets_rapports.list.mpc -borderwidth 1]
+                 pack $mpc -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $mpc -text "MPC"
+
+                 set txt [frame $onglets_rapports.list.txt -borderwidth 1]
+                 pack $txt -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $txt -text "TXT"
 
 
             # Sources - References Parent (par liste de source et moyenne)
@@ -953,6 +1098,50 @@ namespace eval gui_astrometry {
 
 
 #            frame $onglets0.list.sources.table_enf -borderwidth 0 -cursor arrow -relief groove -background white
+
+
+         #--- Rapports MPC
+
+         set ::gui_astrometry::rapport_mpc $mpc.text
+         text $::gui_astrometry::rapport_mpc -height 30 -width 80 \
+              -xscrollcommand "$::gui_astrometry::rapport_mpc.xscroll set" \
+              -yscrollcommand "$::gui_astrometry::rapport_mpc.yscroll set"
+         pack $::gui_astrometry::rapport_mpc -expand yes -fill both -padx 5 -pady 5
+
+         scrollbar $::gui_astrometry::rapport_mpc.xscroll  -orient horizontal -command "$::gui_astrometry::rapport_mpc xview"
+         pack $::gui_astrometry::rapport_mpc.xscroll -side bottom -fill x
+
+         scrollbar $::gui_astrometry::rapport_mpc.yscroll -orient vertical -command "$::gui_astrometry::rapport_mpc yview"
+         pack $::gui_astrometry::rapport_mpc.yscroll -side right -fill y
+
+         #--- Rapports txt
+
+         set ::gui_astrometry::rapport_txt $txt.text
+         text $::gui_astrometry::rapport_txt -height 30 -width 120 \
+              -xscrollcommand "$::gui_astrometry::rapport_txt.xscroll set" \
+              -yscrollcommand "$::gui_astrometry::rapport_txt.yscroll set"
+         pack $::gui_astrometry::rapport_txt -expand yes -fill both -padx 5 -pady 5
+
+         scrollbar $::gui_astrometry::rapport_txt.xscroll  -orient horizontal -command "$::gui_astrometry::rapport_txt xview"
+         pack $::gui_astrometry::rapport_txt.xscroll -side bottom -fill x
+
+         scrollbar $::gui_astrometry::rapport_txt.yscroll -orient vertical -command "$::gui_astrometry::rapport_txt yview"
+         pack $::gui_astrometry::rapport_txt.yscroll -side right -fill y
+
+#   $::gui_astrometry::rapport_txt insert end "$title \n\n" TITLE
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
          #--- Cree un frame pour afficher bouton fermeture

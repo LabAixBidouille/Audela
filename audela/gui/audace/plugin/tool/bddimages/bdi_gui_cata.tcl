@@ -574,31 +574,6 @@ namespace eval gui_cata {
 
 
 
-   proc ::gui_cata::charge_list { img_list } {
-
-      ::tools_cata::charge_list $img_list
-
-      #?Charge l image a l ecran
-      buf$::audace(bufNo) load $::tools_cata::file
-      cleanmark
-      affich_un_rond_xy $::tools_cata::xcent $::tools_cata::ycent red 2 2
-
-      ::gui_cata::affiche_current_image
-      ::gui_cata::affiche_cata
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Anciennement ::gui_cata::load_cata
@@ -674,6 +649,10 @@ namespace eval gui_cata {
 
 
 
+
+
+
+
 # Anciennement ::gui_cata::affiche_cata
 
    proc ::gui_cata::affiche_cata { } {
@@ -683,23 +662,15 @@ namespace eval gui_cata {
       set err [catch {
 
          set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-         if {$cataexist==0} {return}
+         if {$cataexist==0} {return -code 0 "NOCATA"}
    
-         set cataexist [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
-         if {$cataexist!=1} {
-            return -code 0 "NOCATA"
-         }
-          
          if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
             ::gui_cata::load_cata
          } else {
             return -code 0 "NOCATA"
          }
    
-         if {$::gui_cata::gui_img} {
-            affich_rond $::tools_cata::current_listsources IMG $::gui_cata::color_img $::gui_cata::size_img 
-         }
-
+         if {$::gui_cata::gui_img     } { affich_rond $::tools_cata::current_listsources IMG    $::gui_cata::color_img    $::gui_cata::size_img    }
          if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
          if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
          if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
@@ -715,12 +686,48 @@ namespace eval gui_cata {
       if {$err} {
          if {$msg=="NOCATA"} {return}
          ::console::affiche_erreur "ERREUR affiche_cata : $msg\n" 
-         #set ::tools_cata::current_listsources [::tools_sources::set_common_fields_skybot $::tools_cata::current_listsources]
-         #::tools_sources::imprim_3_sources $::tools_cata::current_listsources SKYBOT
       }
 
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+   proc ::gui_cata::charge_list { img_list } {
+
+      ::tools_cata::charge_list $img_list
+
+      #?Charge l image a l ecran
+      buf$::audace(bufNo) load $::tools_cata::file
+      cleanmark
+      affich_un_rond_xy $::tools_cata::xcent $::tools_cata::ycent red 2 2
+
+      ::gui_cata::affiche_current_image
+      ::gui_cata::affiche_cata
+   }
+
+
+   proc ::gui_cata::charge_image { img_list } {
+
+      ::tools_cata::charge_list $img_list
+
+      #?Charge l image a l ecran
+      buf$::audace(bufNo) load $::tools_cata::file
+      cleanmark
+      affich_un_rond_xy $::tools_cata::xcent $::tools_cata::ycent red 2 2
+
+      ::gui_cata::affiche_current_image
+      ::gui_cata::affiche_cata
+   }
 
 
 
@@ -760,7 +767,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources ASTROID]
 
       #--- Creation de la fenetre
-      set ::gui_cata::fenv .new
+      set ::gui_cata::fenv .voircata
       if { [winfo exists $::gui_cata::fenv] } {
          wm withdraw $::gui_cata::fenv
          wm deiconify $::gui_cata::fenv
@@ -970,7 +977,7 @@ namespace eval gui_cata {
                 pack $skybot.color -side left -anchor e -expand 0 
                 spinbox $skybot.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata" -width 3
                 pack  $skybot.radius -in $skybot -side left -anchor w
-                $skybot.radius set $::gui_cata::size_skybot
+                $skybot.radius set $::gui_cata::size_skybot_sav
                 
         #--- Cree un frame pour afficher bouton fermeture
         set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]

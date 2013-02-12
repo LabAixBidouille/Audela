@@ -441,6 +441,16 @@ namespace eval tools_astrometry {
                # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
                
                # TODO Modif du tabkey de chaque image de img_list
+               foreach kk [list FOCLEN RA DEC CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CD1_1 CD1_2 CD2_1 CD2_2 ] {
+                  if {$kk == $key } {
+                     set val [format "%.10f" $val]
+                  }
+               }
+               foreach kk [list CRPIX1 CRPIX2] {
+                  if {$kk == $key } {
+                     set val [format "%.3f" $val]
+                  }
+               }
                lappend ::tools_cata::new_astrometry($id_current_image) [list $kwd $val $type $unit $comment]
                
             }
@@ -759,53 +769,10 @@ namespace eval tools_astrometry {
       }
 
 
-
-
-
       # Fichier au format MPC 
       if {$form=="MPC"} {
       }
 
-      # Fichier au format CATA 
-      if {$form=="CATA"} {
-
-         set fileres [ file join $audace(rep_travail) priam.txt ]
-         set chan0 [open $fileres w]
-         foreach current_image $::tools_cata::img_list {
-            set tabkey      [::bddimages_liste::lget $current_image "tabkey"]
-            set current_listsources [::bddimages_liste::lget $current_image "listsources"]
-
-            set cataxml [::tools_cata::get_catafilename $current_image "TMP" ]
-            
-            gren_info "cataxml = $cataxml\n"
-
-            gren_info "Rol=[ ::manage_source::get_nb_sources_rollup $current_listsources]\n"
-            set votable [::votableUtil::list2votable $current_listsources $tabkey]
-
-#            gren_info "votable = $votable\n"
-
-            # Sauvegarde du cata XML
-            #gren_info "Enregistrement du cata XML: $cataxml\n"
-            
-            set fxml [open $cataxml "w"]
-            puts $fxml $votable
-            close $fxml
-
-            return
-
-            set err [ catch { insertion_solo $cataxml } msg ]
-            gren_info "** INSERTION_SOLO = $err $msg\n"
-
-            set cataexist [::bddimages_liste::lexist $current_image "cataexist"]
-            if {$cataexist==0} {
-               set current_image [::bddimages_liste::ladd $current_image "cataexist" 1]
-            } else {
-               set current_image [::bddimages_liste::lupdate $current_image "cataexist" 1]
-            }
-         }
-
-      }
-   
    }
 
 
@@ -843,9 +810,6 @@ namespace eval tools_astrometry {
          set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
          set tabkey   [::bddimages_liste::lget $current_image "tabkey"]
 
-         # Liste des sources
-         set listsources $::gui_cata::cata_list($id_current_image)
-
          # Noms des fichiers
          set imgfilename    [::bddimages_liste::lget $current_image filename]
          set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
@@ -856,12 +820,18 @@ namespace eval tools_astrometry {
          set ident [bddimages_image_identification $idbddimg]
          set fileimg  [lindex $ident 1]
          set filecata [lindex $ident 3]
- 
+
+
          # Maj du buffer
          buf$::audace(bufNo) load $fileimg
+
          foreach vals $::tools_cata::new_astrometry($id_current_image) {
             buf$::audace(bufNo) setkwd $vals
          }
+
+
+         
+         
          set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
          
          # Creation de l image temporaire
@@ -886,7 +856,7 @@ namespace eval tools_astrometry {
          set errnum [catch {file delete $filetmp} msg]
 
          # insere le cata dans la base
-         ::tools_cata::save_cata $listsources $tabkey $cataxml
+         ::tools_cata::save_cata $::gui_cata::cata_list($id_current_image) $tabkey $cataxml
 
          # Maj  ::tools_cata::img_list
          set current_image [::bddimages_liste::lupdate $current_image idbddimg $idbddimg]
@@ -899,6 +869,58 @@ namespace eval tools_astrometry {
 
 
    }
+
+
+
+#12 56 30.49 
+
+   proc ::tools_astrometry::convert_mpc_hms { val } {
+      set h [expr $val/15.]
+      set hint [expr int($h)]
+      set r [expr $h - $hint]
+      set m [expr $r * 60.]
+      set mint [expr int($m)]
+      set r [expr $m - $mint]
+      set sec [format "%.3f" [expr $r * 60.]]
+      if {$hint <10.0} {set hint "0$hint"}
+      if {$mint <10.0} {set m "0$mint"}
+      if {$sec  <10.0} {set sec "0$sec"}
+      return "$hint $mint $sec"
+   }
+
+
+#+02 12 06.10
+
+   proc ::tools_astrometry::convert_mpc_dms { val } {
+
+      if {$val>=0} {set s "+"} else {set s "-"}
+      set d [expr int($val)]
+      set r [expr $val - $d]
+      set m [expr $r * 60.]
+      set mint [expr int($m)]
+      set r [expr $m - $mint]
+      set sec [format "%.2f" [expr $r * 60.]]
+      if {$d <10.0}    {set d "0$d"}
+      if {$mint <10.0} {set m "0$mint"}
+      if {$sec <10.0}  {set sec "0$sec"}
+      return "$s$d $mint $sec"
+      
+   }
+
+# 2011 04 12.84625370
+
+   proc ::tools_astrometry::convert_mpc_date { date } {
+      set a [string range $date 0 3]
+      set m [string range $date 5 6]
+      set d [string range $date 8 9]
+      set h [string range $date 11 12]
+      set mn [string range $date 14 15]
+      set s  [string range $date 17 22]
+      set day [format "%.6f" [expr $d + $h / 24. + $mn / 24. / 60. + $s / 24. /3600.]]
+      if {$day <10.0} {set day "0$day"}
+      return "$a $m $day"
+   }
+
 
 
 # Fin de Classe
