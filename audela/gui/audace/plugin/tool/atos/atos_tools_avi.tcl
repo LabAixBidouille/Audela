@@ -463,7 +463,7 @@ namespace eval ::atos_tools_avi {
            }
 
         }
-        after 100 " ::atos_tools_avi::acq_display $visuNo $frm"
+        after $::atos::parametres(atos,$visuNo,screen_refresh) " ::atos_tools_avi::acq_display $visuNo $frm"
 
 
    }
