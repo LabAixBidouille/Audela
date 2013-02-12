@@ -11,7 +11,7 @@
 #
 #  return rien
 #------------------------------------------------------------
-proc ::searchPorts { mainThreadNo port_exclus } {
+proc ::searchPorts { mainThreadNo { port_exclus "" } } {
    variable private
    global conf
 
