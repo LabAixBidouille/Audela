@@ -1122,7 +1122,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
       append urlget "long $lon lat $lat alt $alt "
    } else {
       append urlget "c $home "
-   }      
+   }
    append urlget "raty a "
    append urlget "s c "
    append urlget "m m "
@@ -1131,7 +1131,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
    append urlget "fp y "
    append urlget "e 0 "
    append urlget "tit \"\" "
-   append urlget "bu \"\" "  
+   append urlget "bu \"\" "
    append urlget "adir S "
    append urlget "res n "
    append urlget "ch c "
@@ -1149,7 +1149,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
    # alt = altitude (m)
    # raty = coordinate display (a= Full sexa d=decimal)
    # s = motion mode (c=Separate R.A. and Decl. coordinate motions)
-   # m = motion units (s="/sec m="/min h="/hour) 
+   # m = motion units (s="/sec m="/min h="/hour)
    # igd = Suppress output if sun above local horizon (y|n)
    # ibh = Suppress output if object below local horizon (y|n)
    # fp = Generate perturbed ephemerides for unperturbed orbits (y|n)
@@ -1232,3 +1232,4 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
    }
    return $resultats
 }
+
