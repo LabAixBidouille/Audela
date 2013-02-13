@@ -1100,14 +1100,14 @@ proc vo_miriade_ephemcc { args } {
 #          lassign $ephem obj_name obj_date obj_ra obj_dec obj_drift_ra obj_drift_dec obj_magv obj_az obj_elev obj_elong obj_phase obj_r obj_delta sun_elev
 #
 # source $audace(rep_install)/gui/audace/vo_tools.tcl ; vo_getmpcephem 2012DA14 2013-02-15T19:00:00 {GPS 6 E 43 1230}
-proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {incr_nb 1} } {
+proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {incr_nb 1} } {
    set url "http://scully.cfa.harvard.edu/cgi-bin/mpeph2.cgi"
    set urlget ""
    set ids $object_id
    append urlget "\"$ids\" "
    append urlget "ty e "
    set a [mc_date2iso8601 $date_start]
-   set date "[string range $a 0 3] [string range $a 5 6] [string range $a 8 9] [string range $a 11 12] [string range $a 14 15]  [string range $a 16 17]"
+   set date "[string range $a 0 3] [string range $a 5 6] [string range $a 8 9] [string range $a 11 12][string range $a 14 15][string range $a 17 18]"
    append urlget "d \"$date\" "
    append urlget "l $incr_nb "
    append urlget "i $incr_date "
@@ -1122,7 +1122,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
       append urlget "long $lon lat $lat alt $alt "
    } else {
       append urlget "c $home "
-   }
+   }      
    append urlget "raty a "
    append urlget "s c "
    append urlget "m m "
@@ -1131,12 +1131,13 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
    append urlget "fp y "
    append urlget "e 0 "
    append urlget "tit \"\" "
-   append urlget "bu \"\" "
+   append urlget "bu \"\" "  
    append urlget "adir S "
    append urlget "res n "
    append urlget "ch c "
    append urlget "oed \"\" "
    append urlget "js f "
+   #console::affiche_resultat "$urlget\n"
    # ty = Return ephemerides (e=ephemeris)
    # d = date start (YYYY MM DD hh mm ss)
    # l = Number of dates to output (int)
@@ -1149,7 +1150,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
    # alt = altitude (m)
    # raty = coordinate display (a= Full sexa d=decimal)
    # s = motion mode (c=Separate R.A. and Decl. coordinate motions)
-   # m = motion units (s="/sec m="/min h="/hour)
+   # m = motion units (s="/sec m="/min h="/hour) 
    # igd = Suppress output if sun above local horizon (y|n)
    # ibh = Suppress output if object below local horizon (y|n)
    # fp = Generate perturbed ephemerides for unperturbed orbits (y|n)
@@ -1169,9 +1170,11 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
          error [list "URL $url not found" $res]
       }
    }
-   set f [open c:/d/a/mpc.html w]
-   puts -nonewline $f $res
-   close $f
+   catch {
+      set f [open c:/d/a/mpc.html w]
+      puts -nonewline $f $res
+      close $f
+   }
    #
    set resultats ""
    set lignes [split $res \n]
@@ -1215,14 +1218,16 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
             set obj_delta [lindex $ligne 10]
             set obj_r [lindex $ligne 11]
             set obj_elong [lindex $ligne 12]
-            set obj_phase [lindex $ligne 13]
-            set obj_magv [lindex $ligne 14]
-            set obj_drift_ra  [lindex $ligne 15]
-            set obj_drift_dec [lindex $ligne 16]
-            set obj_az [string trim [mc_angle2deg [lindex $ligne 17] 360]]
-            set obj_elev [string trim [mc_angle2deg [lindex $ligne 18] 90]]
-            set sun_elev [string trim [mc_angle2deg [lindex $ligne 19] 90]]
+            set obj_phase [lindex $ligne 13]            
+            set obj_magv [string trim [string range $ligne 68 72]]
+            set obj_drift_ra  [string trim [string range $ligne 73 81]]
+            set obj_drift_dec [string trim [string range $ligne 82 89]]
+            set ligne2 [string range $ligne 91 end]
+            set obj_az [string trim [mc_angle2deg [lindex $ligne2 0] 360]]
+            set obj_elev [string trim [mc_angle2deg [lindex $ligne2 1] 90]]
+            set sun_elev [string trim [mc_angle2deg [lindex $ligne2 2] 90]]
             set res [list $obj_name $obj_date $obj_ra $obj_dec $obj_drift_ra $obj_drift_dec $obj_magv $obj_az $obj_elev $obj_elong $obj_phase $obj_r $obj_delta $sun_elev]
+            #console::affiche_resultat "$ligne\n"
             lappend resultats $res
          }
       }
@@ -1232,4 +1237,5 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {inc
    }
    return $resultats
 }
+
 
