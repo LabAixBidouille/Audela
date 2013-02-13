@@ -1093,3 +1093,142 @@ proc vo_miriade_ephemcc { args } {
 
    }
 }
+
+# proc vo_getmpcephem
+# return ephemeris of a solar system object from a date to date+24h
+# output : List of ephem where ephem is:
+#          lassign $ephem obj_name obj_date obj_ra obj_dec obj_drift_ra obj_drift_dec obj_magv obj_az obj_elev obj_elong obj_phase obj_r obj_delta sun_elev
+#
+# source $audace(rep_install)/gui/audace/vo_tools.tcl ; vo_getmpcephem 2012DA14 2013-02-15T19:00:00 {GPS 6 E 43 1230}
+proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit m} {incr_nb 1} } {
+   set url "http://scully.cfa.harvard.edu/cgi-bin/mpeph2.cgi"
+   set urlget ""
+   set ids $object_id
+   append urlget "\"$ids\" "
+   append urlget "ty e "
+   set a [mc_date2iso8601 $date_start]
+   set date "[string range $a 0 3] [string range $a 5 6] [string range $a 8 9] [string range $a 11 12] [string range $a 14 15]  [string range $a 16 17]"
+   append urlget "d \"$date\" "
+   append urlget "l $incr_nb "
+   append urlget "i $incr_date "
+   append urlget "u $incr_unit "
+   append urlget "uto 0 "
+   if {[llength $home]>1} {
+      set home [mc_home2gps $home]
+      lassign $home gps lon sense lat alt
+      if {$sense=="W"} {
+         set lon [expr $lon*-1.]
+      }
+      append urlget "long $lon lat $lat alt $alt "
+   } else {
+      append urlget "c $home "
+   }      
+   append urlget "raty a "
+   append urlget "s c "
+   append urlget "m m "
+   append urlget "igd n "
+   append urlget "ibh n "
+   append urlget "fp y "
+   append urlget "e 0 "
+   append urlget "tit \"\" "
+   append urlget "bu \"\" "  
+   append urlget "adir S "
+   append urlget "res n "
+   append urlget "ch c "
+   append urlget "oed \"\" "
+   append urlget "js f "
+   # ty = Return ephemerides (e=ephemeris)
+   # d = date start (YYYY MM DD hh mm ss)
+   # l = Number of dates to output (int)
+   # i = Ephemeris interval (see "u" for units)
+   # u = Ephemeris units (d=day h=hour m=minutes s=seconds)
+   # uto = For daily ephemerides, enter desired offset from 0h UT (hours)
+   # c = Observatory code (3 chars)
+   # lon = longitude (deg)
+   # lat = latitude (deg)
+   # alt = altitude (m)
+   # raty = coordinate display (a= Full sexa d=decimal)
+   # s = motion mode (c=Separate R.A. and Decl. coordinate motions)
+   # m = motion units (s="/sec m="/min h="/hour) 
+   # igd = Suppress output if sun above local horizon (y|n)
+   # ibh = Suppress output if object below local horizon (y|n)
+   # fp = Generate perturbed ephemerides for unperturbed orbits (y|n)
+   # e = Format for elements output (0=MPC 8-line)
+   # tit = Title for document (ascii)
+   # bu = Base URL for document (ascii)
+   set toeval "::http::formatQuery TextArea $urlget"
+   set login [eval $toeval]
+   set err [catch {::http::geturl $url -query "$login"} token]
+   if {$err==1} {
+      error "$token"
+   } else {
+      upvar #0 $token state
+      set res $state(body)
+      set len [llength [split $res \n]]
+      if {$len<15} {
+         error [list "URL $url not found" $res]
+      }
+   }
+   set f [open c:/d/a/mpc.html w]
+   puts -nonewline $f $res
+   close $f
+   #
+   set resultats ""
+   set lignes [split $res \n]
+   set flagdeb 0
+   set flagfin 0
+   set nlig [llength $lignes]
+   set comet_ephem ""
+   set obj_name ""
+   for {set klig 0} {$klig<$nlig} {incr klig} {
+      set ligne [lindex $lignes $klig]
+      if {$flagdeb==0} {
+         set key [string range $ligne 0 10]
+         if {($key==" <p><hr><p>")&&($obj_name=="")} {
+            set ligne2 [lindex $lignes [expr 2+$klig]]
+            set k1 [expr [string first <b>  $ligne2 ]+3]
+            set k2 [expr [string first </b> $ligne2 ]-1]
+            set obj_name [string trim [string range $ligne2 $k1 $k2]]
+         }
+         set key [string range $ligne 0 36]
+         #             123456789 123456789 123456789 123456789
+         if {$key=="Date       UT      R.A. (J2000) Decl."} {
+            set flagdeb $klig
+            incr klig 1
+            continue
+         }
+      }
+      if {$flagdeb>0} {
+         if {$ligne=="</pre>"} {
+            set flagfin $klig
+         }
+      }
+      if {($flagdeb>0)&&($flagfin==0)} {
+         if {$ligne!="... Suppressed ..."} {
+            set y [lindex $ligne 0]
+            set m [lindex $ligne 1]
+            set d [lindex $ligne 2]
+            set hms [lindex $ligne 3]
+            set obj_date [mc_date2iso8601 [list $y $m $d [string range $hms 0 1] [string range $hms 2 3] [string range $hms 4 5]]]
+            set obj_ra  [string trim [mc_angle2deg [lindex $ligne 4]h[lindex $ligne 5]m[lindex $ligne 6]s ]]
+            set obj_dec [string trim [mc_angle2deg [lindex $ligne 7]d[lindex $ligne 8]m[lindex $ligne 9]s 90]]
+            set obj_delta [lindex $ligne 10]
+            set obj_r [lindex $ligne 11]
+            set obj_elong [lindex $ligne 12]
+            set obj_phase [lindex $ligne 13]
+            set obj_magv [lindex $ligne 14]
+            set obj_drift_ra  [lindex $ligne 15]
+            set obj_drift_dec [lindex $ligne 16]
+            set obj_az [string trim [mc_angle2deg [lindex $ligne 17] 360]]
+            set obj_elev [string trim [mc_angle2deg [lindex $ligne 18] 90]]
+            set sun_elev [string trim [mc_angle2deg [lindex $ligne 19] 90]]
+            set res [list $obj_name $obj_date $obj_ra $obj_dec $obj_drift_ra $obj_drift_dec $obj_magv $obj_az $obj_elev $obj_elong $obj_phase $obj_r $obj_delta $sun_elev]
+            lappend resultats $res
+         }
+      }
+   }
+   if {$obj_name==""} {
+      error "Object $object_id not found"
+   }
+   return $resultats
+}
