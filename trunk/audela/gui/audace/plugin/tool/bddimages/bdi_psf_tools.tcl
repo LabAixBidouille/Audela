@@ -882,12 +882,219 @@ namespace eval psf_tools {
 
 
 
+   proc ::psf_tools::set_mag { send_listsources } {
+
+      upvar $send_listsources listsources
+      ::psf_tools::set_mag_usno_r2 listsources
+   }
+
+
+
+
+   proc ::psf_tools::set_mag_usno_r { send_listsources } {
+      
+      upvar $send_listsources listsources
+
+      #set ::psf_tools::debug $listsources
+
+
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+      set nd_sources [llength $sources]
+
+      set tabflux ""
+      set tabmag  ""
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "USNOA2"} {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos!=-1} {
+                  set usnoa2 $cata
+                  set usnoa2_oth [lindex $usnoa2 2]
+                  set astroid [lindex $s $pos]
+                  set astroid_com [lindex $astroid 1]
+                  set astroid_oth [lindex $astroid 2]
+                  set flux [lindex $astroid_oth 7 ]
+                  set mag  [lindex $usnoa2_oth  7 ]
+                  if {$flux!="" && $mag != "" } {
+                     lappend tabflux $flux 
+                     lappend tabmag  $mag  
+                  }
+                  
+               }
+            }
+         }
+      }
+      #gren_info "nb data = [llength $tabflux] == [llength $tabmag] \n"
+      set median_flux [::math::statistics::median $tabflux ]
+      set median_mag  [::math::statistics::median $tabmag ]
+
+      set tabflux ""
+      set tabmag  ""
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "USNOA2"} {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos!=-1} {
+                  set usnoa2 $cata
+                  set usnoa2_oth [lindex $usnoa2 2]
+                  set astroid [lindex $s $pos]
+                  set astroid_com [lindex $astroid 1]
+                  set astroid_oth [lindex $astroid 2]
+                  set flux [lindex $astroid_oth 7 ]
+                  set mag  [lindex $usnoa2_oth  7 ]
+                  if {$flux!="" && $mag != "" } {
+                     set magcalc [expr -log10($flux/$median_flux)*2.5+ $median_mag]
+                     lappend tabmag  [expr abs($mag - $median_mag) ]
+                  }
+                  
+               }
+            }
+         }
+      }
+
+      set mag_err [format "%.3f" [::math::statistics::stdev $tabmag] ]
+      
+      set spos 0
+      foreach s $sources {
+         set cpos [lsearch -index 0 $s "ASTROID"]
+         if {$cpos!=-1} {
+               set astroid [lindex $s $cpos]
+               set astroid_com [lindex $astroid 1]
+               set astroid_oth [lindex $astroid 2]
+               set flux [lindex $astroid_oth 7 ]
+               set mag [format "%.3f" [expr -log10($flux/$median_flux)*2.5+ $median_mag] ]
+               set astroid_com [lreplace  $astroid_com  3  4 $mag $mag_err ]
+               set astroid_oth [lreplace  $astroid_oth 22 23 $mag $mag_err ]
+               set s [lreplace $s $cpos $cpos [list "ASTROID" $astroid_com $astroid_oth]]
+               set sources [lreplace $sources $spos $spos $s]
+         }
+         incr spos
+         
+      }
+      
+      set listsources [list $fields $sources]
+      return
+   }
 
 
 
 
 
 
+
+
+
+
+
+
+   proc ::psf_tools::set_mag_usno_r2 { send_listsources } {
+      
+      upvar $send_listsources listsources
+
+      #set ::psf_tools::debug $listsources
+
+
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+      set nd_sources [llength $sources]
+
+      set tabmaginst ""
+      set tabmagcata ""
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "USNOA2"} {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos!=-1} {
+                  set usnoa2 $cata
+                  set usnoa2_oth [lindex $usnoa2 2]
+                  set astroid [lindex $s $pos]
+                  set astroid_com [lindex $astroid 1]
+                  set astroid_oth [lindex $astroid 2]
+                  set flux [lindex $astroid_oth 7 ]
+                  set magcata  [lindex $usnoa2_oth  7]
+                  if {$flux!="" && $magcata != "" } {
+                     set maginst  [expr -log10($flux)*2.5]
+                     lappend tabmaginst  $maginst 
+                     lappend tabmagcata  $magcata  
+                  }
+                  
+               }
+            }
+         }
+      }
+      #gren_info "nb data = [llength $tabflux] == [llength $tabmag] \n"
+      set median_maginst [::math::statistics::median $tabmaginst ]
+      set median_magcata [::math::statistics::median $tabmagcata ]
+      set const_mag      [expr $median_magcata - $median_maginst]
+      gren_info "median_maginst = $median_maginst\n"
+      gren_info "median_magcata = $median_magcata\n"
+      gren_info "const_mag = $const_mag\n"
+
+      set tabflux ""
+      set tabmag  ""
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "USNOA2"} {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos!=-1} {
+                  set usnoa2      $cata
+                  set usnoa2_oth  [lindex $usnoa2 2]
+                  set astroid     [lindex $s $pos]
+                  set astroid_com [lindex $astroid 1]
+                  set astroid_oth [lindex $astroid 2]
+                  set flux        [lindex $astroid_oth 7 ]
+                  set magcata     [lindex $usnoa2_oth  7 ]
+
+                  if {$flux!="" && $magcata != "" } {
+                     set maginst  [expr -log10($flux)*2.5]
+                     set magcalc  [expr -log10($flux)*2.5 + $const_mag]
+
+                     gren_info "mag cata = $magcata ; maginstru = $maginst ; diff = [expr abs($magcata - $maginst) ] ; macalc = $magcalc ; diff = [expr abs($magcalc - $magcata) ]\n"
+
+                     lappend tabmag  [expr abs($magcalc - $magcata) ]
+                  }
+                  
+               }
+            }
+         }
+      }
+
+      set mag_err [format "%.3f" [::math::statistics::mean $tabmag] ]
+      gren_info "mag_err = $mag_err\n"
+      
+
+
+  # calcul toutes les sources
+
+
+      set spos 0
+      foreach s $sources {
+         set cpos [lsearch -index 0 $s "ASTROID"]
+         if {$cpos!=-1} {
+               set astroid [lindex $s $cpos]
+               set astroid_com [lindex $astroid 1]
+               set astroid_oth [lindex $astroid 2]
+               set flux [lindex $astroid_oth 7 ]
+               
+               set err [catch {set mag [format "%.3f" [expr -log10($flux)*2.5 + $const_mag] ]} msg ]
+               if {$err} {
+                  gren_info "ERREUR MAG : s = $s \n"
+                  gren_info "ERREUR MAG : flux = $flux ; const_mag = $const_mag\n"
+               }
+               
+               set astroid_com [lreplace  $astroid_com  3  4 $mag $mag_err ]
+               set astroid_oth [lreplace  $astroid_oth 22 23 $mag $mag_err ]
+               set s [lreplace $s $cpos $cpos [list "ASTROID" $astroid_com $astroid_oth]]
+               set sources [lreplace $sources $spos $spos $s]
+         }
+         incr spos
+         
+      }
+      
+      set listsources [list $fields $sources]
+      return
+   }
 
 
 

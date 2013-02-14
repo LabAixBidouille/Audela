@@ -629,7 +629,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
             ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_delta $::psf_tools::psf_saturation
          }
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
-
+         ::psf_tools::set_mag listsources
+         
       }
 
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
