@@ -629,9 +629,32 @@ namespace eval gui_astrometry {
       append msg \n\n $body
 gren_info "$msg\n"
       exec /usr/lib/sendmail -oi -t << $msg
+
+
    }
 
+proc send_simple_message {originator recipient email_server subject body} {
 
+    package require smtp
+    package require mime
+gren_info "ici\n"
+    set token [mime::initialize -canonical text/plain -string $body]
+gren_info "la\n"
+    #smtp::sendmessage $token -servers $email_server -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+    smtp::sendmessage $token -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+gren_info "ici\n"
+    mime::finalize $token
+gren_info "la\n"
+}
+
+
+#    set gren(email,originator) "Test"
+#    set adresse  fv@imcce.fr 
+#    set gren(email,email_server) smtp.free.fr
+#    set email_subject "sujet test"
+#    set texte00 "Bonjour. Fais-moi un reply que c'est OK."
+
+# send_simple_message $gren(email,originator) $adresse $gren(email,email_server) "$email_subject" "$texte00"
 
 
 
@@ -1474,7 +1497,8 @@ gren_info "$msg\n"
          set ::gui_astrometry::rapport_mpc $mpc.text
          text $::gui_astrometry::rapport_mpc -height 30 -width 80 \
               -xscrollcommand "$::gui_astrometry::rapport_mpc.xscroll set" \
-              -yscrollcommand "$::gui_astrometry::rapport_mpc.yscroll set"
+              -yscrollcommand "$::gui_astrometry::rapport_mpc.yscroll set" \
+              -wrap none
          pack $::gui_astrometry::rapport_mpc -expand yes -fill both -padx 5 -pady 5
 
          scrollbar $::gui_astrometry::rapport_mpc.xscroll  -orient horizontal -command "$::gui_astrometry::rapport_mpc xview"
@@ -1494,7 +1518,8 @@ gren_info "$msg\n"
          set ::gui_astrometry::rapport_txt $txt.text
          text $::gui_astrometry::rapport_txt -height 30 -width 120 \
               -xscrollcommand "$::gui_astrometry::rapport_txt.xscroll set" \
-              -yscrollcommand "$::gui_astrometry::rapport_txt.yscroll set"
+              -yscrollcommand "$::gui_astrometry::rapport_txt.yscroll set" \
+              -wrap none
          pack $::gui_astrometry::rapport_txt -expand yes -fill both -padx 5 -pady 5
 
          scrollbar $::gui_astrometry::rapport_txt.xscroll  -orient horizontal -command "$::gui_astrometry::rapport_txt xview"

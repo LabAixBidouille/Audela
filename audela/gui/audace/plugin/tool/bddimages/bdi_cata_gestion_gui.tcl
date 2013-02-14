@@ -1821,6 +1821,8 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
       
       set ::tools_cata::current_listsources [list $fields $sources]
+      
+      
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       ::tools_cata::current_listsources_to_tklist
       set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
@@ -2017,6 +2019,10 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
       
       set ::tools_cata::current_listsources [list $fields $sources]
+      ::psf_tools::set_mag ::tools_cata::current_listsources
+      
+      
+         # pack les resultats
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       ::tools_cata::current_listsources_to_tklist
       set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
@@ -2099,6 +2105,9 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
 
          set ::tools_cata::current_listsources [list $fields $sources]
+         ::psf_tools::set_mag ::tools_cata::current_listsources
+         
+         # pack les resultats
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
          ::tools_cata::current_listsources_to_tklist
          set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
