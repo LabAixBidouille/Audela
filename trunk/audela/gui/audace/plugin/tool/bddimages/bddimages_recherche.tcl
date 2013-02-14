@@ -1808,15 +1808,14 @@ namespace eval bddimages_recherche {
          set i [lindex [$w curselection ]  0]
          set idbddimg  [lindex [$w get $i] 0]
          affiche_image_by_idbddimg $idbddimg
-         if { [winfo exists $::gui_cata::fenv] } {
-            gren_info "Chargement du cata\n"
-            set lid [list $i]
-            set img_list [::bddimages_liste_gui::new_normallist $lid]
-            ::tools_cata::charge_list $img_list
-            ::gui_cata::affiche_cata
-      }
-         
-         
+         if { [info exists ::gui_cata::fenv] } {
+            if { [winfo exists $::gui_cata::fenv] } {
+               set lid [list $i]
+               set img_list [::bddimages_liste_gui::new_normallist $lid]
+               ::tools_cata::charge_list $img_list
+               ::gui_cata::affiche_cata
+            }
+         }
       }
       return
 
