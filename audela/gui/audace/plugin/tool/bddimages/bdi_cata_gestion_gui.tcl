@@ -24,22 +24,22 @@ namespace eval cata_gestion_gui {
    proc ::cata_gestion_gui::inittoconf {  } {
 
       if {! [info exists ::tools_cata::astroid_saturation] } {
-         if {[info exists conf(astrometry,cata,astroid,saturation)]} {
-            set ::tools_cata::astroid_saturation $conf(astrometry,cata,astroid,saturation)
+         if {[info exists conf(bddimages,cata,astroid,saturation)]} {
+            set ::tools_cata::astroid_saturation $conf(bddimages,cata,astroid,saturation)
          } else {
             set ::tools_cata::astroid_saturation 50000
          }
       }
       if {! [info exists ::tools_cata::astroid_delta] } {
-         if {[info exists conf(astrometry,cata,astroid,delta)]} {
-            set ::tools_cata::astroid_delta $conf(astrometry,cata,astroid,delta)
+         if {[info exists conf(bddimages,cata,astroid,delta)]} {
+            set ::tools_cata::astroid_delta $conf(bddimages,cata,astroid,delta)
          } else {
             set ::tools_cata::astroid_delta 15
          }
       }
       if {! [info exists ::tools_cata::astroid_threshold] } {
-         if {[info exists conf(astrometry,cata,astroid,threshold)]} {
-            set ::tools_cata::astroid_threshold $conf(astrometry,cata,astroid,threshold)
+         if {[info exists conf(bddimages,cata,astroid,threshold)]} {
+            set ::tools_cata::astroid_threshold $conf(bddimages,cata,astroid,threshold)
          } else {
             set ::tools_cata::astroid_threshold 5
          }
@@ -47,22 +47,22 @@ namespace eval cata_gestion_gui {
 
       # Uncosmic or not
       if {! [info exists ::gui_cata::use_uncosmic] } {
-         if {[info exists conf(astrometry,cata,use_uncosmic)]} {
-            set ::gui_cata::use_uncosmic $conf(astrometry,cata,use_uncosmic)
+         if {[info exists conf(bddimages,cata,use_uncosmic)]} {
+            set ::gui_cata::use_uncosmic $conf(bddimages,cata,use_uncosmic)
          } else {
             set ::gui_cata::use_uncosmic 1
          }
       }
       if {! [info exists ::tools_cdl::uncosm_param1] } {
-         if {[info exists conf(astrometry,cata,uncosm_param1)]} {
-            set ::tools_cdl::uncosm_param1 $conf(astrometry,cata,uncosm_param1)
+         if {[info exists conf(bddimages,cata,uncosm_param1)]} {
+            set ::tools_cdl::uncosm_param1 $conf(bddimages,cata,uncosm_param1)
          } else {
             set ::tools_cdl::uncosm_param1 0.8
          }
       }
       if {! [info exists ::tools_cdl::uncosm_param2] } {
-         if {[info exists conf(astrometry,cata,uncosm_param2)]} {
-            set ::tools_cdl::uncosm_param2 $conf(astrometry,cata,uncosm_param2)
+         if {[info exists conf(bddimages,cata,uncosm_param2)]} {
+            set ::tools_cdl::uncosm_param2 $conf(bddimages,cata,uncosm_param2)
          } else {
             set ::tools_cdl::uncosm_param2 100
          }
