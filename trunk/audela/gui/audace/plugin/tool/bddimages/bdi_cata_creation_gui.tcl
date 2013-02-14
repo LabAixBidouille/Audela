@@ -44,64 +44,64 @@ namespace eval cata_creation_gui {
 
       # Check button Use
       if {! [info exists ::tools_cata::use_usnoa2] } {
-         if {[info exists conf(astrometry,cata,use_usnoa2)]} {
-            set ::tools_cata::use_usnoa2 $conf(astrometry,cata,use_usnoa2)
+         if {[info exists conf(bddimages,cata,use_usnoa2)]} {
+            set ::tools_cata::use_usnoa2 $conf(bddimages,cata,use_usnoa2)
          } else {
             set ::tools_cata::use_usnoa2 1
          }
       }
       if {! [info exists ::tools_cata::use_ucac2] } {
-         if {[info exists conf(astrometry,cata,use_ucac2)]} {
-            set ::tools_cata::use_ucac2 $conf(astrometry,cata,use_ucac2)
+         if {[info exists conf(bddimages,cata,use_ucac2)]} {
+            set ::tools_cata::use_ucac2 $conf(bddimages,cata,use_ucac2)
          } else {
             set ::tools_cata::use_ucac2 0
          }
       }
       if {! [info exists ::tools_cata::use_ucac3] } {
-         if {[info exists conf(astrometry,cata,use_ucac3)]} {
-            set ::tools_cata::use_ucac3 $conf(astrometry,cata,use_ucac3)
+         if {[info exists conf(bddimages,cata,use_ucac3)]} {
+            set ::tools_cata::use_ucac3 $conf(bddimages,cata,use_ucac3)
          } else {
             set ::tools_cata::use_ucac3 0
          }
       }
       if {! [info exists ::tools_cata::use_ucac4] } {
-         if {[info exists conf(astrometry,cata,use_ucac4)]} {
-            set ::tools_cata::use_ucac4 $conf(astrometry,cata,use_ucac4)
+         if {[info exists conf(bddimages,cata,use_ucac4)]} {
+            set ::tools_cata::use_ucac4 $conf(bddimages,cata,use_ucac4)
          } else {
             set ::tools_cata::use_ucac4 0
          }
       }
       if {! [info exists ::tools_cata::use_ppmx] } {
-         if {[info exists conf(astrometry,cata,use_ppmx)]} {
-            set ::tools_cata::use_ppmx $conf(astrometry,cata,use_ppmx)
+         if {[info exists conf(bddimages,cata,use_ppmx)]} {
+            set ::tools_cata::use_ppmx $conf(bddimages,cata,use_ppmx)
          } else {
             set ::tools_cata::use_ppmx 0
          }
       }
       if {! [info exists ::tools_cata::use_ppmxl] } {
-         if {[info exists conf(astrometry,cata,use_ppmxl)]} {
-            set ::tools_cata::use_ppmxl $conf(astrometry,cata,use_ppmxl)
+         if {[info exists conf(bddimages,cata,use_ppmxl)]} {
+            set ::tools_cata::use_ppmxl $conf(bddimages,cata,use_ppmxl)
          } else {
             set ::tools_cata::use_ppmxl 0
          }
       }
       if {! [info exists ::tools_cata::use_tycho2] } {
-         if {[info exists conf(astrometry,cata,use_tycho2)]} {
-            set ::tools_cata::use_tycho2 $conf(astrometry,cata,use_tycho2)
+         if {[info exists conf(bddimages,cata,use_tycho2)]} {
+            set ::tools_cata::use_tycho2 $conf(bddimages,cata,use_tycho2)
          } else {
             set ::tools_cata::use_tycho2 0
          }
       }
       if {! [info exists ::tools_cata::use_nomad1] } {
-         if {[info exists conf(astrometry,cata,use_nomad1)]} {
-            set ::tools_cata::use_nomad1 $conf(astrometry,cata,use_nomad1)
+         if {[info exists conf(bddimages,cata,use_nomad1)]} {
+            set ::tools_cata::use_nomad1 $conf(bddimages,cata,use_nomad1)
          } else {
             set ::tools_cata::use_nomad1 0
          }
       }
       if {! [info exists ::tools_cata::use_skybot] } {
-         if {[info exists conf(astrometry,cata,use_skybot)]} {
-            set ::tools_cata::use_skybot $conf(astrometry,cata,use_skybot)
+         if {[info exists conf(bddimages,cata,use_skybot)]} {
+            set ::tools_cata::use_skybot $conf(bddimages,cata,use_skybot)
          } else {
             set ::tools_cata::use_skybot 0
          }
@@ -109,22 +109,22 @@ namespace eval cata_creation_gui {
 
       # Uncosmic or not
       if {! [info exists ::gui_cata::use_uncosmic] } {
-         if {[info exists conf(astrometry,cata,use_uncosmic)]} {
-            set ::gui_cata::use_uncosmic $conf(astrometry,cata,use_uncosmic)
+         if {[info exists conf(bddimages,cata,use_uncosmic)]} {
+            set ::gui_cata::use_uncosmic $conf(bddimages,cata,use_uncosmic)
          } else {
             set ::gui_cata::use_uncosmic 1
          }
       }
       if {! [info exists ::tools_cdl::uncosm_param1] } {
-         if {[info exists conf(astrometry,cata,uncosm_param1)]} {
-            set ::tools_cdl::uncosm_param1 $conf(astrometry,cata,uncosm_param1)
+         if {[info exists conf(bddimages,cata,uncosm_param1)]} {
+            set ::tools_cdl::uncosm_param1 $conf(bddimages,cata,uncosm_param1)
          } else {
             set ::tools_cdl::uncosm_param1 0.8
          }
       }
       if {! [info exists ::tools_cdl::uncosm_param2] } {
-         if {[info exists conf(astrometry,cata,uncosm_param2)]} {
-            set ::tools_cdl::uncosm_param2 $conf(astrometry,cata,uncosm_param2)
+         if {[info exists conf(bddimages,cata,uncosm_param2)]} {
+            set ::tools_cdl::uncosm_param2 $conf(bddimages,cata,uncosm_param2)
          } else {
             set ::tools_cdl::uncosm_param2 100
          }
@@ -132,57 +132,57 @@ namespace eval cata_creation_gui {
 
       # Repertoires 
       if {! [info exists ::tools_cata::catalog_usnoa2] } {
-         if {[info exists conf(astrometry,catfolder,usnoa2)]} {
-            set ::tools_cata::catalog_usnoa2 $conf(astrometry,catfolder,usnoa2)
+         if {[info exists conf(bddimages,catfolder,usnoa2)]} {
+            set ::tools_cata::catalog_usnoa2 $conf(bddimages,catfolder,usnoa2)
          } else {
             set ::tools_cata::catalog_usnoa2 ""
          }
       }
       if {! [info exists ::tools_cata::catalog_ucac2] } {
-         if {[info exists conf(astrometry,catfolder,ucac2)]} {
-            set ::tools_cata::catalog_ucac2 $conf(astrometry,catfolder,ucac2)
+         if {[info exists conf(bddimages,catfolder,ucac2)]} {
+            set ::tools_cata::catalog_ucac2 $conf(bddimages,catfolder,ucac2)
          } else {
             set ::tools_cata::catalog_ucac2 ""
          }
       }
       if {! [info exists ::tools_cata::catalog_ucac3] } {
-         if {[info exists conf(astrometry,catfolder,ucac3)]} {
-            set ::tools_cata::catalog_ucac3 $conf(astrometry,catfolder,ucac3)
+         if {[info exists conf(bddimages,catfolder,ucac3)]} {
+            set ::tools_cata::catalog_ucac3 $conf(bddimages,catfolder,ucac3)
          } else {
             set ::tools_cata::catalog_ucac3 ""
          }
       }
       if {! [info exists ::tools_cata::catalog_ucac4] } {
-         if {[info exists conf(astrometry,catfolder,ucac4)]} {
-            set ::tools_cata::catalog_ucac4 $conf(astrometry,catfolder,ucac4)
+         if {[info exists conf(bddimages,catfolder,ucac4)]} {
+            set ::tools_cata::catalog_ucac4 $conf(bddimages,catfolder,ucac4)
          } else {
             set ::tools_cata::catalog_ucac4 ""
          }
       }
       if {! [info exists ::tools_cata::catalog_ppmx] } {
-         if {[info exists conf(astrometry,catfolder,ppmx)]} {
-            set ::tools_cata::catalog_ppmx $conf(astrometry,catfolder,ppmx)
+         if {[info exists conf(bddimages,catfolder,ppmx)]} {
+            set ::tools_cata::catalog_ppmx $conf(bddimages,catfolder,ppmx)
          } else {
             set ::tools_cata::catalog_ppmx ""
          }
       }
       if {! [info exists ::tools_cata::catalog_ppmxl] } {
-         if {[info exists conf(astrometry,catfolder,ppmxl)]} {
-            set ::tools_cata::catalog_ppmxl $conf(astrometry,catfolder,ppmxl)
+         if {[info exists conf(bddimages,catfolder,ppmxl)]} {
+            set ::tools_cata::catalog_ppmxl $conf(bddimages,catfolder,ppmxl)
          } else {
             set ::tools_cata::catalog_ppmxl ""
          }
       }
       if {! [info exists ::tools_cata::catalog_tycho2] } {
-         if {[info exists conf(astrometry,catfolder,tycho2)]} {
-            set ::tools_cata::catalog_tycho2 $conf(astrometry,catfolder,tycho2)
+         if {[info exists conf(bddimages,catfolder,tycho2)]} {
+            set ::tools_cata::catalog_tycho2 $conf(bddimages,catfolder,tycho2)
          } else {
             set ::tools_cata::catalog_tycho2 ""
          }
       }
       if {! [info exists ::tools_cata::catalog_nomad1] } {
-         if {[info exists conf(astrometry,catfolder,nomad1)]} {
-            set ::tools_cata::catalog_nomad1 $conf(astrometry,catfolder,nomad1)
+         if {[info exists conf(bddimages,catfolder,nomad1)]} {
+            set ::tools_cata::catalog_nomad1 $conf(bddimages,catfolder,nomad1)
          } else {
             set ::tools_cata::catalog_nomad1 ""
          }
@@ -191,78 +191,78 @@ namespace eval cata_creation_gui {
 
       # Autres utilitaires
       if {! [info exists ::tools_cata::keep_radec] } {
-         if {[info exists conf(astrometry,cata,keep_radec)]} {
-            set ::tools_cata::keep_radec $conf(astrometry,cata,keep_radec)
+         if {[info exists conf(bddimages,cata,keep_radec)]} {
+            set ::tools_cata::keep_radec $conf(bddimages,cata,keep_radec)
          } else {
             set ::tools_cata::keep_radec 1
          }
       }
       if {! [info exists ::tools_cata::create_cata] } {
-         if {[info exists conf(astrometry,cata,create_cata)]} {
-            set ::tools_cata::create_cata $conf(astrometry,cata,create_cata)
+         if {[info exists conf(bddimages,cata,create_cata)]} {
+            set ::tools_cata::create_cata $conf(bddimages,cata,create_cata)
          } else {
             set ::tools_cata::create_cata 1
          }
       }
       if {! [info exists ::tools_cata::delpv] } {
-         if {[info exists conf(astrometry,cata,delpv)]} {
-            set ::tools_cata::delpv $conf(astrometry,cata,delpv)
+         if {[info exists conf(bddimages,cata,delpv)]} {
+            set ::tools_cata::delpv $conf(bddimages,cata,delpv)
          } else {
             set ::tools_cata::delpv 1
          }
       }
       if {! [info exists ::tools_cata::boucle] } {
-         if {[info exists conf(astrometry,cata,boucle)]} {
-            set ::tools_cata::boucle $conf(astrometry,cata,boucle)
+         if {[info exists conf(bddimages,cata,boucle)]} {
+            set ::tools_cata::boucle $conf(bddimages,cata,boucle)
          } else {
             set ::tools_cata::boucle 0
          }
       }
       if {! [info exists ::tools_cata::deuxpasses] } {
-         if {[info exists conf(astrometry,cata,deuxpasses)]} {
-            set ::tools_cata::deuxpasses $conf(astrometry,cata,deuxpasses)
+         if {[info exists conf(bddimages,cata,deuxpasses)]} {
+            set ::tools_cata::deuxpasses $conf(bddimages,cata,deuxpasses)
          } else {
             set ::tools_cata::deuxpasses 1
          }
       }
       if {! [info exists ::tools_cata::limit_nbstars_accepted] } {
-         if {[info exists conf(astrometry,cata,limit_nbstars_accepted)]} {
-            set ::tools_cata::limit_nbstars_accepted $conf(astrometry,cata,limit_nbstars_accepted)
+         if {[info exists conf(bddimages,cata,limit_nbstars_accepted)]} {
+            set ::tools_cata::limit_nbstars_accepted $conf(bddimages,cata,limit_nbstars_accepted)
          } else {
             set ::tools_cata::limit_nbstars_accepted 5
          }
       }
       if {! [info exists ::tools_cata::log] } {
-         if {[info exists conf(astrometry,cata,log)]} {
-            set ::tools_cata::log $conf(astrometry,cata,log)
+         if {[info exists conf(bddimages,cata,log)]} {
+            set ::tools_cata::log $conf(bddimages,cata,log)
          } else {
             set ::tools_cata::log 0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_pos_star] } {
-         if {[info exists conf(astrometry,cata,treshold_ident_pos_star)]} {
-            set ::tools_cata::treshold_ident_pos_star $conf(astrometry,cata,treshold_ident_pos_star)
+         if {[info exists conf(bddimages,cata,treshold_ident_pos_star)]} {
+            set ::tools_cata::treshold_ident_pos_star $conf(bddimages,cata,treshold_ident_pos_star)
          } else {
             set ::tools_cata::treshold_ident_pos_star 30.0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_mag_star] } {
-         if {[info exists conf(astrometry,cata,treshold_ident_mag_star)]} {
-            set ::tools_cata::treshold_ident_mag_star $conf(astrometry,cata,treshold_ident_mag_star)
+         if {[info exists conf(bddimages,cata,treshold_ident_mag_star)]} {
+            set ::tools_cata::treshold_ident_mag_star $conf(bddimages,cata,treshold_ident_mag_star)
          } else {
             set ::tools_cata::treshold_ident_mag_star -30.0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_pos_ast] } {
-         if {[info exists conf(astrometry,cata,treshold_ident_pos_ast)]} {
-            set ::tools_cata::treshold_ident_pos_ast $conf(astrometry,cata,treshold_ident_pos_ast)
+         if {[info exists conf(bddimages,cata,treshold_ident_pos_ast)]} {
+            set ::tools_cata::treshold_ident_pos_ast $conf(bddimages,cata,treshold_ident_pos_ast)
          } else {
             set ::tools_cata::treshold_ident_pos_ast 10.0
          }
       }
       if {! [info exists ::tools_cata::treshold_ident_mag_ast] } {
-         if {[info exists conf(astrometry,cata,treshold_ident_mag_ast)]} {
-            set ::tools_cata::treshold_ident_mag_ast $conf(astrometry,cata,treshold_ident_mag_ast)
+         if {[info exists conf(bddimages,cata,treshold_ident_mag_ast)]} {
+            set ::tools_cata::treshold_ident_mag_ast $conf(bddimages,cata,treshold_ident_mag_ast)
          } else {
             set ::tools_cata::treshold_ident_mag_ast -100.0
          }
@@ -392,43 +392,43 @@ namespace eval cata_creation_gui {
       ::psf_tools::closetoconf
 
       # Repertoires 
-      set conf(astrometry,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
-      set conf(astrometry,catfolder,ucac2)  $::tools_cata::catalog_ucac2  
-      set conf(astrometry,catfolder,ucac3)  $::tools_cata::catalog_ucac3  
-      set conf(astrometry,catfolder,ucac4)  $::tools_cata::catalog_ucac4  
-      set conf(astrometry,catfolder,ppmx)   $::tools_cata::catalog_ppmx  
-      set conf(astrometry,catfolder,ppmxl)  $::tools_cata::catalog_ppmxl
-      set conf(astrometry,catfolder,tycho2) $::tools_cata::catalog_tycho2 
-      set conf(astrometry,catfolder,nomad1) $::tools_cata::catalog_nomad1 
+      set conf(bddimages,catfolder,usnoa2) $::tools_cata::catalog_usnoa2 
+      set conf(bddimages,catfolder,ucac2)  $::tools_cata::catalog_ucac2  
+      set conf(bddimages,catfolder,ucac3)  $::tools_cata::catalog_ucac3  
+      set conf(bddimages,catfolder,ucac4)  $::tools_cata::catalog_ucac4  
+      set conf(bddimages,catfolder,ppmx)   $::tools_cata::catalog_ppmx  
+      set conf(bddimages,catfolder,ppmxl)  $::tools_cata::catalog_ppmxl
+      set conf(bddimages,catfolder,tycho2) $::tools_cata::catalog_tycho2 
+      set conf(bddimages,catfolder,nomad1) $::tools_cata::catalog_nomad1 
 
       # Check button Use
-      set conf(astrometry,cata,use_usnoa2) $::tools_cata::use_usnoa2
-      set conf(astrometry,cata,use_ucac2)  $::tools_cata::use_ucac2
-      set conf(astrometry,cata,use_ucac3)  $::tools_cata::use_ucac3
-      set conf(astrometry,cata,use_ucac4)  $::tools_cata::use_ucac4
-      set conf(astrometry,cata,use_ppmx)   $::tools_cata::use_ppmx
-      set conf(astrometry,cata,use_ppmxl)  $::tools_cata::use_ppmxl
-      set conf(astrometry,cata,use_tycho2) $::tools_cata::use_tycho2
-      set conf(astrometry,cata,use_nomad1) $::tools_cata::use_nomad1
-      set conf(astrometry,cata,use_skybot) $::tools_cata::use_skybot
+      set conf(bddimages,cata,use_usnoa2) $::tools_cata::use_usnoa2
+      set conf(bddimages,cata,use_ucac2)  $::tools_cata::use_ucac2
+      set conf(bddimages,cata,use_ucac3)  $::tools_cata::use_ucac3
+      set conf(bddimages,cata,use_ucac4)  $::tools_cata::use_ucac4
+      set conf(bddimages,cata,use_ppmx)   $::tools_cata::use_ppmx
+      set conf(bddimages,cata,use_ppmxl)  $::tools_cata::use_ppmxl
+      set conf(bddimages,cata,use_tycho2) $::tools_cata::use_tycho2
+      set conf(bddimages,cata,use_nomad1) $::tools_cata::use_nomad1
+      set conf(bddimages,cata,use_skybot) $::tools_cata::use_skybot
             
       # Uncosmic or not!
-      set conf(astrometry,cata,use_uncosmic) $::gui_cata::use_uncosmic
-      set conf(astrometry,cata,uncosm_param1) $::tools_cdl::uncosm_param1
-      set conf(astrometry,cata,uncosm_param2) $::tools_cdl::uncosm_param2
+      set conf(bddimages,cata,use_uncosmic) $::gui_cata::use_uncosmic
+      set conf(bddimages,cata,uncosm_param1) $::tools_cdl::uncosm_param1
+      set conf(bddimages,cata,uncosm_param2) $::tools_cdl::uncosm_param2
 
       # Autres utilitaires
-      set conf(astrometry,cata,keep_radec)              $::tools_cata::keep_radec
-      set conf(astrometry,cata,create_cata)             $::tools_cata::create_cata
-      set conf(astrometry,cata,delpv)                   $::tools_cata::delpv
-      set conf(astrometry,cata,boucle)                  $::tools_cata::boucle
-      set conf(astrometry,cata,deuxpasses)              $::tools_cata::deuxpasses
-      set conf(astrometry,cata,limit_nbstars_accepted)  $::tools_cata::limit_nbstars_accepted
-      set conf(astrometry,cata,log)                     $::tools_cata::log
-      set conf(astrometry,cata,treshold_ident_pos_star) $::tools_cata::treshold_ident_pos_star
-      set conf(astrometry,cata,treshold_ident_mag_star) $::tools_cata::treshold_ident_mag_star
-      set conf(astrometry,cata,treshold_ident_pos_ast)  $::tools_cata::treshold_ident_pos_ast
-      set conf(astrometry,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
+      set conf(bddimages,cata,keep_radec)              $::tools_cata::keep_radec
+      set conf(bddimages,cata,create_cata)             $::tools_cata::create_cata
+      set conf(bddimages,cata,delpv)                   $::tools_cata::delpv
+      set conf(bddimages,cata,boucle)                  $::tools_cata::boucle
+      set conf(bddimages,cata,deuxpasses)              $::tools_cata::deuxpasses
+      set conf(bddimages,cata,limit_nbstars_accepted)  $::tools_cata::limit_nbstars_accepted
+      set conf(bddimages,cata,log)                     $::tools_cata::log
+      set conf(bddimages,cata,treshold_ident_pos_star) $::tools_cata::treshold_ident_pos_star
+      set conf(bddimages,cata,treshold_ident_mag_star) $::tools_cata::treshold_ident_mag_star
+      set conf(bddimages,cata,treshold_ident_pos_ast)  $::tools_cata::treshold_ident_pos_ast
+      set conf(bddimages,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
 
 
       destroy $::cata_creation_gui::fen

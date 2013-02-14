@@ -12,15 +12,71 @@ namespace eval gui_astrometry {
       set ::gui_astrometry::factor 1000
 
       if {! [info exists ::tools_astrometry::ifortlib] } {
-         if {[info exists conf(bddimages,cata,ifortlib)]} {
-            set ::tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
+         if {[info exists conf(bddimages,astrometry,priam,ifortlib)]} {
+            set ::tools_astrometry::ifortlib $conf(bddimages,astrometry,priam,ifortlib)
          } else {
             set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
          }
       }
 
+      if {! [info exists ::tools_astrometry::rapport_uai_code] } {
+         if {[info exists conf(bddimages,astrometry,rapport,uai_code)]} {
+            set ::tools_astrometry::rapport_uai_code $conf(bddimages,astrometry,rapport,uai_code)
+         } else {
+            set ::tools_astrometry::rapport_uai_code ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_uai_location] } {
+         if {[info exists conf(bddimages,astrometry,rapport,uai_location)]} {
+            set ::tools_astrometry::rapport_uai_location $conf(bddimages,astrometry,rapport,uai_location)
+         } else {
+            set ::tools_astrometry::rapport_uai_location ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_rapporteur] } {
+         if {[info exists conf(bddimages,astrometry,rapport,rapporteur)]} {
+            set ::tools_astrometry::rapport_rapporteur $conf(bddimages,astrometry,rapport,rapporteur)
+         } else {
+            set ::tools_astrometry::rapport_rapporteur ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_mail] } {
+         if {[info exists conf(bddimages,astrometry,rapport,mail)]} {
+            set ::tools_astrometry::rapport_mail $conf(bddimages,astrometry,rapport,mail)
+         } else {
+            set ::tools_astrometry::rapport_mail ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_observ] } {
+         if {[info exists conf(bddimages,astrometry,rapport,observ)]} {
+            set ::tools_astrometry::rapport_observ $conf(bddimages,astrometry,rapport,observ)
+         } else {
+            set ::tools_astrometry::rapport_observ ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_reduc] } {
+         if {[info exists conf(bddimages,astrometry,rapport,reduc)]} {
+            set ::tools_astrometry::rapport_reduc $conf(bddimages,astrometry,rapport,reduc)
+         } else {
+            set ::tools_astrometry::rapport_reduc ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_instru] } {
+         if {[info exists conf(bddimages,astrometry,rapport,instru)]} {
+            set ::tools_astrometry::rapport_instru $conf(bddimages,astrometry,rapport,instru)
+         } else {
+            set ::tools_astrometry::rapport_instru ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_cata] } {
+         if {[info exists conf(bddimages,astrometry,rapport,cata)]} {
+            set ::tools_astrometry::rapport_cata $conf(bddimages,astrometry,rapport,cata)
+         } else {
+            set ::tools_astrometry::rapport_cata ""
+         }
+      }
 
-
+     set ::tools_astrometry::rapport_desti "mpc@cfa.harvard.edu"
 
 
 
@@ -42,6 +98,7 @@ namespace eval gui_astrometry {
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
       
       ::gui_astrometry::charge_solution_astrometrique
+      ::gui_astrometry::charge_element_rapport
       
 
    }
@@ -108,7 +165,15 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::fermer {  } {
 
       global conf
-      set conf(bddimages,cata,ifortlib) $::tools_astrometry::ifortlib
+      set conf(bddimages,astrometry,priam,ifortlib)        $::tools_astrometry::ifortlib
+      set conf(bddimages,astrometry,rapport,uai_code)      $::tools_astrometry::rapport_uai_code
+      set conf(bddimages,astrometry,rapport,uai_location)  $::tools_astrometry::rapport_uai_location
+      set conf(bddimages,astrometry,rapport,rapporteur)    $::tools_astrometry::rapport_rapporteur
+      set conf(bddimages,astrometry,rapport,mail)          $::tools_astrometry::rapport_mail
+      set conf(bddimages,astrometry,rapport,observ)        $::tools_astrometry::rapport_observ
+      set conf(bddimages,astrometry,rapport,reduc)         $::tools_astrometry::rapport_reduc
+      set conf(bddimages,astrometry,rapport,instru)        $::tools_astrometry::rapport_instru
+      set conf(bddimages,astrometry,rapport,cata)          $::tools_astrometry::rapport_cata
 
       destroy $::gui_astrometry::fen
       #::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -295,43 +360,133 @@ namespace eval gui_astrometry {
       }
    }
 
-#"                        residus residus residus                                  Erreur"
-#"Mid Date                rho     alpha   delta   alpha        delta       mag     mag"
-# 2011-04-12T20:18:36.320 0.1077  0.1421  0.0550  194.15552700 2.19477127  00.000  00.000
-# 2011-04-12T20:20:08.330 0.1151  0.1452  0.0735  194.15465232 2.19597952  00.000  00.000
-# 2011-04-12T20:21:40.360 0.1895  0.2579  0.0727  194.15377966 2.19709127  00.000  00.000
-#2011-04-12T20:18:36.320
-#SKYBOT_274138_2008_FU6
-#::bddimages::ressource ; ::gui_astrometry::rapport
-   proc ::gui_astrometry::rapport {  } {
 
+
+
+
+
+
+
+
+      #MPCCON1 F.Vachier, IMCCE, Obs de Paris,77 Av Denfert Rochereau 75014 Paris France
+      #MPCCON2 [vachier@imcce.fr]
+      #MPCOBS F.Vachier, A.Kryszczynska
+      #MPCMEA F.Vachier
+      #MPCTEL 1.05-m f/12 reflector + CCD
+      #MPCNET USNO-A2
+      #MPCACK Batch 003
+      #MPCAC2 vachier@imcce.fr
+      #MPCNUM 9
+
+
+      #COD 586
+      #CON F.Vachier, IMCCE, Obs de Paris,77 Av Denfert Rochereau 75014 Paris France
+      #CON [vachier@imcce.fr]
+      #OBS F.Vachier, A.Kryszczynska
+      #MEA F.Vachier
+      #TEL 1.05-m f/12 reflector + CCD
+      #NET USNO-A2
+      #ACK Batch 003
+      #AC2 vachier@imcce.fr
+      #NUM 9
+
+    #  ::tools_astrometry::rapport_uai_code
+    #  ::tools_astrometry::rapport_uai_location
+    #  ::tools_astrometry::rapport_rapporteur
+    #  ::tools_astrometry::rapport_mail
+    #  ::tools_astrometry::rapport_observ
+    #  ::tools_astrometry::rapport_reduc
+    #  ::tools_astrometry::rapport_instru
+    #  ::tools_astrometry::rapport_cata
+    #  ::tools_astrometry::rapport_batch
+    #  ::tools_astrometry::rapport_nb
+
+
+
+   proc ::gui_astrometry::charge_element_rapport { } {
+
+      set current_image [lindex $::tools_cata::img_list 0]
+      set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+      set datei  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+
+      set ::tools_astrometry::rapport_uai_code  [string trim [lindex [::bddimages_liste::lget $tabkey "IAU_CODE"] 1] ]
+      set ::tools_astrometry::rapport_observ    [string trim [lindex [::bddimages_liste::lget $tabkey "OBSERVER"] 1] ]
+
+      set ex [::bddimages_liste::lexist $tabkey "INSTRUME"]
+      if {$ex != 0} {
+         set ::tools_astrometry::rapport_instru [string trim [lindex [::bddimages_liste::lget $tabkey "INSTRUME"] 1] ]
+      }
+
+      # Nombre de positions rapportées
+      set cpt 0
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name y} $l {
+         foreach date $::tools_astrometry::listscience($name) {
+            incr cpt
+         }
+      }
+      set ::tools_astrometry::rapport_nb $cpt       
+
+
+   }
+
+
+
+
+
+
+
+
+#::bddimages::ressource ; ::gui_astrometry::rapport
+
+   proc ::gui_astrometry::create_rapport {  } {
+
+
+      # Batch
+      set ::tools_astrometry::rapport_batch [clock format [clock scan now] -format "Audela BDI %Y-%m-%dT%H:%M:%S %Z"]
+
+      # Liste des catalogue de reference
+      set l [array get ::tools_astrometry::listref]
+      set clist ""
+      foreach {name y} $l {
+         set cata [lindex [split $name "_"] 0]
+         set pos [lsearch $clist $cata]
+         if {$pos==-1} {
+            lappend clist $cata
+         }
+      }
+      set ::tools_astrometry::rapport_cata ""
+      set separ ""
+      foreach cata $clist {
+         append ::tools_astrometry::rapport_cata "${separ}${cata}"
+         if {$separ==""} {set separ " "}
+      }
+
+      # Generation des rapports
       ::gui_astrometry::create_rapport_txt
       ::gui_astrometry::create_rapport_mpc
 
    }
-#         1         2         3         4         5         6         7         8
-#12345678901234567890123456789012345678901234567890123456789012345678901234567890
-#
-#     .        C2011 04 12.85103012 56 30.490+02 12 06.10         -06.90      586
-
-#COD 586
-#CON F.Vachier, IMCCE, Obs de Paris,77 Av Denfert Rochereau 75014 Paris France
-#CON [vachier@imcce.fr]
-#OBS F.Vachier, A.Kryszczynska
-#MEA F.Vachier
-#TEL 1.05-m f/12 reflector + CCD
-#NET USNO-A2
-#ACK Batch 003
-#AC2 vachier@imcce.fr
-#NUM 9
-
 
 #::bddimages::ressource ; ::gui_astrometry::create_rapport_mpc
    proc ::gui_astrometry::create_rapport_mpc {  } {
 
       $::gui_astrometry::rapport_mpc delete 0.0 end 
-      $::gui_astrometry::rapport_mpc insert end  "         1         2         3         4         5         6         7         8\n"
-      $::gui_astrometry::rapport_mpc insert end  "12345678901234567890123456789012345678901234567890123456789012345678901234567890\n"
+
+      $::gui_astrometry::rapport_mpc insert end  "#COD $::tools_astrometry::rapport_uai_code \n"
+      $::gui_astrometry::rapport_mpc insert end  "#CON $::tools_astrometry::rapport_rapporteur \n"
+      $::gui_astrometry::rapport_mpc insert end  "#CON $::tools_astrometry::rapport_mail \n"
+      $::gui_astrometry::rapport_mpc insert end  "#CON Software Reduction : Audela Bddimages Priam \n"
+      $::gui_astrometry::rapport_mpc insert end  "#OBS $::tools_astrometry::rapport_observ \n"
+      $::gui_astrometry::rapport_mpc insert end  "#MEA $::tools_astrometry::rapport_reduc \n"
+      $::gui_astrometry::rapport_mpc insert end  "#TEL $::tools_astrometry::rapport_instru \n"
+      $::gui_astrometry::rapport_mpc insert end  "#NET $::tools_astrometry::rapport_cata \n"
+      $::gui_astrometry::rapport_mpc insert end  "#ACK Batch $::tools_astrometry::rapport_batch \n"
+      $::gui_astrometry::rapport_mpc insert end  "#AC2 $::tools_astrometry::rapport_mail \n"
+      $::gui_astrometry::rapport_mpc insert end  "#NUM $::tools_astrometry::rapport_nb \n"
+
+#      $::gui_astrometry::rapport_mpc insert end  "         1         2         3         4         5         6         7         8\n"
+#      $::gui_astrometry::rapport_mpc insert end  "12345678901234567890123456789012345678901234567890123456789012345678901234567890\n"
 
       set form "%14s%s%17s%12s%12s         %5s       %3s\n"
 
@@ -359,6 +514,7 @@ namespace eval gui_astrometry {
          }
       }
       
+      $::gui_astrometry::rapport_mpc insert end  "\n\n\n"
 
 
    }
@@ -372,6 +528,28 @@ namespace eval gui_astrometry {
 
       # ::bddimages::ressource
       $::gui_astrometry::rapport_txt delete 0.0 end 
+
+      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
+
+      $::gui_astrometry::rapport_txt insert end  "#IAU CODE    : $::tools_astrometry::rapport_uai_code \n"
+      $::gui_astrometry::rapport_txt insert end  "#Subscriber  : $::tools_astrometry::rapport_rapporteur \n"
+      $::gui_astrometry::rapport_txt insert end  "#MAIL        : $::tools_astrometry::rapport_mail \n"
+      $::gui_astrometry::rapport_txt insert end  "#Software    : Audela Bddimages Priam \n"
+      $::gui_astrometry::rapport_txt insert end  "#Observers   : $::tools_astrometry::rapport_observ \n"
+      $::gui_astrometry::rapport_txt insert end  "#Reduction   : $::tools_astrometry::rapport_reduc \n"
+      $::gui_astrometry::rapport_txt insert end  "#Instrument  : $::tools_astrometry::rapport_instru \n"
+      $::gui_astrometry::rapport_txt insert end  "#Ref.Catalog : $::tools_astrometry::rapport_cata \n"
+      $::gui_astrometry::rapport_txt insert end  "#Batch       : $::tools_astrometry::rapport_batch \n"
+      $::gui_astrometry::rapport_txt insert end  "#Numb.Pos.   : $::tools_astrometry::rapport_nb \n"
+
+      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
+
+
+
+
+
+
+
 
       set l [array get ::tools_astrometry::listscience]
       set nummax 0
@@ -436,12 +614,63 @@ namespace eval gui_astrometry {
 
 
 
+   proc ::gui_astrometry::send_email { } {
+      
+      set someone "fv@imcce.fr"
+      set recipient_list "fv@imcce.fr"
+      set cc_list ""
+      set subject "BATCH"
+      set body    "body"
+      
+      set msg {From: someone}
+      append msg \n "To: " [join $recipient_list ,]
+      append msg \n "Cc: " [join $cc_list ,]
+      append msg \n "Subject: $subject"
+      append msg \n\n $body
+gren_info "$msg\n"
+      exec /usr/lib/sendmail -oi -t << $msg
+   }
 
 
 
 
 
 
+
+   proc ::gui_astrometry::create_list_denom {  } {
+
+      gren_info "toto\n"
+
+      set l [array get ::tools_astrometry::listscience]
+      
+      set namelist ""
+      foreach {name y} $l {
+         lappend namelist $name
+      }
+      
+      foreach nameall $namelist {
+         gren_info "$nameall\n"
+         set sp [split $nameall "_"]
+         set cata [lindex $sp 0]
+         if {$cata=="SKYBOT"} {
+            gren_info "$cata\n"
+
+            set id [lindex $sp 1]
+            set sp [lreplace $sp 0 1 ""]
+            set name [string trim [join $sp " "] ]
+            gren_info "$id\n"
+            gren_info "$name\n"
+            
+            frame  $::gui_astrometry::zlist.$nameall -borderwidth 0 -cursor arrow -relief groove
+            pack $::gui_astrometry::zlist.$nameall  -in $::gui_astrometry::zlist -side top -expand 0 -fill x -padx 2 -pady 5
+
+            label  $::gui_astrometry::zlist.$nameall.cata -text $cata -borderwidth 1 -width 10
+            pack   $::gui_astrometry::zlist.$nameall.cata -in $::gui_astrometry::zlist.$nameall -side left -padx 3 -pady 1 -anchor w
+            
+         }
+      }
+
+   }
 
 
 
@@ -628,8 +857,32 @@ namespace eval gui_astrometry {
 
 
 
+   proc ::gui_astrometry::create_rapport_default {  } {
 
+      ::tools_astrometry::rapport_uai_code
+      ::tools_astrometry::rapport_uai_location
+      ::tools_astrometry::rapport_rapporteur
+      ::tools_astrometry::rapport_mail
+      ::tools_astrometry::rapport_observ
+      ::tools_astrometry::rapport_reduc
+      ::tools_astrometry::rapport_instru
+      ::tools_astrometry::rapport_cata
 
+      #IAU_CODE
+      #OBSERVER
+
+      #COD 586
+      #CON F.Vachier, IMCCE, Obs de Paris,77 Av Denfert Rochereau 75014 Paris France
+      #CON [vachier@imcce.fr]
+      #OBS F.Vachier, A.Kryszczynska
+      #MEA F.Vachier
+      #TEL 1.05-m f/12 reflector + CCD
+      #NET USNO-A2
+      #ACK Batch 003
+      #AC2 vachier@imcce.fr
+      #NUM 9
+
+   } 
 
 
 
@@ -835,11 +1088,20 @@ namespace eval gui_astrometry {
             set onglets_rapports [frame $rapports.onglets -borderwidth 1 -cursor arrow -relief groove]
             pack $onglets_rapports -in $rapports -side top -expand yes -fill both -padx 10 -pady 5
  
+                 button $onglets_rapports.gen -text "Generer" -borderwidth 2 -takefocus 1 \
+                         -command "::gui_astrometry::create_rapport"
+                 pack   $onglets_rapports.gen -side top -anchor c -expand 0
+
+
                  pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both 
  
                  set entetes [frame $onglets_rapports.list.entetes -borderwidth 1]
                  pack $entetes -in $onglets_rapports.list -expand yes -fill both 
                  $onglets_rapports.list add $entetes -text "Entetes"
+
+                 set denom [frame $onglets_rapports.list.denom -borderwidth 1]
+                 pack $denom -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $denom -text "Dénomination"
 
                  set mpc [frame $onglets_rapports.list.mpc -borderwidth 1]
                  pack $mpc -in $onglets_rapports.list -expand yes -fill both 
@@ -1099,8 +1361,115 @@ namespace eval gui_astrometry {
 
 #            frame $onglets0.list.sources.table_enf -borderwidth 0 -cursor arrow -relief groove -background white
 
+         #--- Entetes Rapports
+         
+         
+         set wdth 13
+         
+         
+         set block [frame $entetes.uai_code  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "UAI Code : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 5 -textvariable ::tools_astrometry::rapport_uai_code
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+               label  $block.loc -textvariable ::tools_astrometry::rapport_uai_location -borderwidth 1 -width $wdth
+               pack   $block.loc -side left -padx 3 -pady 3 -anchor w
+
+
+         set block [frame $entetes.rapporteur  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Rapporteur : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_rapporteur
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $entetes.mail  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Mail : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80  -textvariable ::tools_astrometry::rapport_mail
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $entetes.observ  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Observateurs : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_observ
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $entetes.reduc  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Reduction : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_reduc
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $entetes.instru  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Instrument : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_instru
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $entetes.cata  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Catalogue Ref : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_cata
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         
+# $denom
+         
+  
+         set block [frame $denom.but  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $denom -side top -expand 0 -fill x -padx 2 -pady 5
+
+               button $block.liste -text "Liste" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::create_list_denom"
+               pack   $block.liste -side top -anchor c -expand 0
+         
+         set ::gui_astrometry::zlist [frame $denom.zlist  -borderwidth 0 -cursor arrow -relief groove]
+         pack $::gui_astrometry::zlist  -in $denom -side top -expand 0 -fill x -padx 2 -pady 5
+
+
+
 
          #--- Rapports MPC
+
+         set block [frame $mpc.exped  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Destinataire : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_desti
+               pack   $block.val -side left -padx 3 -pady 1 -anchor w
+
+         set block [frame $mpc.subj  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Sujet : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_batch
+               pack   $block.val -side left -padx 3 -pady 1 -anchor w
 
          set ::gui_astrometry::rapport_mpc $mpc.text
          text $::gui_astrometry::rapport_mpc -height 30 -width 80 \
@@ -1113,6 +1482,12 @@ namespace eval gui_astrometry {
 
          scrollbar $::gui_astrometry::rapport_mpc.yscroll -orient vertical -command "$::gui_astrometry::rapport_mpc yview"
          pack $::gui_astrometry::rapport_mpc.yscroll -side right -fill y
+
+
+
+
+
+
 
          #--- Rapports txt
 
