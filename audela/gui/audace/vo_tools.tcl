@@ -1122,7 +1122,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
       append urlget "long $lon lat $lat alt $alt "
    } else {
       append urlget "c $home "
-   }      
+   }
    append urlget "raty a "
    append urlget "s c "
    append urlget "m m "
@@ -1131,7 +1131,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
    append urlget "fp y "
    append urlget "e 0 "
    append urlget "tit \"\" "
-   append urlget "bu \"\" "  
+   append urlget "bu \"\" "
    append urlget "adir S "
    append urlget "res n "
    append urlget "ch c "
@@ -1150,7 +1150,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
    # alt = altitude (m)
    # raty = coordinate display (a= Full sexa d=decimal)
    # s = motion mode (c=Separate R.A. and Decl. coordinate motions)
-   # m = motion units (s="/sec m="/min h="/hour) 
+   # m = motion units (s="/sec m="/min h="/hour)
    # igd = Suppress output if sun above local horizon (y|n)
    # ibh = Suppress output if object below local horizon (y|n)
    # fp = Generate perturbed ephemerides for unperturbed orbits (y|n)
@@ -1218,7 +1218,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
             set obj_delta [lindex $ligne 10]
             set obj_r [lindex $ligne 11]
             set obj_elong [lindex $ligne 12]
-            set obj_phase [lindex $ligne 13]            
+            set obj_phase [lindex $ligne 13]
             set obj_magv [string trim [string range $ligne 68 72]]
             set obj_drift_ra  [string trim [string range $ligne 73 81]]
             set obj_drift_dec [string trim [string range $ligne 82 89]]
@@ -1237,5 +1237,4 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
    }
    return $resultats
 }
-
 
