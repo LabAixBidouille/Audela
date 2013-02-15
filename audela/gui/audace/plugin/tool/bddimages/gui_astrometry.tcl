@@ -488,34 +488,36 @@ namespace eval gui_astrometry {
 #      $::gui_astrometry::rapport_mpc insert end  "         1         2         3         4         5         6         7         8\n"
 #      $::gui_astrometry::rapport_mpc insert end  "12345678901234567890123456789012345678901234567890123456789012345678901234567890\n"
 
-      set form "%14s%s%17s%12s%12s         %5s       %3s\n"
+      # Constant parameters
+      # - Note 1: alphabetical publishable note or (those sites that use program codes) an alphanumeric
+      #           or non-alphanumeric character program code => http://www.minorplanetcenter.net/iau/info/ObsNote.html
+      set note1 " "
+      # - C = CCD observations (default)
+      set note2 "C"
 
+      # Format of MPC line
+      set form "%13s%1s%1s%17s%12s%12s         %6s      %3s\n"
+      
       set l [array get ::tools_astrometry::listscience]
       foreach {name y} $l {
-         gren_info "$name = $y\n"
          foreach date $::tools_astrometry::listscience($name) {
-
-            set object_name "274138 "
-            set flag "C"
-            set obsuai "586"
-
             set alpha   [lindex $::tools_astrometry::tabval($name,$date) 6]
             set delta   [lindex $::tools_astrometry::tabval($name,$date) 7]
             set mag     [lindex $::tools_astrometry::tabval($name,$date) 8]
-            if {$mag <10.0} {set mag "0$mag"}
-            set mag     [format "%+.2f" $mag ]
+
+            set object  [::tools_astrometry::convert_mpc_name $name]
+            set datempc [::tools_astrometry::convert_mpc_date $date]
             set ra_hms  [::tools_astrometry::convert_mpc_hms $alpha]
             set dec_dms [::tools_astrometry::convert_mpc_dms $delta]
-            set datempc [::tools_astrometry::convert_mpc_date $date]
+            set magmpc  [::tools_astrometry::convert_mpc_mag $mag]
+            set obsuai  $::tools_astrometry::rapport_uai_code
             
-            
-            set txt [format $form $object_name $flag $datempc $ra_hms $dec_dms $mag $obsuai]
-            $::gui_astrometry::rapport_mpc insert end  $txt
+            set txt [format $form $object $note1 $note2 $datempc $ra_hms $dec_dms $magmpc $obsuai]
+            $::gui_astrometry::rapport_mpc insert end $txt
          }
       }
       
       $::gui_astrometry::rapport_mpc insert end  "\n\n\n"
-
 
    }
 
@@ -544,13 +546,6 @@ namespace eval gui_astrometry {
 
       $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
 
-
-
-
-
-
-
-
       set l [array get ::tools_astrometry::listscience]
       set nummax 0
       foreach {name y} $l {
@@ -572,6 +567,7 @@ namespace eval gui_astrometry {
       set err_mag " ErrMag"
       set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag ]
       $::gui_astrometry::rapport_txt insert end  $txt
+
       set name    ""
       set date    "iso"
       set ra_hms  "hms"
@@ -589,7 +585,7 @@ namespace eval gui_astrometry {
       $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
 
       foreach {name y} $l {
-         gren_info "$name = $y\n"
+         gren_info "TXT: $name = $y\n"
          foreach date $::tools_astrometry::listscience($name) {
             gren_info "tabval $nummax = $::tools_astrometry::tabval($name,$date)\n"
 
