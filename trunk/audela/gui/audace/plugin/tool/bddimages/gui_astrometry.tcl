@@ -526,13 +526,129 @@ namespace eval gui_astrometry {
 
 
 
+
+   proc ::gui_astrometry::rapport_get_ephem { send_listsources name middate } {
+      
+      upvar $send_listsources listsources
+   
+      global bddconf audace
+
+
+      set pass "no"
+      foreach s [lindex $listsources 1] {
+      
+         set x  [lsearch -index 0 $s "ASTROID"]
+         if {$x>=0} {
+            set b  [lindex [lindex $s $x] 2]           
+            set cataname [lindex $b 24]
+            if {$cataname == $name} {
+               set sp [split $cataname "_"]
+               set cata [lindex $sp 0]
+               set x  [lsearch -index 0 $s $cata]
+               if {$x>=0 && $cata=="SKYBOT"} {
+                  set b  [lindex [lindex $s $x] 2]
+                  set pass "ok"
+                  set num [string trim [lindex $b 0] ]
+                  set nom [string trim [lindex $b 1] ]
+                  break
+               }
+            } else {
+               continue
+            }
+            
+         }
+      }
+      
+      if {$pass == "no"} {
+         return [list "-" "-"]
+      }
+      
+      if {$num==""} {set num $nom}
+
+      set file [ file join $audace(rep_travail) cmd.ephemcc ]
+      set chan0 [open $file w]
+      puts $chan0 "#!/bin/sh"
+      puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
+      puts $chan0 "export LD_LIBRARY_PATH"
+      puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai 586 -d 1 -e utc --julien"
+      close $chan0
+      set err [catch {exec sh ./cmd.ephemcc} msg]
+
+      if { $err } {
+         ::console::affiche_erreur "WARNING: EPHEMCC $err ($msg)\n"
+         return [list "-" "-"]
+      }
+
+      set ::gui_astrometry::data $msg 
+      
+      set msg $::gui_astrometry::data
+      foreach line [split $msg "\n"] {
+         set line [string trim $line]
+         set c [string index $line 0]
+         if {$c == "#"} {continue}
+         set rd [regexp -inline -all -- {\S+} $line]      
+         set tab [split $rd " "]
+         set rah [lindex $tab 1]
+         set ram [lindex $tab 2]
+         set ras [lindex $tab 3]
+         set ded [lindex $tab 4]
+         set dem [lindex $tab 5]
+         set des [lindex $tab 6]
+         break
+      }
+      #gren_info "EPHEM RA = $rah $ram $ras; DEC = $ded $dem $des\n"
+      set ra [expr 15. * ($rah + $ram / 60. + $ras / 3600.)]
+      if {$ded > 0 } {
+         set de [expr ($ded + $dem / 60. + $des / 3600.)]
+      } else {
+         set de [expr ($ded - $dem / 60. - $des / 3600.)]
+      }
+      #gren_info "EPHEM RA = $ra; DEC = $de\n"
+      return [list $ra $de]
+
+   }
+
+
+
+
+
+   proc ::gui_astrometry::rapport_info { date name } {
+
+      set id_current_image 0
+      foreach current_image $::tools_cata::img_list {
+         incr id_current_image
+         set tabkey   [::bddimages_liste::lget [lindex $::tools_cata::img_list [expr $id_current_image -1] ] "tabkey"]
+         set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+         if {$dateobs == $date} {
+            set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+            set midexpo  [expr $exposure / 2.]
+            set middate  [ expr [ mc_date2jd $date] + $midexpo / 86400. ]
+            set result   [::gui_astrometry::rapport_get_ephem ::gui_cata::cata_list($id_current_image) $name $middate]
+            return [list $midexpo [lindex $result 0] [lindex $result 1] ]
+         }
+      }
+      return [list -1 "-" "-"]
+   }
+
+
+
+
+
+   proc ::gui_astrometry::sep_txt {  } {
+      $::gui_astrometry::rapport_txt insert end  "----------------------------------------------------------------------------------------------------------------------------------------------------\n"
+   }
+
+
+
+
+
    proc ::gui_astrometry::create_rapport_txt {  } {
 
       # ::bddimages::ressource
       $::gui_astrometry::rapport_txt delete 0.0 end 
 
-      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
-
+      ::gui_astrometry::sep_txt
+      
       $::gui_astrometry::rapport_txt insert end  "#IAU CODE    : $::tools_astrometry::rapport_uai_code \n"
       $::gui_astrometry::rapport_txt insert end  "#Subscriber  : $::tools_astrometry::rapport_rapporteur \n"
       $::gui_astrometry::rapport_txt insert end  "#MAIL        : $::tools_astrometry::rapport_mail \n"
@@ -544,7 +660,7 @@ namespace eval gui_astrometry {
       $::gui_astrometry::rapport_txt insert end  "#Batch       : $::tools_astrometry::rapport_batch \n"
       $::gui_astrometry::rapport_txt insert end  "#Numb.Pos.   : $::tools_astrometry::rapport_nb \n"
 
-      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
+      ::gui_astrometry::sep_txt
 
       set l [array get ::tools_astrometry::listscience]
       set nummax 0
@@ -553,56 +669,94 @@ namespace eval gui_astrometry {
          if {$num>$nummax} {set nummax $num}
       }
 
-      set form "%-${nummax}s  %-23s  %-10s  %-11s  %-6s  %-6s  %-11s  %-12s  %-6s  %-6s\n"
+      set form "%-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s  %-16s  %-12s  %-12s\n"
 
-      set name    "Object"
-      set date    "Mid-Date"
-      set ra_hms  "Right Asc."
-      set dec_dms "Declination"
-      set res_a   "Err RA"
-      set res_d   "Err De"
-      set alpha   "Right Asc."
-      set delta   " Declination"
-      set mag     " Mag"
-      set err_mag " ErrMag"
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag ]
+      set name     "Object"
+      set date     "Mid-Date"
+      set ra_hms   "Right Asc."
+      set dec_dms  "Declination"
+      set res_a    "Err RA"
+      set res_d    "Err De"
+      set mag      "Mag"
+      set err_mag  "ErrMag"
+      set ra_omc   "OmC RA"
+      set dec_omc  "OmC De"
+      set datejj   "Julian Date"
+      set alpha    "Right Asc."
+      set delta    "Declination"
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_omc $dec_omc $datejj $alpha $delta]
       $::gui_astrometry::rapport_txt insert end  $txt
 
-      set name    ""
-      set date    "iso"
-      set ra_hms  "hms"
-      set dec_dms "dms"
-      set rho     "arcsec"
-      set res_a   "arcsec"
-      set res_d   "arcsec"
-      set alpha   "deg"
-      set delta   " deg"
-      set mag     ""
-      set err_mag ""
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag]
+      set name     ""
+      set date     "iso"
+      set ra_hms   "hms"
+      set dec_dms  "dms"
+      set rho      "arcsec"
+      set res_a    "arcsec"
+      set res_d    "arcsec"
+      set mag      ""
+      set err_mag  ""
+      set ra_omc   "arcsec"
+      set dec_omc  "arcsec"
+      set datejj   ""
+      set alpha    "deg"
+      set delta    "deg"
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_omc $dec_omc $datejj $alpha $delta]
       $::gui_astrometry::rapport_txt insert end  $txt
 
-      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------\n"
+      ::gui_astrometry::sep_txt
 
       foreach {name y} $l {
          gren_info "TXT: $name = $y\n"
          foreach date $::tools_astrometry::listscience($name) {
-            gren_info "tabval $nummax = $::tools_astrometry::tabval($name,$date)\n"
-
-            set rho     [format "%.4f" [lindex $::tools_astrometry::tabval($name,$date) 3] ]
-            set res_a   [format "%.4f" [lindex $::tools_astrometry::tabval($name,$date) 4] ]
-            set res_d   [format "%.4f" [lindex $::tools_astrometry::tabval($name,$date) 5] ]
-            set alpha   [format "%.8f" [lindex $::tools_astrometry::tabval($name,$date) 6] ]
+            
+            set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 3] ]
+            set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 4] ]
+            set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 5] ]
+            set alpha   [format "%.8f"  [lindex $::tools_astrometry::tabval($name,$date) 6] ]
             set delta   [format "%+.8f" [lindex $::tools_astrometry::tabval($name,$date) 7] ]
-            set mag     [format "%.3f" [lindex $::tools_astrometry::tabval($name,$date) 8] ]
-            set err_mag [format "%.3f" [lindex $::tools_astrometry::tabval($name,$date) 9] ]
-            set ra_hms  [mc_angle2hms [lindex $::tools_astrometry::tabval($name,$date) 6] 360 zero 1 auto string]
-            set dec_dms [mc_angle2dms [lindex $::tools_astrometry::tabval($name,$date) 7] 90 zero 1 + string]
+            set mag     [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 8] ]
+            set err_mag [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 9] ]
+            set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$date) 6]]
+            set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$date) 7]]
 
-            set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $alpha $delta $mag $err_mag]
+            set result [::gui_astrometry::rapport_info $date $name]
+            set midexpo   [lindex $result 0]
+            set ra_ephem  [lindex $result 1]
+            set dec_ephem [lindex $result 2]
+
+            if {$midexpo == -1} {
+              ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
+               set midexpo 0
+            }
+            if {$ra_ephem == "-"} {
+               set ra_omc "-"
+            } else {
+               set ra_omc   [format "%.4f" [expr ($alpha - $ra_ephem) * 3600.0] ]
+               if {$ra_omc>=0} {set ra_omc "+$ra_omc"}
+               set ra_ephem [::tools_astrometry::convert_txt_hms $ra_ephem]
+            }
+            if {$dec_ephem == "-"} {
+               set dec_omc "-"
+            } else {
+               set dec_omc   [format "%.4f" [expr ($delta - $dec_ephem) * 3600.0] ]
+               if {$dec_omc>=0} {set dec_omc "+$dec_omc"}
+               set dec_ephem [::tools_astrometry::convert_txt_dms $dec_ephem]
+            }
+            set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
+            set date    [mc_date2iso8601 $datejj]
+
+            #gren_info "\nDATE =  $date $datejj\n"
+            #gren_info "RA  obs = $ra_hms ; ephem = $ra_ephem ; omc = $ra_omc \n"
+            #gren_info "DEC obs = $dec_dms ; ephem = $dec_ephem ; omc = $dec_omc \n"
+            gren_info "EPHEM =  $date  $ra_ephem  $dec_ephem\n"
+
+
+            set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_omc $dec_omc $datejj $alpha $delta ]
             $::gui_astrometry::rapport_txt insert end  $txt
          }
       }
+      $::gui_astrometry::rapport_txt insert end  "\n\n\n"
 
       return
 
@@ -933,7 +1087,9 @@ gren_info "la\n"
                                 0 "stdev \u03B1"      right \
                                 0 "stdev \u03B4"      right \
                                 0 "moy Mag"           right \
-                                0 "stdev Mag"         right ]
+                                0 "stdev Mag"         right \
+                                0 "moy err x"         right \
+                                0 "moy err y"         right ]
       set loc_dates_enf   [list 0 "Id"                right \
                                 0 "Date-obs"          left  \
                                 0 "\u03C1"            right \
@@ -941,8 +1097,10 @@ gren_info "la\n"
                                 0 "res \u03B4"        right \
                                 0 "\u03B1"            right \
                                 0 "\u03B4"            right \
-                                0 Mag                 right \
-                                0 err_Mag             right ]
+                                0 "Mag"               right \
+                                0 "err_Mag"           right \
+                                0 "err x"             right \
+                                0 "err y"             right ]
       set loc_dates_par   [list 0 "Date-obs"          left  \
                                 0 "Nb ref"            right \
                                 0 "\u03C1"            right \
@@ -956,7 +1114,9 @@ gren_info "la\n"
                                 0 "stdev \u03B1"      right \
                                 0 "stdev \u03B4"      right \
                                 0 "moy Mag"           right \
-                                0 "stdev Mag"         right ]
+                                0 "stdev Mag"         right \
+                                0 "moy err x"         right \
+                                0 "moy err y"         right ]
       set loc_sources_enf [list 0 "Id"                right \
                                 0 "Name"              left  \
                                 0 "type"              center \
@@ -965,8 +1125,10 @@ gren_info "la\n"
                                 0 "res \u03B4"        right \
                                 0 "\u03B1"            right \
                                 0 "\u03B4"            right \
-                                0 Mag                 right \
-                                0 err_Mag             right ]
+                                0 "Mag"               right \
+                                0 "err_Mag"           right \
+                                0 "err x"             right \
+                                0 "err y"             right ]
       set loc_wcs_enf     [list 0 "Clés"              left \
                                 0 "Valeur"            center  \
                                 0 "type"              center \

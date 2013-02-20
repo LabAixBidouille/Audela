@@ -1797,12 +1797,12 @@ gren_info " => source retrouvee $cpt $dl\n"
          #gren_info "S=$s\n"
          set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
          if {$err} {
-            ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
-            ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
+            #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
+            #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
          } else {
             set pos [lsearch -index 0 $s "ASTROID"]
             if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
-            gren_info "NEW PSF ($id) $name\n"
+            #gren_info "NEW PSF ($id) $name\n"
             #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
             set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
             #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
@@ -1862,7 +1862,7 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       set ::cata_gestion_gui::popupprogress 0
-      set ::gui_cata::psf_limitradius 100
+      set ::gui_cata::psf_limitradius 50
       set ::gui_cata::psf_threshold 2
 
       set ::gui_cata::fenpopuppsf .popuppsf
@@ -1996,12 +1996,12 @@ gren_info " => source retrouvee $cpt $dl\n"
          #gren_info "S=$s\n"
          set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
          if {$err} {
-            ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
-            ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
+            #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
+            #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
          } else {
             set pos [lsearch -index 0 $s "ASTROID"]
             if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
-            gren_info "NEW PSF ($id) $name\n"
+            #gren_info "NEW PSF ($id) $name\n"
             #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
             set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
             #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
@@ -2082,12 +2082,12 @@ gren_info " => source retrouvee $cpt $dl\n"
             #gren_info "S=$s\n"
             set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
             if {$err} {
-               ::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
-               ::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
+               #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
+               #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
             } else {
                set pos [lsearch -index 0 $s "ASTROID"]
                if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
-               gren_info "NEW PSF ($id) $name\n"
+               #gren_info "NEW PSF ($id) $name\n"
                #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
                set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
                #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
@@ -2161,7 +2161,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
 
       set ::cata_gestion_gui::popupprogress 0
-      set ::gui_cata::psf_limitradius 100
+      set ::gui_cata::psf_limitradius 50
       set ::gui_cata::psf_threshold 2
 
       set ::gui_cata::fenpopuppsf .popuppsf
@@ -2349,6 +2349,8 @@ gren_info " => source retrouvee $cpt $dl\n"
       global audace
       global bddconf
 
+      set tt0 [clock clicks -milliseconds]
+
       set ::cata_gestion_gui::directaccess 1
       set ::cata_gestion_gui::progress 0
       set ::tools_cata::mem_use 0
@@ -2517,6 +2519,10 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       ::cata_gestion_gui::charge_memory
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Gestion du CATA in $tt sec \n"
+
    }
    
    

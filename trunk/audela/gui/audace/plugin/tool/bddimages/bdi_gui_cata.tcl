@@ -780,7 +780,7 @@ namespace eval gui_cata {
       wm geometry $::gui_cata::fenv +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $::gui_cata::fenv 1 1
       wm title $::gui_cata::fenv "Voir le CATA"
-      wm protocol $::gui_cata::fenv WM_DELETE_WINDOW "destroy $::gui_cata::fenv"
+      wm protocol $::gui_cata::fenv WM_DELETE_WINDOW "::gui_cata::fermer_voir_cata"
 
       set frm $::gui_cata::fenv.frm_voir_cata
       set ::gui_cata::current_appli $frm
@@ -989,7 +989,7 @@ namespace eval gui_cata {
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              set ::gui_cata::gui_fermer [button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
-                -command {cleanmark; destroy $::gui_cata::fenv}]
+                -command "::gui_cata::fermer_voir_cata"]
              pack $boutonpied.fermer -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
@@ -998,7 +998,12 @@ namespace eval gui_cata {
 
 
 
-
+   proc ::gui_cata::fermer_voir_cata {  } {
+   
+   cleanmark
+   ::gui_cata::closetoconf
+   destroy $::gui_cata::fenv
+   }
 
 
 
