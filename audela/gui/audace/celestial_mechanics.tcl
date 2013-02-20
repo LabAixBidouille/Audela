@@ -15,7 +15,7 @@
 # ------------------------------------------------------------------------------------
 
 proc name2coord { args } {
-   # source audace/celestial_mechanics.tcl ; name2coord dudul
+   # source $audace(rep_install)/gui/audace/celestial_mechanics.tcl ; name2coord dudul
    # name2coord m1 -offset 1
    global audace
    set home $audace(posobs,observateur,gps)
@@ -43,7 +43,8 @@ proc name2coord { args } {
       set ra ""
       set dec ""
       if {$name0=="crab"} { set ra 05h42m38.56s ; set dec +22d01m19.7s}
-      if {$name0=="dztau"} { set ra 05h34m31.94s ; set dec +22h00m52.2s}
+      if {$name0=="dztau"} { set ra 05h34m31.94s ; set dec +22d00m52.2s}
+      console::affiche_resultat "ra=$ra dec=$dec\n"
       if {$ra!=""} {
          set ra  [string trim [mc_angle2hms $ra 360 zero 2 auto string]]
          set dec [string trim [mc_angle2dms $dec 90 zero 1 + string]]
