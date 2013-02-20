@@ -505,6 +505,10 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       global bddconf
 
+
+      set tt0 [clock clicks -milliseconds]
+
+
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::tools_cata::current_image filename]
       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
@@ -642,6 +646,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       }
       
       set ::tools_cata::current_listsources $listsources
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Creation du cata in $tt sec \n"
 
       return true
 

@@ -456,7 +456,8 @@ namespace eval psf_gui {
       }
 
       set pass "no"
-
+      # A decocher au cas ou on veut logger cette partie
+      # set r [::psf_tools::method_global ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]
       set err [ catch {set r [::psf_tools::method_global ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]} msg ]
       if {$err} {
          ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
@@ -534,12 +535,219 @@ namespace eval psf_gui {
 
 
 
+#    xsm,mean)          
+#    ysm,mean)          
+#    xsm,err3s)         
+#    ysm,err3s)         
+#    fwhmx,mean)        
+#    fwhmy,mean)        
+#    fwhm,mean)         
+#    fluxintegre,mean)  
+#    fluxintegre,err3s) 
+#    pixmax,mean)       
+#    intensite,mean)    
+#    sigmafond,mean)    
+#    snint,mean)        
+#    snpx,mean)         
+#    delta,mean)        
+#    rdiff,mean)        
+#    ra,mean)           
+#    dec,mean)          
+#
+
+#   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
+
+   proc ::psf_gui::get_list_col { } {
+      return [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec ]
+   }
+
+
+   proc ::psf_gui::get_pos_col { key } {
+
+      set list_of_columns [::psf_gui::get_list_col]
+
+      set cpt 0
+      foreach c $list_of_columns {
+         if {$c==$key} {
+            return $cpt
+         }
+         incr cpt
+      }
+      return -1
+   }
 
 
 
 
 
 
+   proc ::psf_gui::graph { key } {
+   
+      set list_of_columns [::psf_gui::get_list_col]
+
+      foreach c $list_of_columns {
+         if {$c == $key} {
+            $::psf_gui::fen.appli.results.photommethode.values.$key.setval configure -state active
+         } else {
+            catch {$::psf_gui::fen.appli.results.photommethode.values.$c.setval configure -state disabled}
+         }
+      }
+   
+      
+      set id [::psf_gui::get_pos_col $key]
+
+      if {$id == -1 } {
+         ::console::affiche_erreur "$key (err $id) n'est pas definie dans la routine ::psf_gui::get_pos_col\n"
+      }
+
+
+      
+
+      
+      for {set i 0} {$i <= 5} {incr i} {
+
+         set x($i) ""
+         set y($i) ""
+
+         for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
+            
+            if {$::psf_tools::graph_results($radius,err)==$i} {
+                lappend x($i) $radius
+                lappend y($i) [lindex $::psf_tools::graph_results($radius) $id]
+            }
+
+         }
+            
+      }
+      
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {40 40 600 400}
+     
+
+      # Affichage de la valeur obtenue
+      set x0 [ list 0 $::gui_cata::psf_limitradius ]
+      set y0 [ list $::gui_cata::current_psf($key) $::gui_cata::current_psf($key)]
+      set h [::plotxy::plot $x0 $y0 .]
+      plotxy::sethandler $h [list -color black -linewidth 2]
+
+      # Affichage des erreurs
+      if {$key == "xsm" } {
+         set delta $::gui_cata::current_psf(err_xsm)
+         set y0    $::gui_cata::current_psf($key)
+         gren_info "delta y = $key $delta $y0\n"
+         set ymin  [list [expr $y0 - $delta] [expr $y0 - $delta] ]
+         set ymax  [list [expr $y0 + $delta] [expr $y0 + $delta] ]
+         set x0    [ list 0 $::gui_cata::psf_limitradius ]
+         set h [::plotxy::plot $x0 $ymin .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 1]
+         set h [::plotxy::plot $x0 $ymax .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 1]
+      }
+      # Affichage des erreurs
+      if {$key == "ysm" } {
+         set delta $::gui_cata::current_psf(err_ysm)
+         set y0    $::gui_cata::current_psf($key)
+         gren_info "delta y = $key $delta $y0\n"
+         set ymin  [list [expr $y0 - $delta] [expr $y0 - $delta] ]
+         set ymax  [list [expr $y0 + $delta] [expr $y0 + $delta] ]
+         set x0    [ list 0 $::gui_cata::psf_limitradius ]
+         set h [::plotxy::plot $x0 $ymin .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 1]
+         set h [::plotxy::plot $x0 $ymax .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 1]
+      }
+
+
+
+
+      array set point [list 0 . 1 o 2 + 3 . 4 + 5 o ]
+      array set color [list 0 "#18ad86" 1 yellow 2 green 3 blue 4 red 5 black ]
+      array set line  [list 0 1 1 0 2 0 3 0 4 0 5 0 ]
+
+      for {set i 0} {$i <= 5} {incr i} {
+         if {$i==3} {continue}
+         set h [::plotxy::plot $x($i) $y($i) $point($i)]
+         plotxy::sethandler $h [list -color $color($i) -linewidth $line($i)]
+      }
+      
+   } 
+
+
+
+
+
+   proc ::psf_gui::setval { key } {
+
+      set id [::psf_gui::get_pos_col $key]
+
+      if {$id == -1 } {
+         ::console::affiche_erreur "$key (err $id) n'est pas definie dans la routine ::psf_gui::get_pos_col\n"
+      }
+
+      set err [ catch {set rect [::plotxy::get_selected_region]} msg]
+      if {$err} {
+         return
+      }
+      set x1 [lindex $rect 0]
+      set x2 [lindex $rect 2]
+      set y1 [lindex $rect 1]
+      set y2 [lindex $rect 3]
+      
+      if {$x1>$x2} {
+         set t $x1
+         set x1 $x2
+         set x2 $t
+      }
+      if {$y1>$y2} {
+         set t $y1
+         set y1 $y2
+         set y2 $t
+      }
+ 
+      if {$x1 < 0 && $x2 > $::gui_cata::psf_limitradius} {
+         # Astuce pour remettre a zero le graphe
+         for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
+            set ::psf_tools::graph_results($radius,err) 0
+         }
+      } else {
+
+         # on crop
+         set cpt 0
+         for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
+            if {$::psf_tools::graph_results($radius,err)==0} {
+               incr cpt
+               if {$radius < $x1 || $x2 < $radius } {
+                  set ::psf_tools::graph_results($radius,err) 5
+                  incr cpt -1
+                  continue
+               }
+               set val [lindex $::psf_tools::graph_results($radius) $id] 
+               if {$val < $y1 || $y2 < $val } {
+                  set ::psf_tools::graph_results($radius,err) 5
+                  incr cpt -1
+               }
+            }
+         }
+         gren_info "Nb radius stat crop = $cpt \n "
+
+      }
+      
+      array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::gui_cata::psf_limitradius 0]
+      set ::gui_cata::psf_best_sol [::psf_tools::method_global_sol sol]
+
+      set flagastroid [::psf_tools::add_astroid ::gui_cata::psf_source ::gui_cata::psf_best_sol $::gui_cata::psf_name_source]
+      set ::gui_cata::psf_add_astroid $flagastroid
+
+      ::psf_tools::result_photom_methode $::gui_cata::psf_best_sol
+      
+
+      ::psf_gui::graph $key
+
+
+
+   } 
 
 
 
@@ -553,11 +761,11 @@ namespace eval psf_gui {
    proc ::psf_gui::gestion_mode_manuel { { sou "" } } {
 
       ::psf_gui::gestion_mode_manuel_init $sou
-      set ::gui_cata::psf_limitradius 100
+      set ::gui_cata::psf_limitradius 50
       set ::gui_cata::psf_threshold 2
       
       set spinlist ""
-      for {set i 1} {$i<100} {incr i} {lappend spinlist $i}
+      for {set i 1} {$i<$::gui_cata::psf_limitradius} {incr i} {lappend spinlist $i}
 
       set ::psf_gui::fen .psf
       if { [winfo exists $::psf_gui::fen] } {
@@ -634,7 +842,7 @@ namespace eval psf_gui {
          set actions2 [frame $frm.actions2 -borderwidth 1 -cursor arrow -relief groove]
          pack $actions2 -in $frm -anchor c -side top
 
-             spinbox $actions2.radius -values $spinlist -from 1 -to 100 -textvariable ::gui_cata::psf_radius -width 3 \
+             spinbox $actions2.radius -values $spinlist -from 1 -to $::gui_cata::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
                  -command "::psf_gui::one_psf"
              pack  $actions2.radius -side left 
              $actions2.radius set 15
@@ -662,6 +870,18 @@ namespace eval psf_gui {
                          set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                          pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
 
+                              if {$key=="err_xsm"||$key=="err_ysm"||$key=="errflux"||$key=="delta"} {
+                                 set active disabled
+                              } else {
+                                 set active active
+                              }
+                              button $value.graph -state $active -text "@" -relief "raised" \
+                                 -command "::psf_gui::graph $key" 
+                              pack   $value.graph -side left -padx 0
+                              button $value.setval -state $active -text "S" -relief "raised" \
+                                 -command "::psf_gui::setval $key" 
+                              pack   $value.setval -side left -padx 0
+                              
                               label $value.lab1 -text "$key =" 
                               pack  $value.lab1 -side left -padx 2 -pady 0
                               label $value.lab2 -textvariable ::gui_cata::current_psf($key)

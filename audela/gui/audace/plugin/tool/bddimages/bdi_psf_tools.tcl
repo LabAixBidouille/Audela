@@ -313,6 +313,30 @@ namespace eval psf_tools {
 
 
 
+   proc ::psf_tools::result_global_methode { send_result } {
+      
+      upvar $send_result result
+
+      set result [list [format "%.4f" [lindex $result  0] ]  \
+                       [format "%.4f" [lindex $result  1] ]  \
+                       [format "%.4f" [lindex $result  2] ]  \
+                       [format "%.4f" [lindex $result  3] ]  \
+                       [format "%.4f" [lindex $result  4] ]  \
+                       [format "%.4f" [lindex $result  5] ]  \
+                       [format "%.4f" [lindex $result  6] ]  \
+                       [format "%.4f" [lindex $result  7] ]  \
+                       [format "%.4f" [lindex $result  8] ]  \
+                       [format "%.4f" [lindex $result  9] ]  \
+                       [format "%.4f" [lindex $result 10] ]  \
+                       [format "%.4f" [lindex $result 11] ]  \
+                       [format "%.4f" [lindex $result 12] ]  \
+                       [format "%.4f" [lindex $result 13] ]  \
+                       [format "%.4f" [lindex $result 14] ]  \
+                       [format "%.4f" [lindex $result 15] ]  \
+                       [format "%.8f" [lindex $result 16] ]  \
+                       [format "%.8f" [lindex $result 17] ]  \
+                 ]
+   }
 
 
 
@@ -322,10 +346,191 @@ namespace eval psf_tools {
 
 
 
+   proc ::psf_tools::method_global_stat { send_results radiuslimit log } {
+
+      upvar $send_results results 
+
+      if {$log} { gren_info "METHODE GLOBALE STAT \n" }
+
+      set listfield [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec]
+      set i 0
+      foreach field $listfield {
+         set tab ""
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+               lappend tab [lindex $results($radius) $i]
+            }
+         }
+         # Stat FWHM
+         set sol($field,mean)   [::math::statistics::mean $tab]
+         set sol($field,median) [::math::statistics::median $tab]
+         set sol($field,stdev)  [::math::statistics::stdev $tab]
+         set sol($field,err1s)  $sol($field,stdev)
+         set sol($field,err2s)  [ expr 2.0 * $sol($field,stdev) ]
+         set sol($field,err3s)  [ expr 3.0 * $sol($field,stdev) ]
+         incr i
+      }
+      set sol(err_xsm,1)   $sol(xsm,stdev)
+      set sol(err_xsm,2)   [ expr 2.0 * $sol(xsm,stdev) ]
+      set sol(err_xsm,3)   [ expr 3.0 * $sol(xsm,stdev) ]
+      set sol(err_ysm,1)   $sol(ysm,stdev)
+      set sol(err_ysm,2)   [ expr 2.0 * $sol(ysm,stdev) ]
+      set sol(err_ysm,3)   [ expr 3.0 * $sol(ysm,stdev) ]
+      set sol(errflux,1)   $sol(fluxintegre,stdev)
+      set sol(errflux,2)   [ expr 2.0 * $sol(fluxintegre,stdev) ]
+      set sol(errflux,3)   [ expr 3.0 * $sol(fluxintegre,stdev) ]
+
+      return [array get sol]
+
+   }
 
 
 
 
+
+
+   proc ::psf_tools::method_global_sol { send_sol { err 2 } } {
+   
+      upvar $send_sol sol 
+
+      set result_global [list $sol(xsm,mean) \
+                              $sol(ysm,mean) \
+                              $sol(err_xsm,$err) \
+                              $sol(err_ysm,$err) \
+                              $sol(fwhmx,mean) \
+                              $sol(fwhmy,mean) \
+                              $sol(fwhm,mean) \
+                              $sol(fluxintegre,mean) \
+                              $sol(errflux,$err) \
+                              $sol(pixmax,mean) \
+                              $sol(intensite,mean) \
+                              $sol(sigmafond,mean) \
+                              $sol(snint,mean) \
+                              $sol(snpx,mean) \
+                              $sol(delta,mean) \
+                              $sol(rdiff,mean) \
+                              $sol(ra,mean) \
+                              $sol(dec,mean) \
+                         ]
+      return [::psf_tools::result_global_methode result_global]
+   }
+
+
+
+   proc ::psf_tools::log_diff { result_global radius_fwhm radius_fluxintegre radius_posmean} {
+
+      set xsm       [lindex $result_global 0]
+      set ysm       [lindex $result_global 1]
+      set stdev_xsm [lindex $result_global 2]
+      set stdev_ysm [lindex $result_global 3]
+      set pra       [lindex $result_global 16]
+      set pdec      [lindex $result_global 17]
+
+      if {$log} { gren_info "xsm = $xsm +- $stdev_xsm\n" }
+      if {$log} { gren_info "ysm = $ysm +- $stdev_ysm\n" }
+
+
+      set dx [expr abs( $xsm - $xsm_fwhm)]
+      set dy [expr abs( $ysm - $ysm_fwhm)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      if {$log} { gren_info "diff_fwhm ($radius_fwhm) = $diff\n" }
+      set diffmin $diff
+      set best_radius $radius_fwhm
+
+      set dx [expr abs( $xsm - $xsm_fluxintegre)]
+      set dy [expr abs( $ysm - $ysm_fluxintegre)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      if {$log} { gren_info "diff_fluxintegre ($radius_fluxintegre) = $diff\n" }
+      if {$diff<$diffmin} {
+         set diffmin $diff
+         set best_radius $radius_fluxintegre
+      }
+
+      set dx [expr abs( $xsm - $xsm_posmean)]
+      set dy [expr abs( $ysm - $ysm_posmean)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      if {$log} { gren_info "diff_posmean ($radius_posmean) = $diff\n" }
+      if {$diff<$diffmin} {
+         set diffmin $diff
+         set best_radius $radius_posmean
+      }
+
+
+      if {$log} { gren_info "-----\n" }
+      if {$log} { gren_info "RADIUS SELECTED    = $best_radius\n" }
+      set result_selected    [lreplace $results($best_radius) 2 3 $stdev_xsm $stdev_ysm]
+      set xsm_selected       [lindex $result_selected 0]
+      set ysm_selected       [lindex $result_selected 1]
+      set stdev_xsm_selected [lindex $result_selected 2]
+      set stdev_ysm_selected [lindex $result_selected 3]
+      if {$log} { gren_info "xsm_selected = $xsm_selected +- $stdev_xsm_selected\n" }
+      if {$log} { gren_info "ysm_selected = $ysm_selected +- $stdev_ysm_selected\n" }
+
+      set dx [expr abs( $xsm - $xsm_selected)]
+      set dy [expr abs( $ysm - $ysm_selected)]
+      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
+      if {$log} { gren_info "diff_selected ($best_radius) = $diff\n" }
+
+      if {$log} { gren_info "-----\n" }
+
+      return $best_radius
+   }
+
+
+
+
+           ###                                ###
+
+           #    Ajout de ASTROID dans le cata   #  
+
+           ###                                ###
+
+#      ::psf_tools::add_astroid s $name_source
+      #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
+      #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
+      ##gren_info "ASTROID OTHERF = [lindex $astroid 2]\n"
+
+   proc ::psf_tools::add_astroid { send_s send_result_global name_source } {
+
+      upvar $send_s s 
+      upvar $send_result_global result_global 
+      
+      set xsm       [lindex $result_global 0]
+      set ysm       [lindex $result_global 1]
+      set stdev_xsm [lindex $result_global 2]
+      set stdev_ysm [lindex $result_global 3]
+      set pra       [lindex $result_global 16]
+      set pdec      [lindex $result_global 17]
+      
+      set flagastroid "Failure"
+      set pos [lsearch -index 0 $s "ASTROID"]
+         set flagastroid "pos=$pos"
+      if {$pos!=-1} {
+         set astroid [lindex $s $pos]
+
+         set comf   [lindex $astroid 1]
+         set comf   [lreplace $comf 0 1 $pra $pdec]
+
+         set otherf  [lindex $astroid 2]
+         set i 0
+         foreach val $result_global {
+            set otherf [lreplace $otherf $i $i $val]
+            incr i
+         }
+         set otherf [lreplace $otherf 24 24 $name_source]
+         set astroid [ list "ASTROID" $comf $otherf]
+         set s [lreplace $s $pos $pos $astroid]
+         set flagastroid "Modif Success"
+      } else {
+         set cata "ASTROID"
+         set comf [list $pra $pdec 5 0 0]
+         set othf [linsert $result_global end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
+         set astroid [list "ASTROID" $comf $othf]
+         set s [linsert $s end $astroid]
+         set flagastroid "Add Success"
+      }
+      return $flagastroid
+   }
 
 # Anciennement ::gui_cata::psf_box_auto_no_gui
 # Effectue une analyse de psf, en methode globale
@@ -350,10 +555,13 @@ namespace eval psf_tools {
       global bddconf
       
       set log 0
+      set save_file "no"
+      set save_graph "yes"
 
       if {$log} { gren_info "entree dans ::psf_tools::method_global \n"}
       
-            
+      # Nom de la source 
+      
       set name_cata [::manage_source::namable $s]
       if {$name_cata==""} {
          if {$log} { gren_info "s=$s\n" }
@@ -363,6 +571,11 @@ namespace eval psf_tools {
       set name_source [::manage_source::naming $s $name_cata]
       
       set pass "no"
+
+
+      # On recupere les x y alpha delta de chaque source
+      # afin d initialiser le probleme
+
       foreach mycata $s {
       
          if {[lindex $mycata 0] == $name_cata } {
@@ -370,9 +583,9 @@ namespace eval psf_tools {
             if {$log} { gren_info "name_cata = $name_cata\n" }
             if {$log} { gren_info "common = [lindex $mycata 1]\n" }
             
-            #gren_info "ra dec [lindex [lindex $mycata 1] 0] [lindex [lindex $mycata 1] 1]\n"
             set ra  [lindex [lindex $mycata 1] 0]
             set dec [lindex [lindex $mycata 1] 1]
+
             if {$log} { gren_info "ra dec $ra $dec\n" }
             
             set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
@@ -386,15 +599,14 @@ namespace eval psf_tools {
       }
 
 
-      #gren_info "$radiuslimit $threshold"
-      # Calcul des psf
+      # On applique la methode photometrique mais on jette 
+      # les sources a l'exterieur du threshold
+
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
-          #gren_info "x y = $x $y \n"
-          
+
          set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
-          #gren_info "x y = $x $y \n"
          if {$result==-1} {
-            set results($radius,err) 10
+            set results($radius,err) 2
          }
          if {$results($radius,err)==0} {
             set xsm [lindex $result 0]
@@ -407,14 +619,11 @@ namespace eval psf_tools {
             set radiff [expr ($ra - $pra ) * cos ($dec)]
             set decdiff [expr $dec - $pdec ]
             set rsecdiff [expr sqrt ( pow($radiff,2) + pow($decdiff,2) ) * 3600.0]
-            # gren_info "$radius = $rsecdiff > $threshold\n"
             
             if {$rsecdiff > $threshold} {
-               set results($radius,err) 1
+               set results($radius,err) 3
                continue
                }
-            #affich_un_rond_xy $xsm $ysm green $radius 1
-            #affich_un_rond $ra $dec green $radius
 
             set result [linsert $result end $rsecdiff $pra $pdec]
             set results($radius) $result
@@ -424,23 +633,28 @@ namespace eval psf_tools {
 
 
       # Sauve fichier
-      set file [file join $bddconf(dirtmp) "psf_all.csv"]
-      if {$log} { gren_info "Sauve Fichier = $file\n" }
-      set chan [open $file w]
-      #   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
-      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+      if {$save_file=="yes"} {
+         set file [file join $bddconf(dirtmp) "psf_all.csv"]
+         if {$log} { gren_info "Sauve Fichier = $file\n" }
+         set chan [open $file w]
+         #   {xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec}
+         puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
 
-      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
-         if {$results($radius,err)==0} {
-             puts $chan $results($radius)
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+                puts $chan $results($radius)
+            }
          }
+         close $chan
       }
-      close $chan
+
+      # Statistiques
 
 
-      # statistiques
+
       if {$log} { gren_info "statistiques\n" }
       if {$log} { gren_info "NB POP $radiuslimit : start\n" }
+
       set rdiff ""
       set fluxintegre ""
       set intensite ""
@@ -488,15 +702,17 @@ namespace eval psf_tools {
 
 
       for {set i 0} {$i<1} {incr i} {
+
          # statistiques on selectionne tous les radius dont le flux est superieur a une limite
          # CROP autour des plus hautes valeur de flux
+         #gren_info "CROP\n"
          set fluxintegre ""
          set fluxmin  [expr  $median_fluxintegre - $stdev_fluxintegre]
          for {set radius 1} {$radius < $radiuslimit} {incr radius} {
             if {$results($radius,err)==0} {
                set flux  [lindex $results($radius) 7]
                if {$flux < $fluxmin } {
-                  set results($radius,err) 2
+                  set results($radius,err) 4
                } else {
                   lappend fluxintegre  $flux
                }
@@ -504,21 +720,21 @@ namespace eval psf_tools {
          }
          set median_fluxintegre [::math::statistics::median $fluxintegre]
          set stdev_fluxintegre  [::math::statistics::stdev $fluxintegre]
-
       }
 
-      # Sauve fichier
-      set file [file join $bddconf(dirtmp) "psf_crop_flux_$i.csv"]
-      if {$log} { gren_info "Sauve Fichier = $file\n" }
-      set chan [open $file w]
-      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
-      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
-         if {$results($radius,err)==0} {
-             puts $chan $results($radius)
+      if {$save_file=="yes"} {
+         # Sauve fichier
+         set file [file join $bddconf(dirtmp) "psf_crop_flux_$i.csv"]
+         if {$log} { gren_info "Sauve Fichier = $file\n" }
+         set chan [open $file w]
+         puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+                puts $chan $results($radius)
+            }
          }
+         close $chan
       }
-      close $chan
-
 
 
                       ###        ###
@@ -547,7 +763,7 @@ namespace eval psf_tools {
             if {$results($radius,err)==0} {
                set fwhm [lindex $results($radius) 6]
                if {$fwhm < $fwhmmin || $fwhm > $fwhmmax} {
-                  set results($radius,err) 3
+                  set results($radius,err) 5
                }
             }
          }
@@ -582,17 +798,25 @@ namespace eval psf_tools {
             }
          }
       }
-      # Sauve fichier
-      set file [file join $bddconf(dirtmp) "psf_crop_radius_fwhm_$i.csv"]
-      if {$log} { gren_info "Sauve Fichier = $file\n" }
-      set chan [open $file w]
-      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
-      for {set radius 1} {$radius < $radiuslimit} {incr radius} {
-         if {$results($radius,err)==0} {
-             puts $chan $results($radius)
+
+      if {$save_file=="yes"} {
+         # Sauve fichier
+         set file [file join $bddconf(dirtmp) "psf_crop_radius_fwhm_$i.csv"]
+         if {$log} { gren_info "Sauve Fichier = $file\n" }
+         set chan [open $file w]
+         puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
+            if {$results($radius,err)==0} {
+                puts $chan $results($radius)
+            }
          }
+         close $chan
       }
-      close $chan
+
+      # Sauve Graph
+      if {$save_graph=="yes"} {
+         array set ::psf_tools::graph_results [array get results]
+      }
 
    ###                       ###
   
@@ -689,6 +913,8 @@ namespace eval psf_tools {
                       ###         ###
 
 
+
+
       # Choix du bon delta
       set best_radius $radius_fluxintegre
 
@@ -723,109 +949,30 @@ namespace eval psf_tools {
 
            ###                         ###
 
-      if {$log} { gren_info "-----\n" }
-      if {$log} { gren_info "METHODE GLOBALE \n" }
 
-      set listfield [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec]
-      set i 0
-      foreach field $listfield {
-         set tab ""
-         for {set radius 1} {$radius < $radiuslimit} {incr radius} {
-            if {$results($radius,err)==0} {
-               lappend tab [lindex $results($radius) $i]
-            }
-         }
-         # Stat FWHM
-         set st($field,mean)   [::math::statistics::mean $tab]
-         set st($field,median) [::math::statistics::median $tab]
-         set st($field,stdev)  [::math::statistics::stdev  $tab]
-         set st($field,err1s)  $st($field,stdev)
-         set st($field,err3s)  [ expr 3.0 * $st($field,stdev) ]
-         incr i
+
+      # Statistiques
+
+      array set sol [::psf_tools::method_global_stat results $radiuslimit 0]
+
+      # Solution
+
+      set result_global [::psf_tools::method_global_sol sol]
+      
+      if {$save_file=="yes"} {
+         # Sauve fichier
+         set file [file join $bddconf(dirtmp) "psf_global_soluce.csv"]
+         if {$log} { gren_info "Sauve Fichier = $file\n" }
+         set chan [open $file w]
+         puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
+         puts $chan $result_global
+         close $chan
       }
-
-      set result_global [list $st(xsm,mean) \
-                              $st(ysm,mean) \
-                              $st(xsm,err3s) \
-                              $st(ysm,err3s) \
-                              $st(fwhmx,mean) \
-                              $st(fwhmy,mean) \
-                              $st(fwhm,mean) \
-                              $st(fluxintegre,mean) \
-                              $st(fluxintegre,err3s) \
-                              $st(pixmax,mean) \
-                              $st(intensite,mean) \
-                              $st(sigmafond,mean) \
-                              $st(snint,mean) \
-                              $st(snpx,mean) \
-                              $st(delta,mean) \
-                              $st(rdiff,mean) \
-                              $st(ra,mean) \
-                              $st(dec,mean) \
-                         ]
       
 
-      # Sauve fichier
-      set file [file join $bddconf(dirtmp) "psf_global_soluce.csv"]
-      if {$log} { gren_info "Sauve Fichier = $file\n" }
-      set chan [open $file w]
-      puts $chan "#xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec"
-      puts $chan $result_global
-      close $chan
-
-      set xsm       [lindex $result_global 0]
-      set ysm       [lindex $result_global 1]
-      set stdev_xsm [lindex $result_global 2]
-      set stdev_ysm [lindex $result_global 3]
-      set pra       [lindex $result_global 16]
-      set pdec      [lindex $result_global 17]
-
-      if {$log} { gren_info "xsm = $xsm +- $stdev_xsm\n" }
-      if {$log} { gren_info "ysm = $ysm +- $stdev_ysm\n" }
-
-
-      set dx [expr abs( $xsm - $xsm_fwhm)]
-      set dy [expr abs( $ysm - $ysm_fwhm)]
-      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      if {$log} { gren_info "diff_fwhm ($radius_fwhm) = $diff\n" }
-      set diffmin $diff
-      set best_radius $radius_fwhm
-
-      set dx [expr abs( $xsm - $xsm_fluxintegre)]
-      set dy [expr abs( $ysm - $ysm_fluxintegre)]
-      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      if {$log} { gren_info "diff_fluxintegre ($radius_fluxintegre) = $diff\n" }
-      if {$diff<$diffmin} {
-         set diffmin $diff
-         set best_radius $radius_fluxintegre
+      if {$log} {
+         set best_radius [::psf_tools::log_diff $result_global $radius_fwhm $radius_fluxintegre $radius_posmean]
       }
-
-      set dx [expr abs( $xsm - $xsm_posmean)]
-      set dy [expr abs( $ysm - $ysm_posmean)]
-      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      if {$log} { gren_info "diff_posmean ($radius_posmean) = $diff\n" }
-      if {$diff<$diffmin} {
-         set diffmin $diff
-         set best_radius $radius_posmean
-      }
-
-
-      if {$log} { gren_info "-----\n" }
-      if {$log} { gren_info "RADIUS SELECTED    = $best_radius\n" }
-      set result_selected    [lreplace $results($best_radius) 2 3 $stdev_xsm $stdev_ysm]
-      set xsm_selected       [lindex $result_selected 0]
-      set ysm_selected       [lindex $result_selected 1]
-      set stdev_xsm_selected [lindex $result_selected 2]
-      set stdev_ysm_selected [lindex $result_selected 3]
-      if {$log} { gren_info "xsm_selected = $xsm_selected +- $stdev_xsm_selected\n" }
-      if {$log} { gren_info "ysm_selected = $ysm_selected +- $stdev_ysm_selected\n" }
-
-      set dx [expr abs( $xsm - $xsm_selected)]
-      set dy [expr abs( $ysm - $ysm_selected)]
-      set diff [expr sqrt( ( pow($dx,2) + pow($dy,2) ) / 2.0 )]
-      if {$log} { gren_info "diff_selected ($best_radius) = $diff\n" }
-
-      if {$log} { gren_info "-----\n" }
 
 #      if {$dxsm>$stdev_xsm||$dysm>$stdev_ysm} {
 #         ::console::affiche_erreur "WARNING = incertitude sur la position X et Y fournit\n"
@@ -833,47 +980,10 @@ namespace eval psf_tools {
 
 
 
-           ###                                ###
 
-           #    Ajout de ASTROID dans le cata   #  
+      #    Ajout de ASTROID dans le cata   #  
+      set flagastroid [::psf_tools::add_astroid s result_global $name_source]
 
-           ###                                ###
-
-
-      #gren_info "ASTROID CATA   = [lindex $astroid 0]\n"
-      #gren_info "ASTROID COMMON = [lindex $astroid 1]\n"
-      ##gren_info "ASTROID OTHERF = [lindex $astroid 2]\n"
-
-      set flagastroid "Failure"
-      set pos [lsearch -index 0 $s "ASTROID"]
-         set flagastroid "pos=$pos"
-      if {$pos!=-1} {
-         set astroid [lindex $s $pos]
-
-         set comf   [lindex $astroid 1]
-         set comf   [lreplace $comf 0 1 $pra $pdec]
-
-         set otherf  [lindex $astroid 2]
-         set i 0
-         foreach val $result_global {
-            set otherf [lreplace $otherf $i $i $val]
-            incr i
-         }
-         set otherf [lreplace $otherf 24 24 $name_source]
-         set astroid [ list "ASTROID" $comf $otherf]
-         set s [lreplace $s $pos $pos $astroid]
-         set flagastroid "Modif Success"
-      } else {
-         set cata "ASTROID"
-         set comf [list $pra $pdec 5 0 0]
-         set othf [linsert $result_global end "0" "0" "0" "0" "0" "0" $name_source "-" "-" "-" "-"]
-         set astroid [list "ASTROID" $comf $othf]
-         set s [linsert $s end $astroid]
-         set flagastroid "Add Success"
-      }
-
-      if {$log} { gren_info "sortie de ::psf_tools::method_global \n"}
-      #gren_info "S APRES = $s\n"
       return -code 0 [list $result_global $best_radius $flagastroid]
       
 
@@ -1027,9 +1137,9 @@ namespace eval psf_tools {
       set median_maginst [::math::statistics::median $tabmaginst ]
       set median_magcata [::math::statistics::median $tabmagcata ]
       set const_mag      [expr $median_magcata - $median_maginst]
-      gren_info "median_maginst = $median_maginst\n"
-      gren_info "median_magcata = $median_magcata\n"
-      gren_info "const_mag = $const_mag\n"
+      #gren_info "median_maginst = $median_maginst\n"
+      #gren_info "median_magcata = $median_magcata\n"
+      #gren_info "const_mag = $const_mag\n"
 
       set tabflux ""
       set tabmag  ""
@@ -1050,7 +1160,7 @@ namespace eval psf_tools {
                      set maginst  [expr -log10($flux)*2.5]
                      set magcalc  [expr -log10($flux)*2.5 + $const_mag]
 
-                     gren_info "mag cata = $magcata ; maginstru = $maginst ; diff = [expr abs($magcata - $maginst) ] ; macalc = $magcalc ; diff = [expr abs($magcalc - $magcata) ]\n"
+                     #gren_info "mag cata = $magcata ; maginstru = $maginst ; diff = [expr abs($magcata - $maginst) ] ; macalc = $magcalc ; diff = [expr abs($magcalc - $magcata) ]\n"
 
                      lappend tabmag  [expr abs($magcalc - $magcata) ]
                   }
@@ -1061,7 +1171,7 @@ namespace eval psf_tools {
       }
 
       set mag_err [format "%.3f" [::math::statistics::mean $tabmag] ]
-      gren_info "mag_err = $mag_err\n"
+      #gren_info "mag_err = $mag_err\n"
       
 
 
