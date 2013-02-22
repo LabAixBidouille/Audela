@@ -979,8 +979,12 @@ namespace eval cata_creation_gui {
          set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
          set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
          set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-         set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-
+         if {$scale_x=="" || $scale_y == ""} {
+            set ::tools_cata::radius 20
+         } else {
+            set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+         }
+         
          set xcent [expr $naxis1/2.0]
          set ycent [expr $naxis2/2.0]
 
@@ -1113,8 +1117,11 @@ namespace eval cata_creation_gui {
       set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
       set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
       set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-      set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-
+      if {$scale_x=="" || $scale_y == ""} {
+         set ::tools_cata::radius 20
+      } else {
+         set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+      }
       set xcent [expr $naxis1/2.0]
       set ycent [expr $naxis2/2.0]
 
