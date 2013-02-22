@@ -958,12 +958,16 @@ namespace eval tools_astrometry {
 
    proc ::tools_astrometry::convert_mpc_date { date } {
 
-      set a [string range $date 0 3]
-      set m [string range $date 5 6]
-      set d [string range $date 8 9]
-      set h [string range $date 11 12]
-      set mn [string range $date 14 15]
-      set s  [string range $date 17 22]
+      set a  [string range $date 0 3]
+      set m  [string range $date 5 6]
+      set d  [string trimleft [string range $date  8  9] 0]
+      set h  [string trimleft [string range $date 11 12] 0]
+      set mn [string trimleft [string range $date 14 15] 0]
+      set s  [string trimleft [string range $date 17 22] 0]
+      if {$d ==""} {set d  0}
+      if {$h ==""} {set h  0}
+      if {$mn==""} {set mn 0}
+      if {$s ==""} {set s  0}
       set day [format "%.6f" [expr $d + $h / 24. + $mn / 24. / 60. + $s / 24. /3600.]]
       if {$day <10.0} {set day "0$day"}
       return "$a $m $day"

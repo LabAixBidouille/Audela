@@ -1123,7 +1123,7 @@ namespace eval psf_tools {
                   set astroid_oth [lindex $astroid 2]
                   set flux [lindex $astroid_oth 7 ]
                   set magcata  [lindex $usnoa2_oth  7]
-                  if {$flux!="" && $magcata != "" } {
+                  if {$flux!="" && $magcata != "" && $flux>0} {        
                      set maginst  [expr -log10($flux)*2.5]
                      lappend tabmaginst  $maginst 
                      lappend tabmagcata  $magcata  
@@ -1156,7 +1156,7 @@ namespace eval psf_tools {
                   set flux        [lindex $astroid_oth 7 ]
                   set magcata     [lindex $usnoa2_oth  7 ]
 
-                  if {$flux!="" && $magcata != "" } {
+                  if {$flux!="" && $magcata != ""  && $flux>0} {
                      set maginst  [expr -log10($flux)*2.5]
                      set magcalc  [expr -log10($flux)*2.5 + $const_mag]
 
@@ -1191,8 +1191,11 @@ namespace eval psf_tools {
                if {$err} {
                   gren_info "ERREUR MAG : s = $s \n"
                   gren_info "ERREUR MAG : flux = $flux ; const_mag = $const_mag\n"
+                  continue
                }
-               
+               if {$flux < 0 } {
+                  continue
+               }
                set astroid_com [lreplace  $astroid_com  3  4 $mag $mag_err ]
                set astroid_oth [lreplace  $astroid_oth 22 23 $mag $mag_err ]
                set s [lreplace $s $cpos $cpos [list "ASTROID" $astroid_com $astroid_oth]]

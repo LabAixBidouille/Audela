@@ -611,7 +611,7 @@ namespace eval psf_gui {
 
          for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
             
-            if {$::psf_tools::graph_results($radius,err)==$i} {
+            if {$::psf_tools::graph_results($radius,err)==$i && [info exists ::psf_tools::graph_results($radius)]} {
                 lappend x($i) $radius
                 lappend y($i) [lindex $::psf_tools::graph_results($radius) $id]
             }
