@@ -19,4 +19,7 @@ proc load_tkhtml { dir } {
     }
 }
 
-package ifneeded Tkhtml 3.0 [ load_tkhtml $dir ]
+set err [catch {package present Tk} msg]
+if {$err==0} {
+   package ifneeded Tkhtml 3.0 [ load_tkhtml $dir ]
+}
