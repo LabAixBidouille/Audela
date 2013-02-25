@@ -551,6 +551,13 @@ namespace eval gui_astrometry {
                   set nom [string trim [lindex $b 1] ]
                   break
                }
+               if {$x>=0 && ( $cata=="UCAC3" || $cata=="UCAC2" )  } {
+                  set b  [lindex [lindex $s $x] 1]
+                  set pass "ok"
+                  set ra [string trim [lindex $b 0] ]
+                  set dec [string trim [lindex $b 1] ]
+                  return [list $ra $dec]
+               }
             } else {
                continue
             }
@@ -755,8 +762,8 @@ namespace eval gui_astrometry {
             gren_info "EPHEM =  $date  $ra_ephem  $dec_ephem\n"
             lappend tabcalc(res_a)   $res_a
             lappend tabcalc(res_d)   $res_d
-            lappend tabcalc(ra_omc)  $ra_omc
-            lappend tabcalc(dec_omc) $dec_omc
+            if {$ra_ephem != "-"} {lappend tabcalc(ra_omc)  $ra_omc}
+            if {$dec_ephem != "-"} {lappend tabcalc(dec_omc) $dec_omc}
             lappend tabcalc(datejj)  $datejj
             lappend tabcalc(alpha)   $alpha
             lappend tabcalc(delta)   $delta
@@ -769,23 +776,40 @@ namespace eval gui_astrometry {
          set calc(res_a,stdev)   [format "%.4f" [::math::statistics::stdev  $tabcalc(res_a)   ]]
          set calc(res_d,mean)    [format "%.4f" [::math::statistics::mean   $tabcalc(res_d)   ]]
          set calc(res_d,stdev)   [format "%.4f" [::math::statistics::stdev  $tabcalc(res_d)   ]]
-         set calc(ra_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_omc)  ]]
-         set calc(ra_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_omc)  ]]
-         set calc(dec_omc,mean)  [format "%.4f" [::math::statistics::mean   $tabcalc(dec_omc) ]]
-         set calc(dec_omc,stdev) [format "%.4f" [::math::statistics::stdev  $tabcalc(dec_omc) ]]
+         if {[info exists tabcalc(ra_omc)]} {
+            set calc(ra_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_omc)  ]]
+            set calc(ra_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_omc)  ]]
+         } else {
+            set calc(ra_omc,mean)   "-"
+            set calc(ra_omc,stdev)  "-"
+         }
+         if {[info exists tabcalc(dec_omc)]} {
+           set calc(dec_omc,mean)  [format "%.4f" [::math::statistics::mean   $tabcalc(dec_omc) ]]
+           set calc(dec_omc,stdev) [format "%.4f" [::math::statistics::stdev  $tabcalc(dec_omc) ]]
+         } else {
+            set calc(dec_omc,mean)   "-"
+            set calc(dec_omc,stdev)  "-"
+         }
+         
          set calc(datejj,mean)   [::math::statistics::mean   $tabcalc(datejj) ] 
          set calc(datejj,stdev)  [::math::statistics::stdev  $tabcalc(datejj) ] 
          set calc(alpha,mean)    [::math::statistics::mean   $tabcalc(alpha) ]  
          set calc(alpha,stdev)   [::math::statistics::stdev  $tabcalc(alpha) ]  
          set calc(delta,mean)    [::math::statistics::mean   $tabcalc(delta) ]  
          set calc(delta,stdev)   [::math::statistics::stdev  $tabcalc(delta) ]  
+
+         ::gui_astrometry::sep_txt
+         $::gui_astrometry::rapport_txt insert end  "BODY NAME = $name\n"
          $::gui_astrometry::rapport_txt insert end  "Residu RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "Residu DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "OMC RA     \"  : mean = $calc(ra_omc,mean) stedv = $calc(ra_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "OMC DEC    \"  : mean = $calc(dec_omc,mean) stedv = $calc(dec_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "DATE MOYEN jj : mean = $calc(datejj,mean) \n"
-         $::gui_astrometry::rapport_txt insert end  "RA MOYEN   deg: mean = $calc(alpha,mean)  \n"
-         $::gui_astrometry::rapport_txt insert end  "DEC MOYEN  deg: mean = $calc(delta,mean)  \n"
+         $::gui_astrometry::rapport_txt insert end  "DATE MOYEN jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "RA MOYEN   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "DEC MOYEN  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  date,ra_omc,ra_omc_std,dec_omc,dec_omc_std,info\n"
+         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  $calc(datejj,mean),$calc(ra_omc,mean),$calc(ra_omc,stdev),$calc(dec_omc,mean),$calc(dec_omc,stdev),$name [mc_date2iso8601 $calc(datejj,mean)]\n"
+         ::gui_astrometry::sep_txt
          
       }
       $::gui_astrometry::rapport_txt insert end  "\n\n\n"
