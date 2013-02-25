@@ -511,9 +511,16 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::tools_cata::current_image filename]
+
+      gren_info "image qui va etre traitee : $imgfilename \n"
+
       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
       # Definition du nom du cata XML
       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+ 
+      gren_info "image dans tmp : $f \n"
+      gren_info "taille = [file size $f]\n"
+      
       set cataxml "${f}_cata.xml"
 
       # Liste des champs du header de l'image
