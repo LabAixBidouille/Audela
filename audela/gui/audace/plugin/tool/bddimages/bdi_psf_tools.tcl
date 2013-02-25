@@ -1189,8 +1189,8 @@ namespace eval psf_tools {
                
                set err [catch {set mag [format "%.3f" [expr -log10($flux)*2.5 + $const_mag] ]} msg ]
                if {$err} {
-                  gren_info "ERREUR MAG : s = $s \n"
-                  gren_info "ERREUR MAG : flux = $flux ; const_mag = $const_mag\n"
+                  #gren_info "ERREUR MAG : s = $s \n"
+                  #gren_info "ERREUR MAG : flux = $flux ; const_mag = $const_mag\n"
                   continue
                }
                if {$flux < 0 } {
