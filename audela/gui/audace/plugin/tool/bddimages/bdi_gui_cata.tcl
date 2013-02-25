@@ -659,7 +659,9 @@ namespace eval gui_cata {
 
 
       cleanmark
-      set err [catch {
+
+      set err 0
+#      set err [catch {
 
          set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
          if {$cataexist==0} {return -code 0 "NOCATA"}
@@ -681,8 +683,8 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
 
-      } msg ]
-
+#      } msg ]
+return
       if {$err} {
          if {$msg=="NOCATA"} {return}
          ::console::affiche_erreur "ERREUR affiche_cata : $msg\n" 

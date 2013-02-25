@@ -296,7 +296,7 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
       puts $chan0 "#!/bin/sh"
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
-      puts $chan0 "priam -lang en -format priam -m $nb -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:bddimages -te 1"
+      puts $chan0 "priam -lang en -format priam -m $nb -deg 0 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:bddimages -te 1"
       close $chan0
    }
 
@@ -364,7 +364,17 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
                   set ra  [mc_angle2hms [lindex $b 0]]
                   set dec [mc_angle2dms [lindex $b 1] 90]
                   set mag [lindex $b 3]
-                  puts $chan1 "$name $ra $dec 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  $mag ?    0.00 0.0"
+                  
+                  set ra_err  100
+                  set dec_err 100
+                  set b  [lindex [lindex $s $x] 2]
+                  if {  $ac == "UCAC3" } {
+                     set ra_err  [expr [lindex $b 8] * 3600000]
+                     set dec_err [expr [lindex $b 9] * 3600000]
+                  }               
+                  
+                           
+                  puts $chan1 "$name $ra $dec 0.00 0.00 2451545.50  $ra_err $dec_err  0.00  0.00  $mag ?    0.00 0.0"
                } else {
                   ::console::affiche_erreur "ERREUR DE REFERENCE\n"
                }

@@ -554,7 +554,7 @@ namespace eval gui_astrometry {
                if {$x>=0 && ( $cata=="UCAC3" || $cata=="UCAC2" )  } {
                   set b  [lindex [lindex $s $x] 1]
                   set pass "ok"
-                  set ra [string trim [lindex $b 0] ]
+                  set ra  [string trim [lindex $b 0] ]
                   set dec [string trim [lindex $b 1] ]
                   return [list $ra $dec]
                }
@@ -743,14 +743,14 @@ namespace eval gui_astrometry {
                set ra_omc "-"
             } else {
                set ra_omc   [format "%.4f" [expr ($alpha - $ra_ephem) * 3600.0] ]
-               if {$ra_omc>=0} {set ra_omc "+$ra_omc"}
+               if {$ra_omc>0} {set ra_omc "+$ra_omc"}
                set ra_ephem [::tools_astrometry::convert_txt_hms $ra_ephem]
             }
             if {$dec_ephem == "-"} {
                set dec_omc "-"
             } else {
                set dec_omc   [format "%.4f" [expr ($delta - $dec_ephem) * 3600.0] ]
-               if {$dec_omc>=0} {set dec_omc "+$dec_omc"}
+               if {$dec_omc>0} {set dec_omc "+$dec_omc"}
                set dec_ephem [::tools_astrometry::convert_txt_dms $dec_ephem]
             }
             set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]

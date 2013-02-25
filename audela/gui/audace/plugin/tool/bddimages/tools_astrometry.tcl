@@ -879,7 +879,13 @@ namespace eval tools_astrometry {
 
    }
 
+# Conversions
 
+# set rahms  [::tools_astrometry::convert_txt_hms 117.40467]
+# set dechms [::tools_astrometry::convert_txt_dms 26.430267]
+# set radeg  [expr [mc_angle2deg  "07 49 37.12"   360] * 15.]
+# set decdeg [mc_angle2deg "+26 25 48.9612"  90]
+#     
 
 
    proc ::tools_astrometry::convert_mpc_hms { val } {
