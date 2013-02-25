@@ -884,7 +884,8 @@ proc ::bddimages_imgcorrection::copy_to_tmp { type img_list } {
             set errnum [catch {file delete -force -- $fm} msg]
          }
 
-         set errnum [catch {exec gunzip $fc } msg ]
+         lassign [::bddimages::gunzip $fc ] errnum msg
+         #set errnum [catch {exec gunzip $fc } msg ]
          if {$errnum == 0} {
             #::console::affiche_resultat "dezip image : $f\n"
             lappend img [list filenametmp $f ]
@@ -2088,7 +2089,8 @@ proc ::bddimages_imgcorrection::run_auto { this } {
 
          createdir_ifnot_exist $bddconf(dirtmp)
          buf$bufno save $filetmp
-         set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
+         lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+         #set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
 
          # copie l image dans incoming, ainsi que le fichier cata si il existe
          if {$filecata != -1} {
