@@ -1137,7 +1137,7 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
    append urlget "ch c "
    append urlget "oed \"\" "
    append urlget "js f "
-   #console::affiche_resultat "$urlget\n"
+   # console::affiche_resultat "$urlget\n"
    # ty = Return ephemerides (e=ephemeris)
    # d = date start (YYYY MM DD hh mm ss)
    # l = Number of dates to output (int)
@@ -1183,12 +1183,20 @@ proc vo_getmpcephem { object_id date_start home {incr_date 1} {incr_unit s} {inc
    set nlig [llength $lignes]
    set comet_ephem ""
    set obj_name ""
+   set obj_type ""
    for {set klig 0} {$klig<$nlig} {incr klig} {
       set ligne [lindex $lignes $klig]
       if {$flagdeb==0} {
          set key [string range $ligne 0 10]
          if {($key==" <p><hr><p>")&&($obj_name=="")} {
-            set ligne2 [lindex $lignes [expr 2+$klig]]
+            set ligne2 [lindex $lignes [expr 1+$klig]]
+            set k1 [string first <b>  $ligne2 ]
+            if {$k1>=0} {
+               set obj_type comet
+            } else {
+               set obj_type aster
+               set ligne2 [lindex $lignes [expr 2+$klig]]
+            }
             set k1 [expr [string first <b>  $ligne2 ]+3]
             set k2 [expr [string first </b> $ligne2 ]-1]
             set obj_name [string trim [string range $ligne2 $k1 $k2]]
