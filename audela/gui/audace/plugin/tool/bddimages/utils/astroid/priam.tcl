@@ -78,7 +78,24 @@ namespace eval ::priam {
 
 # ** Exemple fichier local.cat
 
-# 2MASS_12585626+0052218    12 58 56.261520 +00 52 21.87840 0.00 0.00 2451545.50  100.0 100.0  0.00  0.00  16.083 ?    0.00 0.0
+#     NOM *                 ______RA_______ _____DEC_______ RPMA RPMD __EPOCH___  _RSA_ _RSD_  RSPMA  RSPMD  _MAG_   TS  PARALE VIT_RAD
+# 2MASS_12585626+0052218    12 58 56.261520 +00 52 21.87840 0.00 0.00 2451545.50  100.0 100.0  0.000  0.000  16.083  ?    0.00    0.0
+#
+# Avec: 
+#   Epoch = Epoque de reference de la position catalogue (J2000 par defaut)
+#   RPMA = mvt propre en RA en s/year
+#   RPMD = mvt propre en DEC en "/year
+#   RSA = Erreur position RA en mas
+#   RSD = Erreur position DEC en mas
+#   RSPMA = Erreur mvt propre RA en mas/year
+#   RSPMD = Erreur mvt propre DEC en mas/year
+#   ParalE = parallaxe trigonometrique de l'etoile en mas
+#   VitRad = vit. radiale en km/s
+#   TS = Type spectral de l'etoile
+#
+# Exemple:
+#   UCAC2_34392837   01 37 48.442248 +07 58 42.43728  0.001820 -0.03410 2451545.00  15.0  15.0   3.5   3.3 12.360 ?       0.00 0.0
+
 
 # ** Exemple fichier cnd.obs
 

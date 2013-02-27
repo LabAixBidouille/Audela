@@ -442,19 +442,21 @@ proc ::bddimages::gunzip { fname_in {fname_out ""} } {
 proc ::bddimages::gzip { fname_in {fname_out ""} } {
    #::console::affiche_resultat "::bddimages::gzip <$fname_in> <$fname_out>\n"
    set ext [file extension $fname_in]
-   if {$ext==".gz"} {
+   if {$ext == ".gz"} {
       set fname_in [file rootname $fname_in]
    }
    set ext [file extension $fname_out]
-   if {$ext!=".gz"} {
+   if {$ext != ".gz"} {
       set fname_out ${fname_out}.gz
    }
-   if {$fname_out==""} {
+   # Force l'effacement du fichier out
+   if {$fname_out == ""} {
       set fname_out0 ${fname_in}.gz
    } else {
       set fname_out0 $fname_out
    }
    file delete -force -- $fname_out0
+   # Zip le fichier
    if { $::tcl_platform(os) == "Linux" } {
       set errnum [catch {
          exec gzip -c $fname_in > $fname_out
