@@ -42,7 +42,7 @@ proc name2coord { args } {
       set name0 [string tolower $name0]
       set ra ""
       set dec ""
-      if {$name0=="dztau"} { set ra 05h42m38.56s ; set dec +22d01m19.7s}
+      if {$name0=="dztau"} { set ra 05h37m38.68s ; set dec +21d08m33.2s}
       if {$name0=="crab"} { set ra 05h34m31.94s ; set dec +22d00m52.2s}
       console::affiche_resultat "ra=$ra dec=$dec\n"
       if {$ra!=""} {
