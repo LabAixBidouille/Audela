@@ -278,6 +278,8 @@ namespace eval gui_astrometry {
          
          # Affiche un rond sur la source
          ::gui_cata::voir_sxpt $::gui_astrometry::srpt
+         
+         set ::gui_astrometry::srpt_name $name
 
          break
       }
@@ -299,6 +301,8 @@ namespace eval gui_astrometry {
 
          # Affiche un rond sur la source
          ::gui_cata::voir_sxpt $::gui_astrometry::sspt
+
+         set ::gui_astrometry::sspt_name $name
 
          break
       }
@@ -1114,7 +1118,58 @@ gren_info "la\n"
    } 
 
 
+   proc ::gui_astrometry::psf { t w } {
+ 
+      set cpt 0
+      gren_info "t=$t\n"
 
+      if {$t == "srp" } {
+         if {[llength [$w curselection]]!=1} {
+            tk_messageBox -message "Selectionner une source" -type ok
+            return
+         }
+         set name [lindex [$w get [$w curselection]] 0]
+         foreach date $::tools_astrometry::listref($name) {
+            set date_id($date) [lindex $::tools_astrometry::tabval($name,$date) 0]
+            incr cpt
+         }
+      }
+
+      if {$t == "sre" } {
+         set name $::gui_astrometry::srpt_name
+         foreach select [$w curselection] {
+            set date_id([lindex [$w get $select] 1]) [lindex [$w get $select] 0]
+            incr cpt
+         }
+      }
+
+      if {$t == "ssp" } {
+         if {[llength [$w curselection]]!=1} {
+            tk_messageBox -message "Selectionner une source" -type ok
+            return
+         }
+         set name [lindex [$w get [$w curselection]] 0]
+         foreach date $::tools_astrometry::listscience($name) {
+            set date_id($date) [lindex $::tools_astrometry::tabval($name,$date) 0]
+            incr cpt
+         }
+      }
+
+      if {$t == "sse" } {
+         set name $::gui_astrometry::sspt_name
+         foreach select [$w curselection] {
+            set date_id([lindex [$w get $select] 1]) [lindex [$w get $select] 0]
+            incr cpt
+         }
+      }
+      
+      gren_info "psfone name = $name \n"
+      gren_info "nb image selected = $cpt \n"
+      gren_info "images id= [array get date_id]\n"
+      
+      ::psf_gui::from_astrometry
+
+   } 
 
 
 
@@ -1371,6 +1426,8 @@ gren_info "la\n"
                  pack $srp.vsb -in $srp -side left -fill y
 
                  menu $srp.popupTbl -title "Actions"
+                     $srp.popupTbl add command -label "Mesurer le photocentre" \
+                        -command "::gui_astrometry::psf srp $::gui_astrometry::srpt"
                      $srp.popupTbl add command -label "Supprimer de toutes les images" \
                          -command {::gui_cata::unset_srpt; ::gui_astrometry::affich_gestion}
 
@@ -1404,6 +1461,8 @@ gren_info "la\n"
                  pack $sre.vsb -in $sre -side right -fill y
 
                  menu $sre.popupTbl -title "Actions"
+                     $sre.popupTbl add command -label "Mesurer le photocentre" \
+                        -command "::gui_astrometry::psf sre $::gui_astrometry::sret"
                      $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command {::gui_cata::unset_sret; ::gui_astrometry::affich_gestion}
 
@@ -1434,6 +1493,8 @@ gren_info "la\n"
                  pack $ssp.vsb -in $ssp -side left -fill y
 
                  menu $ssp.popupTbl -title "Actions"
+                     $ssp.popupTbl add command -label "Mesurer le photocentre" \
+                        -command "::gui_astrometry::psf ssp $::gui_astrometry::sspt"
                      $ssp.popupTbl add command -label "Supprimer de toutes les images" \
                          -command ""
 
@@ -1466,10 +1527,12 @@ gren_info "la\n"
                  pack $sse.vsb -in $sse -side right -fill y
 
                  menu $sse.popupTbl -title "Actions"
+                     $sse.popupTbl add command -label "Mesurer le photocentre" \
+                        -command "::gui_astrometry::psf sse $::gui_astrometry::sset"
                      $sse.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command ""
 
-                 bind [$::gui_astrometry::sset bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
+                 bind [$::gui_astrometry::sset bodypath] <ButtonPress-3> [ list tk_popup $sse.popupTbl %X %Y ]
 
                  pack $::gui_astrometry::sset -in $sse -expand yes -fill both
 

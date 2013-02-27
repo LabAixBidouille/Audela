@@ -1090,5 +1090,30 @@ namespace eval psf_gui {
       set listsources [list $fields $newsources]
    }
 
+
+
+   proc ::psf_gui::from_astrometry { } {
+   
+      ::psf_gui::gestion_mode_manuel
+      set frm $::psf_gui::fen.appli
+
+      pack forget $frm.actions.grab
+      pack forget $frm.actions.new
+      pack forget $frm.actions.save
+      
+      set actions $frm.actions
+
+         button $actions.prev -state active -text "Prev" -relief "raised" -command ""
+         pack   $actions.prev -side left -padx 0
+
+         button $actions.nextsave -state active -text "Next & Save" -relief "raised" -command ""
+         pack   $actions.nextsave -side left -padx 0
+
+         button $actions.next -state active -text "Next" -relief "raised" -command ""
+         pack   $actions.next -side left -padx 0
+       
+   
+   }
+
 #- Fin du namespace -------------------------------------------------
 }
