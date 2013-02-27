@@ -325,17 +325,12 @@ namespace eval tools_cata {
 
       set xml [string range $catafile 0 [expr [string last .gz $catafile] -1]]
       set tmpfile [file join $bddconf(dirtmp) [file tail $xml] ]
+      
+      lassign [::bddimages::gunzip $catafile $tmpfile] errnum msgzip
 
-      lassign [::bddimages::gunzip $xml $tmpfile] errnum msgzip
-      #file delete -force -- $tmpfile
-      #if { $::tcl_platform(os) == "Linux" } {
-      #   set errnum [catch {exec gunzip -c $xml > $tmpfile} msgzip ]
-      #} else {
-      #   set errnum [catch {file copy "$xml" "${tmpfile}.gz" ; gunzip "$tmpfile"} msgzip ]
-      #}
       if {$errnum} {
          file delete -force -- $tmpfile
-         return -code 1 "Err extraction $xml $tmpfile"
+         return -code 1 "Err extraction $catafile -> $tmpfile with msg: $msgzip"
       }
       return $tmpfile
    }
@@ -517,12 +512,13 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
       # Definition du nom du cata XML
       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
- 
-      gren_info "image dans tmp : $f \n"
-      gren_info "taille = [file size $f]\n"
-      
-      set cataxml "${f}_cata.xml"
+       set cataxml "${f}_cata.xml"
 
+      gren_info "  -> cata dans tmp : $cataxml \n"
+
+      set a $::tools_cata::current_image
+      
+      
       # Liste des champs du header de l'image
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
 
@@ -918,7 +914,14 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
          createdir_ifnot_exist $bddconf(dirtmp)
          buf$::audace(bufNo) save $filetmp
+
          lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+
+         if {$errnum != 0} {
+            gren_info "Appel gzip: $filetmp -> $filefinal\n"
+            gren_info "  size filetmp = [file size $filetmp]\n" 
+            gren_info "   => err=$errnum avec msg: $msg\n"
+         }
 
          # efface l image dans la base et le disque
          bddimages_image_delete_fromsql $ident
