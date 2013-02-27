@@ -1,20 +1,34 @@
 TODOLIGHT
 
 general : 
+
     - commencer a enlever les affichages de la console (qui sont pas necessaires)
 
 création cata :
 
     - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
+JB    - ajouter 2mass
+JB    - indentifier les USNOA2 non pas sur les UNSOA2CALIB mais sur IMG
+    - bug gzip trouver l erreur !
 
+PSF 
+    - arriver a faire remonter psf gestion dans recherche
+    
 Gestion cata :
 
     - renommage du champ "name" de astroid
     - Effacement d une source dans toutes les images selectionnées
+FV    - ajouter set reference par rapport a un catalogue + suppression masque bord
+FV    - ajouter set mesure par rapport a un catalogue
 
 Astrométrie :
 
-    - sortie mpc
+    - envoi mail mpc ?
+    - tag envoi mail mpc dans header fits.
+FV    - verifier iau_code egal a toutes les images.
+FV    - psf manuelle avec changement d image pour une seule source
+JB    - mouvement propre sur TYCHO dans priam local.cat
+    
 
 
 
