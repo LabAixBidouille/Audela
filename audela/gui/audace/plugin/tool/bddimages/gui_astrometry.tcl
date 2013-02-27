@@ -5,6 +5,11 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::inittoconf {  } {
 
       global bddconf, conf
+
+
+      ::gui_cata::inittoconf
+
+
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15

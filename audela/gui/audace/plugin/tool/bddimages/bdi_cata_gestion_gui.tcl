@@ -23,6 +23,10 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::inittoconf {  } {
 
+
+      ::gui_cata::inittoconf
+
+
       if {! [info exists ::tools_cata::astroid_saturation] } {
          if {[info exists conf(bddimages,cata,astroid,saturation)]} {
             set ::tools_cata::astroid_saturation $conf(bddimages,cata,astroid,saturation)
