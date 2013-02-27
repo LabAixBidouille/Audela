@@ -1172,7 +1172,7 @@ gren_info "la\n"
       gren_info "nb image selected = $cpt \n"
       gren_info "images id= [array get date_id]\n"
       
-      ::psf_gui::from_astrometry
+      ::psf_gui::from_astrometry $name $cpt date_id
 
    } 
 

@@ -806,6 +806,12 @@ namespace eval psf_gui {
              #label $info.fp -text ")" 
              #pack  $info.fp -side left -padx 2 -pady 0
 
+         set infoimg [frame $frm.infoimg -borderwidth 0 -cursor arrow ]
+         pack $infoimg -in $frm -anchor c -side top -expand 1 
+
+         set infodate [frame $frm.infodate -borderwidth 0 -cursor arrow ]
+         pack $infodate -in $frm -anchor c -side top -expand 1 
+
          set actions [frame $frm.actions -borderwidth 1 -cursor arrow -relief groove]
          pack $actions -in $frm -anchor c -side top -expand 1 
 
@@ -1090,29 +1096,49 @@ namespace eval psf_gui {
       set listsources [list $fields $newsources]
    }
 
+   proc ::psf_gui::read_source { name send_date_id } {
+   }
 
-
-   proc ::psf_gui::from_astrometry { } {
+   proc ::psf_gui::from_astrometry { name cpt send_date_id } {
+   
+      upvar $send_date_id date_id
    
       ::psf_gui::gestion_mode_manuel
       set frm $::psf_gui::fen.appli
+      set ::gui_cata::psf_name_source $name
+      set ::psf_gui::id_img 1
+      set ::psf_gui::dateimg 2012
 
       pack forget $frm.actions.grab
       pack forget $frm.actions.new
       pack forget $frm.actions.save
-      
+
+      set infoimg $frm.infoimg
+             label $infoimg.title -text "Image : "
+             pack  $infoimg.title -side left -padx 2 -pady 0
+             label $infoimg.id -textvariable ::psf_gui::id_img
+             pack  $infoimg.id -side left -padx 2 -pady 0
+             label $infoimg.lab -text "/"
+             pack  $infoimg.lab -side left -padx 2 -pady 0
+             label $infoimg.lab2 -text "$cpt"
+             pack  $infoimg.lab2 -side left -padx 2 -pady 0
+
+      set infodate $frm.infodate
+             label $infodate.id -textvariable ::psf_gui::dateimg
+             pack  $infodate.id -side left -padx 2 -pady 0
+
       set actions $frm.actions
 
-         button $actions.prev -state active -text "Prev" -relief "raised" -command ""
+         button $actions.prev -state disabled -text "Prev" -relief "raised" -command ""
          pack   $actions.prev -side left -padx 0
 
-         button $actions.nextsave -state active -text "Next & Save" -relief "raised" -command ""
+         button $actions.nextsave -state disabled -text "Next & Save" -relief "raised" -command ""
          pack   $actions.nextsave -side left -padx 0
 
          button $actions.next -state active -text "Next" -relief "raised" -command ""
          pack   $actions.next -side left -padx 0
        
-   
+      
    }
 
 #- Fin du namespace -------------------------------------------------
