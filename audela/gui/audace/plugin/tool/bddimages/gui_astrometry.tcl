@@ -585,7 +585,7 @@ namespace eval gui_astrometry {
       puts $chan0 "#!/bin/sh"
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
-      puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai 586 -d 1 -e utc --julien"
+      puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
       close $chan0
       set err [catch {exec sh ./cmd.ephemcc} msg]
 

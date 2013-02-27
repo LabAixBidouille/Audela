@@ -323,7 +323,7 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
    if {$tag=="new"} { 
       set chan0 [open $filemes w] 
       puts $chan0 "#? Centroid measures formatted for Priam"
-      puts $chan0 "#?   Source: Astroid - jan. 2012"
+      puts $chan0 "#?   Source: Astroid - jan. 2013"
       puts $chan0 "#? Object: science"
       puts $chan0 "#"
       puts $chan0 "#> orientation: $axes"
@@ -373,7 +373,7 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
             
             }
             
-            # cas particulier d une reference
+            # cas particulier d une reference -> local.cat
             if  {$ar=="R"} {
                set x [lsearch -index 0 $s $ac]
                if {$x>=0} {
@@ -381,17 +381,61 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
                   set ra  [mc_angle2hms [lindex $b 0]]
                   set dec [mc_angle2dms [lindex $b 1] 90]
                   set mag [lindex $b 3]
-                  
-                  set ra_err  100
+                  set ra_pm 0
+                  set dec_pm 0
+                  set ra_err 100
                   set dec_err 100
-                  set b  [lindex [lindex $s $x] 2]
+                  set ra_pm_err  0
+                  set dec_pm_err 0
+                  set typeS "?"
+                  set paral 0
+                  set vitrad 0
+
+                  set otherfields  [lindex [lindex $s $x] 2]
+
+                  if {  $ac == "UCAC2" } {
+                     # 4 = e_RAm_deg, 5 = e_DEm_deg
+                     set ra_err  [expr [lindex $otherfields 4] * 3600000]
+                     set dec_err [expr [lindex $otherfields 5] * 3600000]
+                     # 12 = pmRA_masperyear, 13 = pmDEC_masperyear
+                     set ra_pm  [expr [lindex $otherfields 12] / 15000.0]
+                     set dec_pm [expr [lindex $otherfields 13] / 1000.0]
+                     # 14 = e_pmRA_masperyear, 15 = e_pmDE_masperyear
+                     set ra_pm_err  [lindex $otherfields 14]
+                     set dec_pm_err [lindex $otherfields 15]
+                  }               
+
                   if {  $ac == "UCAC3" } {
-                     set ra_err  [expr [lindex $b 8] * 3600000]
-                     set dec_err [expr [lindex $b 9] * 3600000]
+                     # 8 = sigra_deg, 9 = sigdc_deg
+                     set ra_err  [expr [lindex $otherfields 8] * 3600000]
+                     set dec_err [expr [lindex $otherfields 9] * 3600000]
+                     # 16 = pmrac_masperyear, 17 = pmdc_masperyear
+                     set ra_pm  [expr [lindex $otherfields 16] / 15000.0]
+                     set dec_pm [expr [lindex $otherfields 17] / 1000.0]
+                     # 18 = sigpmr_masperyear, 19 = sigpmd_masperyear
+                     set ra_pm_err  [lindex $otherfields 18]
+                     set dec_pm_err [lindex $otherfields 19]
+                  }               
+
+                  if {  $ac == "UCAC4" } {
+                     # 8 = sigra_deg, 9 = sigdc_deg
+                     set ra_err  [expr [lindex $otherfields 8] * 3600000]
+                     set dec_err [expr [lindex $otherfields 9] * 3600000]
+                     # 15 = pmrac_masperyear, 16 = pmdc_masperyear
+                     set ra_pm  [expr [lindex $otherfields 15] / 15000.0]
+                     set dec_pm [expr [lindex $otherfields 16] / 1000.0]
+                     # 17 = sigpmr_masperyear, 18 = sigpmd_masperyear
+                     set ra_pm_err  [lindex $otherfields 17]
+                     set dec_pm_err [lindex $otherfields 18]
                   }               
                   
-                           
-                  puts $chan1 "$name $ra $dec 0.00 0.00 2451545.50  $ra_err $dec_err  0.00  0.00  $mag ?    0.00 0.0"
+                  if {  $ac == "USNOA2" } {
+                     set ra_err  500
+                     set dec_err 500
+                  }               
+                  
+                  # Ecriture du local.cat 
+                  puts $chan1 "$name $ra $dec $ra_pm $dec_pm 2451545.50  $ra_err $dec_err  $ra_pm_err  $dec_pm_err  $mag $typeS $paral $vitrad"
                } else {
                   ::console::affiche_erreur "ERREUR DE REFERENCE\n"
                }
