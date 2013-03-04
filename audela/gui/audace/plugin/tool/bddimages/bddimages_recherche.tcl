@@ -1215,13 +1215,14 @@ namespace eval bddimages_recherche {
          -command { ::audace::showHelpPlugin tool bddimages bddimages.htm field_2 }
 
       #--- Gestion des evenements
+      bind  $tbl <<ListboxSelect>>         [ list ::bddimages_recherche::cmdButton1Click %W ]
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
       bind [$tbl bodypath] <Control-Key-a> [ list $tbl selection set 0 end ]
-      bind $tbl <<ListboxSelect>> [ list ::bddimages_recherche::cmdButton1Click %W ]
-      bind [$tbl bodypath] <Key-g> { ::bddimages_recherche::bddimages_gestion_cata }
-      bind [$tbl bodypath] <Key-c> { ::bddimages_recherche::bddimages_creation_cata }
-      bind [$tbl bodypath] <Key-a> { ::bddimages_recherche::bddimages_astrometrie }
-      bind [$tbl bodypath] <Key-v> { ::bddimages_recherche::bddimages_voir_cata }
+      bind [$tbl bodypath] <Key-g>         { ::bddimages_recherche::bddimages_gestion_cata }
+      bind [$tbl bodypath] <Key-c>         { ::bddimages_recherche::bddimages_creation_cata }
+      bind [$tbl bodypath] <Key-a>         { ::bddimages_recherche::bddimages_astrometrie }
+      bind [$tbl bodypath] <Key-v>         { ::bddimages_recherche::bddimages_voir_cata }
+      bind [$tbl bodypath] <Key-Delete>    { ::bddimages_recherche::bddimages_images_delete }
 
    }
 

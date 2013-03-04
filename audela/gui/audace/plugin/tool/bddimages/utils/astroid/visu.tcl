@@ -16,7 +16,7 @@ proc affich_rond { listsources catalog color width } {
    set sources [lindex $listsources 1]
    foreach s $sources { 
       foreach cata $s {
-         if { [lindex $cata 0]==$catalog } {
+         if { [lindex $cata 0] == $catalog } {
             set cm [lindex $cata 1]
             set ra [lindex $cm 0]
             set dec [lindex $cm 1]

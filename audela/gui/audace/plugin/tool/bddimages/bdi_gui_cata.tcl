@@ -198,6 +198,7 @@ namespace eval gui_cata {
    variable gui_ppmxl
    variable gui_tycho2
    variable gui_nomad1
+   variable gui_2mass
    variable gui_skybot
 
    variable size_img
@@ -208,6 +209,7 @@ namespace eval gui_cata {
    variable size_ppmx
    variable size_ppmxl
    variable size_nomad1
+   variable size_2mass
    variable size_tycho2
    variable size_skybot
    variable size_ovni
@@ -220,6 +222,7 @@ namespace eval gui_cata {
    variable color_ppmx    "orange"
    variable color_ppmxl   "orange"
    variable color_nomad1  "#b4b308"
+   variable color_2mass   "#b4b308"
    variable color_tycho2  "orange"
    variable color_skybot  "magenta"
    variable color_ovni    "yellow"
@@ -312,6 +315,13 @@ namespace eval gui_cata {
             set ::gui_cata::gui_nomad1 0
          }
       }
+      if {! [info exists ::gui_cata::gui_2mass] } {
+         if {[info exists conf(bddimages,cata,gui_2mass)]} {
+            set ::gui_cata::gui_2mass $conf(bddimages,cata,gui_2mass)
+         } else {
+            set ::gui_cata::gui_2mass 0
+         }
+      }
       if {! [info exists ::gui_cata::gui_skybot] } {
          if {[info exists conf(bddimages,cata,gui_skybot)]} {
             set ::gui_cata::gui_skybot $conf(bddimages,cata,gui_skybot)
@@ -392,6 +402,15 @@ namespace eval gui_cata {
          }
       }
       set ::gui_cata::size_nomad1_sav $::gui_cata::size_nomad1
+
+      if {! [info exists ::gui_cata::size_2mass] } {
+         if {[info exists conf(bddimages,cata,size_2mass)]} {
+            set ::gui_cata::size_2mass $conf(bddimages,cata,size_2mass)
+         } else {
+            set ::gui_cata::size_2mass 1
+         }
+      }
+      set ::gui_cata::size_2mass_sav $::gui_cata::size_2mass
       
       if {! [info exists ::gui_cata::size_tycho2] } {
          if {[info exists conf(bddimages,cata,size_tycho2)]} {
@@ -452,6 +471,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_ucac3   0
       set ::tools_cata::nb_ucac4   0
       set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_2mass   0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
 
@@ -471,6 +491,7 @@ namespace eval gui_cata {
       set conf(bddimages,cata,gui_ppmxl)  $::gui_cata::gui_ppmxl
       set conf(bddimages,cata,gui_tycho2) $::gui_cata::gui_tycho2
       set conf(bddimages,cata,gui_nomad1) $::gui_cata::gui_nomad1
+      set conf(bddimages,cata,gui_2mass)  $::gui_cata::gui_2mass
       set conf(bddimages,cata,gui_skybot) $::gui_cata::gui_skybot
       
       # Uncosmic or not!
@@ -485,9 +506,10 @@ namespace eval gui_cata {
       set conf(bddimages,cata,size_ucac3)  $::gui_cata::size_ucac3
       set conf(bddimages,cata,size_ucac4)  $::gui_cata::size_ucac4
       set conf(bddimages,cata,size_ppmx)   $::gui_cata::size_ppmx
-      set conf(bddimages,cata,size_ppmxl)   $::gui_cata::size_ppmxl
+      set conf(bddimages,cata,size_ppmxl)  $::gui_cata::size_ppmxl
       set conf(bddimages,cata,size_nomad1) $::gui_cata::size_nomad1
       set conf(bddimages,cata,size_tycho2) $::gui_cata::size_tycho2
+      set conf(bddimages,cata,size_2mass)  $::gui_cata::size_2mass
       set conf(bddimages,cata,size_skybot) $::gui_cata::size_skybot
       set conf(bddimages,cata,size_ovni)   $::gui_cata::size_ovni
 
@@ -600,10 +622,11 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
       set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources 2MASS   { ra_deg dec_deg err_dec jMag jMagError }]
+      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
 #### TODO
 #      set listsources [::tools_sources::set_common_fields $listsources PPMX   {  }]
 #      set listsources [::tools_sources::set_common_fields $listsources PPMXL  {  }]
-      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
       set ::tools_cata::current_listsources $listsources
@@ -664,15 +687,17 @@ namespace eval gui_cata {
 #      set err [catch {
 
          set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-         if {$cataexist==0} {return -code 0 "NOCATA"}
+         if {$cataexist == 0} {
+            return -code 0 "NOCATA"
+         }
    
-         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
+         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"] == "1"} {
             ::gui_cata::load_cata
          } else {
             return -code 0 "NOCATA"
          }
    
-         if {$::gui_cata::gui_img     } { affich_rond $::tools_cata::current_listsources IMG    $::gui_cata::color_img    $::gui_cata::size_img    }
+         if { $::gui_cata::gui_img    } { affich_rond $::tools_cata::current_listsources IMG    $::gui_cata::color_img    $::gui_cata::size_img    }
          if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }
          if { $::gui_cata::gui_ucac2  } { affich_rond $::tools_cata::current_listsources UCAC2  $::gui_cata::color_ucac2  $::gui_cata::size_ucac2  }
          if { $::gui_cata::gui_ucac3  } { affich_rond $::tools_cata::current_listsources UCAC3  $::gui_cata::color_ucac3  $::gui_cata::size_ucac3  }
@@ -681,6 +706,7 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_ppmxl  } { affich_rond $::tools_cata::current_listsources PPMXL  $::gui_cata::color_ppmxl  $::gui_cata::size_ppmxl  }
          if { $::gui_cata::gui_tycho2 } { affich_rond $::tools_cata::current_listsources TYCHO2 $::gui_cata::color_tycho2 $::gui_cata::size_tycho2 }
          if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
+         if { $::gui_cata::gui_2mass  } { affich_rond $::tools_cata::current_listsources 2MASS  $::gui_cata::color_2mass  $::gui_cata::size_2mass  }
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
 
 #      } msg ]
@@ -765,6 +791,7 @@ return
       set ::tools_cata::nb_ppmx [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources PPMX]
       set ::tools_cata::nb_ppmxl [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources PPMXL]
       set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources NOMAD1]
+      set ::tools_cata::nb_2mass [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources 2MASS]
       set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources SKYBOT]
       set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources ASTROID]
 
@@ -962,6 +989,24 @@ return
                 spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
                 $nomad1.radius set $::gui_cata::size_nomad1_sav
+
+           #--- Cree un frame pour afficher 2MASS
+           set twomass [frame $count.2mass -borderwidth 0 -cursor arrow -relief groove]
+           pack $twomass -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $twomass.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_2mass -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $twomass.check -in $twomass -side left -padx 3 -pady 3 -anchor w 
+                label $twomass.name -text "2MASS :" -width 14 -anchor e
+                pack $twomass.name -in $twomass -side left -padx 3 -pady 3 -anchor w 
+                label $twomass.val -textvariable ::tools_cata::nb_2mass -width 4
+                pack $twomass.val -in $twomass -side left -padx 3 -pady 3
+                button $twomass.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_2mass -command ""
+                pack $twomass.color -side left -anchor e -expand 0 
+                spinbox $twomass.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_2mass -command "::gui_cata::affiche_cata" -width 3
+                pack $twomass.radius -in $twomass -side left -anchor w
+                $twomass.radius set $::gui_cata::size_2mass_sav
 
            #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]

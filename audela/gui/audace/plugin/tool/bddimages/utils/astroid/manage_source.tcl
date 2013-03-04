@@ -18,12 +18,12 @@ namespace eval ::manage_source {
    #
    proc ::manage_source::get_nb_sources { listsources } {
 
-       set sources [lindex $listsources 1]
-       set cpt 0
-       foreach s $sources { 
-             incr cpt
-             }
-   return $cpt
+      set sources [lindex $listsources 1]
+      set cpt 0
+      foreach s $sources { 
+         incr cpt
+      }
+      return $cpt
    }
 
 
@@ -33,16 +33,16 @@ namespace eval ::manage_source {
    #
    proc ::manage_source::get_nb_sources_by_cata { listsources catalog } {
 
-       set sources [lindex $listsources 1]
-       set cpt 0
-       foreach s $sources { 
-          foreach cata $s {
-             if { [lindex $cata 0]==$catalog } {
-                incr cpt
-             }
-          }
-       }
-   return $cpt
+      set sources [lindex $listsources 1]
+      set cpt 0
+      foreach s $sources { 
+         foreach cata $s {
+            if { [string toupper [lindex $cata 0]] == $catalog } {
+               incr cpt
+            }
+         }
+      }
+      return $cpt
    }
 
    #
@@ -56,7 +56,7 @@ namespace eval ::manage_source {
        foreach s $sources { 
           incr cpt
           foreach cata $s {
-             set namecata  [lindex $cata 0]
+             set namecata [string toupper [lindex $cata 0]]
              if { [info exists nbcata($namecata)] } {
                 incr nbcata($namecata)
              } else {
@@ -109,7 +109,7 @@ namespace eval ::manage_source {
        set sources [lindex $listsources 1]
        foreach s $sources {
           foreach cata $s {
-             if {[lindex $cata 0] == $catadem} {
+             if {[string toupper [lindex $cata 0]] == $catadem} {
                lappend newsources $s
              }
           }
@@ -135,7 +135,7 @@ namespace eval ::manage_source {
        set sources [lindex $listsources 1]
        foreach s $sources {
           foreach cata $s {
-             if {[lindex $cata 0] == $catadem} {
+             if {[string toupper [lindex $cata 0]] == $catadem} {
                lappend newsources [list $cata ]
              }
           }
@@ -159,7 +159,7 @@ namespace eval ::manage_source {
       foreach s $sources {
           set news {}
           foreach cata $s {
-             if {[lindex $cata 0] != $catadem} {
+             if {[string toupper [lindex $cata 0]] != $catadem} {
                lappend news $cata
                 incr cpt
              }
@@ -189,17 +189,17 @@ namespace eval ::manage_source {
    #
    proc ::manage_source::imprim_all_sources { listsources } {
 
-       ::console::affiche_resultat "** SOURCES = \n"
-       ::console::affiche_resultat "FIELDS = \n"
-       set fields  [lindex $listsources 0]
-       foreach s $fields { 
-             ::console::affiche_resultat "$s\n"
-             }
-       ::console::affiche_resultat "VALUES = \n"
-       set sources [lindex $listsources 1]
-       foreach s $sources { 
-             ::console::affiche_resultat "$s\n"
-             }
+      ::console::affiche_resultat "** SOURCES = \n"
+      ::console::affiche_resultat "FIELDS = \n"
+      set fields  [lindex $listsources 0]
+      foreach s $fields { 
+         ::console::affiche_resultat "$s\n"
+      }
+      ::console::affiche_resultat "VALUES = \n"
+      set sources [lindex $listsources 1]
+      foreach s $sources { 
+         ::console::affiche_resultat "$s\n"
+      }
       }
 
    #
@@ -209,12 +209,12 @@ namespace eval ::manage_source {
    proc ::manage_source::imprim_3_sources { listsources } {
 
       set nb 0
-       ::console::affiche_resultat "FIELDS = \n"
+      ::console::affiche_resultat "FIELDS = \n"
       set fields  [lindex $listsources 0]
       foreach s $fields { 
          ::console::affiche_resultat "$s\n"
-         }
-       ::console::affiche_resultat "VALUES = \n"
+      }
+      ::console::affiche_resultat "VALUES = \n"
       set sources [lindex $listsources 1]
       foreach s $sources { 
          ::console::affiche_resultat "$s\n"
@@ -242,7 +242,7 @@ namespace eval ::manage_source {
        set sources [lindex $listsources 1]
        foreach s $sources { 
           foreach cata $s {
-             if { [lindex $cata 0]==$catalog } {
+             if { [string toupper [lindex $cata 0]] == $catalog } {
                 ::console::affiche_resultat "$s\n"
              }
           }
@@ -284,7 +284,27 @@ namespace eval ::manage_source {
 
       foreach cata $mysource {
       
-         if {[lindex $cata 0] == $mycata} {
+         if {[string toupper [lindex $cata 0]] == $mycata} {
+
+            if {$mycata=="IMG"} {
+               set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
+               set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]
+               if {$dec > 0} {
+                  set dec [regsub {\+} $dec ""]
+                  set dec "+$dec"
+                }
+               return "IMG_${ra}${dec}"
+            }
+
+            if {$mycata=="ASTROID"} {
+               set ra  [format "%.6f" [lindex [lindex $cata 2] 16] ]
+               set dec [format "%.6f" [lindex [lindex $cata 2] 17] ]
+               if {$dec > 0} {
+                  set dec [regsub {\+} $dec ""]
+                  set dec "+$dec"
+                }
+               return "ASTROID_${ra}${dec}"
+            }
 
             if {$mycata=="SKYBOT"} {
                set name [lindex [lindex $cata 2] 1] 
@@ -308,26 +328,6 @@ namespace eval ::manage_source {
                return "UCAC2_$id"
             }
 
-            if {$mycata=="IMG"} {
-               set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
-               set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]
-               if {$dec > 0} {
-                  set dec [regsub {\+} $dec ""]
-                  set dec "+$dec"
-                }
-               return "IMG_${ra}${dec}"
-            }
-
-            if {$mycata=="ASTROID"} {
-               set ra  [format "%.6f" [lindex [lindex $cata 2] 16] ]
-               set dec [format "%.6f" [lindex [lindex $cata 2] 17] ]
-               if {$dec > 0} {
-                  set dec [regsub {\+} $dec ""]
-                  set dec "+$dec"
-                }
-               return "ASTROID_${ra}${dec}"
-            }
-
             if {$mycata=="USNOA2"} {
                set id [lindex [lindex $cata 2] 0]
                return "USNOA2_${id}"
@@ -340,6 +340,10 @@ namespace eval ::manage_source {
                return "TYCHO2_${id1}_${id2}_${id3}"
             }
 
+            if {$mycata=="2MASS"} {
+               set id [lindex [lindex $cata 2] 0]
+               return "2MASS_$id"
+            }
 
          }
       }
@@ -367,11 +371,13 @@ namespace eval ::manage_source {
 
       set idlist ""
       set fields [lindex $listsources 0]
+      #gren_info "FIELDS = $fields\n"
       foreach cata $fields {
-         if { [lindex $cata 0]==$catalog } {
+         #gren_info "CATA: [string toupper [lindex $cata 0]] -> catalog? $catalog\n"
+         if { [string toupper [lindex $cata 0]] == $catalog } {
             set cols [lindex $cata 2]
             foreach f $fieldlist {
-               #gren_info "f = $f \n"
+               #gren_info "     f = $f \n"
                if {[string is double -strict $f]} {
                   #gren_info "double \n"
                   lappend idlist -1
@@ -407,10 +413,10 @@ namespace eval ::manage_source {
       foreach s $sources {
          set sa($ids,catalog) ""
          foreach cata $s {
-            lappend sa($ids,catalog) [lindex $cata 0]
-            set sa($ids,[lindex $cata 0]) $cata
+            lappend sa($ids,catalog) [string toupper [lindex $cata 0]]
+            set sa($ids,[string toupper [lindex $cata 0]]) $cata
                if {$ids == -1 } {
-                  gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
+                  gren_info "catalog = $sa($ids,[string toupper [lindex $cata 0]])\n"
                }
          }
       incr ids
@@ -454,9 +460,7 @@ namespace eval ::manage_source {
                } else {
                   set magerr [lindex $data [lindex $idlist 4]]
                }
-               
-               
-               
+
                set com [list $ra \
                              $dec \
                              $poserr \
@@ -510,8 +514,8 @@ namespace eval ::manage_source {
           set kelcata ""
           set pass "no"
           foreach cata $s {
-             append kelcata "[lindex $cata 0] "
-             if {[lindex $cata 0] == "IMG"} {
+             append kelcata "[string toupper [lindex $cata 0]] "
+             if {[string toupper [lindex $cata 0]] == "IMG"} {
                set x [lindex [lindex [lindex $s 0] 2] 2]
                set y [lindex [lindex [lindex $s 0] 2] 3]
                if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {

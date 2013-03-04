@@ -7,8 +7,6 @@ general :
 création cata :
 
     - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
-JB    - ajouter 2mass
-JB    - indentifier les USNOA2 non pas sur les UNSOA2CALIB mais sur IMG
     - bug gzip trouver l erreur !
 
 PSF 
@@ -27,12 +25,17 @@ Astrométrie :
     - tag envoi mail mpc dans header fits.
 FV    - verifier iau_code egal a toutes les images.
 FV    - psf manuelle avec changement d image pour une seule source
-JB    - mouvement propre sur TYCHO dans priam local.cat
     
+
+
+BUGS
+
+  - Create cata: si liste contient des images avec un BIN different alors affichage cata pas bon
 
 
 
 TODOLIST
+
 partie 0 : Faire aparaitre la roadmap et todolist dans doxygen
 
 

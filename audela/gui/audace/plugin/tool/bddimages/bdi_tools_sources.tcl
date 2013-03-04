@@ -282,13 +282,13 @@ namespace eval tools_sources {
             #gren_info "cata = $cata\n"
             lappend sa($ids,catalog) [lindex $cata 0]
             set sa($ids,[lindex $cata 0]) $cata
-               if {$ids == -1 } {
-                  gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
-               } else {
-                  #gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
-               }
+            if {$ids == -1 } {
+               gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
+            } else {
+               #gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
+            }
          }
-      incr ids
+         incr ids
       }
       set nbs $ids
       #gren_info "idlist = $idlist\n"
@@ -296,56 +296,51 @@ namespace eval tools_sources {
       
       for {set ids 0} {$ids<$nbs} {incr ids} {
          if {[info exists sa($ids,$catalog)] } {
-               set data [lindex $sa($ids,$catalog) 2]
-               
-               if {[string is double -strict [lindex $fieldlist 0]]} {
-                  set ra [lindex $fieldlist 0]
-               } else {
-                  set ra [lindex $data [lindex $idlist 0]]
-               }
-               
-               
-               if {[string is double -strict [lindex $fieldlist 1]]} {
-                  set dec [lindex $fieldlist 1]
-               } else {
-                  set dec [lindex $data [lindex $idlist 1]]
-               }
-               
-               
-               if {[string is double -strict [lindex $fieldlist 2]]} {
-                  set poserr [lindex $fieldlist 2]
-               } else {
-                  set poserr [lindex $data [lindex $idlist 2]]
-               }
-               
-               if {[string is double -strict [lindex $fieldlist 3]]} {
-                  set mag [lindex $fieldlist 3]
-               } else {
-                  set mag [lindex $data [lindex $idlist 3]]
-               }
-               
-               if {[string is double -strict [lindex $fieldlist 4]]} {
-                  set magerr [lindex $fieldlist 4]
-               } else {
-                  set magerr [lindex $data [lindex $idlist 4]]
-               }
-               
-               
-               
-               set com [list $ra \
-                             $dec \
-                             $poserr \
-                             $mag \
-                             $magerr \
-                       ]
-               set sa($ids,$catalog) [lreplace $sa($ids,$catalog) 1 1 $com]
-               if {$ids == -1 } {
-                  gren_info "sa $catalog = $sa($ids,$catalog)\n"
-                  gren_info "catalog = $catalog\n"
-                  gren_info "data = $data\n"
-               
-                  gren_info "com = $com\n"
-               }
+            set data [lindex $sa($ids,$catalog) 2]
+            
+            if {[string is double -strict [lindex $fieldlist 0]]} {
+               set ra [lindex $fieldlist 0]
+            } else {
+               set ra [lindex $data [lindex $idlist 0]]
+            }
+
+            if {[string is double -strict [lindex $fieldlist 1]]} {
+               set dec [lindex $fieldlist 1]
+            } else {
+               set dec [lindex $data [lindex $idlist 1]]
+            }
+
+            if {[string is double -strict [lindex $fieldlist 2]]} {
+               set poserr [lindex $fieldlist 2]
+            } else {
+               set poserr [lindex $data [lindex $idlist 2]]
+            }
+
+            if {[string is double -strict [lindex $fieldlist 3]]} {
+               set mag [lindex $fieldlist 3]
+            } else {
+               set mag [lindex $data [lindex $idlist 3]]
+            }
+
+            if {[string is double -strict [lindex $fieldlist 4]]} {
+               set magerr [lindex $fieldlist 4]
+            } else {
+               set magerr [lindex $data [lindex $idlist 4]]
+            }
+
+            set com [list $ra \
+                          $dec \
+                          $poserr \
+                          $mag \
+                          $magerr \
+                    ]
+            set sa($ids,$catalog) [lreplace $sa($ids,$catalog) 1 1 $com]
+            if {$ids == -1 } {
+               gren_info "sa $catalog = $sa($ids,$catalog)\n"
+               gren_info "catalog = $catalog\n"
+               gren_info "data = $data\n"
+               gren_info "com = $com\n"
+            }
          }
       }
 

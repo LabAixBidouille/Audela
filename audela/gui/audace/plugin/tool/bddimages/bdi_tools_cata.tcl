@@ -147,17 +147,26 @@ namespace eval tools_cata {
    variable current_listsources
 
    variable use_skybot
+
    variable use_usnoa2
+   variable use_tycho2
    variable use_ucac2
    variable use_ucac3
+   variable use_ucac4
+   variable use_ppmx
+   variable use_ppmxl
    variable use_nomad1
-   variable use_tycho2
+   variable use_2mass
 
    variable catalog_usnoa2
+   variable catalog_tycho2
    variable catalog_ucac2
    variable catalog_ucac3
+   variable catalog_ucac4
+   variable catalog_ppmx
+   variable catalog_ppmxl
    variable catalog_nomad1
-   variable catalog_tycho2
+   variable catalog_2mass
 
    variable keep_radec
    variable create_cata
@@ -167,13 +176,18 @@ namespace eval tools_cata {
    variable dec_save
 
    variable nb_img
+   variable nb_ovni
+   variable nb_skybot
+
    variable nb_usnoa2
+   variable nb_tycho2
    variable nb_ucac2
    variable nb_ucac3
+   variable nb_ucac4
+   variable nb_ppmx
+   variable nb_ppmxl
    variable nb_nomad1
-   variable nb_tycho2
-   variable nb_skybot
-   variable nb_ovni
+   variable nb_2mass
 
    variable ra       
    variable dec      
@@ -192,8 +206,7 @@ namespace eval tools_cata {
    variable treshold_ident_pos_ast
    variable treshold_ident_mag_ast
 
-
-
+   
 
    proc ::tools_cata::charge_list { img_list } {
 
@@ -427,7 +440,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          }
          incr cpt
       }
-      
+
       return [list $fields $lso]
 
    }
@@ -512,7 +525,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
       # Definition du nom du cata XML
       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
-       set cataxml "${f}_cata.xml"
+      set cataxml "${f}_cata.xml"
 
       gren_info "  -> cata dans tmp : $cataxml \n"
 
@@ -559,7 +572,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $usnoa2
          #gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources USNOA2CALIB $usnoa2 USNOA2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $usnoa2 USNOA2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set listsources [ ::manage_source::delete_catalog $listsources USNOA2CALIB ]
          set ::tools_cata::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $listsources USNOA2]
       }
@@ -611,7 +624,58 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set listsources [ identification $listsources IMG $ucac4 UCAC4 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac4 [::manage_source::get_nb_sources_by_cata $listsources UCAC4]
       }
-   
+
+      if {$::tools_cata::use_ppmx} {
+         #gren_info "CMD: csppmx $::tools_cata::catalog_ppmx $ra $dec $radius\n"
+         set ppmx [csppmx $::tools_cata::catalog_ppmx $ra $dec $radius]
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmx]\n"
+# TODO
+         set ppmx [::manage_source::set_common_fields $ppmx PPMX {  }]
+         #::manage_source::imprim_3_sources $ppmx
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $ppmx PPMX $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set ::tools_cata::nb_ppmx [::manage_source::get_nb_sources_by_cata $listsources PPMX]
+      }
+
+      if {$::tools_cata::use_ppmxl} {
+         #gren_info "CMD: csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius\n"
+         set ppmxl [csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius]
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmxl]\n"
+# TODO
+         set ppmxl [::manage_source::set_common_fields $ppmxl PPMXL {  }]
+         #::manage_source::imprim_3_sources $ppmxl
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $ppmxl PPMXL $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set ::tools_cata::nb_ppmxl [::manage_source::get_nb_sources_by_cata $listsources PPMXL]
+      }
+
+      if {$::tools_cata::use_nomad1} {
+         #gren_info "CMD: csnomad1 $::tools_cata::catalog_nomad1 $ra $dec $radius\n"
+         set nomad1 [csnomad1 $::tools_cata::catalog_nomad1 $ra $dec $radius]
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $nomad1]\n"
+# TODO
+         set nomad1 [::manage_source::set_common_fields $nomad1 NOMAD1 {  }]
+         #::manage_source::imprim_3_sources $nomad1
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $nomad1 NOMAD1 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $listsources NOMAD1]
+      }
+
+      if {$::tools_cata::use_2mass} {
+         #gren_info "CMD: cs2mass $::tools_cata::catalog_2mass $ra $dec $radius\n"
+         set twomass [cs2mass $::tools_cata::catalog_2mass $ra $dec $radius]
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $twomass]\n"
+         set twomass [::manage_source::set_common_fields $twomass 2MASS { ra_deg dec_deg err_dec jMag jMagError }]
+         #::manage_source::imprim_3_sources $twomass
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $twomass 2MASS $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set ::tools_cata::nb_2mass [::manage_source::get_nb_sources_by_cata $listsources 2MASS]
+      }
+
       if {$::tools_cata::use_skybot} {
          set dateobs [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
          set exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]

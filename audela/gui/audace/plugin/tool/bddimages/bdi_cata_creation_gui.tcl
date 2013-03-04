@@ -99,6 +99,13 @@ namespace eval cata_creation_gui {
             set ::tools_cata::use_nomad1 0
          }
       }
+      if {! [info exists ::tools_cata::use_2mass] } {
+         if {[info exists conf(bddimages,cata,use_2mass)]} {
+            set ::tools_cata::use_2mass $conf(bddimages,cata,use_2mass)
+         } else {
+            set ::tools_cata::use_2mass 0
+         }
+      }
       if {! [info exists ::tools_cata::use_skybot] } {
          if {[info exists conf(bddimages,cata,use_skybot)]} {
             set ::tools_cata::use_skybot $conf(bddimages,cata,use_skybot)
@@ -185,6 +192,13 @@ namespace eval cata_creation_gui {
             set ::tools_cata::catalog_nomad1 $conf(bddimages,catfolder,nomad1)
          } else {
             set ::tools_cata::catalog_nomad1 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_2mass] } {
+         if {[info exists conf(bddimages,catfolder,2mass)]} {
+            set ::tools_cata::catalog_2mass $conf(bddimages,catfolder,2mass)
+         } else {
+            set ::tools_cata::catalog_2mass ""
          }
       }
 
@@ -400,6 +414,7 @@ namespace eval cata_creation_gui {
       set conf(bddimages,catfolder,ppmxl)  $::tools_cata::catalog_ppmxl
       set conf(bddimages,catfolder,tycho2) $::tools_cata::catalog_tycho2 
       set conf(bddimages,catfolder,nomad1) $::tools_cata::catalog_nomad1 
+      set conf(bddimages,catfolder,2mass)  $::tools_cata::catalog_2mass 
 
       # Check button Use
       set conf(bddimages,cata,use_usnoa2) $::tools_cata::use_usnoa2
@@ -410,6 +425,7 @@ namespace eval cata_creation_gui {
       set conf(bddimages,cata,use_ppmxl)  $::tools_cata::use_ppmxl
       set conf(bddimages,cata,use_tycho2) $::tools_cata::use_tycho2
       set conf(bddimages,cata,use_nomad1) $::tools_cata::use_nomad1
+      set conf(bddimages,cata,use_2mass)  $::tools_cata::use_2mass
       set conf(bddimages,cata,use_skybot) $::tools_cata::use_skybot
             
       # Uncosmic or not!
@@ -781,7 +797,7 @@ namespace eval cata_creation_gui {
       set erreur [ catch { vo_skybotresolver $date $name text basic $uaicode } skybot ]
       if { $erreur == "0" } {
          if { [ lindex $skybot 0 ] == "no" } {
-            ::console::affiche_erreur "The solar system object '$name' was not resolved by SkyBoT"
+            tk_messageBox -message "skybotResolver error: the solar system object '$name' was not resolved by SkyBoT" -type ok
          } else {
             set resp [split $skybot ";"]
             set respdata [split [lindex $resp 1] "|"]
@@ -791,7 +807,7 @@ namespace eval cata_creation_gui {
             set ::tools_cata::coord "$ra $dec"
          }
       } else {
-         ::console::affiche_erreur "SkyBoT error: $erreur : $skybot"
+         tk_messageBox -message "skybotResolver error: $erreur : $skybot" -type ok
       }
 
    }
@@ -1159,6 +1175,7 @@ namespace eval cata_creation_gui {
       set ::tools_cata::nb_ppmx    0
       set ::tools_cata::nb_ppmxl   0
       set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_2mass   0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
       affich_un_rond_xy $xcent $ycent red 2 2
@@ -2477,8 +2494,7 @@ namespace eval cata_creation_gui {
         pack $usnoa2 -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             checkbutton $usnoa2.check -highlightthickness 0 -text "USNO-A2" \
-                              -variable ::tools_cata::use_usnoa2 -state disabled
+             checkbutton $usnoa2.check -highlightthickness 0 -text "USNO-A2" -variable ::tools_cata::use_usnoa2 -state disabled
              pack $usnoa2.check -in $usnoa2 -side left -padx 5 -pady 0
              #--- Cree un entry
              entry $usnoa2.dir -relief sunken -textvariable ::tools_cata::catalog_usnoa2 -width 30
@@ -2560,6 +2576,18 @@ namespace eval cata_creation_gui {
              #--- Cree un entry
              entry $nomad1.dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 30
              pack $nomad1.dir -in $nomad1 -side right -pady 1 -anchor w
+
+        #--- Cree un frame pour afficher 2mass
+        set twomass [frame $f1.2mass -borderwidth 0 -cursor arrow -relief groove]
+        pack $twomass -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             #--- Cree un checkbutton
+             checkbutton $twomass.check -highlightthickness 0 -text "2MASS" -variable ::tools_cata::use_2mass
+             pack $twomass.check -in $twomass -side left -padx 5 -pady 0
+             #--- Cree un entry
+             entry $twomass.dir -relief sunken -textvariable ::tools_cata::catalog_2mass -width 30
+             pack $twomass.dir -in $twomass -side right -pady 1 -anchor w
+
   
         #--- Cree un frame pour afficher boucle
         set skybot [frame $f1.skybot -borderwidth 0 -cursor arrow -relief groove]
@@ -2913,6 +2941,24 @@ namespace eval cata_creation_gui {
                 spinbox $nomad1.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata" -width 3
                 pack  $nomad1.radius -in $nomad1 -side left -anchor w
                 $nomad1.radius set $::gui_cata::size_nomad1_sav
+
+           #--- Cree un frame pour afficher 2MASS
+           set twomass [frame $count.2mass -borderwidth 0 -cursor arrow -relief groove]
+           pack $twomass -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $twomass.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_2mass -state normal  \
+                      -command "::gui_cata::affiche_cata" 
+                pack $twomass.check -in $twomass -side left -padx 3 -pady 3 -anchor w 
+                label $twomass.name -text "2MASS :" -width 14 -anchor e
+                pack $twomass.name -in $twomass -side left -padx 3 -pady 3 -anchor w 
+                label $twomass.val -textvariable ::tools_cata::nb_2mass -width 4
+                pack $twomass.val -in $twomass -side left -padx 3 -pady 3
+                button $twomass.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_2mass -command ""
+                pack $twomass.color -side left -anchor e -expand 0 
+                spinbox $twomass.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_2mass -command "::gui_cata::affiche_cata" -width 3
+                pack  $twomass.radius -in $twomass -side left -anchor w
+                $twomass.radius set $::gui_cata::size_2mass_sav
 
            #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]

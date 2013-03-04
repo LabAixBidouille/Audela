@@ -403,7 +403,7 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
                      # 14 = e_pmRA_masperyear, 15 = e_pmDE_masperyear
                      set ra_pm_err  [lindex $otherfields 14]
                      set dec_pm_err [lindex $otherfields 15]
-                  }               
+                  }
 
                   if {  $ac == "UCAC3" } {
                      # 8 = sigra_deg, 9 = sigdc_deg
@@ -415,7 +415,7 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
                      # 18 = sigpmr_masperyear, 19 = sigpmd_masperyear
                      set ra_pm_err  [lindex $otherfields 18]
                      set dec_pm_err [lindex $otherfields 19]
-                  }               
+                  }
 
                   if {  $ac == "UCAC4" } {
                      # 8 = sigra_deg, 9 = sigdc_deg
@@ -427,12 +427,30 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
                      # 17 = sigpmr_masperyear, 18 = sigpmd_masperyear
                      set ra_pm_err  [lindex $otherfields 17]
                      set dec_pm_err [lindex $otherfields 18]
-                  }               
-                  
+                  }
+
+                  if {  $ac == "TYCHO2" } {
+                     # 9 = e_mRA, 10 = e_mDE
+                     set ra_err  [lindex $otherfields 9]
+                     set dec_err [lindex $otherfields 10]
+                     # 7 = pmRA, 8 = pmDE
+                     set ra_pm  [expr [lindex $otherfields 7] / 15000.0]
+                     set dec_pm [expr [lindex $otherfields 8] / 1000.0]
+                     # 11 = e_pmRA, 12 = e_pmDE
+                     set ra_pm_err  [lindex $otherfields 11]
+                     set dec_pm_err [lindex $otherfields 12]
+                  }
+
+                  if {  $ac == "2MASS" } {
+                     # 3 = err_ra, 4 = err_de
+                     set ra_err  [expr [lindex $otherfields 3] * 1000]
+                     set dec_err [expr [lindex $otherfields 4] * 1000]
+                  }
+
                   if {  $ac == "USNOA2" } {
                      set ra_err  500
                      set dec_err 500
-                  }               
+                  }
                   
                   # Ecriture du local.cat 
                   puts $chan1 "$name $ra $dec $ra_pm $dec_pm 2451545.50  $ra_err $dec_err  $ra_pm_err  $dec_pm_err  $mag $typeS $paral $vitrad"
