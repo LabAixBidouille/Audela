@@ -1123,7 +1123,7 @@ gren_info " => source retrouvee $cpt $dl\n"
                set ::tools_cata::current_listsources [list $fields $sources]
 
             }
-               
+
          }
 
          # Modification du tk_list
@@ -2405,7 +2405,7 @@ gren_info " => source retrouvee $cpt $dl\n"
              $menubar.catalog.menu add command -label "Astroid" \
                 -command ""
              $menubar.catalog.menu add command -label "Astrometrie" \
-                -command ""
+                -command "::set_ref_science::go"
              $menubar.catalog.menu add command -label "Photometrie" \
                 -command ""
              $menubar.catalog.menu add separator
