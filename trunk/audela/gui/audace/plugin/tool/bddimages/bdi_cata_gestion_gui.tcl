@@ -429,10 +429,14 @@ namespace eval cata_gestion_gui {
       set ::gui_cata::stateback disabled
       set ::tools_cata::nb_img     0
       set ::tools_cata::nb_usnoa2  0
-      set ::tools_cata::nb_tycho2  0
       set ::tools_cata::nb_ucac2   0
       set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_ucac4   0
+      set ::tools_cata::nb_ppmx    0
+      set ::tools_cata::nb_ppmxl   0
+      set ::tools_cata::nb_tycho2  0
       set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_2mass   0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
 

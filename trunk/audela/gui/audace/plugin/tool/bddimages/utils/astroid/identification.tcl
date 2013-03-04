@@ -106,7 +106,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set llog 0
    foreach s $sources1 {
       foreach cata $s {
-         if { [lindex $cata 0]==$catalog1 } {
+         if { [string toupper [lindex $cata 0]] == $catalog1 } {
            set data [lindex $cata 1]
            set tabs1($id,accepted)     0
            set tabs1($id,ra)           [lindex $data 0]
@@ -131,7 +131,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set id 0
    foreach s $sources2 {
       foreach cata $s {
-         if { [lindex $cata 0]==$catalog2 } {
+         if { [string toupper [lindex $cata 0]] == $catalog2 } {
            set data [lindex $cata 1]
            set tabs2($id,accepted)     0
            set tabs2($id,ra)           [lindex $data 0]
@@ -390,13 +390,13 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
       set s1 [lindex $sources1 $id1]
       set news1 ""
       foreach cata $s1 {
-         if { [lindex $cata 0]!="OVNI" } {
+         if { [lindex $cata 0] != "OVNI" } {
             lappend news1 $cata
          }
       }
       set s2 [lindex $sources2 $id2]
       foreach cata $s2 {
-         if { [lindex $cata 0]!="OVNI" } {
+         if { [lindex $cata 0] != "OVNI" } {
             lappend news1 $cata
          }
       }
@@ -413,7 +413,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
       if {$nbovni == 0} {
          set newfields ""
          foreach cata $fields1 {
-            if { [lindex $cata 0]!="OVNI" } {
+            if { [lindex $cata 0] != "OVNI" } {
                lappend newfields $cata
             }
          }
@@ -421,7 +421,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
          set newfields $fields1
       }
       foreach cata $fields2 {
-         if { [lindex $cata 0]!="OVNI" } {
+         if { [lindex $cata 0] != "OVNI" } {
             lappend newfields $cata
          }
       }

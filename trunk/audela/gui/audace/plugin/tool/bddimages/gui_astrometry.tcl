@@ -542,7 +542,6 @@ namespace eval gui_astrometry {
    
       global bddconf audace
 
-
       set pass "no"
       foreach s [lindex $listsources 1] {
          set x  [lsearch -index 0 $s "ASTROID"]
@@ -552,17 +551,28 @@ namespace eval gui_astrometry {
             if {$cataname == $name} {
                set sp [split $cataname "_"]
                set cata [lindex $sp 0]
-               set x  [lsearch -index 0 $s $cata]
+               set x [lsearch -index 0 $s $cata]
+               gren_info "x,cata = $x :: $cata \n"
                if {$x>=0 && $cata=="SKYBOT"} {
                   set b  [lindex [lindex $s $x] 2]
                   set pass "ok"
+                  set type "aster"
                   set num [string trim [lindex $b 0] ]
                   set nom [string trim [lindex $b 1] ]
                   break
                }
-               if {$x>=0 && ( $cata=="UCAC3" || $cata=="UCAC2" )  } {
+               if {$x>=0 && $cata=="TYCHO2"} {
+                  set b  [lindex [lindex $s $x] 2]
+                  set pass "ok"
+                  set type "star"
+                  set nom [lindex [lindex $s $x] 0]
+                  set num "[string trim [lindex $b 1]]_[string trim [lindex $b 2]]_1"
+                  break
+               }
+               if {$x>=0 && ( $cata=="UCAC2" || $cata=="UCAC3" )  } {
                   set b  [lindex [lindex $s $x] 1]
                   set pass "ok"
+                  set type ""
                   set ra  [string trim [lindex $b 0] ]
                   set dec [string trim [lindex $b 1] ]
                   return [list $ra $dec]
@@ -578,14 +588,20 @@ namespace eval gui_astrometry {
          return [list "-" "-"]
       }
       
-      if {$num==""} {set num $nom}
+      if {$num == ""} {
+         set num $nom
+      }
 
       set file [ file join $audace(rep_travail) cmd.ephemcc ]
       set chan0 [open $file w]
       puts $chan0 "#!/bin/sh"
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
-      puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
+      if {$type == "star"} {
+         puts $chan0 "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
+      } else {
+         puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
+      }
       close $chan0
       set err [catch {exec sh ./cmd.ephemcc} msg]
 
