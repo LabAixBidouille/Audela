@@ -1143,7 +1143,8 @@ gren_info "la\n"
  
       set cpt 0
       gren_info "t=$t\n"
-
+      set date_id "" 
+      
       if {$t == "srp" } {
          if {[llength [$w curselection]]!=1} {
             tk_messageBox -message "Selectionner une source" -type ok
@@ -1151,7 +1152,8 @@ gren_info "la\n"
          }
          set name [lindex [$w get [$w curselection]] 0]
          foreach date $::tools_astrometry::listref($name) {
-            set date_id($date) [lindex $::tools_astrometry::tabval($name,$date) 0]
+            set idsource [lindex $::tools_astrometry::tabval($name,$date) 0]
+            lappend date_id [list $idsource $date]
             incr cpt
          }
       }
@@ -1159,7 +1161,9 @@ gren_info "la\n"
       if {$t == "sre" } {
          set name $::gui_astrometry::srpt_name
          foreach select [$w curselection] {
-            set date_id([lindex [$w get $select] 1]) [lindex [$w get $select] 0]
+            set idsource [lindex [$w get $select] 0]
+            set date [lindex [$w get $select] 1]
+            lappend date_id [list $idsource $date]
             incr cpt
          }
       }
@@ -1171,7 +1175,8 @@ gren_info "la\n"
          }
          set name [lindex [$w get [$w curselection]] 0]
          foreach date $::tools_astrometry::listscience($name) {
-            set date_id($date) [lindex $::tools_astrometry::tabval($name,$date) 0]
+            set idsource [lindex $::tools_astrometry::tabval($name,$date) 0]
+            lappend date_id [list $idsource $date]
             incr cpt
          }
       }
@@ -1179,16 +1184,18 @@ gren_info "la\n"
       if {$t == "sse" } {
          set name $::gui_astrometry::sspt_name
          foreach select [$w curselection] {
-            set date_id([lindex [$w get $select] 1]) [lindex [$w get $select] 0]
+            set idsource [lindex [$w get $select] 0] 
+            set date [lindex [$w get $select] 1]
+            lappend date_id [list $idsource $date]
             incr cpt
          }
       }
       
       gren_info "psfone name = $name \n"
       gren_info "nb image selected = $cpt \n"
-      gren_info "images id= [array get date_id]\n"
+      gren_info "images id= $date_id\n"
       
-      ::psf_gui::from_astrometry $name $cpt date_id
+      ::psf_gui::from_astrometry $name $cpt $date_id
 
    } 
 

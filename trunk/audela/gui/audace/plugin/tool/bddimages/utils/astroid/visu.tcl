@@ -61,9 +61,34 @@ proc affich_un_rond_xy { x y color radius width } {
    set cys [lindex $can_xy 1]
 
    $audace(hCanvas) create oval $cxi $cyi $cxs $cys -outline $color -tags cadres -width $width
-
+   
 }
 
+proc affich_un_rond_xy_crop { x y color radius width visuNo } {
+
+   global audace
+
+   set xi [expr $x - $radius]
+   set yi [expr $y - $radius]
+   set can_xy [::confVisu::picture2Canvas $visuNo [list $xi $yi ]]
+
+   set cxi [lindex $can_xy 0]
+   set cyi [lindex $can_xy 1]
+
+   set xs [expr $x + $radius]
+   set ys [expr $y + $radius]
+   set can_xy [::confVisu::picture2Canvas $visuNo [list $xs $ys ]]
+   set cxs [lindex $can_xy 0]
+   set cys [lindex $can_xy 1]
+
+   $::confVisu::private($visuNo,hCanvas) create oval $cxi $cyi $cxs $cys -outline $color -tags cadres -width $width
+}
+
+proc clean_crop { visuNo } {
+
+      $::confVisu::private($visuNo,hCanvas) delete cadres
+
+}
 
 proc efface_rond { args } {
    global audace conf bddconf

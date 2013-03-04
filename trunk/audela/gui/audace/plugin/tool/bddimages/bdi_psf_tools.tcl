@@ -170,6 +170,7 @@ namespace eval psf_tools {
             ::psf_tools::result_photom_methode "err" 
          
          } else {
+            gren_info "result = $result $xcent $ycent\n"
             ::psf_tools::result_photom_methode $result
 
             set xcent [expr int([lindex $result 0])]
@@ -188,6 +189,50 @@ namespace eval psf_tools {
          }
       
       }
+      
+   }
+
+
+
+   proc ::psf_tools::psf_box_crop { xcent ycent } {
+
+      global bddconf
+
+
+      #gren_info "xcent ycent = $xcent $ycent\n"
+
+      #     photom_methode
+      set err [catch {set result [::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $::psf_gui::bufcrop]} msg]
+      if {$err} {
+         gren_erreur "PSF_BUTTON_PSF : Photom error ($err) ($msg)\n" 
+         ::psf_tools::result_photom_methode "err" 
+      
+      } else {
+         #gren_info "result = $result\n"
+         
+         ::psf_tools::result_photom_methode $result
+
+         set xcent [expr int([lindex $result 0])]
+         set ycent [expr int([lindex $result 1])]
+         set delta [expr int([lindex $result 14])]
+         set rect [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
+         
+         set result_fitgauss [buf$::psf_gui::bufcrop fitgauss $rect]
+         ::psf_tools::result_fitgauss $result_fitgauss
+         
+         set ::gui_cata::current_psf(xsm)   [format "%.4f" [expr $::gui_cata::current_psf(xsm)   + $::psf_gui::xref] ]
+         set ::gui_cata::current_psf(ysm)   [format "%.4f" [expr $::gui_cata::current_psf(ysm)   + $::psf_gui::yref] ]
+         set ::gui_cata::current_psf(xcent) [format "%.4f" [expr $::gui_cata::current_psf(xcent) + $::psf_gui::xref] ]
+         set ::gui_cata::current_psf(ycent) [format "%.4f" [expr $::gui_cata::current_psf(ycent) + $::psf_gui::yref] ]
+         
+         
+         set xd [expr abs($::gui_cata::current_psf(xsm)-$::gui_cata::current_psf(xcent))]
+         set yd [expr abs($::gui_cata::current_psf(ysm)-$::gui_cata::current_psf(ycent))]
+         set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+         set ::gui_cata::current_psf(rdiff) [format "%.4f" $rdiff ]
+      
+      }
+      
       
    }
 
@@ -548,7 +593,7 @@ namespace eval psf_tools {
 #    
 #    
 #    
-   proc ::psf_tools::method_global { sent_s threshold radiuslimit } {
+   proc ::psf_tools::method_global { sent_s threshold radiuslimit bufNo } {
       
      upvar $sent_s s
 
@@ -588,7 +633,7 @@ namespace eval psf_tools {
 
             if {$log} { gren_info "ra dec $ra $dec\n" }
             
-            set xy [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
+            set xy [ buf$bufNo radec2xy [list $ra $dec ] ]
             set x [lindex $xy 0]
             set y [lindex $xy 1]
             set pass "yes"
@@ -604,7 +649,7 @@ namespace eval psf_tools {
 
       for {set radius 1} {$radius < $radiuslimit} {incr radius} {
 
-         set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $::audace(bufNo)]} msg]
+         set results($radius,err) [catch {set result [::tools_cdl::photom_methode $x $y $radius $bufNo]} msg]
          if {$result==-1} {
             set results($radius,err) 2
          }
@@ -612,7 +657,7 @@ namespace eval psf_tools {
             set xsm [lindex $result 0]
             set ysm [lindex $result 1]
             
-            set radec [ buf$::audace(bufNo) xy2radec [list $xsm $ysm ] ]
+            set radec [ buf$bufNo xy2radec [list $xsm $ysm ] ]
             set pra [lindex $radec 0] 
             set pdec [lindex $radec 1]
             
