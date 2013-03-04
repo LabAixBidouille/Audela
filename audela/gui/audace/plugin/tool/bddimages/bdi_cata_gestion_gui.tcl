@@ -1803,7 +1803,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          #gren_info "ID = $id\n"
          set s [lindex $sources [expr $id - 1 ]]
          #gren_info "S=$s\n"
-         set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
+         set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius $::audace(bufNo)]} msg ]
          if {$err} {
             #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
             #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
@@ -2002,7 +2002,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          ::cata_gestion_gui::set_popupprogress $id $nd_sources
          #gren_info "ID = $id\n"
          #gren_info "S=$s\n"
-         set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
+         set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius $::audace(bufNo)]} msg ]
          if {$err} {
             #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
             #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
@@ -2088,7 +2088,7 @@ gren_info " => source retrouvee $cpt $dl\n"
             ::cata_gestion_gui::set_popupprogress $cpt $nd_sources
             #gren_info "ID = $id\n"
             #gren_info "S=$s\n"
-            set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius]} msg ]
+            set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius $::audace(bufNo)]} msg ]
             if {$err} {
                #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
                #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"

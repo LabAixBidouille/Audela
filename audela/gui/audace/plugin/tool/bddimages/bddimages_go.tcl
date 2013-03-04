@@ -475,3 +475,6 @@ proc ::bddimages::gzip { fname_in {fname_out ""} } {
 proc gren_info { msg } {
    ::console::affiche_resultat "$msg" 
 }
+proc gren_erreur { msg } {
+   ::console::affiche_erreur "$msg" 
+}

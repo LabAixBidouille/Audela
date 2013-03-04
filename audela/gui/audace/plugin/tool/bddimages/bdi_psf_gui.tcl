@@ -23,6 +23,8 @@ namespace eval psf_gui {
 # depuis la gestion des cata pour faire l analyse des psf en mode manuel
    proc ::psf_gui::gestion_mode_manuel_fermer { } {
 
+
+      ::psf_tools::closetoconf
       destroy $::psf_gui::fen
       ::cata_gestion_gui::charge_image_directaccess
 
@@ -34,6 +36,8 @@ namespace eval psf_gui {
 # depuis la gestion des cata pour faire l analyse des psf en mode manuel
 
    proc ::psf_gui::gestion_mode_manuel_init { sou } {
+
+      ::psf_tools::inittoconf
 
       if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
       foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
@@ -403,6 +407,44 @@ namespace eval psf_gui {
 
 
 
+# S applique a une nouvelle visu et un nouveau buffer
+
+   proc ::psf_gui::one_psf_crop { } {
+
+
+
+      if {[info exists ::gui_cata::psf_best_sol]} {
+
+         set xcent [expr int([lindex $::gui_cata::psf_best_sol 0])]
+         set ycent [expr int([lindex $::gui_cata::psf_best_sol 1])]
+         ::psf_tools::psf_box_crop $xcent $ycent
+
+      } 
+
+
+#     AFFICHAGE DES RONDS
+
+      catch {
+
+         clean_crop $::psf_gui::visucrop
+      
+         set r $::gui_cata::current_psf(delta)
+
+         set xpm [expr  $::gui_cata::current_psf(xsm)   - $::psf_gui::xref]
+         set ypm [expr  $::gui_cata::current_psf(ysm)   - $::psf_gui::yref]
+         set xfg [expr  $::gui_cata::current_psf(xcent) - $::psf_gui::xref]
+         set yfg [expr  $::gui_cata::current_psf(ycent) - $::psf_gui::yref]
+
+         affich_un_rond_xy_crop $xpm $ypm green  0 1 $::psf_gui::visucrop
+         affich_un_rond_xy_crop $xpm $ypm green $r 2 $::psf_gui::visucrop
+
+         set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
+
+         affich_un_rond_xy_crop $xfg $yfg  red 0  1 $::psf_gui::visucrop
+         affich_un_rond_xy_crop $xfg $yfg blue $r 2 $::psf_gui::visucrop
+      
+      }
+   }
 
 
 
@@ -457,8 +499,8 @@ namespace eval psf_gui {
 
       set pass "no"
       # A decocher au cas ou on veut logger cette partie
-      # set r [::psf_tools::method_global ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]
-      set err [ catch {set r [::psf_tools::method_global ::gui_cata::psf_source $::gui_cata::psf_threshold $::gui_cata::psf_limitradius ]} msg ]
+      # set r [::psf_tools::method_global ::gui_cata::psf_source $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::audace(bufNo)]
+      set err [ catch {set r [::psf_tools::method_global ::gui_cata::psf_source $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::audace(bufNo)]} msg ]
       if {$err} {
          ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
       } else {
@@ -530,6 +572,93 @@ namespace eval psf_gui {
          affich_un_rond_xy $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent) blue $r 2
       
       }
+      
+   }
+
+
+
+
+
+
+
+
+   proc ::psf_gui::box_global_crop { } {
+   
+      global bddconf
+
+      #::gui_cata::psf_cataname
+      #::gui_cata::psf_source
+      #::gui_cata::psf_name_source
+      #::gui_cata::psf_id_source 
+
+
+      set pass "no"
+      # A decocher au cas ou on veut logger cette partie
+      # set r [::psf_tools::method_global ::gui_cata::psf_source $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::audace(bufNo)]
+      set err [ catch {set r [::psf_tools::method_global ::gui_cata::psf_source $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_gui::bufcrop]} msg ]
+      if {$err} {
+         ::console::affiche_erreur "ERREUR PSF no_gui: $msg\n"
+      } else {
+         set pass "yes"
+      }
+      
+      if { $pass=="no" } { return }
+      
+      #gren_info "::gui_cata::psf_source = $::gui_cata::psf_source\n"
+
+      #gren_info "*best PSF pour ($::gui_cata::psf_id_source) $::gui_cata::psf_name_source \n"
+      set ::gui_cata::psf_best_sol        [lindex $r 0]
+      set ::gui_cata::psf_radius          [lindex $r 1]
+      set ::gui_cata::psf_add_astroid     [lindex $r 2]
+
+      set result [lindex $r 0]
+      ::psf_tools::result_photom_methode $result
+
+      set xcent [expr int([lindex $result 0])]
+      set ycent [expr int([lindex $result 1])]
+      set delta [lindex $r 1]
+      set rect [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
+
+      #     fit gauss
+      set result_fitgauss [buf$::psf_gui::bufcrop fitgauss $rect]
+      ::psf_tools::result_fitgauss $result_fitgauss
+ 
+      set xd [expr abs($::gui_cata::current_psf(xsm)-$::gui_cata::current_psf(xcent))]
+      set yd [expr abs($::gui_cata::current_psf(ysm)-$::gui_cata::current_psf(ycent))]
+      set rdiff [expr sqrt (pow($xd,2) + pow($yd ,2))]
+      set ::gui_cata::current_psf(rdiff) [format "%.4f" $rdiff ]
+
+      catch {
+
+         clean_crop $::psf_gui::visucrop
+
+         set xpm $::gui_cata::current_psf(xsm)  
+         set ypm $::gui_cata::current_psf(ysm)  
+         set xfg $::gui_cata::current_psf(xcent)
+         set yfg $::gui_cata::current_psf(ycent)
+         
+         set r $::gui_cata::current_psf(delta)
+         affich_un_rond_xy_crop $xpm $ypm green  0 1 $::psf_gui::visucrop
+         affich_un_rond_xy_crop $xpm $ypm green $r 2 $::psf_gui::visucrop
+
+         set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
+
+         affich_un_rond_xy_crop $xfg $yfg  red 0  1 $::psf_gui::visucrop
+         affich_un_rond_xy_crop $xfg $yfg blue $r 2 $::psf_gui::visucrop
+      
+      }
+
+      set ::gui_cata::current_psf(xsm)   [format "%.4f" [expr  $::gui_cata::current_psf(xsm)  + $::psf_gui::xref ] ]
+      set ::gui_cata::current_psf(ysm)   [format "%.4f" [expr  $::gui_cata::current_psf(ysm)  + $::psf_gui::yref ] ]
+      set ::gui_cata::current_psf(xcent) [format "%.4f" [expr  $::gui_cata::current_psf(xcent)+ $::psf_gui::xref ] ]
+      set ::gui_cata::current_psf(ycent) [format "%.4f" [expr  $::gui_cata::current_psf(ycent)+ $::psf_gui::yref ] ]
+
+      for {set radius 1} {$radius < $::psf_tools::psf_limitradius} {incr radius} {
+         set ::psf_tools::graph_results($radius) [lreplace $::psf_tools::graph_results($radius) 0 0 [expr [lindex $::psf_tools::graph_results($radius) 0] + $::psf_gui::xref ]]
+         set ::psf_tools::graph_results($radius) [lreplace $::psf_tools::graph_results($radius) 1 1 [expr [lindex $::psf_tools::graph_results($radius) 1] + $::psf_gui::yref ]]
+      }
+
+      $::psf_gui::fen.appli.actions.save2 configure -state normal
       
    }
 
@@ -609,7 +738,7 @@ namespace eval psf_gui {
          set x($i) ""
          set y($i) ""
 
-         for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
+         for {set radius 1} {$radius < $::psf_tools::psf_limitradius} {incr radius} {
             
             if {$::psf_tools::graph_results($radius,err)==$i && [info exists ::psf_tools::graph_results($radius)]} {
                 lappend x($i) $radius
@@ -627,7 +756,7 @@ namespace eval psf_gui {
      
 
       # Affichage de la valeur obtenue
-      set x0 [ list 0 $::gui_cata::psf_limitradius ]
+      set x0 [ list 0 $::psf_tools::psf_limitradius ]
       set y0 [ list $::gui_cata::current_psf($key) $::gui_cata::current_psf($key)]
       set h [::plotxy::plot $x0 $y0 .]
       plotxy::sethandler $h [list -color black -linewidth 2]
@@ -639,7 +768,7 @@ namespace eval psf_gui {
          gren_info "delta y = $key $delta $y0\n"
          set ymin  [list [expr $y0 - $delta] [expr $y0 - $delta] ]
          set ymax  [list [expr $y0 + $delta] [expr $y0 + $delta] ]
-         set x0    [ list 0 $::gui_cata::psf_limitradius ]
+         set x0    [ list 0 $::psf_tools::psf_limitradius ]
          set h [::plotxy::plot $x0 $ymin .]
          plotxy::sethandler $h [list -color "#808080" -linewidth 1]
          set h [::plotxy::plot $x0 $ymax .]
@@ -652,7 +781,7 @@ namespace eval psf_gui {
          gren_info "delta y = $key $delta $y0\n"
          set ymin  [list [expr $y0 - $delta] [expr $y0 - $delta] ]
          set ymax  [list [expr $y0 + $delta] [expr $y0 + $delta] ]
-         set x0    [ list 0 $::gui_cata::psf_limitradius ]
+         set x0    [ list 0 $::psf_tools::psf_limitradius ]
          set h [::plotxy::plot $x0 $ymin .]
          plotxy::sethandler $h [list -color "#808080" -linewidth 1]
          set h [::plotxy::plot $x0 $ymax .]
@@ -706,16 +835,16 @@ namespace eval psf_gui {
          set y2 $t
       }
  
-      if {$x1 < 0 && $x2 > $::gui_cata::psf_limitradius} {
+      if {$x1 < 0 && $x2 > $::psf_tools::psf_limitradius} {
          # Astuce pour remettre a zero le graphe
-         for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
+         for {set radius 1} {$radius < $::psf_tools::psf_limitradius} {incr radius} {
             set ::psf_tools::graph_results($radius,err) 0
          }
       } else {
 
          # on crop
          set cpt 0
-         for {set radius 1} {$radius < $::gui_cata::psf_limitradius} {incr radius} {
+         for {set radius 1} {$radius < $::psf_tools::psf_limitradius} {incr radius} {
             if {$::psf_tools::graph_results($radius,err)==0} {
                incr cpt
                if {$radius < $x1 || $x2 < $radius } {
@@ -734,7 +863,7 @@ namespace eval psf_gui {
 
       }
       
-      array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::gui_cata::psf_limitradius 0]
+      array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::psf_tools::psf_limitradius 0]
       set ::gui_cata::psf_best_sol [::psf_tools::method_global_sol sol]
 
       set flagastroid [::psf_tools::add_astroid ::gui_cata::psf_source ::gui_cata::psf_best_sol $::gui_cata::psf_name_source]
@@ -761,11 +890,9 @@ namespace eval psf_gui {
    proc ::psf_gui::gestion_mode_manuel { { sou "" } } {
 
       ::psf_gui::gestion_mode_manuel_init $sou
-      set ::gui_cata::psf_limitradius 50
-      set ::gui_cata::psf_threshold 2
       
       set spinlist ""
-      for {set i 1} {$i<$::gui_cata::psf_limitradius} {incr i} {lappend spinlist $i}
+      for {set i 1} {$i<$::psf_tools::psf_limitradius} {incr i} {lappend spinlist $i}
 
       set ::psf_gui::fen .psf
       if { [winfo exists $::psf_gui::fen] } {
@@ -833,7 +960,7 @@ namespace eval psf_gui {
                  label $data.l -text "Threshold : " 
                  pack  $data.l -side left -padx 2 -pady 0
 
-                 entry $data.v -textvariable ::gui_cata::psf_threshold -relief sunken -width 5
+                 entry $data.v -textvariable ::psf_tools::psf_threshold -relief sunken -width 5
                  pack  $data.v -side left -padx 2 -pady 0
 
              set data  [frame $config.limitradius -borderwidth 0 -cursor arrow -relief groove]
@@ -842,13 +969,13 @@ namespace eval psf_gui {
                  label $data.l -text "Limite du Rayon : " 
                  pack  $data.l -side left -padx 2 -pady 0
 
-                 entry $data.v -textvariable ::gui_cata::psf_limitradius -relief sunken -width 5
+                 entry $data.v -textvariable ::psf_tools::psf_limitradius -relief sunken -width 5
                  pack  $data.v -side left -padx 2 -pady 0
 
          set actions2 [frame $frm.actions2 -borderwidth 1 -cursor arrow -relief groove]
          pack $actions2 -in $frm -anchor c -side top
 
-             spinbox $actions2.radius -values $spinlist -from 1 -to $::gui_cata::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
+             spinbox $actions2.radius -values $spinlist -from 1 -to $::psf_tools::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
                  -command "::psf_gui::one_psf"
              pack  $actions2.radius -side left 
              $actions2.radius set 15
@@ -1083,7 +1210,7 @@ namespace eval psf_gui {
          # Mesure de PSF de la source: 
          # result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
 
-         set err [ catch {set r [::psf_tools::method_global s $threshold $limitradius ]} msg ]
+         set err [ catch {set r [::psf_tools::method_global s $threshold $limitradius $::audace(bufNo)]} msg ]
          if {$err} {
             ::console::affiche_erreur "ERREUR PSF psf_listsources_auto: $msg\n"
          }
@@ -1096,24 +1223,228 @@ namespace eval psf_gui {
       set listsources [list $fields $newsources]
    }
 
-   proc ::psf_gui::read_source { name send_date_id } {
+
+
+
+
+
+
+   proc ::psf_gui::read_source { name l } {
+   
+      global bddconf
+   
+      #::gui_cata::current_psf
+      set ::psf_gui::dateimg "???"
+       
+      #gren_info "l=$l\n"
+      gren_info "nb img == [llength $::tools_cata::img_list]\n"
+      set idsource [lindex $l 0]
+      set dateimg  [lindex $l 1]
+   
+      set ::tools_cata::id_current_image 0
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         incr ::tools_cata::id_current_image
+         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         #gren_info "($::tools_cata::id_current_image) $date == $dateimg\n"
+         if {$date == $dateimg} {
+            set ::psf_gui::dateimg $date
+            break
+         }
+      }
+      
+      set filename      [::bddimages_liste::lget $::tools_cata::current_image "filename"]
+      set dirfilename   [::bddimages_liste::lget $::tools_cata::current_image "dirfilename"]
+      set fileimg       [file join $bddconf(dirbase) $dirfilename $filename]
+      if {![file exists $fileimg]} {
+         gren_erreur "Attention le fichier n existe pas !\n"
+      }
+      
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+      set fields [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+      set pass "no"
+      set ::gui_cata::psf_id_source 0
+      foreach s $sources {
+         incr ::gui_cata::psf_id_source
+         foreach cata $s {
+            if {[lindex $cata 0] == "ASTROID"} {
+               set astroid [lindex $cata 2]
+               set sname [lindex $astroid 24]
+               if {$sname == $name } {
+                  set pass "ok"
+                  break
+               }
+            }
+         }
+         if {$pass == "ok"} {break}         
+      }
+
+      if {$pass == "ok"} {
+
+         set ::gui_cata::psf_source $s
+         if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
+         set cpt -1
+         foreach key [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff] {
+            incr cpt
+            set ::gui_cata::current_psf($key) [lindex $astroid $cpt]
+         }
+
+         set xcent $::gui_cata::current_psf(xsm)
+         set ycent $::gui_cata::current_psf(ysm)
+         
+         #gren_info "xcent ycent = $xcent $ycent\n"
+         
+         set radius 100
+         set offset -2
+         set ::psf_gui::xref [expr int($xcent - $radius) + $offset ]
+         set ::psf_gui::yref [expr int($ycent - $radius) + $offset ]
+         set rect [list [expr int($xcent - $radius)-1] [expr int($ycent - $radius)-1] \
+                    [expr int($xcent + $radius)+1] [expr int($ycent + $radius)+1] ]
+         #gren_info "rect = $rect\n"
+         set sizex [expr [lindex $rect 2]-[lindex $rect 0] +1]
+         set sizey [expr [lindex $rect 3]-[lindex $rect 1] +1]
+
+         set ::gui_cata::psf_best_sol [list [expr $xcent - $::psf_gui::xref] [expr $ycent - $::psf_gui::yref]]
+
+         
+         buf$::psf_gui::bufcrop load $fileimg
+         buf$::psf_gui::bufcrop window $rect
+         ::audace::autovisu $::psf_gui::visucrop
+         
+         
+         catch {
+
+            clean_crop $::psf_gui::visucrop
+
+            set xpm [expr $::gui_cata::current_psf(xsm)   - $::psf_gui::xref]
+            set ypm [expr $::gui_cata::current_psf(ysm)   - $::psf_gui::yref]
+            set xfg [expr $::gui_cata::current_psf(xcent) - $::psf_gui::xref]
+            set yfg [expr $::gui_cata::current_psf(ycent) - $::psf_gui::yref]
+
+            set r $::gui_cata::current_psf(delta)
+            affich_un_rond_xy_crop $xpm $ypm green  0 1 $::psf_gui::visucrop
+            affich_un_rond_xy_crop $xpm $ypm green $r 2 $::psf_gui::visucrop
+
+         }
+
+
+      }         
+      
+      
+      
    }
 
-   proc ::psf_gui::from_astrometry { name cpt send_date_id } {
+
+
+
+
+
+   proc ::psf_gui::next_img { } {
    
-      upvar $send_date_id date_id
+         if {$::psf_gui::id_img == 1} {
+            $::psf_gui::fen.appli.actions.prev configure -state normal
+         }
+         if {$::psf_gui::id_img < $::psf_gui::nb_img} {
+            incr ::psf_gui::id_img
+            ::psf_gui::read_source $::gui_cata::psf_name_source [lindex $::psf_gui::date_id [expr $::psf_gui::id_img - 1] ]
+            $::psf_gui::fen.appli.actions.save2 configure -state disabled
+         }
+         if {$::psf_gui::id_img == $::psf_gui::nb_img} {
+            $::psf_gui::fen.appli.actions.next configure -state disabled
+         }
+   }
+
+
+
+
+
+
+   proc ::psf_gui::prev_img { } {
    
+         if {$::psf_gui::id_img == $::psf_gui::nb_img} {
+            $::psf_gui::fen.appli.actions.next configure -state normal
+         }
+         if {$::psf_gui::id_img > 1} {
+            incr ::psf_gui::id_img -1
+            ::psf_gui::read_source $::gui_cata::psf_name_source [lindex $::psf_gui::date_id [expr $::psf_gui::id_img - 1] ]
+            $::psf_gui::fen.appli.actions.save2 configure -state disabled
+         }
+         if {$::psf_gui::id_img == 1} {
+            $::psf_gui::fen.appli.actions.prev configure -state disabled
+         }
+   }
+
+
+
+
+
+
+
+   proc ::psf_gui::save_img { } {
+
+         
+       $::psf_gui::fen.appli.actions.save2 configure -state disabled
+       set ls [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]
+       set ls [lreplace $ls [expr $::gui_cata::psf_id_source - 1] [expr $::gui_cata::psf_id_source - 1] $::gui_cata::psf_source]
+
+       set ::gui_cata::cata_list($::tools_cata::id_current_image) [lreplace $::gui_cata::cata_list($::tools_cata::id_current_image) 1 1 $ls]
+
+       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+       ::tools_cata::current_listsources_to_tklist
+
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+       set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+         
+   }
+
+
+
+
+
+
+
+   proc ::psf_gui::from_astrometry { name cpt date_id } {
+
+      global bddconf
+
+      ::psf_tools::inittoconf
+
+      set spinlist ""
+      for {set i 1} {$i<$::psf_tools::psf_limitradius} {incr i} {lappend spinlist $i}
+
       ::psf_gui::gestion_mode_manuel
+
       set frm $::psf_gui::fen.appli
+
+      
+
       set ::gui_cata::psf_name_source $name
       set ::psf_gui::id_img 1
-      set ::psf_gui::dateimg 2012
+      set ::psf_gui::nb_img $cpt
+      set ::psf_gui::date_id $date_id
+
+      set ::psf_gui::visucrop [::confVisu::create]
+      set ::psf_gui::bufcrop  [::confVisu::getBufNo $::psf_gui::visucrop]
+      gren_info "visu = $::psf_gui::visucrop\n"
+      gren_info "buffer = $::psf_gui::bufcrop\n"
+
+      gren_info "date_id = $date_id \n"
+      
+      ::psf_gui::read_source $name [lindex $date_id [expr $::psf_gui::id_img-1] ]
+      
 
       pack forget $frm.actions.grab
       pack forget $frm.actions.new
       pack forget $frm.actions.save
+      pack forget $frm.actions2.radius
+      pack forget $frm.actions2.psf
+      pack forget $frm.actions2.psfauto
 
       set infoimg $frm.infoimg
+
              label $infoimg.title -text "Image : "
              pack  $infoimg.title -side left -padx 2 -pady 0
              label $infoimg.id -textvariable ::psf_gui::id_img
@@ -1124,20 +1455,31 @@ namespace eval psf_gui {
              pack  $infoimg.lab2 -side left -padx 2 -pady 0
 
       set infodate $frm.infodate
+
              label $infodate.id -textvariable ::psf_gui::dateimg
              pack  $infodate.id -side left -padx 2 -pady 0
 
       set actions $frm.actions
 
-         button $actions.prev -state disabled -text "Prev" -relief "raised" -command ""
+         button $actions.prev -state disabled -text "Prev" -relief "raised" -command "::psf_gui::prev_img"
          pack   $actions.prev -side left -padx 0
 
-         button $actions.nextsave -state disabled -text "Next & Save" -relief "raised" -command ""
-         pack   $actions.nextsave -side left -padx 0
+         button $actions.save2 -state disabled -text "Save" -relief "raised" -command "::psf_gui::save_img"
+         pack   $actions.save2 -side left -padx 0
 
-         button $actions.next -state active -text "Next" -relief "raised" -command ""
+         button $actions.next -state active -text "Next" -relief "raised" -command "::psf_gui::next_img"
          pack   $actions.next -side left -padx 0
        
+      set actions2 $frm.actions2
+
+             spinbox $actions2.radiusc -values $spinlist -from 1 -to $::psf_tools::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
+                 -command "::psf_gui::one_psf_crop"
+             pack  $actions2.radiusc -side left 
+             $actions2.radiusc set 15
+             button $actions2.psfc -state active -text "PSF" -relief "raised" -command "::psf_gui::one_psf_crop"
+             pack   $actions2.psfc -side left 
+             button $actions2.psfautoc -state active -text "Auto" -relief "raised" -command "::psf_gui::box_global_crop"
+             pack   $actions2.psfautoc -side left 
       
    }
 
