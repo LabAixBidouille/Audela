@@ -62,7 +62,7 @@
    Tcl_CreateCommand(interp,"etel_status",(Tcl_CmdProc *)Cmd_eteltcltcl_status,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"etel_execute_command_x_s",(Tcl_CmdProc *)Cmd_eteltcltcl_ExecuteCommandXS,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"etel_get_register_s",(Tcl_CmdProc *)Cmd_eteltcltcl_GetRegisterS,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
-   Tcl_CreateCommand(interp,"etal_set_register_s",(Tcl_CmdProc *)Cmd_eteltcltcl_SetRegisterS,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"etel_set_register_s",(Tcl_CmdProc *)Cmd_eteltcltcl_SetRegisterS,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
 	return TCL_OK;
 }
