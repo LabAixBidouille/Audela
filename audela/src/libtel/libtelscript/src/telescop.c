@@ -588,8 +588,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			return TCL_ERROR;
 		}
 		// execute la proc setup
-		mytel_tcleval(telthread,telthread->proc_setup);
-		if (mytel_tcleval(telthread,s)==TCL_ERROR) {
+		if (mytel_tcleval(telthread,telthread->proc_setup)==TCL_ERROR) {
 			return TCL_ERROR;
 		}
 		telthread->script_type=SCRIPT_TYPE_PROC;
