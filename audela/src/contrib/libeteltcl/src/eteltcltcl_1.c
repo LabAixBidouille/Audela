@@ -49,7 +49,7 @@ int Cmd_eteltcltcl_open(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /****************************************************************************/
 {
    char s[200],ss[200];
-	int k,kk,err;
+	int k,kk,kkk,err;
    if(argc<3) {
       sprintf(s,"Usage: %s ?-driver name? ?-axis axisno? ?-axis axisno? ...", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -67,12 +67,17 @@ int Cmd_eteltcltcl_open(ClientData clientData, Tcl_Interp *interp, int argc, cha
 		}
 		strcpy(etel.etel_driver,"DSTEB3");
 		if (argc >= 1) {
+			kkk=0;
 			for (kk = 0; kk < argc-1; kk++) {
 				if (strcmp(argv[kk], "-driver") == 0) {
 					strcpy(etel.etel_driver,argv[kk + 1]);
 				}
 				if (strcmp(argv[kk], "-axis") == 0) {
-					etel.axis[atoi(argv[kk + 1])]=AXIS_STATE_TO_BE_OPENED;
+					if (kkk<ETEL_NAXIS_MAXI) {
+						etel.axis[kkk]=AXIS_STATE_TO_BE_OPENED;
+						etel.axisno[kkk]=atoi(argv[kk + 1]);
+						kkk++;
+					}
 				}
 			}
 		}
@@ -88,9 +93,9 @@ int Cmd_eteltcltcl_open(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
-			sprintf(ss,"etb:%s:%d",etel.etel_driver,k);
+			sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
 			if (err = dsa_open_u(etel.drv[k],ss)) {
-				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",k,ss,err);
+				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}

@@ -80,6 +80,7 @@ typedef struct {
 	char etel_driver[50];
 	char msg [200];
 	int axis[ETEL_NAXIS_MAXI];
+	int axisno[ETEL_NAXIS_MAXI];
    DSA_DRIVE *drv[ETEL_NAXIS_MAXI];
 } struct_etel ;
 
