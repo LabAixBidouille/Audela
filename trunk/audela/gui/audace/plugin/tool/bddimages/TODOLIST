@@ -7,8 +7,9 @@ general :
 création cata :
 
     - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
-    - bug gzip trouver l erreur !
-    - Quand Create est activer, disable Next et Prec 
+    - Quand Create est activer, il faut disable Next et Prec pour eviter les conneries ;)
+
+    - bug exec: apres un certain temps, exec ne peut plus creer de subprocess par manque de memoire: pourquoi ? soluce ?
 
 PSF 
     - arriver a faire remonter psf gestion dans recherche
