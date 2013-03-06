@@ -474,6 +474,7 @@ namespace eval gui_astrometry {
       # Generation des rapports
       ::gui_astrometry::create_rapport_txt
       ::gui_astrometry::create_rapport_mpc
+      ::gui_astrometry::create_rapport_xml
 
    }
 
@@ -1019,6 +1020,351 @@ namespace eval gui_astrometry {
    }
 
 
+   proc ::gui_astrometry::create_rapport_xml {  } {
+
+      # clean votable
+      $::gui_astrometry::rapport_xml delete 0.0 end 
+
+      # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
+      ::votable::init "1.1" ""
+      # Ouvre une VOTable
+      set votable [::votable::openVOTable]
+      # Ajoute l'element INFO pour definir le QUERY_STATUS = "OK" | "ERROR"
+      append votable [::votable::addInfoElement "status" "QUERY_STATUS" "OK"] "\n"
+      # Ouvre l'element RESOURCE
+      append votable [::votable::openResourceElement {} ] "\n"
+
+      # Definition des champs PARAM
+      set votParams ""
+      set description "Observatory IAU code"
+      set p [ list "$::votable::Field::ID \"iaucode\"" \
+                   "$::votable::Field::NAME \"IAUCode\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"3\"" \
+                   "$::votable::Field::WIDTH \"3\"" ]
+      lappend p "$::votable::Param::VALUE ${::tools_astrometry::rapport_uai_code}"; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Subscriber"
+      set p [ list "$::votable::Field::ID \"subscriber\"" \
+                   "$::votable::Field::NAME \"Subscriber\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_rapporteur}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Mail"
+      set p [ list "$::votable::Field::ID \"mail\"" \
+                   "$::votable::Field::NAME \"Mail\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_mail}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Software"
+      set p [ list "$::votable::Field::ID \"software\"" \
+                   "$::votable::Field::NAME \"Software\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"Audela Bddimages\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Observers"
+      set p [ list "$::votable::Field::ID \"observers\"" \
+                   "$::votable::Field::NAME \"Observers\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_observ}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Reduction"
+      set p [ list "$::votable::Field::ID \"reduction\"" \
+                   "$::votable::Field::NAME \"Reduction\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_reduc}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Instrument"
+      set p [ list "$::votable::Field::ID \"instrument\"" \
+                   "$::votable::Field::NAME \"Instrument\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_instru}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Reference catalogue"
+      set p [ list "$::votable::Field::ID \"refcata\"" \
+                   "$::votable::Field::NAME \"ReferenceCatalogue\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_cata}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Batch"
+      set p [ list "$::votable::Field::ID \"batch\"" \
+                   "$::votable::Field::NAME \"Batch\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::tools_astrometry::rapport_batch}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "NumberOfPositions"
+      set p [ list "$::votable::Field::ID \"numberpos\"" \
+                   "$::votable::Field::NAME \"NumberOfPositions\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"int\"" \
+                   "$::votable::Field::WIDTH \"6\"" ]
+      lappend p "$::votable::Param::VALUE ${::tools_astrometry::rapport_nb}"; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+   
+      # Definition des champs FIELDS
+      set votFields ""
+      set description "Object Name"
+      set f [ list "$::votable::Field::ID \"object\"" \
+                   "$::votable::Field::NAME \"Object\"" \
+                   "$::votable::Field::UCD \"meta.id;meta.name\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"24\"" \
+                   "$::votable::Field::WIDTH \"24\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "ISO-Date at mid-exposure)"
+      set f [ list "$::votable::Field::ID \"isodate\"" \
+                   "$::votable::Field::NAME \"ISO-Date\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"24\"" \
+                   "$::votable::Field::WIDTH \"24\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Julian date at mid-exposure"
+      set f [ list "$::votable::Field::ID \"jddate\"" \
+                   "$::votable::Field::NAME \"JD-Date\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"16\"" \
+                   "$::votable::Field::PRECISION \"8\"" \
+                   "$::votable::Field::UNIT \"d\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Measured astrometric J2000 right ascension"
+      set f [ list "$::votable::Field::ID \"ra\"" \
+                   "$::votable::Field::NAME \"RA\"" \
+                   "$::votable::Field::UCD \"pos.eq.ra;meta.main\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"10\"" \
+                   "$::votable::Field::PRECISION \"6\"" \
+                   "$::votable::Field::UNIT \"deg\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Measured astrometric J2000 declination"
+      set f [ list "$::votable::Field::ID \"dec\"" \
+                   "$::votable::Field::NAME \"DEC\"" \
+                   "$::votable::Field::UCD \"pos.eq.dec;meta.main\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"10\"" \
+                   "$::votable::Field::PRECISION \"6\"" \
+                   "$::votable::Field::UNIT \"deg\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Uncertainty on astrometric J2000 right ascension"
+      set f [ list "$::votable::Field::ID \"ra_err\"" \
+                   "$::votable::Field::NAME \"RA_err\"" \
+                   "$::votable::Field::UCD \"stat.error;pos.eq.ra\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"10\"" \
+                   "$::votable::Field::PRECISION \"6\"" \
+                   "$::votable::Field::UNIT \"arcsec\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Uncertainty on astrometric J2000 declination"
+      set f [ list "$::votable::Field::ID \"dec_err\"" \
+                   "$::votable::Field::NAME \"DEC_err\"" \
+                   "$::votable::Field::UCD \"stat.error;pos.eq.dec\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"10\"" \
+                   "$::votable::Field::PRECISION \"6\"" \
+                   "$::votable::Field::UNIT \"arcsec\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Measured magnitude"
+      set f [ list "$::votable::Field::ID \"mag\"" \
+                   "$::votable::Field::NAME \"Magnitude\"" \
+                   "$::votable::Field::UCD \"phot.mag\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"13\"" \
+                   "$::votable::Field::PRECISION \"2\"" \
+                   "$::votable::Field::UNIT \"mag\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "Uncertainty on measured magnitude"
+      set f [ list "$::votable::Field::ID \"mag_err\"" \
+                   "$::votable::Field::NAME \"Magnitude_err\"" \
+                   "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"13\"" \
+                   "$::votable::Field::PRECISION \"2\"" \
+                   "$::votable::Field::UNIT \"mag\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "O-C of astrometric J2000 right ascension"
+      set f [ list "$::votable::Field::ID \"ra_omc\"" \
+                   "$::votable::Field::NAME \"RA_omc\"" \
+                   "$::votable::Field::UCD \"pos.ang\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"8\"" \
+                   "$::votable::Field::PRECISION \"3\"" \
+                   "$::votable::Field::UNIT \"arcsec\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+   
+      set description "O-C of astrometric J2000 declination"
+      set f [ list "$::votable::Field::ID \"dec_omc\"" \
+                   "$::votable::Field::NAME \"DEC_omc\"" \
+                   "$::votable::Field::UCD \"pos.ang\"" \
+                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::WIDTH \"8\"" \
+                   "$::votable::Field::PRECISION \"3\"" \
+                   "$::votable::Field::UNIT \"arcsec\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+      # Construit la table des donnees
+      set l [array get ::tools_astrometry::listscience]
+      set nummax 0
+      foreach {name y} $l {
+         set num [string length $name]
+         if {$num>$nummax} {set nummax $num}
+      }
+   
+      set nrows 0
+      set idcataspec 0
+      set votSources ""
+      foreach {name y} $l {
+         gren_info "TXT: $name = $y\n"
+         if {[info exists tabcalc]} {unset tabcalc}
+
+         foreach date $::tools_astrometry::listscience($name) {
+            append votSources [::votable::openElement $::votable::Element::TR {}]
+            
+            set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 4] ]
+            set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 5] ]
+            set alpha   [format "%.8f"  [lindex $::tools_astrometry::tabval($name,$date) 6] ]
+            set delta   [format "%+.8f" [lindex $::tools_astrometry::tabval($name,$date) 7] ]
+            set mag     [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 8] ]
+            set mag_err [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 9] ]
+
+            set result [::gui_astrometry::rapport_info $date $name]
+            set midexpo   [lindex $result 0]
+            set ra_ephem  [lindex $result 1]
+            set dec_ephem [lindex $result 2]
+
+            if {$midexpo == -1} {
+              ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
+               set midexpo 0
+            }
+            if {$ra_ephem == "-"} {
+               set ra_omc "-"
+            } else {
+               set ra_omc   [format "%.4f" [expr ($alpha - $ra_ephem) * 3600.0] ]
+               if {$ra_omc>0} {set ra_omc "+$ra_omc"}
+            }
+            if {$dec_ephem == "-"} {
+               set dec_omc "-"
+            } else {
+               set dec_omc   [format "%.4f" [expr ($delta - $dec_ephem) * 3600.0] ]
+               if {$dec_omc>0} {set dec_omc "+$dec_omc"}
+            }
+            set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
+            set date    [mc_date2iso8601 $datejj]
+
+            append votSources [::votable::addElement $::votable::Element::TD {} $name]
+            append votSources [::votable::addElement $::votable::Element::TD {} $date]
+            append votSources [::votable::addElement $::votable::Element::TD {} $datejj]
+            append votSources [::votable::addElement $::votable::Element::TD {} $alpha]
+            append votSources [::votable::addElement $::votable::Element::TD {} $delta]
+            append votSources [::votable::addElement $::votable::Element::TD {} $res_a]
+            append votSources [::votable::addElement $::votable::Element::TD {} $res_d]
+            append votSources [::votable::addElement $::votable::Element::TD {} $mag]
+            append votSources [::votable::addElement $::votable::Element::TD {} $mag_err]
+            append votSources [::votable::addElement $::votable::Element::TD {} $ra_omc]
+            append votSources [::votable::addElement $::votable::Element::TD {} $dec_omc]
+
+            append votSources [::votable::closeElement $::votable::Element::TR] "\n"
+            incr nrows
+         }
+      }
+
+      # Ajoute les params
+      append votable $votParams "\n" 
+      # Ouvre l'element TABLE
+      append votable [::votable::openTableElement [list "$::votable::Table::NAME \"Science Astrometric Results\"" "$::votable::Table::NROWS $nrows"]] "\n"
+      #  Ajoute un element de description de la table
+      append votable [::votable::addElement $::votable::Element::DESCRIPTION {} "Astrometric measures of science object from Audela/Bddimages"] "\n"
+      #  Ajoute les definitions des colonnes
+      append votable $votFields
+      #  Ouvre l'element DATA
+      append votable [::votable::openElement $::votable::Element::DATA {}] "\n"
+      #   Ouvre l'element TABLEDATA
+      append votable [::votable::openElement $::votable::Element::TABLEDATA {}] "\n"
+      #    Ajoute les sources
+      append votable $votSources
+      #   Ferme l'element TABLEDATA
+      append votable [::votable::closeElement $::votable::Element::TABLEDATA] "\n"
+      #  Ferme l'element DATA
+      append votable [::votable::closeElement $::votable::Element::DATA] "\n"
+      # Ferme l'element TABLE
+      append votable [::votable::closeTableElement] "\n"
+   
+      # Ferme l'element RESOURCE
+      append votable [::votable::closeResourceElement] "\n"
+      # Ferme la VOTable
+      append votable [::votable::closeVOTable]
+
+      $::gui_astrometry::rapport_xml insert end  "$votable\n\n\n"
+
+      return
+
+   }
+
+
 
    proc ::gui_astrometry::send_email { } {
       
@@ -1510,7 +1856,6 @@ gren_info "la\n"
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
  
-            
             pack [ttk::notebook $onglets.list] -expand yes -fill both 
  
             set sources [frame $onglets.list.sources]
@@ -1576,6 +1921,9 @@ gren_info "la\n"
                  pack $txt -in $onglets_rapports.list -expand yes -fill both 
                  $onglets_rapports.list add $txt -text "TXT"
 
+                 set xml [frame $onglets_rapports.list.xml -borderwidth 1]
+                 pack $xml -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $xml -text "XML"
 
             # Sources - References Parent (par liste de source et moyenne)
             set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
@@ -1922,8 +2270,6 @@ gren_info "la\n"
          pack $::gui_astrometry::zlist  -in $denom -side top -expand 0 -fill x -padx 2 -pady 5
 
 
-
-
          #--- Rapports MPC
 
          set block [frame $mpc.exped  -borderwidth 0 -cursor arrow -relief groove]
@@ -1958,11 +2304,6 @@ gren_info "la\n"
          pack $::gui_astrometry::rapport_mpc.yscroll -side right -fill y
 
 
-
-
-
-
-
          #--- Rapports txt
 
          set ::gui_astrometry::rapport_txt $txt.text
@@ -1978,19 +2319,21 @@ gren_info "la\n"
          scrollbar $::gui_astrometry::rapport_txt.yscroll -orient vertical -command "$::gui_astrometry::rapport_txt yview"
          pack $::gui_astrometry::rapport_txt.yscroll -side right -fill y
 
-#   $::gui_astrometry::rapport_txt insert end "$title \n\n" TITLE
 
+         #--- Rapports VOTABLE
 
+         set ::gui_astrometry::rapport_xml $xml.vot
+         text $::gui_astrometry::rapport_xml -height 30 -width 120 \
+              -xscrollcommand "$::gui_astrometry::rapport_xml.xscroll set" \
+              -yscrollcommand "$::gui_astrometry::rapport_xml.yscroll set" \
+              -wrap none
+         pack $::gui_astrometry::rapport_xml -expand yes -fill both -padx 5 -pady 5
 
+         scrollbar $::gui_astrometry::rapport_xml.xscroll -orient horizontal -command "$::gui_astrometry::rapport_xml xview"
+         pack $::gui_astrometry::rapport_xml.xscroll -side bottom -fill x
 
-
-
-
-
-
-
-
-
+         scrollbar $::gui_astrometry::rapport_xml.yscroll -orient vertical -command "$::gui_astrometry::rapport_xml yview"
+         pack $::gui_astrometry::rapport_xml.yscroll -side right -fill y
 
 
 

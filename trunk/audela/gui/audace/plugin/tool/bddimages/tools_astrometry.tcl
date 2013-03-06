@@ -428,8 +428,9 @@ namespace eval tools_astrometry {
             incr id_current_image
             set catascience($id_current_image) ""
             set cataref($id_current_image) ""
+gren_info "   * id_current_image = $id_current_image \n"
             set ::tools_cata::new_astrometry($id_current_image) ""
-            
+
             gets $chan success
 
             if {$success!="SUCCESS"} {
@@ -469,6 +470,7 @@ namespace eval tools_astrometry {
          }
 
          if {$key=="CATA_VALUES"} {
+gren_info "KEY,VAL = $key :: $val\n"
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
             lappend catascience($id_current_image) [list $name $sour]

@@ -887,7 +887,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
       set ra  [lindex $a 0]
       set dec [lindex $a 1]
-      if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
+      if {$::tools_cata::log} {
+         gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
+      }
 
       if {$::tools_cata::deuxpasses} {
          if {$::tools_cata::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}

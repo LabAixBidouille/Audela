@@ -803,7 +803,7 @@ namespace eval cata_creation_gui {
             set respdata [split [lindex $resp 1] "|"]
             set ra [expr [lindex $respdata 2] * 15.0]
             set dec [lindex $respdata 3]
-            if {$dec > 0} { set dec "+$dec" }
+            if {$dec > 0} { set dec "+[string trim $dec]" }
             set ::tools_cata::coord "$ra $dec"
          }
       } else {
