@@ -1320,37 +1320,12 @@ gren_info "la\n"
               pack $actions.go_priam -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-              label  $actions.labv -text "Voir : " -borderwidth 1
-              pack   $actions.labv -in $actions -side left -padx 3 -pady 3 -anchor c
+              set ::gui_astrometry::gui_generer_rapport [button $actions.generer_rapport -text "Generer Rapport" -borderwidth 2 -takefocus 1 \
+                 -command "::gui_astrometry::create_rapport"]
+              pack $actions.generer_rapport -side left -anchor e \
+                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-              button $actions.clean -text "Clean" -borderwidth 2 -takefocus 1 \
-                      -command "cleanmark"
-              pack   $actions.clean -side left -anchor e -expand 0
 
-              button $actions.residus -text "Residus" -borderwidth 2 -takefocus 1 \
-                      -command "::gui_astrometry::see_residus"
-              pack   $actions.residus -side left -anchor e -expand 0
-
-              label  $actions.labf -text "facteur : " -borderwidth 1
-              pack   $actions.labf -in $actions -side left -padx 3 -pady 3 -anchor c
-
-              entry  $actions.factor -relief sunken -textvariable ::gui_astrometry::factor -width 5
-              pack   $actions.factor -in $actions -side left -padx 3 -pady 3 -anchor w
-
-              label  $actions.labe -text "Enregistrer : " -borderwidth 1
-              pack   $actions.labe -in $actions -side left -padx 3 -pady 3 -anchor c
-
-              button $actions.txt -text "TXT" -borderwidth 2 -takefocus 1 \
-                      -command "::tools_astrometry::save TXT"
-              pack   $actions.txt -side left -anchor e -expand 0
-
-              button $actions.mpc -text "MPC" -borderwidth 2 -takefocus 1 \
-                      -command "::tools_astrometry::save MPC"
-              pack   $actions.mpc -side left -anchor e -expand 0
-
-              button $actions.cata -text "CATA" -borderwidth 2 -takefocus 1 \
-                      -command "::tools_astrometry::save CATA"
-              pack   $actions.cata -side left -anchor e -expand 0
 
 
          #--- Cree un frame pour afficher les tables
@@ -1408,11 +1383,6 @@ gren_info "la\n"
             set onglets_rapports [frame $rapports.onglets -borderwidth 1 -cursor arrow -relief groove]
             pack $onglets_rapports -in $rapports -side top -expand yes -fill both -padx 10 -pady 5
  
-                 button $onglets_rapports.gen -text "Generer" -borderwidth 2 -takefocus 1 \
-                         -command "::gui_astrometry::create_rapport"
-                 pack   $onglets_rapports.gen -side top -anchor c -expand 0
-
-
                  pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both 
  
                  set entetes [frame $onglets_rapports.list.entetes -borderwidth 1]
