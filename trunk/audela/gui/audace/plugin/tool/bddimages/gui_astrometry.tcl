@@ -552,7 +552,7 @@ namespace eval gui_astrometry {
                set sp [split $cataname "_"]
                set cata [lindex $sp 0]
                set x [lsearch -index 0 $s $cata]
-               gren_info "x,cata = $x :: $cata \n"
+               #gren_info "x,cata = $x :: $cata \n"
                if {$x>=0 && $cata=="SKYBOT"} {
                   set b  [lindex [lindex $s $x] 2]
                   set pass "ok"
@@ -572,10 +572,10 @@ namespace eval gui_astrometry {
                if {$x>=0 && ( $cata=="UCAC2" || $cata=="UCAC3" )  } {
                   set b  [lindex [lindex $s $x] 1]
                   set pass "ok"
-                  set type ""
+                  set type "star"
                   set ra  [string trim [lindex $b 0] ]
                   set dec [string trim [lindex $b 1] ]
-                  return [list $ra $dec]
+                  return [list $ra $dec "-" "-"]
                }
             } else {
                continue
@@ -585,7 +585,7 @@ namespace eval gui_astrometry {
       }
       
       if {$pass == "no"} {
-         return [list "-" "-"]
+         return [list "-" "-" "-" "-"]
       }
       
       if {$num == ""} {
@@ -597,51 +597,102 @@ namespace eval gui_astrometry {
       puts $chan0 "#!/bin/sh"
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
-      if {$type == "star"} {
-         puts $chan0 "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
-      } else {
-         puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
-      }
+
+      switch $type { "star"  { puts $chan0 "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
+                               }
+                     "aster" { puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
+                               }
+                     default { }
+                   }
+
       close $chan0
       set err [catch {exec sh ./cmd.ephemcc} msg]
-
+ 
+ 
+      set pass "yes"
 
       if { $err } {
          ::console::affiche_erreur "WARNING: EPHEMCC $err ($msg)\n"
-         return [list "-" "-"]
+         set ra_imcce "-"
+         set dec_imcce "-"
+         set pass "no"
+      } else {
+   
+         foreach line [split $msg "\n"] {
+            set line [string trim $line]
+            set c [string index $line 0]
+            if {$c == "#"} {continue}
+            set rd [regexp -inline -all -- {\S+} $line]      
+            set tab [split $rd " "]
+            set rah [lindex $tab 1]
+            set ram [lindex $tab 2]
+            set ras [lindex $tab 3]
+            set ded [lindex $tab 4]
+            set dem [lindex $tab 5]
+            set des [lindex $tab 6]
+            break
+         }
+         #gren_info "EPHEM RA = $rah $ram $ras; DEC = $ded $dem $des\n"
+         set ra_imcce [expr 15. * ($rah + $ram / 60. + $ras / 3600.)]
+
+         if {$ded > 0 } {
+            set dec_imcce [expr ($ded + $dem / 60. + $des / 3600.)]
+         } else {
+            set dec_imcce [expr ($ded - $dem / 60. - $des / 3600.)]
+         }
       }
 
-      set ::gui_astrometry::data $msg 
-      
-      set msg $::gui_astrometry::data
-      foreach line [split $msg "\n"] {
-         set line [string trim $line]
-         set c [string index $line 0]
-         if {$c == "#"} {continue}
-         set rd [regexp -inline -all -- {\S+} $line]      
-         set tab [split $rd " "]
-         set rah [lindex $tab 1]
-         set ram [lindex $tab 2]
-         set ras [lindex $tab 3]
-         set ded [lindex $tab 4]
-         set dem [lindex $tab 5]
-         set des [lindex $tab 6]
-         break
+      # Ephem du mpc
+      set ra_mpc  "-"
+      set dec_mpc "-"
+      if {$type == "aster"} {
+         #set middate 2456298.51579861110
+         #set num 20000
+         set dateiso [ mc_date2iso8601 $middate ]
+         #set position [list GPS 0 E 43 2890]
+         set ephem [vo_getmpcephem $num $dateiso $::tools_astrometry::rapport_uai_code]
+         #gren_info "EPHEM MPC ephem = $ephem\n"
+         #gren_info "CMD = vo_getmpcephem $num $dateiso $position\n"
+         set ra_mpc  [lindex [lindex $ephem 0] 2]
+         set dec_mpc [lindex [lindex $ephem 0] 3]
+         #gren_info "CMD = vo_getmpcephem $num $dateiso $::tools_astrometry::rapport_uai_code   ||EPHEM MPC ($num) ; date =  $middate ; ra dec = $ra_mpc  $dec_mpc \n"
+         
       }
-      #gren_info "EPHEM RA = $rah $ram $ras; DEC = $ded $dem $des\n"
-      set ra [expr 15. * ($rah + $ram / 60. + $ras / 3600.)]
-      if {$ded > 0 } {
-         set de [expr ($ded + $dem / 60. + $des / 3600.)]
-      } else {
-         set de [expr ($ded - $dem / 60. - $des / 3600.)]
-      }
-      #gren_info "EPHEM RA = $ra; DEC = $de\n"
-      return [list $ra $de]
+
+      #gren_info "EPHEM IMCCE RA = $ra_imcce; DEC = $dec_imcce\n"
+      #gren_info "EPHEM MPC RA = $ra_mpc; DEC = $dec_mpc\n"
+      return [list $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
 
    }
 
 
+   proc ::gui_astrometry::test_mpc {  } {
 
+      set url "http://scully.cfa.harvard.edu/cgi-bin/mpeph2.cgi"
+      set urlget "\"20000\" ty e d \"2013 01 06 002244\" l 1 i 1 u s uto 0 c 586 raty d s c m m igd n ibh n fp y e 0 tit \"\" bu \"\" adir S res n ch c oed \"\" js f "
+
+      set toeval "::http::formatQuery TextArea $urlget"
+      set login [eval $toeval]
+      set err [catch {::http::geturl $url -query "$login"} token]
+      if {$err==1} {
+         error "$token"
+      } else {
+         upvar #0 $token state
+         set res $state(body)
+         set len [llength [split $res \n]]
+         if {$len<15} {
+            error [list "URL $url not found" $res]
+         }
+      }
+      set f [open /astrodata/Observations/Images/bddimages/bddimages_local/tmp/mpc.html w]
+      puts -nonewline $f $res
+      close $f
+#2013 01 06 002244 07 49 51.7 +26 25 02  42.680  43.648  169.7   0.2  20.0   -0.055   +0.012   342  +73   -69   0.41   092  -10       N/A   N/A / <a href="http://scully.cfa.harvard.edu/cgi-bin/uncertaintymap.cgi?Obj=20000&JD=2456298.51579&Ext=VAR2">Map</a> / <a href="http://scully.cfa.harvard.edu/cgi-bin/uncertaintymap.cgi?Obj=20000&JD=2456298.51579&Ext=VAR2&Form=Y&OC=500">Offsets</a>
+#
+#
+#
+
+   }
 
 
    proc ::gui_astrometry::rapport_info { date name } {
@@ -656,11 +707,13 @@ namespace eval gui_astrometry {
             set midexpo  [expr $exposure / 2.]
             set middate  [ expr [ mc_date2jd $date] + $midexpo / 86400. ]
             set result   [::gui_astrometry::rapport_get_ephem ::gui_cata::cata_list($id_current_image) $name $middate]
-            return [list $midexpo [lindex $result 0] [lindex $result 1] ]
+            #gren_info "RAPPORT_INFO = $result \n"
+
+            return [list $midexpo $result ]
 
          }
       }
-      return [list -1 "-" "-"]
+      return [list -1 "-" "-" "-" "-"]
    }
 
 
@@ -668,7 +721,7 @@ namespace eval gui_astrometry {
 
 
    proc ::gui_astrometry::sep_txt {  } {
-      $::gui_astrometry::rapport_txt insert end  "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+      $::gui_astrometry::rapport_txt insert end  "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
    }
 
 
@@ -702,45 +755,79 @@ namespace eval gui_astrometry {
          if {$num>$nummax} {set nummax $num}
       }
 
-      set form "%-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s  %-16s  %-12s  %-12s\n"
+      set form "%-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s     \n"
 
-      set name     "Object"
-      set date     "Mid-Date"
-      set ra_hms   "Right Asc."
-      set dec_dms  "Declination"
-      set res_a    "Err RA"
-      set res_d    "Err De"
-      set mag      "Mag"
-      set err_mag  "ErrMag"
-      set ra_omc   "OmC RA"
-      set dec_omc  "OmC De"
-      set datejj   "Julian Date"
-      set alpha    "Right Asc."
-      set delta    "Declination"
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_omc $dec_omc $datejj $alpha $delta]
+      set name          ""
+      set date          ""
+      set ra_hms        ""
+      set dec_dms       ""
+      set res_a         ""
+      set res_d         ""
+      set mag           ""
+      set err_mag       ""
+      set ra_imcce_omc  "IMCCE"
+      set dec_imcce_omc ""
+      set ra_mpc_omc    "MPC"
+      set dec_mpc_omc   ""
+      set datejj        ""
+      set alpha         ""
+      set delta         ""
+      set ra_imcce      "IMCCE"
+      set dec_imcce     ""
+      set ra_mpc        "MPC"
+      set dec_mpc       ""
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
       $::gui_astrometry::rapport_txt insert end  $txt
 
-      set name     ""
-      set date     "iso"
-      set ra_hms   "hms"
-      set dec_dms  "dms"
-      set rho      "arcsec"
-      set res_a    "arcsec"
-      set res_d    "arcsec"
-      set mag      ""
-      set err_mag  ""
-      set ra_omc   "arcsec"
-      set dec_omc  "arcsec"
-      set datejj   ""
-      set alpha    "deg"
-      set delta    "deg"
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_omc $dec_omc $datejj $alpha $delta]
+      set name          "Object"      
+      set date          "Mid-Date"    
+      set ra_hms        "Right Asc."  
+      set dec_dms       "Declination" 
+      set res_a         "Err RA"      
+      set res_d         "Err De"      
+      set mag           "Mag"         
+      set err_mag       "ErrMag"      
+      set ra_imcce_omc  "OmC RA"
+      set dec_imcce_omc "OmC De"
+      set ra_mpc_omc    "OmC RA"
+      set dec_mpc_omc   "OmC De"
+      set datejj        "Julian Date"
+      set alpha         "Right Asc."
+      set delta         "Declination"
+      set ra_imcce      "Right Asc."
+      set dec_imcce     "Declination"
+      set ra_mpc        "Right Asc."
+      set dec_mpc       "Declination"
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
+      $::gui_astrometry::rapport_txt insert end  $txt
+
+      set name          ""
+      set date          "iso"
+      set ra_hms        "hms"
+      set dec_dms       "dms"
+      set rho           "arcsec"
+      set res_a         "arcsec"
+      set res_d         "arcsec"
+      set mag           ""
+      set err_mag       ""
+      set ra_imcce_omc  "arcsec"
+      set dec_imcce_omc "arcsec"
+      set ra_mpc_omc    "arcsec"
+      set dec_mpc_omc   "arcsec"
+      set datejj        ""
+      set alpha         "deg"
+      set delta         "deg"
+      set ra_imcce      "deg"
+      set dec_imcce     "deg"
+      set ra_mpc        "deg"
+      set dec_mpc       "deg"
+      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
       $::gui_astrometry::rapport_txt insert end  $txt
 
       ::gui_astrometry::sep_txt
 
       foreach {name y} $l {
-         gren_info "TXT: $name = $y\n"
+         #gren_info "TXT: $name = $y\n"
          if {[info exists tabcalc]} {unset tabcalc}
          
          foreach date $::tools_astrometry::listscience($name) {
@@ -755,45 +842,81 @@ namespace eval gui_astrometry {
             set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$date) 6]]
             set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$date) 7]]
 
-            set result [::gui_astrometry::rapport_info $date $name]
+            set result    [::gui_astrometry::rapport_info $date $name]
             set midexpo   [lindex $result 0]
-            set ra_ephem  [lindex $result 1]
-            set dec_ephem [lindex $result 2]
+            set result    [lindex $result 1]
+            #gren_info "result = $result \n"
+            set ra_imcce_deg  [lindex $result 0]
+            set dec_imcce_deg [lindex $result 1]
+            set ra_mpc_deg    [lindex $result 2]
+            set dec_mpc_deg   [lindex $result 3]
 
             if {$midexpo == -1} {
               ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
                set midexpo 0
             }
-            if {$ra_ephem == "-"} {
-               set ra_omc "-"
+
+            # OMC IMCCE
+            if {$ra_imcce_deg == "-"} {
+               set ra_imcce_omc "-"
             } else {
-               set ra_omc   [format "%.4f" [expr ($alpha - $ra_ephem) * 3600.0] ]
-               if {$ra_omc>0} {set ra_omc "+$ra_omc"}
-               set ra_ephem [::tools_astrometry::convert_txt_hms $ra_ephem]
+               set ra_imcce_omc   [format "%.4f" [expr ($alpha - $ra_imcce_deg) * 3600.0] ]
+               if {$ra_imcce_omc>0} {set ra_imcce_omc "+$ra_imcce_omc"}
+               set ra_imcce [::tools_astrometry::convert_txt_hms $ra_imcce_deg]
             }
-            if {$dec_ephem == "-"} {
-               set dec_omc "-"
+            
+            if {$dec_imcce_deg == "-"} {
+               set dec_imcce_omc "-"
             } else {
-               set dec_omc   [format "%.4f" [expr ($delta - $dec_ephem) * 3600.0] ]
-               if {$dec_omc>0} {set dec_omc "+$dec_omc"}
-               set dec_ephem [::tools_astrometry::convert_txt_dms $dec_ephem]
+               set dec_imcce_omc [format "%.4f" [expr ($delta - $dec_imcce_deg) * 3600.0] ]
+               if {$dec_imcce_omc>0} {set dec_imcce_omc "+$dec_imcce_omc"}
+               set dec_imcce [::tools_astrometry::convert_txt_dms $dec_imcce_deg]
             }
+
+            # OMC MPC
+            if {$ra_mpc_deg == "-"} {
+               set ra_mpc_omc "-"
+            } else {
+               set ra_mpc_omc   [format "%.4f" [expr ($alpha - $ra_mpc_deg) * 3600.0] ]
+               if {$ra_mpc_omc>0} {set ra_mpc_omc "+$ra_mpc_omc"}
+               set ra_mpc [::tools_astrometry::convert_txt_hms $ra_mpc_deg]
+            }
+            if {$dec_mpc_deg == "-"} {
+               set dec_mpc_omc "-"
+            } else {
+               set dec_mpc_omc   [format "%.4f" [expr ($delta - $dec_mpc_deg) * 3600.0] ]
+               if {$dec_mpc_omc>0} {set dec_mpc_omc "+$dec_mpc_omc"}
+               set dec_mpc [::tools_astrometry::convert_txt_dms $dec_mpc_deg]
+            }
+
+            
+            
+            
             set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
             set date    [mc_date2iso8601 $datejj]
 
             #gren_info "\nDATE =  $date $datejj\n"
-            #gren_info "RA  obs = $ra_hms ; ephem = $ra_ephem ; omc = $ra_omc \n"
-            #gren_info "DEC obs = $dec_dms ; ephem = $dec_ephem ; omc = $dec_omc \n"
-            gren_info "EPHEM =  $date  $ra_ephem  $dec_ephem\n"
+            #gren_info "RA  obs = $ra_hms ; ephem = $ra_imcce ; omc = $ra_imcce_omc \n"
+            #gren_info "DEC obs = $dec_dms ; ephem = $dec_imcce ; omc = $dec_imcce_omc \n"
+            #gren_info "EPHEM =  $date  $ra_imcce  $dec_imcce ; omc = $ra_imcce_omc  $dec_imcce_omc  \n"
+            #gren_info "EPHEM MPC date =  $date ; radec = $ra_mpc  $dec_mpc ; omc = $ra_mpc_omc  $dec_mpc_omc\n"
             lappend tabcalc(res_a)   $res_a
             lappend tabcalc(res_d)   $res_d
-            if {$ra_ephem != "-"} {lappend tabcalc(ra_omc)  $ra_omc}
-            if {$dec_ephem != "-"} {lappend tabcalc(dec_omc) $dec_omc}
+            if {$ra_imcce_omc  != "-"} {lappend tabcalc(ra_imcce_omc)  $ra_imcce_omc }
+            if {$dec_imcce_omc != "-"} {lappend tabcalc(dec_imcce_omc) $dec_imcce_omc}
+            if {$ra_mpc_omc    != "-"} {lappend tabcalc(ra_mpc_omc)    $ra_mpc_omc   }
+            if {$dec_mpc_omc   != "-"} {lappend tabcalc(dec_mpc_omc)   $dec_mpc_omc  }
             lappend tabcalc(datejj)  $datejj
             lappend tabcalc(alpha)   $alpha
             lappend tabcalc(delta)   $delta
 
-            set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_omc $dec_omc $datejj $alpha $delta ]
+            set alpha         [format "%.8f" $alpha]
+            set delta         [format "%.8f" $delta]
+            set ra_imcce_deg  [format "%.8f" $ra_imcce_deg ]
+            set dec_imcce_deg [format "%.8f" $dec_imcce_deg]
+            if {$ra_mpc_deg  != "-"} {set ra_mpc_deg    [format "%.8f" $ra_mpc_deg ] }
+            if {$dec_mpc_deg != "-"} {set dec_mpc_deg   [format "%.8f" $dec_mpc_deg] }
+            set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg]
             $::gui_astrometry::rapport_txt insert end  $txt
          }
          
@@ -801,19 +924,38 @@ namespace eval gui_astrometry {
          set calc(res_a,stdev)   [format "%.4f" [::math::statistics::stdev  $tabcalc(res_a)   ]]
          set calc(res_d,mean)    [format "%.4f" [::math::statistics::mean   $tabcalc(res_d)   ]]
          set calc(res_d,stdev)   [format "%.4f" [::math::statistics::stdev  $tabcalc(res_d)   ]]
-         if {[info exists tabcalc(ra_omc)]} {
-            set calc(ra_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_omc)  ]]
-            set calc(ra_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_omc)  ]]
+
+         # OMC IMCCE
+         if {[info exists tabcalc(ra_imcce_omc)]} {
+            set calc(ra_imcce_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_imcce_omc)  ]]
+            set calc(ra_imcce_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_imcce_omc)  ]]
          } else {
-            set calc(ra_omc,mean)   "-"
-            set calc(ra_omc,stdev)  "-"
+            set calc(ra_imcce_omc,mean)   "-"
+            set calc(ra_imcce_omc,stdev)  "-"
          }
-         if {[info exists tabcalc(dec_omc)]} {
-           set calc(dec_omc,mean)  [format "%.4f" [::math::statistics::mean   $tabcalc(dec_omc) ]]
-           set calc(dec_omc,stdev) [format "%.4f" [::math::statistics::stdev  $tabcalc(dec_omc) ]]
+
+         if {[info exists tabcalc(dec_imcce_omc)]} {
+           set calc(dec_imcce_omc,mean)  [format "%.4f" [::math::statistics::mean   $tabcalc(dec_imcce_omc) ]]
+           set calc(dec_imcce_omc,stdev) [format "%.4f" [::math::statistics::stdev  $tabcalc(dec_imcce_omc) ]]
          } else {
-            set calc(dec_omc,mean)   "-"
-            set calc(dec_omc,stdev)  "-"
+            set calc(dec_imcce_omc,mean)   "-"
+            set calc(dec_imcce_omc,stdev)  "-"
+         }
+         # OMC MPC
+         if {[info exists tabcalc(ra_mpc_omc)]} {
+            set calc(ra_mpc_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_mpc_omc)  ]]
+            set calc(ra_mpc_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_mpc_omc)  ]]
+         } else {
+            set calc(ra_mpc_omc,mean)   "-"
+            set calc(ra_mpc_omc,stdev)  "-"
+         }
+
+         if {[info exists tabcalc(dec_mpc_omc)]} {
+           set calc(dec_mpc_omc,mean)  [format "%.4f" [::math::statistics::mean   $tabcalc(dec_mpc_omc) ]]
+           set calc(dec_mpc_omc,stdev) [format "%.4f" [::math::statistics::stdev  $tabcalc(dec_mpc_omc) ]]
+         } else {
+            set calc(dec_mpc_omc,mean)   "-"
+            set calc(dec_mpc_omc,stdev)  "-"
          }
          
          set calc(datejj,mean)   [::math::statistics::mean   $tabcalc(datejj) ] 
@@ -823,17 +965,50 @@ namespace eval gui_astrometry {
          set calc(delta,mean)    [::math::statistics::mean   $tabcalc(delta) ]  
          set calc(delta,stdev)   [::math::statistics::stdev  $tabcalc(delta) ]  
 
+         if {$calc(res_a,mean)>=0} {set calc(res_a,mean) "+$calc(res_a,mean)" }
+         if {$calc(res_d,mean)>=0} {set calc(res_d,mean) "+$calc(res_d,mean)" }
+         if {$calc(res_a,stdev)>=0} {set calc(res_a,stdev) "+$calc(res_a,stdev)" }
+         if {$calc(res_d,stdev)>=0} {set calc(res_d,stdev) "+$calc(res_d,stdev)" }
+
+         if {$calc(ra_imcce_omc,mean)>=0} {set calc(ra_imcce_omc,mean) "+$calc(ra_imcce_omc,mean)" }
+         if {$calc(dec_imcce_omc,mean)>=0} {set calc(dec_imcce_omc,mean) "+$calc(dec_imcce_omc,mean)" }
+         if {$calc(ra_imcce_omc,stdev)>=0} {set calc(ra_imcce_omc,stdev) "+$calc(ra_imcce_omc,stdev)" }
+         if {$calc(dec_imcce_omc,stdev)>=0} {set calc(dec_imcce_omc,stdev) "+$calc(dec_imcce_omc,stdev)" }
+
+         if {$calc(ra_mpc_omc,mean)>=0} {set calc(ra_mpc_omc,mean) "+$calc(ra_mpc_omc,mean)" }
+         if {$calc(dec_mpc_omc,mean)>=0} {set calc(dec_mpc_omc,mean) "+$calc(dec_mpc_omc,mean)" }
+         if {$calc(ra_mpc_omc,stdev)>=0} {set calc(ra_mpc_omc,stdev) "+$calc(ra_mpc_omc,stdev)" }
+         if {$calc(dec_mpc_omc,stdev)>=0} {set calc(dec_mpc_omc,stdev) "+$calc(dec_mpc_omc,stdev)" }
+
+
+
          ::gui_astrometry::sep_txt
          $::gui_astrometry::rapport_txt insert end  "BODY NAME = $name\n"
-         $::gui_astrometry::rapport_txt insert end  "Residu RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "Residu DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "OMC RA     \"  : mean = $calc(ra_omc,mean) stedv = $calc(ra_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "OMC DEC    \"  : mean = $calc(dec_omc,mean) stedv = $calc(dec_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "DATE MOYEN jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "RA MOYEN   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "DEC MOYEN  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  date,ra_omc,ra_omc_std,dec_omc,dec_omc_std,info\n"
-         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  $calc(datejj,mean),$calc(ra_omc,mean),$calc(ra_omc,stdev),$calc(dec_omc,mean),$calc(dec_omc,stdev),$name [mc_date2iso8601 $calc(datejj,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "-\n"
+         $::gui_astrometry::rapport_txt insert end  "Residus   RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "Residus   DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "-\n"
+         $::gui_astrometry::rapport_txt insert end  "OMC IMCCE RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "OMC IMCCE DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "-\n"
+         $::gui_astrometry::rapport_txt insert end  "OMC MPC   RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "OMC MPC   DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "-\n"
+         $::gui_astrometry::rapport_txt insert end  "Date jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "RA   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "DEC  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "-\n"
+         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  date,ra_imcce_omc,ra_imcce_omc_std,dec_imcce_omc,dec_imcce_omc_std, ra_mpc_omc,ra_mpc_omc_std,dec_mpc_omc,dec_mpc_omc_std, info\n"
+         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  $calc(datejj,mean),         \
+                                                               $calc(ra_imcce_omc,mean),   \
+                                                               $calc(ra_imcce_omc,stdev),  \
+                                                               $calc(dec_imcce_omc,mean),  \
+                                                               $calc(dec_imcce_omc,stdev), \
+                                                               $calc(ra_mpc_omc,mean),     \
+                                                               $calc(ra_mpc_omc,stdev),    \
+                                                               $calc(dec_mpc_omc,mean),    \
+                                                               $calc(dec_mpc_omc,stdev),   \
+                                                               $name [mc_date2iso8601 $calc(datejj,mean)]\n"
          ::gui_astrometry::sep_txt
          
       }
