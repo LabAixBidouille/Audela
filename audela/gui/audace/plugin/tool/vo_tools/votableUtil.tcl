@@ -266,6 +266,7 @@ proc ::votableUtil::list2votable { listsources tabkey } {
    # Pour chaque catalogue de la liste des sources -> TABLE
    foreach t $tables {
       foreach {tableName commun col} $t {
+         set tableName [string toupper $tableName]
          set nbCommonFields [llength $commun]
          set nbColumnFields [llength $col]
          set votFields ""
@@ -297,7 +298,7 @@ proc ::votableUtil::list2votable { listsources tabkey } {
          set votSources ""
          foreach s $sources {
             foreach catalog $s {
-               if {[lindex $catalog 0] == $tableName} {
+               if {[string toupper [lindex $catalog 0]] == $tableName} {
                   # Extrait la liste des valeurs correspondant aux colonnes
                   set data [lindex $catalog $catidx]
                   append votSources [::votable::openElement $::votable::Element::TR {}]
