@@ -1023,7 +1023,13 @@ namespace eval cata_creation_gui {
 
          if { $::tools_cata::boucle == 0 } {
             ::gui_cata::affiche_current_image
-            ::gui_cata::affiche_cata
+            set err [catch {::gui_cata::affiche_cata} msg ]
+            if {$err} {
+               gren_erreur "Erreur d'affichage du CATA\n"
+               gren_erreur "err = $err\n"
+               gren_erreur "msg = $msg\n"
+               set cataexist 0
+            }
          }
          
          #?Mise a jour GUI
@@ -1066,6 +1072,18 @@ namespace eval cata_creation_gui {
 
 
       
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1147,6 +1165,30 @@ namespace eval cata_creation_gui {
       #?Charge l image a l ecran
       buf$::audace(bufNo) load $file
 
+
+      set ::tools_cata::nb_img     0
+      set ::tools_cata::nb_usnoa2  0
+      set ::tools_cata::nb_tycho2  0
+      set ::tools_cata::nb_ucac2   0
+      set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_ucac4   0
+      set ::tools_cata::nb_ppmx    0
+      set ::tools_cata::nb_ppmxl   0
+      set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_2mass   0
+      set ::tools_cata::nb_skybot  0
+      set ::tools_cata::nb_astroid 0
+      affich_un_rond_xy $xcent $ycent red 2 2
+      ::gui_cata::affiche_current_image
+      set err [catch {::gui_cata::affiche_cata} msg ]
+      if {$err} {
+         gren_erreur "Erreur d'affichage du CATA\n"
+         gren_erreur "err = $err\n"
+         gren_erreur "msg = $msg\n"
+         set cataexist 0
+      }
+
+
       # Etat des boutons et GUI
       cleanmark
       set ::gui_cata::stateback disabled
@@ -1166,21 +1208,7 @@ namespace eval cata_creation_gui {
          set ::gui_cata::color_cata $::gui_cata::color_button_bad
       }
 
-      set ::tools_cata::nb_img     0
-      set ::tools_cata::nb_usnoa2  0
-      set ::tools_cata::nb_tycho2  0
-      set ::tools_cata::nb_ucac2   0
-      set ::tools_cata::nb_ucac3   0
-      set ::tools_cata::nb_ucac4   0
-      set ::tools_cata::nb_ppmx    0
-      set ::tools_cata::nb_ppmxl   0
-      set ::tools_cata::nb_nomad1  0
-      set ::tools_cata::nb_2mass   0
-      set ::tools_cata::nb_skybot  0
-      set ::tools_cata::nb_astroid 0
-      affich_un_rond_xy $xcent $ycent red 2 2
-      ::gui_cata::affiche_current_image
-      ::gui_cata::affiche_cata
+
    }
 
 

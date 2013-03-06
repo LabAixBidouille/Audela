@@ -128,12 +128,14 @@ namespace eval tools_cdl {
          set fondmoy     [lindex $valeurs 2]
          set sigmafond   [lindex $valeurs 3]
          set errflux 0
+        
+         set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
 
          set valeurs     [buf$bufNo stat [list $xs0 $ys0 $xs1 $ys1] ]
          set pixmax      [lindex $valeurs 2]
          set intensite   [expr $pixmax - $fondmed]
 
-         set snint       [expr $fluxintegre / $sigmafond]
+         set snint       [expr $fluxintegre / sqrt ( $fluxintegre + $npix * $fondmed )]
          set snpx        [expr $intensite / $sigmafond]
 
          return [ list $xsm $ysm $err_xsm $err_ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
