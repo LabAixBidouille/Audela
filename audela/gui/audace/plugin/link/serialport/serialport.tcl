@@ -490,7 +490,7 @@ proc ::serialport::searchPortsThread { } {
       #--- Chargement du code TCL du fichier dans le thread
       ::thread::send $threadNo [list uplevel #0 source \"$sourceFileName\"]
       #--- Lancement de l'execution du code TCL en differe
-      ::thread::send -async $threadNo "::searchPorts [thread::id] $::conf(serial,port_exclus) "
+      ::thread::send -async $threadNo "::searchPorts [thread::id] $::conf(serial,port_exclus)"
    } ]
 
    if { $catchResult == 1 } {
