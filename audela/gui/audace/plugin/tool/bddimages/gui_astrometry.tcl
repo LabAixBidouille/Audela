@@ -584,7 +584,7 @@ namespace eval gui_astrometry {
          return [list "-" "-" "-" "-"]
       }
       
-      if {$num == ""} {
+      if {$num == "-"} {
          set num $nom
       }
 
@@ -640,13 +640,12 @@ namespace eval gui_astrometry {
       # Ephem du mpc
       set ra_mpc  "-"
       set dec_mpc "-"
-      set go_mpc 0
-      if {$go_mpc && $type == "aster"} {
+      if {$type == "aster"} {
          #set middate 2456298.51579861110
          #set num 20000
          set dateiso [ mc_date2iso8601 $middate ]
          #set position [list GPS 0 E 43 2890]
-         #set ephem [vo_getmpcephem $num $dateiso $::tools_astrometry::rapport_uai_code]
+         set ephem [vo_getmpcephem [string map {" " ""} $num] $dateiso $::tools_astrometry::rapport_uai_code]
          #gren_info "EPHEM MPC ephem = $ephem\n"
          #gren_info "CMD = vo_getmpcephem $num $dateiso $position\n"
          set ra_mpc  [lindex [lindex $ephem 0] 2]
@@ -717,7 +716,7 @@ namespace eval gui_astrometry {
 
 
    proc ::gui_astrometry::sep_txt {  } {
-      $::gui_astrometry::rapport_txt insert end  "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+      $::gui_astrometry::rapport_txt insert end  "#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
    }
 
 
@@ -729,19 +728,18 @@ namespace eval gui_astrometry {
       # ::bddimages::ressource
       $::gui_astrometry::rapport_txt delete 0.0 end 
 
+      # Entete
       ::gui_astrometry::sep_txt
-      
-      $::gui_astrometry::rapport_txt insert end  "#IAU CODE    : $::tools_astrometry::rapport_uai_code \n"
-      $::gui_astrometry::rapport_txt insert end  "#Subscriber  : $::tools_astrometry::rapport_rapporteur \n"
-      $::gui_astrometry::rapport_txt insert end  "#MAIL        : $::tools_astrometry::rapport_mail \n"
-      $::gui_astrometry::rapport_txt insert end  "#Software    : Audela Bddimages Priam \n"
-      $::gui_astrometry::rapport_txt insert end  "#Observers   : $::tools_astrometry::rapport_observ \n"
-      $::gui_astrometry::rapport_txt insert end  "#Reduction   : $::tools_astrometry::rapport_reduc \n"
-      $::gui_astrometry::rapport_txt insert end  "#Instrument  : $::tools_astrometry::rapport_instru \n"
-      $::gui_astrometry::rapport_txt insert end  "#Ref.Catalog : $::tools_astrometry::rapport_cata \n"
-      $::gui_astrometry::rapport_txt insert end  "#Batch       : $::tools_astrometry::rapport_batch \n"
-      $::gui_astrometry::rapport_txt insert end  "#Numb.Pos.   : $::tools_astrometry::rapport_nb \n"
-
+      $::gui_astrometry::rapport_txt insert end  "# IAU CODE    : $::tools_astrometry::rapport_uai_code \n"
+      $::gui_astrometry::rapport_txt insert end  "# Subscriber  : $::tools_astrometry::rapport_rapporteur \n"
+      $::gui_astrometry::rapport_txt insert end  "# MAIL        : $::tools_astrometry::rapport_mail \n"
+      $::gui_astrometry::rapport_txt insert end  "# Software    : Audela Bddimages Priam \n"
+      $::gui_astrometry::rapport_txt insert end  "# Observers   : $::tools_astrometry::rapport_observ \n"
+      $::gui_astrometry::rapport_txt insert end  "# Reduction   : $::tools_astrometry::rapport_reduc \n"
+      $::gui_astrometry::rapport_txt insert end  "# Instrument  : $::tools_astrometry::rapport_instru \n"
+      $::gui_astrometry::rapport_txt insert end  "# Ref.Catalog : $::tools_astrometry::rapport_cata \n"
+      $::gui_astrometry::rapport_txt insert end  "# Batch       : $::tools_astrometry::rapport_batch \n"
+      $::gui_astrometry::rapport_txt insert end  "# Numb.Pos.   : $::tools_astrometry::rapport_nb \n"
       ::gui_astrometry::sep_txt
 
       set l [array get ::tools_astrometry::listscience]
@@ -751,7 +749,7 @@ namespace eval gui_astrometry {
          if {$num>$nummax} {set nummax $num}
       }
 
-      set form "%-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s     \n"
+      set form "%1s %-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s     \n"
 
       set name          ""
       set date          ""
@@ -772,8 +770,7 @@ namespace eval gui_astrometry {
       set dec_imcce     ""
       set ra_mpc        "MPC"
       set dec_mpc       ""
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
-      $::gui_astrometry::rapport_txt insert end  $txt
+      set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
 
       set name          "Object"      
       set date          "Mid-Date"    
@@ -794,8 +791,7 @@ namespace eval gui_astrometry {
       set dec_imcce     "Declination"
       set ra_mpc        "Right Asc."
       set dec_mpc       "Declination"
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
-      $::gui_astrometry::rapport_txt insert end  $txt
+      set headtab2 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
 
       set name          ""
       set date          "iso"
@@ -817,15 +813,18 @@ namespace eval gui_astrometry {
       set dec_imcce     "deg"
       set ra_mpc        "deg"
       set dec_mpc       "deg"
-      set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
-      $::gui_astrometry::rapport_txt insert end  $txt
+      set headtab3 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
 
-      ::gui_astrometry::sep_txt
 
       foreach {name y} $l {
          #gren_info "TXT: $name = $y\n"
          if {[info exists tabcalc]} {unset tabcalc}
-         
+
+         $::gui_astrometry::rapport_txt insert end $headtab1
+         $::gui_astrometry::rapport_txt insert end $headtab2
+         $::gui_astrometry::rapport_txt insert end $headtab3
+         ::gui_astrometry::sep_txt
+
          foreach date $::tools_astrometry::listscience($name) {
             
             set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 3] ]
@@ -838,14 +837,17 @@ namespace eval gui_astrometry {
             set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$date) 6]]
             set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$date) 7]]
 
-            set result    [::gui_astrometry::rapport_info $date $name]
-            set midexpo   [lindex $result 0]
-            set result    [lindex $result 1]
-            #gren_info "result = $result \n"
+            set resultmp [::gui_astrometry::rapport_info $date $name]
+gren_info "RESULTMP = $resultmp\n"
+            set midexpo   [lindex $resultmp 0]
+            set result    [lindex $resultmp 1]
+gren_info "   result = $result \n"
             set ra_imcce_deg  [lindex $result 0]
             set dec_imcce_deg [lindex $result 1]
             set ra_mpc_deg    [lindex $result 2]
             set dec_mpc_deg   [lindex $result 3]
+
+gren_info "EPHEMCC: $name :: $date :: $midexpo -> $ra_imcce_deg $dec_imcce_deg\n"
 
             if {$midexpo == -1} {
               ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
@@ -885,9 +887,6 @@ namespace eval gui_astrometry {
                set dec_mpc [::tools_astrometry::convert_txt_dms $dec_mpc_deg]
             }
 
-            
-            
-            
             set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
             set date    [mc_date2iso8601 $datejj]
 
@@ -912,10 +911,10 @@ namespace eval gui_astrometry {
             set dec_imcce_deg [format "%.8f" $dec_imcce_deg]
             if {$ra_mpc_deg  != "-"} {set ra_mpc_deg    [format "%.8f" $ra_mpc_deg ] }
             if {$dec_mpc_deg != "-"} {set dec_mpc_deg   [format "%.8f" $dec_mpc_deg] }
-            set txt [format $form $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg]
+            set txt [format $form "" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg]
             $::gui_astrometry::rapport_txt insert end  $txt
          }
-         
+
          set calc(res_a,mean)    [format "%.4f" [::math::statistics::mean   $tabcalc(res_a)   ]]
          set calc(res_a,stdev)   [format "%.4f" [::math::statistics::stdev  $tabcalc(res_a)   ]]
          set calc(res_d,mean)    [format "%.4f" [::math::statistics::mean   $tabcalc(res_d)   ]]
@@ -976,39 +975,37 @@ namespace eval gui_astrometry {
          if {$calc(ra_mpc_omc,stdev)>=0} {set calc(ra_mpc_omc,stdev) "+$calc(ra_mpc_omc,stdev)" }
          if {$calc(dec_mpc_omc,stdev)>=0} {set calc(dec_mpc_omc,stdev) "+$calc(dec_mpc_omc,stdev)" }
 
-
-
          ::gui_astrometry::sep_txt
-         $::gui_astrometry::rapport_txt insert end  "BODY NAME = $name\n"
-         $::gui_astrometry::rapport_txt insert end  "-\n"
-         $::gui_astrometry::rapport_txt insert end  "Residus   RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "Residus   DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "-\n"
-         $::gui_astrometry::rapport_txt insert end  "OMC IMCCE RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "OMC IMCCE DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "-\n"
-         $::gui_astrometry::rapport_txt insert end  "OMC MPC   RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "OMC MPC   DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "-\n"
-         $::gui_astrometry::rapport_txt insert end  "Date jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "RA   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "DEC  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "-\n"
-         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  date,ra_imcce_omc,ra_imcce_omc_std,dec_imcce_omc,dec_imcce_omc_std, ra_mpc_omc,ra_mpc_omc_std,dec_mpc_omc,dec_mpc_omc_std, info\n"
-         $::gui_astrometry::rapport_txt insert end  "TOPCAT =  $calc(datejj,mean),         \
-                                                               $calc(ra_imcce_omc,mean),   \
-                                                               $calc(ra_imcce_omc,stdev),  \
-                                                               $calc(dec_imcce_omc,mean),  \
-                                                               $calc(dec_imcce_omc,stdev), \
-                                                               $calc(ra_mpc_omc,mean),     \
-                                                               $calc(ra_mpc_omc,stdev),    \
-                                                               $calc(dec_mpc_omc,mean),    \
-                                                               $calc(dec_mpc_omc,stdev),   \
-                                                               $name [mc_date2iso8601 $calc(datejj,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "# BODY NAME = $name\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"
+         $::gui_astrometry::rapport_txt insert end  "# Residus   RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# Residus   DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC MPC   RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC MPC   DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"
+         $::gui_astrometry::rapport_txt insert end  "# Date jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "# RA   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "# DEC  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"
+         $::gui_astrometry::rapport_txt insert end  "# TOPCAT =  date,ra_imcce_omc,ra_imcce_omc_std,dec_imcce_omc,dec_imcce_omc_std, ra_mpc_omc,ra_mpc_omc_std,dec_mpc_omc,dec_mpc_omc_std, info\n"
+         $::gui_astrometry::rapport_txt insert end  "# TOPCAT =  $calc(datejj,mean),         \
+                                                                 $calc(ra_imcce_omc,mean),   \
+                                                                 $calc(ra_imcce_omc,stdev),  \
+                                                                 $calc(dec_imcce_omc,mean),  \
+                                                                 $calc(dec_imcce_omc,stdev), \
+                                                                 $calc(ra_mpc_omc,mean),     \
+                                                                 $calc(ra_mpc_omc,stdev),    \
+                                                                 $calc(dec_mpc_omc,mean),    \
+                                                                 $calc(dec_mpc_omc,stdev),   \
+                                                                 $name [mc_date2iso8601 $calc(datejj,mean)]\n"
          ::gui_astrometry::sep_txt
 
       }
-      $::gui_astrometry::rapport_txt insert end  "\n\n\n"
+      $::gui_astrometry::rapport_txt insert end "\n"
 
       return
 
