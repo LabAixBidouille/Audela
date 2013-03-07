@@ -8,7 +8,7 @@
 # ------------------------------------------------------------------------------------
 #
 # proc        : name2coord { }
-# Description : Resolveur de noms et retourne les coordonnees J2000.0
+# Description : Resolveur de noms et retourne les coordonnees J2000.0 et la derive dra,ddec (deg/sec)
 # Auteur      : Alain KLOTZ
 # Update      : 06 February 2013
 #
@@ -18,24 +18,46 @@ proc name2coord { args } {
    # source $audace(rep_install)/gui/audace/celestial_mechanics.tcl ; name2coord dudul
    # name2coord m1 -offset 1
    global audace
-   set home $audace(posobs,observateur,gps)
-   set date [::audace::date_sys2ut now]
    set name [lindex $args 0]
    set name0 $name
    set argc [llength $args]
+   set dra 0
+   set ddec 0
    if { $argc < 1} {
-      error "Usage: name2coord name ?-offset flag?"
+      error "Usage: name2coord name ?-offset flag? ?-date Date? ?-home Home?"
       return $error;
    }
    set offset 0
+   set home ""
+   set date ""
+   set drift 0
    if {$argc > 1} {
       for {set k 1} {$k<[expr $argc-1]} {incr k} {
          set argu [lindex $args $k]
          if {$argu=="-offset"} {
             set offset [lindex $args [expr $k+1]]
          }
+         if {$argu=="-date"} {
+            set date [lindex $args [expr $k+1]]
+         }
+         if {$argu=="-home"} {
+            set home [lindex $args [expr $k+1]]
+         }
+      }
+      for {set k 1} {$k<$argc} {incr k} {
+         set argu [lindex $args $k]
+         if {$argu=="-drift"} {
+            set drift 1
+         }
       }
    }
+   if {$home==""} {
+      set home $audace(posobs,observateur,gps)
+   }
+   if {$date==""} {
+      set date [::audace::date_sys2ut now]
+   }
+   set date2 [mc_datescomp $date + [expr 1./86400]]
    set found 0
    # --- special names
    if {$found==0} {
@@ -187,9 +209,25 @@ proc name2coord { args } {
       if {[llength $res]==2} {
          set res [lindex $res 0]
          #::console::affiche_resultat "res=$res\n"
+         set ra1 [lindex $res 0]
+         set dec1 [lindex $res 1]
          set ra  [string trim [mc_angle2hms [lindex $res 0] 360 zero 2 auto string]]
          set dec [string trim [mc_angle2dms [lindex $res 1]  90 zero 1 + string]]
          set found 1
+         if {$drift==1} {
+            set res [mc_ephem $name0 [list $date2] {ra dec} -topo $home]
+            set res [lindex $res 0]
+            set ra2 [lindex $res 0]
+            set dec2 [lindex $res 1]
+            set dra [expr $ra2-$ra1]
+            if {$dra>180} {
+               set dra [expr $dra-360]
+            }
+            if {$dra<-180} {
+               set dra [expr $dra+360]
+            }
+            set ddec [expr $dec2-$dec1]
+         }
      }
    }
    # --- else satellite
@@ -197,28 +235,47 @@ proc name2coord { args } {
       set err [catch {satel_coords "$name0" $date} res]
       if {$err==0} {
          #::console::affiche_resultat "res=$res\n"
+         set ra1 [mc_angle2deg [lindex $res 1]]
+         set dec1 [mc_angle2deg [lindex $res 2]]
          set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
          set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
          set found 1
+         if {$drift==1} {
+            set err [catch {satel_coords "$name0" $date2} res]
+            #::console::affiche_resultat "res=$res\n"
+            set ra2 [mc_angle2deg [lindex $res 1]]
+            set dec2 [mc_angle2deg [lindex $res 2]]
+            set dra [expr $ra2-$ra1]
+            if {$dra>180} {
+               set dra [expr $dra-360]
+            }
+            if {$dra<-180} {
+               set dra [expr $dra+360]
+            }
+            set ddec [expr $dec2-$dec1]
+         }
       }
    }
    # --- final
    if {$found==1} {
-      set dra 0
-      set ddec 0
+      set offra 0
+      set offdec 0
       if {[info exists audace(coords,offset,ra)]==1} {
-         set dra $audace(coords,offset,ra)
+         set offra $audace(coords,offset,ra)
       }
       if {[info exists audace(coords,offset,dec)]==1} {
-         set ddec $audace(coords,offset,dec)
+         set offdec $audace(coords,offset,dec)
       }
       if {($dra!=0)&&($ddec!=0)&&($offset==1)} {
          set ra [mc_angle2deg $ra]
          set dec [mc_angle2deg $dec 90]
-         set ra [expr $dra+$ra]
-         set dec [expr $ddec+$dec]
+         set ra [expr $offra+$ra]
+         set dec [expr $offdec+$dec]
          set ra  [string trim [mc_angle2hms $ra 360 zero 2 auto string]]
          set dec [string trim [mc_angle2dms $dec  90 zero 1 + string]]
+      }
+      if {$drift==1} {
+         return [list $ra $dec $dra $ddec]
       }
       return [list $ra $dec]
    } else {
