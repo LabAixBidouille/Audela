@@ -18,8 +18,7 @@ Gestion cata :
 
     - renommage du champ "name" de astroid
     - Effacement d une source dans toutes les images selectionnées
-FV    - ajouter set reference par rapport a un catalogue + suppression masque bord
-FV    - ajouter set mesure par rapport a un catalogue
+    - ajouter suppression masque bord
 
 Astrométrie :
 
@@ -27,13 +26,13 @@ Astrométrie :
     - tag envoi mail mpc dans header fits.
 FV    - verifier iau_code egal a toutes les images.
 FV    - psf manuelle avec changement d image pour une seule source
-    
+JB    - gerer limite Priam
 
 
 BUGS
 
   - Create cata: si liste contient des images avec un BIN different alors affichage cata pas bon
-
+  - Recherche -> liste intelligente: si 2 conditions "n'importe laquelle" alors filtre pas bon (a confirmer)
 
 
 TODOLIST
