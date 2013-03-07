@@ -484,15 +484,13 @@ proc ::bddimages::gzip { fname_in {fname_out ""} } {
 #------------------------------------------------------------
 proc ::bddimages::save_as { str ftype } {
 
-   set filetype ""
+   set filetype "{ {{All Files} * } }"
    if {[string toupper $ftype] == "TXT"} {
-      set filetype {{{Text Files} {.txt} } {{All Files} * }}
+      set filetype { {{Text Files} {.txt}} {{All Files} * } }
    }
    if {[string toupper $ftype] == "XML"} {
-      set filetype {{{XML Files} {.xml} } {{All Files} * }}
+      set filetype { {{XML Files} {.xml}} {{All Files} * } }
    }
-
-   gren_info "FTYPE = $filetype\n"
 
    set fileName [tk_getSaveFile -title "Save As" -filetypes $filetype]
 
