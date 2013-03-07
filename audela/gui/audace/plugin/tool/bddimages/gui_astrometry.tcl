@@ -594,15 +594,15 @@ namespace eval gui_astrometry {
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
 
-      switch $type { "star"  { puts $chan0 "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
-                               }
-                     "aster" { puts $chan0 "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
-                               }
-                     default { }
+      switch $type { "star"  { set cmd "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
+                     "aster" { set cmd "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
+                     default { set cmd ""}
                    }
-
+gren_info "CMD = $cmd\n"
+      puts $chan0 $cmd
       close $chan0
       set err [catch {exec sh ./cmd.ephemcc} msg]
+gren_erreur "MSG = $msg\n"
 
       set pass "yes"
 
@@ -640,7 +640,8 @@ namespace eval gui_astrometry {
       # Ephem du mpc
       set ra_mpc  "-"
       set dec_mpc "-"
-      if {$type == "aster"} {
+      set go_mpc 0
+      if {$go_mpc && $type == "aster"} {
          #set middate 2456298.51579861110
          #set num 20000
          set dateiso [ mc_date2iso8601 $middate ]
@@ -695,17 +696,17 @@ namespace eval gui_astrometry {
       set id_current_image 0
       foreach current_image $::tools_cata::img_list {
          incr id_current_image
-         set tabkey   [::bddimages_liste::lget [lindex $::tools_cata::img_list [expr $id_current_image -1] ] "tabkey"]
-         set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
-         if {$dateobs == $date} {
+         set tabkey [::bddimages_liste::lget [lindex $::tools_cata::img_list [expr $id_current_image -1] ] "tabkey"]
+         set dateobs [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+         set jddateobs [mc_date2jd $dateobs]
+         set jddate [mc_date2jd $date]
+
+         if {[expr abs($jddateobs-$jddate)*86400.0] <= 0.001} {
             set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
-            set midexpo  [expr $exposure / 2.]
-            set middate  [ expr [ mc_date2jd $date] + $midexpo / 86400. ]
+            set midexpo  [expr $exposure / 2.0]
+            set middate  [expr $jddate + $midexpo / 86400.0]
             set result   [::gui_astrometry::rapport_get_ephem ::gui_cata::cata_list($id_current_image) $name $middate]
-            #gren_info "RAPPORT_INFO = $result \n"
-
             return [list $midexpo $result ]
-
          }
       }
       return [list -1 "-" "-" "-" "-"]
@@ -826,7 +827,7 @@ namespace eval gui_astrometry {
          ::gui_astrometry::sep_txt
 
          foreach date $::tools_astrometry::listscience($name) {
-            
+
             set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 3] ]
             set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 4] ]
             set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 5] ]
@@ -838,16 +839,15 @@ namespace eval gui_astrometry {
             set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$date) 7]]
 
             set resultmp [::gui_astrometry::rapport_info $date $name]
-gren_info "RESULTMP = $resultmp\n"
+
+            # TODO gerer le cas ou resultmp = {-1 - - - - -}
+
             set midexpo   [lindex $resultmp 0]
             set result    [lindex $resultmp 1]
-gren_info "   result = $result \n"
             set ra_imcce_deg  [lindex $result 0]
             set dec_imcce_deg [lindex $result 1]
             set ra_mpc_deg    [lindex $result 2]
             set dec_mpc_deg   [lindex $result 3]
-
-gren_info "EPHEMCC: $name :: $date :: $midexpo -> $ra_imcce_deg $dec_imcce_deg\n"
 
             if {$midexpo == -1} {
               ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
@@ -1284,6 +1284,9 @@ gren_info "EPHEMCC: $name :: $date :: $midexpo -> $ra_imcce_deg $dec_imcce_deg\n
             set mag_err [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 9] ]
 
             set result [::gui_astrometry::rapport_info $date $name]
+
+            # TODO gerer le cas ou result = {-1 - - - - -}
+
             set midexpo [lindex $result 0]
             set coords [lindex $result 1]
             set ra_ephem  [lindex $coords 0]
