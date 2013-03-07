@@ -840,7 +840,10 @@ namespace eval ::audace {
       update
 
       #--- Recherche des ports COMs disponibles dans un thread
-      ::serialport::searchPortsThread
+      #--- Uniquement si le TCL est multithread
+      if { $::tcl_platform(threaded) == "1" } {
+         ::serialport::searchPortsThread
+      }
 
       #--- Connexion au demarrage des cameras
       ::confCam::startPlugin
