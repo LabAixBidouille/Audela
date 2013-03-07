@@ -80,8 +80,6 @@ namespace eval gui_astrometry {
 
      set ::tools_astrometry::rapport_desti "mpc@cfa.harvard.edu"
 
-     set ::gui_astrometry::rapport_xml "N.A."
-
    }
 
 
@@ -1020,7 +1018,7 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::create_rapport_xml {  } {
 
       # clean votable
-      $::gui_astrometry::rapport_xml delete 0.0 end 
+      set ::gui_astrometry::rapport_xml ""
 
       # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
       ::votable::init "1.1" ""
@@ -1356,7 +1354,7 @@ namespace eval gui_astrometry {
       # Ferme la VOTable
       append votable [::votable::closeVOTable]
 
-      $::gui_astrometry::rapport_xml insert end "$votable"
+      set ::gui_astrometry::rapport_xml "$votable"
 
       return
 
@@ -1919,10 +1917,6 @@ gren_info "la\n"
                  pack $txt -in $onglets_rapports.list -expand yes -fill both 
                  $onglets_rapports.list add $txt -text "TXT"
 
-                 set xml [frame $onglets_rapports.list.xml -borderwidth 1]
-                 pack $xml -in $onglets_rapports.list -expand yes -fill both 
-                 $onglets_rapports.list add $xml -text "XML"
-
             # Sources - References Parent (par liste de source et moyenne)
             set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
             pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
@@ -2295,10 +2289,10 @@ gren_info "la\n"
               -wrap none
          pack $::gui_astrometry::rapport_mpc -expand yes -fill both -padx 5 -pady 5
 
-         scrollbar $::gui_astrometry::rapport_mpc.xscroll  -orient horizontal -command "$::gui_astrometry::rapport_mpc xview"
+         scrollbar $::gui_astrometry::rapport_mpc.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::rapport_mpc xview"
          pack $::gui_astrometry::rapport_mpc.xscroll -side bottom -fill x
 
-         scrollbar $::gui_astrometry::rapport_mpc.yscroll -orient vertical -command "$::gui_astrometry::rapport_mpc yview"
+         scrollbar $::gui_astrometry::rapport_mpc.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::rapport_mpc yview"
          pack $::gui_astrometry::rapport_mpc.yscroll -side right -fill y
 
          set block [frame $mpc.save -borderwidth 0 -cursor arrow -relief groove]
@@ -2307,7 +2301,7 @@ gren_info "la\n"
                        -command {::bddimages::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
                pack $block.sas -side top -anchor c -expand 0
 
-         #--- Rapports txt
+         #--- Rapports txt et xml
 
          set ::gui_astrometry::rapport_txt $txt.text
          text $::gui_astrometry::rapport_txt -height 30 -width 120 \
@@ -2316,38 +2310,23 @@ gren_info "la\n"
               -wrap none
          pack $::gui_astrometry::rapport_txt -expand yes -fill both -padx 5 -pady 5
 
-         scrollbar $::gui_astrometry::rapport_txt.xscroll  -orient horizontal -command "$::gui_astrometry::rapport_txt xview"
+         scrollbar $::gui_astrometry::rapport_txt.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::rapport_txt xview"
          pack $::gui_astrometry::rapport_txt.xscroll -side bottom -fill x
 
-         scrollbar $::gui_astrometry::rapport_txt.yscroll -orient vertical -command "$::gui_astrometry::rapport_txt yview"
+         scrollbar $::gui_astrometry::rapport_txt.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::rapport_txt yview"
          pack $::gui_astrometry::rapport_txt.yscroll -side right -fill y
 
          set block [frame $txt.save -borderwidth 0 -cursor arrow -relief groove]
-         pack $block -in $txt -side top -expand 0 -fill x -padx 2 -pady 5
-               button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
+         pack $block -in $txt -side top -expand 0 -padx 2 -pady 5
+
+               button $block.xml -text "Save as XML" -borderwidth 2 -takefocus 1 \
+                       -command {::bddimages::save_as $::gui_astrometry::rapport_xml "XML"}
+               pack $block.xml -side right -anchor c -expand 0
+
+               button $block.txt -text "Save as TXT" -borderwidth 2 -takefocus 1 \
                        -command {::bddimages::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
-               pack $block.sas -side top -anchor c -expand 0
+               pack $block.txt -side right -anchor c -expand 0
 
-         #--- Rapports VOTABLE
-
-         set ::gui_astrometry::rapport_xml $xml.vot
-         text $::gui_astrometry::rapport_xml -height 30 -width 120 \
-              -xscrollcommand "$::gui_astrometry::rapport_xml.xscroll set" \
-              -yscrollcommand "$::gui_astrometry::rapport_xml.yscroll set" \
-              -wrap none
-         pack $::gui_astrometry::rapport_xml -expand yes -fill both -padx 5 -pady 5
-
-         scrollbar $::gui_astrometry::rapport_xml.xscroll -orient horizontal -command "$::gui_astrometry::rapport_xml xview"
-         pack $::gui_astrometry::rapport_xml.xscroll -side bottom -fill x
-
-         scrollbar $::gui_astrometry::rapport_xml.yscroll -orient vertical -command "$::gui_astrometry::rapport_xml yview"
-         pack $::gui_astrometry::rapport_xml.yscroll -side right -fill y
-
-         set block [frame $xml.save -borderwidth 0 -cursor arrow -relief groove]
-         pack $block -in $xml -side top -expand 0 -fill x -padx 2 -pady 5
-               button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
-                       -command {::bddimages::save_as [$::gui_astrometry::rapport_xml get 0.0 end] "XML"}
-               pack $block.sas -side top -anchor c -expand 0
 
          #--- Cree un frame pour afficher bouton fermeture
          set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
