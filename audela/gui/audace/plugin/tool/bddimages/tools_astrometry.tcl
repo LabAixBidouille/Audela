@@ -428,7 +428,6 @@ namespace eval tools_astrometry {
             incr id_current_image
             set catascience($id_current_image) ""
             set cataref($id_current_image) ""
-gren_info "   * id_current_image = $id_current_image \n"
             set ::tools_cata::new_astrometry($id_current_image) ""
 
             gets $chan success
@@ -470,7 +469,6 @@ gren_info "   * id_current_image = $id_current_image \n"
          }
 
          if {$key=="CATA_VALUES"} {
-gren_info "KEY,VAL = $key :: $val\n"
             set name  [lindex $val 0]
             set sour  [lindex $val 1]
             lappend catascience($id_current_image) [list $name $sour]
@@ -1009,7 +1007,7 @@ gren_info "KEY,VAL = $key :: $val\n"
       set sname [split $name "_"]
       switch [lindex $sname 0] {
          SKYBOT {
-            if {[string length [lindex $sname 1]] > 0} {
+            if {[string length [lindex $sname 1]] > 1} {
                # Sso official number 
                set onum [lindex $sname 1]
                if {$onum < 100000} {

@@ -1,14 +1,11 @@
 namespace eval gui_astrometry {
 
 
-
    proc ::gui_astrometry::inittoconf {  } {
 
       global bddconf, conf
 
-
       ::gui_cata::inittoconf
-
 
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
@@ -83,7 +80,7 @@ namespace eval gui_astrometry {
 
      set ::tools_astrometry::rapport_desti "mpc@cfa.harvard.edu"
 
-
+     set ::gui_astrometry::rapport_xml "N.A."
 
    }
 
@@ -608,8 +605,7 @@ namespace eval gui_astrometry {
 
       close $chan0
       set err [catch {exec sh ./cmd.ephemcc} msg]
- 
- 
+
       set pass "yes"
 
       if { $err } {
@@ -646,12 +642,13 @@ namespace eval gui_astrometry {
       # Ephem du mpc
       set ra_mpc  "-"
       set dec_mpc "-"
-      if {$type == "aster"} {
+      set go_mpc 0
+      if {$go_mpc && $type == "aster"} {
          #set middate 2456298.51579861110
          #set num 20000
          set dateiso [ mc_date2iso8601 $middate ]
          #set position [list GPS 0 E 43 2890]
-         set ephem [vo_getmpcephem $num $dateiso $::tools_astrometry::rapport_uai_code]
+         #set ephem [vo_getmpcephem $num $dateiso $::tools_astrometry::rapport_uai_code]
          #gren_info "EPHEM MPC ephem = $ephem\n"
          #gren_info "CMD = vo_getmpcephem $num $dateiso $position\n"
          set ra_mpc  [lindex [lindex $ephem 0] 2]
@@ -1011,7 +1008,7 @@ namespace eval gui_astrometry {
                                                                $calc(dec_mpc_omc,stdev),   \
                                                                $name [mc_date2iso8601 $calc(datejj,mean)]\n"
          ::gui_astrometry::sep_txt
-         
+
       }
       $::gui_astrometry::rapport_txt insert end  "\n\n\n"
 
@@ -1144,7 +1141,10 @@ namespace eval gui_astrometry {
       lappend p "$::votable::Param::VALUE ${::tools_astrometry::rapport_nb}"; # attribut value doit toijours etre present
       set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
-   
+
+      # Ajoute les params a la votable
+      append votable $votParams
+
       # Definition des champs FIELDS
       set votFields ""
       set description "Object Name"
@@ -1273,17 +1273,14 @@ namespace eval gui_astrometry {
          set num [string length $name]
          if {$num>$nummax} {set nummax $num}
       }
-   
-      set nrows 0
-      set idcataspec 0
-      set votSources ""
-      foreach {name y} $l {
-         gren_info "TXT: $name = $y\n"
-         if {[info exists tabcalc]} {unset tabcalc}
 
+      foreach {name y} $l {
+
+         set nrows 0
+         set votSources ""
          foreach date $::tools_astrometry::listscience($name) {
             append votSources [::votable::openElement $::votable::Element::TR {}]
-            
+
             set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 4] ]
             set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 5] ]
             set alpha   [format "%.8f"  [lindex $::tools_astrometry::tabval($name,$date) 6] ]
@@ -1292,9 +1289,10 @@ namespace eval gui_astrometry {
             set mag_err [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 9] ]
 
             set result [::gui_astrometry::rapport_info $date $name]
-            set midexpo   [lindex $result 0]
-            set ra_ephem  [lindex $result 1]
-            set dec_ephem [lindex $result 2]
+            set midexpo [lindex $result 0]
+            set coords [lindex $result 1]
+            set ra_ephem  [lindex $coords 0]
+            set dec_ephem [lindex $coords 1]
 
             if {$midexpo == -1} {
               ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
@@ -1330,35 +1328,35 @@ namespace eval gui_astrometry {
             append votSources [::votable::closeElement $::votable::Element::TR] "\n"
             incr nrows
          }
+
+         set zname [lrange [split $name "_"] 2 end]
+         # Ouvre l'element TABLE
+         append votable [::votable::openTableElement [list "$::votable::Table::NAME \"Astrometric results for $zname\"" "$::votable::Table::NROWS $nrows"]] "\n"
+         #  Ajoute un element de description de la table
+         append votable [::votable::addElement $::votable::Element::DESCRIPTION {} "Astrometric measures of science object $zname obtained by Audela/Bddimages"] "\n"
+         #  Ajoute les definitions des colonnes
+         append votable $votFields
+         #  Ouvre l'element DATA
+         append votable [::votable::openElement $::votable::Element::DATA {}] "\n"
+         #   Ouvre l'element TABLEDATA
+         append votable [::votable::openElement $::votable::Element::TABLEDATA {}] "\n"
+         #    Ajoute les sources
+         append votable $votSources
+         #   Ferme l'element TABLEDATA
+         append votable [::votable::closeElement $::votable::Element::TABLEDATA] "\n"
+         #  Ferme l'element DATA
+         append votable [::votable::closeElement $::votable::Element::DATA] "\n"
+         # Ferme l'element TABLE
+         append votable [::votable::closeTableElement] "\n"
+
       }
 
-      # Ajoute les params
-      append votable $votParams "\n" 
-      # Ouvre l'element TABLE
-      append votable [::votable::openTableElement [list "$::votable::Table::NAME \"Science Astrometric Results\"" "$::votable::Table::NROWS $nrows"]] "\n"
-      #  Ajoute un element de description de la table
-      append votable [::votable::addElement $::votable::Element::DESCRIPTION {} "Astrometric measures of science object from Audela/Bddimages"] "\n"
-      #  Ajoute les definitions des colonnes
-      append votable $votFields
-      #  Ouvre l'element DATA
-      append votable [::votable::openElement $::votable::Element::DATA {}] "\n"
-      #   Ouvre l'element TABLEDATA
-      append votable [::votable::openElement $::votable::Element::TABLEDATA {}] "\n"
-      #    Ajoute les sources
-      append votable $votSources
-      #   Ferme l'element TABLEDATA
-      append votable [::votable::closeElement $::votable::Element::TABLEDATA] "\n"
-      #  Ferme l'element DATA
-      append votable [::votable::closeElement $::votable::Element::DATA] "\n"
-      # Ferme l'element TABLE
-      append votable [::votable::closeTableElement] "\n"
-   
       # Ferme l'element RESOURCE
       append votable [::votable::closeResourceElement] "\n"
       # Ferme la VOTable
       append votable [::votable::closeVOTable]
 
-      $::gui_astrometry::rapport_xml insert end  "$votable\n\n\n"
+      $::gui_astrometry::rapport_xml insert end "$votable"
 
       return
 
@@ -2258,7 +2256,7 @@ gren_info "la\n"
          
 # $denom
          
-  
+
          set block [frame $denom.but  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $denom -side top -expand 0 -fill x -padx 2 -pady 5
 
@@ -2303,6 +2301,11 @@ gren_info "la\n"
          scrollbar $::gui_astrometry::rapport_mpc.yscroll -orient vertical -command "$::gui_astrometry::rapport_mpc yview"
          pack $::gui_astrometry::rapport_mpc.yscroll -side right -fill y
 
+         set block [frame $mpc.save -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
+               button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
+                       -command {::bddimages::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
+               pack $block.sas -side top -anchor c -expand 0
 
          #--- Rapports txt
 
@@ -2319,6 +2322,11 @@ gren_info "la\n"
          scrollbar $::gui_astrometry::rapport_txt.yscroll -orient vertical -command "$::gui_astrometry::rapport_txt yview"
          pack $::gui_astrometry::rapport_txt.yscroll -side right -fill y
 
+         set block [frame $txt.save -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $txt -side top -expand 0 -fill x -padx 2 -pady 5
+               button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
+                       -command {::bddimages::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
+               pack $block.sas -side top -anchor c -expand 0
 
          #--- Rapports VOTABLE
 
@@ -2335,7 +2343,11 @@ gren_info "la\n"
          scrollbar $::gui_astrometry::rapport_xml.yscroll -orient vertical -command "$::gui_astrometry::rapport_xml yview"
          pack $::gui_astrometry::rapport_xml.yscroll -side right -fill y
 
-
+         set block [frame $xml.save -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $xml -side top -expand 0 -fill x -padx 2 -pady 5
+               button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
+                       -command {::bddimages::save_as [$::gui_astrometry::rapport_xml get 0.0 end] "XML"}
+               pack $block.sas -side top -anchor c -expand 0
 
          #--- Cree un frame pour afficher bouton fermeture
          set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
@@ -2358,17 +2370,6 @@ gren_info "la\n"
 
 
    }
-   
-
-   
-   
-   
-   
-   
-   
-   
-   
 
 
-   
 }
