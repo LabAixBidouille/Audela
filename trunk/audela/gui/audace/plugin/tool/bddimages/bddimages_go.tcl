@@ -473,9 +473,45 @@ proc ::bddimages::gzip { fname_in {fname_out ""} } {
    return [list $errnum $msgzip]
 }
 
+#------------------------------------------------------------
+# ::bddimages::save_as
+#    Sauve une chaine de caracteres dans un fichier dont le
+#    nom est fourni par l'utilisateur
+#      str = chaine de caracteres a enregistrer
+#      ftype = type de fichier (e.g. TXT, XML, ...)
+#
+# NB: -filetypes [list [list "XML" ".xml"] [list "TXT" ".txt"]]
+#------------------------------------------------------------
+proc ::bddimages::save_as { str ftype } {
+
+   set filetype ""
+   if {[string toupper $ftype] == "TXT"} {
+      set filetype {{{Text Files} {.txt} } {{All Files} * }}
+   }
+   if {[string toupper $ftype] == "XML"} {
+      set filetype {{{XML Files} {.xml} } {{All Files} * }}
+   }
+
+   gren_info "FTYPE = $filetype\n"
+
+   set fileName [tk_getSaveFile -title "Save As" -filetypes $filetype]
+
+   if { $fileName != "" } {
+      set chan0 [open $fileName w]
+      puts $chan0 $str
+      close $chan0
+   }
+
+   return $fileName
+}
+
+
+
+
 proc gren_info { msg } {
    ::console::affiche_resultat "$msg" 
 }
+
 proc gren_erreur { msg } {
    ::console::affiche_erreur "$msg" 
 }
