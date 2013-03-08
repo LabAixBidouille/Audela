@@ -709,7 +709,7 @@ gren_erreur "MSG = $msg\n"
             return [list $midexpo $result ]
          }
       }
-      return [list -1 "-" "-" "-" "-"]
+      return { -1 {"-" "-" "-" "-"} }
    }
 
 
