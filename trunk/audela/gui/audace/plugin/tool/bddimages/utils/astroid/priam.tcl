@@ -151,7 +151,6 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
    set bandwith 0.57000
 
    # Conditions d observation
-   set axes "en"
 
    set imagefilename [::bddimages_liste::lget $img "filename"]
    set dateobsjd [::bddimages_liste::lget $img "commundatejj"]
@@ -326,7 +325,7 @@ proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
       puts $chan0 "#?   Source: Astroid - jan. 2013"
       puts $chan0 "#? Object: science"
       puts $chan0 "#"
-      puts $chan0 "#> orientation: $axes"
+      puts $chan0 "#> orientation: $::tools_astrometry::orient"
       puts $chan0 "#"
       puts $chan0 "!$imagefilename"
       puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"

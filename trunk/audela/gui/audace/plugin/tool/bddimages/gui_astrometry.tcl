@@ -7,6 +7,7 @@ namespace eval gui_astrometry {
 
       ::gui_cata::inittoconf
 
+      set ::tools_astrometry::orient "wn"
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15
@@ -471,7 +472,22 @@ namespace eval gui_astrometry {
       ::gui_astrometry::create_rapport_mpc
       ::gui_astrometry::create_rapport_xml
 
+      # Combo box pour les graphes
+      set ::gui_astrometry::list_object ""
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name y} $l {
+         lappend ::gui_astrometry::list_object $name
+      }
+      set nb_obj [llength $::gui_astrometry::list_object]
+      $::gui_astrometry::fen.appli.onglets.list.graphes.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::list_object
+
    }
+
+
+
+
+
+
 
 #::bddimages::ressource ; ::gui_astrometry::create_rapport_mpc
    proc ::gui_astrometry::create_rapport_mpc {  } {
@@ -726,6 +742,9 @@ gren_erreur "MSG = $msg\n"
 
    proc ::gui_astrometry::create_rapport_txt {  } {
 
+      # Reset du graphe
+      if {[info exists ::gui_astrometry::graph_results]} {unset ::gui_astrometry::graph_results }
+         
       # ::bddimages::ressource
       $::gui_astrometry::rapport_txt delete 0.0 end 
 
@@ -826,19 +845,19 @@ gren_erreur "MSG = $msg\n"
          $::gui_astrometry::rapport_txt insert end $headtab3
          ::gui_astrometry::sep_txt
 
-         foreach date $::tools_astrometry::listscience($name) {
+         foreach dateimg $::tools_astrometry::listscience($name) {
 
-            set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 3] ]
-            set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 4] ]
-            set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 5] ]
-            set alpha   [format "%.8f"  [lindex $::tools_astrometry::tabval($name,$date) 6] ]
-            set delta   [format "%+.8f" [lindex $::tools_astrometry::tabval($name,$date) 7] ]
-            set mag     [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 8] ]
-            set err_mag [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 9] ]
-            set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$date) 6]]
-            set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$date) 7]]
+            set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 3] ]
+            set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 4] ]
+            set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 5] ]
+            set alpha   [format "%.8f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 6] ]
+            set delta   [format "%+.8f" [lindex $::tools_astrometry::tabval($name,$dateimg) 7] ]
+            set mag     [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 8] ]
+            set err_mag [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 9] ]
+            set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$dateimg) 6]]
+            set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$dateimg) 7]]
 
-            set resultmp [::gui_astrometry::rapport_info $date $name]
+            set resultmp [::gui_astrometry::rapport_info $dateimg $name]
 
             # TODO gerer le cas ou resultmp = {-1 - - - - -}
 
@@ -850,7 +869,7 @@ gren_erreur "MSG = $msg\n"
             set dec_mpc_deg   [lindex $result 3]
 
             if {$midexpo == -1} {
-              ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
+              ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $dateimg\n"
                set midexpo 0
             }
 
@@ -887,7 +906,7 @@ gren_erreur "MSG = $msg\n"
                set dec_mpc [::tools_astrometry::convert_txt_dms $dec_mpc_deg]
             }
 
-            set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
+            set datejj  [format "%.8f"  [ expr [ mc_date2jd $dateimg] + $midexpo / 86400. ] ]
             set date    [mc_date2iso8601 $datejj]
 
             #gren_info "\nDATE =  $date $datejj\n"
@@ -913,6 +932,18 @@ gren_erreur "MSG = $msg\n"
             if {$dec_mpc_deg != "-"} {set dec_mpc_deg   [format "%.8f" $dec_mpc_deg] }
             set txt [format $form "" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg]
             $::gui_astrometry::rapport_txt insert end  $txt
+
+
+            # Graphe
+            set ::gui_astrometry::graph_results($name,$dateimg,datejj)        $datejj
+            set ::gui_astrometry::graph_results($name,$dateimg,res_a)         $res_a
+            set ::gui_astrometry::graph_results($name,$dateimg,res_d)         $res_d
+            set ::gui_astrometry::graph_results($name,$dateimg,ra_imcce_omc)  $ra_imcce_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,dec_imcce_omc) $dec_imcce_omc
+
+
+
+
          }
 
          set calc(res_a,mean)    [format "%.4f" [::math::statistics::mean   $tabcalc(res_a)   ]]
@@ -1718,12 +1749,64 @@ gren_info "la\n"
 
 
 
+
+
+
+
+
+
+   proc ::gui_astrometry::graph { xkey ykey } {
+
+      gren_info "Graphe : $xkey VS $ykey\n"
+
+
+      set x ""
+      set z ""
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name y} $l {
+         if {$name !=  $::gui_astrometry::graph_object} {continue}
+         gren_info "Object Selected : $name\n"
+         foreach dateimg $::tools_astrometry::listscience($name) {
+             lappend x $::gui_astrometry::graph_results($name,$dateimg,$xkey)
+             lappend z $::gui_astrometry::graph_results($name,$dateimg,$ykey)
+         }
+      }
+
+ 
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "$::gui_astrometry::graph_object : $xkey VS $ykey"
+      ::plotxy::xlabel $xkey
+      ::plotxy::ylabel $ykey
+      
+      set h [::plotxy::plot $x $z .]
+      plotxy::sethandler $h [list -color black -linewidth 0]
+
+   } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::gui_astrometry::setup { img_list } {
 
       global audace
       global bddconf
 
 
+      set  nb_obj  1 
+      set  ::gui_astrometry::list_object  "" 
       ::gui_astrometry::inittoconf
 
       ::gui_astrometry::charge_list $img_list
@@ -1831,6 +1914,14 @@ gren_info "la\n"
                  -command "::gui_astrometry::affich_gestion"]
               pack $actions.affich_gestion -side left -anchor e \
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+              set orient [frame $actions.orient -borderwidth 0 -cursor arrow -relief groove]
+              pack $orient -in $actions -side left -expand 0 -fill x -padx 10 -pady 5
+
+                   label  $orient.lab -text "Orientation : " -borderwidth 1
+                   pack   $orient.lab -side left -padx 3 -pady 3 
+                   entry  $orient.val -relief sunken -textvariable ::tools_astrometry::orient -width 3
+                   pack   $orient.val -side left -padx 3 -pady 3 
 
               set ::gui_astrometry::gui_go_priam [button $actions.go_priam -text "Priam" -borderwidth 2 -takefocus 1 \
                  -command "::gui_astrometry::go_priam"]
@@ -2326,6 +2417,89 @@ gren_info "la\n"
                button $block.txt -text "Save as TXT" -borderwidth 2 -takefocus 1 \
                        -command {::bddimages::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
                pack $block.txt -side right -anchor c -expand 0
+
+
+
+
+
+         #--- Les graphes
+   
+         set sciences [frame $graphes.select_obj -borderwidth 0 -cursor arrow -relief groove]
+         pack $sciences -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $sciences.lab -width 10 -text "Objet : "
+             pack  $sciences.lab -in $sciences -side left -padx 5 -pady 0
+
+             ComboBox $sciences.combo \
+                -width 50 -height $nb_obj \
+                -relief sunken -borderwidth 1 -editable 0 \
+                -textvariable ::gui_astrometry::graph_object \
+                -values $::gui_astrometry::list_object
+             pack $sciences.combo -anchor center -side left -fill x -expand 0
+
+ 
+         set frmgraph [frame $graphes.frmgraph -borderwidth 0 -cursor arrow -relief groove]
+         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+         
+              set block [frame $frmgraph.datejj_vs_res_a -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "datejj VS res_a" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj res_a"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.datejj_vs_res_d -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "datejj VS res_d" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj res_d"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.datejj_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "datejj VS ra omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj ra_imcce_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.datejj_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "datejj VS dec omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj dec_imcce_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.res_a_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "res_a VS ra omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph res_a ra_imcce_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.res_d_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "res_d VS dec omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph res_d dec_imcce_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
          #--- Cree un frame pour afficher bouton fermeture
