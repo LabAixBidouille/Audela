@@ -614,11 +614,9 @@ namespace eval gui_astrometry {
                      "aster" { set cmd "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
                      default { set cmd ""}
                    }
-gren_info "CMD = $cmd\n"
       puts $chan0 $cmd
       close $chan0
       set err [catch {exec sh ./cmd.ephemcc} msg]
-gren_erreur "MSG = $msg\n"
 
       set pass "yes"
 
