@@ -1233,8 +1233,6 @@ namespace eval psf_gui {
       global bddconf
 
       set log 0
-      set cpt 0
-      set doute 0
 
       set fields  [lindex $listsources 0]
       set sources [lindex $listsources 1]
@@ -1244,27 +1242,19 @@ namespace eval psf_gui {
 
       lappend fields [::analyse_source::get_fieldastroid]
 
-      set cpts 0
       set newsources {}
 
       foreach s $sources {
-         incr cpts
-         if {$log} {gren_info "source #$cpts : "}
-         
-         # Mesure de PSF de la source: 
-         # result = {$xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta}
-
+         set a [llength $s]
          set err [ catch {set r [::psf_tools::method_global s $threshold $limitradius $::audace(bufNo)]} msg ]
          if {$err} {
             ::console::affiche_erreur "ERREUR PSF psf_listsources_auto: $msg\n"
          }
          lappend newsources $s
-
       }
 
-      if {$log} {gren_info "nb doute : $doute \n"}
-
       set listsources [list $fields $newsources]
+
    }
 
 
