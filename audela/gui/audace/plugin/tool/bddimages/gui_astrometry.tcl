@@ -654,17 +654,23 @@ namespace eval gui_astrometry {
       # Ephem du mpc
       set ra_mpc  "-"
       set dec_mpc "-"
-      set go_mpc 0
+      set go_mpc 1
       if {$go_mpc && $type == "aster"} {
          #set middate 2456298.51579861110
          #set num 20000
-         set dateiso [ mc_date2iso8601 $middate ]
+         #set dateiso [ mc_date2iso8601 $middate ]
          #set position [list GPS 0 E 43 2890]
-         set ephem [vo_getmpcephem [string map {" " ""} $num] $dateiso $::tools_astrometry::rapport_uai_code]
+         #set ephem [vo_getmpcephem [string map {" " ""} $num] $dateiso $::tools_astrometry::rapport_uai_code]
          #gren_info "EPHEM MPC ephem = $ephem\n"
          #gren_info "CMD = vo_getmpcephem $num $dateiso $position\n"
-         set ra_mpc  [lindex [lindex $ephem 0] 2]
-         set dec_mpc [lindex [lindex $ephem 0] 3]
+         set datejj  [format "%.9f"  $middate ]
+         if {[info exists ::gui_astrometry::jpl_ephem($datejj)]} {
+            set ra_mpc  [lindex $::gui_astrometry::jpl_ephem($datejj) 0]
+            set dec_mpc [lindex $::gui_astrometry::jpl_ephem($datejj) 1]
+         } else {
+            set ra_mpc  "-"
+            set dec_mpc "-"
+         }
          #gren_info "CMD = vo_getmpcephem $num $dateiso $::tools_astrometry::rapport_uai_code   ||EPHEM MPC ($num) ; date =  $middate ; ra dec = $ra_mpc  $dec_mpc \n"
          
       }
@@ -779,14 +785,14 @@ namespace eval gui_astrometry {
       set err_mag       ""
       set ra_imcce_omc  "IMCCE"
       set dec_imcce_omc ""
-      set ra_mpc_omc    "MPC"
+      set ra_mpc_omc    "JPL"
       set dec_mpc_omc   ""
       set datejj        ""
       set alpha         ""
       set delta         ""
       set ra_imcce      "IMCCE"
       set dec_imcce     ""
-      set ra_mpc        "MPC"
+      set ra_mpc        "JPL"
       set dec_mpc       ""
       set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
 
@@ -888,7 +894,7 @@ namespace eval gui_astrometry {
                set dec_imcce [::tools_astrometry::convert_txt_dms $dec_imcce_deg]
             }
 
-            # OMC MPC
+            # OMC JPL
             if {$ra_mpc_deg == "-"} {
                set ra_mpc_omc "-"
             } else {
@@ -938,6 +944,8 @@ namespace eval gui_astrometry {
             set ::gui_astrometry::graph_results($name,$dateimg,res_d)         $res_d
             set ::gui_astrometry::graph_results($name,$dateimg,ra_imcce_omc)  $ra_imcce_omc
             set ::gui_astrometry::graph_results($name,$dateimg,dec_imcce_omc) $dec_imcce_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,ra_mpc_omc)    $ra_mpc_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,dec_mpc_omc)   $dec_mpc_omc
 
 
 
@@ -965,7 +973,7 @@ namespace eval gui_astrometry {
             set calc(dec_imcce_omc,mean)   "-"
             set calc(dec_imcce_omc,stdev)  "-"
          }
-         # OMC MPC
+         # OMC JPL
          if {[info exists tabcalc(ra_mpc_omc)]} {
             set calc(ra_mpc_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_mpc_omc)  ]]
             set calc(ra_mpc_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_mpc_omc)  ]]
@@ -1013,8 +1021,8 @@ namespace eval gui_astrometry {
          $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC MPC   RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC MPC   DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC JPL   RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC JPL   DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
          $::gui_astrometry::rapport_txt insert end  "# Date jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
          $::gui_astrometry::rapport_txt insert end  "# RA   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
@@ -1404,21 +1412,32 @@ namespace eval gui_astrometry {
       append msg \n "Cc: " [join $cc_list ,]
       append msg \n "Subject: $subject"
       append msg \n\n $body
-gren_info "$msg\n"
+      gren_info "$msg\n"
       exec /usr/lib/sendmail -oi -t << $msg
+   }
 
+   proc ::gui_astrometry::send_email2 { } {
+
+
+      set gren(email,originator) "Test"
+      set adresse  fv@imcce.fr 
+      set gren(email,email_server) smtp.free.fr
+      set email_subject "sujet test"
+      set texte00 "Bonjour. Fais-moi un reply que c'est OK."
+      ::gui_astrometry::send_simple_message $gren(email,originator) $adresse $gren(email,email_server) "$email_subject" "$texte00"
 
    }
 
-proc send_simple_message {originator recipient email_server subject body} {
+
+proc ::gui_astrometry::send_simple_message {originator recipient email_server subject body} {
 
     package require smtp
     package require mime
 gren_info "ici\n"
     set token [mime::initialize -canonical text/plain -string $body]
 gren_info "la\n"
-    #smtp::sendmessage $token -servers $email_server -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
-    smtp::sendmessage $token -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+    smtp::sendmessage $token -servers $email_server -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+    #smtp::sendmessage $token -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
 gren_info "ici\n"
     mime::finalize $token
 gren_info "la\n"
@@ -1745,11 +1764,81 @@ gren_info "la\n"
 
    } 
 
+   proc ::gui_astrometry::jpl_create { } {
+
+      set ::gui_astrometry::getjpl_desti "horizons@ssd.jpl.nasa.gov"
+      set ::gui_astrometry::getjpl_subj  "JOB"
+
+      gren_info "Object : $::gui_astrometry::graph_object\n"
+      $::gui_astrometry::getjpl_send delete 0.0 end  
+      $::gui_astrometry::getjpl_send insert end "!\$\$SOF\n"
+      $::gui_astrometry::getjpl_send insert end "EMAIL_ADDR= '$::tools_astrometry::rapport_mail'\n"
+      set object  [string trim [::tools_astrometry::convert_mpc_name $::gui_astrometry::graph_object] ]
+      $::gui_astrometry::getjpl_send insert end "COMMAND= '$object;'\n"
+      $::gui_astrometry::getjpl_send insert end "CENTER= '$::tools_astrometry::rapport_uai_code@399'\n"
+      $::gui_astrometry::getjpl_send insert end "MAKE_EPHEM= 'YES'\n"
+      $::gui_astrometry::getjpl_send insert end "TABLE_TYPE= 'OBSERVER'\n"
 
 
 
+      $::gui_astrometry::getjpl_send insert end "TLIST=\n"
+      foreach {name y} [array get ::tools_astrometry::listscience] {
+         if {$name != $::gui_astrometry::graph_object} { continue }
+         foreach dateimg $::tools_astrometry::listscience($name) {
+            set resultmp [::gui_astrometry::rapport_info $dateimg $name]
+            set midexpo  [lindex $resultmp 0]
+            if {$midexpo == -1} { continue }
+            set datejj  [format "%.9f"  [ expr [ mc_date2jd $dateimg] + $midexpo / 86400. ] ]
+            $::gui_astrometry::getjpl_send insert end  "'$datejj'\n"
+         }
+      }
+
+      $::gui_astrometry::getjpl_send insert end "CAL_FORMAT= 'JD'\n"
+      $::gui_astrometry::getjpl_send insert end "TIME_DIGITS= 'FRACSEC'\n"
+      $::gui_astrometry::getjpl_send insert end "ANG_FORMAT= 'DEG'\n"
+      $::gui_astrometry::getjpl_send insert end "OUT_UNITS= 'KM-S'\n"
+      $::gui_astrometry::getjpl_send insert end "RANGE_UNITS= 'AU'\n"
+      $::gui_astrometry::getjpl_send insert end "APPARENT= 'AIRLESS'\n"
+      $::gui_astrometry::getjpl_send insert end "SOLAR_ELONG= '0,180'\n"
+      $::gui_astrometry::getjpl_send insert end "SUPPRESS_RANGE_RATE= 'NO'\n"
+      $::gui_astrometry::getjpl_send insert end "SKIP_DAYLT= 'NO'\n"
+      $::gui_astrometry::getjpl_send insert end "EXTRA_PREC= 'YES'\n"
+      $::gui_astrometry::getjpl_send insert end "R_T_S_ONLY= 'NO'\n"
+      $::gui_astrometry::getjpl_send insert end "REF_SYSTEM= 'J2000'\n"
+      $::gui_astrometry::getjpl_send insert end "CSV_FORMAT= 'NO'\n"
+      $::gui_astrometry::getjpl_send insert end "OBJ_DATA= 'YES'\n"
+      $::gui_astrometry::getjpl_send insert end "QUANTITIES= '1,9,20,23,24'\n"
+      $::gui_astrometry::getjpl_send insert end "!\$\$EOF\n"
+
+   } 
 
 
+   proc ::gui_astrometry::jpl_send { } {
+   
+   } 
+
+
+   proc ::gui_astrometry::jpl_read { } {
+
+      set recv [$::gui_astrometry::getjpl_recev get 0.0 end]
+      
+      set results ""
+      set readres "no"
+      foreach line [split $recv "\n"] {
+         set chars [string range $line 0 4]
+         if {$chars == "\$\$SOE"} {set readres "ok" ; continue}
+         if {$chars == "\$\$EOE"} {set readres "no"}
+         if {$readres == "no"} {continue}
+         regsub -all -- {[[:space:]]+} $line " " line
+         set line [split $line]
+         set datejj [lindex $line 0]
+         set ra     [lindex $line 1]
+         set dec    [lindex $line 2]
+         set ::gui_astrometry::jpl_ephem($datejj) [list $ra $dec]
+         #gren_info "$datejj = $ra $dec\n" 
+      }
+     
+   }
 
 
 
@@ -1994,9 +2083,9 @@ gren_info "la\n"
                  pack $entetes -in $onglets_rapports.list -expand yes -fill both 
                  $onglets_rapports.list add $entetes -text "Entetes"
 
-                 set denom [frame $onglets_rapports.list.denom -borderwidth 1]
-                 pack $denom -in $onglets_rapports.list -expand yes -fill both 
-                 $onglets_rapports.list add $denom -text "Dénomination"
+                 set getjpl [frame $onglets_rapports.list.getjpl -borderwidth 1]
+                 pack $getjpl -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $getjpl -text "JPL"
 
                  set mpc [frame $onglets_rapports.list.mpc -borderwidth 1]
                  pack $mpc -in $onglets_rapports.list -expand yes -fill both 
@@ -2337,18 +2426,85 @@ gren_info "la\n"
                pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
          
-# $denom
+         # JPL
          
+         set sciences [frame $getjpl.select_obj -borderwidth 0 -cursor arrow -relief groove]
+         pack $sciences -in $getjpl -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-         set block [frame $denom.but  -borderwidth 0 -cursor arrow -relief groove]
-         pack $block  -in $denom -side top -expand 0 -fill x -padx 2 -pady 5
+             label $sciences.lab -width 10 -text "Objet : "
+             pack  $sciences.lab -in $sciences -side left -padx 5 -pady 0
 
-               button $block.liste -text "Liste" -borderwidth 2 -takefocus 1 \
-                       -command "::gui_astrometry::create_list_denom"
-               pack   $block.liste -side top -anchor c -expand 0
-         
-         set ::gui_astrometry::zlist [frame $denom.zlist  -borderwidth 0 -cursor arrow -relief groove]
-         pack $::gui_astrometry::zlist  -in $denom -side top -expand 0 -fill x -padx 2 -pady 5
+             ComboBox $sciences.combo \
+                -width 50 -height $nb_obj \
+                -relief sunken -borderwidth 1 -editable 0 \
+                -textvariable ::gui_astrometry::graph_object \
+                -values $::gui_astrometry::list_object
+             pack $sciences.combo -anchor center -side left -fill x -expand 0
+
+         set block [frame $getjpl.exped  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $getjpl -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Destinataire : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::gui_astrometry::getjpl_desti
+               pack   $block.val -side left -padx 3 -pady 1 -anchor w
+
+         set block [frame $getjpl.subj  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $getjpl -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Sujet : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::gui_astrometry::getjpl_subj
+               pack   $block.val -side left -padx 3 -pady 1 -anchor w
+
+         set ::gui_astrometry::getjpl_send $getjpl.sendtext
+         text $::gui_astrometry::getjpl_send -height 30 -width 80 \
+              -xscrollcommand "$::gui_astrometry::getjpl_send.xscroll set" \
+              -yscrollcommand "$::gui_astrometry::getjpl_send.yscroll set" \
+              -wrap none
+         pack $::gui_astrometry::getjpl_send -expand yes -fill both -padx 5 -pady 5
+
+         scrollbar $::gui_astrometry::getjpl_send.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::getjpl_send xview"
+         pack $::gui_astrometry::getjpl_send.xscroll -side bottom -fill x
+
+         scrollbar $::gui_astrometry::getjpl_send.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::getjpl_send yview"
+         pack $::gui_astrometry::getjpl_send.yscroll -side right -fill y
+
+
+         set block [frame $getjpl.butaction -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $getjpl -side top -expand 0 -padx 2 -pady 5
+
+               button $block.butread -text "Read" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::jpl_read"
+               pack $block.butread  -side right -anchor c -expand 0
+
+               button $block.butsend -text "Send" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::jpl_send"
+               pack $block.butsend  -side right -anchor c -expand 0
+
+               button $block.butcreate -text "Create" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::jpl_create"
+               pack $block.butcreate -side right -anchor c -expand 0
+
+
+
+         set ::gui_astrometry::getjpl_recev $getjpl.recevtext
+         text $::gui_astrometry::getjpl_recev -height 30 -width 80 \
+              -xscrollcommand "$::gui_astrometry::getjpl_recev.xscroll set" \
+              -yscrollcommand "$::gui_astrometry::getjpl_recev.yscroll set" \
+              -wrap none
+         pack $::gui_astrometry::getjpl_recev -expand yes -fill both -padx 5 -pady 5
+
+         scrollbar $::gui_astrometry::getjpl_recev.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::getjpl_recev xview"
+         pack $::gui_astrometry::getjpl_recev.xscroll -side bottom -fill x
+
+         scrollbar $::gui_astrometry::getjpl_recev.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::getjpl_recev yview"
+         pack $::gui_astrometry::getjpl_recev.yscroll -side right -fill y
+
+
+
 
 
          #--- Rapports MPC
@@ -2436,7 +2592,7 @@ gren_info "la\n"
              pack $sciences.combo -anchor center -side left -fill x -expand 0
 
  
-         set frmgraph [frame $graphes.frmgraph -borderwidth 0 -cursor arrow -relief groove]
+         set frmgraph [frame $graphes.frmgraph1 -borderwidth 0 -cursor arrow -relief groove]
          pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
          
@@ -2454,35 +2610,80 @@ gren_info "la\n"
                             -command "::gui_astrometry::graph datejj res_d"
                     pack $block.gr -side left -anchor c -expand 0
 
+
+         set frmgraph [frame $graphes.frmgraph2 -borderwidth 0 -cursor arrow -relief groove]
+         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
               set block [frame $frmgraph.datejj_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
               pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
 
-                    button $block.gr -text "datejj VS ra omc" -borderwidth 2 -takefocus 1 \
+                    button $block.gr -text "datejj VS ra_imcce_omc" -borderwidth 2 -takefocus 1 \
                             -command "::gui_astrometry::graph datejj ra_imcce_omc"
                     pack $block.gr -side left -anchor c -expand 0
 
               set block [frame $frmgraph.datejj_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
               pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
 
-                    button $block.gr -text "datejj VS dec omc" -borderwidth 2 -takefocus 1 \
+                    button $block.gr -text "datejj VS dec_imcce_omc" -borderwidth 2 -takefocus 1 \
                             -command "::gui_astrometry::graph datejj dec_imcce_omc"
                     pack $block.gr -side left -anchor c -expand 0
 
+
+         set frmgraph [frame $graphes.frmgraph3 -borderwidth 0 -cursor arrow -relief groove]
+         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+              set block [frame $frmgraph.datejj_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "datejj VS ra_mpc_omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj ra_mpc_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.datejj_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "datejj VS dec_mpc_omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj dec_mpc_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+
+
+         set frmgraph [frame $graphes.frmgraph4 -borderwidth 0 -cursor arrow -relief groove]
+         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+         
               set block [frame $frmgraph.res_a_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
               pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
 
-                    button $block.gr -text "res_a VS ra omc" -borderwidth 2 -takefocus 1 \
+                    button $block.gr -text "res_a VS ra_imcce_omc" -borderwidth 2 -takefocus 1 \
                             -command "::gui_astrometry::graph res_a ra_imcce_omc"
                     pack $block.gr -side left -anchor c -expand 0
 
               set block [frame $frmgraph.res_d_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
               pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
 
-                    button $block.gr -text "res_d VS dec omc" -borderwidth 2 -takefocus 1 \
+                    button $block.gr -text "res_d VS dec_imcce_omc" -borderwidth 2 -takefocus 1 \
                             -command "::gui_astrometry::graph res_d dec_imcce_omc"
                     pack $block.gr -side left -anchor c -expand 0
 
 
+         set frmgraph [frame $graphes.frmgraph5 -borderwidth 0 -cursor arrow -relief groove]
+         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+
+              set block [frame $frmgraph.res_a_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "ra_mpc_omc VS ra_imcce_omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph ra_mpc_omc ra_imcce_omc"
+                    pack $block.gr -side left -anchor c -expand 0
+
+              set block [frame $frmgraph.res_d_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
+
+                    button $block.gr -text "dec_mpc_omc VS dec_imcce_omc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph dec_mpc_omc dec_imcce_omc"
+                    pack $block.gr -side left -anchor c -expand 0
 
 
 
