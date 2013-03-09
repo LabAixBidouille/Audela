@@ -916,6 +916,7 @@ return
                 pack $ucac4.color -side left -anchor e -expand 0 
                 spinbox $ucac4.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac4 -command "::gui_cata::affiche_cata" -width 3
                 pack  $ucac4.radius -in $ucac4 -side left -anchor w
+                $ucac4.radius set $::gui_cata::size_ucac4_sav
 
            #--- Cree un frame pour afficher PPMX
            set ppmx [frame $count.ppmx -borderwidth 0 -cursor arrow -relief groove]
@@ -934,6 +935,7 @@ return
                 pack $ppmx.color -side left -anchor e -expand 0 
                 spinbox $ppmx.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmx -command "::gui_cata::affiche_cata" -width 3
                 pack  $ppmx.radius -in $ppmx -side left -anchor w
+                $ppmx.radius set $::gui_cata::size_ppmx_sav
 
            #--- Cree un frame pour afficher PPMXL
            set ppmxl [frame $count.ppmxl -borderwidth 0 -cursor arrow -relief groove]
@@ -952,6 +954,7 @@ return
                 pack $ppmxl.color -side left -anchor e -expand 0 
                 spinbox $ppmxl.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmxl -command "::gui_cata::affiche_cata" -width 3
                 pack  $ppmxl.radius -in $ppmxl -side left -anchor w
+                $ppmxl.radius set $::gui_cata::size_ppmxl_sav
 
            #--- Cree un frame pour afficher TYCHO2
            set tycho2 [frame $count.tycho2 -borderwidth 0 -cursor arrow -relief groove]
