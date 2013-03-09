@@ -1041,6 +1041,7 @@ namespace eval psf_tools {
 
       upvar $send_listsources listsources
       ::psf_tools::set_mag_usno_r2 listsources
+
    }
 
 
@@ -1222,11 +1223,13 @@ namespace eval psf_tools {
 
   # calcul toutes les sources
 
+      gren_info "MAG 3 = [::manage_source::get_nb_sources_rollup [list $fields $sources]]\n"
+  
 
       set spos 0
       foreach s $sources {
          set cpos [lsearch -index 0 $s "ASTROID"]
-         if {$cpos!=-1} {
+         if {$cpos != -1} {
                set astroid [lindex $s $cpos]
                set astroid_com [lindex $astroid 1]
                set astroid_oth [lindex $astroid 2]
@@ -1236,9 +1239,11 @@ namespace eval psf_tools {
                if {$err} {
                   #gren_info "ERREUR MAG : s = $s \n"
                   #gren_info "ERREUR MAG : flux = $flux ; const_mag = $const_mag\n"
+                  incr spos
                   continue
                }
                if {$flux < 0 } {
+                  incr spos
                   continue
                }
                set astroid_com [lreplace  $astroid_com  3  4 $mag $mag_err ]
@@ -1250,6 +1255,8 @@ namespace eval psf_tools {
          
       }
       
+       gren_info "MAG 4 = [::manage_source::get_nb_sources_rollup [list $fields $sources]]\n"
+
       set listsources [list $fields $sources]
       return
    }

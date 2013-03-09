@@ -74,7 +74,7 @@ proc identification { catalist1 catalog1 catalist2 catalog2 scoreposlimit scorem
    set ulog 0
    if {$log==2} {set ulog 1} 
 
-   set decoupe 16
+   set decoupe 3
    set delta [expr 10./3600.]
    
    set resultlist {}

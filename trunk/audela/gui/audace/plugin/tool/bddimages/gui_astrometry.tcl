@@ -446,7 +446,6 @@ namespace eval gui_astrometry {
 
    proc ::gui_astrometry::create_rapport {  } {
 
-
       # Batch
       set ::tools_astrometry::rapport_batch [clock format [clock scan now] -format "Audela BDI %Y-%m-%dT%H:%M:%S %Z"]
 
@@ -472,7 +471,7 @@ namespace eval gui_astrometry {
       ::gui_astrometry::create_rapport_mpc
       ::gui_astrometry::create_rapport_xml
 
-      # Combo box pour les graphes
+      # Charge les objets science dans la combo box des graphes
       set ::gui_astrometry::list_object ""
       set l [array get ::tools_astrometry::listscience]
       foreach {name y} $l {
@@ -482,6 +481,7 @@ namespace eval gui_astrometry {
       $::gui_astrometry::fen.appli.onglets.list.graphes.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::list_object
 
    }
+
 
 
 
@@ -910,6 +910,20 @@ namespace eval gui_astrometry {
                set dec_mpc [::tools_astrometry::convert_txt_dms $dec_mpc_deg]
             }
 
+            # CMC IMCCE-JPL
+            if {$ra_imcce_deg == "-" || $ra_mpc_deg == "-"} {
+               set ra_imccejpl_cmc "-"
+            } else {
+               set ra_imccejpl_cmc [format "%.4f" [expr ($ra_imcce_deg - $ra_mpc_deg) * 3600.0] ]
+               if {$ra_imccejpl_cmc>0} {set ra_imccejpl_cmc "+$ra_imccejpl_cmc"}
+            }
+            if {$dec_imcce_deg == "-" || $dec_mpc_deg == "-"} {
+               set dec_imccejpl_cmc "-"
+            } else {
+               set dec_imccejpl_cmc   [format "%.4f" [expr ($dec_imcce_deg - $dec_mpc_deg) * 3600.0] ]
+               if {$dec_imccejpl_cmc>0} {set dec_imccejpl_cmc "+$dec_imccejpl_cmc"}
+            }
+
             set datejj  [format "%.8f"  [ expr [ mc_date2jd $dateimg] + $midexpo / 86400. ] ]
             set date    [mc_date2iso8601 $datejj]
 
@@ -920,10 +934,12 @@ namespace eval gui_astrometry {
             #gren_info "EPHEM MPC date =  $date ; radec = $ra_mpc  $dec_mpc ; omc = $ra_mpc_omc  $dec_mpc_omc\n"
             lappend tabcalc(res_a)   $res_a
             lappend tabcalc(res_d)   $res_d
-            if {$ra_imcce_omc  != "-"} {lappend tabcalc(ra_imcce_omc)  $ra_imcce_omc }
-            if {$dec_imcce_omc != "-"} {lappend tabcalc(dec_imcce_omc) $dec_imcce_omc}
-            if {$ra_mpc_omc    != "-"} {lappend tabcalc(ra_mpc_omc)    $ra_mpc_omc   }
-            if {$dec_mpc_omc   != "-"} {lappend tabcalc(dec_mpc_omc)   $dec_mpc_omc  }
+            if {$ra_imcce_omc     != "-"} {lappend tabcalc(ra_imcce_omc)     $ra_imcce_omc }
+            if {$dec_imcce_omc    != "-"} {lappend tabcalc(dec_imcce_omc)    $dec_imcce_omc}
+            if {$ra_mpc_omc       != "-"} {lappend tabcalc(ra_mpc_omc)       $ra_mpc_omc   }
+            if {$dec_mpc_omc      != "-"} {lappend tabcalc(dec_mpc_omc)      $dec_mpc_omc  }
+            if {$ra_imccejpl_cmc  != "-"} {lappend tabcalc(ra_imccejpl_cmc)  $ra_imccejpl_cmc   }
+            if {$dec_imccejpl_cmc != "-"} {lappend tabcalc(dec_imccejpl_cmc) $dec_imccejpl_cmc  }
             lappend tabcalc(datejj)  $datejj
             lappend tabcalc(alpha)   $alpha
             lappend tabcalc(delta)   $delta
@@ -939,13 +955,15 @@ namespace eval gui_astrometry {
 
 
             # Graphe
-            set ::gui_astrometry::graph_results($name,$dateimg,datejj)        $datejj
-            set ::gui_astrometry::graph_results($name,$dateimg,res_a)         $res_a
-            set ::gui_astrometry::graph_results($name,$dateimg,res_d)         $res_d
-            set ::gui_astrometry::graph_results($name,$dateimg,ra_imcce_omc)  $ra_imcce_omc
-            set ::gui_astrometry::graph_results($name,$dateimg,dec_imcce_omc) $dec_imcce_omc
-            set ::gui_astrometry::graph_results($name,$dateimg,ra_mpc_omc)    $ra_mpc_omc
-            set ::gui_astrometry::graph_results($name,$dateimg,dec_mpc_omc)   $dec_mpc_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,datejj)           $datejj
+            set ::gui_astrometry::graph_results($name,$dateimg,res_a)            $res_a
+            set ::gui_astrometry::graph_results($name,$dateimg,res_d)            $res_d
+            set ::gui_astrometry::graph_results($name,$dateimg,ra_imcce_omc)     $ra_imcce_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,dec_imcce_omc)    $dec_imcce_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,ra_mpc_omc)       $ra_mpc_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,dec_mpc_omc)      $dec_mpc_omc
+            set ::gui_astrometry::graph_results($name,$dateimg,ra_imccejpl_cmc)  $ra_imccejpl_cmc
+            set ::gui_astrometry::graph_results($name,$dateimg,dec_imccejpl_cmc) $dec_imccejpl_cmc
 
 
 
@@ -989,6 +1007,22 @@ namespace eval gui_astrometry {
             set calc(dec_mpc_omc,mean)   "-"
             set calc(dec_mpc_omc,stdev)  "-"
          }
+         # CMC IMCCE-JPL
+         if {[info exists tabcalc(ra_imccejpl_cmc)]} {
+            set calc(ra_imccejpl_cmc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_imccejpl_cmc)  ]]
+            set calc(ra_imccejpl_cmc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_imccejpl_cmc)  ]]
+         } else {
+            set calc(ra_imccejpl_cmc,mean)   "-"
+            set calc(ra_imccejpl_cmc,stdev)  "-"
+         }
+
+         if {[info exists tabcalc(dec_imccejpl_cmc)]} {
+           set calc(dec_imccejpl_cmc,mean)  [format "%.4f" [::math::statistics::mean   $tabcalc(dec_imccejpl_cmc) ]]
+           set calc(dec_imccejpl_cmc,stdev) [format "%.4f" [::math::statistics::stdev  $tabcalc(dec_imccejpl_cmc) ]]
+         } else {
+            set calc(dec_imccejpl_cmc,mean)   "-"
+            set calc(dec_imccejpl_cmc,stdev)  "-"
+         }
          
          set calc(datejj,mean)   [::math::statistics::mean   $tabcalc(datejj) ] 
          set calc(datejj,stdev)  [::math::statistics::stdev  $tabcalc(datejj) ] 
@@ -1012,33 +1046,29 @@ namespace eval gui_astrometry {
          if {$calc(ra_mpc_omc,stdev)>=0} {set calc(ra_mpc_omc,stdev) "+$calc(ra_mpc_omc,stdev)" }
          if {$calc(dec_mpc_omc,stdev)>=0} {set calc(dec_mpc_omc,stdev) "+$calc(dec_mpc_omc,stdev)" }
 
+         if {$calc(ra_imccejpl_cmc,mean)>=0} {set calc(ra_imccejpl_cmc,mean) "+$calc(ra_imccejpl_cmc,mean)" }
+         if {$calc(dec_imccejpl_cmc,mean)>=0} {set calc(dec_imccejpl_cmc,mean) "+$calc(dec_imccejpl_cmc,mean)" }
+         if {$calc(ra_imccejpl_cmc,stdev)>=0} {set calc(ra_imccejpl_cmc,stdev) "+$calc(ra_imccejpl_cmc,stdev)" }
+         if {$calc(dec_imccejpl_cmc,stdev)>=0} {set calc(dec_imccejpl_cmc,stdev) "+$calc(dec_imccejpl_cmc,stdev)" }
+
          ::gui_astrometry::sep_txt
          $::gui_astrometry::rapport_txt insert end  "# BODY NAME = $name\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# Residus   RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# Residus   DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# Residus       RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# Residus       DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"          
+         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE     RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE     DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# -\n"          
+         $::gui_astrometry::rapport_txt insert end  "# OMC JPL       RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# OMC JPL       DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC JPL   RA  \"  : mean = $calc(ra_mpc_omc,mean) stedv = $calc(ra_mpc_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC JPL   DEC \"  : mean = $calc(dec_mpc_omc,mean) stedv = $calc(dec_mpc_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# CMC IMCCE-JPL RA  \"  : mean = $calc(ra_imccejpl_cmc,mean) stedv = $calc(ra_imccejpl_cmc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# CMC IMCCE-JPL DEC \"  : mean = $calc(dec_imccejpl_cmc,mean) stedv = $calc(dec_imccejpl_cmc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
          $::gui_astrometry::rapport_txt insert end  "# Date jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
          $::gui_astrometry::rapport_txt insert end  "# RA   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
          $::gui_astrometry::rapport_txt insert end  "# DEC  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# TOPCAT =  date,ra_imcce_omc,ra_imcce_omc_std,dec_imcce_omc,dec_imcce_omc_std, ra_mpc_omc,ra_mpc_omc_std,dec_mpc_omc,dec_mpc_omc_std, info\n"
-         $::gui_astrometry::rapport_txt insert end  "# TOPCAT =  $calc(datejj,mean),         \
-                                                                 $calc(ra_imcce_omc,mean),   \
-                                                                 $calc(ra_imcce_omc,stdev),  \
-                                                                 $calc(dec_imcce_omc,mean),  \
-                                                                 $calc(dec_imcce_omc,stdev), \
-                                                                 $calc(ra_mpc_omc,mean),     \
-                                                                 $calc(ra_mpc_omc,stdev),    \
-                                                                 $calc(dec_mpc_omc,mean),    \
-                                                                 $calc(dec_mpc_omc,stdev),   \
-                                                                 $name [mc_date2iso8601 $calc(datejj,mean)]\n"
          ::gui_astrometry::sep_txt
 
       }
@@ -1892,10 +1922,10 @@ gren_info "la\n"
       global bddconf
 
 
-      set  nb_obj  1 
-      set  ::gui_astrometry::list_object  "" 
-      ::gui_astrometry::inittoconf
+      set nb_obj  1 
+      set ::gui_astrometry::list_object  "" 
 
+      ::gui_astrometry::inittoconf
       ::gui_astrometry::charge_list $img_list
 
       set ::gui_astrometry::state_gestion 0
@@ -2581,15 +2611,15 @@ gren_info "la\n"
          set sciences [frame $graphes.select_obj -borderwidth 0 -cursor arrow -relief groove]
          pack $sciences -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             label $sciences.lab -width 10 -text "Objet : "
-             pack  $sciences.lab -in $sciences -side left -padx 5 -pady 0
+            label $sciences.lab -width 10 -text "Objet : "
+            pack  $sciences.lab -in $sciences -side left -padx 5 -pady 0
 
-             ComboBox $sciences.combo \
+            ComboBox $sciences.combo \
                 -width 50 -height $nb_obj \
                 -relief sunken -borderwidth 1 -editable 0 \
                 -textvariable ::gui_astrometry::graph_object \
                 -values $::gui_astrometry::list_object
-             pack $sciences.combo -anchor center -side left -fill x -expand 0
+            pack $sciences.combo -anchor center -side left -fill x -expand 0
 
  
          set frmgraph [frame $graphes.frmgraph1 -borderwidth 0 -cursor arrow -relief groove]
@@ -2686,13 +2716,23 @@ gren_info "la\n"
                     pack $block.gr -side left -anchor c -expand 0
 
 
+         set frmgraph [frame $graphes.frmgraph6 -borderwidth 0 -cursor arrow -relief groove]
+         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
 
+              set block [frame $frmgraph.datejj_vs_ra_imccejpl_cmc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
 
+                    button $block.gr -text "datejj VS ra_imccejpl_cmc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj ra_imccejpl_cmc"
+                    pack $block.gr -side left -anchor c -expand 0
 
+              set block [frame $frmgraph.datejj_vs_dec_imccejpl_cmc -borderwidth 0 -cursor arrow -relief groove]
+              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
 
-
-
+                    button $block.gr -text "datejj VS dec_imccejpl_cmc" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph datejj dec_imccejpl_cmc"
+                    pack $block.gr -side left -anchor c -expand 0
 
 
 
@@ -2719,7 +2759,6 @@ gren_info "la\n"
 
       # Au lancement, charge les donnees
       ::gui_astrometry::affich_gestion
-
 
    }
 

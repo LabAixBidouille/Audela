@@ -686,9 +686,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
          #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
-         #set listsources [::tools_sources::set_common_fields_skybot $listsources]
+         set log 0; # log=2 pour activer ulog dans identification
          set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
-         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} 0 ] 
+         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} $log ] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
       }
 
@@ -703,8 +703,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          ::psf_tools::set_mag listsources
          
       }
-
-      gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Sauvegarde du cata XML
       gren_info "Enregistrement du cata XML: $cataxml\n"
