@@ -137,6 +137,8 @@ namespace eval bddimages_recherche {
    variable ::bddimages_recherche::current_list_id
    variable ::bddimages_recherche::action
 
+   variable nb_selected_img
+
    variable progress
    #--------------------------------------------------
    # run { this }
@@ -288,7 +290,7 @@ namespace eval bddimages_recherche {
       set r [tk_messageBox -message "Charger ?" -type yesno]
       if {$r=="no"} {return}
 
-      ::console::affiche_resultat "Chargement ... ($::bddimages_recherche::current_list_name)"
+      ::console::affiche_resultat "Chargement de la liste $::bddimages_recherche::current_list_name ...\n"
 
       set t0 [clock clicks -milliseconds]
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -300,10 +302,10 @@ namespace eval bddimages_recherche {
 
       set t2 [clock clicks -milliseconds]
       set sec [format "%.2f" [expr ($t1-$t0)/1000.]]
-      set bddconf(chrgtlist) "Charge $sec sec"
+      set bddconf(chrgtlist) "Chargement : $sec sec"
       set sec [format "%.2f" [expr ($t2-$t1)/1000.]]
-      set bddconf(affichlist) "Affiche $sec sec"
-      ::console::affiche_resultat "Fin...\n"
+      set bddconf(affichlist) "Affichage : $sec sec"
+      ::console::affiche_resultat "Ok.\n"
 
       return
    }
@@ -496,6 +498,7 @@ namespace eval bddimages_recherche {
       if { ! [ info exists conf(bddimages,geometry_recherche) ] } { set conf(bddimages,geometry_recherche) "+100+100" }
       set bddconf(geometry_recherche) $conf(bddimages,geometry_recherche)
       set ::bddimages_recherche::progress 0
+      set ::bddimages_recherche::nb_selected_img 0
 
 
       #---
@@ -529,10 +532,10 @@ namespace eval bddimages_recherche {
       if {$nbintellilist == 0} {
          tk_messageBox -message "$caption(bddimages_recherche,nointelist)" -type ok
       }
-      
+
       set bddconf(inserinfo) "Total($nbintellilist)"
-      set bddconf(chrgtlist) "Charge -"
-      set bddconf(affichlist) "Affiche -"
+      set bddconf(chrgtlist) "Chargement -"
+      set bddconf(affichlist) "Affichage -"
       set bddconf(namelist) "Liste -"
 
 
@@ -806,7 +809,6 @@ namespace eval bddimages_recherche {
                -textvariable bddconf(namelist)
            pack $This.frame11.namelist -in $This.frame11 -side left -padx 3 -pady 1 -anchor w
 
-      
       ::bddimages_recherche::Affiche_listes
 
       #--- La fenetre est active
@@ -1806,6 +1808,7 @@ namespace eval bddimages_recherche {
    proc ::bddimages_recherche::cmdButton1Click { w args } {
 
       if { [$w curselection] != "" } {
+         gren_info "Nb selected images: [llength [$w curselection]]\n"
          set i [lindex [$w curselection ]  0]
          set idbddimg  [lindex [$w get $i] 0]
          affiche_image_by_idbddimg $idbddimg
@@ -1822,6 +1825,9 @@ namespace eval bddimages_recherche {
 
    }
 
+   
+   
+   
    #--------------------------------------------------
    #  cmdSortColumn { tbl col }
    #--------------------------------------------------
