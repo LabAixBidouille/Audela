@@ -627,7 +627,7 @@ namespace eval gui_astrometry {
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
 
-      switch $type { "star"  { set cmd "/usr/local/bin/ephemcc etoile -a $nom $ephemcc_nom -j $middate -tp 1 -te 1 -tc 5 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
+      switch $type { "star"  { set cmd "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 5 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
                      "aster" { set cmd "/usr/local/bin/ephemcc asteroide $ephemcc_nom -j $middate -tp 1 -te 1 -tc 5 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
                      default { set cmd ""}
                    }
