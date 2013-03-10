@@ -762,9 +762,6 @@ namespace eval bddimages_recherche {
             pack $This.frame6.liste.hsb \
                -in $This.frame6.liste -side bottom -fill x
 
-
-
-
             #--- Creation de la table
             ::bddimages_recherche::createTbl2 $This.frame6.liste
             pack $This.frame6.liste.tbl -in $This.frame6.liste -expand yes -fill both
@@ -2073,11 +2070,9 @@ namespace eval bddimages_recherche {
       global intellilisttotal
 
       catch {  $::bddimages_recherche::This.frame6.liste.tbl delete 0 end
-         $::bddimages_recherche::This.frame6.liste.tbl deletecolumns 0 end
-         }
+               $::bddimages_recherche::This.frame6.liste.tbl deletecolumns 0 end }
 
       $::bddimages_recherche::This.frame6.liste.tbl insertcolumns end "20" "Listes" left
-
 
       #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
       if { [ $::bddimages_recherche::This.frame6.liste.tbl columncount ] != "0" } {
