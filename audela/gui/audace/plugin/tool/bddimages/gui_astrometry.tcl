@@ -446,6 +446,14 @@ namespace eval gui_astrometry {
 
    proc ::gui_astrometry::create_rapport {  } {
 
+      # Verifie la presence d'un code UAI
+      if {[string length [string trim $::tools_astrometry::rapport_uai_code]] == 0} {
+         tk_messageBox -message "Veuillez definir le code UAI des observations (onglet Rapports->Entetes->IAU Code)" -type ok
+         return
+      }
+
+      gren_info "Generation des rapports d'observations ...\n"
+
       # Batch
       set ::tools_astrometry::rapport_batch [clock format [clock scan now] -format "Audela BDI %Y-%m-%dT%H:%M:%S %Z"]
 
@@ -466,9 +474,14 @@ namespace eval gui_astrometry {
          if {$separ==""} {set separ " "}
       }
 
+      # Generation du rapport MPC
+      ::gui_astrometry::create_rapport_mpc
+
+      # Calcul des ephemerides
+
+
       # Generation des rapports
       ::gui_astrometry::create_rapport_txt
-      ::gui_astrometry::create_rapport_mpc
       ::gui_astrometry::create_rapport_xml
 
       # Charge les objets science dans la combo box des graphes
@@ -479,6 +492,8 @@ namespace eval gui_astrometry {
       }
       set nb_obj [llength $::gui_astrometry::list_object]
       $::gui_astrometry::fen.appli.onglets.list.graphes.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::list_object
+      $::gui_astrometry::fen.appli.onglets.list.rapports.onglets.list.getjpl.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::list_object
+      $::gui_astrometry::fen.appli.onglets.list.rapports.onglets.list.misc.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::list_object
 
    }
 
@@ -587,7 +602,7 @@ namespace eval gui_astrometry {
                   set type "star"
                   set ra  [string trim [lindex $b 0] ]
                   set dec [string trim [lindex $b 1] ]
-                  return [list $ra $dec "-" "-"]
+                  return [list $ra $dec "-" "-" "-" "-"]
                }
             } else {
                continue
@@ -597,7 +612,7 @@ namespace eval gui_astrometry {
       }
       
       if {$pass == "no"} {
-         return [list "-" "-" "-" "-"]
+         return [list "-" "-" "-" "-" "-" "-"]
       }
       
       if {$num == "-"} {
@@ -610,8 +625,8 @@ namespace eval gui_astrometry {
       puts $chan0 "LD_LIBRARY_PATH=/usr/local/lib:$::tools_astrometry::ifortlib"
       puts $chan0 "export LD_LIBRARY_PATH"
 
-      switch $type { "star"  { set cmd "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
-                     "aster" { set cmd "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 1 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
+      switch $type { "star"  { set cmd "/usr/local/bin/ephemcc etoile -a $nom -n $num -j $middate -tp 1 -te 1 -tc 5 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
+                     "aster" { set cmd "/usr/local/bin/ephemcc asteroide -n $num -j $middate -tp 1 -te 1 -tc 5 -uai $::tools_astrometry::rapport_uai_code -d 1 -e utc --julien" }
                      default { set cmd ""}
                    }
       puts $chan0 $cmd
@@ -624,6 +639,8 @@ namespace eval gui_astrometry {
          ::console::affiche_erreur "WARNING: EPHEMCC $err ($msg)\n"
          set ra_imcce "-"
          set dec_imcce "-"
+         set h_imcce "-"
+         set am_imcce "-"
          set pass "no"
       } else {
    
@@ -633,21 +650,33 @@ namespace eval gui_astrometry {
             if {$c == "#"} {continue}
             set rd [regexp -inline -all -- {\S+} $line]      
             set tab [split $rd " "]
-            set rah [lindex $tab 1]
-            set ram [lindex $tab 2]
-            set ras [lindex $tab 3]
-            set ded [lindex $tab 4]
-            set dem [lindex $tab 5]
-            set des [lindex $tab 6]
+            set rah [string map {"-0" "-" "+0" "+"} [lindex $tab 2]]
+            set ram [lindex $tab 3]
+            set ras [lindex $tab 4]
+            set ded [string map {"-0" "-" "+0" "+"} [lindex $tab 5]]
+            set dem [lindex $tab 6]
+            set des [lindex $tab 7]
+            set hd  [string map {"-0" "-" "+0" "+"} [lindex $tab 17]]
+            set hm  [lindex $tab 18]
+            set hs  [lindex $tab 19]
+            set am  [lindex $tab 20]
             break
          }
          #gren_info "EPHEM RA = $rah $ram $ras; DEC = $ded $dem $des\n"
          set ra_imcce [expr 15. * ($rah + $ram / 60. + $ras / 3600.)]
-
          if {$ded > 0 } {
             set dec_imcce [expr ($ded + $dem / 60. + $des / 3600.)]
          } else {
             set dec_imcce [expr ($ded - $dem / 60. - $des / 3600.)]
+         }
+         if {$hd > 0 } {
+            set h_imcce [expr ($hd + $hm / 60. + $hs / 3600.)]
+         } else {
+            set h_imcce [expr ($hd - $hm / 60. - $hs / 3600.)]
+         }
+         set am_imcce "-"
+         if {$am != "---"} { 
+            set am_imcce $am
          }
       }
 
@@ -677,7 +706,7 @@ namespace eval gui_astrometry {
 
       #gren_info "EPHEM IMCCE RA = $ra_imcce; DEC = $dec_imcce\n"
       #gren_info "EPHEM MPC RA = $ra_mpc; DEC = $dec_mpc\n"
-      return [list $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
+      return [list $ra_imcce $dec_imcce $ra_mpc $dec_mpc $h_imcce $am_imcce]
 
    }
 
@@ -711,7 +740,7 @@ namespace eval gui_astrometry {
    }
 
 
-   proc ::gui_astrometry::rapport_info { date name } {
+   proc ::gui_astrometry::rapport_info { date name {calcephem 1}} {
 
       set id_current_image 0
       foreach current_image $::tools_cata::img_list {
@@ -723,13 +752,16 @@ namespace eval gui_astrometry {
 
          if {[expr abs($jddateobs-$jddate)*86400.0] <= 0.001} {
             set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
-            set midexpo  [expr $exposure / 2.0]
-            set middate  [expr $jddate + $midexpo / 86400.0]
-            set result   [::gui_astrometry::rapport_get_ephem ::gui_cata::cata_list($id_current_image) $name $middate]
-            return [list $midexpo $result ]
+            set midexpo [expr $exposure / 2.0]
+            set middate [expr $jddate + $midexpo / 86400.0]
+            set result {"-" "-" "-" "-" "-" "-"}
+            if {$calcephem} {
+               set result [::gui_astrometry::rapport_get_ephem ::gui_cata::cata_list($id_current_image) $name $middate]
+            }
+            return [list $midexpo $result]
          }
       }
-      return { -1 {"-" "-" "-" "-"} }
+      return { -1 {"-" "-" "-" "-" "-" "-"} }
    }
 
 
@@ -737,7 +769,7 @@ namespace eval gui_astrometry {
 
 
    proc ::gui_astrometry::sep_txt {  } {
-      $::gui_astrometry::rapport_txt insert end  "#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+      $::gui_astrometry::rapport_txt insert end  "#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
    }
 
 
@@ -773,7 +805,7 @@ namespace eval gui_astrometry {
          if {$num>$nummax} {set nummax $num}
       }
 
-      set form "%1s %-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s     \n"
+      set form "%1s %-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s   %10s  %10s  \n"
 
       set name          ""
       set date          ""
@@ -794,7 +826,9 @@ namespace eval gui_astrometry {
       set dec_imcce     ""
       set ra_mpc        "JPL"
       set dec_mpc       ""
-      set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
+      set hauteur       ""
+      set airmass       ""
+      set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $hauteur $airmass]
 
       set name          "Object"      
       set date          "Mid-Date"    
@@ -815,7 +849,9 @@ namespace eval gui_astrometry {
       set dec_imcce     "Declination"
       set ra_mpc        "Right Asc."
       set dec_mpc       "Declination"
-      set headtab2 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
+      set hauteur       "Hauteur"
+      set airmass       "AirMass"
+      set headtab2 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $hauteur $airmass]
 
       set name          ""
       set date          "iso"
@@ -837,8 +873,9 @@ namespace eval gui_astrometry {
       set dec_imcce     "deg"
       set ra_mpc        "deg"
       set dec_mpc       "deg"
-      set headtab3 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc]
-
+      set hauteur       "deg"
+      set airmass       ""
+      set headtab3 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $hauteur $airmass]
 
       foreach {name y} $l {
          #gren_info "TXT: $name = $y\n"
@@ -861,19 +898,20 @@ namespace eval gui_astrometry {
             set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$dateimg) 6]]
             set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$dateimg) 7]]
 
+            gren_info "  Generation des donnees d'ephemerides ...\n"
             set resultmp [::gui_astrometry::rapport_info $dateimg $name]
 
-            # TODO gerer le cas ou resultmp = {-1 - - - - -}
-
-            set midexpo   [lindex $resultmp 0]
-            set result    [lindex $resultmp 1]
+            set midexpo       [lindex $resultmp 0]
+            set result        [lindex $resultmp 1]
             set ra_imcce_deg  [lindex $result 0]
             set dec_imcce_deg [lindex $result 1]
             set ra_mpc_deg    [lindex $result 2]
             set dec_mpc_deg   [lindex $result 3]
+            set h_imcce_deg   [lindex $result 4]
+            set am_imcce_deg  [lindex $result 5]
 
             if {$midexpo == -1} {
-              ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $dateimg\n"
+               gren_erreur "WARNING: Exposure non reconnu pour image : $dateimg\n"
                set midexpo 0
             }
 
@@ -944,13 +982,15 @@ namespace eval gui_astrometry {
             lappend tabcalc(alpha)   $alpha
             lappend tabcalc(delta)   $delta
 
-            set alpha         [format "%.8f" $alpha]
-            set delta         [format "%.8f" $delta]
-            set ra_imcce_deg  [format "%.8f" $ra_imcce_deg ]
-            set dec_imcce_deg [format "%.8f" $dec_imcce_deg]
-            if {$ra_mpc_deg  != "-"} {set ra_mpc_deg    [format "%.8f" $ra_mpc_deg ] }
-            if {$dec_mpc_deg != "-"} {set dec_mpc_deg   [format "%.8f" $dec_mpc_deg] }
-            set txt [format $form "" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg]
+            set alpha [format "%.8f" $alpha]
+            set delta [format "%.8f" $delta]
+            if {$ra_imcce_deg  != "-"} {set ra_imcce_deg  [format "%.8f" $ra_imcce_deg]}
+            if {$dec_imcce_deg != "-"} {set dec_imcce_deg [format "%.8f" $dec_imcce_deg]}
+            if {$ra_mpc_deg    != "-"} {set ra_mpc_deg    [format "%.8f" $ra_mpc_deg ]}
+            if {$dec_mpc_deg   != "-"} {set dec_mpc_deg   [format "%.8f" $dec_mpc_deg]}
+            if {$h_imcce_deg   != "-"} {set h_imcce_deg   [format "%.8f" $h_imcce_deg]}
+            if {$am_imcce_deg  != "-"} {set am_imcce_deg  [format "%.8f" $am_imcce_deg]}
+            set txt [format $form "" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg $h_imcce_deg $am_imcce_deg]
             $::gui_astrometry::rapport_txt insert end  $txt
 
 
@@ -964,9 +1004,6 @@ namespace eval gui_astrometry {
             set ::gui_astrometry::graph_results($name,$dateimg,dec_mpc_omc)      $dec_mpc_omc
             set ::gui_astrometry::graph_results($name,$dateimg,ra_imccejpl_cmc)  $ra_imccejpl_cmc
             set ::gui_astrometry::graph_results($name,$dateimg,dec_imccejpl_cmc) $dec_imccejpl_cmc
-
-
-
 
          }
 
@@ -1222,7 +1259,7 @@ namespace eval gui_astrometry {
       set description "ISO-Date at mid-exposure)"
       set f [ list "$::votable::Field::ID \"isodate\"" \
                    "$::votable::Field::NAME \"ISO-Date\"" \
-                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::UCD \"time.epoch\"" \
                    "$::votable::Field::DATATYPE \"char\"" \
                    "$::votable::Field::ARRAYSIZE \"24\"" \
                    "$::votable::Field::WIDTH \"24\"" ]
@@ -1232,8 +1269,8 @@ namespace eval gui_astrometry {
       set description "Julian date at mid-exposure"
       set f [ list "$::votable::Field::ID \"jddate\"" \
                    "$::votable::Field::NAME \"JD-Date\"" \
-                   "$::votable::Field::UCD \"\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::UCD \"time.epoch\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"16\"" \
                    "$::votable::Field::PRECISION \"8\"" \
                    "$::votable::Field::UNIT \"d\"" ]
@@ -1244,7 +1281,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"ra\"" \
                    "$::votable::Field::NAME \"RA\"" \
                    "$::votable::Field::UCD \"pos.eq.ra;meta.main\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"10\"" \
                    "$::votable::Field::PRECISION \"6\"" \
                    "$::votable::Field::UNIT \"deg\"" ]
@@ -1255,7 +1292,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"dec\"" \
                    "$::votable::Field::NAME \"DEC\"" \
                    "$::votable::Field::UCD \"pos.eq.dec;meta.main\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"10\"" \
                    "$::votable::Field::PRECISION \"6\"" \
                    "$::votable::Field::UNIT \"deg\"" ]
@@ -1266,7 +1303,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"ra_err\"" \
                    "$::votable::Field::NAME \"RA_err\"" \
                    "$::votable::Field::UCD \"stat.error;pos.eq.ra\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"10\"" \
                    "$::votable::Field::PRECISION \"6\"" \
                    "$::votable::Field::UNIT \"arcsec\"" ]
@@ -1277,7 +1314,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"dec_err\"" \
                    "$::votable::Field::NAME \"DEC_err\"" \
                    "$::votable::Field::UCD \"stat.error;pos.eq.dec\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"10\"" \
                    "$::votable::Field::PRECISION \"6\"" \
                    "$::votable::Field::UNIT \"arcsec\"" ]
@@ -1288,7 +1325,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"mag\"" \
                    "$::votable::Field::NAME \"Magnitude\"" \
                    "$::votable::Field::UCD \"phot.mag\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"13\"" \
                    "$::votable::Field::PRECISION \"2\"" \
                    "$::votable::Field::UNIT \"mag\"" ]
@@ -1299,7 +1336,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"mag_err\"" \
                    "$::votable::Field::NAME \"Magnitude_err\"" \
                    "$::votable::Field::UCD \"stat.error;phot.mag\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"13\"" \
                    "$::votable::Field::PRECISION \"2\"" \
                    "$::votable::Field::UNIT \"mag\"" ]
@@ -1310,7 +1347,7 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"ra_omc\"" \
                    "$::votable::Field::NAME \"RA_omc\"" \
                    "$::votable::Field::UCD \"pos.ang\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"8\"" \
                    "$::votable::Field::PRECISION \"3\"" \
                    "$::votable::Field::UNIT \"arcsec\"" ]
@@ -1321,10 +1358,32 @@ namespace eval gui_astrometry {
       set f [ list "$::votable::Field::ID \"dec_omc\"" \
                    "$::votable::Field::NAME \"DEC_omc\"" \
                    "$::votable::Field::UCD \"pos.ang\"" \
-                   "$::votable::Field::DATATYPE \"float\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
                    "$::votable::Field::WIDTH \"8\"" \
                    "$::votable::Field::PRECISION \"3\"" \
                    "$::votable::Field::UNIT \"arcsec\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+      set description "Elevation"
+      set f [ list "$::votable::Field::ID \"elevation\"" \
+                   "$::votable::Field::NAME \"Elevation\"" \
+                   "$::votable::Field::UCD \"pos.ang\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
+                   "$::votable::Field::WIDTH \"8\"" \
+                   "$::votable::Field::PRECISION \"3\"" \
+                   "$::votable::Field::UNIT \"deg\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+      set description "Airmass"
+      set f [ list "$::votable::Field::ID \"airmass\"" \
+                   "$::votable::Field::NAME \"Airmass\"" \
+                   "$::votable::Field::UCD \"pos.ang\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
+                   "$::votable::Field::WIDTH \"8\"" \
+                   "$::votable::Field::PRECISION \"3\"" \
+                   "$::votable::Field::UNIT \"-\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
 
@@ -1350,14 +1409,14 @@ namespace eval gui_astrometry {
             set mag     [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 8] ]
             set mag_err [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date) 9] ]
 
+            gren_info "  Generation des donnees d'ephemerides ...\n"
             set result [::gui_astrometry::rapport_info $date $name]
-
-            # TODO gerer le cas ou result = {-1 - - - - -}
-
             set midexpo [lindex $result 0]
             set coords [lindex $result 1]
-            set ra_ephem  [lindex $coords 0]
+            set ra_ephem [lindex $coords 0]
             set dec_ephem [lindex $coords 1]
+            set h_ephem [lindex $coords 4]
+            set am_ephem [lindex $coords 5]
 
             if {$midexpo == -1} {
               ::console::affiche_erreur "WARNING: Exposure non reconnu pour image : $date\n"
@@ -1389,6 +1448,8 @@ namespace eval gui_astrometry {
             append votSources [::votable::addElement $::votable::Element::TD {} $mag_err]
             append votSources [::votable::addElement $::votable::Element::TD {} $ra_omc]
             append votSources [::votable::addElement $::votable::Element::TD {} $dec_omc]
+            append votSources [::votable::addElement $::votable::Element::TD {} $h_ephem]
+            append votSources [::votable::addElement $::votable::Element::TD {} $am_ephem]
 
             append votSources [::votable::closeElement $::votable::Element::TR] "\n"
             incr nrows
@@ -1794,6 +1855,11 @@ gren_info "la\n"
 
    } 
 
+
+
+
+
+
    proc ::gui_astrometry::jpl_create { } {
 
       set ::gui_astrometry::getjpl_desti "horizons@ssd.jpl.nasa.gov"
@@ -1803,7 +1869,7 @@ gren_info "la\n"
       $::gui_astrometry::getjpl_send delete 0.0 end  
       $::gui_astrometry::getjpl_send insert end "!\$\$SOF\n"
       $::gui_astrometry::getjpl_send insert end "EMAIL_ADDR= '$::tools_astrometry::rapport_mail'\n"
-      set object  [string trim [::tools_astrometry::convert_mpc_name $::gui_astrometry::graph_object] ]
+      set object [string trim [::tools_astrometry::convert_mpc_name $::gui_astrometry::graph_object] ]
       $::gui_astrometry::getjpl_send insert end "COMMAND= '$object;'\n"
       $::gui_astrometry::getjpl_send insert end "CENTER= '$::tools_astrometry::rapport_uai_code@399'\n"
       $::gui_astrometry::getjpl_send insert end "MAKE_EPHEM= 'YES'\n"
@@ -1815,7 +1881,7 @@ gren_info "la\n"
       foreach {name y} [array get ::tools_astrometry::listscience] {
          if {$name != $::gui_astrometry::graph_object} { continue }
          foreach dateimg $::tools_astrometry::listscience($name) {
-            set resultmp [::gui_astrometry::rapport_info $dateimg $name]
+            set resultmp [::gui_astrometry::rapport_info $dateimg $name 0]
             set midexpo  [lindex $resultmp 0]
             if {$midexpo == -1} { continue }
             set datejj  [format "%.9f"  [ expr [ mc_date2jd $dateimg] + $midexpo / 86400. ] ]
@@ -1869,6 +1935,34 @@ gren_info "la\n"
       }
      
    }
+
+
+
+
+
+   proc ::gui_astrometry::save_jd_dates { } {
+
+      set strdate ""
+      gren_info "Extraction des dates pour l'objet $::gui_astrometry::graph_object ...\n"
+      foreach {name y} [array get ::tools_astrometry::listscience] {
+         if {$name != $::gui_astrometry::graph_object} { continue }
+         foreach dateimg $::tools_astrometry::listscience($name) {
+            set resultmp [::gui_astrometry::rapport_info $dateimg $name 0]
+            set midexpo [lindex $resultmp 0]
+            if {$midexpo == -1} { continue }
+            set datejj [format "%.9f" [ expr [ mc_date2jd $dateimg] + $midexpo / 86400. ] ]
+            set strdate "$strdate$datejj\n"
+         }
+      }
+      if {$strdate != ""} {
+         ::bddimages::save_as $strdate "DAT"
+      } else {
+         gren_erreur "Aucune date a sauver\n"
+      }
+
+   }
+
+
 
 
 
@@ -2124,6 +2218,10 @@ gren_info "la\n"
                  set txt [frame $onglets_rapports.list.txt -borderwidth 1]
                  pack $txt -in $onglets_rapports.list -expand yes -fill both 
                  $onglets_rapports.list add $txt -text "TXT"
+
+                 set misc [frame $onglets_rapports.list.misc -borderwidth 1]
+                 pack $misc -in $onglets_rapports.list -expand yes -fill both 
+                 $onglets_rapports.list add $misc -text "MISC"
 
             # Sources - References Parent (par liste de source et moyenne)
             set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
@@ -2383,15 +2481,14 @@ gren_info "la\n"
 #            frame $onglets0.list.sources.table_enf -borderwidth 0 -cursor arrow -relief groove -background white
 
          #--- Entetes Rapports
-         
-         
          set wdth 13
-         
-         
+
+         # Entetes
+
          set block [frame $entetes.uai_code  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-               label  $block.lab -text "UAI Code : " -borderwidth 1 -width $wdth
+               label  $block.lab -text "IAU Code : " -borderwidth 1 -width $wdth
                pack   $block.lab -side left -padx 3 -pady 3 -anchor w
 
                entry  $block.val -relief sunken -width 5 -textvariable ::tools_astrometry::rapport_uai_code
@@ -2399,7 +2496,6 @@ gren_info "la\n"
 
                label  $block.loc -textvariable ::tools_astrometry::rapport_uai_location -borderwidth 1 -width $wdth
                pack   $block.loc -side left -padx 3 -pady 3 -anchor w
-
 
          set block [frame $entetes.rapporteur  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2455,7 +2551,7 @@ gren_info "la\n"
                entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_cata
                pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
-         
+
          # JPL
          
          set sciences [frame $getjpl.select_obj -borderwidth 0 -cursor arrow -relief groove]
@@ -2534,9 +2630,6 @@ gren_info "la\n"
          pack $::gui_astrometry::getjpl_recev.yscroll -side right -fill y
 
 
-
-
-
          #--- Rapports MPC
 
          set block [frame $mpc.exped  -borderwidth 0 -cursor arrow -relief groove]
@@ -2576,6 +2669,7 @@ gren_info "la\n"
                        -command {::bddimages::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
                pack $block.sas -side top -anchor c -expand 0
 
+
          #--- Rapports txt et xml
 
          set ::gui_astrometry::rapport_txt $txt.text
@@ -2602,6 +2696,28 @@ gren_info "la\n"
                        -command {::bddimages::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
                pack $block.txt -side right -anchor c -expand 0
 
+
+         #--- MISC
+
+         set object [frame $misc.select_obj -borderwidth 0 -cursor arrow -relief groove]
+         pack $object -in $misc -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $object.lab -width 10 -text "Objet : "
+             pack  $object.lab -in $object -side left -padx 5 -pady 0
+
+             ComboBox $object.combo \
+                -width 50 -height $nb_obj \
+                -relief sunken -borderwidth 1 -editable 0 \
+                -textvariable ::gui_astrometry::graph_object \
+                -values $::gui_astrometry::list_object
+             pack $object.combo -anchor center -side left -fill x -expand 0
+
+         set block [frame $object.save_date -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $object -side top -expand 0 -padx 2 -pady 5
+
+               button $block.date -text "Save observation dates (JD)" -borderwidth 2 -takefocus 1 \
+                       -command ::gui_astrometry::save_jd_dates
+               pack $block.date -side right -anchor c -expand 0
 
 
 
@@ -2733,11 +2849,6 @@ gren_info "la\n"
                     button $block.gr -text "datejj VS dec_imccejpl_cmc" -borderwidth 2 -takefocus 1 \
                             -command "::gui_astrometry::graph datejj dec_imccejpl_cmc"
                     pack $block.gr -side left -anchor c -expand 0
-
-
-
-
-
 
 
 
