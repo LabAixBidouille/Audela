@@ -108,7 +108,7 @@ namespace eval tools_astrometry {
             set err_x   [lindex $b 2]
             set err_y   [lindex $b 3]
             #gren_info "rho = $rho :: $res_ra $res_dec \n"
-            gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $mag)\n"
+            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $mag)\n"
             set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_x $err_y]
 
             lappend ::tools_astrometry::listref($name)     $dateiso
