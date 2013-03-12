@@ -1049,10 +1049,11 @@ return
 
 
    proc ::gui_cata::fermer_voir_cata {  } {
-   
-   cleanmark
-   ::gui_cata::closetoconf
-   destroy $::gui_cata::fenv
+
+      cleanmark
+      ::gui_cata::closetoconf
+      destroy $::gui_cata::fenv
+
    }
 
 
@@ -1062,13 +1063,10 @@ return
 
 
 
-
-
-
    #
-   # Astrometrie: supprime une source de reference (de la table srpt) dans toutes les images
+   # Astrometrie: Affiche un objet dans une l'image (de la table srpt)
    #
-   proc ::gui_cata::unset_srpt {  } {
+   proc ::gui_cata::voirobj_srpt {  } {
       
       set color red
       set width 2
@@ -1086,8 +1084,7 @@ return
       foreach {x y} [array get cataname] {
          set tabid($y) $x
       }
-      set idcata_astroid $tabid(ASTROID)
-      $onglets select $onglets.f$idcata_astroid
+      $onglets select $onglets.f$tabid(ASTROID)
       set f [$onglets select]
 
       # Selectionne chaque source
@@ -1097,7 +1094,12 @@ return
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
          
-         if {![info exists ::tools_astrometry::tabval($name,$date)]} {
+
+         if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+
+            set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+
+         } else {
 
             set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
             if {$r=="no"} {return}
@@ -1109,29 +1111,38 @@ return
             
             set id 0
             set idok -1
-            foreach current_image  $::tools_cata::img_list {
+            foreach current_image $::tools_cata::img_list {
                incr id
                set tabkey [::bddimages_liste::lget $current_image "tabkey"]
-               set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
-               if { $locdate == $dateok } {
+               set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+gren_info "$id :: locdate == dateok ? $locdate :: $dateok"
+               if { [expr abs([mc_date2jd $locdate] - [mc_date2jd $dateok])*86400.0] <= 0.001 } {
                   set idok $id
                   break
                }
+gren_info "  -> $idok \n"
             }
+gren_info "  OK -> $idok\n"
+
             if {$idok != -1} {
                set ::cata_gestion_gui::directaccess $idok
                ::cata_gestion_gui::charge_image_directaccess
                set date $::tools_cata::current_image_date
-               if {![info exists ::tools_astrometry::tabval($name,$date)]} {
-                  tk_messageBox -message "Chargement de l'image impossible" -type ok
-                  return
+
+gren_info "NAME = $name ; DATE -> $date :: $dateok\n"
+               if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+                  set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+               } else {
+                  if {[info exists ::tools_astrometry::tabval($name,$dateok)]} {
+                     set id [lindex $::tools_astrometry::tabval($name,$dateok) 0]
+                  } else {
+                     tk_messageBox -message "Chargement de l'image impossible" -type ok
+                     return
+                  }
                }
-
             }
-
          }
-         
-         set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+gren_info " ---------------> ID = $id\n"
 
          set u 0
          foreach x [$f.frmtable.tbl get 0 end] {
@@ -1146,6 +1157,29 @@ return
          }
          
       }
+
+   }
+
+
+
+
+
+   #
+   # Astrometrie: supprime une source de reference (de la table srpt) dans toutes les images
+   #
+   proc ::gui_cata::unset_srpt {  } {
+
+      # Affiche l'objet et l'image si besoin
+      ::gui_cata::voirobj_srpt
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      $onglets select $onglets.f$tabid(ASTROID)
+      set f [$onglets select]
 
       # Unset les sources
       ::cata_gestion_gui::unset_flag $f.frmtable.tbl
@@ -1284,7 +1318,6 @@ return
 
             set id [lindex $::tools_astrometry::tabval($name,$date) 0]
             gren_info "voir_sxpt id   = $id\n"
-
 
             set u 0
             foreach x [$f.frmtable.tbl get 0 end] {

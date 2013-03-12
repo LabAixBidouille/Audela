@@ -474,14 +474,12 @@ namespace eval gui_astrometry {
          if {$separ==""} {set separ " "}
       }
 
-      # Generation du rapport MPC
-      ::gui_astrometry::create_rapport_mpc
-
-      # Calcul des ephemerides
-
-
       # Generation des rapports
+      gren_info " ... rapport MPC\n"
+      ::gui_astrometry::create_rapport_mpc
+      gren_info " ... rapport TXT\n"
       ::gui_astrometry::create_rapport_txt
+      gren_info " ... rapport XML\n"
       ::gui_astrometry::create_rapport_xml
 
       # Charge les objets science dans la combo box des graphes
@@ -2284,6 +2282,8 @@ gren_info "la\n"
                  menu $srp.popupTbl -title "Actions"
                      $srp.popupTbl add command -label "Mesurer le photocentre" \
                         -command "::gui_astrometry::psf srp $::gui_astrometry::srpt"
+                     $srp.popupTbl add command -label "Voir l'objet dans une image" \
+                         -command {::gui_cata::voirobj_srpt}
                      $srp.popupTbl add command -label "Supprimer de toutes les images" \
                          -command {::gui_cata::unset_srpt; ::gui_astrometry::affich_gestion}
 

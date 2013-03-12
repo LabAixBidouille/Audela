@@ -40,7 +40,8 @@ proc affich_un_rond { ra dec color width } {
    set x [lindex $img_xy 0]
    set y [lindex $img_xy 1]
 
-   affich_un_rond_xy $x $y $color 5 $width
+gren_erreur "OK affiche un rond -> $x, $y\n"
+   affich_un_rond_xy -$x $y $color 5 $width
 
 }
 
