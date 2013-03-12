@@ -83,7 +83,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	/* Now we loop over the concerned catalog and send to TCL the results */
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { 2Mass { } { ID ra_deg dec_deg err_ra err_dec jMag jMagError hMag hMagError kMag kMagError jd } } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { 2MASS { } { ID ra_deg dec_deg err_ra err_dec jMag jMagError hMag hMagError kMag kMagError jd } } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
@@ -316,7 +316,7 @@ void printStar(const star2Mass* const theStar, char* const tclString) {
 
 	sprintf(theId,OUTPUT_ID_FORMAT,raHour,raMinute,raSeconds,sign,decDegree,decMinute,decSeconds);
 
-	sprintf(tclString,"{ { 2Mass { } {%s %.6f %.6f %.6f %.6f %.3f %.3f %.3f %.3f %.3f %.3f %.6f} } } ",
+	sprintf(tclString,"{ { 2MASS { } {%s %.6f %.6f %.6f %.6f %.3f %.3f %.3f %.3f %.3f %.3f %.6f} } } ",
 			theId,raInDegDouble,decInDegDouble,errorRa,errorDec,jMagnitude,jMagnitudeError,hMagnitude,hMagnitudeError,
 			kMagnitude,kMagnitudeError,jd);
 }
