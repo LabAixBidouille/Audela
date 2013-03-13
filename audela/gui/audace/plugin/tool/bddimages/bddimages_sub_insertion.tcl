@@ -188,7 +188,7 @@ proc info_fichier { nomfich } {
       set tmpfile [ file join $bddconf(dirfits) tmpbddimage.fits ]
       set nomfichdata $tmpfile
 
-      lassign [::bddimages::gunzip $nomfich $tmpfile] errnum msgzip
+      lassign [::bdi_tools::gunzip $nomfich $tmpfile] errnum msgzip
       #file delete -force -- $tmpfile
       #if { $::tcl_platform(os) == "Linux" } {
       #   set errnum [catch {exec gunzip -c $nomfich > $tmpfile} msgzip ]
@@ -231,7 +231,7 @@ proc info_fichier { nomfich } {
    # --- zip/rezip le fichier
    if {$fileformat == "unzipped"} {
       set nomfich "$nomfichfits.gz"
-      lassign [::bddimages::gzip $nomfichdata $nomfich] errnum msg
+      lassign [::bdi_tools::gzip $nomfichdata $nomfich] errnum msg
       #if { $::tcl_platform(os) == "Linux" } {
       #   set errnum [catch {exec gzip -c $nomfichdata > $nomfich} msg ]
       #} else {
@@ -337,7 +337,7 @@ proc bddimages_insertion_unfich { ligne } {
       set errnum [catch {file rename $nomfich $nomfichdest} msg]
       set nomfich $nomfichdest
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      ::bddimages::gzip $nomfich      
+      ::bdi_tools::gzip $nomfich      
       #gzip $nomfich
       set nomfich "$nomfichdest.gz"
       set form2 "fits.gz"
@@ -354,7 +354,7 @@ proc bddimages_insertion_unfich { ligne } {
 
    if {$form2=="fits"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      ::bddimages::gzip $nomfich      
+      ::bdi_tools::gzip $nomfich      
       #gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "fits.gz"
@@ -393,7 +393,7 @@ proc bddimages_insertion_unfich { ligne } {
 
    if {$form2=="cata.txt"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      ::bddimages::gzip $nomfich      
+      ::bdi_tools::gzip $nomfich      
       #gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "cata.txt.gz"
@@ -410,7 +410,7 @@ proc bddimages_insertion_unfich { ligne } {
 
    if {$form2=="cata.xml"} {
       bddimages_sauve_fich "bddimages_insertion_unfich: Compression GZIP de $nomfich"
-      ::bddimages::gzip $nomfich      
+      ::bdi_tools::gzip $nomfich      
       #gzip $nomfich
       set nomfich "$nomfich.gz"
       set form2 "cata.xml.gz"

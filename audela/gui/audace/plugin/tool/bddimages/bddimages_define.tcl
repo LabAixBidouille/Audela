@@ -549,7 +549,7 @@ namespace eval bddimages_define {
 
             createdir_ifnot_exist $bddconf(dirtmp)
             buf$bufno save $filetmp
-            lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+            lassign [::bdi_tools::gzip $filetmp $filefinal] errnum msg
             #set errnum [catch {exec gzip -c $filetmp > $filefinal} msg ]
 
             # copie l image dans incoming, ainsi que le fichier cata si il existe

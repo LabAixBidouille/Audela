@@ -34,7 +34,7 @@ set test "no"
           gren_info "solarsystemprocess:        NUM : <$err>\n" 
           gren_info "solarsystemprocess:        MSG : <$msg>\n"
           }   
-       lassign [::bddimages::gunzip $filenametmpzip] err msg
+       lassign [::bdi_tools::gunzip $filenametmpzip] err msg
        #set err [catch {exec gunzip $filenametmpzip} msg ]
        if {$err} {
           gren_info "solarsystemprocess: ERREUR 4e\n"

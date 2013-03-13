@@ -8,7 +8,7 @@
 
 namespace eval bddimages_calendrier {
 
-   package require bdicalendar 1.0
+   package require bdi_calendar 1.0
 
    global audace
    global bddconf
@@ -100,15 +100,15 @@ namespace eval bddimages_calendrier {
       wm title $This "Calendar"
       wm protocol $This WM_DELETE_WINDOW { ::bddimages_calendrier::fermer }
 
-      ::bdicalendar::chooser $This.calendar
-      entry $This.calentry -textvar ::bdicalendar::$This.calendar(date)
-      regsub -all weekdays, [array names ::bdicalendar::$This.calendar weekdays,*] "" languages
+      ::bdi_calendar::chooser $This.calendar
+      entry $This.calentry -textvar ::bdi_calendar::$This.calendar(date)
+      regsub -all weekdays, [array names ::bdi_calendar::$This.calendar weekdays,*] "" languages
       foreach i [lsort $languages] {
-          radiobutton $This.calendar.b$i -text $i -variable ::bdicalendar::$This.calendar(-language) -value $i -pady 0
+          radiobutton $This.calendar.b$i -text $i -variable ::bdi_calendar::$This.calendar(-language) -value $i -pady 0
       }
-      trace variable ::bdicalendar::$This.calendar(-language) w {::bdicalendar::display $This.calendar;#}
-      checkbutton $This.calendar.mon -variable ::bdicalendar::$This.calendar(-mon) -text "Sunday starts week"
-      trace variable ::bdicalendar::$This.calendar(-mon) w {::bdicalendar::display $This.calendar;#}
+      trace variable ::bdi_calendar::$This.calendar(-language) w {::bdi_calendar::display $This.calendar;#}
+      checkbutton $This.calendar.mon -variable ::bdi_calendar::$This.calendar(-mon) -text "Sunday starts week"
+      trace variable ::bdi_calendar::$This.calendar(-mon) w {::bdi_calendar::display $This.calendar;#}
    
       eval pack [winfo children $This] -fill x -anchor w
    
@@ -181,7 +181,7 @@ proc showCalendar { x y clockformat} {
     set w [toplevel .d]
     wm overrideredirect $w 1
     frame $w.f -borderwidth 2 -relief solid -takefocus 0
-    ::bdicalendar::chooser $w.f.d -language de \
+    ::bdi_calendar::chooser $w.f.d -language de \
             -command [list set ::SEMA close] \
             -textvariable ::DATE -clockformat $clockformat
     pack $w.f.d
