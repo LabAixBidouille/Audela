@@ -1,12 +1,12 @@
 # -------------------------------------------------------------------------------
-# Fichier        : bddicalendar.tcl
+# Fichier        : bdi_calendar.tcl
 # Description    : Affichage d'un calendrier de choix du date 
 # Auteur         : jberthier, sur les bases de Richard Suchenwirth (http://wiki.tcl.tk/1816)
-# Mise à jour $Id$
+# Mise à jour $Id: bdi_calendar.tcl 6861 2011-03-07 01:03:58Z jberthier $
 # -------------------------------------------------------------------------------
 
-namespace eval ::bdicalendar {
-   package provide bdicalendar 1.0
+namespace eval ::bdi_calendar {
+   package provide bdi_calendar 1.0
 
    package require msgcat
    package require Tk
@@ -35,9 +35,9 @@ namespace eval ::bdicalendar {
       set a(canvas) [canvas $w -bg $a(-bg) -width 200 -height 180]
       $w bind day <1> {
             set item [%W find withtag current]
-            set ::bdicalendar::%W(day) [%W itemcget $item -text]
-            ::bdicalendar::display %W
-            ::bdicalendar::HandleCallback %W
+            set ::bdi_calendar::%W(day) [%W itemcget $item -text]
+            ::bdi_calendar::display %W
+            ::bdi_calendar::HandleCallback %W
       }
 
       if { $a(-textvariable) ne {} } {
@@ -50,10 +50,10 @@ namespace eval ::bdicalendar {
          }
       }
 
-      cbutton $w 60  10 << {::bdicalendar::adjust %W  0 -1}
-      cbutton $w 80  10 <  {::bdicalendar::adjust %W -1  0}
-      cbutton $w 120 10 >  {::bdicalendar::adjust %W  1  0}
-      cbutton $w 140 10 >> {::bdicalendar::adjust %W  0  1}
+      cbutton $w 60  10 << {::bdi_calendar::adjust %W  0 -1}
+      cbutton $w 80  10 <  {::bdi_calendar::adjust %W -1  0}
+      cbutton $w 120 10 >  {::bdi_calendar::adjust %W  1  0}
+      cbutton $w 140 10 >> {::bdi_calendar::adjust %W  0  1}
       display $w
       set w
    }

@@ -286,7 +286,7 @@ while {$sortie=="no"} {
       gren_info "solarsystemprocess:        NUM : <$err>" 
       gren_info "solarsystemprocess:        MSG : <$msg>"
       }   
-   lassign [::bddimages::gunzip $filenametmpzip] err msg
+   lassign [::bdi_tools::gunzip $filenametmpzip] err msg
    #set err [catch {exec gunzip $filenametmpzip} msg ]
    if {$err} {
       gren_info "solarsystemprocess: ERREUR 5b"

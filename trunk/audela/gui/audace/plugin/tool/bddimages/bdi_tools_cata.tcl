@@ -339,7 +339,7 @@ namespace eval tools_cata {
       set xml [string range $catafile 0 [expr [string last .gz $catafile] -1]]
       set tmpfile [file join $bddconf(dirtmp) [file tail $xml] ]
       
-      lassign [::bddimages::gunzip $catafile $tmpfile] errnum msgzip
+      lassign [::bdi_tools::gunzip $catafile $tmpfile] errnum msgzip
 
       if {$errnum} {
          file delete -force -- $tmpfile
@@ -979,7 +979,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          createdir_ifnot_exist $bddconf(dirtmp)
          buf$::audace(bufNo) save $filetmp
 
-         lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+         lassign [::bdi_tools::gzip $filetmp $filefinal] errnum msg
 
          if {$errnum != 0} {
             gren_info "Appel gzip: $filetmp -> $filefinal\n"

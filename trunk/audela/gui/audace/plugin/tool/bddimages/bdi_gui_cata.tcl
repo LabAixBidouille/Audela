@@ -1116,10 +1116,13 @@ return
                set tabkey [::bddimages_liste::lget $current_image "tabkey"]
                set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
 gren_info "$id :: locdate == dateok ? $locdate :: $dateok"
-               if { [expr abs([mc_date2jd $locdate] - [mc_date2jd $dateok])*86400.0] <= 0.001 } {
+
+               if { [::bdi_tools::is_isodates_equal $locdate $dateok] } {
                   set idok $id
                   break
                }
+
+
 gren_info "  -> $idok \n"
             }
 gren_info "  OK -> $idok\n"
@@ -1309,15 +1312,10 @@ gren_info " ---------------> ID = $id\n"
          set data [$w get $select]
 
          set name [lindex $data 0]
-         gren_info "voir_sxpt name = $name\n"
-
          set date $::tools_cata::current_image_date
-         gren_info "voir_sxpt date = $date\n"
          
          if {[info exists ::tools_astrometry::tabval($name,$date)]} {
-
             set id [lindex $::tools_astrometry::tabval($name,$date) 0]
-            gren_info "voir_sxpt id   = $id\n"
 
             set u 0
             foreach x [$f.frmtable.tbl get 0 end] {

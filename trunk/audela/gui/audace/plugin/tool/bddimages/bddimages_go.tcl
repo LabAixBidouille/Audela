@@ -59,6 +59,7 @@ proc ::bddimages::getPluginProperty { propertyName } {
 #    initialise le plugin
 #------------------------------------------------------------
 proc ::bddimages::initPlugin { tkbase } {
+
    global audace
    global conf
    global bddconf
@@ -80,7 +81,9 @@ proc ::bddimages::initPlugin { tkbase } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
 
    foreach param $::bddimages_config::allparams {
-     if {[info exists conf(bddimages,$param)]} then { set bddconf($param) $conf(bddimages,$param) }
+      if {[info exists conf(bddimages,$param)]} then {
+         set bddconf($param) $conf(bddimages,$param)
+      }
    }
 
    set bddconf(bufno)    $audace(bufNo)
@@ -92,11 +95,10 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_tmp) ".fit"
    
    if {[info exists bddconf(dirfits)]} {
-      #gren_info "audace(rep_images) = bddconf(dirfits) = $bddconf(dirfits)\n"
       set  audace(rep_images)  $bddconf(dirfits)
    }
+
    if {[info exists bddconf(dirtmp)]} {
-      #gren_info "audace(rep_travail) = bddconf(dirtmp) = $bddconf(dirtmp)\n"
       set  audace(rep_travail)  $bddconf(dirtmp)
    }
 
@@ -135,7 +137,8 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdicalendar.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_calendar.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
 
    # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
 
@@ -397,125 +400,11 @@ proc ::bddimages::InstallMenuInterop { frame } {
    ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
 }
 
-#------------------------------------------------------------
-# ::bddimages::gunzip
-#    Fonction gunzip compatible multi OS
-#    fname_in  = nom complet du fichier a degziper /data/fi.fits.gz
-#    fname_out = nom complet du fichier de sortie /data/fi.fits
-#------------------------------------------------------------
-proc ::bddimages::gunzip { fname_in {fname_out ""} } {
-   #::console::affiche_resultat "::bddimages::gunzip <$fname_in> <$fname_out>\n"
-   set ext [file extension $fname_in]
-   if {$ext!=".gz"} {
-      set fname_in ${fname_in}.gz
-   }
-   set ext [file extension $fname_out]
-   if {$ext==".gz"} {
-      set fname_out [file rootname $fname_out]
-   }
-   if {$fname_out==""} {
-      set fname_out [file rootname $fname_in]
-   }
-   file delete -force -- $fname_out
-   if { $::tcl_platform(os) == "Linux" } {
-      set errnum [catch {
-         exec gunzip -c $fname_in > $fname_out
-      } msgzip ]
-   } else {
-      set errnum [catch {
-         if {$fname_in!="${fname_out}.gz"} {
-            file copy -force -- "$fname_in" "${fname_out}.gz"
-            ::gunzip ${fname_out}.gz
-         } else {
-            ::gunzip "$fname_in"
-         }
-      } msgzip ]
-   }
-   return [list $errnum $msgzip]
-}
-
-#------------------------------------------------------------
-# ::bddimages::gzip
-#    Fonction gzip compatible multi OS
-#    fname_in  = nom complet du fichier a gziper /data/fi.fits
-#    fname_out = nom complet du fichier de sortie /data/fi.fits.gz
-#------------------------------------------------------------
-proc ::bddimages::gzip { fname_in {fname_out ""} } {
-   #::console::affiche_resultat "::bddimages::gzip <$fname_in> <$fname_out>\n"
-   set ext [file extension $fname_in]
-   if {$ext == ".gz"} {
-      set fname_in [file rootname $fname_in]
-   }
-   set ext [file extension $fname_out]
-   if {$ext != ".gz"} {
-      set fname_out ${fname_out}.gz
-   }
-   # Force l'effacement du fichier out
-   if {$fname_out == ""} {
-      set fname_out0 ${fname_in}.gz
-   } else {
-      set fname_out0 $fname_out
-   }
-   file delete -force -- $fname_out0
-   # Zip le fichier
-   if { $::tcl_platform(os) == "Linux" } {
-      set errnum [catch {
-         exec gzip -c $fname_in > $fname_out
-      } msgzip ]
-   } else {
-      set errnum [catch {
-         if {$fname_out!="${fname_in}.gz"} {
-            file copy -force -- "$fname_in" "[file rootname $fname_out]"
-         }
-         ::gzip "[file rootname $fname_out]"
-      } msgzip ]
-   }
-   return [list $errnum $msgzip]
-}
-
-#------------------------------------------------------------
-# ::bddimages::save_as
-#    Sauve une chaine de caracteres dans un fichier dont le
-#    nom est fourni par l'utilisateur
-#      str = chaine de caracteres a enregistrer
-#      ftype = type de fichier (e.g. TXT, XML, ...)
-#
-# NB: -filetypes [list [list "XML" ".xml"] [list "TXT" ".txt"]]
-#------------------------------------------------------------
-proc ::bddimages::save_as { str ftype } {
-
-   switch [string toupper $ftype] {
-      TXT {
-         set filetype { {{Text Files} {.txt}} {{All Files} * } }
-      }
-      DAT {
-         set filetype { {{Data Files} {.dat}} {{All Files} * } }
-      }
-      XML {
-         set filetype { {{XML Files} {.xml}} {{All Files} * } }
-      }
-      default {
-         set filetype "{ {{All Files} * } }"
-      }
-   }
-
-   set fileName [tk_getSaveFile -title "Save As" -filetypes $filetype]
-
-   if { $fileName != "" } {
-      set chan0 [open $fileName w]
-      puts $chan0 $str
-      close $chan0
-   }
-
-   return $fileName
-}
-
-
-
 
 proc gren_info { msg } {
    ::console::affiche_resultat "$msg" 
 }
+
 
 proc gren_erreur { msg } {
    ::console::affiche_erreur "$msg" 

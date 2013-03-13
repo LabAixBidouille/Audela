@@ -650,34 +650,24 @@ namespace eval gui_astrometry {
             if {$c == "#"} {continue}
             set rd [regexp -inline -all -- {\S+} $line]      
             set tab [split $rd " "]
-            set rah [string map {"-0" "-" "+0" "+"} [lindex $tab 2]]
-            set ram [lindex $tab 3]
-            set ras [lindex $tab 4]
-            set ded [string map {"-0" "-" "+0" "+"} [lindex $tab 5]]
-            set dem [lindex $tab 6]
-            set des [lindex $tab 7]
-            set hd  [string map {"-0" "-" "+0" "+"} [lindex $tab 17]]
+            set rah [lindex $tab  2]
+            set ram [lindex $tab  3]
+            set ras [lindex $tab  4]
+            set ded [lindex $tab  5]
+            set dem [lindex $tab  6]
+            set des [lindex $tab  7]
+            set hd  [lindex $tab 17]
             set hm  [lindex $tab 18]
             set hs  [lindex $tab 19]
             set am  [lindex $tab 20]
             break
          }
          #gren_info "EPHEM RA = $rah $ram $ras; DEC = $ded $dem $des\n"
-         set ra_imcce [expr 15. * ($rah + $ram / 60. + $ras / 3600.)]
-         if {$ded > 0 } {
-            set dec_imcce [expr ($ded + $dem / 60. + $des / 3600.)]
-         } else {
-            set dec_imcce [expr ($ded - $dem / 60. - $des / 3600.)]
-         }
-         if {$hd > 0 } {
-            set h_imcce [expr ($hd + $hm / 60. + $hs / 3600.)]
-         } else {
-            set h_imcce [expr ($hd - $hm / 60. - $hs / 3600.)]
-         }
+         set ra_imcce [::bdi_tools::sexa2dec [list $rah $ram $ras] 15.0]
+         set dec_imcce [::bdi_tools::sexa2dec [list $ded $dem $des] 1.0]
+         set h_imcce [::bdi_tools::sexa2dec [list $hd $hm $hs] 1.0]
          set am_imcce "-"
-         if {$am != "---"} { 
-            set am_imcce $am
-         }
+         if {$am != "---"} { set am_imcce $am }
       }
 
       # Ephem du mpc
@@ -1990,7 +1980,7 @@ gren_info "la\n"
          }
       }
       if {$strdate != ""} {
-         ::bddimages::save_as $strdate "DAT"
+         ::bdi_tools::save_as $strdate "DAT"
       } else {
          gren_erreur "Aucune date a sauver\n"
       }
@@ -2703,7 +2693,7 @@ gren_info "la\n"
          set block [frame $mpc.save -borderwidth 0 -cursor arrow -relief groove]
          pack $block -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
                button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
-                       -command {::bddimages::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
+                       -command {::bdi_tools::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
                pack $block.sas -side top -anchor c -expand 0
 
 
@@ -2726,11 +2716,11 @@ gren_info "la\n"
          pack $block -in $txt -side top -expand 0 -padx 2 -pady 5
 
                button $block.xml -text "Save as XML" -borderwidth 2 -takefocus 1 \
-                       -command {::bddimages::save_as $::gui_astrometry::rapport_xml "XML"}
+                       -command {::bdi_tools::save_as $::gui_astrometry::rapport_xml "XML"}
                pack $block.xml -side right -anchor c -expand 0
 
                button $block.txt -text "Save as TXT" -borderwidth 2 -takefocus 1 \
-                       -command {::bddimages::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
+                       -command {::bdi_tools::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
                pack $block.txt -side right -anchor c -expand 0
 
 

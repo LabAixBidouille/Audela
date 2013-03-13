@@ -252,8 +252,7 @@ namespace eval tools_astrometry {
 
       #
       # STAT sur la liste des sciences
-#
-
+      #
       foreach name [array names ::tools_astrometry::listscience] {
 
          set rho ""
@@ -301,10 +300,10 @@ namespace eval tools_astrometry {
 
          set ::tools_astrometry::tabscience($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm $merr_x $merr_y ]
       }
-      
-# STAT sur la liste des dates
 
-
+      #
+      # STAT sur la liste des dates
+      #
       foreach date [array names ::tools_astrometry::listdate] {
 
          set rho ""
@@ -445,7 +444,7 @@ namespace eval tools_astrometry {
 
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
-            if {$kwd==$key} {
+            if {$kwd == $key} {
                set type [lindex $astrom(types) $k]
                set unit [lindex $astrom(units) $k]
                set comment [lindex $astrom(comments) $k]
@@ -753,7 +752,8 @@ namespace eval tools_astrometry {
                      set cataastrom  [lindex $astroid 27]
                      set cataphotom  [lindex $astroid 28]
 
-                     if {$flagastrom!="S"&&$flagastrom!="R"} {break}
+                     if {$flagastrom != "S" && $flagastrom != "R"} {break}
+
                      gren_info "$idbddimg name:$name $ra $dec\n"
                      set fileres "PRIAM_$name.csv"
                      set fileres [ file join $audace(rep_travail) $fileres ]
@@ -841,7 +841,6 @@ namespace eval tools_astrometry {
             buf$::audace(bufNo) setkwd $vals
          }
 
-
          set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
          
          # Creation de l image temporaire
@@ -850,7 +849,7 @@ namespace eval tools_astrometry {
          set filefinal [file join $::bddconf(dirinco) [file tail $fileimg]]
          createdir_ifnot_exist $bddconf(dirtmp)
          buf$::audace(bufNo) save $filetmp
-         lassign [::bddimages::gzip $filetmp $filefinal] errnum msg
+         lassign [::bdi_tools::gzip $filetmp $filefinal] errnum msg
 
          # efface l image dans la base et le disque
          bddimages_image_delete_fromsql $ident
