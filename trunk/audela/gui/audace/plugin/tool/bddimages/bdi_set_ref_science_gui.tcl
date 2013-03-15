@@ -20,6 +20,7 @@ namespace eval set_ref_science {
    variable mask
    variable use_saturation
    variable saturation
+   variable use_visu
    variable progress
 
 
@@ -55,7 +56,14 @@ namespace eval set_ref_science {
          if {[info exists conf(bddimages,astrometry,set_ref_science,saturation)]} {
             set ::set_ref_science::saturation $conf(bddimages,astrometry,set_ref_science,saturation)
          } else {
-            set ::set_ref_science::saturation 60000
+            set ::set_ref_science::saturation 65000
+         }
+      }
+      if {! [info exists ::set_ref_science::use_visu] } {
+         if {[info exists conf(bddimages,astrometry,set_ref_science,use_visu)]} {
+            set ::set_ref_science::use_visu $conf(bddimages,astrometry,set_ref_science,use_visu)
+         } else {
+            set ::set_ref_science::use_visu 0
          }
       }
 
@@ -72,13 +80,13 @@ namespace eval set_ref_science {
       set conf(bddimages,astrometry,set_ref_science,mask)           $::set_ref_science::mask
       set conf(bddimages,astrometry,set_ref_science,use_saturation) $::set_ref_science::use_saturation
       set conf(bddimages,astrometry,set_ref_science,saturation)     $::set_ref_science::saturation
+      set conf(bddimages,astrometry,set_ref_science,use_visu)       $::set_ref_science::use_visu
 
    }
 
 
    proc ::set_ref_science::fermer { } {
 
-#      efface_carre
       ::set_ref_science::closetoconf
       destroy $::set_ref_science::fen
 
@@ -144,7 +152,9 @@ namespace eval set_ref_science {
                # Applique le mask si demande
                set accept 1
                if {$::set_ref_science::use_mask} {
-                  affich_un_carre_xy $mx_min $my_min $mx_max $my_max blue
+                  if {$::set_ref_science::use_visu} {
+                     affich_un_carre_xy $mx_min $my_min $mx_max $my_max blue
+                  }
                   if {$px <= $mx_min || $px >= $mx_max || $py <= $my_min || $py >= $my_max} { set accept 0 }
                }
                if {$::set_ref_science::use_saturation} {
@@ -173,7 +183,9 @@ namespace eval set_ref_science {
                   }
    
                   if {$change == 1} {
-                     affich_un_rond_xy $px $py green 4 2
+                     if {$::set_ref_science::use_visu} {
+                        affich_un_rond_xy $px $py green 4 2
+                     }
                      set astroid [lreplace $astroid 2 2 $b]
                      set s [lreplace $s $posastroid $posastroid $astroid]
                      set sources [lreplace $sources [expr $ids-1] [expr $ids-1] $s]
@@ -187,10 +199,14 @@ namespace eval set_ref_science {
                         }
                      }
                   } else {
-                     affich_un_rond_xy $px $py orange 4 2
+                     if {$::set_ref_science::use_visu} {
+                        affich_un_rond_xy $px $py orange 4 2
+                     }
                   }
                } else {
-                  affich_un_rond_xy $px $py red 4 2
+                  if {$::set_ref_science::use_visu} {
+                     affich_un_rond_xy $px $py red 4 2
+                  }
                }
 
             }
@@ -214,7 +230,7 @@ namespace eval set_ref_science {
       # init
       ::set_ref_science::inittoconf
 
-      set list_cata [list SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS]
+      set list_cata [list "" SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS]
       set nb_cata [llength $list_cata]
 
       #--- Creation de la fenetre
@@ -294,6 +310,12 @@ namespace eval set_ref_science {
                 label $satu.lab -text "ADU"
                 pack  $satu.lab -in $satu -anchor c -side left -padx 5 -pady 0
 
+            set voir [frame $options.voir -borderwidth 0 -cursor arrow -relief groove]
+            pack $voir -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
+   
+                checkbutton $voir.check -highlightthickness 0 -text "Voir les sources selectionnees" -variable ::set_ref_science::use_visu
+                pack $voir.check -in $voir -anchor c -side left -padx 5 -pady 0 
+
          set progressbar [frame $frm.progressbar -borderwidth 0 -cursor arrow -relief groove]
          pack $progressbar -in $frm -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
@@ -311,11 +333,17 @@ namespace eval set_ref_science {
                 -command "::set_ref_science::apply"
              pack $boutonpied.enregistrer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+      # Bindings
+      bind $::set_ref_science::fen <Key-F1> { ::console::GiveFocus }
+
    }
 
+
    proc ::set_ref_science::set_progress { cur max } {
+
       set ::set_ref_science::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
       update
+
    }
 
 }
