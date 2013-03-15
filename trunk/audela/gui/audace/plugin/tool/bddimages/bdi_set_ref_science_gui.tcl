@@ -18,12 +18,17 @@ namespace eval set_ref_science {
 
    variable use_mask
    variable mask
+   variable use_saturation
+   variable saturation
    variable progress
 
 
    proc ::set_ref_science::inittoconf { } {
 
       global conf
+
+      cleanmark
+      efface_carre
 
       if {! [info exists ::set_ref_science::use_mask] } {
          if {[info exists conf(bddimages,astrometry,set_ref_science,use_mask)]} {
@@ -39,6 +44,20 @@ namespace eval set_ref_science {
             set ::set_ref_science::mask 10
          }
       }
+      if {! [info exists ::set_ref_science::use_saturation] } {
+         if {[info exists conf(bddimages,astrometry,set_ref_science,use_saturation)]} {
+            set ::set_ref_science::use_saturation $conf(bddimages,astrometry,set_ref_science,use_saturation)
+         } else {
+            set ::set_ref_science::use_saturation 0
+         }
+      }
+      if {! [info exists ::set_ref_science::saturation] } {
+         if {[info exists conf(bddimages,astrometry,set_ref_science,saturation)]} {
+            set ::set_ref_science::saturation $conf(bddimages,astrometry,set_ref_science,saturation)
+         } else {
+            set ::set_ref_science::saturation 60000
+         }
+      }
 
       set ::set_ref_science::progress 0
 
@@ -49,8 +68,11 @@ namespace eval set_ref_science {
 
       global conf
 
-      set conf(bddimages,astrometry,set_ref_science,use_mask) $::set_ref_science::use_mask
-      set conf(bddimages,astrometry,set_ref_science,mask)     $::set_ref_science::mask
+      set conf(bddimages,astrometry,set_ref_science,use_mask)       $::set_ref_science::use_mask
+      set conf(bddimages,astrometry,set_ref_science,mask)           $::set_ref_science::mask
+      set conf(bddimages,astrometry,set_ref_science,use_saturation) $::set_ref_science::use_saturation
+      set conf(bddimages,astrometry,set_ref_science,saturation)     $::set_ref_science::saturation
+
    }
 
 
@@ -65,9 +87,6 @@ namespace eval set_ref_science {
 
    proc ::set_ref_science::apply { } {
       
-      cleanmark
-      efface_carre
-
       # Sanity check
       if {[string length $::set_ref_science::cata_science] < 1 && [string length $::set_ref_science::cata_ref] < 1} {
          tk_messageBox -message "Veuillez selectionner au moins un catalogue Science ou Reference" -type ok
@@ -120,15 +139,19 @@ namespace eval set_ref_science {
                set b [lindex $astroid 2]
                set px [lindex $b 0]
                set py [lindex $b 1]
+               set pixmax [lindex $b 9]
 
                # Applique le mask si demande
-               set mask 1
+               set accept 1
                if {$::set_ref_science::use_mask} {
                   affich_un_carre_xy $mx_min $my_min $mx_max $my_max blue
-                  if {$px <= $mx_min || $px >= $mx_max || $py <= $my_min || $py >= $my_max} { set mask 0 }
+                  if {$px <= $mx_min || $px >= $mx_max || $py <= $my_min || $py >= $my_max} { set accept 0 }
+               }
+               if {$::set_ref_science::use_saturation} {
+                  if {$pixmax > $::set_ref_science::saturation} { set accept 0 }
                }
 
-               if {$mask} {
+               if {$accept} {
                   set change 0
                   
                   set p [lsearch -index 0 $s $::set_ref_science::cata_science]
@@ -212,17 +235,20 @@ namespace eval set_ref_science {
 
       set frm $::set_ref_science::fen.appli
 
-      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      frame $frm -borderwidth 0 -cursor arrow
       pack $frm -in $::set_ref_science::fen -anchor c -side top -expand 1 -fill both -padx 10 -pady 5
+
+         label $frm.lab -text "Veuillez selectionner au moins un catalogue" -relief groove -borderwidth 1 -padx 10 -pady 7
+         pack  $frm.lab -in $frm -side top -padx 5 -pady 5 -anchor c
 
          set sciences [frame $frm.sciences -borderwidth 0 -cursor arrow -relief groove]
          pack $sciences -in $frm -anchor s -side top -expand 1 -fill x -padx 10 -pady 5
 
              label $sciences.lab -width 15 -text "Sciences"
-             pack  $sciences.lab -in $sciences -side left -padx 5 -pady 0
+             pack  $sciences.lab -in $sciences -anchor e -side left -fill x -expand 0 -padx 5 -pady 0
 
              ComboBox $sciences.combo \
-                -width 10 -height $nb_cata \
+                -height $nb_cata \
                 -relief sunken -borderwidth 1 -editable 0 \
                 -textvariable ::set_ref_science::cata_science \
                 -values $list_cata
@@ -232,26 +258,41 @@ namespace eval set_ref_science {
          pack $references -in $frm -anchor s -side top -expand 1 -fill x -padx 10 -pady 5
 
              label $references.lab -width 15  -text "References"
-             pack  $references.lab -in $references -side left -padx 5 -pady 0
+             pack  $references.lab -in $references -anchor e -side left -fill x -expand 0 -padx 5 -pady 0
 
              ComboBox $references.combo \
-                -width 10 -height $nb_cata \
+                -height $nb_cata \
                 -relief sunken -borderwidth 1 -editable 0 \
                 -textvariable ::set_ref_science::cata_ref \
                 -values $list_cata
              pack $references.combo -anchor center -side left -fill x -expand 1
 
-         set mask [frame $frm.mask -borderwidth 0 -cursor arrow -relief groove]
-         pack $mask -in $frm -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
+         set options [frame $frm.options -borderwidth 1 -cursor arrow -relief groove]
+         pack $options -in $frm -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $mask.check -highlightthickness 0 -text " Ne pas prendre les objets a moins de" -variable ::set_ref_science::use_mask
-             pack $mask.check -in $mask -anchor c -side left -padx 5 -pady 0 
+            set mask [frame $options.mask -borderwidth 0 -cursor arrow -relief groove]
+            pack $mask -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
+   
+                checkbutton $mask.check -highlightthickness 0 -text "Exclure les sources a moins de" -variable ::set_ref_science::use_mask
+                pack $mask.check -in $mask -anchor c -side left -padx 5 -pady 0 
+   
+                entry $mask.val -relief sunken -textvariable ::set_ref_science::mask -borderwidth 2 -width 6 -justify center
+                pack  $mask.val -in $mask -anchor c -side left -padx 5 -pady 0 
+   
+                label $mask.lab -text "pixels du bord de l'image"
+                pack  $mask.lab -in $mask -anchor c -side left -padx 5 -pady 0
 
-             entry $mask.bord -relief sunken -textvariable ::set_ref_science::mask -borderwidth 2 -width 6 -justify center
-             pack  $mask.bord -in $mask -anchor c -side left -padx 5 -pady 0 
-
-             label $mask.lab -text "pixels du bord de l'image"
-             pack  $mask.lab -in $mask -anchor c -side left -padx 5 -pady 0
+            set satu [frame $options.satu -borderwidth 0 -cursor arrow -relief groove]
+            pack $satu -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
+   
+                checkbutton $satu.check -highlightthickness 0 -text "Exclure les sources de flux superieur a" -variable ::set_ref_science::use_saturation
+                pack $satu.check -in $satu -anchor c -side left -padx 5 -pady 0 
+   
+                entry $satu.val -relief sunken -textvariable ::set_ref_science::saturation -borderwidth 1 -width 6 -justify center
+                pack  $satu.val -in $satu -anchor c -side left -padx 5 -pady 0 
+   
+                label $satu.lab -text "ADU"
+                pack  $satu.lab -in $satu -anchor c -side left -padx 5 -pady 0
 
          set progressbar [frame $frm.progressbar -borderwidth 0 -cursor arrow -relief groove]
          pack $progressbar -in $frm -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
