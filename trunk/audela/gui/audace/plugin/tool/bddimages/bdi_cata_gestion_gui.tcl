@@ -2381,15 +2381,15 @@ gren_info " => source retrouvee $cpt $dl\n"
 
                #--- Sous menu astrometrie
                menu $menubar.catalog.menu.astrom -tearoff 0
-               $menubar.catalog.menu.astrom add command -label "Set science and reference" -accelerator "Ctrl-s" \
+               $menubar.catalog.menu.astrom add command -label "Definir sciences et references" -accelerator "Ctrl-s" \
                   -command "::set_ref_science::go" 
-               $menubar.catalog.menu.astrom add command -label "Unset science and reference" -accelerator "Ctrl-u" \
-                  -command "::set_ref_science::unset" -state disable
+               $menubar.catalog.menu.astrom add command -label "Defaire tous les catalogues" -accelerator "Ctrl-u" \
+                  -command "::set_ref_science::unset"
 
 
            #--- menu PSF
            menubutton $menubar.psf -text "PSF" -underline 0 -menu $menubar.psf.menu
-           menu $menubar.psf.menu
+           menu $menubar.psf.menu -tearoff 0
 
              $menubar.psf.menu add command -label "Manuel sur l'image" \
                 -command "::psf_gui::gestion_mode_manuel"
