@@ -286,11 +286,10 @@ namespace eval bddimages_recherche {
       set ::bddimages_recherche::current_list_name [lindex $row 0]
       set ::bddimages_recherche::current_list_id [::bddimages_liste_gui::get_intellilist_by_name $::bddimages_recherche::current_list_name]
 
-
       set r [tk_messageBox -message "Charger ?" -type yesno]
       if {$r=="no"} {return}
 
-      ::console::affiche_resultat "Chargement de la liste $::bddimages_recherche::current_list_name ...\n"
+      gren_info "Chargement de la liste $::bddimages_recherche::current_list_name ...\n"
 
       set t0 [clock clicks -milliseconds]
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
@@ -724,22 +723,19 @@ namespace eval bddimages_recherche {
         frame $This.frame6 -borderwidth 0
         pack $This.frame6 -expand yes -fill both -padx 3 -pady 6
 
-
-        #--- Cree un frame pour l'affichage de la liste des results
+        #--- Cree un frame pour l'affichage de la liste des listes intelligentes et normales
         frame $This.frame6.result -borderwidth 0 -background white
         pack $This.frame6.result -expand yes -fill both -padx 3 -pady 6 -in $This.frame6 -side right -anchor e
 
             #--- Cree un acsenseur vertical
             scrollbar $This.frame6.result.vsb -orient vertical \
                -command { $::bddimages_recherche::This.frame6.result.lst1 yview } -takefocus 1 -borderwidth 1
-            pack $This.frame6.result.vsb \
-               -in $This.frame6.result -side right -fill y
+            pack $This.frame6.result.vsb -in $This.frame6.result -side right -fill y
 
             #--- Cree un acsenseur horizontal
             scrollbar $This.frame6.result.hsb -orient horizontal \
                -command { $::bddimages_recherche::This.frame6.result.lst1 xview } -takefocus 1 -borderwidth 1
-            pack $This.frame6.result.hsb \
-               -in $This.frame6.result -side bottom -fill x
+            pack $This.frame6.result.hsb -in $This.frame6.result -side bottom -fill x
 
             #--- Creation de la table
             ::bddimages_recherche::createTbl1 $This.frame6.result
@@ -765,7 +761,7 @@ namespace eval bddimages_recherche {
             #--- Creation de la table
             ::bddimages_recherche::createTbl2 $This.frame6.liste
             pack $This.frame6.liste.tbl -in $This.frame6.liste -expand yes -fill both
-            bind $This.frame6.liste.tbl <<ListboxSelect>> " ::bddimages_recherche::cmd_list_select $This.frame6.liste.tbl "
+            bind $This.frame6.liste.tbl <<ListboxSelect>> "::bddimages_recherche::cmd_list_select $This.frame6.liste.tbl"
 
          #--- Cree un frame pour y mettre les boutons
          frame $This.frame11 \
@@ -811,7 +807,7 @@ namespace eval bddimages_recherche {
       #--- La fenetre est active
       focus $This
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Surcharge la couleur de fond des resultats
@@ -1046,7 +1042,6 @@ namespace eval bddimages_recherche {
             lappend normal_liste $name
          }
       }
-      ::console::affiche_resultat "normal_liste  = $normal_liste \n"
 
       #--- Quelques raccourcis utiles
       set tbl $frame.tbl
@@ -1057,9 +1052,10 @@ namespace eval bddimages_recherche {
       #--- Table des objets
       tablelist::tablelist $tbl \
          -labelcommand ::bddimages_recherche::cmdSortColumn \
-         -xscrollcommand [ list $frame.hsb set ] -yscrollcommand [ list $frame.vsb set ] \
+         -xscrollcommand [ list $frame.hsb set ] \
+         -yscrollcommand [ list $frame.vsb set ] \
          -selectmode extended \
-         -activestyle none
+         -activestyle none -stretch all 
 
       #--- Scrollbars verticale et horizontale
       $frame.vsb configure -command [ list $tbl yview ]

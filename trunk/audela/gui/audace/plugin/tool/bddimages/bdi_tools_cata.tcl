@@ -530,8 +530,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       gren_info "  -> cata dans tmp : $cataxml \n"
 
       set a $::tools_cata::current_image
-      
-      
+
       # Liste des champs du header de l'image
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
 
