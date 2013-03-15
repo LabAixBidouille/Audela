@@ -2,7 +2,7 @@ namespace eval tools_astrometry {
 
    variable science
    variable reference
-   variable treshold
+   variable threshold
    variable delta
    variable ifortlib
    variable imagelimit
@@ -451,7 +451,7 @@ namespace eval tools_astrometry {
                # gren_info "KWD: $key \n"
                # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
                
-               # TODO Modif du tabkey de chaque image de img_list
+               # TODO ::tools_astrometry::extract_priam_result :: Modif du tabkey de chaque image de img_list
                foreach kk [list FOCLEN RA DEC CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CD1_1 CD1_2 CD2_1 CD2_2 ] {
                   if {$kk == $key } {
                      set val [format "%.10f" $val]

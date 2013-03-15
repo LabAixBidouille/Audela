@@ -58,11 +58,11 @@ namespace eval psf_tools {
             set ::psf_tools::psf_saturation 50000
          }
       }
-      if {! [info exists ::psf_tools::psf_delta] } {
-         if {[info exists conf(bddimages,cata,psf,delta)]} {
-            set ::psf_tools::psf_delta $conf(bddimages,cata,psf,delta)
+      if {! [info exists ::psf_tools::psf_radius] } {
+         if {[info exists conf(bddimages,cata,psf,radius)]} {
+            set ::psf_tools::psf_radius $conf(bddimages,cata,psf,radius)
          } else {
-            set ::psf_tools::psf_delta 15
+            set ::psf_tools::psf_radius 15
          }
       }
       if {! [info exists ::psf_tools::psf_threshold] } {
@@ -105,7 +105,7 @@ namespace eval psf_tools {
       set conf(bddimages,cata,psf,create)       $::psf_tools::use_psf
       set conf(bddimages,cata,psf,globale)      $::psf_tools::use_global
       set conf(bddimages,cata,psf,saturation)   $::psf_tools::psf_saturation
-      set conf(bddimages,cata,psf,delta)        $::psf_tools::psf_delta
+      set conf(bddimages,cata,psf,radius)       $::psf_tools::psf_radius
       set conf(bddimages,cata,psf,threshold)    $::psf_tools::psf_threshold
       set conf(bddimages,cata,psf,limitradius)  $::psf_tools::psf_limitradius
    }
@@ -593,7 +593,7 @@ namespace eval psf_tools {
 #    
 #    
 #    
-   proc ::psf_tools::method_global { sent_s threshold radiuslimit bufNo } {
+   proc ::psf_tools::method_global { sent_s threshold radiuslimit saturation bufNo } {
       
      upvar $sent_s s
 
@@ -654,21 +654,28 @@ namespace eval psf_tools {
             set results($radius,err) 2
          }
          if {$results($radius,err)==0} {
+         
             set xsm [lindex $result 0]
             set ysm [lindex $result 1]
+            set pixmax [lindex $result 9]
+
+            if {$pixmax > $saturation} {
+               set results($radius,err) 4
+               continue
+            }
             
             set radec [ buf$bufNo xy2radec [list $xsm $ysm ] ]
-            set pra [lindex $radec 0] 
-            set pdec [lindex $radec 1]
+            set pra   [lindex $radec 0] 
+            set pdec  [lindex $radec 1]
             
-            set radiff [expr ($ra - $pra ) * cos ($dec)]
-            set decdiff [expr $dec - $pdec ]
+            set radiff   [expr ($ra - $pra ) * cos($dec * 3.141592653589793 / 180.0)]
+            set decdiff  [expr $dec - $pdec ]
             set rsecdiff [expr sqrt ( pow($radiff,2) + pow($decdiff,2) ) * 3600.0]
             
             if {$rsecdiff > $threshold} {
                set results($radius,err) 3
                continue
-               }
+            }
 
             set result [linsert $result end $rsecdiff $pra $pdec]
             set results($radius) $result
@@ -1260,6 +1267,55 @@ namespace eval psf_tools {
       set listsources [list $fields $sources]
       return
    }
+
+
+
+
+
+
+
+
+
+
+
+
+   #
+   # ::analyse_source::psf
+   # Mesure de PSF d'une source
+   #
+   proc ::psf_tools::psf_listsources_auto { sent_listsources threshold limitradius saturation} {
+   
+      upvar $sent_listsources listsources
+
+      global bddconf
+
+      set log 0
+
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+
+      set nbs [::manage_source::get_nb_sources_by_cata $listsources "IMG"]
+      if {$log} {gren_info "nb sources to work : $nbs \n"}
+
+      lappend fields [::analyse_source::get_fieldastroid]
+
+      set newsources {}
+
+      foreach s $sources {
+         set a [llength $s]
+         set err [ catch {set r [::psf_tools::method_global s $threshold $limitradius $saturation $::audace(bufNo)]} msg ]
+         if {$err} {
+            ::console::affiche_erreur "ERREUR PSF psf_listsources_auto: $msg\n"
+         }
+         lappend newsources $s
+      }
+
+      set listsources [list $fields $newsources]
+
+   }
+
+
+
 
 
 
