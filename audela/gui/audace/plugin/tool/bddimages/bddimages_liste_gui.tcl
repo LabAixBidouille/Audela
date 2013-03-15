@@ -2457,7 +2457,7 @@ namespace eval bddimages_liste_gui {
       #--- La fenetre est active
       focus $This
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { $audace(console)::GiveFocus }
+      bind $This <Key-F1> { ::console::GiveFocus }
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
    }

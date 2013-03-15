@@ -2391,26 +2391,28 @@ gren_info " => source retrouvee $cpt $dl\n"
          set menubar [frame $frm.menubar -cursor arrow -borderwidth 1 -relief raised]
          pack $menubar -in $frm -side top -fill x
 
-           #--- menu Fichier
-           menubutton $menubar.catalog -text "Catalogue" -underline 0 -menu $menubar.catalog.menu
-           menu $menubar.catalog.menu
+           #--- menu Catalogues
+           menubutton $menubar.catalog -text "Catalogues" -underline 0 -menu $menubar.catalog.menu
+           pack $menubar.catalog -side left
 
-             $menubar.catalog.menu add command -label "Personnel" \
-                -command ""
-             $menubar.catalog.menu add command -label "Astroid" \
-                -command ""
-             $menubar.catalog.menu add command -label "Astrometrie" \
-                -command "::set_ref_science::go"
-             $menubar.catalog.menu add command -label "Photometrie" \
-                -command ""
-             $menubar.catalog.menu add separator
-             $menubar.catalog.menu add command -label "Supprimer" \
-                -command ""
+           menu $menubar.catalog.menu -tearoff 0
+            $menubar.catalog.menu add cascade -label "Astrometrie" -menu $menubar.catalog.menu.astrom
+            $menubar.catalog.menu add command -label "Photometrie" -command "" -state disabled
+            $menubar.catalog.menu add separator
+            $menubar.catalog.menu add command -label "Personnel" -command "" -state disabled
+            $menubar.catalog.menu add command -label "Astroid" -command "" -state disabled
+            $menubar.catalog.menu add separator
+            $menubar.catalog.menu add command -label "Supprimer" -command "" -state disabled
 
-             #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
-             pack $menubar.catalog -side left
+               #--- Sous menu astrometrie
+               menu $menubar.catalog.menu.astrom -tearoff 0
+               $menubar.catalog.menu.astrom add command -label "Set science and reference" -accelerator "Ctrl-s" \
+                  -command "::set_ref_science::go" 
+               $menubar.catalog.menu.astrom add command -label "Unset science and reference" -accelerator "Ctrl-u" \
+                  -command "::set_ref_science::unset" -state disable
 
-           #--- menu Fichier
+
+           #--- menu PSF
            menubutton $menubar.psf -text "PSF" -underline 0 -menu $menubar.psf.menu
            menu $menubar.psf.menu
 
@@ -2423,8 +2425,6 @@ gren_info " => source retrouvee $cpt $dl\n"
 
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
              pack $menubar.psf -side left
-
-
 
 
          #--- Cree un frame general
@@ -2453,11 +2453,9 @@ gren_info " => source retrouvee $cpt $dl\n"
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
  
             pack [ttk::notebook $onglets.nb] -expand yes -fill both 
- 
- 
+  
 
 #      ::gui_cata::affiche_Tbl_sources $nbcata   
-        
 
 
         #--- Cree un frame pour afficher les boutons
@@ -2520,6 +2518,10 @@ gren_info " => source retrouvee $cpt $dl\n"
              set ::gui_cata::gui_info2 [label $boutonpied.info2 -text ""]
              pack $::gui_cata::gui_info2 -in $boutonpied -side top -padx 3 -pady 3
 
+      # Bindings
+      bind $::cata_gestion_gui::fen <Key-F1> { ::console::GiveFocus }
+      bind $::cata_gestion_gui::fen <Control-Key-s> { ::set_ref_science::go }
+      bind $::cata_gestion_gui::fen <Control-Key-u> { ::set_ref_science::unset }
 
       ::cata_gestion_gui::charge_memory
 
@@ -2527,20 +2529,6 @@ gren_info " => source retrouvee $cpt $dl\n"
       gren_info "Gestion du CATA in $tt sec \n"
 
    }
-   
-   
-   
-   
-   
-
-
-
-
-
-
-
-
-
 
 
 #- Fin du namespace -------------------------------------------------
