@@ -17,15 +17,9 @@
 namespace eval cata_gestion_gui {
 
 
-
-
-
-
    proc ::cata_gestion_gui::inittoconf {  } {
 
-
       ::gui_cata::inittoconf
-
 
       if {! [info exists ::tools_cata::astroid_saturation] } {
          if {[info exists conf(bddimages,cata,astroid,saturation)]} {
@@ -81,8 +75,9 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::fermer { } {
 
-      set ::cata_gestion_gui::state_gestion 0
       cleanmark
+      efface_carre
+      set ::cata_gestion_gui::state_gestion 0
       destroy $::cata_gestion_gui::fen
 
    }

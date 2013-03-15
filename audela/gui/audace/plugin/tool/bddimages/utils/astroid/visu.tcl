@@ -43,6 +43,7 @@ proc affich_un_rond { ra dec color width } {
 
 }
 
+
 proc affich_un_rond_xy { x y color radius width } {
 
    global audace
@@ -62,6 +63,7 @@ proc affich_un_rond_xy { x y color radius width } {
    $audace(hCanvas) create oval $cxi $cyi $cxs $cys -outline $color -tags cadres -width $width
    
 }
+
 
 proc affich_un_rond_xy_crop { x y color radius width visuNo } {
 
@@ -83,17 +85,39 @@ proc affich_un_rond_xy_crop { x y color radius width visuNo } {
    $::confVisu::private($visuNo,hCanvas) create oval $cxi $cyi $cxs $cys -outline $color -tags cadres -width $width
 }
 
+
 proc clean_crop { visuNo } {
 
       $::confVisu::private($visuNo,hCanvas) delete cadres
 
 }
 
+
 proc efface_rond { args } {
-   global audace conf bddconf
-   #--- Efface les reperes des objets
+   global audace
    $audace(hCanvas) delete cadres
 }
+
+
+proc affich_un_carre_xy { x1 y1 x2 y2 color } {
+
+   global audace
+
+   set can1_xy [ ::audace::picture2Canvas [list $x1 $y1] ]
+   set can2_xy [ ::audace::picture2Canvas [list $x2 $y2] ]
+
+   $audace(hCanvas) create line [lindex $can1_xy 0] [lindex $can1_xy 1] [lindex $can2_xy 0] [lindex $can1_xy 1] -fill "$color" -tags carre -width 1.0
+   $audace(hCanvas) create line [lindex $can2_xy 0] [lindex $can1_xy 1] [lindex $can2_xy 0] [lindex $can2_xy 1] -fill "$color" -tags carre -width 1.0
+   $audace(hCanvas) create line [lindex $can2_xy 0] [lindex $can2_xy 1] [lindex $can1_xy 0] [lindex $can2_xy 1] -fill "$color" -tags carre -width 1.0
+   $audace(hCanvas) create line [lindex $can1_xy 0] [lindex $can2_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "$color" -tags carre -width 1.0
+}
+
+
+proc efface_carre { args } {
+   global audace
+   $audace(hCanvas) delete carre
+}
+
 
 #
 # affich_vecteur
