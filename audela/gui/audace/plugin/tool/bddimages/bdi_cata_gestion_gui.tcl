@@ -21,51 +21,6 @@ namespace eval cata_gestion_gui {
 
       ::gui_cata::inittoconf
 
-      if {! [info exists ::tools_cata::astroid_saturation] } {
-         if {[info exists conf(bddimages,cata,astroid,saturation)]} {
-            set ::tools_cata::astroid_saturation $conf(bddimages,cata,astroid,saturation)
-         } else {
-            set ::tools_cata::astroid_saturation 50000
-         }
-      }
-      if {! [info exists ::tools_cata::astroid_delta] } {
-         if {[info exists conf(bddimages,cata,astroid,delta)]} {
-            set ::tools_cata::astroid_delta $conf(bddimages,cata,astroid,delta)
-         } else {
-            set ::tools_cata::astroid_delta 15
-         }
-      }
-      if {! [info exists ::tools_cata::astroid_threshold] } {
-         if {[info exists conf(bddimages,cata,astroid,threshold)]} {
-            set ::tools_cata::astroid_threshold $conf(bddimages,cata,astroid,threshold)
-         } else {
-            set ::tools_cata::astroid_threshold 5
-         }
-      }
-
-      # Uncosmic or not
-      if {! [info exists ::gui_cata::use_uncosmic] } {
-         if {[info exists conf(bddimages,cata,use_uncosmic)]} {
-            set ::gui_cata::use_uncosmic $conf(bddimages,cata,use_uncosmic)
-         } else {
-            set ::gui_cata::use_uncosmic 1
-         }
-      }
-      if {! [info exists ::tools_cdl::uncosm_param1] } {
-         if {[info exists conf(bddimages,cata,uncosm_param1)]} {
-            set ::tools_cdl::uncosm_param1 $conf(bddimages,cata,uncosm_param1)
-         } else {
-            set ::tools_cdl::uncosm_param1 0.8
-         }
-      }
-      if {! [info exists ::tools_cdl::uncosm_param2] } {
-         if {[info exists conf(bddimages,cata,uncosm_param2)]} {
-            set ::tools_cdl::uncosm_param2 $conf(bddimages,cata,uncosm_param2)
-         } else {
-            set ::tools_cdl::uncosm_param2 100
-         }
-      }
-
    }
 
 
@@ -183,7 +138,7 @@ namespace eval cata_gestion_gui {
 
       set onglets $::cata_gestion_gui::fen.appli.onglets
    
-      # TODO afficher l image ici
+      # TODO ::cata_gestion_gui::affich_current_tklist : afficher l image ici
    
       set listsources $::tools_cata::current_listsources
       set fields [lindex $listsources 0]
@@ -589,13 +544,15 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::grab_sources { { tbl "" } } {
 
+      set log 1
+
       global audace
 
       set color red
       set width 2
       cleanmark
       if {$tbl!=""} {
-         gren_info "grab_sources GUI\n"
+         if {$log} {gren_info "grab_sources GUI\n"}
          $tbl selection clear 0 end
       }
 
@@ -604,6 +561,8 @@ namespace eval cata_gestion_gui {
          tk_messageBox -message "Veuillez dessiner un carre dans l'image (avec un clic gauche)" -type ok
          return
       }
+
+      if {$log} {gren_info "rect= $rect\n"}
 
       set sources [lindex $::tools_cata::current_listsources 1]
       set id 1
@@ -624,8 +583,10 @@ namespace eval cata_gestion_gui {
                set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
                set x [lindex $xy 0]
                set y [lindex $xy 1]
+               if {$log} {gren_info "IMG ?= $x $y $ra $dec\n"}
                if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
                   set pass "yes"
+                  if {$log} {gren_info "IMG pass= $x $y\n"}
                   set xpass $x
                   set ypass $y
                }
@@ -1798,7 +1759,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          #gren_info "ID = $id\n"
          set s [lindex $sources [expr $id - 1 ]]
          #gren_info "S=$s\n"
-         set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius $::audace(bufNo)]} msg ]
+         set err [ catch {set r [::psf_tools::method_global s $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation $::audace(bufNo)]} msg ]
          if {$err} {
             #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
             #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
@@ -1865,8 +1826,6 @@ gren_info " => source retrouvee $cpt $dl\n"
 
 
       set ::cata_gestion_gui::popupprogress 0
-      set ::gui_cata::psf_limitradius 50
-      set ::gui_cata::psf_threshold 2
 
       set ::gui_cata::fenpopuppsf .popuppsf
       if { [winfo exists $::gui_cata::fenpopuppsf] } {
@@ -1888,22 +1847,31 @@ gren_info " => source retrouvee $cpt $dl\n"
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_cata::fenpopuppsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
 
+         set data  [frame $frm.saturation -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $data.l -text "Saturation (ADU) : " 
+             pack  $data.l -side left -padx 2 -pady 0
+             
+             entry $data.v -textvariable ::psf_tools::psf_saturation -relief sunken -width 5
+             pack  $data.v -side left -padx 2 -pady 0
+
          set data  [frame $frm.threshold -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             label $data.l -text "Threshold : " 
+             label $data.l -text "Threshold (arcsec): " 
              pack  $data.l -side left -padx 2 -pady 0
              
-             entry $data.v -textvariable ::gui_cata::psf_threshold -relief sunken -width 5
+             entry $data.v -textvariable ::psf_tools::psf_threshold -relief sunken -width 5
              pack  $data.v -side left -padx 2 -pady 0
 
          set data  [frame $frm.limitradius -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             label $data.l -text "Limite du Rayon : " 
+             label $data.l -text "Limite du Rayon (Pixel): " 
              pack  $data.l -side left -padx 2 -pady 0
              
-             entry $data.v -textvariable ::gui_cata::psf_limitradius -relief sunken -width 5
+             entry $data.v -textvariable ::psf_tools::psf_limitradius -relief sunken -width 5
              pack  $data.v -side left -padx 2 -pady 0
 
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
@@ -1997,7 +1965,7 @@ gren_info " => source retrouvee $cpt $dl\n"
          ::cata_gestion_gui::set_popupprogress $id $nd_sources
          #gren_info "ID = $id\n"
          #gren_info "S=$s\n"
-         set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius $::audace(bufNo)]} msg ]
+         set err [ catch {set r [::psf_tools::method_global s $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation $::audace(bufNo)]} msg ]
          if {$err} {
             #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
             #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
@@ -2083,7 +2051,7 @@ gren_info " => source retrouvee $cpt $dl\n"
             ::cata_gestion_gui::set_popupprogress $cpt $nd_sources
             #gren_info "ID = $id\n"
             #gren_info "S=$s\n"
-            set err [ catch {set r [::psf_tools::method_global s $::gui_cata::psf_threshold $::gui_cata::psf_limitradius $::audace(bufNo)]} msg ]
+            set err [ catch {set r [::psf_tools::method_global s $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation $::audace(bufNo)]} msg ]
             if {$err} {
                #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
                #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
@@ -2164,8 +2132,6 @@ gren_info " => source retrouvee $cpt $dl\n"
       }
 
       set ::cata_gestion_gui::popupprogress 0
-      set ::gui_cata::psf_limitradius 50
-      set ::gui_cata::psf_threshold 2
 
       set ::gui_cata::fenpopuppsf .popuppsf
       if { [winfo exists $::gui_cata::fenpopuppsf] } {
@@ -2187,22 +2153,31 @@ gren_info " => source retrouvee $cpt $dl\n"
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_cata::fenpopuppsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
 
+         set data  [frame $frm.saturation -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $data.l -text "Saturation (ADU) : " 
+             pack  $data.l -side left -padx 2 -pady 0
+             
+             entry $data.v -textvariable ::psf_tools::psf_saturation -relief sunken -width 5
+             pack  $data.v -side left -padx 2 -pady 0
+
          set data  [frame $frm.threshold -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             label $data.l -text "Threshold : " 
+             label $data.l -text "Threshold (arcsec): " 
              pack  $data.l -side left -padx 2 -pady 0
              
-             entry $data.v -textvariable ::gui_cata::psf_threshold -relief sunken -width 5
+             entry $data.v -textvariable ::psf_tools::psf_threshold -relief sunken -width 5
              pack  $data.v -side left -padx 2 -pady 0
 
          set data  [frame $frm.limitradius -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             label $data.l -text "Limite du Rayon : " 
+             label $data.l -text "Limite du Rayon (pixel): " 
              pack  $data.l -side left -padx 2 -pady 0
              
-             entry $data.v -textvariable ::gui_cata::psf_limitradius -relief sunken -width 5
+             entry $data.v -textvariable ::psf_tools::psf_limitradius -relief sunken -width 5
              pack  $data.v -side left -padx 2 -pady 0
 
          set info  [frame $frm.info -borderwidth 0 -cursor arrow -relief groove]

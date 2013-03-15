@@ -11,7 +11,7 @@ namespace eval gui_astrometry {
       set ::tools_astrometry::science   "SKYBOT"
       set ::tools_astrometry::reference "UCAC3"
       set ::tools_astrometry::delta 15
-      set ::tools_astrometry::treshold 5
+      set ::tools_astrometry::threshold 5
       set ::gui_astrometry::factor 1000
 
       if {! [info exists ::tools_astrometry::ifortlib] } {
@@ -567,14 +567,32 @@ namespace eval gui_astrometry {
    
       global bddconf audace
 
+      gren_info "rapport_get_ephem $name [ mc_date2iso8601 $middate ]\n"
+
+      set cpts 0
       set pass "no"
       foreach s [lindex $listsources 1] {
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
             set b  [lindex [lindex $s $x] 2]           
-            set cataname [lindex $b 24]
-            if {$cataname == $name} {
-               set sp [split $cataname "_"]
+            set sourcename [lindex $b 24]
+            
+            if {$sourcename == "-"} {
+               
+               set namable [::manage_source::namable $s]
+               if {$namable==""} {
+                  set sourcename ""
+               } else {
+                  set sourcename [::manage_source::naming $s $namable]
+               } 
+            
+            }
+
+            
+            
+            if {$sourcename == $name} {
+
+               set sp [split $sourcename "_"]
                set cata [lindex $sp 0]
                set x [lsearch -index 0 $s $cata]
                #gren_info "x,cata = $x :: $cata \n"
@@ -694,7 +712,7 @@ namespace eval gui_astrometry {
          
       }
 
-      #gren_info "EPHEM IMCCE RA = $ra_imcce; DEC = $dec_imcce\n"
+      gren_info "EPHEM IMCCE RA = $ra_imcce; DEC = $dec_imcce\n"
       #gren_info "EPHEM MPC RA = $ra_mpc; DEC = $dec_mpc\n"
       return [list $ra_imcce $dec_imcce $ra_mpc $dec_mpc $h_imcce $am_imcce]
 
@@ -896,7 +914,7 @@ namespace eval gui_astrometry {
             set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$dateimg) 6]]
             set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$dateimg) 7]]
 
-            gren_info "  Generation des donnees d'ephemerides ...\n"
+            gren_info "  Generation des donnees d'ephemerides ... $dateimg $name \n"
             set resultmp [::gui_astrometry::rapport_info $dateimg $name]
 
             set midexpo       [lindex $resultmp 0]
@@ -1011,9 +1029,18 @@ namespace eval gui_astrometry {
          set calc(res_d,mean)    [format "%.4f" [::math::statistics::mean   $tabcalc(res_d)   ]]
          set calc(res_d,stdev)   [format "%.4f" [::math::statistics::stdev  $tabcalc(res_d)   ]]
 
+         set calc(datejj,mean)   [::math::statistics::mean   $tabcalc(datejj) ] 
+         set calc(datejj,stdev)  [::math::statistics::stdev  $tabcalc(datejj) ] 
+         set calc(alpha,mean)    [::math::statistics::mean   $tabcalc(alpha) ]  
+         set calc(alpha,stdev)   [::math::statistics::stdev  $tabcalc(alpha) ]  
+         set calc(delta,mean)    [::math::statistics::mean   $tabcalc(delta) ]  
+         set calc(delta,stdev)   [::math::statistics::stdev  $tabcalc(delta) ]  
+         set pi  3.141592653589793
          # OMC IMCCE
          if {[info exists tabcalc(ra_imcce_omc)]} {
-            set calc(ra_imcce_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_imcce_omc)  ]]
+            set mean [::math::statistics::mean   $tabcalc(ra_imcce_omc)  ]
+            set mean [expr $mean * cos ( $calc(delta,mean) * $pi / 180.)]
+            set calc(ra_imcce_omc,mean)   [format "%.4f" $mean]
             set calc(ra_imcce_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_imcce_omc)  ]]
          } else {
             set calc(ra_imcce_omc,mean)   "-"
@@ -1029,7 +1056,9 @@ namespace eval gui_astrometry {
          }
          # OMC JPL
          if {[info exists tabcalc(ra_mpc_omc)]} {
-            set calc(ra_mpc_omc,mean)   [format "%.4f" [::math::statistics::mean   $tabcalc(ra_mpc_omc)  ]]
+            set mean [::math::statistics::mean   $tabcalc(ra_mpc_omc)  ]
+            set mean [expr $mean * cos ( $calc(delta,mean) * $pi / 180. )]
+            set calc(ra_mpc_omc,mean)   [format "%.4f" $mean]
             set calc(ra_mpc_omc,stdev)  [format "%.4f" [::math::statistics::stdev  $tabcalc(ra_mpc_omc)  ]]
          } else {
             set calc(ra_mpc_omc,mean)   "-"
@@ -1060,12 +1089,6 @@ namespace eval gui_astrometry {
             set calc(dec_imccejpl_cmc,stdev)  "-"
          }
          
-         set calc(datejj,mean)   [::math::statistics::mean   $tabcalc(datejj) ] 
-         set calc(datejj,stdev)  [::math::statistics::stdev  $tabcalc(datejj) ] 
-         set calc(alpha,mean)    [::math::statistics::mean   $tabcalc(alpha) ]  
-         set calc(alpha,stdev)   [::math::statistics::stdev  $tabcalc(alpha) ]  
-         set calc(delta,mean)    [::math::statistics::mean   $tabcalc(delta) ]  
-         set calc(delta,stdev)   [::math::statistics::stdev  $tabcalc(delta) ]  
 
          if {$calc(res_a,mean)>=0} {set calc(res_a,mean) "+$calc(res_a,mean)" }
          if {$calc(res_d,mean)>=0} {set calc(res_d,mean) "+$calc(res_d,mean)" }

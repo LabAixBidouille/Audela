@@ -201,12 +201,17 @@ namespace eval tools_cata {
    variable limit_nbstars_accepted
    variable log
 
-   variable treshold_ident_pos_star
-   variable treshold_ident_mag_star
-   variable treshold_ident_pos_ast
-   variable treshold_ident_mag_ast
+   variable threshold_ident_pos_star
+   variable threshold_ident_mag_star
+   variable threshold_ident_pos_ast
+   variable threshold_ident_mag_ast
 
    
+   proc ::tools_cata::inittoconf { } {
+
+      ::psf_tools::inittoconf
+      
+   }
 
    proc ::tools_cata::charge_list { img_list } {
 
@@ -571,7 +576,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $usnoa2
          #gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $usnoa2 USNOA2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $usnoa2 USNOA2 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set listsources [ ::manage_source::delete_catalog $listsources USNOA2CALIB ]
          set ::tools_cata::nb_usnoa2 [::manage_source::get_nb_sources_by_cata $listsources USNOA2]
       }
@@ -584,7 +589,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $tycho2
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $tycho2 TYCHO2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $tycho2 TYCHO2 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
       }
 
@@ -596,7 +601,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $ucac2
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ucac2 UCAC2 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $ucac2 UCAC2 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
       }
 
@@ -608,7 +613,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $ucac3
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ucac3 UCAC3 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $ucac3 UCAC3 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
       }
 
@@ -620,7 +625,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $ucac4
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ucac4 UCAC4 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $ucac4 UCAC4 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac4 [::manage_source::get_nb_sources_by_cata $listsources UCAC4]
       }
 
@@ -628,12 +633,13 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #gren_info "CMD: csppmx $::tools_cata::catalog_ppmx $ra $dec $radius\n"
          set ppmx [csppmx $::tools_cata::catalog_ppmx $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmx]\n"
-# TODO
+
+# TODO ::tools_cata::get_cata PPMX
          set ppmx [::manage_source::set_common_fields $ppmx PPMX {  }]
          #::manage_source::imprim_3_sources $ppmx
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ppmx PPMX $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $ppmx PPMX $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ppmx [::manage_source::get_nb_sources_by_cata $listsources PPMX]
       }
 
@@ -641,12 +647,13 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #gren_info "CMD: csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius\n"
          set ppmxl [csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmxl]\n"
-# TODO
+
+# TODO ::tools_cata::get_cata PPMXL
          set ppmxl [::manage_source::set_common_fields $ppmxl PPMXL {  }]
          #::manage_source::imprim_3_sources $ppmxl
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $ppmxl PPMXL $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $ppmxl PPMXL $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ppmxl [::manage_source::get_nb_sources_by_cata $listsources PPMXL]
       }
 
@@ -654,12 +661,12 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #gren_info "CMD: csnomad1 $::tools_cata::catalog_nomad1 $ra $dec $radius\n"
          set nomad1 [csnomad1 $::tools_cata::catalog_nomad1 $ra $dec $radius]
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $nomad1]\n"
-# TODO
+# TODO ::tools_cata::get_cata NOMAD1
          set nomad1 [::manage_source::set_common_fields $nomad1 NOMAD1 {  }]
          #::manage_source::imprim_3_sources $nomad1
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $nomad1 NOMAD1 $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $nomad1 NOMAD1 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $listsources NOMAD1]
       }
 
@@ -671,7 +678,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #::manage_source::imprim_3_sources $twomass
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
-         set listsources [ identification $listsources IMG $twomass 2MASS $::tools_cata::treshold_ident_pos_star $::tools_cata::treshold_ident_mag_star {} $log]
+         set listsources [ identification $listsources IMG $twomass 2MASS $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_2mass [::manage_source::get_nb_sources_by_cata $listsources 2MASS]
       }
 
@@ -687,16 +694,16 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
          set log 0; # log=2 pour activer ulog dans identification
          set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
-         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::treshold_ident_pos_ast $::tools_cata::treshold_ident_mag_ast {} $log ] 
+         set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::threshold_ident_pos_ast $::tools_cata::threshold_ident_mag_ast {} $log ] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
       }
 
       if {$::psf_tools::use_psf} {
          
          if {$::psf_tools::use_global} {
-            ::psf_gui::psf_listsources_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation
+            ::psf_tools::psf_listsources_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation
          } else {
-            ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_delta $::psf_tools::psf_saturation
+            ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_radius $::psf_tools::psf_saturation
          }
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
          ::psf_tools::set_mag listsources

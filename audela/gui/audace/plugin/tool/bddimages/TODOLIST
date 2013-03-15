@@ -9,7 +9,8 @@ création cata :
     - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
     - Quand Create est activer, il faut disable Next et Prec pour eviter les conneries ;)
 
-    - bug exec: apres un certain temps, exec ne peut plus creer de subprocess par manque de memoire: pourquoi ? soluce ?
+    - bug exec: apres un certain temps, exec ne peut plus creer de subprocess 
+      par manque de memoire: pourquoi ? soluce ?
 
 PSF 
     - arriver a faire remonter psf gestion dans recherche
@@ -23,8 +24,7 @@ Astrométrie :
 
     - envoi mail mpc ?
     - tag envoi mail mpc dans header fits.
-FV    - verifier iau_code egal a toutes les images.
-FV    - psf manuelle avec changement d image pour une seule source
+    - verifier iau_code egal a toutes les images.
 JB    - gerer limite Priam
 
 

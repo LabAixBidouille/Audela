@@ -249,7 +249,8 @@ namespace eval gui_cata {
 
       global conf
 
-
+      ::tools_cata::inittoconf
+      
       # Check button GUI
 
       if {! [info exists ::gui_cata::gui_img] } {
@@ -624,7 +625,7 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
       set listsources [::tools_sources::set_common_fields $listsources 2MASS   { ra_deg dec_deg err_dec jMag jMagError }]
       set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
-#### TODO
+#### TODO ::gui_cata::load_cata set_common_fields PPMX et PPMXL
 #      set listsources [::tools_sources::set_common_fields $listsources PPMX   {  }]
 #      set listsources [::tools_sources::set_common_fields $listsources PPMXL  {  }]
       set listsources [::tools_sources::set_common_fields_skybot $listsources]

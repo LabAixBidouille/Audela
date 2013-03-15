@@ -37,11 +37,6 @@ namespace eval cata_creation_gui {
       # Affichage des ronds dans l image
       ::gui_cata::inittoconf
 
-      # Mesure des PSF
-      ::psf_tools::inittoconf
-      
-
-
       # Check button Use
       if {! [info exists ::tools_cata::use_usnoa2] } {
          if {[info exists conf(bddimages,cata,use_usnoa2)]} {
@@ -253,32 +248,32 @@ namespace eval cata_creation_gui {
             set ::tools_cata::log 0
          }
       }
-      if {! [info exists ::tools_cata::treshold_ident_pos_star] } {
-         if {[info exists conf(bddimages,cata,treshold_ident_pos_star)]} {
-            set ::tools_cata::treshold_ident_pos_star $conf(bddimages,cata,treshold_ident_pos_star)
+      if {! [info exists ::tools_cata::threshold_ident_pos_star] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_pos_star)]} {
+            set ::tools_cata::threshold_ident_pos_star $conf(bddimages,cata,threshold_ident_pos_star)
          } else {
-            set ::tools_cata::treshold_ident_pos_star 30.0
+            set ::tools_cata::threshold_ident_pos_star 30.0
          }
       }
-      if {! [info exists ::tools_cata::treshold_ident_mag_star] } {
-         if {[info exists conf(bddimages,cata,treshold_ident_mag_star)]} {
-            set ::tools_cata::treshold_ident_mag_star $conf(bddimages,cata,treshold_ident_mag_star)
+      if {! [info exists ::tools_cata::threshold_ident_mag_star] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_mag_star)]} {
+            set ::tools_cata::threshold_ident_mag_star $conf(bddimages,cata,threshold_ident_mag_star)
          } else {
-            set ::tools_cata::treshold_ident_mag_star -30.0
+            set ::tools_cata::threshold_ident_mag_star -30.0
          }
       }
-      if {! [info exists ::tools_cata::treshold_ident_pos_ast] } {
-         if {[info exists conf(bddimages,cata,treshold_ident_pos_ast)]} {
-            set ::tools_cata::treshold_ident_pos_ast $conf(bddimages,cata,treshold_ident_pos_ast)
+      if {! [info exists ::tools_cata::threshold_ident_pos_ast] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_pos_ast)]} {
+            set ::tools_cata::threshold_ident_pos_ast $conf(bddimages,cata,threshold_ident_pos_ast)
          } else {
-            set ::tools_cata::treshold_ident_pos_ast 10.0
+            set ::tools_cata::threshold_ident_pos_ast 10.0
          }
       }
-      if {! [info exists ::tools_cata::treshold_ident_mag_ast] } {
-         if {[info exists conf(bddimages,cata,treshold_ident_mag_ast)]} {
-            set ::tools_cata::treshold_ident_mag_ast $conf(bddimages,cata,treshold_ident_mag_ast)
+      if {! [info exists ::tools_cata::threshold_ident_mag_ast] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_mag_ast)]} {
+            set ::tools_cata::threshold_ident_mag_ast $conf(bddimages,cata,threshold_ident_mag_ast)
          } else {
-            set ::tools_cata::treshold_ident_mag_ast -100.0
+            set ::tools_cata::threshold_ident_mag_ast -100.0
          }
       }
 
@@ -290,23 +285,6 @@ namespace eval cata_creation_gui {
             set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
          }
       }
-      # 
-      if {! [info exists ::tools_astrometry::treshold] } {
-         if {[info exists conf(bddimages,cata,treshold)]} {
-            set ::tools_astrometry::treshold $conf(bddimages,cata,treshold)
-         } else {
-            set ::tools_astrometry::treshold 10
-         }
-      }
-      # 
-      if {! [info exists ::tools_astrometry::delta] } {
-         if {[info exists conf(bddimages,cata,delta)]} {
-            set ::tools_astrometry::delta $conf(bddimages,cata,delta)
-         } else {
-            set ::tools_astrometry::delta 15
-         }
-      }
-
 
 
    }
@@ -441,10 +419,10 @@ namespace eval cata_creation_gui {
       set conf(bddimages,cata,deuxpasses)              $::tools_cata::deuxpasses
       set conf(bddimages,cata,limit_nbstars_accepted)  $::tools_cata::limit_nbstars_accepted
       set conf(bddimages,cata,log)                     $::tools_cata::log
-      set conf(bddimages,cata,treshold_ident_pos_star) $::tools_cata::treshold_ident_pos_star
-      set conf(bddimages,cata,treshold_ident_mag_star) $::tools_cata::treshold_ident_mag_star
-      set conf(bddimages,cata,treshold_ident_pos_ast)  $::tools_cata::treshold_ident_pos_ast
-      set conf(bddimages,cata,treshold_ident_mag_ast)  $::tools_cata::treshold_ident_mag_ast
+      set conf(bddimages,cata,threshold_ident_pos_star) $::tools_cata::threshold_ident_pos_star
+      set conf(bddimages,cata,threshold_ident_mag_star) $::tools_cata::threshold_ident_mag_star
+      set conf(bddimages,cata,threshold_ident_pos_ast)  $::tools_cata::threshold_ident_pos_ast
+      set conf(bddimages,cata,threshold_ident_mag_ast)  $::tools_cata::threshold_ident_mag_ast
 
 
       destroy $::cata_creation_gui::fen
@@ -487,7 +465,7 @@ namespace eval cata_creation_gui {
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
             
                if {[::tools_cata::get_cata] == false} {
-                  # TODO gerer l'erreur le  cata a echou?
+                  # TODO ::cata_creation_gui::get_cata : gerer l'erreur le  cata a echou?
                   set ::gui_cata::color_cata $::gui_cata::color_button_bad
                   $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                   #return false
@@ -500,7 +478,7 @@ namespace eval cata_creation_gui {
 
                }
             } else {
-               # TODO gerer l'erreur le wcs a echou?
+               # TODO ::cata_creation_gui::get_cata : gerer l'erreur le wcs a echou?
                set ::gui_cata::color_wcs $::gui_cata::color_button_bad
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
                cleanmark
@@ -539,7 +517,7 @@ namespace eval cata_creation_gui {
             set ::gui_cata::color_wcs $::gui_cata::color_button_good
             $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
             if {[::tools_cata::get_cata] == false} {
-               # TODO gerer l'erreur le  cata a echou?
+               # TODO ::cata_creation_gui::get_all_cata : gerer l'erreur le  cata a echou?
                set ::gui_cata::color_cata $::gui_cata::color_button_bad
                $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
                set ::tools_cata::boucle 0
@@ -556,7 +534,7 @@ namespace eval cata_creation_gui {
                ::gui_cata::affiche_cata
             }
          } else {
-            # TODO gerer l'erreur le wcs a echou?
+            # TODO ::cata_creation_gui::get_all_cata : gerer l'erreur le wcs a echou?
             set ::gui_cata::color_wcs $::gui_cata::color_button_bad
             $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
             cleanmark
@@ -1659,12 +1637,8 @@ namespace eval cata_creation_gui {
       
       gren_info "Creation Manuelle du WCS\n"
 
-      #gren_info " tools_astrometry::treshold: $::tools_astrometry::treshold \n"
-      #gren_info " tools_astrometry::delta:    $::tools_astrometry::delta \n"
       #gren_info " Compilo: $::tools_astrometry::ifortlib \n"
 
-      set ::tools_astrometry::treshold 10
-      set ::tools_astrometry::delta   15
       set ::tools_astrometry::science ""
       set ::tools_astrometry::reference ""
 
@@ -1695,7 +1669,8 @@ namespace eval cata_creation_gui {
       #gren_info "sources : $sources\n"
       
       gren_info "     Mesure des PSF\n"
-      ::psf_gui::psf_listsources_no_auto listsources $::tools_astrometry::treshold $::tools_astrometry::delta
+      
+      ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_radius $::psf_tools::psf_saturation
       #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
@@ -2679,38 +2654,38 @@ namespace eval cata_creation_gui {
              pack $log.check -in $log -side left -padx 5 -pady 0
 
         #--- Cree un frame pour afficher boucle
-        set treshold_ident [frame $f2.treshold_ident_star -borderwidth 0 -cursor arrow -relief groove]
-        pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set threshold_ident [frame $f2.threshold_ident_star -borderwidth 0 -cursor arrow -relief groove]
+        pack $threshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             label $treshold_ident.lab1 -text "Seuil d'indentification stellaire : En position :" 
-             pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
+             label $threshold_ident.lab1 -text "Seuil d'indentification stellaire : En position :" 
+             pack $threshold_ident.lab1 -in $threshold_ident -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_star -width 5
-             pack $treshold_ident.val1 -in $treshold_ident -side left -pady 1 -anchor w
+             entry $threshold_ident.val1 -relief sunken -textvariable ::tools_cata::threshold_ident_pos_star -width 5
+             pack $threshold_ident.val1 -in $threshold_ident -side left -pady 1 -anchor w
              #--- Cree un checkbutton
-             label $treshold_ident.lab2 -text "En magnitude :"
-             pack $treshold_ident.lab2 -in $treshold_ident -side left -padx 5 -pady 0
+             label $threshold_ident.lab2 -text "En magnitude :"
+             pack $threshold_ident.lab2 -in $threshold_ident -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_star -width 5
-             pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
+             entry $threshold_ident.val2 -relief sunken -textvariable ::tools_cata::threshold_ident_mag_star -width 5
+             pack $threshold_ident.val2 -in $threshold_ident -side left -pady 1 -anchor w
 
         #--- Cree un frame pour afficher boucle
-        set treshold_ident [frame $f2.treshold_ident_ast -borderwidth 0 -cursor arrow -relief groove]
-        pack $treshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+        set threshold_ident [frame $f2.threshold_ident_ast -borderwidth 0 -cursor arrow -relief groove]
+        pack $threshold_ident -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
-             label $treshold_ident.lab1 -text "Seuil d'indentification planetaire : En position :" 
-             pack $treshold_ident.lab1 -in $treshold_ident -side left -padx 5 -pady 0
+             label $threshold_ident.lab1 -text "Seuil d'indentification planetaire : En position :" 
+             pack $threshold_ident.lab1 -in $threshold_ident -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $treshold_ident.val1 -relief sunken -textvariable ::tools_cata::treshold_ident_pos_ast -width 5
-             pack $treshold_ident.val1 -in $treshold_ident -side left -pady 1 -anchor w
+             entry $threshold_ident.val1 -relief sunken -textvariable ::tools_cata::threshold_ident_pos_ast -width 5
+             pack $threshold_ident.val1 -in $threshold_ident -side left -pady 1 -anchor w
              #--- Cree un checkbutton
-             label $treshold_ident.lab2 -text "En magnitude :" 
-             pack $treshold_ident.lab2 -in $treshold_ident -side left -padx 5 -pady 0
+             label $threshold_ident.lab2 -text "En magnitude :" 
+             pack $threshold_ident.lab2 -in $threshold_ident -side left -padx 5 -pady 0
              #--- Cree un entry
-             entry $treshold_ident.val2 -relief sunken -textvariable ::tools_cata::treshold_ident_mag_ast -width 5
-             pack $treshold_ident.val2 -in $treshold_ident -side left -pady 1 -anchor w
+             entry $threshold_ident.val2 -relief sunken -textvariable ::tools_cata::threshold_ident_mag_ast -width 5
+             pack $threshold_ident.val2 -in $threshold_ident -side left -pady 1 -anchor w
 
         #--- Cree un frame pour afficher boucle
         set myuncosm [frame $f2.myuncosm -borderwidth 0 -cursor arrow -relief groove]
@@ -3057,7 +3032,7 @@ namespace eval cata_creation_gui {
                   pack $delta -in $opts -side top -anchor e -expand 0 -fill x -pady 5
                        label $delta.lab -text "Delta (pixel)" -width 24 -anchor e
                        pack $delta.lab -in $delta -side left -padx 5 -pady 0 -anchor e
-                       entry $delta.val -relief sunken -textvariable ::psf_tools::psf_delta -width 3
+                       entry $delta.val -relief sunken -textvariable ::psf_tools::psf_radius -width 3
                        pack $delta.val -in $delta -side left -pady 1 -anchor w
 
                #--- Creation du cata psf
@@ -3075,7 +3050,7 @@ namespace eval cata_creation_gui {
                   #--- Threshold
                   set threshold [frame $opts.threshold]
                   pack $threshold -in $opts -side top -anchor e -expand 0 -fill x -pady 5
-                       label $threshold.lab -text "Threshold (pixel)" -width 24 -anchor e
+                       label $threshold.lab -text "Threshold (arcsec)" -width 24 -anchor e
                        pack  $threshold.lab -side left -padx 5 -pady 0 -anchor e
                        entry $threshold.val -relief sunken -textvariable ::psf_tools::psf_threshold -width 3
                        pack  $threshold.val -side left -pady 1 -anchor w
