@@ -22,7 +22,7 @@ namespace eval set_ref_science {
    variable saturation
    variable use_visu
    variable progress
-
+   variable liste_cata
 
    proc ::set_ref_science::inittoconf { } {
 
@@ -30,6 +30,9 @@ namespace eval set_ref_science {
 
       cleanmark
       efface_carre
+
+      set ::set_ref_science::list_cata [list SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS]
+      set ::set_ref_science::progress 0
 
       if {! [info exists ::set_ref_science::use_mask] } {
          if {[info exists conf(bddimages,astrometry,set_ref_science,use_mask)]} {
@@ -66,8 +69,6 @@ namespace eval set_ref_science {
             set ::set_ref_science::use_visu 0
          }
       }
-
-      set ::set_ref_science::progress 0
 
    }
 
@@ -113,7 +114,6 @@ namespace eval set_ref_science {
       for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
 
          set current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
-
          gren_info " -> traitement image $::tools_cata::id_current_image / $::tools_cata::nb_img_list ([::bddimages_liste::lget $current_image filename])\n"
          ::set_ref_science::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
 
@@ -149,21 +149,22 @@ namespace eval set_ref_science {
                set py [lindex $b 1]
                set pixmax [lindex $b 9]
 
-               # Applique le mask si demande
                set accept 1
+               # Applique le mask si demande
                if {$::set_ref_science::use_mask} {
                   if {$::set_ref_science::use_visu} {
                      affich_un_carre_xy $mx_min $my_min $mx_max $my_max blue
                   }
                   if {$px <= $mx_min || $px >= $mx_max || $py <= $my_min || $py >= $my_max} { set accept 0 }
                }
+               # Applique la limite de saturation si demande
                if {$::set_ref_science::use_saturation} {
                   if {$pixmax > $::set_ref_science::saturation} { set accept 0 }
                }
 
                if {$accept} {
                   set change 0
-                  
+
                   set p [lsearch -index 0 $s $::set_ref_science::cata_science]
                   if {$p != -1} {
                      set ar "S"
@@ -172,7 +173,7 @@ namespace eval set_ref_science {
                      set b [lreplace $b 27 27 $ac]
                      set change 1
                   }
-                  
+
                   set p [lsearch -index 0 $s $::set_ref_science::cata_ref]
                   if {$p != -1} {
                      set ar "R"
@@ -223,14 +224,83 @@ namespace eval set_ref_science {
    }
 
 
+   proc ::set_ref_science::unset { } {
+
+      # init
+      ::set_ref_science::inittoconf
+
+      # Log
+      gren_info "Nb images a traiter = $::tools_cata::nb_img_list\n"
+
+      # Go
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
+
+         set current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+         gren_info " -> traitement image $::tools_cata::id_current_image / $::tools_cata::nb_img_list ([::bddimages_liste::lget $current_image filename])\n"
+
+         set current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+
+         # Defini les champs et les sources de l'image courante
+         set fields [lindex $current_listsources 0]
+         set sources [lindex $current_listsources 1]
+         array set tklist $::gui_cata::tk_list($::tools_cata::id_current_image,tklist)
+         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+         foreach {x y} [array get cataname] {
+            set getid($y) $x
+         }
+
+         set ids 0
+         foreach s $sources {
+            incr ids
+            set posastroid [lsearch -index 0 $s "ASTROID"]
+            if {$posastroid != -1} {
+               set astroid [lindex $s $posastroid]
+               set b [lindex $astroid 2]
+
+               set change 0
+               foreach cata $::set_ref_science::list_cata {
+                  set p [lsearch -index 0 $s $cata]
+                  if {$p != -1} {
+                     set ar "-"
+                     set ac "-"
+                     set b [lreplace $b 25 25 $ar]
+                     set b [lreplace $b 27 27 $ac]
+                     set change 1
+                  }
+               }
+
+               if {$change == 1} {
+                  set astroid [lreplace $astroid 2 2 $b]
+                  set s [lreplace $s $posastroid $posastroid $astroid]
+                  set sources [lreplace $sources [expr $ids-1] [expr $ids-1] $s]
+                  # Modif TKLIST
+                  foreach {idcata cata} [array get cataname] {
+                     set x [lsearch -index 0 $tklist($idcata) $ids]
+                     if {$x != -1} {
+                        set b [lindex $tklist($idcata) $x]
+                        set b [lreplace $b 1 2 $ar $ac]
+                        set tklist($idcata) [lreplace $tklist($idcata) $x $x $b]
+                     }
+                  }
+               }
+
+            }
+         }
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) [list $fields $sources]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get tklist]
+
+      }
+
+      ::cata_gestion_gui::charge_image_directaccess
+
+   }
 
 
    proc ::set_ref_science::go { } {
 
       # init
       ::set_ref_science::inittoconf
-
-      set list_cata [list "" SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS]
+      set list_cata [concat {" "} $::set_ref_science::list_cata]
       set nb_cata [llength $list_cata]
 
       #--- Creation de la fenetre
