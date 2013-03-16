@@ -139,6 +139,8 @@ proc spc_winini { } {
       .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_smiley_w) -command "spc_smiley" -underline 0
       .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_findtilt) -command "spc_findtilt" -underline 0
       .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_tilt2) -command "spc_tilt2" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_tiltauto) -command "spc_tiltauto" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_somme) -command "spc_somme" -underline 0
 
 
       #--- Menu Profil de raies ---#
@@ -148,6 +150,7 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_traitea_w) -command "spc_traitea" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_select) -command "spc_select" -underline 0
       #.spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_profil_zone" -underline 0
       #.spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_profil_zone" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
@@ -203,6 +206,7 @@ proc spc_winini { } {
       # .spc.menuBar.calibration add command -label $caption(spcaudace,gui,cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadneon) -command "spc_loadneon" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2file_w) -command "spc_calibre" -underline 0 -accelerator "Ctrl-L"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibren) -command "spc_calibren" -underline 0
       #.spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
       # .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
 .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2loifile_w) -command "spc_calibreloifile" -underline 0 -accelerator "Ctrl-M"
