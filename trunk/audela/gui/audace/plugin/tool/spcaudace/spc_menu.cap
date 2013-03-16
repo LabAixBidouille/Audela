@@ -76,6 +76,8 @@ set caption(spcaudace,gui,spc_smilex_w)                     "X axis smile correc
 set caption(spcaudace,gui,spc_smiley_w)                     "Y axis smile correction (2D)"
 set caption(spcaudace,gui,spc_findtilt)                     "Automatic compution of TITL angle"
 set caption(spcaudace,gui,spc_tilt2)                        "TILT correction with angle and center"
+set caption(spcaudace,gui,spc_somme)                        "Compute the sum of 2D registered spectra"
+set caption(spcaudace,gui,spc_tiltauto)                     "Automatic correction of TILT"
 
 #--- Menu Profil de raies ---#
 set caption(spcaudace,gui,spc_profil)                       "Lines profil"
@@ -100,6 +102,7 @@ set caption(spcaudace,gui,spc_multc_w)                      "Multiply intensitie
 set caption(spcaudace,gui,spc_ajustpoints_w)                "Fitting continuum with selected points"
 set caption(spcaudace,gui,spc_cfwhmbinning_w)               "Setup manually coefficient that multiply binning FWHM"
 set caption(spcaudace,gui,spc_hbinning_w)                   "Setup manually binning height"
+set caption(spcaudace,gui,spc_select)                       "Crop a spectrum with two wavelengths"
 
 #--- Menu Mesures ---#
 set caption(spcaudace,gui,spc_mesures)                      "Measures"
@@ -118,7 +121,8 @@ set caption(spcaudace,gui,spc_degauss)                      "Extract lines inten
 #--- Menu Calibration ---#
 set caption(spcaudace,gui,spc_calibration)                  "Calibration"
 set caption(spcaudace,gui,spc_loadneon)                     "Load neon lines profile"
-set caption(spcaudace,gui,spc_calibre2file_w)               "Wavelength calibration"
+set caption(spcaudace,gui,spc_calibre2file_w)               "Assisted wavelength calibration"
+set caption(spcaudace,gui,spc_calibren)                     "Wavelength calibration"
 # set caption(spcaudace,gui,spc_calibre2loifile_w)          "Wavelength calibration with a spectral reference lamp"
 set caption(spcaudace,gui,spc_calibre2loifile_w)            "Apply wavelength calibration law from one spectrum to an other"
 set caption(spcaudace,gui,spc_calibredecal)                 "Apply a wavelength shift"
@@ -248,6 +252,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_pretraitementfc_w)         "Prétraitement de spectres 2D"
    set caption(spcaudace,gui,spc_pretrait)                  "Prétraitement expert de spectres 2D"
    set caption(spcaudace,gui,spc_register_w)                "Appariement d'une série de spectres 2D"
+   set caption(spcaudace,gui,spc_somme)                     "Somme d'une série de spectres 2D"
    set caption(spcaudace,gui,spc_rot180_w)                  "Inversion gauche-droite (2D/1D)"
    set caption(spcaudace,gui,spc_tiltauto_w)                "Rotation automatique (2D)"
    set caption(spcaudace,gui,spc_tilt_w)                    "Rotation manuelle"
@@ -256,6 +261,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_smiley_w)                  "Correction du smile d'axe Y (2D)"
    set caption(spcaudace,gui,spc_findtilt)                  "Calcul automatique de l'angle de TILT"
    set caption(spcaudace,gui,spc_tilt2)                     "Correction du TILT avec l'angle et le centre"
+   set caption(spcaudace,gui,spc_tiltauto)                  "Correction automatique du TILT"
 
    #--- Menu Profil de raies ---#
    set caption(spcaudace,gui,spc_profil)                    "Profil de raies"
@@ -265,6 +271,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_smooth)                    "Adoucissement par filtrage passe bas"
    set caption(spcaudace,gui,spc_smooth2)                   "Adoucissement par filtrage non-linéaire"
    set caption(spcaudace,gui,spc_div)                       "Division de deux profils de raies"
+   set caption(spcaudace,gui,spc_select)                    "Découpage d'un profil de raies calibré"
    set caption(spcaudace,gui,spc_merge)                     "Raboutage de deux profils de raies"
    set caption(spcaudace,gui,spc_echantdelt)                "Rééchantillonnage d'un profil avec un pas"
    set caption(spcaudace,gui,spc_echantmodel)               "Rééchantillonnage d'un profil à l'identique d'un autre"
@@ -299,7 +306,8 @@ if { [string compare $langage "french"] == "0" } {
    #--- Menu Calibration ---#
    set caption(spcaudace,gui,spc_calibration)               "Calibration"
    set caption(spcaudace,gui,spc_loadneon)                  "Visualiser le profil de raies du néon "
-   set caption(spcaudace,gui,spc_calibre2file_w)            "Etalonnage en longueur d'onde"
+   set caption(spcaudace,gui,spc_calibre2file_w)            "Etalonnage en longueur d'onde assisté"
+   set caption(spcaudace,gui,spc_calibren)                  "Etalonnage en longueur d'onde"
    set caption(spcaudace,gui,spc_calibre2loifile_w)         "Appliquer la loi de calibration d'un spectre à un autre"
    set caption(spcaudace,gui,spc_calibredecal)              "Appliquer un décalage (offset) en longueur d'onde"
    set caption(spcaudace,gui,spc_linearcal)                 "Linéarise la loi de calibration"

@@ -2133,7 +2133,7 @@ proc spc_traitenebula { args } {
 
 
 ###############################################################################
-# Procédure de traitement de spectres 2D pour des series : prétraitement, correction géométriques, régistration, sadd, spc_profil, calibration en longeur d'onde, correction réponse instrumentale, normalisation.
+# Procédure de traitement de spectres 2D pour des series (1 spectre=1 profil) : prétraitement, correction géométriques, régistration, spc_profil, calibration en longeur d'onde, correction réponse instrumentale, normalisation.
 # Auteur : Benjamin MAUCLAIRE
 # Date création :  28-08-2006
 # Date de mise à jour : 16-09-2012
@@ -2356,6 +2356,7 @@ proc spc_traiteseries { args } {
       set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${fhreg}\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]$conf(extension,defaut) ${fhreg}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
       set nbspectres [ llength $listefichiers ]
       set num_spectre 1
+
       foreach spectre $listefichiers {
          ::console::affiche_prompt "\n---------- RÉDUCTION DU SPECTRE n°$num_spectre/$nbspectres -------\n"
          set spectre [ file rootname $spectre ]
@@ -2387,6 +2388,17 @@ proc spc_traiteseries { args } {
 
          #--- Correction de la réponse intrumentale :
          buf$audace(bufNo) load "$audace(rep_images)/$fcal"
+         #-- Ajoute le mot clef EXPTIME (pour BeSS) s'il n'existe pas :
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+         if { [ lsearch $listemotsclef "EXPOSURE" ]!=-1 && [ lsearch $listemotsclef "EXPTIME" ]==-1 } {
+            set exptime [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+            buf$audace(bufNo) setkwd [ list "EXPTIME" "$exptime" float "Total observation duration" "s" ]
+            buf$audace(bufNo) bitpix float
+            buf$audace(bufNo) save1d "$audace(rep_images)/$fcal"
+            buf$audace(bufNo) bitpix short
+         }
+
+         #-- Calcule la largeur spectral :
          set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
          set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
          set largeur_spectrale [ expr $cdelt1*$naxis1 ]
@@ -2452,7 +2464,7 @@ proc spc_traiteseries { args } {
 	       return 0
             } else {
                #-- Linearisation de la calibration a partir du niveau 1c :
-               set fricorrlin1 [ spc_linearcal "$fricorr" ]             
+               set fricorrlin1 [ spc_linearcal "$fricorr" ]    
                #-- Elimination des bords "nuls" :
                if { $spcaudace(rm_edges)=="o" } {
                   set fricorrlin [ spc_rmedges "$fricorrlin1" ]
@@ -2558,6 +2570,13 @@ proc spc_traiteseries { args } {
          } else {
             set spectre_calo "$flinearcal"
          }
+
+         #--- Sauve le profil en 1D :
+         buf$audace(bufNo) load "$audace(rep_images)/$spectre_calo"
+         buf$audace(bufNo) bitpix float
+         buf$audace(bufNo) save1d "$audace(rep_images)/$spectre_calo"
+         buf$audace(bufNo) bitpix short
+
 
          if { 1==0 } {
             #--- Retrait des cosmics
