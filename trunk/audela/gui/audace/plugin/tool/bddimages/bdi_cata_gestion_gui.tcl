@@ -390,8 +390,14 @@ namespace eval cata_gestion_gui {
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
 
+      # Affiche l'image courante
       ::gui_cata::affiche_current_image
+      # Affiche le cata
       ::gui_cata::affiche_cata
+      # Trace du repere E/N dans l'image
+      set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
+      set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
+      ::gui_cata::trace_repere [list $cdelt1 $cdelt2]
 
    }
 
@@ -437,74 +443,61 @@ namespace eval cata_gestion_gui {
       menu $popupTbl -title "Selection"
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Grab les sources" \
-           -command "::cata_gestion_gui::grab_sources $tbl"
+        $popupTbl add command -label "Grab les sources" -command "::cata_gestion_gui::grab_sources $tbl"
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Propager les sources" \
-           -command "::cata_gestion_gui::propagation $tbl"
+        $popupTbl add command -label "Propager les sources" -command "::cata_gestion_gui::propagation $tbl"
 
         # Separateur
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Editer la source" \
-           -command "::cata_gestion_gui::edit_source $tbl" -state disable
+        $popupTbl add command -label "Editer la source" -command "::cata_gestion_gui::edit_source $tbl" -state disable
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Sauver la source" \
-           -command "" -state disable
+        $popupTbl add command -label "Sauver la source" -command "" -state disable
 
         # Supprime les sources selectionnees dans l'image courante
-        $popupTbl add command -label "Supprimer dans l'image courante" \
-           -command "::cata_gestion_gui::delete_sources $tbl"
+        $popupTbl add command -label "Supprimer dans l'image courante" -command "::cata_gestion_gui::delete_sources $tbl"
 
         # Supprime les sources selectionnees dans toutes les images
-        $popupTbl add command -label "Supprimer dans toutes les images" \
-           -command "::cata_gestion_gui::delete_sources_allimg $tbl"
+        $popupTbl add command -label "Supprimer dans toutes les images" -command "::cata_gestion_gui::delete_sources_allimg $tbl"
 
         # Separateur
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Unset" \
-           -command "::cata_gestion_gui::unset_flag $tbl"
+        $popupTbl add command -label "Unset" -command "::cata_gestion_gui::unset_flag $tbl"
 
         # Separateur
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Set astrometric reference" \
-           -command "::cata_gestion_gui::set_astrom_ref $tbl"
+        $popupTbl add command -label "Set astrometric reference" -command "::cata_gestion_gui::set_astrom_ref $tbl"
 
         # Supprime la liste selectionnee
-        $popupTbl add command -label "Set astrometric mesure" \
-           -command "::cata_gestion_gui::set_astrom_mes $tbl"
+        $popupTbl add command -label "Set astrometric mesure" -command "::cata_gestion_gui::set_astrom_mes $tbl"
 
         # Separateur
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Set photometric reference" \
-           -command "::cata_gestion_gui::set_photom_ref $tbl"
+        $popupTbl add command -label "Set photometric reference" -command "::cata_gestion_gui::set_photom_ref $tbl"
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Set photometric mesure" \
-           -command "::cata_gestion_gui::set_photom_mes $tbl"
+        $popupTbl add command -label "Set photometric mesure" -command "::cata_gestion_gui::set_photom_mes $tbl"
 
         # Separateur
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "PSF Auto -> ASTROID" \
-           -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
+        $popupTbl add command -label "PSF Auto -> ASTROID" -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
 
         # Separateur
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Cataloguer la source" \
-           -command "" -state disable
+        $popupTbl add command -label "Cataloguer la source" -command "" -state disable
 
 
       #--- Gestion des evenements
@@ -914,10 +907,6 @@ namespace eval cata_gestion_gui {
 
 
 
-
-
-
-
 # Anciennement ::gui_cata::edit_source
 
    proc ::cata_gestion_gui::edit_source { tbl } {
@@ -929,14 +918,6 @@ namespace eval cata_gestion_gui {
 #
 #   
    }
-
-
-
-
- 
-
-
-
 
 
 
@@ -959,9 +940,12 @@ namespace eval cata_gestion_gui {
       foreach select [$tbl curselection] {
          
          set id [lindex [$tbl get $select] 0]
+
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
+
             set idcata [string index [lindex [split $t .] 5] 1]
+
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
             if {$x != -1} {
@@ -972,11 +956,9 @@ namespace eval cata_gestion_gui {
          # Modification du current_listsources
          set fields [lindex $::tools_cata::current_listsources 0]
          set sources [lindex $::tools_cata::current_listsources 1]
-         set sources [lreplace $sources [expr $select-$cpt] [expr $select-$cpt]]
+         set sources [lreplace $sources [expr $id - 1] [expr $id - 1]]
          set ::tools_cata::current_listsources [list $fields $sources]
 
-         # Compteur de sources effacees
-         incr cpt
       }
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
@@ -991,101 +973,78 @@ namespace eval cata_gestion_gui {
 
 
 
-
-
-
-
-
-
-
-
-# Anciennement ::gui_cata::delete_sources_allimg
-
    proc ::cata_gestion_gui::delete_sources_allimg { tbl } {
 
       set onglets $::cata_gestion_gui::fen.appli.onglets
       set idcata [string index [lindex [split $tbl .] 5] 1]
-         
+      set cata $::gui_cata::cataname($idcata)
+
+      if {[string compare -nocase $cata "IMG"] == 0} {
+         tk_messageBox -message "Il n'est pas possible d'effacer une source du cata IMG dans toutes les images" -type ok
+         return
+      }
+
       set dellist ""
       foreach select [$tbl curselection] {
          set id [lindex [$tbl get $select] [::gui_cata::get_pos_col bdi_idc_lock $idcata]]
          set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
-         set sname [::manage_source::naming $s "IMG"]
-         lappend dellist $sname
+         set sname [::manage_source::naming $s $cata]
+         lappend dellist [list $cata $sname]
       }
-gren_info "ListToDel: $dellist\n"
 
       # Si la liste est vide, rien a faire
       if {[llength $dellist] < 1} {
+         gren_erreur "La source selectionnee n'a pas ete trouvee dans le cata ($cata) => pb de naming ?\n"
          return
       }
 
-      # On boucle sur les images (sauf celle qui est courrante car rien a propager)
+      # Boucle sur les images
       for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
-
-::console::affiche_erreur "Image #$i / $::tools_cata::nb_img_list\n"
 
          array set tklist $::gui_cata::tk_list($i,tklist)
          array set cataname $::gui_cata::tk_list($i,cataname)
-gren_info "cataname = [array get ::gui_cata::cataname]\n"
          set current_listsources $::gui_cata::cata_list($i)
          set sources [lindex $current_listsources 1]
-#gren_info "sources = $sources \n"
 
-            foreach {x y} [array get cataname] {
-               set getid($y) $x
-            }
-
-         # On boucle sur les sources a effacer
+         # Boucle sur les sources a effacer
          foreach dl $dellist {
-
-gren_info "DL = $dl\n"
-
-            # on boucle sur les sources du cata
-            set cpt 1
+            # recherche de la source a effacer dans le cata (i.e. onglet courant)
+            set idsource 1
             set pass "no"
             foreach s $sources {
                foreach c $s {
-                  if {[lindex $c 0] == "IMG"} {
-                     set namesou [::manage_source::naming $s "IMG"]
-                     if {$namesou == $dl} {
+                  if {[string compare -nocase [lindex $c 0] [lindex $dl 0]] == 0} {
+                     set namesou [::manage_source::naming $s [lindex $dl 0]]
+                     if {$namesou == [lindex $dl 1]} {
                         set pass "ok"
                         break
                      }
                   }
                }
                if {$pass == "ok"} { break }
-               incr cpt
+               incr idsource
             }
 
-gren_info "PASS? $pass \n"
-
+            # si la source a ete trouvee alors on l'efface
             if {$pass == "ok"} {
-
-gren_info " => source retrouvee $cpt $dl\n"
-
                # Modif TKLIST
                foreach {idcata cata} [array get cataname] {
-                  set x [lsearch -index 0 $tklist($idcata) $cpt]
+                  set x [lsearch -index 0 $tklist($idcata) $idsource]
                   if {$x != -1} {
                      set tklist($idcata) [lreplace $tklist($idcata) $x $x]
                   }
                }
- 
                # Modif current_listsources
-               set fields [lindex $::tools_cata::current_listsources 0]
-               set sources [lindex $::tools_cata::current_listsources 1]
-               set sources [lreplace $sources $cpt $cpt]
-               set ::tools_cata::current_listsources [list $fields $sources]
-
+               set fields [lindex $current_listsources 0]
+               set sources [lindex $current_listsources 1]
+               set sources [lreplace $sources [expr $idsource-1] [expr $idsource-1]]
+               set current_listsources [list $fields $sources]
             }
 
          }
 
-         # Modification du tk_list
+         set ::gui_cata::cata_list($i) $current_listsources
          set ::gui_cata::tk_list($i,tklist) [array get tklist]
-         # Modification du cata_list
-         set ::gui_cata::cata_list($i) [list [lindex $current_listsources 0] $sources]
 
       }
 
@@ -1097,14 +1056,6 @@ gren_info " => source retrouvee $cpt $dl\n"
  
  
  
- 
- 
- 
-
-
-
-
-
 
 
 
@@ -1134,7 +1085,7 @@ gren_info " => source retrouvee $cpt $dl\n"
             set idcata [string index [lindex [split $t .] 5] 1]
             set cata   $::gui_cata::cataname($idcata)
          
-            # Modification du cata_list_source
+            # Modification du current_listsources
             if {[string compare -nocase $cata "ASTROID"] == 0} {
 
                set fields [lindex $::tools_cata::current_listsources 0]
@@ -1160,7 +1111,6 @@ gren_info " => source retrouvee $cpt $dl\n"
                
             }
 
-
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
             if {$x != -1} {
@@ -1177,7 +1127,6 @@ gren_info " => source retrouvee $cpt $dl\n"
 
             # cas de l onglet courant (pas besoin de rechercher l indice de la table. il est fournit par $select
             if {"$tbl" == "$t.frmtable.tbl"} {
-               #gren_info "on est ici $t\n"
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_reference] -text $flag
                $t.frmtable.tbl cellconfigure $select,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                # Rempli les champs correspondants dans le cata ASTROID
@@ -1194,7 +1143,6 @@ gren_info " => source retrouvee $cpt $dl\n"
             foreach x [$t.frmtable.tbl get 0 end] {
                set idx [lindex $x 0]
                if {$idx == $id} {
-                  #gren_info "$id -> $u sur $t\n"
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_reference] -text $flag
                   $t.frmtable.tbl cellconfigure $u,[::gui_cata::get_pos_col astrom_catalog]   -text $cataselect
                   # Rempli les champs correspondants dans le cata ASTROID
@@ -1210,18 +1158,18 @@ gren_info " => source retrouvee $cpt $dl\n"
          }
 
       }
-      set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
-      set x [lsearch -index 0 $a "ASTROID"]
-      set a [lindex [lindex $a $x] 2]
-      gren_info "AV REF $a\n"
+      #set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+      #set x [lsearch -index 0 $a "ASTROID"]
+      #set a [lindex [lindex $a $x] 2]
+      #gren_info "AV REF $a\n"
 
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
 
-      set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
-      set x [lsearch -index 0 $a "ASTROID"]
-      set a [lindex [lindex $a $x] 2]
-      gren_info "SET REF $a\n"
+      #set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+      #set x [lsearch -index 0 $a "ASTROID"]
+      #set a [lindex [lindex $a $x] 2]
+      #gren_info "SET REF $a\n"
 
       return
    }
@@ -2216,13 +2164,6 @@ gren_info " => source retrouvee $cpt $dl\n"
  
  
  
- 
- 
- 
- 
- 
- 
- 
 # Anciennement ::gui_cata::selectall
  
     proc ::cata_gestion_gui::selectall { tbl } {
@@ -2244,8 +2185,6 @@ gren_info " => source retrouvee $cpt $dl\n"
    }
 
 
- 
- 
  
  
  
@@ -2287,22 +2226,6 @@ gren_info " => source retrouvee $cpt $dl\n"
       return
 
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2385,18 +2308,17 @@ gren_info " => source retrouvee $cpt $dl\n"
                   -command "::set_ref_science::go" 
                $menubar.catalog.menu.astrom add command -label "Defaire tous les catalogues" -accelerator "Ctrl-u" \
                   -command "::set_ref_science::unset"
+               $menubar.catalog.menu.astrom add command -label "Effacer les marques" -accelerator "Ctrl-e" \
+                  -command "::set_ref_science::clean"
 
 
            #--- menu PSF
            menubutton $menubar.psf -text "PSF" -underline 0 -menu $menubar.psf.menu
            menu $menubar.psf.menu -tearoff 0
 
-             $menubar.psf.menu add command -label "Manuel sur l'image" \
-                -command "::psf_gui::gestion_mode_manuel"
-             $menubar.psf.menu add command -label "Auto sur l'image" \
-                -command "::cata_gestion_gui::psf_auto one"
-             $menubar.psf.menu add command -label "Auto toutes images" \
-                -command "::cata_gestion_gui::psf_auto all"
+             $menubar.psf.menu add command -label "Manuel sur l'image" -command "::psf_gui::gestion_mode_manuel"
+             $menubar.psf.menu add command -label "Auto sur l'image" -command "::cata_gestion_gui::psf_auto one"
+             $menubar.psf.menu add command -label "Auto toutes images" -command "::cata_gestion_gui::psf_auto all"
 
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
              pack $menubar.psf -side left
@@ -2430,12 +2352,9 @@ gren_info " => source retrouvee $cpt $dl\n"
             pack [ttk::notebook $onglets.nb] -expand yes -fill both 
   
 
-#      ::gui_cata::affiche_Tbl_sources $nbcata   
-
-
-        #--- Cree un frame pour afficher les boutons
-        set infoimg [frame $frm.infoimg -borderwidth 0 -cursor arrow -relief groove]
-        pack $infoimg -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         #--- Cree un frame pour afficher les boutons
+         set infoimg [frame $frm.infoimg -borderwidth 0 -cursor arrow -relief groove]
+         pack $infoimg -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
              #--- Cree un checkbutton
              label $infoimg.lab1 -textvariable ::tools_cata::id_current_image
@@ -2497,6 +2416,7 @@ gren_info " => source retrouvee $cpt $dl\n"
       bind $::cata_gestion_gui::fen <Key-F1> { ::console::GiveFocus }
       bind $::cata_gestion_gui::fen <Control-Key-s> { ::set_ref_science::go }
       bind $::cata_gestion_gui::fen <Control-Key-u> { ::set_ref_science::unset }
+      bind $::cata_gestion_gui::fen <Control-Key-e> { ::set_ref_science::clean }
 
       ::cata_gestion_gui::charge_memory
 

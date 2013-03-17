@@ -813,7 +813,7 @@ namespace eval gui_astrometry {
          if {$num>$nummax} {set nummax $num}
       }
 
-      set form "%1s %-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s  %10s %10s %10s %10s \n"
+      set form "%1s %-${nummax}s  %-23s  %-13s  %-13s  %-6s  %-6s  %-6s  %-6s %-7s %-7s %-7s %-7s  %-16s  %-12s  %-12s  %-12s  %-12s  %-12s  %-12s  %10s %10s %10s %10s %10s %10s \n"
 
       set name          ""
       set date          ""
@@ -836,9 +836,11 @@ namespace eval gui_astrometry {
       set dec_mpc       ""
       set err_x         ""
       set err_y         ""
+      set fwhm_x        ""
+      set fwhm_y        ""
       set hauteur       ""
       set airmass       ""
-      set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $hauteur $airmass]
+      set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $fwhm_x $fwhm_y $hauteur $airmass]
 
       set name          "Object"      
       set date          "Mid-Date"    
@@ -861,9 +863,11 @@ namespace eval gui_astrometry {
       set dec_mpc       "Declination"
       set err_x         "Err x"
       set err_y         "Err y"
+      set fwhm_x        "fwhm x"
+      set fwhm_y        "fwhm y"
       set hauteur       "Hauteur"
       set airmass       "AirMass"
-      set headtab2 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $hauteur $airmass]
+      set headtab2 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $fwhm_x $fwhm_y $hauteur $airmass]
 
       set name          ""
       set date          "iso"
@@ -887,9 +891,11 @@ namespace eval gui_astrometry {
       set dec_mpc       "deg"
       set err_x         "px"
       set err_y         "px"
+      set fwhm_x        "px"
+      set fwhm_y        "px"
       set hauteur       "deg"
       set airmass       ""
-      set headtab3 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $hauteur $airmass]
+      set headtab3 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $fwhm_x $fwhm_y $hauteur $airmass]
 
       foreach {name y} $l {
          #gren_info "TXT: $name = $y\n"
@@ -911,6 +917,8 @@ namespace eval gui_astrometry {
             set err_mag [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  9]]
             set err_x   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 10]]
             set err_y   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 11]]
+            set fwhm_x  [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 12]]
+            set fwhm_y  [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg) 13]]
             set ra_hms  [::tools_astrometry::convert_txt_hms [lindex $::tools_astrometry::tabval($name,$dateimg) 6]]
             set dec_dms [::tools_astrometry::convert_txt_dms [lindex $::tools_astrometry::tabval($name,$dateimg) 7]]
 
@@ -1007,7 +1015,7 @@ namespace eval gui_astrometry {
             if {$h_imcce_deg   != "-"} {set h_imcce_deg   [format "%.8f" $h_imcce_deg]}
             if {$am_imcce_deg  != "-"} {set am_imcce_deg  [format "%.8f" $am_imcce_deg]}
 
-            set txt [format $form "" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg $err_x $err_y $h_imcce_deg $am_imcce_deg]
+            set txt [format $form "" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_mpc_deg $dec_mpc_deg $err_x $err_y $fwhm_x $fwhm_y $h_imcce_deg $am_imcce_deg]
             $::gui_astrometry::rapport_txt insert end  $txt
 
 
@@ -1409,6 +1417,28 @@ namespace eval gui_astrometry {
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
 
+      set description "FWHM on x"
+      set f [ list "$::votable::Field::ID \"fwhm_x\"" \
+                   "$::votable::Field::NAME \"fwhm x\"" \
+                   "$::votable::Field::UCD \"obs.param;phys.angSize\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
+                   "$::votable::Field::WIDTH \"10\"" \
+                   "$::votable::Field::PRECISION \"4\"" \
+                   "$::votable::Field::UNIT \"px\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+      set description "FWHM on y"
+      set f [ list "$::votable::Field::ID \"fwhm_y\"" \
+                   "$::votable::Field::NAME \"fwhm y\"" \
+                   "$::votable::Field::UCD \"obs.param;phys.angSize\"" \
+                   "$::votable::Field::DATATYPE \"double\"" \
+                   "$::votable::Field::WIDTH \"10\"" \
+                   "$::votable::Field::PRECISION \"4\"" \
+                   "$::votable::Field::UNIT \"px\"" ]
+      set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
       set description "Elevation"
       set f [ list "$::votable::Field::ID \"elevation\"" \
                    "$::votable::Field::NAME \"Elevation\"" \
@@ -1454,6 +1484,8 @@ namespace eval gui_astrometry {
             set mag_err [format "%.3f"  [lindex $::tools_astrometry::tabval($name,$date)  9]]
             set err_x   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 10]]
             set err_y   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 11]]
+            set fwhm_x  [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 12]]
+            set fwhm_y  [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$date) 13]]
 
             gren_info "  Generation des donnees d'ephemerides ...\n"
             set result [::gui_astrometry::rapport_info $date $name]
@@ -1480,8 +1512,8 @@ namespace eval gui_astrometry {
                set dec_omc   [format "%.4f" [expr ($delta - $dec_ephem) * 3600.0] ]
                if {$dec_omc>0} {set dec_omc "+$dec_omc"}
             }
-            set datejj  [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
-            set date    [mc_date2iso8601 $datejj]
+            set datejj [format "%.8f"  [ expr [ mc_date2jd $date] + $midexpo / 86400. ] ]
+            set date [mc_date2iso8601 $datejj]
 
             append votSources [::votable::addElement $::votable::Element::TD {} $name]
             append votSources [::votable::addElement $::votable::Element::TD {} $date]
@@ -1496,6 +1528,8 @@ namespace eval gui_astrometry {
             append votSources [::votable::addElement $::votable::Element::TD {} $dec_omc]
             append votSources [::votable::addElement $::votable::Element::TD {} $err_x]
             append votSources [::votable::addElement $::votable::Element::TD {} $err_y]
+            append votSources [::votable::addElement $::votable::Element::TD {} $fwhm_x]
+            append votSources [::votable::addElement $::votable::Element::TD {} $fwhm_y]
             append votSources [::votable::addElement $::votable::Element::TD {} $h_ephem]
             append votSources [::votable::addElement $::votable::Element::TD {} $am_ephem]
 

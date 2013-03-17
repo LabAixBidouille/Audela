@@ -28,8 +28,7 @@ namespace eval set_ref_science {
 
       global conf
 
-      cleanmark
-      efface_carre
+      ::set_ref_science::clean
 
       set ::set_ref_science::list_cata [list SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS]
       set ::set_ref_science::progress 0
@@ -94,6 +93,14 @@ namespace eval set_ref_science {
    }
 
 
+   proc ::set_ref_science::clean { } {
+
+      cleanmark
+      efface_carre
+
+   }
+
+
    proc ::set_ref_science::apply { } {
       
       # Sanity check
@@ -101,6 +108,8 @@ namespace eval set_ref_science {
          tk_messageBox -message "Veuillez selectionner au moins un catalogue Science ou Reference" -type ok
          return
       }
+
+      ::set_ref_science::clean
 
       # Log
       gren_info "Sciences = $::set_ref_science::cata_science\n"
@@ -218,8 +227,30 @@ namespace eval set_ref_science {
       }
 
       ::set_ref_science::set_progress 0 100
-      ::set_ref_science::fermer
       ::cata_gestion_gui::charge_image_directaccess
+
+   }
+
+
+   proc ::set_ref_science::view_mask { } {
+      
+      ::set_ref_science::clean
+
+      # Recupere les infos de la 1ere image
+      set ::tools_cata::id_current_image 1
+      set current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+      set current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+      # Recupere les NAXISi de l'image courante
+      set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+      set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      # Definition du mask
+      set mx_min $::set_ref_science::mask
+      set mx_max [expr $naxis1 - $::set_ref_science::mask]
+      set my_min $::set_ref_science::mask
+      set my_max [expr $naxis2 - $::set_ref_science::mask]
+
+      affich_un_carre_xy $mx_min $my_min $mx_max $my_max blue
 
    }
 
@@ -298,10 +329,16 @@ namespace eval set_ref_science {
 
    proc ::set_ref_science::go { } {
 
-      # init
+      global audace
+
       ::set_ref_science::inittoconf
+
       set list_cata [concat {" "} $::set_ref_science::list_cata]
       set nb_cata [llength $list_cata]
+
+      # Icon
+      image create photo view
+      view configure -file [file join $audace(rep_plugin) tool bddimages icons view_s.gif]
 
       #--- Creation de la fenetre
       set ::set_ref_science::fen .set_ref_science
@@ -367,6 +404,9 @@ namespace eval set_ref_science {
    
                 label $mask.lab -text "pixels du bord de l'image"
                 pack  $mask.lab -in $mask -anchor c -side left -padx 5 -pady 0
+
+                button $mask.voir -image view -borderwidth 1 -command "::set_ref_science::view_mask"
+                pack $mask.voir -in $mask -anchor c -side left -padx 5 -pady 0
 
             set satu [frame $options.satu -borderwidth 0 -cursor arrow -relief groove]
             pack $satu -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5

@@ -54,7 +54,7 @@ namespace eval tools_astrometry {
 
 
    proc ::tools_astrometry::create_vartab { } {
-         
+
       if {[info exists ::tools_astrometry::tabval]}        {unset ::tools_astrometry::tabval}
       if {[info exists ::tools_astrometry::listref]}       {unset ::tools_astrometry::listref}
       if {[info exists ::tools_astrometry::listscience]}   {unset ::tools_astrometry::listscience}
@@ -87,34 +87,30 @@ namespace eval tools_astrometry {
                gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
             }
             #gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
-
-            #set a [lindex [lindex $current_listsources 1] $id]
-            #gren_info "ASTROM UNSET $a\n"
             
             set s       [lindex [lindex $current_listsources 1] $id]
             set astroid [lindex $s $idcata]
             set b       [lindex $astroid 2]
-            #gren_info "b = $b\n"
 
             set ra      [lindex $b 16]
             set dec     [lindex $b 17]
-            set res_ra  [format  "%.4f" [lindex $b 18]]
-            set res_dec [format  "%.4f" [lindex $b 19]]
-            set rho     [format  "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
+            set res_ra  [format "%.4f" [lindex $b 18]]
+            set res_dec [format "%.4f" [lindex $b 19]]
+            set rho     [format "%.4f" [expr sqrt((pow($res_ra,2)+pow($res_dec,2))/2.)]]
             set omc_ra  [lindex $b 20]
             set omc_dec [lindex $b 21]
             set mag     [lindex $b 22]
             set err_mag [lindex $b 23]
             set err_x   [lindex $b 2]
             set err_y   [lindex $b 3]
-            #gren_info "rho = $rho :: $res_ra $res_dec \n"
-            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $mag)\n"
-            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_x $err_y]
+            set fwhm_x  [lindex $b 4]
+            set fwhm_y  [lindex $b 5]
+            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_x $err_y $fwhm_x $fwhm_y]
 
             lappend ::tools_astrometry::listref($name)     $dateiso
             lappend ::tools_astrometry::listdate($dateiso) $name
             set ::tools_astrometry::date_to_id($dateiso)   $id_current_image
-            
+
          }
 
          # SCIENCES
@@ -149,10 +145,10 @@ namespace eval tools_astrometry {
             set err_mag [lindex $b 23]
             set err_x   [format  "%.4f" [lindex $b 2] ]
             set err_y   [format  "%.4f" [lindex $b 3] ]
-            #gren_info "Rho = $rho :: $res_ra $res_dec \n"
-            #gren_info "->vartab($name,$dateiso) ($ar $ra $dec $res_ra $res_dec $ecart $mag)\n"
+            set fwhm_x  [lindex $b 4]
+            set fwhm_y  [lindex $b 5]
 
-            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_x $err_y]
+            set ::tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_x $err_y $fwhm_x $fwhm_y]
 
             lappend ::tools_astrometry::listscience($name) $dateiso
             lappend ::tools_astrometry::listdate($dateiso) $name
@@ -212,32 +208,32 @@ namespace eval tools_astrometry {
          set m   ""
 
          foreach date $::tools_astrometry::listref($name) {
-            lappend rho [lindex $::tools_astrometry::tabval($name,$date)      3]
-            lappend ra  [lindex $::tools_astrometry::tabval($name,$date)      4]
-            lappend rd  [lindex $::tools_astrometry::tabval($name,$date)      5]
-            lappend a   [lindex $::tools_astrometry::tabval($name,$date)      6]
-            lappend d   [lindex $::tools_astrometry::tabval($name,$date)      7]
-            lappend m   [lindex $::tools_astrometry::tabval($name,$date)      8]
-            lappend err_x   [lindex $::tools_astrometry::tabval($name,$date) 10]
-            lappend err_y   [lindex $::tools_astrometry::tabval($name,$date) 11]
+            lappend rho   [lindex $::tools_astrometry::tabval($name,$date)  3]
+            lappend ra    [lindex $::tools_astrometry::tabval($name,$date)  4]
+            lappend rd    [lindex $::tools_astrometry::tabval($name,$date)  5]
+            lappend a     [lindex $::tools_astrometry::tabval($name,$date)  6]
+            lappend d     [lindex $::tools_astrometry::tabval($name,$date)  7]
+            lappend m     [lindex $::tools_astrometry::tabval($name,$date)  8]
+            lappend err_x [lindex $::tools_astrometry::tabval($name,$date) 10]
+            lappend err_y [lindex $::tools_astrometry::tabval($name,$date) 11]
          }
 
          set nb       [llength $::tools_astrometry::listref($name)]
-         set mrho     [format "%.3f" [::math::statistics::mean  $rho    ]]
-         set mra      [format "%.3f" [::math::statistics::mean  $ra     ]]
-         set mrd      [format "%.3f" [::math::statistics::mean  $rd     ]]
-         set ma       [format "%.6f" [::math::statistics::mean  $a      ]]
-         set md       [format "%.5f" [::math::statistics::mean  $d      ]]
-         set mm       [format "%.3f" [::math::statistics::mean  $m      ]]
-         set merr_x   [format "%.3f" [::math::statistics::mean  $err_x  ]]
-         set merr_y   [format "%.3f" [::math::statistics::mean  $err_y  ]]
+         set mrho     [format "%.3f" [::math::statistics::mean  $rho  ]]
+         set mra      [format "%.3f" [::math::statistics::mean  $ra   ]]
+         set mrd      [format "%.3f" [::math::statistics::mean  $rd   ]]
+         set ma       [format "%.6f" [::math::statistics::mean  $a    ]]
+         set md       [format "%.5f" [::math::statistics::mean  $d    ]]
+         set mm       [format "%.3f" [::math::statistics::mean  $m    ]]
+         set merr_x   [format "%.3f" [::math::statistics::mean  $err_x]]
+         set merr_y   [format "%.3f" [::math::statistics::mean  $err_y]]
          if {$nb>1} {
-            set srho     [format "%.3f" [::math::statistics::stdev $rho    ]]
-            set sra      [format "%.3f" [::math::statistics::stdev $ra     ]]
-            set srd      [format "%.3f" [::math::statistics::stdev $rd     ]]
-            set sa       [format "%.3f" [::math::statistics::stdev $a      ]]
-            set sd       [format "%.3f" [::math::statistics::stdev $d      ]]
-            set sm       [format "%.3f" [::math::statistics::stdev $m      ]]
+            set srho     [format "%.3f" [::math::statistics::stdev $rho]]
+            set sra      [format "%.3f" [::math::statistics::stdev $ra ]]
+            set srd      [format "%.3f" [::math::statistics::stdev $rd ]]
+            set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
+            set sd       [format "%.3f" [::math::statistics::stdev $d  ]]
+            set sm       [format "%.3f" [::math::statistics::stdev $m  ]]
          } else {
             set srho     0
             set sra      0
@@ -482,7 +478,7 @@ namespace eval tools_astrometry {
       close $chan
       
       if {$id_current_image == $nberr } {
-         return -code 1 "ASTROMETRY FAILURE"
+         return -code 1 "ASTROMETRY FAILURE: no valid valid result provided by Priam"
       }
 
 

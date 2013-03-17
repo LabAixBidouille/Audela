@@ -6,6 +6,8 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    global skybot_list
    global skybot_list2
 
+   set log 0
+
    set voconf(date_image)          $dateobs
    set voconf(centre_ad_image)     $ra
    set voconf(centre_dec_image)    $dec
@@ -124,6 +126,7 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    if {$cpt == 0} {
       return -1
    } else {
+      if {$log} { gren_info " SKYBOT obecjts: $skybot_list2\n" }
       return $skybot_list2
    }
 

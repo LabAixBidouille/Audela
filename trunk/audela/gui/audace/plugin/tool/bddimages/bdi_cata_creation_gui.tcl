@@ -476,13 +476,18 @@ namespace eval cata_creation_gui {
                   # Affiche le cata
                   ::gui_cata::affiche_cata
 
+                  # Trace du repere E/N dans l'image
+                  # TODO est-ce que c'est bon ici ?
+                  set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+                  set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
+                  set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
+                  ::gui_cata::trace_repere [list $cdelt1 $cdelt2]
                }
             } else {
                # TODO ::cata_creation_gui::get_cata : gerer l'erreur le wcs a echou?
                set ::gui_cata::color_wcs $::gui_cata::color_button_bad
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
                cleanmark
-               
             }
             
          }
@@ -1212,26 +1217,15 @@ namespace eval cata_creation_gui {
 
       global audace
 
-         
-         set fileconf [ file join $audace(rep_plugin) tool bddimages config config.sex ]
-         
-         set chan [open $fileconf r]
-         while {[gets $chan line] >= 0} {
-            $::cata_creation_gui::fen.frm_creation_cata.onglets.nb.f5.confsex.file insert end "$line\n"
-         }
-         close $chan
+      set fileconf [ file join $audace(rep_plugin) tool bddimages config config.sex ]
+      
+      set chan [open $fileconf r]
+      while {[gets $chan line] >= 0} {
+         $::cata_creation_gui::fen.frm_creation_cata.onglets.nb.f5.confsex.file insert end "$line\n"
+      }
+      close $chan
 
    }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1243,30 +1237,11 @@ namespace eval cata_creation_gui {
       global audace
 
       set r  [$::cata_creation_gui::fen.frm_creation_cata.onglets.nb.f5.confsex.file get 1.0 end]
-      #set r [split $r "\n"]
-      #set r [lreverse $r]
-      #::console::affiche_erreur "$r\n***\n"
-      #::console::affiche_erreur "[pwd]\n"
       set chan [open "./config.sex" "w"]
-      #foreach l $r {
-      #   puts $chan "$l"
-      #}
       puts $chan $r
       close $chan
-      
+
    }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1282,8 +1257,6 @@ namespace eval cata_creation_gui {
         set r [calibwcs * * * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]
         gren_info "Resultat test -> nb stars = $r\n"
       }
-
-
 
       set chan [open "./obs.lst" "r"]
       while {[gets $chan line] >= 0} {
@@ -1302,7 +1275,6 @@ namespace eval cata_creation_gui {
       }
       close $chan
 
-      
    }
 
 
@@ -2366,7 +2338,6 @@ namespace eval cata_creation_gui {
       }
    
    }
-
 
 
 
