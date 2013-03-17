@@ -641,7 +641,6 @@ namespace eval gui_cata {
 
 
 
-# Anciennement ::gui_cata::save_cata
    
    proc ::gui_cata::save_cata {  } {
 
@@ -722,6 +721,44 @@ return
 
 
 
+
+
+
+
+
+   #
+   # cata_creation_gui::Trace_Repere
+   # Trace le repere E/N dans l'image
+   # @param scale_factor list of the x and y scale factor of the image
+   #
+   proc ::gui_cata::trace_repere { scale_factor } {
+      global audace color
+
+      #--- longueur des axes du repere
+      set lgaxe "30"
+      #--- coordonnees du centre de la representation des axes
+      set can0_xy [ list "35" "35" ]
+      set img0_xy [ ::audace::canvas2Picture $can0_xy ]
+      set img0_radec [ buf$audace(bufNo) xy2radec $img0_xy 2 ]
+      #--- coordonnees du point du segment en alpha
+      set img1_radec [ list [expr [lindex $img0_radec 0]+$lgaxe*abs([lindex $scale_factor 0])] [lindex $img0_radec 1] ]
+      set dir_EW "E"
+      if { [expr [lindex $img1_radec 0]-[lindex $img0_radec 0]] < 0 } { set dir_EW "W" }
+      set img1_xy [ buf$audace(bufNo) radec2xy $img1_radec ]
+      set can1_xy [ ::audace::picture2Canvas $img1_xy ]
+      #--- coordonnees du point du segment en delta
+      set img2_radec [ list [lindex $img0_radec 0] [expr [lindex $img0_radec 1]+$lgaxe*abs([lindex $scale_factor 1])] ]
+      set dir_NS "N"
+      if { [expr [lindex $img2_radec 1]-[lindex $img0_radec 1]] < 0 } { set dir_NS "S" }
+      set img2_xy [ buf$audace(bufNo) radec2xy $img2_radec ]
+      set can2_xy [ ::audace::picture2Canvas $img2_xy ]
+      #--- trace du repere
+      $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "green" -tags cadres -width 1.0 -arrow last
+      $audace(hCanvas) create text [expr [lindex $can1_xy 0]-1] [expr [lindex $can1_xy 1]-10] -text $dir_EW -justify center -fill "green" -tags cadres
+      $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can2_xy 0] [lindex $can2_xy 1]  -fill "green" -tags cadres -width 1.0 -arrow last
+      $audace(hCanvas) create text [expr [lindex $can2_xy 0]-10] [expr [lindex $can2_xy 1]-1] -text $dir_NS -justify center -fill "green" -tags cadres
+
+   }
 
 
 
