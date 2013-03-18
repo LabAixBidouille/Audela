@@ -709,6 +709,13 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_2mass  } { affich_rond $::tools_cata::current_listsources 2MASS  $::gui_cata::color_2mass  $::gui_cata::size_2mass  }
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
 
+         # Trace du repere E/N dans l'image
+         # TODO est-ce que c'est bon ici ?
+         set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
+         set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
+         ::gui_cata::trace_repere [list $cdelt1 $cdelt2]
+
 #      } msg ]
 return
       if {$err} {
@@ -765,41 +772,39 @@ return
 
 
 
-
-
-
    proc ::gui_cata::charge_list { img_list } {
 
       ::tools_cata::charge_list $img_list
 
-      #?Charge l image a l ecran
+      # Charge l'image 
       buf$::audace(bufNo) load $::tools_cata::file
+      # Nettoie les marques
       cleanmark
+      # Affiche un rond au centre de l'image
       affich_un_rond_xy $::tools_cata::xcent $::tools_cata::ycent red 2 2
-
+      # Affiche l'image
       ::gui_cata::affiche_current_image
       ::gui_cata::affiche_cata
    }
+
+
 
 
    proc ::gui_cata::charge_image { img_list } {
 
       ::tools_cata::charge_list $img_list
 
-      #?Charge l image a l ecran
+      # Charge l'image
       buf$::audace(bufNo) load $::tools_cata::file
+      # Nettoie les marques
       cleanmark
+      # Affiche un rond au centre de l'image
       affich_un_rond_xy $::tools_cata::xcent $::tools_cata::ycent red 2 2
-
+      # Affiche l'image
       ::gui_cata::affiche_current_image
       ::gui_cata::affiche_cata
+
    }
-
-
-
-
-
-
 
 
 
@@ -814,6 +819,7 @@ return
       global bddconf
 
       ::gui_cata::inittoconf
+
       set uncosmic_status $::gui_cata::use_uncosmic
       set ::gui_cata::use_uncosmic 0
       ::gui_cata::charge_list $img_list

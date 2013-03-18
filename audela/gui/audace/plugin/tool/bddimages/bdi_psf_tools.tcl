@@ -21,18 +21,6 @@ namespace eval psf_tools {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::psf_tools::inittoconf { } {
 
       global conf
@@ -81,16 +69,6 @@ namespace eval psf_tools {
       }
 
    }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1230,7 +1208,7 @@ namespace eval psf_tools {
 
   # calcul toutes les sources
 
-      gren_info "MAG 3 = [::manage_source::get_nb_sources_rollup [list $fields $sources]]\n"
+      #gren_info "MAG 3 = [::manage_source::get_nb_sources_rollup [list $fields $sources]]\n"
   
 
       set spos 0
@@ -1262,7 +1240,7 @@ namespace eval psf_tools {
          
       }
       
-       gren_info "MAG 4 = [::manage_source::get_nb_sources_rollup [list $fields $sources]]\n"
+      #gren_info "MAG 4 = [::manage_source::get_nb_sources_rollup [list $fields $sources]]\n"
 
       set listsources [list $fields $sources]
       return
