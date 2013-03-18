@@ -458,6 +458,7 @@ namespace eval cata_creation_gui {
             ::cata_creation_gui::get_all_cata
 
          }  else {
+
             cleanmark
             if {[::cata_creation_gui::get_one_wcs] == true} {
             
@@ -489,7 +490,7 @@ namespace eval cata_creation_gui {
                $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
                cleanmark
             }
-            
+
          }
          $::gui_cata::gui_create configure -state normal
          $::gui_cata::gui_fermer configure -state normal
@@ -537,6 +538,12 @@ namespace eval cata_creation_gui {
                cleanmark
                ::gui_cata::affiche_current_image
                ::gui_cata::affiche_cata
+               # Trace du repere E/N dans l'image
+               # TODO est-ce que c'est bon ici ?
+               set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+               set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
+               set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
+               ::gui_cata::trace_repere [list $cdelt1 $cdelt2]
             }
          } else {
             # TODO ::cata_creation_gui::get_all_cata : gerer l'erreur le wcs a echou?
