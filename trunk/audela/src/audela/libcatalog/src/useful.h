@@ -57,7 +57,7 @@
 #define COMPLETE_RA_DEG 360.
 
 /* 1 deg = 360000 cas (= centi arc second)*/
-#define DEG2CAS         360000.
+#define DEG2CAS         360000
 /* 0 deg = 0 cas */
 #define START_RA_CAS    0
 /* 360 deg = 129600000. cas */
@@ -79,10 +79,16 @@
 
 #define DEBUG 0
 
-
+int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
+		char* const pathToCatalog,double* const ra, double* const dec,
+		double* const radius, double* const magMin, double* const magMax);
 void releaseSimpleArray(void* theOneDArray);
 void releaseDoubleArray(void** theTwoDArray, const int firstDimension);
 void addLastSlashToPath(char* onePath);
+int convertBig2LittleEndianForInteger(int l);
+void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int length);
+short convertBig2LittleForShort(short l);
+void convertBig2LittleForArrayOfShort(short* const inputArray, const int length);
 
 
 #endif /* USEFUL_H_ */

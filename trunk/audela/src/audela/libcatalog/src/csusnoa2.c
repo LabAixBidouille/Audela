@@ -10,12 +10,12 @@ static char outputLogChar[1024];
 
 int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
-	char* pathToCatalog;
-	double ra;
-	double dec;
-	double radius;
-	double magMin;
-	double magMax;
+	char pathToCatalog[STRING_COMMON_LENGTH];
+	double ra     = 0.;
+	double dec    = 0.;
+	double radius = 0.;
+	double magMin = 0.;
+	double magMax = 0.;
 	int maximumNumberOfStars = 0;
 	int indexOfRA;
 	int indexOfCatalog;
@@ -27,35 +27,11 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	const indexTableUsno* allAccFiles;
 	Tcl_DString dsptr;
 
-	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",
-				argv[0]);
+	/* Decode inputs */
+	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMin)) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
-
-	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLogChar,"usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",
-				argv[0]);
-		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
-		return (TCL_ERROR);
-	}
-
-	/* Read inputs */
-	pathToCatalog = argv[1];
-	ra            = atof(argv[2]);
-	dec           = atof(argv[3]);
-	radius        = atof(argv[4]);
-	if(argc == 7) {
-		magMin    = atof(argv[5]);
-		magMax    = atof(argv[6]);
-	} else {
-		magMin    = -99.99;
-		magMax    = 99.99;
-	}
-
-	/* Add slash to the end of the path if not exist*/
-	addLastSlashToPath(pathToCatalog);
 
 	/* Define search zone */
 	mySearchZoneUsnoa2 = findSearchZoneUsnoa2(ra,dec,radius,magMin,magMax);
@@ -183,19 +159,19 @@ int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inpu
 	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStars[indexOfRA]; indexOfStar++) {
 
 		theStar  = arrayOfStars[indexOfStar];
-		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
+		raInCas  = convertBig2LittleEndianForInteger(theStar.ra);
 		position++;
 
 		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) && (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
 			continue;
 		}
 
-		spdInCas   = usnoa2Big2LittleEndianLong(theStar.spd);
+		spdInCas   = convertBig2LittleEndianForInteger(theStar.spd);
 
 		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
 			continue;
 		}
-		magnitudes             = usnoa2Big2LittleEndianLong(theStar.mags);
+		magnitudes             = convertBig2LittleEndianForInteger(theStar.mags);
 		redMagnitudeInDeciMag  = usnoa2GetUsnoRedMagnitudeInDeciMag(magnitudes);
 		if((redMagnitudeInDeciMag < mySearchZoneUsnoa2->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZoneUsnoa2->magnitudeEndInDeciMag)) {
 			continue;
@@ -254,19 +230,19 @@ int processOneZoneUsnoNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const i
 	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStars[indexOfRA]; indexOfStar++) {
 
 		theStar  = arrayOfStars[indexOfStar];
-		raInCas  = usnoa2Big2LittleEndianLong(theStar.ra);
+		raInCas  = convertBig2LittleEndianForInteger(theStar.ra);
 		position++;
 
 		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) || (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
 			continue;
 		}
 
-		spdInCas = usnoa2Big2LittleEndianLong(theStar.spd);
+		spdInCas = convertBig2LittleEndianForInteger(theStar.spd);
 
 		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
 			continue;
 		}
-		magnitudes             = usnoa2Big2LittleEndianLong(theStar.mags);
+		magnitudes             = convertBig2LittleEndianForInteger(theStar.mags);
 		redMagnitudeInDeciMag  = usnoa2GetUsnoRedMagnitudeInDeciMag(magnitudes);
 		if((redMagnitudeInDeciMag < mySearchZoneUsnoa2->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZoneUsnoa2->magnitudeEndInDeciMag)) {
 			continue;
@@ -382,16 +358,6 @@ const indexTableUsno* readIndexFileUsno(const char* const pathOfCatalog,
 	}
 
 	return (allAccFiles);
-}
-
-/*=========================================================*/
-/* Transform Big to Little Endian (and vice versa */
-/* d'ailleurs...!!!). L'entier 32 bits ABCD est transforme */
-/* en DCBA.                                                */
-/*=========================================================*/
-int usnoa2Big2LittleEndianLong(int l) {
-
-	return ((l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF));
 }
 
 /*===========================================================*/

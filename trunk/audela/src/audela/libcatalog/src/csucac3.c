@@ -6,20 +6,20 @@
  *      Author: Y. Damerdji
  */
 
-static char outputLogChar[1024];
+static char outputLogChar[STRING_COMMON_LENGTH];
 
 int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
-	char* pathToCatalog;
 	int resultOfFunction;
 	int idOfStar;
 	int counterDec;
 	int counterRa;
-	double ra;
-	double dec;
-	double radius;
-	double magMin;
-	double magMax;
+	char pathToCatalog[STRING_COMMON_LENGTH];
+	double ra     = 0.;
+	double dec    = 0.;
+	double radius = 0.;
+	double magMin = 0.;
+	double magMax = 0.;
 	indexTableUcac** indexTable;
 	starUcac3 oneStar;
 	searchZoneUcac3And4 mySearchZoneUcac3;
@@ -28,35 +28,11 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	starUcac3* allStars;
 	Tcl_DString dsptr;
 
-	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",
-				argv[0]);
+	/* Decode inputs */
+	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMin)) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
-
-	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLogChar,"usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",
-				argv[0]);
-		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
-		return (TCL_ERROR);
-	}
-
-	/* Read inputs */
-	pathToCatalog = argv[1];
-	ra            = atof(argv[2]);
-	dec           = atof(argv[3]);
-	radius        = atof(argv[4]);
-	if(argc == 7) {
-		magMin    = atof(argv[5]);
-		magMax    = atof(argv[6]);
-	} else {
-		magMin    = -99.99;
-		magMax    = 99.99;
-	}
-
-	/* Add slash to the end of the path if not exist*/
-	addLastSlashToPath(pathToCatalog);
 
 	/* Define search zone */
 	mySearchZoneUcac3 = findSearchZoneUcac3And4(ra,dec,radius,magMin,magMax);
