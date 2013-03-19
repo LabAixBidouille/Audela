@@ -2,7 +2,7 @@
 OUTPUT   = libcatalog.so
 
 SRC = $(SRCDIR)/libcatalog.c $(SRCDIR)/cstycho.c $(SRCDIR)/csucac2.c $(SRCDIR)/csucac3.c $(SRCDIR)/csucac4.c
-SRC += $(SRCDIR)/useful.c $(SRCDIR)/csusnoa2.c $(SRCDIR)/cs2mass.c
+SRC += $(SRCDIR)/useful.c $(SRCDIR)/csusnoa2.c $(SRCDIR)/cs2mass.c $(SRCDIR)/ppmx.c
 
 OBJ = $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 

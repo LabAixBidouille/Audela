@@ -56,7 +56,6 @@ typedef struct {
 } starUsno;
 
 const searchZoneUsnoa2 findSearchZoneUsnoa2(const double ra,const double dec,const double radius,const double magMin, const double magMax);
-int usnoa2Big2LittleEndianLong(int l);
 const indexTableUsno* readIndexFileUsno(const char* const pathOfCatalog, const searchZoneUsnoa2* const mySearchZoneUsnoa2, int* const maximumNumberOfStars);
 void freeAllUsnoCatalogFiles(const indexTableUsno* const allAccFiles,const searchZoneUsnoa2* const mySearchZoneUsnoa2);
 double usnoa2GetUsnoBleueMagnitudeInDeciMag(const int magL);

@@ -8,26 +8,27 @@
 
 // format.txt, character number of the beginning of field (first character number is 1)
 static int istart[] = {
-	1,6,12,14,16,29,42,50,58,62,
-	66,71,76,84,92,95,99,103,107,111,
-	118,124,131,137,141,143,149,153,166,179,
-	184,189,195,201,203
+		1,6,12,14,16,29,42,50,58,62,
+		66,71,76,84,92,95,99,103,107,111,
+		118,124,131,137,141,143,149,153,166,179,
+		184,189,195,201,203
 };
 
 // format.txt, character number of the end of field without trailing vertical bar
 static int iend[] = {
-	4-0,10-0,13-1,15-1,28-1,41-1,49-1,57-1,61-1,65-1,
-	70-1,75-1,83-1,91-1,94-1,98-1,102-1,106-1,110-1,117-1,
-	123-1,130-1,136-1,140-1,142-1,148-0,152-1,165-1,178-1,183-1,
-	188-1,194-1,200-1,202-1,206-0
+		4-0,10-0,13-1,15-1,28-1,41-1,49-1,57-1,61-1,65-1,
+		70-1,75-1,83-1,91-1,94-1,98-1,102-1,106-1,110-1,117-1,
+		123-1,130-1,136-1,140-1,142-1,148-0,152-1,165-1,178-1,183-1,
+		188-1,194-1,200-1,202-1,206-0
 };
 
 int field_is_blank(char *p) {
- while (*p == ' ') p++;
- return (*p == '\0');
+	while (*p == ' ') p++;
+	return (*p == '\0');
 }
 
-char outputLine[1024];
+static char outputLogChar[STRING_COMMON_LENGTH];
+static char outputLine[STRING_COMMON_LENGTH];
 
 /*
  * ra0 : from 0 to 360 degrees
@@ -37,90 +38,90 @@ char outputLine[1024];
 char** tycho2_search(const char*pathName, double ra0, double dec0, double range,
 		double magmin, double magmax, int* numberOfOutputs) {
 
-    double dec_min, dec_max;
-    double ra_min1, ra_max1;
-    double ra_min2, ra_max2;
-    char catalogCompleteName[1024];
-    double ra,dec,mag;
-    FILE *fp;
-    char buf[206+2+1]; // field length + cr + lf + null
-    int lengthOfLine;
-    int numberOfSupposedOutputs;
-    char** outputs;
-    int id;
+	double dec_min, dec_max;
+	double ra_min1, ra_max1;
+	double ra_min2, ra_max2;
+	char catalogCompleteName[1024];
+	double ra,dec,mag;
+	FILE *fp;
+	char buf[206+2+1]; // field length + cr + lf + null
+	int lengthOfLine;
+	int numberOfSupposedOutputs;
+	char** outputs;
+	int id;
 
-    sprintf(catalogCompleteName,"%s/%s",pathName,CATALOG_FILE_NAME);
-    
-    range /= DEG2ARCMIN; // convert range from minutes to degrees
+	sprintf(catalogCompleteName,"%s/%s",pathName,CATALOG_FILE_NAME);
 
-    dec_min = dec0 - range;
-    dec_max = dec0 + range;
+	range /= DEG2ARCMIN; // convert range from minutes to degrees
 
-    if(dec_max >= 89.9 || dec_min <= -89.9) {
-        ra_min1 = 0.0; ra_max1 = 360.0;
-        ra_min2 = 0.0; ra_max2 = 360.0;
-    } else {
-        range      /= cos(dec0 * DEC2RAD);
-        ra_min1     = ra_min2 = ra0 - range;
-        ra_max1     = ra_max2 = ra0 + range;
-        if(ra_min1  < 0.0) {
-            ra_min2 = ra_min1 + 360.0;
-            ra_max2 = 360.0;
-        } else if (ra_max1 > 360.0) {
-            ra_min2 = 0.0;
-            ra_max2 = ra_max1 - 360.0;
-        }
-    }
+	dec_min = dec0 - range;
+	dec_max = dec0 + range;
 
-    fp = fopen(catalogCompleteName,"r");
-    if (fp==NULL) {
-        sprintf(outputLine,"Cannot open catalog : %s\n",catalogCompleteName);
-        return (NULL);
-    }
+	if(dec_max >= 89.9 || dec_min <= -89.9) {
+		ra_min1 = 0.0; ra_max1 = 360.0;
+		ra_min2 = 0.0; ra_max2 = 360.0;
+	} else {
+		range      /= cos(dec0 * DEC2RAD);
+		ra_min1     = ra_min2 = ra0 - range;
+		ra_max1     = ra_max2 = ra0 + range;
+		if(ra_min1  < 0.0) {
+			ra_min2 = ra_min1 + 360.0;
+			ra_max2 = 360.0;
+		} else if (ra_max1 > 360.0) {
+			ra_min2 = 0.0;
+			ra_max2 = ra_max1 - 360.0;
+		}
+	}
 
-    *numberOfOutputs        = 0;
-    lengthOfLine            = 1000;
-    numberOfSupposedOutputs = 10000000;
-    outputs                 = (char**)malloc(numberOfSupposedOutputs * sizeof(char*));
-    if(outputs == NULL) {
-    	sprintf(outputLine,"outputs out of memory\n");
-    	return (NULL);
-    }
+	fp = fopen(catalogCompleteName,"r");
+	if (fp==NULL) {
+		sprintf(outputLine,"Cannot open catalog : %s\n",catalogCompleteName);
+		return (NULL);
+	}
 
-    // Create an implicit ID = line number in the catalog
-    id = 0;
-    while((fgets(buf,sizeof(buf),fp)) != NULL) {
-    	id++;
-        buf[206] = '\0';
-        if(buf[14-1] == 'X') continue; // no mean position
-        // 16- 28   F12.8,1X deg     mRAdeg    []? Mean Right Asc, ICRS, epoch J2000 (3)
-        buf[28-1]='\0'; ra=atof(buf+16-1);
-        //if(field_is_blank(buf+16+1)) xabort();
-        // 29- 41   F12.8,1X deg     mDEdeg    []? Mean Decl, ICRS, at epoch J2000 (3)
-        buf[41-1]='\0'; dec=atof(buf+29-1);
-        //if(field_is_blank(buf+29+1)) xabort();
-        // 124-130   F6.3,1X  mag     VT        [1.905,15.193]? Tycho-2 VT magnitude (7)
-        buf[130-1]='\0'; mag=atof(buf+124-1);
-        if(dec_min <= dec && dec <= dec_max) {
-            if((ra_min1 <= ra && ra <= ra_max1) || (ra_min2 <= ra && ra <= ra_max2)) {
-                if((magmin <= mag && mag <= magmax) || field_is_blank(buf+124-1)) {
-                    buf[28-1] = '|';
-                    buf[41-1] = '|';
-                    buf[130-1] = '|';
-                    //printf("ra = %3.8f dec = %3.8f mag= %3.3f [%s]\n",ra, dec, mag, buf);
-                    outputs[*numberOfOutputs] = (char*)malloc(lengthOfLine * sizeof(char));
-                    if(outputs[*numberOfOutputs] == NULL) {
-                    	sprintf(outputLine,"outputs[%d] out of memory\n",*numberOfOutputs);
-                    	return (NULL);
-                    }
-                    sprintf(outputs[*numberOfOutputs],"%d|%s",id,buf);
-                    (*numberOfOutputs)++;
-                }
-            }
-        }
-    }
+	*numberOfOutputs        = 0;
+	lengthOfLine            = 1000;
+	numberOfSupposedOutputs = 10000000;
+	outputs                 = (char**)malloc(numberOfSupposedOutputs * sizeof(char*));
+	if(outputs == NULL) {
+		sprintf(outputLine,"outputs out of memory\n");
+		return (NULL);
+	}
 
-    return (outputs);
+	// Create an implicit ID = line number in the catalog
+	id = 0;
+	while((fgets(buf,sizeof(buf),fp)) != NULL) {
+		id++;
+		buf[206] = '\0';
+		if(buf[14-1] == 'X') continue; // no mean position
+		// 16- 28   F12.8,1X deg     mRAdeg    []? Mean Right Asc, ICRS, epoch J2000 (3)
+		buf[28-1]='\0'; ra=atof(buf+16-1);
+		//if(field_is_blank(buf+16+1)) xabort();
+		// 29- 41   F12.8,1X deg     mDEdeg    []? Mean Decl, ICRS, at epoch J2000 (3)
+		buf[41-1]='\0'; dec=atof(buf+29-1);
+		//if(field_is_blank(buf+29+1)) xabort();
+		// 124-130   F6.3,1X  mag     VT        [1.905,15.193]? Tycho-2 VT magnitude (7)
+		buf[130-1]='\0'; mag=atof(buf+124-1);
+		if(dec_min <= dec && dec <= dec_max) {
+			if((ra_min1 <= ra && ra <= ra_max1) || (ra_min2 <= ra && ra <= ra_max2)) {
+				if((magmin <= mag && mag <= magmax) || field_is_blank(buf+124-1)) {
+					buf[28-1] = '|';
+					buf[41-1] = '|';
+					buf[130-1] = '|';
+					//printf("ra = %3.8f dec = %3.8f mag= %3.3f [%s]\n",ra, dec, mag, buf);
+					outputs[*numberOfOutputs] = (char*)malloc(lengthOfLine * sizeof(char));
+					if(outputs[*numberOfOutputs] == NULL) {
+						sprintf(outputLine,"outputs[%d] out of memory\n",*numberOfOutputs);
+						return (NULL);
+					}
+					sprintf(outputs[*numberOfOutputs],"%d|%s",id,buf);
+					(*numberOfOutputs)++;
+				}
+			}
+		}
+	}
+
+	return (outputs);
 }
 
 /**
@@ -130,45 +131,23 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 	int i;
 	char c;
-	char* pathToCatalog;
-	double ra;
-	double dec;
-	double radius;
-	double magMin;
-	double magMax;
+	char pathToCatalog[STRING_COMMON_LENGTH];
+	double ra     = 0.;
+	double dec    = 0.;
+	double radius = 0.;
+	double magMin = 0.;
+	double magMax = 0.;
 	int index;
 	int numberOfOutputs;
 	char *line;
 	char** outputs;
 	Tcl_DString dsptr;
 
-	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLine,"Help usage : %s pathToCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?\n",argv[0]);
-		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
+	/* Decode inputs */
+	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMin)) {
+		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}
-
-	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLine,"usage : %s pathToCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?\n",argv[0]);
-		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
-		return (TCL_ERROR);
-	}
-
-	/* Read inputs */
-	pathToCatalog = argv[1];
-	ra            = atof(argv[2]);
-	dec           = atof(argv[3]);
-	radius        = atof(argv[4]);
-	if(argc == 7) {
-		magMin    = atof(argv[5]);
-		magMax    = atof(argv[6]);
-	} else {
-		magMin    = -99.99;
-		magMax    = 99.99;
-	}
-
-	/* Add slash to the end of the path if not exist*/
-	addLastSlashToPath(pathToCatalog);
 
 	numberOfOutputs = 0;
 	outputs         = tycho2_search(pathToCatalog,ra,dec,radius,magMin,magMax,&numberOfOutputs);
@@ -179,10 +158,10 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 	Tcl_DStringInit(&dsptr);
 	Tcl_DStringAppend(&dsptr,"{ { TYCHO2 { } "
-		"{ ID TYC1 TYC2 TYC3 pflag mRAdeg mDEdeg pmRA pmDE e_mRA e_mDE "
-		"e_pmRA e_pmDE mepRA mepDE Num g_mRA g_mDE g_pmRA g_pmDE BT "
-		"e_BT VT e_VT prox TYC HIP CCDM RAdeg DEdeg epRA epDE e_RA "
-		"e_DE posflg corr } } } ",-1);
+			"{ ID TYC1 TYC2 TYC3 pflag mRAdeg mDEdeg pmRA pmDE e_mRA e_mDE "
+			"e_pmRA e_pmDE mepRA mepDE Num g_mRA g_mDE g_pmRA g_pmDE BT "
+			"e_BT VT e_VT prox TYC HIP CCDM RAdeg DEdeg epRA epDE e_RA "
+			"e_DE posflg corr } } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 	for(index = 0; index < numberOfOutputs; index++) {
 		line = strchr(outputs[index],'|') + 1;
