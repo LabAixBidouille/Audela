@@ -87,7 +87,7 @@ void releaseDoubleArray(void** theTwoDArray, const int firstDimension);
 void addLastSlashToPath(char* onePath);
 int convertBig2LittleEndianForInteger(int l);
 void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int length);
-short convertBig2LittleForShort(short l);
+short convertBig2LittleEndianForShort(short l);
 void convertBig2LittleForArrayOfShort(short* const inputArray, const int length);
 
 

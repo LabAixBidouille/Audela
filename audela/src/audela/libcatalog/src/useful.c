@@ -124,7 +124,7 @@ void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int l
 /*=========================================================*/
 /* Transform Big to Little Endian (and vice versa ).       */
 /*=========================================================*/
-short convertBig2LittleForShort(short l) {
+short convertBig2LittleEndianForShort(short l) {
 
 	return ((((l)&0xff)<<8) | (((l)&0xff00)>>8));
 }
