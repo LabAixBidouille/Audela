@@ -90,10 +90,25 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 		return(1);
 	}
 
+	if(mySearchZonePPMX->isArroundZeroRa) {
 
+		/* From chunkStart to end */
+		if(processChunks(dsptr,mySearchZonePPMX,inputStream,&headerInformation,chunkStart,headerInformation.lengthOfAcceleratorTable - 1, binaryFileName)) {
+			return (1);
+		}
 
+		/* From 0 to chunkEnd */
+		if(processChunks(dsptr,mySearchZonePPMX,inputStream,&headerInformation,0,chunkEnd, binaryFileName)) {
+			return (1);
+		}
 
+	} else {
 
+		/* From chunkStart to chunkEnd */
+		if(processChunks(dsptr,mySearchZonePPMX,inputStream,&headerInformation,chunkStart,chunkEnd, binaryFileName)) {
+			return (1);
+		}
+	}
 
 	/* Close all and release memory */
 	fclose(inputStream);
@@ -103,6 +118,43 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 	releaseSimpleArray(headerInformation.chunkNumberOfStars);
 
 	return (0);
+}
+
+/**
+ * Process a series of successive chunks of data
+ */
+int processChunks(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,FILE* const inputStream,
+		headerInformationPPMX* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName) {
+
+	int resultOfFunction;
+	const int numberOfStars = sumNumberOfElements(headerInformation->chunkNumberOfStars,chunkStart,chunkEnd);
+	const int sizeOfBuffer  = numberOfStars * PPMX_RECORD_LENGTH;
+
+	char* const buffer      = (char*)malloc(sizeOfBuffer * sizeof(char));
+	if(buffer == NULL) {
+		sprintf(outputLogChar,"Buffer = %d (char) out of memory",sizeOfBuffer);
+		return(1);
+	}
+
+	fseek(inputStream,headerInformation->chunkOffsets[chunkStart],SEEK_SET);
+	resultOfFunction = fread(buffer,sizeof(char),sizeOfBuffer,inputStream);
+	if(resultOfFunction != sizeOfBuffer) {
+		sprintf(outputLogChar,"Can not read %d (char) from %s",sizeOfBuffer,binaryFileName);
+		return(1);
+	}
+
+	processBufferedData(dsptr,mySearchZonePPMX,buffer);
+
+	releaseSimpleArray(buffer);
+
+	return (0);
+}
+
+/**
+ * Process stars in an allocated buffer
+ */
+void processBufferedData(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,const char* const buffer) {
+//TODO
 }
 
 /**

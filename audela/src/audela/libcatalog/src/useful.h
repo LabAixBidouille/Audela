@@ -89,6 +89,7 @@ int convertBig2LittleEndianForInteger(int l);
 void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int length);
 short convertBig2LittleEndianForShort(short l);
 void convertBig2LittleEndianForArrayOfShort(short* const inputArray, const int length);
+int sumNumberOfElements(const int* const inputArray,const int indexStart,const int indexEnd);
 
 
 #endif /* USEFUL_H_ */
