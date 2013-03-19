@@ -140,4 +140,19 @@ void convertBig2LittleEndianForArrayOfShort(short* const inputArray, const int l
 	}
 }
 
+/*============================================================*/
+/* Sum components of an interger array */
+/*============================================================*/
+int sumNumberOfElements(const int* const inputArray,const int indexStart,const int indexEnd) {
+
+	int sumOfElements = 0;
+	int index;
+
+	for(index = indexStart; index <= indexEnd; index++) {
+		sumOfElements += inputArray[index];
+	}
+
+	return (sumOfElements);
+}
+
 

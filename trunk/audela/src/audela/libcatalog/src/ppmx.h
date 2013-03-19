@@ -51,6 +51,9 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 		const char* const binaryFileName);
 int readHeaderPPMX(FILE* const inputStream, headerInformationPPMX* const headerInformation,
 		const char* const binaryFileName);
+int processChunks(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,FILE* const inputStream,
+		headerInformationPPMX* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName);
+void processBufferedData(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,const char* const buffer);
 
 
 #endif /* PPMX_H_ */
