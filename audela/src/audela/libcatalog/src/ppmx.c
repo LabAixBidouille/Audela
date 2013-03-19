@@ -77,9 +77,9 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 
 	int resultOfFunction;
 	headerInformationPPMX headerInformation;;
-	const int chunkStart                          = mySearchZonePPMX->raStartInMas >> CHUNK_SHIFT_RA;
-	const int chunkEnd                            = mySearchZonePPMX->raEndInMas >> CHUNK_SHIFT_RA;
-	FILE* const inputStream                       = fopen(binaryFileName,"rb");
+	const int chunkStart     = mySearchZonePPMX->raStartInMas >> CHUNK_SHIFT_RA;
+	const int chunkEnd       = mySearchZonePPMX->raEndInMas >> CHUNK_SHIFT_RA;
+	FILE* const inputStream  = fopen(binaryFileName,"rb");
 	if(inputStream == NULL) {
 		sprintf(outputLogChar,"File %s not found",binaryFileName);
 		return(1);
@@ -89,6 +89,8 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 	if(resultOfFunction) {
 		return(1);
 	}
+
+
 
 
 
@@ -177,7 +179,7 @@ int readHeaderPPMX(FILE* const inputStream, headerInformationPPMX* const headerI
 	/* Swap values because data is written in Big_endian */
 	convertBig2LittleEndianForArrayOfInteger(headerInformation->chunkOffsets,headerInformation->lengthOfAcceleratorTable);
 	convertBig2LittleEndianForArrayOfInteger(headerInformation->extraValues4,headerInformation->numberOfExtra4);
-	convertBig2LittleForArrayOfShort(headerInformation->extraValues2,headerInformation->numberOfExtra2);
+	convertBig2LittleEndianForArrayOfShort(headerInformation->extraValues2,headerInformation->numberOfExtra2);
 
 	lastIndex      = headerInformation->lengthOfAcceleratorTable - 1;
 	sumOfStar      = 0;

@@ -88,7 +88,7 @@ void addLastSlashToPath(char* onePath);
 int convertBig2LittleEndianForInteger(int l);
 void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int length);
 short convertBig2LittleEndianForShort(short l);
-void convertBig2LittleForArrayOfShort(short* const inputArray, const int length);
+void convertBig2LittleEndianForArrayOfShort(short* const inputArray, const int length);
 
 
 #endif /* USEFUL_H_ */

@@ -132,7 +132,7 @@ short convertBig2LittleEndianForShort(short l) {
 /*============================================================*/
 /* Transform array of Big to Little Endian (and vice versa ). */
 /*============================================================*/
-void convertBig2LittleForArrayOfShort(short* const inputArray, const int length) {
+void convertBig2LittleEndianForArrayOfShort(short* const inputArray, const int length) {
 
 	int index;
 	for(index = 0; index < length; index++) {
