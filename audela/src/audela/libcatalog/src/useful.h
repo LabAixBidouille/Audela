@@ -87,9 +87,12 @@ void releaseDoubleArray(void** theTwoDArray, const int firstDimension);
 void addLastSlashToPath(char* onePath);
 int convertBig2LittleEndianForInteger(int l);
 void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int length);
-short convertBig2LittleEndianForShort(short l);
-void convertBig2LittleEndianForArrayOfShort(short* const inputArray, const int length);
+short convertBig2LittleEndianForShort(short int l);
+void convertBig2LittleEndianForArrayOfShort(short int* const inputArray, const int length);
 int sumNumberOfElements(const int* const inputArray,const int indexStart,const int indexEnd);
-
+/* Francois Ochsenbein's methods */
+int getBits(unsigned char * const a, const int b, const int length);
+int xget4(unsigned char * const a, const int b, const int length, const int max, const int * const xtra4);
+int xget2(unsigned char * const a, const int b, const int length, const int max, const short int* const xtra2);
 
 #endif /* USEFUL_H_ */
