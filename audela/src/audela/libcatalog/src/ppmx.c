@@ -253,7 +253,7 @@ void processBufferedDataPPMX(Tcl_DString* const dsptr,const searchZonePPMX* cons
 
 	sprintf(outputLogChar,"%12s %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f "
 			"%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f "
-			"%1d %1d %1d %1d",
+			"%d %c %c %c",
 			jName, // the ID %03d-%06d
 			(double)raInMas/DEG2MAS,
 			(double)decInMas / DEG2MAS,
