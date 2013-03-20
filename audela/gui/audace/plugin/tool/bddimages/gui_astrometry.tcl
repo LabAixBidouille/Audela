@@ -1,17 +1,46 @@
+## \file gui_astrometry.tcl
+#  \brief     Astrometrie en mode manuel. Necessite une GUI
+#  \details   This class is used to demonstrate a number of section commands.
+#  \author    Frederic Vachier & Jerome Berthier
+#  \version   1.0
+#  \date      2013
+#  \copyright GNU Public License.
+#  \par Ressource 
+#  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages gui_astrometry.tcl]
+#  \endcode
+#  \todo      modifier le nom du fichier source 
+
+# Mise à jour $Id: gui_astrometry.tcl 9228 2013-03-20 16:24:43Z fredvachier $
+
+
+
+
+
+#============================================================
+## Declaration du namespace \c gui_astrometry .
+#  \brief     Permet d'effectuer l'astrometrie en mode manuel. 
+#             Necessite une GUI.
+#  \pre       Chargement a partir de l'outil Recherche
+#  \bug       Probleme de memoire sur les exec
+#  \warning   Pour developpeur seulement
+#  \todo      Sauver les infos MPC dans le header de l'image
 namespace eval gui_astrometry {
 
 
+#------------------------------------------------------------
+## Initialisation des variables de namespace
+#  \details   Si la variable n'existe pas alors on va chercher
+#             dans la variable globale \c conf 
+#  \sa        ::gui_cata::inittoconf
    proc ::gui_astrometry::inittoconf {  } {
 
       global bddconf, conf
 
       ::gui_cata::inittoconf
 
-      set ::tools_astrometry::orient "wn"
+      set ::tools_astrometry::orient    "wn"
       set ::tools_astrometry::science   "SKYBOT"
-      set ::tools_astrometry::reference "UCAC3"
-      set ::tools_astrometry::delta 15
-      set ::tools_astrometry::threshold 5
+      set ::tools_astrometry::reference "UCAC2"
       set ::gui_astrometry::factor 1000
 
       if {! [info exists ::tools_astrometry::ifortlib] } {
@@ -86,6 +115,13 @@ namespace eval gui_astrometry {
 
 
 
+#------------------------------------------------------------
+## Chargement de la liste d'image selectionnee dans l'outil
+#  Recherche.
+#  \param img_list structure de liste d'images
+#  \note le resultat de cette procedure affecte la variable de 
+# namespace  \c ::tools_cata::img_list puis charge toutes l'info 
+# concernant l'astrometrie
    proc ::gui_astrometry::charge_list { img_list } {
 
      catch {
@@ -114,11 +150,18 @@ namespace eval gui_astrometry {
 
 
 
-#      set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
-#      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
-#      set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
-#      set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
-
+#------------------------------------------------------------
+# set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
+# set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+# set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
+# set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
+#------------------------------------------------------------
+## Chargement de l'astrometrie pour chaque image de la structure
+#  img_list
+#  \param img_list structure de liste d'images
+#  \note le resultat de cette procedure affecte la variable de 
+# namespace \c ::tools_cata::img_list puis charge toutes l'info 
+# concernant l'astrometrie
    proc ::gui_astrometry::charge_solution_astrometrique {  } {
 
       set id_current_image 0
@@ -163,6 +206,10 @@ namespace eval gui_astrometry {
 
 
 
+#------------------------------------------------------------
+## Fermeture de la fenetre Astrometrie.
+#  Les variables utilisees sont affectees a la variable globale
+# \c conf
    proc ::gui_astrometry::fermer {  } {
 
       global conf
@@ -188,20 +235,24 @@ namespace eval gui_astrometry {
 
 
 
+
+
+
+
+
+#------------------------------------------------------------
 #tabval($name,$dateiso) [list $ar $ra $dec $res_ra $res_dec $ecart $mag]
 #tabfield(sources,$name) $dateiso
 #tabfield(science,$name) $dateiso
 #tabfield(ref,$name) $dateiso
 #tabfield(date,$dateiso) $name
-
-
-
-
-
+#------------------------------------------------------------
 # "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
 # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
 # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "flagastrom" 
 # "mag" "err_mag" "name"
+#------------------------------------------------------------
+## Fonction qui permet de tracer les residus dans la visu courante.
    proc ::gui_astrometry::see_residus {  } {
 
       set id_current_image 1
@@ -265,6 +316,11 @@ namespace eval gui_astrometry {
 
 
 
+#------------------------------------------------------------
+## Fonction qui est appelee lors d'un clic gauche dans la table
+# des references (parent / table de gauche)
+#  \param w    
+#  \param args
    proc ::gui_astrometry::cmdButton1Click_srpt { w args } {
 
       foreach select [$w curselection] {
