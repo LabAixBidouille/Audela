@@ -172,6 +172,9 @@ namespace eval psf_tools {
 
 
 
+
+
+
    proc ::psf_tools::psf_box_crop { xcent ycent } {
 
       global bddconf
@@ -180,6 +183,8 @@ namespace eval psf_tools {
       #gren_info "xcent ycent = $xcent $ycent\n"
 
       #     photom_methode
+      #gren_info "CMD = ::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $::psf_gui::bufcrop\n"
+      
       set err [catch {set result [::tools_cdl::photom_methode $xcent $ycent $::gui_cata::psf_radius $::psf_gui::bufcrop]} msg]
       if {$err} {
          gren_erreur "PSF_BUTTON_PSF : Photom error ($err) ($msg)\n" 
@@ -193,10 +198,16 @@ namespace eval psf_tools {
          set xcent [expr int([lindex $result 0])]
          set ycent [expr int([lindex $result 1])]
          set delta [expr int([lindex $result 14])]
-         set rect [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
+         set rect  [list [expr $xcent - $delta] [expr $ycent - $delta] [expr $xcent + $delta]  [expr $ycent + $delta] ] 
+
+         #gren_info "xcent = $xcent\n"
+         #gren_info "ycent = $ycent\n"
+         #gren_info "delta = $delta\n"
+         #gren_info "rect  = $rect \n"
          
          set result_fitgauss [buf$::psf_gui::bufcrop fitgauss $rect]
          ::psf_tools::result_fitgauss $result_fitgauss
+         #gren_info "result_fitgauss  = $result_fitgauss \n"
          
          set ::gui_cata::current_psf(xsm)   [format "%.4f" [expr $::gui_cata::current_psf(xsm)   + $::psf_gui::xref] ]
          set ::gui_cata::current_psf(ysm)   [format "%.4f" [expr $::gui_cata::current_psf(ysm)   + $::psf_gui::yref] ]
