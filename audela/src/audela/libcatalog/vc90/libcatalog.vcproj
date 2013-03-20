@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win"
+				AdditionalIncludeDirectories="..\src;&quot;C:\Documents and Settings\Administrateur\Bureau\src_audela\external\tcl\tcl\include&quot;;..\..\..\include;..\..\..\external\include\win"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBCATALOG_EXPORTS;USE_TCL_STUBS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -49,6 +49,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -64,7 +65,7 @@
 				AdditionalDependencies="tclstub85.lib "
 				OutputFile="..\..\..\..\bin\libcatalog.dll "
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\external\lib"
+				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Administrateur\Bureau\src_audela\external\tcl\tcl\lib&quot;;..\..\..\external\lib"
 				ModuleDefinitionFile=".\libcatalog.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/libaudela.pdb"
@@ -186,6 +187,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\cs2mass.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cstycho.c"
 				>
 			</File>
@@ -198,23 +203,19 @@
 				>
 			</File>
 			<File
-                RelativePath="..\src\csucac4.c"
-                >
-            </File>
+				RelativePath="..\src\csucac4.c"
+				>
+			</File>
 			<File
 				RelativePath="..\src\csusnoa2.c"
 				>
 			</File>
 			<File
-                RelativePath="..\src\cs2mass.c"
-                >
-            </File>
-			<File
 				RelativePath="..\src\libcatalog.c"
 				>
 			</File>
 			<File
-				RelativePath=".\libcatalog.def"
+				RelativePath="..\src\ppmx.c"
 				>
 			</File>
 			<File
@@ -228,6 +229,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\src\cs2mass.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cstycho.h"
 				>
 			</File>
@@ -236,15 +241,15 @@
 				>
 			</File>
 			<File
-                RelativePath="..\src\cs2mass.h"
-                >
-            </File>
-            <File
-                RelativePath="..\src\csusno.h"
-                >
-            </File>
+				RelativePath="..\src\csusno.h"
+				>
+			</File>
 			<File
 				RelativePath="..\src\libcatalog.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\ppmx.h"
 				>
 			</File>
 			<File
