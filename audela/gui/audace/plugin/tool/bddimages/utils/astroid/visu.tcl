@@ -1,11 +1,16 @@
+## \file visu.tcl
+# Routines de visualisation dans une visu de Audace
+
+
+## Affiche une image fits.
+# \c fitsfile :: param[in] :: Chaine de caractere du nom du fichier fits
+
 proc affich_image { fitsfile } {
    global bddconf
    global audace
    set errnum [catch {loadima $fitsfile} msg ]
    set bddconf(zoom) [::confVisu::getZoom $bddconf(visuno)]
    ::console::affiche_resultat "ZOOM=$bddconf(zoom)\n"
-
-
 }
 
 

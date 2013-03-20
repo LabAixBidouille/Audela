@@ -1,5 +1,5 @@
 #--------------------------------------------------
-# source audace/plugin/tool/av4l/analyse_source.tcl
+# source [file join $audace(rep_install) gui audace plugin tool bddimages analyse_source.tcl]
 #--------------------------------------------------
 #
 # Fichier        : analyse_source.tcl

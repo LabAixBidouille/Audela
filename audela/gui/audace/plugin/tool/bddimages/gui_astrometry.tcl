@@ -1602,19 +1602,20 @@ namespace eval gui_astrometry {
    }
 
 
-proc ::gui_astrometry::send_simple_message {originator recipient email_server subject body} {
+   proc ::gui_astrometry::send_simple_message {originator recipient email_server subject body} {
 
-    package require smtp
-    package require mime
-gren_info "ici\n"
-    set token [mime::initialize -canonical text/plain -string $body]
-gren_info "la\n"
-    smtp::sendmessage $token -servers $email_server -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
-    #smtp::sendmessage $token -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
-gren_info "ici\n"
-    mime::finalize $token
-gren_info "la\n"
-}
+       package require smtp
+       package require mime
+       gren_info "ici\n"
+       set token [mime::initialize -canonical text/plain -string $body]
+       gren_info "la\n"
+       smtp::sendmessage $token -servers $email_server -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+       #smtp::sendmessage $token -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+       gren_info "ici\n"
+       mime::finalize $token
+       gren_info "la\n"
+
+    }
 
 
 #    set gren(email,originator) "Test"
@@ -1737,6 +1738,11 @@ gren_info "la\n"
    }
 
 
+
+
+
+
+
    proc ::gui_astrometry::go_priam {  } {
 
       ::tools_astrometry::init_priam
@@ -1744,6 +1750,11 @@ gren_info "la\n"
       ::gui_astrometry::affich_catalist
 
    }
+
+
+
+
+
 
 
 
@@ -1789,6 +1800,11 @@ gren_info "la\n"
       $::gui_astrometry::fensav.appli.boutons.annul configure -state disabled
       set ::tools_astrometry::savannul 1
    }
+
+
+
+
+
 
 
 
@@ -1844,7 +1860,7 @@ gren_info "la\n"
       $::gui_astrometry::fen.appli.info.fermer configure -state normal
       $::gui_astrometry::fen.appli.info.enregistrer configure -state normal
    
-   } 
+   }
    
 
 
@@ -1874,7 +1890,7 @@ gren_info "la\n"
       #AC2 vachier@imcce.fr
       #NUM 9
 
-   } 
+   }
 
 
    proc ::gui_astrometry::psf { t w } {
@@ -1935,7 +1951,7 @@ gren_info "la\n"
       
       ::psf_gui::from_astrometry $name $cpt $date_id
 
-   } 
+   }
 
 
 
@@ -1988,12 +2004,12 @@ gren_info "la\n"
       $::gui_astrometry::getjpl_send insert end "QUANTITIES= '1,9,20,23,24'\n"
       $::gui_astrometry::getjpl_send insert end "!\$\$EOF\n"
 
-   } 
+   }
 
 
    proc ::gui_astrometry::jpl_send { } {
    
-   } 
+   }
 
 
    proc ::gui_astrometry::jpl_read { } {

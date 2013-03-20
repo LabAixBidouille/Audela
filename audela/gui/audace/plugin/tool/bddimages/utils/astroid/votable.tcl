@@ -1,3 +1,11 @@
+## \file votable.tcl
+# Routines de gestion des votables
+
+
+## Ecriture de la votable \n
+# \c listsources :: param[in] :: structure de type sources \n
+# \c tabkey      :: param[in] :: Chaine de caractere du nom du fichier fits \n
+# \c newcatafile :: param[in] :: Chaine de caractere du nom du fichier cata
 
 proc write_cata_votable { listsources tabkey newcatafile } {
 
@@ -219,6 +227,7 @@ proc write_cata_votable_dom { listsources } {
 
 
 
+## Lecture de la votable
 proc read_cata_votable {  } {
 
 
