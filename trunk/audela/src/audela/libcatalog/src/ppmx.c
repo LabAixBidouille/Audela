@@ -8,6 +8,8 @@
 
 static char *ppxZoneNames[] = {"0000", "0730", "1500", "2230", "3000", "3730",
 		"4500", "5230", "6000", "6730", "7500", "8230" };
+static char referenceCatalog[] = "AGHPST";
+static char ppmxSet[] = "HOS";
 
 static char outputLogChar[STRING_COMMON_LENGTH];
 static char binaryHeader[PPMX_HEADER_LENGTH];
@@ -30,7 +32,7 @@ int cmd_tcl_csppmx(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	Tcl_DString dsptr;
 
 	/* Decode inputs */
-	resultOfFunction = decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMin);
+	resultOfFunction = decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMax);
 	if(resultOfFunction) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
@@ -45,7 +47,7 @@ int cmd_tcl_csppmx(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	/* No we loop over the binary files to be opened, we process them one by one */
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { PPMX { } { ID RAJ2000 DECJ2000 pmRA pmDE Cmag Rmag Jmag Hmag Kmag Nobs P sub } } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { PPMX { } { ID RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec Cmag Rmag Bmag errBmag Vmag ErrVmag Jmag ErrJmag Hmag ErrHmag Kmag ErrKmag Nobs P sub refCatalog} } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
@@ -124,26 +126,47 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
  * Process a series of successive chunks of data
  */
 int processChunks(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,FILE* const inputStream,
-		headerInformationPPMX* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName) {
+		const headerInformationPPMX* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName) {
 
+	unsigned char* buffer;
+	unsigned char* pointerToBuffer;
 	int resultOfFunction;
-	const int numberOfStars = sumNumberOfElements(headerInformation->chunkNumberOfStars,chunkStart,chunkEnd);
-	const int sizeOfBuffer  = numberOfStars * PPMX_RECORD_LENGTH;
+	int indexOfChunk;
+	int indexOfStar;
+	int raStart;
+	int numberOfStars;
+	int totalNumberOfStars;
+	int sizeOfBuffer;
 
-	char* const buffer      = (char*)malloc(sizeOfBuffer * sizeof(char));
+	/* We read all merged chunks to optimise access time to disk */
+	totalNumberOfStars = sumNumberOfElements(headerInformation->chunkNumberOfStars,chunkStart,chunkEnd);
+	sizeOfBuffer       = totalNumberOfStars * PPMX_RECORD_LENGTH;
+	buffer             = (unsigned char*)malloc(sizeOfBuffer * sizeof(unsigned char));
 	if(buffer == NULL) {
-		sprintf(outputLogChar,"Buffer = %d (char) out of memory",sizeOfBuffer);
+		sprintf(outputLogChar,"Buffer = %d (unsigned char) out of memory",sizeOfBuffer);
 		return(1);
 	}
-
 	fseek(inputStream,headerInformation->chunkOffsets[chunkStart],SEEK_SET);
-	resultOfFunction = fread(buffer,sizeof(char),sizeOfBuffer,inputStream);
+	resultOfFunction = fread(buffer,sizeof(unsigned char),sizeOfBuffer,inputStream);
 	if(resultOfFunction != sizeOfBuffer) {
 		sprintf(outputLogChar,"Can not read %d (char) from %s",sizeOfBuffer,binaryFileName);
 		return(1);
 	}
 
-	processBufferedData(dsptr,mySearchZonePPMX,buffer);
+	pointerToBuffer = buffer;
+
+	for(indexOfChunk = chunkStart; indexOfChunk <= chunkEnd; indexOfChunk++) {
+
+		numberOfStars = headerInformation->chunkNumberOfStars[indexOfChunk];
+		raStart       = indexOfChunk << CHUNK_SHIFT_RA;
+
+		/* Loop over stars */
+		for(indexOfStar = 0; indexOfStar <= numberOfStars; indexOfStar++) {
+			processBufferedDataPPMX(dsptr,mySearchZonePPMX,pointerToBuffer,headerInformation,raStart);
+			/* Move the buffer to read the next star */
+			pointerToBuffer += PPMX_RECORD_LENGTH;
+		}
+	}
 
 	releaseSimpleArray(buffer);
 
@@ -152,10 +175,147 @@ int processChunks(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZ
 
 /**
  * Process stars in an allocated buffer
+ * This method contains the method ed_rec from Francois's code
  */
-void processBufferedData(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,const char* const buffer) {
-//TODO
+void processBufferedDataPPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX, unsigned char* buffer,
+		const headerInformationPPMX* const headerInformation, const int raStart) {
+
+	int o = 0, i;
+	char jName[15]; /* IAU name HHMMSS.S+ddmmss	*/ /*=ID */
+	int raInMas;
+	int decInMas;
+	short int errorRa, errorDec;
+	short int errorPmRa, errorPmDec;
+	int epRa, epDec;
+	int pmRa, pmDec;
+	unsigned char nObs; /* Number of observations	*/
+	short int magnitudes[7];	/* (mmag) B V J H K C r mags	*/
+	short int errorMagnitudes[5];	/* (mmag) Error on magnitudes   */
+	char subsetFlag;	/* subset flag			*/
+	char fitFlag;		/* Bad fit flag [P]		*/
+	char src;		/* source catalog  		*/
+
+	/* Convert the compacted record */
+	raInMas = getBits(buffer, 0, 23) + raStart; o += 23;
+	if(
+			(mySearchZonePPMX->isArroundZeroRa && (raInMas < mySearchZonePPMX->raStartInMas) && (raInMas > mySearchZonePPMX->raEndInMas)) ||
+			(!mySearchZonePPMX->isArroundZeroRa && ((raInMas < mySearchZonePPMX->raStartInMas) || (raInMas > mySearchZonePPMX->raEndInMas)))
+	) {
+		/* The star is not accepted for output */
+		return;
+	}
+
+	decInMas = getBits(buffer, o, 25) + headerInformation->decStartInMas; o += 25;
+	if((decInMas  < mySearchZonePPMX->declinationStartInMas) || (decInMas > mySearchZonePPMX->declinationEndInMas)) {
+		/* The star is not accepted for output */
+		return;
+	}
+
+	errorRa    = getBits(buffer, o, 10); o += 10;
+	errorDec   = getBits(buffer, o, 10); o += 10;
+	epRa       = getBits(buffer, o, 14); o += 14;  epRa  += 190000;
+	epDec      = getBits(buffer, o, 14); o += 14;  epDec += 190000;
+	pmRa       = xget4(buffer, o, 20, 1000000, headerInformation->extraValues4)-500000; o += 20;
+	pmDec      = xget4(buffer, o, 20, 1000000, headerInformation->extraValues4)-500000; o += 20;
+	errorPmRa  = getBits(buffer, o, 10); o += 10;
+	errorPmDec = getBits(buffer, o, 10); o += 10;
+
+	subsetFlag = ppmxSet[getBits(buffer, o, 2)]; o += 2;
+	fitFlag    = getBits(buffer, o, 1) ? 'P' : ' '; o += 1;
+
+	o += 1 /* +UNUSED */ + 4 /* Naming problems */;
+
+	/* Magnitudes (mmag) B V J H K C R mags	*/
+	magnitudes[5] = xget2(buffer, o, 14, 16000, headerInformation->extraValues2)+2000; o += 14;
+	magnitudes[6] = xget2(buffer, o, 14, 16000, headerInformation->extraValues2)+2000; o += 14;
+
+	/* We consider Rmag = magnitudes[6] for selection */
+	if((magnitudes[6] < mySearchZonePPMX->magnitudeStartInMilliMag) || (magnitudes[6] > mySearchZonePPMX->magnitudeEndInMilliMag)) {
+		/* The star is not accepted for output */
+		return;
+	}
+
+	for (i=0; i<5; i++) {
+		magnitudes[i]      = xget2(buffer, o, 14, 16000, headerInformation->extraValues2)+2000; o += 14;
+		errorMagnitudes[i] = getBits(buffer, o, 10); o += 10;
+		if (errorMagnitudes[i] == (1 << 10) - 1 ) {
+			errorMagnitudes[i] = -99;
+		}
+	}
+	nObs = getBits(buffer, o, 5); o += 5;
+	src  = referenceCatalog[getBits(buffer, o, 3)]; //o += 3;
+
+	/* Write out the Declination part of Jname */
+	sJname(jName, raInMas, decInMas, (buffer[20] & 0xc0) >> 6);
+
+	/* Add the result to TCL output */
+	Tcl_DStringAppend(dsptr,"{ { PPMX { } {",-1);
+
+	sprintf(outputLogChar,"%12s %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f "
+			"%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f "
+			"%1d %1d %1d %1d",
+			jName, // the ID %03d-%06d
+			(double)raInMas/DEG2MAS,
+			(double)decInMas / DEG2MAS,
+			(double)errorRa / DEG2MAS,
+			(double)errorDec / DEG2MAS,
+			(double)pmRa / DEG2MAS,
+			(double)pmDec / DEG2MAS,
+			(double)errorPmRa / DEG2MAS,
+			(double)errorPmDec / DEG2MAS,
+			(double)magnitudes[5] / MAG2MILLIMAG,
+			(double)magnitudes[6] / MAG2MILLIMAG,
+			(double)magnitudes[0] / MAG2MILLIMAG, (double)errorMagnitudes[0] / MAG2MILLIMAG,
+			(double)magnitudes[1] / MAG2MILLIMAG, (double)errorMagnitudes[1] / MAG2MILLIMAG,
+			(double)magnitudes[2] / MAG2MILLIMAG, (double)errorMagnitudes[2] / MAG2MILLIMAG,
+			(double)magnitudes[3] / MAG2MILLIMAG, (double)errorMagnitudes[3] / MAG2MILLIMAG,
+			(double)magnitudes[4] / MAG2MILLIMAG, (double)errorMagnitudes[4] / MAG2MILLIMAG,
+			nObs,fitFlag,subsetFlag,src);
+
+	Tcl_DStringAppend(dsptr,outputLogChar,-1);
+	Tcl_DStringAppend(dsptr,"} } } ",-1);
 }
+
+/*============================================================
+ * Francois Ochsenbein's method (sJname)
+ * PURPOSE  Convert a RA and Dec into J-name for PPMX
+ * RETURNS  [0,max] = standard; >max => saved in header
+ * REMARKS  modJ&1 ==> add 1 unit to DE ;
+ *          modJ&2 ==> add 1 unit to RA ;
+ *============================================================*/
+void sJname(char * const str, const int ra, const int de, const int modJ) {
+
+	int val;
+	val = de;
+	if (val<0) val = -val;
+	val = val/1000;	   /* Value in arcsec */
+	if (modJ&1) {
+		val++;
+	}
+	str[14] = '0' + val%10;
+	val /= 10;   str[13] = '0' + val%6;
+	val /=  6;   str[12] = '0' + val%10;
+	val /= 10;   str[11] = '0' + val%6;
+	val /=  6;   str[10] = '0' + val%10;
+	val /= 10;   str[ 9] = '0' + val;
+	str[ 8] = de<0 ? '-' : '+';
+
+	/* Write out the RA part of Jname */
+	val  = ra - (ra/3);     /* RA in 1/10000s */
+	val /= 1000;
+	if (modJ&2) {
+		val++;
+	}
+	str[7] = '0' + val%10;
+	str[6] = '.';
+	val /= 10;   str[5] = '0' + val%10;
+	val /= 10;   str[4] = '0' + val%6;
+	val /=  6;   str[3] = '0' + val%10;
+	val /= 10;   str[2] = '0' + val%6;
+	val /=  6;   str[1] = '0' + val%10;
+	val /= 10;   str[0] = '0' + val;
+}
+
 
 /**
  * Read the header information in the binary file
@@ -281,22 +441,22 @@ const searchZonePPMX findSearchZonePPMX(const double raInDeg,const double decInD
 
 	if((mySearchZonePPMX.declinationStartInMas <= DEC_SOUTH_POLE_MAS) && (mySearchZonePPMX.declinationEndInMas >= DEC_NORTH_POLE_MAS)) {
 
-		mySearchZonePPMX.declinationStartInMas  = DEC_SOUTH_POLE_MAS;
-		mySearchZonePPMX.declinationEndInMas    = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS;
+		mySearchZonePPMX.declinationStartInMas  = DEC_SOUTH_POLE_MAS + 1;
+		mySearchZonePPMX.declinationEndInMas    = DEC_NORTH_POLE_MAS - 1;
 		mySearchZonePPMX.raStartInMas           = START_RA_MAS;
 		mySearchZonePPMX.raEndInMas             = COMPLETE_RA_MAS;
 		mySearchZonePPMX.isArroundZeroRa        = 0;
 
 	} else if(mySearchZonePPMX.declinationStartInMas <= DEC_SOUTH_POLE_MAS) {
 
-		mySearchZonePPMX.declinationStartInMas        = DEC_SOUTH_POLE_MAS;
+		mySearchZonePPMX.declinationStartInMas        = DEC_SOUTH_POLE_MAS + 1;
 		mySearchZonePPMX.raStartInMas                 = START_RA_MAS;
 		mySearchZonePPMX.raEndInMas                   = COMPLETE_RA_MAS;
 		mySearchZonePPMX.isArroundZeroRa              = 0;
 
 	} else if(mySearchZonePPMX.declinationEndInMas   >= DEC_NORTH_POLE_MAS) {
 
-		mySearchZonePPMX.declinationEndInMas          = DEC_NORTH_POLE_MAS;
+		mySearchZonePPMX.declinationEndInMas          = DEC_NORTH_POLE_MAS - 1;
 		mySearchZonePPMX.raStartInMas                 = START_RA_MAS;
 		mySearchZonePPMX.raEndInMas                   = COMPLETE_RA_MAS;
 		mySearchZonePPMX.isArroundZeroRa              = 0;
@@ -419,7 +579,3 @@ void allocateMemoryForSearchZonePPMX(searchZonePPMX* const mySearchZonePPMX) {
 		}
 	}
 }
-
-
-
-

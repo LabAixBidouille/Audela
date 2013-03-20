@@ -144,7 +144,7 @@ int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	Tcl_DString dsptr;
 
 	/* Decode inputs */
-	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMin)) {
+	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMax)) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
 		return (TCL_ERROR);
 	}

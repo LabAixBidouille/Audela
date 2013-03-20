@@ -37,7 +37,7 @@ typedef struct {
 	int numberOfExtra2;
 	int numberOfExtra4;
 	int lengthOfAcceleratorTable;
-	short* extraValues2;
+	short int* extraValues2;
 	int* extraValues4;
 	int* chunkOffsets;
 	int* chunkNumberOfStars;
@@ -52,8 +52,9 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 int readHeaderPPMX(FILE* const inputStream, headerInformationPPMX* const headerInformation,
 		const char* const binaryFileName);
 int processChunks(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,FILE* const inputStream,
-		headerInformationPPMX* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName);
-void processBufferedData(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,const char* const buffer);
-
+		const headerInformationPPMX* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName);
+void processBufferedDataPPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,
+		unsigned char* buffer, const headerInformationPPMX* const headerInformation, const int raStart);
+void sJname(char * const str, const int ra, const int de, const int modJ);
 
 #endif /* PPMX_H_ */
