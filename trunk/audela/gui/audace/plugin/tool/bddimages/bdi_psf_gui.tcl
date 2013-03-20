@@ -817,6 +817,67 @@ namespace eval psf_gui {
 
 
 
+   proc ::psf_gui::fitgauss {  } {
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::psf_gui::visucrop ]} msg ]
+      if {$err>0 || $rect==""} {
+         tk_messageBox -message "Veuillez dessiner un carre dans l'image (avec un clic gauche)" -type ok
+         return
+      }
+      set result_fitgauss [buf$::psf_gui::bufcrop fitgauss $rect]
+      ::psf_tools::result_fitgauss $result_fitgauss
+      set xcent  [lindex $result_fitgauss 1]  
+      set ycent  [lindex $result_fitgauss 5]  
+
+      set ::gui_cata::psf_radius [expr int(sqrt ( pow([lindex $rect 2] - [lindex $rect 0],2) +  \
+                                       pow([lindex $rect 3] - [lindex $rect 1],2) ) / 2.0)]
+      #gren_info "xcent ycent = $xcent $ycent \n"
+      #gren_info "::gui_cata::psf_radius = $::gui_cata::psf_radius \n"
+      ::psf_tools::psf_box_crop $xcent $ycent
+      
+      set ::gui_cata::psf_best_sol [lreplace $::gui_cata::psf_best_sol 0 1 $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent)]
+
+      set err [ catch {set a [buf$::audace(bufNo) xy2radec [list $::gui_cata::current_psf(xcent) $::gui_cata::current_psf(ycent)]]} msg ]
+      if {$err} {
+         ::console::affiche_erreur "$err $msg\n"
+         return
+      }
+      set ra  [lindex $a 0]
+      set dec [lindex $a 1]
+      gren_info " ::gui_cata::psf_source = $::gui_cata::psf_source \n"
+      set pos [lsearch -index 0 $::gui_cata::psf_source "ASTROID"]
+      if {$pos != -1} {
+         set astroid [lindex [lindex $::gui_cata::psf_source $pos] 2]
+      } else {
+         return
+      }
+   
+               
+      catch {
+
+         clean_crop $::psf_gui::visucrop
+      
+         set r $::gui_cata::current_psf(delta)
+
+         set xpm [expr  $::gui_cata::current_psf(xsm)   - $::psf_gui::xref]
+         set ypm [expr  $::gui_cata::current_psf(ysm)   - $::psf_gui::yref]
+         set xfg [expr  $::gui_cata::current_psf(xcent) - $::psf_gui::xref]
+         set yfg [expr  $::gui_cata::current_psf(ycent) - $::psf_gui::yref]
+
+         affich_un_rond_xy_crop $xpm $ypm green  0 1 $::psf_gui::visucrop
+         affich_un_rond_xy_crop $xpm $ypm green $r 2 $::psf_gui::visucrop
+
+         set r [expr 3.0*sqrt((pow($::gui_cata::current_psf(xfwhm),2)+pow($::gui_cata::current_psf(yfwhm),2))/2.0)]
+
+         affich_un_rond_xy_crop $xfg $yfg  red 0  1 $::psf_gui::visucrop
+         affich_un_rond_xy_crop $xfg $yfg blue $r 2 $::psf_gui::visucrop
+      
+      }
+      
+   } 
+
+
+
    proc ::psf_gui::setval { key } {
 
       set id [::psf_gui::get_pos_col $key]
@@ -1518,6 +1579,8 @@ namespace eval psf_gui {
              pack   $actions2.clean -side left 
              button $actions2.takall -state active -text "Select All Radius" -relief "raised" -command "::psf_gui::takall"
              pack   $actions2.takall -side left 
+             button $actions2.fitgauss -state active -text "fitgauss" -relief "raised" -command "::psf_gui::fitgauss"
+             pack   $actions2.fitgauss -side left 
       
    }
 
