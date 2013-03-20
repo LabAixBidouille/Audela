@@ -78,10 +78,11 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 		const char* const binaryFileName) {
 
 	int resultOfFunction;
-	headerInformationPPMX headerInformation;;
-	const int chunkStart     = mySearchZonePPMX->raStartInMas >> CHUNK_SHIFT_RA;
-	const int chunkEnd       = mySearchZonePPMX->raEndInMas >> CHUNK_SHIFT_RA;
-	FILE* const inputStream  = fopen(binaryFileName,"rb");
+	headerInformationPPMX headerInformation;
+	const int chunkStart    = mySearchZonePPMX->raStartInMas >> CHUNK_SHIFT_RA;
+	const int chunkEnd      = mySearchZonePPMX->raEndInMas >> CHUNK_SHIFT_RA;
+	FILE* const inputStream = fopen(binaryFileName,"rb");
+
 	if(inputStream == NULL) {
 		sprintf(outputLogChar,"File %s not found",binaryFileName);
 		return(1);
