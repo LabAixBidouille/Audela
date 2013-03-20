@@ -1,29 +1,34 @@
-#--------------------------------------------------
-# source audace/plugin/tool/bddimages/bddimages_go.tcl
-#--------------------------------------------------
-#
-# Fichier        : bddimages_go.tcl
-# Description    : Outil d'appel des fonctionnalites de l'observatoire virtuel
-# Auteur         : Frédéric Vachier
+## \file bddimages_go.tcl
+#  \brief     Demarrage du plugin bddimages
+#  \details   This class is used to demonstrate a number of section commands.
+#  \author    Frederic Vachier
+#  \version   1.0
+#  \date      2008
+#  \copyright GNU Public License.
+#  \par Ressource 
+#  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages bddimages_go.tcl]
+#  \endcode
+#  \todo      normaliser les noms des fichiers sources 
+
 # Mise à jour $Id$
-#
 
 #============================================================
-# Declaration du namespace bddimages
-#    initialise le namespace
-#============================================================
+## Declaration du namespace \c bddimages .
+#  \pre       Chargement a partir d'Audace
+#  \bug       Probleme de memoire sur les exec
+#  \warning   Pour developpeur seulement
+#  \todo      Normaliser les noms des fichiers sources 
 namespace eval ::bddimages {
    package provide bddimages 1.0
    variable This
-
    #--- Chargement des captions
    source [ file join [file dirname [info script]] bddimages_go.cap ]
 }
 
 #------------------------------------------------------------
-# ::bddimages::getPluginTitle
-#    retourne le titre du plugin dans la langue de l'utilisateur
-#------------------------------------------------------------
+## Retourne le titre du plugin dans la langue de l'utilisateur
+#  \return     titre du plugin
+#  \sa         getPluginType
 proc ::bddimages::getPluginTitle { } {
    global caption
 
@@ -31,21 +36,16 @@ proc ::bddimages::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-# ::bddimages::getPluginType
-#    retourne le type de plugin
-#------------------------------------------------------------
+## Retourne le type de plugin
+#  \return     type de Plugin
 proc ::bddimages::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-# ::bddimages::getPluginProperty
-#    retourne la valeur de la propriete
-#
-# parametre :
-#    propertyName : nom de la propriete
-# return : valeur de la propriete ou "" si la propriete n'existe pas
-#------------------------------------------------------------
+## Recupere la valeur de la propriete
+#  \param propertyName Nom de la propriete
+#  \return    valeur de la propriete ou "" si la propriete n'existe pas 
 proc ::bddimages::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "file" }
@@ -55,9 +55,9 @@ proc ::bddimages::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::bddimages::initPlugin
-#    initialise le plugin
-#------------------------------------------------------------
+##    initialise le plugin
+#  \param tkbase 
+#  \return    
 proc ::bddimages::initPlugin { tkbase } {
 
    global audace

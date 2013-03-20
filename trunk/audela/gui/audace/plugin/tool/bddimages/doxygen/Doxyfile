@@ -1,0 +1,40 @@
+PROJECT_NAME       = "Bddimages"
+OUTPUT_DIRECTORY   = doxy
+OUTPUT_LANGUAGE    = French
+BRIEF_MEMBER_DESC  = YES
+REPEAT_BRIEF       = YES
+GENERATE_LATEX     = NO
+GENERATE_MAN       = NO
+GENERATE_BUGLIST       = YES
+GENERATE_TODOLIST      = YES
+SORT_MEMBER_DOCS       = YES
+SHOW_INCLUDE_FILES     = YES
+SHOW_DIRECTORIES       = NO
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
+GENERATE_RTF       = NO
+CASE_SENSE_NAMES   = NO
+
+EXCLUDE            = . \
+                     ../icons \
+                     ../utils
+
+INPUT              = .. \
+                     ../utils/astroid 
+
+FILE_PATTERNS          = *.tcl \
+                         *.dox
+EXCLUDE_PATTERNS       = .svn
+RECURSIVE              = NO
+
+SEARCHENGINE           = YES
+SERVER_BASED_SEARCH    = YES
+EXTERNAL_SEARCH        = YES
+
+ALPHABETICAL_INDEX     = YES
+COLS_IN_ALPHA_INDEX    = 5
+QUIET              = YES
+JAVADOC_AUTOBRIEF  = YES
+SEARCHENGINE       = NO
+INLINE_SOURCES     = YES
+HIDE_UNDOC_MEMBERS = YES
