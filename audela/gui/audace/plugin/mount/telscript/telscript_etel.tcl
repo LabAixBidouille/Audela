@@ -160,7 +160,7 @@ proc setup { } {
    set pwd0 [pwd]
    cd $path
    load libaudela[info sharedlibextension]
-   load libeteltcl[info sharedlibextension]
+   catch {load libeteltcl[info sharedlibextension]}
    # --- Open the ports for combits
    set err [catch {
       porttalk open all
