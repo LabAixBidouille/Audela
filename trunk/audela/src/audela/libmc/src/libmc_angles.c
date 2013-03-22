@@ -693,8 +693,6 @@ int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p)
 	p->cdelta1=0.;p->cdelta2=0.;
 	p->crpix1=0.;p->crpix2=0.;
 	if (inputdatatype==1) {
-      p->crpix1=p->naxis1/2.;
-      p->crpix2=p->naxis2/2.;
 	   for (k=0;k<nbinputdatas-1;k++) {
 	      strcpy(s,inputdatas[k]);
 		   mc_strupr(s,s);
@@ -703,11 +701,17 @@ int mctcl_listfield2mc_astrom(Tcl_Interp *interp, char *listfield, mc_ASTROM *p)
 		   else if (strcmp(s,"NAXIS2")==0) { p->naxis2=atoi(inputdatas[k+1]); }
 		   else if (strcmp(s,"PIXSIZE1")==0) { p->px=atof(inputdatas[k+1]); }
 		   else if (strcmp(s,"PIXSIZE2")==0) { p->py=atof(inputdatas[k+1]); }
-		   else if (strcmp(s,"CRPIX1")==0) { p->crpix1=atof(inputdatas[k+1]); }
-		   else if (strcmp(s,"CRPIX2")==0) { p->crpix2=atof(inputdatas[k+1]); }
 		   else if (strcmp(s,"CROTA2")==0) { p->crota2=atof(inputdatas[k+1])*(DR); }
 		   else if (strcmp(s,"RA")==0) { p->ra0=atof(inputdatas[k+1])*(DR); p->crval1=p->ra0; }
 		   else if (strcmp(s,"DEC")==0) { p->dec0=atof(inputdatas[k+1])*(DR); p->crval2=p->dec0; }
+      }
+      p->crpix1=p->naxis1/2.+0.5;
+      p->crpix2=p->naxis2/2.+0.5;
+	   for (k=0;k<nbinputdatas-1;k++) {
+	      strcpy(s,inputdatas[k]);
+		   mc_strupr(s,s);
+		   if (strcmp(s,"CRPIX1")==0) { p->crpix1=atof(inputdatas[k+1]); }
+		   if (strcmp(s,"CRPIX2")==0) { p->crpix2=atof(inputdatas[k+1]); }
       }
    } else if (inputdatatype==0) {
       /*--- On recopie les mots-cles du buffer temporaire dans le buffer */
