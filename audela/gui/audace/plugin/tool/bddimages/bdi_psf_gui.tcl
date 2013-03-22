@@ -23,7 +23,10 @@ namespace eval psf_gui {
 # depuis la gestion des cata pour faire l analyse des psf en mode manuel
    proc ::psf_gui::gestion_mode_manuel_fermer { } {
 
-
+      if {[info exists ::psf_gui::visucrop]} {
+         ::confVisu::close $::psf_gui::visucrop
+         unset ::psf_gui::visucrop
+      }
       ::psf_tools::closetoconf
       destroy $::psf_gui::fen
       ::cata_gestion_gui::charge_image_directaccess

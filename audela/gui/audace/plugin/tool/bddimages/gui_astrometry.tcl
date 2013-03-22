@@ -682,6 +682,8 @@ namespace eval gui_astrometry {
 
          foreach dateimg $::tools_astrometry::listscience($name) {
 
+            set idsource [lindex $::tools_astrometry::tabval($name,$dateimg)  0]
+            gren_info "idsource = $idsource\n"
             set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  4]]
             set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  5]]
@@ -784,6 +786,8 @@ namespace eval gui_astrometry {
             $::gui_astrometry::rapport_txt insert end  $txt
 
             # Graphe
+            set ::gui_astrometry::graph_results($name,$dateimg,good)             1
+            set ::gui_astrometry::graph_results($name,$dateimg,idsource)         $idsource
             set ::gui_astrometry::graph_results($name,$dateimg,datejj)           $midatejd
             set ::gui_astrometry::graph_results($name,$dateimg,res_a)            $res_a
             set ::gui_astrometry::graph_results($name,$dateimg,res_d)            $res_d
@@ -1516,7 +1520,7 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::graph { xkey ykey } {
 
       gren_info "Graphe : $xkey VS $ykey\n"
-
+      
       set x ""
       set z ""
       set l [array get ::tools_astrometry::listscience]
@@ -1526,8 +1530,10 @@ namespace eval gui_astrometry {
          }
          gren_info "Object Selected : $name\n"
          foreach dateimg $::tools_astrometry::listscience($name) {
-            lappend x $::gui_astrometry::graph_results($name,$dateimg,$xkey)
-            lappend z $::gui_astrometry::graph_results($name,$dateimg,$ykey)
+            if { $::gui_astrometry::graph_results($name,$dateimg,good) } {
+               lappend x $::gui_astrometry::graph_results($name,$dateimg,$xkey)
+               lappend z $::gui_astrometry::graph_results($name,$dateimg,$ykey)
+            }
          }
       }
 
@@ -1543,6 +1549,162 @@ namespace eval gui_astrometry {
       plotxy::sethandler $h [list -color black -linewidth 0]
 
    }
+
+   proc ::gui_astrometry::graph_crop { } {
+
+      if {[::plotxy::figure] == 0 } {
+         ::console::affiche_erreur "pas de graphes actifs\n"
+         return
+      }
+
+      set err [ catch {set rect [::plotxy::get_selected_region]} msg]
+      if {$err} {
+         return
+      }
+      set x1 [lindex $rect 0]
+      set x2 [lindex $rect 2]
+      set y1 [lindex $rect 1]
+      set y2 [lindex $rect 3]
+      
+      if {$x1>$x2} {
+         set t $x1
+         set x1 $x2
+         set x2 $t
+      }
+      if {$y1>$y2} {
+         set t $y1
+         set y1 $y2
+         set y2 $t
+      }
+      
+      set xkey [::plotxy::xlabel]
+      set ykey [::plotxy::ylabel]
+      
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name w} $l {
+         if {$name !=  $::gui_astrometry::combo_list_object} {
+            continue
+         }
+         gren_info "Object Selected : $name\n"
+         foreach dateimg $::tools_astrometry::listscience($name) {
+            set xx $::gui_astrometry::graph_results($name,$dateimg,$xkey)
+            if { $xx > $x1 && $xx < $x2} {
+               set yy $::gui_astrometry::graph_results($name,$dateimg,$ykey)
+               if { $yy > $y1 && $yy < $y2} {
+                  continue
+               } 
+            }
+            set ::gui_astrometry::graph_results($name,$dateimg,good) 0
+         }
+      }
+      
+      ::gui_astrometry::graph $xkey $ykey
+   }
+   
+   
+   
+   
+   
+   
+   proc ::gui_astrometry::graph_uncrop { } {
+
+      set xkey [::plotxy::xlabel]
+      set ykey [::plotxy::ylabel]
+      
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name w} $l {
+         if {$name !=  $::gui_astrometry::combo_list_object} {
+            continue
+         }
+         gren_info "Object Selected : $name\n"
+         foreach dateimg $::tools_astrometry::listscience($name) {
+            set ::gui_astrometry::graph_results($name,$dateimg,good) 1
+         }
+      }
+      
+      ::gui_astrometry::graph $xkey $ykey
+   }
+
+
+
+
+
+
+
+
+   proc ::gui_astrometry::graph_voir_source { } {
+
+      if {[::plotxy::figure] == 0 } {
+         ::console::affiche_erreur "pas de graphes actifs\n"
+         return
+      }
+
+      set err [ catch {set rect [::plotxy::get_selected_region]} msg]
+      if {$err} {
+         return
+      }
+      set x1 [lindex $rect 0]
+      set x2 [lindex $rect 2]
+      set y1 [lindex $rect 1]
+      set y2 [lindex $rect 3]
+      
+      if {$x1>$x2} {
+         set t $x1
+         set x1 $x2
+         set x2 $t
+      }
+      if {$y1>$y2} {
+         set t $y1
+         set y1 $y2
+         set y2 $t
+      }
+      
+      set xkey [::plotxy::xlabel]
+      set ykey [::plotxy::ylabel]
+      set x ""
+      set y ""
+      set l [array get ::tools_astrometry::listscience]
+      foreach {name w} $l {
+         if {$name !=  $::gui_astrometry::combo_list_object} {
+            continue
+         }
+         gren_info "Object Selected : $name\n"
+         foreach dateimg $::tools_astrometry::listscience($name) {
+            set xx $::gui_astrometry::graph_results($name,$dateimg,$xkey)
+            if { $xx > $x1 && $xx < $x2} {
+               set yy $::gui_astrometry::graph_results($name,$dateimg,$ykey)
+               if { $yy > $y1 && $yy < $y2} {
+                  lappend x $xx
+                  lappend y $yy
+                  set idsource $::gui_astrometry::graph_results($name,$dateimg,idsource)
+                  set date $dateimg
+                  
+                  continue
+               } 
+            }
+         }
+      }
+      
+      if { [llength $x]>1 || [llength $y]>1 } {
+         ::console::affiche_erreur "Selectionner 1 seul point\n"
+         return
+      }
+      
+      set name $::gui_astrometry::combo_list_object
+      gren_info "Voir la source\n"
+      gren_info "date image = $date\n"
+      gren_info "Objet = $name\n"
+      #incr idsource -1
+      gren_info "Idsource = $idsource\n"
+      
+# TODO afficher la psf
+      ::psf_gui::from_astrometry $name 1 [list [list $idsource $date]]
+
+   }
+
+
+
+
 
 
 
@@ -2584,6 +2746,22 @@ namespace eval gui_astrometry {
                 -textvariable ::gui_astrometry::combo_list_object \
                 -values $::gui_astrometry::object_list
             pack $sciences.combo -anchor center -side left -fill x -expand 0
+
+         set selingraph [frame $graphes.selingraph -borderwidth 1 -cursor arrow -relief groove]
+         pack $selingraph -in $graphes -anchor c -side top -expand 1 -fill x -padx 10 -pady 5 -ipady 5 
+
+                    button $selingraph.c -text "Crop" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph_crop"
+                    pack $selingraph.c -side left -anchor c -expand 1
+
+                    button $selingraph.u -text "Un-Crop" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph_uncrop"
+                    pack $selingraph.u -side left -anchor c -expand 1
+
+                    button $selingraph.v -text "Voir Source" -borderwidth 2 -takefocus 1 \
+                            -command "::gui_astrometry::graph_voir_source"
+                    pack $selingraph.v -side left -anchor c -expand 1
+
 
          set frmgraph [frame $graphes.frmgraph1 -borderwidth 0 -cursor arrow -relief groove]
          pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5

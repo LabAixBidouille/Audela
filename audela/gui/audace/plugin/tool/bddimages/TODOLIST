@@ -3,7 +3,9 @@ TODOLIGHT
 general : 
 
     - commencer a enlever les affichages de la console (qui sont pas necessaires)
+    - doxyfile
 
+    
 création cata :
 
     - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
@@ -20,12 +22,15 @@ Gestion cata :
     - renommage du champ "name" de astroid
 
 Astrométrie :
-
+    - ephemeride etoile
     - envoi mail mpc ?
     - tag envoi mail mpc dans header fits.
     - verifier iau_code egal a toutes les images.
 JB    - gerer limite Priam
-
+    - champs nb obs
+FV  - construction du graph
+    - regler voir wcs
+    - voir source dans sre ssp sse dsp
 
 BUGS
 
