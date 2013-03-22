@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Planification des observations avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20110318<br>
+version 20130322<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -242,7 +242,7 @@ proc afelev { date home } {<br>
 &nbsp;&nbsp; return "[format %6.2f [lindex $res 1 ]] [format %+6.2f
 [lindex $res 0 ]]"<br>
 }<br>
-::console::affiche_resultat "========= RISE2RISE home=$home\n"<br>
+::console::affiche_resultat "========= MER2MER home=$home\n"<br>
 ::console::affiche_resultat "prev_mer, [mc_date2iso8601 [lindex
 $mer2mer 0]] : [afelev [lindex $mer2mer 0] $home]\n"<br>
 ::console::affiche_resultat "sun_set,&nbsp; [mc_date2iso8601 [lindex
