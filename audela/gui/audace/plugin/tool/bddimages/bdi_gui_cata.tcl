@@ -710,7 +710,7 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
 
          # Trace du repere E/N dans l'image
-         # TODO est-ce que c'est bon ici ?
+         # TODO ::gui_cata::affiche_cata est-ce que c'est bon ici ?
          set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
          set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]

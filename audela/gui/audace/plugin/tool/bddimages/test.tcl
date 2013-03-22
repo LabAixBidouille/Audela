@@ -435,6 +435,33 @@ return
 
 
 
+   proc ::gui_astrometry::test_mpc {  } {
+
+      set url "http://scully.cfa.harvard.edu/cgi-bin/mpeph2.cgi"
+      set urlget "\"20000\" ty e d \"2013 01 06 002244\" l 1 i 1 u s uto 0 c 586 raty d s c m m igd n ibh n fp y e 0 tit \"\" bu \"\" adir S res n ch c oed \"\" js f "
+
+      set toeval "::http::formatQuery TextArea $urlget"
+      set login [eval $toeval]
+      set err [catch {::http::geturl $url -query "$login"} token]
+      if {$err==1} {
+         error "$token"
+      } else {
+         upvar #0 $token state
+         set res $state(body)
+         set len [llength [split $res \n]]
+         if {$len<15} {
+            error [list "URL $url not found" $res]
+         }
+      }
+      set f [open /astrodata/Observations/Images/bddimages/bddimages_local/tmp/mpc.html w]
+      puts -nonewline $f $res
+      close $f
+#2013 01 06 002244 07 49 51.7 +26 25 02  42.680  43.648  169.7   0.2  20.0   -0.055   +0.012   342  +73   -69   0.41   092  -10       N/A   N/A / <a href="http://scully.cfa.harvard.edu/cgi-bin/uncertaintymap.cgi?Obj=20000&JD=2456298.51579&Ext=VAR2">Map</a> / <a href="http://scully.cfa.harvard.edu/cgi-bin/uncertaintymap.cgi?Obj=20000&JD=2456298.51579&Ext=VAR2&Form=Y&OC=500">Offsets</a>
+#
+#
+#
+
+   }
 
 
 
