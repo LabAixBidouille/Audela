@@ -11,11 +11,60 @@ namespace eval ::bdi_tools {
    package provide bdi_tools 1.0
 
    # #############################################################################
-   # Declaration des attributs de l'espace de nom aoos
+   # Declaration des attributs de l'espace de nom
    # #############################################################################
-   # @var string name-space du schema XML
-   #variable xmlSchemaNs "http://www.w3.org/2001/XMLSchema-instance"
+   # @var string blablabla
+   #variable x "y"
 
+   # #############################################################################
+   # Declaration des sous-classes
+   # #############################################################################
+   namespace eval sendmail {
+
+      proc send { } {
+         
+         set someone "fv@imcce.fr"
+         set recipient_list "fv@imcce.fr"
+         set cc_list ""
+         set subject "BATCH"
+         set body    "body"
+         
+         set msg {From: someone}
+         append msg \n "To: " [join $recipient_list ,]
+         append msg \n "Cc: " [join $cc_list ,]
+         append msg \n "Subject: $subject"
+         append msg \n\n $body
+         gren_info "$msg\n"
+         exec /usr/lib/sendmail -oi -t << $msg
+      }
+
+      proc send2 { } {
+
+         set gren(email,originator) "Test"
+         set adresse  fv@imcce.fr 
+         set gren(email,email_server) smtp.free.fr
+         set email_subject "sujet test"
+         set texte00 "Bonjour. Fais-moi un reply que c'est OK."
+         ::gui_astrometry::send_simple_message $gren(email,originator) $adresse $gren(email,email_server) "$email_subject" "$texte00"
+
+      }
+
+      proc simple_message {originator recipient email_server subject body} {
+
+          package require smtp
+          package require mime
+          gren_info "ici\n"
+          set token [mime::initialize -canonical text/plain -string $body]
+          gren_info "la\n"
+          smtp::sendmessage $token -servers $email_server -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+          #smtp::sendmessage $token -header [list From "$originator"] -header [list To "$recipient"] -header [list Subject "$subject"] -header [list cc ""]  -header [list Bcc ""]
+          gren_info "ici\n"
+          mime::finalize $token
+          gren_info "la\n"
+
+      }
+
+   }
 
 }
 
@@ -145,9 +194,9 @@ proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
 }
 
 #
-# Sauve une chaine de caracteres dans un fichier dont le nom est fourni par l'utilisateur
-# @param $str string chaine de caracteres a enregistrer
-# @param $ftype string type de fichier: TXT, DAT, XML, ...
+## Sauve une chaine de caracteres dans un fichier dont le nom est fourni par l'utilisateur
+# @param \c str string chaine de caracteres a enregistrer
+# @param \c ftype string type de fichier: TXT, DAT, XML, ...
 # @return string le nom du fichier sauve
 #
 proc ::bdi_tools::save_as { str ftype } {

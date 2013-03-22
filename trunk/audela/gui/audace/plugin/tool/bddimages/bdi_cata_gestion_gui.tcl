@@ -642,7 +642,7 @@ namespace eval cata_gestion_gui {
                            set name [::manage_source::naming $s $namable]
                         } 
                         
-                        gren_info "mNAME ($id) = $name "
+                        gren_info "NAME ($id) = $name "
                         foreach cata $s {
                            gren_info "[lindex $cata 0] "
                         }
@@ -2356,13 +2356,13 @@ namespace eval cata_gestion_gui {
          set infoimg [frame $frm.infoimg -borderwidth 0 -cursor arrow -relief groove]
          pack $infoimg -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             #--- Cree un checkbutton
+             #--- Cree un label
              label $infoimg.lab1 -textvariable ::tools_cata::id_current_image
              pack  $infoimg.lab1 -in $infoimg -side left -padx 5 -pady 0
-             #--- Cree un checkbutton
+             #--- Cree un label
              label $infoimg.lab2 -textvariable ::tools_cata::current_image_name
              pack  $infoimg.lab2 -in $infoimg -side left -padx 5 -pady 0
-             #--- Cree un checkbutton
+             #--- Cree un label
              label $infoimg.lab3 -textvariable ::tools_cata::current_image_date
              pack  $infoimg.lab3 -in $infoimg -side left -padx 5 -pady 0
 
@@ -2379,7 +2379,7 @@ namespace eval cata_gestion_gui {
                    -command "::cata_gestion_gui::next" 
              pack $navigation.next -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-             #--- Cree un checkbutton
+             #--- Cree un label, une entree et un bouton
              label $navigation.lab -text "Access direct a l'image : "
              pack $navigation.lab -in $navigation -side left -padx 5 -pady 0
              entry $navigation.val -relief sunken \

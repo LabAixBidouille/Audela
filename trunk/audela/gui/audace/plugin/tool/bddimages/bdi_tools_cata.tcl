@@ -1231,7 +1231,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
                foreach cc [lindex $f 2] {
                   lappend ::gui_cata::tklist_list_of_columns($idcata) [list $cc $cc]
                   lappend otherfields $cc
-                }
+               }
             }
          }
       }
@@ -1287,12 +1287,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
    }
-
-
-
-
-
-
 
 
 

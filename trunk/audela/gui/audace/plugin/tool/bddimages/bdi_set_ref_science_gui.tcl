@@ -13,7 +13,6 @@
 #
 #--------------------------------------------------
 
-
 namespace eval set_ref_science {
 
    variable use_mask
@@ -327,6 +326,18 @@ namespace eval set_ref_science {
    }
 
 
+
+
+   proc ::set_ref_science::set_progress { cur max } {
+
+      set ::set_ref_science::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+
+   }
+
+
+
+
    proc ::set_ref_science::go { } {
 
       global audace
@@ -448,13 +459,6 @@ namespace eval set_ref_science {
 
    }
 
-
-   proc ::set_ref_science::set_progress { cur max } {
-
-      set ::set_ref_science::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
-      update
-
-   }
 
 }
 

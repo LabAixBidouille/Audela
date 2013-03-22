@@ -478,7 +478,7 @@ namespace eval cata_creation_gui {
                   ::gui_cata::affiche_cata
 
                   # Trace du repere E/N dans l'image
-                  # TODO est-ce que c'est bon ici ?
+                  # TODO ::cata_creation_gui::get_cata est-ce que c'est bon ici ?
                   set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
                   set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
                   set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
@@ -539,7 +539,7 @@ namespace eval cata_creation_gui {
                ::gui_cata::affiche_current_image
                ::gui_cata::affiche_cata
                # Trace du repere E/N dans l'image
-               # TODO est-ce que c'est bon ici ?
+               # TODO ::cata_creation_gui::get_all_cata est-ce que c'est bon ici ?
                set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
                set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
                set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
@@ -1711,15 +1711,13 @@ namespace eval cata_creation_gui {
       # Nouvel appel
       # set ::tools_astrometry::last_results_file [::priam::launch_priam]
       # gren_info "new file : <$::tools_astrometry::last_results_file>\n"
-      # ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
+      # ::tools_astrometry::extract_priam_results $::tools_astrometry::last_results_file
 
 
       set err [catch {
-
           set ::tools_astrometry::last_results_file [::priam::launch_priam]
           gren_info "new file : <$::tools_astrometry::last_results_file>\n"
-          ::tools_astrometry::extract_priam_result $::tools_astrometry::last_results_file
-      
+          ::tools_astrometry::extract_priam_results $::tools_astrometry::last_results_file
       } msg ]
       
       if {$err} {
