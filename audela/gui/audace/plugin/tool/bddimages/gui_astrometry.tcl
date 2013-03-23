@@ -52,7 +52,7 @@ namespace eval gui_astrometry {
          if {[info exists conf(bddimages,astrometry,ifortlib)]} {
             set ::tools_astrometry::ifortlib $conf(bddimages,astrometry,ifortlib)
          } else {
-            set ::tools_astrometry::ifortlib "/opt/intel/lib/ia32"
+            set ::tools_astrometry::ifortlib "/opt/intel/lib/intel64"
          }
       }
       if {! [info exists ::tools_astrometry::locallib] } {
@@ -1550,10 +1550,13 @@ namespace eval gui_astrometry {
 
    }
 
+
+
+
    proc ::gui_astrometry::graph_crop { } {
 
       if {[::plotxy::figure] == 0 } {
-         ::console::affiche_erreur "pas de graphes actifs\n"
+         gren_erreur "Pas de graphe actif\n"
          return
       }
 
@@ -1600,12 +1603,10 @@ namespace eval gui_astrometry {
       
       ::gui_astrometry::graph $xkey $ykey
    }
-   
-   
-   
-   
-   
-   
+
+
+
+
    proc ::gui_astrometry::graph_uncrop { } {
 
       set xkey [::plotxy::xlabel]
@@ -1628,14 +1629,10 @@ namespace eval gui_astrometry {
 
 
 
-
-
-
-
    proc ::gui_astrometry::graph_voir_source { } {
 
       if {[::plotxy::figure] == 0 } {
-         ::console::affiche_erreur "pas de graphes actifs\n"
+         gren_erreur "Pas de graphe actif\n"
          return
       }
 
@@ -1701,10 +1698,6 @@ namespace eval gui_astrometry {
       ::psf_gui::from_astrometry $name 1 [list [list $idsource $date]]
 
    }
-
-
-
-
 
 
 
@@ -2395,6 +2388,8 @@ namespace eval gui_astrometry {
                  menu $sre.popupTbl -title "Actions"
                      $sre.popupTbl add command -label "Mesurer le photocentre" \
                         -command "::gui_astrometry::psf sre $::gui_astrometry::sret"
+                     $sre.popupTbl add command -label "Voir cette image" \
+                         -command {::gui_cata::voirimg_sret}
                      $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command {::gui_cata::unset_sret; ::gui_astrometry::affich_gestion}
 

@@ -1137,7 +1137,6 @@ return
          set data [$::gui_astrometry::srpt get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
-         
 
          if {[info exists ::tools_astrometry::tabval($name,$date)]} {
 
@@ -1147,36 +1146,30 @@ return
 
             set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
             if {$r=="no"} {return}
-            
             foreach dateok $::tools_astrometry::listref($name) {
                break
             }
-            gren_info "dateok = $dateok\n"
-            
+#gren_info "dateok = $dateok\n"
             set id 0
             set idok -1
             foreach current_image $::tools_cata::img_list {
                incr id
                set tabkey [::bddimages_liste::lget $current_image "tabkey"]
                set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
-gren_info "$id :: locdate == dateok ? $locdate :: $dateok"
-
+#gren_info "$id :: locdate == dateok ? $locdate :: $dateok"
                if { [::bdi_tools::is_isodates_equal $locdate $dateok] } {
                   set idok $id
                   break
                }
-
-
-gren_info "  -> $idok \n"
+#gren_info "  -> $idok \n"
             }
-gren_info "  OK -> $idok\n"
+#gren_info "  OK -> $idok\n"
 
             if {$idok != -1} {
                set ::cata_gestion_gui::directaccess $idok
                ::cata_gestion_gui::charge_image_directaccess
                set date $::tools_cata::current_image_date
-
-gren_info "NAME = $name ; DATE -> $date :: $dateok\n"
+#gren_info "NAME = $name ; DATE -> $date :: $dateok\n"
                if {[info exists ::tools_astrometry::tabval($name,$date)]} {
                   set id [lindex $::tools_astrometry::tabval($name,$date) 0]
                } else {
@@ -1189,7 +1182,7 @@ gren_info "NAME = $name ; DATE -> $date :: $dateok\n"
                }
             }
          }
-gren_info " ---------------> ID = $id\n"
+#gren_info " ---------------> ID = $id\n"
 
          set u 0
          foreach x [$f.frmtable.tbl get 0 end] {
@@ -1240,6 +1233,45 @@ gren_info " ---------------> ID = $id\n"
 
 
 
+
+   #
+   # Astrometrie: Affiche cette l'image (de la table sret)
+   #
+   proc ::gui_cata::voirimg_sret {  } {
+      
+      set color red
+      set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      $onglets select $onglets.f$tabid(ASTROID)
+      set f [$onglets select]
+
+      # Recupere l'image selectionnee dans la table sret
+      set select [$::gui_astrometry::sret curselection]
+      set data [$::gui_astrometry::sret get $select]
+      set name [lindex $data 0]
+      set date [lindex $data 1]
+
+gren_info "SELECT = $select => $name :: $date\n"
+return
+      
+      
+      
+      # TODO TODO TODO
+
+   }
 
 
 
