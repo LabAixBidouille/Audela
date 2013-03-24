@@ -1833,7 +1833,7 @@ namespace eval gui_astrometry {
       }
 
       if {$::tools_astrometry::use_ephem_jpl} {
-         set err [::tools_astrometry::get_ephem_jpl]
+         set err [::tools_astrometry::compose_ephem_jpl]
          if {$err != 0} {
             gren_erreur "WARNING: le calcul des ephemerides JPL a echoue\n"
          }
@@ -2259,7 +2259,7 @@ namespace eval gui_astrometry {
 
                   set block [frame $onglets_ephem_jpl.obj -borderwidth 0 -cursor arrow -relief groove]
                   pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 2
-                     label $block.lab -text "Objet Science : " -width 12 -justify right
+                     label $block.lab -text "Objet Science : " -width 12
                      pack $block.lab -in $block -side left -padx 5 -pady 2 -fill x
                      ComboBox $block.combo \
                         -width 50 -height $nb_obj \
@@ -2268,49 +2268,71 @@ namespace eval gui_astrometry {
                         -values $::gui_astrometry::object_list
                      pack $block.combo -side left -fill x -expand 0
 
+                  set block [frame $onglets_ephem_jpl.mailer -borderwidth 0 -cursor arrow -relief groove]
+                  pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 10
+                     label $block.lab -text "Thunderbird : " -width 12 -justify left
+                     pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
+                     entry $block.val -relief sunken -textvariable ::bdi_tools::sendmail::thunderbird
+                     pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
+
                   set block [frame $onglets_ephem_jpl.exped  -borderwidth 0 -cursor arrow -relief groove]
-                  pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 5
-                     label $block.lab -text "Destinataire : " -width 12 -justify right
+                  pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 3
+                     label $block.lab -text "Destinataire : " -width 12
                      pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
                      entry $block.val -relief sunken -textvariable ::bdi_jpl::destinataire
                      pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
                   set block [frame $onglets_ephem_jpl.subj  -borderwidth 0 -cursor arrow -relief groove]
-                  pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 5
-                        label $block.lab -text "Sujet : " -width 12 -justify right
+                  pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 3
+                        label $block.lab -text "Sujet : " -width 12
                         pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
                         entry $block.val -relief sunken -textvariable ::bdi_jpl::sujet
                         pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
-                  set ::gui_astrometry::getjpl_send $onglets_ephem_jpl.sendtext
-                     text $::gui_astrometry::getjpl_send -height 30  \
-                          -xscrollcommand "$::gui_astrometry::getjpl_send.xscroll set" \
-                          -yscrollcommand "$::gui_astrometry::getjpl_send.yscroll set" \
-                          -wrap none
-                     pack $::gui_astrometry::getjpl_send -expand yes -fill both -padx 5 -pady 5
+                  #set ::gui_astrometry::getjpl_send $onglets_ephem_jpl.sendtext
+                  #   text $::gui_astrometry::getjpl_send -height 30  \
+                  #        -xscrollcommand "$::gui_astrometry::getjpl_send.xscroll set" \
+                  #        -yscrollcommand "$::gui_astrometry::getjpl_send.yscroll set" \
+                  #        -wrap none
+                  #   pack $::gui_astrometry::getjpl_send -expand yes -fill both -padx 5 -pady 5
+                  #
+                  #   scrollbar $::gui_astrometry::getjpl_send.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::getjpl_send xview"
+                  #   pack $::gui_astrometry::getjpl_send.xscroll -side bottom -fill x
+                  #   
+                  #   scrollbar $::gui_astrometry::getjpl_send.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::getjpl_send yview"
+                  #   pack $::gui_astrometry::getjpl_send.yscroll -side right -fill y
+         
+                  #set block [frame $onglets_ephem_jpl.butaction -borderwidth 0 -cursor arrow -relief groove]
+                  #pack $block -in $onglets_ephem_jpl -side top -expand 0 -padx 2 -pady 5
+                  #      button $block.butread -text "Read" -borderwidth 2 -takefocus 1 -command "" -state disable
+                  #      pack $block.butread -side right -anchor c -expand 0
+                  #      button $block.butsend -text "Send" -borderwidth 2 -takefocus 1 -command "" -state disable
+                  #      pack $block.butsend -side right -anchor c -expand 0
+                  #      button $block.butcreate -text "Create" -borderwidth 2 -takefocus 1 -command "" -state disable
+                  #      pack $block.butcreate -side right -anchor c -expand 0
+         
+                  set block [frame $onglets_ephem_jpl.reponse -borderwidth 1 -cursor arrow -relief groove]
+                  pack $block -in $onglets_ephem_jpl -side top -expand 1 -fill both -padx 5 -pady 5
+                     label $block.lab -text "Copier/coller ci-dessous les ephemerides renvoyees par Horizons@JPL" -font $bddconf(font,arial_10_b) 
+                     pack $block.lab -side top -anchor c -fill x -padx 3 -pady 3
 
-                     scrollbar $::gui_astrometry::getjpl_send.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::getjpl_send xview"
-                     pack $::gui_astrometry::getjpl_send.xscroll -side bottom -fill x
-                     
-                     scrollbar $::gui_astrometry::getjpl_send.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::getjpl_send yview"
-                     pack $::gui_astrometry::getjpl_send.yscroll -side right -fill y
-         
-                  set block [frame $onglets_ephem_jpl.butaction -borderwidth 0 -cursor arrow -relief groove]
-                  pack $block -in $onglets_ephem_jpl -side top -expand 0 -padx 2 -pady 5
-                        button $block.butread -text "Read" -borderwidth 2 -takefocus 1 -command "" -state disable
-                        pack $block.butread  -side right -anchor c -expand 0
-                        button $block.butsend -text "Send" -borderwidth 2 -takefocus 1 -command "" -state disable
-                        pack $block.butsend  -side right -anchor c -expand 0
-                        button $block.butcreate -text "Create" -borderwidth 2 -takefocus 1 -command "" -state disable
-                        pack $block.butcreate -side right -anchor c -expand 0
-         
-                  set ::gui_astrometry::getjpl_recev $onglets_ephem_jpl.recevtext
-                     text $::gui_astrometry::getjpl_recev -height 30 \
-                          -xscrollcommand "$::gui_astrometry::getjpl_recev.xscroll set" \
-                          -yscrollcommand "$::gui_astrometry::getjpl_recev.yscroll set" \
-                          -wrap none
-                     pack $::gui_astrometry::getjpl_recev -expand yes -fill both -padx 5 -pady 5
-                  
+                     set recv [frame $block.reponse -borderwidth 0 -cursor arrow -relief groove]
+                     pack $recv -in $block -side top -expand 1 -fill both -padx 5 -pady 5
+
+                        set ::gui_astrometry::getjpl_recev $recv.recevtext
+                        text $::gui_astrometry::getjpl_recev -height 30 \
+                             -xscrollcommand "$::gui_astrometry::getjpl_recev.xscroll set" \
+                             -yscrollcommand "$::gui_astrometry::getjpl_recev.yscroll set" \
+                             -wrap none
+                        pack $::gui_astrometry::getjpl_recev -side left -expand yes -fill both -padx 3
+
+                        set but [frame $recv.but -borderwidth 0]
+                        pack $but -in $recv -side left -expand 0 -fill y
+                           button $but.butread -text "Read" -borderwidth 2 -takefocus 1 -command "::tools_astrometry::read_ephem_jpl"
+                           pack $but.butread -side top -anchor n -expand 0 -fill x
+                           button $but.butclean -text "Clean" -borderwidth 2 -takefocus 1 -command "$::gui_astrometry::getjpl_recev delete 0.0 end"
+                           pack $but.butclean -side top -anchor n -expand 0 -fill x
+
                      scrollbar $::gui_astrometry::getjpl_recev.xscroll -orient horizontal -cursor arrow -command "$::gui_astrometry::getjpl_recev xview"
                      pack $::gui_astrometry::getjpl_recev.xscroll -side bottom -fill x
                      

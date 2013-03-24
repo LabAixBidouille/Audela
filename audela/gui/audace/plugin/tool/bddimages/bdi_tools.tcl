@@ -21,6 +21,27 @@ namespace eval ::bdi_tools {
    # #############################################################################
    namespace eval sendmail {
 
+      variable thunderbird "/usr/bin/thunderbird"
+
+      proc compose_with_thunderbird { to subject body } {
+
+         global audace
+
+         # Enregistre le corps du mail dans un fichier temporaire
+         set tempfile [file join $audace(rep_travail) "mail2horizons.txt"]
+         set chan0 [open $tempfile w]
+         puts $chan0 "$body"
+         close $chan0
+
+         # Ouvre la fenetre de mailto de Thunderbird
+         set err [catch {exec $::bdi_tools::sendmail::thunderbird -compose "to='$to',subject='$subject',body='$body'"} msg]
+         if {$err != 0} {
+            gren_erreur "ERROR: unable to launch thunderbird ($msg)"
+         }
+         return $err
+
+      }
+
       proc send { } {
          
          set someone "fv@imcce.fr"

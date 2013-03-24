@@ -421,10 +421,9 @@ namespace eval tools_astrometry {
    }
 
 
-   # Calcul des ephemerides JPL pour tous les objets SCIENCE pour toutes les dates 
+   # Calcul des ephemerides JPL pour un objet SCIENCE pour toutes les dates 
    # @return void
-
-   proc ::tools_astrometry::get_ephem_jpl {  } {
+   proc ::tools_astrometry::compose_ephem_jpl {  } {
 
       # Le Sso concerne est celui selectionne dans la combo liste
 # TODO : tester que c bien un objet skybot
@@ -459,32 +458,60 @@ namespace eval tools_astrometry {
          return
       }
 
-      # Creation du msg pour Horizons
+      # Creation du msg pour Horizons@JPL
       gren_info " - Calcul des ephemerides (JPL) de l'objet $fname ...\n"
       set jpl_job [::bdi_jpl::create $sso_name list_dates $::tools_astrometry::rapport_uai_code]
 
+      # Composition du mail a envoyer a Horizons@JPL
+      ::bdi_tools::sendmail::compose_with_thunderbird $::bdi_jpl::destinataire $::bdi_jpl::sujet $jpl_job
+
       # Affichage dans la GUI (astrometrie->Ephemerides->JPL)
-      $::gui_astrometry::getjpl_send delete 0.0 end  
-      $::gui_astrometry::getjpl_send insert end "$jpl_job"
+#      $::gui_astrometry::getjpl_send delete 0.0 end  
+#      $::gui_astrometry::getjpl_send insert end "$jpl_job"
 
-# En attendant la suite ...
-gren_info "OK, le message a envoyer a Horizons@JPL est pret. A faire manuellement.\n"
+      # Mode manuel ...
+      gren_info "     * Verifiez le message puis envoyez le\n"
+      gren_info "     * Copier/coller la reponse de Horizons@JPL dans la gui\n"
+      gren_info "     * Charger les ephemerides en cliquant sur le bouton READ\n"
 
-      # Extraction des ephemerides apres reception de la reponse du JPL
+      # A ce stade, les ephemerides du JPL n'existe pas et on prepare la structure
+      # de donnees pour quand meme pouvoir generer le rapport (sans les donnees JPL).
+      foreach {midepoch dateimg} [array get list_dates] {
+         set ::tools_astrometry::ephem_jpl($fname,$dateimg) [list $midepoch "-" "-"]
+      }
+
+      return 0
+
+   }
+
+
+   # Lecture et chargement des ephemerides JPL depuis la zone de texte dediee
+   # @return void
+   proc ::tools_astrometry::read_ephem_jpl {  } {
+
+      # Sanity check: le bouton ephemerides doit deja avoir ete active
+      if {[array size ::tools_astrometry::ephem_jpl] < 1} {
+         gren_erreur "Veuillez initialiser les ephemerides en cliquant sur le bouton 'Ephemerides'"
+         return
+      }
+
+      gren_info "Lecture des ephemerides JPL depuis la zone de texte ...\n"
+
+      # Lecture des ephemerides JPL dans la zone de texte
       array unset ephem
       ::bdi_jpl::read [$::gui_astrometry::getjpl_recev get 0.0 end] ephem
 
-      # Sauvegarde des ephemerides de l'objet courant
-      if {[array size ephem] < 1} {
-         foreach {midepoch dateimg} [array get list_dates] {
-            set ::tools_astrometry::ephem_jpl($fname,$dateimg) [list $midepoch "-" "-"]
+      # Sauvegarde des ephemerides de l'objet calcule
+      if {[array size ephem] > 0} {
+         foreach {key val} [array get ::tools_astrometry::ephem_jpl] {
+            set midepoch [lindex $val 0]
+            set ::tools_astrometry::ephem_jpl($key) $ephem($midepoch)
          }
       } else {
-         foreach {midepoch dateimg} [array get list_dates] {
-            set ::tools_astrometry::ephem_jpl($fname,$dateimg) $ephem($midepoch)
-         }
+         gren_info "WARNING: aucune ephemeride a charger\n"
       }
 
+      gren_info "done"
       return 0
 
    }
