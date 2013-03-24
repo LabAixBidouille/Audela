@@ -2,7 +2,7 @@
 # Fichier : telscript_etel.tcl
 # Description : Driver de la monture T940 en TCL
 # Auteur : Alain KLOTZ & Pierre THIERRY
-# Mise à jour $Id: telscript_etel.tcl 9111 2013-02-03 11:09:51Z alainklotz $
+# Mise à jour $Id$
 #
 
 # === Script to test and to develop a scripted telescope driver for AudeLA ===
