@@ -167,6 +167,10 @@ proc ::telscript::fillConfigPage { frm } {
    entry $frm.nom -textvariable ::telscript::private(telname) -width 25 -justify center
    pack $frm.nom -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
 
+   #--- Bouton pour ouvrir l'interface graphique de debug du T940
+   button $frm.debug -text "$caption(telscript,debug)" -relief raised -command "source \"$private(script)\";telscript_gui"
+   pack $frm.debug -in $frm.frame3 -anchor n -side left -ipadx 10 -ipady 5 -expand true
+
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(telscript,raquette_tel)" \
       -highlightthickness 0 -variable ::telscript::private(raquette)
@@ -183,6 +187,9 @@ proc ::telscript::fillConfigPage { frm } {
    set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(telscript,site_telscript)" \
       "$caption(telscript,site_telscript)" ]
    pack $labelName -side top -fill x -pady 2
+
+   #--- Gestion du bouton actif/inactif
+   ::telscript::confTelScript
 }
 
 #
@@ -206,6 +213,8 @@ proc ::telscript::configureMonture { } {
       ::console::affiche_saut "\n"
       #--- Je change de variable
       set private(telNo) $telNo
+      #--- Gestion du bouton actif/inactif
+      ::telscript::confTelScript
    } ]
 
    if { $catchResult == "1" } {
@@ -228,6 +237,8 @@ proc ::telscript::stop { } {
       return
    }
 
+   #--- Gestion du bouton actif/inactif
+   ::telscript::confTelScriptInactif
    #--- J'arrete la monture
    tel::delete $private(telNo)
    #--- Remise a zero du numero de monture
@@ -245,6 +256,50 @@ proc ::telscript::explore { } {
    #--- Ouvre la fenetre de choix des scripts
    set fenetre "$audace(base)"
    set private(script) [ ::tkutil::box_load $fenetre [ file join $audace(rep_plugin) mount telscript ] $audace(bufNo) "3" ]
+}
+
+#
+# confTelScript
+# Permet d'activer ou de desactiver le bouton
+#
+proc ::telscript::confTelScript { } {
+   variable private
+   global caption
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::telscript::isReady ] == 1 } {
+            if { ( [ file tail $private(script) ] == "telscript_etel.tcl" ) && ( $private(telname) == "t940" ) } {
+               #--- Bouton pour ouvrir l'interface graphique de debug du T940
+               $frm.debug configure -state normal
+            }
+         } else {
+            #--- Bouton pour ouvrir l'interface graphique de debug du T940
+            $frm.debug configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# confTelScriptInactif
+#    Permet de desactiver le bouton a l'arret de la monture
+#
+proc ::telscript::confTelScriptInactif { } {
+   variable private
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Bouton pour ouvrir l'interface graphique de debug du T940
+         $frm.debug configure -state disabled
+         #--- Fermeture de l'interface graphique de debug du T940 si elle existe
+         if [ winfo exists .etel ] {
+            destroy .etel
+         }
+      }
+   }
 }
 
 #
