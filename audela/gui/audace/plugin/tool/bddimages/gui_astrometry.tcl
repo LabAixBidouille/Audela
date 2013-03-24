@@ -1521,6 +1521,11 @@ namespace eval gui_astrometry {
 
    proc ::gui_astrometry::graph { xkey ykey } {
 
+      if {[string length $::gui_astrometry::combo_list_object] < 1} {
+         tk_messageBox -message "Veuillez choisir un objet dans la liste" -type ok
+         return
+      }
+
       gren_info "Graphe : $xkey VS $ykey\n"
       
       set x ""
@@ -1708,7 +1713,7 @@ namespace eval gui_astrometry {
 
       set nb_obj [llength $::gui_astrometry::object_list]
       $::gui_astrometry::fen.appli.onglets.list.ephem.onglets.list.jpl.input.obj.combo configure -height $nb_obj -values $::gui_astrometry::object_list
-      $::gui_astrometry::fen.appli.onglets.list.graphes.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::object_list
+      $::gui_astrometry::fen.appli.onglets.list.graphes.selinobj.obj.combo configure -height $nb_obj -values $::gui_astrometry::object_list
       $::gui_astrometry::fen.appli.onglets.list.rapports.onglets.list.misc.select_obj.combo configure -height $nb_obj -values $::gui_astrometry::object_list
 
    }
@@ -2134,7 +2139,7 @@ namespace eval gui_astrometry {
                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
-         #--- Cree un frame pour afficher les tables
+         #--- Cree un frame pour afficher les tables et les onglets
          set tables [frame $frm.tables  -borderwidth 0 -cursor arrow -relief groove]
          pack $tables  -in $frm -anchor s -side top -expand 0  -padx 10 -pady 5
 
@@ -2163,32 +2168,35 @@ namespace eval gui_astrometry {
             pack $rapports -in $onglets.list -expand yes -fill both 
             $onglets.list add $rapports -text "Rapports"
 
-            set onglets_sources [frame $sources.onglets -borderwidth 1 -cursor arrow -relief groove]
-            pack $onglets_sources -in $sources -side top -expand yes -fill both -padx 10 -pady 5
- 
-                 pack [ttk::notebook $onglets_sources.list] -expand yes -fill both 
- 
-                 set references [frame $onglets_sources.list.references -borderwidth 1]
-                 pack $references -in $onglets_sources.list -expand yes -fill both 
-                 $onglets_sources.list add $references -text "References"
+         #--- Onglet SOURCES
+         set onglets_sources [frame $sources.onglets -borderwidth 1 -cursor arrow -relief groove]
+         pack $onglets_sources -in $sources -side top -expand yes -fill both -padx 10 -pady 5
 
-                 set sciences [frame $onglets_sources.list.sciences -borderwidth 1]
-                 pack $sciences -in $onglets_sources.list -expand yes -fill both 
-                 $onglets_sources.list add $sciences -text "Sciences"
+              pack [ttk::notebook $onglets_sources.list] -expand yes -fill both 
 
-            set onglets_dates [frame $dates.onglets -borderwidth 1 -cursor arrow -relief groove]
-            pack $onglets_dates -in $dates -side top -expand yes -fill both -padx 10 -pady 5
- 
-                 pack [ttk::notebook $onglets_dates.list] -expand yes -fill both 
- 
-                 set sour [frame $onglets_dates.list.sources -borderwidth 1]
-                 pack $sour -in $onglets_dates.list -expand yes -fill both 
-                 $onglets_dates.list add $sour -text "Sources"
+              set references [frame $onglets_sources.list.references -borderwidth 1]
+              pack $references -in $onglets_sources.list -expand yes -fill both 
+              $onglets_sources.list add $references -text "References"
 
-                 set wcs [frame $onglets_dates.list.wcs -borderwidth 1]
-                 pack $wcs -in $onglets_dates.list -expand yes -fill both 
-                 $onglets_dates.list add $wcs -text "WCS"
+              set sciences [frame $onglets_sources.list.sciences -borderwidth 1]
+              pack $sciences -in $onglets_sources.list -expand yes -fill both 
+              $onglets_sources.list add $sciences -text "Sciences"
 
+         #--- Onglet DATES
+         set onglets_dates [frame $dates.onglets -borderwidth 1 -cursor arrow -relief groove]
+         pack $onglets_dates -in $dates -side top -expand yes -fill both -padx 10 -pady 5
+
+              pack [ttk::notebook $onglets_dates.list] -expand yes -fill both 
+
+              set sour [frame $onglets_dates.list.sources -borderwidth 1]
+              pack $sour -in $onglets_dates.list -expand yes -fill both 
+              $onglets_dates.list add $sour -text "Sources"
+
+              set wcs [frame $onglets_dates.list.wcs -borderwidth 1]
+              pack $wcs -in $onglets_dates.list -expand yes -fill both 
+              $onglets_dates.list add $wcs -text "WCS"
+
+         #--- Onglet EPHEMERIDES
          set onglets_ephem [frame $ephem.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets_ephem -in $ephem -side top -expand yes -fill both -padx 10 -pady 5
 
@@ -2203,7 +2211,7 @@ namespace eval gui_astrometry {
             $onglets_ephem.list add $jpl -text "JPL"
 
                #--- EPHEM IMCCE
-               set onglets_ephem_imcce [frame $imcce.input -borderwidth 1 -cursor arrow -relief groove]
+               set onglets_ephem_imcce [frame $imcce.input -borderwidth 0 -cursor arrow -relief groove]
                pack $onglets_ephem_imcce -in $imcce -side top -expand 0 -fill x -padx 5 -pady 5 -anchor n
  
                   checkbutton $onglets_ephem_imcce.use -highlightthickness 0 -text " Calculer les ephemerides IMCCE" \
@@ -2242,7 +2250,7 @@ namespace eval gui_astrometry {
                      pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
                #--- EPHEM JPL
-               set onglets_ephem_jpl [frame $jpl.input -borderwidth 1 -cursor arrow -relief groove]
+               set onglets_ephem_jpl [frame $jpl.input -borderwidth 0 -cursor arrow -relief groove]
                pack $onglets_ephem_jpl -in $jpl -side top -expand yes -fill both -padx 5 -pady 5 -anchor n
  
                   checkbutton $onglets_ephem_jpl.use -highlightthickness 0 -text " Calculer les ephemerides JPL" \
@@ -2309,276 +2317,275 @@ namespace eval gui_astrometry {
                      scrollbar $::gui_astrometry::getjpl_recev.yscroll -orient vertical -cursor arrow -command "$::gui_astrometry::getjpl_recev yview"
                      pack $::gui_astrometry::getjpl_recev.yscroll -side right -fill y
 
+         #--- Onglet RAPPORTS
+         set onglets_rapports [frame $rapports.onglets -borderwidth 1 -cursor arrow -relief groove]
+         pack $onglets_rapports -in $rapports -side top -expand yes -fill both -padx 10 -pady 5
 
-            set onglets_rapports [frame $rapports.onglets -borderwidth 1 -cursor arrow -relief groove]
-            pack $onglets_rapports -in $rapports -side top -expand yes -fill both -padx 10 -pady 5
- 
-                 pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both 
- 
-                 set entetes [frame $onglets_rapports.list.entetes -borderwidth 1]
-                 pack $entetes -in $onglets_rapports.list -expand yes -fill both 
-                 $onglets_rapports.list add $entetes -text "Entetes"
+            pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both 
 
-                 set mpc [frame $onglets_rapports.list.mpc -borderwidth 1]
-                 pack $mpc -in $onglets_rapports.list -expand yes -fill both 
-                 $onglets_rapports.list add $mpc -text "MPC"
+            set entetes [frame $onglets_rapports.list.entetes -borderwidth 1]
+            pack $entetes -in $onglets_rapports.list -expand yes -fill both 
+            $onglets_rapports.list add $entetes -text "Entetes"
 
-                 set txt [frame $onglets_rapports.list.txt -borderwidth 1]
-                 pack $txt -in $onglets_rapports.list -expand yes -fill both 
-                 $onglets_rapports.list add $txt -text "TXT"
+            set mpc [frame $onglets_rapports.list.mpc -borderwidth 1]
+            pack $mpc -in $onglets_rapports.list -expand yes -fill both 
+            $onglets_rapports.list add $mpc -text "MPC"
 
-                 set misc [frame $onglets_rapports.list.misc -borderwidth 1]
-                 pack $misc -in $onglets_rapports.list -expand yes -fill both 
-                 $onglets_rapports.list add $misc -text "MISC"
+            set txt [frame $onglets_rapports.list.txt -borderwidth 1]
+            pack $txt -in $onglets_rapports.list -expand yes -fill both 
+            $onglets_rapports.list add $txt -text "TXT"
 
-            # Sources - References Parent (par liste de source et moyenne)
-            set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
-            pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
+            set misc [frame $onglets_rapports.list.misc -borderwidth 1]
+            pack $misc -in $onglets_rapports.list -expand yes -fill both 
+            $onglets_rapports.list add $misc -text "MISC"
 
-                 set ::gui_astrometry::srpt $srp.table
-                 
-                 tablelist::tablelist $::gui_astrometry::srpt \
-                   -columns $loc_sources_par \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $srp.hsb set ] \
-                   -yscrollcommand [ list $srp.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+         #--- TABLE Sources - References Parent (par liste de source et moyenne)
+         set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+         pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
 
-                 scrollbar $srp.hsb -orient horizontal -command [list $::gui_astrometry::srpt xview]
-                 pack $srp.hsb -in $srp -side bottom -fill x
-                 scrollbar $srp.vsb -orient vertical -command [list $::gui_astrometry::srpt yview]
-                 pack $srp.vsb -in $srp -side left -fill y
+              set ::gui_astrometry::srpt $srp.table
+              
+              tablelist::tablelist $::gui_astrometry::srpt \
+                -columns $loc_sources_par \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $srp.hsb set ] \
+                -yscrollcommand [ list $srp.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 menu $srp.popupTbl -title "Actions"
-                     $srp.popupTbl add command -label "Mesurer le photocentre" \
-                        -command "::gui_astrometry::psf srp $::gui_astrometry::srpt"
-                     $srp.popupTbl add command -label "Voir l'objet dans une image" \
-                         -command {::gui_cata::voirobj_srpt}
-                     $srp.popupTbl add command -label "Supprimer de toutes les images" \
-                         -command {::gui_cata::unset_srpt; ::gui_astrometry::affich_gestion}
+              scrollbar $srp.hsb -orient horizontal -command [list $::gui_astrometry::srpt xview]
+              pack $srp.hsb -in $srp -side bottom -fill x
+              scrollbar $srp.vsb -orient vertical -command [list $::gui_astrometry::srpt yview]
+              pack $srp.vsb -in $srp -side left -fill y
 
-                 #--- bindings
-                 bind $::gui_astrometry::srpt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_srpt %W ]
-                 bind [$::gui_astrometry::srpt bodypath] <ButtonPress-3> [ list tk_popup $srp.popupTbl %X %Y ]
+              menu $srp.popupTbl -title "Actions"
+                  $srp.popupTbl add command -label "Mesurer le photocentre" \
+                     -command "::gui_astrometry::psf srp $::gui_astrometry::srpt"
+                  $srp.popupTbl add command -label "Voir l'objet dans une image" \
+                      -command {::gui_cata::voirobj_srpt}
+                  $srp.popupTbl add command -label "Supprimer de toutes les images" \
+                      -command {::gui_cata::unset_srpt; ::gui_astrometry::affich_gestion}
 
-                 pack $::gui_astrometry::srpt -in $srp -expand yes -fill both 
+              #--- bindings
+              bind $::gui_astrometry::srpt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_srpt %W ]
+              bind [$::gui_astrometry::srpt bodypath] <ButtonPress-3> [ list tk_popup $srp.popupTbl %X %Y ]
 
-            # Sources - References Enfant (par liste de date chaque mesure)
-            set sre [frame $onglets_sources.list.references.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
-            pack $sre -in $onglets_sources.list.references -expand yes -fill both -side left
+              pack $::gui_astrometry::srpt -in $srp -expand yes -fill both 
 
-                 set ::gui_astrometry::sret $sre.table
+         #--- TABLE Sources - References Enfant (par liste de date chaque mesure)
+         set sre [frame $onglets_sources.list.references.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
+         pack $sre -in $onglets_sources.list.references -expand yes -fill both -side left
 
-                 tablelist::tablelist $::gui_astrometry::sret \
-                   -columns $loc_dates_enf \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $sre.hsb set ] \
-                   -yscrollcommand [ list $sre.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::sret $sre.table
 
-                 scrollbar $sre.hsb -orient horizontal -command [list $::gui_astrometry::sret xview]
-                 pack $sre.hsb -in $sre -side bottom -fill x
-                 scrollbar $sre.vsb -orient vertical -command [list $::gui_astrometry::sret yview]
-                 pack $sre.vsb -in $sre -side right -fill y
+              tablelist::tablelist $::gui_astrometry::sret \
+                -columns $loc_dates_enf \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $sre.hsb set ] \
+                -yscrollcommand [ list $sre.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 menu $sre.popupTbl -title "Actions"
-                     $sre.popupTbl add command -label "Mesurer le photocentre" \
-                        -command "::gui_astrometry::psf sre $::gui_astrometry::sret"
-                     $sre.popupTbl add command -label "Voir l'objet dans cette image" \
-                         -command "::gui_cata::voirobj_sret"
-                     $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
-                        -command {::gui_cata::unset_sret; ::gui_astrometry::affich_gestion}
+              scrollbar $sre.hsb -orient horizontal -command [list $::gui_astrometry::sret xview]
+              pack $sre.hsb -in $sre -side bottom -fill x
+              scrollbar $sre.vsb -orient vertical -command [list $::gui_astrometry::sret yview]
+              pack $sre.vsb -in $sre -side right -fill y
 
-                 bind [$::gui_astrometry::sret bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
+              menu $sre.popupTbl -title "Actions"
+                  $sre.popupTbl add command -label "Mesurer le photocentre" \
+                     -command "::gui_astrometry::psf sre $::gui_astrometry::sret"
+                  $sre.popupTbl add command -label "Voir l'objet dans cette image" \
+                      -command "::gui_cata::voirobj_sret"
+                  $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
+                     -command {::gui_cata::unset_sret; ::gui_astrometry::affich_gestion}
 
-                 pack $::gui_astrometry::sret -in $sre -expand yes -fill both
+              bind [$::gui_astrometry::sret bodypath] <ButtonPress-3> [ list tk_popup $sre.popupTbl %X %Y ]
 
-            # Sources - Science Parent (par liste de source et moyenne)
-            set ssp [frame $onglets_sources.list.sciences.parent -borderwidth 1 -cursor arrow -relief groove -background white]
-            pack $ssp -in $onglets_sources.list.sciences -expand yes -fill both -side left
+              pack $::gui_astrometry::sret -in $sre -expand yes -fill both
 
-                 set ::gui_astrometry::sspt $onglets_sources.list.sciences.parent.table
+         #--- TABLE Sources - Science Parent (par liste de source et moyenne)
+         set ssp [frame $onglets_sources.list.sciences.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+         pack $ssp -in $onglets_sources.list.sciences -expand yes -fill both -side left
 
-                 tablelist::tablelist $::gui_astrometry::sspt \
-                   -columns $loc_sources_par \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $ssp.hsb set ] \
-                   -yscrollcommand [ list $ssp.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::sspt $onglets_sources.list.sciences.parent.table
 
-                 scrollbar $ssp.hsb -orient horizontal -command [list $::gui_astrometry::sspt xview]
-                 pack $ssp.hsb -in $ssp -side bottom -fill x
-                 scrollbar $ssp.vsb -orient vertical -command [list $::gui_astrometry::sspt yview]
-                 pack $ssp.vsb -in $ssp -side left -fill y
+              tablelist::tablelist $::gui_astrometry::sspt \
+                -columns $loc_sources_par \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $ssp.hsb set ] \
+                -yscrollcommand [ list $ssp.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 menu $ssp.popupTbl -title "Actions"
-                     $ssp.popupTbl add command -label "Mesurer le photocentre" \
-                        -command "::gui_astrometry::psf ssp $::gui_astrometry::sspt"
-                     $ssp.popupTbl add command -label "Voir l'objet dans une image" \
-                         -command "::gui_cata::voirobj_sspt"
-                     $ssp.popupTbl add command -label "Supprimer de toutes les images" \
-                         -command {::gui_cata::unset_sspt; ::gui_astrometry::affich_gestion}
+              scrollbar $ssp.hsb -orient horizontal -command [list $::gui_astrometry::sspt xview]
+              pack $ssp.hsb -in $ssp -side bottom -fill x
+              scrollbar $ssp.vsb -orient vertical -command [list $::gui_astrometry::sspt yview]
+              pack $ssp.vsb -in $ssp -side left -fill y
 
-                 bind $::gui_astrometry::sspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_sspt %W ]
-                 bind [$::gui_astrometry::sspt bodypath] <ButtonPress-3> [ list tk_popup $ssp.popupTbl %X %Y ]
+              menu $ssp.popupTbl -title "Actions"
+                  $ssp.popupTbl add command -label "Mesurer le photocentre" \
+                     -command "::gui_astrometry::psf ssp $::gui_astrometry::sspt"
+                  $ssp.popupTbl add command -label "Voir l'objet dans une image" \
+                      -command "::gui_cata::voirobj_sspt"
+                  $ssp.popupTbl add command -label "Supprimer de toutes les images" \
+                      -command {::gui_cata::unset_sspt; ::gui_astrometry::affich_gestion}
 
-                 pack $::gui_astrometry::sspt -in $ssp -expand yes -fill both 
+              bind $::gui_astrometry::sspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_sspt %W ]
+              bind [$::gui_astrometry::sspt bodypath] <ButtonPress-3> [ list tk_popup $ssp.popupTbl %X %Y ]
 
-            # Sources - Science Enfant (par liste de date chaque mesure)
-            set sse [frame $onglets_sources.list.sciences.enfant -borderwidth 1 -cursor arrow -relief groove -background white]
-            pack $sse -in $onglets_sources.list.sciences -expand yes -fill both -side left
+              pack $::gui_astrometry::sspt -in $ssp -expand yes -fill both 
 
-                 set ::gui_astrometry::sset $onglets_sources.list.sciences.enfant.table
+         #--- TABLE Sources - Science Enfant (par liste de date chaque mesure)
+         set sse [frame $onglets_sources.list.sciences.enfant -borderwidth 1 -cursor arrow -relief groove -background white]
+         pack $sse -in $onglets_sources.list.sciences -expand yes -fill both -side left
 
-                 tablelist::tablelist $::gui_astrometry::sset \
-                   -columns $loc_dates_enf \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $sse.hsb set ] \
-                   -yscrollcommand [ list $sse.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::sset $onglets_sources.list.sciences.enfant.table
 
-                 scrollbar $sse.hsb -orient horizontal -command [list $::gui_astrometry::sset xview]
-                 pack $sse.hsb -in $sse -side bottom -fill x
-                 scrollbar $sse.vsb -orient vertical -command [list $::gui_astrometry::sset yview]
-                 pack $sse.vsb -in $sse -side right -fill y
+              tablelist::tablelist $::gui_astrometry::sset \
+                -columns $loc_dates_enf \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $sse.hsb set ] \
+                -yscrollcommand [ list $sse.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 menu $sse.popupTbl -title "Actions"
-                     $sse.popupTbl add command -label "Mesurer le photocentre" \
-                        -command "::gui_astrometry::psf sse $::gui_astrometry::sset"
-                     $sse.popupTbl add command -label "Voir l'objet dans cette image" \
-                         -command "::gui_cata::voirobj_sset"
-                     $sse.popupTbl add command -label "Supprimer de cette image uniquement" \
-                        -command {::gui_cata::unset_sset; ::gui_astrometry::affich_gestion}
+              scrollbar $sse.hsb -orient horizontal -command [list $::gui_astrometry::sset xview]
+              pack $sse.hsb -in $sse -side bottom -fill x
+              scrollbar $sse.vsb -orient vertical -command [list $::gui_astrometry::sset yview]
+              pack $sse.vsb -in $sse -side right -fill y
 
-                 bind [$::gui_astrometry::sset bodypath] <ButtonPress-3> [ list tk_popup $sse.popupTbl %X %Y ]
+              menu $sse.popupTbl -title "Actions"
+                  $sse.popupTbl add command -label "Mesurer le photocentre" \
+                     -command "::gui_astrometry::psf sse $::gui_astrometry::sset"
+                  $sse.popupTbl add command -label "Voir l'objet dans cette image" \
+                      -command "::gui_cata::voirobj_sset"
+                  $sse.popupTbl add command -label "Supprimer de cette image uniquement" \
+                     -command {::gui_cata::unset_sset; ::gui_astrometry::affich_gestion}
 
-                 pack $::gui_astrometry::sset -in $sse -expand yes -fill both
+              bind [$::gui_astrometry::sset bodypath] <ButtonPress-3> [ list tk_popup $sse.popupTbl %X %Y ]
 
-            # Dates - Sources Parent (par liste de dates et moyenne)
-            set dsp [frame $onglets_dates.list.sources.parent -borderwidth 1 -cursor arrow -relief groove -background white]
-            pack $dsp -in $onglets_dates.list.sources -expand yes -fill both -side left
+              pack $::gui_astrometry::sset -in $sse -expand yes -fill both
 
-                 set ::gui_astrometry::dspt $onglets_dates.list.sources.parent.table
+         #--- TABLE Dates - Sources Parent (par liste de dates et moyenne)
+         set dsp [frame $onglets_dates.list.sources.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+         pack $dsp -in $onglets_dates.list.sources -expand yes -fill both -side left
 
-                 tablelist::tablelist $::gui_astrometry::dspt \
-                   -columns $loc_dates_par \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $dsp.hsb set ] \
-                   -yscrollcommand [ list $dsp.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::dspt $onglets_dates.list.sources.parent.table
 
-                 scrollbar $dsp.hsb -orient horizontal -command [list $::gui_astrometry::dspt xview]
-                 pack $dsp.hsb -in $dsp -side bottom -fill x
-                 scrollbar $dsp.vsb -orient vertical -command [list $::gui_astrometry::dspt yview]
-                 pack $dsp.vsb -in $dsp -side left -fill y
+              tablelist::tablelist $::gui_astrometry::dspt \
+                -columns $loc_dates_par \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $dsp.hsb set ] \
+                -yscrollcommand [ list $dsp.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 menu $dsp.popupTbl -title "Actions"
-                     $dsp.popupTbl add command -label "Voir cette image" -command "::gui_cata::voirimg_dspt"
-                     $dsp.popupTbl add command -label "Supprimer cette image" -command "" -state disable
+              scrollbar $dsp.hsb -orient horizontal -command [list $::gui_astrometry::dspt xview]
+              pack $dsp.hsb -in $dsp -side bottom -fill x
+              scrollbar $dsp.vsb -orient vertical -command [list $::gui_astrometry::dspt yview]
+              pack $dsp.vsb -in $dsp -side left -fill y
 
-                 bind $::gui_astrometry::dspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dspt %W ]
-                 bind [$::gui_astrometry::dspt bodypath] <ButtonPress-3> [ list tk_popup $dsp.popupTbl %X %Y ]
+              menu $dsp.popupTbl -title "Actions"
+                  $dsp.popupTbl add command -label "Voir cette image" -command "::gui_cata::voirimg_dspt"
+                  $dsp.popupTbl add command -label "Supprimer cette image" -command "" -state disable
 
-                 pack $::gui_astrometry::dspt -in $dsp -expand yes -fill both 
+              bind $::gui_astrometry::dspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dspt %W ]
+              bind [$::gui_astrometry::dspt bodypath] <ButtonPress-3> [ list tk_popup $dsp.popupTbl %X %Y ]
 
-            # Dates - Sources Enfant (par liste de sources chaque mesure)
-            set dse [frame $onglets_dates.list.sources.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
-            pack $dse -in $onglets_dates.list.sources -expand yes -fill both -side left
+              pack $::gui_astrometry::dspt -in $dsp -expand yes -fill both 
 
-                 set ::gui_astrometry::dset $dse.table
+         #--- TABLE Dates - Sources Enfant (par liste de sources chaque mesure)
+         set dse [frame $onglets_dates.list.sources.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
+         pack $dse -in $onglets_dates.list.sources -expand yes -fill both -side left
 
-                 tablelist::tablelist $::gui_astrometry::dset \
-                   -columns $loc_sources_enf \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $dse.hsb set ] \
-                   -yscrollcommand [ list $dse.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::dset $dse.table
 
-                 scrollbar $dse.hsb -orient horizontal -command [list $::gui_astrometry::dset xview]
-                 pack $dse.hsb -in $dse -side bottom -fill x
-                 scrollbar $dse.vsb -orient vertical -command [list $::gui_astrometry::dset yview]
-                 pack $dse.vsb -in $dse -side right -fill y
+              tablelist::tablelist $::gui_astrometry::dset \
+                -columns $loc_sources_enf \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $dse.hsb set ] \
+                -yscrollcommand [ list $dse.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 menu $dse.popupTbl -title "Actions"
+              scrollbar $dse.hsb -orient horizontal -command [list $::gui_astrometry::dset xview]
+              pack $dse.hsb -in $dse -side bottom -fill x
+              scrollbar $dse.vsb -orient vertical -command [list $::gui_astrometry::dset yview]
+              pack $dse.vsb -in $dse -side right -fill y
 
-                     $dse.popupTbl add command -label "Supprimer de cette image uniquement" -command "" -state disable
+              menu $dse.popupTbl -title "Actions"
 
-                 bind $::gui_astrometry::dset <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dset %W ]
-                 bind [$::gui_astrometry::dset bodypath] <ButtonPress-3> [ list tk_popup $dse.popupTbl %X %Y ]
+                  $dse.popupTbl add command -label "Supprimer de cette image uniquement" -command "" -state disable
 
-                 pack $::gui_astrometry::dset -in $dse -expand yes -fill both
+              bind $::gui_astrometry::dset <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dset %W ]
+              bind [$::gui_astrometry::dset bodypath] <ButtonPress-3> [ list tk_popup $dse.popupTbl %X %Y ]
 
-            # Dates - WCS Parent (par liste de dates et moyenne)
-            set dwp [frame $onglets_dates.list.wcs.parent -borderwidth 1 -cursor arrow -relief groove -background white]
-            pack $dwp -in $onglets_dates.list.wcs -expand yes -fill both -side left
+              pack $::gui_astrometry::dset -in $dse -expand yes -fill both
 
-                 set ::gui_astrometry::dwpt $onglets_dates.list.wcs.parent.table
+         #--- TABLE Dates - WCS Parent (par liste de dates et moyenne)
+         set dwp [frame $onglets_dates.list.wcs.parent -borderwidth 1 -cursor arrow -relief groove -background white]
+         pack $dwp -in $onglets_dates.list.wcs -expand yes -fill both -side left
 
-                 tablelist::tablelist $::gui_astrometry::dwpt \
-                   -columns $loc_dates_par \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $dwp.hsb set ] \
-                   -yscrollcommand [ list $dwp.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::dwpt $onglets_dates.list.wcs.parent.table
 
-                 scrollbar $dwp.hsb -orient horizontal -command [list $::gui_astrometry::dwpt xview]
-                 pack $dwp.hsb -in $dwp -side bottom -fill x
-                 scrollbar $dwp.vsb -orient vertical -command [list $::gui_astrometry::dwpt yview]
-                 pack $dwp.vsb -in $dwp -side left -fill y
+              tablelist::tablelist $::gui_astrometry::dwpt \
+                -columns $loc_dates_par \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $dwp.hsb set ] \
+                -yscrollcommand [ list $dwp.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 bind $::gui_astrometry::dwpt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dwpt %W ]
+              scrollbar $dwp.hsb -orient horizontal -command [list $::gui_astrometry::dwpt xview]
+              pack $dwp.hsb -in $dwp -side bottom -fill x
+              scrollbar $dwp.vsb -orient vertical -command [list $::gui_astrometry::dwpt yview]
+              pack $dwp.vsb -in $dwp -side left -fill y
 
-                 pack $::gui_astrometry::dwpt -in $dwp -expand yes -fill both 
+              bind $::gui_astrometry::dwpt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dwpt %W ]
 
-            # Dates - WCS Enfant (Solution astrometrique)
-            set dwe [frame $onglets_dates.list.wcs.enfant -borderwidth 1 -cursor arrow -relief groove -background ivory]
-            pack $dwe -in $onglets_dates.list.wcs -expand yes -fill both -side left
+              pack $::gui_astrometry::dwpt -in $dwp -expand yes -fill both 
 
-               label  $dwe.titre -text "Solution astrometrique" -borderwidth 1
-               pack   $dwe.titre -in $dwe -side top -padx 3 -pady 3 -anchor c
+         #--- TABLE Dates - WCS Enfant (Solution astrometrique)
+         set dwe [frame $onglets_dates.list.wcs.enfant -borderwidth 1 -cursor arrow -relief groove -background ivory]
+         pack $dwe -in $onglets_dates.list.wcs -expand yes -fill both -side left
 
-                 set ::gui_astrometry::dwet $onglets_dates.list.wcs.enfant.table
+            label  $dwe.titre -text "Solution astrometrique" -borderwidth 1
+            pack   $dwe.titre -in $dwe -side top -padx 3 -pady 3 -anchor c
 
-                 tablelist::tablelist $::gui_astrometry::dwet \
-                   -columns $loc_wcs_enf \
-                   -labelcommand tablelist::sortByColumn \
-                   -xscrollcommand [ list $dwe.hsb set ] \
-                   -yscrollcommand [ list $dwe.vsb set ] \
-                   -selectmode extended \
-                   -activestyle none \
-                   -stripebackground #e0e8f0 \
-                   -showseparators 1
+              set ::gui_astrometry::dwet $onglets_dates.list.wcs.enfant.table
 
-                 scrollbar $dwe.hsb -orient horizontal -command [list $::gui_astrometry::dwet xview]
-                 pack $dwe.hsb -in $dwe -side bottom -fill x
-                 scrollbar $dwe.vsb -orient vertical -command [list $::gui_astrometry::dwet yview]
-                 pack $dwe.vsb -in $dwe -side left -fill y
+              tablelist::tablelist $::gui_astrometry::dwet \
+                -columns $loc_wcs_enf \
+                -labelcommand tablelist::sortByColumn \
+                -xscrollcommand [ list $dwe.hsb set ] \
+                -yscrollcommand [ list $dwe.vsb set ] \
+                -selectmode extended \
+                -activestyle none \
+                -stripebackground #e0e8f0 \
+                -showseparators 1
 
-                 pack $::gui_astrometry::dwet -in $dwe -expand yes -fill both 
+              scrollbar $dwe.hsb -orient horizontal -command [list $::gui_astrometry::dwet xview]
+              pack $dwe.hsb -in $dwe -side bottom -fill x
+              scrollbar $dwe.vsb -orient vertical -command [list $::gui_astrometry::dwet yview]
+              pack $dwe.vsb -in $dwe -side left -fill y
 
-         #--- Entetes
+              pack $::gui_astrometry::dwet -in $dwe -expand yes -fill both 
 
+         #--- Onglet RAPPORT - Entetes
          set block [frame $entetes.uai_code  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -2645,9 +2652,7 @@ namespace eval gui_astrometry {
                entry  $block.val -relief sunken -width 80 -textvariable ::tools_astrometry::rapport_cata
                pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
-
-         #--- Rapports MPC
-
+         #--- Onglet RAPPORT - MPC
          set block [frame $mpc.exped  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
 
@@ -2685,8 +2690,7 @@ namespace eval gui_astrometry {
                        -command {::bdi_tools::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
                pack $block.sas -side top -anchor c -expand 0
 
-         #--- Rapports txt et xml
-
+         #--- Onglet RAPPORT - TXT et XML
          set ::gui_astrometry::rapport_txt $txt.text
          text $::gui_astrometry::rapport_txt -height 30 -width 120 \
               -xscrollcommand "$::gui_astrometry::rapport_txt.xscroll set" \
@@ -2711,8 +2715,7 @@ namespace eval gui_astrometry {
                        -command {::bdi_tools::save_as [$::gui_astrometry::rapport_txt get 0.0 end] "TXT"}
                pack $block.txt -side right -anchor c -expand 0
 
-         #--- MISC
-
+         #--- Onglet RAPPORT - MISC
          set object [frame $misc.select_obj -borderwidth 0 -cursor arrow -relief groove]
          pack $object -in $misc -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -2733,140 +2736,103 @@ namespace eval gui_astrometry {
                        -command ::gui_astrometry::save_dateobs
                pack $block.date -side right -anchor c -expand 0
 
-         #--- Les graphes
+         #--- Onglet GRAPHS
+         set onglet_graphes [frame $graphes.selinobj -borderwidth 0 -cursor arrow -relief groove]
+         pack $onglet_graphes -in $graphes -anchor s -side top -expand 0  -padx 10 -pady 5
+
+            set selinobject [frame $onglet_graphes.obj -borderwidth 0 -cursor arrow -relief groove]
+            pack $selinobject -in $onglet_graphes -anchor s -side top -expand 0  -padx 10 -pady 10
+
+               label $selinobject.lab -width 10 -text "Objet : "
+               pack  $selinobject.lab -in $selinobject -side left -padx 5 -pady 0
+
+               ComboBox $selinobject.combo \
+                   -width 50 -height $nb_obj \
+                   -relief sunken -borderwidth 1 -editable 0 \
+                   -textvariable ::gui_astrometry::combo_list_object \
+                   -values $::gui_astrometry::object_list
+               pack $selinobject.combo -anchor center -side left -fill x -expand 0
+
+            set selingraph [frame $onglet_graphes.selingraph -borderwidth 1 -cursor arrow -relief groove]
+            pack $selingraph -in $onglet_graphes -anchor c -side top -expand 0  -padx 10 -pady 5 -ipady 5 
    
-         set sciences [frame $graphes.select_obj -borderwidth 0 -cursor arrow -relief groove]
-         pack $sciences -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+               button $selingraph.c -text "Crop" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::graph_crop"
+               pack $selingraph.c -side left -anchor c -expand 1 -padx 20 -pady 5
+   
+               button $selingraph.u -text "Un-Crop" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::graph_uncrop"
+               pack $selingraph.u -side left -anchor c -expand 1 -padx 20 -pady 5
+   
+               button $selingraph.v -text "Voir Source" -borderwidth 2 -takefocus 1 \
+                       -command "::gui_astrometry::graph_voir_source"
+               pack $selingraph.v -side left -anchor c -expand 1 -padx 20 -pady 5
 
-            label $sciences.lab -width 10 -text "Objet : "
-            pack  $sciences.lab -in $sciences -side left -padx 5 -pady 0
+            set frmgraph [frame $onglet_graphes.actions -borderwidth 0 -cursor arrow -relief groove]
+            pack $frmgraph -in $onglet_graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-            ComboBox $sciences.combo \
-                -width 50 -height $nb_obj \
-                -relief sunken -borderwidth 1 -editable 0 \
-                -textvariable ::gui_astrometry::combo_list_object \
-                -values $::gui_astrometry::object_list
-            pack $sciences.combo -anchor center -side left -fill x -expand 0
+               set frmgraphx [frame $frmgraph.x -borderwidth 0 -cursor arrow -relief groove]
+               pack $frmgraphx -in $frmgraph -anchor s -side left -expand 1 -fill x -padx 10 -pady 5
 
-         set selingraph [frame $graphes.selingraph -borderwidth 1 -cursor arrow -relief groove]
-         pack $selingraph -in $graphes -anchor c -side top -expand 1 -fill x -padx 10 -pady 5 -ipady 5 
+                  label $frmgraphx.lab -text "RA"
+                  pack  $frmgraphx.lab -in $frmgraphx -side top -padx 5 -pady 5
 
-                    button $selingraph.c -text "Crop" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph_crop"
-                    pack $selingraph.c -side left -anchor c -expand 1
+                  button $frmgraphx.datejj_vs_res_a -text "Date vs Residus" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj res_a"
+                  pack $frmgraphx.datejj_vs_res_a -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
 
-                    button $selingraph.u -text "Un-Crop" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph_uncrop"
-                    pack $selingraph.u -side left -anchor c -expand 1
+                  button $frmgraphx.datejj_vs_ra_omc_imcce -text "Date vs O-C(IMCCE)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj ra_imcce_omc"
+                  pack $frmgraphx.datejj_vs_ra_omc_imcce -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
 
-                    button $selingraph.v -text "Voir Source" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph_voir_source"
-                    pack $selingraph.v -side left -anchor c -expand 1
+                  button $frmgraphx.res_a_vs_ra_omc -text "Residus vs O-C(IMCCE)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph res_a ra_imcce_omc"
+                  pack $frmgraphx.res_a_vs_ra_omc -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphx.datejj_vs_ra_omc_jpl -text "Date vs O-C(JPL)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj ra_mpc_omc"
+                  pack $frmgraphx.datejj_vs_ra_omc_jpl -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphx.omc_jpl_vs_omc_imcce -text "O-C(JPL) vs O-C(IMCCE)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph ra_mpc_omc ra_imcce_omc"
+                  pack $frmgraphx.omc_jpl_vs_omc_imcce -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphx.datejj_vs_ra_imccejpl_cmc -text "Date vs IMCCE-JPL" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj ra_imccejpl_cmc"
+                  pack $frmgraphx.datejj_vs_ra_imccejpl_cmc -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+               set frmgraphy [frame $frmgraph.y -borderwidth 0 -cursor arrow -relief groove]
+               pack $frmgraphy -in $frmgraph -anchor s -side left -expand 1 -fill x -padx 10 -pady 5
+
+                  label $frmgraphy.lab -text "DEC"
+                  pack  $frmgraphy.lab -in $frmgraphy -side top -padx 5 -pady 5
+
+                  button $frmgraphy.datejj_vs_res_d -text "Date vs Residus" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj res_d"
+                  pack $frmgraphy.datejj_vs_res_d -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphy.datejj_vs_dec_omc_imcce -text "Date vs O-C(IMCCE)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj dec_imcce_omc"
+                  pack $frmgraphy.datejj_vs_dec_omc_imcce -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphy.res_d_vs_dec_omc -text "Residus vs O-C(IMCCE)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph res_d dec_imcce_omc"
+                  pack $frmgraphy.res_d_vs_dec_omc -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphy.datejj_vs_dec_omc_jpl -text "Date vs O-C(JPL)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj dec_mpc_omc"
+                  pack $frmgraphy.datejj_vs_dec_omc_jpl -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphy.omc_jpl_vs_omc_imcce -text "O-C(JPL) vs O-C(IMCCE)" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph dec_mpc_omc dec_imcce_omc"
+                  pack $frmgraphy.omc_jpl_vs_omc_imcce -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
+                  button $frmgraphy.datejj_vs_dec_imccejpl_cmc -text "Date vs IMCCE-JPL" -borderwidth 2 -takefocus 1 \
+                          -command "::gui_astrometry::graph datejj dec_imccejpl_cmc"
+                  pack $frmgraphy.datejj_vs_dec_imccejpl_cmc -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
 
 
-         set frmgraph [frame $graphes.frmgraph1 -borderwidth 0 -cursor arrow -relief groove]
-         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              set block [frame $frmgraph.datejj_vs_res_a -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS res_a" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj res_a"
-                    pack $block.gr -side left -anchor c -expand 0
-
-              set block [frame $frmgraph.datejj_vs_res_d -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS res_d" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj res_d"
-                    pack $block.gr -side left -anchor c -expand 0
-
-         set frmgraph [frame $graphes.frmgraph2 -borderwidth 0 -cursor arrow -relief groove]
-         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              set block [frame $frmgraph.datejj_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS ra_imcce_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj ra_imcce_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-              set block [frame $frmgraph.datejj_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS dec_imcce_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj dec_imcce_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-         set frmgraph [frame $graphes.frmgraph3 -borderwidth 0 -cursor arrow -relief groove]
-         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              set block [frame $frmgraph.datejj_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS ra_mpc_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj ra_mpc_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-              set block [frame $frmgraph.datejj_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS dec_mpc_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj dec_mpc_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-         set frmgraph [frame $graphes.frmgraph4 -borderwidth 0 -cursor arrow -relief groove]
-         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-         
-              set block [frame $frmgraph.res_a_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "res_a VS ra_imcce_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph res_a ra_imcce_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-              set block [frame $frmgraph.res_d_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "res_d VS dec_imcce_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph res_d dec_imcce_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-         set frmgraph [frame $graphes.frmgraph5 -borderwidth 0 -cursor arrow -relief groove]
-         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              set block [frame $frmgraph.res_a_vs_ra_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "ra_mpc_omc VS ra_imcce_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph ra_mpc_omc ra_imcce_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-              set block [frame $frmgraph.res_d_vs_dec_omc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "dec_mpc_omc VS dec_imcce_omc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph dec_mpc_omc dec_imcce_omc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-         set frmgraph [frame $graphes.frmgraph6 -borderwidth 0 -cursor arrow -relief groove]
-         pack $frmgraph -in $graphes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-              set block [frame $frmgraph.datejj_vs_ra_imccejpl_cmc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS ra_imccejpl_cmc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj ra_imccejpl_cmc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-              set block [frame $frmgraph.datejj_vs_dec_imccejpl_cmc -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $frmgraph -side left -expand 0 -padx 2 -pady 5
-
-                    button $block.gr -text "datejj VS dec_imccejpl_cmc" -borderwidth 2 -takefocus 1 \
-                            -command "::gui_astrometry::graph datejj dec_imccejpl_cmc"
-                    pack $block.gr -side left -anchor c -expand 0
-
-         #--- Cree un frame pour afficher bouton fermeture
+         #--- Cree un frame pour afficher les boutons
          set info [frame $frm.info  -borderwidth 0 -cursor arrow -relief groove]
          pack $info  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
 
