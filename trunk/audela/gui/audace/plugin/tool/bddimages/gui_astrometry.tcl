@@ -469,7 +469,6 @@ namespace eval gui_astrometry {
 
       set imcce [list "-" {"-" "-" "-" "-" "-"}]
       if {$::tools_astrometry::use_ephem_imcce && [array exists ::tools_astrometry::ephem_imcce]} {
-
          foreach key [array names ::tools_astrometry::ephem_imcce] {
             if {[regexp -all -- $name $key]} {
                set imcce [list "$key" $::tools_astrometry::ephem_imcce($name,$date)]
@@ -683,7 +682,6 @@ namespace eval gui_astrometry {
          foreach dateimg $::tools_astrometry::listscience($name) {
 
             set idsource [lindex $::tools_astrometry::tabval($name,$dateimg)  0]
-            gren_info "idsource = $idsource\n"
             set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  4]]
             set res_d   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  5]]
@@ -703,7 +701,7 @@ namespace eval gui_astrometry {
 
             # Ephemerides de l'IMCCE
             set eph_imcce     [lindex $all_ephem 0]
-            set midatejd      [lindex $eph_imcce {1 1 0}]
+            #set midatejd      [lindex $eph_imcce {1 1 0}]
             set ra_imcce_deg  [lindex $eph_imcce {1 1 1}]
             set dec_imcce_deg [lindex $eph_imcce {1 1 2}]
             set h_imcce_deg   [lindex $eph_imcce {1 1 3}]
@@ -711,10 +709,14 @@ namespace eval gui_astrometry {
 
             # Ephemerides du JPL
             set eph_jpl       [lindex $all_ephem 1]
+            #set midatejd [lindex $eph_jpl {1 1 0}]
             set ra_jpl_deg    [lindex $eph_jpl {1 1 1}]
             set dec_jpl_deg   [lindex $eph_jpl {1 1 2}]
 
-            # Epoque d milieu de pose au format ISO
+            # Epoque du milieu de pose au format JD
+            set midatejd $::tools_cata::date2midate($dateimg)
+
+            # Epoque du milieu de pose au format ISO
             set midateiso "-"
             if {$midatejd != "-"} {
                set midateiso [mc_date2iso8601 $midatejd]
@@ -1718,7 +1720,7 @@ namespace eval gui_astrometry {
    proc ::gui_astrometry::affich_catalist {  } {
 
       set tt0 [clock clicks -milliseconds]
-      ::tools_astrometry::create_vartab  
+      ::tools_astrometry::create_vartab
       gren_info "Creation de la structure de variable en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
 
       # Charge la liste des objets SCIENCE
@@ -2262,14 +2264,14 @@ namespace eval gui_astrometry {
                   pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 5
                      label $block.lab -text "Destinataire : " -width 12 -justify right
                      pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
-                     entry $block.val -relief sunken -textvariable ::gui_astrometry::getjpl_desti
+                     entry $block.val -relief sunken -textvariable ::bdi_jpl::destinataire
                      pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
                   set block [frame $onglets_ephem_jpl.subj  -borderwidth 0 -cursor arrow -relief groove]
                   pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 5
                         label $block.lab -text "Sujet : " -width 12 -justify right
                         pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
-                        entry $block.val -relief sunken -textvariable ::gui_astrometry::getjpl_subj
+                        entry $block.val -relief sunken -textvariable ::bdi_jpl::sujet
                         pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
                   set ::gui_astrometry::getjpl_send $onglets_ephem_jpl.sendtext
@@ -2287,11 +2289,11 @@ namespace eval gui_astrometry {
          
                   set block [frame $onglets_ephem_jpl.butaction -borderwidth 0 -cursor arrow -relief groove]
                   pack $block -in $onglets_ephem_jpl -side top -expand 0 -padx 2 -pady 5
-                        button $block.butread -text "Read" -borderwidth 2 -takefocus 1 -command "::gui_astrometry::jpl_read"
+                        button $block.butread -text "Read" -borderwidth 2 -takefocus 1 -command "" -state disable
                         pack $block.butread  -side right -anchor c -expand 0
-                        button $block.butsend -text "Send" -borderwidth 2 -takefocus 1 -command "::gui_astrometry::jpl_send"
+                        button $block.butsend -text "Send" -borderwidth 2 -takefocus 1 -command "" -state disable
                         pack $block.butsend  -side right -anchor c -expand 0
-                        button $block.butcreate -text "Create" -borderwidth 2 -takefocus 1 -command "::gui_astrometry::jpl_create"
+                        button $block.butcreate -text "Create" -borderwidth 2 -takefocus 1 -command "" -state disable
                         pack $block.butcreate -side right -anchor c -expand 0
          
                   set ::gui_astrometry::getjpl_recev $onglets_ephem_jpl.recevtext
@@ -2388,8 +2390,8 @@ namespace eval gui_astrometry {
                  menu $sre.popupTbl -title "Actions"
                      $sre.popupTbl add command -label "Mesurer le photocentre" \
                         -command "::gui_astrometry::psf sre $::gui_astrometry::sret"
-                     $sre.popupTbl add command -label "Voir cette image" \
-                         -command {::gui_cata::voirimg_sret}
+                     $sre.popupTbl add command -label "Voir l'objet dans cette image" \
+                         -command "::gui_cata::voirobj_sret"
                      $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
                         -command {::gui_cata::unset_sret; ::gui_astrometry::affich_gestion}
 
@@ -2421,8 +2423,10 @@ namespace eval gui_astrometry {
                  menu $ssp.popupTbl -title "Actions"
                      $ssp.popupTbl add command -label "Mesurer le photocentre" \
                         -command "::gui_astrometry::psf ssp $::gui_astrometry::sspt"
+                     $ssp.popupTbl add command -label "Voir l'objet dans une image" \
+                         -command "::gui_cata::voirobj_sspt"
                      $ssp.popupTbl add command -label "Supprimer de toutes les images" \
-                         -command ""
+                         -command {::gui_cata::unset_sspt; ::gui_astrometry::affich_gestion}
 
                  bind $::gui_astrometry::sspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_sspt %W ]
                  bind [$::gui_astrometry::sspt bodypath] <ButtonPress-3> [ list tk_popup $ssp.popupTbl %X %Y ]
@@ -2453,8 +2457,10 @@ namespace eval gui_astrometry {
                  menu $sse.popupTbl -title "Actions"
                      $sse.popupTbl add command -label "Mesurer le photocentre" \
                         -command "::gui_astrometry::psf sse $::gui_astrometry::sset"
+                     $sse.popupTbl add command -label "Voir l'objet dans cette image" \
+                         -command "::gui_cata::voirobj_sset"
                      $sse.popupTbl add command -label "Supprimer de cette image uniquement" \
-                        -command ""
+                        -command {::gui_cata::unset_sset; ::gui_astrometry::affich_gestion}
 
                  bind [$::gui_astrometry::sset bodypath] <ButtonPress-3> [ list tk_popup $sse.popupTbl %X %Y ]
 
@@ -2482,8 +2488,8 @@ namespace eval gui_astrometry {
                  pack $dsp.vsb -in $dsp -side left -fill y
 
                  menu $dsp.popupTbl -title "Actions"
-                     $dsp.popupTbl add command -label "Supprimer l'image" \
-                         -command ""
+                     $dsp.popupTbl add command -label "Voir cette image" -command "::gui_cata::voirimg_dspt"
+                     $dsp.popupTbl add command -label "Supprimer cette image" -command "" -state disable
 
                  bind $::gui_astrometry::dspt <<ListboxSelect>> [ list ::gui_astrometry::cmdButton1Click_dspt %W ]
                  bind [$::gui_astrometry::dspt bodypath] <ButtonPress-3> [ list tk_popup $dsp.popupTbl %X %Y ]

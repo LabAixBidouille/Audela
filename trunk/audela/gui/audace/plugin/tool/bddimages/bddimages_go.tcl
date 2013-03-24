@@ -95,11 +95,11 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_tmp) ".fit"
    
    if {[info exists bddconf(dirfits)]} {
-      set  audace(rep_images)  $bddconf(dirfits)
+      set audace(rep_images) $bddconf(dirfits)
    }
 
    if {[info exists bddconf(dirtmp)]} {
-      set  audace(rep_travail)  $bddconf(dirtmp)
+      set audace(rep_travail) $bddconf(dirtmp)
    }
 
 }
@@ -138,6 +138,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_calendar.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_jpl.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
 
    # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
@@ -208,7 +209,6 @@ proc ::bddimages::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
    load libcatalog[info sharedlibextension]
-   #gren_info "ressources\n"
 }
 
 #------------------------------------------------------------
