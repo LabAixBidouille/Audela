@@ -30,7 +30,10 @@ JB    - gerer limite Priam
     - champs nb obs
 FV  - construction du graph
     - regler voir wcs
-    - voir source dans sre ssp sse dsp
+    - supprimer source dans dse
+    - supprimer image dans dsp 
+    - mesurer le photocentre (PSF): apres reglage des parametres => on applique a toutes les images pour 1 source donnée
+                                    ou mode "rafale" sur les n images suivantes, avec n reglable
 
 BUGS
 

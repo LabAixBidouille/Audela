@@ -1804,7 +1804,7 @@ namespace eval bddimages_recherche {
          gren_info "Nb selected images: [llength [$w curselection]]\n"
          set i [lindex [$w curselection ]  0]
          set idbddimg  [lindex [$w get $i] 0]
-         affiche_image_by_idbddimg $idbddimg
+         ::bddimages_recherche::affiche_image_by_idbddimg $idbddimg
          if { [info exists ::gui_cata::fenv] } {
             if { [winfo exists $::gui_cata::fenv] } {
                set lid [list $i]

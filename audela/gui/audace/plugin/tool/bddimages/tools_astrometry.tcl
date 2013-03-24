@@ -419,96 +419,66 @@ namespace eval tools_astrometry {
 
    proc ::tools_astrometry::get_ephem_jpl {  } {
 
-      # Initialisation
-      array unset ::tools_astrometry::ephem_jpl
+      # Le Sso concerne est celui selectionne dans la combo liste
+# TODO : tester que c bien un objet skybot
+      set fname $::gui_astrometry::combo_list_object
+      set sso_name [lrange [split $fname "_"] 2 end]
+      if {[string length $sso_name] < 1} {
+         gren_erreur "WARNING: Aucun Sso n'a ete selectionne\n"
+         return
+      }
 
-      # Pour chaque objet
+      # Initialisations
+      array unset ::tools_astrometry::ephem_jpl
+      array unset list_dates
+
+      # Collecte des infos 
       foreach {name y} [array get ::tools_astrometry::listscience] {
 
-         # Collecte des dates pour l'objet courant
-         array unset list_dates
+         if {[string compare $name $fname] != 0} { continue }
+
+         # Collecte des dates pour l'objet selectionne
+         set ldates {}
          foreach dateimg $::tools_astrometry::listscience($name) {
             set midepoch $::tools_cata::date2midate($dateimg)
-            set list_dates([format "%18.10f" $midepoch]) $dateimg
-         }
-
-         # Test l'existence de dates de calcul
-         if {[array size list_dates] == 0} {
-            gren_erreur "WARNING: Aucune date de calcul pour l'objet $name\n"
-            continue
-         }
-
-         # Initialise les calculs d'ephemerides pour l'objet
-         set cmdfile [::tools_astrometry::init_ephem_imcce $name list_dates]
-
-         # Calcul des ephemerides de l'objet
-         gren_info " - Calcul des ephemerides (JPL) de l'objet $name ... "
-         set tt0 [clock clicks -milliseconds]
-         set err [catch {exec sh $cmdfile} msg]
-         gren_info "en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
-
-         if { $err } {
-            gren_erreur "ERROR ephemcc #$err: $msg\n"
-            foreach {midepoch dateimg} [array get list_dates] {
-               set ::tools_astrometry::ephem_jpl($name,$dateimg) [list $midepoch "-" "-" "-" "-"]
-            }
-         } else {
-            array unset ephem
-            foreach line [split $msg "\n"] {
-               set line [string trim $line]
-               set c [string index $line 0]
-               if {$c == "#"} {continue}
-               set rd [regexp -inline -all -- {\S+} $line]
-               set tab [split $rd " "]
-               set jd [lindex $tab 0]
-               set ra [::bdi_tools::sexa2dec [list [lindex $tab  2] [lindex $tab  3] [lindex $tab  4]] 15.0]
-               set dec [::bdi_tools::sexa2dec [list [lindex $tab  5] [lindex $tab  6] [lindex $tab  7]] 1.0]
-               set h [::bdi_tools::sexa2dec [list [lindex $tab 17] [lindex $tab 18] [lindex $tab 19]] 1.0]
-               set am [lindex $tab 20]
-               if {$am == "---"} { set am "-" }
-               set ephem([format "%18.10f" $jd]) [list $jd $ra $dec $h $am]
-            }
-            # Sauvegarde des ephemerides de l'objet courant
-            foreach {midepoch dateimg} [array get list_dates] {
-               set ::tools_astrometry::ephem_jpl($name,$dateimg) $ephem($midepoch)
-            }
+            set list_dates([format "%18.9f" $midepoch]) $dateimg
          }
 
       }
-      return 0
 
-   }
+      # Test l'existence de dates de calcul
+      if {[array size list_dates] == 0} {
+         gren_erreur "WARNING: Aucune date de calcul pour l'objet $name\n"
+         return
+      }
 
+      # Creation du msg pour Horizons
+      gren_info " - Calcul des ephemerides (JPL) de l'objet $fname ...\n"
+      set jpl_job [::bdi_jpl::create $sso_name list_dates $::tools_astrometry::rapport_uai_code]
 
-   proc ::gui_astrometry::jpl_read { } {
-
-# TODO ::gui_astrometry::jpl_read
-
-      ::bdi_jpl::read
-
-   }
-
-
-   proc ::gui_astrometry::jpl_send { } {
-
-# TODO ::gui_astrometry::jpl_send
-
-      ::bdi_jpl::send
-
-   }
-
-
-   proc ::gui_astrometry::jpl_create { } {
-
-# TODO ::gui_astrometry::jpl_create
-
-      set object_name [string trim [::tools_astrometry::convert_mpc_name $::gui_astrometry::combo_list_object]]
-      set iau_code $::tools_astrometry::rapport_uai_code
-      set reply_mail ::tools_astrometry::rapport_mail
-      ::bdi_jpl::create $object_name $iau_code $reply_mail
-
+      # Affichage dans la GUI (astrometrie->Ephemerides->JPL)
       $::gui_astrometry::getjpl_send delete 0.0 end  
-      $::gui_astrometry::getjpl_send insert end "!\$\$SOF\n"
+      $::gui_astrometry::getjpl_send insert end "$jpl_job"
+
+# En attendant la suite ...
+gren_info "OK, le message a envoyer a Horizons@JPL est pret. A faire manuellement.\n"
+
+      # Extraction des ephemerides apres reception de la reponse du JPL
+      array unset ephem
+      ::bdi_jpl::read [$::gui_astrometry::getjpl_recev get 0.0 end] ephem
+
+      # Sauvegarde des ephemerides de l'objet courant
+      if {[array size ephem] < 1} {
+         foreach {midepoch dateimg} [array get list_dates] {
+            set ::tools_astrometry::ephem_jpl($fname,$dateimg) [list $midepoch "-" "-"]
+         }
+      } else {
+         foreach {midepoch dateimg} [array get list_dates] {
+            set ::tools_astrometry::ephem_jpl($fname,$dateimg) $ephem($midepoch)
+         }
+      }
+
+      return 0
 
    }
 

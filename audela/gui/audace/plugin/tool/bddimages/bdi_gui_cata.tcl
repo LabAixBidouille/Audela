@@ -1108,7 +1108,7 @@ return
 
 
    #
-   # Astrometrie: Affiche un objet dans une l'image (de la table srpt)
+   # Astrometrie: Affiche une source de reference dans une l'image (de la table srpt)
    #
    proc ::gui_cata::voirobj_srpt {  } {
       
@@ -1149,27 +1149,22 @@ return
             foreach dateok $::tools_astrometry::listref($name) {
                break
             }
-#gren_info "dateok = $dateok\n"
             set id 0
             set idok -1
             foreach current_image $::tools_cata::img_list {
                incr id
                set tabkey [::bddimages_liste::lget $current_image "tabkey"]
                set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
-#gren_info "$id :: locdate == dateok ? $locdate :: $dateok"
                if { [::bdi_tools::is_isodates_equal $locdate $dateok] } {
                   set idok $id
                   break
                }
-#gren_info "  -> $idok \n"
             }
-#gren_info "  OK -> $idok\n"
 
             if {$idok != -1} {
                set ::cata_gestion_gui::directaccess $idok
                ::cata_gestion_gui::charge_image_directaccess
                set date $::tools_cata::current_image_date
-#gren_info "NAME = $name ; DATE -> $date :: $dateok\n"
                if {[info exists ::tools_astrometry::tabval($name,$date)]} {
                   set id [lindex $::tools_astrometry::tabval($name,$date) 0]
                } else {
@@ -1182,7 +1177,6 @@ return
                }
             }
          }
-#gren_info " ---------------> ID = $id\n"
 
          set u 0
          foreach x [$f.frmtable.tbl get 0 end] {
@@ -1235,9 +1229,9 @@ return
 
 
    #
-   # Astrometrie: Affiche cette l'image (de la table sret)
+   # Astrometrie: Affiche une source de reference dans cette l'image (de la table sret)
    #
-   proc ::gui_cata::voirimg_sret {  } {
+   proc ::gui_cata::voirobj_sret {  } {
       
       set color red
       set width 2
@@ -1249,27 +1243,32 @@ return
 
       cleanmark
 
-      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
-      set onglets .gestion_cata.appli.onglets.nb
-      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
-      foreach {x y} [array get cataname] {
-         set tabid($y) $x
-      }
-      $onglets select $onglets.f$tabid(ASTROID)
-      set f [$onglets select]
-
       # Recupere l'image selectionnee dans la table sret
       set select [$::gui_astrometry::sret curselection]
       set data [$::gui_astrometry::sret get $select]
-      set name [lindex $data 0]
+      set objid [lindex $data 0]
       set date [lindex $data 1]
+      set ra [lindex $data 5]
+      set dec [lindex $data 6]
 
-gren_info "SELECT = $select => $name :: $date\n"
-return
-      
-      
-      
-      # TODO TODO TODO
+      set id 0
+      set idok -1
+      foreach current_image $::tools_cata::img_list {
+         incr id
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+         if { [::bdi_tools::is_isodates_equal $locdate $date] } {
+            set idok $id
+            break
+         }
+      }
+
+      if {$idok != -1} {
+         set ::cata_gestion_gui::directaccess $idok
+         ::cata_gestion_gui::charge_image_directaccess
+         gren_info "Image $date affichee\n"
+         affich_un_rond $ra $dec $color $width
+      }
 
    }
 
@@ -1280,13 +1279,13 @@ return
 
 
    #
-   # Astrometrie: supprime une source de reference (de la table srpt) dans l'image selectionnee
+   # Astrometrie: supprime une source de reference (de la table sret) dans l'image selectionnee
    #
    proc ::gui_cata::unset_sret {  } {
       
       set color red
-
       set width 2
+
       if {![winfo exists .gestion_cata.appli.onglets.nb]} {
          tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
          return
@@ -1334,27 +1333,90 @@ return
 
 
 
-
-
-
-   proc ::gui_cata::get_pos_col { name { idcata 1 } } {
-
-      if {![info exists idcata]} {set idcata 1}
+   #
+   # Astrometrie: Affiche une source science dans une l'image (de la table sspt)
+   #
+   proc ::gui_cata::voirobj_sspt {  } {
       
-      set list_of_columns $::gui_cata::tklist_list_of_columns($idcata)
+      set color red
+      set width 2
 
-      set cpt 0
-      foreach { c } $list_of_columns {
-         set a [split $c " "]
-         set b [lindex $a 1]
-         set a [lindex $a 0]
-         if {$a==$name} {
-            return $cpt
-         }
-         incr cpt
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
       }
-      
-      return -1
+
+      cleanmark
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      $onglets select $onglets.f$tabid(ASTROID)
+      set f [$onglets select]
+
+      # Selectionne chaque source
+      foreach select [$::gui_astrometry::sspt curselection] {
+         
+         set data [$::gui_astrometry::sspt get $select]
+         set name [lindex $data 0]
+         set date $::tools_cata::current_image_date
+
+         if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+
+            set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+
+         } else {
+
+            set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
+            if {$r=="no"} {return}
+            foreach dateok $::tools_astrometry::listscience($name) {
+               break
+            }
+            set id 0
+            set idok -1
+            foreach current_image $::tools_cata::img_list {
+               incr id
+               set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+               set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+               if { [::bdi_tools::is_isodates_equal $locdate $dateok] } {
+                  set idok $id
+                  break
+               }
+            }
+
+            if {$idok != -1} {
+               set ::cata_gestion_gui::directaccess $idok
+               ::cata_gestion_gui::charge_image_directaccess
+               set date $::tools_cata::current_image_date
+               if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+                  set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+               } else {
+                  if {[info exists ::tools_astrometry::tabval($name,$dateok)]} {
+                     set id [lindex $::tools_astrometry::tabval($name,$dateok) 0]
+                  } else {
+                     tk_messageBox -message "Chargement de l'image impossible" -type ok
+                     return
+                  }
+               }
+            }
+         }
+
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               $f.frmtable.tbl selection set $u
+               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+               set dec [lindex $x [::gui_cata::get_pos_col dec]]
+               affich_un_rond $ra $dec $color $width
+            }
+            incr u
+         }
+         
+      }
 
    }
 
@@ -1362,8 +1424,175 @@ return
 
 
 
+   #
+   # Astrometrie: supprime une source science (de la table sspt) dans toutes les images
+   #
+   proc ::gui_cata::unset_sspt {  } {
+
+      # Affiche l'objet et l'image si besoin
+      ::gui_cata::voirobj_sspt
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      $onglets select $onglets.f$tabid(ASTROID)
+      set f [$onglets select]
+
+      # Unset les sources
+      ::cata_gestion_gui::unset_flag $f.frmtable.tbl
+      # Propage les sources
+      ::cata_gestion_gui::propagation $f.frmtable.tbl
+   }
 
 
+
+
+
+
+   #
+   # Astrometrie: Affiche une source science dans cette l'image (de la table sset)
+   #
+   proc ::gui_cata::voirobj_sset {  } {
+      
+      set color red
+      set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+
+      # Recupere l'image selectionnee dans la table sret
+      set select [$::gui_astrometry::sset curselection]
+      set data [$::gui_astrometry::sset get $select]
+      set objid [lindex $data 0]
+      set date [lindex $data 1]
+      set ra [lindex $data 5]
+      set dec [lindex $data 6]
+
+      set id 0
+      set idok -1
+      foreach current_image $::tools_cata::img_list {
+         incr id
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+         if { [::bdi_tools::is_isodates_equal $locdate $date] } {
+            set idok $id
+            break
+         }
+      }
+
+      if {$idok != -1} {
+         set ::cata_gestion_gui::directaccess $idok
+         ::cata_gestion_gui::charge_image_directaccess
+         gren_info "Image $date affichee\n"
+         affich_un_rond $ra $dec $color $width
+      }
+
+   }
+
+
+
+
+   #
+   # Astrometrie: supprime une source science (de la table sset) dans l'image selectionnee
+   #
+   proc ::gui_cata::unset_sset {  } {
+      
+      set color red
+
+      set width 2
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      set idcata_astroid $tabid(ASTROID)
+      $onglets select $onglets.f$idcata_astroid
+      set f [$onglets select]
+
+      # Selectionne chaque source
+      foreach select [$::gui_astrometry::sset curselection] {
+         
+         set data [$::gui_astrometry::sset get $select]
+         set id [lindex $data 0]
+         set date [lindex $data 1]
+
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               $f.frmtable.tbl selection set $u
+               set ra  [lindex $x [::gui_cata::get_pos_col ra]]
+               set dec [lindex $x [::gui_cata::get_pos_col dec]]
+               affich_un_rond $ra $dec $color $width
+            }
+            incr u
+         }
+         
+      }
+      
+      # Unset les sources
+      ::cata_gestion_gui::unset_flag $f.frmtable.tbl
+
+   }
+
+
+
+
+
+   #
+   # Astrometrie: Affiche une image (de la table dspt)
+   #
+   proc ::gui_cata::voirimg_dspt {  } {
+      
+      set color red
+      set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+
+      # Recupere l'image selectionnee dans la table sret
+      set select [$::gui_astrometry::dspt curselection]
+      set data [$::gui_astrometry::dspt get $select]
+      set date [lindex $data 0]
+
+      set id 0
+      set idok -1
+      foreach current_image $::tools_cata::img_list {
+         incr id
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+         if { [::bdi_tools::is_isodates_equal $locdate $date] } {
+            set idok $id
+            break
+         }
+      }
+
+      if {$idok != -1} {
+         set ::cata_gestion_gui::directaccess $idok
+         ::cata_gestion_gui::charge_image_directaccess
+         gren_info "Image $date affichee\n"
+      }
+
+   }
 
 
 
@@ -1416,20 +1645,6 @@ return
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
    proc ::gui_cata::voir_dset { w } {
       
       set color red
@@ -1470,23 +1685,31 @@ return
    
    }
 
-   
-
-   
-   
-   
-   
-   
 
 
 
 
 
+   proc ::gui_cata::get_pos_col { name { idcata 1 } } {
+
+      if {![info exists idcata]} {set idcata 1}
+      
+      set list_of_columns $::gui_cata::tklist_list_of_columns($idcata)
+
+      set cpt 0
+      foreach { c } $list_of_columns {
+         set a [split $c " "]
+         set b [lindex $a 1]
+         set a [lindex $a 0]
+         if {$a==$name} {
+            return $cpt
+         }
+         incr cpt
+      }
+      
+      return -1
+
+   }
 
 
-
-
-
-# Fin Classe
 }
-
