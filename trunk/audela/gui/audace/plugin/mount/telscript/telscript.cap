@@ -16,6 +16,7 @@ set caption(telscript,script)                     "Script"
 set caption(telscript,parcourir)                  "..."
 set caption(telscript,dossier)                    "From Folder:"
 set caption(telscript,telname)                    "Name"
+set caption(telscript,debug)                      "Debug Graphical Interface for T940"
 set caption(telscript,raquette_tel)               "Hand controller on screen"
 
 set caption(telscript,2points)                    ":"
@@ -31,6 +32,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "A partir du dossier :"
    set caption(telscript,telname)                 "Nom"
+   set caption(telscript,debug)                   "Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Raquette à l'écran"
 
    set caption(telscript,2points)                 ":"
@@ -46,6 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "Dalla cartella:"
    set caption(telscript,telname)                 "Nome"
+   set caption(telscript,debug)                   "# Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Pulsantiera a schermo"
 
    set caption(telscript,2points)                 ":"
@@ -61,6 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "Desde la carpeta:"
    set caption(telscript,telname)                 "Nombre"
+   set caption(telscript,debug)                   "# Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Controlador virtual"
 
    set caption(telscript,2points)                 ":"
@@ -76,6 +80,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "Vom Unterlagen:"
    set caption(telscript,telname)                 "Namen"
+   set caption(telscript,debug)                   "# Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Hand Kontroller am Bildschirm"
 
    set caption(telscript,2points)                 ":"
@@ -91,6 +96,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "Da Pasta:"
    set caption(telscript,telname)                 "Nome"
+   set caption(telscript,debug)                   "# Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Controlador de mão no ecrã"
 
    set caption(telscript,2points)                 ":"
@@ -106,6 +112,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "From Folder:"
    set caption(telscript,telname)                 "Name"
+   set caption(telscript,debug)                   "Debug Graphical Interface for T940"
    set caption(telscript,raquette_tel)            "Hand controller on screen"
 
    set caption(telscript,2points)                 ":"
@@ -121,6 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "From Folder:"
    set caption(telscript,telname)                 "Name"
+   set caption(telscript,debug)                   "Debug Graphical Interface for T940"
    set caption(telscript,raquette_tel)            "Hand controller on screen"
 
    set caption(telscript,2points)                 ":"
@@ -136,6 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,dossier)                 "From Folder:"
    set caption(telscript,parcourir)               "..."
    set caption(telscript,telname)                 "Name"
+   set caption(telscript,debug)                   "Debug Graphical Interface for T940"
    set caption(telscript,raquette_tel)            "Hand controller on screen"
 
    set caption(telscript,2points)                 ":"
