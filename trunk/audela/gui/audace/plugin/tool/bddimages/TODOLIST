@@ -26,8 +26,7 @@ Astrométrie :
     - envoi mail mpc ?
     - tag envoi mail mpc dans header fits.
     - verifier iau_code egal a toutes les images.
-JB    - gerer limite Priam
-    - champs nb obs
+JB  - gerer limite Priam
 FV  - construction du graph
     - regler voir wcs
     - supprimer source dans dse

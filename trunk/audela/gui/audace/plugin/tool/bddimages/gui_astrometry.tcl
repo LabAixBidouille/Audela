@@ -572,7 +572,6 @@ namespace eval gui_astrometry {
       $::gui_astrometry::rapport_txt insert end  "# Instrument     : $::tools_astrometry::rapport_instru \n"
       $::gui_astrometry::rapport_txt insert end  "# Ref. catalogue : $::tools_astrometry::rapport_cata \n"
       $::gui_astrometry::rapport_txt insert end  "# Batch          : $::tools_astrometry::rapport_batch \n"
-      $::gui_astrometry::rapport_txt insert end  "# Numb. pos.     : $::tools_astrometry::rapport_nb \n"
       $::gui_astrometry::rapport_txt insert end $sep_txt
 
       # Cherche la lgueur max des noms des objets SCIENCE pour le formattage
@@ -679,8 +678,11 @@ namespace eval gui_astrometry {
          $::gui_astrometry::rapport_txt insert end $headtab3
          $::gui_astrometry::rapport_txt insert end $sep_txt
 
+         set nbobs 0
+
          foreach dateimg $::tools_astrometry::listscience($name) {
 
+            incr nbobs
             set idsource [lindex $::tools_astrometry::tabval($name,$dateimg)  0]
             set rho     [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  4]]
@@ -891,22 +893,23 @@ namespace eval gui_astrometry {
 
          $::gui_astrometry::rapport_txt insert end $sep_txt
          $::gui_astrometry::rapport_txt insert end  "# BODY NAME = [lrange [split $name "_"] 2 end]\n"
+         $::gui_astrometry::rapport_txt insert end  "# Number of positions: $nbobs \n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# Residus       RA  \"  : mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# Residus       DEC \"  : mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# Residus     RA  (arcsec): mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# Residus     DEC (arcsec): mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"          
-         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE     RA  \"  : mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC IMCCE     DEC \"  : mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# O-C(IMCCE)  RA  (arcsec): mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# O-C(IMCCE)  DEC (arcsec): mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"          
-         $::gui_astrometry::rapport_txt insert end  "# OMC JPL       RA  \"  : mean = $calc(ra_jpl_omc,mean) stedv = $calc(ra_jpl_omc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# OMC JPL       DEC \"  : mean = $calc(dec_jpl_omc,mean) stedv = $calc(dec_jpl_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# O-C(JPL)    RA  (arcsec): mean = $calc(ra_jpl_omc,mean) stedv = $calc(ra_jpl_omc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# O-C(JPL)    DEC (arcsec): mean = $calc(dec_jpl_omc,mean) stedv = $calc(dec_jpl_omc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# CMC IMCCE-JPL RA  \"  : mean = $calc(ra_imccejpl_cmc,mean) stedv = $calc(ra_imccejpl_cmc,stdev)\n"
-         $::gui_astrometry::rapport_txt insert end  "# CMC IMCCE-JPL DEC \"  : mean = $calc(dec_imccejpl_cmc,mean) stedv = $calc(dec_imccejpl_cmc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# IMCCE-JPL   RA  (arcsec): mean = $calc(ra_imccejpl_cmc,mean) stedv = $calc(ra_imccejpl_cmc,stdev)\n"
+         $::gui_astrometry::rapport_txt insert end  "# IMCCE-JPL   DEC (arcsec): mean = $calc(dec_imccejpl_cmc,mean) stedv = $calc(dec_imccejpl_cmc,stdev)\n"
          $::gui_astrometry::rapport_txt insert end  "# -\n"
-         $::gui_astrometry::rapport_txt insert end  "# Date jj : mean = $calc(datejj,mean) [mc_date2iso8601 $calc(datejj,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "# RA   deg: mean = $calc(alpha,mean)  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)]\n"
-         $::gui_astrometry::rapport_txt insert end  "# DEC  deg: mean = $calc(delta,mean)  [::tools_astrometry::convert_txt_dms $calc(delta,mean)]\n"
+         $::gui_astrometry::rapport_txt insert end  "# Mean epoch (jd) : $calc(datejj,mean) ( [mc_date2iso8601 $calc(datejj,mean)] )\n"
+         $::gui_astrometry::rapport_txt insert end  "# Mean RA    (deg): [format "%16.12f" $calc(alpha,mean)]   (  [::tools_astrometry::convert_txt_hms $calc(alpha,mean)] )\n"
+         $::gui_astrometry::rapport_txt insert end  "# Mean DEC   (deg): [format "%+15.12f" $calc(delta,mean)]   ( [::tools_astrometry::convert_txt_dms $calc(delta,mean)]  )\n"
          $::gui_astrometry::rapport_txt insert end $sep_txt
 
       }
@@ -1240,6 +1243,7 @@ namespace eval gui_astrometry {
          set nrows 0
          set votSources ""
          foreach dateimg $::tools_astrometry::listscience($name) {
+            incr nrows
             append votSources [::votable::openElement $::votable::Element::TR {}]
 
             set res_a   [format "%.4f"  [lindex $::tools_astrometry::tabval($name,$dateimg)  4]]
@@ -1318,7 +1322,6 @@ namespace eval gui_astrometry {
             append votSources [::votable::addElement $::votable::Element::TD {} $am_imcce]
 
             append votSources [::votable::closeElement $::votable::Element::TR] "\n"
-            incr nrows
          }
 
          set zname [lrange [split $name "_"] 2 end]
