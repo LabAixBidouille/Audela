@@ -303,11 +303,18 @@ namespace eval tools_astrometry {
 
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
 
+      # Tri dans l'ordre croissant des dates
+      set tridates {}
+      foreach d [array names ldates] {
+         lappend tridates $d
+      }
+      set tridates [lsort -real $tridates]
+
       # Creation du fichier des dates de toutes les images selectionnees
       # pour lesquelles on veut calculer les ephemerides des objets
       set filedate [file join $audace(rep_travail) "datephem_$name.dat"]
       set chan0 [open $filedate w]
-      foreach d [array names ldates] {
+      foreach d $tridates {
          puts $chan0 "$d"
       }
       close $chan0

@@ -286,7 +286,7 @@ namespace eval bddimages_recherche {
       set ::bddimages_recherche::current_list_name [lindex $row 0]
       set ::bddimages_recherche::current_list_id [::bddimages_liste_gui::get_intellilist_by_name $::bddimages_recherche::current_list_name]
 
-      set r [tk_messageBox -message "Charger ?" -type yesno]
+      set r [tk_messageBox -message "Charger $::bddimages_recherche::current_list_name ?" -type yesno]
       if {$r=="no"} {return}
 
       gren_info "Chargement de la liste $::bddimages_recherche::current_list_name ...\n"

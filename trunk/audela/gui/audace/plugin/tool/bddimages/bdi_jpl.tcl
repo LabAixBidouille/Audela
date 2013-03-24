@@ -25,7 +25,15 @@ namespace eval bdi_jpl {
 proc ::bdi_jpl::create { sso_name list_dates iau_code } {
 
    upvar $list_dates dates
+   
+   # Tri dans l'ordre croissant des dates
+   set tridates {}
+   foreach d [array names dates] {
+      lappend tridates [string trim $d]
+   }
+   set tridates [lsort -real $tridates]
 
+   # Construction du job Horizons
    set jpl_job "!\$\$SOF\n"
    append jpl_job "EMAIL_ADDR= \n"
    append jpl_job "COMMAND= '[string trim $sso_name];'\n"
@@ -33,8 +41,8 @@ proc ::bdi_jpl::create { sso_name list_dates iau_code } {
    append jpl_job "MAKE_EPHEM= 'YES'\n"
    append jpl_job "TABLE_TYPE= 'OBSERVER'\n"
    append jpl_job "TLIST=\n"
-   foreach {midepoch dateimg} [array get dates] {
-      append jpl_job "'$midepoch'\n"
+   foreach d $tridates {
+      append jpl_job "'$d'\n"
    }
    append jpl_job "CAL_FORMAT= 'JD'\n"
    append jpl_job "TIME_DIGITS= 'FRACSEC'\n"
