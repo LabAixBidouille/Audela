@@ -2710,10 +2710,13 @@ namespace eval gui_astrometry {
          pack $::gui_astrometry::rapport_mpc.yscroll -side right -fill y
 
          set block [frame $mpc.save -borderwidth 0 -cursor arrow -relief groove]
-         pack $block -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
-               button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
-                       -command {::bdi_tools::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
-               pack $block.sas -side top -anchor c -expand 0
+         pack $block -in $mpc -side top -expand 0 -padx 2 -pady 5
+            button $block.sas -text "Save As" -borderwidth 2 -takefocus 1 \
+                    -command {::bdi_tools::save_as [$::gui_astrometry::rapport_mpc get 0.0 end] "TXT"}
+            pack $block.sas -side left -anchor c -expand 0 -fill x -padx 3
+            button $block.send -text "Send to MPC" -borderwidth 2 -takefocus 1 \
+                    -command "::tools_astrometry::send_to_mpc"
+            pack $block.send -side left -anchor c -expand 0 -fill x -padx 3
 
          #--- Onglet RAPPORT - TXT et XML
          set ::gui_astrometry::rapport_txt $txt.text

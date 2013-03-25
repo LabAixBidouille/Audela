@@ -23,7 +23,6 @@ Gestion cata :
 
 Astrométrie :
     - ephemeride etoile
-    - envoi mail mpc ?
     - tag envoi mail mpc dans header fits.
     - verifier iau_code egal a toutes les images.
 JB  - gerer limite Priam
