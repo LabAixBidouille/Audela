@@ -289,13 +289,12 @@ namespace eval tools_astrometry {
    # EPHEMERIDES
    #----------------------------------------------------------------------------
 
-   # Initialisation des calculs des ephemerides: creation du fichier de dates
+   ## Initialisation des calculs des ephemerides: creation du fichier de dates
    # pour lesquelles on veut calculer des ephemerides, et creation du fichier
    # de commande shell pour executer Eproc.ephemcc
    # @param name string nom de l'objet
    # @param list_dates array des dates au format list_dates(jd) = isodate
    # @return nom du fichier de commande pour calculer l'ephemeride de l'objet
-
    proc ::tools_astrometry::init_ephem_imcce { name list_dates } {
 
       upvar $list_dates ldates
@@ -355,9 +354,8 @@ namespace eval tools_astrometry {
    }
 
 
-   # Calcul des ephemerides IMCCE pour tous les objets SCIENCE pour toutes les dates 
+   ## Calcul des ephemerides IMCCE pour tous les objets SCIENCE pour toutes les dates 
    # @return void
-
    proc ::tools_astrometry::get_ephem_imcce {  } {
 
       # Initialisation
@@ -421,13 +419,17 @@ namespace eval tools_astrometry {
    }
 
 
-   # Calcul des ephemerides JPL pour un objet SCIENCE pour toutes les dates 
+   ## Calcul des ephemerides JPL pour un objet SCIENCE pour toutes les dates 
    # @return void
    proc ::tools_astrometry::compose_ephem_jpl {  } {
 
       # Le Sso concerne est celui selectionne dans la combo liste
 # TODO : tester que c bien un objet skybot
       set fname $::gui_astrometry::combo_list_object
+      set cataname [lindex [split $fname "_"] 0]
+      if {![string compare $cataname "SKYBOT"]} {
+         gren_erreur "WARNING: La source n'est pas un corps du systeme solaire.\n"
+      }
       set sso_name [lrange [split $fname "_"] 2 end]
       if {[string length $sso_name] < 1} {
          gren_erreur "WARNING: Aucun Sso n'a ete selectionne\n"
@@ -485,7 +487,7 @@ namespace eval tools_astrometry {
    }
 
 
-   # Lecture et chargement des ephemerides JPL depuis la zone de texte dediee
+   ## Lecture et chargement des ephemerides JPL depuis la zone de texte dediee
    # @return void
    proc ::tools_astrometry::read_ephem_jpl {  } {
 
@@ -513,6 +515,20 @@ namespace eval tools_astrometry {
 
       gren_info "done"
       return 0
+
+   }
+
+
+   #----------------------------------------------------------------------------
+
+   ## Composition du mail a envoyer au MPC pour soumettre le resultat astrometrique
+   #  @return void
+   proc ::tools_astrometry::send_to_mpc { } {
+
+      ::bdi_tools::sendmail::compose_with_thunderbird \
+            $::tools_astrometry::rapport_desti \
+            $::tools_astrometry::rapport_batch \
+            [$::gui_astrometry::rapport_mpc get 0.0 end]
 
    }
 
