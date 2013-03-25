@@ -46,13 +46,8 @@ typedef struct {
 } indexTable2Mass;
 
 typedef struct {
-	int   raStartInMicroDegree;
-	int   raEndInMicroDegree;
-	char  isArroundZeroRa;
-	int   decStartInMicroDegree;
-	int   decEndInMicroDegree;
-	int   magnitudeStartInMilliMag;
-	int   magnitudeEndInMilliMag;
+	searchZoneRaDecMicroDeg subSearchZone;
+	magnitudeBoxMilliMag  magnitudeBox;
 	int   indexOfFirstDecZone;
 	int   indexOfLastDecZone;
 	int   indexOfFirstRightAscensionZone;

@@ -69,6 +69,7 @@ int cmd_tcl_csucac4 (ClientData clientData, Tcl_Interp *interp, int argc, char *
 int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmd_tcl_cs2mass (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmd_tcl_csppmx  (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmd_tcl_csppmxl (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif /* __LIBCATALOGH__ */
 

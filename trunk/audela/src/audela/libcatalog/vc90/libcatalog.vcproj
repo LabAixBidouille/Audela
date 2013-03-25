@@ -219,6 +219,10 @@
 				>
 			</File>
 			<File
+                RelativePath="..\src\ppmxl.c"
+                >
+            </File>
+			<File
 				RelativePath="..\src\useful.c"
 				>
 			</File>

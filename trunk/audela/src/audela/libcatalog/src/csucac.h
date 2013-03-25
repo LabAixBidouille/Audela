@@ -194,23 +194,13 @@ typedef struct {
 } indexTableUcac;
 
 typedef struct {
-	int  raStartInMas;
-	int  raEndInMas;
-	char isArroundZeroRa;
-	int  decStartInMas;
-	int  decEndInMas;
-	int  magnitudeStartInCentiMag;
-	int  magnitudeEndInCentiMag;
+	searchZoneRaDecMas subSearchZone;
+	magnitudeBoxCentiMag magnitudeBox;
 } searchZoneUcac2;
 
 typedef struct {
-	int  raStartInMas;
-	int  raEndInMas;
-	char isArroundZeroRa;
-	int  distanceToPoleStartInMas;
-	int  distanceToPoleEndInMas;
-	int  magnitudeStartInMilliMag;
-	int  magnitudeEndInMilliMag;
+	searchZoneRaSpdMas subSearchZone;
+	magnitudeBoxMilliMag magnitudeBox;
 } searchZoneUcac3And4;
 
 /* Function prototypes for UCAC2 */
