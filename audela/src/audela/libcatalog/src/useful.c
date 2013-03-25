@@ -16,13 +16,13 @@ int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?",
+		sprintf(outputLogChar,"Help usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?",
 				argv[0]);
 		return (1);
 	}
 
 	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?",
+		sprintf(outputLogChar,"usage : %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?",
 				argv[0]);
 		return (1);
 	}
@@ -234,4 +234,319 @@ int xget2(unsigned char * const a, const int b, const int length, const int max,
 	value = xtra2[value-(max+1)];
 
 	return(value);
+}
+
+/**
+ * Fill the search zone {RA,DEC} in MAS
+ */
+void fillSearchZoneRaDecMas(searchZoneRaDecMas* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin) {
+
+	const double radiusInDeg          = radiusInArcMin / DEG2ARCMIN;
+	double ratio;
+	double tmpValue;
+	double radiusRa;
+
+	theSearchZone->decStartInMas      = (int)(DEG2MAS * (decInDeg - radiusInDeg));
+	theSearchZone->decEndInMas        = (int)(DEG2MAS * (decInDeg + radiusInDeg));
+
+	if((theSearchZone->decStartInMas <= DEC_SOUTH_POLE_MAS) && (theSearchZone->decEndInMas >= DEC_NORTH_POLE_MAS)) {
+
+		theSearchZone->decStartInMas  = DEC_SOUTH_POLE_MAS + 1;
+		theSearchZone->decEndInMas     = DEC_NORTH_POLE_MAS - 1;
+		theSearchZone->raStartInMas    = START_RA_MAS;
+		theSearchZone->raEndInMas      = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa = 0;
+
+	} else if(theSearchZone->decStartInMas <= DEC_SOUTH_POLE_MAS) {
+
+		theSearchZone->decStartInMas        = DEC_SOUTH_POLE_MAS + 1;
+		theSearchZone->raStartInMas         = START_RA_MAS;
+		theSearchZone->raEndInMas           = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa      = 0;
+
+	} else if(theSearchZone->decEndInMas   >= DEC_NORTH_POLE_MAS) {
+
+		theSearchZone->decEndInMas          = DEC_NORTH_POLE_MAS - 1;
+		theSearchZone->raStartInMas                 = START_RA_MAS;
+		theSearchZone->raEndInMas                   = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa              = 0;
+
+	} else {
+
+		radiusRa                           = radiusInDeg / cos(decInDeg * DEC2RAD);
+		tmpValue                           = DEG2MAS * (raInDeg  - radiusRa);
+		ratio                              = tmpValue / COMPLETE_RA_MAS;
+		ratio                              = floor(ratio) * COMPLETE_RA_MAS;
+		tmpValue                          -= ratio;
+		theSearchZone->raStartInMas        = (int)tmpValue;
+
+		tmpValue                           = DEG2MAS * (raInDeg  + radiusRa);
+		ratio                              = tmpValue / COMPLETE_RA_MAS;
+		ratio                              = floor(ratio) * COMPLETE_RA_MAS;
+		tmpValue                          -= ratio;
+		theSearchZone->raEndInMas          = (int)tmpValue;
+
+		theSearchZone->isArroundZeroRa     = 0;
+
+		if(theSearchZone->raStartInMas     >  theSearchZone->raEndInMas) {
+			theSearchZone->isArroundZeroRa = 1;
+		}
+	}
+
+	if(DEBUG) {
+		printf("mySearchZonePPMX.decStart            = %d\n",theSearchZone->decStartInMas);
+		printf("mySearchZonePPMX.decEnd              = %d\n",theSearchZone->decEndInMas);
+		printf("mySearchZonePPMX.raStart             = %d\n",theSearchZone->raStartInMas);
+		printf("mySearchZonePPMX.raEnd               = %d\n",theSearchZone->raEndInMas);
+		printf("mySearchZonePPMX.isArroundZeroRa     = %d\n",theSearchZone->isArroundZeroRa);
+	}
+}
+
+/**
+ * Fill the search zone {RA,SPD} in MAS
+ */
+void fillSearchZoneRaSpdMas(searchZoneRaSpdMas* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin) {
+
+	const double radiusInDeg     = radiusInArcMin / DEG2ARCMIN;
+	double ratio;
+	double tmpValue;
+	double radiusRa;
+
+	theSearchZone->spdStartInMas = (int)(DEG2MAS * (decInDeg - DEC_SOUTH_POLE_DEG - radiusInDeg));
+	theSearchZone->spdEndInMas   = (int)(DEG2MAS * (decInDeg - DEC_SOUTH_POLE_DEG + radiusInDeg));
+
+	if((theSearchZone->spdStartInMas  <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) && (theSearchZone->spdEndInMas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS)) {
+
+		theSearchZone->spdStartInMas        = 0;
+		theSearchZone->spdEndInMas          = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS - 1;
+		theSearchZone->raStartInMas         = START_RA_MAS;
+		theSearchZone->raEndInMas           = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa      = 0;
+
+	} else if(theSearchZone->spdStartInMas <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) {
+
+		theSearchZone->spdStartInMas        = 0;
+		theSearchZone->raStartInMas         = START_RA_MAS;
+		theSearchZone->raEndInMas           = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa      = 0;
+
+	} else if(theSearchZone->spdEndInMas   >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS) {
+
+		theSearchZone->spdEndInMas          = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS - 1;
+		theSearchZone->raStartInMas         = START_RA_MAS;
+		theSearchZone->raEndInMas           = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa      = 0;
+
+	} else {
+
+		radiusRa                        = radiusInDeg / cos(decInDeg * DEC2RAD);
+		tmpValue                        = DEG2MAS * (raInDeg  - radiusRa);
+		ratio                           = tmpValue / COMPLETE_RA_MAS;
+		ratio                           = floor(ratio) * COMPLETE_RA_MAS;
+		tmpValue                       -= ratio;
+		theSearchZone->raStartInMas  = (int)tmpValue;
+
+		tmpValue                        = DEG2MAS * (raInDeg  + radiusRa);
+		ratio                           = tmpValue / COMPLETE_RA_MAS;
+		ratio                           = floor(ratio) * COMPLETE_RA_MAS;
+		tmpValue                       -= ratio;
+		theSearchZone->raEndInMas    = (int)tmpValue;
+
+		theSearchZone->isArroundZeroRa      = 0;
+
+		if(theSearchZone->raStartInMas      >  theSearchZone->raEndInMas) {
+			theSearchZone->isArroundZeroRa  = 1;
+		}
+	}
+
+	if(DEBUG) {
+		printf("theSearchZone->spdStart        = %d\n",theSearchZone->spdStartInMas);
+		printf("theSearchZone->spdEnd          = %d\n",theSearchZone->spdEndInMas);
+		printf("theSearchZone->raStart         = %d\n",theSearchZone->raStartInMas);
+		printf("theSearchZone->raEnd           = %d\n",theSearchZone->raEndInMas);
+		printf("theSearchZone->isArroundZeroRa = %d\n",theSearchZone->isArroundZeroRa);
+	}
+}
+
+/**
+ * Fill the search zone {RA,DEC} in Micro DEG
+ */
+void fillSearchZoneRaDecMicroDeg(searchZoneRaDecMicroDeg* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin) {
+
+	const double radiusInDeg                = radiusInArcMin / DEG2ARCMIN;
+	double ratio;
+	double tmpValue;
+	double radiusRa;
+
+	const int decNorthPoleInMicroDegree     = (int) (DEG2MICRODEG * DEC_NORTH_POLE_DEG);
+	const int decSouthPoleInMicroDegree     = (int) (DEG2MICRODEG * DEC_SOUTH_POLE_DEG);
+
+	theSearchZone->decStartInMicroDegree    = (int)(DEG2MICRODEG * (decInDeg - radiusInDeg));
+	theSearchZone->decEndInMicroDegree      = (int)(DEG2MICRODEG * (decInDeg + radiusInDeg));
+
+	if((theSearchZone->decStartInMicroDegree  <= decSouthPoleInMicroDegree) &&
+			(theSearchZone->decEndInMicroDegree >= decNorthPoleInMicroDegree)) {
+
+		theSearchZone->decStartInMicroDegree      = decSouthPoleInMicroDegree + 1;
+		theSearchZone->decEndInMicroDegree        = decNorthPoleInMicroDegree - 1;
+		theSearchZone->raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
+		theSearchZone->raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
+		theSearchZone->isArroundZeroRa            = 0;
+
+	} else if(theSearchZone->decStartInMicroDegree <= decSouthPoleInMicroDegree) {
+
+		theSearchZone->decStartInMicroDegree      = decSouthPoleInMicroDegree + 1;
+		theSearchZone->raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
+		theSearchZone->raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
+		theSearchZone->isArroundZeroRa            = 0;
+
+	} else if(theSearchZone->decEndInMicroDegree >= decNorthPoleInMicroDegree) {
+
+		theSearchZone->decEndInMicroDegree        = decNorthPoleInMicroDegree - 1;
+		theSearchZone->raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
+		theSearchZone->raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
+		theSearchZone->isArroundZeroRa            = 0;
+
+	} else {
+
+		radiusRa                                = radiusInDeg / cos(decInDeg * DEC2RAD);
+		tmpValue                                = raInDeg  - radiusRa;
+		ratio                                   = tmpValue / COMPLETE_RA_DEG;
+		ratio                                   = floor(ratio) * COMPLETE_RA_DEG;
+		tmpValue                               -= ratio;
+		theSearchZone->raStartInMicroDegree     = (int)floor(DEG2MICRODEG * tmpValue);
+
+		tmpValue                                = raInDeg  + radiusRa;
+		ratio                                   = tmpValue / COMPLETE_RA_DEG;
+		ratio                                   = floor(ratio) * COMPLETE_RA_DEG;
+		tmpValue                               -= ratio;
+		theSearchZone->raEndInMicroDegree       = (int)ceil(DEG2MICRODEG * tmpValue);
+
+		theSearchZone->isArroundZeroRa         = 0;
+
+		if(theSearchZone->raStartInMicroDegree >  theSearchZone->raEndInMicroDegree) {
+			theSearchZone->isArroundZeroRa     = 1;
+		}
+	}
+
+	if(DEBUG) {
+		printf("mySearchZoneUcac3.decStart        = %d\n",theSearchZone->decStartInMicroDegree);
+		printf("mySearchZoneUcac3.spdEnd          = %d\n",theSearchZone->decEndInMicroDegree);
+		printf("mySearchZoneUcac3.raStart         = %d\n",theSearchZone->raStartInMicroDegree);
+		printf("mySearchZoneUcac3.raEnd           = %d\n",theSearchZone->raEndInMicroDegree);
+		printf("mySearchZoneUcac3.isArroundZeroRa = %d\n",theSearchZone->isArroundZeroRa);
+	}
+
+}
+
+/**
+ * Fill the search zone {RA,SPD} in CAS
+ */
+void fillSearchZoneRaSpdCas(searchZoneRaSpdCas* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin) {
+
+	double ratio;
+	double tmpValue;
+	double radiusRa;
+
+	const double radiusInDeg     = radiusInArcMin / DEG2ARCMIN;
+	theSearchZone->spdStartInCas = (int)(DEG2CAS * (decInDeg - DEC_SOUTH_POLE_DEG - radiusInDeg));
+	theSearchZone->spdEndInCas   = (int)(DEG2CAS * (decInDeg - DEC_SOUTH_POLE_DEG + radiusInDeg));
+
+	if((theSearchZone->spdStartInCas  <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_CAS) && (theSearchZone->spdEndInCas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS)) {
+
+		theSearchZone->spdStartInCas   = 0;
+		theSearchZone->spdEndInCas     = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS - 1;
+		theSearchZone->raStartInCas               = START_RA_CAS;
+		theSearchZone->raEndInCas                 = COMPLETE_RA_CAS;
+		theSearchZone->isArroundZeroRa            = 0;
+
+	} else if(theSearchZone->spdStartInCas <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_CAS) {
+
+		theSearchZone->spdStartInCas        = 0;
+		theSearchZone->raStartInCas                    = START_RA_CAS;
+		theSearchZone->raEndInCas                      = COMPLETE_RA_CAS;
+		theSearchZone->isArroundZeroRa                 = 0;
+
+	} else if(theSearchZone->spdEndInCas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS) {
+
+		theSearchZone->spdEndInCas        = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS;
+		theSearchZone->raStartInCas                  = START_RA_CAS;
+		theSearchZone->raEndInCas                    = COMPLETE_RA_CAS;
+		theSearchZone->isArroundZeroRa               = 0;
+
+	} else {
+
+		radiusRa                               = radiusInDeg / cos(decInDeg * DEC2RAD);
+		tmpValue                               = DEG2CAS * (raInDeg  - radiusRa);
+		ratio                                  = tmpValue / COMPLETE_RA_CAS;
+		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
+		tmpValue                              -= ratio;
+		theSearchZone->raStartInCas        = (int)tmpValue;
+
+		tmpValue                               = DEG2CAS * (raInDeg  + radiusRa);
+		ratio                                  = tmpValue / COMPLETE_RA_CAS;
+		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
+		tmpValue                              -= ratio;
+		theSearchZone->raEndInCas          = (int)tmpValue;
+
+		theSearchZone->isArroundZeroRa     = 0;
+
+		if(theSearchZone->raStartInCas     >  theSearchZone->raEndInCas) {
+			theSearchZone->isArroundZeroRa = 1;
+		}
+	}
+
+	if(DEBUG) {
+		printf("mySearchZoneUsnoa2.spdStart                         = %d\n",theSearchZone->spdStartInCas);
+		printf("mySearchZoneUsnoa2.spdEnd                           = %d\n",theSearchZone->spdEndInCas);
+		printf("mySearchZoneUsnoa2.raStart                          = %d\n",theSearchZone->raStartInCas);
+		printf("mySearchZoneUsnoa2.raEnd                            = %d\n",theSearchZone->raEndInCas);
+		printf("mySearchZoneUsnoa2.isArroundZeroRa                  = %d\n",theSearchZone->isArroundZeroRa);
+	}
+}
+
+/**
+ * Fill the magnitude box in milli magnitude
+ */
+void fillMagnitudeBoxMilliMag(magnitudeBoxMilliMag* const magnitudeBox, const double magMin, const double magMax) {
+
+	magnitudeBox->magnitudeStartInMilliMag = (int)(MAG2MILLIMAG * magMin);
+	magnitudeBox->magnitudeEndInMilliMag   = (int)(MAG2MILLIMAG * magMax);
+
+	if(DEBUG) {
+		printf("mySearchZonePPMX.magnitudeStart      = %d\n",magnitudeBox->magnitudeStartInMilliMag);
+		printf("mySearchZonePPMX.magnitudeEnd        = %d\n",magnitudeBox->magnitudeEndInMilliMag);
+	}
+}
+
+/**
+ * Fill the magnitude box in Centi magnitude
+ */
+void fillMagnitudeBoxCentiMag(magnitudeBoxCentiMag* const magnitudeBox, const double magMin, const double magMax) {
+
+	magnitudeBox->magnitudeStartInCentiMag = (short int)(MAG2CENTIMAG * magMin);
+	magnitudeBox->magnitudeEndInCentiMag   = (short int)(MAG2CENTIMAG * magMax);
+
+	if(DEBUG) {
+		printf("mySearchZonePPMX.magnitudeStart      = %d\n",magnitudeBox->magnitudeStartInCentiMag);
+		printf("mySearchZonePPMX.magnitudeEnd        = %d\n",magnitudeBox->magnitudeEndInCentiMag);
+	}
+}
+
+/**
+ * Fill the magnitude box in Deci magnitude
+ */
+void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const double magMin, const double magMax) {
+
+	magnitudeBox->magnitudeStartInDeciMag = (short int)(MAG2DECIMAG * magMin);
+	magnitudeBox->magnitudeEndInDeciMag   = (short int)(MAG2DECIMAG * magMax);
+
+	if(DEBUG) {
+		printf("mySearchZonePPMX.magnitudeStart      = %d\n",magnitudeBox->magnitudeStartInDeciMag);
+		printf("mySearchZonePPMX.magnitudeEnd        = %d\n",magnitudeBox->magnitudeEndInDeciMag);
+	}
 }

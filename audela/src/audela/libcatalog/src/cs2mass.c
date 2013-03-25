@@ -83,7 +83,7 @@ int cmd_tcl_cs2mass(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 						((allAccFiles[indexOfCatalog].prefix == NORTH_HEMISPHERE_PREFIX) &&
 								(allAccFiles[indexOfCatalog].indexOfCatalog == HALF_NUMBER_OF_CATALOG_FILES_2MASS_MINUS_ONE));
 
-		if(mySearchZone2Mass.isArroundZeroRa) {
+		if(mySearchZone2Mass.subSearchZone.isArroundZeroRa) {
 
 			/* process one RA box only */
 			if(isBadAccFile) {
@@ -164,6 +164,9 @@ int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inp
 	star2Mass theStar;
 	char tclString[STRING_COMMON_LENGTH];
 
+	const searchZoneRaDecMicroDeg* const subSearchZone = &(mySearchZone2Mass->subSearchZone);
+	const magnitudeBoxMilliMag* const magnitudeBox     = &(mySearchZone2Mass->magnitudeBox);
+
 	/* Move to this position */
 	fseek(inputStream,oneAccFile->idOfFirstStarInZone[indexOfRA] * sizeof(star2Mass),SEEK_SET);
 	/* Read the amount of stars */
@@ -177,15 +180,15 @@ int processOneZone2MassCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inp
 
 		theStar  = arrayOfStars[indexOfStar];
 
-		if ((theStar.raInMicroDegree < mySearchZone2Mass->raStartInMicroDegree) && (theStar.raInMicroDegree > mySearchZone2Mass->raEndInMicroDegree)) {
+		if ((theStar.raInMicroDegree < subSearchZone->raStartInMicroDegree) && (theStar.raInMicroDegree > subSearchZone->raEndInMicroDegree)) {
 			continue;
 		}
 
-		if ((theStar.decInMicroDegree < mySearchZone2Mass->decStartInMicroDegree) || (theStar.decInMicroDegree > mySearchZone2Mass->decEndInMicroDegree)) {
+		if ((theStar.decInMicroDegree < subSearchZone->decStartInMicroDegree) || (theStar.decInMicroDegree > subSearchZone->decEndInMicroDegree)) {
 			continue;
 		}
 
-		if((theStar.jMagInMilliMag < mySearchZone2Mass->magnitudeStartInMilliMag) || (theStar.jMagInMilliMag > mySearchZone2Mass->magnitudeEndInMilliMag)) {
+		if((theStar.jMagInMilliMag < magnitudeBox->magnitudeStartInMilliMag) || (theStar.jMagInMilliMag > magnitudeBox->magnitudeEndInMilliMag)) {
 			continue;
 		}
 
@@ -207,6 +210,9 @@ int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const 
 	star2Mass theStar;
 	char tclString[STRING_COMMON_LENGTH];
 
+	const searchZoneRaDecMicroDeg* const subSearchZone = &(mySearchZone2Mass->subSearchZone);
+	const magnitudeBoxMilliMag* const magnitudeBox     = &(mySearchZone2Mass->magnitudeBox);
+
 	/* Move to this position */
 	fseek(inputStream,oneAccFile->idOfFirstStarInZone[indexOfRA] * sizeof(star2Mass),SEEK_SET);
 	/* Read the amount of stars */
@@ -220,15 +226,15 @@ int processOneZone2MassNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const 
 
 		theStar  = arrayOfStars[indexOfStar];
 
-		if ((theStar.raInMicroDegree < mySearchZone2Mass->raStartInMicroDegree) || (theStar.raInMicroDegree > mySearchZone2Mass->raEndInMicroDegree)) {
+		if ((theStar.raInMicroDegree < subSearchZone->raStartInMicroDegree) || (theStar.raInMicroDegree > subSearchZone->raEndInMicroDegree)) {
 			continue;
 		}
 
-		if ((theStar.decInMicroDegree < mySearchZone2Mass->decStartInMicroDegree) || (theStar.decInMicroDegree > mySearchZone2Mass->decEndInMicroDegree)) {
+		if ((theStar.decInMicroDegree < subSearchZone->decStartInMicroDegree) || (theStar.decInMicroDegree > subSearchZone->decEndInMicroDegree)) {
 			continue;
 		}
 
-		if((theStar.jMagInMilliMag < mySearchZone2Mass->magnitudeStartInMilliMag) || (theStar.jMagInMilliMag > mySearchZone2Mass->magnitudeEndInMilliMag)) {
+		if((theStar.jMagInMilliMag < magnitudeBox->magnitudeStartInMilliMag) || (theStar.jMagInMilliMag > magnitudeBox->magnitudeEndInMilliMag)) {
 			continue;
 		}
 
@@ -455,67 +461,16 @@ const searchZone2Mass findSearchZone2Mass(const double raInDeg,const double decI
 		const double radiusInArcMin,const double magMin, const double magMax) {
 
 	searchZone2Mass mySearchZone2Mass;
-	const double radiusInDeg                   = radiusInArcMin / DEG2ARCMIN;
-	double ratio;
-	double tmpValue;
-	double radiusRa;
+
 	const double catalogDistanceToPoleWidthInMicroDegree = DEG2MICRODEG * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE;
-	const int decNorthPoleInMicroDegree                  = (int) (DEG2MICRODEG * DEC_NORTH_POLE_DEG);
-	const int decSouthPoleInMicroDegree                  = (int) (DEG2MICRODEG * DEC_SOUTH_POLE_DEG);
 	const double accFileRaZoneWidthInMicroDegree         = DEG2MICRODEG * ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE;
+	const int decSouthPoleInMicroDegree                  = (int) (DEG2MICRODEG * DEC_SOUTH_POLE_DEG);
 
-	mySearchZone2Mass.decStartInMicroDegree    = (int)(DEG2MICRODEG * (decInDeg - radiusInDeg));
-	mySearchZone2Mass.decEndInMicroDegree      = (int)(DEG2MICRODEG * (decInDeg + radiusInDeg));
-	mySearchZone2Mass.magnitudeStartInMilliMag = (int)(MAG2MILLIMAG * magMin);
-	mySearchZone2Mass.magnitudeEndInMilliMag   = (int)(MAG2MILLIMAG * magMax);
+	fillSearchZoneRaDecMicroDeg(&(mySearchZone2Mass.subSearchZone), raInDeg, decInDeg, radiusInArcMin);
+	fillMagnitudeBoxMilliMag(&(mySearchZone2Mass.magnitudeBox), magMin, magMax);
 
-	if((mySearchZone2Mass.decStartInMicroDegree  <= decSouthPoleInMicroDegree) &&
-			(mySearchZone2Mass.decEndInMicroDegree >= decNorthPoleInMicroDegree)) {
-
-		mySearchZone2Mass.decStartInMicroDegree      = decSouthPoleInMicroDegree;
-		mySearchZone2Mass.decEndInMicroDegree        = decNorthPoleInMicroDegree;
-		mySearchZone2Mass.raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
-		mySearchZone2Mass.raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
-		mySearchZone2Mass.isArroundZeroRa            = 0;
-
-	} else if(mySearchZone2Mass.decStartInMicroDegree <= decSouthPoleInMicroDegree) {
-
-		mySearchZone2Mass.decStartInMicroDegree      = decSouthPoleInMicroDegree;
-		mySearchZone2Mass.raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
-		mySearchZone2Mass.raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
-		mySearchZone2Mass.isArroundZeroRa            = 0;
-
-	} else if(mySearchZone2Mass.decEndInMicroDegree >= decNorthPoleInMicroDegree) {
-
-		mySearchZone2Mass.decEndInMicroDegree        = decNorthPoleInMicroDegree;
-		mySearchZone2Mass.raStartInMicroDegree       = (int) (DEG2MICRODEG * START_RA_DEG);
-		mySearchZone2Mass.raEndInMicroDegree         = (int) (DEG2MICRODEG * COMPLETE_RA_DEG);
-		mySearchZone2Mass.isArroundZeroRa            = 0;
-
-	} else {
-
-		radiusRa                                = radiusInDeg / cos(decInDeg * DEC2RAD);
-		tmpValue                                = raInDeg  - radiusRa;
-		ratio                                   = tmpValue / COMPLETE_RA_DEG;
-		ratio                                   = floor(ratio) * COMPLETE_RA_DEG;
-		tmpValue                               -= ratio;
-		mySearchZone2Mass.raStartInMicroDegree  = (int)floor(DEG2MICRODEG * tmpValue);
-
-		tmpValue                                = raInDeg  + radiusRa;
-		ratio                                   = tmpValue / COMPLETE_RA_DEG;
-		ratio                                   = floor(ratio) * COMPLETE_RA_DEG;
-		tmpValue                               -= ratio;
-		mySearchZone2Mass.raEndInMicroDegree    = (int)ceil(DEG2MICRODEG * tmpValue);
-
-		mySearchZone2Mass.isArroundZeroRa       = 0;
-
-		if(mySearchZone2Mass.raStartInMicroDegree >  mySearchZone2Mass.raEndInMicroDegree) {
-			mySearchZone2Mass.isArroundZeroRa     = 1;
-		}
-	}
-
-	mySearchZone2Mass.indexOfFirstDecZone = (int) ((mySearchZone2Mass.decStartInMicroDegree - decSouthPoleInMicroDegree) / catalogDistanceToPoleWidthInMicroDegree);
-	mySearchZone2Mass.indexOfLastDecZone  = (int) ((mySearchZone2Mass.decEndInMicroDegree   - decSouthPoleInMicroDegree) / catalogDistanceToPoleWidthInMicroDegree);
+	mySearchZone2Mass.indexOfFirstDecZone = (int) ((mySearchZone2Mass.subSearchZone.decStartInMicroDegree - decSouthPoleInMicroDegree) / catalogDistanceToPoleWidthInMicroDegree);
+	mySearchZone2Mass.indexOfLastDecZone  = (int) ((mySearchZone2Mass.subSearchZone.decEndInMicroDegree   - decSouthPoleInMicroDegree) / catalogDistanceToPoleWidthInMicroDegree);
 
 	if(mySearchZone2Mass.indexOfFirstDecZone >= NUMBER_OF_CATALOG_FILES_2MASS) {
 		mySearchZone2Mass.indexOfFirstDecZone = NUMBER_OF_CATALOG_FILES_2MASS - 1;
@@ -524,18 +479,8 @@ const searchZone2Mass findSearchZone2Mass(const double raInDeg,const double decI
 		mySearchZone2Mass.indexOfLastDecZone  = NUMBER_OF_CATALOG_FILES_2MASS - 1;
 	}
 
-	mySearchZone2Mass.indexOfFirstRightAscensionZone = (int)(mySearchZone2Mass.raStartInMicroDegree / accFileRaZoneWidthInMicroDegree);
-	mySearchZone2Mass.indexOfLastRightAscensionZone  = (int)(mySearchZone2Mass.raEndInMicroDegree   / accFileRaZoneWidthInMicroDegree);
-
-	if(DEBUG) {
-		printf("mySearchZoneUcac3.decStart        = %d\n",mySearchZone2Mass.decStartInMicroDegree);
-		printf("mySearchZoneUcac3.spdEnd          = %d\n",mySearchZone2Mass.decEndInMicroDegree);
-		printf("mySearchZoneUcac3.raStart         = %d\n",mySearchZone2Mass.raStartInMicroDegree);
-		printf("mySearchZoneUcac3.raEnd           = %d\n",mySearchZone2Mass.raEndInMicroDegree);
-		printf("mySearchZoneUcac3.isArroundZeroRa = %d\n",mySearchZone2Mass.isArroundZeroRa);
-		printf("mySearchZoneUcac3.magnitudeStart  = %d\n",mySearchZone2Mass.magnitudeStartInMilliMag);
-		printf("mySearchZoneUcac3.magnitudeEnd    = %d\n",mySearchZone2Mass.magnitudeEndInMilliMag);
-	}
+	mySearchZone2Mass.indexOfFirstRightAscensionZone = (int)(mySearchZone2Mass.subSearchZone.raStartInMicroDegree / accFileRaZoneWidthInMicroDegree);
+	mySearchZone2Mass.indexOfLastRightAscensionZone  = (int)(mySearchZone2Mass.subSearchZone.raEndInMicroDegree   / accFileRaZoneWidthInMicroDegree);
 
 	return (mySearchZone2Mass);
 }

@@ -75,7 +75,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 			return (TCL_ERROR);
 		}
 
-		if(mySearchZoneUsnoa2.isArroundZeroRa) {
+		if(mySearchZoneUsnoa2.subSearchZone.isArroundZeroRa) {
 
 			for(indexOfRA = mySearchZoneUsnoa2.indexOfFirstRightAscensionZone; indexOfRA < ACC_FILE_NUMBER_OF_LINES; indexOfRA++) {
 
@@ -144,6 +144,9 @@ int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inpu
 	starUsno theStar;
 	char tclString[1024];
 
+	const searchZoneRaSpdCas* const subSearchZone = &(mySearchZoneUsnoa2->subSearchZone);
+	const magnitudeBoxDeciMag* const magnitudeBox = &(mySearchZoneUsnoa2->magnitudeBox);
+
 	/* Move to this position */
 	fseek(inputStream,oneAccFile->arrayOfPosition[indexOfRA] * sizeof(starUsno),SEEK_SET);
 	/* Read the amount of stars */
@@ -162,18 +165,18 @@ int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inpu
 		raInCas  = convertBig2LittleEndianForInteger(theStar.ra);
 		position++;
 
-		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) && (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
+		if ((raInCas < subSearchZone->raStartInCas) && (raInCas > subSearchZone->raEndInCas)) {
 			continue;
 		}
 
 		spdInCas   = convertBig2LittleEndianForInteger(theStar.spd);
 
-		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
+		if ((spdInCas < subSearchZone->spdStartInCas) || (spdInCas > subSearchZone->spdEndInCas)) {
 			continue;
 		}
 		magnitudes             = convertBig2LittleEndianForInteger(theStar.mags);
 		redMagnitudeInDeciMag  = usnoa2GetUsnoRedMagnitudeInDeciMag(magnitudes);
-		if((redMagnitudeInDeciMag < mySearchZoneUsnoa2->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZoneUsnoa2->magnitudeEndInDeciMag)) {
+		if((redMagnitudeInDeciMag < magnitudeBox->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > magnitudeBox->magnitudeEndInDeciMag)) {
 			continue;
 		}
 
@@ -215,6 +218,9 @@ int processOneZoneUsnoNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const i
 	starUsno theStar;
 	char tclString[1024];
 
+	const searchZoneRaSpdCas* const subSearchZone = &(mySearchZoneUsnoa2->subSearchZone);
+	const magnitudeBoxDeciMag* const magnitudeBox = &(mySearchZoneUsnoa2->magnitudeBox);
+
 	/* Move to this position */
 	fseek(inputStream,oneAccFile->arrayOfPosition[indexOfRA] * sizeof(starUsno),SEEK_SET);
 	/* Read the amount of stars */
@@ -233,18 +239,18 @@ int processOneZoneUsnoNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const i
 		raInCas  = convertBig2LittleEndianForInteger(theStar.ra);
 		position++;
 
-		if ((raInCas < mySearchZoneUsnoa2->raStartInCas) || (raInCas > mySearchZoneUsnoa2->raEndInCas)) {
+		if ((raInCas < subSearchZone->raStartInCas) || (raInCas > subSearchZone->raEndInCas)) {
 			continue;
 		}
 
 		spdInCas = convertBig2LittleEndianForInteger(theStar.spd);
 
-		if ((spdInCas < mySearchZoneUsnoa2->distanceToPoleStartInCas) || (spdInCas > mySearchZoneUsnoa2->distanceToPoleEndInCas)) {
+		if ((spdInCas < subSearchZone->spdStartInCas) || (spdInCas > subSearchZone->spdEndInCas)) {
 			continue;
 		}
 		magnitudes             = convertBig2LittleEndianForInteger(theStar.mags);
 		redMagnitudeInDeciMag  = usnoa2GetUsnoRedMagnitudeInDeciMag(magnitudes);
-		if((redMagnitudeInDeciMag < mySearchZoneUsnoa2->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > mySearchZoneUsnoa2->magnitudeEndInDeciMag)) {
+		if((redMagnitudeInDeciMag < magnitudeBox->magnitudeStartInDeciMag) || (redMagnitudeInDeciMag > magnitudeBox->magnitudeEndInDeciMag)) {
 			continue;
 		}
 
@@ -500,62 +506,12 @@ int usnoa2GetUsnoField(const int magL)
 const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double decInDeg,const double radiusInArcMin,const double magMin, const double magMax) {
 
 	searchZoneUsnoa2 mySearchZoneUsnoa2;
-	double ratio;
-	double tmpValue;
-	double radiusRa;
-	const double radiusInDeg                    = radiusInArcMin / DEG2ARCMIN;
 
-	mySearchZoneUsnoa2.distanceToPoleStartInCas = (int)(DEG2CAS * (decInDeg - DEC_SOUTH_POLE_DEG - radiusInDeg));
-	mySearchZoneUsnoa2.distanceToPoleEndInCas   = (int)(DEG2CAS * (decInDeg - DEC_SOUTH_POLE_DEG + radiusInDeg));
-	mySearchZoneUsnoa2.magnitudeStartInDeciMag  = (int)(MAG2DECIMAG * magMin);
-	mySearchZoneUsnoa2.magnitudeEndInDeciMag    = (int)(MAG2DECIMAG * magMax);
+	fillSearchZoneRaSpdCas(&(mySearchZoneUsnoa2.subSearchZone), raInDeg, decInDeg, radiusInArcMin);
+	fillMagnitudeBoxDeciMag(&(mySearchZoneUsnoa2.magnitudeBox), magMin, magMax);
 
-	if((mySearchZoneUsnoa2.distanceToPoleStartInCas  <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_CAS) && (mySearchZoneUsnoa2.distanceToPoleEndInCas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS)) {
-
-		mySearchZoneUsnoa2.distanceToPoleStartInCas   = 0;
-		mySearchZoneUsnoa2.distanceToPoleEndInCas     = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS;
-		mySearchZoneUsnoa2.raStartInCas               = START_RA_CAS;
-		mySearchZoneUsnoa2.raEndInCas                 = COMPLETE_RA_CAS;
-		mySearchZoneUsnoa2.isArroundZeroRa            = 0;
-
-	} else if(mySearchZoneUsnoa2.distanceToPoleStartInCas <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_CAS) {
-
-		mySearchZoneUsnoa2.distanceToPoleStartInCas        = 0;
-		mySearchZoneUsnoa2.raStartInCas                    = START_RA_CAS;
-		mySearchZoneUsnoa2.raEndInCas                      = COMPLETE_RA_CAS;
-		mySearchZoneUsnoa2.isArroundZeroRa                 = 0;
-
-	} else if(mySearchZoneUsnoa2.distanceToPoleEndInCas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS) {
-
-		mySearchZoneUsnoa2.distanceToPoleEndInCas        = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_CAS;
-		mySearchZoneUsnoa2.raStartInCas                  = START_RA_CAS;
-		mySearchZoneUsnoa2.raEndInCas                    = COMPLETE_RA_CAS;
-		mySearchZoneUsnoa2.isArroundZeroRa               = 0;
-
-	} else {
-
-		radiusRa                               = radiusInDeg / cos(decInDeg * DEC2RAD);
-		tmpValue                               = DEG2CAS * (raInDeg  - radiusRa);
-		ratio                                  = tmpValue / COMPLETE_RA_CAS;
-		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
-		tmpValue                              -= ratio;
-		mySearchZoneUsnoa2.raStartInCas        = (int)tmpValue;
-
-		tmpValue                               = DEG2CAS * (raInDeg  + radiusRa);
-		ratio                                  = tmpValue / COMPLETE_RA_CAS;
-		ratio                                  = floor(ratio) * COMPLETE_RA_CAS;
-		tmpValue                              -= ratio;
-		mySearchZoneUsnoa2.raEndInCas          = (int)tmpValue;
-
-		mySearchZoneUsnoa2.isArroundZeroRa     = 0;
-
-		if(mySearchZoneUsnoa2.raStartInCas     >  mySearchZoneUsnoa2.raEndInCas) {
-			mySearchZoneUsnoa2.isArroundZeroRa = 1;
-		}
-	}
-
-	mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone    = (int) (mySearchZoneUsnoa2.distanceToPoleStartInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
-	mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone     = (int) (mySearchZoneUsnoa2.distanceToPoleEndInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
+	mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone    = (int) (mySearchZoneUsnoa2.subSearchZone.spdStartInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
+	mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone     = (int) (mySearchZoneUsnoa2.subSearchZone.spdEndInCas / (CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DEGREE * DEG2CAS));
 
 	if(mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone >= NUMBER_OF_CATALOG_FILES_USNO) {
 		mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone = NUMBER_OF_CATALOG_FILES_USNO - 1;
@@ -564,17 +520,10 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 		mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone  = NUMBER_OF_CATALOG_FILES_USNO - 1;
 	}
 
-	mySearchZoneUsnoa2.indexOfFirstRightAscensionZone    = (int) (mySearchZoneUsnoa2.raStartInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
-	mySearchZoneUsnoa2.indexOfLastRightAscensionZone     = (int) (mySearchZoneUsnoa2.raEndInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
+	mySearchZoneUsnoa2.indexOfFirstRightAscensionZone    = (int) (mySearchZoneUsnoa2.subSearchZone.raStartInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
+	mySearchZoneUsnoa2.indexOfLastRightAscensionZone     = (int) (mySearchZoneUsnoa2.subSearchZone.raEndInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
 
 	if(DEBUG) {
-		printf("mySearchZoneUsnoa2.decStart                         = %d\n",mySearchZoneUsnoa2.distanceToPoleStartInCas);
-		printf("mySearchZoneUsnoa2.decEnd                           = %d\n",mySearchZoneUsnoa2.distanceToPoleEndInCas);
-		printf("mySearchZoneUsnoa2.raStart                          = %d\n",mySearchZoneUsnoa2.raStartInCas);
-		printf("mySearchZoneUsnoa2.raEnd                            = %d\n",mySearchZoneUsnoa2.raEndInCas);
-		printf("mySearchZoneUsnoa2.isArroundZeroRa                  = %d\n",mySearchZoneUsnoa2.isArroundZeroRa);
-		printf("mySearchZoneUsnoa2.magnitudeStart                   = %d\n",mySearchZoneUsnoa2.magnitudeStartInDeciMag);
-		printf("mySearchZoneUsnoa2.magnitudeEnd                     = %d\n",mySearchZoneUsnoa2.magnitudeEndInDeciMag);
 		printf("mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone   = %d\n",mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone);
 		printf("mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone    = %d\n",mySearchZoneUsnoa2.indexOfLastDistanceToPoleZone);
 		printf("mySearchZoneUsnoa2.indexOfFirstRightAscensionZone   = %d\n",mySearchZoneUsnoa2.indexOfFirstRightAscensionZone);

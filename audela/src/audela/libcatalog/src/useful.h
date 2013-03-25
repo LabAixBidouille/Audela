@@ -77,6 +77,57 @@
 
 #define STRING_COMMON_LENGTH 1024
 
+/* Search zones structures */
+/* {RA,DEC} in MAS */
+typedef struct {
+	int  raStartInMas;
+	int  raEndInMas;
+	int  decStartInMas;
+	int  decEndInMas;
+	char isArroundZeroRa;
+} searchZoneRaDecMas;
+/* {RA,DEC} in Micro DEG */
+typedef struct {
+	int   raStartInMicroDegree;
+	int   raEndInMicroDegree;
+	int   decStartInMicroDegree;
+	int   decEndInMicroDegree;
+	char  isArroundZeroRa;
+} searchZoneRaDecMicroDeg;
+/* {RA,SPD} in MAS */
+typedef struct {
+	int  raStartInMas;
+	int  raEndInMas;
+	int  spdStartInMas;
+	int  spdEndInMas;
+	char isArroundZeroRa;
+} searchZoneRaSpdMas;
+/* {RA,SPD} in CAS */
+typedef struct {
+	int  raStartInCas;
+	int  raEndInCas;
+	int  spdStartInCas;
+	int  spdEndInCas;
+	char isArroundZeroRa;
+} searchZoneRaSpdCas;
+
+/* Magnitude box structures */
+/* Milli mag */
+typedef struct {
+	int  magnitudeStartInMilliMag;
+	int  magnitudeEndInMilliMag;
+} magnitudeBoxMilliMag;
+/* Centi mag */
+typedef struct {
+	short int  magnitudeStartInCentiMag;
+	short int  magnitudeEndInCentiMag;
+} magnitudeBoxCentiMag;
+/* Deci mag */
+typedef struct {
+	short int  magnitudeStartInDeciMag;
+	short int  magnitudeEndInDeciMag;
+} magnitudeBoxDeciMag;
+
 #define DEBUG 0
 
 int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
@@ -90,6 +141,17 @@ void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int l
 short convertBig2LittleEndianForShort(short int l);
 void convertBig2LittleEndianForArrayOfShort(short int* const inputArray, const int length);
 int sumNumberOfElements(const int* const inputArray,const int indexStart,const int indexEnd);
+void fillSearchZoneRaDecMas(searchZoneRaDecMas* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin);
+void fillSearchZoneRaSpdMas(searchZoneRaSpdMas* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin);
+void fillSearchZoneRaDecMicroDeg(searchZoneRaDecMicroDeg* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin);
+void fillSearchZoneRaSpdCas(searchZoneRaSpdCas* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin);
+void fillMagnitudeBoxMilliMag(magnitudeBoxMilliMag* const magnitudeBox, const double magMin, const double magMax);
+void fillMagnitudeBoxCentiMag(magnitudeBoxCentiMag* const magnitudeBox, const double magMin, const double magMax);
+void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const double magMin, const double magMax);
 /* Francois Ochsenbein's methods */
 int getBits(unsigned char * const a, const int b, const int length);
 int xget4(unsigned char * const a, const int b, const int length, const int max, const int * const xtra4);

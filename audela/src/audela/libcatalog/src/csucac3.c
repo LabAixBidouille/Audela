@@ -163,13 +163,16 @@ int cmd_tcl_csucac3(ClientData clientData, Tcl_Interp *interp, int argc, char *a
  */
 int isGoodStarUcac3(const starUcac3* const oneStar,const searchZoneUcac3And4* const mySearchZoneUcac3) {
 
+	const searchZoneRaSpdMas* const subSearchZone  = &(mySearchZoneUcac3->subSearchZone);
+	const magnitudeBoxMilliMag* const magnitudeBox = &(mySearchZoneUcac3->magnitudeBox);
+
 	if(
-			((mySearchZoneUcac3->isArroundZeroRa && ((oneStar->raInMas >= mySearchZoneUcac3->raStartInMas) || (oneStar->raInMas <= mySearchZoneUcac3->raEndInMas))) ||
-					(!mySearchZoneUcac3->isArroundZeroRa && ((oneStar->raInMas >= mySearchZoneUcac3->raStartInMas) && (oneStar->raInMas <= mySearchZoneUcac3->raEndInMas)))) &&
-					(oneStar->distanceToSouthPoleInMas  >= mySearchZoneUcac3->distanceToPoleStartInMas) &&
-					(oneStar->distanceToSouthPoleInMas  <= mySearchZoneUcac3->distanceToPoleEndInMas) &&
-					(oneStar->ucacApertureMagInMilliMag >= mySearchZoneUcac3->magnitudeStartInMilliMag) &&
-					(oneStar->ucacApertureMagInMilliMag <= mySearchZoneUcac3->magnitudeEndInMilliMag)) {
+			((subSearchZone->isArroundZeroRa && ((oneStar->raInMas >= subSearchZone->raStartInMas) || (oneStar->raInMas <= subSearchZone->raEndInMas))) ||
+					(!subSearchZone->isArroundZeroRa && ((oneStar->raInMas >= subSearchZone->raStartInMas) && (oneStar->raInMas <= subSearchZone->raEndInMas)))) &&
+					(oneStar->distanceToSouthPoleInMas  >= subSearchZone->spdStartInMas) &&
+					(oneStar->distanceToSouthPoleInMas  <= subSearchZone->spdEndInMas) &&
+					(oneStar->ucacApertureMagInMilliMag >= magnitudeBox->magnitudeStartInMilliMag) &&
+					(oneStar->ucacApertureMagInMilliMag <= magnitudeBox->magnitudeEndInMilliMag)) {
 
 		return (1);
 	}
@@ -187,11 +190,13 @@ int retrieveUnfilteredStarsUcac3(const char* const pathOfCatalog, const searchZo
 	int indexZoneDecStart,indexZoneDecEnd,indexZoneRaStart,indexZoneRaEnd,resultOfFunction;
 	int numberOfDecZones;
 
+	const searchZoneRaSpdMas* const subSearchZone  = &(mySearchZoneUcac3->subSearchZone);
+
 	retrieveIndexesUcac3(mySearchZoneUcac3,&indexZoneDecStart,&indexZoneDecEnd,&indexZoneRaStart,&indexZoneRaEnd);
 
 	numberOfDecZones      = indexZoneDecEnd - indexZoneDecStart + 1;
 	/* If ra is around 0, we double the size of the array */
-	if(mySearchZoneUcac3->isArroundZeroRa) {
+	if(subSearchZone->isArroundZeroRa) {
 		numberOfDecZones *= 2;
 	}
 
@@ -209,14 +214,14 @@ int retrieveUnfilteredStarsUcac3(const char* const pathOfCatalog, const searchZo
 	//printf("numberOfDecZones = %d\n",numberOfDecZones);
 	/* Now we allocate the memory for each zone */
 	resultOfFunction = allocateUnfiltredStarUcac3(unFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
-			indexZoneRaStart, indexZoneRaEnd, mySearchZoneUcac3->isArroundZeroRa);
+			indexZoneRaStart, indexZoneRaEnd, subSearchZone->isArroundZeroRa);
 	if(resultOfFunction) {
 		return (1);
 	}
 
 	/* Now we read the un-filtered stars from the catalog */
 	resultOfFunction = readUnfiltredStarUcac3(pathOfCatalog, unFilteredStars, indexTable, indexZoneDecStart, indexZoneDecEnd,
-			indexZoneRaStart, indexZoneRaEnd, mySearchZoneUcac3->isArroundZeroRa);
+			indexZoneRaStart, indexZoneRaEnd, subSearchZone->isArroundZeroRa);
 	if(resultOfFunction) {
 		releaseMemoryArrayTwoDOfStarUcac3(unFilteredStars);
 		return (1);
@@ -453,26 +458,28 @@ int allocateUnfiltredStarForOneDecZoneUcac3(arrayOneDOfStarUcac3* const unFilter
 void retrieveIndexesUcac3(const searchZoneUcac3And4* const mySearchZoneUcac3,int* const indexZoneDecStart,int* const indexZoneDecEnd,
 		int* const indexZoneRaStart,int* const indexZoneRaEnd) {
 
+	const searchZoneRaSpdMas* const subSearchZone  = &(mySearchZoneUcac3->subSearchZone);
+
 	/* dec start */
-	*indexZoneDecStart     = (int)((mySearchZoneUcac3->distanceToPoleStartInMas - DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS_UCAC2AND3);
+	*indexZoneDecStart     = (int)((subSearchZone->spdStartInMas - DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS_UCAC2AND3);
 	if(*indexZoneDecStart  < 0) {
 		*indexZoneDecStart = 0;
 	}
 
 	/* dec end */
-	*indexZoneDecEnd       = (int)((mySearchZoneUcac3->distanceToPoleEndInMas - DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS_UCAC2AND3);
+	*indexZoneDecEnd       = (int)((subSearchZone->spdEndInMas - DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) / DEC_WIDTH_ZONE_MAS_UCAC2AND3);
 	if(*indexZoneDecEnd   >= INDEX_TABLE_DEC_DIMENSION_UCAC2AND3) {
 		*indexZoneDecEnd   = INDEX_TABLE_DEC_DIMENSION_UCAC2AND3 - 1;
 	}
 
 	/* ra start */
-	*indexZoneRaStart     = (int)((mySearchZoneUcac3->raStartInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS_UCAC2AND3);
+	*indexZoneRaStart     = (int)((subSearchZone->raStartInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS_UCAC2AND3);
 	if(*indexZoneDecStart < 0) {
 		*indexZoneRaStart = 0;
 	}
 
 	/* ra end */
-	*indexZoneRaEnd     = (int)((mySearchZoneUcac3->raEndInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS_UCAC2AND3);
+	*indexZoneRaEnd     = (int)((subSearchZone->raEndInMas - START_RA_MAS) / RA_WIDTH_ZONE_MAS_UCAC2AND3);
 	if(*indexZoneRaEnd >= INDEX_TABLE_RA_DIMENSION_UCAC2AND3) {
 		*indexZoneRaEnd = INDEX_TABLE_RA_DIMENSION_UCAC2AND3 - 1;
 	}
@@ -549,69 +556,9 @@ indexTableUcac** readIndexFileUcac3(const char* const pathOfCatalog) {
 const searchZoneUcac3And4 findSearchZoneUcac3And4(const double raInDeg,const double decInDeg,const double radiusInArcMin,const double magMin, const double magMax) {
 
 	searchZoneUcac3And4 mySearchZoneUcac3;
-	const double radiusInDeg                   = radiusInArcMin / DEG2ARCMIN;
-	double ratio;
-	double tmpValue;
-	double radiusRa;
 
-	mySearchZoneUcac3.distanceToPoleStartInMas = (int)(DEG2MAS * (decInDeg - DEC_SOUTH_POLE_DEG - radiusInDeg));
-	mySearchZoneUcac3.distanceToPoleEndInMas   = (int)(DEG2MAS * (decInDeg - DEC_SOUTH_POLE_DEG + radiusInDeg));
-	mySearchZoneUcac3.magnitudeStartInMilliMag = (int)(MAG2MILLIMAG * magMin);
-	mySearchZoneUcac3.magnitudeEndInMilliMag   = (int)(MAG2MILLIMAG * magMax);
-
-	if((mySearchZoneUcac3.distanceToPoleStartInMas  <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) && (mySearchZoneUcac3.distanceToPoleEndInMas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS)) {
-
-		mySearchZoneUcac3.distanceToPoleStartInMas   = 0;
-		mySearchZoneUcac3.distanceToPoleEndInMas     = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS;
-		mySearchZoneUcac3.raStartInMas               = START_RA_MAS;
-		mySearchZoneUcac3.raEndInMas                 = COMPLETE_RA_MAS;
-		mySearchZoneUcac3.isArroundZeroRa            = 0;
-
-	} else if(mySearchZoneUcac3.distanceToPoleStartInMas <= DISTANCE_TO_SOUTH_POLE_AT_SOUTH_POLE_MAS) {
-
-		mySearchZoneUcac3.distanceToPoleStartInMas        = 0;
-		mySearchZoneUcac3.raStartInMas                    = START_RA_MAS;
-		mySearchZoneUcac3.raEndInMas                      = COMPLETE_RA_MAS;
-		mySearchZoneUcac3.isArroundZeroRa                 = 0;
-
-	} else if(mySearchZoneUcac3.distanceToPoleEndInMas >= DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS) {
-
-		mySearchZoneUcac3.distanceToPoleEndInMas        = DISTANCE_TO_SOUTH_POLE_AT_NORTH_POLE_MAS;
-		mySearchZoneUcac3.raStartInMas                  = START_RA_MAS;
-		mySearchZoneUcac3.raEndInMas                    = COMPLETE_RA_MAS;
-		mySearchZoneUcac3.isArroundZeroRa               = 0;
-
-	} else {
-
-		radiusRa                        = radiusInDeg / cos(decInDeg * DEC2RAD);
-		tmpValue                        = DEG2MAS * (raInDeg  - radiusRa);
-		ratio                           = tmpValue / COMPLETE_RA_MAS;
-		ratio                           = floor(ratio) * COMPLETE_RA_MAS;
-		tmpValue                       -= ratio;
-		mySearchZoneUcac3.raStartInMas  = (int)tmpValue;
-
-		tmpValue                        = DEG2MAS * (raInDeg  + radiusRa);
-		ratio                           = tmpValue / COMPLETE_RA_MAS;
-		ratio                           = floor(ratio) * COMPLETE_RA_MAS;
-		tmpValue                       -= ratio;
-		mySearchZoneUcac3.raEndInMas    = (int)tmpValue;
-
-		mySearchZoneUcac3.isArroundZeroRa      = 0;
-
-		if(mySearchZoneUcac3.raStartInMas      >  mySearchZoneUcac3.raEndInMas) {
-			mySearchZoneUcac3.isArroundZeroRa  = 1;
-		}
-	}
-
-	if(DEBUG) {
-		printf("mySearchZoneUcac3.spdStart        = %d\n",mySearchZoneUcac3.distanceToPoleStartInMas);
-		printf("mySearchZoneUcac3.spdEnd          = %d\n",mySearchZoneUcac3.distanceToPoleEndInMas);
-		printf("mySearchZoneUcac3.raStart         = %d\n",mySearchZoneUcac3.raStartInMas);
-		printf("mySearchZoneUcac3.raEnd           = %d\n",mySearchZoneUcac3.raEndInMas);
-		printf("mySearchZoneUcac3.isArroundZeroRa = %d\n",mySearchZoneUcac3.isArroundZeroRa);
-		printf("mySearchZoneUcac3.magnitudeStart  = %d\n",mySearchZoneUcac3.magnitudeStartInMilliMag);
-		printf("mySearchZoneUcac3.magnitudeEnd    = %d\n",mySearchZoneUcac3.magnitudeEndInMilliMag);
-	}
+	fillSearchZoneRaSpdMas(&(mySearchZoneUcac3.subSearchZone), raInDeg, decInDeg, radiusInArcMin);
+	fillMagnitudeBoxMilliMag(&(mySearchZoneUcac3.magnitudeBox), magMin, magMax);
 
 	return (mySearchZoneUcac3);
 }

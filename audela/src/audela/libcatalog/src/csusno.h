@@ -36,13 +36,8 @@ typedef struct {
 } indexTableUsno;
 
 typedef struct {
-	int    raStartInCas;
-	int    raEndInCas;
-	char   isArroundZeroRa;
-	int    distanceToPoleStartInCas;
-	int    distanceToPoleEndInCas;
-	short  magnitudeStartInDeciMag;
-	short  magnitudeEndInDeciMag;
+	searchZoneRaSpdCas subSearchZone;
+	magnitudeBoxDeciMag magnitudeBox;
 	int    indexOfFirstDistanceToPoleZone;
 	int    indexOfLastDistanceToPoleZone;
 	int    indexOfFirstRightAscensionZone;
