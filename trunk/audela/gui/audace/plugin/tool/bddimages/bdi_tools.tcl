@@ -214,6 +214,66 @@ proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
    return [list $errnum $msgzip]
 }
 
+
+
+proc ::bdi_tools::get_sources { send_sources name } {
+
+      upvar $send_sources sources
+
+      foreach s $sources {
+         set cata [::manage_source::name_cata $name]
+         set sourcename [::manage_source::naming $s $cata]
+         if {$sourcename == $name} {
+            return -code 0 $s
+         }
+      }
+      return -code 1 "" 
+}
+
+
+proc ::bdi_tools::get_astroid { dateobs name } {
+
+      set pass "no"
+      set id_current_image 0
+      foreach current_image $::tools_cata::img_list {
+         incr id_current_image
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         set datei  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+         if {$datei==$dateobs} {
+            set pass "ok"
+            break
+         }
+
+      }
+      
+      if {$pass=="no"} {
+         return -code 1 "No Date"
+      }
+      
+      set astroid ""
+      
+      set sources [lindex $::gui_cata::cata_list($id_current_image) 1]
+
+      set err [ catch { set s [::bdi_tools::get_sources sources $name] } msg ]
+      if {$err} {
+         return -code 2 "No Sources ($msg)"
+      }
+      
+      
+      set pos [lsearch -index 0 $s "ASTROID"]
+      
+      if {$pos!=-1} {
+         set astroid [lindex $s [list $pos 2]]
+         return $astroid
+      }
+      
+      
+      
+      
+      return -code 3 "No ASTROID"
+
+}
+
 #
 ## Sauve une chaine de caracteres dans un fichier dont le nom est fourni par l'utilisateur
 # @param \c str string chaine de caracteres a enregistrer

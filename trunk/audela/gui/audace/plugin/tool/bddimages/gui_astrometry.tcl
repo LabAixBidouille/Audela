@@ -510,7 +510,8 @@ namespace eval gui_astrometry {
       $::gui_astrometry::rapport_mpc insert end  "#NET $::tools_astrometry::rapport_cata \n"
       $::gui_astrometry::rapport_mpc insert end  "#ACK Batch $::tools_astrometry::rapport_batch \n"
       $::gui_astrometry::rapport_mpc insert end  "#AC2 $::tools_astrometry::rapport_mail \n"
-      $::gui_astrometry::rapport_mpc insert end  "#NUM $::tools_astrometry::rapport_nb \n"
+      #$::gui_astrometry::rapport_mpc insert end  "#NUM $::tools_astrometry::rapport_nb \n"
+
 
       # Constant parameters
       # - Note 1: alphabetical publishable note or (those sites that use program codes) an alphanumeric
@@ -521,9 +522,12 @@ namespace eval gui_astrometry {
 
       # Format of MPC line
       set form "%13s%1s%1s%17s%12s%12s         %6s      %3s\n"
-      
+      set nb 0
       set l [array get ::tools_astrometry::listscience]
       foreach {name y} $l {
+         set cata [::manage_source::name_cata $name]
+         if {$cata != "SKYBOT"} {continue}
+
          foreach date $::tools_astrometry::listscience($name) {
             set alpha   [lindex $::tools_astrometry::tabval($name,$date) 6]
             set delta   [lindex $::tools_astrometry::tabval($name,$date) 7]
@@ -538,9 +542,10 @@ namespace eval gui_astrometry {
             
             set txt [format $form $object $note1 $note2 $datempc $ra_hms $dec_dms $magmpc $obsuai]
             $::gui_astrometry::rapport_mpc insert end $txt
+            incr nb
          }
       }
-      
+      $::gui_astrometry::rapport_mpc insert 11.0  "#NUM $nb\n"      
       $::gui_astrometry::rapport_mpc insert end  "\n\n\n"
 
    }
@@ -785,6 +790,9 @@ namespace eval gui_astrometry {
             if {$ra_jpl_deg    != "-"} {set ra_jpl_deg    [format "%.8f" $ra_jpl_deg ]}
             if {$dec_jpl_deg   != "-"} {set dec_jpl_deg   [format "%.8f" $dec_jpl_deg]}
 
+            # Ajustement affichage
+            set midatejd [string range "${midatejd}000000000000" 0 15]
+            
             # Ligne de resultats
             set txt [format $form "" $name $midateiso $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_jpl_omc $dec_jpl_omc $midatejd $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_jpl_deg $dec_jpl_deg $err_x $err_y $fwhm_x $fwhm_y $h_imcce_deg $am_imcce_deg]
             $::gui_astrometry::rapport_txt insert end  $txt
@@ -1388,6 +1396,44 @@ namespace eval gui_astrometry {
    }
 
 
+   #----------------------------------------------------------------------------
+
+
+   proc ::gui_astrometry::save_posxy { } {
+
+      gren_info "Extraction des dates pour l'objet $::gui_astrometry::combo_list_object ...\n"
+      set strdate ""
+      if {[array exists ::tools_cata::date2midate]} {
+         foreach {name y} [array get ::tools_astrometry::listscience] {
+            append strdate "#Object = $name\n"
+            append strdate "#midepoch         x pixel  y pixel  xerr     yerr   xfwhm  yfwhm\n"
+            foreach dateimg $::tools_astrometry::listscience($name) {
+               set midepoch $::tools_cata::date2midate($dateimg)
+               set err [ catch { set astroid [::bdi_tools::get_astroid $dateimg $name] } msg ]
+               if {$err} {
+                  gren_erreur "get_astroid = ($err) $msg\n"
+                  continue
+               }
+               set x      [format "%.3f" [lindex $astroid 0]]
+               set y      [format "%.3f" [lindex $astroid 1]]
+               set err_x  [format "%.3f" [lindex $astroid 2]]
+               set err_y  [format "%.3f" [lindex $astroid 3]]
+               set fwhm_x [format "%.1f" [lindex $astroid 4]]
+               set fwhm_y [format "%.1f" [lindex $astroid 5]]
+               
+               append strdate [format "%.9f %-8s %-8s %-8s %-8s %-6s %-6s \n" $midepoch $x $y $err_x $err_y $fwhm_x $fwhm_y]
+            }
+         }
+         if {[string length $strdate] > 0} {
+            ::bdi_tools::save_as $strdate "DAT"
+         } else {
+            gren_erreur "  Aucune date a sauver\n"
+         }
+      } else {
+         gren_erreur "  Aucune date chargee: rien a sauver\n"
+      }
+
+   }
 
 
    proc ::gui_astrometry::save_images { } {
@@ -2757,12 +2803,16 @@ namespace eval gui_astrometry {
                 -values $::gui_astrometry::object_list
              pack $object.combo -anchor center -side left -fill x -expand 0
 
-         set block [frame $object.save_date -borderwidth 0 -cursor arrow -relief groove]
-         pack $block -in $object -side top -expand 0 -padx 2 -pady 5
+         set block [frame $misc.save -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $misc -side top -expand 0 -padx 2 -pady 5
 
                button $block.date -text "Save observation dates (JD)" -borderwidth 2 -takefocus 1 \
                        -command ::gui_astrometry::save_dateobs
-               pack $block.date -side right -anchor c -expand 0
+               pack $block.date -side top -anchor c -expand 0
+
+               button $block.posyx -text "Save pixel positions" -borderwidth 2 -takefocus 1 \
+                       -command ::gui_astrometry::save_posxy
+               pack $block.posyx -side top -anchor c -expand 0
 
          #--- Onglet GRAPHS
          set onglet_graphes [frame $graphes.selinobj -borderwidth 0 -cursor arrow -relief groove]
