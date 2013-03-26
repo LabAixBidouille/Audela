@@ -71,6 +71,7 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
 #if defined(MOUCHARD)
 	FILE *f;
 #endif
+	FILE *f;
 
    tel = (struct telprop *)clientData;
    if (argc<4) {
@@ -105,6 +106,9 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
    fprintf(f,"dsa_execute_command_x_s(%d=>axe%d,%d,%d,%d)\n",tel->drv[axisno],axisno,cmd,params[kk].val.i,nparams);
 	fclose(f);
 #endif
+   f=fopen("mouchard_etel0.txt","at");
+   fprintf(f,"dsa_execute_command_x_s(%d=>axe%d,%d,%d,%d)\n",tel->drv[axisno],axisno,cmd,params[kk].val.i,nparams);
+	fclose(f);
 	if (err = dsa_execute_command_x_s(tel->drv[axisno],cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
 		mytel_error(tel,k,err);
    	sprintf(ligne,"%s",tel->msg);
