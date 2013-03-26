@@ -944,7 +944,7 @@ proc start_shift_lent { direction } {
    #mouvement télescope
    if {$direction=="N"} {
       if { $sens == 1  } {
-         etel_execute_command_x_s $axe 26 1 0 0 82
+         etel_execute_command_x_s $axe 26 1 0 0 83
       }
       if { $sens == 0  } {
          if { $vhl < 0  } {
