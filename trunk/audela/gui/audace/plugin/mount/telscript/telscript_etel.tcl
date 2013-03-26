@@ -944,31 +944,32 @@ proc start_shift_lent { direction } {
    #mouvement télescope
    if {$direction=="N"} {
       if { $sens == 1  } {
-         etel_execute_command_x_s $axe 26 1 0 0 83
+         etel_execute_command_x_s $axe 26 1 0 0 82
       }
       if { $sens == 0  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 84
+            etel_execute_command_x_s $axe 26 1 0 0 83
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 85
          }
       }
    }
+   
    if {$direction=="S"} {
-      if { $sens == 1  } {
-         etel_execute_command_x_s $axe 26 1 0 0 85
-      }
       if { $sens == 0  } {
+         etel_execute_command_x_s $axe 26 1 0 0 84
+      }
+      if { $sens == 1  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 85
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 84
+            etel_execute_command_x_s $axe 26 1 0 0 83
          }
       }
    }
-   if {$direction=="E"} {
+  if {$direction=="E"} {
       if { $sens == 1  } {
          etel_execute_command_x_s $axe 26 1 0 0 83
       }
@@ -982,10 +983,10 @@ proc start_shift_lent { direction } {
       }
    }
    if {$direction=="W"} {
-      if { $sens == 1  } {
+      if { $sens == 0  } {
          etel_execute_command_x_s $axe 26 1 0 0 85
       }
-      if { $sens == 0  } {
+      if { $sens == 1  } {
          if { $vhl < 0  } {
             etel_execute_command_x_s $axe 26 1 0 0 83
          }
