@@ -46,6 +46,7 @@
 
 /* 1 deg = 3600000 mas (= milli arc second) */
 #define DEG2MAS         3600000.
+#define DEG2DECIMAS     36000000.
 #define DEG2MICRODEG    1.e6
 /* 0 deg = 0 mas */
 #define START_RA_MAS    0
@@ -141,6 +142,7 @@ void convertBig2LittleEndianForArrayOfInteger(int* const inputArray, const int l
 short convertBig2LittleEndianForShort(short int l);
 void convertBig2LittleEndianForArrayOfShort(short int* const inputArray, const int length);
 int sumNumberOfElements(const int* const inputArray,const int indexStart,const int indexEnd);
+int findComponentNumber(const int* const sortedArrayOfValues, const int lengthOfArray, const int value);
 void fillSearchZoneRaDecMas(searchZoneRaDecMas* const theSearchZone, const double raInDeg,const double decInDeg,
 		const double radiusInArcMin);
 void fillSearchZoneRaSpdMas(searchZoneRaSpdMas* const theSearchZone, const double raInDeg,const double decInDeg,

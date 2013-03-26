@@ -20,19 +20,21 @@
 #define PPMX_BINARY_FILE_NAME_LENGTH       10
 #define PPMX_BINARY_FILE_NAME_FORMAT_SOUTH "s%s.bin"
 #define PPMX_BINARY_FILE_NAME_FORMAT_NORTH "n%s.bin"
+#define PPMX_CHUNK_SHIFT_RA     23
 
 /* PPMXL */
-#define PPMXL_HEADER_FORMAT     "#PPMX(28+)/%4s.bin N=%d n4=%d Noff=%d*%d oDE=%dmas"
-//#define PPMX_RECORD_LENGTH      46
-#define PPMXL_DECLINATION_FIRST_STEP       3600000
-#define PPMXL_DECLINATION_SECOND_STEP      900000
-#define PPMXL_BINARY_FILE_NAME_LENGTH      8
+#define PPMXL_HEADER_FORMAT                 "N=%d n4=%d Noff=%d*2 oDE=%dmas"
+#define PPMXL_HEADER_UNUSEFUL_LENGTH        21
+#define PPMXL_SHORT_RECORD_LENGTH           29
+#define PPMXL_DECLINATION_FIRST_STEP        3600000
+#define PPMXL_DECLINATION_SECOND_STEP       900000
+#define PPMXL_BINARY_FILE_NAME_LENGTH       8
 #define PPMXL_BINARY_FILE_NAME_FORMAT_SOUTH "s%02d%c.bin"
 #define PPMXL_BINARY_FILE_NAME_FORMAT_NORTH "n%02d%c.bin"
-
-
-
-#define CHUNK_SHIFT_RA          23
+#define binRA(s)                            ((s[12]&0x7f)<<24)|(s[13]<<16)|(s[14]<<8)|s[15]
+#define BAD_MAGNITUDE                    	-32768	/* NULL value for int2 values   */
+#define NUMBER_OF_2MASS_MAGNITUDES          3
+#define NUMBER_OF_USNO_MAGNITUDES           5
 
 typedef struct {
 	searchZoneRaDecMas subSearchZone;
@@ -52,15 +54,13 @@ typedef struct {
 	int decStartInMas;
 } headerInformationPPMX;
 
-//TODO
 typedef struct {
-	int numberOfExtra2;
 	int numberOfExtra4;
 	int lengthOfAcceleratorTable;
-	short int* extraValues2;
 	int* extraValues4;
 	int* chunkOffsets;
-	int* chunkNumberOfStars;
+	int* chunkOffRa;
+	int* chunkSizes;
 	int decStartInMas;
 } headerInformationPPMXL;
 
@@ -84,7 +84,7 @@ int processChunksPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 void processBufferedDataPPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,
 		unsigned char* buffer, const headerInformationPPMX* const headerInformation, const int raStart);
 void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX, unsigned char* buffer,
-		const headerInformationPPMXL* const headerInformation, const int raStart);
+		const headerInformationPPMXL* const headerInformation, int* const lengthOfRecord);
 void sJname(char * const str, const int ra, const int de, const int modJ);
 
 #endif /* PPMX_H_ */
