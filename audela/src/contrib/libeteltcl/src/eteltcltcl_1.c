@@ -43,6 +43,7 @@ etel_set_register_s
 
 etel_execute_command_x_s
 */
+//#define MOUCHARD
 
 int Cmd_eteltcltcl_open(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
@@ -223,7 +224,7 @@ int Cmd_eteltcltcl_ExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, i
 		}
 	}
 #if defined(MOUCHARD)
-   f=fopen("mouchard_etel.txt","at");
+   f=fopen("mouchard_etel1.txt","at");
    fprintf(f,"dsa_execute_command_x_s(%d=>axe%d,%d,%d,%d)\n",etel.drv[axisno],axisno,cmd,params[kk].val.i,nparams);
 	fclose(f);
 #endif
@@ -244,9 +245,11 @@ int Cmd_eteltcltcl_GetRegisterS(ClientData clientData, Tcl_Interp *interp, int a
    char ligne[256];
    int result = TCL_OK,err=0,axisno;
 	int typ,idx,sidx=0,val;
+/*
 #if defined(MOUCHARD)
 	FILE *f;
 #endif
+*/
    if (argc<4) {
    	sprintf(ligne,"usage: %s axisno typ(X|K|M) idx ?sidx?",argv[0]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -272,11 +275,13 @@ int Cmd_eteltcltcl_GetRegisterS(ClientData clientData, Tcl_Interp *interp, int a
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
+	/*
 #if defined(MOUCHARD)
    f=fopen("mouchard_etel.txt","at");
    fprintf(f,"dsa_get_register_s(%d=>axe%d,%d,%d,%d) => %d\n",etel.drv[axisno],axisno,typ,idx,sidx,val);
 	fclose(f);
 #endif
+	*/
   	sprintf(ligne,"%d",val);
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return result;
