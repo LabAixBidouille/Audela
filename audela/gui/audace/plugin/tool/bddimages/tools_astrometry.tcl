@@ -569,7 +569,7 @@ namespace eval tools_astrometry {
          incr id_current_image
          set current_listsources $::gui_cata::cata_list($id_current_image)
  
-         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         set tabkey  [::bddimages_liste::lget $current_image "tabkey"]
          set dateiso [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
 
          gren_info "-- IMG : $id_current_image / [llength $::tools_cata::img_list] :: "

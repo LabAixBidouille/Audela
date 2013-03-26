@@ -275,6 +275,14 @@ namespace eval ::manage_source {
       return ""
    }
 
+   #
+   # manage_source::name_cata
+   # retourne le nom du catalogue pour un nom de source 
+   #
+   proc ::manage_source::name_cata { name } {
+       set a [split $name "_"]
+       return [lindex $a 0]
+   }
 
    #
    # manage_source::naming

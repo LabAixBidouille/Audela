@@ -1733,6 +1733,7 @@ namespace eval cata_gestion_gui {
       }
       
       set ::tools_cata::current_listsources [list $fields $sources]
+      ::psf_tools::set_mag ::tools_cata::current_listsources
       
       
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
