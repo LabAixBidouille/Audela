@@ -203,8 +203,8 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	short int nObs;
 	int pmRa, pmDec;
 	int epochRa, epochDec;
-	short int magJHK[NUMBER_OF_2MASS_MAGNITUDES], errorMagJHK[NUMBER_OF_2MASS_MAGNITUDES];
-	short int magUsno[NUMBER_OF_USNO_MAGNITUDES];	/*=b1mag,b2mag,r1mag,r2mag,imag */
+	short int magJHK[NUMBER_OF_2MASS_MAGNITUDES], errorMagJHK[NUMBER_OF_2MASS_MAGNITUDES]; /*unit = milli mag*/
+	short int magUsno[NUMBER_OF_USNO_MAGNITUDES];	/*=b1mag,b2mag,r1mag,r2mag,imag : unit = centi mag*/
 	//char survey[NUMBER_OF_USNO_MAGNITUDES];	/* 5 digits for b1 b2 r1 r2 i   */
 	const int lengthOf2MassRecord = 3;
 	const int lengthOfUsnoRecord  = 2;
@@ -316,7 +316,7 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	/* Add the result to TCL output */
 	Tcl_DStringAppend(dsptr,"{ { PPMX { } {",-1);
 
-	sprintf(outputLogChar,"%lld %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %d %d "
+	sprintf(outputLogChar,"%lld %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.2f %.2f "
 			"%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f "
 			"%d",
 			idOfStar,
@@ -328,7 +328,7 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 			(double)pmDec / DEG2DECIMAS,
 			(double)errorPmRa / DEG2DECIMAS,
 			(double)errorPmDec / DEG2DECIMAS,
-			epochRa, epochDec,
+			epochRa / 100., epochDec / 100.,
 			(double)magUsno[0] / MAG2MILLIMAG,
 			(double)magUsno[1] / MAG2MILLIMAG,
 			(double)magUsno[2] / MAG2MILLIMAG,

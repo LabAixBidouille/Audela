@@ -32,9 +32,10 @@
 #define PPMXL_BINARY_FILE_NAME_FORMAT_SOUTH "s%02d%c.bin"
 #define PPMXL_BINARY_FILE_NAME_FORMAT_NORTH "n%02d%c.bin"
 #define binRA(s)                            ((s[12]&0x7f)<<24)|(s[13]<<16)|(s[14]<<8)|s[15]
-#define BAD_MAGNITUDE                    	-32768	/* NULL value for int2 values   */
 #define NUMBER_OF_2MASS_MAGNITUDES          3
 #define NUMBER_OF_USNO_MAGNITUDES           5
+
+#define BAD_MAGNITUDE                    	-32768	/* NULL value for int2 values   */
 
 typedef struct {
 	searchZoneRaDecMas subSearchZone;

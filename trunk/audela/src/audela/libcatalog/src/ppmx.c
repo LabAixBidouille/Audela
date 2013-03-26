@@ -242,7 +242,7 @@ void processBufferedDataPPMX(Tcl_DString* const dsptr,const searchZonePPMX* cons
 		magnitudes[i]      = xget2(buffer, o, 14, 16000, headerInformation->extraValues2)+2000; o += 14;
 		errorMagnitudes[i] = getBits(buffer, o, 10); o += 10;
 		if (errorMagnitudes[i] == (1 << 10) - 1 ) {
-			errorMagnitudes[i] = -99;
+			errorMagnitudes[i] = BAD_MAGNITUDE;
 		}
 	}
 	nObs = getBits(buffer, o, 5); o += 5;
