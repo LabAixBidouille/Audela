@@ -15,23 +15,33 @@ création cata :
       par manque de memoire: pourquoi ? soluce ?
 
 PSF 
-    - arriver a faire remonter psf gestion dans recherche
+    - A faire nouvelle GUI PSF executable depuis n importe quelle GUI.
+    - remonter psf gestion dans recherche
+    - mesurer le photocentre (PSF): apres reglage des parametres => on applique a toutes les images pour 1 source donnée
+                                    ou mode "rafale" sur les n images suivantes, avec n reglable
+    - bug crop de l image si l etoile est en bord de champ
+    - mecanisme de dissociation de catalogue
+    - mecanisme de rappel des conesearch
+
+    - afficher le crop de l image
+    - remettre le bouton grab
+    - onglets : mesures, methode, rafale, conesearch, identification, cata
     
 Gestion cata :
 
     - renommage du champ "name" de astroid
+    - verification des sources; erreur : quand on a SKYBOT + ETOILE
+                                erreur : quand ra dec de different catalogue sont superieur a thrsehlod (")
 
 Astrométrie :
     - ephemeride etoile
-    - tag envoi mail mpc dans header fits.
+    - tag envoi mail mpc dans header fits ?
     - verifier iau_code egal a toutes les images.
 JB  - gerer limite Priam
-FV  - construction du graph
     - regler voir wcs
     - supprimer source dans dse
     - supprimer image dans dsp 
-    - mesurer le photocentre (PSF): apres reglage des parametres => on applique a toutes les images pour 1 source donnée
-                                    ou mode "rafale" sur les n images suivantes, avec n reglable
+
 
 BUGS
 
