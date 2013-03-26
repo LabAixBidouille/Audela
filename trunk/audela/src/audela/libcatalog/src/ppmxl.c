@@ -43,8 +43,7 @@ int cmd_tcl_csppmxl(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	/* No we loop over the binary files to be opened, we process them one by one */
 	Tcl_DStringInit(&dsptr);
-	//TODO please fill correctly, use Aladin
-	Tcl_DStringAppend(&dsptr,"{ { PPMXL { } { ID RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec Cmag Rmag Bmag errBmag Vmag ErrVmag Jmag ErrJmag Hmag ErrHmag Kmag ErrKmag Nobs P sub refCatalog} } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { PPMXL { } { ID RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec epochRa epochDec magB1 magB2 magR1 magR2 magI magJ errMagJ magH errMagH magK errMagK Nobs} } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
@@ -74,11 +73,10 @@ int cmd_tcl_csppmxl(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 int processOneFilePPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,
 		const char* const binaryFileName) {
 
-	//TODO recode please
 	int resultOfFunction;
 	headerInformationPPMXL headerInformation;
-	const int chunkStart    = mySearchZonePPMX->subSearchZone.raStartInMas >> CHUNK_SHIFT_RA;
-	const int chunkEnd      = mySearchZonePPMX->subSearchZone.raEndInMas >> CHUNK_SHIFT_RA;
+	int chunkStart;
+	int chunkEnd;
 	FILE* const inputStream = fopen(binaryFileName,"rb");
 
 	if(inputStream == NULL) {
@@ -89,6 +87,21 @@ int processOneFilePPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const myS
 	resultOfFunction = readHeaderPPMXL(inputStream, &headerInformation, binaryFileName);
 	if(resultOfFunction) {
 		return(1);
+	}
+
+	/* Find chunk numbers */
+	chunkStart    = findComponentNumber(headerInformation.chunkOffRa,headerInformation.lengthOfAcceleratorTable,
+			mySearchZonePPMX->subSearchZone.raStartInMas);
+	if(chunkStart < 0) {
+		sprintf(outputLogChar,"Can not find a valid chunk number for ra = %d",mySearchZonePPMX->subSearchZone.raStartInMas);
+		return (1);
+	}
+
+	chunkEnd    = findComponentNumber(headerInformation.chunkOffRa,headerInformation.lengthOfAcceleratorTable,
+			mySearchZonePPMX->subSearchZone.raEndInMas);
+	if(chunkEnd < 0) {
+		sprintf(outputLogChar,"Can not find a valid chunk number for ra = %d",mySearchZonePPMX->subSearchZone.raEndInMas);
+		return (1);
 	}
 
 	if(mySearchZonePPMX->subSearchZone.isArroundZeroRa) {
@@ -113,10 +126,10 @@ int processOneFilePPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const myS
 
 	/* Close all and release memory */
 	fclose(inputStream);
-	releaseSimpleArray(headerInformation.extraValues2);
 	releaseSimpleArray(headerInformation.extraValues4);
 	releaseSimpleArray(headerInformation.chunkOffsets);
-	releaseSimpleArray(headerInformation.chunkNumberOfStars);
+	releaseSimpleArray(headerInformation.chunkOffRa);
+	releaseSimpleArray(headerInformation.chunkSizes);
 
 	return (0);
 }
@@ -124,24 +137,18 @@ int processOneFilePPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const myS
 /**
  * Process a series of successive chunks of data
  */
-int processChunksPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX,FILE* const inputStream,
+int processChunksPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX, FILE* const inputStream,
 		const headerInformationPPMXL* const headerInformation,const int chunkStart,const int chunkEnd, const char* const binaryFileName) {
 
-	//TODO recode please
 	unsigned char* buffer;
 	unsigned char* pointerToBuffer;
 	int resultOfFunction;
-	int indexOfChunk;
-	int indexOfStar;
-	int raStart;
-	int numberOfStars;
-	int totalNumberOfStars;
+	int lengthOfRecord;
 	int sizeOfBuffer;
 
 	/* We read all merged chunks to optimise access time to disk */
-	totalNumberOfStars = sumNumberOfElements(headerInformation->chunkNumberOfStars,chunkStart,chunkEnd);
-	sizeOfBuffer       = totalNumberOfStars * PPMX_RECORD_LENGTH;
-	buffer             = (unsigned char*)malloc(sizeOfBuffer * sizeof(unsigned char));
+	sizeOfBuffer = sumNumberOfElements(headerInformation->chunkSizes,chunkStart,chunkEnd);
+	buffer       = (unsigned char*)malloc(sizeOfBuffer * sizeof(unsigned char));
 	if(buffer == NULL) {
 		sprintf(outputLogChar,"Buffer = %d (unsigned char) out of memory",sizeOfBuffer);
 		return(1);
@@ -153,22 +160,24 @@ int processChunksPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 		return(1);
 	}
 
+	/* Loop over stars */
 	pointerToBuffer = buffer;
 
-	for(indexOfChunk = chunkStart; indexOfChunk <= chunkEnd; indexOfChunk++) {
+	while(sizeOfBuffer > 0) {
 
-		numberOfStars = headerInformation->chunkNumberOfStars[indexOfChunk];
-		raStart       = indexOfChunk << CHUNK_SHIFT_RA;
-
-		/* Loop over stars */
-		for(indexOfStar = 0; indexOfStar <= numberOfStars; indexOfStar++) {
-			processBufferedDataPPMXL(dsptr,mySearchZonePPMX,pointerToBuffer,headerInformation,raStart);
-			/* Move the buffer to read the next star */
-			pointerToBuffer += PPMX_RECORD_LENGTH;
-		}
+		processBufferedDataPPMXL(dsptr,mySearchZonePPMX,pointerToBuffer,headerInformation,&lengthOfRecord);
+		/* Move the buffer to read the next star */
+		pointerToBuffer += lengthOfRecord;
+		sizeOfBuffer    -= lengthOfRecord;
 	}
 
 	releaseSimpleArray(buffer);
+
+	// sizeOfBuffer should be equal to 0 at the end of this loop
+	if(sizeOfBuffer != 0) {
+		sprintf(outputLogChar,"Buffer = %d (unsigned char) : error when reading records",sizeOfBuffer);
+		return(1);
+	}
 
 	return (0);
 }
@@ -178,9 +187,160 @@ int processChunksPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
  * This method contains the method ed_rec from Francois's code
  */
 void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* const mySearchZonePPMX, unsigned char* buffer,
-		const headerInformationPPMXL* const headerInformation, const int raStart) {
+		const headerInformationPPMXL* const headerInformation, int* const lengthOfRecord) {
 
-	//TODO recode please
+	unsigned int val4;
+	int indexOfMagnitude, m, m0, val;
+
+	*lengthOfRecord = 0;
+	const searchZoneRaDecMas* const subSearchZone = &(mySearchZonePPMX->subSearchZone);
+	long long idOfStar;
+	int raInMas;
+	int decInMas;
+	short int flags;
+	short int errorRa, errorDec;
+	short int errorPmRa, errorPmDec;
+	short int nObs;
+	int pmRa, pmDec;
+	int epochRa, epochDec;
+	short int magJHK[NUMBER_OF_2MASS_MAGNITUDES], errorMagJHK[NUMBER_OF_2MASS_MAGNITUDES];
+	short int magUsno[NUMBER_OF_USNO_MAGNITUDES];	/*=b1mag,b2mag,r1mag,r2mag,imag */
+	//char survey[NUMBER_OF_USNO_MAGNITUDES];	/* 5 digits for b1 b2 r1 r2 i   */
+	const int lengthOf2MassRecord = 3;
+	const int lengthOfUsnoRecord  = 2;
+
+	m0         = buffer[0];
+	if (buffer[1] & 0x80) {
+		m0    |= 0x100;
+	}
+	/* ID */
+	idOfStar   = ((buffer[1]&0x7f)<<24) | (buffer[2]<<16) | (buffer[3]<<8) | buffer[4];
+	idOfStar <<= 32;
+	val4       = (buffer[5]<<24) | (buffer[6]<<16) | (buffer[7]<<8) | buffer[8];
+	idOfStar  |= val4;
+
+	/* Ra */
+	raInMas    = binRA(buffer);
+
+	/* Dec */
+	decInMas   = getBits(buffer + 9, 4, 20) + headerInformation->decStartInMas;
+
+	/* Flags */
+	flags      = getBits(buffer + 9, 0, 4);
+
+	/* sigmaRa and sigmaDec */
+	errorRa    = buffer[16];
+	errorDec   = buffer[17];
+
+	/* Nobs */
+	nObs       = getBits(buffer+18, 1, 5);
+
+	/* Proper motion RA and DEC */
+	pmRa       = xget4(buffer + 18, 6, 17, 130000, headerInformation->extraValues4) - 65000;
+	pmDec      = xget4(buffer + 20, 7, 17, 130000, headerInformation->extraValues4) - 65000;
+
+	/* erron on pmRa and pmDec and epochs */
+	errorPmRa  = getBits(buffer + 23, 0, 10);
+	epochRa    = getBits(buffer + 23,10, 14) + 190000;
+	errorPmDec = getBits(buffer + 26, 0, 10);
+	epochDec   = getBits(buffer + 26,10, 14) + 190000;
+
+	/* Get magnitudes; error is stored as (val+1) */
+	*lengthOfRecord += PPMXL_SHORT_RECORD_LENGTH;
+	buffer          += PPMXL_SHORT_RECORD_LENGTH;
+	m                = 0x80;
+	for (indexOfMagnitude = 0; indexOfMagnitude < NUMBER_OF_2MASS_MAGNITUDES; indexOfMagnitude++, m>>=1) {
+		if (m0 & m) { 	/* Yes, value is present */
+			magJHK[indexOfMagnitude]      = getBits(buffer, 0, 15) - 5000;
+			errorMagJHK[indexOfMagnitude] = getBits(buffer, 15, 9) -1;
+			if (m0 & 0x100) { /* Large JHK error */
+				errorMagJHK[indexOfMagnitude] = getBits(buffer, 15, 17) -1;
+				buffer++;
+			}
+			buffer            += lengthOf2MassRecord;
+			*lengthOfRecord   += lengthOf2MassRecord;
+			if (errorMagJHK[indexOfMagnitude] < 0) {
+				errorMagJHK[indexOfMagnitude] = BAD_MAGNITUDE;
+			}
+		} else {
+			magJHK[indexOfMagnitude]          = BAD_MAGNITUDE;
+			errorMagJHK[indexOfMagnitude]     = BAD_MAGNITUDE;
+		}
+	}
+
+	for (indexOfMagnitude = 0; indexOfMagnitude < NUMBER_OF_USNO_MAGNITUDES; indexOfMagnitude++, m>>=1) {
+		if (m0&m) {	/* Yes, value is present */
+			/*val = get_bits(bin, 0, 16); -- V1.2: not useful */
+			val =  xget4(buffer, 0, 16, 65000, headerInformation->extraValues4);
+//			survey[indexOfMagnitude] = (val%10) | '0';
+//			if (survey[indexOfMagnitude] == '9') {
+//				survey[indexOfMagnitude] = '-';
+//			}
+			val = ((val/10) - 1000);	/* Convert cmag (Mod. V1.2) */
+			magUsno[indexOfMagnitude]  = val  /*<=30000 ? val : NULL2*/;
+			*lengthOfRecord += lengthOfUsnoRecord;
+			buffer          += lengthOfUsnoRecord;
+		} else {
+//			survey[indexOfMagnitude]  = '-';
+			magUsno[indexOfMagnitude] = BAD_MAGNITUDE;
+		}
+	}
+
+	/* V1.2: Negative "b1" magnitudes, in case of flag '2' set,
+	 * and no 2MASS mag., must be blanked.
+	 * (see message by S. Roeser in "History" file) */
+	if ((flags&2) && ((m0 & 0xe0) == 0)) {
+		magUsno[2] = BAD_MAGNITUDE;
+	}
+
+	/* Unfortunately the conditions have to be after decoding all argument : we need to output the total record length ! */
+	if(
+			(subSearchZone->isArroundZeroRa && (raInMas < subSearchZone->raStartInMas) && (raInMas > subSearchZone->raEndInMas)) ||
+			(!subSearchZone->isArroundZeroRa && ((raInMas < subSearchZone->raStartInMas) || (raInMas > subSearchZone->raEndInMas)))
+	) {
+		/* The star is not accepted for output */
+		return;
+	}
+
+	if((decInMas  < subSearchZone->decStartInMas) || (decInMas > subSearchZone->decEndInMas)) {
+		/* The star is not accepted for output */
+		return;
+	}
+
+	/* We consider Rmag2 = magUsno[3] for selection */
+	if((magUsno[3] < mySearchZonePPMX->magnitudeBox.magnitudeStartInMilliMag) || (magUsno[3] > mySearchZonePPMX->magnitudeBox.magnitudeEndInMilliMag)) {
+		/* The star is not accepted for output */
+		return;
+	}
+
+	/* Add the result to TCL output */
+	Tcl_DStringAppend(dsptr,"{ { PPMX { } {",-1);
+
+	sprintf(outputLogChar,"%lld %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %d %d "
+			"%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f "
+			"%d",
+			idOfStar,
+			(double)raInMas/DEG2MAS,
+			(double)decInMas / DEG2MAS,
+			(double)errorRa / DEG2MAS,
+			(double)errorDec / DEG2MAS,
+			(double)pmRa / DEG2DECIMAS,
+			(double)pmDec / DEG2DECIMAS,
+			(double)errorPmRa / DEG2DECIMAS,
+			(double)errorPmDec / DEG2DECIMAS,
+			epochRa, epochDec,
+			(double)magUsno[0] / MAG2MILLIMAG,
+			(double)magUsno[1] / MAG2MILLIMAG,
+			(double)magUsno[2] / MAG2MILLIMAG,
+			(double)magUsno[3] / MAG2MILLIMAG,
+			(double)magUsno[4] / MAG2MILLIMAG,
+			(double)magJHK[0] / MAG2MILLIMAG, (double)errorMagJHK[0] / MAG2MILLIMAG,
+			(double)magJHK[1] / MAG2MILLIMAG, (double)errorMagJHK[1] / MAG2MILLIMAG,
+			(double)magJHK[2] / MAG2MILLIMAG, (double)errorMagJHK[2] / MAG2MILLIMAG,
+			nObs);
+
+	Tcl_DStringAppend(dsptr,outputLogChar,-1);
+	Tcl_DStringAppend(dsptr,"} } } ",-1);
 }
 
 /**
@@ -189,13 +349,12 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 int readHeaderPPMXL(FILE* const inputStream, headerInformationPPMXL* const headerInformation,
 		const char* const binaryFileName) {
 
-	//TODO recode please
 	int index;
 	int indexPlusOne;
-	int sumOfStar;
 	int lastIndex;
-	char fileNameInHeader[PPMX_HEADER_LENGTH];
+	const char* newBinaryHeader = binaryHeader + PPMXL_HEADER_UNUSEFUL_LENGTH;
 	int totalNumberOfStars;
+	int fileSize;
 	int resultOfFunction = fread(binaryHeader,sizeof(char),PPMX_HEADER_LENGTH,inputStream);
 
 	if(resultOfFunction != PPMX_HEADER_LENGTH) {
@@ -203,82 +362,87 @@ int readHeaderPPMXL(FILE* const inputStream, headerInformationPPMXL* const heade
 		return(1);
 	}
 
-	sscanf(binaryHeader,PPMXL_HEADER_FORMAT,fileNameInHeader,&totalNumberOfStars,
-			&(headerInformation->lengthOfAcceleratorTable),&(headerInformation->numberOfExtra4),
-			&(headerInformation->numberOfExtra2),&(headerInformation->decStartInMas));
+	sscanf(newBinaryHeader,PPMXL_HEADER_FORMAT,&totalNumberOfStars,
+			&(headerInformation->numberOfExtra4),&(headerInformation->lengthOfAcceleratorTable),
+			&(headerInformation->decStartInMas));
 
 	if(DEBUG) {
+		printf("binaryFileName                              = %s\n",binaryFileName);
 		printf("binaryHeader                                = %s\n",binaryHeader);
 		printf("totalNumberOfStars                          = %d\n",totalNumberOfStars);
 		printf("headerInformation->lengthOfAcceleratorTable = %d\n",headerInformation->lengthOfAcceleratorTable);
 		printf("headerInformation->numberOfExtra4           = %d\n",headerInformation->numberOfExtra4);
-		printf("headerInformation->numberOfExtra2           = %d\n",headerInformation->numberOfExtra2);
 		printf("headerInformation->decStartInMas            = %d\n",headerInformation->decStartInMas);
 	}
 
 	/* Allocate memory */
-	headerInformation->chunkOffsets = (int*)malloc(headerInformation->lengthOfAcceleratorTable * sizeof(int));
-	if(headerInformation->chunkOffsets == NULL) {
-		sprintf(outputLogChar,"headerInformation->chunkOffsets = %d(int) out of memory",headerInformation->lengthOfAcceleratorTable);
-		return(1);
-	}
-	headerInformation->chunkNumberOfStars = (int*)malloc(headerInformation->lengthOfAcceleratorTable * sizeof(int));
-	if(headerInformation->chunkNumberOfStars == NULL) {
-		sprintf(outputLogChar,"headerInformation->chunkNumberOfStars = %d(int) out of memory",headerInformation->lengthOfAcceleratorTable);
-		return(1);
-	}
-	headerInformation->extraValues2 = (short*)malloc(headerInformation->numberOfExtra2 * sizeof(short));
-	if(headerInformation->extraValues2 == NULL) {
-		sprintf(outputLogChar,"headerInformation->extraValues2 = %d(short) out of memory",headerInformation->numberOfExtra2);
-		return(1);
-	}
 	headerInformation->extraValues4 = (int*)malloc(headerInformation->numberOfExtra4 * sizeof(int));
 	if(headerInformation->extraValues4 == NULL) {
 		sprintf(outputLogChar,"headerInformation->extraValues4 = %d(int) out of memory",headerInformation->numberOfExtra4);
 		return(1);
 	}
+	headerInformation->chunkOffsets = (int*)malloc(headerInformation->lengthOfAcceleratorTable * sizeof(int));
+	if(headerInformation->chunkOffsets == NULL) {
+		sprintf(outputLogChar,"headerInformation->chunkOffsets = %d(int) out of memory",headerInformation->lengthOfAcceleratorTable);
+		return(1);
+	}
+	headerInformation->chunkOffRa = (int*)malloc(headerInformation->lengthOfAcceleratorTable * sizeof(int));
+	if(headerInformation->chunkOffsets == NULL) {
+		sprintf(outputLogChar,"headerInformation->chunkOffsets = %d(int) out of memory",headerInformation->lengthOfAcceleratorTable);
+		return(1);
+	}
+	headerInformation->chunkSizes = (int*)malloc(headerInformation->lengthOfAcceleratorTable * sizeof(int));
+	if(headerInformation->chunkSizes == NULL) {
+		sprintf(outputLogChar,"headerInformation->chunkSizes = %d(int) out of memory",headerInformation->lengthOfAcceleratorTable);
+		return(1);
+	}
 
 	/* Read from file */
-	resultOfFunction = fread(headerInformation->chunkOffsets,sizeof(int),headerInformation->lengthOfAcceleratorTable,inputStream);
-	if(resultOfFunction != headerInformation->lengthOfAcceleratorTable) {
-		sprintf(outputLogChar,"Error when reading headerInformation->chunkOffsets from the binary file %s",binaryFileName);
-		return(1);
-	}
-	resultOfFunction = fread(headerInformation->extraValues2,sizeof(short),headerInformation->numberOfExtra2,inputStream);
-	if(resultOfFunction != headerInformation->numberOfExtra2) {
-		sprintf(outputLogChar,"Error when reading headerInformation->extraValues2 from the binary file %s",binaryFileName);
-		return(1);
-	}
 	resultOfFunction = fread(headerInformation->extraValues4,sizeof(int),headerInformation->numberOfExtra4,inputStream);
 	if(resultOfFunction != headerInformation->numberOfExtra4) {
 		sprintf(outputLogChar,"Error when reading headerInformation->extraValues4 from the binary file %s",binaryFileName);
 		return(1);
 	}
 
+	resultOfFunction = fread(headerInformation->chunkOffsets,sizeof(int),headerInformation->lengthOfAcceleratorTable,inputStream);
+	if(resultOfFunction != headerInformation->lengthOfAcceleratorTable) {
+		sprintf(outputLogChar,"Error when reading headerInformation->chunkOffsets from the binary file %s",binaryFileName);
+		return(1);
+	}
+
+	resultOfFunction = fread(headerInformation->chunkOffRa,sizeof(int),headerInformation->lengthOfAcceleratorTable,inputStream);
+	if(resultOfFunction != headerInformation->lengthOfAcceleratorTable) {
+		sprintf(outputLogChar,"Error when reading headerInformation->chunkOffRa from the binary file %s",binaryFileName);
+		return(1);
+	}
+
 	/* Swap values because data is written in Big_endian */
 	convertBig2LittleEndianForArrayOfInteger(headerInformation->chunkOffsets,headerInformation->lengthOfAcceleratorTable);
+	convertBig2LittleEndianForArrayOfInteger(headerInformation->chunkOffRa,headerInformation->lengthOfAcceleratorTable);
 	convertBig2LittleEndianForArrayOfInteger(headerInformation->extraValues4,headerInformation->numberOfExtra4);
-	convertBig2LittleEndianForArrayOfShort(headerInformation->extraValues2,headerInformation->numberOfExtra2);
 
 	lastIndex      = headerInformation->lengthOfAcceleratorTable - 1;
-	sumOfStar      = 0;
 	index          = 0;
 	indexPlusOne   = 1;
 	while(index    < lastIndex) {
-		headerInformation->chunkNumberOfStars[index] =
-				(headerInformation->chunkOffsets[indexPlusOne] - headerInformation->chunkOffsets[index]) / PPMX_RECORD_LENGTH;
-		sumOfStar += headerInformation->chunkNumberOfStars[index];
+		headerInformation->chunkSizes[index] =
+				headerInformation->chunkOffsets[indexPlusOne] - headerInformation->chunkOffsets[index];
 		index      = indexPlusOne;
 		indexPlusOne++;
 	}
 
-	headerInformation->chunkNumberOfStars[lastIndex] = totalNumberOfStars - sumOfStar;
-	if(headerInformation->chunkNumberOfStars[lastIndex] < 0) {
+	/* The size of the last chunk */
+	fseek(inputStream,0,SEEK_END);
+	fileSize = ftell(inputStream);
+
+	headerInformation->chunkSizes[lastIndex] = fileSize - headerInformation->chunkOffsets[lastIndex];
+	//printf("last size = %d\n",headerInformation->chunkSizes[lastIndex]);
+	if(headerInformation->chunkSizes[lastIndex] < 0) {
 		sprintf(outputLogChar,"The number of stars is not coherent in %s",binaryFileName);
-		releaseSimpleArray(headerInformation->extraValues2);
 		releaseSimpleArray(headerInformation->extraValues4);
 		releaseSimpleArray(headerInformation->chunkOffsets);
-		releaseSimpleArray(headerInformation->chunkNumberOfStars);
+		releaseSimpleArray(headerInformation->chunkOffRa);
+		releaseSimpleArray(headerInformation->chunkSizes);
 		return(1);
 	}
 

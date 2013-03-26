@@ -79,8 +79,8 @@ int processOneFilePPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySe
 
 	int resultOfFunction;
 	headerInformationPPMX headerInformation;
-	const int chunkStart    = mySearchZonePPMX->subSearchZone.raStartInMas >> CHUNK_SHIFT_RA;
-	const int chunkEnd      = mySearchZonePPMX->subSearchZone.raEndInMas >> CHUNK_SHIFT_RA;
+	const int chunkStart    = mySearchZonePPMX->subSearchZone.raStartInMas >> PPMX_CHUNK_SHIFT_RA;
+	const int chunkEnd      = mySearchZonePPMX->subSearchZone.raEndInMas >> PPMX_CHUNK_SHIFT_RA;
 	FILE* const inputStream = fopen(binaryFileName,"rb");
 
 	if(inputStream == NULL) {
@@ -159,7 +159,7 @@ int processChunksPPMX(Tcl_DString* const dsptr,const searchZonePPMX* const mySea
 	for(indexOfChunk = chunkStart; indexOfChunk <= chunkEnd; indexOfChunk++) {
 
 		numberOfStars = headerInformation->chunkNumberOfStars[indexOfChunk];
-		raStart       = indexOfChunk << CHUNK_SHIFT_RA;
+		raStart       = indexOfChunk << PPMX_CHUNK_SHIFT_RA;
 
 		/* Loop over stars */
 		for(indexOfStar = 0; indexOfStar <= numberOfStars; indexOfStar++) {

@@ -550,3 +550,43 @@ void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const doub
 		printf("mySearchZonePPMX.magnitudeEnd        = %d\n",magnitudeBox->magnitudeEndInDeciMag);
 	}
 }
+
+/**
+ * Find the component in sortedArrayOfValues for which value is in [array(component),array(component+1)] by dichotomie
+ * Adapted from Francois Ochsenbein's method : binloc
+ */
+int findComponentNumber(const int* const sortedArrayOfValues, const int lengthOfArray, const int value) {
+
+	int lowerIndex      = 0;
+	const int lastIndex = lengthOfArray - 1;
+	int higherIndex     = lastIndex;
+	int medianValue;
+	int medianIndex;
+	int deltaIndex;
+
+	if (value < sortedArrayOfValues[lowerIndex]) {
+		return(-1);
+	}
+
+	if (value >= sortedArrayOfValues[lastIndex]) {
+		return(lastIndex);
+	}
+
+	deltaIndex = higherIndex - lowerIndex;
+
+	while (deltaIndex > 1) {
+
+		medianIndex     = lowerIndex + deltaIndex / 2 ;
+		medianValue     = sortedArrayOfValues[medianIndex];
+
+		if (value       < medianValue) {
+			higherIndex = medianIndex;
+		} else {
+			lowerIndex  = medianIndex ;
+		}
+
+		deltaIndex      = higherIndex - lowerIndex;
+	}
+
+	return (lowerIndex) ;
+}
