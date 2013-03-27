@@ -158,5 +158,6 @@ void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const doub
 int getBits(unsigned char * const a, const int b, const int length);
 int xget4(unsigned char * const a, const int b, const int length, const int max, const int * const xtra4);
 int xget2(unsigned char * const a, const int b, const int length, const int max, const short int* const xtra2);
+int strloc(char * const text, const int c);
 
 #endif /* USEFUL_H_ */

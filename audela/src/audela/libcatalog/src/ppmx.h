@@ -17,18 +17,19 @@
 #define PPMX_HEADER_LENGTH      80
 #define PPMX_RECORD_LENGTH      46
 #define PPMX_DECLINATION_STEP              27000000
-#define PPMX_BINARY_FILE_NAME_LENGTH       10
+#define PPMX_BINARY_FILE_NAME_LENGTH       11
 #define PPMX_BINARY_FILE_NAME_FORMAT_SOUTH "s%s.bin"
 #define PPMX_BINARY_FILE_NAME_FORMAT_NORTH "n%s.bin"
 #define PPMX_CHUNK_SHIFT_RA     23
 
 /* PPMXL */
+#define PPMXL_HEADER_START                  "#PPMXL(28+)"
 #define PPMXL_HEADER_FORMAT                 "N=%d n4=%d Noff=%d*2 oDE=%dmas"
 #define PPMXL_HEADER_UNUSEFUL_LENGTH        21
 #define PPMXL_SHORT_RECORD_LENGTH           29
 #define PPMXL_DECLINATION_FIRST_STEP        3600000
 #define PPMXL_DECLINATION_SECOND_STEP       900000
-#define PPMXL_BINARY_FILE_NAME_LENGTH       8
+#define PPMXL_BINARY_FILE_NAME_LENGTH       9
 #define PPMXL_BINARY_FILE_NAME_FORMAT_SOUTH "s%02d%c.bin"
 #define PPMXL_BINARY_FILE_NAME_FORMAT_NORTH "n%02d%c.bin"
 #define binRA(s)                            ((s[12]&0x7f)<<24)|(s[13]<<16)|(s[14]<<8)|s[15]

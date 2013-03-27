@@ -157,7 +157,7 @@ int sumNumberOfElements(const int* const inputArray,const int indexStart,const i
 
 /*============================================================
  * Francois Ochsenbein's method (get_bits)
- * PURPOSE  Get a value made of 'len' bits
+ * PURPOSE  Get a value made of 'length' bits
  * starting from byte position 'a', bit offset 'b'.
  * RETURNS  The value
  * REMARKS  Independent of the architecture.
@@ -203,7 +203,8 @@ int getBits(unsigned char * const a, const int b, const int length) {
 
 /*============================================================
  * Francois Ochsenbein's method
- * PURPOSE  Get a value made of 'len' bits, extra values being in a dedicate array
+ * PURPOSE  Get a value made of 'length' bits,
+ * extra values being in a dedicate array
  * RETURNS  The value
  *============================================================*/
 int xget4(unsigned char * const a, const int b, const int length, const int max, const int * const xtra4) {
@@ -220,7 +221,8 @@ int xget4(unsigned char * const a, const int b, const int length, const int max,
 
 /*============================================================
  * Francois Ochsenbein's method
- * PURPOSE  Get a value made of 'len' bits, extra values being in a dedicate array
+ * PURPOSE  Get a value made of 'length' bits,
+ * extra values being in a dedicate array
  * RETURNS  The value
  *============================================================*/
 int xget2(unsigned char * const a, const int b, const int length, const int max, const short int* const xtra2) {
@@ -242,17 +244,17 @@ int xget2(unsigned char * const a, const int b, const int length, const int max,
 void fillSearchZoneRaDecMas(searchZoneRaDecMas* const theSearchZone, const double raInDeg,const double decInDeg,
 		const double radiusInArcMin) {
 
-	const double radiusInDeg          = radiusInArcMin / DEG2ARCMIN;
+	const double radiusInDeg           = radiusInArcMin / DEG2ARCMIN;
 	double ratio;
 	double tmpValue;
 	double radiusRa;
 
-	theSearchZone->decStartInMas      = (int)(DEG2MAS * (decInDeg - radiusInDeg));
-	theSearchZone->decEndInMas        = (int)(DEG2MAS * (decInDeg + radiusInDeg));
+	theSearchZone->decStartInMas       = (int)(DEG2MAS * (decInDeg - radiusInDeg));
+	theSearchZone->decEndInMas         = (int)(DEG2MAS * (decInDeg + radiusInDeg));
 
-	if((theSearchZone->decStartInMas <= DEC_SOUTH_POLE_MAS) && (theSearchZone->decEndInMas >= DEC_NORTH_POLE_MAS)) {
+	if((theSearchZone->decStartInMas  <= DEC_SOUTH_POLE_MAS) && (theSearchZone->decEndInMas >= DEC_NORTH_POLE_MAS)) {
 
-		theSearchZone->decStartInMas  = DEC_SOUTH_POLE_MAS + 1;
+		theSearchZone->decStartInMas   = DEC_SOUTH_POLE_MAS + 1;
 		theSearchZone->decEndInMas     = DEC_NORTH_POLE_MAS - 1;
 		theSearchZone->raStartInMas    = START_RA_MAS;
 		theSearchZone->raEndInMas      = COMPLETE_RA_MAS;
@@ -268,9 +270,9 @@ void fillSearchZoneRaDecMas(searchZoneRaDecMas* const theSearchZone, const doubl
 	} else if(theSearchZone->decEndInMas   >= DEC_NORTH_POLE_MAS) {
 
 		theSearchZone->decEndInMas          = DEC_NORTH_POLE_MAS - 1;
-		theSearchZone->raStartInMas                 = START_RA_MAS;
-		theSearchZone->raEndInMas                   = COMPLETE_RA_MAS;
-		theSearchZone->isArroundZeroRa              = 0;
+		theSearchZone->raStartInMas         = START_RA_MAS;
+		theSearchZone->raEndInMas           = COMPLETE_RA_MAS;
+		theSearchZone->isArroundZeroRa      = 0;
 
 	} else {
 
@@ -589,4 +591,20 @@ int findComponentNumber(const int* const sortedArrayOfValues, const int lengthOf
 	}
 
 	return (lowerIndex) ;
+}
+
+/*
+ * Francois Ochsenbein's method
+ * PURPOSE  Locate specified character
+ * RETURNS  Index of located char
+*/
+int strloc(char * const text, const int c) {
+
+	char *s;
+	for (s = text; *s; s++) {
+		if (*s == c) {
+			break;
+		}
+	}
+	return(s-text);
 }

@@ -222,6 +222,10 @@
                 RelativePath="..\src\ppmxl.c"
                 >
             </File>
+            <File
+                RelativePath="..\src\nomad1.c"
+                >
+            </File>
 			<File
 				RelativePath="..\src\useful.c"
 				>
@@ -256,6 +260,10 @@
 				RelativePath="..\src\ppmx.h"
 				>
 			</File>
+			<File
+                RelativePath="..\src\nomad1.h"
+                >
+            </File>
 			<File
 				RelativePath="..\src\useful.h"
 				>

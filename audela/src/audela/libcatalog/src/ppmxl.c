@@ -191,9 +191,6 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 
 	unsigned int val4;
 	int indexOfMagnitude, m, m0, val;
-
-	*lengthOfRecord = 0;
-	const searchZoneRaDecMas* const subSearchZone = &(mySearchZonePPMX->subSearchZone);
 	long long idOfStar;
 	int raInMas;
 	int decInMas;
@@ -208,6 +205,9 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	//char survey[NUMBER_OF_USNO_MAGNITUDES];	/* 5 digits for b1 b2 r1 r2 i   */
 	const int lengthOf2MassRecord = 3;
 	const int lengthOfUsnoRecord  = 2;
+	const searchZoneRaDecMas* const subSearchZone = &(mySearchZonePPMX->subSearchZone);
+
+	*lengthOfRecord = 0;
 
 	m0         = buffer[0];
 	if (buffer[1] & 0x80) {
@@ -272,16 +272,16 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 		if (m0&m) {	/* Yes, value is present */
 			/*val = get_bits(bin, 0, 16); -- V1.2: not useful */
 			val =  xget4(buffer, 0, 16, 65000, headerInformation->extraValues4);
-//			survey[indexOfMagnitude] = (val%10) | '0';
-//			if (survey[indexOfMagnitude] == '9') {
-//				survey[indexOfMagnitude] = '-';
-//			}
+			//			survey[indexOfMagnitude] = (val%10) | '0';
+			//			if (survey[indexOfMagnitude] == '9') {
+			//				survey[indexOfMagnitude] = '-';
+			//			}
 			val                        = ((val/10) - 1000);	/* Convert cmag (Mod. V1.2) */
 			magUsno[indexOfMagnitude]  = MAG2DECIMAG * val; /*<=30000 ? val : NULL2, magUsno are in centi mag not in milli mag*/
 			*lengthOfRecord           += lengthOfUsnoRecord;
 			buffer                    += lengthOfUsnoRecord;
 		} else {
-//			survey[indexOfMagnitude]  = '-';
+			//			survey[indexOfMagnitude]  = '-';
 			magUsno[indexOfMagnitude]  = BAD_MAGNITUDE;
 		}
 	}
@@ -360,6 +360,13 @@ int readHeaderPPMXL(FILE* const inputStream, headerInformationPPMXL* const heade
 	if(resultOfFunction != PPMX_HEADER_LENGTH) {
 		sprintf(outputLogChar,"Error when reading the header from the binary file %s",binaryFileName);
 		return(1);
+	}
+
+	/* Check that this file is PPMX */
+	index = strloc(PPMXL_HEADER_START, '(');
+	if (strncmp(binaryHeader, PPMXL_HEADER_START, index+1) != 0) {
+		sprintf(outputLogChar, "File %s is not PPMXL", binaryFileName);
+		return (1);
 	}
 
 	sscanf(newBinaryHeader,PPMXL_HEADER_FORMAT,&totalNumberOfStars,
