@@ -237,7 +237,7 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	pmRa       = xget4(buffer + 18, 6, 17, 130000, headerInformation->extraValues4) - 65000;
 	pmDec      = xget4(buffer + 20, 7, 17, 130000, headerInformation->extraValues4) - 65000;
 
-	/* erron on pmRa and pmDec and epochs */
+	/* error on pmRa and pmDec and epochs */
 	errorPmRa  = getBits(buffer + 23, 0, 10);
 	epochRa    = getBits(buffer + 23,10, 14) + 190000;
 	errorPmDec = getBits(buffer + 26, 0, 10);
