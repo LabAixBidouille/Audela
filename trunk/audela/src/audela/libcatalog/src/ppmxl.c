@@ -207,8 +207,6 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	const int lengthOfUsnoRecord  = 2;
 	const searchZoneRaDecMas* const subSearchZone = &(mySearchZonePPMX->subSearchZone);
 
-	*lengthOfRecord = 0;
-
 	m0         = buffer[0];
 	if (buffer[1] & 0x80) {
 		m0    |= 0x100;
@@ -246,7 +244,7 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	epochDec   = getBits(buffer + 26,10, 14) + 190000;
 
 	/* Get magnitudes; error is stored as (val+1) */
-	*lengthOfRecord += PPMXL_SHORT_RECORD_LENGTH;
+	*lengthOfRecord  = PPMXL_SHORT_RECORD_LENGTH;
 	buffer          += PPMXL_SHORT_RECORD_LENGTH;
 	m                = 0x80;
 	for (indexOfMagnitude = 0; indexOfMagnitude < NUMBER_OF_2MASS_MAGNITUDES; indexOfMagnitude++, m>>=1) {
