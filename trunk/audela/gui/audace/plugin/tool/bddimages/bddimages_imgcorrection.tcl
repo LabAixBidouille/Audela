@@ -147,7 +147,10 @@ namespace eval bddimages_imgcorrection {
 
    variable progress
 
-}
+
+
+
+
 
 
 proc ::bddimages_imgcorrection::get_info_img {  } {
@@ -159,6 +162,12 @@ proc ::bddimages_imgcorrection::get_info_img {  } {
    #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
    return $imgtmplist
 }
+
+
+
+
+
+
 
 
 
@@ -205,6 +214,13 @@ proc ::bddimages_imgcorrection::verif_all_img {  } {
 
    return -code ok ""
 }
+
+
+
+
+
+
+
 
 
 
@@ -263,6 +279,11 @@ proc ::bddimages_imgcorrection::cleanSpace { chunk } {
    return $chunk
 }
 
+
+
+
+
+
 #
 # Clean special characters into string
 # @param string chaine a convertir
@@ -270,10 +291,10 @@ proc ::bddimages_imgcorrection::cleanSpace { chunk } {
 proc ::bddimages_imgcorrection::cleanEntities { chunk } {
    regsub -all { }  $chunk {} chunk
    regsub -all {!}  $chunk {} chunk
-   regsub -all {#}  $chunk {} chunk
    regsub -all {\$} $chunk {} chunk
    regsub -all {\&} $chunk {} chunk
    regsub -all {'}  $chunk {} chunk
+   regsub -all {\#} $chunk {} chunk
    regsub -all {\(} $chunk {} chunk
    regsub -all {\)} $chunk {} chunk
    regsub -all {\*} $chunk {} chunk
@@ -296,6 +317,16 @@ proc ::bddimages_imgcorrection::cleanEntities { chunk } {
    regsub -all {\.} $chunk {} chunk
    return $chunk
 }
+
+
+
+
+
+
+
+
+
+
 
 #proc ::bddimages_imgcorrection::create_filename_deflat { file } {
 #
@@ -349,6 +380,17 @@ proc ::bddimages_imgcorrection::create_filename_deflat { file } {
 
    return $filename
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 proc ::bddimages_imgcorrection::create_filename { type } {
@@ -406,6 +448,19 @@ proc ::bddimages_imgcorrection::create_filename { type } {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::create_image_offset { type inforesult } {
 
    global bddconf
@@ -444,6 +499,21 @@ proc ::bddimages_imgcorrection::create_image_offset { type inforesult } {
    insertion_solo $bddconf(dirtmp)/${fileout}${ext}${gz}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -510,11 +580,20 @@ proc ::bddimages_imgcorrection::create_image_dark { type inforesult } {
 
 
 
-proc ::bddimages_imgcorrection::set_progress { cur max } {
 
-   set ::bddimages_imgcorrection::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
-   update
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -524,6 +603,22 @@ proc ::bddimages_imgcorrection::get_stat { bufno } {
    return "moy=[lindex $stat 4] sig=[lindex $stat 5]"
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -691,6 +786,20 @@ proc ::bddimages_imgcorrection::create_image_flat { type inforesult } {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::create_image_deflat {  } {
 
    global bddconf
@@ -819,6 +928,20 @@ proc ::bddimages_imgcorrection::create_image_deflat {  } {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::create_image { type inforesult} {
 
   global bddconf
@@ -840,6 +963,21 @@ proc ::bddimages_imgcorrection::create_image { type inforesult} {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::delete_to_tmp { type img_list } {
 
    global bddconf
@@ -852,6 +990,21 @@ proc ::bddimages_imgcorrection::delete_to_tmp { type img_list } {
    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -912,6 +1065,21 @@ proc ::bddimages_imgcorrection::copy_to_tmp { type img_list } {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::correction { type inforesult} {
 
    global action_label audace bddconf
@@ -954,6 +1122,18 @@ proc ::bddimages_imgcorrection::correction { type inforesult} {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 #--------------------------------------------------
 # img_list_to_filename_list { img_list }
 #--------------------------------------------------
@@ -985,6 +1165,19 @@ proc ::bddimages_imgcorrection::img_list_to_filename_list { img_list typ } {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::img_to_filename { img typ } {
 
    global bddconf
@@ -1010,6 +1203,15 @@ proc ::bddimages_imgcorrection::img_to_filename { img typ } {
   
    return "-1"
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1057,6 +1259,17 @@ proc ::bddimages_imgcorrection::select_img_list_by_type { bddimages_type bddimag
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::chrono_first_img { img_list } {
 
    set cpt 0
@@ -1075,6 +1288,18 @@ proc ::bddimages_imgcorrection::chrono_first_img { img_list } {
    }
    return $result_img
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1099,6 +1324,23 @@ proc ::bddimages_imgcorrection::chrono_last_img { img_list } {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
 
    set sort_img_list ""
@@ -1116,6 +1358,20 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
 
    return $result_img_list
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1153,6 +1409,20 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_imgcorrection::mirroiry { img_list } {
 
       global bddconf
@@ -1185,6 +1455,21 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
       }
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    proc ::bddimages_imgcorrection::rot_plus90 { img_list } {
 
@@ -1224,6 +1509,19 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
       }
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
    proc ::bddimages_imgcorrection::rot_moins90 { img_list } {
@@ -1266,6 +1564,18 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
    }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bddimages_imgcorrection::rot_180 { img_list } {
 
       global bddconf
@@ -1304,6 +1614,22 @@ proc ::bddimages_imgcorrection::chrono_sort_img { img_list } {
       }
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1351,6 +1677,16 @@ proc ::bddimages_imgcorrection::showReport { {title "Console"} {ltexte "Empty"} 
    }
 
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1860,6 +2196,12 @@ proc ::bddimages_imgcorrection::run_create { this type } {
 
 
 
+
+
+
+
+
+
 #--------------------------------------------------
 # run_auto { this }
 #--------------------------------------------------
@@ -1990,6 +2332,15 @@ proc ::bddimages_imgcorrection::run_auto { this } {
 
 }
 
+
+
+
+
+
+
+
+
+
 #--------------------------------------------------
 # Fonction d utilitaires pour le CROP
 #--------------------------------------------------
@@ -2029,6 +2380,22 @@ proc ::bddimages_imgcorrection::run_auto { this } {
       return "yes"      
 
    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    
    proc ::bddimages_imgcorrection::gocrop {  } {
 
@@ -2120,6 +2487,11 @@ proc ::bddimages_imgcorrection::run_auto { this } {
 
    }
    
+
+
+## Defini la barre de progression qui correspond au traitement des images
+# \param cur valeur courante 
+# \param max valeur maximale
    proc ::bddimages_imgcorrection::set_progress { cur max } {
 
 #      pack [ ttk::progressbar $this.p -variable v -orient horizontal -length 200 -mode determinate]
@@ -2271,3 +2643,7 @@ proc ::bddimages_imgcorrection::crop { this } {
    grab set $This
    tkwait window $This
 }
+
+# fin du namespace
+}
+

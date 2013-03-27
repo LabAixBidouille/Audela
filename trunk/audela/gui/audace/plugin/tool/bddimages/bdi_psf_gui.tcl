@@ -1,3 +1,15 @@
+## \file bdi_psf_gui.tcl
+#  \brief     Traitement des psf des images
+#  \details   This class is used to demonstrate a number of section commands.
+#  \author    Frederic Vachier
+#  \version   1.0
+#  \date      2008
+#  \copyright GNU Public License.
+#  \par Ressource 
+#  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages bddimages_go.tcl]
+#  \endcode
+#  \todo      normaliser les noms des fichiers sources 
+
 #--------------------------------------------------
 # source [ file join $audace(rep_plugin) tool bddimages bdi_psf_gui.tcl ]
 #--------------------------------------------------
@@ -14,13 +26,19 @@
 #--------------------------------------------------
 
 
+## Declaration du namespace \c psf_gui .
+#  @pre       Chargement a partir d'Audace
+#  @bug       Probleme de memoire sur les exec
+#  @warning   Pour developpeur seulement
+#  @todo      faire en sorte que la psf s appelle depuis la recherche 
 namespace eval psf_gui {
 
 
 
 # Anciennement ::gui_cata::psf_fermer
-# Ferme la boite de dialogue appellée
+# Ferme la boite de dialogue appellee
 # depuis la gestion des cata pour faire l analyse des psf en mode manuel
+
    proc ::psf_gui::gestion_mode_manuel_fermer { } {
 
       if {[info exists ::psf_gui::visucrop]} {
@@ -35,7 +53,7 @@ namespace eval psf_gui {
 
 
 # Anciennement ::gui_cata::init_psf
-# Initialise la boite de dialogue appellée
+# Initialise la boite de dialogue appellee
 # depuis la gestion des cata pour faire l analyse des psf en mode manuel
 
    proc ::psf_gui::gestion_mode_manuel_init { sou } {
@@ -268,7 +286,7 @@ namespace eval psf_gui {
 
 # Anciennement ::gui_cata::psf_save
 # sauve les resultats de la psf d'une source connue selectionnee dans l image
-# appelée depuis l analyse des psf en mode manuel
+# appelee depuis l analyse des psf en mode manuel
 
    proc ::psf_gui::gestion_mode_manuel_save { } {
 
@@ -299,7 +317,7 @@ namespace eval psf_gui {
 
 # Anciennement ::gui_cata::psf_new
 # sauve les resultats de la psf d'une source inconnue selectionnee dans l image
-# appelée depuis l analyse des psf en mode manuel
+# appelee depuis l analyse des psf en mode manuel
 
 
    proc ::psf_gui::gestion_mode_manuel_new { } {
@@ -345,8 +363,8 @@ namespace eval psf_gui {
 
 
 # Anciennement ::gui_cata::psf_button_psf
-# Effectue l analyse d'une psf pour un rayon donné
-# appelé depuis l analyse des psf en mode manuel
+# Effectue l analyse d'une psf pour un rayon donne
+# appele depuis l analyse des psf en mode manuel
 
 
    proc ::psf_gui::one_psf { } {
@@ -1586,6 +1604,334 @@ namespace eval psf_gui {
              pack   $actions2.fitgauss -side left 
       
    }
+
+
+
+
+
+
+
+   proc ::psf_gui::init { } {
+
+      ::psf_tools::inittoconf
+
+      if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
+      foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
+         set ::gui_cata::current_psf($key) "-"
+      }
+      foreach key [ list xflux xcent xfwhm xfond yflux ycent yfwhm yfond ] {
+         set ::gui_cata::current_psf($key) "-"
+      }
+
+#      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+#      set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+      
+   }
+
+
+
+
+
+#------------------------------------------------------------
+## Analyse de photocentre d'une source
+# Permet la recombinaison des catalogue pour une source.
+# fonction appelee par l'outil recherche
+#  \sa psf_gui::run
+   proc ::psf_gui::charge_list { img_list } {
+      
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      
+      set ::tools_cata::id_current_image 0
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         incr ::tools_cata::id_current_image
+         ::gui_cata::load_cata
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      }
+
+   }
+
+
+
+#------------------------------------------------------------
+## Analyse de photocentre d'une source
+# Permet la recombinaison des catalogue pour une source.
+# fonction appelee par l'outil recherche
+#  \sa psf_gui::run
+   proc ::psf_gui::run_recherche { img_list } {
+      
+      ::psf_gui::charge_list $img_list
+      ::psf_gui::run
+   }
+
+
+
+#------------------------------------------------------------
+## Analyse de photocentre d'une source
+# Permet la recombinaison des catalogue pour une source.
+#  \param sou parametre optionel sous la forme d'une structure tcl d'une source
+#  \sa psf_gui::gestion_mode_manuel_init
+   proc ::psf_gui::run {  } {
+
+      ::psf_tools::inittoconf
+      ::psf_gui::init
+      set spinlist ""
+      for {set i 1} {$i<$::psf_tools::psf_limitradius} {incr i} {lappend spinlist $i}
+      set ::psf_gui::visucrop ""
+      set ::psf_gui::bufcrop  ""
+      
+      
+      set spinlist ""
+      for {set i 1} {$i<$::psf_tools::psf_limitradius} {incr i} {lappend spinlist $i}
+
+      set ::psf_gui::fen .psf
+      if { [winfo exists $::psf_gui::fen] } {
+         wm withdraw $::psf_gui::fen
+         wm deiconify $::psf_gui::fen
+         focus $::psf_gui::fen
+         return
+      }
+      toplevel $::psf_gui::fen -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::psf_gui::fen ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::psf_gui::fen ] "+" ] 2 ]
+      wm geometry $::psf_gui::fen +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::psf_gui::fen 1 1
+      wm title $::psf_gui::fen "PSF"
+      wm protocol $::psf_gui::fen WM_DELETE_WINDOW "destroy $::psf_gui::fen"
+
+      set frm $::psf_gui::fen.appli
+
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::psf_gui::fen -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+
+         set info_source  [frame $frm.info_source -borderwidth 0 -cursor arrow -relief groove]
+         pack $info_source -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $info_source.lab1 -text "Source : " 
+             pack  $info_source.lab1 -side left -padx 2 -pady 0
+             
+             label $info_source.labv -textvariable ::gui_cata::psf_name_source 
+             pack  $info_source.labv -side left -padx 2 -pady 0
+
+         set info_cata  [frame $frm.info_cata -borderwidth 0 -cursor arrow -relief groove]
+         pack $info_cata -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $info_source.loc -textvariable ::gui_cata::list_of_cata -fg darkblue
+             pack  $info_source.loc -side left -padx 2 -pady 0
+
+         set info_img  [frame $frm.info_img -borderwidth 0 -cursor arrow -relief groove]
+         pack $info_img -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+             label $info_img.title -text "Image : "
+             pack  $info_img.title -side left -padx 2 -pady 0
+             label $info_img.id -textvariable ::psf_gui::id_img
+             pack  $info_img.id -side left -padx 2 -pady 0
+             label $info_img.lab -text "/"
+             pack  $info_img.lab -side left -padx 2 -pady 0
+             label $info_img.lab2 -text $::tools_cata::nb_img_list
+             pack  $info_img.lab2 -side left -padx 2 -pady 0
+
+         set info_date [frame $frm.info_date -borderwidth 0 -cursor arrow ]
+         pack $info_date -in $frm -anchor c -side top -expand 1 
+
+             label $info_date.id -textvariable ::psf_gui::dateimg
+             pack  $info_date.id -side left -padx 2 -pady 0
+
+         set actions [frame $frm.actions1 -borderwidth 1 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor c -side top -expand 1 
+
+                 button $actions.grab -state active -text "Grab" -relief "raised" \
+                  -command "::psf_gui::gestion_mode_manuel_grab"
+                 pack   $actions.grab -side left -padx 0
+
+                 button $actions.crop -state active -text "Crop" -relief "raised" \
+                  -command ""
+                 pack   $actions.crop -side left -padx 0
+
+                 button $actions.new -state disabled -text "New" -relief "raised" \
+                  -command "::psf_gui::gestion_mode_manuel_new"
+                 pack   $actions.new -side left -padx 0
+
+                 button $actions.save -state disabled -text "Save" -relief "raised" \
+                  -command "::psf_gui::gestion_mode_manuel_save"
+                 pack   $actions.save -side left -padx 0
+ 
+         set actions [frame $frm.actions2 -borderwidth 1 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor c -side top -expand 1 
+
+                 button $actions.prev -state disabled -text "Prev" -relief "raised" \
+                  -command "::psf_gui::prev_img"
+                 pack   $actions.prev -side left -padx 0
+
+                 button $actions.next -state active -text "Next" -relief "raised" \
+                  -command "::psf_gui::next_img"
+                 pack   $actions.next -side left -padx 0
+
+                 button $actions.nextauto -state active -text "Next & Auto" -relief "raised" \
+                  -command "::psf_gui::nextauto_img"
+                 pack   $actions.nextauto -side left -padx 0
+
+                 button $actions.savenextauto -state active -text "Save & Next & Auto" -relief "raised" \
+                  -command "::psf_gui::savenextauto_img"
+                 pack   $actions.savenextauto -side left -padx 0
+ 
+         set actions [frame $frm.actions3 -borderwidth 1 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor c -side top
+
+             spinbox $actions.radiusc -values $spinlist -from 1 -to $::psf_tools::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
+                 -command "::psf_gui::one_psf_crop"
+             pack  $actions.radiusc -side left 
+             $actions.radiusc set 15
+             button $actions.psfc -state active -text "PSF" -relief "raised" \
+                  -command "::psf_gui::one_psf_crop"
+             pack   $actions.psfc -side left 
+             button $actions.psfautoc -state active -text "Auto" -relief "raised" \
+                  -command "::psf_gui::box_global_crop"
+             pack   $actions.psfautoc -side left 
+             button $actions.clean -state active -text "Clean" -relief "raised" \
+                  -command "clean_crop $::psf_gui::visucrop"
+             pack   $actions.clean -side left 
+             button $actions.takall -state active -text "Select All Radius" -relief "raised" \
+                  -command "::psf_gui::takall"
+             pack   $actions.takall -side left 
+             button $actions.fitgauss -state active -text "fitgauss" -relief "raised" \
+                  -command "::psf_gui::fitgauss"
+             pack   $actions.fitgauss -side left 
+ 
+         set config [frame $frm.config -borderwidth 0 -cursor arrow -relief groove]
+         pack $config -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             set data  [frame $config.saturation -borderwidth 0 -cursor arrow -relief groove]
+             pack $data -in $config -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                 label $data.l -text "Saturation (ADU): " 
+                 pack  $data.l -side left -padx 2 -pady 0
+
+                 entry $data.v -textvariable ::psf_tools::psf_saturation -relief sunken -width 5
+                 pack  $data.v -side left -padx 2 -pady 0
+
+             set data  [frame $config.threshold -borderwidth 0 -cursor arrow -relief groove]
+             pack $data -in $config -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                 label $data.l -text "Threshold (arcsec): " 
+                 pack  $data.l -side left -padx 2 -pady 0
+
+                 entry $data.v -textvariable ::psf_tools::psf_threshold -relief sunken -width 5
+                 pack  $data.v -side left -padx 2 -pady 0
+
+             set data  [frame $config.limitradius -borderwidth 0 -cursor arrow -relief groove]
+             pack $data -in $config -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
+
+                 label $data.l -text "Limite du Rayon : " 
+                 pack  $data.l -side left -padx 2 -pady 0
+
+                 entry $data.v -textvariable ::psf_tools::psf_limitradius -relief sunken -width 5
+                 pack  $data.v -side left -padx 2 -pady 0
+
+
+# onglets : mesures, methode, rafale, conesearch, identification, cata
+
+         set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
+         pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
+ 
+         pack [ttk::notebook $onglets.nb] -expand yes -fill both 
+         set f1 [frame $onglets.nb.f1]
+         set f2 [frame $onglets.nb.f2]
+         set f3 [frame $onglets.nb.f3]
+         set f4 [frame $onglets.nb.f4]
+         set f5 [frame $onglets.nb.f5]
+         set f6 [frame $onglets.nb.f6]
+
+         $onglets.nb add $f1 -text "Mesures"
+         $onglets.nb add $f2 -text "Methode"
+         $onglets.nb add $f3 -text "Rafale"
+         $onglets.nb add $f4 -text "Conesearch"
+         $onglets.nb add $f5 -text "Identification"
+         $onglets.nb add $f6 -text "Catalogues"
+
+        $onglets.nb select $f1
+        ttk::notebook::enableTraversal $onglets.nb
+
+
+
+
+
+# onglets : mesures
+
+         set results [frame $f1.results -borderwidth 0 -cursor arrow -relief groove]
+         pack $results -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+              set photommethode [frame $results.photommethode -borderwidth 0 -cursor arrow -relief groove]
+              pack $photommethode -in $results -anchor n -side left -expand 0 -fill x -padx 10 -pady 5
+
+                  label $photommethode.lab1 -text "PhotomMethode :"
+                  pack  $photommethode.lab1 -in $photommethode -side top -padx 2 -pady 0
+
+                  set values [ frame $photommethode.values -borderwidth 0 -cursor arrow -relief groove ]
+                  pack $values -in $photommethode -anchor n -side top -expand 1 -fill both -padx 10 -pady 2
+
+                         foreach key [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff] {
+
+                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
+
+                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="errflux"||$key=="delta"} {
+                                      set active disabled
+                                   } else {
+                                      set active active
+                                   }
+                                   button $value.graph -state $active -text "@" -relief "raised" -width 1 -height 1\
+                                      -command "::psf_gui::graph $key" 
+                                   pack   $value.graph -side left -padx 0
+                                   button $value.setval -state $active -text "S" -relief "raised" \
+                                      -command "::psf_gui::setval $key" 
+                                   pack   $value.setval -side left -padx 0
+
+                                   label $value.lab1 -text "$key =" 
+                                   pack  $value.lab1 -side left -padx 2 -pady 0
+                                   label $value.lab2 -textvariable ::gui_cata::current_psf($key)
+                                   pack  $value.lab2 -side right -padx 2 -pady 0
+                         }
+
+              set fitgauss [frame $results.fitgauss -borderwidth 0 -cursor arrow -relief groove]
+              pack $fitgauss -in $results -anchor n -side left -expand 0 -fill x -padx 2 -pady 2
+
+                  label $fitgauss.labfitgauss -text "FitGauss :"
+                  pack  $fitgauss.labfitgauss -in $fitgauss -side top -padx 2 -pady 0
+
+                  set values [ frame $fitgauss.values -borderwidth 0 -cursor arrow -relief groove ]
+                  pack $values -in $fitgauss -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
+
+                         foreach key [list xflux xcent xfwhm xfond yflux ycent yfwhm yfond] {
+
+                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 2
+
+                                   label $value.lab1 -text "$key =" 
+                                   pack  $value.lab1 -side left -anchor sw -padx 5 -pady 0
+                                   label $value.lab2 -textvariable ::gui_cata::current_psf($key)
+                                   pack  $value.lab2 -side right -padx 5 -pady 0 -anchor se 
+                         }
+
+         set actionspied [frame $frm.actionspied -borderwidth 0 -cursor arrow -relief groove]
+         pack $actionspied -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $actionspied.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::psf_gui::fen"
+             pack   $actionspied.fermer -in $actionspied -side right -anchor w -padx 0
+
+   }
+
+
+
+
+
+
+
+
+
+
 
 #- Fin du namespace -------------------------------------------------
 }
