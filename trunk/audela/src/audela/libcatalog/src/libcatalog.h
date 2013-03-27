@@ -62,14 +62,24 @@
 /***************************************************************************/
 
 /* Yassine : extraction of stars from catalogs : function for Frederic Vachier */
+/* TYCHO catalog */
 int cmd_tcl_cstycho2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* UCAC2 catalog */
 int cmd_tcl_csucac2 (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* UCAC3 catalog */
 int cmd_tcl_csucac3 (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* UCAC4 catalog */
 int cmd_tcl_csucac4 (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* USNO-A2 catalog */
 int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* 2MASS catalog */
 int cmd_tcl_cs2mass (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* PPMX catalog */
 int cmd_tcl_csppmx  (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* PPMXL catalog */
 int cmd_tcl_csppmxl (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* NOMAD1 catalog */
+int cmd_tcl_csnomad1(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif /* __LIBCATALOGH__ */
 

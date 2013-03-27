@@ -340,6 +340,13 @@ int readHeaderPPMX(FILE* const inputStream, headerInformationPPMX* const headerI
 		return(1);
 	}
 
+	/* Check that this file is PPMX */
+	index = strloc(PPMX_HEADER_FORMAT, '(');
+	if (strncmp(binaryHeader, PPMX_HEADER_FORMAT, index+1) != 0) {
+		sprintf(outputLogChar, "File %s is not PPMX", binaryFileName);
+		return (1);
+	}
+
 	sscanf(binaryHeader,PPMX_HEADER_FORMAT,fileNameInHeader,&totalNumberOfStars,
 			&(headerInformation->lengthOfAcceleratorTable),&(headerInformation->numberOfExtra4),
 			&(headerInformation->numberOfExtra2),&(headerInformation->decStartInMas));

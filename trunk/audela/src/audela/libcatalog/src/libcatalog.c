@@ -51,5 +51,6 @@
    Tcl_CreateCommand(interp,"cs2mass" ,(Tcl_CmdProc *)cmd_tcl_cs2mass ,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"csppmx"  ,(Tcl_CmdProc *)cmd_tcl_csppmx  ,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"csppmxl" ,(Tcl_CmdProc *)cmd_tcl_csppmxl ,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"csnomad1",(Tcl_CmdProc *)cmd_tcl_csnomad1,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    return (TCL_OK);
 }
