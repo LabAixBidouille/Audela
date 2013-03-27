@@ -1168,8 +1168,11 @@ namespace eval bddimages_recherche {
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
+           $popupTbl.analyse add command -label "Photocentre" \
+              -command { ::bddimages_recherche::psf }
+
            $popupTbl.analyse add command -label "CdL" \
-              -command { ::bddimages_cdl::run}
+              -command { ::bddimages_cdl::run }
 
            $popupTbl.analyse add command -label "CdL avec WCS" \
               -command { ::bddimages_recherche::creation_cdlwcs}
@@ -1217,6 +1220,7 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Key-c>         { ::bddimages_recherche::bddimages_creation_cata }
       bind [$tbl bodypath] <Key-a>         { ::bddimages_recherche::bddimages_astrometrie }
       bind [$tbl bodypath] <Key-v>         { ::bddimages_recherche::bddimages_voir_cata }
+      bind [$tbl bodypath] <Key-p>         { ::bddimages_recherche::psf }
       bind [$tbl bodypath] <Key-Delete>    { ::bddimages_recherche::bddimages_images_delete }
 
    }
@@ -1697,6 +1701,18 @@ namespace eval bddimages_recherche {
 
    }
 
+   proc ::bddimages_recherche::psf { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+
+      ::psf_gui::run_recherche $imglist
+
+   }
 
 
    proc ::bddimages_recherche::bddimages_astrometrie { } {

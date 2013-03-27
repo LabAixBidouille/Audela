@@ -29,8 +29,7 @@ namespace eval gui_astrometry {
    ## Initialisation des variables de namespace
    #  \details   Si la variable n'existe pas alors on va chercher
    #             dans la variable globale \c conf
-   #  \sa        ::gui_cata::inittoconf
-   #----------------------------------------------------------------------------
+   #  \sa        gui_cata::inittoconf
    proc ::gui_astrometry::inittoconf {  } {
 
       global bddconf, conf
@@ -156,7 +155,6 @@ namespace eval gui_astrometry {
    ## Fermeture de la fenetre Astrometrie.
    # Les variables utilisees sont affectees a la variable globale
    # \c conf
-   #----------------------------------------------------------------------------
    proc ::gui_astrometry::fermer {  } {
 
       global conf
@@ -185,9 +183,8 @@ namespace eval gui_astrometry {
    #----------------------------------------------------------------------------
    ## Fonction qui est appelee lors d'un clic gauche dans la table
    # des references (parent / table de gauche)
-   #  \param w    
-   #  \param args
-   #----------------------------------------------------------------------------
+   #  \param w    selection tklist
+   #  \param args argument non utilise
    proc ::gui_astrometry::cmdButton1Click_srpt { w args } {
 
       foreach select [$w curselection] {
@@ -1956,7 +1953,7 @@ namespace eval gui_astrometry {
          set ::tools_astrometry::rapport_instru [string trim [lindex [::bddimages_liste::lget $tabkey "INSTRUME"] 1] ]
       }
 
-      # Nombre de positions rapportées
+      # Nombre de positions rapportees
       set cpt 0
       set l [array get ::tools_astrometry::listscience]
       foreach {name y} $l {
@@ -1972,11 +1969,9 @@ namespace eval gui_astrometry {
 
 
    #----------------------------------------------------------------------------
-   ## Chargement de l'astrometrie pour chaque image de la structure
-   #  img_list
-   #  \param img_list structure de liste d'images
-   #  \note le resultat de cette procedure affecte la variable de 
-   # namespace \c ::tools_cata::img_list puis charge toutes l'info 
+   ## Chargement de l'astrometrie pour chaque image de la structure img_list
+   # \note le resultat de cette procedure affecte la variable de 
+   # namespace \c tools_cata::img_list puis charge toutes l'info 
    # concernant l'astrometrie
    #----------------------------------------------------------------------------
    # set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
@@ -2036,7 +2031,7 @@ namespace eval gui_astrometry {
    ## Chargement de la liste d'image selectionnee dans l'outil Recherche.
    #  \param img_list structure de liste d'images
    #  \note le resultat de cette procedure affecte la variable de 
-   # namespace  \c ::tools_cata::img_list puis charge toutes l'info 
+   # namespace  \c img_list puis charge toutes l'info 
    # concernant l'astrometrie
    #----------------------------------------------------------------------------
    proc ::gui_astrometry::charge_list { img_list } {
@@ -2128,10 +2123,10 @@ namespace eval gui_astrometry {
                                 0 "err_Mag"           right \
                                 0 "err x"             right \
                                 0 "err y"             right ]
-      set loc_wcs_enf     [list 0 "Clés"              left \
+      set loc_wcs_enf     [list 0 "Cles"              left \
                                 0 "Valeur"            center  \
                                 0 "type"              center \
-                                0 "unité"             center \
+                                0 "unite"             center \
                                 0 "commentaire"       left ]
       
       set ::gui_astrometry::fen .astrometry
@@ -2423,7 +2418,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $srp.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $srp.hsb -orient horizontal -command [list $::gui_astrometry::srpt xview]
@@ -2458,7 +2453,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $sre.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $sre.hsb -orient horizontal -command [list $::gui_astrometry::sret xview]
@@ -2491,7 +2486,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $ssp.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $ssp.hsb -orient horizontal -command [list $::gui_astrometry::sspt xview]
@@ -2525,7 +2520,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $sse.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $sse.hsb -orient horizontal -command [list $::gui_astrometry::sset xview]
@@ -2558,7 +2553,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $dsp.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $dsp.hsb -orient horizontal -command [list $::gui_astrometry::dspt xview]
@@ -2588,7 +2583,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $dse.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $dse.hsb -orient horizontal -command [list $::gui_astrometry::dset xview]
@@ -2618,7 +2613,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $dwp.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $dwp.hsb -orient horizontal -command [list $::gui_astrometry::dwpt xview]
@@ -2646,7 +2641,7 @@ namespace eval gui_astrometry {
                 -yscrollcommand [ list $dwe.vsb set ] \
                 -selectmode extended \
                 -activestyle none \
-                -stripebackground #e0e8f0 \
+                -stripebackground "#e0e8f0" \
                 -showseparators 1
 
               scrollbar $dwe.hsb -orient horizontal -command [list $::gui_astrometry::dwet xview]
@@ -2928,7 +2923,15 @@ namespace eval gui_astrometry {
 
       # Au lancement, charge les donnees
       ::gui_astrometry::affich_gestion
-
+      
+      
+      
    }
+
+
+proc toto { } {
+
+
+}
 
 }
