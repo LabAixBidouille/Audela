@@ -275,7 +275,7 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 			//				survey[indexOfMagnitude] = '-';
 			//			}
 			val                        = ((val/10) - 1000);	/* Convert cmag (Mod. V1.2) */
-			magUsno[indexOfMagnitude]  = MAG2DECIMAG * val; /*<=30000 ? val : NULL2, magUsno are in centi mag not in milli mag*/
+			magUsno[indexOfMagnitude]  = (short) (MAG2DECIMAG * val); /*<=30000 ? val : NULL2, magUsno are in centi mag not in milli mag*/
 			*lengthOfRecord           += lengthOfUsnoRecord;
 			buffer                    += lengthOfUsnoRecord;
 		} else {
