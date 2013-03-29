@@ -13,7 +13,7 @@ global caption langage
 
 set caption(bddimages_admin,msg_prevent)        "Warning!"
 set caption(bddimages_admin,msg_prevent2)       "This will reset the database. All data will be deleted from the disk. Are you sure?"
-set caption(bddimages_admin,efface)             "Data base will be deleted"
+set caption(bddimages_admin,efface)             "Reset of the database"
 set caption(bddimages_admin,mdprootsql)         "Enter the root password for the SQL server"
 set caption(bddimages_admin,cancelRAZ)          "DB reset canceled"
 set caption(bddimages_admin,mysqlconnecterr)    "MySQL connection error:"
@@ -25,7 +25,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(bddimages_admin,msg_prevent)     "Attention !"
    set caption(bddimages_admin,msg_prevent2)    "Cette action va réinitialiser la base de données. Toutes les données seront définitivement effacées du disque. Etes-vous sûr ?"
-   set caption(bddimages_admin,efface)          "Effacement de la base de données"
+   set caption(bddimages_admin,efface)          "Réinitialisation de la base de données"
    set caption(bddimages_admin,mdprootsql)      "Veuillez saisir le mot de passe root du serveur SQL"
    set caption(bddimages_admin,cancelRAZ)       "RAZ annulée de la BDD"
    set caption(bddimages_admin,mysqlconnecterr) "Erreur de connexion à MySQL :"

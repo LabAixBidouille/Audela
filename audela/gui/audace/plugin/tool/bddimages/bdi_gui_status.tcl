@@ -117,9 +117,9 @@ proc ::bdi_gui_status::createDialog { } {
 
    set nbimg     [::bddimagesAdmin::sql_nbimg]
    set nbheader  [::bddimagesAdmin::sql_header]
-   set nbfichbdd [numberoffile $conf(bddimages,dirfits)]
-   set nbfichinc [numberoffile $conf(bddimages,dirinco)]
-   set nbficherr [numberoffile $conf(bddimages,direrr)]
+   set nbfichbdd [numberoffile $bddconf(dirfits)]
+   set nbfichinc [numberoffile $bddconf(dirinco)]
+   set nbficherr [numberoffile $bddconf(direrr)]
    set erreur 0
 
    #--- Gestion des erreurs

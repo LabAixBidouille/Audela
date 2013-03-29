@@ -68,6 +68,27 @@ proc ::bdi_gui_config::save_and_load { } {
    # Charge la coufig courante
    ::bdi_tools_config::load_config $bddconf(current_config)
    # Met a jour la GUI
+   ::bdi_gui_config::handleBddState
+   ::bddimages::handleBddState
+
+}
+
+#------------------------------------------------------------
+## Configuration des boutons et autres widgets du panneau
+# @return void
+#
+proc ::bdi_gui_config::handleBddState { } {
+
+   global bddconf menuconfig
+
+   $menuconfig delete 0 end
+
+   foreach myconf $bddconf(list_config) {
+      $menuconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] \
+         -variable bddconf(current_config) \
+         -command { set bddconf(current_config) [::bdi_tools_xml::load_config $bddconf(current_config)] }
+   }
+
    ::bddimages::handleBddState
 
 }
@@ -151,8 +172,8 @@ proc ::bdi_gui_config::GetInfo { subject } {
 proc ::bdi_gui_config::new_config_name { } {
 
    variable This
-   global caption bddconf
-   global new_config_name new_config_gui
+   global caption bddconf menuconfig
+   global new_config_name new_config_gui 
 
    set new_config_gui $This.configname
    if {[winfo exists $new_config_gui]} { destroy $new_config_gui }
@@ -182,24 +203,27 @@ proc ::bdi_gui_config::new_config_name { } {
       pack $b.annuler -in $b -side right -anchor e -padx 5 -pady 5 -expand 0
 
       button $b.ok -text "OK" -borderwidth 2 \
-       -command {
-          set previous_config $bddconf(current_config)
-          if {[string length $new_config_name] > 0} {
-
-             set new_config [::bdi_tools_xml::add_config $new_config_name]
-
-             set bddconf(current_config) [::bdi_tools_xml::load_config $new_config]
-             set bddconf(list_config) $::bdi_tools_xml::list_bddimages
-             $rbconfig add radiobutton -label $bddconf(current_config) -value $bddconf(current_config) -variable bddconf(current_config) \
-                -command { set bddconf(current_config) [::bdi_tools_xml::load_config $bddconf(current_config)] }
-          }
-          if {[string compare $previous_config "?"] == 0} {
-             if {[catch {::bdi_tools_xml::delete_config $previous_config} new_config] == 0} {
-                $rbconfig delete $previous_config
-             }
-          }
-          destroy $new_config_gui
-       }
+         -command {
+            set previous_config $bddconf(current_config)
+            if {[string length $new_config_name] > 0} {
+               set new_config [::bdi_tools_xml::add_config $new_config_name]
+               set bddconf(current_config) [::bdi_tools_xml::load_config $new_config]
+               set bddconf(list_config) $::bdi_tools_xml::list_bddimages
+               $menuconfig add radiobutton -label $bddconf(current_config) -value $bddconf(current_config) \
+                  -variable bddconf(current_config) \
+                  -command {
+                     set ::bdi_tools_config::ok_mysql_connect 0
+                     set bddconf(current_config) [::bdi_tools_xml::load_config $bddconf(current_config)]
+                     ::bddimages::handleBddState
+                  }
+            }
+            if {[string compare $previous_config "?"] == 0} {
+               if {[catch {::bdi_tools_xml::delete_config $previous_config} new_config] == 0} {
+                  $menuconfig delete $previous_config
+               }
+            }
+            destroy $new_config_gui
+         }
       pack $b.ok -in $b -side right -anchor e -padx 5 -pady 5 -expand 0
 
    #--- Mise a jour dynamique des couleurs
@@ -221,10 +245,10 @@ proc ::bdi_gui_config::createDialog { } {
 
    global audace caption color
    global conf bddconf myconf
-   global rbconfig
+   global menuconfig
 
    set widthlab 30
-   set widthentry 60
+   set widthentry 30
 
    #--- Geometry
    if { ! [ info exists conf(bddimages,geometry_config) ] } {
@@ -286,10 +310,14 @@ proc ::bdi_gui_config::createDialog { } {
          #--- Cree un menu bouton pour choisir la config
          menubutton $xml.conf.m.menu -relief raised -borderwidth 2 -textvariable bddconf(current_config) -menu $xml.conf.m.menu.list
          pack $xml.conf.m.menu -in $xml.conf.m -side left -anchor w -padx 3 -pady 3
-         set rbconfig [menu $xml.conf.m.menu.list -tearoff 0]
+         set menuconfig [menu $xml.conf.m.menu.list -tearoff 0]
          foreach myconf $bddconf(list_config) {
-            $rbconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
-                -command { set bddconf(current_config) [::bdi_tools_xml::load_config $bddconf(current_config)] }
+            $menuconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] -variable bddconf(current_config) \
+               -command {
+                  set ::bdi_tools_config::ok_mysql_connect 0
+                  set bddconf(current_config) [::bdi_tools_xml::load_config $bddconf(current_config)]
+                  ::bddimages::handleBddState
+               }
          }
 
       #--- Cree un frame pour les acces a la bdd
@@ -392,7 +420,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.dirbase.lab -in $xml.dir.dirbase -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.dirbase.dat -textvariable bddconf(dirbase) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.dirbase.dat -in $xml.dir.dirbase -side left -anchor w -padx 1
+            pack $xml.dir.dirbase.dat -in $xml.dir.dirbase -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.dirbase.explore -text "..." -width 3 \
                -command {
@@ -416,7 +444,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.dirinco.lab -in $xml.dir.dirinco -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.dirinco.dat -textvariable bddconf(dirinco) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.dirinco.dat -in $xml.dir.dirinco -side left -anchor w -padx 1
+            pack $xml.dir.dirinco.dat -in $xml.dir.dirinco -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.dirinco.explore -text "..." -width 3 \
                -command { 
@@ -439,7 +467,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.dirfits.lab -in $xml.dir.dirfits -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.dirfits.dat -textvariable bddconf(dirfits) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.dirfits.dat -in $xml.dir.dirfits -side left -anchor w -padx 1
+            pack $xml.dir.dirfits.dat -in $xml.dir.dirfits -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.dirfits.explore -text "..." -width 3 \
                -command { 
@@ -462,7 +490,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.dircata.lab -in $xml.dir.dircata -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.dircata.dat -textvariable bddconf(dircata) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.dircata.dat -in $xml.dir.dircata -side left -anchor w -padx 1
+            pack $xml.dir.dircata.dat -in $xml.dir.dircata -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.dircata.explore -text "..." -width 3 \
                -command { 
@@ -485,7 +513,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.direrr.lab -in $xml.dir.direrr -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.direrr.dat -textvariable bddconf(direrr) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.direrr.dat -in $xml.dir.direrr -side left -anchor w -padx 1
+            pack $xml.dir.direrr.dat -in $xml.dir.direrr -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.direrr.explore -text "..." -width 3 \
                -command { 
@@ -508,7 +536,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.dirlog.lab -in $xml.dir.dirlog -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.dirlog.dat -textvariable bddconf(dirlog) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.dirlog.dat -in $xml.dir.dirlog -side left -anchor w -padx 1
+            pack $xml.dir.dirlog.dat -in $xml.dir.dirlog -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.dirlog.explore -text "..." -width 3 \
                -command { 
@@ -531,7 +559,7 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.dir.dirtmp.lab -in $xml.dir.dirtmp -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
             entry $xml.dir.dirtmp.dat -textvariable bddconf(dirtmp) -borderwidth 1 -relief groove -width $widthentry -justify left
-            pack $xml.dir.dirtmp.dat -in $xml.dir.dirtmp -side left -anchor w -padx 1
+            pack $xml.dir.dirtmp.dat -in $xml.dir.dirtmp -side left -anchor w -padx 1 -expand 1 -fill x
             #--- Cree un bouton charger
             button $xml.dir.dirtmp.explore -text "..." -width 3 \
                -command { 
@@ -584,7 +612,7 @@ proc ::bdi_gui_config::createDialog { } {
          button $xml.action.del -state active -text "$caption(bdi_gui_config,delete)" \
             -command { 
                if {[catch {::bdi_tools_xml::delete_config $bddconf(current_config)} new_config] == 0} {
-                  $rbconfig delete $bddconf(current_config)
+                  $menuconfig delete $bddconf(current_config)
                   set bddconf(current_config) [::bdi_tools_xml::load_config $new_config]
                   set bddconf(list_config) $::bdi_tools_xml::list_bddimages
                }

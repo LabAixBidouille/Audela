@@ -102,6 +102,8 @@ proc ::bdi_tools_config::load_config { name } {
       gren_info "Connexion reussie : $connectstatus\n"
    }
 
+   return $bddconf(name)
+
 }
 
 #------------------------------------------------------------
@@ -148,8 +150,10 @@ proc ::bdi_tools_config::checkOtherDir { base } {
             "cata"     { set bddconf(dircata) [file join $base $d] }
             "fits"     { set bddconf(dirfits) [file join $base $d] }
             "incoming" { set bddconf(dirinco) [file join $base $d] }
-            "error"    { set bddconf(direrr)  [file join $base $d] }
-            "log"      { set bddconf(dirlog)  [file join $base $d] }
+            "error"    -
+            "errors"   { set bddconf(direrr)  [file join $base $d] }
+            "log"      -
+            "logs"     { set bddconf(dirlog)  [file join $base $d] }
             "tmp"      { set bddconf(dirtmp)  [file join $base $d] }
          }
       }
