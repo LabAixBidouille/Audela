@@ -122,6 +122,9 @@
       variable private
       global audace
 
+      set private(equinox) "J2000.0"
+      set private(true) "J2000.0"
+
       switch -exact $private(image) {
          type1    {  if {$audace(telNo) != 0} {
                         #--   coordonnees rafraichies par le telescope
@@ -138,7 +141,6 @@
 
                         #--   met a jour les coordonnees
                         refreshCoordsJ2000 $az $elev ALTAZ
-                        set private(equinox) "J2000.0"
                      }
                   }
          default  {  if {$audace(telNo) == 0} {
