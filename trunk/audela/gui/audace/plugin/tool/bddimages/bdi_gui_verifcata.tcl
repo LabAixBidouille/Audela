@@ -18,7 +18,7 @@ namespace eval gui_verifcata {
 
 
 
-   proc ::gui_verifcata::cmdButton1Click { w } {
+   proc ::gui_verifcata::cmdButton1Click { w args } {
 
    }
 

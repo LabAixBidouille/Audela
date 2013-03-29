@@ -103,26 +103,135 @@ namespace eval psf_gui {
          tk_messageBox -message "Veuillez dessiner un carre dans l'image (avec un clic gauche)" -type ok
          return
       }
+      set ::psf_gui::gui_catalogues_data ""
+
+
+      gren_info "** GRAB SOURCE 136 : [::psf_gui::aff_catas [lindex $::tools_cata::current_listsources {1 136}]]\n"
 
       set sources [lindex $::tools_cata::current_listsources 1]
+
+
       set id 1
       set cpt_grab 0
       foreach s $sources {
-         set x -100
-         set y -100
+
          foreach cata $s {
-         
+            
             set namable [::manage_source::namable $s]
             if {$namable==""} {
                set name ""
             } else {
                set name [::manage_source::naming $s $namable]
             } 
+            if {$id == 137} {
+               gren_info "name = $name\n"
+            }
 
+            set pass "no"
+            
+            set ra [lindex [lindex $cata 1] 0]
+            set dec [lindex [lindex $cata 1] 1]
+            set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+            set x [lindex $xy 0]
+            set y [lindex $xy 1]
+            if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+               set pass "yes"
+               set xpass $x
+               set ypass $y
+            }
+
+            if {$pass=="yes"} {
+
+               #gren_info "**NAME = $name \n"
+               incr cpt_grab
+               if {$cpt_grab>1}  { set ambigue "yes"}
+
+               #gren_info "NAME = $name \n"
+               #gren_info "xpass ypass  = $xpass $ypass\n"
+               #gren_info "rect = $rect\n"
+               affich_un_rond_xy $xpass $ypass green 60 1
+
+               # gren_info "cpt_grab = $cpt_grab\n"
+
+               gren_info "SOURCE FOUND : ID = $id NAME = $name CATAS = "
+               set pos 0
+               foreach cata $s {
+                  gren_info "[lindex $cata 0] "
+                  set ra0  [lindex [lindex $cata 1] 0]
+                  set dec0 [lindex [lindex $cata 1] 1]
+                  set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
+                  set x [lindex $xy 0]
+                  set y [lindex $xy 1]
+                  lappend ::psf_gui::gui_catalogues_data [list $pos [lindex $cata 0] $id $x $y ]
+                  incr pos
+               }
+               gren_info "\n"
+
+               if {$ambigue == "yes" } {
+                  set result [list 1 "Ambigue" $id $xpass $ypass $s]
+               } else {
+                  set result [list 0 "" $id $xpass $ypass $s]
+               }
+               break
+            }
+         }
+         incr id
+      }
+      if {$cpt_grab==0} { return [list 1 "Unknown"] }
+      return $result
+   }
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+   proc ::psf_gui::grab_sourcesold {  } {
+ 
+
+      set color red
+      set width 2
+      cleanmark
+
+      set ambigue "no"
+
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect==""} {
+         tk_messageBox -message "Veuillez dessiner un carre dans l'image (avec un clic gauche)" -type ok
+         return
+      }
+      set ::psf_gui::gui_catalogues_data ""
+
+
+      gren_info "** GRAB SOURCE 136 : [::psf_gui::aff_catas [lindex $::tools_cata::current_listsources {1 136}]]\n"
+
+      set sources [lindex $::tools_cata::current_listsources 1]
+
+
+      set id 1
+      set cpt_grab 0
+      foreach s $sources {
+
+         foreach cata $s {
+            
+            set namable [::manage_source::namable $s]
+            if {$namable==""} {
+               set name ""
+            } else {
+               set name [::manage_source::naming $s $namable]
+            } 
+            if {$id == 137} {
+               gren_info "name = $name\n"
+            }
+            
             set x -100
             set y -100
             set pass "no"
-                        
+            
             if {[lindex $cata 0] == "IMG"} {
                set ra [lindex [lindex $cata 1] 0]
                set dec [lindex [lindex $cata 1] 1]
@@ -152,6 +261,8 @@ namespace eval psf_gui {
             }
             
             if {$pass=="yes"} {
+
+
 
                #gren_info "**NAME = $name \n"
                incr cpt_grab
@@ -190,13 +301,23 @@ namespace eval psf_gui {
                # gren_info "cpt_grab = $cpt_grab\n"
 
                gren_info "SOURCE FOUND : ID = $id NAME = $name CATAS = "
+               set pos 0
                foreach cata $s {
                   gren_info "[lindex $cata 0] "
+
+                  set ra0  [lindex [lindex $cata 1] 0]
+                  set dec0 [lindex [lindex $cata 1] 1]
+                  set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
+                  set x [lindex $xy 0]
+                  set y [lindex $xy 1]
+                  lappend ::psf_gui::gui_catalogues_data [list $pos [lindex $cata 0] $id $x $y ]
+
                   if {[lindex $cata 0]==$namable} {
                      set ra  [lindex [lindex $cata 1] 0]
                      set dec [lindex [lindex $cata 1] 1]
                      #affich_un_rond $ra $dec $color $width
                   }
+                  incr pos
                }
                gren_info "\n"
 
@@ -217,8 +338,6 @@ namespace eval psf_gui {
  
  
  
- 
- 
 
 
 
@@ -229,111 +348,6 @@ namespace eval psf_gui {
 
 
 
-
-
-
-
-# Anciennement ::gui_cata::psf_grab
-# Grab des sources dans l image
-# appele depuis l analyse des psf en mode manuel
-
-
-   proc ::psf_gui::gestion_mode_manuel_grab { } {
-
-       $::psf_gui::fen.appli.actions1.save configure -state disabled
-       $::psf_gui::fen.appli.actions1.new  configure -state disabled
-
-       set ::gui_cata::psf_id_source ""
-       set ::gui_cata::list_of_cata ""
-       set r [::psf_gui::grab_sources]
-
-       #gren_info "r=$r\n"
-
-       set err   [lindex $r 0]
-       set aff   [lindex $r 1]
-       set id    [lindex $r 2]
-       set xpass [lindex $r 3]
-       set ypass [lindex $r 4]
-       set s     [lindex $r 5]
-
-       set ::gui_cata::psf_best_sol [list $xpass $ypass]
-
-       if {$err!=0} {
-           set ::gui_cata::psf_name_source "Erreur"
-           if { $aff=="Unknown" || $aff=="Ambigue" } {
-              set ::gui_cata::psf_name_source $aff
-              if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
-           }
-           if { $aff=="Ambigue" } {
-              set ::gui_cata::psf_name_source $aff
-              if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
-           }
-           return
-       }
-       ::psf_tools::result_photom_methode "err" 
-       ::psf_tools::result_fitgauss "err" 
-
-       set d [::manage_source::namable $s]
-       if {$d==""} {
-          gren_info "s=$s\n"
-          set ::gui_cata::psf_name_source "Unnamable"
-          return
-       }
-       set ::gui_cata::psf_source $s
-       set ::gui_cata::psf_name_source [::manage_source::naming $s $d]
-       set ::gui_cata::psf_name_cata $d
-       set ::gui_cata::psf_id_source $id
-        
-       gren_info "nb_butcata = $::gui_cata::nb_butcata \n"
-        
-      if {[info exists ::gui_cata::nb_butcata]} {
-         for { set i 0 } { $i <= $::gui_cata::nb_butcata} {incr i} {
-            destroy $::psf_gui::fen.appli.info_cata.c$i
-            gren_info "destroy $::psf_gui::fen.appli.info_cata.c$i \n"
-         } 
-      } 
-         
-      array unset ::psf_gui::butcata
-         
-      set i 0
-      foreach mycata $s {
-         set a [lindex $mycata 0]
-         button $::psf_gui::fen.appli.info_cata.c$i  -state normal \
-            -text $a -relief "sunken" -command "::psf_gui::butcata_action $i"
-         pack   $::psf_gui::fen.appli.info_cata.c$i -in $::psf_gui::fen.appli.info_cata -side left -padx 0
-         set ::psf_gui::butcata($i,cata) $a
-         set ::psf_gui::butcata($i,state) "Ok"
-         incr i
-      
-      }
-      set ::gui_cata::nb_butcata $i
-      ::psf_gui::affich_cata
-
-   }
-
-
-
-   proc ::psf_gui::affich_cata { } {
-
-      for { set i 0 } { $i < $::gui_cata::nb_butcata} {incr i} {
-         gren_info  "bouton : $::psf_gui::butcata($i,cata) : $::psf_gui::butcata($i,state)\n"
-      }
-
-   }
-
-   proc ::psf_gui::butcata_action { i } {
-
-      if { $::psf_gui::butcata($i,state) == "Ok" } {
-         set ::psf_gui::butcata($i,state) ""
-         $::psf_gui::fen.appli.info_cata.c$i configure -relief "raised"
-      } else {
-         set ::psf_gui::butcata($i,state) "Ok"
-         $::psf_gui::fen.appli.info_cata.c$i configure -relief "sunken"
-      }
-      
-      ::psf_gui::affich_cata
-
-   }
 
 
 
@@ -1663,6 +1677,146 @@ namespace eval psf_gui {
 
 
 
+# Anciennement ::gui_cata::psf_grab
+# Grab des sources dans l image
+# appele depuis l analyse des psf en mode manuel
+
+
+   proc ::psf_gui::gestion_mode_manuel_grab { } {
+
+       $::psf_gui::fen.appli.actions1.save configure -state normal
+       $::psf_gui::fen.appli.actions1.new  configure -state disabled
+       set ::gui_cata::nb_butcata 0
+
+       set ::gui_cata::psf_id_source ""
+       set ::gui_cata::list_of_cata ""
+       set r [::psf_gui::grab_sources]
+
+       #gren_info "r=$r\n"
+
+       set err   [lindex $r 0]
+       set aff   [lindex $r 1]
+       set id    [lindex $r 2]
+       set xpass [lindex $r 3]
+       set ypass [lindex $r 4]
+       set s     [lindex $r 5]
+
+       set ::gui_cata::psf_best_sol [list $xpass $ypass]
+
+       if {$err!=0} {
+           set ::gui_cata::psf_name_source "Erreur"
+           if { $aff=="Unknown" || $aff=="Ambigue" } {
+              set ::gui_cata::psf_name_source $aff
+              if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
+           }
+           if { $aff=="Ambigue" } {
+              set ::gui_cata::psf_name_source $aff
+              if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
+           }
+       } else {
+       
+       
+          ::psf_tools::result_photom_methode "err" 
+          ::psf_tools::result_fitgauss "err" 
+
+          set d [::manage_source::namable $s]
+          if {$d==""} {
+             gren_info "s=$s\n"
+             set ::gui_cata::psf_name_source "Unnamable"
+             return
+          }
+          set ::gui_cata::psf_source $s
+          set ::gui_cata::psf_name_source [::manage_source::naming $s $d]
+          set ::gui_cata::psf_name_cata $d
+          set ::gui_cata::psf_id_source $id
+
+
+         if {[info exists ::gui_cata::nb_butcata]} {
+            gren_info "exist = [info exists ::gui_cata::nb_butcata] \n"
+            gren_info "nb_butcata = $::gui_cata::nb_butcata \n"
+            for { set i 0 } { $i <= $::gui_cata::nb_butcata} {incr i} {
+               destroy $::psf_gui::fen.appli.info_cata.c$i
+               gren_info "destroy $::psf_gui::fen.appli.info_cata.c$i \n"
+            } 
+         } 
+
+
+         # bouton et list des cata des sources grabées
+
+         array unset ::psf_gui::butcata
+         set i 0
+         foreach mycata $s {
+            set a [lindex $mycata 0]
+            button $::psf_gui::fen.appli.info_cata.c$i  -state normal \
+               -text $a -relief "sunken" -command "::psf_gui::butcata_action $i"
+            pack   $::psf_gui::fen.appli.info_cata.c$i -in $::psf_gui::fen.appli.info_cata -side left -padx 0
+            set ::psf_gui::butcata($i,cata) $a
+            set ::psf_gui::butcata($i,state) "Ok"
+            incr i
+         }
+         set ::gui_cata::nb_butcata $i
+
+      }
+
+      ::psf_gui::affich_cata
+
+     
+
+
+   }
+
+
+
+   proc ::psf_gui::affich_cata { } {
+
+      global bddconf
+
+      set bufno $::bddconf(bufno)
+      cleanmark
+      
+      
+      for { set i 0 } { $i < $::gui_cata::nb_butcata} {incr i} {
+
+         
+         if { $::psf_gui::butcata($i,state) == "Ok" } {
+            set pos [lsearch -index 0 $::gui_cata::psf_source $::psf_gui::butcata($i,cata)]
+            if {$pos != -1} {
+               set ra  [lindex $::gui_cata::psf_source [list $pos 1 0] ]
+               set dec [lindex $::gui_cata::psf_source [list $pos 1 1] ]
+            }
+            set width [expr 20 + $i * 10]
+
+            # Affiche un rond vert
+            set img_xy [ buf$bufno radec2xy [ list $ra $dec ] ]
+            set x [lindex $img_xy 0]
+            set y [lindex $img_xy 1]
+            affich_un_rond_xy $x $y green  $width 1
+            
+         }
+      }
+      
+      $::psf_gui::gui_catalogues.tbl delete 0 end
+      foreach line $::psf_gui::gui_catalogues_data {
+         $::psf_gui::gui_catalogues.tbl insert end $line
+      }
+
+
+   }
+
+   proc ::psf_gui::butcata_action { i } {
+
+      if { $::psf_gui::butcata($i,state) == "Ok" } {
+         set ::psf_gui::butcata($i,state) ""
+         $::psf_gui::fen.appli.info_cata.c$i configure -relief "raised"
+      } else {
+         set ::psf_gui::butcata($i,state) "Ok"
+         $::psf_gui::fen.appli.info_cata.c$i configure -relief "sunken"
+      }
+      
+      ::psf_gui::affich_cata
+
+   }
+
 
 
 
@@ -1702,7 +1856,6 @@ namespace eval psf_gui {
       set ::tools_cata::id_current_image 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
          incr ::tools_cata::id_current_image
-         
          ::gui_cata::load_cata
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       }
@@ -1728,10 +1881,280 @@ namespace eval psf_gui {
 # fonction appelee par l'outil recherche
 #  \sa psf_gui::run
    proc ::psf_gui::run_recherche { img_list } {
-      
+      set ::gui_cata::use_uncosmic 0
       ::psf_gui::charge_list $img_list
       ::psf_gui::run
    }
+
+
+
+
+   proc ::psf_gui::getpos { s cata x y } {
+
+      set p -1
+      
+      set p [lsearch -index 0 $s $cata]
+      if {$p!=-1} {
+         set mycata [lindex $s $p]
+         set ra  [lindex $mycata {1 0}]
+         set dec [lindex $mycata {1 1}]
+         set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+         set xc [lindex $img_xy 0]
+         set yc [lindex $img_xy 1]
+         #gren_info " $xc $x\n"
+         #gren_info " $yc $y\n"
+         #gren_info "a [expr abs($xc - $x)]\n"
+         #gren_info "b [expr abs($yc - $y)]\n"
+         if { [expr abs($xc - $x)] < 0.001 && [expr abs($yc - $y)] < 0.001} { 
+            return $p
+         }
+      }
+      return $p
+   }
+
+   proc ::psf_gui::console { tbl } {
+
+      set l ""
+      foreach select [$tbl curselection] {
+         set pos  [lindex [$tbl get $select] 0]      
+         set cata [lindex [$tbl get $select] 1]      
+         set ids  [lindex [$tbl get $select] 2]   
+         set x    [lindex [$tbl get $select] 3]   
+         set y    [lindex [$tbl get $select] 4]   
+         lappend l [list $pos $cata $ids $x $y]
+      }
+      set l [lsort -decreasing -integer -index 2 $l]
+      foreach c $l {
+         set pos  [lindex $c 0]      
+         set cata [lindex $c 1]      
+         set ids  [lindex $c 2]   
+         set x    [lindex $c 3]   
+         set y    [lindex $c 4]   
+         #gren_info "cata = $cata ; ids = $ids ; pos = $pos ; x = $x ; y = $y\n"
+         gren_info [format "%-7s %5s %5s %.3f %.3f\n" $cata $ids $pos $x $y] 
+      }
+  }
+
+   proc ::psf_gui::aff_catas { s } {
+
+      set line "AFF_CATAS ="
+      foreach c $s {
+         append line " [lindex $c 0]"
+      }
+      return $line
+  }
+
+
+
+   proc ::psf_gui::mode_manuel_save { } {
+
+       global bddconf
+       
+       gren_info "Maj id = $::tools_cata::id_current_image \n"
+
+       set current_image [ lindex  $::tools_cata::img_list $::tools_cata::id_current_image  ]
+       # @todo sauver ::tools_cata::current_listsources
+       gren_info "img_list = [llength $::tools_cata::img_list] \n"
+       gren_info "current_image = $current_image \n"
+
+       # Tabkey
+       set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+       # Liste des sources
+       incr id_current_image
+       # Noms du fichier cata
+       set imgfilename    [::bddimages_liste::lget $current_image filename]
+       set imgdirfilename [::bddimages_liste::lget $current_image dirfilename]
+       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+       set cataxml "${f}_cata.xml"
+
+       ::tools_cata::save_cata $::tools_cata::current_listsources $tabkey $cataxml
+
+   }
+
+
+   proc ::psf_gui::newsource { tbl } {
+
+
+# ouvrir bouton save
+      $::psf_gui::fen.appli.actions1.save configure -state normal
+
+      set l ""
+      foreach select [$tbl curselection] {
+         set pos  [lindex [$tbl get $select] 0]      
+         set cata [lindex [$tbl get $select] 1]      
+         set ids  [lindex [$tbl get $select] 2]   
+         set x    [lindex [$tbl get $select] 3]   
+         set y    [lindex [$tbl get $select] 4]   
+         gren_info "cata = $cata ; ids = $ids ; pos = $pos ; x = $x ; y = $y\n"
+         lappend l [list $pos $cata $ids $x $y]
+      }
+      set l [lsort -decreasing -integer -index 2 $l]
+
+
+      set fields  [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+
+      set newsource ""
+      foreach c $l {
+         set pos  [lindex $c 0]      
+         set cata [lindex $c 1]      
+         set ids  [lindex $c 2]   
+         set x    [lindex $c 3]   
+         set y    [lindex $c 4]   
+
+         gren_info "catat = $cata ; ids = $ids ; pos = $pos ; x = $x ; y = $y\n"
+         incr ids -1
+         set s [lindex $sources $ids]
+         set ::psf_gui::ssave $s
+         set pos [::psf_gui::getpos $s $cata $x $y]
+         if {$pos==-1} {
+            gren_erreur "pos = $pos\n"
+         }
+
+
+         gren_info "s $ids : [::psf_gui::aff_catas $s]\n"
+         gren_info "pos $ids : $pos\n"
+         gren_info "ns $ids : [lindex $s [list $pos 0]]\n"
+
+         
+         lappend newsource [lindex $s $pos]
+         set s [lreplace $s $pos $pos]
+         if {[llength $s ]==0} {
+            set sources [lreplace $sources $ids $ids]
+            gren_info "old s $ids : SUPPRIMEE\n"
+         } else {
+            set sources [lreplace $sources $ids $ids $s]
+            gren_info "old s $ids : [::psf_gui::aff_catas $s]\n"
+            set s [lindex $sources $ids]
+            
+         }
+      }
+
+      gren_info "New source : [::psf_gui::aff_catas $newsource]\n"
+      
+      lappend sources $newsource
+
+      set s [lindex $sources $ids]
+
+      set ::tools_cata::current_listsources [list $fields $sources]
+      gren_info "** SOURCE 136 : [::psf_gui::aff_catas [lindex $::tools_cata::current_listsources {1 136}]]\n"
+      
+      ::psf_gui::gestion_mode_manuel_grab
+
+   }
+
+
+   proc ::psf_gui::deletesource { tbl } {
+
+      set l ""
+      foreach select [$tbl curselection] {
+         set pos  [lindex [$tbl get $select] 0]      
+         set cata [lindex [$tbl get $select] 1]      
+         set ids  [lindex [$tbl get $select] 2]   
+         set x    [lindex [$tbl get $select] 3]   
+         set y    [lindex [$tbl get $select] 4]   
+         lappend l [list $pos $cata $ids $x $y]
+      }
+      set l [lsort -decreasing -integer -index 2 $l]
+      foreach c $l {
+         set pos  [lindex $c 0]      
+         set cata [lindex $c 1]      
+         set ids  [lindex $c 2]   
+         set x    [lindex $c 3]   
+         set y    [lindex $c 4]   
+         gren_info "cata = $cata ; ids = $ids ; pos = $pos ; x = $x ; y = $y\n"
+      }
+
+
+
+   }
+
+   proc ::psf_gui::selectall { tbl  } {
+      $tbl selection set 0 end
+      set nb [llength [$tbl curselection] ]
+      gren_info "Nb selected : $nb\n"
+      set i 0
+      foreach select [$tbl curselection] {
+         set pos  [lindex [$tbl get $select] 0]      
+         set cata [lindex [$tbl get $select] 1]      
+         set ids  [lindex [$tbl get $select] 2]   
+         set x    [lindex [$tbl get $select] 3]   
+         set y    [lindex [$tbl get $select] 4]   
+         
+         set width [expr 20 + $i * 10]
+         affich_un_rond_xy $x $y green  $width 1
+         #gren_info "cata = $cata ; ids = $ids \n"   
+         incr i
+      }
+   }
+
+   proc ::psf_gui::cmdButton1Click { tbl  args } {
+
+      cleanmark
+      set nb [llength [$tbl curselection] ]
+      gren_info "Nb selected : $nb\n"
+      set i 0
+      foreach select [$tbl curselection] {
+         set pos  [lindex [$tbl get $select] 0]      
+         set cata [lindex [$tbl get $select] 1]      
+         set ids  [lindex [$tbl get $select] 2]   
+         set x    [lindex [$tbl get $select] 3]   
+         set y    [lindex [$tbl get $select] 4]   
+         
+         set width [expr 20 + $i * 10]
+         affich_un_rond_xy $x $y green  $width 1
+         #gren_info "cata = $cata ; ids = $ids \n"   
+         incr i
+      }
+
+ 
+   }
+
+   proc ::psf_gui::create_Tbl_sources { frmtable name_of_columns} {
+
+      variable This
+      global audace
+      global caption
+      global bddconf
+
+      #--- Quelques raccourcis utiles
+      set tbl $frmtable.tbl
+      set popupTbl $frmtable.popupTbl
+
+      #--- Table des objets
+      tablelist::tablelist $tbl \
+         -columns $name_of_columns \
+         -labelcommand tablelist::sortByColumn \
+         -selectmode extended \
+         -activestyle none \
+         -stripebackground #e0e8f0 \
+         -showseparators 1
+
+
+      #--- Gestion des popup
+
+      #--- Menu pop-up associe a la table
+      menu $popupTbl -title "Selection"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Console" -command "::psf_gui::console $tbl"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Nouvelle source" -command "::psf_gui::newsource $tbl"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Supprimer" -command "::psf_gui::deletesource $tbl"
+
+
+      #--- Gestion des evenements
+      bind [$tbl bodypath] <Control-Key-a> [ list ::psf_gui::selectall $tbl ]
+      bind $tbl <<ListboxSelect>>          [ list ::psf_gui::cmdButton1Click %W ]
+      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
+
+      pack  $tbl -in  $frmtable -expand yes -fill both
+      
+   }
+
 
 
 
@@ -1821,8 +2244,8 @@ namespace eval psf_gui {
                   -command "::psf_gui::gestion_mode_manuel_new"
                  pack   $actions.new -side left -padx 0
 
-                 button $actions.save -state disabled -text "Save" -relief "raised" \
-                  -command "::psf_gui::gestion_mode_manuel_save"
+                 button $actions.save -state normal -text "Save" -relief "raised" \
+                  -command "::psf_gui::mode_manuel_save"
                  pack   $actions.save -side left -padx 0
  
          set actions [frame $frm.actions2 -borderwidth 1 -cursor arrow -relief groove]
@@ -1981,6 +2404,17 @@ namespace eval psf_gui {
                                    label $value.lab2 -textvariable ::gui_cata::current_psf($key)
                                    pack  $value.lab2 -side right -padx 5 -pady 0 -anchor se 
                          }
+
+# onglets : Catalogues
+
+         set col_catalogues { 0 pos 0 Cata 0 IdS 0 x 0 y }
+
+         set ::psf_gui::gui_catalogues [frame $f6.catalogues -borderwidth 0 -cursor arrow -relief groove]
+         pack $::psf_gui::gui_catalogues -in $f6 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+         ::psf_gui::create_Tbl_sources $::psf_gui::gui_catalogues $col_catalogues
+
+
+# Pied de page
 
          set actionspied [frame $frm.actionspied -borderwidth 0 -cursor arrow -relief groove]
          pack $actionspied -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
