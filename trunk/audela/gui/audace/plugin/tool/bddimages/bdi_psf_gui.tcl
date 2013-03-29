@@ -220,6 +220,19 @@ namespace eval psf_gui {
  
  
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Anciennement ::gui_cata::psf_grab
 # Grab des sources dans l image
 # appele depuis l analyse des psf en mode manuel
@@ -227,8 +240,8 @@ namespace eval psf_gui {
 
    proc ::psf_gui::gestion_mode_manuel_grab { } {
 
-       $::psf_gui::fen.appli.actions.save configure -state disabled
-       $::psf_gui::fen.appli.actions.new  configure -state disabled
+       $::psf_gui::fen.appli.actions1.save configure -state disabled
+       $::psf_gui::fen.appli.actions1.new  configure -state disabled
 
        set ::gui_cata::psf_id_source ""
        set ::gui_cata::list_of_cata ""
@@ -270,14 +283,57 @@ namespace eval psf_gui {
        set ::gui_cata::psf_name_source [::manage_source::naming $s $d]
        set ::gui_cata::psf_name_cata $d
        set ::gui_cata::psf_id_source $id
-            
-       foreach mycata $s {
-          append ::gui_cata::list_of_cata " " [lindex $mycata 0]
-       }
+        
+       gren_info "nb_butcata = $::gui_cata::nb_butcata \n"
+        
+      if {[info exists ::gui_cata::nb_butcata]} {
+         for { set i 0 } { $i <= $::gui_cata::nb_butcata} {incr i} {
+            destroy $::psf_gui::fen.appli.info_cata.c$i
+            gren_info "destroy $::psf_gui::fen.appli.info_cata.c$i \n"
+         } 
+      } 
+         
+      array unset ::psf_gui::butcata
+         
+      set i 0
+      foreach mycata $s {
+         set a [lindex $mycata 0]
+         button $::psf_gui::fen.appli.info_cata.c$i  -state normal \
+            -text $a -relief "sunken" -command "::psf_gui::butcata_action $i"
+         pack   $::psf_gui::fen.appli.info_cata.c$i -in $::psf_gui::fen.appli.info_cata -side left -padx 0
+         set ::psf_gui::butcata($i,cata) $a
+         set ::psf_gui::butcata($i,state) "Ok"
+         incr i
+      
+      }
+      set ::gui_cata::nb_butcata $i
+      ::psf_gui::affich_cata
 
    }
 
 
+
+   proc ::psf_gui::affich_cata { } {
+
+      for { set i 0 } { $i < $::gui_cata::nb_butcata} {incr i} {
+         gren_info  "bouton : $::psf_gui::butcata($i,cata) : $::psf_gui::butcata($i,state)\n"
+      }
+
+   }
+
+   proc ::psf_gui::butcata_action { i } {
+
+      if { $::psf_gui::butcata($i,state) == "Ok" } {
+         set ::psf_gui::butcata($i,state) ""
+         $::psf_gui::fen.appli.info_cata.c$i configure -relief "raised"
+      } else {
+         set ::psf_gui::butcata($i,state) "Ok"
+         $::psf_gui::fen.appli.info_cata.c$i configure -relief "sunken"
+      }
+      
+      ::psf_gui::affich_cata
+
+   }
 
 
 
@@ -1646,9 +1702,21 @@ namespace eval psf_gui {
       set ::tools_cata::id_current_image 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
          incr ::tools_cata::id_current_image
+         
          ::gui_cata::load_cata
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       }
+
+      set ::tools_cata::id_current_image 0
+      set ::psf_gui::id_img 1
+      set ::tools_cata::current_image [lindex  $::tools_cata::img_list 0]
+      ::gui_cata::affiche_current_image
+      
+      set ::gui_cata::psf_name_source "-"
+      set ::gui_cata::list_of_cata "-"
+
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set ::psf_gui::dateimg [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
 
    }
 
@@ -1675,6 +1743,8 @@ namespace eval psf_gui {
 
       ::psf_tools::inittoconf
       ::psf_gui::init
+      
+      
       set spinlist ""
       for {set i 1} {$i<$::psf_tools::psf_limitradius} {incr i} {lappend spinlist $i}
       set ::psf_gui::visucrop ""
@@ -1715,10 +1785,8 @@ namespace eval psf_gui {
              pack  $info_source.labv -side left -padx 2 -pady 0
 
          set info_cata  [frame $frm.info_cata -borderwidth 0 -cursor arrow -relief groove]
-         pack $info_cata -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         pack $info_cata -in $frm -anchor s -side top -expand 1 -fill x -padx 10 -pady 5
 
-             label $info_source.loc -textvariable ::gui_cata::list_of_cata -fg darkblue
-             pack  $info_source.loc -side left -padx 2 -pady 0
 
          set info_img  [frame $frm.info_img -borderwidth 0 -cursor arrow -relief groove]
          pack $info_img -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 0

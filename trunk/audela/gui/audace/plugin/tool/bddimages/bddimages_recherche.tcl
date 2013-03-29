@@ -1152,7 +1152,7 @@ namespace eval bddimages_recherche {
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
-           $popupTbl.analyse add command -label "Photocentre" \
+           $popupTbl.analyse add command -label "(p) Photocentre" \
               -command { ::bddimages_recherche::psf }
 
            $popupTbl.analyse add command -label "CdL" \
@@ -1693,7 +1693,7 @@ namespace eval bddimages_recherche {
       set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
-
+      
       ::psf_gui::run_recherche $imglist
 
    }
