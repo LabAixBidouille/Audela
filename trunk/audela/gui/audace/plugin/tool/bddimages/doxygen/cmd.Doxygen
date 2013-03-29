@@ -1,2 +1,6 @@
 #!/bin/bash 
+
+# Generation de la doc
 doxygen Doxyfile
+# Compilation de la doc latex
+cd latex && make && cp refman.pdf ../. && make clean && cd ..
