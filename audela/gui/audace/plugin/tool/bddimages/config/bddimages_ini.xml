@@ -9,7 +9,7 @@
   </document>
 
   <bddimages id="1" default="yes">
-     <name>bddimages</name>
+     <name>?</name>
      <sql>
         <dbname>bddimages</dbname>
         <login>bddimagesAdmin</login>
@@ -24,6 +24,7 @@
        <cata></cata>
        <error></error>
        <log></log>
+       <tmp></tmp>
      </files>
      <screenlimit>10</screenlimit>
   </bddimages>

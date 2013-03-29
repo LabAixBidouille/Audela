@@ -14,7 +14,7 @@
    source /srv/develop/audela/gui/audace/plugin/tool/av4l/av4l_photom.tcl
 
    ::bddimagesXML::load_xml_config
-   ::bddimagesXML::get_config bddimages_cador
+   ::bddimagesXML::load_config bddimages_cador
 
    cleanmark
    set tt0 [clock clicks -milliseconds]

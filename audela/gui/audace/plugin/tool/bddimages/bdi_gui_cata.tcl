@@ -163,6 +163,8 @@ namespace eval gui_cata {
    global audace
    global bddconf
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.cap ]\""
+
    variable current_image
    variable current_cata
    variable fen

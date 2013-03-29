@@ -1,28 +1,42 @@
-#--------------------------------------------------
-# source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/bdi_tools.tcl
-#--------------------------------------------------
-#
-# Fichier        : bdi_tools.tcl
-# Description    : Outils pour bddimages
-# Auteur         : J. Berthier <berthier@imcce.fr> et F. Vachier <fv@imcce.fr>
-# Mise à jour $Id: bdi_tools.tcl 6795 2011-02-26 16:05:27Z fredvachier $
-#
-namespace eval ::bdi_tools {
-   package provide bdi_tools 1.0
+## @file bdi_tools.tcl
+#  @brief     Definitions d'outils pour bddimages
+#  @details   This class is used to demonstrate a number of section commands.
+#  @author    Jerome Berthier and Frederic Vachier
+#  @version   1.0
+#  @date      2013
+#  @copyright GNU Public License.
+#  @par Ressource 
+#  @code  source [file join $audace(rep_install) gui audace plugin tool bddimages bdi_tools.tcl]
+#  @endcode
 
-   # #############################################################################
-   # Declaration des attributs de l'espace de nom
-   # #############################################################################
-   # @var string blablabla
-   #variable x "y"
+# Mise à jour $Id: bdi_tools.tcl 9239 2013-03-24 02:12:05Z jberthier $
+
+#============================================================
+## Declaration du namespace \c bdi_tools .
+#  @brief     Outils generaux pour bddimages
+#  @warning   Pour developpeur seulement
+namespace eval bdi_tools {
+   package provide bdi_tools 1.0
 
    # #############################################################################
    # Declaration des sous-classes
    # #############################################################################
+
+   #------------------------------------------------------------
+   ## Declaration du namespace \c bdi_tools::sendmail .
+   # @brief     Mecanismes d'envoie d'emails 
+   # @warning   Pour developpeur seulement
    namespace eval sendmail {
 
+      # @var string Nom de la commande d'execution de Thhunderbird (fullpath name)
       variable thunderbird "/usr/bin/thunderbird"
 
+      #------------------------------------------------------------
+      ## Ouvre la fenetre de composition de Thunderbird avec les champs pre-remplis
+      # @param to string Destinataire du message
+      # @param subject string Sujet du message
+      # @param body string Message a envoyer
+      # @return Code d'erreur (0 si pas d'erreur)
       proc compose_with_thunderbird { to subject body } {
 
          global audace
@@ -93,10 +107,10 @@ namespace eval ::bdi_tools {
 # Implementation des methodes de l'espace de nom aoos
 # #############################################################################
 
-#
-# Verifie l'egalite entre deux dates exprimees au format ISO.
-# @param $date1 string premiere date, format ISO
-# @param $date2 string premiere date, format ISO
+#------------------------------------------------------------
+## Verifie l'egalite entre deux dates exprimees au format ISO.
+# @param date1 string Premiere date au format ISO
+# @param date2 string Deuxieme date au format ISO
 # @return true or false
 #
 proc ::bdi_tools::is_isodates_equal { date1 date2 } {
@@ -109,10 +123,10 @@ proc ::bdi_tools::is_isodates_equal { date1 date2 } {
    
 }
 
-#
-# Converti un angle au format sexagesimal en decimal
-# @param list $x angle sexagesimal au format {[+-]dd mm ss.s} ou {[+-]dd:mm:ss}
-# @param float $f facteur multiplicatif pour exprimer un angle horaire en degres par exemple
+#------------------------------------------------------------
+## Converti un angle sexagesimal en decimal
+# @param x list Angle sexagesimal au format {[+-]dd mm ss.s} ou {[+-]dd:mm:ss}
+# @param f float Facteur multiplicatif pour exprimer un angle horaire en degres par exemple
 # @return float angle decimal
 #
 proc ::bdi_tools::sexa2dec { x {f "1"} } {
@@ -140,11 +154,11 @@ proc ::bdi_tools::sexa2dec { x {f "1"} } {
 
 }
 
-#
-# Fonction gunzip compatible multi OS
-# @param $fname_in string nom complet du fichier a degziper /data/fi.fits.gz
-# @param $fname_out string nom complet du fichier de sortie /data/fi.fits
-# @return list composed of errnum and msgzip
+#------------------------------------------------------------
+## Fonction gunzip compatible multi OS
+# @param fname_in string Nom complet du fichier a degziper /data/fi.fits.gz
+# @param fname_out string Nom complet du fichier de sortie /data/fi.fits
+# @return liste composee of errnum and msgzip
 #
 proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
    set ext [file extension $fname_in]
@@ -176,10 +190,10 @@ proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
    return [list $errnum $msgzip]
 }
 
-#
-# Fonction gzip compatible multi OS
-# @param $fname_in string nom complet du fichier a gziper /data/fi.fits
-# @param $fname_out string nom complet du fichier de sortie /data/fi.fits.gz
+#------------------------------------------------------------
+## Fonction gzip compatible multi OS
+# @param fname_in string nom complet du fichier a gziper /data/fi.fits
+# @param fname_out string nom complet du fichier de sortie /data/fi.fits.gz
 # @return list composed of errnum and msgzip
 #
 proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
@@ -214,8 +228,12 @@ proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
    return [list $errnum $msgzip]
 }
 
-
-
+#------------------------------------------------------------
+## Recupere une source donnee dans une liste de sources
+# @param send_sources list Liste des sources
+# @param name string Nom de la source
+# @return Code d'erreur (0) et source recherchee
+#
 proc ::bdi_tools::get_sources { send_sources name } {
 
       upvar $send_sources sources
@@ -230,54 +248,51 @@ proc ::bdi_tools::get_sources { send_sources name } {
       return -code 1 "" 
 }
 
-
+#------------------------------------------------------------
+## Recupere une source ASTROID donnee pour une date donnee dans une liste de sources
+# @param dateobs date-obs Date consideree (format ISO)
+# @param name string Nom de la source ASTROID
+# @return Code d'erreur (0) et source recherchee
+#
 proc ::bdi_tools::get_astroid { dateobs name } {
 
-      set pass "no"
-      set id_current_image 0
-      foreach current_image $::tools_cata::img_list {
-         incr id_current_image
-         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
-         set datei  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
-         if {$datei==$dateobs} {
-            set pass "ok"
-            break
-         }
+   set pass "no"
+   set id_current_image 0
+   foreach current_image $::tools_cata::img_list {
+      incr id_current_image
+      set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+      set datei  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+      if {$datei == $dateobs} {
+         set pass "ok"
+         break
+      }
+   }
+   
+   if {$pass == "no"} {
+      return -code 1 "No Date"
+   }
+   
+   set astroid ""
+   set sources [lindex $::gui_cata::cata_list($id_current_image) 1]
+   set err [ catch { set s [::bdi_tools::get_sources sources $name] } msg ]
+   if {$err} {
+      return -code 2 "No Sources ($msg)"
+   }
+   
+   set pos [lsearch -index 0 $s "ASTROID"]
+   if {$pos != -1} {
+      set astroid [lindex $s [list $pos 2]]
+      return $astroid
+   }
 
-      }
-      
-      if {$pass=="no"} {
-         return -code 1 "No Date"
-      }
-      
-      set astroid ""
-      
-      set sources [lindex $::gui_cata::cata_list($id_current_image) 1]
-
-      set err [ catch { set s [::bdi_tools::get_sources sources $name] } msg ]
-      if {$err} {
-         return -code 2 "No Sources ($msg)"
-      }
-      
-      
-      set pos [lsearch -index 0 $s "ASTROID"]
-      
-      if {$pos!=-1} {
-         set astroid [lindex $s [list $pos 2]]
-         return $astroid
-      }
-      
-      
-      
-      
-      return -code 3 "No ASTROID"
+   return -code 3 "No ASTROID"
 
 }
 
-#
+#------------------------------------------------------------
 ## Sauve une chaine de caracteres dans un fichier dont le nom est fourni par l'utilisateur
-# @param \c str string chaine de caracteres a enregistrer
-# @param \c ftype string type de fichier: TXT, DAT, XML, ...
+# @param str string chaine de caracteres a enregistrer
+# @param ftype string type de fichier: TXT, DAT, XML, ...
 # @return string le nom du fichier sauve
 #
 proc ::bdi_tools::save_as { str ftype } {
@@ -307,5 +322,3 @@ proc ::bdi_tools::save_as { str ftype } {
 
    return $fileName
 }
-
-

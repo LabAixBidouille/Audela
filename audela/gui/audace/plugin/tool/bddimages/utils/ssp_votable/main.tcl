@@ -13,7 +13,7 @@
    source /usr/local/src/audela/gui/audace/vo_tools.tcl
 
    ::bddimagesXML::load_xml_config
-   ::bddimagesXML::get_config bddimages_cador
+   ::bddimagesXML::load_config bddimages_cador
     get_info
 
    set tt0 [clock clicks -milliseconds]

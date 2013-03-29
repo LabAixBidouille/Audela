@@ -1,34 +1,39 @@
-## \file bddimages_go.tcl
-#  \brief     Demarrage du plugin bddimages
-#  \details   This class is used to demonstrate a number of section commands.
-#  \author    Frederic Vachier
-#  \version   1.0
-#  \date      2008
-#  \copyright GNU Public License.
-#  \par Ressource 
-#  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages bddimages_go.tcl]
-#  \endcode
-#  \todo      normaliser les noms des fichiers sources 
+## @file bddimages_go.tcl
+#  @brief     Demarrage du plugin bddimages
+#  @details   This class is used to demonstrate a number of section commands.
+#  @author    Frederic Vachier and Jerome Berthier
+#  @version   1.0
+#  @date      2013
+#  @copyright GNU Public License.
+#  @par Ressource 
+#  @code  source [file join $audace(rep_install) gui audace plugin tool bddimages bddimages_go.tcl]
+#  @endcode
+#  @todo      Normaliser l'ensemble des noms des fichiers sources 
 
 # Mise à jour $Id$
 
 #============================================================
 ## Declaration du namespace \c bddimages .
-#  \pre       Chargement a partir d'Audace
-#  \bug       Probleme de memoire sur les exec
-#  \warning   Pour developpeur seulement
-#  \todo      Normaliser les noms des fichiers sources 
+#  @brief     Creation et initialisation du plugin bddimages.
+#  @pre       Chargement a partir d'Audace
+#  @bug       Probleme de memoire sur les exec
+#  @warning   Pour developpeur seulement
+#
 namespace eval ::bddimages {
+
    package provide bddimages 1.0
+
    variable This
    #--- Chargement des captions
    source [ file join [file dirname [info script]] bddimages_go.cap ]
+
 }
 
 #------------------------------------------------------------
 ## Retourne le titre du plugin dans la langue de l'utilisateur
-#  \return     titre du plugin
-#  \sa         getPluginType
+#  @return  Titre du plugin
+#  @sa      getPluginType
+#
 proc ::bddimages::getPluginTitle { } {
    global caption
 
@@ -37,15 +42,17 @@ proc ::bddimages::getPluginTitle { } {
 
 #------------------------------------------------------------
 ## Retourne le type de plugin
-#  \return     type de Plugin
+#  @return type de plugin
+#
 proc ::bddimages::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-## Recupere la valeur de la propriete
-#  \param propertyName Nom de la propriete
-#  \return    valeur de la propriete ou "" si la propriete n'existe pas 
+## Recupere la valeur d'une propriete du plugin
+#  @param propertyName Nom de la propriete
+#  @return valeur de la propriete ou "" si la propriete n'existe pas
+#
 proc ::bddimages::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "file" }
@@ -55,36 +62,35 @@ proc ::bddimages::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-##    initialise le plugin
-#  \param tkbase 
-#  \return    
+## Initialisation du plugin
+#  @param tkbase 
+#  @return void
+#
 proc ::bddimages::initPlugin { tkbase } {
 
    global audace
    global conf
    global bddconf
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools sampTools.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
+
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
+
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_xml.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_config.tcl ]\""
+
+   set bddconf(current_db) "?"
+
+   set bddconf(font,courier_8)  "Courier  8 normal"
    set bddconf(font,courier_10) "Courier 10 normal"
    set bddconf(font,arial_10)   "{Arial} 10 normal"
    set bddconf(font,arial_10_b) "{Arial} 10 bold"
    set bddconf(font,arial_12)   "{Arial} 12 normal"
    set bddconf(font,arial_12_b) "{Arial} 12 bold"
    set bddconf(font,arial_14_b) "{Arial} 14 bold"
-
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools sampTools.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
-
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
-
-   foreach param $::bddimages_config::allparams {
-      if {[info exists conf(bddimages,$param)]} then {
-         set bddconf($param) $conf(bddimages,$param)
-      }
-   }
 
    set bddconf(bufno)    $audace(bufNo)
    set bddconf(visuno)   $audace(visuNo)
@@ -93,22 +99,17 @@ proc ::bddimages::initPlugin { tkbase } {
 
    set bddconf(extension_bdd) ".fits.gz"
    set bddconf(extension_tmp) ".fit"
-   
-   if {[info exists bddconf(dirfits)]} {
-      set audace(rep_images) $bddconf(dirfits)
-   }
-
-   if {[info exists bddconf(dirtmp)]} {
-      set audace(rep_travail) $bddconf(dirtmp)
-   }
 
 }
 
 #------------------------------------------------------------
-# ::bddimages::createPluginInstance
-#    cree une nouvelle instance de l'outil
-#------------------------------------------------------------
+## Creation d'une instance du plugin
+# @param in string pathName du widget dans le quel s'insert le plugin
+# @param visuNo int Numero de la Visu
+# @return void
+#
 proc ::bddimages::createPluginInstance { { in "" } { visuNo 1 } } {
+
    global audace
 
    #--- Chargement des packages 
@@ -120,63 +121,71 @@ proc ::bddimages::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Mise en place de l'interface graphique
    ::bddimages::createPanel $in.bddimages
+
 }
 
 #------------------------------------------------------------
-# ::bddimages::ressource
-#    ressource l ensemble des scripts
-#------------------------------------------------------------
+## Re-source l'ensemble des sources Tcl du plugin
+# @return void
+#
 proc ::bddimages::ressource {  } {
+
    global audace
 
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool bddimages bddimages_go.cap ]
-   #--- Chargement des fichiers auxiliaires
+
+   #--- Chargement des fichiers externes
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools samp.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools sampTools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_calendar.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_jpl.tcl ]\""
+   #--- Chargement des fichiers tools
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
 
-   # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astroid.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_calendar.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_config.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_image.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_jpl.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_sources.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_verifcata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_xml.tcl ]\""
 
+
+   #--- Chargement des fichiers gui
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_config.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
+
+
+# TODO
+
+   # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_tools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_gestion_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_creation_gui.tcl ]\""
-
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_popup.tcl ]\""
-
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_ihm.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_tools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_set_ref_science_gui.tcl ]\""
 
 
-   # Anciennes facon de nommage des routines
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
 
+
+   # Anciennes facon de nommage des routines
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages gui_astrometry.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages tools_astrometry.tcl ]\""
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_status.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_status.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astroid.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_sources.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_image.tcl ]\""
-
-   # Ancienne facon de nomage des routines
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
+   
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_identification.tcl ]\""
@@ -186,7 +195,6 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_gui.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.tcl ]\""
@@ -201,7 +209,6 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion_applet.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_infocam.tcl ]\""
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_config.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.cap ]\""
@@ -209,155 +216,212 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_infocam.cap ]\""
 
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
    load libcatalog[info sharedlibextension]
 }
 
 #------------------------------------------------------------
-# ::bddimages::deletePluginInstance
-#    suppprime l'instance du plugin
-#------------------------------------------------------------
+## Detruit d'instance du plugin
+# @param visuNo Numero de la Visu
+# @return void
+#
 proc ::bddimages::deletePluginInstance { visuNo } {
 
 }
 
 #------------------------------------------------------------
-# ::bddimages::createPanel
-#    prepare la creation de la fenetre de l'outil
-#------------------------------------------------------------
+## Initialisation de la creation du panneau bddimages
+# @param this string pathName racine du panneau
+# @return void
+#
 proc ::bddimages::createPanel { this } {
+
    variable This
-   global caption panneau
+   global caption panneau bddconf
 
    #--- Initialisation du nom de la fenetre
    set This $this
-   #--- Initialisation des captions
-   set panneau(bddimages,titre)  "$caption(bddimages_go,bddimages)"
-   set panneau(bddimages,aide)   "$caption(bddimages_go,help_titre)"
-   set panneau(bddimages,aide1)  "$caption(bddimages_go,help_titre1)"
-   set panneau(bddimages,titre1) "$caption(bddimages_go,configuration)"
-   set panneau(bddimages,titre2) "$caption(bddimages_go,status)"
-   set panneau(bddimages,titre3) "$caption(bddimages_go,insertion)"
-   set panneau(bddimages,titre4) "$caption(bddimages_go,recherche)"
-   set panneau(bddimages,titre5) "$caption(bddimages_go,test)"
-   set panneau(bddimages,titre6) "$caption(bddimages_go,ressource)"
+
+   #--- Chargement des noms des config disponibles de bddimages
+   ::bdi_tools_config::load_config_names
+
    #--- Construction de l'interface
    ::bddimages::bddimagesBuildIF $This
+
 }
 
 #------------------------------------------------------------
-# ::bddimages::startTool
-#    affiche la fenetre de l'outil
-#------------------------------------------------------------
+## Affichage du panneau de bddimages
+# @param visuNo int Numero de la Visu
+# @return void
+#
 proc ::bddimages::startTool { visuNo } {
-   variable This
 
+   variable This
    pack $This -side left -fill y
+
 }
 
 #------------------------------------------------------------
-# ::bddimages::stopTool
-#    masque la fenetre de l'outil
-#------------------------------------------------------------
+## Masquage du panneau de bddimages
+# @param visuNo int Numero de la Visu
+# @return void
+#
 proc ::bddimages::stopTool { visuNo } {
-   variable This
 
+   variable This
    pack forget $This
+
 }
 
 #------------------------------------------------------------
-# ::bddimages::vo_toolsBuildIF
-#    cree la fenetre de l'outil
+## Configuration des boutons et autres widgets du panneau
+# @return void
+#
+proc ::bddimages::handleBddState { } {
+
+   variable This
+   global audace bddconf menuconfig
+
+   set visuNo $::audace(visuNo)
+
+   if {$::bdi_tools_xml::is_config_loaded && $::bdi_tools_config::ok_mysql_connect} {
+      set colorBtn "#00CC00"
+      #--- Active les boutons
+      $This.fra3.but1 configure -state active
+      $This.fra4.but1 configure -state active
+      $This.fra5.but1 configure -state active
+   } else {
+      set colorBtn "#DD0000"
+      #--- De-Active les boutons
+      $This.fra3.but1 configure -state disabled
+      $This.fra4.but1 configure -state disabled
+      $This.fra5.but1 configure -state disabled
+   }
+
+   # Configure menubutton du choix des bdd
+   $This.fra1.menu configure -bg $colorBtn
+
+   ##--- Reconfigure le menu bouton des config
+   $menuconfig delete 0 end
+   foreach myconf $bddconf(list_config) {
+      $menuconfig add radiobutton -label [lindex $myconf 1] -value [lindex $myconf 1] \
+         -variable bddconf(current_config)  \
+         -command "::bddimages::load_config_frombutton"
+   }
+
+}
+
 #------------------------------------------------------------
+## Chargement de la config selectionnee a partir du menu-bouton config.
+# @return void
+#
+proc ::bddimages::load_config_frombutton { } {
+
+   variable This
+   global audace bddconf
+
+   if {[string compare $bddconf(current_config)  "?"] == 0} {
+      ::bdi_gui_config::configuration $audace(base).bdi_gui_config
+   } else {
+      ::bdi_tools_config::load_config $bddconf(current_config)
+      ::bddimages::handleBddState
+   }
+
+}
+
+#------------------------------------------------------------
+## Creation du panneau de bddimages
+# @param This string pathName de la racine du panneau
+# @return void
+#
 proc ::bddimages::bddimagesBuildIF { This } {
-   global audace panneau
+
+   global audace caption bddconf menuconfig
 
    #--- Frame
    frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
+      frame $This.fra0 -borderwidth 2 -relief groove
+      pack $This.fra0 -side top -fill x
 
          #--- Bouton du titre
-         Button $This.fra1.but -borderwidth 1 \
-            -text "$panneau(bddimages,aide1)\n$panneau(bddimages,titre)" \
+         button $This.fra0.but -borderwidth 1 \
+            -text "$caption(bddimages_go,help_titre1)\n$caption(bddimages_go,bddimages)" \
             -command "::audace::showHelpPlugin tool bddimages bddimages.htm"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(bddimages,aide)
+         pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
+         DynamicHelp::add $This.fra0.but -text $caption(bddimages_go,help_titre)
 
+      #--- Frame des services
+      frame $This.fra1 -borderwidth 1 -relief groove
       pack $This.fra1 -side top -fill x
+
+         menubutton $This.fra1.menu -relief raised -borderwidth 2 \
+            -textvariable bddconf(current_config) -menu $This.fra1.menu.list
+         pack $This.fra1.menu -in $This.fra1 -side top -padx 3 -pady 10 -ipadx 5 -ipady 2
+         # Defini le menu config
+         set menuconfig [menu $This.fra1.menu.list -tearoff 0]
+         foreach myconf $bddconf(list_config) {
+            $menuconfig add radiobutton -label [lindex $myconf 1] -value [lindex $myconf 1] \
+               -variable bddconf(current_config)  \
+               -command "::bddimages::load_config_frombutton"
+         }
 
       #--- Frame des services
       frame $This.fra2 -borderwidth 1 -relief groove
-
-         #--- Bouton d'ouverture de l'outil de configuration
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(bddimages,titre1) \
-            -command "::bddimages_config::run $audace(base).bddimages_config"
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
       pack $This.fra2 -side top -fill x
+
+         #--- Bouton d'ouverture de la config
+         button $This.fra2.but1 -borderwidth 2 -text $caption(bddimages_go,configuration) \
+            -command "::bdi_gui_config::configuration $audace(base).bdi_gui_config"
+         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
       #--- Frame des services
       frame $This.fra3 -borderwidth 1 -relief groove
+      pack $This.fra3 -side top -fill x
 
          #--- Bouton d'ouverture de l'outil de statut
-         button $This.fra3.but1 -borderwidth 2 -text $panneau(bddimages,titre2) \
+         button $This.fra3.but1 -borderwidth 2 -text $caption(bddimages_go,status) \
             -command "::bdi_gui_status::run $audace(base).status"
          pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      pack $This.fra3 -side top -fill x
-
       #--- Frame des services
       frame $This.fra4 -borderwidth 1 -relief groove
+      pack $This.fra4 -side top -fill x
 
          #--- Bouton d'ouverture de l'outil d'insertion des images
-         button $This.fra4.but1 -borderwidth 2 -text $panneau(bddimages,titre3) \
+         button $This.fra4.but1 -borderwidth 2 -text $caption(bddimages_go,insertion) \
             -command "::bddimages_insertion::run $audace(base).bddimages_insertion"
          pack $This.fra4.but1 -in $This.fra4 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      pack $This.fra4 -side top -fill x
-
       #--- Frame des services
       frame $This.fra5 -borderwidth 1 -relief groove
+      pack $This.fra5 -side top -fill x
 
          #--- Bouton d'ouverture de l'outil de recherche d images
-         button $This.fra5.but1 -borderwidth 2 -text $panneau(bddimages,titre4) \
+         button $This.fra5.but1 -borderwidth 2 -text $caption(bddimages_go,recherche) \
             -command "::bddimages_recherche::run $audace(base).bddimages_recherche"
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      pack $This.fra5 -side top -fill x
-
      #--- Frame des services
      frame $This.fra6 -borderwidth 1 -relief groove
+     pack $This.fra6 -side top -fill x
 
         #--- Bouton d'ouverture de l'outil de recherche d images
-        button $This.fra6.but1 -borderwidth 2 -text $panneau(bddimages,titre5) \
+        button $This.fra6.but1 -borderwidth 2 -text $caption(bddimages_go,test) \
            -command "::testprocedure::run" -state disabled
         pack $This.fra6.but1 -in $This.fra6 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-     pack $This.fra6 -side top -fill x
-
-
-#     #---
-#     frame $This.fra7 -borderwidth 1 -relief groove
-#
-#        #--- Bouton d'ouverture de l'outil
-#        button $This.fra7.but1 -borderwidth 2 -text "IDENT" \
-#           -command "::bddimages_identification::run $audace(base).bddimages_identification"
-#        pack $This.fra7.but1 -in $This.fra7 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-#
-#     pack $This.fra7 -side top -fill x
-#
-
       #--- Frame des services
       frame $This.ressource -borderwidth 1 -relief groove
+      pack $This.ressource -side top -fill x
 
          #--- Bouton d'ouverture de l'outil de recherche d images
-         button $This.ressource.but1 -borderwidth 2 -text $panneau(bddimages,titre6) \
+         button $This.ressource.but1 -borderwidth 2 -text $caption(bddimages_go,ressource) \
             -command {::bddimages::ressource}
          pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-      pack $This.ressource -side top -fill x
 
       #--- Bouton Interop
       frame $This.interop -borderwidth 1 -relief groove
@@ -367,6 +431,13 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
+      #--- Coloration du menubouton du choix de la bdd
+      $This.fra1.menu configure -bg "#DD0000"
+      #--- Desactive les boutons, qui seront actives apres chargement de la config
+      $This.fra3.but1 configure -state disabled
+      $This.fra4.but1 configure -state disabled
+      $This.fra5.but1 configure -state disabled
+
 }
 
 #------------------------------------------------------------
@@ -403,11 +474,18 @@ proc ::bddimages::InstallMenuInterop { frame } {
 }
 
 
+#------------------------------------------------------------
+## Impression d'un message d'info dans la console
+# @return void
+#
 proc gren_info { msg } {
    ::console::affiche_resultat "$msg" 
 }
 
-
+#------------------------------------------------------------
+## Impression d'un message d'erreur dans la console
+# @return void
+#
 proc gren_erreur { msg } {
    ::console::affiche_erreur "$msg" 
 }

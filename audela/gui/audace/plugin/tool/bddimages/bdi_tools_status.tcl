@@ -10,18 +10,19 @@
 
 namespace eval ::bdi_tools_status {
 
-variable err_sql    
-variable err_file   
-variable err_img    
-variable err_img_hd 
-variable err_nblist 
-variable new_list_sql
-variable new_list_dir
-variable list_img
-variable list_img_hd
-variable err_doublon
-variable list_doublon
+   variable err_sql    
+   variable err_file   
+   variable err_img    
+   variable err_img_hd 
+   variable err_nblist 
+   variable new_list_sql
+   variable new_list_dir
+   variable list_img
+   variable list_img_hd
+   variable err_doublon
+   variable list_doublon
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_status.cap ]\""
 
 
    proc ::bdi_tools_status::get_idbddcata { idbddimg } {
