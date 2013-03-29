@@ -633,10 +633,7 @@ namespace eval gui_cata {
 #### TODO ::gui_cata::load_cata set_common_fields PPMX et PPMXL
 #      set listsources [::tools_sources::set_common_fields $listsources PPMX   {  }]
 #      set listsources [::tools_sources::set_common_fields $listsources PPMXL  {  }]
-
-#      set listsources [::tools_sources::set_common_fields_skybot $listsources]
       set listsources [::tools_sources::set_common_fields $listsources SKYBOT { ra de errpos magV 0.5 }]
-
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
       set ::tools_cata::current_listsources $listsources
 
