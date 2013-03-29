@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;&quot;C:\Documents and Settings\Administrateur\Bureau\src_audela\external\tcl\tcl\include&quot;;..\..\..\include;..\..\..\external\include\win"
+				AdditionalIncludeDirectories="..\src;&quot;C:\Documents and Settings\Administrateur\Bureau\audela-code\audela\src\external\tcl\tcl\include&quot;;..\..\..\include;..\..\..\external\include\win"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBCATALOG_EXPORTS;USE_TCL_STUBS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,7 +65,7 @@
 				AdditionalDependencies="tclstub85.lib "
 				OutputFile="..\..\..\..\bin\libcatalog.dll "
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Administrateur\Bureau\src_audela\external\tcl\tcl\lib&quot;;..\..\..\external\lib"
+				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Administrateur\Bureau\audela-code\audela\src\external\tcl\tcl\lib&quot;;..\..\..\external\lib"
 				ModuleDefinitionFile=".\libcatalog.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/libaudela.pdb"
@@ -215,17 +215,17 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\nomad1.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\ppmx.c"
 				>
 			</File>
 			<File
-                RelativePath="..\src\ppmxl.c"
-                >
-            </File>
-            <File
-                RelativePath="..\src\nomad1.c"
-                >
-            </File>
+				RelativePath="..\src\ppmxl.c"
+				>
+			</File>
 			<File
 				RelativePath="..\src\useful.c"
 				>
@@ -257,13 +257,13 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\ppmx.h"
+				RelativePath="..\src\nomad1.h"
 				>
 			</File>
 			<File
-                RelativePath="..\src\nomad1.h"
-                >
-            </File>
+				RelativePath="..\src\ppmx.h"
+				>
+			</File>
 			<File
 				RelativePath="..\src\useful.h"
 				>
