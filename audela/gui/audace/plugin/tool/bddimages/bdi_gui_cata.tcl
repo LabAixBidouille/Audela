@@ -618,19 +618,25 @@ namespace eval gui_cata {
       if {$errnum} {
          return -code $errnum $msg
       }
-      
+
+      # Charge la liste des sources depuis les cata (les common sont vides)
       set listsources [::tools_cata::get_cata_xml $catafile]
-      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag_ss2 err_calib_mag_ss2}]
-      set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra_deg dec_deg 5.0 magR 0.5 }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      set listsources [::tools_sources::set_common_fields $listsources 2MASS   { ra_deg dec_deg err_dec jMag jMagError }]
-      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
+
+      # Affecte les common selon le cata
+      set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag_ss2 err_calib_mag_ss2 }]
+      set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC3  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC4  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources 2MASS  { ra_deg dec_deg err_dec jMag jMagError }]
+      set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5.0 VT e_VT }]
 #### TODO ::gui_cata::load_cata set_common_fields PPMX et PPMXL
 #      set listsources [::tools_sources::set_common_fields $listsources PPMX   {  }]
 #      set listsources [::tools_sources::set_common_fields $listsources PPMXL  {  }]
-      set listsources [::tools_sources::set_common_fields_skybot $listsources]
+
+#      set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      set listsources [::tools_sources::set_common_fields $listsources SKYBOT { ra de errpos magV 0.5 }]
+
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
       set ::tools_cata::current_listsources $listsources
 
