@@ -189,7 +189,7 @@
       lassign [list "" 0] private(suivi) private(german)
       $this.n.tlscp.suivi configure -image $private(redLed) \
          -compound right -textvariable ""
-     set private(image) ""
+      set private(image) ""
 
       $this.n.dynamic.prior current 0
       $this.n.kwds.imagetyp current 3
