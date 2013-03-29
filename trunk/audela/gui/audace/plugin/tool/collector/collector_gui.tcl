@@ -66,7 +66,7 @@
       #--   liste les variables exclusivement label (resultat de calculs ou affichage simple)
       #--   non modifiables par l'utilisateur
       set private(labels) [list equinox true raTel decTel azTel elevTel haTel error \
-         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt moon_age ncfz \
+         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt ncfz \
          temprose hygro winddir windsp fwhm secz airmass aptdia foclen fond resolution \
          telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code access cumulus]
 
@@ -128,7 +128,6 @@
       set targetChildren [list equinox ra dec separator1 true raTel decTel azTel elevTel haTel]
       set dynamicChildren [list m error snr t prior]
       set poseChildren [list bin1 bin2 cdelt1 cdelt2 naxis1 naxis2 fov1 fov2 crota2]
-     #set localChildren [list gps modifGps tu jd tsl moonphas moonalt moon_age]
       set localChildren [list gps modifGps tu jd tsl moonphas moonalt]
       set atmChildren [list tempair temprose hygro airpress winddir windsp seeing fwhm secz airmass]
       set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz psf filter]
@@ -190,7 +189,7 @@
       lassign [list "" 0] private(suivi) private(german)
       $this.n.tlscp.suivi configure -image $private(redLed) \
          -compound right -textvariable ""
-      set private(image) ""
+     set private(image) ""
 
       $this.n.dynamic.prior current 0
       $this.n.kwds.imagetyp current 3
