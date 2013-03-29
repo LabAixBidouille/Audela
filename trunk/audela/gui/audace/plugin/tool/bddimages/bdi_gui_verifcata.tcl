@@ -1,6 +1,7 @@
 namespace eval gui_verifcata {
 
    variable fen
+   variable frmtable
 
    proc ::gui_verifcata::inittoconf { } {
 
@@ -16,95 +17,57 @@ namespace eval gui_verifcata {
 
 
 
-   proc ::gui_verifcata::affich_results_tklist { } {
+
+   proc ::gui_verifcata::cmdButton1Click { w } {
+
+   }
 
 
-      return
+
+
+
+
+
+   proc ::gui_verifcata::create_Tbl_sources { frmtable name_of_columns} {
+
+      variable This
+      global audace
+      global caption
+      global bddconf
+
+      #--- Quelques raccourcis utiles
+      set tbl $frmtable.tbl
+      set popupTbl $frmtable.popupTbl
+
+      #--- Table des objets
+      tablelist::tablelist $tbl \
+         -columns $name_of_columns \
+         -labelcommand tablelist::sortByColumn \
+         -selectmode extended \
+         -activestyle none \
+         -stripebackground #e0e8f0 \
+         -showseparators 1
+
+
+      #--- Gestion des popup
+
+      #--- Menu pop-up associe a la table
+      menu $popupTbl -title "Selection"
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Voir" -command ""
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "psf" -command "::gui_verifcata::popup_psf $tbl"
+
+
+      #--- Gestion des evenements
+      bind [$tbl bodypath] <Control-Key-a> [ list ::gui_verifcata::selectall $tbl ]
+      bind $tbl <<ListboxSelect>> [ list ::gui_verifcata::cmdButton1Click %W ]
+      bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
+
+      pack  $tbl -in  $frmtable -expand yes -fill both
       
-      set onglets $::gui_verifcata::fen.appli.onglets
-   
-      # TODO ::gui_verifcata::affich_current_tklist : afficher l image ici
-   
-      set listsources $::tools_cata::current_listsources
-      set fields [lindex $listsources 0]
-   
-      set nbcatadel [expr [llength [array get ::gui_cata::cataname]]/2]
-      #gren_info "cataname = [array get ::gui_cata::cataname] \n"
-      #gren_info "nbcatadel = $nbcatadel \n"
-   
-      foreach t [$onglets.nb tabs] {
-         destroy $t
-      }
-
-      set idcata 0
-      set select 0
-      foreach field $fields {
-         incr idcata
-         
-         set fc($idcata) [frame $onglets.nb.f$idcata]
-         
-         set c [lindex $field 0]
-         
-         $onglets.nb add $fc($idcata) -text $c
-         if {$c=="IMG"} {
-            set select $idcata
-         }
-      }
-      set nbcata $idcata
-      #gren_info "nbcata : $nbcata\n"
-   
-      if {$select >0} {$onglets.nb select $fc($select)}
-      ttk::notebook::enableTraversal $onglets.nb
-
-      for { set idcata 1 } { $idcata <= $nbcata} { incr idcata } {
-
-         set ::gui_verifcata::frmtable($idcata) [frame $fc($idcata).frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
-         pack $::gui_verifcata::frmtable($idcata) -expand yes -fill both -padx 3 -pady 6 -in $fc($idcata) -side right -anchor e
-
-         #--- Cree un acsenseur vertical
-         scrollbar $::gui_verifcata::frmtable($idcata).vsb -orient vertical \
-            -command { $::gui_verifcata::frmtable($idcata).lst1 yview } -takefocus 1 -borderwidth 1
-         pack $::gui_verifcata::frmtable($idcata).vsb -in $::gui_verifcata::frmtable($idcata) -side right -fill y
-
-         #--- Cree un acsenseur horizontal
-         scrollbar $::gui_verifcata::frmtable($idcata).hsb -orient horizontal \
-            -command { $::gui_verifcata::frmtable($idcata).lst1 xview } -takefocus 1 -borderwidth 1
-         pack $::gui_verifcata::frmtable($idcata).hsb -in $::gui_verifcata::frmtable($idcata) -side bottom -fill x
-
-         #--- Creation de la table
-         ::gui_verifcata::create_Tbl_sources $idcata
-         pack  $::gui_verifcata::frmtable($idcata).tbl -in  $::gui_verifcata::frmtable($idcata) -expand yes -fill both
-
-
-         catch { $::gui_verifcata::frmtable($idcata).tbl delete 0 end
-                 $::gui_verifcata::frmtable($idcata).tbl deletecolumns 0 end  
-         }
-        
-         set nbcol [llength $::gui_cata::tklist_list_of_columns($idcata)]
-         for { set j 0 } { $j < $nbcol} { incr j } {
-            set current_columns [lindex $::gui_cata::tklist_list_of_columns($idcata) $j]
-            $::gui_verifcata::frmtable($idcata).tbl insertcolumns end 0 [lindex $current_columns 1] left
-            $::gui_verifcata::frmtable($idcata).tbl columnconfigure $j -sortmode dictionary
-         }
-
-         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
-         if { [ $::gui_verifcata::frmtable($idcata).tbl columncount ] != "0" } {
-            $::gui_verifcata::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
-         }
-         foreach col {5 6 7 8 9} {
-             $::gui_verifcata::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary
-         }
-
-         foreach line $::gui_cata::tklist($idcata) {
-            $::gui_verifcata::frmtable($idcata).tbl insert end $line
-         }
-         
-         #gren_info "$::gui_cata::cataname($idcata) : [llength $::gui_cata::tklist($idcata)]\n"
-         #gren_info "onglets : [$::gui_verifcata::fen.appli.onglets.nb tabs]\n"
-         
-         $::gui_verifcata::fen.appli.onglets.nb tab [expr $idcata - 1] -text "([llength $::gui_cata::tklist($idcata)])$::gui_cata::cataname($idcata)"
-         
-      }
    }
 
 
@@ -114,10 +77,57 @@ namespace eval gui_verifcata {
 
 
 
+
+
+
+
+
+
+
+   proc ::gui_verifcata::affich_results_tklist { send_source_list send_date_list } {
+
+      upvar $send_source_list source_list
+      upvar $send_date_list   date_list
+
+
+      set onglets $::gui_verifcata::fen.appli.onglets
+      set tbl1 $onglets.nb.f1.frmtable.tbl
+      set tbl2 $onglets.nb.f2.frmtable.tbl
+      catch { 
+         $tbl1 delete 0 end
+         $tbl2 delete 0 end
+      }
+
+      foreach line $source_list {
+         $tbl1 insert end $line
+      }
+      foreach line $date_list {
+         $tbl2 insert end $line
+      }
+      
+
+
+      return
+         
+   }
+
+
+   proc ::gui_verifcata::popup_psf { tbl } {
+
+      foreach select [$tbl curselection] {
+      
+         set ids [lindex [$tbl get $select] 0]      
+         set idd [lindex [$tbl get $select] 1]   
+         gren_info "ids = $ids ; idd = $idd \n"   
+         break
+      }
+   }
+
+
    proc ::gui_verifcata::verif {  } {
 
-      ::tools_verifcata::verif
-      ::gui_verifcata::affich_results_tklist
+      ::tools_verifcata::verif source_list date_list 
+      ::gui_verifcata::affich_results_tklist source_list date_list 
 
    }
 
@@ -132,6 +142,10 @@ namespace eval gui_verifcata {
       global bddconf
 
       ::gui_verifcata::inittoconf
+      
+      set col_sources { 0 IdS  0 IdD 0 Date-Obs 0 Erreur     0 Name 0 Catas }
+      set col_dates   { 0 IdS  0 IdD 0 Date-Obs 0 Star&Aster   }
+     
       
       #--- Creation de la fenetre
       set ::gui_verifcata::fen .verifcata
@@ -163,6 +177,9 @@ namespace eval gui_verifcata {
                    -command "::gui_verifcata::verif" 
              pack $actions.back -side top -anchor c -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+
+
+
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
  
@@ -175,6 +192,25 @@ namespace eval gui_verifcata {
 
              $onglets.nb select $f1
              ttk::notebook::enableTraversal $onglets.nb
+
+             set frmtable [frame $f1.frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
+             pack $frmtable -in $f1 -expand yes -fill both -padx 3 -pady 6 -side right -anchor e
+             ::gui_verifcata::create_Tbl_sources $frmtable $col_sources
+
+             set frmtable [frame $f2.frmtable -borderwidth 0 -cursor arrow -relief groove -background white]
+             pack $frmtable -in $f2 -expand yes -fill both -padx 3 -pady 6 -side right -anchor e
+             ::gui_verifcata::create_Tbl_sources $frmtable $col_dates
+
+
+
+         set actions [frame $frm.pied -borderwidth 0 -cursor arrow -relief groove]
+         pack $actions -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $actions.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+                   -command "::gui_verifcata::fermer" 
+             pack $actions.fermer -side top -anchor c -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+
 
    }
 
