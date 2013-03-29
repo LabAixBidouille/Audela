@@ -1670,7 +1670,6 @@ namespace eval psf_gui {
 #------------------------------------------------------------
 ## Analyse de photocentre d'une source
 # Permet la recombinaison des catalogue pour une source.
-#  \param sou parametre optionel sous la forme d'une structure tcl d'une source
 #  \sa psf_gui::gestion_mode_manuel_init
    proc ::psf_gui::run {  } {
 

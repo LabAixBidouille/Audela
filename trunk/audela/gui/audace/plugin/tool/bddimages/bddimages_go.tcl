@@ -142,6 +142,8 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
 
    # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_verifcata.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_tools.tcl ]\""
