@@ -496,7 +496,7 @@ namespace eval bddimages_recherche {
       set bddconf(geometry_recherche) $conf(bddimages,geometry_recherche)
       set ::bddimages_recherche::progress 0
       set ::bddimages_recherche::nb_selected_img 0
-
+      set ::bddimages_recherche::current_list_id 0
 
       #---
       if { [ winfo exists $This ] } {

@@ -282,7 +282,7 @@ proc ::bddimages::stopTool { visuNo } {
 proc ::bddimages::handleBddState { } {
 
    variable This
-   global audace bddconf menuconfig
+   global audace bddconf
 
    set visuNo $::audace(visuNo)
 
@@ -301,15 +301,7 @@ proc ::bddimages::handleBddState { } {
    }
 
    # Configure menubutton du choix des bdd
-   $This.fra1.menu configure -bg $colorBtn
-
-   ##--- Reconfigure le menu bouton des config
-   $menuconfig delete 0 end
-   foreach myconf $bddconf(list_config) {
-      $menuconfig add radiobutton -label [lindex $myconf 1] -value [lindex $myconf 1] \
-         -variable bddconf(current_config)  \
-         -command "::bddimages::load_config_frombutton"
-   }
+   $This.fra1.but configure -bg $colorBtn
 
 }
 
@@ -338,7 +330,7 @@ proc ::bddimages::load_config_frombutton { } {
 #
 proc ::bddimages::bddimagesBuildIF { This } {
 
-   global audace caption bddconf menuconfig
+   global audace caption bddconf
 
    #--- Frame
    frame $This -borderwidth 2 -relief groove
@@ -358,16 +350,10 @@ proc ::bddimages::bddimagesBuildIF { This } {
       frame $This.fra1 -borderwidth 1 -relief groove
       pack $This.fra1 -side top -fill x
 
-         menubutton $This.fra1.menu -relief raised -borderwidth 2 \
-            -textvariable bddconf(current_config) -menu $This.fra1.menu.list
-         pack $This.fra1.menu -in $This.fra1 -side top -padx 3 -pady 10 -ipadx 5 -ipady 2
-         # Defini le menu config
-         set menuconfig [menu $This.fra1.menu.list -tearoff 0]
-         foreach myconf $bddconf(list_config) {
-            $menuconfig add radiobutton -label [lindex $myconf 1] -value [lindex $myconf 1] \
-               -variable bddconf(current_config)  \
-               -command "::bddimages::load_config_frombutton"
-         }
+         button $This.fra1.but -relief raised -borderwidth 2 \
+            -textvariable bddconf(current_config) \
+            -command "::bddimages::load_config_frombutton"
+         pack $This.fra1.but -in $This.fra1 -side top -padx 3 -pady 10 -ipadx 5 -ipady 2
 
       #--- Frame des services
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -432,7 +418,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Coloration du menubouton du choix de la bdd
-      $This.fra1.menu configure -bg "#DD0000"
+      $This.fra1.but configure -bg "#DD0000"
       #--- Desactive les boutons, qui seront actives apres chargement de la config
       $This.fra3.but1 configure -state disabled
       $This.fra4.but1 configure -state disabled

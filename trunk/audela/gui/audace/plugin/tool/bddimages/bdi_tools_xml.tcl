@@ -292,6 +292,7 @@ proc ::bdi_tools_xml::load_config { name } {
 
    # Retourne le nom de la config chargee
    return $bddconf(name)
+
 }
 
 #------------------------------------------------------------
