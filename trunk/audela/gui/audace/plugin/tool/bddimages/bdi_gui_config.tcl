@@ -336,7 +336,7 @@ proc ::bdi_gui_config::createDialog { } {
             label $xml.bdd.name.lab -text "$caption(bdi_gui_config,dbname)" -width 30 -anchor w -borderwidth 0 -relief flat
             pack $xml.bdd.name.lab -in $xml.bdd.name -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $xml.bdd.name.dat -textvariable bddconf(dbname) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $xml.bdd.name.dat -textvariable bddconf(dbname) -borderwidth 1 -relief groove -width 25 -justify left -state disable
             pack $xml.bdd.name.dat -in $xml.bdd.name -side left -anchor w -padx 1
             #--- Cree un bouton Create BDD
             button $xml.bdd.name.test -state active -relief groove -anchor c -width 4 -text "Create" \

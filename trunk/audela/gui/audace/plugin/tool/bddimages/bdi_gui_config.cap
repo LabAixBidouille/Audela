@@ -31,7 +31,7 @@ set caption(bdi_gui_config,cancel)            "Cancel"
 set caption(bdi_gui_config,sauvexml)          "Save the XML config file"
 
 set caption(bdi_gui_config,access)            "Access to the database"
-set caption(bdi_gui_config,dbname)            " - Name of th DB"
+set caption(bdi_gui_config,dbname)            " - Name of the DB"
 set caption(bdi_gui_config,login)             " - Login"
 set caption(bdi_gui_config,pass)              " - Password"
 set caption(bdi_gui_config,server)            " - SQL server"
