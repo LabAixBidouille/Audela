@@ -2298,6 +2298,7 @@ namespace eval cata_gestion_gui {
             $menubar.catalog.menu add cascade -label "Astrometrie" -menu $menubar.catalog.menu.astrom
             $menubar.catalog.menu add command -label "Photometrie" -command "" -state disabled
             $menubar.catalog.menu add separator
+            $menubar.catalog.menu add command -label "Verifier" -command "" -state normal
             $menubar.catalog.menu add command -label "Personnel" -command "" -state disabled
             $menubar.catalog.menu add command -label "Astroid" -command "" -state disabled
             $menubar.catalog.menu add separator
