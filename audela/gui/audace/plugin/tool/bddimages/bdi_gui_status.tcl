@@ -24,9 +24,6 @@ namespace eval bdi_gui_status {
    global audace
    global bddconf
 
-   #--- Chargement des captions
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.cap ]\""
-
 }
 
 #------------------------------------------------------------
