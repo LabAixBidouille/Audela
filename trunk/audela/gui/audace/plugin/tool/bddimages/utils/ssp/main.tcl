@@ -18,7 +18,7 @@ source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/astroid/identi
 source /srv/develop/audela/gui/audace/vo_tools.tcl
 
 ::bddimagesXML::load_xml_config
-::bddimagesXML::get_config bddimages_cador
+::bddimagesXML::load_config bddimages_cador
 
 gren_info "SSP_PLUGIN: name    : $bddconf(name)    \n"
 gren_info "SSP_PLUGIN: dbname  : $bddconf(dbname)  \n"

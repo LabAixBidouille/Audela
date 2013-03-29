@@ -20,7 +20,7 @@
 #   source /usr/local/src/audela/gui/audace/vo_tools.tcl
 
    ::bddimagesXML::load_xml_config
-   ::bddimagesXML::get_config bddimages_cador
+   ::bddimagesXML::load_config bddimages_cador
 
    cleanmark
    set tt0 [clock clicks -milliseconds]

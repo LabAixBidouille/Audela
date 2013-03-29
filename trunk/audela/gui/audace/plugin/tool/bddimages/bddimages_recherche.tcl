@@ -129,8 +129,6 @@
 
 namespace eval bddimages_recherche {
 
-   package require bddimagesXML 1.0
-   
    global audace
    global bddconf
 
@@ -505,20 +503,6 @@ namespace eval bddimages_recherche {
          wm withdraw $This
          wm deiconify $This
          return
-      }
-
-      if {! [ info exists bddconf(current_config)]} {
-         # Charge les config bddimages depuis le fichier XML
-         set err [::bddimagesXML::load_xml_config]
-         # Recupere la liste des bddimages disponibles
-         set bddconf(list_config) $::bddimagesXML::list_bddimages
-         # Recupere la config par defaut [liste id name]
-         set bddconf(default_config) $::bddimagesXML::default_config
-         # Recupere la config par courante [liste id name]
-         set bddconf(current_config) $::bddimagesXML::current_config
-         #::console::affiche_resultat "list_config = $bddconf(list_config) \n"
-         ::console::affiche_resultat "default_config = $bddconf(default_config) \n"
-         ::console::affiche_resultat "current_config = $bddconf(current_config) \n"
       }
 
       set nbintellilist 0

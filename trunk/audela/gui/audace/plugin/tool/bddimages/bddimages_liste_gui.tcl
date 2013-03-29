@@ -127,7 +127,7 @@
 
 namespace eval bddimages_liste_gui {
 
-   package require bdi_calendar 1.0
+   package require bdi_tools_calendar 1.0
 
    global audace
    global bddconf
@@ -2111,7 +2111,7 @@ namespace eval bddimages_liste_gui {
       set w [toplevel $This.calendar]
       wm overrideredirect $w 1
       frame $w.f -borderwidth 2 -relief solid -takefocus 0
-      ::bdi_calendar::chooser $w.f.d -language $userLang -mon 0 \
+      ::bdi_tools_calendar::chooser $w.f.d -language $userLang -mon 0 \
              -command [list set ::SEMA close] \
              -textvariable $wdate -clockformat $clockformat
       pack $w.f.d $w.f
