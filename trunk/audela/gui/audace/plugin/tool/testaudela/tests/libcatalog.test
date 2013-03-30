@@ -231,3 +231,75 @@ test libcatalog_csusnoa2_catalog_existe { trouve 59 etoiles } -constraints {
 
 } -result "59"
 
+
+#-------------------------------------------------------------------------------
+test libcatalog_csppmx_sansparam { csppmx sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csppmx]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage: csppmx pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csppmx_catalog_existe { trouve 7 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csppmx [file join $::audace(rep_userCatalog) PPMX data] 10 5 5]
+   } msg]
+
+   if { $catchError==0 } {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "7"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csppmxl_sansparam { csppmxl sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csppmxl]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage: csppmxl pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csppmxl_catalog_existe { trouve 160 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csppmxl [file join $::audace(rep_userCatalog) PPMXL dat] 10 5 5]
+   } msg]
+
+   if { $catchError==0 } {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "160"
+
