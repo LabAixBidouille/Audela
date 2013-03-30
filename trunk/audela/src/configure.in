@@ -138,9 +138,9 @@ AC_SUBST(V4L2_ENABLE)
 
 
 
-dnl Check for the libtiff header
+dnl libqsi dependencies
 QSI_ENABLE=1
-AC_CHECK_HEADER([tiff.h],,[QSI_ENABLE=0])
+AC_CHECK_HEADERS([tiff.h ftdi.h],,[QSI_ENABLE=0])
 AC_MSG_CHECKING([if QSI cameras are supported])
 if test x"$QSI_ENABLE" = x"1" ; then
         AC_MSG_RESULT([yes.])

@@ -10,7 +10,7 @@ build:
 	@if test ! -e $(DIR)/Makefile || test ../../Makefile.defs -nt $(DIR)/Makefile; then \
 		cd $(DIR) && \
 		chmod +x configure ; \
-		./configure --quiet --enable-shared --enable-static=no --enable-libftd2xx --bindir=$(BINDIR) --libdir=$(EXTLIB) --includedir=$(EXTINC) LDFLAGS="-L$(EXTLIB) -Wl,-rpath,$(OUTPUTDIR)" ; \
+		./configure --enable-shared --enable-static=no --disable-libftd2xx --enable-libftdi --bindir=$(BINDIR) --libdir=$(EXTLIB) --includedir=$(EXTINC) LDFLAGS="-L$(EXTLIB) -Wl,-rpath,$(OUTPUTDIR)" ; \
 		 \
 	fi;
 	$(MAKE) -C $(DIR)

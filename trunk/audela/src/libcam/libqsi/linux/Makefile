@@ -13,6 +13,6 @@ OBJ += $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
 include ../../../Makefile1
 
 CXXFLAGS += -I$(EXTINC)
-LDFLAGS += -L$(EXTLIB) -lqsiapi -lftd2xx -Wl,-rpath,$(EXTLIB)
+LDFLAGS += -L$(EXTLIB) -lqsiapi -Wl,-rpath,$(EXTLIB)
 
 
