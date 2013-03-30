@@ -87,14 +87,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temmaconfig,2points)               ":"
 
    set caption(temmaconfig,para_mobile,aide0)     "Usate un numero intero per indicare la velocita` di spostamento dell' oggetto.\
-                                                 \n# RA : Réglage du suivi sidéral en secondes par jour.\
-                                                 \n# Réglage de la vitesse sidérale : Combien de secondes sont ajoutées ou\
-                                                 \n# soustraites par période de 24 heures.\
-                                                 \n# DEC : Réglage du suivi sur la déclinaison en minutes par jour.\
-                                                 \n# Réglage du suivi sur la déc. : Combien de minutes par période de 24 heures.\
+                                                 \n AR: Regola guida siderale in secondi per giorno.\
+                                                 \n Regolazione velocità AR: Quanti secondi in AR sono aggiunti o\
+                                                 \n sottratti in un periodo di 24 ore.\
+                                                 \n DEC: Regola DEC in minuti per giorno.\
+                                                 \n Regolazione DEC: Quanti minuti in un periodo di 24 ore.\
                                                  \nEsempio:\
-                                                 \n# RA = -120, ralentit la vitesse sidérale à (86164 - 120) / 86164 = 86044 / 86164 = 0,9986.\
-                                                 \n# DEC = +30, la vitesse sur la déclinaison est de 30 minutes par jour.\
+                                                 \n AR = -120, rallenta la velocità in AR a (86164 - 120) / 86164 = 86044 / 86164 = 0,9986.\
+                                                 \n DEC = +30, la velocità in DEC è di 30 minuti al giorno.\
                                                  \nValori limite: ±21541 in AR and ±600 in DEC.\
                                                  \n-21541: Tracciamento siderale rallentato a 0.75x della velocita' siderale: (86164 - 21541) / 86164 = 0,75.\
                                                  \n+21541: Tracciamento siderale accelerato a 1.25x della velocita` siderale: (86164 + 21541) / 86164 = 1,25.\
