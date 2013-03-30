@@ -47,7 +47,7 @@ extern "C" {
 struct camini CAM_INI[] = {
     {"QSI 632",          /* camera name 70 car maxi*/
      "qsi",              /* camera product */
-     "",                 /* ccd name */
+     "KAF 3200",         /* ccd name */
      2184, 1472,         /* maxx maxy */
      14, 14,             /* overscans x */
      4, 4,               /* overscans y */
@@ -121,6 +121,8 @@ struct _PrivateParams {
 #define LOG_INFO    3
 #define LOG_DEBUG   4
 int debug_level = LOG_NONE;
+static char logFileName[1024];
+
 char *getlogdate(char *buf, size_t size)
 {
 #if defined(OS_LIN)
@@ -152,9 +154,9 @@ void cam_log(int level, const char *fmt, ...)
    va_list mkr;
    va_start(mkr, fmt);
 
-   if (level <= debug_level) {
+   if ( level <= debug_level ) {
       getlogdate( buf, 100 );
-      f = fopen( "qsi.log","at+" );
+      f = fopen( logFileName,"at+" );
       switch (level) {
       case LOG_ERROR:
          fprintf( f, "%s - %s(%s) <ERROR> : ", buf, CAM_LIBNAME, CAM_LIBVER );
@@ -169,12 +171,11 @@ void cam_log(int level, const char *fmt, ...)
          fprintf(f,"%s - %s(%s) <DEBUG> : ", buf, CAM_LIBNAME, CAM_LIBVER);
          break;
       }
-      vfprintf(f,fmt, mkr);
-      fprintf(f,"\n");
-      va_end(mkr);
-      fclose(f);
+      vfprintf( f, fmt, mkr );
+      fprintf( f, "\n" );
+      va_end( mkr );
+      fclose( f );
    }
-
 }
 
 /* ========================================================= */
@@ -189,25 +190,44 @@ void cam_log(int level, const char *fmt, ...)
 
 int cam_init( struct camprop *cam, int argc, char **argv )
 {
-    // aucune trace n'est générée par défaut dans le fichier qsi.log
-    debug_level = LOG_DEBUG;
+    // niveau de trace par défaut dans le fichier libqsi.log
+    debug_level = LOG_INFO;
+    strcpy( logFileName,"libqsi.log" );
 
     //  Récuperation des paramètres optionnels
     if ( argc >= 5 )
     {
         for ( int kk = 3; kk < argc - 1; kk++ )
         {
-            if ( strcmp(argv[kk], "-loglevel" ) == 0 )
+            // fprintf( stderr, "param %s\n", argv[kk] );
+            if ( strcmp( argv[kk], "-loglevel" ) == 0 )
                 debug_level = atoi( argv[kk + 1] );
+            if ( strcmp( argv[kk], "-debug_directory") == 0 ) {
+                if ( kk + 1 <  argc ) {
+                   char fileTempName[1024];
+                   // je conserve le nom du fichier de log
+                   strcpy( fileTempName, logFileName );
+                   // je recupere le repertoire du fichier de traces
+                    strcpy( logFileName, argv[kk + 1] );
+                   // je concatene un "/" a la fin du repertoire s'il n'y est pas deja
+                   if ( logFileName[strlen(logFileName)-1]!= '\\' && logFileName[strlen(logFileName)-1]!= '/' && strlen(logFileName)!=0 ) {
+                      strcat(logFileName,"/");
+                   }
+                   // je concatene le nom du fichier de trace
+                   strcat(logFileName, fileTempName);
+                }
+            }
         }
     }
 
-    cam_log( LOG_DEBUG, "*********************************************" );
-    cam_log( LOG_DEBUG, "cam_init début. Version du %s", __TIMESTAMP__ );
+    cam_log( LOG_INFO, "*********************************************" );
+    cam_log( LOG_INFO, "*********************************************" );
+    cam_log( LOG_INFO, "*********************************************" );
+    cam_log( LOG_DEBUG, "cam_init : début. Version du %s", __TIMESTAMP__ );
     if ( ( cam->params != 0 ) && ( cam->params->qsicam != 0 ) ) {
-        cam_log( LOG_ERROR, "Caméra déjà  initialisée" );
+        cam_log( LOG_ERROR, "Caméra déjà initialisée" );
         return 0;
-        cam_log( LOG_DEBUG,"cam_init fin OK" );
+        cam_log( LOG_DEBUG,"cam_init : fin OK" );
     }
 
     cam->params = (PrivateParams*) malloc( sizeof(PrivateParams) );
@@ -223,7 +243,6 @@ int cam_init( struct camprop *cam, int argc, char **argv )
 
     // Utilisation systématique des méthodes try/catch
     qsi->put_UseStructuredExceptions( true );
-
     try
     {
         std::string info("");
@@ -237,17 +256,17 @@ int cam_init( struct camprop *cam, int argc, char **argv )
 
         qsi->get_AvailableCameras( camSerial, camDesc, iNumFound );
         for ( int i = 0; i < iNumFound; i++ )
-            cam_log( LOG_DEBUG, "Caméras disponibles %s : %s", camSerial[i].c_str(), camDesc[i].c_str() );
+            cam_log( LOG_INFO, "Caméras disponibles %s : %s", camSerial[i].c_str(), camDesc[i].c_str() );
 
-        cam_log( LOG_DEBUG, "cam_init avant connexion" );
+        cam_log( LOG_DEBUG, "cam_init : sélection de la 1ère caméra" );
         // On ne considère que la première. Bogue potentiel.
         qsi->put_SelectCamera( camSerial[0] );
-
         qsi->put_IsMainCamera( true );
 
         // Connect to the selected camera and retrieve camera parameters
+        cam_log( LOG_DEBUG, "cam_init  essai de connexion" );
         qsi->put_Connected( true );
-        cam_log( LOG_DEBUG, "cam_init après connexion" );
+        cam_log( LOG_INFO, "cam_init caméra connectée" );
 
         // Get Model Number
         std::string modele("");
@@ -262,24 +281,41 @@ int cam_init( struct camprop *cam, int argc, char **argv )
         cam_log( LOG_INFO, "Descriptif : %s", desc.c_str() );
 
         // Configuration de la caméra
-        // Bipeur
+        // Bipeur activé
         qsi->put_SoundEnabled( true );
-        // Voyant
+        // Voyant activé
         qsi->put_LEDEnabled( true );
-        // Ventilateurs
+        // Ventilateurs en mode auto
         qsi->put_FanMode( QSICamera::fanQuiet );
         // Nettoyage CCD
         qsi->put_PreExposureFlush( QSICamera::FlushNormal );
+
         // Gain
         bool can_set_gain;
         qsi->get_CanSetGain( &can_set_gain );
-        if ( can_set_gain )
-            qsi->put_CameraGain( QSICamera::CameraGainLow );
+        if ( can_set_gain ) {
+        	enum QSICamera::CameraGain gain;
+        	qsi->get_CameraGain( &gain );
+        	if ( gain == QSICamera::CameraGainLow )
+        		cam_log( LOG_INFO, "Gain par défaut 1.5e-/ADU (bas)" );
+        	else
+        		cam_log( LOG_INFO, "Gain par défaut 0.75e-/ADU (haut)" );
+            //qsi->put_CameraGain( QSICamera::CameraGainLow );
+	        //cam_log( LOG_INFO, "Gain initialisé à Low" );
+	    }
+
         // Vitesse de lecture
         if ( modele.substr(0,1) == "6")
         {
             cam_log( LOG_INFO, "Modèle de la série 600" );
-            qsi->put_ReadoutSpeed( QSICamera::HighImageQuality );
+        	enum QSICamera::ReadoutSpeed vitesse_lecture;
+            qsi->get_ReadoutSpeed( vitesse_lecture );
+            if ( vitesse_lecture == QSICamera::HighImageQuality )
+        		cam_log( LOG_INFO, "Vitesse de lecture par défaut : lente (haute_qualité)" );
+			else
+        		cam_log( LOG_INFO, "Vitesse de lecture par défaut : rapide" );
+
+            //qsi->put_ReadoutSpeed( QSICamera::HighImageQuality );
         }
 
         // Dimensions du capteur en binning 1x1
@@ -305,7 +341,6 @@ int cam_init( struct camprop *cam, int argc, char **argv )
             qsi->get_ReadoutSpeed( vitesse_lecture );
             cam_log( LOG_INFO, "Vitesse de lecture (lente = 0, rapide = 1) : %d", vitesse_lecture );
         }
-
         cam->params->abort = 0;
     }
     catch (std::runtime_error &err)
@@ -366,29 +401,29 @@ void cam_update_window( struct camprop *cam )
     maxy = cam->nb_photoy;
     int x1, x2, y1, y2;
 
-    if (cam->x1 > cam->x2) {
+    if ( cam->x1 > cam->x2 ) {
         int x0 = cam->x2;
         cam->x2 = cam->x1;
         cam->x1 = x0;
     }
 
-    if (cam->x1 < 0) {
+    if ( cam->x1 < 0 ) {
         cam->x1 = 0;
     }
-   if (cam->x2 > maxx - 1) {
+   if ( cam->x2 > maxx - 1 ) {
       cam->x2 = maxx - 1;
    }
 
-   if (cam->y1 > cam->y2) {
+   if ( cam->y1 > cam->y2 ) {
       int y0 = cam->y2;
       cam->y2 = cam->y1;
       cam->y1 = y0;
    }
-   if (cam->y1 < 0) {
+   if ( cam->y1 < 0 ) {
       cam->y1 = 0;
    }
 
-   if (cam->y2 > maxy - 1) {
+   if ( cam->y2 > maxy - 1 ) {
       cam->y2 = maxy - 1;
    }
 
@@ -402,14 +437,14 @@ void cam_update_window( struct camprop *cam )
 
    if ( cam->mirrorv == 1 ) {
       // j'applique un miroir vertical en inversant les ordonnees de la fenetre
-      x1 = (maxx / cam->binx ) - x2 -1;
+      x1 = ( maxx / cam->binx ) - x2 - 1;
    }
 
    if ( cam->mirrorh == 1 ) {
       // j'applique un miroir horizontal en inversant les abcisses de la fenetre
       // 0---y1-----y2---------------------(w-1)
       // 0---------------(w-y2)---(w-y1)---(w-1)
-      y1 = (maxy / cam->biny ) - y2 -1;
+      y1 = ( maxy / cam->biny ) - y2 - 1;
    }
 
    // je configure la camera.
@@ -426,11 +461,23 @@ void cam_update_window( struct camprop *cam )
    //    (StartX + NumX) * BinX <= CameraXSize and (StartY + NumY) * BinY <= CameraYSize
    // Attention , il faut d'abord mettre a jour l'origine (StartX,StartY) avant la taille de la nouvelle fenetre
    // car sinon on risque de provoquer une exception si l'ancienne origine hors de la nouvelle fenetre.
-
-   cam->params->qsicam->put_StartX( x1 );
-   cam->params->qsicam->put_StartY( y1 );
-   cam->params->qsicam->put_NumX( cam->w );
-   cam->params->qsicam->put_NumY( cam->h );
+   cam_log( LOG_DEBUG, "cam_update_window : x1=%d / y1=%d / largeur=%d / hauteur=%d", x1, y1, cam->w, cam->h );
+   try
+   {
+   	   cam->params->qsicam->put_StartX( x1 );
+   	   cam->params->qsicam->put_StartY( y1 );
+   	   cam->params->qsicam->put_NumX( cam->w );
+   	   cam->params->qsicam->put_NumY( cam->h );
+   }
+   catch ( std::runtime_error &err )
+   {
+   	   std::string text = err.what();
+   	   cam_log( LOG_ERROR, text.c_str() );
+   	   std::string last("");
+   	   cam->params->qsicam->get_LastError( last );
+   	   sprintf( cam->msg, "%s\n", last.c_str() );
+   	   cam_log( LOG_ERROR, last.c_str() );
+   }
 }
 
 
@@ -450,7 +497,7 @@ void cam_start_exp( struct camprop *cam, char *amplionoff )
             // Pour simplifier les écritures
             QSICamera * qsi = cam->params->qsicam;
 
-            float exptime ;
+            double exptime ;
             if ( cam->exptime <= 0.06f )
                 exptime = 0.06f;
             else
@@ -460,16 +507,19 @@ void cam_start_exp( struct camprop *cam, char *amplionoff )
             if ( cam->shutterindex == 0 )
             {
                 // acquisition avec obturateur ferme
-                cam_log( LOG_DEBUG,"cam_start_exp apres StartExposure shutter=closed exptime=%f", cam->exptime );
+                cam_log( LOG_INFO,"Début acquisition [obturateur: fermé, temps expo.: %.1f]", cam->exptime );
+                cam_log( LOG_DEBUG,"cam_start_exp avant StartExposure shutter=closed exptime=%f", cam->exptime );
                 qsi->StartExposure( exptime, false );
             }
             else
             {
                 // acquisition avec obturateur ouvert
-                cam_log( LOG_DEBUG, "cam_start_exp apres StartExposure shutter=synchro exptime=%f", cam->exptime );
+                cam_log( LOG_INFO, "Début acquisition [obturateur: synchro temps expo.: %.1f", cam->exptime );
+                cam_log( LOG_DEBUG, "cam_start_exp avant StartExposure shutter=synchro exptime=%f", cam->exptime );
                 qsi->StartExposure( exptime, true );
-                cam_log( LOG_DEBUG, "cam_start_exp apres StartExposure" );
             }
+            cam_log( LOG_DEBUG, "cam_start_exp apres StartExposure" );
+            cam_log( LOG_INFO, "Fin acquisition" );
             cam->params->abort = 0;
         }
         catch ( std::runtime_error &err )
@@ -487,7 +537,8 @@ void cam_start_exp( struct camprop *cam, char *amplionoff )
 
 void cam_stop_exp( struct camprop *cam )
 {
-    cam_log(LOG_DEBUG,"cam_stop_exp debut");
+    cam_log( LOG_DEBUG,"cam_stop_exp debut");
+    cam_log( LOG_INFO, "Arrêt acquisition" );
     if ( cam->params->qsicam == 0 )
     {
          cam_log( LOG_ERROR, "cam_start_exp camera not initialized" );
@@ -495,7 +546,7 @@ void cam_stop_exp( struct camprop *cam )
          return;
     }
 
-    // Si la caméra ne supporte pas l 'arrÃªt brutal d'acquisition, il y aura une exception générée
+    // Si la caméra ne supporte pas l 'arret brutal d'acquisition, il y aura une exception générée
     // Pas besoin donc de tester via camAbortExposure()
     try
     {
@@ -515,11 +566,12 @@ void cam_stop_exp( struct camprop *cam )
 
 void cam_read_ccd( struct camprop *cam, unsigned short *p )
 {
-    cam_log( LOG_DEBUG, "cam_read_ccd debut" );
+    cam_log( LOG_DEBUG, "cam_read_ccd : debut" );
+    cam_log( LOG_INFO, "Début lecture CCD" );
     if ( cam->params->qsicam == 0 )
     {
-         cam_log( LOG_ERROR, "cam_read_ccd camera not initialized" );
-         sprintf( cam->msg, "cam_read_ccd camera not initialized" );
+         cam_log( LOG_ERROR, "cam_read_ccd : camera not initialized" );
+         sprintf( cam->msg, "camera not initialized" );
          return;
     }
     if ( p == NULL )
@@ -528,7 +580,7 @@ void cam_read_ccd( struct camprop *cam, unsigned short *p )
     if ( cam->params->abort == 1 )
     {
         cam->params->abort = 0;
-        sprintf(cam->msg, "acq stopped by usr");
+        sprintf( cam->msg, "acq stopped by user" );
         return;
     }
 
@@ -542,11 +594,28 @@ void cam_read_ccd( struct camprop *cam, unsigned short *p )
             while( !image_prete )
             {
                 usleep( 5000 );
+            	cam_log( LOG_DEBUG, "cam_read_ccd : attente de 5 ms" );
                 cam->params->qsicam->get_ImageReady( &image_prete );
             }
+            double temps_exposition;
+            cam->params->qsicam->get_LastExposureDuration( &temps_exposition );
+            cam_log( LOG_DEBUG, "cam_read_ccd : temps exposition réel : %f", temps_exposition );
+            if ( debug_level == LOG_DEBUG )
+            {
+            	int x, y, z;
+            	cam->params->qsicam->get_ImageArraySize( x, y, z );
+            	cam_log( LOG_DEBUG, "cam_read_ccd : taille %d x %d, profondeur en octet %d", x, y, z );
+            	if ( ( x != cam->w ) || ( y != cam->h ) ) {
+            		cam_log( LOG_ERROR, "Image size not consistent : largeur réelle %d / largeur attendue %d / hauteur réelle %d / hauteur attendue %d", x, cam->w, y, cam->h );
+            	}
+            }
+
+            QSICamera::CameraState etat;
+            cam->params->qsicam->get_CameraState( &etat );
+      		cam_log( LOG_DEBUG, "cam_read_ccd : etat=%d", etat );
 
             cam->params->qsicam->get_ImageArray( p );
-            cam_log(LOG_DEBUG, "cam_read_ccd OK");
+            cam_log( LOG_DEBUG, "cam_read_ccd OK" );
         }
         catch ( std::runtime_error &err )
         {
@@ -559,6 +628,7 @@ void cam_read_ccd( struct camprop *cam, unsigned short *p )
         }
     }
     cam_log( LOG_DEBUG, "cam_read_ccd fin" );
+    cam_log( LOG_INFO, "Fin lecture CCD" );
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -731,17 +801,25 @@ void qsiGetTemperatureInfo( struct camprop *cam, double *setTemperature, double 
 
 void cam_set_binning( int binx, int biny, struct camprop *cam )
 {
-    int previousBinX;
-    int previousBinY;
-    cam_log( LOG_DEBUG, "cam_set_binning debut. binx=%d biny=%d", binx, biny );
+    cam_log( LOG_DEBUG, "cam_set_binning : debut. binx=%d biny=%d", binx, biny );
     if ( cam->params->qsicam == 0 ) {
         cam_log( LOG_ERROR,"cam_set_binning camera not initialized" );
         sprintf( cam->msg, "cam_set_binning camera not initialized" );
         return;
     }
     try {
-        previousBinX = cam->binx;
-        previousBinY = cam->biny;
+    	/* Vérification préalable */
+    	short int binx_courant;
+    	short int biny_courant;
+        cam->params->qsicam->get_BinX( &binx_courant );
+        cam->params->qsicam->get_BinY( &biny_courant );
+        cam_log( LOG_DEBUG, "cam_set_binning : ancien_binx = %d ancien_biny=%d", binx_courant, biny_courant );
+		if ( ( binx_courant != cam->binx ) || ( biny_courant != cam->biny ) ) {
+			cam_log( LOG_ERROR, "Error : Inconsistent bin values : stored binx %d / actual binx %d / stored biny %d / actual biny %d", cam->binx, binx_courant, cam->biny, biny_courant );
+		}
+
+		long largeur_reelle, hauteur_reelle;
+		long x_reel, y_reel;
 
         short max_binx;
         cam->params->qsicam->get_MaxBinX( &max_binx );
@@ -764,12 +842,35 @@ void cam_set_binning( int binx, int biny, struct camprop *cam )
         cam->biny = biny;
         cam->w = ( cam->x2 - cam->x1 + 1 ) / cam->binx;
         cam->h = ( cam->y2 - cam->y1 + 1 ) / cam->biny;
+        cam_log( LOG_DEBUG, "cam_set_binning : x1 = %d / y1 = %d / x2 = %d / y2 = %d", cam->x1, cam->y1, cam->x2, cam->y2 );
+        cam_log( LOG_DEBUG, "cam_set_binning : binx = %d / biny = %d", cam->binx, cam->biny );
         cam->params->qsicam->put_NumX( cam->w );
         cam->params->qsicam->put_NumY( cam->h );
         cam->params->qsicam->put_BinX( binx );
         cam->params->qsicam->put_BinY( biny );
-        cam_log( LOG_DEBUG, "cam_set_binning apres binx=%d biny=%d", binx, biny );
-        cam_log( LOG_DEBUG, "cam_set_binning fin OK" );
+
+        /* Vérifications */
+        cam->params->qsicam->get_BinX( &binx_courant );
+        cam->params->qsicam->get_BinY( &biny_courant );
+        cam_log( LOG_DEBUG, "cam_set_binning : binx_reel = %d biny_reel = %d", binx_courant, biny_courant );
+		if ( ( binx_courant != cam->binx ) || ( biny_courant != cam->biny ) ) {
+			cam_log( LOG_ERROR, "Error : Inconsistent bin values : stored binx %d / actual binx %d / stored biny %d / actual biny %d", cam->binx, binx_courant, cam->biny, biny_courant );
+		}
+        cam->params->qsicam->get_NumX( &largeur_reelle );
+        cam->params->qsicam->get_NumY( &hauteur_reelle );
+        cam_log( LOG_DEBUG, "cam_set_binning : largeur_reelle = %ld hauteur_reelle = %ld", largeur_reelle, hauteur_reelle );
+		if ( ( largeur_reelle != cam->w ) || ( hauteur_reelle != cam->h ) ) {
+			cam_log( LOG_ERROR, "Error : Inconsistent dim values : stored width %ld / actual width %ld / stored height %ld / actual height %ld", cam->w, largeur_reelle, cam->h, hauteur_reelle );
+		}
+        cam->params->qsicam->get_StartX( &x_reel );
+        cam->params->qsicam->get_StartY( &y_reel );
+        cam_log( LOG_DEBUG, "cam_set_binning : x_reel = %ld y_reel = %ld", x_reel, y_reel );
+		if ( ( x_reel != cam->x1 ) || ( y_reel != cam->y1 ) ) {
+			cam_log( LOG_ERROR, "Error : Inconsistent start point : stored x %ld / actual x %ld / stored y %ld / actual y %ld", cam->x1, x_reel, cam->y1, y_reel );
+		}
+
+        cam_log( LOG_DEBUG, "cam_set_binning apres : binx=%d biny=%d", binx, biny );
+        cam_log( LOG_DEBUG, "cam_set_binning : fin OK" );
     }
     catch ( std::runtime_error &err )
     {
@@ -805,9 +906,9 @@ void qsiSetupDialog(struct camprop *cam) {}
 
 int qsiSetWheelPosition( struct camprop *cam, int position )
 {
-    cam_log( LOG_DEBUG, "qsiSetWheelPosition debut. Position=%d", position );
-   if ( cam->params->qsicam == 0 )
-   {
+    cam_log( LOG_DEBUG, "Changement filtre : position=%d", position );
+    if ( cam->params->qsicam == 0 )
+    {
         cam_log( LOG_ERROR,"qsiSetWheelPosition camera not initialized" );
         sprintf( cam->msg, "qsiSetWheelPosition camera not initialized" );
         return -1;
@@ -893,7 +994,7 @@ int qsiGetWheelPosition( struct camprop *cam, int *position )
 // ---------------------------------------------------------------------------
 // qsiGetWheelNames
 //    retourne les noms des positions de la roue filtre
-// @param **names  : pointeur de pointeu de chaine de caracteres
+// @param **names  : pointeur de pointeur de chaine de caracteres
 // @return
 //    0  si pas d'erreur
 //    -1 si erreur , le libelle de l'erreur est dans cam->msg
@@ -915,10 +1016,10 @@ int qsiGetWheelNames( struct camprop *cam, char **names )
         {
             int filtres;
             cam->params->qsicam->get_FilterCount( filtres );
-            cam_log( LOG_DEBUG, "Nombre de position de la roue Ã  filtre : %d", filtres );
+            cam_log( LOG_INFO, "Nombre de position de la roue à filtre : %d", filtres );
             std::string * noms = new std::string[filtres];
             long * dec_map = new long[filtres];
-            /* Allocation. La libération sera fait dans la routine appelante */
+            /* Allocation. La libération sera faite dans la routine appelante */
             *names = (char*) calloc( filtres, 256 );
             cam_log( LOG_DEBUG, "qsiGetWheelNames avant GetNames filter Wheel : noms = %p, dec_map = %p", noms, dec_map );
             cam->params->qsicam->get_Names( noms );
@@ -935,13 +1036,12 @@ int qsiGetWheelNames( struct camprop *cam, char **names )
                     cam_log( LOG_DEBUG, "nom_filtre[%d] = <vide>" );
                 strcat( *names, " } ");
             }
-            cam_log( LOG_DEBUG, "Nom des filtres=%s", *names );
+            cam_log( LOG_INFO, "Nom des filtres=%s", *names );
             cam_log( LOG_DEBUG, "qsiGetWheelNames fin" );
             return 0;
         }
         else
         {
-            cam_log( LOG_DEBUG,"Pas de roue Ã  filtre" );
             sprintf( cam->msg, "Camera has no filter wheel" );
             return -1;
         }
