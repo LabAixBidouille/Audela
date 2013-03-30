@@ -29,10 +29,11 @@ set caption(en-tete,a_propos_de_copyright8)           "J. Berthier, F. Vachier, 
 set caption(en-tete,a_propos_de_copyright9)           "L. Jorda, JF. Coliac"
 set caption(en-tete,a_propos_de_copyright10)          "Translations:"
 set caption(en-tete,a_propos_de_copyright11)          "(GB) C. Jasinski + D. Futak + D. Holler"
-set caption(en-tete,a_propos_de_copyright12)          "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-set caption(en-tete,a_propos_de_copyright13)          "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-set caption(en-tete,a_propos_de_copyright14)          "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-set caption(en-tete,a_propos_de_copyright15)          "(UA) O. Maliy, (RUS) O. Maliy"
+set caption(en-tete,a_propos_de_copyright12)          "(I) F. Manenti + E. Pavoni + L. Moretti"
+set caption(en-tete,a_propos_de_copyright13)          "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+set caption(en-tete,a_propos_de_copyright14)          "(D) Ph. Kauffmann + J. Hoebelmann"
+set caption(en-tete,a_propos_de_copyright15)          "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+set caption(en-tete,a_propos_de_copyright16)          "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -55,10 +56,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Traductions :"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -81,10 +83,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Traduzione:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -107,10 +110,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Traducciones:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -133,10 +137,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Übersetzungen:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version portugais ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -159,10 +164,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Traduções:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -185,10 +191,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Oversættelser:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -211,10 +218,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Translations:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -237,10 +245,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(en-tete,a_propos_de_copyright9)        "L. Jorda, JF. Coliac"
    set caption(en-tete,a_propos_de_copyright10)       "Translations:"
    set caption(en-tete,a_propos_de_copyright11)       "(GB) C. Jasinski + D. Futak + D. Holler"
-   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia +"
-   set caption(en-tete,a_propos_de_copyright13)       "J. Iglesias, (D) Ph. Kauffmann + J. Hoebelmann"
-   set caption(en-tete,a_propos_de_copyright14)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
-   set caption(en-tete,a_propos_de_copyright15)       "(UA) O. Maliy, (RUS) O. Maliy"
+   set caption(en-tete,a_propos_de_copyright12)       "(I) F. Manenti + E. Pavoni + L. Moretti"
+   set caption(en-tete,a_propos_de_copyright13)       "(E) R. G. Fuentetaja + C. Garcia + J. Iglesias"
+   set caption(en-tete,a_propos_de_copyright14)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright15)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+   set caption(en-tete,a_propos_de_copyright16)       "(UA) O. Maliy, (RUS) O. Maliy"
 
 }
 

@@ -84,6 +84,7 @@ namespace eval ::console {
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright13)\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright14)\n" style_entete
       $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright15)\n" style_entete
+      $This.txt1 insert end "# $caption(en-tete,a_propos_de_copyright16)\n" style_entete
       $This.txt1 insert end "#\n" style_entete
       $This.txt1 insert end "\n"
 
