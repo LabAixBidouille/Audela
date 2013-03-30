@@ -2771,6 +2771,9 @@ namespace eval ::confVersion {
       label $This.lab19 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright15)"
       pack $This.lab19 -in $This.frame1 -padx 30 -pady 2
 
+      label $This.lab20 -borderwidth 1 -anchor w -text "$caption(en-tete,a_propos_de_copyright16)"
+      pack $This.lab20 -in $This.frame1 -padx 30 -pady 2
+
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
          -command { ::confVersion::fermer }
