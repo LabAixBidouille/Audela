@@ -244,7 +244,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(div,ok)                                "OK"
    set caption(div,apply)                             "Applicare"
    set caption(div,save)                              "# Définir ma palette"
-   set caption(div,copy)                              "# Copier vers le presse papier"
+   set caption(div,copy)                              "Copia negli appunti"
    set caption(div,help)                              "Aiuto"
    set caption(div,close)                             "Chiudere"
    set caption(div,annuler)                           "Cancellare"
