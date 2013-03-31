@@ -24,7 +24,7 @@
 #define NOMAD1_NUMBER_OF_FILES_PER_SUBDIRECTORY 10
 #define NOMAD1_LENTGH_ACCELERATOR_TABLE         160
 #define NOMAD1_HALF_LENTGH_ACCELERATOR_TABLE    80
-#define NOMAD1_CHUNK_SHIFT_RA                24
+#define NOMAD1_CHUNK_SHIFT_RA                   24
 
 
 typedef struct {
