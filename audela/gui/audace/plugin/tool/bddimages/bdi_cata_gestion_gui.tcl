@@ -2307,11 +2307,11 @@ namespace eval cata_gestion_gui {
                #--- Sous menu astrometrie
                menu $menubar.catalog.menu.astrom -tearoff 0
                $menubar.catalog.menu.astrom add command -label "Definir sciences et references" -accelerator "Ctrl-s" \
-                  -command "::set_ref_science::go" 
+                  -command "::bdi_gui_set_ref_science::go" 
                $menubar.catalog.menu.astrom add command -label "Defaire tous les catalogues" -accelerator "Ctrl-u" \
-                  -command "::set_ref_science::unset"
+                  -command "::bdi_gui_set_ref_science::unset"
                $menubar.catalog.menu.astrom add command -label "Effacer les marques" -accelerator "Ctrl-e" \
-                  -command "::set_ref_science::clean"
+                  -command "::bdi_gui_set_ref_science::clean"
 
 
            #--- menu PSF
@@ -2416,9 +2416,9 @@ namespace eval cata_gestion_gui {
 
       # Bindings
       bind $::cata_gestion_gui::fen <Key-F1> { ::console::GiveFocus }
-      bind $::cata_gestion_gui::fen <Control-Key-s> { ::set_ref_science::go }
-      bind $::cata_gestion_gui::fen <Control-Key-u> { ::set_ref_science::unset }
-      bind $::cata_gestion_gui::fen <Control-Key-e> { ::set_ref_science::clean }
+      bind $::cata_gestion_gui::fen <Control-Key-s> { ::bdi_gui_set_ref_science::go }
+      bind $::cata_gestion_gui::fen <Control-Key-u> { ::bdi_gui_set_ref_science::unset }
+      bind $::cata_gestion_gui::fen <Control-Key-e> { ::bdi_gui_set_ref_science::clean }
 
       ::cata_gestion_gui::charge_memory
 
