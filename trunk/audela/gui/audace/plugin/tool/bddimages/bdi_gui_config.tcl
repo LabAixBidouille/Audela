@@ -695,11 +695,11 @@ proc ::bdi_gui_config::createDialog { } {
             entry $cataconf.ucac3_dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 50
          checkbutton $cataconf.ucac4_check -highlightthickness 0 -text "  UCAC4" -variable ::tools_cata::use_ucac4
             entry $cataconf.ucac4_dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 50
-         checkbutton $cataconf.ppmx_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmx -state disabled
+         checkbutton $cataconf.ppmx_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmx
             entry $cataconf.ppmx_dir -relief sunken -textvariable ::tools_cata::catalog_ppmx -width 50
-         checkbutton $cataconf.ppmxl_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmxl -state disabled
+         checkbutton $cataconf.ppmxl_check -highlightthickness 0 -text "  PPMXL" -variable ::tools_cata::use_ppmxl
             entry $cataconf.ppmxl_dir -relief sunken -textvariable ::tools_cata::catalog_ppmxl -width 50
-         checkbutton $cataconf.nomad1_check -highlightthickness 0 -text "  NOMAD1" -variable ::tools_cata::use_nomad1 -state disabled
+         checkbutton $cataconf.nomad1_check -highlightthickness 0 -text "  NOMAD1" -variable ::tools_cata::use_nomad1
             entry $cataconf.nomad1_dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 50
          checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
             entry $cataconf.twomass_dir -relief sunken -textvariable ::tools_cata::catalog_2mass -width 50
