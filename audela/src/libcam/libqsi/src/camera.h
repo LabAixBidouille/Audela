@@ -26,8 +26,8 @@
 #pragma once
 
 // The following macros define the minimum required platform.  The minimum required platform
-// is the earliest version of Windows, Internet Explorer etc. that has the necessary features to run 
-// your application.  The macros work by enabling all features available on platform versions up to and 
+// is the earliest version of Windows, Internet Explorer etc. that has the necessary features to run
+// your application.  The macros work by enabling all features available on platform versions up to and
 // including the version specified.
 
 // Modify the following defines if you have to target a platform prior to the ones specified below.
@@ -65,13 +65,14 @@ struct camprop {
 };
 
 
-void qsiGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *ccdTemperature, 
+void qsiGetTemperatureInfo(struct camprop *cam, double *setTemperature, double *ccdTemperature,
                                double *ambientTemperature, int *regulationEnabled, int *power);
 void qsiSetupDialog(struct camprop *cam);
 
 int qsiSetWheelPosition(struct camprop *cam, int position);
 int qsiGetWheelPosition(struct camprop *cam, int *position);
 int qsiGetWheelNames(struct camprop *cam, char **names);
+int qsiPutWheelNames(struct camprop *cam, int position, char *name);
 int qsiGetProperty(struct camprop *cam, char *propertyName, char *propertyValue);
 
 #ifdef __cplusplus
