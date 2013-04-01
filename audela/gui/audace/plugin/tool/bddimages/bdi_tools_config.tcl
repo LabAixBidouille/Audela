@@ -102,6 +102,7 @@ proc ::bdi_tools_config::load_config { name } {
       gren_info "Connexion reussie : $connectstatus\n"
    }
 
+   #--- Nom de la bdd
    return $bddconf(name)
 
 }

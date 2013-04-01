@@ -1,3 +1,22 @@
+## \file tools_astrometry.tcl
+#  \brief     Outils des methodes de reduction astrometriquee des images.
+#  \author    Frederic Vachier & Jerome Berthier
+#  \version   1.0
+#  \date      2013
+#  \copyright GNU Public License.
+#  \par Ressource 
+#  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages tools_astrometry.tcl]
+#  \endcode
+#  \todo      modifier le nom du fichier source -> bdi_tools_astrometry.tcl
+
+# Mise à jour $Id: tools_astrometry.tcl 9228 2013-03-20 16:24:43Z fredvachier $
+
+#============================================================
+## Declaration du namespace \c tools_astrometry .
+#  \brief     Outils des methodes de reduction astrometriquee des images.
+#  \bug       Probleme de memoire avec la cmde exec
+#  \warning   Pour developpeur seulement
+#  \todo      Sauver les infos MPC dans le header de l'image
 namespace eval tools_astrometry {
 
    variable science
@@ -25,6 +44,148 @@ namespace eval tools_astrometry {
    variable rapport_reduc
    variable rapport_instru
    variable rapport_cata
+
+   #----------------------------------------------------------------------------
+   # INIT CONF
+   #----------------------------------------------------------------------------
+
+   #----------------------------------------------------------------------------
+   ## Initialisation des variables de namespace
+   #  \details   Si la variable n'existe pas alors on va chercher
+   #             dans la variable globale \c conf
+   # @return void
+   proc ::tools_astrometry::inittoconf { } {
+
+      global conf
+
+      set ::tools_astrometry::orient "wn"
+      set ::tools_astrometry::science "SKYBOT"
+      set ::tools_astrometry::reference "UCAC2"
+      set ::tools_astrometry::ephemcc_options ""
+
+      if {! [info exists ::tools_astrometry::ifortlib] } {
+         if {[info exists conf(bddimages,astrometry,ifortlib)]} {
+            set ::tools_astrometry::ifortlib $conf(bddimages,astrometry,ifortlib)
+         } else {
+            set ::tools_astrometry::ifortlib "/opt/intel/lib/intel64"
+         }
+      }
+      if {! [info exists ::tools_astrometry::locallib] } {
+         if {[info exists conf(bddimages,astrometry,locallib)]} {
+            set ::tools_astrometry::locallib $conf(bddimages,astrometry,locallib)
+         } else {
+            set ::tools_astrometry::locallib "/usr/local/lib"
+         }
+      }
+      if {! [info exists ::tools_astrometry::use_ephem_imcce] } {
+         if {[info exists conf(bddimages,astrometry,use_ephem_imcce)]} {
+            set ::tools_astrometry::use_ephem_imcce $conf(bddimages,astrometry,use_ephem_imcce)
+         } else {
+            set ::tools_astrometry::use_ephem_imcce 1
+         }
+      }
+      if {! [info exists ::tools_astrometry::imcce_ephemcc] } {
+         if {[info exists conf(bddimages,astrometry,imcce_ephemcc)]} {
+            set ::tools_astrometry::imcce_ephemcc $conf(bddimages,astrometry,imcce_ephemcc)
+         } else {
+            set ::tools_astrometry::imcce_ephemcc "/usr/local/bin/ephemcc"
+         }
+      }
+      if {! [info exists ::tools_astrometry::use_ephem_jpl] } {
+         if {[info exists conf(bddimages,astrometry,use_ephem_jpl)]} {
+            set ::tools_astrometry::use_ephem_jpl $conf(bddimages,astrometry,use_ephem_jpl)
+         } else {
+            set ::tools_astrometry::use_ephem_jpl 0
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_uai_code] } {
+         if {[info exists conf(bddimages,astrometry,rapport,uai_code)]} {
+            set ::tools_astrometry::rapport_uai_code $conf(bddimages,astrometry,rapport,uai_code)
+         } else {
+            set ::tools_astrometry::rapport_uai_code ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_uai_location] } {
+         if {[info exists conf(bddimages,astrometry,rapport,uai_location)]} {
+            set ::tools_astrometry::rapport_uai_location $conf(bddimages,astrometry,rapport,uai_location)
+         } else {
+            set ::tools_astrometry::rapport_uai_location ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_rapporteur] } {
+         if {[info exists conf(bddimages,astrometry,rapport,rapporteur)]} {
+            set ::tools_astrometry::rapport_rapporteur $conf(bddimages,astrometry,rapport,rapporteur)
+         } else {
+            set ::tools_astrometry::rapport_rapporteur ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_mail] } {
+         if {[info exists conf(bddimages,astrometry,rapport,mail)]} {
+            set ::tools_astrometry::rapport_mail $conf(bddimages,astrometry,rapport,mail)
+         } else {
+            set ::tools_astrometry::rapport_mail ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_observ] } {
+         if {[info exists conf(bddimages,astrometry,rapport,observ)]} {
+            set ::tools_astrometry::rapport_observ $conf(bddimages,astrometry,rapport,observ)
+         } else {
+            set ::tools_astrometry::rapport_observ ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_reduc] } {
+         if {[info exists conf(bddimages,astrometry,rapport,reduc)]} {
+            set ::tools_astrometry::rapport_reduc $conf(bddimages,astrometry,rapport,reduc)
+         } else {
+            set ::tools_astrometry::rapport_reduc ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_instru] } {
+         if {[info exists conf(bddimages,astrometry,rapport,instru)]} {
+            set ::tools_astrometry::rapport_instru $conf(bddimages,astrometry,rapport,instru)
+         } else {
+            set ::tools_astrometry::rapport_instru ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_cata] } {
+         if {[info exists conf(bddimages,astrometry,rapport,cata)]} {
+            set ::tools_astrometry::rapport_cata $conf(bddimages,astrometry,rapport,cata)
+         } else {
+            set ::tools_astrometry::rapport_cata ""
+         }
+      }
+      if {! [info exists ::tools_astrometry::rapport_desti] } {
+         if {[info exists conf(bddimages,astrometry,rapport,mpc_mail)]} {
+            set ::tools_astrometry::rapport_desti $conf(bddimages,astrometry,rapport,mpc_mail)
+         } else {
+            set ::tools_astrometry::rapport_desti "mpc@cfa.harvard.edu"
+         }
+      }
+
+   }
+
+   #----------------------------------------------------------------------------
+   ## Sauvegarde des variables de namespace
+   # @return void
+   #
+   proc ::tools_astrometry::closetoconf {  } {
+
+      global conf
+      set conf(bddimages,astrometry,ifortlib)             $::tools_astrometry::ifortlib
+      set conf(bddimages,astrometry,locallib)             $::tools_astrometry::locallib
+      set conf(bddimages,astrometry,use_ephem_imcce)      $::tools_astrometry::use_ephem_imcce
+      set conf(bddimages,astrometry,imcce_ephemcc)        $::tools_astrometry::imcce_ephemcc
+      set conf(bddimages,astrometry,use_ephem_jpl)        $::tools_astrometry::use_ephem_jpl
+      set conf(bddimages,astrometry,rapport,uai_code)     $::tools_astrometry::rapport_uai_code
+      set conf(bddimages,astrometry,rapport,uai_location) $::tools_astrometry::rapport_uai_location
+      set conf(bddimages,astrometry,rapport,rapporteur)   $::tools_astrometry::rapport_rapporteur
+      set conf(bddimages,astrometry,rapport,mail)         $::tools_astrometry::rapport_mail
+      set conf(bddimages,astrometry,rapport,observ)       $::tools_astrometry::rapport_observ
+      set conf(bddimages,astrometry,rapport,reduc)        $::tools_astrometry::rapport_reduc
+      set conf(bddimages,astrometry,rapport,instru)       $::tools_astrometry::rapport_instru
+      set conf(bddimages,astrometry,rapport,cata)         $::tools_astrometry::rapport_cata
+
+   }
 
 
    #----------------------------------------------------------------------------

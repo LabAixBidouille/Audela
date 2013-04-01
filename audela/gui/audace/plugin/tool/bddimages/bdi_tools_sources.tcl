@@ -372,17 +372,12 @@ namespace eval tools_sources {
 
       set ids 0
       foreach s $sources {
-      
          foreach cata $s {
-            #gren_info "cata = $cata\n"
             if {[lindex $cata 0] == "IMG" } {
                set sa($ids) [lindex $cata 1]
-            } else {
-               #gren_info "catalog = $sa($ids,[lindex $cata 0])\n"
             }
          }
-         
-      incr ids
+         incr ids
       }
 
       set ids 0
