@@ -58,7 +58,7 @@ int cmd_tcl_csucac4(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			"{ ID ra_deg dec_deg im1_mag im2_mag sigmag_mag objt dsf "
 			"sigra_deg sigdc_deg na1 nu1 us1 cepra_deg cepdc_deg pmrac_masperyear pmdc_masperyear sigpmr_masperyear sigpmd_masperyear "
 			"id2m jmag_mag hmag_mag kmag_mag jicqflg hicqflg kicqflg je2mpho he2mpho ke2mpho "
-			"apassB_mag apassV_mag apassG_mag apassR_mag apassI_mag apassB_errmag apassV_errmag apassG_errmag apassR_errmag apassI_errmag"
+			"apassB_mag apassV_mag apassG_mag apassR_mag apassI_mag apassB_errmag apassV_errmag apassG_errmag apassR_errmag apassI_errmag "
 			"catflg1 catflg2 catflg3 catflg4 starId zoneUcac2 idUcac2 } } } ",-1);
 	Tcl_DStringAppend(&dsptr,"{",-1); // start of sources list
 
