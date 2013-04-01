@@ -25,6 +25,9 @@ namespace eval bdi_gui_set_ref_science {
    variable progress
    variable liste_cata
 
+   #--- Chargement des captions
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_set_ref_science.cap ]\""
+
 }
 
 
@@ -129,25 +132,27 @@ proc ::bdi_gui_set_ref_science::apply { } {
    
    # Sanity check
    if {[string length $::bdi_gui_set_ref_science::cata_science] < 1 && [string length $::bdi_gui_set_ref_science::cata_ref] < 1} {
-      tk_messageBox -message "Veuillez selectionner au moins un catalogue Science ou Reference" -type ok
+      tk_messageBox -message "$caption(bdi_gui_set_ref_science,noselect)" -type ok
       return
    }
 
    ::bdi_gui_set_ref_science::clean
 
    # Log
-   gren_info "Sciences = $::bdi_gui_set_ref_science::cata_science\n"
-   gren_info "Reference = $::bdi_gui_set_ref_science::cata_ref\n"
-   set msg "Mask = $::bdi_gui_set_ref_science::use_mask"
-   if {$::bdi_gui_set_ref_science::use_mask} { set msg "$msg (bordure = $::bdi_gui_set_ref_science::mask pixels)" }
+   gren_info "Apply: nb images to process = $::tools_cata::nb_img_list\n"
+   gren_info "  Science = $::bdi_gui_set_ref_science::cata_science\n"
+   gren_info "  Reference = $::bdi_gui_set_ref_science::cata_ref\n"
+   set msg "  Mask = $::bdi_gui_set_ref_science::use_mask"
+   if {$::bdi_gui_set_ref_science::use_mask} {
+      set msg "  $msg (border = $::bdi_gui_set_ref_science::mask pixels)"
+   }
    gren_info "$msg\n"
-   gren_info "Nb images a traiter = $::tools_cata::nb_img_list\n"
 
    # Go
    for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
 
       set current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
-      gren_info " -> traitement image $::tools_cata::id_current_image / $::tools_cata::nb_img_list ([::bddimages_liste::lget $current_image filename])\n"
+      gren_info " -> processing image $::tools_cata::id_current_image / $::tools_cata::nb_img_list ([::bddimages_liste::lget $current_image filename])\n"
       ::bdi_gui_set_ref_science::set_progress $::tools_cata::id_current_image $::tools_cata::nb_img_list
 
       set current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
@@ -293,13 +298,13 @@ proc ::bdi_gui_set_ref_science::unset { } {
    ::bdi_gui_set_ref_science::inittoconf
 
    # Log
-   gren_info "Nb images a traiter = $::tools_cata::nb_img_list\n"
+   gren_info "Unset: nb images to process = $::tools_cata::nb_img_list\n"
 
    # Go
    for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
 
       set current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
-      gren_info " -> traitement image $::tools_cata::id_current_image / $::tools_cata::nb_img_list ([::bddimages_liste::lget $current_image filename])\n"
+      gren_info " -> processing image $::tools_cata::id_current_image / $::tools_cata::nb_img_list ([::bddimages_liste::lget $current_image filename])\n"
 
       set current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -409,7 +414,7 @@ proc ::bdi_gui_set_ref_science::go { } {
    frame $frm -borderwidth 0 -cursor arrow
    pack $frm -in $::bdi_gui_set_ref_science::fen -anchor c -side top -expand 1 -fill both -padx 10 -pady 5
 
-      label $frm.lab -text "Veuillez selectionner au moins un catalogue" -relief groove -borderwidth 1 -padx 10 -pady 7
+      label $frm.lab -text "$caption(bdi_gui_set_ref_science,select)" -relief groove -borderwidth 1 -padx 10 -pady 7
       pack  $frm.lab -in $frm -side top -padx 5 -pady 5 -anchor c
 
       set sciences [frame $frm.sciences -borderwidth 0 -cursor arrow -relief groove]
@@ -444,13 +449,13 @@ proc ::bdi_gui_set_ref_science::go { } {
          set mask [frame $options.mask -borderwidth 0 -cursor arrow -relief groove]
          pack $mask -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $mask.check -highlightthickness 0 -text "Exclure les sources a moins de" -variable ::bdi_gui_set_ref_science::use_mask
+             checkbutton $mask.check -highlightthickness 0 -text "$set caption(bdi_gui_set_ref_science,msgmask)" -variable ::bdi_gui_set_ref_science::use_mask
              pack $mask.check -in $mask -anchor c -side left -padx 5 -pady 0 
 
              entry $mask.val -relief sunken -textvariable ::bdi_gui_set_ref_science::mask -borderwidth 2 -width 6 -justify center
              pack  $mask.val -in $mask -anchor c -side left -padx 5 -pady 0 
 
-             label $mask.lab -text "pixels du bord de l'image"
+             label $mask.lab -text "$set caption(bdi_gui_set_ref_science,unimask)"
              pack  $mask.lab -in $mask -anchor c -side left -padx 5 -pady 0
 
              button $mask.voir -image view -borderwidth 1 -command "::bdi_gui_set_ref_science::view_mask"
@@ -459,7 +464,7 @@ proc ::bdi_gui_set_ref_science::go { } {
          set satu [frame $options.satu -borderwidth 0 -cursor arrow -relief groove]
          pack $satu -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $satu.check -highlightthickness 0 -text "Exclure les sources de flux superieur a" -variable ::bdi_gui_set_ref_science::use_saturation
+             checkbutton $satu.check -highlightthickness 0 -text "$set caption(bdi_gui_set_ref_science,msgflux)" -variable ::bdi_gui_set_ref_science::use_saturation
              pack $satu.check -in $satu -anchor c -side left -padx 5 -pady 0 
 
              entry $satu.val -relief sunken -textvariable ::bdi_gui_set_ref_science::saturation -borderwidth 1 -width 6 -justify center
@@ -471,7 +476,7 @@ proc ::bdi_gui_set_ref_science::go { } {
          set voir [frame $options.voir -borderwidth 0 -cursor arrow -relief groove]
          pack $voir -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $voir.check -highlightthickness 0 -text "Voir les sources selectionnees" -variable ::bdi_gui_set_ref_science::use_visu
+             checkbutton $voir.check -highlightthickness 0 -text "$set caption(bdi_gui_set_ref_science,voirsou)" -variable ::bdi_gui_set_ref_science::use_visu
              pack $voir.check -in $voir -anchor c -side left -padx 5 -pady 0 
 
       set progressbar [frame $frm.progressbar -borderwidth 0 -cursor arrow -relief groove]
@@ -483,11 +488,11 @@ proc ::bdi_gui_set_ref_science::go { } {
       set boutonpied [frame $frm.boutonpied  -borderwidth 0 -cursor arrow -relief groove]
       pack $boutonpied  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-          button $boutonpied.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
+          button $boutonpied.fermer -text "$caption(bdi_gui_set_ref_science,fermer)" -borderwidth 2 -takefocus 1 \
              -command "::bdi_gui_set_ref_science::fermer"
           pack $boutonpied.fermer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-          button $boutonpied.enregistrer -text "Appliquer" -borderwidth 2 -takefocus 1 \
+          button $boutonpied.enregistrer -text "$caption(bdi_gui_set_ref_science,apply)" -borderwidth 2 -takefocus 1 \
              -command "::bdi_gui_set_ref_science::apply"
           pack $boutonpied.enregistrer -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
