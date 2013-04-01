@@ -11,9 +11,14 @@
 #============================================================
 namespace eval ::vo_tools {
    package provide vo_tools 2.0
+   global audace
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] vo_tools_go.cap ]
+
+   #--- Definie la variable de listerner pour le statut de connexion
+   set ::vo_tools::interop($::audace(visuNo),interopListener) ""
+
 }
 
 #------------------------------------------------------------
@@ -318,9 +323,11 @@ proc ::vo_tools::SampConnect {} {
    if { [::SampTools::connect] } {
       ::vo_tools::handleInteropBtnState
       ::vo_tools::handleBroadcastBtnState
+      set ::vo_tools::interop($::audace(visuNo),interopListener) ""
    } else {
       ::vo_tools::handleInteropBtnState "disabled"
       ::vo_tools::handleBroadcastBtnState "disabled"
+      set ::vo_tools::interop($::audace(visuNo),interopListener) "disabled"
    }
 }
 
@@ -332,6 +339,26 @@ proc ::vo_tools::SampDisconnect {} {
    ::Samp::destroy
    ::vo_tools::handleInteropBtnState "disabled"
    ::vo_tools::handleBroadcastBtnState "disabled"
+   set ::vo_tools::interop($::audace(visuNo),interopListener) "disabled"
+}
+
+#------------------------------------------------------------
+# ::vo_tools::addInteropListener
+#    Ajoute une procedure a appeler si le statut de la connexion change 
+#------------------------------------------------------------
+proc ::vo_tools::addInteropListener { cmd } {
+   global audace
+   trace add variable ::vo_tools::interop($::audace(visuNo),interopListener) write $cmd
+}
+
+
+#------------------------------------------------------------
+# ::vo_tools::removeInteropListener
+#    Enleve une procedure a appeler si le statut de la connexion change
+#------------------------------------------------------------
+proc ::vo_tools::removeInteropListener { cmd } {
+   global audace
+   trace remove variable ::vo_tools::interop($::audace(visuNo),interopListener) write $cmd
 }
 
 #------------------------------------------------------------
@@ -434,7 +461,7 @@ proc ::vo_tools::InstallMenuInterop { frame } {
    # Tentative de connexion au hub Samp
    ::vo_tools::SampConnect
    # Ajoute un binding sur le canvas pour broadcaster les coordonnees cliquees
-   bind $::audace(hCanvas) <ButtonPress-1> {::SampTools::broadcastPointAtSky %W %x %y}
+   bind $::audace(hCanvas) <ButtonPress-1> {catch {::SampTools::broadcastPointAtSky %W %x %y}}
    # Active la mise a jour automatique de l'affichage quand on change d'image
    ::confVisu::addFileNameListener $visuNo "::vo_tools::handleBroadcastBtnState"
    ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"

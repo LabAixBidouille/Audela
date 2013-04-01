@@ -1809,8 +1809,7 @@ proc ::votable::getFieldFromKey_UCAC4 { key } {
       }
       na1 -
       nu1 -
-      us1 -
-      cn1 {
+      us1 {
          if {[string equal -nocase $key "na1"]} { set description "UCAC object classification flag" }
          if {[string equal -nocase $key "nu1"]} { set description "Number of used UCAC observations" }
          if {[string equal -nocase $key "us1"]} { set description "Number of catalog positions used for pm's" }
@@ -1909,20 +1908,32 @@ proc ::votable::getFieldFromKey_UCAC4 { key } {
                        "$::votable::Field::DATATYPE \"int\"" \
                        "$::votable::Field::WIDTH \"2\""
       }
-      smB_mag -
-      smR2_mag -
-      smI_mag {
-         if {[string equal -nocase $key "smB_mag"]} { 
-            set description "SuperCosmos Bmag" 
-            set ucd "phot.mag;em.opt.B"
-         }
-         if {[string equal -nocase $key "smR2_mag"]} { 
-            set description "SuperCosmos R2mag" 
-            set ucd "phot.mag;em.opt.R"
-         }
-         if {[string equal -nocase $key "smI_mag"]} { 
-            set description "SuperCosmos Kmag" 
-            set ucd "phot.mag;em.opt.I"
+      apassB_mag -
+      apassV_mag -
+      apassG_mag -
+      apassR_mag -
+      apassI_mag {
+         switch $key {
+            "apassB_mag" {
+               set description "B magnitude from APASS" 
+               set ucd "phot.mag;em.opt.B"
+            }
+            "apassV_mag" {
+               set description "V magnitude from APASS" 
+               set ucd "phot.mag;em.opt.V"
+            }
+            "apassG_mag" {
+               set description "G magnitude from APASS" 
+               set ucd "phot.mag;em.opt.G"
+            }
+            "apassR_mag" {
+               set description "R magnitude from APASS" 
+               set ucd "phot.mag;em.opt.R"
+            }
+            "apassI_mag" {
+               set description "I magnitude from APASS" 
+               set ucd "phot.mag;em.opt.I"
+            }
          }
          lappend field "$::votable::Field::UCD \"$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -1930,59 +1941,60 @@ proc ::votable::getFieldFromKey_UCAC4 { key } {
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"mag\""
       }
-      clbl {
-         set description "SuperCosmos star/galaxy classif./quality flag"
-         lappend field "$::votable::Field::UCD \"src.class.starGalaxy\"" \
-                       "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"2\""
-      }
-      qfB -
-      qfR2 -
-      qfI {
-         if {[string equal -nocase $key "qfB"]}  { set description "B-band quality-confusion flag" }
-         if {[string equal -nocase $key "qfR2"]} { set description "R-band quality-confusion flag" }
-         if {[string equal -nocase $key "qfI"]}  { set description "I-band quality-confusion flag" }
-         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
-                       "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"3\"" 
+      apassB_errmag -
+      apassV_errmag -
+      apassG_errmag -
+      apassR_errmag -
+      apassI_errmag {
+         switch $key {
+            "apassB_errmag" {
+               set description "Estimated error on B magnitude from APASS" 
+               set ucd "stat.error;phot.mag;em.opt.B"
+            }
+            "apassV_errmag" {
+               set description "Estimated error on V magnitude from APASS" 
+               set ucd "stat.error;phot.mag;em.opt.V"
+            }
+            "apassG_errmag" {
+               set description "Estimated error on G magnitude from APASS" 
+               set ucd "stat.error;phot.mag;em.opt.G"
+            }
+            "apassR_errmag" {
+               set description "Estimated error on R magnitude from APASS" 
+               set ucd "stat.error;phot.mag;em.opt.R"
+            }
+            "apassI_errmag" {
+               set description "Estimated error on I magnitude from APASS" 
+               set ucd "stat.error;phot.mag;em.opt.I"
+            }
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
       }
       catflg1 -
       catflg2 -
       catflg3 -
-      catflg4 -
-      catflg5 -
-      catflg6 -
-      catflg7 -
-      catflg8 -
-      catflg9 -
-      catflg10 {
+      catflg4 {
          set i [string replace $key 0 5 ""]
          set description "Matching flags for catalogue $i"
          lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
                        "$::votable::Field::DATATYPE \"int\"" \
                        "$::votable::Field::WIDTH \"3\"" 
       }
-      g1 -
-      c1 {
-         if {[string equal -nocase $key "g1"]}  { set description "Yale SPM object type (g-flag)" }
-         if {[string equal -nocase $key "c1"]}  { set description "Yale SPM input cat. (c-flag) " }
-         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
+      starId -
+      zoneUcac2 -
+      idUcac2 {
+         switch $key {
+            "starId"    { set description "Unique star ID number" }
+            "zoneUcac2" { set description "UCAC2 zone number (ZZZ)" }
+            "idUcac2"   { set description "UCAC2 number (NNNNNN)" }
+         }
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
                        "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"3\"" 
-      }
-      leda -
-      x2m {
-         if {[string equal -nocase $key "leda"]}  { set description "LEDA galaxy match flag" }
-         if {[string equal -nocase $key "x2m"]}  { set description "2MASS extend.source flag" }
-         lappend field "$::votable::Field::UCD \"meta.code.qual\"" \
-                       "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"3\"" 
-      }
-      rn {
-         set description "mean position (MPOS) number"
-         lappend field "$::votable::Field::UCD \"meta.id\"" \
-                       "$::votable::Field::DATATYPE \"int\"" \
-                       "$::votable::Field::WIDTH \"9\"" 
+                       "$::votable::Field::WIDTH \"10\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
@@ -2001,7 +2013,7 @@ proc ::votable::getFieldFromKey_UCAC4 { key } {
 #
 proc ::votable::getFieldFromKey_2MASS { key } {
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID 2MASS.${key}" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID TWOMASS.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ID {

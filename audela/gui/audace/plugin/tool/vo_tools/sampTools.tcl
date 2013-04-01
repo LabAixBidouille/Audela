@@ -62,7 +62,7 @@ proc ::SampTools::broadcastImage {} {
 
 #------------------------------------------------------------
 # ::SampTools::broadcastTable
-#    Broadcast l'image courante
+#    Broadcast la VOTable courante
 #------------------------------------------------------------
 proc ::SampTools::broadcastTable {} {
    global caption
