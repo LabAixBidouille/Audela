@@ -49,6 +49,8 @@ proc ::bdi_gui_config::configuration { this } {
 proc ::bdi_gui_config::fermer { } {
 
    variable This
+
+   ::gui_cata_creation::closetoconf
    ::bdi_gui_config::recup_position
    destroy $This
 
@@ -235,13 +237,31 @@ proc ::bdi_gui_config::new_config_name { } {
 
 
 #------------------------------------------------------------
+## GUI de choix de la couleur pour l'affichage des catalogues
+# @param color_cata string Couleur initiale
+# @param button string pathName du bouton a colorer
+# @return void
+#
+proc ::bdi_gui_config::choose_color { color_cata button } {
+
+   upvar $color_cata color
+
+   set new_color [tk_chooseColor -initialcolor $color -title "Choose color"]
+   if {$new_color != ""} {
+      set color $new_color
+      $button configure -bg $color
+   }
+   
+}
+
+
+#------------------------------------------------------------
 ## Creation de la GUI de gestion des config de bddimages
 # @return void
 #
 proc ::bdi_gui_config::createDialog { } {
 
    variable This
-   variable allparams
 
    global audace caption color
    global conf bddconf myconf
@@ -249,6 +269,10 @@ proc ::bdi_gui_config::createDialog { } {
 
    set widthlab 30
    set widthentry 30
+
+   #--- Initialisation des parametres
+   ::gui_cata_creation::inittoconf 
+   ::gui_astrometry::inittoconf
 
    #--- Geometry
    if { ! [ info exists conf(bddimages,geometry_config) ] } {
@@ -285,15 +309,17 @@ proc ::bdi_gui_config::createDialog { } {
       pack $cata -in $onglets.list -expand yes -fill both 
       $onglets.list add $cata -text "$caption(bdi_gui_config,tab_cata)"
 
-      set ephem [frame $onglets.list.ephem]
-      pack $ephem -in $onglets.list -expand yes -fill both 
-      $onglets.list add $ephem -text "$caption(bdi_gui_config,tab_ephem)"
+      set astrom [frame $onglets.list.astrom]
+      pack $astrom -in $onglets.list -expand yes -fill both 
+      $onglets.list add $astrom -text "$caption(bdi_gui_config,tab_astrom)"
 
       set others [frame $onglets.list.others]
       pack $others -in $onglets.list -expand yes -fill both 
       $onglets.list add $others -text "$caption(bdi_gui_config,tab_others)"
 
+   #----------------------------------------------------------------------------
    #--- CONFIG XML
+   #----------------------------------------------------------------------------
 
    #--- Cree un frame pour la liste des bddimages de l'utilisateur
    frame $xml.conf -borderwidth 1 -relief groove
@@ -403,9 +429,9 @@ proc ::bdi_gui_config::createDialog { } {
             pack $xml.bdd.serv.help -in $xml.bdd.serv -side left -anchor w -padx 1
 
 
-     #--- Cree un frame pour les repertoires
-     frame $xml.dir -borderwidth 1 -relief groove
-     pack $xml.dir -in $xml -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
+      #--- Cree un frame pour les repertoires
+      frame $xml.dir -borderwidth 1 -relief groove
+      pack $xml.dir -in $xml -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
 
          #--- Cree un label pour le titre
          label $xml.dir.titre -text "$caption(bdi_gui_config,dir)" -borderwidth 0 -relief flat
@@ -573,9 +599,9 @@ proc ::bdi_gui_config::createDialog { } {
                     -text "$caption(bdi_gui_config,info)" -command { ::bdi_gui_config::GetInfo "dir_tmp" }
             pack $xml.dir.dirtmp.help -in $xml.dir.dirtmp -side left -anchor w -padx 1
 
-     #--- Cree un frame pour les variables
-     frame $xml.var -borderwidth 1 -relief groove
-     pack $xml.var -in $xml -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
+      #--- Cree un frame pour les variables
+      frame $xml.var -borderwidth 1 -relief groove
+      pack $xml.var -in $xml -anchor w -side top -expand 0 -fill x -padx 10 -pady 5
 
          #--- Cree un label pour le titre
          label $xml.var.titre -text "$caption(bdi_gui_config,variables)" -borderwidth 0 -relief flat
@@ -589,27 +615,24 @@ proc ::bdi_gui_config::createDialog { } {
             label $xml.var.lim.lab -text "$caption(bdi_gui_config,listlimit)" -width $widthlab -anchor w -borderwidth 0 -relief flat
             pack $xml.var.lim.lab -in $xml.var.lim -side left -anchor w -padx 1
             #--- Cree une ligne d'entree pour la variable
-            entry $xml.var.lim.dat -textvariable bddconf(limit) -borderwidth 1 -relief groove -width 25 -justify left
+            entry $xml.var.lim.dat -textvariable bddconf(limit) -borderwidth 1 -relief groove -width 6 -justify left
             pack $xml.var.lim.dat -in $xml.var.lim -side left -anchor w -padx 1
-            #--- Cree un bouton vide
-            button $xml.var.lim.test -state disabled -relief flat -anchor c -width 4
-            pack $xml.var.lim.test -in $xml.var.lim -side left -anchor w -padx 1
             #--- Cree un bouton info
             button $xml.var.lim.help -state active -relief groove -anchor c \
                     -text "$caption(bdi_gui_config,info)" -command { ::bdi_gui_config::GetInfo "listlimit" }
             pack $xml.var.lim.help -in $xml.var.lim -side left -anchor w -padx 1
 
-     #--- Cree un frame pour les boutons d'actions
-     frame $xml.action -relief flat
-     pack $xml.action -in $xml -anchor c -side top -expand 0 -padx 10 -pady 5
+      #--- Cree un frame pour les boutons d'actions
+      frame $xml.action -relief flat
+      pack $xml.action -in $xml -anchor c -side top -expand 0 -padx 10 -pady 5
 
          #--- Cree un bouton pour ajouter une config
-         button $xml.action.add -state active -text "$caption(bdi_gui_config,add)" \
+         button $xml.action.add -text "$caption(bdi_gui_config,add)" \
             -command { ::bdi_gui_config::new_config_name }
          pack $xml.action.add -in $xml.action -side left -anchor c -padx 3
 
          #--- Cree un bouton pour effacer la config courante
-         button $xml.action.del -state active -text "$caption(bdi_gui_config,delete)" \
+         button $xml.action.del -text "$caption(bdi_gui_config,delete)" \
             -command { 
                if {[catch {::bdi_tools_xml::delete_config $bddconf(current_config)} new_config] == 0} {
                   $menuconfig delete $bddconf(current_config)
@@ -619,38 +642,238 @@ proc ::bdi_gui_config::createDialog { } {
              }
          pack $xml.action.del -in $xml.action -side left -anchor c -padx 3
 
-      #--- Cree un frame pour y mettre les boutons
-      frame $This.buttons \
-         -borderwidth 0 -cursor arrow
-      pack $This.buttons \
-         -in $This -anchor s -side bottom -expand 0 -fill x
-
-        #--- Creation du bouton Fermer
-        button $This.buttons.but_fermer -text "$caption(bdi_gui_config,fermer)" -borderwidth 2 \
-           -command { ::bdi_gui_config::fermer }
-        pack $This.buttons.but_fermer -in $This.buttons -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Creation du bouton Sauver
-        button $This.buttons.but_save -text "$caption(bdi_gui_config,save)" -borderwidth 2 \
-            -command "::bdi_gui_config::save_and_load"
-        pack $This.buttons.but_save -in $This.buttons -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-        #--- Creation du bouton aide
-        button $This.buttons.but_aide -text "$caption(bdi_gui_config,aide)" -borderwidth 2 \
-           -command { ::audace::showHelpPlugin tool bddimages bddimages.htm }
-        pack $This.buttons.but_aide -in $This.buttons -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+         #--- Cree un bouton pour sauver les configs
+         button $xml.action.save -text "$caption(bdi_gui_config,save)" \
+             -command { ::bdi_gui_config::save_and_load }
+         pack $xml.action.save -in $xml.action -side left -anchor c -padx 3
 
 
-   #--- Gestion du bouton
-   #$audace(base).bddimages_config.fra5.but1 configure -relief raised -state normal
+   #----------------------------------------------------------------------------
+   #--- CONFIG CATA
+   #----------------------------------------------------------------------------
+
+   #--- Cree un frame pour afficher les onglets
+   set subonglets [frame $cata.onglets -borderwidth 0 -cursor arrow -relief groove]
+   pack $subonglets -in $cata -side top -expand 1 -fill both -padx 5 -pady 5
+
+      pack [ttk::notebook $subonglets.list] -expand yes -fill both -padx 5 -pady 5
+
+      set conesearch [frame $subonglets.list.xml]
+      pack $conesearch -in $subonglets.list -expand yes -fill both 
+      $subonglets.list add $conesearch -text "Conesearch"
+      
+      set affichage [frame $subonglets.list.cata]
+      pack $affichage -in $subonglets.list -expand yes -fill both 
+      $subonglets.list add $affichage -text "Display"
+
+      #--- Cree un frame pour la liste des cata
+      set cataconftitre [frame $conesearch.titre -borderwidth 0 -relief groove]
+      pack $cataconftitre -in $conesearch -anchor w -side top -expand 0 -fill x -padx 10 -pady 10
+         label $cataconftitre.lab -text "$caption(bdi_gui_config,conesearchmsg)" -font $bddconf(font,arial_10_b)
+         pack $cataconftitre.lab -in $cataconftitre -side top -fill x -anchor c -pady 10
+   
+      #--- Cree un frame pour la liste des cata
+      set cataconf [frame $conesearch.conf -borderwidth 0 -relief groove]
+      pack $cataconf -in $conesearch -anchor c -side top -expand 0 -padx 10 -pady 5
+   
+         checkbutton $cataconf.skybot_check -highlightthickness 0 -text "  SKYBOT" -variable ::tools_cata::use_skybot
+            entry $cataconf.skybot_dir -relief sunken -textvariable ::tools_cata::catalog_skybot -width 50
+         frame $cataconf.blank -height 15
+         checkbutton $cataconf.usnoa2_check -highlightthickness 0 -text "  USNO-A2" -variable ::tools_cata::use_usnoa2 -state disabled
+            entry $cataconf.usnoa2_dir -relief sunken -textvariable ::tools_cata::catalog_usnoa2 -width 50
+            #button $cataconf.usnoa2_explore -text "..." \
+            #   -command { 
+            #      if {! [catch {::bdi_gui_config::getDir $::tools_cata::catalog_usnoa2 "du catalogue USNOA2"} wdir]} {
+            #         set ::tools_cata::catalog_usnoa2 $wdir
+            #      }
+            #   }
+         checkbutton $cataconf.tycho2_check -highlightthickness 0 -text "  TYCHO-2" -variable ::tools_cata::use_tycho2
+            entry $cataconf.tycho2_dir -relief sunken -textvariable ::tools_cata::catalog_tycho2 -width 50
+         checkbutton $cataconf.ucac2_check -highlightthickness 0 -text "  UCAC2" -variable ::tools_cata::use_ucac2
+            entry $cataconf.ucac2_dir -relief sunken -textvariable ::tools_cata::catalog_ucac2 -width 50
+         checkbutton $cataconf.ucac3_check -highlightthickness 0 -text "  UCAC3" -variable ::tools_cata::use_ucac3
+            entry $cataconf.ucac3_dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 50
+         checkbutton $cataconf.ucac4_check -highlightthickness 0 -text "  UCAC4" -variable ::tools_cata::use_ucac4
+            entry $cataconf.ucac4_dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 50
+         checkbutton $cataconf.ppmx_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmx -state disabled
+            entry $cataconf.ppmx_dir -relief sunken -textvariable ::tools_cata::catalog_ppmx -width 50
+         checkbutton $cataconf.ppmxl_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmxl -state disabled
+            entry $cataconf.ppmxl_dir -relief sunken -textvariable ::tools_cata::catalog_ppmxl -width 50
+         checkbutton $cataconf.nomad1_check -highlightthickness 0 -text "  NOMAD1" -variable ::tools_cata::use_nomad1 -state disabled
+            entry $cataconf.nomad1_dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 50
+         checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
+            entry $cataconf.twomass_dir -relief sunken -textvariable ::tools_cata::catalog_2mass -width 50
+
+      grid $cataconf.skybot_check  $cataconf.skybot_dir  -sticky nsw -pady 3
+      grid $cataconf.blank
+      grid $cataconf.usnoa2_check  $cataconf.usnoa2_dir  -sticky nsw -pady 3
+      grid $cataconf.tycho2_check  $cataconf.tycho2_dir  -sticky nsw -pady 3
+      grid $cataconf.ucac2_check   $cataconf.ucac2_dir   -sticky nsw -pady 3
+      grid $cataconf.ucac3_check   $cataconf.ucac3_dir   -sticky nsw -pady 3
+      grid $cataconf.ucac4_check   $cataconf.ucac4_dir   -sticky nsw -pady 3
+      grid $cataconf.ppmx_check    $cataconf.ppmx_dir    -sticky nsw -pady 3
+      grid $cataconf.ppmxl_check   $cataconf.ppmxl_dir   -sticky nsw -pady 3
+      grid $cataconf.nomad1_check  $cataconf.nomad1_dir  -sticky nsw -pady 3
+      grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
+      grid columnconfigure $cataconf 0 -pad 30
+
+      #--- Cree un frame pour la liste des cata
+      set catafftitre [frame $affichage.titre -borderwidth 0 -relief groove]
+      pack $catafftitre -in $affichage -anchor w -side top -expand 0 -fill x -padx 10 -pady 10
+         label $catafftitre.lab -text "$caption(bdi_gui_config,dispcatamsg)" -font $bddconf(font,arial_10_b)
+         pack $catafftitre.lab -in $catafftitre -side top -fill x -anchor c -pady 10
+
+      #--- Cree un frame pour la liste des cata
+      set cataff [frame $affichage.conf -borderwidth 0 -relief groove]
+      pack $cataff -in $affichage -anchor c -side top -expand 0 -padx 10 -pady 5
+   
+         label $cataff.img_lab -text "* IMG"
+            button $cataff.img_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_img \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_img $cataff.img_color"
+            spinbox $cataff.img_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_img -width 3
+            $cataff.img_radius set $::gui_cata::size_img_sav
+         label $cataff.astroid_lab -text "* ASTROID"
+            button $cataff.astroid_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_astroid \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_astroid $cataff.astroid_color"
+            spinbox $cataff.astroid_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_astroid -width 3
+            $cataff.astroid_radius set $::gui_cata::size_astroid_sav
+         label $cataff.skybot_lab -text "* SKYBOT"
+            button $cataff.skybot_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_skybot \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_skybot $cataff.skybot_color"
+            spinbox $cataff.skybot_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_skybot -width 3
+            $cataff.skybot_radius set $::gui_cata::size_skybot_sav
+         label $cataff.usnoa2_lab -text "* USNOA2"
+            button $cataff.usnoa2_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_usnoa2 \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_usnoa2 $cataff.usnoa2_color"
+            spinbox $cataff.usnoa2_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_usnoa2 -width 3
+            $cataff.usnoa2_radius set $::gui_cata::size_usnoa2_sav
+         label $cataff.tycho2_lab -text "* TYCHO-2"
+            button $cataff.tycho2_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_tycho2 \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_tycho2 $cataff.tycho2_color"
+            spinbox $cataff.tycho2_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_tycho2 -width 3
+            $cataff.tycho2_radius set $::gui_cata::size_tycho2_sav
+         label $cataff.ucac2_lab -text "* UCAC2"
+            button $cataff.ucac2_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ucac2 \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_ucac2 $cataff.ucac2_color"
+            spinbox $cataff.ucac2_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac2 -width 3
+            $cataff.ucac2_radius set $::gui_cata::size_ucac2_sav
+         label $cataff.ucac3_lab -text "* UCAC3"
+            button $cataff.ucac3_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ucac3 \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_ucac3 $cataff.ucac3_color"
+            spinbox $cataff.ucac3_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac3 -width 3
+            $cataff.ucac3_radius set $::gui_cata::size_ucac3_sav
+         label $cataff.ucac4_lab -text "* UCAC4"
+            button $cataff.ucac4_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ucac4 \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_ucac4 $cataff.ucac4_color"
+            spinbox $cataff.ucac4_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ucac4 -width 3
+            $cataff.ucac4_radius set $::gui_cata::size_ucac4_sav
+         label $cataff.ppmx_lab -text "* PPMX"
+            button $cataff.ppmx_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ppmx \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_ppmx $cataff.ppmx_color"
+            spinbox $cataff.ppmx_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmx -width 3
+            $cataff.ppmx_radius set $::gui_cata::size_ppmx_sav
+         label $cataff.ppmxl_lab -text "* PPMXL"
+            button $cataff.ppmxl_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ppmxl \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_ppmxl $cataff.ppmxl_color"
+            spinbox $cataff.ppmxl_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_ppmxl -width 3
+            $cataff.ppmxl_radius set $::gui_cata::size_ppmxl_sav
+         label $cataff.nomad1_lab -text "* NOMAD1"
+            button $cataff.nomad1_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_nomad1 \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_nomad1 $cataff.nomad1_color"
+            spinbox $cataff.nomad1_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_nomad1 -width 3
+            $cataff.nomad1_radius set $::gui_cata::size_nomad1_sav
+         label $cataff.2mass_lab -text "* 2MASS"
+            button $cataff.2mass_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_2mass \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_2mass $cataff.2mass_color"
+            spinbox $cataff.2mass_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_2mass -width 3
+            $cataff.2mass_radius set $::gui_cata::size_2mass_sav
+
+         frame $cataff.blank -width 15 -height 15
+
+      grid $cataff.skybot_lab  $cataff.skybot_color  $cataff.skybot_radius $cataff.astroid_lab $cataff.astroid_color $cataff.astroid_radius -sticky nsw -pady 1
+      grid $cataff.blank
+      grid $cataff.img_lab     $cataff.img_color     $cataff.img_radius    $cataff.usnoa2_lab  $cataff.usnoa2_color  $cataff.usnoa2_radius  -sticky nsw -pady 1
+      grid $cataff.tycho2_lab  $cataff.tycho2_color  $cataff.tycho2_radius $cataff.ucac3_lab   $cataff.ucac3_color   $cataff.ucac3_radius -sticky nsw -pady 1
+      grid $cataff.ucac2_lab   $cataff.ucac2_color   $cataff.ucac2_radius  $cataff.ucac4_lab   $cataff.ucac4_color   $cataff.ucac4_radius -sticky nsw -pady 1
+      grid $cataff.ppmx_lab    $cataff.ppmx_color    $cataff.ppmx_radius   $cataff.ppmxl_lab   $cataff.ppmxl_color   $cataff.ppmxl_radius -sticky nsw -pady 1
+      grid $cataff.nomad1_lab  $cataff.nomad1_color  $cataff.nomad1_radius $cataff.2mass_lab   $cataff.2mass_color   $cataff.2mass_radius -sticky nsw -pady 1
+      grid columnconfigure $cataff 0 -pad 20
+      grid columnconfigure $cataff 1 -pad 10
+      grid columnconfigure $cataff 2 -pad 10
+      grid columnconfigure $cataff 3 -pad 20
+      grid columnconfigure $cataff 4 -pad 10
+      grid columnconfigure $cataff 5 -pad 10
+
+
+   #----------------------------------------------------------------------------
+   #--- CONFIG ASTROMETRIE
+   #----------------------------------------------------------------------------
+
+   #--- Cree un frame pour la liste des bddimages de l'utilisateur
+   frame $astrom.conf -borderwidth 0 -relief groove
+   pack $astrom.conf -in $astrom -anchor w -side top -expand 0 -fill x -padx 10 -pady 10
+
+      #--- Cree un label pour le titre
+      label $astrom.conf.titre -text "$caption(bdi_gui_config,titleastrom)" -font $bddconf(font,arial_10_b)
+      pack $astrom.conf.titre -in $astrom.conf -side top -anchor c -padx 10 -pady 5
+
+      #--- Cree un frame pour le titre et le menu deroulant
+      set gril [frame $astrom.conf.param -borderwidth 0 -relief solid]
+      pack $gril -in $astrom.conf -anchor c -side top -expand 0 -padx 10 -pady 5
+
+         label $gril.lab1 -text "$caption(bdi_gui_config,ephemcc)"
+         entry $gril.val1 -relief sunken -textvariable ::tools_astrometry::imcce_ephemcc
+
+         label $gril.lab2 -text "$caption(bdi_gui_config,ephemccopts)"
+         entry $gril.val2 -relief sunken -textvariable ::tools_astrometry::ephemcc_options
+
+         label $gril.lab3 -text "$caption(bdi_gui_config,ifortlib)"
+         entry $gril.val3 -relief sunken -textvariable ::tools_astrometry::ifortlib
+
+         label $gril.lab4 -text "$caption(bdi_gui_config,locallib)" 
+         entry $gril.val4 -relief sunken -textvariable ::tools_astrometry::locallib
+
+         label $gril.lab5 -text "$caption(bdi_gui_config,thunderbird)"
+         entry $gril.val5 -relief sunken -textvariable ::bdi_tools::sendmail::thunderbird
+
+      grid $gril.lab1  $gril.val1 -sticky nse -pady 5
+      grid $gril.lab2  $gril.val2 -sticky nse -pady 5
+      grid $gril.lab5  $gril.val5 -sticky nse -pady 5
+      grid $gril.lab3  $gril.val3 -sticky nse -pady 5
+      grid $gril.lab4  $gril.val4 -sticky nse -pady 5
+      grid columnconfigure $gril 1 -pad 20
+
+
+   #----------------------------------------------------------------------------
+   #--- CONFIG ?
+   #----------------------------------------------------------------------------
+
+
+
+   #----------------------------------------------------------------------------
+   #--- PIED DE FEN
+   #----------------------------------------------------------------------------
+
+   #--- Cree un frame pour y mettre les boutons
+   frame $This.buttons \
+      -borderwidth 0 -cursor arrow
+   pack $This.buttons \
+      -in $This -anchor s -side bottom -expand 0 -fill x
+
+     #--- Creation du bouton Fermer
+     button $This.buttons.but_fermer -text "$caption(bdi_gui_config,fermer)" -borderwidth 2 \
+        -command { ::bdi_gui_config::fermer }
+     pack $This.buttons.but_fermer -in $This.buttons -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+
+     #--- Creation du bouton aide
+     button $This.buttons.but_aide -text "$caption(bdi_gui_config,aide)" -borderwidth 2 \
+        -command { ::audace::showHelpPlugin tool bddimages bddimages.htm }
+     pack $This.buttons.but_aide -in $This.buttons -side right -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
    #--- La fenetre est active
    focus $This
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
 
 }

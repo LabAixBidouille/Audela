@@ -172,7 +172,6 @@ namespace eval gui_cata {
    variable statenext
    variable current_appli
 
-
    variable color_button_good "green"
    variable color_button_bad  "red"
    variable color_wcs      
@@ -202,6 +201,7 @@ namespace eval gui_cata {
    variable gui_nomad1
    variable gui_2mass
    variable gui_skybot
+   variable gui_astroid
 
    variable size_img
    variable size_usnoa2
@@ -214,20 +214,22 @@ namespace eval gui_cata {
    variable size_2mass
    variable size_tycho2
    variable size_skybot
+   variable size_astroid
    variable size_ovni
 
-   variable color_img     "red"
-   variable color_usnoa2  "green"
-   variable color_ucac2   "cyan"
-   variable color_ucac3   "#006cc0"
-   variable color_ucac4   "#0000ff"
-   variable color_ppmx    "orange"
-   variable color_ppmxl   "orange"
-   variable color_nomad1  "#b4b308"
-   variable color_2mass   "#b4b308"
-   variable color_tycho2  "orange"
-   variable color_skybot  "magenta"
-   variable color_ovni    "yellow"
+   variable color_img    
+   variable color_usnoa2 
+   variable color_ucac2  
+   variable color_ucac3  
+   variable color_ucac4  
+   variable color_ppmx   
+   variable color_ppmxl  
+   variable color_nomad1 
+   variable color_2mass  
+   variable color_tycho2 
+   variable color_skybot 
+   variable color_ovni   
+   variable color_astroid
 
    variable dssvisu
    variable dssbuf 
@@ -252,7 +254,8 @@ namespace eval gui_cata {
       global conf
 
       ::tools_cata::inittoconf
-      
+      ::psf_tools::inittoconf
+
       # Check button GUI
 
       if {! [info exists ::gui_cata::gui_img] } {
@@ -330,6 +333,13 @@ namespace eval gui_cata {
             set ::gui_cata::gui_skybot $conf(bddimages,cata,gui_skybot)
          } else {
             set ::gui_cata::gui_skybot 0
+         }
+      }
+      if {! [info exists ::gui_cata::gui_astroid] } {
+         if {[info exists conf(bddimages,cata,gui_astroid)]} {
+            set ::gui_cata::gui_astroid $conf(bddimages,cata,gui_astroid)
+         } else {
+            set ::gui_cata::gui_astroid 0
          }
       }
 
@@ -433,6 +443,15 @@ namespace eval gui_cata {
       }
       set ::gui_cata::size_skybot_sav $::gui_cata::size_skybot
       
+      if {! [info exists ::gui_cata::size_astroid] } {
+         if {[info exists conf(bddimages,cata,size_astroid)]} {
+            set ::gui_cata::size_astroid $conf(bddimages,cata,size_astroid)
+         } else {
+            set ::gui_cata::size_astroid 1
+         }
+      }
+      set ::gui_cata::size_astroid_sav $::gui_cata::size_astroid
+
       if {! [info exists ::gui_cata::size_ovni] } {
          if {[info exists conf(bddimages,cata,size_ovni)]} {
             set ::gui_cata::size_ovni $conf(bddimages,cata,size_ovni)
@@ -440,6 +459,116 @@ namespace eval gui_cata {
             set ::gui_cata::size_ovni 1
          }
       }
+      set ::gui_cata::size_ovni_sav $::gui_cata::size_ovni
+
+      # Couleurs des cata
+      if {! [info exists ::gui_cata::color_img] } {
+         if {[info exists conf(bddimages,cata,color_img)]} {
+            set ::gui_cata::color_img $conf(bddimages,cata,color_img)
+         } else {
+            set ::gui_cata::color_img "red"
+         }
+      }
+      set ::gui_cata::color_img_sav $::gui_cata::color_img
+      
+      if {! [info exists ::gui_cata::color_usnoa2] } {
+         if {[info exists conf(bddimages,cata,color_usnoa2)]} {
+            set ::gui_cata::color_usnoa2 $conf(bddimages,cata,color_usnoa2)
+         } else {
+            set ::gui_cata::color_usnoa2 "green"
+         }
+      }
+      set ::gui_cata::color_usnoa2_sav $::gui_cata::color_usnoa2
+      
+      if {! [info exists ::gui_cata::color_ucac2] } {
+         if {[info exists conf(bddimages,cata,color_ucac2)]} {
+            set ::gui_cata::color_ucac2 $conf(bddimages,cata,color_ucac2)
+         } else {
+            set ::gui_cata::color_ucac2 "cyan"
+         }
+      }
+      set ::gui_cata::color_ucac2_sav $::gui_cata::color_ucac2
+
+      if {! [info exists ::gui_cata::color_ucac3] } {
+         if {[info exists conf(bddimages,cata,color_ucac3)]} {
+            set ::gui_cata::color_ucac3 $conf(bddimages,cata,color_ucac3)
+         } else {
+            set ::gui_cata::color_ucac3 "#006cc0"
+         }
+      }
+      set ::gui_cata::color_ucac3_sav $::gui_cata::color_ucac3
+      
+      if {! [info exists ::gui_cata::color_ucac4] } {
+         if {[info exists conf(bddimages,cata,color_ucac4)]} {
+            set ::gui_cata::color_ucac4 $conf(bddimages,cata,color_ucac4)
+         } else {
+            set ::gui_cata::color_ucac4 "#0000ff"
+         }
+      }
+      set ::gui_cata::color_ucac4_sav $::gui_cata::color_ucac4
+
+      if {! [info exists ::gui_cata::color_ppmx] } {
+         if {[info exists conf(bddimages,cata,color_ppmx)]} {
+            set ::gui_cata::color_ppmx $conf(bddimages,cata,color_ppmx)
+         } else {
+            set ::gui_cata::color_ppmx "orange"
+         }
+      }
+      set ::gui_cata::color_ppmx_sav $::gui_cata::color_ppmx
+
+      if {! [info exists ::gui_cata::color_ppmxl] } {
+         if {[info exists conf(bddimages,cata,color_ppmxl)]} {
+            set ::gui_cata::color_ppmxl $conf(bddimages,cata,color_ppmxl)
+         } else {
+            set ::gui_cata::color_ppmxl "orange"
+         }
+      }
+      set ::gui_cata::color_ppmxl_sav $::gui_cata::color_ppmxl
+
+      if {! [info exists ::gui_cata::color_nomad1] } {
+         if {[info exists conf(bddimages,cata,color_nomad1)]} {
+            set ::gui_cata::color_nomad1 $conf(bddimages,cata,color_nomad1)
+         } else {
+            set ::gui_cata::color_nomad1 "#b4b308"
+         }
+      }
+      set ::gui_cata::color_nomad1_sav $::gui_cata::color_nomad1
+
+      if {! [info exists ::gui_cata::color_2mass] } {
+         if {[info exists conf(bddimages,cata,color_2mass)]} {
+            set ::gui_cata::color_2mass $conf(bddimages,cata,color_2mass)
+         } else {
+            set ::gui_cata::color_2mass "#b4b308"
+         }
+      }
+      set ::gui_cata::color_2mass_sav $::gui_cata::color_2mass
+      
+      if {! [info exists ::gui_cata::color_tycho2] } {
+         if {[info exists conf(bddimages,cata,color_tycho2)]} {
+            set ::gui_cata::color_tycho2 $conf(bddimages,cata,color_tycho2)
+         } else {
+            set ::gui_cata::color_tycho2 "orange"
+         }
+      }
+      set ::gui_cata::color_tycho2_sav $::gui_cata::color_tycho2
+      
+      if {! [info exists ::gui_cata::color_skybot] } {
+         if {[info exists conf(bddimages,cata,color_skybot)]} {
+            set ::gui_cata::color_skybot $conf(bddimages,cata,color_skybot)
+         } else {
+            set ::gui_cata::color_skybot "magenta"
+         }
+      }
+      set ::gui_cata::color_skybot_sav $::gui_cata::color_skybot
+      
+      if {! [info exists ::gui_cata::color_astroid] } {
+         if {[info exists conf(bddimages,cata,color_astroid)]} {
+            set ::gui_cata::color_astroid $conf(bddimages,cata,color_astroid)
+         } else {
+            set ::gui_cata::color_astroid "purple"
+         }
+      }
+      set ::gui_cata::color_astroid_sav $::gui_cata::color_astroid
 
       # Uncosmic or not
       if {! [info exists ::gui_cata::use_uncosmic] } {
@@ -465,19 +594,6 @@ namespace eval gui_cata {
       }
 
 
-      set ::tools_cata::nb_img     0
-      set ::tools_cata::nb_usnoa2  0
-      set ::tools_cata::nb_tycho2  0
-      set ::tools_cata::nb_ppmx    0
-      set ::tools_cata::nb_ppmxl   0
-      set ::tools_cata::nb_ucac2   0
-      set ::tools_cata::nb_ucac3   0
-      set ::tools_cata::nb_ucac4   0
-      set ::tools_cata::nb_nomad1  0
-      set ::tools_cata::nb_2mass   0
-      set ::tools_cata::nb_skybot  0
-      set ::tools_cata::nb_astroid 0
-
    }
 
 
@@ -485,17 +601,22 @@ namespace eval gui_cata {
 
       global conf
 
-      set conf(bddimages,cata,gui_img)    $::gui_cata::gui_img
-      set conf(bddimages,cata,gui_usnoa2) $::gui_cata::gui_usnoa2
-      set conf(bddimages,cata,gui_ucac2)  $::gui_cata::gui_ucac2
-      set conf(bddimages,cata,gui_ucac3)  $::gui_cata::gui_ucac3
-      set conf(bddimages,cata,gui_ucac4)  $::gui_cata::gui_ucac4
-      set conf(bddimages,cata,gui_ppmx)   $::gui_cata::gui_ppmx
-      set conf(bddimages,cata,gui_ppmxl)  $::gui_cata::gui_ppmxl
-      set conf(bddimages,cata,gui_tycho2) $::gui_cata::gui_tycho2
-      set conf(bddimages,cata,gui_nomad1) $::gui_cata::gui_nomad1
-      set conf(bddimages,cata,gui_2mass)  $::gui_cata::gui_2mass
-      set conf(bddimages,cata,gui_skybot) $::gui_cata::gui_skybot
+      ::tools_cata::closetoconf
+      ::psf_tools::closetoconf
+
+      # Specifique a GUI cata
+      set conf(bddimages,cata,gui_img)     $::gui_cata::gui_img
+      set conf(bddimages,cata,gui_usnoa2)  $::gui_cata::gui_usnoa2
+      set conf(bddimages,cata,gui_ucac2)   $::gui_cata::gui_ucac2
+      set conf(bddimages,cata,gui_ucac3)   $::gui_cata::gui_ucac3
+      set conf(bddimages,cata,gui_ucac4)   $::gui_cata::gui_ucac4
+      set conf(bddimages,cata,gui_ppmx)    $::gui_cata::gui_ppmx
+      set conf(bddimages,cata,gui_ppmxl)   $::gui_cata::gui_ppmxl
+      set conf(bddimages,cata,gui_tycho2)  $::gui_cata::gui_tycho2
+      set conf(bddimages,cata,gui_nomad1)  $::gui_cata::gui_nomad1
+      set conf(bddimages,cata,gui_2mass)   $::gui_cata::gui_2mass
+      set conf(bddimages,cata,gui_skybot)  $::gui_cata::gui_skybot
+      set conf(bddimages,cata,gui_astroid) $::gui_cata::gui_astroid
       
       # Uncosmic or not!
       set conf(bddimages,cata,use_uncosmic)  $::gui_cata::use_uncosmic
@@ -503,18 +624,33 @@ namespace eval gui_cata {
       set conf(bddimages,cata,uncosm_param2) $::tools_cdl::uncosm_param2
 
       # Taille des ronds
-      set conf(bddimages,cata,size_img)    $::gui_cata::size_img
-      set conf(bddimages,cata,size_usnoa2) $::gui_cata::size_usnoa2
-      set conf(bddimages,cata,size_ucac2)  $::gui_cata::size_ucac2
-      set conf(bddimages,cata,size_ucac3)  $::gui_cata::size_ucac3
-      set conf(bddimages,cata,size_ucac4)  $::gui_cata::size_ucac4
-      set conf(bddimages,cata,size_ppmx)   $::gui_cata::size_ppmx
-      set conf(bddimages,cata,size_ppmxl)  $::gui_cata::size_ppmxl
-      set conf(bddimages,cata,size_nomad1) $::gui_cata::size_nomad1
-      set conf(bddimages,cata,size_tycho2) $::gui_cata::size_tycho2
-      set conf(bddimages,cata,size_2mass)  $::gui_cata::size_2mass
-      set conf(bddimages,cata,size_skybot) $::gui_cata::size_skybot
-      set conf(bddimages,cata,size_ovni)   $::gui_cata::size_ovni
+      set conf(bddimages,cata,size_img)     $::gui_cata::size_img
+      set conf(bddimages,cata,size_usnoa2)  $::gui_cata::size_usnoa2
+      set conf(bddimages,cata,size_ucac2)   $::gui_cata::size_ucac2
+      set conf(bddimages,cata,size_ucac3)   $::gui_cata::size_ucac3
+      set conf(bddimages,cata,size_ucac4)   $::gui_cata::size_ucac4
+      set conf(bddimages,cata,size_ppmx)    $::gui_cata::size_ppmx
+      set conf(bddimages,cata,size_ppmxl)   $::gui_cata::size_ppmxl
+      set conf(bddimages,cata,size_nomad1)  $::gui_cata::size_nomad1
+      set conf(bddimages,cata,size_tycho2)  $::gui_cata::size_tycho2
+      set conf(bddimages,cata,size_2mass)   $::gui_cata::size_2mass
+      set conf(bddimages,cata,size_skybot)  $::gui_cata::size_skybot
+      set conf(bddimages,cata,size_astroid) $::gui_cata::size_astroid
+      set conf(bddimages,cata,size_ovni)    $::gui_cata::size_ovni
+
+      # Couleurs des cata
+      set conf(bddimages,cata,color_img)     $::gui_cata::color_img
+      set conf(bddimages,cata,color_usnoa2)  $::gui_cata::color_usnoa2
+      set conf(bddimages,cata,color_ucac2)   $::gui_cata::color_ucac2
+      set conf(bddimages,cata,color_ucac3)   $::gui_cata::color_ucac3
+      set conf(bddimages,cata,color_ucac4)   $::gui_cata::color_ucac4
+      set conf(bddimages,cata,color_ppmx)    $::gui_cata::color_ppmx
+      set conf(bddimages,cata,color_ppmxl)   $::gui_cata::color_ppmxl
+      set conf(bddimages,cata,color_nomad1)  $::gui_cata::color_nomad1
+      set conf(bddimages,cata,color_tycho2)  $::gui_cata::color_tycho2
+      set conf(bddimages,cata,color_2mass)   $::gui_cata::color_2mass
+      set conf(bddimages,cata,color_skybot)  $::gui_cata::color_skybot
+      set conf(bddimages,cata,color_astroid) $::gui_cata::color_astroid
 
    }
 
@@ -574,6 +710,8 @@ namespace eval gui_cata {
 
 
    proc ::gui_cata::getDSS { } {
+
+      gren_info "Get DSS image @ RA=$::tools_cata::ra deg, DEC=$::tools_cata::dec deg, fov=$::tools_cata::radius arcmin..."
 
       if {$::tools_cata::radius == ""} { set ::tools_cata::radius 15.0 }
       if {$::tools_cata::crota == ""} { set ::tools_cata::crota 0.0 }
@@ -739,7 +877,7 @@ return
 
 
    #
-   # cata_creation_gui::Trace_Repere
+   # gui_cata::trace_repere
    # Trace le repere E/N dans l'image
    # @param scale_factor list of the x and y scale factor of the image
    #

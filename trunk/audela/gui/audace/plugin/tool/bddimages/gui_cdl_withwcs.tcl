@@ -1216,7 +1216,7 @@ proc random {{range 100}} {
       if {$errnum} { return -code $errnum $msg }
       set listsources [::tools_cata::get_cata_xml $catafile]
       set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
-      set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      ##set listsources [::tools_sources::set_common_fields_skybot $listsources]
       affich_rond $listsources SKYBOT $::gui_cata::color_skybot 1
       catch { file delete -force  $catafile}
       
@@ -1288,7 +1288,7 @@ proc random {{range 100}} {
       if {$errnum} { return -code $errnum $msg }
       set listsources [::tools_cata::get_cata_xml $catafile]
       set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag calib_mag_ss1}]
-      set listsources [::tools_sources::set_common_fields_skybot $listsources]
+      ##set listsources [::tools_sources::set_common_fields_skybot $listsources]
       affich_rond $listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot
 
    }

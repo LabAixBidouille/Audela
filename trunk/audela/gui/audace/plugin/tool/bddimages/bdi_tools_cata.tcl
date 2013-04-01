@@ -209,9 +209,295 @@ namespace eval tools_cata {
    
    proc ::tools_cata::inittoconf { } {
 
-      ::psf_tools::inittoconf
-      
+      global conf
+
+      set ::tools_cata::nb_img     0
+      set ::tools_cata::nb_usnoa2  0
+      set ::tools_cata::nb_tycho2  0
+      set ::tools_cata::nb_ppmx    0
+      set ::tools_cata::nb_ppmxl   0
+      set ::tools_cata::nb_ucac2   0
+      set ::tools_cata::nb_ucac3   0
+      set ::tools_cata::nb_ucac4   0
+      set ::tools_cata::nb_nomad1  0
+      set ::tools_cata::nb_2mass   0
+      set ::tools_cata::nb_skybot  0
+      set ::tools_cata::nb_astroid 0
+
+      # Utilisation des catalogues
+      if {! [info exists ::tools_cata::use_usnoa2] } {
+         if {[info exists conf(bddimages,cata,use_usnoa2)]} {
+            set ::tools_cata::use_usnoa2 $conf(bddimages,cata,use_usnoa2)
+         } else {
+            set ::tools_cata::use_usnoa2 1
+         }
+      }
+      if {! [info exists ::tools_cata::use_ucac2] } {
+         if {[info exists conf(bddimages,cata,use_ucac2)]} {
+            set ::tools_cata::use_ucac2 $conf(bddimages,cata,use_ucac2)
+         } else {
+            set ::tools_cata::use_ucac2 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_ucac3] } {
+         if {[info exists conf(bddimages,cata,use_ucac3)]} {
+            set ::tools_cata::use_ucac3 $conf(bddimages,cata,use_ucac3)
+         } else {
+            set ::tools_cata::use_ucac3 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_ucac4] } {
+         if {[info exists conf(bddimages,cata,use_ucac4)]} {
+            set ::tools_cata::use_ucac4 $conf(bddimages,cata,use_ucac4)
+         } else {
+            set ::tools_cata::use_ucac4 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_ppmx] } {
+         if {[info exists conf(bddimages,cata,use_ppmx)]} {
+            set ::tools_cata::use_ppmx $conf(bddimages,cata,use_ppmx)
+         } else {
+            set ::tools_cata::use_ppmx 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_ppmxl] } {
+         if {[info exists conf(bddimages,cata,use_ppmxl)]} {
+            set ::tools_cata::use_ppmxl $conf(bddimages,cata,use_ppmxl)
+         } else {
+            set ::tools_cata::use_ppmxl 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_tycho2] } {
+         if {[info exists conf(bddimages,cata,use_tycho2)]} {
+            set ::tools_cata::use_tycho2 $conf(bddimages,cata,use_tycho2)
+         } else {
+            set ::tools_cata::use_tycho2 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_nomad1] } {
+         if {[info exists conf(bddimages,cata,use_nomad1)]} {
+            set ::tools_cata::use_nomad1 $conf(bddimages,cata,use_nomad1)
+         } else {
+            set ::tools_cata::use_nomad1 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_2mass] } {
+         if {[info exists conf(bddimages,cata,use_2mass)]} {
+            set ::tools_cata::use_2mass $conf(bddimages,cata,use_2mass)
+         } else {
+            set ::tools_cata::use_2mass 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_skybot] } {
+         if {[info exists conf(bddimages,cata,use_skybot)]} {
+            set ::tools_cata::use_skybot $conf(bddimages,cata,use_skybot)
+         } else {
+            set ::tools_cata::use_skybot 0
+         }
+      }
+
+      # Repertoires 
+      if {! [info exists ::tools_cata::catalog_usnoa2] } {
+         if {[info exists conf(bddimages,catfolder,usnoa2)]} {
+            set ::tools_cata::catalog_usnoa2 $conf(bddimages,catfolder,usnoa2)
+         } else {
+            set ::tools_cata::catalog_usnoa2 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ucac2] } {
+         if {[info exists conf(bddimages,catfolder,ucac2)]} {
+            set ::tools_cata::catalog_ucac2 $conf(bddimages,catfolder,ucac2)
+         } else {
+            set ::tools_cata::catalog_ucac2 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ucac3] } {
+         if {[info exists conf(bddimages,catfolder,ucac3)]} {
+            set ::tools_cata::catalog_ucac3 $conf(bddimages,catfolder,ucac3)
+         } else {
+            set ::tools_cata::catalog_ucac3 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ucac4] } {
+         if {[info exists conf(bddimages,catfolder,ucac4)]} {
+            set ::tools_cata::catalog_ucac4 $conf(bddimages,catfolder,ucac4)
+         } else {
+            set ::tools_cata::catalog_ucac4 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ppmx] } {
+         if {[info exists conf(bddimages,catfolder,ppmx)]} {
+            set ::tools_cata::catalog_ppmx $conf(bddimages,catfolder,ppmx)
+         } else {
+            set ::tools_cata::catalog_ppmx ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_ppmxl] } {
+         if {[info exists conf(bddimages,catfolder,ppmxl)]} {
+            set ::tools_cata::catalog_ppmxl $conf(bddimages,catfolder,ppmxl)
+         } else {
+            set ::tools_cata::catalog_ppmxl ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_tycho2] } {
+         if {[info exists conf(bddimages,catfolder,tycho2)]} {
+            set ::tools_cata::catalog_tycho2 $conf(bddimages,catfolder,tycho2)
+         } else {
+            set ::tools_cata::catalog_tycho2 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_nomad1] } {
+         if {[info exists conf(bddimages,catfolder,nomad1)]} {
+            set ::tools_cata::catalog_nomad1 $conf(bddimages,catfolder,nomad1)
+         } else {
+            set ::tools_cata::catalog_nomad1 ""
+         }
+      }
+      if {! [info exists ::tools_cata::catalog_2mass] } {
+         if {[info exists conf(bddimages,catfolder,2mass)]} {
+            set ::tools_cata::catalog_2mass $conf(bddimages,catfolder,2mass)
+         } else {
+            set ::tools_cata::catalog_2mass ""
+         }
+      }
+
+      # Services
+      if {! [info exists ::tools_cata::catalog_skybot] } {
+         if {[info exists conf(bddimages,catfolder,skybot)]} {
+            set ::tools_cata::catalog_2mass $conf(bddimages,catfolder,skybot)
+         } else {
+            set ::tools_cata::catalog_skybot "http://vo.imcce.fr/webservices/skybot/"
+         }
+      }
+
+      # Autres utilitaires
+      if {! [info exists ::tools_cata::keep_radec] } {
+         if {[info exists conf(bddimages,cata,keep_radec)]} {
+            set ::tools_cata::keep_radec $conf(bddimages,cata,keep_radec)
+         } else {
+            set ::tools_cata::keep_radec 1
+         }
+      }
+      if {! [info exists ::tools_cata::create_cata] } {
+         if {[info exists conf(bddimages,cata,create_cata)]} {
+            set ::tools_cata::create_cata $conf(bddimages,cata,create_cata)
+         } else {
+            set ::tools_cata::create_cata 1
+         }
+      }
+      if {! [info exists ::tools_cata::delpv] } {
+         if {[info exists conf(bddimages,cata,delpv)]} {
+            set ::tools_cata::delpv $conf(bddimages,cata,delpv)
+         } else {
+            set ::tools_cata::delpv 1
+         }
+      }
+      if {! [info exists ::tools_cata::boucle] } {
+         if {[info exists conf(bddimages,cata,boucle)]} {
+            set ::tools_cata::boucle $conf(bddimages,cata,boucle)
+         } else {
+            set ::tools_cata::boucle 0
+         }
+      }
+      if {! [info exists ::tools_cata::deuxpasses] } {
+         if {[info exists conf(bddimages,cata,deuxpasses)]} {
+            set ::tools_cata::deuxpasses $conf(bddimages,cata,deuxpasses)
+         } else {
+            set ::tools_cata::deuxpasses 1
+         }
+      }
+      if {! [info exists ::tools_cata::limit_nbstars_accepted] } {
+         if {[info exists conf(bddimages,cata,limit_nbstars_accepted)]} {
+            set ::tools_cata::limit_nbstars_accepted $conf(bddimages,cata,limit_nbstars_accepted)
+         } else {
+            set ::tools_cata::limit_nbstars_accepted 5
+         }
+      }
+      if {! [info exists ::tools_cata::log] } {
+         if {[info exists conf(bddimages,cata,log)]} {
+            set ::tools_cata::log $conf(bddimages,cata,log)
+         } else {
+            set ::tools_cata::log 0
+         }
+      }
+      if {! [info exists ::tools_cata::threshold_ident_pos_star] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_pos_star)]} {
+            set ::tools_cata::threshold_ident_pos_star $conf(bddimages,cata,threshold_ident_pos_star)
+         } else {
+            set ::tools_cata::threshold_ident_pos_star 30.0
+         }
+      }
+      if {! [info exists ::tools_cata::threshold_ident_mag_star] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_mag_star)]} {
+            set ::tools_cata::threshold_ident_mag_star $conf(bddimages,cata,threshold_ident_mag_star)
+         } else {
+            set ::tools_cata::threshold_ident_mag_star -30.0
+         }
+      }
+      if {! [info exists ::tools_cata::threshold_ident_pos_ast] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_pos_ast)]} {
+            set ::tools_cata::threshold_ident_pos_ast $conf(bddimages,cata,threshold_ident_pos_ast)
+         } else {
+            set ::tools_cata::threshold_ident_pos_ast 10.0
+         }
+      }
+      if {! [info exists ::tools_cata::threshold_ident_mag_ast] } {
+         if {[info exists conf(bddimages,cata,threshold_ident_mag_ast)]} {
+            set ::tools_cata::threshold_ident_mag_ast $conf(bddimages,cata,threshold_ident_mag_ast)
+         } else {
+            set ::tools_cata::threshold_ident_mag_ast -100.0
+         }
+      }
+
    }
+
+
+
+
+   proc ::tools_cata::closetoconf { } {
+
+      global conf
+
+       # Repertoires 
+      set conf(bddimages,catfolder,usnoa2)              $::tools_cata::catalog_usnoa2 
+      set conf(bddimages,catfolder,ucac2)               $::tools_cata::catalog_ucac2  
+      set conf(bddimages,catfolder,ucac3)               $::tools_cata::catalog_ucac3  
+      set conf(bddimages,catfolder,ucac4)               $::tools_cata::catalog_ucac4  
+      set conf(bddimages,catfolder,ppmx)                $::tools_cata::catalog_ppmx  
+      set conf(bddimages,catfolder,ppmxl)               $::tools_cata::catalog_ppmxl
+      set conf(bddimages,catfolder,tycho2)              $::tools_cata::catalog_tycho2 
+      set conf(bddimages,catfolder,nomad1)              $::tools_cata::catalog_nomad1 
+      set conf(bddimages,catfolder,2mass)               $::tools_cata::catalog_2mass 
+      # Utilisation des catalogues
+      set conf(bddimages,cata,use_usnoa2)               $::tools_cata::use_usnoa2
+      set conf(bddimages,cata,use_ucac2)                $::tools_cata::use_ucac2
+      set conf(bddimages,cata,use_ucac3)                $::tools_cata::use_ucac3
+      set conf(bddimages,cata,use_ucac4)                $::tools_cata::use_ucac4
+      set conf(bddimages,cata,use_ppmx)                 $::tools_cata::use_ppmx
+      set conf(bddimages,cata,use_ppmxl)                $::tools_cata::use_ppmxl
+      set conf(bddimages,cata,use_tycho2)               $::tools_cata::use_tycho2
+      set conf(bddimages,cata,use_nomad1)               $::tools_cata::use_nomad1
+      set conf(bddimages,cata,use_2mass)                $::tools_cata::use_2mass
+      set conf(bddimages,cata,use_skybot)               $::tools_cata::use_skybot
+     # Autres utilitaires
+      set conf(bddimages,cata,keep_radec)               $::tools_cata::keep_radec
+      set conf(bddimages,cata,create_cata)              $::tools_cata::create_cata
+      set conf(bddimages,cata,delpv)                    $::tools_cata::delpv
+      set conf(bddimages,cata,boucle)                   $::tools_cata::boucle
+      set conf(bddimages,cata,deuxpasses)               $::tools_cata::deuxpasses
+      set conf(bddimages,cata,limit_nbstars_accepted)   $::tools_cata::limit_nbstars_accepted
+      set conf(bddimages,cata,log)                      $::tools_cata::log
+      set conf(bddimages,cata,threshold_ident_pos_star) $::tools_cata::threshold_ident_pos_star
+      set conf(bddimages,cata,threshold_ident_mag_star) $::tools_cata::threshold_ident_mag_star
+      set conf(bddimages,cata,threshold_ident_pos_ast)  $::tools_cata::threshold_ident_pos_ast
+      set conf(bddimages,cata,threshold_ident_mag_ast)  $::tools_cata::threshold_ident_mag_ast
+
+   }
+
+
+
+
+
 
    proc ::tools_cata::charge_list { img_list } {
 
@@ -403,17 +689,18 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set res [regexp -all -inline -- $motif $data]
       set cpt 1
       foreach { table name nrows } $res {
-         #gren_info "$cpt  :  \n"
-         #gren_info "Name => $name  \n"
-         #gren_info "nrows  => $nrows  \n"
-         #gren_info "TABLE => $table  \n"
-         set res [ get_table $name $table ]
-         #gren_info "TABLE res => $res  \n"
-         #set ftmp  [lindex [lindex $res 0] 2]
-         #set ftmp [lrange $ftmp 1 end]
-         #set ftmp [list  [lindex [lindex $res 0] 0]   [lindex [lindex $res 0] 1]  $ftmp]  
-         #gren_info "TABLE => $ftmp  \n"
-         
+#gren_erreur "----------------------------------------------------------------\n"
+#gren_info "$cpt  :  \n"
+#gren_info "Name => $name  \n"
+#gren_info "nrows  => $nrows  \n"
+#gren_info "TABLE => $table  \n"
+         set res [ ::tools_cata::get_table $name $table ]
+#gren_info "TABLE res => $res  \n"
+#set ftmp  [lindex [lindex $res 0] 2]
+#set ftmp [lrange $ftmp 1 end]
+#set ftmp [list  [lindex [lindex $res 0] 0]   [lindex [lindex $res 0] 1]  $ftmp]  
+#gren_info "TABLE => $ftmp  \n"
+
          lappend fields [lindex $res 0]
          set asource [lindex $res 1]
          foreach x $asource {
@@ -428,11 +715,10 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
                lappend tsource($idcataspec) [list $name {} $val]
             }
          }
-
          incr cpt
       }
       
-      #gren_info "tsource => [array get tsource]  \n"
+#gren_info "tsource => [array get tsource]  \n"
       set tab [array get tsource]
       set lso {}
       set cpt 0
@@ -1290,5 +1576,148 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
 
-# Fin du namespace
+
+
+# Anciennement ::gui_cata::setCenterFromRADEC
+   
+   proc ::tools_cata::setCenterFromRADEC { } {
+
+      set rd [regexp -inline -all -- {\S+} $::tools_cata::coord]
+      set ra [lindex $rd 0]
+      set dec [lindex $rd 1]
+      set ::tools_cata::ra  $ra
+      set ::tools_cata::dec $dec
+      gren_info "SET CENTER FROM RA,DEC: $::tools_cata::ra $::tools_cata::dec\n"
+
+   }
+
+   
+
+# Anciennement ::gui_cata::sendImageAndTable
+
+   proc ::tools_cata::broadcastImageAndTable { } {
+
+      global bddconf
+
+      set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+      set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+      set filename    [::bddimages_liste::lget $::tools_cata::current_image filename   ]
+      set file        [file join $bddconf(dirbase) $dirfilename $filename]
+      
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set ::tools_cata::ra        [lindex [::bddimages_liste::lget $tabkey ra      ] 1]
+      set ::tools_cata::dec       [lindex [::bddimages_liste::lget $tabkey dec     ] 1]
+      set ::tools_cata::pixsize1  [lindex [::bddimages_liste::lget $tabkey pixsize1] 1]
+      set ::tools_cata::pixsize2  [lindex [::bddimages_liste::lget $tabkey pixsize2] 1]
+      set ::tools_cata::foclen    [lindex [::bddimages_liste::lget $tabkey foclen  ] 1]
+      set ::tools_cata::exposure  [lindex [::bddimages_liste::lget $tabkey EXPOSURE] 1]
+
+      set ::tools_cata::bddimages_wcs [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs ] 1] ]
+
+      set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set radius  [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
+      # Envoie de l'image dans Aladin via Samp
+      ::SampTools::broadcastImage
+      
+      set cataexist [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+      set catafile [::bddimages_liste::lget $::tools_cata::current_image "catafilename"]
+      set catafilename [string range $catafile 0 [expr [string last .gz $catafile] -1]]
+      set catadir [::bddimages_liste::lget $::tools_cata::current_image "catadirfilename"]
+      set cata [file join $bddconf(dirbase) $bddconf(dirtmp) $catafilename]
+
+      set ::tools_cata::current_image [::bddimages_liste_gui::add_info_cata $::tools_cata::current_image]
+
+      # Envoie du CATA dans Aladin via Samp
+      if {$cataexist} {
+         set ::votableUtil::votBuf(file) $cata
+         ::SampTools::broadcastTable
+      } else {
+         gren_erreur "Cata does not exist. Broadcast to VO tools aborted."
+      }
+
+   }
+
+
+# Anciennement ::gui_cata::set_aladin_script_params
+
+   proc ::tools_cata::set_aladin_script_params { } {
+   
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+
+      set ::tools_cata::uaicode [string trim [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]]
+
+      set ra  [lindex [::bddimages_liste::lget $tabkey ra] 1]
+      set dec [lindex [::bddimages_liste::lget $tabkey dec] 1]
+      if {$dec > 0} { set dec "+$dec" }
+      set ::tools_cata::coord "$ra $dec"
+
+      set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+      set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+
+   }
+
+
+# Anciennement ::gui_cata::sendAladinScript
+
+   proc ::tools_cata::broadcastAladinScript { } {
+
+      # Get parameters
+      set coord $::tools_cata::coord
+      set radius_arcmin "${::tools_cata::radius}arcmin"
+      set radius_arcsec [concat [expr $::tools_cata::radius * 60.0] "arcsec"]
+      set date $::tools_cata::current_image_date
+      set uaicode [string trim $::tools_cata::uaicode]
+
+      # Request Skybot cone-search
+      set skybotQuery "get SkyBoT.IMCCE($date,$uaicode,'Asteroids and Planets','$radius_arcsec')"
+
+      # Draw a circle to mark the fov center
+      set lcoord [split $coord " "]
+      set drawFovCenter "draw phot([lindex $lcoord 0],[lindex $lcoord 1],20.00arcsec)"
+      # Draw USNO stars as triangles
+      set shapeUSNO "set USNO2 shape=triangle"
+
+      # Aladin Script
+      set script "get Aladin(DSS2) ${coord} $radius_arcmin; get VizieR(USNO2); sync; $shapeUSNO; $drawFovCenter; $skybotQuery;"
+      # Broadcast script
+      ::SampTools::broadcastAladinScript $script
+   
+   }
+
+
+
+# Anciennement ::gui_cata::skybotResolver
+
+   proc ::tools_cata::skybotResolver { } {
+
+      set name $::tools_cata::coord
+      set date $::tools_cata::current_image_date
+      set uaicode [string trim $::tools_cata::uaicode]
+
+      set erreur [ catch { vo_skybotresolver $date $name text basic $uaicode } skybot ]
+      if { $erreur == "0" } {
+         if { [ lindex $skybot 0 ] == "no" } {
+            tk_messageBox -message "skybotResolver error: the solar system object '$name' was not resolved by SkyBoT" -type ok
+         } else {
+            set resp [split $skybot ";"]
+            set respdata [split [lindex $resp 1] "|"]
+            set ra [expr [lindex $respdata 2] * 15.0]
+            set dec [lindex $respdata 3]
+            if {$dec > 0} { set dec "+[string trim $dec]" }
+            set ::tools_cata::coord "$ra $dec"
+         }
+      } else {
+         tk_messageBox -message "skybotResolver error: $erreur : $skybot" -type ok
+      }
+
+   }
+
+
 }

@@ -23,7 +23,9 @@ namespace eval ::bddimages {
 
    package provide bddimages 1.0
 
+   global audace
    variable This
+
    #--- Chargement des captions
    source [ file join [file dirname [info script]] bddimages_go.cap ]
 
@@ -158,6 +160,7 @@ proc ::bddimages::ressource {  } {
 
    #--- Chargement des fichiers gui
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata_creation.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_config.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
@@ -169,7 +172,6 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_tools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_gestion_gui.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_creation_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_popup.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_ihm.tcl ]\""
@@ -219,6 +221,9 @@ proc ::bddimages::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
    load libcatalog[info sharedlibextension]
+
+   ::Samp::destroy
+
 }
 
 #------------------------------------------------------------
@@ -321,6 +326,10 @@ proc ::bddimages::load_config_frombutton { } {
       ::bddimages::handleBddState
    }
 
+   #--- Initialisation des parametres des cata
+   ::gui_cata_creation::inittoconf
+   ::gui_astrometry::inittoconf
+
 }
 
 #------------------------------------------------------------
@@ -409,12 +418,6 @@ proc ::bddimages::bddimagesBuildIF { This } {
             -command {::bddimages::ressource}
          pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
-      #--- Bouton Interop
-      frame $This.interop -borderwidth 1 -relief groove
-      pack $This.interop -side top -fill x
-         button $This.interop.but1 -borderwidth 2 -text "Interop" -command "::bddimages::InstallMenuInterop $This.interop"
-         pack $This.interop.but1 -in $This.interop -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Coloration du menubouton du choix de la bdd
@@ -426,39 +429,6 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
 }
 
-#------------------------------------------------------------
-# ::bddimages::InstallMenuInterop
-#    Installe le menu Interop dans la barre de menu d'Audace
-#------------------------------------------------------------
-proc ::bddimages::InstallMenuInterop { frame } {
-   global audace caption menu
-   set visuNo $::audace(visuNo)
-   # Deploiement du menu Interop
-   Menu $visuNo "Interop"
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_connect) ::vo_tools::SampConnect
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_disconnect) ::vo_tools::SampDisconnect
-   Menu_Separator $visuNo "Interop"
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_loadvotable) ::vo_tools::LoadVotable
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_cleardisplay) ::vo_tools::ClearDisplay
-   Menu_Separator $visuNo "Interop"
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastImg) ::vo_tools::SampBroadcastImage
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastSpe) ::vo_tools::SampBroadcastSpectrum
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_broadcastTab) ::vo_tools::SampBroadcastTable
-   Menu_Separator $visuNo "Interop"
-   Menu_Command $visuNo "Interop" $caption(vo_tools_go,samp_menu_help) ::vo_tools::helpInterop
-   #--- Mise a jour dynamique des couleurs et fontes
-   ::confColor::applyColor [MenuGet $visuNo "Interop"]
-   # Destruction du bouton Interop du panneau VO
-   destroy $frame
-   # Tentative de connexion au hub Samp
-   ::vo_tools::SampConnect
-   # Ajoute un binding sur le canvas pour broadcaster les coordonnees cliquees
-   bind $::audace(hCanvas) <ButtonPress-1> {::SampTools::broadcastPointAtSky %W %x %y}
-   # Active la mise a jour automatique de l'affichage quand on change d'image
-   ::confVisu::addFileNameListener $visuNo "::vo_tools::handleBroadcastBtnState"
-   ::confVisu::addFileNameListener $visuNo "::vo_tools::ClearDisplay"
-}
-
 
 #------------------------------------------------------------
 ## Impression d'un message d'info dans la console
@@ -467,6 +437,7 @@ proc ::bddimages::InstallMenuInterop { frame } {
 proc gren_info { msg } {
    ::console::affiche_resultat "$msg" 
 }
+
 
 #------------------------------------------------------------
 ## Impression d'un message d'erreur dans la console
