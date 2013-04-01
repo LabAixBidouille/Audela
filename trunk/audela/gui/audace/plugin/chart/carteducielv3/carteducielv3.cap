@@ -35,6 +35,7 @@ set caption(carteducielv3,rate)                       "Access not possible"
 set caption(carteducielv3,gagne)                      "Access OK"
 set caption(carteducielv3,no_connect)                 "Connexion to Sky Charts aborted."
 set caption(carteducielv3,no_object_select)           "No object selected on the chart."
+set caption(carteducielv3,wrong_version)              "You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -63,6 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Accès réussi"
    set caption(carteducielv3,no_connect)              "La connexion à Cartes du Ciel a échoué."
    set caption(carteducielv3,no_object_select)        "Pas d'objet sélectionné sur la carte."
+   set caption(carteducielv3,wrong_version)           "Vous utilisez une ancienne version de Cartes du Ciel.\nMerci de mettre à jour à la version 3.9 au moins."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -91,6 +93,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Accesso riuscito"
    set caption(carteducielv3,no_connect)              "Connessione a Carte Celesti fallita."
    set caption(carteducielv3,no_object_select)        "Nessun oggetto selezionato nella mappa."
+   set caption(carteducielv3,wrong_version)           "# You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -119,6 +122,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Acceso correcto"
    set caption(carteducielv3,no_connect)              "Conexión a Cartas Celestes abortada."
    set caption(carteducielv3,no_object_select)        "No hay objeto seleccionado en el mapa."
+   set caption(carteducielv3,wrong_version)           "# You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -147,6 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Zugriff gelungen"
    set caption(carteducielv3,no_connect)              "Der Anschluß zu der Sternkarten ist durchgefallen."
    set caption(carteducielv3,no_object_select)        "Kein Ziel auf die Karte gewählt."
+   set caption(carteducielv3,wrong_version)           "# You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -175,6 +180,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Acesso OK"
    set caption(carteducielv3,no_connect)              "A ligação à Carta Celeste foi abortada."
    set caption(carteducielv3,no_object_select)        "Nenhum objecto seleccionado na carta."
+   set caption(carteducielv3,wrong_version)           "# You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -203,6 +209,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Adgang: OK!"
    set caption(carteducielv3,no_connect)              "Forbindelse til stjernekort afbrudt."
    set caption(carteducielv3,no_object_select)        "Intet objekt er valgt på kortet."
+   set caption(carteducielv3,wrong_version)           "You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -231,6 +238,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Access OK"
    set caption(carteducielv3,no_connect)              "Connexion to Sky Charts aborted."
    set caption(carteducielv3,no_object_select)        "No object selected on the chart."
+   set caption(carteducielv3,wrong_version)           "You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -259,6 +267,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Access OK"
    set caption(carteducielv3,no_connect)              "Connexion to Sky Charts aborted."
    set caption(carteducielv3,no_object_select)        "No object selected on the chart."
+   set caption(carteducielv3,wrong_version)           "You are using an older version of Skychart.\nPlease upgrade to at least version 3.9."
 
 }
 
