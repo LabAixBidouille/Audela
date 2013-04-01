@@ -25,6 +25,7 @@
 #define NOMAD1_LENTGH_ACCELERATOR_TABLE         160
 #define NOMAD1_HALF_LENTGH_ACCELERATOR_TABLE    80
 #define NOMAD1_CHUNK_SHIFT_RA                   24
+#define NOMADE_CHUNK_HEADER_NUMBER_OF_INTEGERS  7
 
 
 typedef struct {
@@ -35,11 +36,30 @@ typedef struct {
 } searchZoneNOMAD1;
 
 typedef struct {
+	int prefaceLength;
+	int id0;
+	int id1;
+	int ra0;
+	int ra1;
+	int spd0;
+	int spd1;
+	short int numberOfExtra2;
+	short int numberOfExtra4;
+	short int* extraValues2;
+	int* extraValues4;
+
+
+
+} chunkHeader;
+
+typedef struct {
 	int chunkTable[NOMAD1_LENTGH_ACCELERATOR_TABLE];
 	int numberOfChunks;
 	int pm;
 	int mag;
 	int ep;
+	chunkHeader theChunkHeader;
+
 } headerInformationNOMAD1;
 
 const searchZoneNOMAD1 findSearchZoneNOMAD1(const double raInDeg,const double decInDeg,

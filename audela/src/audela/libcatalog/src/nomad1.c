@@ -149,6 +149,7 @@ int processChunksNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* const m
 	unsigned char* pointerToBuffer;
 	int resultOfFunction;
 	int lengthOfRecord;
+	int* arrayOfIntegers;
 	const int indexInTable = chunkNumber << 1;
 	const int sizeOfBuffer = headerInformation->chunkTable[indexInTable + 2] - headerInformation->chunkTable[indexInTable];
 
@@ -169,25 +170,47 @@ int processChunksNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* const m
 		return(1);
 	}
 
-	//TODO recode please
-	/* Loop over stars */
-	pointerToBuffer = buffer;
+	/* Read the preface of the chunk */
+	pointerToBuffer  = buffer;
+	arrayOfIntegers  = (int*) pointerToBuffer;
+	convertBig2LittleEndianForArrayOfInteger(arrayOfIntegers,NOMADE_CHUNK_HEADER_NUMBER_OF_INTEGERS);
+	/* prefaceLength */
+	headerInformation->theChunkHeader.prefaceLength = arrayOfIntegers[0];
+	/* id0 */
+	headerInformation->theChunkHeader.id0           = arrayOfIntegers[1];
+	/* ra0 */
+	headerInformation->theChunkHeader.ra0           = arrayOfIntegers[2];
+	/* spd0 */
+	headerInformation->theChunkHeader.spd0          = arrayOfIntegers[3];
+	/* id1 */
+	headerInformation->theChunkHeader.id1           = arrayOfIntegers[4];
+	/* ra1 */
+	headerInformation->theChunkHeader.ra1           = arrayOfIntegers[5];
+	/* spd1 */
+	headerInformation->theChunkHeader.spd1          = arrayOfIntegers[6];
 
-	while(sizeOfBuffer > 0) {
+	pointerToBuffer += NOMADE_CHUNK_HEADER_NUMBER_OF_INTEGERS * sizeof(int);
+	/* numberOfExtra2 */
 
-		processBufferedDataNOMAD1(dsptr,mySearchZoneNOMAD1,pointerToBuffer,headerInformation,&lengthOfRecord);
-		/* Move the buffer to read the next star */
-		pointerToBuffer += lengthOfRecord;
-		//sizeOfBuffer    -= lengthOfRecord;
-	}
 
-	releaseSimpleArray(buffer);
 
-	// sizeOfBuffer should be equal to 0 at the end of this loop
-	if(sizeOfBuffer != 0) {
-		sprintf(outputLogChar,"Buffer = %d (unsigned char) : error when reading records",sizeOfBuffer);
-		return(1);
-	}
+//	//TODO recode please
+//
+//	while(sizeOfBuffer > 0) {
+//
+//		processBufferedDataNOMAD1(dsptr,mySearchZoneNOMAD1,pointerToBuffer,headerInformation,&lengthOfRecord);
+//		/* Move the buffer to read the next star */
+//		pointerToBuffer += lengthOfRecord;
+//		//sizeOfBuffer    -= lengthOfRecord;
+//	}
+//
+//	releaseSimpleArray(buffer);
+//
+//	// sizeOfBuffer should be equal to 0 at the end of this loop
+//	if(sizeOfBuffer != 0) {
+//		sprintf(outputLogChar,"Buffer = %d (unsigned char) : error when reading records",sizeOfBuffer);
+//		return(1);
+//	}
 
 	return (0);
 }
