@@ -1,9 +1,9 @@
 #
 # Fichier : carteducielv3.tcl
 # Description : Plugin de communication avec "Cartes du Ciel" (communication TCP)
-#    pour afficher la carte du champ des objets selectionnes dans AudeLA
+#    pour afficher la carte du champ des objets selectionnes dans Aud'ACE
 #    Fonctionne avec Windows et Linux
-# Auteur : Michel PUJOL
+# Auteurs : Michel PUJOL et Patrick CHEVALLEY
 # Mise à jour $Id$
 #
 
@@ -309,7 +309,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       set result "0"
-     # ::console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
+      #::console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
       if { $nom_objet != "#etoile#" && $nom_objet != "" } {
          selectObject $nom_objet
       } else {
@@ -394,29 +394,26 @@ namespace eval carteducielv3 {
    #
    #     ou "" si erreur
    #
-   #  Remarque : Si aucun objet n'est selectionne dans CarteDuCiel,
-   #  alors getSelectedObject retourne les coordonnees du centre de la carte
-   #
    #  Description de l'interface Audela / CarteDuCiel
    #  -------------------------------------
    #  Requete TCP envoyee a CarteDuCiel :
-   #     puts socket "GETMSGBOX"
-   #  Reponse DDE retournee par CarteDuCiel :
-   #     ligne : position du centre et champ de vision de la carte
+   #     puts socket "GETSELECTEDOBJECT"
+   #  Reponse retournee par CarteDuCiel :
+   #     ligne : dernier objet selectione sur la carte
    #
    #  exemple de reponse :
-   #     ligne : OK!\n14h15m39.70s +19°10'57.0"   * HR 5340 HD124897 Fl: 16 Ba:Alp  const:Boo mV:-0.04 b-v: 1.23 sp:  K1.5IIIFe-0.5      pm:-1.093 -1.998 ;ARCTURUS; Haris-el-sema
+   #     ligne : OK!  18h46m04.48s	+26°39'43.7"	  *	HD173780	mV: 4.83	HD:173780	BD:BD+26 3349 	HIP: 92088	HR:7064	b-v: 1.20	mB: 6.03	sp:K2III                     	pmRA:    18 [mas/y]	pmDE:    24 [mas/y]	px:  12.8 [mas]	Dist:254.8 [ly]	Comp:       	Const:Lyr	RV:-17.06 [km/s]	mI:3.8		Equinox:J2000.0
    #
-   #     Les coordonnees et le nom de l'objet sont extraits de la ligne 2
+   #     Les coordonnees et le nom de l'objet sont extraits de la ligne
    #     Les autres lignes ne sont pas utilisees.
+   #     Tout les champs apres OK! sont separes par des tabulations.
    #
-   #     Format de la ligne 1 : OK!
-   #     Format de la ligne 2 : "$ra $dec $objType $detail"
+   #     Format de la ligne : OK! "$ra $dec $objType $detail"
    #     avec
-   #       $ra      = right ascension  ex: "16h41m42.00s"
-   #       $dec     = declinaison      ex: "+36°28'00.0""
-   #       $objType = object type      ex: "M "
-   #       $detail  = object detail    ex :"13 NGC 6205 const: HER Dim: 23.2'x 23.2'  m: 5.90 sbr:12.00 desc: !!eB,vRi,vgeCM,*11...;Hercules cluster;Messier said round nebula contains no star"
+   #       $ra      = right ascension  ex: "16h42m11.67s"
+   #       $dec     = declinaison      ex: "+36°26'18.9""
+   #       $objType = object type      ex: "Gb"
+   #       $detail  = object detail    ex :"M  13            	m: 5.80	Name:NGC 6205          	sbr:12.00	Dim: 23.2 x 23.2 '	pa: 90	class:VOliptical	desc:!!eB;vRi;vgeCM;*11...;Hercules cluster;Messier said round nebula contains no star                                       	Const:HER		Equinox:now"
    #
    #  Mise en forme de la reponse
    #  ---------------------------
@@ -431,90 +428,27 @@ namespace eval carteducielv3 {
    #
    #  3)Mise en forme du nom de l'objet $objName
    #
-   #     SI $objType = "*" ALORS
-   #        je mets dans $objName le nom usuel de l'etoile s'il existe
-   #        ou le nom du catalogue et le numero de l'etoile
-   #        et eventuellement le nom de la constellation (catalogues Ba et Fl)
-   #
-   #       SI existe un point virgule dans $detail ALORS
-   #          $objName = nom usuel de l'etoile se situant
-   #                     apres le premier point virgule de $detail
-   #                     et jusqu'au point virgule suivant ou la fin de $detail
-   #       SINON
-   #          $catName = premiere chaine de caractere de $detail jusqu'au premier espace
-   #          $const   = chaine de caractere dans $detail qui suit "const:" jusqu'au premier espace suivant
-   #          SI       $catName = "GSC"  ALORS $objName = "GSC"+ 10 caracteres de $detail apres catName
-   #          SINON SI $catName = "TYC"  ALORS $objName = "TYC"+ 15 caracteres de $detail apres catName
-   #          SINON SI $catName = "SAO"  ALORS $objName = "SAO"+ 9 caracteres de $detail apres catName
-   #          SINON SI $catName = "Ba:" ALORS  $objName = "Ba" + 3 caracteres de $detail apres catName + $const
-   #          SINON SI $catName = "BD"  ALORS  $objName = "BD" + 10 caracteres de $detail apres catName
-   #          SINON SI $catName = "Fl:"  ALORS $objName = "Fl" + 3 caracteres de $detail apres catName + $const
-   #          SINON SI $catName = "HD"   ALORS $objName = "HD" + 8 caracteres de $detail apres catName
-   #          SINON SI $catName = "HR"   ALORS $objName = "HR" + 7 caracteres de $detail apres catName
-   #        FINSI
-   #     FINSI
-   #
-   #     SI $objType = "Gb" ou "Gx" ou "Nb" ou "OC" ou "Pl"
-   #       je mets dans $objName le nom du catalogue et le numero de l'objet
-   #
-   #       $catName = premiere chaine de caractere de $detail jusqu'au premier espace
-   #       SI       $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
-   #       SINON SI $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
-   #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
-   #       SINON SI $catName = "PGC"  ALORS  $objName = "PGC" + 8 caracteres de $detail apres catName
-   #       SINON SI $catName = "PNG"  ALORS  $objName = "PNG" + 13 caracteres de $detail apres catName
-   #       SINON SI $catName = "LBN"  ALORS  $objName = "LBN" + 6 caracteres de $detail apres catName
-   #       SINON SI $catName = "OCL"  ALORS  $objName = "OCL" + 6 caracteres de $detail apres catName
-   #     FINSI
-   #
-   #     SI $objType = "As" ALORS
-   #       $objName = 17 premiers caracteres de $detail
-   #     FINSI
-   #
-   #     SI $objType = "Cm"  ALORS
-   #       $objName = debut de detail jusqu'a la premiere parenthese fermante ")"
-   #     FINSI
-   #
-   #     SI $objType = "P" ALORS
-   #       $objName = debut de detail jusqu'au premier espace ""
-   #     FINSI
-   #
-   #     SI $objType = "C2"  ALORS             (catalogue externe UGC )
-   #       $objName = debut de detail jusqu'a Dim
-   #     FINSI
-   #
-   # Remarque
-   # ------------------------
-   #  Quand un objet est reference dans plusieurs catalogues,
-   #  le nom retenu depend de l'ordre des SI $catName=... SINON ...
-   #  Si vous preferez retenir en priorite le nom de l'objet d'un autre catalogue
-   #  il suffit de changer l'ordre des SI $catName=... SINON ...
-   #
-   #  ex: l'amas  M13 a s'appelle aussi NGC6205
-   #
-   #  Par defaut , objName est retourne avec la valeur "M 13"
-   #  car l'agorithme commence par chercher si l'objet a un nom dans le catalogue Messier
-   #       SI       $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
-   #       SINON SI $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
-   #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
-   #       ...
-   #
-   #  Si vous preferez retenir en priorite le nom du catalogue NGC,
-   #  il suffit d'inverser l'ordre des tests :
-   #       SI       $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
-   #       SINON SI $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
-   #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
-   #       ...
+   #     On prend le nom par defaut de Cartes du Ciel dans le premier champ
+   #     Un ou des noms supplémentaires sont parfois présent après la magnitude, on les ignores.
    #
    #  le catalogue externe UGC peut etre trouve sur :
    #     http://www.astrogeek.org/ftp/pub/cdc/ugc2001a.exe (version catgen)
-   #     http://astrosurf.com/astropc/cartes/prog/ugc.zip  (ancienne version non catgen)
    #------------------------------------------------------------
    proc getSelectedObject { } {
       variable private
       global caption
 
-      set result [ sendRequest "GETMSGBOX" ]
+      #--- nouvelle commande depuis la version 3.9, retourne la meme chaine qu'avant 3.6
+      set result [ sendRequest "GETSELECTEDOBJECT" ]
+
+      ##### Version du CdC trop ancienne
+      if { $result == "Failed! Bad command name" } {
+         ::console::affiche_erreur "$caption(carteducielv3,wrong_version)\n\n"
+         tk_messageBox -icon error -message $caption(carteducielv3,wrong_version) -type ok
+         return ""
+      }
+      #####
+
       if { $result == "" } {
          return ""
       }
@@ -527,20 +461,20 @@ namespace eval carteducielv3 {
       set objType ""
       set detail ""
       set magnitude ""
-      scan $ligne "%s %s %s %s %\[^\r\] " cr ra dec objType detail
-      if { $ra == "AR:" } {
-        # ::console::disp "CdC V3.6 et +. \n"
-         scan $ligne "%s %s %s %s %s %\[^\r\] " cr AR ra dec objType detail
-         set dec [ string range $dec 3 end ]
-      }
+      scan $ligne "%s %s\t%s\t%s\t%\[^\r\] " cr ra dec objType detail
 
-     # ::console::disp "CDC ----------------\n"
-     # ::console::disp "CDC entry cr=$cr\n"
-     # ::console::disp "CDC entry ra=$ra\n"
-     # ::console::disp "CDC entry dec=$dec\n"
-     # ::console::disp "CDC entry objType=$objType\n"
-     # ::console::disp "CDC entry detail=$detail \n"
-     # ::console::disp "CDC ----------------\n"
+      #::console::disp "CDC ----------------\n"
+      #::console::disp "CDC entry cr=$cr\n"
+      #::console::disp "CDC entry ra=$ra\n"
+      #::console::disp "CDC entry dec=$dec\n"
+      #::console::disp "CDC entry objType=$objType\n"
+      #::console::disp "CDC entry detail=$detail \n"
+      #::console::disp "CDC ----------------\n"
+
+      if { $cr != "OK!" } {
+         ::console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
+         return ""
+      }
 
       #--- Mise en forme de ra
       set ra [lindex [split $ra "."] 0]
@@ -555,321 +489,59 @@ namespace eval carteducielv3 {
       #--- j'ajoute l'unite des secondes
       append dec "s"
 
+      #::console::disp "detail = |$detail|\n"
+
+      #--- Equinox
+      set index [string first "\tEquinox:" $detail]
+      if { $index >= 0 } {
+         #--- j'extrais l'equinoxe des coordonnees
+         set equinox [lindex [split [string range $detail [expr $index+9] end] "\t"] 0]
+      } else {
+         set equinox "now"
+      }
+
+      #-- Nom de l'objet est le premier champ jusqu'a la tabulation
+      set objName [string trim [lindex [split [string range $detail 0 end] "\t"] 0]]
+      #::console::disp "objName par defaut $objName\n"
+
       #--- Mise en forme de la magnitude
-      set index [string first "mV:" $detail]
+      set index [string first "\tmV:" $detail]
       if { $index >= 0 } {
-         #--- j'extrais la chaine mV: xxxx
-         set magnitude [lindex [split [string range $detail $index end ]] 1]
+         #--- j'extrais la magnitude mV
+         set magnitude [lindex [split [string range $detail [expr $index+4] end] "\t"] 0]
       } else {
-         #--- attention il faut prendre en compte l'espace avant m: pour le differencier de dim:
-         set index [string first " m:" $detail]
+         set index [string first "\tm:" $detail]
          if { $index >= 0 } {
-            #--- j'extrais la chaine m:xxxx Attention, il n'y a pas d'espace entre ":" et la magnitude
-            set magnitude [lindex [split [string range $detail $index end ]] 1]
-            set magnitude [string map {"m:" ""} $magnitude ]
-         }
-      }
-      set index [string first "visuelle:" $detail]
-      if { $index >= 0 } {
-         #--- j'extrais la chaine Magnitude visuelle: xxxx
-         if { [lindex [split [string range $detail $index end ]] 1] != "" } {
-            set magnitude [lindex [split [string range $detail $index end ]] 1]
+            #--- j'extrais la magnitude m
+            set magnitude [lindex [split [string range $detail [expr $index+3] end] "\t"] 0]
          } else {
-            set magnitude [lindex [split [string range $detail $index end ]] 2]
-         }
-      } else {
-         set index [string first " Magnitude:" $detail]
-         if { $index >= 0 } {
-            if { [lindex [split [string range $detail $index end ]] 3] != "" } {
-               set magnitude [lindex [split [string range $detail $index end ]] 3]
-            } else {
-               set magnitude [lindex [split [string range $detail $index end ]] 2]
-            }
-         }
-      }
-
-      #--- Mise en forme de objName
-      if { $objType=="" || $objType=="port:" } {
-         if { $private(premierLancement) == 1 } {
-            ::console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
-            return ""
-         }
-         return ""
-      } else {
-         #--- j'extrais les coordonnees du detail de la ligne2
-         set usualName ""
-         set bsc       ""
-         set ba        ""
-         set fl        ""
-         set const     ""
-         set gsc       ""
-         set hr        ""
-         set hd        ""
-         set bd        ""
-         set sao       ""
-         set wds       ""
-         set gcvs      ""
-         set tyc       ""
-         set hip       ""
-         set ucac3     ""
-         set ngc       ""
-         set pgc       ""
-         set ugc       ""
-         set ocl       ""
-         set lbn       ""
-         set png       ""
-         set do        ""
-         set berk      ""
-         set cr        ""
-         set pk        ""
-         set messier   ""
-         set planete   ""
-
-         #--- je recherche tous les catalogues cites dans la ligne de detail
-         set index [string first "Common Name:" $detail]
-         if { $index >= 0 } {
-            set usualName [string trim [string range $detail [expr $index + 12] [string length $detail] ] ]
-         } else {
-            set index [string first "Nom commun:" $detail]
+            #--- etoiles variables, j'extrais les magnitudes mMax et mMin
+            set index [string first "\tmMax:" $detail]
             if { $index >= 0 } {
-               set usualName [string trim [string range $detail [expr $index + 11] [expr [string first "HD:" $detail $index] -1] ] ]
-            }
-         }
-         set index [string first "BSC" $detail]
-         if { $index >= 0 } {
-            #--- le nom BSC peut avoir les formes suivantes
-            set bscList [string trim [string range $detail [expr $index + 3] [expr [string first "mV:" $detail $index] -1] ] ]
-            set bscList [split $bscList]
-            switch [llength $bscList] {
-               2 {
-                  #--- BSC 15 Dra      => bsc = "15 Dra"
-                  set bsc "[lrange $bscList 0 1 ]"
-               }
-               3 {
-                  #--- BSC nu 2   Boo  => bsc = "nu 2 Boo"
-                  #--- BSC 22 Zet Dra  => bsc = "Zet Dra"
-                  if { [string is alpha [lindex $bscList 0]] == 1 } {
-                     set bsc "[lrange $bscList 0 2 ]"
-                  } else {
-                     set bsc "[lrange $bscList 1 2 ]"
-                  }
-               }
-               4 {
-                  #--- BSC 53 nu 2 Boo => bsc = "nu 2 Boo"
-                  set bsc "[lrange $bscList 1 3 ]"
-               }
-               default {
-                  #--- BSC HR6025      => bsc = ""
-                  #--- BSC HD6025      => bsc = ""
-                  set bsc ""
+               set mMax [lindex [split [string range $detail [expr $index+6] end] "\t"] 0]
+               set index [string first "\tmMin:" $detail]
+               set mMin [lindex [split [string range $detail [expr $index+6] end] "\t"] 0]
+               set magnitude "$mMax - $mMin"
+            } else {
+               #--- etoiles doubles, j'extrais les magnitudes du premier et du second composant
+               set index [string first "\tm1:" $detail]
+               if { $index >= 0 } {
+                  set m1 [lindex [split [string range $detail [expr $index+4] end] "\t"] 0]
+                  set index [string first "\tm2:" $detail]
+                  set m2 [lindex [split [string range $detail [expr $index+4] end] "\t"] 0]
+                  set magnitude "$m1 - $m2"
                }
             }
-         }
-         set index [string first "Fl:" $detail]
-         if { $index >= 0 } {
-            set fl [string trim [string range $detail [expr $index + 3] [expr $index + 6] ] ]
-         }
-         set index [string first "Ba:" $detail]
-         if { $index >= 0 } {
-            set ba [string trim [string range $detail [expr $index + 3] [expr $index + 6] ] ]
-         }
-         set index [string first "const:" $detail]
-         if { $index >= 0 } {
-            set const [string trim [string range $detail [expr $index + 6] [expr $index + 9] ] ]
-         }
-         set index [string first "M " $detail]
-         if { $index >= 0 } {
-            set messier [string trim [string range $detail [expr $index + 2] [expr $index + 4] ] ]
-         }
-         set index [string first "GSC" $detail]
-         if { $index >= 0 } {
-            set gsc [string trim [string range $detail $index [expr $index + 12] ] ]
-         }
-         set index [string first "TYC" $detail]
-         if { $index >= 0 } {
-            #--- j'extrais la chaine apres TYC
-            set tyc [string trim [lindex [split [string range $detail $index end ]] 1]]
-            set tyc "TYC$tyc"
-         }
-         set index [string first "HIP" $detail]
-         if { $index >= 0 } {
-            #--- j'extrais la chaine apres HIP
-            set hip [string trim [lindex [split [string range $detail $index end ]] 1]]
-            set hip "HIP$hip"
-         }
-         set index [string first "3UC" $detail]
-         if { $index >= 0 } {
-            #--- j'extrais la chaine apres 3UC
-            set ucac3 [string trim [lindex [split [string range $detail $index end ]] 1]]
-            set ucac3 "UCAC3-$ucac3"
-         }
-         set index [string first "HD:" $detail]
-         if { $index >= 0 } {
-            #--- j'extrais la chaine HD:xxxx
-            set hd [lindex [split [string range $detail $index end ]] 0]
-            set hd [string map {":" ""} $hd ]
-         }
-         set index [string first "BD" $detail]
-         if { $index >= 0 } {
-            set bd [string range $detail $index [expr $index + 10 ] ]
-         }
-         set index [string first "HR:" $detail]
-         if { $index >= 0 } {
-            #--- j'extrais la chaine HR:xxxx
-            set hr [lindex [split [string range $detail $index end ]] 0]
-            set hr [string map {":" ""} $hr ]
-         }
-         set index [string first "SAO" $detail]
-         if { $index >= 0 } {
-            set sao [string range $detail $index [expr $index + 9 ] ]
-         }
-         set index [string first "WDS" $detail]
-         if { $index >= 0 } {
-            set wds [string range $detail $index [expr $index + 11 ] ]
-         }
-         set index [string first "GCVS" $detail]
-         if { $index >= 0 } {
-            set gcvs [string range $detail $index [expr $index + 12 ] ]
-         }
-         set index [string first "NGC" $detail]
-         if { $index >= 0 } {
-            set ngc [string range $detail $index [expr $index + 8 ] ]
-         }
-         set index [string first "UGC" $detail]
-         if { $index >= 0 } {
-            set ugc [string range $detail $index [expr [string first " m" $detail $index] -1] ]
-            set ugc [string range $detail $index [expr $index + 8 ] ]
-         }
-         set index [string first "PGC" $detail]
-         if { $index >= 0 } {
-            set pgc [string range $detail $index [expr [string first " " $detail $index] -1] ]
-            set pgc [string range $detail $index [expr $index + 10 ] ]
-         }
-         set index [string first "PNG" $detail]
-         if { $index >= 0 } {
-            set png [string range $detail $index [expr $index + 13 ] ]
-         }
-         set index [string first "Do" $detail]
-         if { $index >= 0 } {
-            set do [string range $detail $index [expr $index + 5 ] ]
-         }
-         set index [string first "Berk" $detail]
-         if { $index >= 0 } {
-            set berk [string range $detail $index [expr $index + 7 ] ]
-         }
-         set index [string first "Cr" $detail]
-         if { $index >= 0 } {
-            set cr [string range $detail $index [expr $index + 6 ] ]
-         }
-         set index [string first "PK" $detail]
-         if { $index >= 0 } {
-            set pk [string range $detail $index [expr $index + 11 ] ]
-         }
-         set index [string first "LBN" $detail]
-         if { $index >= 0 } {
-            set lbn [string range $detail $index [expr $index + 6 ] ]
-         }
-         set index [string first "OCL" $detail]
-         if { $index >= 0 } {
-            set ocl [string range $detail $index [expr $index + 6 ] ]
-         }
-      }
-
-      #--- je choisi la reference et le catalogue en fonction du type de l'objet
-      if { $objType=="*" || [string first $objType "Etoile:"]!=-1 } {
-         #--- pour une etoile : nom usuel ou numero d'un catalogue
-         #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
-         if { $usualName!="" } {
-            #--- je retiens d'abord le nom usuel s'il existe
-            set objName $usualName
-         } elseif { [lindex [split $detail " " ] 0 ] == "Soleil" } {
-            set objName "Soleil"
-         } elseif { $bsc != "" } {
-            set objName "$bsc"
-         } elseif { $hd != "" } {
-            set objName "$hd"
-         } elseif { $ba != "" } {
-            set objName "$ba $const"
-         } elseif { $fl != "" } {
-            set objName "$fl $const"
-         } elseif { $gsc != "" } {
-            set objName "$gsc"
-         } elseif { $sao != "" } {
-            set objName "SAO $sao"
-        } elseif { $hr != "" } {
-            set objName "$hr"
-         } elseif { $tyc != "" } {
-            set objName "$tyc"
-         } elseif { $hip != "" } {
-            set objName "$hip"
-         } elseif { $ucac3 != "" } {
-            set objName "$ucac3"
-         } elseif { $bd != "" } {
-            set objName "$bd"
-         } elseif { $wds != "" } {
-            set objName "$wds"
-         } elseif { $gcvs != "" } {
-            set objName "$gcvs"
-         }
-      } elseif { $objType=="Gb" || $objType=="Gx" || $objType=="Nb" || $objType=="OC" || $objType=="Pl" || $objType=="Amas" || $objType=="Nébuleuse" || $objType=="Galaxie:" } {
-         #--- pour une galaxie, nebuleuse ou un amas
-         #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
-         if { $messier!="" } {
-            set objName "M$messier"
-         } elseif { $ngc != "" } {
-            set objName "$ngc"
-         } elseif { $ugc != "" } {
-            # je supprime les espaces entre UGC et le numero de galaxie
-           set objName "UGC[string trim [string range $ugc 3 end ] ]"
-         } elseif { $pgc != "" } {
-            set objName $pgc
-         } elseif { $ocl != "" } {
-            set objName $ocl
-         } elseif { $lbn != "" } {
-            set objName $lbn
-         } elseif { $png != "" } {
-            set objName $png
-         } elseif { $do != "" } {
-            set objName $do
-         } elseif { $berk != "" } {
-            set objName $berk
-         } elseif { $cr != "" } {
-            set objName $cr
-         } elseif { $pk != "" } {
-            set objName $pk
-         }
-      } elseif { $objType=="As" } {
-         #--- pour un asteroide, je prends les 17 premiers caracteres
-         set objName [string trim [string range $detail 0 17 ] ]
-      } elseif { $objType=="Astéroïde:" } {
-         #--- pour un asteroide, je prends les 2 premiers mots
-         set objName "[lindex [split $detail " " ] 0 ] [lindex [split $detail " " ] 1 ]"
-      } elseif { $objType=="P" || $objType=="Planète:" } {
-         #--- pour une planete, je prends le premier mot
-         set objName [lindex [split $detail " " ] 0 ]
-      } elseif { $objType=="Satellite" } {
-         #--- pour la lune, je prends le second mot
-         set objName [lindex [split $detail " " ] 1 ]
-      } elseif { $objType=="Cm" || $objType=="Comète:" } {
-         #--- pour une comete, je prends jusqu'a la parenthese fermante
-         set index [string first ")" $detail]
-         set objName [string trim [string range $detail 0 $index ] ]
-      } elseif { $objType=="C2" } {
-         set objName [string trim [lindex [split $detail "Dim" ] 0 ] ]
-         if { [string range $objName 0 2] == "UGC" } {
-            #--- Pour le catalogue externe UGC genere sans catgen
-            #--- je supprime les espaces entre UGC et le numero de galaxie
-            set objName "UGC[string trim [string range $objName 3 end ] ]"
          }
       }
 
       ::console::disp "CDC result objName=$objName\n"
       ::console::disp "CDC result ra=$ra\n"
       ::console::disp "CDC result dec=$dec\n"
+      ::console::disp "CDC result equinox=$equinox\n"
       ::console::disp "CDC result magnitude=$magnitude\n\n"
-     # ::console::disp "CDC ----------------\n"
 
-      return [list $ra $dec "now" $objName $magnitude]
+      return [list $ra $dec $equinox $objName $magnitude]
    }
 
    #------------------------------------------------------------
@@ -957,12 +629,12 @@ namespace eval carteducielv3 {
 
       set result ""
       catch {
-        # ::console::disp "sendRequest socket=$private(socket)\n"
-        # ::console::disp "sendRequest REQ= $req\n"
+         #::console::disp "sendRequest socket=$private(socket)\n"
+         #::console::disp "sendRequest REQ= $req\n"
          puts  $private(socket) $req
          flush $private(socket)
          set result [gets $private(socket)]
-        # ::console::disp "sendRequest REP= $result\n"
+         #::console::disp "sendRequest REP= $result\n"
       }
 
       #--- je ferme la connexion
@@ -982,15 +654,15 @@ namespace eval carteducielv3 {
 
       set result 1
       catch {
-        # ::console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
+         #::console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
 
          set private(socket) [socket $conf(carteducielv3,host) $conf(carteducielv3,port)]
-        # ::console::disp "openConnection private(socket)=$private(socket)\n"
+         #::console::disp "openConnection private(socket)=$private(socket)\n"
          if { [string compare -length 7 $private(socket) "Failed!"] == 0 } {
             set result 1
          } else {
             set response [gets $private(socket)]
-           # ::console::disp "CONNECT= $response\n"
+            #::console::disp "CONNECT= $response\n"
             set result 0
          }
 
@@ -1010,7 +682,7 @@ namespace eval carteducielv3 {
 
       puts  $private(socket) "QUIT"
       close $private(socket)
-     # ::console::disp "closeConnection socket=$private(socket)\n"
+      #::console::disp "closeConnection socket=$private(socket)\n"
    }
 
 }
