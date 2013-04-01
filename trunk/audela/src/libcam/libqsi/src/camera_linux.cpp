@@ -919,10 +919,17 @@ int qsiSetWheelPosition( struct camprop *cam, int position )
         cam->params->qsicam->get_HasFilterWheel( &has_filter_wheel );
         if ( has_filter_wheel )
         {
+            int filtres;
+            cam->params->qsicam->get_FilterCount( filtres );
             // Position : Starts filter wheel rotation immediately when written.
-            // Reading the property gives current slot number (if wheel stationary)
-            // or -1 if wheel is moving.
             cam->params->qsicam->put_Position( (short)position );
+            // Init à une valeur positive mais nécessairement fausse
+            short retour_position = filtres + 10;
+            while ( position != retour_position ) {
+                cam->params->qsicam->get_Position( &retour_position );
+                sleep(1);
+            }
+            cam_log( LOG_INFO, "Roue à filtre en position %d", retour_position );
             return 0;
         }
         else
@@ -944,8 +951,8 @@ int qsiSetWheelPosition( struct camprop *cam, int position )
 }
 
 // ---------------------------------------------------------------------------
-// qsiSetWheelPosition
-//    change la position de la roue a filtre
+// qsiGetWheelPosition
+//    récupère la position de la roue a filtre
 // return
 //    0  si pas d'erreur
 //    -1 si erreur , le libelle de l'erreur est dans cam->msg
@@ -966,10 +973,14 @@ int qsiGetWheelPosition( struct camprop *cam, int *position )
         cam->params->qsicam->get_HasFilterWheel( &has_filter_wheel );
         if ( has_filter_wheel )
         {
-            // Position : Starts filter wheel rotation immediately when written.
+            int filtres;
+            cam->params->qsicam->get_FilterCount( filtres );
+            // Init à une valeur positive mais nécessairement fausse
+            *position = filtres + 10;
             // Reading the property gives current slot number (if wheel stationary)
             // or -1 if wheel is moving.
             cam->params->qsicam->get_Position( (short*)position );
+            cam_log( LOG_INFO, "Roue à filtre en position %d", *position );
             return 0;
         }
         else
@@ -1016,7 +1027,7 @@ int qsiGetWheelNames( struct camprop *cam, char **names )
         {
             int filtres;
             cam->params->qsicam->get_FilterCount( filtres );
-            cam_log( LOG_INFO, "Nombre de position de la roue à filtre : %d", filtres );
+            cam_log( LOG_INFO, "Nombre de positions de la roue à filtre : %d", filtres );
             std::string * noms = new std::string[filtres];
             long * dec_map = new long[filtres];
             /* Allocation. La libération sera faite dans la routine appelante */
@@ -1038,6 +1049,8 @@ int qsiGetWheelNames( struct camprop *cam, char **names )
             }
             cam_log( LOG_INFO, "Nom des filtres=%s", *names );
             cam_log( LOG_DEBUG, "qsiGetWheelNames fin" );
+            delete[] noms;
+            delete[] dec_map;
             return 0;
         }
         else
@@ -1050,13 +1063,74 @@ int qsiGetWheelNames( struct camprop *cam, char **names )
     {
         std::string text = err.what();
         cam_log( LOG_ERROR, text.c_str() );
-//        std::string last("");
-//        cam->params->qsicam->get_LastError( last );
-//        sprintf( cam->msg, "%s\n", last.c_str() );
-//        cam_log( LOG_ERROR, last.c_str() );
+        std::string last("");
+        cam->params->qsicam->get_LastError( last );
+        sprintf( cam->msg, "%s\n", last.c_str() );
+        cam_log( LOG_ERROR, last.c_str() );
         return -1;
     }
 }
+
+// ---------------------------------------------------------------------------
+// qsiPutWheelNames
+//    fixe le noms d'une position de la roue filtre
+// @param **names  : pointeur de pointeur de chaine de caracteres
+// @return
+//    0  si pas d'erreur
+//    -1 si erreur , le libelle de l'erreur est dans cam->msg
+// ---------------------------------------------------------------------------
+int qsiPutWheelNames( struct camprop *cam, int position, char* nom_filtre )
+{
+    cam_log( LOG_DEBUG, "qsiPutWheelNames debut" );
+    if ( cam->params->qsicam == 0 ) {
+        cam_log( LOG_ERROR, "qsiPutWheelNames camera not initialized" );
+        sprintf( cam->msg, "qsiPutWheelNames camera not initialized" );
+       return -1;
+    }
+    try
+    {
+        bool has_filter_wheel;
+        cam->params->qsicam->get_HasFilterWheel( &has_filter_wheel );
+        if ( has_filter_wheel )
+        {
+            int filtres;
+            cam->params->qsicam->get_FilterCount( filtres );
+            cam_log( LOG_INFO, "Nombre de positions de la roue à filtre : %d", filtres );
+            if ( ( position >= 0 ) && ( position < filtres ) ) {
+                std::string * noms = new std::string[filtres];
+                cam_log( LOG_DEBUG, "qsiPutWheelNames avant GetNames filter wheel : noms = %p", noms );
+                cam->params->qsicam->get_Names( noms );
+                noms[position].assign( nom_filtre );
+                cam_log( LOG_DEBUG, "qsiPutWheelNames avant PutNames filter wheel : noms = %p", noms );
+                cam->params->qsicam->put_Names( noms );
+                delete[] noms;
+            }
+            else
+            {
+                sprintf( cam->msg, "%d : Illegal position for the filter wheel", position );
+                return -1;
+            }
+        }
+        else
+        {
+            sprintf( cam->msg, "Camera has no filter wheel" );
+            return -1;
+        }
+        cam_log( LOG_DEBUG, "qsiPutWheelNames fin" );
+        return 0;
+    }
+    catch ( std::runtime_error &err )
+    {
+        std::string text = err.what();
+        cam_log( LOG_ERROR, text.c_str() );
+        std::string last("");
+        cam->params->qsicam->get_LastError( last );
+        sprintf( cam->msg, "%s\n", last.c_str() );
+        cam_log( LOG_ERROR, last.c_str() );
+        return -1;
+    }
+}
+
 
 // ---------------------------------------------------------------------------
 // qsiGetWheelNames
