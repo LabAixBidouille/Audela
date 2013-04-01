@@ -152,49 +152,55 @@ namespace eval gui_cata_creation {
    #
    proc ::gui_cata_creation::get_cata { } {
 
-         $::gui_cata::gui_create configure -state disabled
-         $::gui_cata::gui_fermer configure -state disabled
+      $::gui_cata::gui_create configure -state disabled
+      $::gui_cata::gui_fermer configure -state disabled
+      set next_state [$::gui_cata::gui_next cget -state]
+      $::gui_cata::gui_next   configure -state disabled
+      set back_state [$::gui_cata::gui_back cget -state]
+      $::gui_cata::gui_back   configure -state disabled
 
-         if { $::tools_cata::boucle == 1 } {
+      if { $::tools_cata::boucle == 1 } {
 
-            ::gui_cata_creation::get_all_cata
+         ::gui_cata_creation::get_all_cata
 
-         }  else {
+      }  else {
 
-            cleanmark
-            if {[::gui_cata_creation::get_one_wcs] == true} {
-            
-               set ::gui_cata::color_wcs $::gui_cata::color_button_good
-               $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-            
-               if {[::tools_cata::get_cata] == false} {
-                  # TODO ::gui_cata_creation::get_cata : gerer l'erreur le  cata a echou?
-                  set ::gui_cata::color_cata $::gui_cata::color_button_bad
-                  $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-                  #return false
-               } else {
-                  set ::gui_cata::color_cata $::gui_cata::color_button_good
-                  $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
-
-                  # Affiche le cata
-                  ::gui_cata::affiche_cata
-
-                  # Trace du repere E/N dans l'image
-                  set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-                  set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
-                  set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
-                  ::gui_cata::trace_repere [list $cdelt1 $cdelt2]
-               }
+         cleanmark
+         if {[::gui_cata_creation::get_one_wcs] == true} {
+         
+            set ::gui_cata::color_wcs $::gui_cata::color_button_good
+            $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+         
+            if {[::tools_cata::get_cata] == false} {
+               # TODO ::gui_cata_creation::get_cata : gerer l'erreur le  cata a echou?
+               set ::gui_cata::color_cata $::gui_cata::color_button_bad
+               $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+               #return false
             } else {
-               # TODO ::gui_cata_creation::get_cata : gerer l'erreur le wcs a echou?
-               set ::gui_cata::color_wcs $::gui_cata::color_button_bad
-               $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-               cleanmark
-            }
+               set ::gui_cata::color_cata $::gui_cata::color_button_good
+               $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
 
+               # Affiche le cata
+               ::gui_cata::affiche_cata
+
+               # Trace du repere E/N dans l'image
+               set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+               set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
+               set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
+               ::gui_cata::trace_repere [list $cdelt1 $cdelt2]
+            }
+         } else {
+            # TODO ::gui_cata_creation::get_cata : gerer l'erreur le wcs a echou?
+            set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+            $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+            cleanmark
          }
-         $::gui_cata::gui_create configure -state normal
-         $::gui_cata::gui_fermer configure -state normal
+
+      }
+      $::gui_cata::gui_create configure -state normal
+      $::gui_cata::gui_fermer configure -state normal
+      $::gui_cata::gui_next   configure -state $next_state
+      $::gui_cata::gui_back   configure -state $back_state
 
    }
 
