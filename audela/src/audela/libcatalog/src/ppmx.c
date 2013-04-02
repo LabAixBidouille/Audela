@@ -224,7 +224,7 @@ void processBufferedDataPPMX(Tcl_DString* const dsptr,const searchZonePPMX* cons
 	errorPmDec = getBits(buffer, o, 10); o += 10;
 
 	subsetFlag = ppmxSet[getBits(buffer, o, 2)]; o += 2;
-	fitFlag    = getBits(buffer, o, 1) ? 'P' : ' '; o += 1;
+	fitFlag    = getBits(buffer, o, 1) ? 'P' : 'G'; o += 1;
 
 	o += 1 /* +UNUSED */ + 4 /* Naming problems */;
 
