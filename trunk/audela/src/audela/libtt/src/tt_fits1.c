@@ -480,10 +480,9 @@ int tt_imareallocnewkey(TT_IMA *p,int nbkeys2add)
 	/* --- copie les valeurs vers le pointeur temporaire ---*/
 	for (k=0;k<p_tmp->new_nbkeys;k++) {
 		strcpy(p_tmp->new_keynames[k],p->new_keynames[k]);
-		strcpy(p_tmp->new_keynames[k],p->new_values[k]);
-		strcpy(p_tmp->new_keynames[k],p->new_comments[k]);
-		strcpy(p_tmp->new_keynames[k],p->new_keynames[k]);
-		strcpy(p_tmp->new_keynames[k],p->new_units[k]);
+		strcpy(p_tmp->new_values[k],p->new_values[k]);
+		strcpy(p_tmp->new_comments[k],p->new_comments[k]);
+		strcpy(p_tmp->new_units[k],p->new_units[k]);
 		p_tmp->new_datatypes[k]=p->new_datatypes[k];
 	}
 	/* --- libere les pointeurs du pointeur de l'image ---*/
@@ -528,10 +527,9 @@ int tt_imareallocnewkey(TT_IMA *p,int nbkeys2add)
 	/* --- copie les valeurs temporaires vers le pointeur image ---*/
 	for (k=0;k<p_tmp->new_nbkeys;k++) {
 		strcpy(p->new_keynames[k],p_tmp->new_keynames[k]);
-		strcpy(p->new_keynames[k],p_tmp->new_values[k]);
-		strcpy(p->new_keynames[k],p_tmp->new_comments[k]);
-		strcpy(p->new_keynames[k],p_tmp->new_keynames[k]);
-		strcpy(p->new_keynames[k],p_tmp->new_units[k]);
+		strcpy(p->new_values[k],p_tmp->new_values[k]);
+		strcpy(p->new_comments[k],p_tmp->new_comments[k]);
+		strcpy(p->new_units[k],p_tmp->new_units[k]);
 		p->new_datatypes[k]=p_tmp->new_datatypes[k];
 	}
 	/* --- on libere les pointeurs temporaires ---*/
