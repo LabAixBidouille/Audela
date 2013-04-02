@@ -423,10 +423,10 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	Tcl_DStringAppend(dsptr,"{ { NOMAD1 { } {",-1);
 
 	//TODO Complete correctly
-	sprintf(outputLogChar,"%04d%c%07d %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
-			"%.3f %.3f %.3f %.3f %.3f %.3f "
-			"%d %d %d %d %d",
-			zoneNOMAD,'-',idNOMAD,
+	sprintf(outputLogChar,"%04d-%07d %c %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
+			"%c %.3f %c %.3f %c %.3f %.3f %.3f %.3f "
+			"%d %d %d %d %d %hd",
+			zoneNOMAD,idNOMAD,abvr[0],
 			(double)raInMas/DEG2MAS,
 			(double) (spdInMas + DEC_SOUTH_POLE_MAS) / DEG2MAS,
 			(double)errorRa / DEG2MAS,
@@ -436,13 +436,13 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 			(double)errorPmRa / DEG2DECIMAS,
 			(double)errorPmDec / DEG2DECIMAS,
 			epochRa / 10., epochDec / 10.,
-			(double)mag[0] / MAG2MILLIMAG,
-			(double)mag[1] / MAG2MILLIMAG,
-			(double)mag[2] / MAG2MILLIMAG,
+			abvr[1],(double)mag[0] / MAG2MILLIMAG,
+			abvr[2],(double)mag[1] / MAG2MILLIMAG,
+			abvr[3],(double)mag[2] / MAG2MILLIMAG,
 			(double)mag[3] / MAG2MILLIMAG,
 			(double)mag[4] / MAG2MILLIMAG,
 			(double)mag[5] / MAG2MILLIMAG,
-			idUCAC2, idHIP, idTYC1, idTYC2, idTYC3);
+			idUCAC2, idHIP, idTYC1, idTYC2, idTYC3,flagFarTYC);
 
 	Tcl_DStringAppend(dsptr,outputLogChar,-1);
 	Tcl_DStringAppend(dsptr,"} } } ",-1);
