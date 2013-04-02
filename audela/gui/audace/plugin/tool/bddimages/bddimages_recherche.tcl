@@ -1694,7 +1694,7 @@ namespace eval bddimages_recherche {
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
       
-      ::psf_gui::run_recherche $imglist
+      ::bdi_gui_gestion_source::run_recherche $imglist
 
    }
 
