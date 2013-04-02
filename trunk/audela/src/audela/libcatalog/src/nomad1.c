@@ -423,7 +423,7 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	Tcl_DStringAppend(dsptr,"{ { NOMAD1 { } {",-1);
 
 	//TODO Complete correctly
-	sprintf(outputLogChar,"%03d%c%d %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
+	sprintf(outputLogChar,"%04d%c%07d %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
 			"%.3f %.3f %.3f %.3f %.3f %.3f "
 			"%d %d %d %d %d",
 			zoneNOMAD,'-',idNOMAD,
@@ -460,9 +460,9 @@ int getExtraValues(const int value, const int max, const int max2, const int* co
 	}
 
 	if(value > max2) {
-		return extraValue4[value-max2-1];
+		return (extraValue4[value-max2-1]);
 	} else {
-		return extraValue2[value-max -1];
+		return (extraValue2[value-max -1]);
 	}
 }
 
@@ -488,7 +488,7 @@ int readHeaderNOMAD1(FILE* const inputStream, headerInformationNOMAD1* const hea
 		return (1);
 	}
 
-	sscanf(binaryHeader,NOMAD1_HEADER_FORMAT,&temp,&(headerInformation->zoneNumber),&temp,&temp,&temp,
+	sscanf(binaryHeader,NOMAD1_HEADER_FORMAT,&temp,&temp,&(headerInformation->zoneNumber),&temp,&temp,
 			&(headerInformation->pm),&(headerInformation->mag),&(headerInformation->ep),
 			&temp,&temp,&temp,&temp,&temp,&temp);
 
