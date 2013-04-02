@@ -42,8 +42,7 @@ int cmd_tcl_csnomad1(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 	/* No we loop over the binary files to be opened, we process them one by one */
 	Tcl_DStringInit(&dsptr);
-	//TODO fill correctly
-	Tcl_DStringAppend(&dsptr,"{ { NOMAD1 { } { ID RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec epochRa epochDec magB1 magB2 magR1 magR2 magI magJ errMagJ magH errMagH magK errMagK Nobs} } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { NOMAD1 { } { ID oriAstro RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec epochRa epochDec oriMagB magB oriMagV magV oriMagR magR magJ magH magK idUCAC2 idHIP idTYC1 idTYC2 idTYC3 flagDistTYC} } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
@@ -424,9 +423,8 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	/* Add the result to TCL output */
 	Tcl_DStringAppend(dsptr,"{ { NOMAD1 { } {",-1);
 
-	//TODO Complete correctly
-	sprintf(outputLogChar,"%04d-%07d %c %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
-			"%c %.3f %c %.3f %c %.3f %.3f %.3f %.3f "
+	sprintf(outputLogChar,"%04d-%07d %d %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
+			"%d %.3f %d %.3f %d %.3f %.3f %.3f %.3f "
 			"%d %d %d %d %d %hd",
 			zoneNOMAD,idNOMAD,abvr[0],
 			(double)raInMas/DEG2MAS,
