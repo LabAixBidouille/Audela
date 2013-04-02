@@ -47,7 +47,7 @@ int cmd_tcl_csppmx(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	/* No we loop over the binary files to be opened, we process them one by one */
 	Tcl_DStringInit(&dsptr);
-	Tcl_DStringAppend(&dsptr,"{ { PPMX { } { ID RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec Cmag Rmag Bmag errBmag Vmag ErrVmag Jmag ErrJmag Hmag ErrHmag Kmag ErrKmag Nobs P sub refCatalog} } } ",-1);
+	Tcl_DStringAppend(&dsptr,"{ { PPMX { } { ID RAJ2000 DECJ2000 errRa errDec pmRA pmDE errPmRa errPmDec Cmag Rmag Bmag ErrBmag Vmag ErrVmag Jmag ErrJmag Hmag ErrHmag Kmag ErrKmag Nobs P sub refCatalog} } } ",-1);
 	/* start of main list */
 	Tcl_DStringAppend(&dsptr,"{ ",-1);
 
