@@ -261,7 +261,7 @@ int processChunksNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* const m
 
 			/* We process this sub-chunk : there is a common region of RA to explore */
 			pointerToBuffer  = buffer + acceleratorTable[index];
-			sizeOfSubChunk  = acceleratorTable[index + NOMAD1_CHUNK_ACCELERATOR_TABLE_DIMENSION] - acceleratorTable[index];
+			sizeOfSubChunk   = acceleratorTable[index + NOMAD1_CHUNK_ACCELERATOR_TABLE_DIMENSION] - acceleratorTable[index];
 			headerInformation->theChunkHeader.id = acceleratorTable[index + 1];
 
 			while(sizeOfSubChunk > 0) {
@@ -273,7 +273,7 @@ int processChunksNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* const m
 				headerInformation->theChunkHeader.id++;
 			}
 
-			// sizeOfBuffer should be equal to 0 at the end of this loop
+			// sizeOfSubChunk should be equal to 0 at the end of this loop
 			if(sizeOfSubChunk != 0) {
 				sprintf(outputLogChar,"Buffer = %d (unsigned char) : error when reading records",sizeOfSubChunk);
 				return(1);
