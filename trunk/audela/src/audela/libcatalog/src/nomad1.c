@@ -366,6 +366,8 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 		*lengthOfRecord += 4;
 	}
 
+	flagFarTYC = 0;
+
 	/* Tycho */
 	if (presence&0x40) {
 		flagFarTYC = buffer[0] >> 7;
