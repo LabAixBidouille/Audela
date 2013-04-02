@@ -554,7 +554,7 @@ void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const doub
 }
 
 /**
- * Find the component in sortedArrayOfValues for which value is in [array(component),array(component+1)] by dichotomie
+ * Find the component in sortedArrayOfValues for which value is in [array(component),array(component+1)] by dichotomy
  * Adapted from Francois Ochsenbein's method : binloc
  */
 int findComponentNumber(const int* const sortedArrayOfValues, const int lengthOfArray, const int value) {
