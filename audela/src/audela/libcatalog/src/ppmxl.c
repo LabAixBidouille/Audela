@@ -468,6 +468,7 @@ const searchZonePPMX findSearchZonePPMXL(const double raInDeg,const double decIn
 	int rest;
 	int indexDec;
 	int indexDec2;
+	int lastIndex;
 	int counter;
 	const int numberOfCatalogPerZone = strlen(ppmxlFileNameSuffix);
 
@@ -540,8 +541,10 @@ const searchZonePPMX findSearchZonePPMXL(const double raInDeg,const double decIn
 		}
 
 		counter      = 0;
+		lastIndex    = 0;
+		if (indexStarDec == indexEndDec) {lastIndex = indexEndDec2;}
 		/* South at indexStarDec from 0 to indexStarDec2 */
-		for(indexDec2 = indexStarDec2; indexDec2 >= 0; indexDec2--) {
+		for(indexDec2 = indexStarDec2; indexDec2 >= lastIndex; indexDec2--) {
 			sprintf(mySearchZonePPMX.binaryFileNames[counter],PPMXL_BINARY_FILE_NAME_FORMAT_SOUTH,indexStarDec,ppmxlFileNameSuffix[indexDec2]);
 			counter++;
 		}
@@ -554,11 +557,12 @@ const searchZonePPMX findSearchZonePPMXL(const double raInDeg,const double decIn
 			}
 		}
 
-		/* South at indexEndDec from numberOfCatalogPerZone to indexEndDec2 */
-		indexDec++;
-		for(indexDec2 = numberOfCatalogPerZone - 1; indexDec2 >= indexEndDec2; indexDec2--) {
-			sprintf(mySearchZonePPMX.binaryFileNames[counter],PPMXL_BINARY_FILE_NAME_FORMAT_SOUTH,indexEndDec,ppmxlFileNameSuffix[indexDec2]);
-			counter++;
+		if(indexStarDec != indexEndDec) {
+			/* South at indexEndDec from numberOfCatalogPerZone to indexEndDec2 */
+			for(indexDec2 = numberOfCatalogPerZone - 1; indexDec2 >= indexEndDec2; indexDec2--) {
+				sprintf(mySearchZonePPMX.binaryFileNames[counter],PPMXL_BINARY_FILE_NAME_FORMAT_SOUTH,indexEndDec,ppmxlFileNameSuffix[indexDec2]);
+				counter++;
+			}
 		}
 
 	} else {
@@ -580,8 +584,10 @@ const searchZonePPMX findSearchZonePPMXL(const double raInDeg,const double decIn
 		}
 
 		counter      = 0;
+		lastIndex    = numberOfCatalogPerZone - 1;
+		if (indexStarDec == indexEndDec) {lastIndex = indexEndDec2;}
 		/* North at indexStarDec from indexStarDec2 to numberOfCatalogPerZone */
-		for(indexDec2 = indexStarDec2; indexDec2 < numberOfCatalogPerZone; indexDec2++) {
+		for(indexDec2 = indexStarDec2; indexDec2 <= lastIndex; indexDec2++) {
 			sprintf(mySearchZonePPMX.binaryFileNames[counter],PPMXL_BINARY_FILE_NAME_FORMAT_NORTH,indexStarDec,ppmxlFileNameSuffix[indexDec2]);
 			counter++;
 		}
@@ -594,10 +600,12 @@ const searchZonePPMX findSearchZonePPMXL(const double raInDeg,const double decIn
 			}
 		}
 
-		/* North at indexEndDec from 0 to indexEndDec2 */
-		for(indexDec2 = 0; indexDec2 <= indexEndDec2; indexDec2++) {
-			sprintf(mySearchZonePPMX.binaryFileNames[counter],PPMXL_BINARY_FILE_NAME_FORMAT_NORTH,indexEndDec,ppmxlFileNameSuffix[indexDec2]);
-			counter++;
+		if(indexStarDec != indexEndDec) {
+			/* North at indexEndDec from 0 to indexEndDec2 */
+			for(indexDec2 = 0; indexDec2 <= indexEndDec2; indexDec2++) {
+				sprintf(mySearchZonePPMX.binaryFileNames[counter],PPMXL_BINARY_FILE_NAME_FORMAT_NORTH,indexEndDec,ppmxlFileNameSuffix[indexDec2]);
+				counter++;
+			}
 		}
 	}
 
