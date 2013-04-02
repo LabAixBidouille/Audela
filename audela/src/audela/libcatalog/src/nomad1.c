@@ -305,10 +305,9 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	short int mag[6];                 /* Magnitudes B V R J H K	*/
 	unsigned char abvr[4];            /* Refs. Astrometry B V R : 1..9 = USNO,2MASS,YB6,UCAC2,Tycho2,Hip,.,O,E */
 	int  idUCAC2;                     /* UCAC2 Identifier */
-	short int idTYC1, idTYC2, idTYC3; /* Identifiers */
+	int idTYC1, idTYC2, idTYC3;       /* Identifiers */
 	short int flagFarTYC;             /* Flag r>0.3(1), 1"(2), 3"(3) */
 	int idHIP;                        /* Hipparcos number */
-	int pmtot;                        /* Total Proper Motion 0.1mas/y */
 
 	const searchZoneRaSpdMas* const subSearchZone = &(mySearchZoneNOMAD1->subSearchZone);
 
@@ -370,12 +369,12 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	/* Tycho */
 	if (presence&0x40) {
 		flagFarTYC = buffer[0] >> 7;
-		idTYC3     = getBits(buffer, 29, 3);
+		idTYC3     = (int)getBits(buffer, 29, 3);
 		if (idTYC3 == 0)
 			idHIP = (getBits(buffer, 1, 28)) % 1000000;
 		else {
-			idTYC1 = getBits(buffer, 1, 14);
-			idTYC2 = getBits(buffer, 15, 14);
+			idTYC1 = (int)getBits(buffer, 1, 14);
+			idTYC2 = (int)getBits(buffer, 15, 14);
 		}
 		buffer          += 4;
 		*lengthOfRecord += 4;
@@ -426,7 +425,7 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	//TODO Complete correctly
 	sprintf(outputLogChar,"%03d%c%d %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.1f %.1f "
 			"%.3f %.3f %.3f %.3f %.3f %.3f "
-			"%d ",
+			"%d %d %d %d %d",
 			zoneNOMAD,'-',idNOMAD,
 			(double)raInMas/DEG2MAS,
 			(double) (spdInMas + DEC_SOUTH_POLE_MAS) / DEG2MAS,
@@ -443,7 +442,7 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 			(double)mag[3] / MAG2MILLIMAG,
 			(double)mag[4] / MAG2MILLIMAG,
 			(double)mag[5] / MAG2MILLIMAG,
-			idUCAC2);
+			idUCAC2, idHIP, idTYC1, idTYC2, idTYC3);
 
 	Tcl_DStringAppend(dsptr,outputLogChar,-1);
 	Tcl_DStringAppend(dsptr,"} } } ",-1);
