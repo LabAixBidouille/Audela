@@ -1504,6 +1504,20 @@ namespace eval gui_cata_creation {
    }
 
 
+   #------------------------------------------------------------
+   ## GUI de choix de la couleur pour l'affichage des catalogues
+   # @param color_cata string Couleur initiale
+   # @param button string pathName du bouton a colorer
+   # @return void
+   #
+   proc ::gui_cata_creation::choose_color { color_cata button } {
+   
+      upvar $color_cata color
+      ::bdi_gui_config::choose_color color $button
+      ::gui_cata::affiche_cata
+
+   }
+
 
    #------------------------------------------------------------
    ## GUI principale de creation des fichiers catalogues d'un lot d'images
@@ -1674,7 +1688,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_skybot -command "::gui_cata::affiche_cata"
                   label $cataff.skybot_val -textvariable ::tools_cata::nb_skybot -width 4
                   button $cataff.skybot_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_skybot \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_skybot $cataff.skybot_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_skybot $cataff.skybot_color"
                   spinbox $cataff.skybot_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_skybot -command "::gui_cata::affiche_cata"
                   $cataff.skybot_radius set $::gui_cata::size_skybot_sav
@@ -1682,7 +1696,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_astroid -command "::gui_cata::affiche_cata"
                   label $cataff.astroid_val -textvariable ::tools_cata::nb_astroid -width 4
                   button $cataff.astroid_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_astroid \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_astroid $cataff.astroid_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_astroid $cataff.astroid_color"
                   spinbox $cataff.astroid_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_astroid -command "::gui_cata::affiche_cata"
                   $cataff.astroid_radius set $::gui_cata::size_astroid_sav
@@ -1690,7 +1704,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_img -command "::gui_cata::affiche_cata"
                   label $cataff.img_val -textvariable ::tools_cata::nb_img -width 4
                   button $cataff.img_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_img \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_img $cataff.img_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_img $cataff.img_color"
                   spinbox $cataff.img_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_img -command "::gui_cata::affiche_cata"
                   $cataff.img_radius set $::gui_cata::size_img_sav
@@ -1698,7 +1712,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_usnoa2 -command "::gui_cata::affiche_cata"
                   label $cataff.usnoa2_val -textvariable ::tools_cata::nb_usnoa2 -width 4
                   button $cataff.usnoa2_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_usnoa2 \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_usnoa2 $cataff.usnoa2_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_usnoa2 $cataff.usnoa2_color"
                   spinbox $cataff.usnoa2_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_usnoa2 -command "::gui_cata::affiche_cata"
                   $cataff.usnoa2_radius set $::gui_cata::size_usnoa2_sav
@@ -1706,7 +1720,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_tycho2 -command "::gui_cata::affiche_cata"
                   label $cataff.tycho2_val -textvariable ::tools_cata::nb_tycho2 -width 4
                   button $cataff.tycho2_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_tycho2 \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_tycho2 $cataff.tycho2_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_tycho2 $cataff.tycho2_color"
                   spinbox $cataff.tycho2_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_tycho2 -command "::gui_cata::affiche_cata"
                   $cataff.tycho2_radius set $::gui_cata::size_tycho2_sav
@@ -1714,7 +1728,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_ucac2 -command "::gui_cata::affiche_cata"
                   label $cataff.ucac2_val -textvariable ::tools_cata::nb_ucac2 -width 4
                   button $cataff.ucac2_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ucac2 \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_ucac2 $cataff.ucac2_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_ucac2 $cataff.ucac2_color"
                   spinbox $cataff.ucac2_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_ucac2 -command "::gui_cata::affiche_cata"
                   $cataff.ucac2_radius set $::gui_cata::size_ucac2_sav
@@ -1722,7 +1736,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_ucac3 -command "::gui_cata::affiche_cata"
                   label $cataff.ucac3_val -textvariable ::tools_cata::nb_ucac3 -width 4
                   button $cataff.ucac3_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ucac3 \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_ucac3 $cataff.ucac3_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_ucac3 $cataff.ucac3_color"
                   spinbox $cataff.ucac3_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_ucac3 -command "::gui_cata::affiche_cata"
                   $cataff.ucac3_radius set $::gui_cata::size_ucac3_sav
@@ -1730,7 +1744,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_ucac4 -command "::gui_cata::affiche_cata"
                   label $cataff.ucac4_val -textvariable ::tools_cata::nb_ucac4 -width 4
                   button $cataff.ucac4_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ucac4 \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_ucac4 $cataff.ucac4_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_ucac4 $cataff.ucac4_color"
                   spinbox $cataff.ucac4_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_ucac4 -command "::gui_cata::affiche_cata"
                   $cataff.ucac4_radius set $::gui_cata::size_ucac4_sav
@@ -1738,7 +1752,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_ppmx -command "::gui_cata::affiche_cata"
                   label $cataff.ppmx_val -textvariable ::tools_cata::nb_ppmx -width 4
                   button $cataff.ppmx_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ppmx \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_ppmx $cataff.ppmx_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_ppmx $cataff.ppmx_color"
                   spinbox $cataff.ppmx_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_ppmx -command "::gui_cata::affiche_cata"
                   $cataff.ppmx_radius set $::gui_cata::size_ppmx_sav
@@ -1746,7 +1760,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_ppmxl -command "::gui_cata::affiche_cata"
                   label $cataff.ppmxl_val -textvariable ::tools_cata::nb_ppmxl -width 4
                   button $cataff.ppmxl_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_ppmxl \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_ppmxl $cataff.ppmxl_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_ppmxl $cataff.ppmxl_color"
                   spinbox $cataff.ppmxl_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_ppmxl -command "::gui_cata::affiche_cata"
                   $cataff.ppmxl_radius set $::gui_cata::size_ppmxl_sav
@@ -1754,7 +1768,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_nomad1 -command "::gui_cata::affiche_cata"
                   label $cataff.nomad1_val -textvariable ::tools_cata::nb_nomad1 -width 4
                   button $cataff.nomad1_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_nomad1 \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_nomad1 $cataff.nomad1_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_nomad1 $cataff.nomad1_color"
                   spinbox $cataff.nomad1_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_nomad1 -command "::gui_cata::affiche_cata"
                   $cataff.nomad1_radius set $::gui_cata::size_nomad1_sav
@@ -1762,7 +1776,7 @@ namespace eval gui_cata_creation {
                   -variable ::gui_cata::gui_2mass -command "::gui_cata::affiche_cata"
                   label $cataff.2mass_val -textvariable ::tools_cata::nb_2mass -width 4
                   button $cataff.2mass_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_2mass \
-                     -command "::bdi_gui_config::choose_color ::gui_cata::color_2mass $cataff.2mass_color"
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_2mass $cataff.2mass_color"
                   spinbox $cataff.2mass_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_2mass -command "::gui_cata::affiche_cata"
                   $cataff.2mass_radius set $::gui_cata::size_2mass_sav

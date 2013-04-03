@@ -264,7 +264,7 @@ namespace eval ::manage_source {
 
    proc ::manage_source::namable { mysource } {
 
-      set list_of_cata [list SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS USNOA2 ASTROID IMG]
+      set list_of_cata [list SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 ASTROID IMG]
       foreach cata $list_of_cata {
           foreach mycata $mysource {
              if {[lindex $mycata 0] == $cata} {
@@ -339,6 +339,21 @@ namespace eval ::manage_source {
             if {$mycata=="USNOA2"} {
                set id [lindex [lindex $cata 2] 0]
                return "USNOA2_${id}"
+            }
+
+            if {$mycata=="PPMX"} {
+               set id [lindex [lindex $cata 2] 0]
+               return "PPMX_${id}"
+            }
+
+            if {$mycata=="PPMXL"} {
+               set id [lindex [lindex $cata 2] 0]
+               return "PPMXL_${id}"
+            }
+
+            if {$mycata=="NOMAD1"} {
+               set id [lindex [lindex $cata 2] 0]
+               return "NOMAD1_${id}"
             }
 
             if {$mycata=="TYCHO2"} {
@@ -442,27 +457,25 @@ namespace eval ::manage_source {
                } else {
                   set ra [lindex $data [lindex $idlist 0]]
                }
-               
-               
+
                if {[string is double -strict [lindex $fieldlist 1]]} {
                   set dec [lindex $fieldlist 1]
                } else {
                   set dec [lindex $data [lindex $idlist 1]]
                }
-               
-               
+
                if {[string is double -strict [lindex $fieldlist 2]]} {
                   set poserr [lindex $fieldlist 2]
                } else {
                   set poserr [lindex $data [lindex $idlist 2]]
                }
-               
+
                if {[string is double -strict [lindex $fieldlist 3]]} {
                   set mag [lindex $fieldlist 3]
                } else {
                   set mag [lindex $data [lindex $idlist 3]]
                }
-               
+
                if {[string is double -strict [lindex $fieldlist 4]]} {
                   set magerr [lindex $fieldlist 4]
                } else {
