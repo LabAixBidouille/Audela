@@ -761,18 +761,32 @@ namespace eval gui_cata {
       set listsources [::tools_cata::get_cata_xml $catafile]
 
       # Affecte les common selon le cata
-      set listsources [::tools_sources::set_common_fields $listsources IMG    { ra dec 5.0 calib_mag_ss2 err_calib_mag_ss2 }]
-      set listsources [::tools_sources::set_common_fields $listsources USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC2  { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC3  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      set listsources [::tools_sources::set_common_fields $listsources UCAC4  { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
-      set listsources [::tools_sources::set_common_fields $listsources 2MASS  { ra_deg dec_deg err_dec jMag jMagError }]
-      set listsources [::tools_sources::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5.0 VT e_VT }]
-#### TODO ::gui_cata::load_cata set_common_fields PPMX et PPMXL
-#      set listsources [::tools_sources::set_common_fields $listsources PPMX   {  }]
-#      set listsources [::tools_sources::set_common_fields $listsources PPMXL  {  }]
-      set listsources [::tools_sources::set_common_fields $listsources SKYBOT { ra de errpos magV 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources IMG     { ra dec 5.0 calib_mag_ss2 err_calib_mag_ss2 }]
+      set listsources [::tools_sources::set_common_fields $listsources USNOA2  { ra_deg dec_deg 5.0 magR 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC2   { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC3   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources UCAC4   { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
+      set listsources [::tools_sources::set_common_fields $listsources 2MASS   { ra_deg dec_deg err_dec jMag jMagError }]
+      set listsources [::tools_sources::set_common_fields $listsources TYCHO2  { RAdeg DEdeg 5.0 VT e_VT }]
+      set listsources [::tools_sources::set_common_fields $listsources PPMX    { RAJ2000 DECJ2000 errDec Vmag ErrVmag }]
+      set listsources [::tools_sources::set_common_fields $listsources PPMXL   { RAJ2000 DECJ2000 errDec magR1 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources NOMAD1  { RAJ2000 DECJ2000 errDec magV 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources SKYBOT  { ra de errpos magV 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
+
+      set ::tools_cata::nb_img     [::manage_source::get_nb_sources_by_cata $listsources IMG]
+      set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
+      set ::tools_cata::nb_skybot  [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
+      set ::tools_cata::nb_usnoa2  [::manage_source::get_nb_sources_by_cata $listsources USNOA2]
+      set ::tools_cata::nb_tycho2  [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
+      set ::tools_cata::nb_ucac2   [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
+      set ::tools_cata::nb_ucac3   [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
+      set ::tools_cata::nb_ucac4   [::manage_source::get_nb_sources_by_cata $listsources UCAC4]
+      set ::tools_cata::nb_ppmx    [::manage_source::get_nb_sources_by_cata $listsources PPMX]
+      set ::tools_cata::nb_ppmxl   [::manage_source::get_nb_sources_by_cata $listsources PPMXL]
+      set ::tools_cata::nb_nomad1  [::manage_source::get_nb_sources_by_cata $listsources NOMAD1]
+      set ::tools_cata::nb_2mass   [::manage_source::get_nb_sources_by_cata $listsources 2MASS]
+
       set ::tools_cata::current_listsources $listsources
 
    }

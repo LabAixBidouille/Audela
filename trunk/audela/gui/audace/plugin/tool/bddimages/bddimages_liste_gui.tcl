@@ -589,9 +589,7 @@ namespace eval bddimages_liste_gui {
       lappend imgtmplist [list "name"               "tmp"]              
       lappend imgtmplist [list "idlist"             ""]              
       set imgtmplist [::bddimages_liste_gui::add_to_normallist $lid $imgtmplist]
-      #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
       set imgtmplist [::bddimages_liste_gui::intellilist_to_imglist $imgtmplist]
-      #::console::affiche_resultat "imgtmplist=$imgtmplist\n"
       return $imgtmplist
    }
 
