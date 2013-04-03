@@ -980,6 +980,7 @@ proc ::votable::getFieldFromKey_USNOA2 { key } {
    return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
 }
 
+
 #
 # Construction des elements FIELDS en fonction de la cle de la colonne pour le cataloguye NOMAD1
 # @access private
@@ -991,43 +992,171 @@ proc ::votable::getFieldFromKey_NOMAD1 { key } {
    set field [list "$::votable::Field::ID NOMAD1.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
-      ra -
-      dec {
-         if {[string equal -nocase $key "ra"]} {
-            set description "Astrometric J2000 right ascension"
+      ID {
+         set description "NOMAD-identifier"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"12\""
+      }
+      oriAstro {
+         set description "?"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"1\"" \
+                       "$::votable::Field::WIDTH \"1\""
+      }
+      RAJ2000 -
+      DECJ2000 {
+         if {[string equal -nocase $key "RAJ2000"]} {
+            set description "Right ascension in ICRS, Ep=J2000"
          } else {
-            set description "Astrometric J2000 declination"
+            set description "Declination in ICRS, Ep=J2000"
          }
          lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
-                       "$::votable::Field::WIDTH \"9\"" \
-                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::WIDTH \"11\"" \
+                       "$::votable::Field::PRECISION \"7\"" \
                        "$::votable::Field::UNIT \"deg\""
       }
-      poserr {
-         set description "Uncertainty of the celestial coordinates"
-         set ucd "stat.error;pos"
+      errRa -
+      errDec {
+         if {[string equal -nocase $key "errRa"]} {
+            set description "Mean error on RAJ2000 (at epRAJ2000)"
+            set ucd "stat.error;pos.eq.ra"
+         } else {
+            set description "Mean error on DECJ2000 (at epDECJ2000)"
+            set ucd "stat.error;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"10\"" \
+                       "$::votable::Field::PRECISION \"6\"" \
+                       "$::votable::Field::UNIT \"mas\""
+      }
+      pmRA -
+      pmDE {
+         if {[string equal -nocase $key "pmRA"]} {
+            set description "Proper Motion in RAJ2000*cos(DECJ2000)"
+            set ucd "pos.pm;pos.eq.ra"
+         } else {
+            set description "Proper motion in DECJ2000"
+            set ucd "pos.pm;pos.eq.dec"
+         }
          lappend field "$::votable::Field::UCD \"$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"6\"" \
                        "$::votable::Field::PRECISION \"2\"" \
-                       "$::votable::Field::UNIT \"arcsec\""
+                       "$::votable::Field::UNIT \"mas/yr\""
       }
-      mag {
-         set description "Catalogue magnitude"
-         lappend field "$::votable::Field::UCD \"phot.mag\"" \
+      errPmRa -
+      errPmDec {
+         if {[string equal -nocase $key "errPmRa"]} {
+            set description "Mean error pmRA)"
+            set ucd "stat.error;pos.pm;pos.eq.ra"
+         } else {
+            set description "Mean error on pmDE"
+            set ucd "stat.error;pos.pm;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mas/yr\""
+      }
+      epochRa -
+      epochDec {
+         if {[string equal -nocase $key "epochRa"]} {
+            set description "Mean epoch of RAJ2000"
+         } else {
+            set description "Mean epoch of DECJ2000"
+         }
+         lappend field "$::votable::Field::UCD \"time.epoch\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"7\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"yr\""
+      }
+      oriMagB -
+      oriMagV -
+      oriMagR {
+         set description "Origin of [string index $key end] magnitude"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"1\"" \
+                       "$::votable::Field::WIDTH \"1\""
+      }
+      magB -
+      magV -
+      magR -
+      magJ -
+      magH -
+      magK {
+         switch $key {
+            "magR" { 
+               set description "Red magnitude" 
+               set ucd "phot.mag;em.opt.R"
+            }
+            "magB" { 
+               set description "Blue magnitude" 
+               set ucd "phot.mag;em.opt.B"
+            }
+            "magV" { 
+               set description "Visual magnitude" 
+               set ucd "phot.mag;em.opt.V"
+            }
+            "magJ" { 
+               set description "Infrared J magnitude from 2MASS" 
+               set ucd "phot.mag;em.IR.J"
+            }
+            "magH" { 
+               set description "Infrared H magnitude from 2MASS" 
+               set ucd "phot.mag;em.IR.H"
+            }
+            "magK" { 
+               set description "Infrared Ks magnitude from 2MASS" 
+               set ucd "phot.mag;em.IR.K"
+            }
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"mag\""
       }
-      magerr {
-         set description "Uncertainty of the catalogue magnitude"
-         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
-                       "$::votable::Field::DATATYPE \"float\"" \
-                       "$::votable::Field::WIDTH \"8\"" \
-                       "$::votable::Field::PRECISION \"3\"" \
-                       "$::votable::Field::UNIT \"mag\""
+      idUCAC2 {
+         set description "Number in UCAC2 (Cat. I/289)" 
+         lappend field "$::votable::Field::UCD \"meta.id.part;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"8\""
+      }
+      idHIP - 
+      idTYC1 -
+      idTYC2 -
+      idTYC3 {
+         switch $key {
+            "idHIP" { 
+               set description "Identification in Hipparcos" 
+            }
+            "idTYC1" { 
+               set description "Identification in Tycho-2 (TYC1)" 
+            }
+            "idTYC2" { 
+               set description "Identification in Tycho-2 (TYC2)" 
+            }
+            "idTYC3" { 
+               set description "Identification in Tycho-2 (TYC3)" 
+            }
+         }
+         lappend field "$::votable::Field::UCD \"meta.id.part;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"12\"" \
+                       "$::votable::Field::WIDTH \"12\""
+      }
+      flagDistTYC {
+         set description "When distance NOMAD1/Tycho-2 > 1arcsec"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::WIDTH \"1\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
@@ -2007,7 +2136,7 @@ proc ::votable::getFieldFromKey_UCAC4 { key } {
 
 
 #
-# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue 2MASS
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue PPMX
 # @access private
 # @param key nom de la colonne dont on veut construire l'element FIELD
 # @return liste liste contenant la definition du champ et sa description
@@ -2114,7 +2243,7 @@ proc ::votable::getFieldFromKey_PPMX { key } {
                set ucd "phot.mag;em.IR.H"
             }
             "Kmag" { 
-               set description "K magnitude from 2MASS" 
+               set description "Ks magnitude from 2MASS" 
                set ucd "phot.mag;em.IR.K"
             }
          }
@@ -2124,13 +2253,13 @@ proc ::votable::getFieldFromKey_PPMX { key } {
                        "$::votable::Field::PRECISION \"3\"" \
                        "$::votable::Field::UNIT \"mag\""
       }
-      errBmag -
+      ErrBmag -
       ErrVmag -
       ErrJmag -
       ErrHmag -
       ErrKmag {
          switch $key {
-            "errBmag" { 
+            "ErrBmag" { 
                set description "Standard error on B magnitude"
                set ucd "phot.mag;em.opt.B"
             }
@@ -2147,11 +2276,11 @@ proc ::votable::getFieldFromKey_PPMX { key } {
                set ucd "phot.mag;em.IR.H"
             }
             "ErrKmag" { 
-               set description "Standard error on K magnitude" 
+               set description "Standard error on Ks magnitude" 
                set ucd "phot.mag;em.IR.K"
             }
          }
-         lappend field "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+         lappend field "$::votable::Field::UCD \"stat.error;$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"3\"" \
@@ -2180,6 +2309,181 @@ proc ::votable::getFieldFromKey_PPMX { key } {
          lappend field "$::votable::Field::UCD \"meta.code\"" \
                        "$::votable::Field::DATATYPE \"char\"" \
                        "$::votable::Field::WIDTH \"1\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue PPMXL
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_PPMXL { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID PPMXL.${key}" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      ID {
+         set description "PPMXL identifier (IAU convention HHMMSS.S+DDMMSS)"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::WIDTH \"16\""
+      }
+      RAJ2000 -
+      DECJ2000 {
+         if {[string equal -nocase $key "RAJ2000"]} {
+            set description "Right ascension at epoch J2000.0"
+         } else {
+            set description "Declination at epoch J2000.0"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      errRa -
+      errDec {
+         if {[string equal -nocase $key "errRa"]} {
+            set description "Mean error in RAJ2000*cos(DECJ2000) at epRA"
+            set ucd "stat.error;pos.eq.ra"
+         } else {
+            set description "Mean error in DE at epDE"
+            set ucd "stat.error;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"10\"" \
+                       "$::votable::Field::PRECISION \"6\"" \
+                       "$::votable::Field::UNIT \"mas\""
+      }
+      pmRA -
+      pmDE {
+         if {[string equal -nocase $key "pmRA"]} {
+            set description "Proper Motion in RAJ2000*cos(DECJ2000)"
+            set ucd "pos.pm;pos.eq.ra"
+         } else {
+            set description "Proper motion in DEC"
+            set ucd "pos.pm;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mas/yr\""
+      }
+      errPmRa -
+      errPmDec {
+         if {[string equal -nocase $key "errPmRa"]} {
+            set description "Mean error in RA proper motion (pmRA*cos(DECJ2000))"
+            set ucd "stat.error;pos.pm;pos.eq.ra"
+         } else {
+            set description "Mean error in DEC proper motion"
+            set ucd "stat.error;pos.pm;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mas/yr\""
+      }
+      epochRa -
+      epochDec {
+         if {[string equal -nocase $key "epochRa"]} {
+            set description "Mean epoch of RAJ2000"
+         } else {
+            set description "Mean epoch of DECJ2000"
+         }
+         lappend field "$::votable::Field::UCD \"time.epoch\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"7\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"yr\""
+      }
+      magB1 -
+      magB2 -
+      magR1 -
+      magR2 -
+      magI -
+      magJ -
+      magH -
+      magK {
+         switch $key {
+            "magB1" { 
+               set description "B mag from USNO-B, first epoch" 
+               set ucd "phot.mag;em.opt.B"
+            }
+            "magB2" { 
+               set description "B mag from USNO-B, second epoch" 
+               set ucd "phot.mag;em.opt.B"
+            }
+            "magR1" { 
+               set description "R mag from USNO-B, first epoch" 
+               set ucd "phot.mag;em.opt.R"
+            }
+            "magR2" { 
+               set description "R mag from USNO-B, second epoch" 
+               set ucd "phot.mag;em.opt.R"
+            }
+            "magI" { 
+               set description "I mag from USNO-B" 
+               set ucd "phot.mag;em.IR.I"
+            }
+            "magJ" { 
+               set description "J magnitude from 2MASS" 
+               set ucd "phot.mag;em.IR.J"
+            }
+            "magH" { 
+               set description "H magnitude from 2MASS" 
+               set ucd "phot.mag;em.IR.H"
+            }
+            "magK" { 
+               set description "Ks magnitude from 2MASS" 
+               set ucd "phot.mag;em.IR.K"
+            }
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      errMagJ -
+      errMagH -
+      errMagK {
+         switch $key {
+            "errMagJ" { 
+               set description "J total magnitude uncertainty"
+               set ucd "phot.mag;em.IR.J"
+            }
+            "errMagH" { 
+               set description "H total magnitude uncertainty"
+               set ucd "phot.mag;em.IR.H"
+            }
+            "errMagK" { 
+               set description "Ks total magnitude uncertainty"
+               set ucd "phot.mag;em.IR.K"
+            }
+         }
+         lappend field "$::votable::Field::UCD \"stat.error;ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      Nobs {
+         set description "Number of observation used"
+         lappend field "$::votable::Field::UCD \"meta.number\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"2\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
