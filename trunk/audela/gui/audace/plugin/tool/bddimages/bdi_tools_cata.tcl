@@ -931,9 +931,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          #gren_info "CMD: csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius\n"
          set ppmxl [csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius]
          gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmxl]\n"
-# TODO ::tools_cata::get_cata PPMXL
          set ppmxl [::manage_source::set_common_fields $ppmxl PPMXL { RAJ2000 DECJ2000 errDec magR1 0.5 }]
-         ::manage_source::imprim_3_sources $ppmxl
+         #::manage_source::imprim_3_sources $ppmxl
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ppmxl PPMXL $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
@@ -943,11 +942,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       if {$::tools_cata::use_nomad1} {
          #gren_info "CMD: csnomad1 $::tools_cata::catalog_nomad1 $ra $dec $radius\n"
          set nomad1 [csnomad1 $::tools_cata::catalog_nomad1 $ra $dec $radius]
-         ::manage_source::imprim_3_sources $nomad1
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $nomad1]\n"
-# TODO ::tools_cata::get_cata NOMAD1
          set nomad1 [::manage_source::set_common_fields $nomad1 NOMAD1 { RAJ2000 DECJ2000 errDec magV 0.5 }]
-         ::manage_source::imprim_3_sources $nomad1
+         #::manage_source::imprim_3_sources $nomad1
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $nomad1 NOMAD1 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
