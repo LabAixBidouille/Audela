@@ -16,13 +16,13 @@ int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeBright(mag)? magnitudeFaint(mag)?",
+		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeBright(mag)? ?magnitudeFaint(mag)?",
 				argv[0]);
 		return (1);
 	}
 
 	if((argc != 5) && (argc != 6) && (argc != 7)) {
-		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeBright(mag)? magnitudeFaint(mag)?",
+		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeBright(mag)? ?magnitudeFaint(mag)?",
 				argv[0]);
 		return (1);
 	}
