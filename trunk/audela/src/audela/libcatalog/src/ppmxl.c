@@ -312,7 +312,7 @@ void processBufferedDataPPMXL(Tcl_DString* const dsptr,const searchZonePPMX* con
 	}
 
 	/* Add the result to TCL output */
-	Tcl_DStringAppend(dsptr,"{ { PPMX { } {",-1);
+	Tcl_DStringAppend(dsptr,"{ { PPMXL { } {",-1);
 
 	sprintf(outputLogChar,"%lld %.8f %+.8f %.8f %.8f %+.8f %+.8f %.8f %.8f %.2f %.2f "
 			"%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f "
