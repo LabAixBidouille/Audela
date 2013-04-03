@@ -35,6 +35,117 @@ namespace eval bdi_gui_psf {
 
 
 
+   #------------------------------------------------------------
+   ## Charge les parametres depuis la configuration d'AUDACE
+   # Cette initialisation est a effectuer avant l'appel
+   # a une fonction de mesure de photocentre
+   # @return void
+   #
+   proc ::bdi_gui_psf::inittoconf { } {
+
+      global conf
+
+      if {! [info exists ::bdi_tools_psf::use_psf] } {
+         if {[info exists conf(bddimages,cata,psf,create)]} {
+            set ::bdi_tools_psf::use_psf $conf(bddimages,cata,psf,create)
+         } else {
+            set ::bdi_tools_psf::use_psf 0
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::use_global] } {
+         if {[info exists conf(bddimages,cata,psf,globale)]} {
+            set ::bdi_tools_psf::use_global $conf(bddimages,cata,psf,globale)
+         } else {
+            set ::bdi_tools_psf::use_global 0
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::psf_saturation] } {
+         if {[info exists conf(bddimages,cata,psf,saturation)]} {
+            set ::bdi_tools_psf::psf_saturation $conf(bddimages,cata,psf,saturation)
+         } else {
+            set ::bdi_tools_psf::psf_saturation 50000
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::psf_radius] } {
+         if {[info exists conf(bddimages,cata,psf,radius)]} {
+            set ::bdi_tools_psf::psf_radius $conf(bddimages,cata,psf,radius)
+         } else {
+            set ::bdi_tools_psf::psf_radius 15
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::psf_threshold] } {
+         if {[info exists conf(bddimages,cata,psf,threshold)]} {
+            set ::bdi_tools_psf::psf_threshold $conf(bddimages,cata,psf,threshold)
+         } else {
+            set ::bdi_tools_psf::psf_threshold 2
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::psf_limitradius] } {
+         if {[info exists conf(bddimages,cata,psf,limitradius)]} {
+            set ::bdi_tools_psf::psf_limitradius $conf(bddimages,cata,psf,limitradius)
+         } else {
+            set ::bdi_tools_psf::psf_limitradius 50
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::psf_methode] } {
+         if {[info exists conf(bddimages,cata,psf,methode)]} {
+            set ::bdi_tools_psf::psf_methode $conf(bddimages,cata,psf,methode)
+         } else {
+            set ::bdi_tools_psf::psf_methode "basic"
+         }
+      }
+
+   }
+
+
+
+
+
+
+   #------------------------------------------------------------
+   ## A la fermeture de l'application, cette fonction
+   # sauvegarde les parametres dans la conf
+   # @return void
+   #
+   proc ::bdi_gui_psf::closetoconf { } {
+
+      global conf
+   
+      # Conf cata psf
+      set conf(bddimages,cata,psf,create)       $::bdi_tools_psf::use_psf
+      set conf(bddimages,cata,psf,globale)      $::bdi_tools_psf::use_global
+      set conf(bddimages,cata,psf,saturation)   $::bdi_tools_psf::psf_saturation
+      set conf(bddimages,cata,psf,radius)       $::bdi_tools_psf::psf_radius
+      set conf(bddimages,cata,psf,threshold)    $::bdi_tools_psf::psf_threshold
+      set conf(bddimages,cata,psf,limitradius)  $::bdi_tools_psf::psf_limitradius
+      set conf(bddimages,cata,psf,methode)      $::bdi_tools_psf::psf_methode
+   }
+
+
+
+   #------------------------------------------------------------
+   ## Fonction qui initialise la variable current_psf
+   # et formate le resultat
+   # @param otherfield ASTROID
+   # @return void
+   #
+   proc ::bdi_gui_psf::init_current_psf { othf } {
+   
+      set l [::bdi_tools_psf::get_fields_current_psf]
+
+      foreach key $l {
+         set value [::bdi_tools_psf::get_val othf $key]
+         
+         if {[string is ascii $value]} {set fmt "%s"}
+         if {[string is double $value]} {set fmt "%.4f"}
+         
+         if { ! [info exists fmt] } {gren_erreur "$value n a pas de format\n"}
+         set ::gui_cata::current_psf($key) [format $fmt $value ]
+      }
+      
+   }
+
+
 
 
 

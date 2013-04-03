@@ -36,86 +36,259 @@ namespace eval bdi_tools_psf {
 
 
 
-   proc ::bdi_tools_psf::inittoconf { } {
-
-      global conf
-
-      if {! [info exists ::bdi_tools_psf::use_psf] } {
-         if {[info exists conf(bddimages,cata,psf,create)]} {
-            set ::bdi_tools_psf::use_psf $conf(bddimages,cata,psf,create)
-         } else {
-            set ::bdi_tools_psf::use_psf 0
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::use_global] } {
-         if {[info exists conf(bddimages,cata,psf,globale)]} {
-            set ::bdi_tools_psf::use_global $conf(bddimages,cata,psf,globale)
-         } else {
-            set ::bdi_tools_psf::use_global 0
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_saturation] } {
-         if {[info exists conf(bddimages,cata,psf,saturation)]} {
-            set ::bdi_tools_psf::psf_saturation $conf(bddimages,cata,psf,saturation)
-         } else {
-            set ::bdi_tools_psf::psf_saturation 50000
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_radius] } {
-         if {[info exists conf(bddimages,cata,psf,radius)]} {
-            set ::bdi_tools_psf::psf_radius $conf(bddimages,cata,psf,radius)
-         } else {
-            set ::bdi_tools_psf::psf_radius 15
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_threshold] } {
-         if {[info exists conf(bddimages,cata,psf,threshold)]} {
-            set ::bdi_tools_psf::psf_threshold $conf(bddimages,cata,psf,threshold)
-         } else {
-            set ::bdi_tools_psf::psf_threshold 2
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_limitradius] } {
-         if {[info exists conf(bddimages,cata,psf,limitradius)]} {
-            set ::bdi_tools_psf::psf_limitradius $conf(bddimages,cata,psf,limitradius)
-         } else {
-            set ::bdi_tools_psf::psf_limitradius 50
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_methode] } {
-         if {[info exists conf(bddimages,cata,psf,methode)]} {
-            set ::bdi_tools_psf::psf_methode $conf(bddimages,cata,psf,methode)
-         } else {
-            set ::bdi_tools_psf::psf_methode "basic"
-         }
-      }
-
-   }
-
-
-
-
-
-   proc ::bdi_tools_psf::closetoconf { } {
-
-      global conf
+   #------------------------------------------------------------
+   ## Cette fonction renvoit la liste des methodes
+   # de mesure de psf
+   # @return liste des methodes
+   #
+   proc ::bdi_tools_psf::get_methodes { } {
    
-      # Conf cata psf
-      set conf(bddimages,cata,psf,create)       $::bdi_tools_psf::use_psf
-      set conf(bddimages,cata,psf,globale)      $::bdi_tools_psf::use_global
-      set conf(bddimages,cata,psf,saturation)   $::bdi_tools_psf::psf_saturation
-      set conf(bddimages,cata,psf,radius)       $::bdi_tools_psf::psf_radius
-      set conf(bddimages,cata,psf,threshold)    $::bdi_tools_psf::psf_threshold
-      set conf(bddimages,cata,psf,limitradius)  $::bdi_tools_psf::psf_limitradius
-      set conf(bddimages,cata,psf,methode)      $::bdi_tools_psf::psf_methode
+      return { fitgauss basic globale aphot bphot }
+   
    }
 
 
-   proc ::bdi_tools_psf::get_xy { send_s } {
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit une source
+   # ASTROID nulle.
+   # elle sert generalement comme premiere etape 
+   # de creation d'une nouvelle source 
+   # @return une source ASTROID vide
+   #
+   proc ::bdi_tools_psf::get_astroid_null { } {
+
+      return [list "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "0" \
+                   "-" \
+                   "-" \
+                   "-" \
+                   "-" \
+                   "-" \
+                   ]
+   }
+
+
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs d'une source
+   # ASTROID sous la forme des other field
+   # c est la liste de tous les parametres que l'on peut 
+   # en tirer par la mesure photocentrique. mais aussi de l'astrometrie
+   # ainsi que les parametres de gestion 
+   # @return liste des champs d'une source ASTROID
+   #
+   proc ::bdi_tools_psf::get_otherfields_astroid { } {
+
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "err_flux" "pixmax" \
+                   "intensity" "sigma_sky" "snint" "snpx" "radius" "rdiff" "moy_sky" "err_psf" "ra" "dec" \
+                   "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name" "flagastrom" "flagphotom" "cataastrom" \
+                   "cataphotom"]
+   }
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs 
+   # d'une source ASTROID sous la forme des other field
+   # seulement la liste des champs modifie par la methode BASIC
+   # @return liste des champs d'une source ASTROID
+   #
+   proc ::bdi_tools_psf::get_basic_fields { } {
+
+      return [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "pixmax" \
+                   "intensity" "sigma_sky" "snint" "snpx" "radius" "rdiff" "moy_sky" "err_psf" "ra" "dec" \
+             ]
+   }
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs 
+   # d'une source ASTROID sous la forme des other field
+   # seulement la liste des champs modifie par la methode BASIC
+   # @return liste des champs d'une source ASTROID
+   #
+   proc ::bdi_tools_psf::get_fitgauss_fields { } {
+      return [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm"  "pixmax" \
+                   "intensity" "radius" "moy_sky" "err_psf" "ra" "dec" \
+             ]
+   }
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs 
+   # d'une source ASTROID sous la forme d'une variable current_psf
+   # qui sert pour l affichage 
+   # @return liste des champs d'une source ASTROID
+   #
+   proc ::bdi_tools_psf::get_fields_current_psf { } {
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "err_flux" "pixmax" \
+                   "intensity" "sigma_sky" "snint" "snpx" "radius" "rdiff" "moy_sky" "err_psf"  \
+             ]
+   }
+
+
+
+
+
+
+
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs d'une source
+   # ASTROID compatible avec la forme listesource.
+   # c est l'entete d'un cata ASTROID
+   # @return cata fields d'astroid
+   #
+   proc ::bdi_tools_psf::get_fields_sources_astroid { } {
+
+      return [list "ASTROID" [list "ra" "dec" "poserr" "mag" "magerr"] \
+                             [::bdi_tools_psf::get_otherfields_astroid] ]
+
+   }
+
+
+
+
+
+
+   #------------------------------------------------------------
+   ## Pour une clé donné, cette fonction fournit sa position 
+   # dans la liste ASTROID 
+   # @param key nom de la clé  (\sa get_fields_sources_astroid).
+   # @return id sous forme d'un entier 
+   #
+   proc ::bdi_tools_psf::get_id_astroid { key } {
+      return [lsearch [::bdi_tools_psf::get_otherfields_astroid] $key]     
+   }
+
+
+
+
+
+
+
+
+
+
+
+   #------------------------------------------------------------
+   ## modifier la clé d'une liste astroid (other fields) 
+   # @param othf pointeur de la liste qui va etre modifiée.
+   # @param key clé qui fait reference de la valeur a modifiée
+   # @param val nouvelle valeur a modifier
+   # @return void
+   #
+   proc ::bdi_tools_psf::set_by_key { send_othf key val } {
+      
+      upvar $send_othf othf
+   
+      set p [::bdi_tools_psf::get_otherfields_astroid]
+      set pos [lsearch $p $key]
+      set othf [lreplace $othf $pos $pos $val]
+   }
+
+
+
+   #------------------------------------------------------------
+   ## cree un tableau taboid des element de la liste otherfield
+   # @param taboid pointeur du tableau qui va etre cree
+   # @param othf pointeur de la liste qui va etre lue
+   # @return void
+   #
+   proc ::bdi_tools_psf::get_tab {  send_othf send_taboid } {
+
+      upvar $send_taboid taboid
+      upvar $send_othf othf
+
+         set p [::bdi_tools_psf::get_otherfields_astroid]
+         foreach key $p {
+            set pos [lsearch $p $key]
+            set taboid($key) [lindex $othf $pos]
+         }
+   }
+
+
+
+   #------------------------------------------------------------
+   ## Affiche la liste otherfield dans la console
+   # @param taboid pointeur du tableau qui va etre cree
+   # @param othf pointeur de la liste qui va etre lue
+   # @return void
+   #
+   proc ::bdi_tools_psf::gren_astroid {  send_othf } {
+
+      upvar $send_othf othf
+
+         gren_info "-- ASTROID ---\n"
+         set p [::bdi_tools_psf::get_otherfields_astroid]
+         foreach key $p {
+            set pos [lsearch $p $key]
+            gren_info "$key = [lindex $othf $pos]\n"
+         }
+   }
+
+   #------------------------------------------------------------
+   ## cree un tableau taboid des element de la liste otherfield
+   # @param taboid pointeur du tableau qui va etre cree
+   # @param othf pointeur de la liste qui va etre lue
+   # @return void
+   #
+   proc ::bdi_tools_psf::get_val { send_othf key } {
+
+      upvar $send_othf othf
+
+         set p [::bdi_tools_psf::get_otherfields_astroid]
+         set pos [lsearch $p $key]
+         return [lindex $othf $pos]
+   }
+
+
+
+
+
+
+
+
+
+
+   #------------------------------------------------------------
+   ## A la fermeture de l'application, cette fonction
+   # sauvegarde les parametres dans la conf
+   # @return void
+   #
+   proc ::bdi_tools_psf::get_xy { send_s { cata ""} } {
 
       upvar $send_s s
 
-      return xy  { 973.33 1201.05 }
+      if { $cata == "" } {
+         set cata [lindex $s 0]
+      } else {
+         set cata [lindex $s [lsearch -index 0 $s $cata]]
+      }
+      set ra   [lindex $cata {1 0}] 
+      set dec  [lindex $cata {1 1}]
+      return [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
    }
 
 
@@ -124,39 +297,151 @@ namespace eval bdi_tools_psf {
 
 
 
+   #------------------------------------------------------------
+   ## Fonction qui retourne les champs otherfield d ASTROID
+   # pour une source donnee. Si la source ne comporte pas de 
+   # cata ASTROID alors une entree vide 
+   # @param s pointeur d'une source qui se verra modifiée
+   # @return void
+   #
+   proc ::bdi_tools_psf::get_astroid_othf_from_source { s } {
+      
+      set posastr [lsearch -index 0 $s "ASTROID"]
+      if {$posastr == -1} {
+         set othf [::bdi_tools_psf::get_astroid_null]
+      } else {
+         set othf [lindex [lindex $s $posastr] 2]
+      }
+      return $othf
+   }
 
 
+   #------------------------------------------------------------
+   ## Fonction qui supprime le catalogue ASTROID d'une source
+   # @param s pointeur d'une source qui sera modifiée
+   # @return void
+   #
+   proc ::bdi_tools_psf::delete_cata_from_source { send_s cata} {
+
+      upvar $send_s s
+
+      set news ""
+      foreach c $s {
+         if {[lindex $c 0]==$cata} {continue}
+         lappend news $c
+      }
+      set s $news
+
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui modifie les champs commonfields d'une source ASTROID
+   # a partir de ses champs otherfields
+   # @param s pointeur d'une source qui sera modifiée
+   # @return void
+   #
+   proc ::bdi_tools_psf::set_astroid_common_fields { send_s } {
+
+      upvar $send_s s
+     
+      set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+
+      set ra      [::bdi_tools_psf::get_val othf "ra"]
+      set dec     [::bdi_tools_psf::get_val othf "dec"]
+      set res_ra  [::bdi_tools_psf::get_val othf "res_ra"]
+      set res_ra  [expr $res_ra * cos([deg2rad $dec]) ]
+      set res_dec [::bdi_tools_psf::get_val othf "res_dec"]
+      set err_pos [expr sqrt( ( pow($res_ra,2) + pow($res_dec,2) ) / 2.0 ) ]
+      set mag     [::bdi_tools_psf::get_val othf "mag"]
+      set err_mag [::bdi_tools_psf::get_val othf "err_mag"]
+
+      set commonf [list $ra $dec $err_pos $mag $err_mag ]
+      set posastr [lsearch -index 0 $s "ASTROID"]
+      if {$posastr == -1} {
+         return
+      } else {
+        set astroid [lindex $s $posastr]
+        set astroid [lreplace $astroid 1 1 $commonf]
+        set s [lreplace $s $posastr $posastr $astroid]
+      }
+      
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui modifie les champs otherfield une source ASTROID
+   # @param s pointeur d'une source qui se verra modifiée
+   # @param othf pointeur d'une liste otherfield
+   # @return void
+   #
+   proc ::bdi_tools_psf::set_astroid_in_source { send_s send_othf} {
+
+      upvar $send_s s
+      upvar $send_othf othf
+      
+      ::bdi_tools_psf::delete_cata_from_source s "ASTROID"
+      lappend s [list "ASTROID" {} $othf]
+      ::bdi_tools_psf::set_astroid_common_fields s
+   }
 
 
-
-   proc ::bdi_tools_psf::psf_source { send_s } {
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # @param s pointeur d'une source qui se verra modifiée
+   # @return void
+   #
+   proc ::bdi_tools_psf::get_psf_source { send_s } {
 
       upvar $send_s s
       
       gren_info "psf_methode = $::bdi_tools_psf::psf_methode\n"
-      gren_info "s = $s\n"
-      set xy [::bdi_tools_psf::get_xy s]
-      
+      set xy       [::bdi_tools_psf::get_xy s]
+      set othf_old [::bdi_tools_psf::get_astroid_othf_from_source $s]
+      set p        [::bdi_tools_psf::get_otherfields_astroid]
+
       switch $::bdi_tools_psf::psf_methode {
+
          "fitgauss" {
-            set r [::bdi_tools_methodes_psf::fitgauss $::bdi_tools_psf::psf_rect $::audace(bufNo)]
+            set othf [::bdi_tools_methodes_psf::fitgauss $::bdi_tools_psf::psf_rect $::audace(bufNo)]
+            set fields [::bdi_tools_psf::get_fitgauss_fields]
          }
+
          "basic" {
-            set r [::bdi_tools_methodes_psf::basic [lindex $xy 0] [lindex $xy 1] $::bdi_tools_psf::psf_radius $::audace(bufNo)]
+            set othf [::bdi_tools_methodes_psf::basic [lindex $xy 0] [lindex $xy 1] $::bdi_tools_psf::psf_radius $::audace(bufNo)]
+            set fields [::bdi_tools_psf::get_basic_fields]
          }
+
          "globale" {
+            set othf [::bdi_tools_methodes_psf::globale [lindex $xy 0] [lindex $xy 1] $::audace(bufNo)]
+            set fields [::bdi_tools_methodes_psf::get_globale_fields]
          }
+
          "aphot" {
          }
+
          "bphot" {
          }
       
       }
-      gren_info "Resultats = $r\n"
-      
-      
+      ::bdi_tools_psf::gren_astroid othf
+
+      # on ne modifie que les champs modifiés par la methode
+      foreach key $fields {
+         set pos [lsearch $p $key]
+         set othf_old [lreplace $othf_old $pos $pos [lindex $othf $pos] ]
+      }
+      ::bdi_tools_psf::set_astroid_in_source s othf_old
       
    }
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1149,6 +1149,9 @@ namespace eval bddimages_recherche {
            $popupTbl.cata add command -label "(c) Creer le Cata" \
               -command { ::bddimages_recherche::bddimages_creation_cata }
 
+           $popupTbl.cata add command -label "(V) Verifier le Cata" \
+              -command { ::bddimages_recherche::bddimages_verifier_cata }
+
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
@@ -1204,6 +1207,7 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Key-c>         { ::bddimages_recherche::bddimages_creation_cata }
       bind [$tbl bodypath] <Key-a>         { ::bddimages_recherche::bddimages_astrometrie }
       bind [$tbl bodypath] <Key-v>         { ::bddimages_recherche::bddimages_voir_cata }
+      bind [$tbl bodypath] <Key-V>         { ::bddimages_recherche::bddimages_verifier_cata }
       bind [$tbl bodypath] <Key-p>         { ::bddimages_recherche::psf }
       bind [$tbl bodypath] <Key-Delete>    { ::bddimages_recherche::bddimages_images_delete }
 
@@ -1652,6 +1656,20 @@ namespace eval bddimages_recherche {
       # Liste d'1 image = img chargee
       set imglist [list [lindex $imglist 0]]
       ::gui_cata::voir_cata $imglist
+
+   }
+
+   proc ::bddimages_recherche::bddimages_verifier_cata { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+      set imglist [::bddimages_liste_gui::new_normallist $lid]
+      # Liste d'1 image = img chargee
+      set imglist [list [lindex $imglist 0]]
+      ::gui_verifcata::run_from_recherche $imglist
 
    }
 
