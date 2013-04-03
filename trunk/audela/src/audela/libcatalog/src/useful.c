@@ -16,13 +16,13 @@ int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeBright(mag)? ?magnitudeFaint(mag)?",
+		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?",
 				argv[0]);
 		return (1);
 	}
 
 	if((argc != 5) && (argc != 6) && (argc != 7)) {
-		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeBright(mag)? ?magnitudeFaint(mag)?",
+		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?",
 				argv[0]);
 		return (1);
 	}
@@ -33,11 +33,11 @@ int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 	*dec            = atof(argv[3]);
 	*radius         = atof(argv[4]);
 	if(argc == 6) {
-		*magBright  = atof(argv[5]);
-		*magFaint   = 99.999;
+		*magFaint   = atof(argv[5]);
+		*magBright  = -99.999;
 	} else if(argc == 7) {
-		*magBright  = atof(argv[5]);
-		*magFaint   = atof(argv[6]);
+		*magFaint   = atof(argv[5]);
+		*magBright  = atof(argv[6]);
 	} else {
 		*magBright  = -99.999;
 		*magFaint   = 99.999;
