@@ -133,7 +133,7 @@ typedef struct {
 
 int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 		char* const pathToCatalog,double* const ra, double* const dec,
-		double* const radius, double* const magMin, double* const magMax);
+		double* const radius, double* const magBright, double* const magFaint);
 void releaseSimpleArray(void* theOneDArray);
 void releaseDoubleArray(void** theTwoDArray, const int firstDimension);
 void addLastSlashToPath(char* onePath);

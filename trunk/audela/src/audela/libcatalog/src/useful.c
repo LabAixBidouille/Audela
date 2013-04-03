@@ -12,32 +12,35 @@
 /*=========================================================*/
 int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 		char* const pathToCatalog, double* const ra, double* const dec, double* const radius,
-		double* const magMin, double* const magMax) {
+		double* const magBright, double* const magFaint) {
 
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
-		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMin(mag)? magnitudeMax(mag)?",
+		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeBright(mag)? magnitudeFaint(mag)?",
 				argv[0]);
 		return (1);
 	}
 
-	if((argc != 5) && (argc != 7)) {
-		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?",
+	if((argc != 5) && (argc != 6) && (argc != 7)) {
+		sprintf(outputLogChar,"usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeBright(mag)? magnitudeFaint(mag)?",
 				argv[0]);
 		return (1);
 	}
 
 	/* Read inputs */
 	sprintf(pathToCatalog,"%s",argv[1]);
-	*ra            = atof(argv[2]);
-	*dec           = atof(argv[3]);
-	*radius        = atof(argv[4]);
-	if(argc == 7) {
-		*magMin   = atof(argv[5]);
-		*magMax   = atof(argv[6]);
+	*ra             = atof(argv[2]);
+	*dec            = atof(argv[3]);
+	*radius         = atof(argv[4]);
+	if(argc == 6) {
+		*magBright  = atof(argv[5]);
+		*magFaint   = 99.999;
+	} else if(argc == 7) {
+		*magBright  = atof(argv[5]);
+		*magFaint   = atof(argv[6]);
 	} else {
-		*magMin   = -99.999;
-		*magMax   = 99.999;
+		*magBright  = -99.999;
+		*magFaint   = 99.999;
 	}
 
 	/* Add slash to the end of the path if not exist*/
