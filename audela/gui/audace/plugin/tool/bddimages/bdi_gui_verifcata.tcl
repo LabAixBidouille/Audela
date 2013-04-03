@@ -133,7 +133,38 @@ namespace eval gui_verifcata {
 
 
 
+   proc ::gui_verifcata::run_from_recherche { img_list } {
+   
+     global bddconf
+   
+     catch {
+         if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+         if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+         if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+      }
 
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+
+         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
+
+         set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
+         set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+         set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
+         set file        [file join $bddconf(dirbase) $dirfilename $::tools_cata::current_image_name]
+
+         ::gui_cata::load_cata
+
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+
+      }
+      ::gui_verifcata::run
+   }
 
 
    proc ::gui_verifcata::run {  } {
@@ -176,8 +207,6 @@ namespace eval gui_verifcata {
              button $actions.back -text "Verifier" -borderwidth 2 -takefocus 1 \
                    -command "::gui_verifcata::verif" 
              pack $actions.back -side top -anchor c -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-
 
 
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]

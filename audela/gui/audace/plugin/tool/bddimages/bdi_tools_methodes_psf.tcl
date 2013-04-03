@@ -33,11 +33,6 @@ namespace eval bdi_tools_methodes_psf {
 
 
 
-   proc ::bdi_tools_methodes_psf::get_methodes { } {
-   
-      return { fitgauss basic globale aphot bphot }
-   
-   }
 
 
 
@@ -56,45 +51,29 @@ namespace eval bdi_tools_methodes_psf {
       # Photometrie d ouverture
       for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
 
-         set results($radius,err) [catch {set result [::bdi_tools_methodes_psf::photombasic $x $y $radius $bufNo]} msg]
+         set results($radius,err) [catch {set othf [::bdi_tools_methodes_psf::basic $x $y $radius $bufNo]} msg]
 
-         # rejet si echec avec la methode photombasic
-         if {$result==-1} {
-            set results($radius,err) 2
+         # erreur de mesure
+         if {$results($radius,err)} {
+            continue
+         }
+         set err_psf [::bdi_tools_psf::get_val othf "err_psf"]
+         # rejet si erreur psf
+         if {$err_psf} {
+            set results($radius,err) $err_psf
             continue
          }
 
-         set xsm [lindex $result 0]
-         set ysm [lindex $result 1]
-         set pixmax [lindex $result 9]
-
-         # rejet si saturé
-         if {$pixmax > $::bdi_tools_psf::psf_saturation} {
-            set results($radius,err) 4
-            continue
-         }
-
-         # calcul des coordonnees celeste de l'objet mesuré
-         set radec [ buf$bufNo xy2radec [list $xsm $ysm ] ]
-         set pra   [lindex $radec 0] 
-         set pdec  [lindex $radec 1]
-
-         set radiff   [expr ($ra - $pra ) * cos($dec * 3.141592653589793 / 180.0)]
-         set decdiff  [expr $dec - $pdec ]
-         set rsecdiff [expr sqrt ( ( pow($radiff,2) + pow($decdiff,2) ) / 2.0 ) * 3600.0]
-
-         # rejet si trop loin de la position demandée
-         if {$rsecdiff > $::bdi_tools_psf::psf_threshold} {
-            set results($radius,err) 3
-            continue
-         }
-
-         set result [linsert $result end $rsecdiff $pra $pdec]
-         set results($radius) $result
-  
+         set results($radius) $othf
       }
-        
+
    }
+
+
+
+
+
+
 
 
 
@@ -105,24 +84,26 @@ namespace eval bdi_tools_methodes_psf {
 
    proc ::bdi_tools_methodes_psf::basic { x y radius bufNo } {
 
-         set xs0         [expr int($xsm - $radius)]
-         set ys0         [expr int($ysm - $radius)]
-         set xs1         [expr int($xsm + $radius)]
-         set ys1         [expr int($ysm + $radius)]
+
+         set xs0         [expr int($x - $radius)]
+         set ys0         [expr int($y - $radius)]
+         set xs1         [expr int($x + $radius)]
+         set ys1         [expr int($y + $radius)]
 
          set valeurs     [buf$bufNo fitgauss [ list $xs0 $ys0 $xs1 $ys1 ] ]
-         set fwhmx       [lindex $valeurs 2]
-         set fwhmy       [lindex $valeurs 6]
-         set fwhm        [expr ($fwhmx + $fwhmy)/2.]
-         set xsm         [lindex $valeurs 1]
-         set ysm         [lindex $valeurs 5]
-         set err_xsm     0.0
-         set err_ysm     0.0
+         set taboid(fwhmx)       [lindex $valeurs 2]
+         set taboid(fwhmy)       [lindex $valeurs 6]
+         set taboid(fwhm)        [expr ($taboid(fwhmx) + $taboid(fwhmy))/2.]
 
-         set xs0         [expr int($xsm - $radius)]
-         set ys0         [expr int($ysm - $radius)]
-         set xs1         [expr int($xsm + $radius)]
-         set ys1         [expr int($ysm + $radius)]
+         set taboid(xsm)         [lindex $valeurs 1]
+         set taboid(ysm)         [lindex $valeurs 5]
+
+         set taboid(radius)      $radius
+
+         set xs0         [expr int($taboid(xsm) - $radius)]
+         set ys0         [expr int($taboid(ysm) - $radius)]
+         set xs1         [expr int($taboid(xsm) + $radius)]
+         set ys1         [expr int($taboid(ysm) + $radius)]
 
          set r1          [expr int(1*$radius)]
          set r2          [expr int(2*$radius)]
@@ -148,23 +129,49 @@ namespace eval bdi_tools_methodes_psf {
             return -1
          }
 
-         set fluxintegre [lindex $valeurs 0]
-         set fondmed     [lindex $valeurs 1]
-         set fondmoy     [lindex $valeurs 2]
-         set sigmafond   [lindex $valeurs 3]
-         set errflux 0
-        
-         set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
+         set taboid(err_psf)    "-"
+         set taboid(fluxintegre) [lindex $valeurs 0]
+         set taboid(med_sky)     [lindex $valeurs 1]
+         set taboid(moy_sky)     [lindex $valeurs 2]
+         set taboid(sigma_sky)   [lindex $valeurs 3]
 
-         set valeurs     [buf$bufNo stat [list $xs0 $ys0 $xs1 $ys1] ]
-         set pixmax      [lindex $valeurs 2]
-         set intensite   [expr $pixmax - $fondmed]
+         set taboid(npix)        [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
 
-         set snint       [expr $fluxintegre / sqrt ( $fluxintegre + $npix * $fondmed )]
-         set snpx        [expr $intensite / $sigmafond]
+         set valeurs             [buf$bufNo stat [list $xs0 $ys0 $xs1 $ys1] ]
+         set taboid(pixmax)      [lindex $valeurs 2]
+         set taboid(intensity)   [expr $taboid(pixmax) - $taboid(med_sky)]
 
-         return [ list $xsm $ysm $err_xsm $err_ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $radius] 
+         set taboid(snint)       [expr $taboid(fluxintegre) / sqrt ( $taboid(fluxintegre) + $taboid(npix) * $taboid(med_sky) )]
+         set taboid(snpx)        [expr $taboid(intensity) / $taboid(sigma_sky)]
 
+         # rejet si saturé
+         if {$taboid(pixmax) > $::bdi_tools_psf::psf_saturation} {
+            set taboid(err_psf)    "Saturated"
+            set taboid(pixmax) "Max"
+         }
+
+         # calcul des coordonnees celeste de l'objet mesuré
+         set radec [ buf$bufNo xy2radec [list $x $y ] ]
+         set ra    [lindex $radec 0] 
+         set dec   [lindex $radec 1]
+         set radec [ buf$bufNo xy2radec [list $taboid(xsm) $taboid(ysm) ] ]
+         set taboid(ra)  [lindex $radec 0] 
+         set taboid(dec) [lindex $radec 1]
+
+         set radiff   [expr ($taboid(ra) - $ra ) * cos($taboid(dec) * 3.141592653589793 / 180.0)]
+         set decdiff  [expr $taboid(dec) - $dec ]
+         set taboid(rdiff) [expr sqrt ( ( pow($radiff,2) + pow($decdiff,2) ) / 2.0 ) * 3600.0]
+
+         # rejet si trop loin de la position demandée
+         if {$taboid(rdiff) > $::bdi_tools_psf::psf_threshold} {
+            set taboid(err_psf) "Far"
+         }
+
+         set othf [::bdi_tools_psf::get_astroid_null]
+         foreach key [::bdi_tools_psf::get_basic_fields] {
+            ::bdi_tools_psf::set_by_key othf $key $taboid($key)
+         }
+         return $othf
 
          # Calcul du signal sur bruit : 
          # S/N = fluxintegre / sqrt (fluxintegre + npix ( sky + offset + readnoise^2) )
@@ -176,10 +183,6 @@ namespace eval bdi_tools_methodes_psf {
 
 
    }
-
-
-
-
 
 
 
@@ -204,29 +207,38 @@ namespace eval bdi_tools_methodes_psf {
             set y2 $t
          }
 
-
-
-         set valeurs     [buf$bufNo fitgauss $rect ]
+         set valeurs [buf$bufNo fitgauss $rect ]
          
          set intx        [lindex $valeurs 0]
-         set xsm         [lindex $valeurs 1]
-         set fwhmx       [lindex $valeurs 2]
+         set taboid(xsm)         [lindex $valeurs 1]
+         set taboid(fwhmx)       [lindex $valeurs 2]
          set fondx       [lindex $valeurs 3]
          set inty        [lindex $valeurs 4]
-         set ysm         [lindex $valeurs 5]
-         set fwhmy       [lindex $valeurs 6]
+         set taboid(ysm)         [lindex $valeurs 5]
+         set taboid(fwhmy)       [lindex $valeurs 6]
          set fondy       [lindex $valeurs 7]
 
-         set intensite   [expr ($intx + $inty)/2.]
-         set fwhm        [expr ($fwhmx + $fwhmy)/2.]
-         set fond        [expr ($fondx + $fondy)/2.]
+         set taboid(intensity)   [expr ($intx + $inty)/2.]
+         set taboid(fwhm)        [expr ($taboid(fwhmx) + $taboid(fwhmy))/2.]
+         set taboid(moy_sky)     [expr ($fondx + $fondy)/2.]
 
-         set radius [expr (abs($x1-$x2)+abs($y1-$y2))/4.0 ]
+         # calcul des coordonnees celeste de l'objet mesuré
+         set radec [ buf$bufNo xy2radec [list $taboid(xsm) $taboid(ysm) ] ]
+         set taboid(ra)  [lindex $radec 0] 
+         set taboid(dec) [lindex $radec 1]
 
-         set valeurs     [buf$bufNo stat [list $x1 $y1 $x2 $y2] ]
-         set pixmax      [lindex $valeurs 2]
+         set taboid(radius) [expr (abs($x1-$x2)+abs($y1-$y2))/4.0 ]
 
-         return [ list $xsm $ysm "Nan" "Nan" $fwhmx $fwhmy $fwhm "Nan" "Nan" $pixmax $intensite "Nan" "Nan" "Nan" $radius] 
+         set valeurs        [buf$bufNo stat [list $x1 $y1 $x2 $y2] ]
+         set taboid(pixmax) [lindex $valeurs 2]
+
+         set taboid(err_psf) "-"
+
+         set othf [::bdi_tools_psf::get_astroid_null]
+         foreach key [::bdi_tools_psf::get_fitgauss_fields] {
+            ::bdi_tools_psf::set_by_key othf $key $taboid($key)
+         }
+         return $othf
 
    }
 

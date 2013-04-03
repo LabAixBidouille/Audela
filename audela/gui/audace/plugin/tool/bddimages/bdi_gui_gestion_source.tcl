@@ -48,6 +48,10 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+
+
+
+
    proc ::bdi_gui_gestion_source::psf { } {
 
    
@@ -80,14 +84,99 @@ namespace eval bdi_gui_gestion_source {
          default  {
             gren_info "id source : $::gui_cata::psf_id_source  \n"
             set s [lindex [lindex $::tools_cata::current_listsources 1] [expr $::gui_cata::psf_id_source - 1] ]
-            ::bdi_tools_psf::psf_source s
+            ::bdi_tools_psf::get_psf_source s
          }
       }
+      
+      #::bdi_gui_gestion_source::affich_cata
+       
+      set lf [lindex $::tools_cata::current_listsources 0]
+      set ls [lindex $::tools_cata::current_listsources 1]
+      set i  [expr $::gui_cata::psf_id_source - 1]
+      set ls [lreplace $ls $i $i $s]
+      set ::tools_cata::current_listsources [list $lf $ls]
+      
+      ::bdi_gui_psf::init_current_psf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+      
+      ::bdi_gui_gestion_source::maj_catalogues
 
       set onglets $::bdi_gui_gestion_source::fen.appli.onglets
       $onglets.nb select $onglets.nb.f1
       
+      
    }
+
+
+
+
+
+
+
+
+   proc ::bdi_gui_gestion_source::maj_catalogues {  } {
+
+      # recupere la liste des sources de l image courante
+      set sources [lindex $::tools_cata::current_listsources 1]
+      
+      # Recupere la liste des id des sources du catalogue selectionne
+      set idlist ""
+      foreach line $::bdi_gui_gestion_source::gui_catalogues_data {
+         lappend idlist [lindex $line 2]
+      }
+      set idlist [lsort -unique $idlist]
+     
+      
+      # reconstruit pour chaque source la variable catalogue
+      set ::bdi_gui_gestion_source::gui_catalogues_data ""
+      foreach id $idlist {
+         incr id -1
+         set s [lindex $sources $id]
+         set pos 0
+         foreach cata $s {
+            set ra0  [lindex [lindex $cata 1] 0]
+            set dec0 [lindex [lindex $cata 1] 1]
+            set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
+            set x [lindex $xy 0]
+            set y [lindex $xy 1]
+            lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] [expr $id + 1] $x $y ]
+            incr pos
+         }
+      }
+
+      $::bdi_gui_gestion_source::gui_catalogues.tbl delete 0 end
+      foreach line $::bdi_gui_gestion_source::gui_catalogues_data {
+         $::bdi_gui_gestion_source::gui_catalogues.tbl insert end $line
+      }
+      
+      
+      # Effacement des boutons des catalogues
+      if {[info exists ::gui_cata::nb_butcata]} {
+         for { set i 0 } { $i <= 10} {incr i} {
+            set ex [winfo exists $::bdi_gui_gestion_source::fen.appli.info_cata.c$i]
+            if {$ex == 0} {break}
+            destroy $::bdi_gui_gestion_source::fen.appli.info_cata.c$i
+         } 
+      } 
+
+      # Affichage des boutons des catalogues si il n y a qu une seule source concernee
+      if {[llength $idlist]==1} {
+         array unset ::bdi_gui_gestion_source::butcata
+         set i 0
+         foreach mycata $s {
+            set a [lindex $mycata 0]
+            button $::bdi_gui_gestion_source::fen.appli.info_cata.c$i  -state normal \
+               -text $a -relief "sunken" -command "::bdi_gui_gestion_source::butcata_action $i"
+            pack   $::bdi_gui_gestion_source::fen.appli.info_cata.c$i -in $::bdi_gui_gestion_source::fen.appli.info_cata -side left -padx 0
+            set ::bdi_gui_gestion_source::butcata($i,cata) $a
+            set ::bdi_gui_gestion_source::butcata($i,state) "Ok"
+            incr i
+         }
+         set ::gui_cata::nb_butcata $i
+      }
+
+   }
+
+
 
 
 
@@ -131,6 +220,16 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::grab_sources_getbox {  } {
  
       set color red
@@ -165,13 +264,16 @@ namespace eval bdi_gui_gestion_source {
             
             set ra  [lindex [lindex $cata 1] 0]
             set dec [lindex [lindex $cata 1] 1]
-            set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
-            set x [lindex $xy 0]
-            set y [lindex $xy 1]
-            if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
-               set pass "yes"
-               set xpass $x
-               set ypass $y
+            
+            if {$ra!="" && $dec!="" && $ra!="-" && $dec!="-"  } {
+               set xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+               set x [lindex $xy 0]
+               set y [lindex $xy 1]
+               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+                  set pass "yes"
+                  set xpass $x
+                  set ypass $y
+               }
             }
 
             if {$pass=="yes"} {
@@ -193,10 +295,12 @@ namespace eval bdi_gui_gestion_source {
                   gren_info "[lindex $cata 0] "
                   set ra0  [lindex [lindex $cata 1] 0]
                   set dec0 [lindex [lindex $cata 1] 1]
-                  set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
-                  set x [lindex $xy 0]
-                  set y [lindex $xy 1]
-                  lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] $id $x $y ]
+                  if {$ra0!="" && $dec0!="" && $ra0!="-" && $dec0!="-"  } {
+                     set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
+                     set x [lindex $xy 0]
+                     set y [lindex $xy 1]
+                     lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] $id $x $y ]
+                  }
                   incr pos
                }
                gren_info "\n"
@@ -280,15 +384,11 @@ namespace eval bdi_gui_gestion_source {
 
 
       # Effacement des boutons des catalogues
-      #gren_info "nb_butcata [info exists ::gui_cata::nb_butcata] \n"
       if {[info exists ::gui_cata::nb_butcata]} {
-         #gren_info "exist = [info exists ::gui_cata::nb_butcata] \n"
-         #gren_info "nb_butcata = $::gui_cata::nb_butcata \n"
          for { set i 0 } { $i <= 10} {incr i} {
             set ex [winfo exists $::bdi_gui_gestion_source::fen.appli.info_cata.c$i]
             if {$ex == 0} {break}
             destroy $::bdi_gui_gestion_source::fen.appli.info_cata.c$i
-            #gren_info "destroy $::bdi_gui_gestion_source::fen.appli.info_cata.c$i \n"
          } 
       } 
 
@@ -330,6 +430,21 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::affich_cata { } {
 
       global bddconf
@@ -349,12 +464,13 @@ namespace eval bdi_gui_gestion_source {
             }
             set width [expr 20 + $i * 10]
 
-            # Affiche un rond vert
-            set img_xy [ buf$bufno radec2xy [ list $ra $dec ] ]
-            set x [lindex $img_xy 0]
-            set y [lindex $img_xy 1]
-            affich_un_rond_xy $x $y green  $width 1
-            
+            if {$ra!="" && $dec!="" && $ra!="-" && $dec!="-"  } {
+               # Affiche un rond vert
+               set img_xy [ buf$bufno radec2xy [ list $ra $dec ] ]
+               set x [lindex $img_xy 0]
+               set y [lindex $img_xy 1]
+               affich_un_rond_xy $x $y green  $width 1
+            }
          }
       }
       
@@ -365,6 +481,10 @@ namespace eval bdi_gui_gestion_source {
 
 
    }
+
+
+
+
 
    proc ::bdi_gui_gestion_source::butcata_action { i } {
 
@@ -389,18 +509,12 @@ namespace eval bdi_gui_gestion_source {
 
    proc ::bdi_gui_gestion_source::init { } {
 
-      ::bdi_tools_psf::inittoconf
+      ::bdi_gui_psf::inittoconf
 
       if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
       foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
          set ::gui_cata::current_psf($key) "-"
       }
-      foreach key [ list xflux xcent xfwhm xfond yflux ycent yfwhm yfond ] {
-         set ::gui_cata::current_psf($key) "-"
-      }
-
-#      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-#      set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
 
    }
 
@@ -428,7 +542,7 @@ namespace eval bdi_gui_gestion_source {
 
       set ::tools_cata::id_current_image 0
       set ::bdi_gui_gestion_source::id_img 1
-      set ::tools_cata::current_image [lindex  $::tools_cata::img_list 0]
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list 0]
       ::gui_cata::affiche_current_image
       
       set ::gui_cata::psf_name_source "-"
@@ -438,6 +552,13 @@ namespace eval bdi_gui_gestion_source {
       set ::bdi_gui_gestion_source::dateimg [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
 
    }
+
+
+
+
+
+
+
 
 
 
@@ -451,6 +572,15 @@ namespace eval bdi_gui_gestion_source {
       ::bdi_gui_gestion_source::charge_list $img_list
       ::bdi_gui_gestion_source::run
    }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -502,6 +632,16 @@ namespace eval bdi_gui_gestion_source {
          gren_info [format "%-7s %5s %5s %.3f %.3f\n" $cata $ids $pos $x $y] 
       }
   }
+
+
+
+
+
+
+
+
+
+
 
    proc ::bdi_gui_gestion_source::select { tbl } {
 
@@ -654,6 +794,34 @@ namespace eval bdi_gui_gestion_source {
    }
 
 
+
+
+
+
+
+
+
+
+   proc ::bdi_gui_gestion_source::get_id_from_gui_catalogues_data { c } {
+
+      set cpt -1
+      foreach x $::bdi_gui_gestion_source::gui_catalogues_data {
+         incr cpt
+         if {[lindex $x 0] != [lindex $c 0] } {continue}
+         if {[lindex $x 1] != [lindex $c 1] } {continue}
+         if {[lindex $x 2] != [lindex $c 2] } {continue}
+         if {[lindex $x 3] != [lindex $c 3] } {continue}
+         if {[lindex $x 4] != [lindex $c 4] } {continue}
+         return $cpt
+      }
+      return -1
+   }
+   
+   
+   
+   
+   
+   
    proc ::bdi_gui_gestion_source::deletesource { tbl } {
 
       set l ""
@@ -665,6 +833,7 @@ namespace eval bdi_gui_gestion_source {
          set y    [lindex [$tbl get $select] 4]   
          lappend l [list $pos $cata $ids $x $y]
       }
+
       set l [lsort -decreasing -integer -index 2 $l]
       foreach c $l {
          set pos  [lindex $c 0]      
@@ -673,11 +842,38 @@ namespace eval bdi_gui_gestion_source {
          set x    [lindex $c 3]   
          set y    [lindex $c 4]   
          gren_info "cata = $cata ; ids = $ids ; pos = $pos ; x = $x ; y = $y\n"
+
+         set id [expr $ids - 1]
+         set ls [lindex $::tools_cata::current_listsources 1]
+         set s  [lindex $ls $id]
+
+         ::bdi_tools_psf::delete_cata_from_source s $cata
+         set ls [lreplace $ls $id $id $s]
+         set ::tools_cata::current_listsources [lreplace $::tools_cata::current_listsources 1 1 $ls]
+         
+         set posc [::bdi_gui_gestion_source::get_id_from_gui_catalogues_data $c]
+         if {$posc == -1} {
+            gren_erreur "$c n est pas dans la liste des catalogues"
+            return
+         } else {
+            set ::bdi_gui_gestion_source::gui_catalogues_data [lreplace $::bdi_gui_gestion_source::gui_catalogues_data $posc $posc]
+         }
+
       }
 
+      ::bdi_gui_gestion_source::affich_cata
 
+      
 
    }
+
+
+
+
+
+
+
+
 
    proc ::bdi_gui_gestion_source::selectall { tbl  } {
       $tbl selection set 0 end
@@ -781,8 +977,7 @@ namespace eval bdi_gui_gestion_source {
 
       ::psf_tools::inittoconf
       ::bdi_gui_gestion_source::init
-      
-      
+
       set spinlist ""
       for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius} {incr i} {lappend spinlist $i}
       set ::bdi_gui_gestion_source::visucrop ""
@@ -887,10 +1082,10 @@ namespace eval bdi_gui_gestion_source {
 
              label $actions.lab1 -text "Methode pour PSF : " 
              ComboBox $actions.combo \
-                -width 50 -height [llength [::bdi_tools_methodes_psf::get_methodes]] \
+                -width 50 -height [llength [::bdi_tools_psf::get_methodes]] \
                 -relief sunken -borderwidth 1 -editable 0 -width 10\
                 -textvariable ::bdi_tools_psf::psf_methode \
-                -values [::bdi_tools_methodes_psf::get_methodes]
+                -values [::bdi_tools_psf::get_methodes]
 
              button $actions.psfc -state active -text "PSF" -relief "raised" \
                   -command "::bdi_gui_gestion_source::psf"
@@ -931,6 +1126,9 @@ namespace eval bdi_gui_gestion_source {
 
 
          # onglets : mesures
+         set nbp [llength [::bdi_tools_psf::get_fields_current_psf] ]
+         set cptmed [expr int($nbp/2)]
+
 
          set results [frame $f1.results -borderwidth 0 -cursor arrow -relief groove]
          pack $results -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -940,9 +1138,11 @@ namespace eval bdi_gui_gestion_source {
 
                   set values [ frame $block.valuesleft -borderwidth 0 -cursor arrow -relief groove ]
                   pack $values -in $block -anchor n -side left -expand 1 -fill both -padx 10 -pady 2
-
-                         foreach key [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm rdiff] {
-
+                          
+                         set cpt 0
+                         foreach key [::bdi_tools_psf::get_fields_current_psf]  {
+                              incr cpt
+                              if {$cpt > $cptmed } {break}
                               set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                               pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
 
@@ -961,7 +1161,10 @@ namespace eval bdi_gui_gestion_source {
                   set values [ frame $block.valuesright -borderwidth 0 -cursor arrow -relief groove ]
                   pack $values -in $block -anchor n -side right -expand 1 -fill both -padx 10 -pady 2
 
-                         foreach key [list fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff] {
+                         set cpt 0
+                         foreach key [::bdi_tools_psf::get_fields_current_psf] {
+                              incr cpt
+                              if {$cpt <= $cptmed } {continue}
 
                               set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                               pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
@@ -1001,7 +1204,7 @@ namespace eval bdi_gui_gestion_source {
 
                    pack [ttk::notebook $meth_onglets.nb] -expand yes -fill both 
                    set i 0
-                   foreach m [::bdi_tools_methodes_psf::get_methodes] {
+                   foreach m [::bdi_tools_psf::get_methodes] {
                       incr i
                       set a [frame $meth_onglets.nb.g$i]
                       set g$i $a
