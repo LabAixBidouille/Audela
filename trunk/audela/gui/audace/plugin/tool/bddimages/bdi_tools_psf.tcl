@@ -116,9 +116,21 @@ namespace eval bdi_tools_psf {
    # seulement la liste des champs modifie par la methode BASIC
    # @return liste des champs d'une source ASTROID
    #
+   proc ::bdi_tools_psf::get_globale_fields { } {
+
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec"]
+   }
+
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs 
+   # d'une source ASTROID sous la forme des other field
+   # seulement la liste des champs modifie par la methode BASIC
+   # @return liste des champs d'une source ASTROID
+   #
    proc ::bdi_tools_psf::get_basic_fields { } {
 
-      return [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "pixmax" \
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
                    "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec"]
    }
 
@@ -129,8 +141,8 @@ namespace eval bdi_tools_psf {
    # @return liste des champs d'une source ASTROID
    #
    proc ::bdi_tools_psf::get_fitgauss_fields { } {
-      return [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm"  "pixmax" \
-                   "intensity" "sky" "radius" "err_psf" "ra" "dec" \
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec" \
              ]
    }
 
@@ -141,8 +153,8 @@ namespace eval bdi_tools_psf {
    # @return liste des champs d'une source ASTROID
    #
    proc ::bdi_tools_psf::get_fields_current_psf { } {
-      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "err_flux" "pixmax" \
-                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf"]
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" "flux" "err_flux" "pixmax" \
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff"]
    }
 
 
@@ -173,7 +185,7 @@ namespace eval bdi_tools_psf {
    #------------------------------------------------------------
    ## Pour une clé donné, cette fonction fournit sa position 
    # dans la liste ASTROID 
-   # @param key nom de la clé  (\sa get_fields_sources_astroid).
+   # @param key nom de la clé  (\sa get_fields_sources_astroid
    # @return id sous forme d'un entier 
    #
    proc ::bdi_tools_psf::get_id_astroid { key } {
@@ -182,6 +194,25 @@ namespace eval bdi_tools_psf {
 
 
 
+
+
+   #------------------------------------------------------------
+   ## Pour une clé donné, cette fonction fournit sa position 
+   # dans la liste ASTROID 
+   # @param key nom de la clé  (\sa get_fields_sources_astroid
+   # @return id sous forme d'un entier 
+   #
+   proc ::bdi_tools_psf::set_photom_error { p_othf err } {
+
+      upvar $p_othf othf
+
+      set othf ""
+      foreach key [::bdi_tools_psf::get_otherfields_astroid] {
+         lappend othf "-"
+      }
+      ::bdi_tools_psf::set_by_key othf "err_psf" $err
+      gren_erreur "$othf \n"
+   }
 
 
 
@@ -197,9 +228,9 @@ namespace eval bdi_tools_psf {
    # @param val nouvelle valeur a modifier
    # @return void
    #
-   proc ::bdi_tools_psf::set_by_key { send_othf key val } {
+   proc ::bdi_tools_psf::set_by_key { p_othf key val } {
       
-      upvar $send_othf othf
+      upvar $p_othf othf
    
       set p [::bdi_tools_psf::get_otherfields_astroid]
       set pos [lsearch $p $key]
@@ -214,10 +245,10 @@ namespace eval bdi_tools_psf {
    # @param othf pointeur de la liste qui va etre lue
    # @return void
    #
-   proc ::bdi_tools_psf::get_tab {  send_othf send_taboid } {
+   proc ::bdi_tools_psf::get_tab {  p_othf p_taboid } {
 
-      upvar $send_taboid taboid
-      upvar $send_othf othf
+      upvar $p_taboid taboid
+      upvar $p_othf othf
 
          set p [::bdi_tools_psf::get_otherfields_astroid]
          foreach key $p {
@@ -230,13 +261,12 @@ namespace eval bdi_tools_psf {
 
    #------------------------------------------------------------
    ## Affiche la liste otherfield dans la console
-   # @param taboid pointeur du tableau qui va etre cree
-   # @param othf pointeur de la liste qui va etre lue
+   # @param othf pointeur de la liste qui va etre affichee
    # @return void
    #
-   proc ::bdi_tools_psf::gren_astroid {  send_othf } {
+   proc ::bdi_tools_psf::gren_astroid {  p_othf } {
 
-      upvar $send_othf othf
+      upvar $p_othf othf
 
          gren_info "-- ASTROID ---\n"
          set p [::bdi_tools_psf::get_otherfields_astroid]
@@ -252,9 +282,9 @@ namespace eval bdi_tools_psf {
    # @param othf pointeur de la liste qui va etre lue
    # @return void
    #
-   proc ::bdi_tools_psf::get_val { send_othf key } {
+   proc ::bdi_tools_psf::get_val { p_othf key } {
 
-      upvar $send_othf othf
+      upvar $p_othf othf
 
          set p [::bdi_tools_psf::get_otherfields_astroid]
          set pos [lsearch $p $key]
@@ -271,13 +301,20 @@ namespace eval bdi_tools_psf {
 
 
    #------------------------------------------------------------
-   ## A la fermeture de l'application, cette fonction
-   # sauvegarde les parametres dans la conf
-   # @return void
+   ## Fonction qui renvoit les coordonnees de la source
+   # calculee a partir du WCS inscrit dans l image et 
+   # se basant sur les coordonnees RA et DEC des champs 
+   # common de la source.
+   # Si "cata" n est pas renseigne, le premier catalogue 
+   # de la liste sera considere
+   # @param s pointeur de la source envoyee en argument
+   # @param cata (optionnel) fixe le nom du catalogue pour 
+   # en calculer la position x y 
+   # @return {x y} la liste des coordonnees pixels de la source
    #
-   proc ::bdi_tools_psf::get_xy { send_s { cata ""} } {
+   proc ::bdi_tools_psf::get_xy { p_s { cata ""} } {
 
-      upvar $send_s s
+      upvar $p_s s
 
       if { $cata == "" } {
          set cata [lindex $s 0]
@@ -299,7 +336,7 @@ namespace eval bdi_tools_psf {
    ## Fonction qui retourne les champs otherfield d ASTROID
    # pour une source donnee. Si la source ne comporte pas de 
    # cata ASTROID alors une entree vide 
-   # @param s pointeur d'une source qui se verra modifiée
+   # @param s source qui se verra modifiée
    # @return void
    #
    proc ::bdi_tools_psf::get_astroid_othf_from_source { s } {
@@ -316,12 +353,12 @@ namespace eval bdi_tools_psf {
 
    #------------------------------------------------------------
    ## Fonction qui supprime le catalogue ASTROID d'une source
-   # @param s pointeur d'une source qui sera modifiée
+   # @param p_s pointeur d'une source qui sera modifiée
    # @return void
    #
-   proc ::bdi_tools_psf::delete_cata_from_source { send_s cata} {
+   proc ::bdi_tools_psf::delete_cata_from_source { p_s cata} {
 
-      upvar $send_s s
+      upvar $p_s s
 
       set news ""
       foreach c $s {
@@ -335,12 +372,12 @@ namespace eval bdi_tools_psf {
    #------------------------------------------------------------
    ## Fonction qui modifie les champs commonfields d'une source ASTROID
    # a partir de ses champs otherfields
-   # @param s pointeur d'une source qui sera modifiée
+   # @param p_s pointeur d'une source qui sera modifiée
    # @return void
    #
-   proc ::bdi_tools_psf::set_astroid_common_fields { send_s } {
+   proc ::bdi_tools_psf::set_astroid_common_fields { p_s } {
 
-      upvar $send_s s
+      upvar $p_s s
      
       set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
 
@@ -371,10 +408,10 @@ namespace eval bdi_tools_psf {
    # @param othf pointeur d'une liste otherfield
    # @return void
    #
-   proc ::bdi_tools_psf::set_astroid_in_source { send_s send_othf} {
+   proc ::bdi_tools_psf::set_astroid_in_source { p_s p_othf} {
 
-      upvar $send_s s
-      upvar $send_othf othf
+      upvar $p_s s
+      upvar $p_othf othf
       
       ::bdi_tools_psf::delete_cata_from_source s "ASTROID"
       lappend s [list "ASTROID" {} $othf]
@@ -387,9 +424,9 @@ namespace eval bdi_tools_psf {
    # @param s pointeur d'une source qui se verra modifiée
    # @return void
    #
-   proc ::bdi_tools_psf::get_psf_source { send_s } {
+   proc ::bdi_tools_psf::get_psf_source { p_s } {
 
-      upvar $send_s s
+      upvar $p_s s
       
       gren_info "psf_methode = $::bdi_tools_psf::psf_methode\n"
       set xy       [::bdi_tools_psf::get_xy s]
@@ -410,7 +447,7 @@ namespace eval bdi_tools_psf {
 
          "globale" {
             set othf [::bdi_tools_methodes_psf::globale [lindex $xy 0] [lindex $xy 1] $::audace(bufNo)]
-            set fields [::bdi_tools_methodes_psf::get_globale_fields]
+            set fields [::bdi_tools_psf::get_globale_fields]
          }
 
          "aphot" {
@@ -420,15 +457,20 @@ namespace eval bdi_tools_psf {
          }
       
       }
-      ::bdi_tools_psf::gren_astroid othf
+      #::bdi_tools_psf::gren_astroid othf
 
       # on ne modifie que les champs modifiés par la methode
       foreach key $fields {
          set pos [lsearch $p $key]
          set othf_old [lreplace $othf_old $pos $pos [lindex $othf $pos] ]
       }
-      ::bdi_tools_psf::set_astroid_in_source s othf_old
-      
+      gren_erreur "$othf_old \n"
+      set err_psf [::bdi_tools_psf::get_val othf_old "err_psf"]
+      if {$err_psf == "-" } {
+         ::bdi_tools_psf::set_astroid_in_source s othf_old
+      } else {
+         gren_erreur "Erreur PSF\n"
+      }
    }
 
 

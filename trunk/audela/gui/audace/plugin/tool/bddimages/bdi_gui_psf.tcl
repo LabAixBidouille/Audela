@@ -134,11 +134,12 @@ namespace eval bdi_gui_psf {
       set l [::bdi_tools_psf::get_fields_current_psf]
 
       foreach key $l {
+      
          set value [::bdi_tools_psf::get_val othf $key]
          
          if {[string is ascii $value]} {set fmt "%s"}
          if {[string is double $value]} {set fmt "%.4f"}
-         
+         gren_info "$value $fmt\n"
          if { ! [info exists fmt] } {gren_erreur "$value n a pas de format\n"}
          set ::gui_cata::current_psf($key) [format $fmt $value ]
       }

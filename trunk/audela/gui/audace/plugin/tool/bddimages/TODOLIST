@@ -1,5 +1,17 @@
 TODOLIGHT
 
+Recherche : refaire les boutons d affichage:
+
+       I F D O ? 
+       i f d o T 
+       
+       cocher I : on affiche les images corrigées
+       cocher f : on affiche les flats bruts
+       cocher ? : on affiche toutes les autres images qui ne sont ni :
+                  i I F f D d O o
+       cocher T   : coche tous les boutons 
+       decocher T : decoche tous les boutons
+
 general : 
 
     - commencer a enlever les affichages de la console (qui sont pas necessaires)
