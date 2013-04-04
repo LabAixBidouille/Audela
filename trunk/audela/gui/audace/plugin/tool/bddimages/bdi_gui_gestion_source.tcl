@@ -1303,7 +1303,7 @@ namespace eval bdi_gui_gestion_source {
          # onglets : conesearch
 
          set cataconf [frame $f4.conesearch -borderwidth 0 -cursor arrow -relief groove]
-         pack $cataconf -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         pack $cataconf -in $f4 -anchor c -side top -expand 0 -padx 10 -pady 5
  
                checkbutton $cataconf.skybot_check -highlightthickness 0 -text "  SKYBOT" -variable ::tools_cata::use_skybot
                   entry $cataconf.skybot_dir -relief flat -borderwidth 1 -textvariable ::tools_cata::catalog_skybot -width 30 -state disabled
@@ -1326,8 +1326,6 @@ namespace eval bdi_gui_gestion_source {
                checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
                   entry $cataconf.twomass_dir -relief flat -textvariable ::tools_cata::catalog_2mass -width 30 -state disabled
                frame $cataconf.blank -height 15
-               button $cataconf.go -state active -text "Conesearch" -relief "raised" \
-                        -command ""
 
             grid $cataconf.skybot_check  $cataconf.skybot_dir  -sticky nsw -pady 3
             grid $cataconf.blank
@@ -1340,8 +1338,10 @@ namespace eval bdi_gui_gestion_source {
             grid $cataconf.ppmxl_check   $cataconf.ppmxl_dir   -sticky nsw -pady 3
             grid $cataconf.nomad1_check  $cataconf.nomad1_dir  -sticky nsw -pady 3
             grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
-            grid $cataconf.go -sticky e -pady 3
  
+            button $f4.go -state active -text "Conesearch" -relief "raised" \
+               -command ""
+            pack $f4.go -in $f4 -anchor c 
  
               
          # onglets : Catalogues
