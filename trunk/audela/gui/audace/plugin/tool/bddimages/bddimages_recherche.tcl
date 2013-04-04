@@ -159,7 +159,7 @@ namespace eval bddimages_recherche {
 
       set entetelog "recherche"
       set This $this
-      createDialog
+      ::bddimages_recherche::createDialog
       return
    }
 
