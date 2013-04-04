@@ -104,8 +104,8 @@ namespace eval bdi_tools_psf {
    #
    proc ::bdi_tools_psf::get_otherfields_astroid { } {
 
-      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "err_flux" "pixmax" \
-                   "intensity" "sigma_sky" "snint" "snpx" "radius" "rdiff" "moy_sky" "err_psf" "ra" "dec" \
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec" \
                    "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name" "flagastrom" "flagphotom" "cataastrom" \
                    "cataphotom"]
    }
@@ -119,8 +119,7 @@ namespace eval bdi_tools_psf {
    proc ::bdi_tools_psf::get_basic_fields { } {
 
       return [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "pixmax" \
-                   "intensity" "sigma_sky" "snint" "snpx" "radius" "rdiff" "moy_sky" "err_psf" "ra" "dec" \
-             ]
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec"]
    }
 
    #------------------------------------------------------------
@@ -131,7 +130,7 @@ namespace eval bdi_tools_psf {
    #
    proc ::bdi_tools_psf::get_fitgauss_fields { } {
       return [list "xsm" "ysm" "fwhmx" "fwhmy" "fwhm"  "pixmax" \
-                   "intensity" "radius" "moy_sky" "err_psf" "ra" "dec" \
+                   "intensity" "sky" "radius" "err_psf" "ra" "dec" \
              ]
    }
 
@@ -143,8 +142,7 @@ namespace eval bdi_tools_psf {
    #
    proc ::bdi_tools_psf::get_fields_current_psf { } {
       return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "err_flux" "pixmax" \
-                   "intensity" "sigma_sky" "snint" "snpx" "radius" "rdiff" "moy_sky" "err_psf"  \
-             ]
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf"]
    }
 
 
