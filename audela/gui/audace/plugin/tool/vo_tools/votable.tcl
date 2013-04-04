@@ -2716,11 +2716,11 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
       fwhmy -
       fwhm {
          if {[string equal -nocase $key "fwhmx"]} {
-            set description "X component of the FWHM of the source measured by Bddimages"
+            set description "X component of the FWHM of the source measured"
          } elseif {[string equal -nocase $key "fwhmy"]} {
-            set description "Y component of the FWHM of the source measured by Bddimages"
+            set description "Y component of the FWHM of the source measured"
          } else {
-            set description "FWHM of the source measured by Bddimages"
+            set description "FWHM of the source measured"
          }
          lappend field "$::votable::Field::UCD \"phys.angSize\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -2728,16 +2728,16 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::PRECISION \"2\"" \
                        "$::votable::Field::UNIT \"pixel\""
       }
-      fluxintegre {
-         set description "Measured flux of the source by Bddimages"
+      flux {
+         set description "Measured flux of the source"
          lappend field "$::votable::Field::UCD \"phot.count\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
                        "$::votable::Field::UNIT \"ADU\""
       }
-      errflux {
-         set description "Uncertainty of the measured source flux by Bddimages"
+      err_flux {
+         set description "Uncertainty on the measured source flux"
          lappend field "$::votable::Field::UCD \"stat.error;phot.count\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
@@ -2752,7 +2752,7 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::PRECISION \"1\"" \
                        "$::votable::Field::UNIT \"ADU\""
       }
-      intensite {
+      intensity {
          set description "Flux of the pixel of maximum intensity minus the background intensity"
          lappend field "$::votable::Field::UCD \"phot.count\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -2760,9 +2760,17 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::PRECISION \"1\"" \
                        "$::votable::Field::UNIT \"ADU\""
       }
-      sigmafond {
-         set description "Standard deviation of the background intensity"
+      sky {
+         set description "Measured flux of the sky level"
          lappend field "$::votable::Field::UCD \"phot.count\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"1\"" \
+                       "$::votable::Field::UNIT \"ADU\""
+      }
+      err_sky {
+         set description "Standard deviation on the sky level"
+         lappend field "$::votable::Field::UCD \"stat.error;phot.count\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
@@ -2776,15 +2784,7 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::PRECISION \"1\"" \
                        "$::votable::Field::UNIT \"-\""
       }
-      snpx {
-         set description "Intensity of maximum pixel divided by the background sigma"
-         lappend field "$::votable::Field::UCD \"stat.value\"" \
-                       "$::votable::Field::DATATYPE \"float\"" \
-                       "$::votable::Field::WIDTH \"8\"" \
-                       "$::votable::Field::PRECISION \"1\"" \
-                       "$::votable::Field::UNIT \"-\""
-      }
-      delta {
+      radius {
          set description "Radius of the window used to measure the photocenter (pix)"
          lappend field "$::votable::Field::UCD \"stat.value\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -2799,6 +2799,13 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"1\"" \
                        "$::votable::Field::UNIT \"px\""
+      }
+      err_psf {
+         set description "Flag about the measure of the PSF"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"16\"" \
+                       "$::votable::Field::WIDTH \"16\""
       }
       ra -
       dec {
