@@ -2,73 +2,51 @@
 
 \mainpage Bddimages Tools 1.x - Documentation
 
- \em Eproc (Eph&eacute;m&eacute;rides, Pr&eacute;dictions et R&eacute;ductions pour les Corps C&eacute;lestes) est 
- une suite logicielle de m&eacute;canique c&eacute;leste dedi&eacute;e aux calculs d'&eacute;ph&eacute;m&eacute;rides,
- &agrave; la pr&eacute;dictions des ph&eacute;nom&egrave;mes et &agrave; la r&eacute;duction des observations des 
- corps du syst&egrave;me solaire. Cette librairie est d&eacute;velopp&eacute;e par l'<a href="http://www.imcce.fr/">IMCCE</a>
- (Observatoire de Paris) dans le cadre de ses travaux de m&eacute;canique c&eacute;leste et de calcul des 
- &eacute;ph&eacute;m&eacute;rides.
+ \em BDDImages, (Base de donnee d'images) est une suite logicielle de traitement d'images astronomique par la manipulation d'une archive
+  de donnees. 
 
  
-\author J. Berthier <berthier@imcce.fr>, F. Vachier <fv@imcce.fr>, B. Carry <bcarry@imcce.fr>,
-<br/>P. Descamps <descamps@imcce.fr>, D. Hestroffer <hestro@imcce.fr>, J. Vaubaillon <vaubaill@imcce.fr>
-<br/>et de nombreux autres contributeurs, en France et ailleurs.
+\authors F. Vachier <fv@imcce.fr>, J. Berthier <berthier@imcce.fr>
 
-\version 5.0
-\date 1995-2013
+\version 1.0
+\date 2006-2013
 
-\section news Nouveaut&eacute;s
+\section news Nouveautes
 
-Version 5.0 (fevrier 2013)
- \li poursuite des developpements, finalisation des concepts objet
+Fonctionnalites Version 1.0 (fevrier 2013)
 
-Version 5.0 (juin 2011)
- \li mise &agrave; la norme Fortran 2003
- \li introduction de classes orient&eacute;es objet
- \li allocation dynamique systematique des chaines de caract&egrave;re
- \li mise &agrave; des mod&egrave;s de pr&eacute;cession/nutation (IAU2006)
- \li introduction du calcul de TE-UT d'apres Espenak et Meeus, 2006
-
-Version 4.0 (f&eacute;vrier 2010)
- \li impl&eacute;mentation du format VOTable (IVOA) pour 
- \li impl&eacute;mentation finale de la pr&eacute;cession/nutation IAU2000
- \li am&eacute;lioration du script de configuration
- \li documentation g&eacute;n&eacute;r&eacute;e par <a href="http://www.doxygen.org/">DOxygen</a>
-
-Version 4.0 (juillet 2009)
- \li refonte globale de la librairie
- \li harmonisation des noms des fonctions vs. les noms des fichiers
- \li cr&eacute;ation de l'espace de nom \em eproc_ pour la d&eacute;finition des modules
- \li introduction de la pr&eacute;cession et de la nutation IAU 2000A
- \li gestion avec XML des entr&eacute;es/sorties des programmes (usage de la librairie <a href="http://uszla.me.uk/space/software/FoX/">FoX</a>)
- \li suppression de toute forme de support graphique (pgplot, X11)
- \li introduction de la passerelle Eproc -> IDL, VO
+\li Traitements d'images habituel, correction dark, offset, flat, 
+\li Geometrie de l'image...
+\li Gestion des mots cles. 
+\li Ajout de WCS, 
+\li Reconnaissance des champs,  
+\li Extraction des sources stellaires et systeme solaire identifiees de l'image.
+\li Analyse photometrique differentielle pour effectuer des courbes de lumieres d asteroides.
+\li Analyse astrometrique de l'image. 
+\li Generation et association d'un fichier catalogue votable XML de la liste des sources de l images. comprenant une table pour les header fits, 
+puis autant de table que de catalogues identifies dans l'image.
+\li Verification de la structure des donnees en recherchant les sources qui ne sont pas pertinentes.
+\li Analyse des sources par une gestion des catalogues et des sources.
+\li Gestion des catalogues globalement pour un traitement automatique par lot.
+\li Astrometrie
+\li Ephemerides IMCCE et JPL,
+\li Soumission de rapport MPC.
 
 
-\section dependance D&eacute;pendances
+\section dependance Dependances
 
- La compilation de la librairie Eproc n&eacute;cessite au pr&eacute;alable l'installation des composants logiciels
- suivants:
-
- \li make, gawk, grep (version GNU)
- \li librairie <a href="http://www.imcce.fr/inpop/calceph/">Calceph</a>
- \li librairie <a href="http://uszla.me.uk/space/software/FoX/">FoX</a>
- \li librairie <a href="http://naif.jpl.nasa.gov/naif/">Spice</a>
- 
- ainsi que les composants optionnels, mais recommand&eacute;s:
- 
- \li <a href="http://cdsarc.u-strasbg.fr/doc/cdsclient.html">cdsclient</a> du CDS
- \li <a href="http://www.exelisvis.com/ProductsServices/IDL.aspx">IDL</a> (ITT Exelis)
+\li Un serveur Mysql doit etre installe sur la machine.
+\li la librairie Eproc est necessaire au calcul des ephemerides de l'IMCCE, et l'ajustement de la geometrie de l'image.
+ Se referer a la documentation d'Eproc pour son installation
 
 
 \section documentation Documentation
  
- Ce document fourni tous les &eacute;l&eacute;ments de documentation n&eacute;cessaire au developpeur pour exploiter les modules 
- et les fonctions de la librairie Eproc. La librairie Eproc-5.x est structur&eacute;e par th&egrave;mes ou fonctionnalit&eacute;es
- selon une hierarchie en niveau de d&eacute;pendance: les fonctions et modules d'un niveau donn&eacute; d&eacute;pendent de fonctions 
- et modules de niveaux inf&eacute;rieurs. Les espaces de nom des modules de la librairie sont pr&eacute;fix&eacute;s par <em>Eproc_</em>
- et <em>Eproc_class_</em> pour les modules orient&eacute;s objet. L'architecture de la librairie est pr&eacute;sent&eacute;e dans la
- figure suivante. Pour acc&eacute;der aux informations relatives &agrave; un &eacute;l&eacute;ment de la librairie, cliquez sur son nom.
+ Ce document fourni tous les elements de documentation necessaire au developpeur pour exploiter les modules 
+ et les fonctions de Bddimage. La librairie est structuree par themes ou fonctionnalitees
+ selon une hierarchie en niveau de dependance: En majorite on trouvera un  namespace par fichier, qui porte la denomination
+ TOOLS ou GUI. la couche GUI s appuie sur les TOOLS et apporte une interface homme machine. la couche TOOLS apporte toutes 
+ les routines necessaire pour faire le travail en mode console afin d'obtenir des traitements automatiques sur les images.
 
  \dot
  graph eproclib {
@@ -82,13 +60,13 @@ Version 4.0 (juillet 2009)
    node [shape=box,style=filled,color=white,fontsize=9,fontname=Helvetica,fillcolor=snow];
 
    subgraph cluster0 {
-     label = "Eproc-4.x lib";
+     label = "Bddimages GUI";
 
      subgraph cluster4 {
        style=filled;
        color=slategray3;
-       lib41 [ label="gaia" ];
-       lib42 [ label="impressions" ];
+       lib41 [ label="traitements" ];
+       lib42 [ label="photometrie" ];
        lib43 [ label="ephemerides" ];
        lib41 -- lib42 -- lib43 [ style="dotted" ];
        label = "Niveau 3";
