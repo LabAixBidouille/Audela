@@ -13,4 +13,4 @@ source [file join $audace(rep_install) gui audace plugin tool bddimages utils as
 source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid votable.tcl       ]
 source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid priam.tcl         ]
 source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid statbox.tcl       ]
-#source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid constantes.tcl    ]
+source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid constantes.tcl    ]
