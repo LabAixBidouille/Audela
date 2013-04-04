@@ -29,7 +29,7 @@ test libcatalog_cstycho2_sansparam { cstycho2 sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: cstycho2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: cstycho2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ test libcatalog_csucac2_sansparam { csucac2 sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: csucac2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: csucac2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ test libcatalog_csucac3_sansparam { csucac3 sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: csucac3 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: csucac3 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ test libcatalog_csucac4_sansparam { csucac4 sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: csucac4 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: csucac4 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ test libcatalog_cs2mass_sansparam { cs2mass sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: cs2mass pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: cs2mass pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ test libcatalog_csusnoa2_sansparam { csusnoa2 sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: csusnoa2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: csusnoa2 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ test libcatalog_csppmx_sansparam { csppmx sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: csppmx pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: csppmx pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
@@ -281,7 +281,7 @@ test libcatalog_csppmxl_sansparam { csppmxl sans parametre } -constraints {
    return $msg
 } -cleanup {
 
-} -result "usage: csppmxl pathOfCatalog ra(deg) dec(deg) radius(arcmin) magnitudeMax(mag)? magnitudeMin(mag)?"
+} -result "usage: csppmxl pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
 
 
 #-------------------------------------------------------------------------------
