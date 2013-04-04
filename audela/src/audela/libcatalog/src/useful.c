@@ -32,6 +32,11 @@ int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 	*ra             = atof(argv[2]);
 	*dec            = atof(argv[3]);
 	*radius         = atof(argv[4]);
+	if(*radius      < 0.) {
+		sprintf(outputLogChar,"Function %s : radius(arcmin) = %f must be > 0.",argv[0],*radius);
+		return (1);
+	}
+
 	if(argc == 6) {
 		*magFaint   = atof(argv[5]);
 		*magBright  = -99.999;
@@ -41,6 +46,11 @@ int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 	} else {
 		*magBright  = -99.999;
 		*magFaint   = 99.999;
+	}
+
+	if(*magBright   > *magFaint) {
+		sprintf(outputLogChar,"Function %s : magBright = %f must be < magFaint = %f",argv[0],*magBright,*magFaint);
+		return (1);
 	}
 
 	/* Add slash to the end of the path if not exist*/
@@ -600,7 +610,7 @@ int findComponentNumber(const int* const sortedArrayOfValues, const int lengthOf
  * Francois Ochsenbein's method
  * PURPOSE  Locate specified character
  * RETURNS  Index of located char
-*/
+ */
 int strloc(char * const text, const int c) {
 
 	char *s;
