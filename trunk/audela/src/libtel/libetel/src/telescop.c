@@ -695,7 +695,7 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
 {
 	/*
 	int err;
-   if (err = dsa_quick_stop_s(tel->drv[k], 10000)) {
+   if (err = dsa_quick_stop_s(tel->drv[k], DSA_QS_PROGRAMMED_DEC, DSA_QS_BYPASS | DSA_QS_STOP_SEQUENCE, DSA_DEF_TIMEOUT)) {
 	   mytel_error(tel,k,err);
 		return 1;
 	}

@@ -37,6 +37,7 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelInitDefault(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelDsa_quick_stop_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

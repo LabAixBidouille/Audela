@@ -205,6 +205,31 @@ int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
    return result;
 }
 
+int cmdTelDsa_quick_stop_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/****************************************************************************/
+{
+   char ligne[256];
+   int result = TCL_OK,err=0,axisno;
+	int sidx=0;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if (argc<2) {
+   	sprintf(ligne,"usage: %s %s axisno",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   axisno=atoi(argv[2]);
+	if (err = dsa_quick_stop_s(tel->drv[axisno],DSA_QS_PROGRAMMED_DEC,DSA_QS_BYPASS | DSA_QS_STOP_SEQUENCE, DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,axisno,err);
+   	sprintf(ligne,"%s",tel->msg);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   return result;
+}
+
 int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    int result = TCL_OK,err=0;

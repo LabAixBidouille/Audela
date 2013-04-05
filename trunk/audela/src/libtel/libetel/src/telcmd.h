@@ -33,6 +33,7 @@ static struct cmditem cmdlist[] = {
    {"execute_command_x_s", (Tcl_CmdProc *)cmdTelExecuteCommandXS},\
    {"get_register_s", (Tcl_CmdProc *)cmdTelGetRegisterS},\
    {"set_register_s", (Tcl_CmdProc *)cmdTelSetRegisterS},\
+   {"dsa_quick_stop_s", (Tcl_CmdProc *)cmdTelDsa_quick_stop_s},\
    {"type_mount", (Tcl_CmdProc *)cmdTelTypeMount},\
    {"type_axis", (Tcl_CmdProc *)cmdTelTypeAxis},\
    {"inc_axis", (Tcl_CmdProc *)cmdTelIncAxis},\

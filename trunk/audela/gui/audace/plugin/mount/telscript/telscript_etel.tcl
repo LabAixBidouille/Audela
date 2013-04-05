@@ -117,6 +117,8 @@
 # foreach res [lsort [tel1 variables]] { console::affiche_resultat "$res\n" }
 #
 # ============================================================================================
+# etel_dsa_quick_stop_s 1
+# ============================================================================================
 
 # --- common defined variables
 # telscript(def,telname) is ever defined before the source of this script
@@ -296,8 +298,8 @@ proc setup { } {
          set telscript($telname,adu4deg_az)        [etel_get_register_s 0 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_az0) [etel_get_register_s 0 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_az0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_az)        [etel_get_register_s 0 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_az)        [etel_get_register_s 0 X 61] ; # limite sup adu
+         set telscript($telname,lim_min_az)        [etel_get_register_s 0 K 34] ; # limite inf adu
+         set telscript($telname,lim_max_az)        [etel_get_register_s 0 K 35] ; # limite sup adu
          # --- special T940 on change les signes des coefs
          set telscript($telname,adu4deg_az)        [expr -1*$telscript($telname,adu4deg_az)]
          # --- elev
@@ -305,8 +307,8 @@ proc setup { } {
          set telscript($telname,adu4deg_elev)        [etel_get_register_s 1 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_elev0) [etel_get_register_s 1 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_elev)        [etel_get_register_s 1 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_elev)        [etel_get_register_s 1 X 61] ; # limite sup adu
+         set telscript($telname,lim_min_elev)        [etel_get_register_s 1 K 34] ; # limite inf adu
+         set telscript($telname,lim_max_elev)        [etel_get_register_s 1 K 35] ; # limite sup adu
       }
       if {$telscript($telname,mount_type)=="azelevrot"} {
          # --- rot
@@ -323,15 +325,15 @@ proc setup { } {
          set telscript($telname,adu4deg_ha)        [etel_get_register_s 0 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_ha0) [etel_get_register_s 0 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_ha0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_ha)        [etel_get_register_s 0 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_ha)        [etel_get_register_s 0 X 61] ; # limite sup adu
+         set telscript($telname,lim_min_ha)        [etel_get_register_s 0 K 34] ; # limite inf adu
+         set telscript($telname,lim_max_ha)        [etel_get_register_s 0 K 35] ; # limite sup adu
          # --- dec
          set telscript($telname,adu4deg4sec_dec)    [etel_get_register_s 1 X 26] ; # vitesse coef (adu/(deg/s))
          set telscript($telname,adu4deg_dec)        [etel_get_register_s 1 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_dec0) [etel_get_register_s 1 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_dec0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_dec)        [etel_get_register_s 1 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_dec)        [etel_get_register_s 1 X 61] ; # limite sup adu
+         set telscript($telname,lim_min_dec)        [etel_get_register_s 1 K 34] ; # limite inf adu
+         set telscript($telname,lim_max_dec)        [etel_get_register_s 1 K 35] ; # limite sup adu
       }
 
       #---arret de tous les moteurs
@@ -364,7 +366,7 @@ proc setup { } {
          # --- rot
          set telscript($telname,adu4deg4sec_rot)    1849316 ; # vitesse coef (adu/(deg/s))
          set telscript($telname,adu4deg_rot)        3458015 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_rot0) 0 ; # position init (adu)
+         set telscript($telname,coord_app_adu_rot0) 1157420421 ; # position init (adu)
          set telscript($telname,coord_app_deg_rot0) 0 ; # position init (deg)
          set telscript($telname,lim_min_rot)        0 ; # limite inf adu
          set telscript($telname,lim_max_rot)        0 ; # limite sup adu
@@ -553,8 +555,8 @@ proc loop { } {
 
       # --- Action = radec_goto
 	  	catch {exec espeak.exe -v fr "Pointage."}
-      lassign [object2radec] raj2000 decj2000 drift_ra drift_dec 3.
-      radec2degs goto $raj2000 $decj2000 $drift_ra $drift_dec
+      lassign [object2radec] raj2000 decj2000 drift_ra drift_dec
+      radec2degs goto $raj2000 $decj2000 $drift_ra $drift_dec 3.
       degs2adus goto
       set_pos_adus
       set telscript($telname,goto,status) ""
@@ -578,7 +580,7 @@ proc loop { } {
       set telscript($telname,ra00) $raj2000
       set telscript($telname,dec00) $decj2000
       set telscript($telname,goto,object) ""
-      stop_motors
+      stop_all_motors
       catch {exec espeak.exe -v fr "Stoppe les moteurs."}
       set telscript($telname,motion_next) "stopped"
       set telscript($telname,action_next) "motor_off"
@@ -813,6 +815,7 @@ proc get_pad_buttons {} {
 
 # ################################################################################
 # ### proc direction2axesens
+# Enlever le retour de $sens qui est obsolete
 # ################################################################################
 proc direction2axesens { direction } {
    set axe 1 ; set sens 1
@@ -1044,6 +1047,22 @@ proc start_shift_spectro { direction } {
    }
 }
 
+
+# ################################################################################
+# ### proc stop all motors
+# ################################################################################
+# ################################################################################
+proc stop_all_motors { } {
+   global telscript
+   # --- Get useful variables
+   set telname $telscript(def,telname)
+	etel_dsa_quick_stop_s 0
+	etel_dsa_quick_stop_s 1
+   if {$telscript($telname,mount_type)=="azelevrot"} {
+		etel_dsa_quick_stop_s 2
+   }
+}
+
 # ################################################################################
 # ### proc stop motors
 # ################################################################################
@@ -1196,11 +1215,15 @@ proc save_x { } {
 		etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_az))]
 		etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_az))]
 		etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_az0)
+		#etel_set_register_s 0 K 34 0 $telscript($telname,lim_min_az)
+		#etel_set_register_s 0 K 35 0 $telscript($telname,lim_max_az)
 		etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_elev)
 		etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_elev)
 		etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_elev))]
 		etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_elev))]
 		etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_elev0)
+		#etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_elev)
+		#etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_elev)
 	}
    if {$telscript($telname,mount_type)=="azelevrot"} {
 		etel_set_register_s 2 X 26 0 $telscript($telname,adu4deg4sec_rot)
@@ -1215,25 +1238,29 @@ proc save_x { } {
 		etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_ha))]
 		etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_ha))]
 		etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_ha0)
+		#etel_set_register_s 0 K 34 0 $telscript($telname,lim_min_ha)
+		#etel_set_register_s 0 K 35 0 $telscript($telname,lim_max_ha)
 		etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_dec)
 		etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_dec)
 		etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_dec))]
 		etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
 		etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
+		#etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_dec)
+		#etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_dec)
 	}
-	etel_execute_command_x_s 0 119 0
+	#etel_execute_command_x_s 0 119 0
 	etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
 	after 1000
-	etel_execute_command_x_s 0 79 0
-	etel_execute_command_x_s 1 119 0
+	#etel_execute_command_x_s 0 79 0
+	#etel_execute_command_x_s 1 119 0
 	etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
 	after 1000
-   etel_execute_command_x_s 1 79 0
+   #etel_execute_command_x_s 1 79 0
    if {$telscript($telname,mount_type)=="azelevrot"} {
-		etel_execute_command_x_s 2 119 0
+		#etel_execute_command_x_s 2 119 0
 		etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
       after 1000
-	  	etel_execute_command_x_s 2 79 0
+	  	#etel_execute_command_x_s 2 79 0
 	}
 }
 
