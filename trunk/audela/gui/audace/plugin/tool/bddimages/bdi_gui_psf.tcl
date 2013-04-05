@@ -139,7 +139,10 @@ namespace eval bdi_gui_psf {
          
          if {[string is ascii $value]} {set fmt "%s"}
          if {[string is double $value]} {set fmt "%.4f"}
-         gren_info "$value $fmt\n"
+         if {$value==""} {
+            set ::gui_cata::current_psf($key) ""
+            continue
+         }
          if { ! [info exists fmt] } {gren_erreur "$value n a pas de format\n"}
          set ::gui_cata::current_psf($key) [format $fmt $value ]
       }

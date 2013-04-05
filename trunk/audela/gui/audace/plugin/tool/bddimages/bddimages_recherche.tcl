@@ -1668,7 +1668,7 @@ namespace eval bddimages_recherche {
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
       # Liste d'1 image = img chargee
-      set imglist [list [lindex $imglist 0]]
+      #  set imglist [list [lindex $imglist 0]]
       ::gui_verifcata::run_from_recherche $imglist
 
    }

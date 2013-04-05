@@ -55,7 +55,7 @@ namespace eval gui_verifcata {
       menu $popupTbl -title "Selection"
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Voir" -command ""
+        $popupTbl add command -label "Voir une source" -command "::gui_verifcata::popup_voir $tbl"
 
         # Edite la liste selectionnee
         $popupTbl add command -label "psf" -command "::gui_verifcata::popup_psf $tbl"
@@ -112,6 +112,62 @@ namespace eval gui_verifcata {
    }
 
 
+
+   proc ::gui_verifcata::visu_image {  } {
+
+      set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+      ::gui_cata::affiche_current_image
+   }
+
+
+
+
+
+
+
+   proc ::gui_verifcata::popup_voir { tbl } {
+
+      foreach select [$tbl curselection] {
+      
+         set ids [lindex [$tbl get $select] 0]      
+         set idd [lindex [$tbl get $select] 1]   
+         gren_info "ids = $ids ; idd = $idd \n"   
+         break
+      }
+      
+      if {$::tools_cata::id_current_image == $idd} {
+         # L image est deja affichée
+         
+      } else {
+         # L image affichée n est pas la bonne
+         set ::tools_cata::id_current_image $idd
+         ::gui_verifcata::visu_image
+      }
+      set s [lindex [lindex $::tools_cata::current_listsources 1] [expr $ids - 1] ]
+      set r [::bdi_gui_gestion_source::grab_sources_getsource $ids $s ]
+   
+
+      #gren_info "r=$r\n"
+
+      set err   [lindex $r 0]
+      set aff   [lindex $r 1]
+      set id    [lindex $r 2]
+      set xpass [lindex $r 3]
+      set ypass [lindex $r 4]
+      
+      ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
+      affich_un_rond_xy $xpass $ypass green  10 1
+
+   }
+
+
+
+
+
+
+
+
    proc ::gui_verifcata::popup_psf { tbl } {
 
       foreach select [$tbl curselection] {
@@ -121,7 +177,38 @@ namespace eval gui_verifcata {
          gren_info "ids = $ids ; idd = $idd \n"   
          break
       }
+      
+      if {$::tools_cata::id_current_image == $idd} {
+         # L image est deja affichée
+         
+      } else {
+         # L image affichée n est pas la bonne
+         set ::tools_cata::id_current_image $idd
+         ::gui_verifcata::visu_image
+      }
+      set s [lindex [lindex $::tools_cata::current_listsources 1] [expr $ids - 1] ]
+      set r [::bdi_gui_gestion_source::grab_sources_getsource $ids $s ]
+   
+
+      #gren_info "r=$r\n"
+
+      set err   [lindex $r 0]
+      set aff   [lindex $r 1]
+      set id    [lindex $r 2]
+      set xpass [lindex $r 3]
+      set ypass [lindex $r 4]
+      ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
+      
+      ::bdi_gui_gestion_source::run $ids
+      
    }
+
+
+
+
+
+
+
 
 
    proc ::gui_verifcata::verif {  } {
@@ -133,22 +220,34 @@ namespace eval gui_verifcata {
 
 
 
+
+
+
+
+
+
+
+
+
+
    proc ::gui_verifcata::run_from_recherche { img_list } {
    
      global bddconf
-   
+
      catch {
-         if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
-         if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
-         if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
-      }
+         if { [ info exists ::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+         if { [ info exists ::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+         if { [ info exists ::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+         if { [ info exists ::gui_cata::cata_list ] }            {unset ::gui_cata::cata_list}
+      } 
 
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
       
+      set ::tools_cata::id_current_image 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
-
+         incr ::tools_cata::id_current_image
          set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
 
@@ -161,10 +260,21 @@ namespace eval gui_verifcata {
          ::gui_cata::load_cata
 
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-
       }
+      set ::tools_cata::id_current_image -1
       ::gui_verifcata::run
    }
+
+
+
+
+
+
+
+
+
+
+
 
 
    proc ::gui_verifcata::run {  } {
