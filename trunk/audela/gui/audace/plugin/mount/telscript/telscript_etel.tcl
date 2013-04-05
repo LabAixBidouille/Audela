@@ -114,6 +114,7 @@
 #      To display the last action_next and the number of loops ever done.
 #
 # tel::create telscript -telname mytel -script $audace(rep_install)/gui/audace/scripts/telscript/telscript_etel.tcl -home \{$audace(posobs,observateur,gps)\}
+# tel::create telscript -telname t940 -script $audace(rep_install)/gui/audace/plugin/mount/telscript/telscript_etel.tcl -home \{$audace(posobs,observateur,gps)\}
 # foreach res [lsort [tel1 variables]] { console::affiche_resultat "$res\n" }
 #
 # ============================================================================================
@@ -161,7 +162,7 @@ proc setup { } {
    # === check the functions if not loaded in the thread
    set pwd0 [pwd]
    cd $path
-   load libaudela[info sharedlibextension]
+   #load libaudela[info sharedlibextension]
    catch {load libeteltcl[info sharedlibextension]}
    # --- Open the ports for combits
    set err [catch {
