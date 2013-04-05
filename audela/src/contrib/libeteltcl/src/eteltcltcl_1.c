@@ -329,3 +329,37 @@ int Cmd_eteltcltcl_SetRegisterS(ClientData clientData, Tcl_Interp *interp, int a
    Tcl_SetResult(interp,"",TCL_VOLATILE);
    return result;
 }
+
+int Cmd_eteltcltcl_dsa_quick_stop_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/*
+* Now it's time to stop the motor. the dsa_quick_stop_s()
+* function will bypass any other command pending into the drive.
+* If the motor is already stopped, this operation doesn't have
+* any effect.
+*/
+//#define DSA_QS_BYPASS                    2           /* bypass all pending command */
+//#define DSA_QS_INFINITE_DEC              1           /* stop motor with infinite deceleration (step) */
+//#define DSA_QS_POWER_OFF                 0           /* switch off power bridge */
+//#define DSA_QS_PROGRAMMED_DEC            2           /* stop motor with programmed deceleration */
+//#define DSA_QS_STOP_SEQUENCE             1           /* also stop the sequence */
+
+/****************************************************************************/
+{
+   char ligne[256];
+   int result = TCL_OK,err=0,axisno;
+   if (argc<2) {
+   	sprintf(ligne,"usage: %s axisno",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   axisno=atoi(argv[1]);
+	if (err = dsa_quick_stop_s(etel.drv[axisno],DSA_QS_PROGRAMMED_DEC,DSA_QS_BYPASS | DSA_QS_STOP_SEQUENCE, DSA_DEF_TIMEOUT)) {
+		etel_error(axisno,err);
+   	sprintf(ligne,"%s",etel.msg);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   return result;
+}
