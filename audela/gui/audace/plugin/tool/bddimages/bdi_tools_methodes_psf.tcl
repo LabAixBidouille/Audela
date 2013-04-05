@@ -62,13 +62,11 @@ namespace eval bdi_tools_methodes_psf {
          set err_psf [::bdi_tools_psf::get_val othf "err_psf"]
          # rejet si erreur psf
          if {$err_psf=="Saturated"} {
-            gren_erreur "ici"
             ::bdi_tools_psf::set_photom_error othf $err_psf
             return $othf
          }
-         if {$err_psf!="-"} {
+         if {$err_psf!=""} {
             set results($radius,err) $err_psf
-            gren_erreur $err_psf
             continue
          }
 
@@ -188,7 +186,7 @@ namespace eval bdi_tools_methodes_psf {
          }
       }
 
-      set taboid(err_psf)    "-"
+      set taboid(err_psf)    ""
       set othf [::bdi_tools_psf::get_astroid_null]
       foreach key [::bdi_tools_psf::get_basic_fields] {
          ::bdi_tools_psf::set_by_key othf $key $taboid($key)
@@ -257,7 +255,7 @@ namespace eval bdi_tools_methodes_psf {
             return -1
          }
 
-         set taboid(err_psf)    "-"
+         set taboid(err_psf)    ""
          set taboid(flux)        [lindex $valeurs 0]
          set taboid(med_sky)     [lindex $valeurs 1]
          set taboid(moy_sky)     [lindex $valeurs 2]
@@ -296,9 +294,9 @@ namespace eval bdi_tools_methodes_psf {
             set taboid(err_psf) "Far"
          }
 
-         set taboid(err_xsm) "-"
-         set taboid(err_ysm) "-"
-         set taboid(err_flux) "-"
+         set taboid(err_xsm) ""
+         set taboid(err_ysm) ""
+         set taboid(err_flux) ""
 
          set othf [::bdi_tools_psf::get_astroid_null]
          foreach key [::bdi_tools_psf::get_basic_fields] {
@@ -365,14 +363,14 @@ namespace eval bdi_tools_methodes_psf {
          set valeurs        [buf$bufNo stat [list $x1 $y1 $x2 $y2] ]
          set taboid(pixmax) [lindex $valeurs 2]
 
-         set taboid(err_psf) "-"
-         set taboid(err_xsm) "-"
-         set taboid(err_ysm) "-"
-         set taboid(flux) "-"
-         set taboid(err_flux) "-"
-         set taboid(err_sky) "-"
-         set taboid(snint) "-"
-         set taboid(rdiff) "-"
+         set taboid(err_psf) ""
+         set taboid(err_xsm) ""
+         set taboid(err_ysm) ""
+         set taboid(flux) ""
+         set taboid(err_flux) ""
+         set taboid(err_sky) ""
+         set taboid(snint) ""
+         set taboid(rdiff) ""
 
          set othf [::bdi_tools_psf::get_astroid_null]
          foreach key [::bdi_tools_psf::get_fitgauss_fields] {

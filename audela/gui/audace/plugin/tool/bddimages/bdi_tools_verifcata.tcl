@@ -14,7 +14,6 @@ namespace eval tools_verifcata {
       if {[info exists ::gui_cata::cata_list]} {
          
          foreach {idd listsources} [array get ::gui_cata::cata_list] {
-
             set satraster 0
             set catadouble 0
             set err 0

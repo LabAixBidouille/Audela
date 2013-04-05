@@ -84,7 +84,7 @@ namespace eval bdi_gui_gestion_source {
          default  {
             gren_info "id source : $::gui_cata::psf_id_source  \n"
             set s [lindex [lindex $::tools_cata::current_listsources 1] [expr $::gui_cata::psf_id_source - 1] ]
-            ::bdi_tools_psf::get_psf_source s
+            set err_psf [::bdi_tools_psf::get_psf_source s]
          }
       }
       
@@ -97,6 +97,9 @@ namespace eval bdi_gui_gestion_source {
       set ::tools_cata::current_listsources [list $lf $ls]
       
       ::bdi_gui_psf::init_current_psf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+      if {$err_psf!=""} {
+         set ::gui_cata::current_psf(err_psf) $err_psf
+      }
       
       ::bdi_gui_gestion_source::maj_catalogues
 
@@ -966,17 +969,17 @@ namespace eval bdi_gui_gestion_source {
 
 
 
-
 #------------------------------------------------------------
 ## Analyse de photocentre d'une source
 # Permet de recombiner des catalogues pour une source,
 # de mesurer la psf d'une source, de rappeler les 
 # conesearch dans une zone de l'image
 #  \sa bdi_gui_gestion_source::gestion_mode_manuel_init
-   proc ::bdi_gui_gestion_source::run {  } {
+   proc ::bdi_gui_gestion_source::run { { ids "" } } {
 
       ::psf_tools::inittoconf
       ::bdi_gui_gestion_source::init
+      
 
       set spinlist ""
       for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius} {incr i} {lappend spinlist $i}
@@ -1146,7 +1149,7 @@ namespace eval bdi_gui_gestion_source {
                               set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                               pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
 
-                                   if {$key=="err_xsm"||$key=="err_ysm"} {
+                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="err_psf"} {
                                       set active disabled
                                    } else {
                                       set active active
@@ -1169,7 +1172,7 @@ namespace eval bdi_gui_gestion_source {
                               set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                               pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
 
-                                   if {$key=="errflux"||$key=="delta"} {
+                                   if {$key=="err_flux"||$key=="radius"} {
                                       set active disabled
                                    } else {
                                       set active active
@@ -1215,19 +1218,6 @@ namespace eval bdi_gui_gestion_source {
               ttk::notebook::enableTraversal $meth_onglets.nb
 
 
-              # configuration fitgauss
-              set block [frame $g1.conf -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $g1 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-              
-                     label $block.satl -text "Saturation (ADU): " 
-                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
-
-                     label $block.thrl -text "Threshold (arcsec): " 
-                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
-
-                     grid $block.satl  $block.satv  -sticky nsw -pady 3
-                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
-
               # configuration photombasic
               set block [frame $g2.conf -borderwidth 0 -cursor arrow -relief groove]
               pack $block -in $g2 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
@@ -1264,41 +1254,6 @@ namespace eval bdi_gui_gestion_source {
                      grid $block.satl  $block.satv  -sticky nsw -pady 3
                      grid $block.thrl  $block.thrv  -sticky nsw -pady 3
                      grid $block.radl  $block.radv  -sticky nsw -pady 3
-
-              # configuration aphot
-              set block [frame $g4.conf -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $g4 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-              
-                     label $block.satl -text "Saturation (ADU): " 
-                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
-
-                     label $block.thrl -text "Threshold (arcsec): " 
-                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
-
-                     label $block.radl -text "Limite du Rayon : " 
-                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius -relief sunken -width 5
-                   
-                     grid $block.satl  $block.satv  -sticky nsw -pady 3
-                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
-                     grid $block.radl  $block.radv  -sticky nsw -pady 3
-
-              # configuration bphot
-              set block [frame $g5.conf -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $g5 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-              
-                     label $block.satl -text "Saturation (ADU): " 
-                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
-
-                     label $block.thrl -text "Threshold (arcsec): " 
-                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
-
-                     label $block.radl -text "Limite du Rayon : " 
-                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius -relief sunken -width 5
-                   
-                     grid $block.satl  $block.satv  -sticky nsw -pady 3
-                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
-                     grid $block.radl  $block.radv  -sticky nsw -pady 3
-
 
          # onglets : conesearch
 
@@ -1360,6 +1315,14 @@ namespace eval bdi_gui_gestion_source {
 
              button $actionspied.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::bdi_gui_gestion_source::fen"
              pack   $actionspied.fermer -in $actionspied -side right -anchor w -padx 0
+
+
+
+      if {$ids != ""} {
+         ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids
+         gren_info "TODO : Ecrire Ambigue , disable tous les boutons sauf grab"
+      }
+
 
    }
 
