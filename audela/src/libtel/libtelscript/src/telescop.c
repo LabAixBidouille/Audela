@@ -110,6 +110,15 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			threadpb=3;
       }
 
+		// --- Importe la proc portalk
+		/*
+      sprintf(s,"thread::copycommand %s porttalk}", tel->loopThreadId);
+      if ( Tcl_Eval(tel->interp, s) == TCL_ERROR ) {
+			strcpy(tel->msg,tel->interp->result);
+			threadpb=3;
+      }
+		*/
+
 		// --- Appel des initialisations et fait demarrer la boucle 
 		sprintf(s,"thread::send %s {ThreadTel_Init", tel->loopThreadId);
 		for (k=0;k<argc;k++) {
