@@ -162,7 +162,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(sn_tarot,main_title)          "Tarot Vista SN"
-   set caption(sn_tarot,title)               "# Image du jour <-  Analyse de l'archive : %s  -> Référence"
+   set caption(sn_tarot,title)               "Immagine del giorno <-  Analisi dell'Archivio: %s  -> Riferimento"
    set caption(sn_tarot,prev)                "Precedente"
    set caption(sn_tarot,next)                "Successivo\n(F1)"
    set caption(sn_tarot,goto)                "Vai a"
@@ -176,10 +176,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image1)              "Immagine 1 -> %s %s %s %s %s %s"
    set caption(sn_tarot,image2)              "Immagine 2 -> %s %s"
 
-   set caption(sn_tarot,galaxy_center)       "# Centre de la galaxie hôte"
-   set caption(sn_tarot,star_ref)            "# Position d'une étoile de référence"
-   set caption(sn_tarot,star_pos)            "# Position de la candidate SN"
-   set caption(sn_tarot,star_id)             "# Création de la fiche de la candidate SN"
+   set caption(sn_tarot,galaxy_center)       "Centro della galassia ospite"
+   set caption(sn_tarot,star_ref)            "Posizione di una stella di riferimento"
+   set caption(sn_tarot,star_pos)            "Posizione della candidata SN"
+   set caption(sn_tarot,star_id)             "Creazione del file della candidata SN"
    set caption(sn_tarot,swatch)              "Palette & Funzione di trasferimento"
 
    set caption(sn_tarot,save1)               "Salvare"
@@ -201,7 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,image_gzip)          "Salvataggio immagini di riferimento:"
 
    set caption(sn_tarot,attention)           "Attenzione"
-   set caption(sn_tarot,alerte)              "# Le changement de configuration du rafraîchissement de la visualisation\nne prendra effet qu'au prochain démarrage de Tarot Vista SN."
+   set caption(sn_tarot,alerte)              "La modifica del Display Refresh sarà attiva solo dopo il riavvio."
 
    set caption(sn_tarot,reference)           "Riferimento"
    set caption(sn_tarot,newref)              "Nuovo riferimento Immagine 1"
@@ -210,28 +210,28 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sn_tarot,fits_header)         "Header FITS"
    set caption(sn_tarot,header,noimage)      "Nessuna immagine in memoria."
 
-   set caption(sn_tarot,dss_title)           "# Téléchargement des images DSS"
-   set caption(sn_tarot,dss_galaxy)          "# Galaxie : %s"
-   set caption(sn_tarot,dss_not_found)       "# %s pas chargé. Motif : %s"
-   set caption(sn_tarot,dss_all)             "# Toutes les images DSS sont présentes."
-   set caption(sn_tarot,dss_manq)            "# Télécharge les images DSS :\n%s."
+   set caption(sn_tarot,dss_title)           "Scaricamento delle immagini DSS"
+   set caption(sn_tarot,dss_galaxy)          "Galassia: %s"
+   set caption(sn_tarot,dss_not_found)       "%s non caricato. Causa: %s"
+   set caption(sn_tarot,dss_all)             "Tutte le immagini DSS sono disponibili."
+   set caption(sn_tarot,dss_manq)            "Scarica immagini DSS:\n%s."
 
    set caption(sn_tarot,configuration)       "Configurazione"
-   set caption(sn_tarot,select)              "# Sélectionner une archive :"
+   set caption(sn_tarot,select)              "Seleziona un archivio:"
    set caption(sn_tarot,aide)                "Aiuto"
    set caption(sn_tarot,exit)                "Chiudere"
 
-   set caption(sn_tarot,candidate)           "# Candidate supernova"
-   set caption(sn_tarot,modify)              "# Modifier le fichier candidat"
+   set caption(sn_tarot,candidate)           "Candidata Supernova"
+   set caption(sn_tarot,modify)              "Modifica file candidato"
    set caption(sn_tarot,ok)                  "OK"
    set caption(sn_tarot,result_analysis)     "Risultato delle analisi:"
 
-   set caption(sn_tarot,cand_wait)           "# Patientez pendant la création de la fiche candidate..."
-   set caption(sn_tarot,cand_wait_mp)        "# Vérifie la présence d'astéroïdes..."
-   set caption(sn_tarot,cand_wait_sn)        "# Vérifie la présence d'une supernova connue..."
-   set caption(sn_tarot,cand_wait_ar)        "# Vérifie la présence de la galaxie dans les archives..."
+   set caption(sn_tarot,cand_wait)           "Attendere creazione file della candidata..."
+   set caption(sn_tarot,cand_wait_mp)        "Verifica la presenza di asteroidi..."
+   set caption(sn_tarot,cand_wait_sn)        "Verifica la presenza di una supernova nota..."
+   set caption(sn_tarot,cand_wait_ar)        "Verifica la presenza della galassia negli archivi..."
 
-   set caption(sn_tarot,ancand_wait)         "# Patientez pendant l'analyse des fiches candidates..."
+   set caption(sn_tarot,ancand_wait)         "Attendere l'analisi dei file candidati..."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

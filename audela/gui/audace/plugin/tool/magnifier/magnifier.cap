@@ -33,7 +33,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(magnifier,titre)                 "# Loupe"
+   set caption(magnifier,titre)                 "Ingrandimento"
    set caption(magnifier,intens)                "I= %s"
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Visualizza all'avvio"
@@ -77,7 +77,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(magnifier,titre)                 "# Loupe"
+   set caption(magnifier,titre)                 "Forstørrelse"
    set caption(magnifier,intens)                "I= %s"
    set caption(magnifier,coord)                 "X= %s Y= %s"
    set caption(magnifier,default_state_label)   "Vis ved Opstart"
