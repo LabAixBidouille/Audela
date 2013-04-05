@@ -310,6 +310,8 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 
 	const searchZoneRaSpdMas* const subSearchZone = &(mySearchZoneNOMAD1->subSearchZone);
 
+	*lengthOfRecord = 0;
+
 	/* Convert the compacted record */
 	presence    = *buffer;			/* presence of mags and IDs */
 	zoneNOMAD   = headerInformation->zoneNumber;
@@ -328,6 +330,7 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	raInMas       = (buffer[4]<<16) | (buffer[5]<<8) | buffer[6];
 	if (headerInformation->numberOfChunks == 1) {
 		++buffer;
+		(*lengthOfRecord)++;
 		raInMas <<= 8;
 		raInMas  |= buffer[6];
 	}
@@ -355,12 +358,12 @@ void processBufferedDataNOMAD1(Tcl_DString* const dsptr,const searchZoneNOMAD1* 
 	flags      = status >> 12;
 
 	/* Fixed-length part done. */
-	buffer         += NOMAD1_RECORD_LENGTH;
-	*lengthOfRecord = NOMAD1_RECORD_LENGTH;
+	buffer          += NOMAD1_RECORD_LENGTH;
+	*lengthOfRecord += NOMAD1_RECORD_LENGTH;
 
 	/* UCAC2 */
 	if (presence & 0x80) {
-		idUCAC2            = (buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3];
+		idUCAC2          = (buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3];
 		buffer          += 4;
 		*lengthOfRecord += 4;
 	}
