@@ -17,6 +17,31 @@ test libcatalog_load { load } -constraints {
 
 
 #-------------------------------------------------------------------------------
+test libcatalog_list_catalog { liste des catalogues } -constraints {
+   AUDACE
+} -setup {
+
+
+} -body {
+   set catchError [ catch {
+      #--- je charge la librairie libcatalog
+      load [file join $::audela_start_dir libcatalog[info sharedlibextension]]
+      #--- je recherche les commandes de lecture des catalogues
+      set catas [ info commands cs* ]
+      #--- je liste les catalogues
+      set cats ""
+      foreach cata $catas {
+          lappend cats [ string range $cata 2 end ]
+      }
+      set result $cats
+   } msg]
+   return "$msg"
+} -cleanup {
+
+} -result "ppmxl ppmx tycho2 ucac2 ucac3 ucac4 2mass nomad1 usnoa2"
+
+
+#-------------------------------------------------------------------------------
 test libcatalog_cstycho2_sansparam { cstycho2 sans parametre } -constraints {
    AUDACE
 } -setup {
