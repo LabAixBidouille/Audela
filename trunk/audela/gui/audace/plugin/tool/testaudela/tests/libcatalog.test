@@ -64,7 +64,7 @@ test libcatalog_cstycho2_catalog_existe { trouve 1 etoile } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [cstycho2 [file join $::audace(rep_userCatalog) TYCHO-2] 10 5 5]
+      set result [cstycho2 [file join $::audace(rep_userCatalogTycho2)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -100,7 +100,7 @@ test libcatalog_csucac2_catalog_existe { trouve 7 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csucac2 [file join $::audace(rep_userCatalog) UCAC2] 10 5 5]
+      set result [csucac2 [file join $::audace(rep_userCatalogUcac2)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -136,7 +136,7 @@ test libcatalog_csucac3_catalog_existe { trouve 15 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csucac3 [file join $::audace(rep_userCatalog) UCAC3] 10 5 5]
+      set result [csucac3 [file join $::audace(rep_userCatalogUcac3)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -172,7 +172,7 @@ test libcatalog_csucac4_catalog_existe { trouve 16 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csucac4 [file join $::audace(rep_userCatalog) UCAC4] 10 5 5]
+      set result [csucac4 [file join $::audace(rep_userCatalogUcac4)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -208,7 +208,7 @@ test libcatalog_cs2mass_catalog_existe { trouve 52 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [cs2mass [file join $::audace(rep_userCatalog) 2MASS 2MASS] 10 5 5]
+      set result [cs2mass [file join $::audace(rep_userCatalog2mass)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -244,7 +244,7 @@ test libcatalog_csusnoa2_catalog_existe { trouve 59 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csusnoa2 [file join $::audace(rep_userCatalog) USNOA2] 10 5 5]
+      set result [csusnoa2 [file join $::audace(rep_userCatalogUsnoa2)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -280,7 +280,7 @@ test libcatalog_csppmx_catalog_existe { trouve 7 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csppmx [file join $::audace(rep_userCatalog) PPMX data] 10 5 5]
+      set result [csppmx [file join $::audace(rep_userCatalogPpmx)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {
@@ -316,7 +316,7 @@ test libcatalog_csppmxl_catalog_existe { trouve 160 etoiles } -constraints {
 
 } -body {
    set catchError [ catch {
-      set result [csppmxl [file join $::audace(rep_userCatalog) PPMXL dat] 10 5 5]
+      set result [csppmxl [file join $::audace(rep_userCatalogPpmxl)] 10 5 5]
    } msg]
 
    if { $catchError==0 } {

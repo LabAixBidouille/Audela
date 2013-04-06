@@ -30,6 +30,15 @@ namespace eval ::cwdWindow {
          set cwdWindow(travail_images)         $::conf(rep_travail,travail_images)
          set cwdWindow(dir_scripts)            [file nativename $audace(rep_scripts)]
          set cwdWindow(dir_catalogues)         [file nativename $audace(rep_userCatalog)]
+         set cwdWindow(dir_cata_usnoa2)        [file nativename $audace(rep_userCatalogUsnoa2)]
+         set cwdWindow(dir_cata_tycho2)        [file nativename $audace(rep_userCatalogTycho2)]
+         set cwdWindow(dir_cata_ucac2)         [file nativename $audace(rep_userCatalogUcac2)]
+         set cwdWindow(dir_cata_ucac3)         [file nativename $audace(rep_userCatalogUcac3)]
+         set cwdWindow(dir_cata_ucac4)         [file nativename $audace(rep_userCatalogUcac4)]
+         set cwdWindow(dir_cata_ppmx)          [file nativename $audace(rep_userCatalogPpmx)]
+         set cwdWindow(dir_cata_ppmxl)         [file nativename $audace(rep_userCatalogPpmxl)]
+         set cwdWindow(dir_cata_nomad1)        [file nativename $audace(rep_userCatalogNomad1)]
+         set cwdWindow(dir_cata_2mass)         [file nativename $audace(rep_userCatalog2mass)]
          set cwdWindow(dir_archives)           [file nativename $audace(rep_archives)]
          set cwdWindow(long)                   [string length $cwdWindow(dir_images)]
          if {[string length $cwdWindow(dir_images)] > $cwdWindow(long)} {
@@ -43,6 +52,33 @@ namespace eval ::cwdWindow {
          }
          if {[string length $cwdWindow(dir_catalogues)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_catalogues)]
+         }
+         if {[string length $cwdWindow(dir_cata_usnoa2)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_usnoa2)]
+         }
+         if {[string length $cwdWindow(dir_cata_tycho2)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_tycho2)]
+         }
+         if {[string length $cwdWindow(dir_cata_ucac2)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_ucac2)]
+         }
+         if {[string length $cwdWindow(dir_cata_ucac3)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_ucac3)]
+         }
+         if {[string length $cwdWindow(dir_cata_ucac4)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_ucac4)]
+         }
+         if {[string length $cwdWindow(dir_cata_ppmx)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_ppmx)]
+         }
+         if {[string length $cwdWindow(dir_cata_ppmxl)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_ppmxl)]
+         }
+         if {[string length $cwdWindow(dir_cata_nomad1)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_nomad1)]
+         }
+         if {[string length $cwdWindow(dir_cata_2mass)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_2mass)]
          }
          if {[string length $cwdWindow(dir_archives)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_archives)]
@@ -96,7 +132,7 @@ namespace eval ::cwdWindow {
       #--- Frame pour les repertoires
       frame $This.usr -borderwidth 0 -relief raised
 
-         #--- Frame du répertoire images
+         #--- Frame du repertoire images
          frame $This.usr.1 -borderwidth 1 -relief raised
             frame $This.usr.1.a -borderwidth 0 -relief raised
                label $This.usr.1.a.lab1 -text "$caption(cwdWindow,repertoire_images)"
@@ -152,7 +188,7 @@ namespace eval ::cwdWindow {
             pack $This.usr.1.subdir -side top -fill x -padx 12
          pack $This.usr.1 -side top -fill both -expand 1
 
-         #--- Frame du répertoire de travail
+         #--- Frame du repertoire de travail
          frame $This.usr.1a -borderwidth 1 -relief raised
             frame $This.usr.1a.a -borderwidth 0 -relief raised
                label $This.usr.1a.a.lab1a -text "$caption(cwdWindow,repertoire_travail)"
@@ -173,7 +209,7 @@ namespace eval ::cwdWindow {
          #--- Configuration des widgets du repertoire de travail
          ::cwdWindow::changeState
 
-         #--- Frame du répertoire des scripts
+         #--- Frame du repertoire des scripts
          frame $This.usr.2 -borderwidth 1 -relief raised
             label $This.usr.2.lab2 -text "$caption(cwdWindow,repertoire_scripts)"
             pack $This.usr.2.lab2 -side left -padx 5 -pady 5
@@ -184,18 +220,111 @@ namespace eval ::cwdWindow {
             pack $This.usr.2.ent2 -side right -padx 5 -pady 5
          pack $This.usr.2 -side top -fill both -expand 1
 
-         #--- Frame du répertoire des catalogues
+         #--- Frame du repertoire des catalogues
          frame $This.usr.3 -borderwidth 1 -relief raised
-            label $This.usr.3.lab3 -text "$caption(cwdWindow,repertoire_catalogues)"
-            pack $This.usr.3.lab3 -side left -padx 5 -pady 5
-            button $This.usr.3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-               -command ::cwdWindow::changeRepUserCatalog
-            pack $This.usr.3.explore -side right -padx 5 -pady 5 -ipady 5
-            entry $This.usr.3.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
-            pack $This.usr.3.ent3 -side right -padx 5 -pady 5
+            #--- Frame du repertoire des catalogues
+            frame $This.usr.3.catalogues -borderwidth 0 -relief raised
+               label $This.usr.3.catalogues.lab3 -text "$caption(cwdWindow,repertoire_catalogues)"
+               pack $This.usr.3.catalogues.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.catalogues.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog catalogues"
+               pack $This.usr.3.catalogues.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.catalogues.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
+               pack $This.usr.3.catalogues.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.catalogues -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue USNO-A2
+            frame $This.usr.3.cata_usnoa2 -borderwidth 0 -relief raised
+               label $This.usr.3.cata_usnoa2.lab3 -text "$caption(cwdWindow,repertoire_cata_usnoa2)"
+               pack $This.usr.3.cata_usnoa2.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_usnoa2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_usnoa2"
+               pack $This.usr.3.cata_usnoa2.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_usnoa2.ent3 -textvariable cwdWindow(dir_cata_usnoa2) -width $cwdWindow(long)
+               pack $This.usr.3.cata_usnoa2.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_usnoa2 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue TYCHO-2
+            frame $This.usr.3.cata_tycho2 -borderwidth 0 -relief raised
+               label $This.usr.3.cata_tycho2.lab3 -text "$caption(cwdWindow,repertoire_cata_tycho2)"
+               pack $This.usr.3.cata_tycho2.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_tycho2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_tycho2"
+               pack $This.usr.3.cata_tycho2.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_tycho2.ent3 -textvariable cwdWindow(dir_cata_tycho2) -width $cwdWindow(long)
+               pack $This.usr.3.cata_tycho2.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_tycho2 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue UCAC2
+            frame $This.usr.3.cata_ucac2 -borderwidth 0 -relief raised
+               label $This.usr.3.cata_ucac2.lab3 -text "$caption(cwdWindow,repertoire_cata_ucac2)"
+               pack $This.usr.3.cata_ucac2.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_ucac2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_ucac2"
+               pack $This.usr.3.cata_ucac2.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_ucac2.ent3 -textvariable cwdWindow(dir_cata_ucac2) -width $cwdWindow(long)
+               pack $This.usr.3.cata_ucac2.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_ucac2 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue UCAC3
+            frame $This.usr.3.cata_ucac3 -borderwidth 0 -relief raised
+               label $This.usr.3.cata_ucac3.lab3 -text "$caption(cwdWindow,repertoire_cata_ucac3)"
+               pack $This.usr.3.cata_ucac3.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_ucac3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_ucac3"
+               pack $This.usr.3.cata_ucac3.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_ucac3.ent3 -textvariable cwdWindow(dir_cata_ucac3) -width $cwdWindow(long)
+               pack $This.usr.3.cata_ucac3.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_ucac3 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue UCAC4
+            frame $This.usr.3.cata_ucac4 -borderwidth 0 -relief raised
+               label $This.usr.3.cata_ucac4.lab3 -text "$caption(cwdWindow,repertoire_cata_ucac4)"
+               pack $This.usr.3.cata_ucac4.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_ucac4.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_ucac4"
+               pack $This.usr.3.cata_ucac4.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_ucac4.ent3 -textvariable cwdWindow(dir_cata_ucac4) -width $cwdWindow(long)
+               pack $This.usr.3.cata_ucac4.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_ucac4 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue PPMX
+            frame $This.usr.3.cata_ppmx -borderwidth 0 -relief raised
+               label $This.usr.3.cata_ppmx.lab3 -text "$caption(cwdWindow,repertoire_cata_ppmx)"
+               pack $This.usr.3.cata_ppmx.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_ppmx.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_ppmx"
+               pack $This.usr.3.cata_ppmx.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_ppmx.ent3 -textvariable cwdWindow(dir_cata_ppmx) -width $cwdWindow(long)
+               pack $This.usr.3.cata_ppmx.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_ppmx -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue PPMXL
+            frame $This.usr.3.cata_ppmxl -borderwidth 0 -relief raised
+               label $This.usr.3.cata_ppmxl.lab3 -text "$caption(cwdWindow,repertoire_cata_ppmxl)"
+               pack $This.usr.3.cata_ppmxl.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_ppmxl.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_ppmxl"
+               pack $This.usr.3.cata_ppmxl.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_ppmxl.ent3 -textvariable cwdWindow(dir_cata_ppmxl) -width $cwdWindow(long)
+               pack $This.usr.3.cata_ppmxl.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_ppmxl -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue NOMAD1
+            frame $This.usr.3.cata_nomad1 -borderwidth 0 -relief raised
+               label $This.usr.3.cata_nomad1.lab3 -text "$caption(cwdWindow,repertoire_cata_nomad1)"
+               pack $This.usr.3.cata_nomad1.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_nomad1.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_nomad1"
+               pack $This.usr.3.cata_nomad1.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_nomad1.ent3 -textvariable cwdWindow(dir_cata_nomad1) -width $cwdWindow(long)
+               pack $This.usr.3.cata_nomad1.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_nomad1 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue 2MASS
+            frame $This.usr.3.cata_2mass -borderwidth 0 -relief raised
+               label $This.usr.3.cata_2mass.lab3 -text "$caption(cwdWindow,repertoire_cata_2mass)"
+               pack $This.usr.3.cata_2mass.lab3 -side left -padx 5 -pady 5
+               button $This.usr.3.cata_2mass.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_2mass"
+               pack $This.usr.3.cata_2mass.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_2mass.ent3 -textvariable cwdWindow(dir_cata_2mass) -width $cwdWindow(long)
+               pack $This.usr.3.cata_2mass.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_2mass -side top -fill both -expand 1
          pack $This.usr.3 -side top -fill both -expand 1
 
-         #--- Frame du répertoire des archives
+         #--- Frame du repertoire des archives
          frame $This.usr.4 -borderwidth 1 -relief raised
             label $This.usr.4.lab4 -text "$caption(cwdWindow,repertoire_archives)"
             pack $This.usr.4.lab4 -side left -padx 5 -pady 5
@@ -337,7 +466,7 @@ namespace eval ::cwdWindow {
    # ::cwdWindow::changeRepUserCatalog
    # Ouvre le navigateur pour choisir le repertoire des catalogues
    #
-   proc changeRepUserCatalog { } {
+   proc changeRepUserCatalog { nomCata } {
       variable This
       global audace caption cwdWindow
 
@@ -347,11 +476,11 @@ namespace eval ::cwdWindow {
       set cwdWindow(rep_font_italic) [ lreplace $cwdWindow(rep_font) 2 2 italic ]
       #---
       set cwdWindow(rep_userCatalog) "1"
-      $This.usr.3.ent3 configure -font $cwdWindow(rep_font_italic) -relief solid
-      set initialdir [file normalize $cwdWindow(dir_catalogues)]
-      set title $caption(cwdWindow,repertoire_catalogues)
-      set cwdWindow(dir_catalogues) [file nativename [ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
-      $This.usr.3.ent3 configure -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long) \
+      $This.usr.3.$nomCata.ent3 configure -font $cwdWindow(rep_font_italic) -relief solid
+      set initialdir [file normalize $cwdWindow(dir_$nomCata)]
+      set title $caption(cwdWindow,repertoire_$nomCata)
+      set cwdWindow(dir_$nomCata) [file nativename [ ::cwdWindow::tkplus_chooseDir $initialdir $title $This ]]
+      $This.usr.3.$nomCata.ent3 configure -textvariable cwdWindow(dir_$nomCata) -width $cwdWindow(long) \
          -font $cwdWindow(rep_font) -relief sunken
       focus $This.usr.3
    }
@@ -456,11 +585,20 @@ namespace eval ::cwdWindow {
       global audace caption conf cwdWindow
 
       #--- Substituer les \ par des /
-      set normalized_dir_images     [file normalize $cwdWindow(dir_images)]
-      set normalized_dir_travail    [file normalize $cwdWindow(dir_travail)]
-      set normalized_dir_scripts    [file normalize $cwdWindow(dir_scripts)]
-      set normalized_dir_catalogues [file normalize $cwdWindow(dir_catalogues)]
-      set normalized_dir_archives   [file normalize $cwdWindow(dir_archives)]
+      set normalized_dir_images      [file normalize $cwdWindow(dir_images)]
+      set normalized_dir_travail     [file normalize $cwdWindow(dir_travail)]
+      set normalized_dir_scripts     [file normalize $cwdWindow(dir_scripts)]
+      set normalized_dir_catalogues  [file normalize $cwdWindow(dir_catalogues)]
+      set normalized_dir_cata_usnoa2 [file normalize $cwdWindow(dir_cata_usnoa2)]
+      set normalized_dir_cata_tycho2 [file normalize $cwdWindow(dir_cata_tycho2)]
+      set normalized_dir_cata_ucac2  [file normalize $cwdWindow(dir_cata_ucac2)]
+      set normalized_dir_cata_ucac3  [file normalize $cwdWindow(dir_cata_ucac3)]
+      set normalized_dir_cata_ucac4  [file normalize $cwdWindow(dir_cata_ucac4)]
+      set normalized_dir_cata_ppmx   [file normalize $cwdWindow(dir_cata_ppmx)]
+      set normalized_dir_cata_ppmxl  [file normalize $cwdWindow(dir_cata_ppmxl)]
+      set normalized_dir_cata_nomad1 [file normalize $cwdWindow(dir_cata_nomad1)]
+      set normalized_dir_cata_2mass  [file normalize $cwdWindow(dir_cata_2mass)]
+      set normalized_dir_archives    [file normalize $cwdWindow(dir_archives)]
 
       set conf(rep_travail,travail_images) $cwdWindow(travail_images)
 
@@ -543,6 +681,96 @@ namespace eval ::cwdWindow {
          set audace(rep_userCatalog) $normalized_dir_catalogues
       } else {
          set m "$cwdWindow(dir_catalogues)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_usnoa2] && [file isdirectory $normalized_dir_cata_usnoa2]} {
+         set conf(rep_userCatalogUsnoa2)   $normalized_dir_cata_usnoa2
+         set audace(rep_userCatalogUsnoa2) $normalized_dir_cata_usnoa2
+      } else {
+         set m "$cwdWindow(dir_cata_usnoa2)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_tycho2] && [file isdirectory $normalized_dir_cata_tycho2]} {
+         set conf(rep_userCatalogTycho2)   $normalized_dir_cata_tycho2
+         set audace(rep_userCatalogTycho2) $normalized_dir_cata_tycho2
+      } else {
+         set m "$cwdWindow(dir_cata_tycho2)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_ucac2] && [file isdirectory $normalized_dir_cata_ucac2]} {
+         set conf(rep_userCatalogUcac2)   $normalized_dir_cata_ucac2
+         set audace(rep_userCatalogUcac2) $normalized_dir_cata_ucac2
+      } else {
+         set m "$cwdWindow(dir_cata_ucac2)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_ucac3] && [file isdirectory $normalized_dir_cata_ucac3]} {
+         set conf(rep_userCatalogUcac3)   $normalized_dir_cata_ucac3
+         set audace(rep_userCatalogUcac3) $normalized_dir_cata_ucac3
+      } else {
+         set m "$cwdWindow(dir_cata_ucac3)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_ucac4] && [file isdirectory $normalized_dir_cata_ucac4]} {
+         set conf(rep_userCatalogUcac4)   $normalized_dir_cata_ucac4
+         set audace(rep_userCatalogUcac4) $normalized_dir_cata_ucac4
+      } else {
+         set m "$cwdWindow(dir_cata_ucac4)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_ppmx] && [file isdirectory $normalized_dir_cata_ppmx]} {
+         set conf(rep_userCatalogPpmx)   $normalized_dir_cata_ppmx
+         set audace(rep_userCatalogPpmx) $normalized_dir_cata_ppmx
+      } else {
+         set m "$cwdWindow(dir_cata_ppmx)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_ppmxl] && [file isdirectory $normalized_dir_cata_ppmxl]} {
+         set conf(rep_userCatalogPpmxl)   $normalized_dir_cata_ppmxl
+         set audace(rep_userCatalogPpmxl) $normalized_dir_cata_ppmxl
+      } else {
+         set m "$cwdWindow(dir_cata_ppmxl)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_nomad1] && [file isdirectory $normalized_dir_cata_nomad1]} {
+         set conf(rep_userCatalogNomad1)   $normalized_dir_cata_nomad1
+         set audace(rep_userCatalogNomad1) $normalized_dir_cata_nomad1
+      } else {
+         set m "$cwdWindow(dir_cata_nomad1)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_2mass] && [file isdirectory $normalized_dir_cata_2mass]} {
+         set conf(rep_userCatalog2mass)   $normalized_dir_cata_2mass
+         set audace(rep_userCatalog2mass) $normalized_dir_cata_2mass
+      } else {
+         set m "$cwdWindow(dir_cata_2mass)"
          append m "$caption(cwdWindow,pas_repertoire)"
          tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
          return -1
