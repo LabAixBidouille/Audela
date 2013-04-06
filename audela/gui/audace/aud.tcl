@@ -321,6 +321,132 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
+      #--- Creation du repertoire USNO-A2
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogUsnoa2) ] } {
+            set conf(rep_userCatalogUsnoa2) [ file join $audace(rep_home) catalog USNOA2 ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogUsnoa2) ] } {
+            file mkdir $conf(rep_userCatalogUsnoa2)
+         }
+         set audace(rep_userCatalogUsnoa2) $conf(rep_userCatalogUsnoa2)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire TYCHO-2
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogTycho2) ] } {
+            set conf(rep_userCatalogTycho2) [ file join $audace(rep_home) catalog TYCHO-2 ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogTycho2) ] } {
+            file mkdir $conf(rep_userCatalogTycho2)
+         }
+         set audace(rep_userCatalogTycho2) $conf(rep_userCatalogTycho2)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire UCAC2
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogUcac2) ] } {
+            set conf(rep_userCatalogUcac2) [ file join $audace(rep_home) catalog UCAC2 ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogUcac2) ] } {
+            file mkdir $conf(rep_userCatalogUcac2)
+         }
+         set audace(rep_userCatalogUcac2) $conf(rep_userCatalogUcac2)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire UCAC3
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogUcac3) ] } {
+            set conf(rep_userCatalogUcac3) [ file join $audace(rep_home) catalog UCAC3 ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogUcac3) ] } {
+            file mkdir $conf(rep_userCatalogUcac3)
+         }
+         set audace(rep_userCatalogUcac3) $conf(rep_userCatalogUcac3)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire UCAC4
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogUcac4) ] } {
+            set conf(rep_userCatalogUcac4) [ file join $audace(rep_home) catalog UCAC4 ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogUcac4) ] } {
+            file mkdir $conf(rep_userCatalogUcac4)
+         }
+         set audace(rep_userCatalogUcac4) $conf(rep_userCatalogUcac4)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire PPMX
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogPpmx) ] } {
+            set conf(rep_userCatalogPpmx) [ file join $audace(rep_home) catalog PPMX data ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogPpmx) ] } {
+            file mkdir $conf(rep_userCatalogPpmx)
+         }
+         set audace(rep_userCatalogPpmx) $conf(rep_userCatalogPpmx)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire PPMXL
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogPpmxl) ] } {
+            set conf(rep_userCatalogPpmxl) [ file join $audace(rep_home) catalog PPMXL dat ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogPpmxl) ] } {
+            file mkdir $conf(rep_userCatalogPpmxl)
+         }
+         set audace(rep_userCatalogPpmxl) $conf(rep_userCatalogPpmxl)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire NOMAD1
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogNomad1) ] } {
+            set conf(rep_userCatalogNomad1) [ file join $audace(rep_home) catalog NOMAD1 ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogNomad1) ] } {
+            file mkdir $conf(rep_userCatalogNomad1)
+         }
+         set audace(rep_userCatalogNomad1) $conf(rep_userCatalogNomad1)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
+      #--- Creation du repertoire 2MASS
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalog2mass) ] } {
+            set conf(rep_userCatalog2mass) [ file join $audace(rep_home) catalog 2MASS 2MASS ]
+         }
+         if { ! [ file exists $conf(rep_userCatalog2mass) ] } {
+            file mkdir $conf(rep_userCatalog2mass)
+         }
+         set audace(rep_userCatalog2mass) $conf(rep_userCatalog2mass)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
       #--- Creation du repertoire des palettes
       set catchError [ catch {
          if { ! [ info exists conf(rep_userPalette) ] } {
