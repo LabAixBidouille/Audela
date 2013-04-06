@@ -16,9 +16,6 @@ namespace eval ::vo_tools {
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] vo_tools_go.cap ]
 
-   #--- Definie la variable de listerner pour le statut de connexion
-   set ::vo_tools::interop($::audace(visuNo),interopListener) ""
-
 }
 
 #------------------------------------------------------------
@@ -84,6 +81,9 @@ proc ::vo_tools::getPluginProperty { propertyName } {
 #    initialise le plugin
 #------------------------------------------------------------
 proc ::vo_tools::initPlugin { tkbase } {
+
+   #--- Definie la variable de listerner pour le statut de connexion
+   set ::vo_tools::interop($::audace(visuNo),interopListener) ""
 
 }
 
