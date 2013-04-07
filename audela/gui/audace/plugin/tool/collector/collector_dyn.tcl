@@ -62,7 +62,7 @@
 
       set error 10
       set private(ncfz) [getNewCriticalFocusZone $private(fond) $private(aptdia) $private(seeing) $error]
-    }
+   }
 
    #------------------------------------------------------------
    #  computeCdeltFov
