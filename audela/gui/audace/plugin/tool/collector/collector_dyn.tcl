@@ -61,9 +61,8 @@
          private(fond) private(resolution)
 
       set error 10
-      set ncfz [getNewCriticalFocusZone $private(fond) $private(aptdia) $private(seeing) $error]
-      set private(ncfz) [format %0.1f $ncfz]
-   }
+      set private(ncfz) [getNewCriticalFocusZone $private(fond) $private(aptdia) $private(seeing) $error]
+    }
 
    #------------------------------------------------------------
    #  computeCdeltFov
