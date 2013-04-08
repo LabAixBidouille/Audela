@@ -138,8 +138,8 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
    if { ! [ info exists conf(tlscp,notebook)] }               { set conf(tlscp,notebook)               "mount" }
 
    if { ! [ info exists conf(tlscp,catalogueName)] }          { set conf(tlscp,catalogueName)          "MicroCat" }
-   if { ! [ info exists conf(tlscp,cataloguePath,MicroCat)] } { set conf(tlscp,cataloguePath,MicroCat) ""  }
-   if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO)     ""  }
+   if { ! [ info exists conf(tlscp,cataloguePath,MicroCat)] } { set conf(tlscp,cataloguePath,MicroCat) "$audace(rep_userCatalogMicrocat)" }
+   if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO)     "$audace(rep_userCatalogUsnoa2)" }
 
    #--- Initialisation des variables
    set private($visuNo,This)              "$tkBase.tlscp"
