@@ -353,9 +353,13 @@ namespace eval bdi_tools_psf {
       set ra      [::bdi_tools_psf::get_val othf "ra"]
       set dec     [::bdi_tools_psf::get_val othf "dec"]
       set res_ra  [::bdi_tools_psf::get_val othf "res_ra"]
-      set res_ra  [expr $res_ra * cos([deg2rad $dec]) ]
       set res_dec [::bdi_tools_psf::get_val othf "res_dec"]
-      set err_pos [expr sqrt( ( pow($res_ra,2) + pow($res_dec,2) ) / 2.0 ) ]
+      if { $res_ra == "" || $res_dec == "" } {
+         set err_pos "3"
+      } else {
+         set res_ra  [expr $res_ra * cos([deg2rad $dec]) ]
+         set err_pos [expr sqrt( ( pow($res_ra,2) + pow($res_dec,2) ) / 2.0 ) ]
+      }
       set mag     [::bdi_tools_psf::get_val othf "mag"]
       set err_mag [::bdi_tools_psf::get_val othf "err_mag"]
 
