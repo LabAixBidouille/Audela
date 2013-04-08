@@ -665,7 +665,8 @@ namespace eval gui_cata {
       set filename    [::bddimages_liste::lget $::tools_cata::current_image filename]
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
 
-      buf$::audace(bufNo) load $file
+      #buf$::audace(bufNo) load $file
+      loadima $file
       if {$::gui_cata::use_uncosmic} {
          ::tools_cdl::myuncosmic $::audace(bufNo)
       }

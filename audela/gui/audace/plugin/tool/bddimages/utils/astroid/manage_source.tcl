@@ -305,8 +305,9 @@ namespace eval ::manage_source {
             }
 
             if {$mycata=="ASTROID"} {
-               set ra  [format "%.6f" [lindex [lindex $cata 2] 16] ]
-               set dec [format "%.6f" [lindex [lindex $cata 2] 17] ]
+               set othf [lindex $cata 2]
+               set ra  [format "%.6f" [::bdi_tools_psf::get_val othf "ra"] ]
+               set dec [format "%.6f" [::bdi_tools_psf::get_val othf "dec"] ]
                if {$dec > 0} {
                   set dec [regsub {\+} $dec ""]
                   set dec "+$dec"

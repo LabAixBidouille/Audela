@@ -49,6 +49,151 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   proc ::bdi_gui_gestion_source::init { work_list } {
+
+      ::psf_tools::inittoconf
+      ::bdi_gui_psf::inittoconf
+
+      # RAZ des valeurs de psf de la gui
+      if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
+      foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
+         set ::gui_cata::current_psf($key) ""
+      }
+      set iddl "" 
+      set cpt 0
+      foreach work $work_list {
+         set nb [llength $work]
+         if {$nb == 0} {
+            # @todo gerer le cas nb = 0
+            gren_erreur "Erreur : Cas non pris en charge dans ::bdi_gui_gestion_source::init : nb = 0\n"
+            return -code 1 "Rien a Faire"
+         }
+         if {$nb >= 1} {
+            set idd [lindex $work 0]
+            incr cpt
+            set ::bdi_gui_gestion_source::idd2gui_list($idd) $cpt
+            set ::bdi_gui_gestion_source::current2idd_list($cpt) $idd
+         }
+      }
+      
+      set ::bdi_gui_gestion_source::nb_img_list $cpt
+      set ::bdi_gui_gestion_source::work_nb_list [llength $work_list]
+      
+      set ::bdi_gui_gestion_source::work_id 0
+      set ::bdi_gui_gestion_source::work_list $work_list
+      set ::tools_cata::id_current_image -1
+      
+   }
+
+
+
+
+
+
+
+
+
+
+
+   proc ::bdi_gui_gestion_source::work_charge {  } {
+
+
+      set work [lindex $::bdi_gui_gestion_source::work_list $::bdi_gui_gestion_source::work_id]
+      set nb [llength $work]
+      # test si il y a quelque chose a traiter
+      if {$nb == 0} {
+         # @todo gerer le cas nb = 0
+         gren_erreur "Erreur : Cas non pris en charge dans ::bdi_gui_gestion_source::work_charge : nb = 0\n"
+         return -code 1 "Rien a Faire"
+      }
+      # chargement d une date
+      if {$nb >= 1} {
+         set idd [lindex $work 0]
+         if {$::tools_cata::id_current_image == $idd} {
+            # L image est deja affichée
+         } else {
+            # L image affichée n est pas la bonne
+            set ::tools_cata::id_current_image $idd
+            set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
+            set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+            set ::bdi_gui_gestion_source::dateimg [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+            set ::bdi_gui_gestion_source::id_img $::bdi_gui_gestion_source::idd2gui_list($idd)       
+            set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+            ::gui_cata::affiche_current_image
+         }
+      } 
+      # chargement d une source ?
+      if {$nb == 2} {
+         set ids [lindex $work 1]
+      } else {
+         set ids -1
+      }
+      
+      # des/activation des boutons prev next
+      if {$::bdi_gui_gestion_source::work_id == 0} {
+         $::bdi_gui_gestion_source::fen.appli.actions2.prev configure -state disabled
+      
+      }
+      if {$::bdi_gui_gestion_source::work_id == [expr $::bdi_gui_gestion_source::work_nb_list-1]} {
+         $::bdi_gui_gestion_source::fen.appli.actions2.next configure -state disabled
+      }
+      if {$::bdi_gui_gestion_source::work_id > 0} {
+         $::bdi_gui_gestion_source::fen.appli.actions2.prev configure -state normal
+      }
+      if {$::bdi_gui_gestion_source::work_id < [expr $::bdi_gui_gestion_source::work_nb_list-1]} {
+         $::bdi_gui_gestion_source::fen.appli.actions2.next configure -state normal
+      }
+
+
+      if {$ids > -1} {
+         # centre l objet demandé dans la visu
+         set s [lindex [lindex $::tools_cata::current_listsources 1] [expr $ids - 1] ]
+         set r [::bdi_gui_gestion_source::grab_sources_getsource $ids $s ]
+         set err   [lindex $r 0]
+         set aff   [lindex $r 1]
+         set id    [lindex $r 2]
+         set xpass [lindex $r 3]
+         set ypass [lindex $r 4]
+         ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
+         # charge par un grab l objet dans la visu
+         ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids
+      }
+      
+      gren_info "work_id = $::bdi_gui_gestion_source::work_id\n"
+      gren_info "work_nb_list = $::bdi_gui_gestion_source::work_nb_list\n"
+
+   }
+
+
+
+
+
+
+
+
+
+   proc ::bdi_gui_gestion_source::prev { } {
+
+      if {$::bdi_gui_gestion_source::work_id > 0 } {
+         incr ::bdi_gui_gestion_source::work_id -1
+         ::bdi_gui_gestion_source::work_charge
+      } else {
+         gren_erreur "au bout\n"
+      }
+   }
+
+   proc ::bdi_gui_gestion_source::next { } {
+      if {$::bdi_gui_gestion_source::work_id < [expr $::bdi_gui_gestion_source::work_nb_list-1]} {
+         incr ::bdi_gui_gestion_source::work_id
+         ::bdi_gui_gestion_source::work_charge
+      } else {
+         gren_erreur "au bout\n"
+      }
+   }
+
+
+
+
 
 
 
@@ -108,6 +253,13 @@ namespace eval bdi_gui_gestion_source {
       
       
    }
+
+
+
+
+
+
+
 
 
 
@@ -178,6 +330,13 @@ namespace eval bdi_gui_gestion_source {
       }
 
    }
+
+
+
+
+
+
+
 
 
 
@@ -260,6 +419,7 @@ namespace eval bdi_gui_gestion_source {
             if {$namable==""} {
                set name ""
             } else {
+               gren_erreur "name = $namable\n"
                set name [::manage_source::naming $s $namable]
             } 
 
@@ -324,7 +484,54 @@ namespace eval bdi_gui_gestion_source {
  
  
  
+
+
+
+
+
+
+
+
+   proc ::bdi_gui_gestion_source::select_source { ids } {
+      
+      set r [::bdi_gui_gestion_source::grab_sources_getsource $ids [lindex [lindex $::tools_cata::current_listsources 1] [expr $ids - 1] ] ]
+      set err   [lindex $r 0]
+      set aff   [lindex $r 1]
+      set id    [lindex $r 2]
+      set xpass [lindex $r 3]
+      set ypass [lindex $r 4]
+      set s     [lindex $r 5]
  
+      if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
+
+      if {$err!=0} {
+         set ::gui_cata::psf_name_source "Erreur"
+         if { $aff=="Unknown" || $aff=="Ambigue" } {
+            set ::gui_cata::psf_name_source $aff
+         }
+         if { $aff=="Ambigue" } {
+            set ::gui_cata::psf_name_source $aff
+         }
+      } else {
+       
+         set ::gui_cata::psf_best_sol [list $xpass $ypass]
+       
+         set d [::manage_source::namable $s]
+         if {$d==""} {
+            gren_info "s=$s\n"
+            set ::gui_cata::psf_name_source "Unnamable"
+            return
+         }
+         set ::gui_cata::psf_source $s
+         set ::gui_cata::psf_name_source [::manage_source::naming $s $d]
+         set ::gui_cata::psf_name_cata $d
+         set ::gui_cata::psf_id_source $id
+      }
+
+   }
+
+
+
 
 # Anciennement ::gui_cata::psf_grab
 # Grab des sources dans l image
@@ -347,7 +554,6 @@ namespace eval bdi_gui_gestion_source {
       }
 
       #gren_info "r=$r\n"
-
       set err   [lindex $r 0]
       set aff   [lindex $r 1]
       set id    [lindex $r 2]
@@ -489,6 +695,13 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::butcata_action { i } {
 
       if { $::bdi_gui_gestion_source::butcata($i,state) == "Ok" } {
@@ -510,16 +723,9 @@ namespace eval bdi_gui_gestion_source {
 
 
 
-   proc ::bdi_gui_gestion_source::init { } {
 
-      ::bdi_gui_psf::inittoconf
 
-      if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
-      foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
-         set ::gui_cata::current_psf($key) "-"
-      }
 
-   }
 
 
 
@@ -613,6 +819,18 @@ namespace eval bdi_gui_gestion_source {
       return $p
    }
 
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::console { tbl } {
 
       set l ""
@@ -684,6 +902,13 @@ namespace eval bdi_gui_gestion_source {
   
   
 
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::aff_catas { s } {
 
       set line "AFF_CATAS ="
@@ -695,24 +920,28 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::mode_manuel_save { } {
 
        global bddconf
        
        gren_info "Maj id = $::tools_cata::id_current_image \n"
 
-       set current_image [ lindex  $::tools_cata::img_list $::tools_cata::id_current_image  ]
-       # @todo sauver ::tools_cata::current_listsources
-       gren_info "img_list = [llength $::tools_cata::img_list] \n"
-       gren_info "current_image = $current_image \n"
-
        # Tabkey
-       set tabkey [::bddimages_liste::lget $current_image "tabkey"]
-       # Liste des sources
-       incr id_current_image
+       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
        # Noms du fichier cata
-       set imgfilename    [::bddimages_liste::lget $current_image filename]
-       set imgdirfilename [::bddimages_liste::lget $current_image dirfilename]
+       set imgfilename    [::bddimages_liste::lget $::tools_cata::current_image filename]
+       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
        set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
        set cataxml "${f}_cata.xml"
 
@@ -794,9 +1023,35 @@ namespace eval bdi_gui_gestion_source {
       
       ::bdi_gui_gestion_source::gestion_mode_manuel_grab
 
+      # effectue tri croissant sur la colonne x
+      set sens [tablelist::sortByColumn $tbl 3]
+      if {$sens == "decreasing"} {
+         tablelist::sortByColumn $tbl 3
+      }
+
    }
 
 
+
+
+
+
+
+   proc ::bdi_gui_gestion_source::popup_psf_on_list { tbl } {
+
+      set l ""
+      foreach select [$tbl curselection] {
+         set ids  [lindex [$tbl get $select] 2]   
+         lappend l $ids
+      }
+      set l [lsort -increasing -integer -unique $l]
+      gren_info "l=$l\n"
+      
+      foreach ids $l {
+         ::bdi_gui_gestion_source::select_source $ids
+         ::bdi_gui_gestion_source::psf
+      }
+   }
 
 
 
@@ -821,6 +1076,13 @@ namespace eval bdi_gui_gestion_source {
    }
    
    
+
+
+
+
+
+
+
    
    
    
@@ -866,8 +1128,11 @@ namespace eval bdi_gui_gestion_source {
 
       ::bdi_gui_gestion_source::affich_cata
 
-      
-
+      # effectue tri croissant sur la colonne x
+      set sens [tablelist::sortByColumn $tbl 3]
+      if {$sens == "decreasing"} {
+         tablelist::sortByColumn $tbl 3
+      }
    }
 
 
@@ -897,6 +1162,13 @@ namespace eval bdi_gui_gestion_source {
       }
    }
 
+
+
+
+
+
+
+
    proc ::bdi_gui_gestion_source::cmdButton1Click { tbl  args } {
 
       cleanmark
@@ -918,6 +1190,12 @@ namespace eval bdi_gui_gestion_source {
 
  
    }
+
+
+
+
+
+
 
    proc ::bdi_gui_gestion_source::create_Tbl_sources { frmtable name_of_columns} {
 
@@ -945,17 +1223,12 @@ namespace eval bdi_gui_gestion_source {
       #--- Menu pop-up associe a la table
       menu $popupTbl -title "Selection"
 
-        # Edite la liste selectionnee
+        # popups
         $popupTbl add command -label "Console" -command "::bdi_gui_gestion_source::console $tbl"
-
-        # Edite la liste selectionnee
         $popupTbl add command -label "Select" -command "::bdi_gui_gestion_source::select $tbl"
-
-        # Edite la liste selectionnee
         $popupTbl add command -label "Nouvelle source" -command "::bdi_gui_gestion_source::newsource $tbl"
-
-        # Edite la liste selectionnee
         $popupTbl add command -label "Supprimer" -command "::bdi_gui_gestion_source::deletesource $tbl"
+        $popupTbl add command -label "PSF sur la liste" -command "::bdi_gui_gestion_source::popup_psf_on_list $tbl"
 
 
       #--- Gestion des evenements
@@ -969,16 +1242,23 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+
+
+
+
+
+
+
 #------------------------------------------------------------
 ## Analyse de photocentre d'une source
 # Permet de recombiner des catalogues pour une source,
 # de mesurer la psf d'une source, de rappeler les 
 # conesearch dans une zone de l'image
+# @param srclist list des indices des sources dont on veut se focaliser.
 #  \sa bdi_gui_gestion_source::gestion_mode_manuel_init
-   proc ::bdi_gui_gestion_source::run { { ids "" } } {
+   proc ::bdi_gui_gestion_source::run { { worklist "" } } {
 
-      ::psf_tools::inittoconf
-      ::bdi_gui_gestion_source::init
+      ::bdi_gui_gestion_source::init $worklist
       
 
       set spinlist ""
@@ -1033,7 +1313,7 @@ namespace eval bdi_gui_gestion_source {
              pack  $info_img.id -side left -padx 2 -pady 0
              label $info_img.lab -text "/"
              pack  $info_img.lab -side left -padx 2 -pady 0
-             label $info_img.lab2 -text $::tools_cata::nb_img_list
+             label $info_img.lab2 -text $::bdi_gui_gestion_source::nb_img_list
              pack  $info_img.lab2 -side left -padx 2 -pady 0
 
          set info_date [frame $frm.info_date -borderwidth 0 -cursor arrow ]
@@ -1065,11 +1345,11 @@ namespace eval bdi_gui_gestion_source {
          pack $actions -in $frm -anchor c -side top -expand 1 
 
                  button $actions.prev -state disabled -text "Prev" -relief "raised" \
-                  -command "::bdi_gui_gestion_source::prev_img"
+                  -command "::bdi_gui_gestion_source::prev"
                  pack   $actions.prev -side left -padx 0
 
                  button $actions.next -state active -text "Next" -relief "raised" \
-                  -command "::bdi_gui_gestion_source::next_img"
+                  -command "::bdi_gui_gestion_source::next"
                  pack   $actions.next -side left -padx 0
 
                  button $actions.nextauto -state active -text "Next & Auto" -relief "raised" \
@@ -1317,11 +1597,9 @@ namespace eval bdi_gui_gestion_source {
              pack   $actionspied.fermer -in $actionspied -side right -anchor w -padx 0
 
 
+      ::bdi_gui_gestion_source::work_charge
 
-      if {$ids != ""} {
-         ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids
-         gren_info "TODO : Ecrire Ambigue , disable tous les boutons sauf grab"
-      }
+      gren_info "TODO : Ecrire Ambigue , disable tous les boutons sauf grab"
 
 
    }

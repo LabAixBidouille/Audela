@@ -170,13 +170,24 @@ namespace eval gui_verifcata {
 
    proc ::gui_verifcata::popup_psf { tbl } {
 
+
+      set worklist ""
       foreach select [$tbl curselection] {
-      
          set ids [lindex [$tbl get $select] 0]      
          set idd [lindex [$tbl get $select] 1]   
          gren_info "ids = $ids ; idd = $idd \n"   
-         break
+         lappend worklist [list $idd $ids]
       }
+      set worklist [lsort -dictionary $worklist]
+      gren_info "worklist = $worklist\n"
+      ::bdi_gui_gestion_source::run $worklist
+      gren_info "popup_psf fin\n"
+      return
+
+      # premiere image de la liste 
+      set a [lindex $worklist 0]
+      set idd [lindex $a 0]
+      set ids [lindex $a 1]      
       
       if {$::tools_cata::id_current_image == $idd} {
          # L image est deja affichée
@@ -199,6 +210,8 @@ namespace eval gui_verifcata {
       set ypass [lindex $r 4]
       ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
       
+      
+      
       ::bdi_gui_gestion_source::run $ids
       
    }
@@ -213,7 +226,7 @@ namespace eval gui_verifcata {
 
    proc ::gui_verifcata::verif {  } {
 
-      ::tools_verifcata::verif source_list date_list 
+      ::tools_verifcata::verif source_list date_list
       ::gui_verifcata::affich_results_tklist source_list date_list 
 
    }
@@ -245,22 +258,6 @@ namespace eval gui_verifcata {
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
       
-      set ::tools_cata::id_current_image 0
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-         incr ::tools_cata::id_current_image
-         set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-         set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
-
-         set ::tools_cata::current_image_date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-         set idbddimg    [::bddimages_liste::lget $::tools_cata::current_image idbddimg]
-         set dirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-         set ::tools_cata::current_image_name [::bddimages_liste::lget $::tools_cata::current_image "filename"]
-         set file        [file join $bddconf(dirbase) $dirfilename $::tools_cata::current_image_name]
-
-         ::gui_cata::load_cata
-
-         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-      }
       set ::tools_cata::id_current_image -1
       ::gui_verifcata::run
    }
