@@ -422,7 +422,7 @@ namespace eval ::audace {
       #--- Creation du repertoire NOMAD1
       set catchError [ catch {
          if { ! [ info exists conf(rep_userCatalogNomad1) ] } {
-            set conf(rep_userCatalogNomad1) [ file join $audace(rep_home) catalog NOMAD1 ]
+            set conf(rep_userCatalogNomad1) [ file join $audace(rep_home) catalog NOMAD1 bindat ]
          }
          if { ! [ file exists $conf(rep_userCatalogNomad1) ] } {
             file mkdir $conf(rep_userCatalogNomad1)
