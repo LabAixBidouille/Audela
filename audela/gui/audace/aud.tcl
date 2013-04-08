@@ -321,6 +321,20 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
+      #--- Creation du repertoire MicroCat
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogMicrocat) ] } {
+            set conf(rep_userCatalogMicrocat) [ file join $audace(rep_home) catalog microcat ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogMicrocat) ] } {
+            file mkdir $conf(rep_userCatalogMicrocat)
+         }
+         set audace(rep_userCatalogMicrocat) $conf(rep_userCatalogMicrocat)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
       #--- Creation du repertoire USNO-A2
       set catchError [ catch {
          if { ! [ info exists conf(rep_userCatalogUsnoa2) ] } {
