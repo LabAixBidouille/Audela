@@ -328,3 +328,40 @@ test libcatalog_csppmxl_catalog_existe { trouve 160 etoiles } -constraints {
 
 } -result "160"
 
+
+#-------------------------------------------------------------------------------
+test libcatalog_csnomad1_sansparam { csnomad1 sans parametre } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      #--- je recupere le message d'erreur "usage ..."
+      set result [csnomad1]
+   } msg]
+   return $msg
+} -cleanup {
+
+} -result "usage: csnomad1 pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?"
+
+
+#-------------------------------------------------------------------------------
+test libcatalog_csnomad1_catalog_existe { trouve 181 etoiles } -constraints {
+   AUDACE
+} -setup {
+
+} -body {
+   set catchError [ catch {
+      set result [csnomad1 [file join $::audace(rep_userCatalogNomad1)] 10 5 5]
+   } msg]
+
+   if { $catchError==0 } {
+      return [ llength [ lindex $result 1 ] ]
+   } else {
+      return $msg
+   }
+} -cleanup {
+
+} -result "181"
+
+
