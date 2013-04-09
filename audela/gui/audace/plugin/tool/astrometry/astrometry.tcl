@@ -308,6 +308,13 @@ namespace eval ::astrometry {
          pack $astrom(This).delete_images.chk -side left -pady 3
       pack $astrom(This).delete_images -anchor center -fill x
 
+      #--- Gestion de l'etat de l'entry du chemin du catalogue
+      if { $astrom(cattype) == "$caption(astrometry,cat,personal)" } {
+         $astrom(This).cal.catalog.fra_1.ent configure -state normal
+      } else {
+         $astrom(This).cal.catalog.fra_1.ent configure -state disabled
+      }
+
       #---
       set astrom(currenttypewcs) [lindex $astrom(typewcs) 0]
       ::astrometry::wcs_pack $astrom(currenttypewcs)
@@ -905,12 +912,14 @@ namespace eval ::astrometry {
 
       if { $astrom(cattype) == "$caption(astrometry,cat,usno)" } {
          set astrom(catfolder) $audace(rep_userCatalogUsnoa2)
+         $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder) -state disabled
       } elseif { $astrom(cattype) == "$caption(astrometry,cat,microcat)" } {
          set astrom(catfolder) $audace(rep_userCatalogMicrocat)
+         $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder) -state disabled
       } elseif { $astrom(cattype) == "$caption(astrometry,cat,personal)" } {
          set astrom(catfolder) "$conf(astrometry,personnalfolder)"
+         $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder) -state normal
       }
-      $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder)
    }
 
    proc exploredirname { } {
