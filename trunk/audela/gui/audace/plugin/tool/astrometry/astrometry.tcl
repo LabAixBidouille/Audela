@@ -86,7 +86,7 @@ namespace eval ::astrometry {
    #------------------------------------------------------------
    proc createPluginInstance { { tkbase "" } { visuNo 1 } } {
       variable astrom
-      global caption conf
+      global audace caption conf
 
       #--- Inititalisation du nom de la fenetre
       set astrom(This) "$tkbase.astrometry"
@@ -95,15 +95,12 @@ namespace eval ::astrometry {
       set astrom(list_combobox) [ list $caption(astrometry,cat,usno) $caption(astrometry,cat,microcat) \
          $caption(astrometry,cat,personal) ]
 
-      if { $::tcl_platform(os) == "Linux" } {
-         if { ! [ info exists conf(astrometry,catfolder) ] }  { set conf(astrometry,catfolder)     "/cdrom/" }
-      } else {
-         if { ! [ info exists conf(astrometry,catfolder) ] }  { set conf(astrometry,catfolder)     "d:/" }
-      }
-      if { ! [ info exists conf(astrometry,cattype) ] }       { set conf(astrometry,cattype)       "0" }
-      if { ! [ info exists conf(astrometry,position) ] }      { set conf(astrometry,position)      "+150+100" }
-      if { ! [ info exists conf(astrometry,delete_files) ] }  { set conf(astrometry,delete_files)  "1" }
-      if { ! [ info exists conf(astrometry,delete_images) ] } { set conf(astrometry,delete_images) "1" }
+      if { ! [ info exists conf(astrometry,catfolder) ] }       { set conf(astrometry,catfolder)       "$audace(rep_userCatalogMicrocat)" }
+      if { ! [ info exists conf(astrometry,personnalfolder) ] } { set conf(astrometry,personnalfolder) "" }
+      if { ! [ info exists conf(astrometry,cattype) ] }         { set conf(astrometry,cattype)         "1" }
+      if { ! [ info exists conf(astrometry,position) ] }        { set conf(astrometry,position)        "+150+100" }
+      if { ! [ info exists conf(astrometry,delete_files) ] }    { set conf(astrometry,delete_files)    "1" }
+      if { ! [ info exists conf(astrometry,delete_images) ] }   { set conf(astrometry,delete_images)   "1" }
 
       #--- j'initialise les variable des widgets
       ::astrometry::confToWidget
@@ -245,7 +242,8 @@ namespace eval ::astrometry {
             -borderwidth 1    \
             -editable 0       \
             -textvariable ::astrometry::astrom(cattype) \
-            -values $list_combobox
+            -values $list_combobox \
+            -modifycmd "::astrometry::modifydirname"
          pack $astrom(This).cal.${cal}.fra_0.cat -side left
       pack $astrom(This).cal.${cal}.fra_0 -anchor center -fill x
       frame $astrom(This).cal.${cal}.fra_1
@@ -259,10 +257,7 @@ namespace eval ::astrometry {
          entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::astrom(catfolder) -width $width
          pack $astrom(This).cal.${cal}.fra_1.ent -fill x -expand 1 -side left -padx 5
          button $astrom(This).cal.${cal}.fra_1.but -text "$caption(astrometry,cal,parcourir)" \
-            -command {
-               set d [::astrometry::getdirname]
-               if {$d!=""} {set ::astrometry::astrom(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
-            }
+            -command "::astrometry::exploredirname"
          pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 5 -ipady 5
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
       #--- Calibration from a file
@@ -902,6 +897,40 @@ namespace eval ::astrometry {
             -text "$astrom(wcsunits,${kwd}) ($astrom(wcscomments,${kwd}))"
          pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 -side left
       pack $astrom(This).wcs.${wcs}.fra_${kwd} -anchor center -fill x
+   }
+
+   proc modifydirname { } {
+      variable astrom
+      global audace caption conf
+
+      if { $astrom(cattype) == "$caption(astrometry,cat,usno)" } {
+         set astrom(catfolder) $audace(rep_userCatalogUsnoa2)
+      } elseif { $astrom(cattype) == "$caption(astrometry,cat,microcat)" } {
+         set astrom(catfolder) $audace(rep_userCatalogMicrocat)
+      } elseif { $astrom(cattype) == "$caption(astrometry,cat,personal)" } {
+         set astrom(catfolder) "$conf(astrometry,personnalfolder)"
+      }
+      $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder)
+   }
+
+   proc exploredirname { } {
+      variable astrom
+      global audace caption conf
+
+      if { $astrom(cattype) == "$caption(astrometry,cat,usno)" } {
+         ::cwdWindow::run "$audace(base).cwdWindow"
+         ::cwdWindow::changeRepUserCatalog cata_usnoa2
+         $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::audace(rep_userCatalogUsnoa2)
+      } elseif { $astrom(cattype) == "$caption(astrometry,cat,microcat)" } {
+         ::cwdWindow::run "$audace(base).cwdWindow"
+         ::cwdWindow::changeRepUserCatalog cata_microcat
+         $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $astrom(cattype) == "$caption(astrometry,cat,personal)" } {
+         set dirname [::astrometry::getdirname]
+         set astrom(catfolder)                $dirname
+         set conf(astrometry,personnalfolder) $dirname
+         focus $astrom(This)
+      }
    }
 
    proc getdirname { } {
