@@ -240,13 +240,14 @@ namespace eval ::fieldchart {
                -borderwidth 1    \
                -textvariable ::fieldchart::widget(fieldchart,catalogue) \
                -editable 0       \
-               -values $list_combobox
+               -values $list_combobox \
+               -modifycmd "::fieldchart::modifydirname"
             grid $This.usr.1.cata -row 1 -column 1 -padx 5 -pady 2 -sticky e
 
             label $This.usr.1.lab3 -text "$caption(fieldchart,recherche)"
             grid $This.usr.1.lab3 -row 2 -column 0 -padx 5 -pady 2 -sticky w
 
-            entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog) -width 30
+            entry $This.usr.1.ent1 -textvariable ::fieldchart::widget(fieldchart,pathCatalog) -width 30 -state disabled
             grid $This.usr.1.ent1 -row 2 -column 1 -padx 5 -pady 2 -sticky e
             $This.usr.1.ent1 xview end
 
@@ -589,40 +590,57 @@ namespace eval ::fieldchart {
    }
 
    #------------------------------------------------------------
+   # modifydirname
+   #    Adapte l'entry en fonction du catalogue selectionne
+   #------------------------------------------------------------
+   proc modifydirname { } {
+      variable This
+      variable widget
+      global audace caption
+
+      if { $widget(fieldchart,catalogue) == "$caption(fieldchart,microcat)" } {
+         set widget(fieldchart,pathCatalog) "$audace(rep_userCatalogMicrocat)/"
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $widget(fieldchart,catalogue) == "$caption(fieldchart,tycho)" } {
+         set widget(fieldchart,pathCatalog) "$audace(rep_userCatalogMicrocat)/"
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $widget(fieldchart,catalogue) == "$caption(fieldchart,loneos)" } {
+         set widget(fieldchart,pathCatalog) "$audace(rep_userCatalogMicrocat)/"
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $widget(fieldchart,catalogue) == "$caption(fieldchart,usno)" } {
+         set widget(fieldchart,pathCatalog) "$audace(rep_userCatalogUsnoa2)/"
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogUsnoa2)
+      }
+      $This.usr.1.ent1 xview end
+   }
+
+   #------------------------------------------------------------
    # cataFolder
    #    Affiche le chemin du catalogue
    #------------------------------------------------------------
    proc cataFolder { } {
       variable This
       variable widget
+      global audace caption
 
-      set widget(fieldchart,pathCatalog) [ ::fieldchart::parcourir ]
+      if { $widget(fieldchart,catalogue) == "$caption(fieldchart,microcat)" } {
+         ::cwdWindow::run "$audace(base).cwdWindow"
+         ::cwdWindow::changeRepUserCatalog cata_microcat
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $widget(fieldchart,catalogue) == "$caption(fieldchart,tycho)" } {
+         ::cwdWindow::run "$audace(base).cwdWindow"
+         ::cwdWindow::changeRepUserCatalog cata_microcat
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $widget(fieldchart,catalogue) == "$caption(fieldchart,loneos)" } {
+         ::cwdWindow::run "$audace(base).cwdWindow"
+         ::cwdWindow::changeRepUserCatalog cata_microcat
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogMicrocat)
+      } elseif { $widget(fieldchart,catalogue) == "$caption(fieldchart,usno)" } {
+         ::cwdWindow::run "$audace(base).cwdWindow"
+         ::cwdWindow::changeRepUserCatalog cata_usnoa2
+         $This.usr.1.ent1 configure -textvariable ::audace(rep_userCatalogUsnoa2)
+      }
       $This.usr.1.ent1 xview end
-   }
-
-   #------------------------------------------------------------
-   # parcourir
-   #    Ouvre un explorateur pour choisir un fichier
-   #------------------------------------------------------------
-   proc parcourir { } {
-      variable This
-      global audace caption conf
-
-      set dirname [ tk_chooseDirectory -title "$caption(fieldchart,recherche)" \
-         -initialdir "$audace(rep_userCatalog)" -parent $This ]
-      set len [ string length $dirname ]
-      set folder "$dirname"
-      if { $len > "0" } {
-         set car [ string index "$dirname" [ expr $len-1 ] ]
-         if { $car != "/" } {
-            append folder "/"
-         }
-         set dirname $folder
-      }
-      if { $dirname == "" } {
-         set dirname $conf(fieldchart,pathCatalog)
-      }
-      return $dirname
    }
 
    #------------------------------------------------------------
