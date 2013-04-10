@@ -911,15 +911,16 @@ namespace eval ::astrometry {
       global audace caption conf
 
       if { $astrom(cattype) == "$caption(astrometry,cat,usno)" } {
-         set astrom(catfolder) $audace(rep_userCatalogUsnoa2)
+         set astrom(catfolder) "$audace(rep_userCatalogUsnoa2)/"
          $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder) -state disabled
       } elseif { $astrom(cattype) == "$caption(astrometry,cat,microcat)" } {
-         set astrom(catfolder) $audace(rep_userCatalogMicrocat)
+         set astrom(catfolder) "$audace(rep_userCatalogMicrocat)/"
          $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder) -state disabled
       } elseif { $astrom(cattype) == "$caption(astrometry,cat,personal)" } {
          set astrom(catfolder) "$conf(astrometry,personnalfolder)"
          $astrom(This).cal.catalog.fra_1.ent configure -textvariable ::astrometry::astrom(catfolder) -state normal
       }
+      $astrom(This).cal.catalog.fra_1.ent xview end
    }
 
    proc exploredirname { } {
@@ -940,6 +941,7 @@ namespace eval ::astrometry {
          set conf(astrometry,personnalfolder) $dirname
          focus $astrom(This)
       }
+      $astrom(This).cal.catalog.fra_1.ent xview end
    }
 
    proc getdirname { } {
