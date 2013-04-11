@@ -415,8 +415,9 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          return TCL_ERROR;
       }
       value-=360;
-      value*=fabs(tel->radec_position_conversion);
-      tel->stop_e_uc=(int)value;
+      value*=fabs(tel->adu4deg_ha);
+		tel->coord_adu_ha_emin = value;
+      //tel->stop_e_uc=(int)value;
       sprintf(s,"mc_angle2deg %s",argv[3]); mytel_tcleval(tel,s);
       value=atof(tel->interp->result);
       if (value>270) {
@@ -424,12 +425,20 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          return TCL_ERROR;
       }
-      value*=fabs(tel->radec_position_conversion);
-      tel->stop_w_uc=(int)value;
+      value*=fabs(tel->adu4deg_ha);
+		tel->coord_adu_ha_wmax = value;
+      //tel->stop_w_uc=(int)value;
+		// ---
+		// mise à jour des domaines de pointages pour les deux positions de tube
+		tel->coord_deg_ha_wmin = tel->coord_deg_ha0 + (tel->coord_adu_ha_min  - tel->coord_adu_ha0) / tel->adu4deg_ha;
+		tel->coord_deg_ha_wmax = tel->coord_deg_ha0 + (tel->coord_adu_ha_wmax - tel->coord_adu_ha0) / tel->adu4deg_ha;
+		tel->coord_deg_ha_emin = tel->coord_deg_ha0 + (tel->coord_adu_ha_emin  - tel->coord_adu_ha0) / tel->adu4deg_ha;
+		tel->coord_deg_ha_emax = tel->coord_deg_ha0 + (tel->coord_adu_ha_max - tel->coord_adu_ha0) / tel->adu4deg_ha;
+
    }
-   sprintf(s,"mc_angle2hms %.8f 360 zero 2 auto string",tel->stop_e_uc/fabs(tel->radec_position_conversion)); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2hms %.8f 360 zero 2 auto string",tel->coord_adu_ha_emin/fabs(tel->adu4deg_ha)); mytel_tcleval(tel,s);
    strcpy(le,tel->interp->result);
-   sprintf(s,"mc_angle2hms %.8f 360 zero 2 auto string",tel->stop_w_uc/fabs(tel->radec_position_conversion)); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2hms %.8f 360 zero 2 auto string",tel->coord_adu_ha_wmax/fabs(tel->adu4deg_ha)); mytel_tcleval(tel,s);
    strcpy(lw,tel->interp->result);
    sprintf(ligne,"%s %s",le,lw);
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -451,7 +460,7 @@ int cmdTelOrientation(ClientData clientData, Tcl_Interp *interp, int argc, char 
 		return TCL_ERROR;
 	}
 	tel = (struct telprop*)clientData;
-	if (tel->tubepos == 0) {
+	if (tel->tube_current_side== 0) {
 		Tcl_SetResult(interp,"west",TCL_STATIC);
 	} else {
 		Tcl_SetResult(interp,"east",TCL_STATIC);
@@ -526,7 +535,7 @@ int cmdTelState(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char s[1024];
    struct telprop *tel;
    tel = (struct telprop *)clientData;   
-   sprintf(s,"state=%s, old_state=%s\n",state2string(tel->state),state2string(tel->old_state));
+   sprintf(s,"%s",state2string(tel->state));
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }
@@ -637,16 +646,19 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	sprintf(ss,"{s1 %d {ADU/turn} {microsteps to a complete turnover of worm}} {s2 %d {ADU/turn} {microsteps to a complete turnover of worm}} ",tel->param_s1,tel->param_s2); strcat(s,ss);
 	sprintf(ss,"{speed_track_ra %f {deg/s} {motorRA track speed}} {speed_track_dec %f {deg/s} {motorDEC track speed}} ",tel->speed_track_ra,tel->speed_track_dec); strcat(s,ss);
 	sprintf(ss,"{speed_slew_ra %f {deg/s} {motorRA slew speed}} {speed_slew_dec %f {deg/s} {motorDEC slew speed}} ",tel->speed_slew_ra,tel->speed_slew_dec); strcat(s,ss);
-	sprintf(ss,"{radec_position_conversion %f {ADU/deg} {motorRA and motorDEC position conversion}} ",tel->radec_position_conversion); strcat(s,ss);
+	sprintf(ss,"{adu4deg_ha %f {ADU/deg} {motorRA position conversion}} ",tel->adu4deg_ha); strcat(s,ss);
+	sprintf(ss,"{adu4deg_dec %f {ADU/deg} {motorDEC position conversion}} ",tel->adu4deg_dec); strcat(s,ss);
 	sprintf(ss,"{track_diurnal %f {deg/s} {motorRA theoretical diurnal track}} ",tel->track_diurnal); strcat(s,ss);
-	sprintf(ss,"{stop_w_uc %d {ADU} {motorRA western stop}} {stop_e_uc %d {ADU} {motorRA eastern stop}} ",tel->stop_w_uc,tel->stop_e_uc); strcat(s,ss);
+	sprintf(ss,"{coord_adu_ha_wmax %d {ADU} {motorRA western stop}} {coord_adu_ha_emin %d {ADU} {motorRA eastern stop}} ",(int)tel->coord_adu_ha_wmax,(int)tel->coord_adu_ha_emin); strcat(s,ss);
 	sprintf(ss,"{radec_move_rate_max %f {deg/s} {motorRA and motorDEC maximum authorized move speed}} ",tel->radec_move_rate_max); strcat(s,ss);
 	sprintf(ss,"{slew_axis %d {integer} {motorRA and motorDEC motion states. 0: none, 1: RA, 2: DEC, 3: RA+DEC}} ",tel->slew_axis); strcat(s,ss);
-	sprintf(ss,"{tubepos %d {binary} {0|1=tube_position(W|E)}} ",tel->tubepos); strcat(s,ss);
+	sprintf(ss,"{tube_prefered_side %d {binary} {0|1=tube position preference (W|E)}} ",tel->tube_prefered_side); strcat(s,ss);
+	sprintf(ss,"{tube_current_side %d {binary} {0|1=tube current side (W|E)}} ",tel->tube_current_side); strcat(s,ss);
 	sprintf(ss,"{gotodead_ms %d {ms} {waiting delay for a complete slew}} ",tel->gotodead_ms); strcat(s,ss);
 	sprintf(ss,"{gotoread_ms %d {ms} {waiting delay for a answer}} ",tel->gotoread_ms); strcat(s,ss);
 	sprintf(ss,"{dead_delay_slew %f {s} {delay for a GOTO at the same place}} ",tel->dead_delay_slew); strcat(s,ss);
 	sprintf(ss,"{tempo %d {ms} {delay before to read a command}} ",tel->tempo); strcat(s,ss);
+	sprintf(ss,"{problem_motor %d {binary} {0=no pb 1=pb encoders}} ",tel->problem_motor); strcat(s,ss);
 	sprintf(ss,"{ha_park %f {deg} {motorRA Parking hour angle}} {dec_park %f {deg} {motorDEC Parking declination}} ",tel->ha_park,tel->dec_park); strcat(s,ss);
 	sprintf(ss,"{gotoblocking %d {binary} {default GOTO blocking 0|1=non_blocking|blocking}} ",tel->gotoblocking); strcat(s,ss);
    Tcl_SetResult(interp,s,TCL_VOLATILE);

@@ -38,6 +38,9 @@ extern "C" {
 #define EQMOD_STATE_SLEW            5   // SLEW: deplacement manuel, qui interromp le suivi
 #define state2string(s) (s==EQMOD_STATE_NOT_INITIALIZED?"NOT_INITIALIZED":(s==EQMOD_STATE_HALT?"HALT":(s==EQMOD_STATE_STOPPED?"STOPPED":(s==EQMOD_STATE_GOTO?"GOTO":(s==EQMOD_STATE_TRACK?"TRACK":(s==EQMOD_STATE_SLEW?"SLEW":"NOT DEFINED"))))))
 
+#define PROBLEM_MOTOR_NOTHING 0
+#define PROBLEM_MOTOR_MINI_ENCODERS 1
+
 #define AXE_RA   1
 #define AXE_DEC  2
 
@@ -46,7 +49,7 @@ extern "C" {
 
 #define TUBE_OUEST   0
 #define TUBE_EST     1
-#define TubePos2string(s) ( s == TUBE_OUEST ? "W" : "E" )
+//#define TubePos2string(s) ( s == TUBE_OUEST ? "W" : "E" )
 
 #define PRINTF printf
 
@@ -80,15 +83,38 @@ struct telprop {
    double speed_track_dec;            // (deg/s)
    double speed_slew_ra;              // (deg/s)
    double speed_slew_dec;             // (deg/s)
-   double radec_position_conversion;  // (UC)/(deg) */
    double track_diurnal;              // (deg/s)
-   int stop_e_uc;                     // butee mecanique est (en pas codeurs)
-   int stop_w_uc;                     // butee mecanique ouest (en pas codeurs)
+	int adu_max;                       // valeur max ADU admissible
+	int adu_min;                       // valeur min ADU admissible
+	double coord_adu_ha;
+	double coord_deg_ha;
+	double coord_adu_ha0;
+	double coord_deg_ha0;
+	double coord_adu_dec;
+	double coord_deg_dec;
+	double coord_deg_dec0;
+	double coord_adu_dec0;
+	double adu4deg_ha;      // (ADU/deg)
+	double adu4deg_dec;     // (ADU/deg)
+	int tube_prefered_side;
+	int tube_current_side; // 0: tube a l'ouest ; 1: tube a l'est
+	int tube_next_side;
+	double coord_adu_ha_max; /* FFFF7F */
+	double coord_adu_ha_min; /* 000080 */
+	double coord_adu_dec_max; /* FFFF7F */
+	double coord_adu_dec_min; /* 000080 */
+	double coord_adu_ha_emin;
+	double coord_adu_ha_wmax;
+   double coord_deg_ha_wmin;
+   double coord_deg_ha_wmax;
+   double coord_deg_ha_emin;
+   double coord_deg_ha_emax;
+	int problem_motor;
    double radec_move_rate_max;        // vitesse max (deg/s) pour move -rate 1
    int state;
    int old_state;
    int slew_axis;                     // variable qui indique que est l'axe en cours de slew 0: aucun, 1: RA, 2: DEC, 3: RA+DEC.
-   int tubepos;                       // 0: tube a l'ouest ; 1: tube a l'est
+//   int tubepos;                       
    int ha_pointing;
 	int gotodead_ms;
 	int gotoread_ms;
@@ -129,7 +155,7 @@ int eqmod_delete(struct telprop *tel);
 int eqmod_decode(struct telprop *tel,char *chars,int *num);
 int eqmod_encode(struct telprop *tel,int num,char *chars);
 int eqmod_positions12(struct telprop *tel,int *p1,int *p2);
-void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *ha, double *ra, double *dec);
+void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *ha, double *ra, double *dec, int *flip, double *ha_raw, double *dec_raw);
 
 int mytel_tcleval(struct telprop *tel,char *ligne);
 double mytel_sec2jd(time_t secs1970);
