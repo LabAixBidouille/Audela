@@ -50,7 +50,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cycle,lancement)             "Esegui 'Cycle'"
    set caption(cycle,initFiltres)           "Inizializzazione filtri"
    set caption(cycle,initCamera)            "Inizializzazione camera"
-   set caption(cycle,pasCamera)             "# Aucune caméra n'est définie"
+   set caption(cycle,pasCamera)             "Nessuna camera definita"
    set caption(cycle,initBuffer)            "Inizializzazione buffer"
    set caption(cycle,initCom)               "Inizializzazione della connessione con la ruota portafiltri"
    set caption(cycle,roueNonInitialise)     "La ruota portafiltri non è stata inizializzata"
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cycle,fermeCom)              "Chiusura della connessione con la ruota portafiltri"
    set caption(cycle,filtre)                "Filtro:"
    set caption(cycle,acquisition)           "Acquisizione:"
-   set caption(cycle,energistre)            "# Enregistrement de :"
+   set caption(cycle,energistre)            "Salvataggio di:"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

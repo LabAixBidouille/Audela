@@ -283,9 +283,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Fine della simulazione.\n"
    set caption(acqt1m,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqt1m,buttonShiftConfig)      "Spostamento"
-   set caption(acqt1m,flatAuto)               "# Flats Auto"
+   set caption(acqt1m,flatAuto)               "Flat Field automatici"
    set caption(acqt1m,cycle)                  "Ciclo"
-   set caption(acqt1m,ressource)              "# Re-charge les scripts"
+   set caption(acqt1m,ressource)              "Rilancia gli script"
    set caption(acqt1m,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
 
    set caption(acqt1m,bin,1x1)                "Binning 1x1"
@@ -294,7 +294,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,bin,4x4)                "Binning 4x4"
    set caption(acqt1m,filtre)                 "Filtro: "
    set caption(acqt1m,extensionFITS)          "Estensione del file FITS:"
-   set caption(acqt1m,rechargeScripts)        "# Re-charge les scripts\n\n"
+   set caption(acqt1m,rechargeScripts)        "Rilancia gli script\n\n"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
