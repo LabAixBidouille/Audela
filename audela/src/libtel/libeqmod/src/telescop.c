@@ -63,7 +63,7 @@ struct telini tel_ini[] = {
 /*                                                      */
 /********************************************************/
 char sate_move_radec;
-
+/*
 #define EQMOD_STATE_NOT_INITIALIZED 0   // On ne sait pas ou on en est
 #define EQMOD_STATE_HALT            1   // Init en cours, moteur pas alimente
 #define EQMOD_STATE_STOPPED         2   // Moteur alimente, a l'arret
@@ -81,6 +81,7 @@ char sate_move_radec;
 #define TUBE_OUEST   0
 #define TUBE_EST     1
 #define TubePos2string(s) ( s == TUBE_OUEST ? "W" : "E" )
+*/
 
 #define PRINTF printf
 //#define PRINTF(args,...)
@@ -109,13 +110,13 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char ss[1024],ssusb[1024];
 	char portnum[128];
    double ha, dec;
-	int HA,DEC,j1,j2;
+	int j1,j2;
 	int mode_debug = 0,tempo;
    FILE *f;
 
    tel->state               = EQMOD_STATE_NOT_INITIALIZED;
    tel->old_state           = tel->state;
-   tel->tubepos             = TUBE_OUEST;
+	tel->tube_prefered_side  = TUBE_OUEST;
    tel->track_diurnal       = 360.0/86164.; // 0.00417807901212 (deg/s)
    tel->speed_track_ra      = tel->track_diurnal; // (deg/s)
    tel->speed_track_dec     = 0.;  // (deg/s)
@@ -191,7 +192,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          tel->mouchard = 1;
       }
       if ( ! strcmp(argv[i],"-east") ) {
-         tel->tubepos = TUBE_EST;
+			tel->tube_prefered_side= TUBE_EST;
       }
       if ( (strcmp(argv[i],"-gps")==0)&&(i<=(argc-2)) ) {
          sprintf(tel->home,"%s",argv[i+1]);
@@ -202,28 +203,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 				tel->latitude = 48;
 			}
       }
-		// --- pointing direction of the parking|initial position
-      if ( (strcmp(argv[i],"-point")==0)&&(i<=(argc-2)) ) {
-         if ( ! strcmp(argv[i+1],"east") ) {
-            ha = ( tel->tubepos == TUBE_EST ) ? -90.0 : 90.0 ;
-            dec = ( tel->tubepos == TUBE_EST ) ? 180.0 : 0.0;
-         } else if ( ! strcmp(argv[i+1],"west") ) {
-            ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
-            dec = ( tel->tubepos == TUBE_EST ) ? 180.0 : 0.0;
-         } else if ( ! strcmp(argv[i+1],"south") ) {
-            ha = 0.0;
-            dec = ( tel->tubepos == TUBE_EST ) ? 180.0 : 0.0;
-         } else if ( ! strcmp(argv[i+1],"north") ) {
-            ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
-            dec = 90.0;
-         } else if ( ! strcmp(argv[i+1],"north_pole") ) {
-            ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
-            dec = ( tel->tubepos == TUBE_EST ) ? 90.00001 : 89.99999; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
-         } else if ( ! strcmp(argv[i+1],"south_pole") ) {
-            ha = ( tel->tubepos == TUBE_EST ) ? 90.0 : -90.0;
-            dec = ( tel->tubepos == TUBE_EST ) ? -90.00001 : 89.99999; // 90° est un point appartenant a la zone 'non retournee', donc tube a l'ouest.
-         }
-      }
       if ( ! strcmp(argv[i],"-startmotor") ) {
          start_motor = 1;
       }
@@ -231,8 +210,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          mode_debug = 1;
       }
    }
-	tel->ha_park=ha;
-	tel->dec_park=dec;
+
 //tel->mouchard=2; // 0=pas de fichier log
 //mode_debug = 1;
 
@@ -325,50 +303,97 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->param_g2=16;
 		tel->param_s1=50133;
 		tel->param_s2=50133;
-		tel->param_d1=8388608;
-		tel->param_d2=8388608;
+		tel->param_d1=-8388608;
+		tel->param_d2=-8388608;
 	}
 
    // Facteur de conversion deg vers step: step = deg * tel->radec_position_conversion
-   tel->radec_position_conversion = 1.0 * tel->param_a1 / 360.;
+   //tel->radec_position_conversion = 1.0 * tel->param_a1 / 360.;
+	tel->adu4deg_ha=1.0 * tel->param_a1 / 360.;      // (ADU/deg)
+	tel->adu4deg_dec=1.0 * tel->param_a2 / 360.;     // (ADU/deg)
+
+	tel->coord_adu_ha0=0;
+	tel->coord_deg_ha0=0;
+	tel->coord_adu_dec0=0;
+	tel->coord_deg_dec0=0;
+
+   for (i=0;i<argc;i++) {
+		// --- pointing direction of the parking|initial position
+      if ( (strcmp(argv[i],"-point")==0)&&(i<=(argc-2)) ) {
+         if ( ! strcmp(argv[i+1],"east") ) {
+				tel->coord_adu_ha0=-90*tel->adu4deg_ha;
+				tel->coord_deg_ha0=-90;
+				tel->coord_adu_dec0=0*tel->adu4deg_dec;
+				tel->coord_deg_dec0=0;
+         } else if ( ! strcmp(argv[i+1],"west") ) {
+				tel->coord_adu_ha0=-90*tel->adu4deg_ha;
+				tel->coord_deg_ha0=90;
+				tel->coord_adu_dec0=180*tel->adu4deg_dec;
+				tel->coord_deg_dec0=0;
+         } else if ( ! strcmp(argv[i+1],"south") ) {
+				if ( tel->tube_prefered_side == TUBE_OUEST ) {
+					tel->coord_adu_ha0=0*tel->adu4deg_ha;
+					tel->coord_deg_ha0=0;
+					tel->coord_adu_dec0=0*tel->adu4deg_dec;
+					tel->coord_deg_dec0=0;
+				} else {
+					tel->coord_adu_ha0=-180*tel->adu4deg_ha;
+					tel->coord_deg_ha0=0;
+					tel->coord_adu_dec0=180*tel->adu4deg_dec;
+					tel->coord_deg_dec0=0;
+				}
+         } else if ( ! strcmp(argv[i+1],"north") ) {
+				tel->coord_adu_dec0=90*tel->adu4deg_dec;
+				tel->coord_deg_dec0=90;
+				if ( tel->tube_prefered_side == TUBE_OUEST ) {
+					tel->coord_adu_ha0=0*tel->adu4deg_ha;
+					tel->coord_deg_ha0=0;
+				} else {
+					tel->coord_adu_ha0=-180*tel->adu4deg_ha;
+					tel->coord_deg_ha0=-180;
+				}
+         } else if ( ! strcmp(argv[i+1],"north_pole") ) {
+				tel->coord_adu_ha0=-90*tel->adu4deg_ha;
+				tel->coord_deg_ha0=-90;
+				tel->coord_adu_dec0=90*tel->adu4deg_dec;
+				tel->coord_deg_dec0=90;
+         } else if ( ! strcmp(argv[i+1],"south_pole") ) {
+				tel->coord_adu_ha0=-90*tel->adu4deg_ha;
+				tel->coord_deg_ha0=-90;
+				tel->coord_adu_dec0=-90*tel->adu4deg_dec;
+				tel->coord_deg_dec0=-90;
+         }
+      }
+   }
+	tel->ha_park=tel->coord_deg_ha0;
+	tel->dec_park=tel->coord_deg_dec0;
 
    // Init des positions moteurs
    sprintf(s,":j1"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j1);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j2);
 	if ( (j1==tel->param_d1)&&(j2==tel->param_d2) ) {
-		//if ( ! strncmp(ss,"000080",6) ) { }
       // On vient d'allumer la monture. Les deux positions sont sur 800000 hexa.
-      // Le sens de rotation des moteurs est le suivant:
-      //    AD: commande + (les codeurs incrementent) = CCW  AH augm, RA dim
-      //    AD: commande - (les codeurs decrementent) = CW  AH dim, RA augm
-      //    DEC: commande + (les codeurs incrementent) = CCW.
-      //    DEC: commande - (les codeurs decrementent) = CW
-      // Codeurs initialises en HA=0, DEC=0
-		HA=(int)(ha * tel->radec_position_conversion);
-      eqmod_encode(tel,HA,ss);
+      eqmod_encode(tel,(int)tel->coord_adu_ha0,ss);
       sprintf(s,":E1%s",ss); eqmod_putread(tel,s,ss);
-		DEC=(int)(dec * tel->radec_position_conversion);
-      eqmod_encode(tel,DEC,ss);
+      eqmod_encode(tel,(int)tel->coord_adu_dec0,ss);
       sprintf(s,":E2%s",ss); eqmod_putread(tel,s,ss);
-   } else {
-      // La monture etait deja allumee ; mais si on a retourne le tube,
-      // il faut reactualiser le codeur dec.
-      eqmod_decode(tel,ss,&res);
-		// a finir
-
    }
    sprintf(s,":j1"); eqmod_putread(tel,s,ss);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss);
 
-   //eqmod_putread(tel,":K1",NULL);
-   //eqmod_putread(tel,":K2",NULL);
+	tel->coord_adu_ha_max= 8388607; /* FFFF7F */
+	tel->coord_adu_ha_min=-8388608; /* 000080 */
+	tel->coord_adu_dec_max= 8388607; /* FFFF7F */
+	tel->coord_adu_dec_min=-8388608; /* 000080 */
 
-   // Limites de pointage en angle horaire exprimé en UC
-   //tel->stop_e_uc=-tel->param_a1/2;
-   //tel->stop_w_uc=tel->param_a1/2;
-   tel->stop_e_uc = (int)(-10.0 * tel->radec_position_conversion);
-   tel->stop_w_uc = (int)(10.0 * tel->radec_position_conversion);
-   
+	// domaines de pointages pour les deux positions de tube
+	tel->coord_adu_ha_emin = -10.0*tel->adu4deg_ha;
+	tel->coord_adu_ha_wmax =  10.0*tel->adu4deg_ha;
+   tel->coord_deg_ha_wmin = tel->coord_deg_ha0 + (tel->coord_adu_ha_min  - tel->coord_adu_ha0) / tel->adu4deg_ha;
+   tel->coord_deg_ha_wmax = tel->coord_deg_ha0 + (tel->coord_adu_ha_wmax - tel->coord_adu_ha0) / tel->adu4deg_ha;
+   tel->coord_deg_ha_emin = tel->coord_deg_ha0 + (tel->coord_adu_ha_emin - tel->coord_adu_ha0) / tel->adu4deg_ha;
+   tel->coord_deg_ha_emax = tel->coord_deg_ha0 + (tel->coord_adu_ha_max  - tel->coord_adu_ha0) / tel->adu4deg_ha;
+
    tel->old_state = tel->state;
    tel->state = EQMOD_STATE_HALT;
 
@@ -379,6 +404,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    // On ne sait pas a quoi ça sert
    sprintf(s,":P13"); res=eqmod_putread(tel,s,NULL);
    sprintf(s,":P23"); res=eqmod_putread(tel,s,NULL);
+
+	tel->problem_motor=PROBLEM_MOTOR_NOTHING;
 
    tel->old_state = tel->state;
    tel->state = EQMOD_STATE_STOPPED;
@@ -440,7 +467,7 @@ int tel_radec_state(struct telprop *tel,char *result)
 /* --- called by : tel1 radec state --- */
 /* ------------------------------------ */
 {
-   sprintf(result,"%s %d",state2string(tel->state),tel->tubepos);
+   sprintf(result,"%s %d",state2string(tel->state),tel->tube_current_side);
    return 0;
 }
 
@@ -530,7 +557,8 @@ int tel_date_get(struct telprop *tel,char *ligne)
 /* --- called by : tel1 date --- */
 /* ----------------------------- */
 {
-   //eqmod_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   eqmod_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+	/*
    time_t ltime;
    double jd;
    char s[100];
@@ -538,6 +566,7 @@ int tel_date_get(struct telprop *tel,char *ligne)
 	sprintf(s,"mc_date2iso8601 %f",jd);
 	Tcl_Eval(tel->interp,s);
 	strcpy(ligne,tel->interp->result);
+	*/
    return 0;
 }
 
@@ -678,7 +707,6 @@ int eqmod_decode(struct telprop *tel,char *chars,int *num)
    char s[2048];
 
 	sprintf(s,"expr int(0x[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ]00) / 256",chars,chars,chars);
-   //sprintf(s,"eqmod_decode %s",chars);
    if (mytel_tcleval(tel,s)==1) {
       *num=0;
       return 1;
@@ -701,13 +729,6 @@ int eqmod_encode(struct telprop *tel,int num,char *chars)
       strcpy(chars,tel->interp->result);
       return 1;
    }
-	/*
-   sprintf(s,"eqmod_encode %d",num);
-   if (mytel_tcleval(tel,s)==1) {
-      strcpy(chars,tel->interp->result);
-      return 1;
-   }
-	*/
    strcpy(chars,tel->interp->result);
    return 0;
 }
@@ -719,6 +740,7 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
 {
    char s[1024],ss[1024],axe;
    int res;
+	double pole_deg,pole_adu;
 
    // Vide le buffer
    res=eqmod_read(tel,s);
@@ -736,6 +758,11 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
    if (res==0) {
       eqmod_decode(tel,s,&res);
       *p1=res;
+		if (res==tel->param_d1) {
+			// traiter le cas d'une panne de courant
+			tel->problem_motor=PROBLEM_MOTOR_MINI_ENCODERS;
+		}
+		tel->coord_adu_ha=(double)(res);
    }
 
    // Lecture AXE 2 (axe declinaison)
@@ -751,7 +778,27 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
    if (res==0) {
       eqmod_decode(tel,s,&res);
       *p2=res;
+		if (res==tel->param_d2) {
+			// traiter le cas d'une panne de courant
+			tel->problem_motor=PROBLEM_MOTOR_MINI_ENCODERS;
+		}
+		tel->coord_adu_dec=(double)(res);
    }
+
+	// Tube position
+	if (tel->latitude >= 0.0 ) {
+		pole_deg=90;
+	} else {
+		pole_deg=-90;
+	}
+	pole_adu = pole_deg * tel->adu4deg_dec;
+
+	if ( tel->coord_adu_dec <= pole_adu ) {
+		tel->tube_current_side=TUBE_OUEST;
+	} else {
+		tel->tube_current_side=TUBE_EST;
+	}
+
    return 0;
 }
 
@@ -761,70 +808,56 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
-void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *ha, double *ra, double *dec)
+void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *ha, double *ra, double *dec, int *flip, double *ha_raw, double *dec_raw)
 {
-   double lst, int_ha, int_dec, int_ra;
-   const int deg90 = (int)(90.0 * tel->radec_position_conversion);
+   double lst;
+	double deg_ha,deg_ra,deg_dec;
 
-   // Conversion de l'axe horaire
-   int_ha = hastep / tel->radec_position_conversion;
+	if (tel->problem_motor==PROBLEM_MOTOR_NOTHING) {
+		if (tel->tube_current_side == TUBE_OUEST) {
+			*flip=0;
+			tel->coord_deg_ha  = tel->coord_deg_ha0  + (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  ;
+			tel->coord_deg_dec = tel->coord_deg_dec0 + (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+		} else {
+			*flip=1;
+			tel->coord_deg_ha  = tel->coord_deg_ha0  + (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  -180 ;
+			tel->coord_deg_dec = tel->coord_deg_dec0 - (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+		}
+		deg_dec = tel->coord_deg_dec ;
+	}
 
-   // Conversion de l'axe declinaison, et traitement du retournement
-   int_dec = decstep / tel->radec_position_conversion;
-
-   // Traitement du retournement:
-   // 1.  Si le codeur dec est dans la zone etendue (<-90° ou >90°), il faut ramener la declinaison dans -90°,+90°
-   // 2.  Si le cadran de la declinaison ne correspond au cadran de l'initialisation, alors la monture est retournee,
-   //     et il faut ramener ha dans -180°,180°.
-   if ( ( decstep > deg90 ) || ( decstep < -deg90 ) ) {
-      if (tel->latitude >= 0.0 ) {
-         int_dec = 180.0 - int_dec;
-      } else {
-         int_dec = -180.0 - int_dec;
-      }
-      if ( tel->tubepos == TUBE_OUEST ) {
-         // Cette configuration correspond a un tube initialise a l'ouest, mais qui est passe a l'est.
-         int_ha -= 180.0;
-      }
-   } else {
-      if ( tel->tubepos == TUBE_EST ) {
-         // Cette configuration correspond a un tube initialise a l'est, mais qui est passe a l'ouest.
-         int_ha += 180.0;
-      }
-   }
-
+   deg_ha = fmod(tel->coord_deg_ha+360*7,360.);
    // Recadrage de l'angle horaire entre -180°,180°.
-   if ( int_ha < -180.0 ) {
-      int_ha += 360.0;
-   }
-   if ( int_ha > 180.0 ) {
-      int_ha -= 360.0;
+   if ( deg_ha > 180.0 ) {
+      deg_ha -= 360.0;
    }
 
    lst = eqmod_tsl(tel,NULL,NULL,NULL);
-   int_ra = lst - int_ha + 360 * 5; // Remember: H=TSL-alpha => alpha=TSL-H
-   int_ra = fmod(int_ra,360.);
+   deg_ra = lst - deg_ha + 360 * 7; // Remember: H=TSL-alpha => alpha=TSL-H
+   deg_ra = fmod(deg_ra,360.);
 
    if (ha) {
-      *ha = int_ha;
+      *ha = deg_ha;
    }
    if (ra) {
-      *ra = int_ra;
+      *ra = deg_ra;
    }
    if (dec) {
-      *dec = int_dec;
+      *dec = deg_dec;
    }
-}
 
+}
 
 int eqmod_radec_coord(struct telprop *tel,char *result)
 {
    char s[1024], ras[20], decs[20];
    int hastep, decstep;
    double ra, dec;
+	int flip; 
+	double ha_raw, dec_raw;
 
    eqmod_positions12(tel, &hastep, &decstep);
-   eqmod_codeur2skypos(tel, hastep, decstep, NULL, &ra, &dec);
+   eqmod_codeur2skypos(tel, hastep, decstep, NULL, &ra, &dec,&flip,&ha_raw,&dec_raw);
 
    // Elaboration de la chaine de caracteres en sortie, si besoin
    if ( NULL != result ) {
@@ -843,9 +876,11 @@ int eqmod_hadec_coord(struct telprop *tel,char *result)
    char s[1024], ras[20], decs[20];
    int hastep, decstep;
    double ha, dec;
+	int flip; 
+	double ha_raw, dec_raw;
 
    eqmod_positions12(tel, &hastep, &decstep);
-   eqmod_codeur2skypos(tel, hastep, decstep, &ha, NULL, &dec);
+   eqmod_codeur2skypos(tel, hastep, decstep, &ha, NULL, &dec,&flip,&ha_raw,&dec_raw);
 
    // Elaboration de la chaine de caracteres en sortie, si besoin
    if ( NULL != result ) {
@@ -867,36 +902,55 @@ int eqmod_hadec_match(struct telprop *tel)
 {
    char s[1024],ss[1024];
    int p;
-   double ha;
+   double ha,deg_ha,deg_dec,adu_ha,adu_dec;
+	int iha,idec;
 
    if ( ( tel->state != EQMOD_STATE_STOPPED ) && ( tel->state != EQMOD_STATE_TRACK ) ) {
       return -1;
    }
+	if (tel->problem_motor!=PROBLEM_MOTOR_NOTHING) {
+		return -2;
+	}
 
    if ( tel->state == EQMOD_STATE_TRACK ) {
 		tel->radec_motor=1;
       eqmod2_action_motor(tel);
    }
+
+	eqmod_positions12(tel, &iha, &idec);
    
    // --- HA ---
-   // H=TSL-alpha => alpha=TSL-H
    ha=tel->ra0+360*5;
    ha=fmod(ha,360.);
+	if (ha>180) {
+		ha-=360;
+	}
+
+	deg_ha=ha;
+	deg_dec=tel->dec0;
+
+	if (tel->tube_current_side == TUBE_OUEST) {
+		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+		adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+	} else {
+		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+		adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+	}
 
    // --- Init AXE 1 (horaire) 0 UC pour HA = 0h ---
-   p = ( int ) ( ha * tel->radec_position_conversion );
+   p = ( int ) ( adu_ha );
    eqmod_encode(tel,p,s);
    sprintf(ss,":E1%s",s);
    if ( eqmod_putread(tel,ss,s) ) {
-	return -1;
+		return -1;
    }
 
    // --- Init AXE 2 (declinaison) 0 UC pour DEC = 0 deg ---
-   p = ( int ) ( tel->dec0 * tel->radec_position_conversion );
+   p = ( int ) (  adu_dec );
    eqmod_encode(tel,p,s);
    sprintf(ss,":E2%s",s);
    if ( eqmod_putread(tel,ss,s) ) {
-	return -2;
+		return -2;
    }
 
    // --- ---
@@ -927,33 +981,17 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
    char s[1024];
    char ss[1024];
    double tsl;
-   time_t ltime;
-   double jd;
+   //time_t ltime;
+   //double jd;
 	double dt;
 
 	dt=tel->dead_delay_slew/86400;
-   //eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-	jd=mytel_sec2jd((int)time(&ltime));
-   sprintf(s,"mc_date2lst [expr %f + %f] {%s}",jd,dt,tel->home);
+   eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+   sprintf(s,"mc_date2lst [mc_datescomp %s + %f] {%s} -format deg",ss,dt,tel->home);
+	//jd=mytel_sec2jd((int)time(&ltime));
+   //sprintf(s,"mc_date2lst [expr %f + %f] {%s} -format deg",jd,dt,tel->home);
    mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
-   sprintf(s,"lindex {%s} 0",ss);
-   mytel_tcleval(tel,s);
-   if (h) {
-	   *h=(int)atoi(tel->interp->result);
-   }
-   sprintf(s,"lindex {%s} 1",ss);
-   mytel_tcleval(tel,s);
-   if (m) {
-		*m=(int)atoi(tel->interp->result);
-   }
-   sprintf(s,"lindex {%s} 2",ss);
-   mytel_tcleval(tel,s);
-   if (sec) {
-		*sec=(double)atof(tel->interp->result);
-   }
-   sprintf(s,"expr ([lindex {%s} 0]+[lindex {%s} 1]/60.+[lindex {%s} 2]/3600.)*15",ss,ss,ss);
-   mytel_tcleval(tel,s);
    tsl=atof(tel->interp->result); /* en degres */
    return tsl;
 }
@@ -978,15 +1016,12 @@ void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functio
 int eqmod2_stopmotor(struct telprop *tel, int axe)
 {
    int res;
-
    if ( axe & AXE_RA ) {
       res = eqmod_putread(tel,":K1",NULL);
    }
    if ( axe & AXE_DEC ) {
       res = eqmod_putread(tel,":K2",NULL);
    }
-   //   eqmod_radec_coord(tel,NULL); // Permet de verifier le retournement
-
    return 0;
 }
 
@@ -1068,13 +1103,13 @@ int eqmod2_track(struct telprop *tel)
 
 int eqmod2_move(struct telprop *tel, char direction)
 {
-   char s[1024],vc[20];
+   char s[1024],vc[20],axe;
    int res;
-   double v,radec_move_rate;
-   char vit;
-	FILE *f;
+   double radec_move_rate;
+	double g,a,b,i;
+	int motion_type,motion_sense;
 
-	if (direction>91) { direction-=32; } // Majuscules -> minuscules
+	if (direction>91) { direction-=32; } // minuscules -> Majuscules
 	radec_move_rate=tel->radec_move_rate;
 	if (tel->state == EQMOD_STATE_TRACK) {
 		if (direction=='E') {
@@ -1096,55 +1131,63 @@ int eqmod2_move(struct telprop *tel, char direction)
 	if (fabs(radec_move_rate) < 1e-10) {
 		radec_move_rate = tel->track_diurnal/1000;
 	}
-   if (radec_move_rate>0.7) {
-      vit='3';
-      v = ((float)tel->param_b1) * 360.0 / ((float)radec_move_rate) / ((float)tel->param_a1) * 16.0;
+
+	if ((direction=='E')||(direction=='W')) {
+		axe='1';
+		a=(double)tel->param_a1;
+		b=(double)tel->param_b1;
+		g=(double)tel->param_g1;
+	} else {
+		axe='2';
+		a=(double)tel->param_a2;
+		b=(double)tel->param_b2;
+		g=(double)tel->param_g2;
+	}
+
+	// --- motion type
+   if (radec_move_rate>0.25) {
+      motion_type=3; // fast infinite
+		i = g * b / (float)radec_move_rate / a * 360.0 ;
    } else {
-      vit='1';
-      v = ((float)tel->param_b1) * 360.0 / ((float)radec_move_rate) / ((float)tel->param_a1);
+      motion_type=1; // slow infinite
+		i = b / (float)radec_move_rate / a * 360.0 ;
    }
 
-   if ( ( axe(direction) == AXE_DEC ) && ( tel->tubepos == TUBE_EST ) ) {
-      // Mouvement axe delta et tube a l'est
-      sprintf(s,":G%d%c%d",axe(direction),vit,1-dir(direction));
-   } else {
-      // Mouvement axe alpha, ou delta tube a l'ouest
-      sprintf(s,":G%d%c%d",axe(direction),vit,dir(direction));
-   }
-	if (tel->mouchard==2) {
-		f=fopen("mouchard_eqmod.txt","at");
-		fprintf(f,"========== ENTER in RADEC MOVE\n");
-		fprintf(f,"tel->state=%d\n",tel->state);
-		fprintf(f,"tel->radec_move_rate=%f\n",tel->radec_move_rate);
-		fprintf(f,"radec_move_rate=%f\n",radec_move_rate);
-		fprintf(f,"v=%f\n",v);
-		fprintf(f,"direction=%c %d\n",direction,direction);
-		fprintf(f,"axe(direction)=%d\n",axe(direction));
-		fprintf(f,"dir(direction)=%d\n",dir(direction));
-		fprintf(f,"s=%s\n",s);
-		fclose(f);
+	// --- motion sense
+	if (direction=='W') {
+		motion_sense=0;
+	} else if (direction=='E') {
+		motion_sense=1;
+	} else {
+		if (tel->latitude >= 0.0 ) {
+			if (direction=='N') {
+				motion_sense = (tel->tube_current_side == TUBE_OUEST )? 0 : 1;
+			} else {
+				motion_sense = (tel->tube_current_side == TUBE_OUEST )? 1 : 0;
+			}
+		} else {
+			if (direction=='N') {
+				motion_sense = (tel->tube_current_side == TUBE_OUEST )? 1 : 0;
+			} else {
+				motion_sense = (tel->tube_current_side == TUBE_OUEST )? 0 : 1;
+			}
+		}
 	}
+
+	// --- Avant n'importe quel move E ou W il faut arreter les moteurs
+	if ((direction=='W')||(direction=='E')) {
+		eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
+	}
+
+	sprintf(s,":G%c%d%d",axe,motion_type,motion_sense);
    res=eqmod_putread(tel,s,NULL); 
-   eqmod_encode(tel,(int)v,vc);
-   sprintf(s,":I%d%s",axe(direction),vc);
-	if (tel->mouchard==2) {
-		f=fopen("mouchard_eqmod.txt","at");
-		fprintf(f,"s=%s\n",s);
-		fclose(f);
-	}
+
+   eqmod_encode(tel,(int)i,vc);
+   sprintf(s,":I%c%s",axe,vc);
+	res=eqmod_putread(tel,s,NULL); 
+
+   sprintf(s,":J%c",axe);
    res=eqmod_putread(tel,s,NULL); 
-   sprintf(s,":J%d",axe(direction));
-	if (tel->mouchard==2) {
-		f=fopen("mouchard_eqmod.txt","at");
-		fprintf(f,"s=%s\n",s);
-		fclose(f);
-	}
-   res=eqmod_putread(tel,s,NULL); 
-	if (tel->mouchard==2) {
-		f=fopen("mouchard_eqmod.txt","at");
-		fprintf(f,"------------ EXIT from RADEC MOVE\n");
-		fclose(f);
-	}
 
    return 0;
 }
@@ -1153,20 +1196,26 @@ int eqmod2_move(struct telprop *tel, char direction)
 
 int eqmod2_goto(struct telprop *tel)
 {
-   char s[1024],ss[1024],axe,sens;
+   char s[1024],ss[1024],axe;
    int res, k, nbcalc;
    double ha,lst,sec,dec;
    int h,m;
    int HA0, DEC0;
    int HA, DEC;
    double ha0, dec0, dha, ddec;
-   int retournement;
 	double slewing_delay_ha,slewing_delay_dec,slewing_delay;
-   const int DEG90 = (int)(90.0 * tel->radec_position_conversion);
-   	
+//   const int DEG90 = (int)(90.0 * tel->radec_position_conversion);
+	int flip; 
+	double ha_raw, dec_raw;
+   double deg_ha,deg_dec,adu_ha,adu_dec;
+	//double deg_ra_offw,deg_ra_offe;
+
    // Etape1: savoir ou on est en HADEC
    eqmod_positions12(tel,&HA0,&DEC0);
-   eqmod_codeur2skypos(tel, HA0, DEC0, &ha0, NULL, &dec0);
+	if (tel->problem_motor!=PROBLEM_MOTOR_NOTHING) {
+		return -2;
+	}
+   eqmod_codeur2skypos(tel, HA0, DEC0, &ha0, NULL, &dec0,&flip,&ha_raw,&dec_raw);
 
 	slewing_delay=0;
 	if (tel->ha_pointing==0) {
@@ -1191,48 +1240,64 @@ int eqmod2_goto(struct telprop *tel)
 		}
 		dec = tel->dec0;
 		if ( ha > 180.0 ) ha -= 360.;
-	   
-		// Etape3: evaluer le besoin de retournement
-		if ( DEC0 > 90.0 * tel->radec_position_conversion ) {
-			// --- le telescope est deja retourné
-			retournement = ha < ( tel->stop_e_uc / tel->radec_position_conversion ) ? 1 : 0;
+		deg_ha=ha;
+		deg_dec=dec;
+
+		// Etape3: evaluer le prochain cote du tube
+		if ( tel->tube_prefered_side == TUBE_EST ) {
+			if ( ha>= tel->coord_deg_ha_emin ) {
+				tel->tube_next_side=TUBE_EST;
+			} else {
+				tel->tube_next_side=TUBE_OUEST;
+			}
 		} else {
-			// --- le telescope n'est pas retourné
-			retournement = ha > ( tel->stop_w_uc / tel->radec_position_conversion ) ? 1 : 0;
-		}
-
-		// Etape 4: calcul du trajet a parcourir
-		dha = ha - ha0;
-		ddec = dec - dec0;
-
-		// Etape 4bis: correction de retournement
-		if ( retournement ) {
-			if ( DEC0 > DEG90 ) {
-				dha = ha - ha0 + 180.0;
+			if ( ha<= tel->coord_deg_ha_wmax ) {
+				tel->tube_next_side=TUBE_OUEST;
 			} else {
-				dha = ha - ha0 - 180.0;
-			}
-			if (tel->latitude >= 0.0 ) {
-				ddec = 180.0 - ( dec + dec0 );
-			} else {
-				ddec = dec + dec0 - 180.0;
+				tel->tube_next_side=TUBE_EST;
 			}
 		}
 
-		slewing_delay_ha  = tel->dead_delay_slew + fabs(dha /tel->speed_slew_ra );
-		slewing_delay_dec = tel->dead_delay_slew + fabs(ddec/tel->speed_slew_dec);
+		// Etape4: calcul des ADU a pointer
+		if (tel->tube_next_side == TUBE_OUEST) {
+			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		} else {
+			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		}
+
+		// Etape 5: calcul du trajet a parcourir (en ADU)
+		dha = adu_ha - tel->coord_adu_ha;
+		ddec = adu_dec - tel->coord_adu_dec;
+
+		// Etape 6: calcul des securites (ADU)
+		if ( adu_ha > tel->coord_adu_ha_max) {
+			dha=0;
+			ddec=0;
+		}
+		if ( adu_ha < tel->coord_adu_ha_min) {
+			dha=0;
+			ddec=0;
+		}
+		if ( adu_dec > tel->coord_adu_dec_max) {
+			dha=0;
+			ddec=0;
+		}
+		if ( adu_dec < tel->coord_adu_dec_min) {
+			dha=0;
+			ddec=0;
+		}
+
+		slewing_delay_ha  = tel->dead_delay_slew + fabs(dha/tel->adu4deg_ha /tel->speed_slew_ra );
+		slewing_delay_dec = tel->dead_delay_slew + fabs(ddec/tel->adu4deg_dec /tel->speed_slew_dec);
 		slewing_delay = (slewing_delay_ha>slewing_delay_dec) ? slewing_delay_ha : slewing_delay_dec ;
 	}
 
-   // Etape 5: Pointage de la monture
-   if ( DEC0 > DEG90 ) {
-      sens = '1';
-   } else {
-      sens = '0';
-   }
+   // Etape 6: Pointage de la monture
 
-	HA=(int)(dha * tel->radec_position_conversion);
-	DEC=(int)(ddec * tel->radec_position_conversion);
+	HA=(int)(dha);
+	DEC=(int)(ddec);
    
    axe='1';
    sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL);
@@ -1241,7 +1306,7 @@ int eqmod2_goto(struct telprop *tel)
    sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL);
 
    axe='2';
-   sprintf(s,":G%c0%c",axe,sens); res=eqmod_putread(tel,s,NULL);
+   sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL);
    eqmod_encode(tel,DEC,ss);
    sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
    sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL);
@@ -1265,7 +1330,7 @@ int eqmod2_waitgoto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       // A loop is actived until the telescope is stopped
       eqmod_positions12(tel,&p10,&p20);
-      tol=(tel->radec_position_conversion)/3600.*10; // tolerance +/- 10 arcsec
+      tol=(tel->adu4deg_ha)/3600.*10; // tolerance +/- 10 arcsec
 		clock00 = clock();
       while (1==1) {
          time_in++;
@@ -1323,13 +1388,18 @@ int eqmod2_match(struct telprop *tel)
 {
    char s[1024],ss[1024],axe;
    int res;
-   double ha, lst, dec,int_ha,int_dec;
-   int HA0, DEC0;
+   double ha, lst, dec, deg_ha,deg_dec, adu_ha,adu_dec;
+	int iha,idec;
    int p;
 
    if ( ( tel->state != EQMOD_STATE_STOPPED ) && ( tel->state != EQMOD_STATE_TRACK ) ) {
       return -1;
    }
+	if (tel->problem_motor!=PROBLEM_MOTOR_NOTHING) {
+		return -2;
+	}
+
+	eqmod_positions12(tel, &iha, &idec);
 
    // Calcul de l'angle horaire correspondant a la position de match
    // Meme si le tube est retourne, on travaille toujours entre -180° et +180°.
@@ -1341,49 +1411,15 @@ int eqmod2_match(struct telprop *tel)
    }
    dec = tel->dec0;
 
-	// Lecture des positions des codeurs
-   eqmod_positions12(tel,&HA0,&DEC0);
+	deg_ha=ha;
+	deg_dec=dec;
 
-	int_ha=ha;
-	int_dec=dec;
-
-	if ((strcmp(tel->mountside,"W")==0)||(strcmp(tel->mountside,"w")==0)) {
-		if ( tel->tubepos == TUBE_EST ) { 
-			// on est retourné
-			if (tel->latitude>0) {
-				int_dec=90+(90-dec);
-				int_ha =ha+180;
-				if (int_ha>180) { int_ha-=360.; }
-			} else {
-				int_dec=-90+(-90-dec);
-				int_ha =ha+180;
-				if (int_ha>180) { int_ha-=360.; }
-			}
-		}
-	}
-
-	if ((strcmp(tel->mountside,"E")==0)||(strcmp(tel->mountside,"e")==0)) {
-		if ( tel->tubepos == TUBE_OUEST ) { 
-			// on est retourné
-			if (tel->latitude>0) {
-				int_dec=90+(90-dec);
-				int_ha =ha-180;
-				if (int_ha<-180) { int_ha+=360.; }
-			} else {
-				int_dec=-90+(-90-dec);
-				int_ha =ha-180;
-				if (int_ha<-180) { int_ha+=360.; }
-			}
-		}
-	}
-
-	if (strcmp(tel->mountside,"auto")==0) {
-		// On place la declinaison dans le meme quadran que la declinaison actuelle
-		if ( DEC0 > ( 90.0 * tel->radec_position_conversion ) ) {
-			int_dec = 180.0 - dec;
-		} else if ( DEC0 < ( -90.0 * tel->radec_position_conversion ) ) {
-			int_dec = -180.0 + dec;
-		}
+	if (tel->tube_current_side == TUBE_OUEST) {
+		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+		adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+	} else {
+		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+		adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
 	}
 
 	// --- on arrete le moteur
@@ -1392,19 +1428,14 @@ int eqmod2_match(struct telprop *tel)
    }
 
    // Encodage axe horaire
-   //   angle horaire entre -180 et 180
-   //   codeur entre -a1/2 et a1/2
    axe='1';
-   p = (int)(int_ha * tel->radec_position_conversion); 
+   p = (int)(adu_ha); 
    eqmod_encode(tel,p,ss);
    sprintf(s,":E%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
 
    // Encodage declinaison
-   //   angle entre -90 et +90 pour tube a l'ouest (codeur entre -a1/4 et a1/4)
-   //   angle entre -90 et -270 pour tube a l'est dans l'hemisphere sud
-   //   angle entre +90 et +270 pour tube a l'est dans l'hemisphere nord
    axe='2';
-   p = (int)(int_dec * tel->radec_position_conversion);
+   p = (int)(adu_dec);
    eqmod_encode(tel,p,ss);
    sprintf(s,":E%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
 
@@ -1464,6 +1495,7 @@ int eqmod2_action_move(struct telprop *tel, char *direction)
 
 int eqmod2_action_stop(struct telprop *tel, char *direction)
 {
+   char s[80],ss[80];
    switch ( tel->state ) {
       case EQMOD_STATE_NOT_INITIALIZED:
          return -1;
@@ -1479,7 +1511,18 @@ int eqmod2_action_stop(struct telprop *tel, char *direction)
          // Pour arreter le moteur, il faut faire action_motor
          return -1;
       case EQMOD_STATE_SLEW:
+			// on arrete le jog en cours
          eqmod2_stopmotor(tel, AXE_RA | AXE_DEC);
+			// attente de la fin de deceleration
+			do {
+				sprintf(s,":f1"); 
+				eqmod_putread(tel,s,ss); 
+			} while (ss[1]=='1');
+			do {
+				sprintf(s,":f2"); 
+				eqmod_putread(tel,s,ss); 
+			} while (ss[1]=='1');
+			// arret complet
          if ( tel->old_state == EQMOD_STATE_TRACK ) {
             // On vient de track, il faut re-enclencher le moteur
             eqmod2_track(tel);
@@ -1532,6 +1575,10 @@ int eqmod2_action_goto(struct telprop *tel)
 	}
 	// --- Ne fait rien si le système est déjà en train de pointer
 	if ( tel->state == EQMOD_STATE_SLEW ) {
+		return -1;
+	}
+	// --- Ne fait rien si le système de codeur est aux valeurs minis
+	if (tel->problem_motor!=PROBLEM_MOTOR_NOTHING) {
 		return -1;
 	}
 	// --- Avant n'importe quel GOTO il faut arreter les moteurs
