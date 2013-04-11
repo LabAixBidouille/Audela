@@ -302,7 +302,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqfc,buttonShiftConfig)      "Spostamento"
    set caption(acqfc,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
-   set caption(acqfc,flatAuto)               "# Flats Auto"
+   set caption(acqfc,flatAuto)               "Flat Field automatici"
 
    set caption(acqfc,emccd,mode)             "# Mode EMCCD"
    set caption(acqfc,emccd,parametres)       "# Paramètres EMCCD"
