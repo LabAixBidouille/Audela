@@ -819,7 +819,7 @@ namespace eval gui_cata_creation {
    # la GUI (onglet Manuel). L'astrometrie est calculee par Priam.
    # @return void
    #
-   proc ::gui_cata_creation::manual_create_wcs {  } {
+   proc ::gui_cata_creation::manual_create_wcs_obsolete {  } {
 
       global bddconf
 
@@ -868,6 +868,21 @@ namespace eval gui_cata_creation {
       set ::tools_astrometry::reference ""
 
       # Creation des fichiers et lancement de Priam
+
+
+ #  #  #       
+ #  #  #       
+ #  #  #       
+ #  #  #       
+ #  #  #       
+ # @warning CA ne va plus fonctionner ici , car les champs astroid sont modulable : par ::bdi_tools_psf::get_otherfields_astroid
+ #  #  #       
+ #  #  #       
+ #  #  #       
+ #  #  #       
+ #  #  #       
+
+
       gren_info "     Creation des fichiers et lancement de Priam\n"
       set id 0
       set ls [lindex $listsources 1]
@@ -1357,7 +1372,7 @@ namespace eval gui_cata_creation {
    #
    proc ::gui_cata_creation::develop { tag } {
 
-      switch $box {
+      switch $tag {
 
          "box" {
             set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
@@ -1986,57 +2001,18 @@ namespace eval gui_cata_creation {
                set creer [frame $psf.creer -borderwidth 0 -cursor arrow -relief groove]
                pack $creer -in $psf -side top -anchor w -expand 0 -fill x -pady 5
                   checkbutton $creer.check -highlightthickness 0 -text "  $caption(gui_cata_creation,psfcreer)" \
-                        -variable ::psf_tools::use_psf -command "::gui_cata_creation::handlePSFParams $psf"
+                        -variable ::psf_tools::use_psf -command ""
                   pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w 
 
                #--- Option de creation du cata Astroid
-               set opts [frame $psf.opts -borderwidth 1 -cursor arrow -relief sunken]
-               pack $opts -in $psf  -side top -anchor e -expand 0 -fill x 
+               set methconf [frame $psf.methconf -borderwidth 0 -cursor arrow -relief sunken]
+               pack $methconf -in $psf  -side top -anchor e -expand 0 -fill x  -padx 3 -pady 3
         
-                  #--- Niveau de saturation (ADU)
-                  set saturation [frame $opts.saturation]
-                  pack $saturation -in $opts -side top -anchor e -expand 0 -fill x -pady 5
-                     label $saturation.lab -text "$caption(gui_cata_creation,psfsatu)" -width 24 -anchor e
-                     pack $saturation.lab -in $saturation -side left -padx 5 -pady 0 -anchor e
-                     entry $saturation.val -relief sunken -textvariable ::psf_tools::psf_saturation -width 6
-                     pack $saturation.val -in $saturation -side left -pady 1 -anchor w
 
-                  #--- Delta
-                  set delta [frame $opts.delta]
-                  pack $delta -in $opts -side top -anchor e -expand 0 -fill x -pady 5
-                     label $delta.lab -text "$caption(gui_cata_creation,psfdelta)" -width 24 -anchor e
-                     pack $delta.lab -in $delta -side left -padx 5 -pady 0 -anchor e
-                     entry $delta.val -relief sunken -textvariable ::psf_tools::psf_radius -width 3
-                     pack $delta.val -in $delta -side left -pady 1 -anchor w
+               ::bdi_gui_psf::gui_configuration $methconf
 
-               #--- Creation du cata psf
-               set methglobale [frame $psf.methglobale -borderwidth 0 -cursor arrow -relief groove]
-               pack $methglobale -in $psf -side top -anchor w -expand 0 -fill x -pady 5
-                  checkbutton $methglobale.check -highlightthickness 0 -text "  $caption(gui_cata_creation,psfauto)" \
-                     -variable ::psf_tools::use_global -command "::gui_cata_creation::handlePSFParams $psf"
-                  pack $methglobale.check -in $methglobale -side left -padx 3 -pady 3 -anchor w 
 
-               #--- Option de creation du cata Astroid
-               set opts [frame $psf.opts2 -borderwidth 1 -cursor arrow -relief sunken]
-               pack $opts -in $psf  -side top -anchor e -expand 0 -fill x 
-        
-                  #--- Threshold
-                  set threshold [frame $opts.threshold]
-                  pack $threshold -in $opts -side top -anchor e -expand 0 -fill x -pady 5
-                     label $threshold.lab -text "$caption(gui_cata_creation,psfseuil)" -width 24 -anchor e
-                     pack  $threshold.lab -side left -padx 5 -pady 0 -anchor e
-                     entry $threshold.val -relief sunken -textvariable ::psf_tools::psf_threshold -width 3
-                     pack  $threshold.val -side left -pady 1 -anchor w
-
-                  #--- Threshold
-                  set limitradius [frame $opts.limitradius]
-                  pack $limitradius -in $opts -side top -anchor e -expand 0 -fill x -pady 5
-                     label $limitradius.lab -text "$caption(gui_cata_creation,psfrayon)" -width 24 -anchor e
-                     pack  $limitradius.lab -side left -padx 5 -pady 0 -anchor e
-                     entry $limitradius.val -relief sunken -textvariable ::psf_tools::psf_limitradius -width 3
-                     pack  $limitradius.val -side left -pady 1 -anchor w
-
-               ::gui_cata_creation::handlePSFParams $psf
+               #::gui_cata_creation::handlePSFParams $psf
  
 
          #-----------------------------------------------------------------------

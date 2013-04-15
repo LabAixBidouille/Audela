@@ -66,7 +66,37 @@ namespace eval bdi_tools_psf {
    }
 
 
-
+#  0    "xsm" 
+#  1    "ysm" 
+#  2    "err_xsm" 
+#  3    "err_ysm" 
+#  4    "fwhmx" 
+#  5    "fwhmy" 
+#  6    "fwhm" 
+#  7    "flux" 
+#  8    "err_flux" 
+#  9    "pixmax"
+#  10   "intensity" 
+#  11   "sky" 
+#  12   "err_sky" 
+#  13   "snint" 
+#  14   "radius" 
+#  15   "rdiff" 
+#  16   "err_psf" 
+#  17   "ra" 
+#  18   "dec"
+#  19   "res_ra" 
+#  20   "res_dec" 
+#  21   "omc_ra" 
+#  22   "omc_dec" 
+#  23   "mag" 
+#  24   "err_mag" 
+#  25   "name" 
+#  26   "flagastrom" 
+#  27   "flagphotom" 
+#  28   "cataastrom"
+#  29   "cataphotom"
+#  
    #------------------------------------------------------------
    ## Cette fonction renvoit les noms des champs d'une source
    # ASTROID sous la forme des other field
@@ -203,7 +233,10 @@ namespace eval bdi_tools_psf {
    
       set p [::bdi_tools_psf::get_otherfields_astroid]
       set pos [lsearch $p $key]
-      set othf [lreplace $othf $pos $pos $val]
+      if {$pos != -1} {
+         set othf [lreplace $othf $pos $pos $val]
+      }
+      return
    }
 
 
@@ -320,23 +353,6 @@ namespace eval bdi_tools_psf {
    }
 
 
-   #------------------------------------------------------------
-   ## Fonction qui supprime le catalogue ASTROID d'une source
-   # @param p_s pointeur d'une source qui sera modifiee
-   # @return void
-   #
-   proc ::bdi_tools_psf::delete_cata_from_source { p_s cata} {
-
-      upvar $p_s s
-
-      set news ""
-      foreach c $s {
-         if {[lindex $c 0]==$cata} {continue}
-         lappend news $c
-      }
-      set s $news
-
-   }
 
    #------------------------------------------------------------
    ## Fonction qui modifie les champs commonfields d'une source ASTROID
@@ -386,10 +402,16 @@ namespace eval bdi_tools_psf {
       upvar $p_s s
       upvar $p_othf othf
       
-      ::bdi_tools_psf::delete_cata_from_source s "ASTROID"
+      ::manage_source::delete_catalog_in_source s "ASTROID"
       lappend s [list "ASTROID" {} $othf]
       ::bdi_tools_psf::set_astroid_common_fields s
    }
+
+
+
+
+
+
 
 
    #------------------------------------------------------------
@@ -401,10 +423,12 @@ namespace eval bdi_tools_psf {
 
       upvar $p_s s
       
-      gren_info "psf_methode = $::bdi_tools_psf::psf_methode\n"
       set xy       [::bdi_tools_psf::get_xy s]
       set othf_old [::bdi_tools_psf::get_astroid_othf_from_source $s]
       set p        [::bdi_tools_psf::get_otherfields_astroid]
+      if {[llength $othf_old ] !=  [llength $p ]} {
+         set othf_old [::bdi_tools_psf::get_astroid_null]
+      }
 
       switch $::bdi_tools_psf::psf_methode {
 
@@ -419,7 +443,13 @@ namespace eval bdi_tools_psf {
          }
 
          "globale" {
-            set othf [::bdi_tools_methodes_psf::globale [lindex $xy 0] [lindex $xy 1] $::audace(bufNo)]
+            set err [ catch { set othf [::bdi_tools_methodes_psf::globale [lindex $xy 0] [lindex $xy 1] $::audace(bufNo)] } msg ]
+            if {$err} {
+               gren_erreur "err = $err\n"
+               gren_erreur "msg = $msg\n"
+               return -code 10 "Globale PSF impossible"
+               
+            }
             set fields [::bdi_tools_psf::get_globale_fields]
          }
 
@@ -430,13 +460,26 @@ namespace eval bdi_tools_psf {
          }
       
       }
+      
+      # Affichage des resultats dans la console
       #::bdi_tools_psf::gren_astroid othf
 
       # on ne modifie que les champs modifies par la methode
+
+
       foreach key $fields {
          set pos [lsearch $p $key]
          set othf_old [lreplace $othf_old $pos $pos [lindex $othf $pos] ]
       }
+      
+      # on nomme la source
+      set name_cata [::manage_source::namable $s]
+      if {$name_cata!=""} {
+         set name_source [::manage_source::naming $s $name_cata]
+         ::bdi_tools_psf::set_by_key othf_old "name" $name_source
+      }
+
+
       set err_psf [::bdi_tools_psf::get_val othf_old "err_psf"]
       if {$err_psf == "" } {
          ::bdi_tools_psf::set_astroid_in_source s othf_old
@@ -459,4 +502,196 @@ namespace eval bdi_tools_psf {
 
 
 
+
+
+   #
+   # ::analyse_source::psf
+   # Mesure de PSF d'une source
+   #
+   proc ::bdi_tools_psf::get_psf_listsources { p_listsources } {
+   
+      upvar $p_listsources listsources
+    
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+      set pass "no"
+      set id 0     
+      foreach s $sources {
+         set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
+         
+         if {$id == -1} {
+            gren_info "err=$err\n"
+            gren_info "err_psf=$err_psf\n"
+            gren_info "s=$s\n"
+         }
+         
+         if {$err} {
+            ::manage_source::delete_catalog_in_source s "ASTROID"
+         } else {
+            if { $err_psf != ""} {
+               gren_erreur "*ERREUR PSF err_psf: $err_psf\n"
+            } else {
+               set pass "yes"
+            }
+         }
+         set sources [lreplace $sources $id $id $s]
+         incr id
+      }
+
+      if {$pass=="no"} { return }
+      set pos [lsearch -index 0 $fields "ASTROID"]
+      if {$pos!=-1} {
+         set fields [lreplace $fields $pos $pos [::bdi_tools_psf::get_fields_sources_astroid]]
+      } else {
+      
+         set fields [linsert $fields end [::bdi_tools_psf::get_fields_sources_astroid]]
+      }
+      
+      set listsources [list $fields $sources]
+      ::bdi_tools_psf::set_mag listsources
+      
+      #gren_erreur "[lsearch -index 0 [lindex $listsources {1 2 }] "ASTROID"]\n"
+      #gren_erreur "[lindex $listsources {1 2 8 2 25}]\n"
+      return
+   }
+
+
+
+
+
+
+
+   proc ::bdi_tools_psf::set_mag { send_listsources } {
+
+      upvar $send_listsources listsources
+      ::bdi_tools_psf::set_mag_usno_r listsources
+
+   }
+
+
+   proc ::bdi_tools_psf::set_mag_usno_r { send_listsources } {
+      
+      upvar $send_listsources listsources
+
+      #set ::psf_tools::debug $listsources
+
+
+      set fields  [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+      
+      set nd_sources [llength $sources]
+
+      set tabmaginst ""
+      set tabmagcata ""
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "USNOA2"} {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos!=-1} {
+                  set usnoa2 $cata
+                  set usnoa2_oth [lindex $usnoa2 2]
+                  set astroid [lindex $s $pos]
+                  set astroid_com [lindex $astroid 1]
+                  set astroid_oth [lindex $astroid 2]
+                  set flux [lindex $astroid_oth 7 ]
+                  set magcata  [lindex $usnoa2_oth  7]
+                  if {$flux!="" && $magcata != "" && $flux>0} {        
+                     set maginst  [expr -log10($flux)*2.5]
+                     lappend tabmaginst  $maginst 
+                     lappend tabmagcata  $magcata  
+                  }
+                  
+               }
+            }
+         }
+      }
+      #gren_info "nb data = [llength $tabflux] == [llength $tabmag] \n"
+      set median_maginst [::math::statistics::median $tabmaginst ]
+      set median_magcata [::math::statistics::median $tabmagcata ]
+      set const_mag      [expr $median_magcata - $median_maginst]
+      #gren_info "median_maginst = $median_maginst\n"
+      #gren_info "median_magcata = $median_magcata\n"
+      #gren_info "const_mag = $const_mag\n"
+
+      set tabmaginst ""
+      set tabmagcata ""
+      set tabflux ""
+      set tabmag  ""
+      foreach s $sources {
+         foreach cata $s {
+            if {[lindex $cata 0] == "USNOA2"} {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos!=-1} {
+                  set usnoa2      $cata
+                  set usnoa2_oth  [lindex $usnoa2 2]
+                  set astroid     [lindex $s $pos]
+                  set astroid_com [lindex $astroid 1]
+                  set astroid_oth [lindex $astroid 2]
+                  set flux        [::bdi_tools_psf::get_val astroid_oth "flux" ]
+                  set magcata     [lindex $usnoa2_oth  7 ]
+
+                  if {$flux!="" && $magcata != ""  && $flux>0} {
+                     set maginst  [expr -log10($flux)*2.5]
+                     set magcalc  [expr -log10($flux)*2.5 + $const_mag]
+                     if {[expr abs($magcata - $magcalc) ] < 1.} {
+                        lappend tabmaginst  $maginst 
+                        lappend tabmagcata  $magcata  
+                        #gren_info "mag cata = $magcata ; maginstru = $maginst ; diff = [expr abs($magcata - $maginst) ] ; macalc = $magcalc ; diff = [expr abs($magcalc - $magcata) ]\n"
+                        #gren_info "flux = $flux ; mag cata = $magcata ; magcalc = $magcalc ; diff = [expr abs($magcata - $magcalc) ] \n"
+                        lappend tabmag  [expr abs($magcalc - $magcata) ]
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      set median_maginst [::math::statistics::median $tabmaginst ]
+      set median_magcata [::math::statistics::median $tabmagcata ]
+      set const_mag      [expr $median_magcata - $median_maginst]
+      set mag_err [format "%.3f" [::math::statistics::mean $tabmag] ]
+
+  # calcul toutes les sources
+
+      set spos 0
+      foreach s $sources {
+         set cpos [lsearch -index 0 $s "ASTROID"]
+         if {$cpos != -1} {
+
+               set astroid [lindex $s $cpos]
+               set astroid_com [lindex $astroid 1]
+               set astroid_oth [lindex $astroid 2]
+               set flux [::bdi_tools_psf::get_val astroid_oth "flux" ]
+
+               set err [catch {set mag [format "%.3f" [expr -log10($flux)*2.5 + $const_mag] ]} msg ]
+               if {$err} {
+                  #gren_info "ERREUR MAG : s = $s \n"
+                  #gren_info "ERREUR MAG : flux = $flux ; const_mag = $const_mag\n"
+                  incr spos
+                  continue
+               }
+               if {$flux < 0 } {
+                  incr spos
+                  continue
+               }
+               set astroid_com [lreplace  $astroid_com 3 4 $mag $mag_err ]
+               ::bdi_tools_psf::set_by_key astroid_oth "mag" $mag
+               ::bdi_tools_psf::set_by_key astroid_oth "err_mag" $mag_err
+               set s [lreplace $s $cpos $cpos [list "ASTROID" $astroid_com $astroid_oth]]
+               set sources [lreplace $sources $spos $spos $s]
+         }
+         incr spos
+         
+      }
+      
+      set listsources [list $fields $sources]
+      return
+   }
+
+
+
+
 }
+
+
+

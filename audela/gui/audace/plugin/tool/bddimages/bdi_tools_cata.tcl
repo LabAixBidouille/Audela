@@ -743,6 +743,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
 
+
    proc ::tools_cata::get_table { name table } {
 
 
@@ -764,6 +765,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       set motiftr  "<vot:TR>(.*?)</vot:TR>"
       set motiftd  "<vot:TD>(.*?)</vot:TD>"
+      # parfois
+      set motiftb  "<vot:TD(>.*?|)/>"
       
       set tr [regexp -all -inline -- $motiftr $table ]
       set cpt 1
@@ -771,6 +774,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       foreach { a x } $tr {
          #gren_info "TR-> $cpt  : a: $a x: $x \n"
          #gren_info "TR-> $cpt \n"
+         set x [string map { "<vot:TD/>" "<vot:TD></vot:TD>" } $x]
          set td [regexp -all -inline -- $motiftd $x ]
          set u 0
          set ls ""
@@ -930,7 +934,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       if {$::tools_cata::use_ppmxl} {
          #gren_info "CMD: csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius\n"
          set ppmxl [csppmxl $::tools_cata::catalog_ppmxl $ra $dec $radius]
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmxl]\n"
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmxl]\n"
          set ppmxl [::manage_source::set_common_fields $ppmxl PPMXL { RAJ2000 DECJ2000 errDec magR1 0.5 }]
          #::manage_source::imprim_3_sources $ppmxl
          #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
@@ -980,15 +984,19 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       }
 
       if {$::psf_tools::use_psf} {
-         
-         if {$::psf_tools::use_global} {
-            ::psf_tools::psf_listsources_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation
-         } else {
-            ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_radius $::psf_tools::psf_saturation
-         }
+      
+         gren_info "** Working ASTROID "
+         set tt0 [clock clicks -milliseconds]
+
+# ::bdi_tools_psf::get_psf_listsources ::tools_cata::current_listsources_sav
+
+         ::bdi_tools_psf::get_psf_listsources listsources
+         set ::tools_cata::current_listsources_sav $listsources
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
-         ::psf_tools::set_mag listsources
-         
+   
+         set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+         gren_info "in $tt secondes with SUCCESS for $::tools_cata::nb_astroid sources\n"
+
       }
 
       # Sauvegarde du cata XML
@@ -1463,6 +1471,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set listsources $::tools_cata::current_listsources
       set fields  [lindex $listsources 0]
       set sources [lindex $listsources 1]
+      #gren_erreur "sources current_listsources_to_tklist=[lindex $sources {1 9 2 0}]\n"
 
       set nbcata  [llength $fields]
 
@@ -1526,18 +1535,18 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
          incr cpts
 
-         set ar "-"
-         set ac "-"
-         set pr "-"
-         set pc "-"
+         set ar ""
+         set ac ""
+         set pr ""
+         set pc ""
 
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
-            set b  [lindex [lindex $s $x] 2]           
-            set ar [lindex $b 25]
-            set ac [lindex $b 27]
-            set pr [lindex $b 26]
-            set pc [lindex $b 28]   
+            set othf [lindex [lindex $s $x] 2]           
+            set ar [::bdi_tools_psf::get_val othf "flagastrom"]
+            set ac [::bdi_tools_psf::get_val othf "cataastrom"]
+            set pr [::bdi_tools_psf::get_val othf "flagphotom"]
+            set pc [::bdi_tools_psf::get_val othf "cataphotom"]
             #gren_info "AR = $ar $ac $pr $pc\n"
          }
 
@@ -1562,7 +1571,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
             }
             lappend ::gui_cata::tklist($idcata) $line
          }
-
 
       }
 

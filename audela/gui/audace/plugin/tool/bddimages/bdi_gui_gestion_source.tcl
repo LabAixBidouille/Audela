@@ -53,33 +53,67 @@ namespace eval bdi_gui_gestion_source {
 
       ::psf_tools::inittoconf
       ::bdi_gui_psf::inittoconf
-
+      
+      
+      #gren_erreur "work_list = $work_list\n"
+      
+      
       # RAZ des valeurs de psf de la gui
       if {[info exists ::gui_cata::current_psf]} {unset ::gui_cata::current_psf}
       foreach key [list xsm ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta] {
          set ::gui_cata::current_psf($key) ""
       }
-      set iddl "" 
-      set cpt 0
-      foreach work $work_list {
-         set nb [llength $work]
-         if {$nb == 0} {
-            # @todo gerer le cas nb = 0
-            gren_erreur "Erreur : Cas non pris en charge dans ::bdi_gui_gestion_source::init : nb = 0\n"
-            return -code 1 "Rien a Faire"
+
+
+      if { $work_list == "current" } {
+         set work_list ""
+         for {set cpt 1} {$cpt <= [llength $::tools_cata::img_list] } { incr cpt } {
+               set ::bdi_gui_gestion_source::idd2gui_list($cpt) $cpt
+               set ::bdi_gui_gestion_source::current2idd_list($cpt) $cpt
+               lappend work_list [ list $cpt ]
          }
-         if {$nb >= 1} {
-            set idd [lindex $work 0]
-            incr cpt
-            set ::bdi_gui_gestion_source::idd2gui_list($idd) $cpt
-            set ::bdi_gui_gestion_source::current2idd_list($cpt) $idd
+         incr cpt -1
+         gren_info  "id_current_image $::tools_cata::id_current_image \n"
+         set ::bdi_gui_gestion_source::work_id [expr $::tools_cata::id_current_image -1]
+      }  else {   
+
+         if { $work_list == "" } {
+            set work_list ""
+            for {set cpt 1} {$cpt <= [llength $::tools_cata::img_list] } { incr cpt } {
+                  set ::bdi_gui_gestion_source::idd2gui_list($cpt) $cpt
+                  set ::bdi_gui_gestion_source::current2idd_list($cpt) $cpt
+                  lappend work_list [ list $cpt ]
+            }
+            incr cpt -1
+            set ::bdi_gui_gestion_source::work_id 0
+
+         } else {
+
+            set iddl "" 
+            set cpt 0
+            foreach work $work_list {
+               set nb [llength $work]
+               if {$nb == 0} {
+                  # @todo gerer le cas nb = 0
+                  gren_erreur "Erreur : Cas non pris en charge dans ::bdi_gui_gestion_source::init : nb = 0\n"
+                  return -code 1 "Rien a Faire"
+               }
+               if {$nb >= 1} {
+                  set idd [lindex $work 0]
+                  #gren_info "idd=$idd\n"
+                  incr cpt
+                  set ::bdi_gui_gestion_source::idd2gui_list($idd) $cpt
+                  set ::bdi_gui_gestion_source::current2idd_list($cpt) $idd
+               }
+            }
+            set ::bdi_gui_gestion_source::work_id 0
          }
       }
       
+      #gren_info  "work_id $::bdi_gui_gestion_source::work_id \n"
+
       set ::bdi_gui_gestion_source::nb_img_list $cpt
       set ::bdi_gui_gestion_source::work_nb_list [llength $work_list]
-      
-      set ::bdi_gui_gestion_source::work_id 0
       set ::bdi_gui_gestion_source::work_list $work_list
       set ::tools_cata::id_current_image -1
       
@@ -95,8 +129,9 @@ namespace eval bdi_gui_gestion_source {
 
 
 
-   proc ::bdi_gui_gestion_source::work_charge {  } {
+   proc ::bdi_gui_gestion_source::work_charge { {forceids ""} } {
 
+      
 
       set work [lindex $::bdi_gui_gestion_source::work_list $::bdi_gui_gestion_source::work_id]
       set nb [llength $work]
@@ -144,6 +179,10 @@ namespace eval bdi_gui_gestion_source {
          $::bdi_gui_gestion_source::fen.appli.actions2.next configure -state normal
       }
 
+      if {$forceids > -1} {
+         set ids $forceids
+      }
+      
 
       if {$ids > -1} {
          # centre l objet demandé dans la visu
@@ -159,8 +198,8 @@ namespace eval bdi_gui_gestion_source {
          ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids
       }
       
-      gren_info "work_id = $::bdi_gui_gestion_source::work_id\n"
-      gren_info "work_nb_list = $::bdi_gui_gestion_source::work_nb_list\n"
+      #gren_info "work_id = $::bdi_gui_gestion_source::work_id\n"
+      #gren_info "work_nb_list = $::bdi_gui_gestion_source::work_nb_list\n"
 
    }
 
@@ -350,6 +389,11 @@ namespace eval bdi_gui_gestion_source {
       set width 2
       cleanmark
 
+         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+         #::bdi_tools_psf::gren_astroid othf
+
+
+
       set ::bdi_gui_gestion_source::gui_catalogues_data ""
 
       # Nom de la source
@@ -385,13 +429,6 @@ namespace eval bdi_gui_gestion_source {
 
 
 
-
-
-
-
-
-
-
    proc ::bdi_gui_gestion_source::grab_sources_getbox {  } {
  
       set color red
@@ -419,7 +456,7 @@ namespace eval bdi_gui_gestion_source {
             if {$namable==""} {
                set name ""
             } else {
-               gren_erreur "name = $namable\n"
+               #gren_erreur "name = $namable\n"
                set name [::manage_source::naming $s $namable]
             } 
 
@@ -488,7 +525,16 @@ namespace eval bdi_gui_gestion_source {
 
 
 
-
+   proc ::bdi_gui_gestion_source::focus_source {  } {
+      if {$::gui_cata::psf_id_source != ""} {
+         catch {
+            set id [::manage_source::name2ids ::gui_cata::psf_name_source ::tools_cata::current_listsources]
+            gren_info "ids = $id\n"
+            ::bdi_gui_gestion_source::select_source $::gui_cata::psf_id_source
+            ::bdi_gui_gestion_source::work_charge $::gui_cata::psf_id_source
+         }
+      }
+   }
 
 
 
@@ -501,6 +547,10 @@ namespace eval bdi_gui_gestion_source {
       set xpass [lindex $r 3]
       set ypass [lindex $r 4]
       set s     [lindex $r 5]
+
+         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+         ::bdi_tools_psf::gren_astroid othf
+
  
       if {[info exists ::gui_cata::psf_best_sol]} { unset ::gui_cata::psf_best_sol }
 
@@ -526,6 +576,7 @@ namespace eval bdi_gui_gestion_source {
          set ::gui_cata::psf_name_source [::manage_source::naming $s $d]
          set ::gui_cata::psf_name_cata $d
          set ::gui_cata::psf_id_source $id
+         
       }
 
    }
@@ -1329,9 +1380,9 @@ namespace eval bdi_gui_gestion_source {
                   -command "::bdi_gui_gestion_source::gestion_mode_manuel_grab"
                  pack   $actions.grab -side left -padx 0
 
-                 button $actions.crop -state active -text "Crop" -relief "raised" \
-                  -command ""
-                 pack   $actions.crop -side left -padx 0
+                 button $actions.foc -state active -text "Focus" -relief "raised" \
+                  -command "::bdi_gui_gestion_source::focus_source"
+                 pack   $actions.foc -side left -padx 0
 
                  button $actions.new -state disabled -text "New" -relief "raised" \
                   -command "::bdi_gui_gestion_source::gestion_mode_manuel_new"
@@ -1352,11 +1403,11 @@ namespace eval bdi_gui_gestion_source {
                   -command "::bdi_gui_gestion_source::next"
                  pack   $actions.next -side left -padx 0
 
-                 button $actions.nextauto -state active -text "Next & Auto" -relief "raised" \
+                 button $actions.nextauto -state disabled -text "Next & Auto" -relief "raised" \
                   -command "::bdi_gui_gestion_source::nextauto_img"
                  pack   $actions.nextauto -side left -padx 0
 
-                 button $actions.savenextauto -state active -text "Save & Next & Auto" -relief "raised" \
+                 button $actions.savenextauto -state disabled -text "Save & Next & Auto" -relief "raised" \
                   -command "::bdi_gui_gestion_source::savenextauto_img"
                  pack   $actions.savenextauto -side left -padx 0
  

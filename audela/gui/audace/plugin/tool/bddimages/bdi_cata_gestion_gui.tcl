@@ -443,6 +443,9 @@ namespace eval cata_gestion_gui {
       menu $popupTbl -title "Selection"
 
         # Edite la liste selectionnee
+        $popupTbl add command -label "Centrer la source" -command "::cata_gestion_gui::center_visu $tbl"
+
+        # Edite la liste selectionnee
         $popupTbl add command -label "Grab les sources" -command "::cata_gestion_gui::grab_sources $tbl"
 
         # Edite la liste selectionnee
@@ -493,6 +496,9 @@ namespace eval cata_gestion_gui {
         # Edite la liste selectionnee
         $popupTbl add command -label "PSF Auto -> ASTROID" -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
 
+        # Edite la liste selectionnee
+        $popupTbl add command -label "Console ASTROID" -command "::cata_gestion_gui::console_astroid $tbl" -state normal
+
         # Separateur
         $popupTbl add separator
 
@@ -520,6 +526,7 @@ namespace eval cata_gestion_gui {
 
  
  
+
 
 
 
@@ -670,10 +677,41 @@ namespace eval cata_gestion_gui {
 
 
 
+   proc ::cata_gestion_gui::center_visu { { tbl "" } } {
+
+
+         foreach select [$tbl curselection] {
+            set id   [lindex [$tbl get $select] 0]
+            break
+         }
+         
+         set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+         
+         ::confVisu::setpos $::audace(visuNo) [::bdi_tools_psf::get_xy s ]
+         
+
+   }
 
 
 
 
+
+   proc ::cata_gestion_gui::console_astroid { { tbl "" } } {
+
+
+         foreach select [$tbl curselection] {
+            set id   [lindex [$tbl get $select] 0]
+            break
+         }
+         
+         set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+         
+         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+         ::bdi_tools_psf::gren_astroid othf
+         
+         
+
+   }
 
 
 
@@ -699,9 +737,9 @@ namespace eval cata_gestion_gui {
             set pc   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_catalog $idcata]]
             set name [lindex [$tbl get $select] [::gui_cata::get_pos_col name $idcata]]
             set cata ""
-            if {$ac != "-"} {
+            if {$ac != ""} {
                set cata $ac
-            } elseif {$pc != "-"} {
+            } elseif {$pc != ""} {
                set cata $pc
             }
 
@@ -1297,7 +1335,7 @@ namespace eval cata_gestion_gui {
  
    proc ::cata_gestion_gui::unset_flag { tbl } {
 
-      set flag "-"
+      set flag ""
       gren_info "tbl=$tbl\n"
       set onglets $::cata_gestion_gui::fen.appli.onglets
       set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
@@ -1765,85 +1803,14 @@ namespace eval cata_gestion_gui {
 
       #gren_info "psf_popup_auto tbl = $tbl \n"
 
-      set list_id ""
+      set worklist ""
       foreach select [$tbl curselection] {
-         set list_id [linsert $list_id end [lindex [$tbl get $select] 0] ]
+         lappend worklist [list $::tools_cata::id_current_image [lindex [$tbl get $select] 0] ]
       }
-      set list_id [list $list_id]
-      #gren_info "list_id = $list_id \n"
-
-
-
-      set ::cata_gestion_gui::popupprogress 0
-
-      set ::gui_cata::fenpopuppsf .popuppsf
-      if { [winfo exists $::gui_cata::fenpopuppsf] } {
-         wm withdraw $::gui_cata::fenpopuppsf
-         wm deiconify $::gui_cata::fenpopuppsf
-         focus $::gui_cata::fenpopuppsf
-         return
-      }
-      toplevel $::gui_cata::fenpopuppsf -class Toplevel
-      set posx_config [ lindex [ split [ wm geometry $::gui_cata::fenpopuppsf ] "+" ] 1 ]
-      set posy_config [ lindex [ split [ wm geometry $::gui_cata::fenpopuppsf ] "+" ] 2 ]
-      wm geometry $::gui_cata::fenpopuppsf +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
-      wm resizable $::gui_cata::fenpopuppsf 1 1
-      wm title $::gui_cata::fenpopuppsf "PSF"
-      wm protocol $::gui_cata::fenpopuppsf WM_DELETE_WINDOW "destroy $::gui_cata::fenpopuppsf"
-
-      set frm $::gui_cata::fenpopuppsf.appli
-
-      frame $frm -borderwidth 0 -cursor arrow -relief groove
-      pack $frm -in $::gui_cata::fenpopuppsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-
-         set data  [frame $frm.saturation -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             label $data.l -text "Saturation (ADU) : " 
-             pack  $data.l -side left -padx 2 -pady 0
-             
-             entry $data.v -textvariable ::psf_tools::psf_saturation -relief sunken -width 5
-             pack  $data.v -side left -padx 2 -pady 0
-
-         set data  [frame $frm.threshold -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             label $data.l -text "Threshold (arcsec): " 
-             pack  $data.l -side left -padx 2 -pady 0
-             
-             entry $data.v -textvariable ::psf_tools::psf_threshold -relief sunken -width 5
-             pack  $data.v -side left -padx 2 -pady 0
-
-         set data  [frame $frm.limitradius -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             label $data.l -text "Limite du Rayon (Pixel): " 
-             pack  $data.l -side left -padx 2 -pady 0
-             
-             entry $data.v -textvariable ::psf_tools::psf_limitradius -relief sunken -width 5
-             pack  $data.v -side left -padx 2 -pady 0
-
-         set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             set    pf [ ttk::progressbar $data.p -variable ::cata_gestion_gui::popupprogress -orient horizontal -length 200 -mode determinate]
-             pack   $pf -in $data -side top
-
-         set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             button $data.ress -state active -text "Ressource" -relief "raised" \
-                -command "::bddimages::ressource"
-             pack   $data.ress -side left -anchor c -padx 0 -padx 10 -pady 5
-
-             button $data.fermer -state active -text "Fermer" -relief "raised" \
-                -command "destroy $::gui_cata::fenpopuppsf"
-             pack   $data.fermer -side right -anchor c -padx 0 -padx 10 -pady 5
-
-             button $data.go -state active -text "Go" -relief "raised" \
-                -command "::cata_gestion_gui::psf_popup_auto_go $list_id ; destroy $::gui_cata::fenpopuppsf"
-             pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
-
+      #gren_info "worklist = $worklist \n"
+      
+      
+      ::bdi_gui_gestion_source::run $worklist
 
    }
 
@@ -1867,7 +1834,7 @@ namespace eval cata_gestion_gui {
    proc ::cata_gestion_gui::psf_auto_go { type list_id } {
 
       if {$type == "one"} {
-         ::cata_gestion_gui::psf_auto_go_one
+         ::cata_gestion_gui::psf_auto_go_one "oneimage"
       }
       if {$type == "popup"} {
       }
@@ -1895,61 +1862,78 @@ namespace eval cata_gestion_gui {
 
 # Anciennement ::cata_gestion_gui::psf_auto_go_one
 
-   proc ::cata_gestion_gui::psf_auto_go_one { } {
+   proc ::cata_gestion_gui::psf_auto_go_one { { worktype "oneimage" } { nd_sources "" } { current "" } } {
 
       #gren_info "id_current_image = $::tools_cata::id_current_image \n"
-     
+      gren_info "ASTROID sur l'image\n"
+      
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
       set fields  [lindex $::tools_cata::current_listsources 0]
       set sources [lindex $::tools_cata::current_listsources 1]
-      set nd_sources [llength $sources]
+
+      set pass "no"
+      set id 0
+
+      if {$worktype == "oneimage" } {
+         set nd_sources [llength $sources]
+         set current 0
+      } else {
+         set worktype "listimage"
+      }
 
       #gren_info "Sources selectionnees ($nd_sources): \n"
-      set pass "no"
-
-      set id 0     
+      set current 
       foreach s $sources {
          incr id
-         ::cata_gestion_gui::set_popupprogress $id $nd_sources
+         ::cata_gestion_gui::set_popupprogress $current $nd_sources
          #gren_info "ID = $id\n"
          #gren_info "S=$s\n"
-         set err [ catch {set r [::psf_tools::method_global s $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation $::audace(bufNo)]} msg ]
+         set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
+
+         set name [::manage_source::naming $s [::manage_source::namable $s] ]
+
+         #gren_erreur "$id ($name)-> ($err) ($err_psf) ($msg)\n"
          if {$err} {
-            #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
-            #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
+            ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
-            set pos [lsearch -index 0 $s "ASTROID"]
-            if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
-            #gren_info "NEW PSF ($id) $name\n"
-            #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
-            set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
-            #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
-            set pass "yes"
+            if { $err_psf != ""} {
+               gren_erreur "*ERREUR PSF err_psf: $err_psf\n"
+            } else {
+               set pass "yes"
+            }
          }
+         set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
+         incr current
       }
 
       if {$pass=="no"} { return }
 
       set pos [lsearch -index 0 $fields "ASTROID"]
       if {$pos!=-1} {
-         set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
+         #gren_info "Remplacement des champs fields ASTROID\n"
+         set fields [lreplace $fields $pos $pos [::bdi_tools_psf::get_fields_sources_astroid]]
       } else {
-         set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
+         #gren_info "Ajout des champs fields ASTROID\n"
+         set fields [linsert $fields end [::bdi_tools_psf::get_fields_sources_astroid]]
       }
       
       set ::tools_cata::current_listsources [list $fields $sources]
-      ::psf_tools::set_mag ::tools_cata::current_listsources
       
+      ::bdi_tools_psf::set_mag ::tools_cata::current_listsources
       
-         # pack les resultats
+      # pack les resultats
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-      ::tools_cata::current_listsources_to_tklist
-      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
-      ::cata_gestion_gui::charge_image_directaccess
-
+      
+      if {$worktype == "oneimage" } {
+         ::tools_cata::current_listsources_to_tklist
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+         ::cata_gestion_gui::charge_image_directaccess
+      }
+      
+      return $current
    }
    
 
@@ -1978,62 +1962,14 @@ namespace eval cata_gestion_gui {
       }
       set cpt 0
 
-
+      set current 0
      
       for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image<=$::tools_cata::nb_img_list} {incr ::tools_cata::id_current_image} {
 
          set ::cata_gestion_gui::directaccess $::tools_cata::id_current_image
          ::cata_gestion_gui::charge_image_directaccess
-
-         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-
-         set fields  [lindex $::tools_cata::current_listsources 0]
-         set sources [lindex $::tools_cata::current_listsources 1]
-
-         #gren_info "Sources selectionnees ($nd_sources): \n"
-         set pass "no"
-
-         set id 0     
-         foreach s $sources {
-            incr id
-            incr cpt
-            ::cata_gestion_gui::set_popupprogress $cpt $nd_sources
-            #gren_info "ID = $id\n"
-            #gren_info "S=$s\n"
-            set err [ catch {set r [::psf_tools::method_global s $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation $::audace(bufNo)]} msg ]
-            if {$err} {
-               #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
-               #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
-            } else {
-               set pos [lsearch -index 0 $s "ASTROID"]
-               if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
-               #gren_info "NEW PSF ($id) $name\n"
-               #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
-               set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
-               #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
-               set pass "yes"
-            }
-         }
-
-         if {$pass=="no"} { return }
-
-         set pos [lsearch -index 0 $fields "ASTROID"]
-         if {$pos!=-1} {
-            set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
-         } else {
-            set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
-         }
-
-         set ::tools_cata::current_listsources [list $fields $sources]
-         ::psf_tools::set_mag ::tools_cata::current_listsources
+         set current [::cata_gestion_gui::psf_auto_go_one "listimage" $nd_sources $current]
          
-         # pack les resultats
-         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-         ::tools_cata::current_listsources_to_tklist
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
-
       }
 
 
@@ -2055,11 +1991,11 @@ namespace eval cata_gestion_gui {
 
 
 
-
-
 # Anciennement ::gui_cata::psf_auto
 
    proc ::cata_gestion_gui::psf_auto { type { tbl ""} } {
+
+
 
       set list_id [list "nothing"]
       if {$type == "one"} {
@@ -2102,32 +2038,7 @@ namespace eval cata_gestion_gui {
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_cata::fenpopuppsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
 
-         set data  [frame $frm.saturation -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             label $data.l -text "Saturation (ADU) : " 
-             pack  $data.l -side left -padx 2 -pady 0
-             
-             entry $data.v -textvariable ::psf_tools::psf_saturation -relief sunken -width 5
-             pack  $data.v -side left -padx 2 -pady 0
-
-         set data  [frame $frm.threshold -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             label $data.l -text "Threshold (arcsec): " 
-             pack  $data.l -side left -padx 2 -pady 0
-             
-             entry $data.v -textvariable ::psf_tools::psf_threshold -relief sunken -width 5
-             pack  $data.v -side left -padx 2 -pady 0
-
-         set data  [frame $frm.limitradius -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-             label $data.l -text "Limite du Rayon (pixel): " 
-             pack  $data.l -side left -padx 2 -pady 0
-             
-             entry $data.v -textvariable ::psf_tools::psf_limitradius -relief sunken -width 5
-             pack  $data.v -side left -padx 2 -pady 0
+         ::bdi_gui_psf::gui_configuration $frm
 
          set info  [frame $frm.info -borderwidth 0 -cursor arrow -relief groove]
          pack $info -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2318,7 +2229,7 @@ namespace eval cata_gestion_gui {
            menubutton $menubar.psf -text "PSF" -underline 0 -menu $menubar.psf.menu
            menu $menubar.psf.menu -tearoff 0
 
-             $menubar.psf.menu add command -label "Manuel sur l'image" -command "::psf_gui::gestion_mode_manuel"
+             $menubar.psf.menu add command -label "Manuel sur l'image" -command "::bdi_gui_gestion_source::run current"
              $menubar.psf.menu add command -label "Auto sur l'image" -command "::cata_gestion_gui::psf_auto one"
              $menubar.psf.menu add command -label "Auto toutes images" -command "::cata_gestion_gui::psf_auto all"
 

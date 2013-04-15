@@ -15,42 +15,36 @@ Recherche : refaire les boutons d affichage:
 general : 
 
     - commencer a enlever les affichages de la console (qui sont pas necessaires)
-    - doxyfile
 
+Voir : 
+    - il manque l affichage du catalogue ASTROID
     
 création cata :
-
-    - menu Astroid : verifier l information avec le mode manuel de la gestion des cata
+    - lancement en mode console
+    - verifier qu on peut supprimer les chemin des catalogues de bddconf
+    - Chemin des catalogues utiliser les variables audace
+    - menu Astroid : verifier la photometrie par rapport au mode manuel de la gestion des cata
     - bug exec: apres un certain temps, exec ne peut plus creer de subprocess 
       par manque de memoire: pourquoi ? soluce ?
 
 PSF 
-    - A faire nouvelle GUI PSF executable depuis n importe quelle GUI.
-    - remonter psf gestion dans recherche
+    - finir que ca puisse etre appelé depuis toutes les outils en mode GUI ou non.
     - mesurer le photocentre (PSF): apres reglage des parametres => on applique a toutes les images pour 1 source donnée
                                     ou mode "rafale" sur les n images suivantes, avec n reglable
-    - bug crop de l image si l etoile est en bord de champ
-    - mecanisme de dissociation de catalogue
     - mecanisme de rappel des conesearch
-
-    - afficher le crop de l image
-    - remettre le bouton grab
-    - onglets : mesures, methode, rafale, conesearch, identification, cata
     
 Gestion cata :
 
     - renommage du champ "name" de astroid
-    - verification des sources; erreur : quand on a SKYBOT + ETOILE
-                                erreur : quand ra dec de different catalogue sont superieur a thrsehlod (")
 
 Astrométrie :
     - ephemeride etoile
     - tag envoi mail mpc dans header fits ?
     - verifier iau_code egal a toutes les images.
-JB  - gerer limite Priam
+    - gerer limite Priam : mettre un message d erreur en cas de depassament des limites
     - regler voir wcs
     - supprimer source dans dse
-    - supprimer image dans dsp 
+    - supprimer image dans dsp
 
 
 BUGS

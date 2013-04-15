@@ -91,6 +91,7 @@ namespace eval bdi_tools_methodes_psf {
          set stdev_flux       [::math::statistics::stdev  $tabflux ]
       } else {
          ::bdi_tools_psf::set_photom_error othf "Error"
+         gren_erreur "globale erreur...\n"
          return $othf
       }
 
