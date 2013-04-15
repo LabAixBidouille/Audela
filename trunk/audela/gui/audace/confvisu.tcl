@@ -1180,26 +1180,17 @@ namespace eval ::confVisu {
       ::confVisu::redrawCrosshair $visuNo
    }
 
-
-
-
-
-
-
-
-
-
    #------------------------------------------------------------
-   #  setpos
-   #     Centre l image dans la visu au coordonnees images x y
-   #     
+   #  setPos
+   #     Centre l'image dans la visu aux coordonnees images x y
+   #
    #  parametres :
    #    visuNo: numero de la visu
-   #    xy  : liste de coordonnees x y
-   #  Exemple : afficher aux coordonnees 512 512
-   #    ::confVisu::setpos visuNo {512 512}
+   #    xy    : liste des coordonnees x et y
+   #  Exemple : afficher aux coordonnees 512 512 dans la visu 1
+   #    ::confVisu::setPos 1 {512 512}
    #------------------------------------------------------------
-   proc setpos { visuNo xy } {
+   proc setPos { visuNo xy } {
       variable private
 
       #--- mise a jour du parametre scrollposition du canvas
@@ -1242,6 +1233,7 @@ namespace eval ::confVisu {
       #--- je mets a jour la taille du reticule
       ::confVisu::redrawCrosshair $visuNo
    }
+
    #------------------------------------------------------------
    #  setMirrorX
    #     applique un miroir par rapport a l'axe des X
