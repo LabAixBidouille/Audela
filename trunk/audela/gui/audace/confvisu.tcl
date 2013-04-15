@@ -1197,7 +1197,7 @@ namespace eval ::confVisu {
    #    visuNo: numero de la visu
    #    xy  : liste de coordonnees x y
    #  Exemple : afficher aux coordonnees 512 512
-   #    ::confVisu::setpos {512 512}
+   #    ::confVisu::setpos visuNo {512 512}
    #------------------------------------------------------------
    proc setpos { visuNo xy } {
       variable private
