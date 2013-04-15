@@ -51,7 +51,6 @@ namespace eval bdi_gui_gestion_source {
 
    proc ::bdi_gui_gestion_source::init { work_list } {
 
-      ::psf_tools::inittoconf
       ::bdi_gui_psf::inittoconf
       
       
@@ -627,8 +626,8 @@ namespace eval bdi_gui_gestion_source {
       } else {
        
        
-         ::psf_tools::result_photom_methode "err" 
-         ::psf_tools::result_fitgauss "err" 
+         #::psf_tools::result_photom_methode "err" 
+         #::psf_tools::result_fitgauss "err" 
 
          set d [::manage_source::namable $s]
          if {$d==""} {

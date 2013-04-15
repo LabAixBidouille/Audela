@@ -1726,7 +1726,7 @@ namespace eval bddimages_recherche {
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
 
-      ::gui_astrometry::setup $imglist
+      ::bdi_gui_astrometry::setup $imglist
 
       #::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
       #::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]

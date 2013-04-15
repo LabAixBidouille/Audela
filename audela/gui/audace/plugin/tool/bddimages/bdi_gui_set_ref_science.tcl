@@ -180,12 +180,13 @@ proc ::bdi_gui_set_ref_science::apply { } {
       foreach s $sources {
          incr ids
          set posastroid [lsearch -index 0 $s "ASTROID"]
+         if {$ids==35} {gren_info "s=$s\n"}
          if {$posastroid != -1} {
             set astroid [lindex $s $posastroid]
-            set b [lindex $astroid 2]
-            set px [lindex $b 0]
-            set py [lindex $b 1]
-            set pixmax [lindex $b 9]
+            set othf [lindex $astroid 2]
+            set px [::bdi_tools_psf::get_val othf "xsm"]
+            set py [::bdi_tools_psf::get_val othf "ysm"]
+            set pixmax [::bdi_tools_psf::get_val othf "pixmax"]
 
             set accept 1
             # Applique le mask si demande
@@ -202,13 +203,14 @@ proc ::bdi_gui_set_ref_science::apply { } {
 
             if {$accept} {
                set change 0
-
                set p [lsearch -index 0 $s $::bdi_gui_set_ref_science::cata_science]
+               gren_info "$ids $p cata_science = $::bdi_gui_set_ref_science::cata_science\n"
                if {$p != -1} {
+                  gren_info "cata_science = $::bdi_gui_set_ref_science::cata_science\n"
                   set ar "S"
                   set ac $::bdi_gui_set_ref_science::cata_science
-                  set b [lreplace $b 25 25 $ar]
-                  set b [lreplace $b 27 27 $ac]
+                  ::bdi_tools_psf::set_by_key othf "flagastrom" $ar
+                  ::bdi_tools_psf::set_by_key othf "cataastrom" $ac
                   set change 1
                }
 
@@ -216,8 +218,8 @@ proc ::bdi_gui_set_ref_science::apply { } {
                if {$p != -1} {
                   set ar "R"
                   set ac $::bdi_gui_set_ref_science::cata_ref
-                  set b [lreplace $b 25 25 $ar]
-                  set b [lreplace $b 27 27 $ac]
+                  ::bdi_tools_psf::set_by_key othf "flagastrom" $ar
+                  ::bdi_tools_psf::set_by_key othf "cataastrom" $ac
                   set change 1
                }
 
@@ -225,7 +227,8 @@ proc ::bdi_gui_set_ref_science::apply { } {
                   if {$::bdi_gui_set_ref_science::use_visu} {
                      affich_un_rond_xy $px $py green 4 2
                   }
-                  set astroid [lreplace $astroid 2 2 $b]
+                  gren_info "othf = $othf\n"
+                  set astroid [lreplace $astroid 2 2 $othf]
                   set s [lreplace $s $posastroid $posastroid $astroid]
                   set sources [lreplace $sources [expr $ids-1] [expr $ids-1] $s]
                   # Modif TKLIST
@@ -234,6 +237,12 @@ proc ::bdi_gui_set_ref_science::apply { } {
                      if {$x != -1} {
                         set b [lindex $tklist($idcata) $x]
                         set b [lreplace $b 1 2 $ar $ac]
+                        if {$cata == "ASTROID" } {
+                           set p1 [::cata_gestion_gui::get_id_astroid "flagastrom"]
+                           set p2 [::cata_gestion_gui::get_id_astroid "cataastrom"]
+                           set b [lreplace $b $p1 $p1 $ar]
+                           set b [lreplace $b $p2 $p2 $ac]
+                        }
                         set tklist($idcata) [lreplace $tklist($idcata) $x $x $b]
                      }
                   }
@@ -323,22 +332,26 @@ proc ::bdi_gui_set_ref_science::unset { } {
          set posastroid [lsearch -index 0 $s "ASTROID"]
          if {$posastroid != -1} {
             set astroid [lindex $s $posastroid]
-            set b [lindex $astroid 2]
+            set othf [lindex $astroid 2]
 
             set change 0
             foreach cata $::bdi_gui_set_ref_science::list_cata {
                set p [lsearch -index 0 $s $cata]
                if {$p != -1} {
-                  set ar "-"
-                  set ac "-"
-                  set b [lreplace $b 25 25 $ar]
-                  set b [lreplace $b 27 27 $ac]
+                  set ar ""
+                  set ac ""
+                  set pr ""
+                  set pc ""
+                  ::bdi_tools_psf::set_by_key othf "flagastrom" $ar
+                  ::bdi_tools_psf::set_by_key othf "cataastrom" $ac
+                  ::bdi_tools_psf::set_by_key othf "flagphotom" $pr
+                  ::bdi_tools_psf::set_by_key othf "cataphotom" $pc
                   set change 1
                }
             }
 
             if {$change == 1} {
-               set astroid [lreplace $astroid 2 2 $b]
+               set astroid [lreplace $astroid 2 2 $othf]
                set s [lreplace $s $posastroid $posastroid $astroid]
                set sources [lreplace $sources [expr $ids-1] [expr $ids-1] $s]
                # Modif TKLIST
@@ -346,8 +359,17 @@ proc ::bdi_gui_set_ref_science::unset { } {
                   set x [lsearch -index 0 $tklist($idcata) $ids]
                   if {$x != -1} {
                      set b [lindex $tklist($idcata) $x]
-                     set b [lreplace $b 1 2 $ar $ac]
+                     set b [lreplace $b 1 4 $ar $ac $pr $pc]
+                     if {$cata == "ASTROID" } {
+                        #gren_info "cata = $cata\n"
+                        #gren_info "poss :[::gui_cata::get_pos_col flagastrom $posastroid] [::gui_cata::get_pos_col cataphotom $posastroid]\n"
+                        set p1 [::cata_gestion_gui::get_id_astroid "flagastrom"]
+                        set p4 [::cata_gestion_gui::get_id_astroid "cataphotom"]
+                        #gren_info "$p1 $p4\n"
+                        set b [lreplace $b $p1 $p4 $ar $ac $pr $pc]
+                     }
                      set tklist($idcata) [lreplace $tklist($idcata) $x $x $b]
+                     
                   }
                }
             }

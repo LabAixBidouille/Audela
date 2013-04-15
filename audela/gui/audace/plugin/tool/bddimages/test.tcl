@@ -435,7 +435,7 @@ return
 
 
 
-   proc ::gui_astrometry::test_mpc {  } {
+   proc test_mpc {  } {
 
       set url "http://scully.cfa.harvard.edu/cgi-bin/mpeph2.cgi"
       set urlget "\"20000\" ty e d \"2013 01 06 002244\" l 1 i 1 u s uto 0 c 586 raty d s c m m igd n ibh n fp y e 0 tit \"\" bu \"\" adir S res n ch c oed \"\" js f "

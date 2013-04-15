@@ -254,7 +254,6 @@ namespace eval gui_cata {
       global conf
 
       ::tools_cata::inittoconf
-      ::psf_tools::inittoconf
 
       # Check button GUI
 
@@ -602,7 +601,6 @@ namespace eval gui_cata {
       global conf
 
       ::tools_cata::closetoconf
-      ::psf_tools::closetoconf
 
       # Specifique a GUI cata
       set conf(bddimages,cata,gui_img)     $::gui_cata::gui_img
@@ -1296,15 +1294,15 @@ return
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
 
-         if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+         if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
 
-            set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+            set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
 
          } else {
 
             set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
             if {$r=="no"} {return}
-            foreach dateok $::tools_astrometry::listref($name) {
+            foreach dateok $::bdi_tools_astrometry::listref($name) {
                break
             }
             set id 0
@@ -1323,11 +1321,11 @@ return
                set ::cata_gestion_gui::directaccess $idok
                ::cata_gestion_gui::charge_image_directaccess
                set date $::tools_cata::current_image_date
-               if {[info exists ::tools_astrometry::tabval($name,$date)]} {
-                  set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+               if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
+                  set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
                } else {
-                  if {[info exists ::tools_astrometry::tabval($name,$dateok)]} {
-                     set id [lindex $::tools_astrometry::tabval($name,$dateok) 0]
+                  if {[info exists ::bdi_tools_astrometry::tabval($name,$dateok)]} {
+                     set id [lindex $::bdi_tools_astrometry::tabval($name,$dateok) 0]
                   } else {
                      tk_messageBox -message "Chargement de l'image impossible" -type ok
                      return
@@ -1522,15 +1520,15 @@ return
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
 
-         if {[info exists ::tools_astrometry::tabval($name,$date)]} {
+         if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
 
-            set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+            set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
 
          } else {
 
             set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
             if {$r=="no"} {return}
-            foreach dateok $::tools_astrometry::listscience($name) {
+            foreach dateok $::bdi_tools_astrometry::listscience($name) {
                break
             }
             set id 0
@@ -1549,11 +1547,11 @@ return
                set ::cata_gestion_gui::directaccess $idok
                ::cata_gestion_gui::charge_image_directaccess
                set date $::tools_cata::current_image_date
-               if {[info exists ::tools_astrometry::tabval($name,$date)]} {
-                  set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+               if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
+                  set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
                } else {
-                  if {[info exists ::tools_astrometry::tabval($name,$dateok)]} {
-                     set id [lindex $::tools_astrometry::tabval($name,$dateok) 0]
+                  if {[info exists ::bdi_tools_astrometry::tabval($name,$dateok)]} {
+                     set id [lindex $::bdi_tools_astrometry::tabval($name,$dateok) 0]
                   } else {
                      tk_messageBox -message "Chargement de l'image impossible" -type ok
                      return
@@ -1777,8 +1775,8 @@ return
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
          
-         if {[info exists ::tools_astrometry::tabval($name,$date)]} {
-            set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+         if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
+            set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
 
             set u 0
             foreach x [$f.frmtable.tbl get 0 end] {
@@ -1821,7 +1819,7 @@ return
          set data [$w get $select]
          set name [lindex $data 1]
          set date $::tools_cata::current_image_date
-         set id [lindex $::tools_astrometry::tabval($name,$date) 0]
+         set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
 
          if {![winfo exists .gestion_cata.appli.onglets.nb]} {
             return
@@ -1864,9 +1862,7 @@ return
          }
          incr cpt
       }
-      
       return -1
-
    }
 
 

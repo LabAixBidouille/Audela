@@ -42,11 +42,11 @@ namespace eval gui_cata_creation {
       ::gui_cata::inittoconf
 
       # Lib du compilateur Fortran pour executer Priam
-      if {! [info exists ::tools_astrometry::ifortlib] } {
+      if {! [info exists ::bdi_tools_astrometry::ifortlib] } {
          if {[info exists conf(bddimages,cata,ifortlib)]} {
-            set ::tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
+            set ::bdi_tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
          } else {
-            set ::tools_astrometry::ifortlib "/opt/intel/lib/intel64"
+            set ::bdi_tools_astrometry::ifortlib "/opt/intel/lib/intel64"
          }
       }
 

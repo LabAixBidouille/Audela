@@ -272,7 +272,7 @@ proc ::bdi_gui_config::createDialog { } {
 
    #--- Initialisation des parametres
    ::gui_cata_creation::inittoconf 
-   ::gui_astrometry::inittoconf
+   ::bdi_gui_astrometry::inittoconf
 
    #--- Geometry
    if { ! [ info exists conf(bddimages,geometry_config) ] } {
@@ -822,16 +822,16 @@ proc ::bdi_gui_config::createDialog { } {
       pack $gril -in $astrom.conf -anchor c -side top -expand 0 -padx 10 -pady 5
 
          label $gril.lab1 -text "$caption(bdi_gui_config,ephemcc)"
-         entry $gril.val1 -relief sunken -textvariable ::tools_astrometry::imcce_ephemcc
+         entry $gril.val1 -relief sunken -textvariable ::bdi_tools_astrometry::imcce_ephemcc
 
          label $gril.lab2 -text "$caption(bdi_gui_config,ephemccopts)"
-         entry $gril.val2 -relief sunken -textvariable ::tools_astrometry::ephemcc_options
+         entry $gril.val2 -relief sunken -textvariable ::bdi_tools_astrometry::ephemcc_options
 
          label $gril.lab3 -text "$caption(bdi_gui_config,ifortlib)"
-         entry $gril.val3 -relief sunken -textvariable ::tools_astrometry::ifortlib
+         entry $gril.val3 -relief sunken -textvariable ::bdi_tools_astrometry::ifortlib
 
          label $gril.lab4 -text "$caption(bdi_gui_config,locallib)" 
-         entry $gril.val4 -relief sunken -textvariable ::tools_astrometry::locallib
+         entry $gril.val4 -relief sunken -textvariable ::bdi_tools_astrometry::locallib
 
          label $gril.lab5 -text "$caption(bdi_gui_config,thunderbird)"
          entry $gril.val5 -relief sunken -textvariable ::bdi_tools::sendmail::thunderbird

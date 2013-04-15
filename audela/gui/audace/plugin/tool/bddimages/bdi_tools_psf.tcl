@@ -414,6 +414,11 @@ namespace eval bdi_tools_psf {
 
 
 
+
+
+
+
+
    #------------------------------------------------------------
    ## Fonction qui mesure le photocentre d'une source
    # @param s pointeur d'une source qui se verra modifiee
