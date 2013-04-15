@@ -207,7 +207,7 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
 
             // je duplique la commande "::console::disp" dans la thread du telescope
             strcpy(cmd,"::console::disp");
-            sprintf(s,"info command %s",cmd);
+            sprintf(s,"info commands %s",cmd);
             Tcl_Eval(interp,s);
             if (strcmp(interp->result,cmd)==0) {
                sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
@@ -218,171 +218,21 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
                }
             }
 
-			// --- Importe les procs de libmc dans le thread
-			sprintf(s,"foreach mc_proc [info commands mc_*] { thread::copycommand %s $mc_proc }", telThreadId);
+				// --- Importe les procs de libmc dans le thread
+				sprintf(s,"foreach mc_proc [info commands mc_*] { thread::copycommand %s $mc_proc }", telThreadId);
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
                sprintf(s, "cmdTelCreate: %s",interp->result);
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
 
-			/*
-            // je duplique la commande "mc_refraction_difradec" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_refraction_difradec");
+				// --- Importe la proc porttalk dans le thread
+				sprintf(s,"catch {thread::copycommand %s porttalk}", telThreadId);
             if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
                sprintf(s, "cmdTelCreate: %s",interp->result);
                Tcl_SetResult(interp, s, TCL_VOLATILE);
                return TCL_ERROR;
             }
-
-            // je duplique la commande "mc_angle2lx200ra" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2lx200ra");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_angle2lx200dec" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2lx200dec");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_angle2hms" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2hms");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_angle2deg" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2deg");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_date2iso8601" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2iso8601");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_date2ymdhms" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2ymdhms");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_date2jd" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2jd");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_angle2dms" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2dms");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_angles2nexstar" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angles2nexstar");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_date2lst" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_date2lst");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_anglesep" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_anglesep");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_nexstar2angles" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_nexstar2angles");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-            // je duplique la commande "mc_anglescomp" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_anglescomp");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_angle2rad" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_angle2rad");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_radec2altaz" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_radec2altaz");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_sepangle" dans la thread du telescope
-            strcpy(cmd,"mc_sepangle");
-            sprintf(s,"info command %s",cmd);
-            Tcl_Eval(interp,s);
-            if (strcmp(interp->result,cmd)==0) {
-               sprintf(s,"thread::copycommand %s %s ",telThreadId,cmd);
-               if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-                  sprintf(s, "cmdTelCreate: %s",interp->result);
-                  Tcl_SetResult(interp, s, TCL_VOLATILE);
-                  return TCL_ERROR;
-               }
-            }
-
-            // je duplique la commande "mc_hip2tel" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_hip2tel");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-
-            // je duplique la commande "mc_tel2cat" dans la thread du telescope
-            sprintf(s,"thread::copycommand %s %s ",telThreadId, "mc_tel2cat");
-            if ( Tcl_Eval(interp, s) == TCL_ERROR ) {
-               sprintf(s, "cmdTelCreate: %s",interp->result);
-               Tcl_SetResult(interp, s, TCL_VOLATILE);
-               return TCL_ERROR;
-            }
-			*/
 
             // je prepare la commande de creation du telescope dans la thread du telescope :
             // thread::send $threadId { {argv0} {argv1} ... {argvn} mainThreadId $mainThreadId }
