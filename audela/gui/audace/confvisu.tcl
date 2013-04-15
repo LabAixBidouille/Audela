@@ -1180,6 +1180,68 @@ namespace eval ::confVisu {
       ::confVisu::redrawCrosshair $visuNo
    }
 
+
+
+
+
+
+
+
+
+
+   #------------------------------------------------------------
+   #  setpos
+   #     Centre l image dans la visu au coordonnees images x y
+   #     
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    xy  : liste de coordonnees x y
+   #  Exemple : afficher aux coordonnees 512 512
+   #    ::confVisu::setpos {512 512}
+   #------------------------------------------------------------
+   proc setpos { visuNo xy } {
+      variable private
+
+      #--- mise a jour du parametre scrollposition du canvas
+      setScrollbarSize $visuNo
+
+      #--- je calcule les coordonnées du centre de l'image
+      set canvasCenterPrev [getCanvasCenter $visuNo]
+      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
+
+      #--- je calcule la position du bord gauche et du bord haut
+      set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
+      set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
+
+      #--- je calcule les coordonnes du nouveau centre dans le canvas
+      set canvasCenter [::confVisu::picture2Canvas $visuNo $xy]
+
+      #--- je calcule la nouvelle position du bord gauche et du haut pour garder le centre de l'image au meme endroit
+      set newleft [expr [lindex $canvasCenter 0] - $previousLeft ]
+      set newtop  [expr [lindex $canvasCenter 1] - $previousTop  ]
+
+      #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
+      if { $newleft < 0 } { set newleft 0 }
+      if { $newtop  < 0 } { set newtop  0 }
+
+      #--- je centre le canvas
+      set scrollRegion [$private($visuNo,hCanvas) cget -scrollregion]
+      set leftRegion   [lindex $scrollRegion 0]
+      set topRegion    [lindex $scrollRegion 1]
+      set rightRegion  [lindex $scrollRegion 2]
+      set bottomRegion [lindex $scrollRegion 3]
+
+      if { $rightRegion != 0 } {
+         $private($visuNo,hCanvas) xview moveto [ expr $newleft / ($rightRegion - $leftRegion) ]
+      }
+
+      if { $bottomRegion != 0 } {
+         $private($visuNo,hCanvas) yview moveto [ expr $newtop / ($bottomRegion - $topRegion) ]
+      }
+
+      #--- je mets a jour la taille du reticule
+      ::confVisu::redrawCrosshair $visuNo
+   }
    #------------------------------------------------------------
    #  setMirrorX
    #     applique un miroir par rapport a l'axe des X
