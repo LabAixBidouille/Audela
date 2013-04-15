@@ -382,7 +382,7 @@ proc ::bdi_gui_set_ref_science::set_progress { cur max } {
 #
 proc ::bdi_gui_set_ref_science::go { } {
 
-   global audace
+   global audace caption
 
    ::bdi_gui_set_ref_science::inittoconf
 
@@ -449,13 +449,13 @@ proc ::bdi_gui_set_ref_science::go { } {
          set mask [frame $options.mask -borderwidth 0 -cursor arrow -relief groove]
          pack $mask -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $mask.check -highlightthickness 0 -text "$set caption(bdi_gui_set_ref_science,msgmask)" -variable ::bdi_gui_set_ref_science::use_mask
+             checkbutton $mask.check -highlightthickness 0 -text "$caption(bdi_gui_set_ref_science,msgmask)" -variable ::bdi_gui_set_ref_science::use_mask
              pack $mask.check -in $mask -anchor c -side left -padx 5 -pady 0 
 
              entry $mask.val -relief sunken -textvariable ::bdi_gui_set_ref_science::mask -borderwidth 2 -width 6 -justify center
              pack  $mask.val -in $mask -anchor c -side left -padx 5 -pady 0 
 
-             label $mask.lab -text "$set caption(bdi_gui_set_ref_science,unimask)"
+             label $mask.lab -text "$caption(bdi_gui_set_ref_science,unimask)"
              pack  $mask.lab -in $mask -anchor c -side left -padx 5 -pady 0
 
              button $mask.voir -image view -borderwidth 1 -command "::bdi_gui_set_ref_science::view_mask"
@@ -464,7 +464,7 @@ proc ::bdi_gui_set_ref_science::go { } {
          set satu [frame $options.satu -borderwidth 0 -cursor arrow -relief groove]
          pack $satu -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $satu.check -highlightthickness 0 -text "$set caption(bdi_gui_set_ref_science,msgflux)" -variable ::bdi_gui_set_ref_science::use_saturation
+             checkbutton $satu.check -highlightthickness 0 -text "$caption(bdi_gui_set_ref_science,msgflux)" -variable ::bdi_gui_set_ref_science::use_saturation
              pack $satu.check -in $satu -anchor c -side left -padx 5 -pady 0 
 
              entry $satu.val -relief sunken -textvariable ::bdi_gui_set_ref_science::saturation -borderwidth 1 -width 6 -justify center
@@ -476,7 +476,7 @@ proc ::bdi_gui_set_ref_science::go { } {
          set voir [frame $options.voir -borderwidth 0 -cursor arrow -relief groove]
          pack $voir -in $options -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
-             checkbutton $voir.check -highlightthickness 0 -text "$set caption(bdi_gui_set_ref_science,voirsou)" -variable ::bdi_gui_set_ref_science::use_visu
+             checkbutton $voir.check -highlightthickness 0 -text "$caption(bdi_gui_set_ref_science,voirsou)" -variable ::bdi_gui_set_ref_science::use_visu
              pack $voir.check -in $voir -anchor c -side left -padx 5 -pady 0 
 
       set progressbar [frame $frm.progressbar -borderwidth 0 -cursor arrow -relief groove]

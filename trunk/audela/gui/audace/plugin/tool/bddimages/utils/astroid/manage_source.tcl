@@ -181,6 +181,21 @@ namespace eval ::manage_source {
       return [list $newfields $newsources]
    }
 
+   #------------------------------------------------------------
+   ## Fonction qui supprime le catalogue ASTROID d'une source
+   # @param p_s pointeur d'une source qui sera modifiee
+   # @return void
+   #
+   proc ::manage_source::delete_catalog_in_source { p_s catadem } {
+      
+      upvar $p_s s
+
+      set pos [lsearch -index 0 $s $catadem]
+      if {$pos != -1} {
+         set s [lreplace $s $pos $pos]
+      }
+   }
+
 
 
    #
@@ -261,7 +276,6 @@ namespace eval ::manage_source {
 
 
 
-
    proc ::manage_source::namable { mysource } {
 
       set list_of_cata [list SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 ASTROID IMG]
@@ -306,7 +320,7 @@ namespace eval ::manage_source {
 
             if {$mycata=="ASTROID"} {
                set othf [lindex $cata 2]
-               set ra  [format "%.6f" [::bdi_tools_psf::get_val othf "ra"] ]
+               set ra  [format "%.6f" [::bdi_tools_psf::get_val othf "ra" ] ]
                set dec [format "%.6f" [::bdi_tools_psf::get_val othf "dec"] ]
                if {$dec > 0} {
                   set dec [regsub {\+} $dec ""]
@@ -372,6 +386,40 @@ namespace eval ::manage_source {
          }
       }
    }
+
+   #
+   # manage_source::name2ids
+   # Fournit l'id de la source nommé par dans astroid
+   #
+   proc ::manage_source::name2ids { mycata p_listsources} {
+      
+      upvar $p_listsources listsources 
+
+      set fields [lindex $listsources 0]
+      set sources [lindex $listsources 1]
+      set ids 0
+      foreach s $sources {
+         set pos [lsearch -index 0 $s "ASTROID"]
+         if {$pos != -1 } {
+            set keypos [::bdi_tools_psf::get_id_astroid "name"]
+            gren_info "$pos 2 $keypos\n"
+            set name [lindex $s [list $pos 2 $keypos]]
+            gren_info "name = $name\n"
+            
+            set p [::bdi_tools_psf::get_otherfields_astroid]
+            gren_info "lp = [llength $p]\n"
+            gren_info "ls = [llength [lindex $s [list $pos 2]]]\n"
+            gren_info "$p\n"
+            gren_info "$s\n"
+            
+            break
+         }
+         
+      }
+      return 0
+   }
+
+
 
    #
    # manage_source::set_common_fields

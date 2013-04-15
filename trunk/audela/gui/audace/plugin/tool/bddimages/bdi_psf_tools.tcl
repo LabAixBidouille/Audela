@@ -1100,7 +1100,7 @@ namespace eval psf_tools {
                   set astroid     [lindex $s $pos]
                   set astroid_com [lindex $astroid 1]
                   set astroid_oth [lindex $astroid 2]
-                  set flux        [lindex $astroid_oth 7 ]
+                  set flux        [::bdi_tools_psf::get_val astroid_oth "flux" ]
                   set magcata     [lindex $usnoa2_oth  7 ]
 
                   if {$flux!="" && $magcata != ""  && $flux>0} {
@@ -1137,7 +1137,7 @@ namespace eval psf_tools {
                set astroid [lindex $s $cpos]
                set astroid_com [lindex $astroid 1]
                set astroid_oth [lindex $astroid 2]
-               set flux [lindex $astroid_oth 7 ]
+               set flux [::bdi_tools_psf::get_val astroid_oth "flux" ]
                
                set err [catch {set mag [format "%.3f" [expr -log10($flux)*2.5 + $const_mag] ]} msg ]
                if {$err} {
@@ -1150,8 +1150,10 @@ namespace eval psf_tools {
                   incr spos
                   continue
                }
-               set astroid_com [lreplace  $astroid_com  3  4 $mag $mag_err ]
-               set astroid_oth [lreplace  $astroid_oth 22 23 $mag $mag_err ]
+               set astroid_com [lreplace  $astroid_com 3 4 $mag $mag_err ]
+               ::bdi_tools_psf::set_by_key astroid_oth "mag" $mag
+               ::bdi_tools_psf::set_by_key astroid_oth "mag_err" $mag_err
+               
                set s [lreplace $s $cpos $cpos [list "ASTROID" $astroid_com $astroid_oth]]
                set sources [lreplace $sources $spos $spos $s]
          }
