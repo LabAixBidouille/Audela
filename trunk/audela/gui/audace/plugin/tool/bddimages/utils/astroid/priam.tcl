@@ -132,11 +132,13 @@ namespace eval ::priam {
 # Constante a modifier dans le futur bandwith 0.57000
 
    proc ::priam::create_file_oldformat { tag nb sent_img sent_list_source } {
+
+      
    
       upvar $sent_img img
       upvar $sent_list_source listsources
    
-      global bddconf audace
+      global bddconf 
    
       set imagefilename [::bddimages_liste::lget $img "filename"]
    
@@ -275,7 +277,7 @@ namespace eval ::priam {
       if {$tag=="new"} {
    
          # creation du fichier de conditions initiales (cnd.obs)
-         set filecnd [ file join $audace(rep_travail) cnd.obs ]
+         set filecnd [ file join $bddconf(dirtmp) cnd.obs ]
          set chan0 [open $filecnd w]
          puts $chan0 "#? Centroid measures formatted for Priam"
          puts $chan0 "# Conditions observationnelles"
@@ -302,17 +304,20 @@ namespace eval ::priam {
    
       if {$tag=="new"} {
          # creation du fichier d'exec de priam (cmd.priam)
-         set filepriam [ file join $audace(rep_travail) cmd.priam ]
+         set filepriam [ file join $bddconf(dirtmp) cmd.priam ]
+         gren_info "filepriam = $bddconf(dirtmp)\n"
+         gren_info "filepriam = $filepriam\n"
+         
          set chan0 [open $filepriam w]
          puts $chan0 "#!/bin/sh"
-         puts $chan0 "LD_LIBRARY_PATH=$::tools_astrometry::locallib:$::tools_astrometry::ifortlib"
+         puts $chan0 "LD_LIBRARY_PATH=$::bdi_tools_astrometry::locallib:$::bdi_tools_astrometry::ifortlib"
          puts $chan0 "export LD_LIBRARY_PATH"
          puts $chan0 "priam -lang en -format priam -m $nb -deg 0 -fc cnd.obs -fm science.mes -r ./ -fcat local.cat -rcat ./ -s fichier:bddimages -te 1"
          close $chan0
       }
    
       # creation du fichier de mesures
-      set filemes [ file join $audace(rep_travail) science.mes ]
+      set filemes [ file join $bddconf(dirtmp) science.mes ]
       
       if {$tag=="new"} { 
          set chan0 [open $filemes w] 
@@ -320,7 +325,7 @@ namespace eval ::priam {
          puts $chan0 "#?   Source: Astroid - jan. 2013"
          puts $chan0 "#? Object: science"
          puts $chan0 "#"
-         puts $chan0 "#> orientation: $::tools_astrometry::orient"
+         puts $chan0 "#> orientation: $::bdi_tools_astrometry::orient"
          puts $chan0 "#"
          puts $chan0 "!$imagefilename"
          puts $chan0 "$dateobsjd $temperature $pression  $humidity $bandwith"
@@ -332,7 +337,7 @@ namespace eval ::priam {
       }
        
       # creation du fichier stellaire
-      set filelocal [ file join $audace(rep_travail) local.cat ]
+      set filelocal [ file join $bddconf(dirtmp) local.cat ]
    
       if {$tag=="new"} { set chan1 [open $filelocal w] }
       if {$tag=="add"} { set chan1 [open $filelocal a+] }

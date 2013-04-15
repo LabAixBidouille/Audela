@@ -176,10 +176,7 @@ proc ::bddimages::ressource {  } {
 # TODO
 
    # Nouvelle facon de nommage des routines (separation gui et ligne de commande)
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_gui.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_tools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_cata_gestion_gui.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_psf_popup.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_ihm.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_tools.tcl ]\""
@@ -189,8 +186,6 @@ proc ::bddimages::ressource {  } {
 
 
    # Anciennes facon de nommage des routines
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages gui_astrometry.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages tools_astrometry.tcl ]\""
 
    
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
@@ -334,7 +329,7 @@ proc ::bddimages::load_config_frombutton { } {
 
    #--- Initialisation des parametres des cata
    ::gui_cata_creation::inittoconf
-   ::gui_astrometry::inittoconf
+   ::bdi_gui_astrometry::inittoconf
 
 }
 

@@ -704,7 +704,9 @@ namespace eval cata_gestion_gui {
             break
          }
          
+         gren_info "Id source = $id\n"
          set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+         gren_info "s= $s\n"
          
          set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
          ::bdi_tools_psf::gren_astroid othf
@@ -714,6 +716,23 @@ namespace eval cata_gestion_gui {
    }
 
 
+   #------------------------------------------------------------
+   ## Pour une cle donne, cette fonction fournit sa position 
+   # dans la liste ASTROID sous forme tklist. Cad qu il faut 
+   # ajouter les 10 champs supplementaires (Id, ar ,ac ,pr, pc,
+   # et common fields 
+   #  @warning   valable seulement pour les clés des otherfield.
+   # Ne fonctionne pas par exemple pour ra du champ common. Ce sera
+   # forcement celui du ra des otherfields. 
+   # @param key nom de la cle  (\sa get_fields_sources_astroid
+   # @return id sous forme d'un entier 
+   #
+   proc ::cata_gestion_gui::get_id_astroid { key } {
+      
+      set pos [lsearch [::bdi_tools_psf::get_otherfields_astroid] $key]
+      return [expr $pos + 10]
+        
+   }
 
 
 
@@ -721,10 +740,13 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::propagation { tbl } {
 
+
+      gren_info "set tbl $tbl  \n"
+
       set onglets $::cata_gestion_gui::fen.appli.onglets
 
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end]
       if {[string compare -nocase $cataselect "ASTROID"] == 0} {
          
          set propalist ""
@@ -736,6 +758,7 @@ namespace eval cata_gestion_gui {
             set pr   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_reference $idcata]]
             set pc   [lindex [$tbl get $select] [::gui_cata::get_pos_col photom_catalog $idcata]]
             set name [lindex [$tbl get $select] [::gui_cata::get_pos_col name $idcata]]
+            #gren_info "PROPA: $id $ar $ac $pr $pc $name\n"
             set cata ""
             if {$ac != ""} {
                set cata $ac
@@ -901,12 +924,12 @@ namespace eval cata_gestion_gui {
                   set x  [lsearch -index 0 $s "ASTROID"]
                   if {$x>=0} {
                      set a [lindex $s $x]
-                     set b [lindex $a 2]
-                     set b [lreplace $b 25 25 $ar]
-                     set b [lreplace $b 27 27 $ac]
-                     set b [lreplace $b 26 26 $pr]
-                     set b [lreplace $b 28 28 $pc]
-                     set a [lreplace $a 2 2 $b]
+                     set othf [lindex $a 2]
+                     ::bdi_tools_psf::set_by_key othf "flagastrom" $ar
+                     ::bdi_tools_psf::set_by_key othf "cataastrom" $ac
+                     ::bdi_tools_psf::set_by_key othf "flagphotom" $pr
+                     ::bdi_tools_psf::set_by_key othf "cataphotom" $pc
+                     set a [lreplace $a 2 2 $othf]
                      #gren_info "a modif = $a\n"
                      set s [lreplace $s $x $x $a]
                      #gren_info "S modif = $s\n"
@@ -982,7 +1005,7 @@ namespace eval cata_gestion_gui {
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
 
-            set idcata [string index [lindex [split $t .] 5] 1]
+            set idcata [string range [lindex [split $t .] 5] 1 end]
 
             # modification de la tklist
             set x [lsearch -index 0 $::gui_cata::tklist($idcata) $id]
@@ -1014,7 +1037,7 @@ namespace eval cata_gestion_gui {
    proc ::cata_gestion_gui::delete_sources_allimg { tbl } {
 
       set onglets $::cata_gestion_gui::fen.appli.onglets
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end]
       set cata $::gui_cata::cataname($idcata)
 
       if {[string compare -nocase $cata "IMG"] == 0} {
@@ -1104,8 +1127,8 @@ namespace eval cata_gestion_gui {
 
       set flag "R"
       set onglets $::cata_gestion_gui::fen.appli.onglets
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end]
 
       if {![::tools_cata::is_astrometric_catalog $cataselect]} {
          tk_messageBox -message "Le catalogue selectionné $cataselect n'est pas astrometrique" -type ok
@@ -1120,7 +1143,7 @@ namespace eval cata_gestion_gui {
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
 
-            set idcata [string index [lindex [split $t .] 5] 1]
+            set idcata [string range [lindex [split $t .] 5] 1 end]
             set cata   $::gui_cata::cataname($idcata)
          
             # Modification du current_listsources
@@ -1231,19 +1254,24 @@ namespace eval cata_gestion_gui {
 
       set flag "S"
       set onglets $::cata_gestion_gui::fen.appli.onglets
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end] 
 
       # On boucle sur les selections (indice de la table affichée de 0 a end)
       foreach select [$tbl curselection] {
          
          set id [lindex [$tbl get $select] 0]
+         gren_info "id = $id\n"
 
          # On boucle sur les onglets
+         set listtabs [lsort -unique [$onglets.nb tabs]]
          foreach t [$onglets.nb tabs] {
 
-            set idcata [string index [lindex [split $t .] 5] 1]
+            gren_info "t = $t\n"
+            set idcata [string range [lindex [split $t .] 5] 1 end]
             set cata   $::gui_cata::cataname($idcata)
+            gren_info "cata = $idcata $cata\n"
+            
 
             # Modification du cata_list_source
             if {[string compare -nocase $cata "ASTROID"] == 0} {
@@ -1251,24 +1279,17 @@ namespace eval cata_gestion_gui {
                set fields [lindex $::tools_cata::current_listsources 0]
                set sources [lindex $::tools_cata::current_listsources 1]
 
-               set a [lindex $sources [expr $id - 1]]
-               set cpt 0
-               foreach c $a {
-                  if {[lindex $c 0]=="ASTROID"} {
-                     set b [lindex $c 2]
-                     set pos [expr [::gui_cata::get_pos_col flagastrom $idcata] - 10]
-                     set b [lreplace $b $pos $pos $flag]
-                     set pos [expr [::gui_cata::get_pos_col cataastrom $idcata] - 10]
-                     set b [lreplace $b $pos $pos $cataselect]
-                     set c [lreplace $c 2 2 $b]
-                     set a [lreplace $a $cpt $cpt $c]
-                     set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
-                     set ::tools_cata::current_listsources [list $fields $sources]
-                     break
-                  }
-                  incr cpt
-               }
+               set s [lindex $sources [expr $id - 1]]
+   
+               set othf [::bdi_tools_psf::get_astroid_othf_from_source $s] 
+               ::bdi_tools_psf::set_by_key othf "flagastrom" $flag
+               ::bdi_tools_psf::set_by_key othf "cataastrom" $cataselect
+               ::bdi_tools_psf::set_astroid_in_source s othf            
+               gren_info "$flag $cataselect\n"
                
+               set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $s]
+               set ::tools_cata::current_listsources [list $fields $sources]
+
             }
             
             # modification de la tklist
@@ -1338,8 +1359,8 @@ namespace eval cata_gestion_gui {
       set flag ""
       gren_info "tbl=$tbl\n"
       set onglets $::cata_gestion_gui::fen.appli.onglets
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end]
 
       # On boucle sur les selections (indice de la table affichée de 0 a end)
       foreach select [$tbl curselection] {
@@ -1349,7 +1370,7 @@ namespace eval cata_gestion_gui {
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
 
-            set idcata [string index [lindex [split $t .] 5] 1]
+            set idcata [string range [lindex [split $t .] 5] 1 end]
             set cata   $::gui_cata::cataname($idcata)
 
 
@@ -1480,8 +1501,8 @@ namespace eval cata_gestion_gui {
 
       set flag "R"
       set onglets $::cata_gestion_gui::fen.appli.onglets
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end]
 
       if {![::tools_cata::is_photometric_catalog $cataselect]} {
          tk_messageBox -message "Le catalogue selectionné $cataselect n'est pas photometrique" -type ok
@@ -1496,7 +1517,7 @@ namespace eval cata_gestion_gui {
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
 
-            set idcata [string index [lindex [split $t .] 5] 1]
+            set idcata [string range [lindex [split $t .] 5] 1 end]
             set cata   $::gui_cata::cataname($idcata)
 
             # Modification du cata_list_source
@@ -1600,8 +1621,8 @@ namespace eval cata_gestion_gui {
 
       set flag "S"
       set onglets $::cata_gestion_gui::fen.appli.onglets
-      set cataselect [lindex [split [$onglets.nb tab [expr [string index [lindex [split $tbl .] 5] 1] -1] -text] ")"] 1]
-      set idcata [string index [lindex [split $tbl .] 5] 1]
+      set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
+      set idcata [string range [lindex [split $tbl .] 5] 1 end]
 
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -1620,7 +1641,7 @@ namespace eval cata_gestion_gui {
          # On boucle sur les onglets
          foreach t [$onglets.nb tabs] {
 
-            set idcata [string index [lindex [split $t .] 5] 1]
+            set idcata [string range [lindex [split $t .] 5] 1 end]
             set cata   $::gui_cata::cataname($idcata)
             #gren_info "Cata   = $cata\n"
             #gren_info "idCata = $idcata\n"
@@ -1807,7 +1828,7 @@ namespace eval cata_gestion_gui {
       foreach select [$tbl curselection] {
          lappend worklist [list $::tools_cata::id_current_image [lindex [$tbl get $select] 0] ]
       }
-      #gren_info "worklist = $worklist \n"
+      gren_info "worklist = $worklist \n"
       
       
       ::bdi_gui_gestion_source::run $worklist

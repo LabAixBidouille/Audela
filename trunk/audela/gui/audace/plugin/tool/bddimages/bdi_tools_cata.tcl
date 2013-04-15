@@ -765,8 +765,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       set motiftr  "<vot:TR>(.*?)</vot:TR>"
       set motiftd  "<vot:TD>(.*?)</vot:TD>"
-      # parfois
-      set motiftb  "<vot:TD(>.*?|)/>"
       
       set tr [regexp -all -inline -- $motiftr $table ]
       set cpt 1
@@ -1047,7 +1045,10 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
-
+      set fxml [open "/astrodata/Observations/Images/bddimages/bddimages_local/tmp/test.xml" "w"]
+      puts $fxml $votable
+      close $fxml
+      
       # Insertion du cata dans bdi
       set err [ catch { insertion_solo $cataxml } msg ]
       #gren_info "** INSERTION_SOLO = $err $msg\n"
@@ -1364,9 +1365,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       foreach s $sources {
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
-            set b  [lindex [lindex $s $x] 2]           
-            set ar [lindex $b 25]
-            set ac [lindex $b 27]
+            set othf  [lindex [lindex $s $x] 2]           
+            set ar [::bdi_tools_psf::get_val othf "flagastrom"]
+            set ac [::bdi_tools_psf::get_val othf "cataastrom"]
             if {$ar==$tag} {
                set name [::manage_source::naming $s $ac]
                lappend result [list $cpt $x $ar $ac $name]
@@ -1551,6 +1552,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          }
 
          foreach cata $s {
+            #set a [lindex $cata 0]
+            #if {$a == "ASTROID"} { gren_info "cata = $a\n" }
             if {![info exists ::gui_cata::cataid([lindex $cata 0])]} { continue }
             set idcata $::gui_cata::cataid([lindex $cata 0])
             set line ""
@@ -1570,6 +1573,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
                lappend line $field
             }
             lappend ::gui_cata::tklist($idcata) $line
+            #if {$a == "ASTROID"} { gren_info "line = $line\n" }
+            #if {$a == "ASTROID"} { return }
+            
          }
 
       }
