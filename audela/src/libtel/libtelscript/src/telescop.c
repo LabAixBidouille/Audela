@@ -74,6 +74,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 {
    char s[1024];
 	int threadpb=0,k;
+	/*
+	Tcl_CmdInfo p;
+	int err;
+	*/
 
 #if defined(MOUCHARD)
    FILE *f;
@@ -110,9 +114,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 			threadpb=3;
       }
 
-		// --- Importe la proc portalk
 		/*
-      sprintf(s,"thread::copycommand %s porttalk}", tel->loopThreadId);
+		// --- Importe la proc portalk
+		err=Tcl_GetCommandInfo(tel->interp,"thread::porttalk",&p);
+
+		sprintf(s,"thread::copycommand %s thread::porttalk}", tel->loopThreadId);
       if ( Tcl_Eval(tel->interp, s) == TCL_ERROR ) {
 			strcpy(tel->msg,tel->interp->result);
 			threadpb=3;

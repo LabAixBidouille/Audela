@@ -162,7 +162,7 @@ proc setup { } {
    # === check the functions if not loaded in the thread
    set pwd0 [pwd]
    cd $path
-   #load libaudela[info sharedlibextension]
+   load libaudela[info sharedlibextension]
    catch {load libeteltcl[info sharedlibextension]}
    # --- Open the ports for combits
    set err [catch {
@@ -1216,15 +1216,15 @@ proc save_x { } {
 		etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_az))]
 		etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_az))]
 		etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_az0)
-		#etel_set_register_s 0 K 34 0 $telscript($telname,lim_min_az)
-		#etel_set_register_s 0 K 35 0 $telscript($telname,lim_max_az)
+		etel_set_register_s 0 K 34 0 $telscript($telname,lim_min_az) ; # a supprimer
+		etel_set_register_s 0 K 35 0 $telscript($telname,lim_max_az) ; # a supprimer
 		etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_elev)
 		etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_elev)
 		etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_elev))]
 		etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_elev))]
 		etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_elev0)
-		#etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_elev)
-		#etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_elev)
+		etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_elev) ; # a supprimer
+		etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_elev) ; # a supprimer
 	}
    if {$telscript($telname,mount_type)=="azelevrot"} {
 		etel_set_register_s 2 X 26 0 $telscript($telname,adu4deg4sec_rot)
@@ -1249,19 +1249,19 @@ proc save_x { } {
 		#etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_dec)
 		#etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_dec)
 	}
-	#etel_execute_command_x_s 0 119 0
+	etel_execute_command_x_s 0 119 0 ; # a supprimer
 	etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
 	after 1000
-	#etel_execute_command_x_s 0 79 0
-	#etel_execute_command_x_s 1 119 0
+	etel_execute_command_x_s 0 79 0 ; # a supprimer
+	etel_execute_command_x_s 1 119 0 ; # a supprimer
 	etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
 	after 1000
-   #etel_execute_command_x_s 1 79 0
+   etel_execute_command_x_s 1 79 0 ; # a supprimer
    if {$telscript($telname,mount_type)=="azelevrot"} {
-		#etel_execute_command_x_s 2 119 0
+		etel_execute_command_x_s 2 119 0 ; # a supprimer
 		etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
       after 1000
-	  	#etel_execute_command_x_s 2 79 0
+	  	etel_execute_command_x_s 2 79 0 ; # a supprimer
 	}
 }
 
@@ -2649,7 +2649,7 @@ proc telscript_gui { } {
       frame $base.f.fgetreg1 -bg $paramscript(color,back)
          label $base.f.fgetreg1.lab_def \
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
-            -font $paramscript(font) -text "REGISTER axe X|M|K num ?val?"
+            -font $paramscript(font) -text "REGISTER axe X|M|K num ?0 val?"
          pack $base.f.fgetreg1.lab_def -side left -fill none -pady 0 -padx 4
    	   entry $base.f.fgetreg1.ent \
    	      -textvariable telscript($telname,loopeval_register) -width 15
