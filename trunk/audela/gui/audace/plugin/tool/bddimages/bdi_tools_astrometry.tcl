@@ -557,11 +557,10 @@ namespace eval bdi_tools_astrometry {
          set tt0 [clock clicks -milliseconds]
          set err [catch {exec sh $cmdfile} msg]
          gren_info "en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
-
          if { $err } {
             gren_erreur "ERROR ephemcc #$err: $msg\n"
             foreach {midepoch dateimg} [array get list_dates] {
-               set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) [list $midepoch "" "" "" ""]
+               set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) [list $midepoch "-" "-" "-" "-"]
             }
          } else {
             array unset ephem
@@ -783,8 +782,8 @@ namespace eval bdi_tools_astrometry {
             set err_mag [::bdi_tools_psf::get_val othf "err_mag"]
             set err_xsm [::bdi_tools_psf::get_val othf "err_xsm"]
             set err_ysm [::bdi_tools_psf::get_val othf "err_ysm"]
-            set fwhm_x  [::bdi_tools_psf::get_val othf "fwhm_x"]
-            set fwhm_y  [::bdi_tools_psf::get_val othf "fwhm_y"]
+            set fwhmx  [::bdi_tools_psf::get_val othf "fwhmx"]
+            set fwhmy  [::bdi_tools_psf::get_val othf "fwhmy"]
 
             if { $res_ra == "" || $res_dec == "" } { 
                set rho     ""
@@ -802,8 +801,24 @@ namespace eval bdi_tools_astrometry {
                set err_ysm   [format  "%.4f" $err_ysm]
             }
 
-            set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhm_x $fwhm_y]
-            #gren_info "tabval($name,$dateiso) = $::bdi_tools_astrometry::tabval($name,$dateiso)\n"
+# Structure de tabval :
+#  0  id 
+#  1  field 
+#  2  ar
+#  3  rho
+#  4  res_ra
+#  5  res_dec
+#  6  ra
+#  7  dec
+#  8  mag
+#  9  err_mag
+# 10  err_xsm
+# 11  err_ysm
+# 12  fwhmx
+# 13  fwhmy
+
+            set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhmx $fwhmy]
+            gren_info "C tabval($name,$dateiso) = $::bdi_tools_astrometry::tabval($name,$dateiso)\n"
 
             lappend ::bdi_tools_astrometry::listref($name)     $dateiso
             lappend ::bdi_tools_astrometry::listdate($dateiso) $name
@@ -843,8 +858,8 @@ namespace eval bdi_tools_astrometry {
             set err_mag [::bdi_tools_psf::get_val othf "err_mag"]
             set err_xsm [::bdi_tools_psf::get_val othf "err_xsm"]
             set err_ysm [::bdi_tools_psf::get_val othf "err_ysm"]
-            set fwhm_x  [::bdi_tools_psf::get_val othf "fwhm_x"]
-            set fwhm_y  [::bdi_tools_psf::get_val othf "fwhm_y"]
+            set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
+            set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
 
             if { $res_ra == "" || $res_dec == "" } { 
                set rho  ""
@@ -862,7 +877,7 @@ namespace eval bdi_tools_astrometry {
                set err_ysm   [format  "%.4f" $err_ysm]
             }
 
-            set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] "field" $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhm_x $fwhm_y]
+            set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] "field" $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhmx $fwhmy]
             #gren_info "tabval($name,$dateiso) = $::bdi_tools_astrometry::tabval($name,$dateiso)\n"
 
             lappend ::bdi_tools_astrometry::listscience($name) $dateiso
