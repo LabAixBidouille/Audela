@@ -983,7 +983,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       if {$::bdi_tools_psf::use_psf} {
       
-         gren_info "** Working ASTROID "
+         gren_info "** Working ASTROID \n"
          set tt0 [clock clicks -milliseconds]
 
 # ::bdi_tools_psf::get_psf_listsources ::tools_cata::current_listsources_sav
@@ -993,7 +993,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
    
          set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-         gren_info "in $tt secondes with SUCCESS for $::tools_cata::nb_astroid sources\n"
+         gren_info "** ASTROID in $tt secondes with SUCCESS for $::tools_cata::nb_astroid sources\n"
 
       }
 
@@ -1035,7 +1035,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       global bddconf
 
       set dateobs  [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
-      gren_info "date = $dateobs\n"
+      #gren_info "date = $dateobs\n"
       gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Creation de la VOTable en memoire

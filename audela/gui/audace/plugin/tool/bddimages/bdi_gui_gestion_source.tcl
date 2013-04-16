@@ -1162,7 +1162,7 @@ namespace eval bdi_gui_gestion_source {
          set ls [lindex $::tools_cata::current_listsources 1]
          set s  [lindex $ls $id]
 
-         ::bdi_tools_psf::delete_cata_from_source s $cata
+         ::manage_source::delete_catalog_in_source s $cata
          set ls [lreplace $ls $id $id $s]
          set ::tools_cata::current_listsources [lreplace $::tools_cata::current_listsources 1 1 $ls]
          

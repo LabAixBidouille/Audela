@@ -424,6 +424,15 @@ namespace eval bdi_gui_astrometry {
 
 
 
+   proc ::bdi_gui_astrometry::stdev { tab fmt} {
+
+      if {[llength $tab] > 1} {
+         return [format $fmt [::math::statistics::stdev $tab] ]
+      } else {
+         return ""
+      }
+   }
+
 
    proc ::bdi_gui_astrometry::create_report_txt {  } {
 
@@ -561,6 +570,23 @@ namespace eval bdi_gui_astrometry {
 
             incr nbobs
             set idsource [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  0]
+
+            # Structure de tabval :
+            #  0  id 
+            #  1  field 
+            #  2  ar
+            #  3  rho
+            #  4  res_ra
+            #  5  res_dec
+            #  6  ra
+            #  7  dec
+            #  8  mag
+            #  9  err_mag
+            # 10  err_xsm
+            # 11  err_ysm
+            # 12  fwhm_x
+            # 13  fwhm_y
+            gren_info "tabval($name,$dateimg) = $::bdi_tools_astrometry::tabval($name,$dateimg)\n"
             set rho     [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  4]]
             set res_d   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  5]]
@@ -581,6 +607,7 @@ namespace eval bdi_gui_astrometry {
             # Ephemerides de l'IMCCE
             set eph_imcce     [lindex $all_ephem 0]
             #set midatejd      [lindex $eph_imcce {1 1 0}]
+            gren_info "eph_imcce = $eph_imcce\n"
             set ra_imcce_deg  [lindex $eph_imcce {1 1 1}]
             set dec_imcce_deg [lindex $eph_imcce {1 1 2}]
             set h_imcce_deg   [lindex $eph_imcce {1 1 3}]
@@ -602,13 +629,15 @@ namespace eval bdi_gui_astrometry {
             }
 
             # OMC IMCCE
-            if {$ra_imcce_deg == "-"} {
+            gren_info "ra_imcce_deg = $ra_imcce_deg\n"
+            if { $ra_imcce_deg == "" || $ra_imcce_deg == "-" } {
                set ra_imcce_omc "-"
             } else {
+               gren_info "ra_imcce_deg = $ra_imcce_deg\n"
                set ra_imcce_omc [format "%+.4f" [expr ($alpha - $ra_imcce_deg) * 3600.0]]
                set ra_imcce [::bdi_tools_astrometry::convert_txt_hms $ra_imcce_deg]
             }
-            if {$dec_imcce_deg == "-"} {
+            if { $dec_imcce_deg == "" || $dec_imcce_deg == "-" } {
                set dec_imcce_omc "-"
             } else {
                set dec_imcce_omc [format "%+.4f" [expr ($delta - $dec_imcce_deg) * 3600.0]]
@@ -655,6 +684,7 @@ namespace eval bdi_gui_astrometry {
             if {$dec_imccejpl_cmc != "-"} {lappend tabcalc(dec_imccejpl_cmc) $dec_imccejpl_cmc}
 
             # Formatage de certaines valeurs
+            gren_info "ra_imcce_deg = $ra_imcce_deg\n"
             if {$ra_imcce_deg  != "-"} {set ra_imcce_deg  [format "%.8f" $ra_imcce_deg]}
             if {$dec_imcce_deg != "-"} {set dec_imcce_deg [format "%.8f" $dec_imcce_deg]}
             if {$h_imcce_deg   != "-"} {set h_imcce_deg   [format "%.8f" $h_imcce_deg]}
@@ -685,16 +715,17 @@ namespace eval bdi_gui_astrometry {
          }
 
          set calc(res_a,mean)   [format "%.4f" [::math::statistics::mean  $tabcalc(res_a)]]
-         set calc(res_a,stdev)  [format "%.4f" [::math::statistics::stdev $tabcalc(res_a)]]
          set calc(res_d,mean)   [format "%.4f" [::math::statistics::mean  $tabcalc(res_d)]]
-         set calc(res_d,stdev)  [format "%.4f" [::math::statistics::stdev $tabcalc(res_d)]]
-
          set calc(datejj,mean)  [::math::statistics::mean  $tabcalc(datejj)] 
-         set calc(datejj,stdev) [::math::statistics::stdev $tabcalc(datejj)] 
          set calc(alpha,mean)   [::math::statistics::mean  $tabcalc(alpha)]  
-         set calc(alpha,stdev)  [::math::statistics::stdev $tabcalc(alpha)]  
          set calc(delta,mean)   [::math::statistics::mean  $tabcalc(delta)]  
-         set calc(delta,stdev)  [::math::statistics::stdev $tabcalc(delta)]  
+  
+         set calc(res_a,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_a) "%.4f"]
+         set calc(res_d,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_d) "%.4f"]
+         set calc(datejj,stdev) [::bdi_gui_astrometry::stdev $tabcalc(datejj) "%.4f"]
+         set calc(alpha,stdev) [::bdi_gui_astrometry::stdev $tabcalc(alpha) "%.4f"]
+         set calc(delta,stdev) [::bdi_gui_astrometry::stdev $tabcalc(delta) "%.4f"]
+
          set pi [expr 2*asin(1.0)]
 
          # OMC IMCCE
@@ -702,14 +733,14 @@ namespace eval bdi_gui_astrometry {
             set mean [::math::statistics::mean $tabcalc(ra_imcce_omc)  ]
             set mean [expr $mean * cos($calc(delta,mean) * $pi / 180.)]
             set calc(ra_imcce_omc,mean)  [format "%.4f" $mean]
-            set calc(ra_imcce_omc,stdev) [format "%.4f" [::math::statistics::stdev $tabcalc(ra_imcce_omc)]]
+            set calc(ra_imcce_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(ra_imcce_omc) "%.4f"]
          } else {
             set calc(ra_imcce_omc,mean)  "-"
             set calc(ra_imcce_omc,stdev) "-"
          }
          if {[info exists tabcalc(dec_imcce_omc)]} {
-           set calc(dec_imcce_omc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_imcce_omc)]]
-           set calc(dec_imcce_omc,stdev) [format "%.4f" [::math::statistics::stdev $tabcalc(dec_imcce_omc)]]
+            set calc(dec_imcce_omc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_imcce_omc)]]
+            set calc(dec_imcce_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(dec_imcce_omc) "%.4f"]
          } else {
             set calc(dec_imcce_omc,mean)   "-"
             set calc(dec_imcce_omc,stdev)  "-"
@@ -720,14 +751,14 @@ namespace eval bdi_gui_astrometry {
             set mean [::math::statistics::mean  $tabcalc(ra_jpl_omc)]
             set mean [expr $mean * cos($calc(delta,mean) * $pi / 180.)]
             set calc(ra_jpl_omc,mean)  [format "%.4f" $mean]
-            set calc(ra_jpl_omc,stdev) [format "%.4f" [::math::statistics::stdev $tabcalc(ra_jpl_omc)]]
+            set calc(ra_jpl_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(ra_jpl_omc) "%.4f"]
          } else {
             set calc(ra_jpl_omc,mean)   "-"
             set calc(ra_jpl_omc,stdev)  "-"
          }
          if {[info exists tabcalc(dec_jpl_omc)]} {
-           set calc(dec_jpl_omc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_jpl_omc)]]
-           set calc(dec_jpl_omc,stdev) [format "%.4f" [::math::statistics::stdev $tabcalc(dec_jpl_omc)]]
+            set calc(dec_jpl_omc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_jpl_omc)]]
+            set calc(dec_jpl_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(dec_jpl_omc) "%.4f"]
          } else {
             set calc(dec_jpl_omc,mean)   "-"
             set calc(dec_jpl_omc,stdev)  "-"
@@ -736,15 +767,15 @@ namespace eval bdi_gui_astrometry {
          # CMC IMCCE-JPL
          if {[info exists tabcalc(ra_imccejpl_cmc)]} {
             set calc(ra_imccejpl_cmc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(ra_imccejpl_cmc)]]
-            set calc(ra_imccejpl_cmc,stdev) [format "%.4f" [::math::statistics::stdev $tabcalc(ra_imccejpl_cmc)]]
+            set calc(ra_imccejpl_cmc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(ra_imccejpl_cmc) "%.4f"]
          } else {
             set calc(ra_imccejpl_cmc,mean)   "-"
             set calc(ra_imccejpl_cmc,stdev)  "-"
          }
 
          if {[info exists tabcalc(dec_imccejpl_cmc)]} {
-           set calc(dec_imccejpl_cmc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_imccejpl_cmc)]]
-           set calc(dec_imccejpl_cmc,stdev) [format "%.4f" [::math::statistics::stdev $tabcalc(dec_imccejpl_cmc)]]
+            set calc(dec_imccejpl_cmc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_imccejpl_cmc)]]
+            set calc(dec_imccejpl_cmc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(dec_imccejpl_cmc) "%.4f"]
          } else {
             set calc(dec_imccejpl_cmc,mean)   "-"
             set calc(dec_imccejpl_cmc,stdev)  "-"

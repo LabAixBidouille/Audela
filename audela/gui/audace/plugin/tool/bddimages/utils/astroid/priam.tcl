@@ -348,25 +348,25 @@ namespace eval ::priam {
    
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
-            set b  [lindex [lindex $s $x] 2]           
-            set ar [lindex $b 25]
-            set ac [lindex $b 27]
+            set othf  [lindex [lindex $s $x] 2]
+            set ar [::bdi_tools_psf::get_val othf "flagastrom"]
+            set ac [::bdi_tools_psf::get_val othf "cataastrom"]
             #gren_info "ASTROID $b\n"
             #gren_info "ASTROID $ar $ac\n"
             
             # cas d une reference ou d une science
             if  {$ar=="R" || $ar=="S"} {
                #gren_info "yop\n"
-               set name [::manage_source::naming $s $ac]
-               set xsm [lindex $b 0]
-               set ysm [lindex $b 1]
-               set xsmerr [lindex $b 2]
-               set ysmerr [lindex $b 3]
-               set fwhmx [lindex $b 4]
-               set fwhmy [lindex $b 5]
-               set fluxintegre [lindex $b 6]
+               set name    [::manage_source::naming $s $ac]
+               set xsm     [::bdi_tools_psf::get_val othf "xsm"]
+               set ysm     [::bdi_tools_psf::get_val othf "ysm"]
+               set err_xsm [::bdi_tools_psf::get_val othf "err_xsm"]
+               set err_ysm [::bdi_tools_psf::get_val othf "err_ysm"]
+               set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
+               set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
+               set flux    [::bdi_tools_psf::get_val othf "flux"]
                #gren_info "insert science.mes $ar $xsm $ysm\n"
-               puts $chan0 "$ar $xsm $xsmerr $ysm $ysmerr $fwhmx $fwhmy $fluxintegre $name"
+               puts $chan0 "$ar $xsm $err_xsm $ysm $err_ysm $fwhmx $fwhmy $flux $name"
             } else {
                #gren_info "not ($ar)\n"
             
