@@ -981,7 +981,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
       }
 
-      if {$::psf_tools::use_psf} {
+      if {$::bdi_tools_psf::use_psf} {
       
          gren_info "** Working ASTROID "
          set tt0 [clock clicks -milliseconds]
@@ -1045,9 +1045,9 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
-      set fxml [open "/astrodata/Observations/Images/bddimages/bddimages_local/tmp/test.xml" "w"]
-      puts $fxml $votable
-      close $fxml
+      #set fxml [open "/astrodata/Observations/Images/bddimages/bddimages_local/tmp/test.xml" "w"]
+      #puts $fxml $votable
+      #close $fxml
       
       # Insertion du cata dans bdi
       set err [ catch { insertion_solo $cataxml } msg ]

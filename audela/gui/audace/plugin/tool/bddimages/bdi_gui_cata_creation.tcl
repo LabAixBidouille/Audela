@@ -40,15 +40,18 @@ namespace eval gui_cata_creation {
 
       # Initialisation au niveau GUI cata
       ::gui_cata::inittoconf
+      ::bdi_gui_psf::inittoconf
 
-      # Lib du compilateur Fortran pour executer Priam
-      if {! [info exists ::bdi_tools_astrometry::ifortlib] } {
-         if {[info exists conf(bddimages,cata,ifortlib)]} {
-            set ::bdi_tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
-         } else {
-            set ::bdi_tools_astrometry::ifortlib "/opt/intel/lib/intel64"
-         }
-      }
+# TODO ::gui_cata_creation::inittoconf : cette init n'a rien a faire ici, a remomnter dans bdi_tools_astrometry
+
+      ## Lib du compilateur Fortran pour executer Priam
+      #if {! [info exists ::bdi_tools_astrometry::ifortlib] } {
+      #   if {[info exists conf(bddimages,cata,ifortlib)]} {
+      #      set ::bdi_tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
+      #   } else {
+      #      set ::bdi_tools_astrometry::ifortlib "/opt/intel/lib/intel64"
+      #   }
+      #}
 
    }
 
@@ -61,6 +64,7 @@ namespace eval gui_cata_creation {
    proc ::gui_cata_creation::closetoconf { } {
 
       ::gui_cata::closetoconf
+      ::bdi_gui_psf::closetoconf
 
    }
 
@@ -856,7 +860,7 @@ namespace eval gui_cata_creation {
       
       gren_info "     Mesure des PSF\n"
       
-      ::psf_gui::psf_listsources_no_auto listsources $::psf_tools::psf_threshold $::psf_tools::psf_radius $::psf_tools::psf_saturation
+      ::psf_gui::psf_listsources_no_auto listsources $::bdi_tools_psf::psf_threshold $::bdi_tools_psf::psf_radius $::bdi_tools_psf::psf_saturation
       #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
@@ -1436,13 +1440,13 @@ namespace eval gui_cata_creation {
    #
    proc ::gui_cata_creation::handlePSFParams { this } {
 
-      if {$::psf_tools::use_psf} {
+      if {$::bdi_tools_psf::use_psf} {
          $this.opts.saturation.val   configure -state normal
          $this.opts.delta.val        configure -state normal
          $this.methglobale.check     configure -state normal
          $this.opts2.threshold.val   configure -state normal
          $this.opts2.limitradius.val configure -state normal
-         if {$::psf_tools::use_global} {
+         if {$::bdi_tools_psf::use_global} {
             $this.opts2.threshold.val   configure -state normal
             $this.opts2.limitradius.val configure -state normal
             $this.opts.delta.val        configure -state disabled
@@ -2001,7 +2005,7 @@ namespace eval gui_cata_creation {
                set creer [frame $psf.creer -borderwidth 0 -cursor arrow -relief groove]
                pack $creer -in $psf -side top -anchor w -expand 0 -fill x -pady 5
                   checkbutton $creer.check -highlightthickness 0 -text "  $caption(gui_cata_creation,psfcreer)" \
-                        -variable ::psf_tools::use_psf -command ""
+                        -variable ::bdi_tools_psf::use_psf -command ""
                   pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w 
 
                #--- Option de creation du cata Astroid
