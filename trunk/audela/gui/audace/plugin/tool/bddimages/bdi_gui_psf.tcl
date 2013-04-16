@@ -34,92 +34,31 @@
 namespace eval bdi_gui_psf {
 
 
-
    #------------------------------------------------------------
-   ## Charge les parametres depuis la configuration d'AUDACE
+   ## Initialisation des parametres de PSF au niveau GUI
    # Cette initialisation est a effectuer avant l'appel
    # a une fonction de mesure de photocentre
    # @return void
    #
    proc ::bdi_gui_psf::inittoconf { } {
 
-      global conf
+      ::bdi_tools_psf::inittoconf
 
-      if {! [info exists ::bdi_tools_psf::use_psf] } {
-         if {[info exists conf(bddimages,cata,psf,create)]} {
-            set ::bdi_tools_psf::use_psf $conf(bddimages,cata,psf,create)
-         } else {
-            set ::bdi_tools_psf::use_psf 0
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::use_global] } {
-         if {[info exists conf(bddimages,cata,psf,globale)]} {
-            set ::bdi_tools_psf::use_global $conf(bddimages,cata,psf,globale)
-         } else {
-            set ::bdi_tools_psf::use_global 0
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_saturation] } {
-         if {[info exists conf(bddimages,cata,psf,saturation)]} {
-            set ::bdi_tools_psf::psf_saturation $conf(bddimages,cata,psf,saturation)
-         } else {
-            set ::bdi_tools_psf::psf_saturation 50000
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_radius] } {
-         if {[info exists conf(bddimages,cata,psf,radius)]} {
-            set ::bdi_tools_psf::psf_radius $conf(bddimages,cata,psf,radius)
-         } else {
-            set ::bdi_tools_psf::psf_radius 15
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_threshold] } {
-         if {[info exists conf(bddimages,cata,psf,threshold)]} {
-            set ::bdi_tools_psf::psf_threshold $conf(bddimages,cata,psf,threshold)
-         } else {
-            set ::bdi_tools_psf::psf_threshold 2
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_limitradius] } {
-         if {[info exists conf(bddimages,cata,psf,limitradius)]} {
-            set ::bdi_tools_psf::psf_limitradius $conf(bddimages,cata,psf,limitradius)
-         } else {
-            set ::bdi_tools_psf::psf_limitradius 50
-         }
-      }
-      if {! [info exists ::bdi_tools_psf::psf_methode] } {
-         if {[info exists conf(bddimages,cata,psf,methode)]} {
-            set ::bdi_tools_psf::psf_methode $conf(bddimages,cata,psf,methode)
-         } else {
-            set ::bdi_tools_psf::psf_methode "basic"
-         }
-      }
-
-   }
-
-
-
+   }   
 
 
 
    #------------------------------------------------------------
-   ## A la fermeture de l'application, cette fonction
-   # sauvegarde les parametres dans la conf
+   ## Sauvegarde dans la conf des parametres lies a la PSF
+   # Cette initialisation est a effectuer avant l'appel
+   # a une fonction de mesure de photocentre
    # @return void
    #
    proc ::bdi_gui_psf::closetoconf { } {
 
-      global conf
-   
-      # Conf cata psf
-      set conf(bddimages,cata,psf,create)       $::bdi_tools_psf::use_psf
-      set conf(bddimages,cata,psf,globale)      $::bdi_tools_psf::use_global
-      set conf(bddimages,cata,psf,saturation)   $::bdi_tools_psf::psf_saturation
-      set conf(bddimages,cata,psf,radius)       $::bdi_tools_psf::psf_radius
-      set conf(bddimages,cata,psf,threshold)    $::bdi_tools_psf::psf_threshold
-      set conf(bddimages,cata,psf,limitradius)  $::bdi_tools_psf::psf_limitradius
-      set conf(bddimages,cata,psf,methode)      $::bdi_tools_psf::psf_methode
-   }
+      ::bdi_tools_psf::closetoconf
+
+   }   
 
 
 
@@ -214,8 +153,8 @@ namespace eval bdi_gui_psf {
 
 
 
-    set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
-    pack $actions -in $frm -anchor c -side top
+      set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
+      pack $actions -in $frm -anchor c -side top
 
            label $actions.lab1 -text "Methode pour PSF : " 
            menubutton $actions.b -menu $actions.b.m -textvar ::bdi_tools_psf::psf_methode -width 10 -relief groove
@@ -228,10 +167,11 @@ namespace eval bdi_gui_psf {
 
      ::bdi_gui_psf::focus_conf_methode $frm
    }
-     
-     
-# focus sur l'onglet de la methode de ::bdi_tools_psf::psf_methode
-proc ::bdi_gui_psf::focus_conf_methode { frm { value "" } } {
+
+
+
+   # focus sur l'onglet de la methode de ::bdi_tools_psf::psf_methode
+   proc ::bdi_gui_psf::focus_conf_methode { frm { value "" } } {
       
       if { $value != "" } {
          set ::bdi_tools_psf::psf_methode $value
