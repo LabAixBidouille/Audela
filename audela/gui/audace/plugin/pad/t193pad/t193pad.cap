@@ -17,7 +17,7 @@ set caption(t193pad,nord)                 "N"
 set caption(t193pad,sud)                  "S"
 set caption(t193pad,est)                  "E"
 set caption(t193pad,ouest)                "W"
-set caption(t193pad,activeFleches)        "# Activer les flèches\ndu clavier"
+set caption(t193pad,activeFleches)        "Enable\nArrow Keys"
 
 set caption(t193pad,goto)                 "GOTO"
 set caption(t193pad,stopGoto)             "STOP"
@@ -199,7 +199,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "W"
-   set caption(t193pad,activeFleches)     "# Activer les flèches\ndu clavier"
+   set caption(t193pad,activeFleches)     "Enable\nArrow Keys"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"
@@ -225,7 +225,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "E"
    set caption(t193pad,ouest)             "W"
-   set caption(t193pad,activeFleches)     "# Activer les flèches\ndu clavier"
+   set caption(t193pad,activeFleches)     "Enable\nArrow Keys"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"

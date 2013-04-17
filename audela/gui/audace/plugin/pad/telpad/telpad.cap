@@ -17,7 +17,7 @@ set caption(telpad,nord)             "N"
 set caption(telpad,sud)              "S"
 set caption(telpad,est)              "E"
 set caption(telpad,ouest)            "W"
-set caption(telpad,activeFleches)    "# Activer les flèches\ndu clavier"
+set caption(telpad,activeFleches)    "Enable\nArrow Keys"
 
 set caption(telpad,moteur_foc)       "Focusing Motor"
 
@@ -108,7 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telpad,sud)           "S"
    set caption(telpad,est)           "E"
    set caption(telpad,ouest)         "W"
-   set caption(telpad,activeFleches) "# Activer les flèches\ndu clavier"
+   set caption(telpad,activeFleches) "Enable\nArrow Keys"
 
    set caption(telpad,moteur_foc)    "Focusing Motor"
 
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telpad,sud)           "S"
    set caption(telpad,est)           "E"
    set caption(telpad,ouest)         "W"
-   set caption(telpad,activeFleches) "# Activer les flèches\ndu clavier"
+   set caption(telpad,activeFleches) "Enable\nArrow Keys"
 
    set caption(telpad,moteur_foc)    "Focusing Motor"
 
