@@ -814,14 +814,26 @@ void eqmod_codeur2skypos(struct telprop *tel, int hastep, int decstep, double *h
 	double deg_ha,deg_ra,deg_dec;
 
 	if (tel->problem_motor==PROBLEM_MOTOR_NOTHING) {
-		if (tel->tube_current_side == TUBE_OUEST) {
-			*flip=0;
-			tel->coord_deg_ha  = tel->coord_deg_ha0  + (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  ;
-			tel->coord_deg_dec = tel->coord_deg_dec0 + (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+		if (tel->latitude >= 0.0 ) {
+			if (tel->tube_current_side == TUBE_OUEST) {
+				*flip=0;
+				tel->coord_deg_ha  = tel->coord_deg_ha0  + (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  ;
+				tel->coord_deg_dec = tel->coord_deg_dec0 + (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+			} else {
+				*flip=1;
+				tel->coord_deg_ha  = tel->coord_deg_ha0  + (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  -180 ;
+				tel->coord_deg_dec = tel->coord_deg_dec0 - (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+			}
 		} else {
-			*flip=1;
-			tel->coord_deg_ha  = tel->coord_deg_ha0  + (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  -180 ;
-			tel->coord_deg_dec = tel->coord_deg_dec0 - (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+			if (tel->tube_current_side == TUBE_OUEST) {
+				*flip=0;
+				tel->coord_deg_ha  = tel->coord_deg_ha0  - (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  -180 ;
+				tel->coord_deg_dec = tel->coord_deg_dec0 - (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+			} else {
+				*flip=1;
+				tel->coord_deg_ha  = tel->coord_deg_ha0  - (tel->coord_adu_ha -tel->coord_adu_ha0 ) / tel->adu4deg_ha  ;
+				tel->coord_deg_dec = tel->coord_deg_dec0 + (tel->coord_adu_dec-tel->coord_adu_dec0) / tel->adu4deg_dec ;
+			}
 		}
 		deg_dec = tel->coord_deg_dec ;
 	}
@@ -929,12 +941,22 @@ int eqmod_hadec_match(struct telprop *tel)
 	deg_ha=ha;
 	deg_dec=tel->dec0;
 
-	if (tel->tube_current_side == TUBE_OUEST) {
-		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
-		adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+	if (tel->latitude >= 0.0 ) {
+		if (tel->tube_current_side == TUBE_OUEST) {
+			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		} else {
+			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		}
 	} else {
-		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
-		adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		if (tel->tube_current_side == TUBE_OUEST) {
+			adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		} else {
+			adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		}
 	}
 
    // --- Init AXE 1 (horaire) 0 UC pour HA = 0h ---
@@ -1042,8 +1064,9 @@ c (sense)
 int eqmod2_track(struct telprop *tel)
 {
    char s[1024],ss[1024],axe;
-   int res,motion_type;
+   int res,motion_type,motion_sense;
    double v;
+
 
    // Track Hour Axis
    axe='1';
@@ -1055,13 +1078,21 @@ int eqmod2_track(struct telprop *tel)
 			v=v*tel->param_g1; // g1=16
 			if (v<10) { v=10; }
 		}
-		if (tel->speed_track_ra>0) {
-			sprintf(s,":G%c%d0",axe,motion_type);
-			res=eqmod_putread(tel,s,NULL);
-		} else if (tel->speed_track_ra<0) {
-			sprintf(s,":G%c%d1",axe,motion_type);
-			res=eqmod_putread(tel,s,NULL);
+		if (tel->latitude >= 0.0 ) {
+			if (tel->speed_track_ra>0) {
+				motion_sense=0;
+			} else {
+				motion_sense=1;
+			}
+		} else {
+			if (tel->speed_track_ra>0) {
+				motion_sense=1;
+			} else {
+				motion_sense=0;
+			}
 		}
+		sprintf(s,":G%c%d%d",axe,motion_type,motion_sense);
+		res=eqmod_putread(tel,s,NULL);
       eqmod_encode(tel,(int)v,ss);
       sprintf(s,":I%c%s",axe,ss);
       res=eqmod_putread(tel,s,NULL);
@@ -1082,13 +1113,21 @@ int eqmod2_track(struct telprop *tel)
 			v=v*tel->param_g2;
 			if (v<10) { v=10; }
 		}
-		if (tel->speed_track_dec>0) {
-			sprintf(s,":G%c%d0",axe,motion_type);
-			res=eqmod_putread(tel,s,NULL);
-		} else if (tel->speed_track_dec<0) {
-			sprintf(s,":G%c%d1",axe,motion_type);
-			res=eqmod_putread(tel,s,NULL);
+		if (tel->latitude >= 0.0 ) {
+			if (tel->speed_track_dec>0) {
+				motion_sense=0;
+			} else {
+				motion_sense=1;
+			}
+		} else {
+			if (tel->speed_track_dec>0) {
+				motion_sense=1;
+			} else {
+				motion_sense=0;
+			}
 		}
+		sprintf(s,":G%c%d%d",axe,motion_type,motion_sense);
+		res=eqmod_putread(tel,s,NULL);
       eqmod_encode(tel,(int)v,ss);
       sprintf(s,":I%c%s",axe,ss);
       res=eqmod_putread(tel,s,NULL);
@@ -1155,9 +1194,9 @@ int eqmod2_move(struct telprop *tel, char direction)
 
 	// --- motion sense
 	if (direction=='W') {
-		motion_sense=0;
+		motion_sense=(tel->latitude >= 0.0 )? 0 : 1;
 	} else if (direction=='E') {
-		motion_sense=1;
+		motion_sense=(tel->latitude >= 0.0 )? 1 : 0;
 	} else {
 		if (tel->latitude >= 0.0 ) {
 			if (direction=='N') {
@@ -1204,11 +1243,9 @@ int eqmod2_goto(struct telprop *tel)
    int HA, DEC;
    double ha0, dec0, dha, ddec;
 	double slewing_delay_ha,slewing_delay_dec,slewing_delay;
-//   const int DEG90 = (int)(90.0 * tel->radec_position_conversion);
 	int flip; 
 	double ha_raw, dec_raw;
    double deg_ha,deg_dec,adu_ha,adu_dec;
-	//double deg_ra_offw,deg_ra_offe;
 
    // Etape1: savoir ou on est en HADEC
    eqmod_positions12(tel,&HA0,&DEC0);
@@ -1257,15 +1294,33 @@ int eqmod2_goto(struct telprop *tel)
 				tel->tube_next_side=TUBE_EST;
 			}
 		}
+		if (tel->latitude < 0.0 ) {
+			if (tel->tube_next_side==TUBE_EST) {
+				tel->tube_next_side=TUBE_OUEST;
+			} else {
+				tel->tube_next_side=TUBE_EST;
+			}
+		}
 
 		// Etape4: calcul des ADU a pointer
-		if (tel->tube_next_side == TUBE_OUEST) {
-			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
-			adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		if (tel->latitude >= 0.0 ) {
+			if (tel->tube_next_side == TUBE_OUEST) {
+				adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			} else {
+				adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			}
 		} else {
-			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
-			adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			if (tel->tube_next_side == TUBE_OUEST) {
+				adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			} else {
+				adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			}
 		}
+
 
 		// Etape 5: calcul du trajet a parcourir (en ADU)
 		dha = adu_ha - tel->coord_adu_ha;
@@ -1414,12 +1469,22 @@ int eqmod2_match(struct telprop *tel)
 	deg_ha=ha;
 	deg_dec=dec;
 
-	if (tel->tube_current_side == TUBE_OUEST) {
-		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
-		adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+	if (tel->latitude >= 0.0 ) {
+		if (tel->tube_current_side == TUBE_OUEST) {
+			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		} else {
+			adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		}
 	} else {
-		adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
-		adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		if (tel->tube_current_side == TUBE_OUEST) {
+			adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		} else {
+			adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+			adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+		}
 	}
 
 	// --- on arrete le moteur
