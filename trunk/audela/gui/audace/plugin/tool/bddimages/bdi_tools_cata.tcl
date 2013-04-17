@@ -983,10 +983,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       if {$::bdi_tools_psf::use_psf} {
       
-         gren_info "** Working ASTROID \n"
+         gren_info "Building ASTROID catalogue ... \n"
          set tt0 [clock clicks -milliseconds]
-
-# ::bdi_tools_psf::get_psf_listsources ::tools_cata::current_listsources_sav
 
          ::bdi_tools_psf::get_psf_listsources listsources
          set ::tools_cata::current_listsources_sav $listsources

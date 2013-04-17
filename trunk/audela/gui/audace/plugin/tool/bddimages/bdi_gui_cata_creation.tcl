@@ -42,17 +42,6 @@ namespace eval gui_cata_creation {
       ::gui_cata::inittoconf
       ::bdi_gui_psf::inittoconf
 
-# TODO ::gui_cata_creation::inittoconf : cette init n'a rien a faire ici, a remomnter dans bdi_tools_astrometry
-
-      ## Lib du compilateur Fortran pour executer Priam
-      #if {! [info exists ::bdi_tools_astrometry::ifortlib] } {
-      #   if {[info exists conf(bddimages,cata,ifortlib)]} {
-      #      set ::bdi_tools_astrometry::ifortlib $conf(bddimages,cata,ifortlib)
-      #   } else {
-      #      set ::bdi_tools_astrometry::ifortlib "/opt/intel/lib/intel64"
-      #   }
-      #}
-
    }
 
 
@@ -159,9 +148,9 @@ namespace eval gui_cata_creation {
       $::gui_cata::gui_create configure -state disabled
       $::gui_cata::gui_fermer configure -state disabled
       set next_state [$::gui_cata::gui_next cget -state]
-      $::gui_cata::gui_next   configure -state disabled
+      $::gui_cata::gui_next configure -state disabled
       set back_state [$::gui_cata::gui_back cget -state]
-      $::gui_cata::gui_back   configure -state disabled
+      $::gui_cata::gui_back configure -state disabled
 
       if { $::tools_cata::boucle == 1 } {
 
@@ -306,10 +295,12 @@ namespace eval gui_cata_creation {
             return true
 
          } else {
-            gren_erreur "Error: ::gui_cata_creation::get_one_wcs: $msg  [ idbddimg : $idbddimg ] [ filename : $filename ]\n"
+
+            gren_erreur "Error: ::gui_cata_creation::get_one_wcs: $msg\n (idbddimg : $idbddimg -> filename : $filename)\n"
             set ::gui_cata::color_wcs $::gui_cata::color_button_bad
             set ::tools_cata::boucle 0
             return false
+
          }
    }
 
@@ -635,11 +626,11 @@ namespace eval gui_cata_creation {
          #}
          #close $chan
    
-         array set color { 1 green 2 blue 3 red}
+         array set color { 1 green 2 red 3 blue}
          gren_info "  Display ascii.txt:\n"
          gren_info "   * green = Sextractor extracted sources (code 1)\n"
-         gren_info "   * blue = Sources identified as USNOA2 stars (code 2)\n"
-         gren_info "   * red = Rejected sources (code 3)\n"
+         gren_info "   * blue = Sources identified as USNOA2 stars (code 3)\n"
+         gren_info "   * red = Rejected sources (code 2)\n"
          # Lecture des sources depuis le fichier obs.lst
          set chan [open "./ascii.txt" "r"]
          while {[gets $chan line] >= 0} {
