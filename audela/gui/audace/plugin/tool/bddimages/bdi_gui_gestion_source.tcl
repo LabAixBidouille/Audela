@@ -192,7 +192,7 @@ namespace eval bdi_gui_gestion_source {
          set id    [lindex $r 2]
          set xpass [lindex $r 3]
          set ypass [lindex $r 4]
-         ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
+         ::confVisu::setPos $::audace(visuNo) [list $xpass $ypass]
          # charge par un grab l objet dans la visu
          ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids
       }

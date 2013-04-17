@@ -156,7 +156,7 @@ namespace eval gui_verifcata {
       set xpass [lindex $r 3]
       set ypass [lindex $r 4]
       
-      ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
+      ::confVisu::setPos $::audace(visuNo) [list $xpass $ypass]
       affich_un_rond_xy $xpass $ypass green  10 1
 
    }
@@ -208,7 +208,7 @@ namespace eval gui_verifcata {
       set id    [lindex $r 2]
       set xpass [lindex $r 3]
       set ypass [lindex $r 4]
-      ::confVisu::setpos $::audace(visuNo) [list $xpass $ypass]
+      ::confVisu::setPos $::audace(visuNo) [list $xpass $ypass]
       
       
       
