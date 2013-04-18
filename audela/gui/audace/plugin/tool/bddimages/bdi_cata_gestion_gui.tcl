@@ -355,6 +355,17 @@ namespace eval cata_gestion_gui {
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      
+      # fonction de transfert entre dateiso et id pour la variable cata_list (id commence a 1)
+      set id 0
+      foreach current_image $::tools_cata::img_list {
+         incr id
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         set date   [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+         set ::tools_cata::date2id($date) $id
+         set ::tools_cata::id2date($id)   $date
+      }
+      
 
       # Chargement premiere image sans GUI
       set ::tools_cata::id_current_image 1
@@ -687,7 +698,7 @@ namespace eval cata_gestion_gui {
          
          set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
          
-         ::confVisu::setpos $::audace(visuNo) [::bdi_tools_psf::get_xy s ]
+         ::confVisu::setPos $::audace(visuNo) [::bdi_tools_psf::get_xy s ]
          
 
    }
@@ -1378,7 +1389,7 @@ namespace eval cata_gestion_gui {
 
             if {[string compare -nocase $cata "ASTROID"] == 0} {
 
-               gren_info "modif  current_listsources\n"
+               #gren_info "modif  current_listsources\n"
                set fields [lindex $::tools_cata::current_listsources 0]
                set sources [lindex $::tools_cata::current_listsources 1]
 
@@ -1388,16 +1399,16 @@ namespace eval cata_gestion_gui {
 
                set b [lindex $astroid 2]
                set pos [expr [::gui_cata::get_pos_col flagphotom $idcata] - 10]
-               gren_info "pos flagphotom= $pos\n"
+               #gren_info "pos flagphotom= $pos\n"
                set b [lreplace $b $pos $pos $flag]
                set pos [expr [::gui_cata::get_pos_col cataphotom $idcata] - 10]
-               gren_info "pos cataphotom= $pos\n"
+               #gren_info "pos cataphotom= $pos\n"
                set b [lreplace $b $pos $pos $flag]
                set pos [expr [::gui_cata::get_pos_col flagastrom $idcata] - 10]
-               gren_info "pos flagastrom= $pos\n"
+               #gren_info "pos flagastrom= $pos\n"
                set b [lreplace $b $pos $pos $flag]
                set pos [expr [::gui_cata::get_pos_col cataastrom $idcata] - 10]
-               gren_info "pos cataastrom= $pos\n"
+               #gren_info "pos cataastrom= $pos\n"
                set b [lreplace $b $pos $pos $flag]
 
                set astroid [lreplace $astroid 2 2 $b]

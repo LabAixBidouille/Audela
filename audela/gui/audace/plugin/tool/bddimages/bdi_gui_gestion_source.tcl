@@ -328,6 +328,7 @@ namespace eval bdi_gui_gestion_source {
          foreach cata $s {
             set ra0  [lindex [lindex $cata 1] 0]
             set dec0 [lindex [lindex $cata 1] 1]
+            gren_info "[lindex $cata 0] : $ra0 $dec0\n"
             set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
             set x [lindex $xy 0]
             set y [lindex $xy 1]
@@ -407,9 +408,9 @@ namespace eval bdi_gui_gestion_source {
       gren_info "SOURCE FOUND : ID = $ids NAME = $name CATAS = "
       set pos 0
       foreach cata $s {
-         gren_info "[lindex $cata 0] "
          set ra0  [lindex [lindex $cata 1] 0]
          set dec0 [lindex [lindex $cata 1] 1]
+         gren_info "[lindex $cata 0] $ra0 $dec0 " 
          set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
          set x [lindex $xy 0]
          set y [lindex $xy 1]
@@ -721,7 +722,7 @@ namespace eval bdi_gui_gestion_source {
                set ra  [lindex $::gui_cata::psf_source [list $pos 1 0] ]
                set dec [lindex $::gui_cata::psf_source [list $pos 1 1] ]
             }
-            set width [expr 20 + $i * 10]
+            set width [expr 7 + $i * 2]
 
             if {$ra!="" && $dec!="" && $ra!="-" && $dec!="-"  } {
                # Affiche un rond vert
@@ -989,12 +990,16 @@ namespace eval bdi_gui_gestion_source {
 
        # Tabkey
        set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+       set date   [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+       set id $::tools_cata::date2id($date)
+       set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
+
        # Noms du fichier cata
        set imgfilename    [::bddimages_liste::lget $::tools_cata::current_image filename]
        set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
        set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
        set cataxml "${f}_cata.xml"
-
+       
        ::tools_cata::save_cata $::tools_cata::current_listsources $tabkey $cataxml
 
    }
@@ -1205,7 +1210,7 @@ namespace eval bdi_gui_gestion_source {
          set x    [lindex [$tbl get $select] 3]   
          set y    [lindex [$tbl get $select] 4]   
          
-         set width [expr 20 + $i * 10]
+         set width [expr 7 + $i * 2]
          affich_un_rond_xy $x $y green  $width 1
          #gren_info "cata = $cata ; ids = $ids \n"   
          incr i
@@ -1232,7 +1237,7 @@ namespace eval bdi_gui_gestion_source {
          set x    [lindex [$tbl get $select] 3]   
          set y    [lindex [$tbl get $select] 4]   
          
-         set width [expr 20 + $i * 10]
+         set width [expr 7 + $i * 2]
          affich_un_rond_xy $x $y green  $width 1
          #gren_info "cata = $cata ; ids = $ids \n"   
          incr i
@@ -1276,13 +1281,16 @@ namespace eval bdi_gui_gestion_source {
         # popups
         $popupTbl add command -label "Console" -command "::bdi_gui_gestion_source::console $tbl"
         $popupTbl add command -label "Select" -command "::bdi_gui_gestion_source::select $tbl"
-        $popupTbl add command -label "Nouvelle source" -command "::bdi_gui_gestion_source::newsource $tbl"
-        $popupTbl add command -label "Supprimer" -command "::bdi_gui_gestion_source::deletesource $tbl"
-        $popupTbl add command -label "PSF sur la liste" -command "::bdi_gui_gestion_source::popup_psf_on_list $tbl"
+        $popupTbl add command -label "(n) Nouvelle source" -command "::bdi_gui_gestion_source::newsource $tbl"
+        $popupTbl add command -label "(d) Supprimer" -command "::bdi_gui_gestion_source::deletesource $tbl"
+        $popupTbl add command -label "(p) PSF sur la liste" -command "::bdi_gui_gestion_source::popup_psf_on_list $tbl"
 
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <Control-Key-a> [ list ::bdi_gui_gestion_source::selectall $tbl ]
+      bind [$tbl bodypath] <Key-d> [ list ::bdi_gui_gestion_source::deletesource $tbl ]
+      bind [$tbl bodypath] <Key-n> [ list ::bdi_gui_gestion_source::newsource $tbl ]
+      bind [$tbl bodypath] <Key-p> [ list ::bdi_gui_gestion_source::popup_psf_on_list $tbl ]
       bind $tbl <<ListboxSelect>>          [ list ::bdi_gui_gestion_source::cmdButton1Click %W ]
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
 
@@ -1650,6 +1658,8 @@ namespace eval bdi_gui_gestion_source {
       ::bdi_gui_gestion_source::work_charge
 
       gren_info "TODO : Ecrire Ambigue , disable tous les boutons sauf grab"
+
+#      bind $This <Key-F1> { ::console::GiveFocus }
 
 
    }

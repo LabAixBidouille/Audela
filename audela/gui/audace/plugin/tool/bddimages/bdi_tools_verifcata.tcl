@@ -26,8 +26,9 @@ namespace eval tools_verifcata {
          set listsources $::tools_cata::current_listsources
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $listsources
          
-         set satraster 0
+         set staraster 0
          set catadouble 0
+         set cataastrom 0
          set err 0
 
          set sources [lindex $listsources 1] 
@@ -57,6 +58,7 @@ namespace eval tools_verifcata {
                    "UCAC4" { set star  "y" } 
                    default {}
                }
+               
             }
             # Denomination de la source
             set namable [::manage_source::namable $s]
@@ -74,14 +76,32 @@ namespace eval tools_verifcata {
             # Test si la source est a la fois stellaire et systeme solaire
             if {$star == "y" && $aster == "y"} {
                lappend source_list [list $ids $idd $::tools_cata::current_image_date "Star&Aster" $namesource $catas]
-               incr satraster
+               incr staraster
                incr err
             }
+
+            # Test si le flag cataastrom pointe bien sur la bonne source
+            set p [lsearch -index 0 $s "ASTROID"]
+            if {$p!=-1} {
+               set othf [lindex [lindex $s $p] 2]
+               set ar [::bdi_tools_psf::get_val othf "flagastrom"]
+               set ac [::bdi_tools_psf::get_val othf "cataastrom"]
+               if {$ar=="S"||$ar=="R"} {
+                  set p [lsearch -index 0 $s $ac]
+                  if {$p==-1} {
+                     incr err
+                     incr cataastrom
+                     lappend source_list [list $ids $idd $::tools_cata::current_image_date "CataAstrom" $namesource $catas]
+                  }
+               }
+            }
+            
+            
 
          }
 
 
-         if {$err} { lappend date_list [list $ids $idd $idd $satraster] }
+         if {$err} { lappend date_list [list $ids $idd $idd $staraster $catadouble $cataastrom] }
       }
          
       

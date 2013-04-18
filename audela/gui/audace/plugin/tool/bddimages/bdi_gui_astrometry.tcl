@@ -401,6 +401,12 @@ namespace eval bdi_gui_astrometry {
          if {$cata != "SKYBOT"} {continue}
 
          foreach date $::bdi_tools_astrometry::listscience($name) {
+            
+            # Rend effectif le crop du graphe
+            if {[info exists ::bdi_gui_astrometry::graph_results($name,$date,good)]} {
+               if {$::bdi_gui_astrometry::graph_results($name,$date,good)==0} {continue}
+            }
+         
             set alpha   [lindex $::bdi_tools_astrometry::tabval($name,$date) 6]
             set delta   [lindex $::bdi_tools_astrometry::tabval($name,$date) 7]
             set mag     [lindex $::bdi_tools_astrometry::tabval($name,$date) 8]
@@ -434,12 +440,306 @@ namespace eval bdi_gui_astrometry {
    }
 
 
+
+
+   # Structure de tabval :
+   #  0  id 
+   #  1  field 
+   #  2  ar
+   #  3  rho
+   #  4  res_ra
+   #  5  res_dec
+   #  6  ra
+   #  7  dec
+   #  8  mag
+   #  9  err_mag
+   # 10  err_xsm
+   # 11  err_ysm
+   # 12  fwhm_x
+   # 13  fwhm_y
+   
+   # Future routine de calcul des resultats qui sera lancée par ephemeride et non plus a la creation du rapport
+   proc ::bdi_gui_astrometry::tabule { } {
+
+
+      # Pour chaque objet SCIENCE
+      foreach {name y} $l {
+
+         if {[info exists tabcalc]} { unset tabcalc }
+
+         set calc($name,name,short) [lrange [split $name "_"] 2 end]
+         set nbobs 0
+
+         foreach dateimg $::bdi_tools_astrometry::listscience($name) {
+
+            # Rend effectif le crop du graphe
+            if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
+               if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
+            }
+            
+
+            incr nbobs
+            set idsource [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  0]
+           
+            set rho     [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  3]]
+            set res_a   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  4]]
+            set res_d   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  5]]
+            set alpha   [format "%.8f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  6]]
+            set delta   [format "%+.8f" [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  7]]
+            set mag     [format "%.3f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  8]]
+            set err_mag [format "%.3f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  9]]
+            set err_x   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 10]]
+            set err_y   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 11]]
+            set fwhm_x  [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 12]]
+            set fwhm_y  [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 13]]
+            set ra_hms  [::bdi_tools_astrometry::convert_txt_hms [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 6]]
+            set dec_dms [::bdi_tools_astrometry::convert_txt_dms [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 7]]
+
+            # Recupere les ephemerides de l'objet courant pour la date courante
+            set all_ephem [::bdi_gui_astrometry::get_data_report $name $dateimg]
+
+            # Ephemerides de l'IMCCE
+            set eph_imcce     [lindex $all_ephem 0]
+            #set midatejd      [lindex $eph_imcce {1 1 0}]
+            #gren_info "eph_imcce = $eph_imcce\n"
+            set ra_imcce_deg  [lindex $eph_imcce {1 1 1}]
+            set dec_imcce_deg [lindex $eph_imcce {1 1 2}]
+            set h_imcce_deg   [lindex $eph_imcce {1 1 3}]
+            set am_imcce_deg  [lindex $eph_imcce {1 1 4}]
+
+            # Ephemerides du JPL
+            set eph_jpl       [lindex $all_ephem 1]
+            #set midatejd [lindex $eph_jpl {1 1 0}]
+            set ra_jpl_deg    [lindex $eph_jpl {1 1 1}]
+            set dec_jpl_deg   [lindex $eph_jpl {1 1 2}]
+
+            # Epoque du milieu de pose au format JD
+            set midatejd $::tools_cata::date2midate($dateimg)
+
+            # Epoque du milieu de pose au format ISO
+            set midateiso "-"
+            if {$midatejd != "-"} {
+               set midateiso [mc_date2iso8601 $midatejd]
+            }
+
+            # OMC IMCCE
+            if { $ra_imcce_deg == "" || $ra_imcce_deg == "-" } {
+               set ra_imcce_omc "-"
+            } else {
+               set ra_imcce_omc [format "%+.4f" [expr ($alpha - $ra_imcce_deg) * 3600.0]]
+               set ra_imcce [::bdi_tools_astrometry::convert_txt_hms $ra_imcce_deg]
+            }
+            if { $dec_imcce_deg == "" || $dec_imcce_deg == "-" } {
+               set dec_imcce_omc "-"
+            } else {
+               set dec_imcce_omc [format "%+.4f" [expr ($delta - $dec_imcce_deg) * 3600.0]]
+               set dec_imcce [::bdi_tools_astrometry::convert_txt_dms $dec_imcce_deg]
+            }
+
+            # OMC JPL
+            if {$ra_jpl_deg == "-"} {
+               set ra_jpl_omc "-"
+            } else {
+               set ra_jpl_omc [format "%+.4f" [expr ($alpha - $ra_jpl_deg) * 3600.0]]
+               set ra_jpl [::bdi_tools_astrometry::convert_txt_hms $ra_jpl_deg]
+            }
+            if {$dec_jpl_deg == "-"} {
+               set dec_jpl_omc "-"
+            } else {
+               set dec_jpl_omc [format "%+.4f" [expr ($delta - $dec_jpl_deg) * 3600.0]]
+               set dec_jpl [::bdi_tools_astrometry::convert_txt_dms $dec_jpl_deg]
+            }
+
+            # CMC IMCCE-JPL
+            if {$ra_imcce_deg == "-" || $ra_jpl_deg == "-"} {
+               set ra_imccejpl_cmc "-"
+            } else {
+               set ra_imccejpl_cmc [format "%+.4f" [expr ($ra_imcce_deg - $ra_jpl_deg) * 3600.0]]
+            }
+            if {$dec_imcce_deg == "-" || $dec_jpl_deg == "-"} {
+               set dec_imccejpl_cmc "-"
+            } else {
+               set dec_imccejpl_cmc   [format "%+.4f" [expr ($dec_imcce_deg - $dec_jpl_deg) * 3600.0]]
+            }
+
+            # Definition de la structure de donnees pour les calculs de stat
+            lappend tabcalc(datejj) $midatejd
+            lappend tabcalc(alpha)  $alpha
+            lappend tabcalc(delta)  $delta
+            lappend tabcalc(res_a)  $res_a
+            lappend tabcalc(res_d)  $res_d
+
+            if {$ra_imcce_omc     != "-"} {lappend tabcalc(ra_imcce_omc)     $ra_imcce_omc}
+            if {$dec_imcce_omc    != "-"} {lappend tabcalc(dec_imcce_omc)    $dec_imcce_omc}
+            if {$ra_jpl_omc       != "-"} {lappend tabcalc(ra_jpl_omc)       $ra_jpl_omc}
+            if {$dec_jpl_omc      != "-"} {lappend tabcalc(dec_jpl_omc)      $dec_jpl_omc}
+            if {$ra_imccejpl_cmc  != "-"} {lappend tabcalc(ra_imccejpl_cmc)  $ra_imccejpl_cmc}
+            if {$dec_imccejpl_cmc != "-"} {lappend tabcalc(dec_imccejpl_cmc) $dec_imccejpl_cmc}
+
+            # Formatage de certaines valeurs
+            if {$ra_imcce_deg  != "-"} {set ra_imcce_deg  [format "%.8f" $ra_imcce_deg]}
+            if {$dec_imcce_deg != "-"} {set dec_imcce_deg [format "%.8f" $dec_imcce_deg]}
+            if {$h_imcce_deg   != "-"} {set h_imcce_deg   [format "%.8f" $h_imcce_deg]}
+            if {$am_imcce_deg  != "-"} {set am_imcce_deg  [format "%.8f" $am_imcce_deg]}
+            if {$ra_jpl_deg    != "-"} {set ra_jpl_deg    [format "%.8f" $ra_jpl_deg ]}
+            if {$dec_jpl_deg   != "-"} {set dec_jpl_deg   [format "%.8f" $dec_jpl_deg]}
+
+            # Ajustement affichage
+            set midatejd [string range "${midatejd}000000000000" 0 15]
+
+            # Graphe
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,good)             1
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,idsource)         $idsource
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,datejj)           $midatejd
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra)               $alpha
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec)              $delta
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,res_a)            $res_a
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,res_d)            $res_d
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra_imcce_omc)     $ra_imcce_omc
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec_imcce_omc)    $dec_imcce_omc
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra_jpl_omc)       $ra_jpl_omc
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec_jpl_omc)      $dec_jpl_omc
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra_imccejpl_cmc)  $ra_imccejpl_cmc
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec_imccejpl_cmc) $dec_imccejpl_cmc
+            
+            set calc($name,$dateimg,good)             1
+            set calc($name,$dateimg,idsource)         $idsource
+            set calc($name,$dateimg,middatejj)        $midatejd
+            set calc($name,$dateimg,ra)               $alpha
+            set calc($name,$dateimg,dec)              $delta
+            set calc($name,$dateimg,ra_hms)           $ra_hms
+            set calc($name,$dateimg,dec_dms)          $dec_dms
+            set calc($name,$dateimg,res_a)            $res_a
+            set calc($name,$dateimg,res_d)            $res_d
+            set calc($name,$dateimg,ra_imcce_omc)     $ra_imcce_omc
+            set calc($name,$dateimg,dec_imcce_omc)    $dec_imcce_omc
+            set calc($name,$dateimg,ra_jpl_omc)       $ra_jpl_omc
+            set calc($name,$dateimg,dec_jpl_omc)      $dec_jpl_omc
+            set calc($name,$dateimg,ra_imccejpl_cmc)  $ra_imccejpl_cmc
+            set calc($name,$dateimg,dec_imccejpl_cmc) $dec_imccejpl_cmc
+            
+            set calc($name,$dateimg,mag)              $mag
+            set calc($name,$dateimg,err_mag)          $err_mag
+            set calc($name,$dateimg,ra_imcce_deg)     $ra_imcce_deg
+            set calc($name,$dateimg,dec_imcce_deg)    $dec_imcce_deg
+            set calc($name,$dateimg,ra_jpl_deg)       $ra_jpl_deg
+            set calc($name,$dateimg,dec_jpl_deg)      $dec_jpl_deg
+            set calc($name,$dateimg,err_x)            $err_x
+            set calc($name,$dateimg,err_y)            $err_y
+            set calc($name,$dateimg,fwhm_x)           $fwhm_x
+            set calc($name,$dateimg,fwhm_y)           $fwhm_y
+            set calc($name,$dateimg,h_imcce_deg)      $h_imcce_deg
+            set calc($name,$dateimg,am_imcce_deg)     $am_imcce_deg
+            
+
+         }
+
+
+         set calc($name,mean,res_a)      [format "%.4f" [::math::statistics::mean  $tabcalc(res_a)]]
+         set calc($name,mean,res_d)      [format "%.4f" [::math::statistics::mean  $tabcalc(res_d)]]
+         set calc($name,mean,middatejj)  [::math::statistics::mean  $tabcalc(datejj)] 
+         set calc($name,mean,middateiso) [mc_date2iso8601 $calc($name,mean,middatejj)]
+         set calc($name,mean,alpha)      [format "%16.12f"  [::math::statistics::mean  $tabcalc(alpha)] ]
+         set calc($name,mean,delta)      [format "%+15.12f" [::math::statistics::mean  $tabcalc(delta)] ]
+         set calc($name,mean,alphasexa)  [::bdi_tools_astrometry::convert_txt_hms $calc($name,mean,alpha)]
+         set calc($name,mean,deltasexa)  [::bdi_tools_astrometry::convert_txt_dms $calc($name,mean,delta)]  
+         set calc($name,stdev,res_a)     [::bdi_gui_astrometry::stdev $tabcalc(res_a)  "%.4f"]
+         set calc($name,stdev,res_d)     [::bdi_gui_astrometry::stdev $tabcalc(res_d)  "%.4f"]
+         set calc($name,stdev,datejj)    [::bdi_gui_astrometry::stdev $tabcalc(datejj) "%.4f"]
+         set calc($name,stdev,alpha)     [::bdi_gui_astrometry::stdev $tabcalc(alpha)  "%.4f"]
+         set calc($name,stdev,delta)     [::bdi_gui_astrometry::stdev $tabcalc(delta)  "%.4f"]
+
+         set pi [expr 2*asin(1.0)]
+
+         # OMC IMCCE
+         if {[info exists tabcalc(ra_imcce_omc)]} {
+            set mean [::math::statistics::mean $tabcalc(ra_imcce_omc)  ]
+            set mean [expr $mean * cos($calc($name,delta,mean) * $pi / 180.)]
+            set calc($name,ra_imcce_omc,mean)  [format "%.4f" $mean]
+            set calc($name,ra_imcce_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(ra_imcce_omc) "%.4f"]
+         } else {
+            set calc($name,ra_imcce_omc,mean)  "-"
+            set calc($name,ra_imcce_omc,stdev) "-"
+         }
+         if {[info exists tabcalc(dec_imcce_omc)]} {
+            set calc($name,dec_imcce_omc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_imcce_omc)]]
+            set calc($name,dec_imcce_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(dec_imcce_omc) "%.4f"]
+         } else {
+            set calc($name,dec_imcce_omc,mean)   "-"
+            set calc($name,dec_imcce_omc,stdev)  "-"
+         }
+
+         # OMC JPL
+         if {[info exists tabcalc(ra_jpl_omc)]} {
+            set mean [::math::statistics::mean  $tabcalc(ra_jpl_omc)]
+            set mean [expr $mean * cos($calc($name,mean,delta) * $pi / 180.)]
+            set calc($name,ra_jpl_omc,mean)  [format "%.4f" $mean]
+            set calc($name,ra_jpl_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(ra_jpl_omc) "%.4f"]
+         } else {
+            set calc($name,ra_jpl_omc,mean)   "-"
+            set calc($name,ra_jpl_omc,stdev)  "-"
+         }
+         if {[info exists tabcalc(dec_jpl_omc)]} {
+            set calc($name,dec_jpl_omc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_jpl_omc)]]
+            set calc($name,dec_jpl_omc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(dec_jpl_omc) "%.4f"]
+         } else {
+            set calc($name,dec_jpl_omc,mean)   "-"
+            set calc($name,dec_jpl_omc,stdev)  "-"
+         }
+
+         # CMC IMCCE-JPL
+         if {[info exists tabcalc(ra_imccejpl_cmc)]} {
+            set calc($name,ra_imccejpl_cmc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(ra_imccejpl_cmc)]]
+            set calc($name,ra_imccejpl_cmc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(ra_imccejpl_cmc) "%.4f"]
+         } else {
+            set calc($name,ra_imccejpl_cmc,mean)   "-"
+            set calc($name,ra_imccejpl_cmc,stdev)  "-"
+         }
+
+         if {[info exists tabcalc(dec_imccejpl_cmc)]} {
+            set calc($name,dec_imccejpl_cmc,mean)  [format "%.4f" [::math::statistics::mean  $tabcalc(dec_imccejpl_cmc)]]
+            set calc($name,dec_imccejpl_cmc,stdev) [::bdi_gui_astrometry::stdev $tabcalc(dec_imccejpl_cmc) "%.4f"]
+         } else {
+            set calc($name,dec_imccejpl_cmc,mean)   "-"
+            set calc($name,dec_imccejpl_cmc,stdev)  "-"
+         }
+         
+         if {$calc($name,res_a,mean)>=0} {set calc($name,res_a,mean) "+$calc($name,mean,res_a)" }
+         if {$calc($name,res_d,mean)>=0} {set calc($name,res_d,mean) "+$calc($name,mean,res_d)" }
+         if {$calc($name,res_a,stdev)>=0} {set calc($name,res_a,stdev) "+$calc($name,stdev,res_a)" }
+         if {$calc($name,res_d,stdev)>=0} {set calc($name,res_d,stdev) "+$calc($name,stdev,res_d)" }
+
+         if {$calc($name,ra_imcce_omc,mean)>=0} {set calc($name,ra_imcce_omc,mean) "+$calc($name,mean,ra_imcce_omc)" }
+         if {$calc($name,dec_imcce_omc,mean)>=0} {set calc($name,dec_imcce_omc,mean) "+$calc($name,dec_imcce_omc,mean)" }
+         if {$calc($name,ra_imcce_omc,stdev)>=0} {set calc($name,ra_imcce_omc,stdev) "+$calc($name,ra_imcce_omc,stdev)" }
+         if {$calc($name,dec_imcce_omc,stdev)>=0} {set calc($name,dec_imcce_omc,stdev) "+$calc($name,dec_imcce_omc,stdev)" }
+
+         if {$calc($name,ra_jpl_omc,mean)>=0} {set calc($name,ra_jpl_omc,mean) "+$calc($name,ra_jpl_omc,mean)" }
+         if {$calc($name,dec_jpl_omc,mean)>=0} {set calc($name,dec_jpl_omc,mean) "+$calc($name,dec_jpl_omc,mean)" }
+         if {$calc($name,ra_jpl_omc,stdev)>=0} {set calc($name,ra_jpl_omc,stdev) "+$calc($name,ra_jpl_omc,stdev)" }
+         if {$calc($name,dec_jpl_omc,stdev)>=0} {set calc($name,dec_jpl_omc,stdev) "+$calc($name,dec_jpl_omc,stdev)" }
+
+         if {$calc($name,ra_imccejpl_cmc,mean)>=0} {set calc($name,ra_imccejpl_cmc,mean) "+$calc($name,ra_imccejpl_cmc,mean)" }
+         if {$calc($name,dec_imccejpl_cmc,mean)>=0} {set calc($name,dec_imccejpl_cmc,mean) "+$calc($name,dec_imccejpl_cmc,mean)" }
+         if {$calc($name,ra_imccejpl_cmc,stdev)>=0} {set calc($name,ra_imccejpl_cmc,stdev) "+$calc($name,ra_imccejpl_cmc,stdev)" }
+         if {$calc($name,dec_imccejpl_cmc,stdev)>=0} {set calc($name,dec_imccejpl_cmc,stdev) "+$calc($name,dec_imccejpl_cmc,stdev)" }
+
+      }
+
+
+   }
+
+
+
+
+
+
    proc ::bdi_gui_astrometry::create_report_txt {  } {
 
       # Reset du graphe
-      if {[info exists ::bdi_gui_astrometry::graph_results]} {
-         unset ::bdi_gui_astrometry::graph_results
-      }
+      #if {[info exists ::bdi_gui_astrometry::graph_results]} {
+      #   unset ::bdi_gui_astrometry::graph_results
+      #}
 
       # Efface la zone de rapport
       $::bdi_gui_astrometry::rapport_txt delete 0.0 end 
@@ -568,6 +868,13 @@ namespace eval bdi_gui_astrometry {
 
          foreach dateimg $::bdi_tools_astrometry::listscience($name) {
 
+            
+            # Rend effectif le crop du graphe
+            if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
+               if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
+            }
+
+
             incr nbobs
             set idsource [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  0]
 
@@ -607,7 +914,7 @@ namespace eval bdi_gui_astrometry {
             # Ephemerides de l'IMCCE
             set eph_imcce     [lindex $all_ephem 0]
             #set midatejd      [lindex $eph_imcce {1 1 0}]
-            gren_info "eph_imcce = $eph_imcce\n"
+            #gren_info "eph_imcce = $eph_imcce\n"
             set ra_imcce_deg  [lindex $eph_imcce {1 1 1}]
             set dec_imcce_deg [lindex $eph_imcce {1 1 2}]
             set h_imcce_deg   [lindex $eph_imcce {1 1 3}]
@@ -629,11 +936,11 @@ namespace eval bdi_gui_astrometry {
             }
 
             # OMC IMCCE
-            gren_info "ra_imcce_deg = $ra_imcce_deg\n"
+            #gren_info "ra_imcce_deg = $ra_imcce_deg\n"
             if { $ra_imcce_deg == "" || $ra_imcce_deg == "-" } {
                set ra_imcce_omc "-"
             } else {
-               gren_info "ra_imcce_deg = $ra_imcce_deg\n"
+               #gren_info "ra_imcce_deg = $ra_imcce_deg\n"
                set ra_imcce_omc [format "%+.4f" [expr ($alpha - $ra_imcce_deg) * 3600.0]]
                set ra_imcce [::bdi_tools_astrometry::convert_txt_hms $ra_imcce_deg]
             }
@@ -684,7 +991,7 @@ namespace eval bdi_gui_astrometry {
             if {$dec_imccejpl_cmc != "-"} {lappend tabcalc(dec_imccejpl_cmc) $dec_imccejpl_cmc}
 
             # Formatage de certaines valeurs
-            gren_info "ra_imcce_deg = $ra_imcce_deg\n"
+            #gren_info "ra_imcce_deg = $ra_imcce_deg\n"
             if {$ra_imcce_deg  != "-"} {set ra_imcce_deg  [format "%.8f" $ra_imcce_deg]}
             if {$dec_imcce_deg != "-"} {set dec_imcce_deg [format "%.8f" $dec_imcce_deg]}
             if {$h_imcce_deg   != "-"} {set h_imcce_deg   [format "%.8f" $h_imcce_deg]}
@@ -703,6 +1010,8 @@ namespace eval bdi_gui_astrometry {
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,good)             1
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,idsource)         $idsource
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,datejj)           $midatejd
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra)               $alpha
+            set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec)              $delta
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,res_a)            $res_a
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,res_d)            $res_d
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra_imcce_omc)     $ra_imcce_omc
@@ -1154,6 +1463,14 @@ namespace eval bdi_gui_astrometry {
          set nrows 0
          set votSources ""
          foreach dateimg $::bdi_tools_astrometry::listscience($name) {
+         
+            
+            # Rend effectif le crop du graphe
+            if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
+               if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
+            }
+         
+         
             incr nrows
             append votSources [::votable::openElement $::votable::Element::TR {}]
 
@@ -1409,6 +1726,7 @@ namespace eval bdi_gui_astrometry {
  
       set cpt 0
       set date_id "" 
+      set worklist "" 
 
       switch $t {
 
@@ -1421,6 +1739,7 @@ namespace eval bdi_gui_astrometry {
             foreach date $::bdi_tools_astrometry::listref($name) {
                set idsource [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
                lappend date_id [list $idsource $date]
+               lappend worklist [list $::tools_cata::date2id($date) $idsource]
                incr cpt
             }
          }
@@ -1431,6 +1750,7 @@ namespace eval bdi_gui_astrometry {
                set idsource [lindex [$w get $select] 0]
                set date [lindex [$w get $select] 1]
                lappend date_id [list $idsource $date]
+               lappend worklist [list $::tools_cata::date2id($date) $idsource]
                incr cpt
             }
          }
@@ -1444,6 +1764,7 @@ namespace eval bdi_gui_astrometry {
             foreach date $::bdi_tools_astrometry::listscience($name) {
                set idsource [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
                lappend date_id [list $idsource $date]
+               lappend worklist [list $::tools_cata::date2id($date) $idsource]
                incr cpt
             }
          }
@@ -1454,6 +1775,7 @@ namespace eval bdi_gui_astrometry {
                set idsource [lindex [$w get $select] 0] 
                set date [lindex [$w get $select] 1]
                lappend date_id [list $idsource $date]
+               lappend worklist [list $::tools_cata::date2id($date) $idsource]
                incr cpt
             }
          }
@@ -1463,8 +1785,8 @@ namespace eval bdi_gui_astrometry {
             return
          }
       }
-
-      ::psf_gui::from_astrometry $name $cpt $date_id
+      ::bdi_gui_gestion_source::run $worklist
+      #::psf_gui::from_astrometry $name $cpt $date_id
 
    } 
 
@@ -1619,6 +1941,8 @@ namespace eval bdi_gui_astrometry {
       set ykey [::plotxy::ylabel]
       set x ""
       set y ""
+      set worklist ""
+      
       set l [array get ::bdi_tools_astrometry::listscience]
       foreach {name w} $l {
          if {$name !=  $::bdi_gui_astrometry::combo_list_object} {
@@ -1634,13 +1958,22 @@ namespace eval bdi_gui_astrometry {
                   lappend y $yy
                   set idsource $::bdi_gui_astrometry::graph_results($name,$dateimg,idsource)
                   set date $dateimg
-                  
+                  lappend worklist [list $::tools_cata::date2id($dateimg) $idsource]
                   continue
-               } 
+               }
             }
          }
       }
+      set name $::bdi_gui_astrometry::combo_list_object
+      gren_info "Voir la source\n"
+      gren_info "Objet = $name\n"
       
+      gren_info "worklist = $worklist\n"
+      
+      ::bdi_gui_gestion_source::run $worklist
+      
+      return
+
       if { [llength $x]>1 || [llength $y]>1 } {
          ::console::affiche_erreur "Selectionner 1 seul point\n"
          return
@@ -2749,6 +3082,10 @@ namespace eval bdi_gui_astrometry {
                   label $frmgraphx.lab -text "RA"
                   pack  $frmgraphx.lab -in $frmgraphx -side top -padx 5 -pady 5
 
+                  button $frmgraphx.datejj_vs_ra -text "Date vs RA" -borderwidth 2 -takefocus 1 \
+                          -command "::bdi_gui_astrometry::graph datejj ra"
+                  pack $frmgraphx.datejj_vs_ra -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
+
                   button $frmgraphx.datejj_vs_res_a -text "Date vs Residus" -borderwidth 2 -takefocus 1 \
                           -command "::bdi_gui_astrometry::graph datejj res_a"
                   pack $frmgraphx.datejj_vs_res_a -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
@@ -2778,6 +3115,10 @@ namespace eval bdi_gui_astrometry {
 
                   label $frmgraphy.lab -text "DEC"
                   pack  $frmgraphy.lab -in $frmgraphy -side top -padx 5 -pady 5
+
+                  button $frmgraphy.datejj_vs_dec -text "Date vs Dec" -borderwidth 2 -takefocus 1 \
+                          -command "::bdi_gui_astrometry::graph datejj dec"
+                  pack $frmgraphy.datejj_vs_dec -side top -anchor c -expand 0 -fill x -padx 10 -pady 5
 
                   button $frmgraphy.datejj_vs_res_d -text "Date vs Residus" -borderwidth 2 -takefocus 1 \
                           -command "::bdi_gui_astrometry::graph datejj res_d"
