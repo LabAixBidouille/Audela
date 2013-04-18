@@ -402,6 +402,11 @@ namespace eval bdi_tools_astrometry {
                ::bdi_tools_psf::set_by_key othf "omc_ra"  $omc_ra
                ::bdi_tools_psf::set_by_key othf "omc_dec" $omc_dec
                
+               #if {$id_current_image == 2} {
+               #   gren_info "Lect Ref = $id_current_image $id $idcata $ar $ac $name $ra $dec\n"
+               #}
+               
+               
                set astroid [lreplace $astroid 2 2 $othf]
                set s [lreplace $s $idcata $idcata $astroid]
                set sources [lreplace $sources $id $id $s]
@@ -818,7 +823,7 @@ namespace eval bdi_tools_astrometry {
 # 13  fwhmy
 
             set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhmx $fwhmy]
-            gren_info "C tabval($name,$dateiso) = $::bdi_tools_astrometry::tabval($name,$dateiso)\n"
+            #gren_info "C tabval($name,$dateiso) = $::bdi_tools_astrometry::tabval($name,$dateiso)\n"
 
             lappend ::bdi_tools_astrometry::listref($name)     $dateiso
             lappend ::bdi_tools_astrometry::listdate($dateiso) $name
@@ -860,6 +865,10 @@ namespace eval bdi_tools_astrometry {
             set err_ysm [::bdi_tools_psf::get_val othf "err_ysm"]
             set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
             set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
+
+            #if {$id_current_image == 2} {
+            #   gren_info "Lect Ref = $id_current_image $id $idcata $ar $ac $name $ra $dec\n"
+            #}
 
             if { $res_ra == "" || $res_dec == "" } { 
                set rho  ""
@@ -951,7 +960,7 @@ namespace eval bdi_tools_astrometry {
          set nb       [llength $::bdi_tools_astrometry::listref($name)]
          set nbrho    [llength $rho]
          if {$nbrho > 0} {
-            gren_erreur "rho = $rho\n"
+            #gren_erreur "rho = $rho\n"
             set mrho   [format "%.3f" [::math::statistics::mean  $rho  ]]
             set mra    [format "%.3f" [::math::statistics::mean  $ra   ]]
             set mrd    [format "%.3f" [::math::statistics::mean  $rd   ]]
@@ -1017,7 +1026,7 @@ gren_info "sciences"
             lappend m     [lindex $::bdi_tools_astrometry::tabval($name,$date) 8]
             lappend err_x [lindex $::bdi_tools_astrometry::tabval($name,$date) 10]
             lappend err_y [lindex $::bdi_tools_astrometry::tabval($name,$date) 11]
-            gren_info "tabval($name,$date) = $::bdi_tools_astrometry::tabval($name,$date)\n"
+            #gren_info "tabval($name,$date) = $::bdi_tools_astrometry::tabval($name,$date)\n"
          }
          
          set nb     [llength $::bdi_tools_astrometry::listscience($name)]
@@ -1025,7 +1034,7 @@ gren_info "sciences"
 
 
          if {$nbrho > 0} {
-            gren_erreur "rho = $rho\n"
+            #gren_erreur "rho = $rho\n"
             set mrho   [format "%.3f" [::math::statistics::mean  $rho  ]]
             set mra    [format "%.3f" [::math::statistics::mean  $ra   ]]
             set mrd    [format "%.3f" [::math::statistics::mean  $rd   ]]
@@ -1070,7 +1079,6 @@ gren_info "sciences"
       }
 
       # STAT sur la liste des dates
-gren_info "dates"
 
       foreach date [array names ::bdi_tools_astrometry::listdate] {
 
@@ -1097,7 +1105,7 @@ gren_info "dates"
          set nbrho    [llength $rho]
 
          if {$nbrho > 0} {
-            gren_erreur "rho = $rho\n"
+            #gren_erreur "rho = $rho\n"
             set mrho   [format "%.3f" [::math::statistics::mean  $rho  ]]
             set mra    [format "%.3f" [::math::statistics::mean  $ra   ]]
             set mrd    [format "%.3f" [::math::statistics::mean  $rd   ]]
@@ -1454,6 +1462,7 @@ gren_info "fin"
       #  B (default if band is not indicated), V, R, I, J, W, U, g, r, i, w, y and z
       set bandmag "R"
       # Observed magnitude and band: F5.2,A1
+      if {$mag==""} {set mag 0}
       set mpc_mag [format "%5.2f%1s" $mag $bandmag]
 
       return "$mpc_mag"

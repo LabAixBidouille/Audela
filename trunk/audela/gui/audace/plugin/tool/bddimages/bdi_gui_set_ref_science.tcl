@@ -204,9 +204,9 @@ proc ::bdi_gui_set_ref_science::apply { } {
             if {$accept} {
                set change 0
                set p [lsearch -index 0 $s $::bdi_gui_set_ref_science::cata_science]
-               gren_info "$ids $p cata_science = $::bdi_gui_set_ref_science::cata_science\n"
+               #gren_info "$ids $p cata_science = $::bdi_gui_set_ref_science::cata_science\n"
                if {$p != -1} {
-                  gren_info "cata_science = $::bdi_gui_set_ref_science::cata_science\n"
+                  #gren_info "cata_science = $::bdi_gui_set_ref_science::cata_science\n"
                   set ar "S"
                   set ac $::bdi_gui_set_ref_science::cata_science
                   ::bdi_tools_psf::set_by_key othf "flagastrom" $ar
@@ -227,7 +227,7 @@ proc ::bdi_gui_set_ref_science::apply { } {
                   if {$::bdi_gui_set_ref_science::use_visu} {
                      affich_un_rond_xy $px $py green 4 2
                   }
-                  gren_info "othf = $othf\n"
+                  #gren_info "othf = $othf\n"
                   set astroid [lreplace $astroid 2 2 $othf]
                   set s [lreplace $s $posastroid $posastroid $astroid]
                   set sources [lreplace $sources [expr $ids-1] [expr $ids-1] $s]

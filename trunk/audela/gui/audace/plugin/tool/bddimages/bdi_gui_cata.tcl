@@ -1288,9 +1288,9 @@ return
       set f [$onglets select]
 
       # Selectionne chaque source
-      foreach select [$::gui_astrometry::srpt curselection] {
+      foreach select [$::bdi_gui_astrometry::srpt curselection] {
          
-         set data [$::gui_astrometry::srpt get $select]
+         set data [$::bdi_gui_astrometry::srpt get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
 
@@ -1400,8 +1400,8 @@ return
       cleanmark
 
       # Recupere l'image selectionnee dans la table sret
-      set select [$::gui_astrometry::sret curselection]
-      set data [$::gui_astrometry::sret get $select]
+      set select [$::bdi_gui_astrometry::sret curselection]
+      set data [$::bdi_gui_astrometry::sret get $select]
       set objid [lindex $data 0]
       set date [lindex $data 1]
       set ra [lindex $data 5]
@@ -1460,9 +1460,9 @@ return
       set f [$onglets select]
 
       # Selectionne chaque source
-      foreach select [$::gui_astrometry::sret curselection] {
+      foreach select [$::bdi_gui_astrometry::sret curselection] {
          
-         set data [$::gui_astrometry::sret get $select]
+         set data [$::bdi_gui_astrometry::sret get $select]
          set id [lindex $data 0]
          set date [lindex $data 1]
 
@@ -1514,9 +1514,9 @@ return
       set f [$onglets select]
 
       # Selectionne chaque source
-      foreach select [$::gui_astrometry::sspt curselection] {
+      foreach select [$::bdi_gui_astrometry::sspt curselection] {
          
-         set data [$::gui_astrometry::sspt get $select]
+         set data [$::bdi_gui_astrometry::sspt get $select]
          set name [lindex $data 0]
          set date $::tools_cata::current_image_date
 
@@ -1624,8 +1624,8 @@ return
       cleanmark
 
       # Recupere l'image selectionnee dans la table sret
-      set select [$::gui_astrometry::sset curselection]
-      set data [$::gui_astrometry::sset get $select]
+      set select [$::bdi_gui_astrometry::sset curselection]
+      set data [$::bdi_gui_astrometry::sset get $select]
       set objid [lindex $data 0]
       set date [lindex $data 1]
       set ra [lindex $data 5]
@@ -1681,9 +1681,9 @@ return
       set f [$onglets select]
 
       # Selectionne chaque source
-      foreach select [$::gui_astrometry::sset curselection] {
+      foreach select [$::bdi_gui_astrometry::sset curselection] {
          
-         set data [$::gui_astrometry::sset get $select]
+         set data [$::bdi_gui_astrometry::sset get $select]
          set id [lindex $data 0]
          set date [lindex $data 1]
 
@@ -1726,8 +1726,8 @@ return
       cleanmark
 
       # Recupere l'image selectionnee dans la table sret
-      set select [$::gui_astrometry::dspt curselection]
-      set data [$::gui_astrometry::dspt get $select]
+      set select [$::bdi_gui_astrometry::dspt curselection]
+      set data [$::bdi_gui_astrometry::dspt get $select]
       set date [lindex $data 0]
 
       set id 0

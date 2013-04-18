@@ -54,11 +54,9 @@ namespace eval gui_verifcata {
       #--- Menu pop-up associe a la table
       menu $popupTbl -title "Selection"
 
-        # Edite la liste selectionnee
         $popupTbl add command -label "Voir une source" -command "::gui_verifcata::popup_voir $tbl"
-
-        # Edite la liste selectionnee
-        $popupTbl add command -label "psf" -command "::gui_verifcata::popup_psf $tbl"
+        $popupTbl add command -label "Psf"             -command "::gui_verifcata::popup_psf $tbl"
+        $popupTbl add command -label "Unset"           -command "::gui_verifcata::popup_unset $tbl"
 
 
       #--- Gestion des evenements
@@ -221,6 +219,45 @@ namespace eval gui_verifcata {
 
 
 
+   proc ::gui_verifcata::popup_unset { tbl } {
+
+      global bddconf
+      
+      set worklist ""
+      foreach select [$tbl curselection] {
+         set ids [lindex [$tbl get $select] 0]      
+         set idd [lindex [$tbl get $select] 1]   
+         
+         set current_listsources $::gui_cata::cata_list($idd)
+         set sources [lindex $current_listsources 1]
+         set s [lindex $sources [expr $ids - 1] ]
+         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+         ::bdi_tools_psf::set_by_key othf "flagastrom" ""
+         ::bdi_tools_psf::set_by_key othf "cataastrom" ""
+         ::bdi_tools_psf::set_astroid_in_source s othf
+         set sources [lreplace $sources [expr $ids - 1] [expr $ids - 1] $s]
+         set current_listsources [list [lindex $current_listsources 0] $sources]
+
+
+         # @TODO
+         set current_image [lindex $::tools_cata::img_list [expr $idd-1]]
+         set tabkey         [::bddimages_liste::lget $current_image "tabkey"]
+         set imgfilename    [::bddimages_liste::lget $current_image filename]
+         set imgdirfilename [::bddimages_liste::lget $current_image dirfilename]
+         set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+         set cataxml "${f}_cata.xml"
+         
+         ::tools_cata::save_cata $current_listsources $tabkey $cataxml
+
+
+      }
+      return
+
+   }
+
+
+
+
 
 
 
@@ -282,7 +319,7 @@ namespace eval gui_verifcata {
       ::gui_verifcata::inittoconf
       
       set col_sources { 0 IdS  0 IdD 0 Date-Obs 0 Erreur     0 Name 0 Catas }
-      set col_dates   { 0 IdS  0 IdD 0 Date-Obs 0 Star&Aster   }
+      set col_dates   { 0 IdS  0 IdD 0 Date-Obs 0 Star&Aster 0 CataDouble 0 CataAstrom }
      
       
       #--- Creation de la fenetre
