@@ -608,8 +608,40 @@ namespace eval ::manage_source {
    }
 
 
-
-
+   #
+   # 
+   # Fournit un tableau de source unique extraite des catalogues stellaires
+   # en utilisant cata_list
+   #
+   proc ::manage_source::extract_tabsources_by_flagastrom { flagastrom p_tabsources } {
+      
+      upvar $p_tabsources tabsources
+      
+      array unset tabsources
+      
+      foreach {id_source current_listsources} [array get ::gui_cata::cata_list] {
+      
+         foreach s [lindex $current_listsources 1] {
+            set p [lsearch -index 0 $s "ASTROID"]
+            if {$p!=-1} {
+               set othf  [::bdi_tools_psf::get_astroid_othf_from_source $s]
+               set ar [::bdi_tools_psf::get_val othf "flagastrom"]
+               if {$ar == $flagastrom} {
+                  set ac [::bdi_tools_psf::get_val othf "cataastrom"]
+                  set p [lsearch -index 0 $s $ac]
+                  if {$p!=-1} {
+                     set obj [lindex $s $p]
+                     set name [::manage_source::naming $s $ac]
+                     set tabsources($name) $obj
+                  } else {
+                     gren_erreur "trouver l'erreur...\n"
+                  } 
+               }
+            }
+         }
+      }
+      return
+      }
 
 
 # source /srv/develop/audela/gui/audace/plugin/tool/bddimages/utils/ssp_yd/manage_source.tcl
