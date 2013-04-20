@@ -13,7 +13,6 @@
 #============================================================
 ## Declaration du namespace \c bdi_tools_astrometry .
 #  @brief     Outils des methodes de reduction astrometriquee des images.
-#  @bug       Probleme de memoire avec la cmde exec
 #  @warning   Pour developpeur seulement
 #  @todo      Sauver les infos MPC dans le header de l'image
 namespace eval bdi_tools_astrometry {
