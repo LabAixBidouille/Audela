@@ -411,11 +411,11 @@ namespace eval bdi_gui_astrometry {
             set delta   [lindex $::bdi_tools_astrometry::tabval($name,$date) 7]
             set mag     [lindex $::bdi_tools_astrometry::tabval($name,$date) 8]
 
-            set object  [::bdi_tools_astrometry::convert_mpc_name $name]
-            set datempc [::bdi_tools_astrometry::convert_mpc_date $date]
-            set ra_hms  [::bdi_tools_astrometry::convert_mpc_hms $alpha]
-            set dec_dms [::bdi_tools_astrometry::convert_mpc_dms $delta]
-            set magmpc  [::bdi_tools_astrometry::convert_mpc_mag $mag]
+            set object  [::bdi_tools_mpc::convert_name $name]
+            set datempc [::bdi_tools_mpc::convert_date $date]
+            set ra_hms  [::bdi_tools_mpc::convert_hms $alpha]
+            set dec_dms [::bdi_tools_mpc::convert_dms $delta]
+            set magmpc  [::bdi_tools_mpc::convert_mag $mag]
             set obsuai  $::bdi_tools_astrometry::rapport_uai_code
             
             set txt [format $form $object $note1 $note2 $datempc $ra_hms $dec_dms $magmpc $obsuai]
@@ -893,7 +893,6 @@ namespace eval bdi_gui_astrometry {
             # 11  err_ysm
             # 12  fwhm_x
             # 13  fwhm_y
-            gren_info "tabval($name,$dateimg) = $::bdi_tools_astrometry::tabval($name,$dateimg)\n"
             set rho     [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  4]]
             set res_d   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  5]]
@@ -2396,30 +2395,22 @@ namespace eval bdi_gui_astrometry {
               set ::bdi_gui_astrometry::gui_affich_gestion [button $actions.affich_gestion -text "Charge" \
                   -borderwidth 2 -takefocus 1 -relief "raised" -command "::bdi_gui_astrometry::affich_gestion"]
               pack $actions.affich_gestion -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-              set orient [frame $actions.orient -borderwidth 0 -cursor arrow -relief groove]
-              pack $orient -in $actions -side left -expand 0 -fill x -padx 10 -pady 5
-
-                   label  $orient.lab -text "Orientation : " -borderwidth 1
-                   pack   $orient.lab -side left -padx 3 -pady 3 
-                   entry  $orient.val -relief sunken -textvariable ::bdi_tools_astrometry::orient -width 3
-                   pack   $orient.val -side left -padx 3 -pady 3 
+                 -padx 5 -pady 5 -ipadx 2 -ipady 2 -expand 0
 
               set ::bdi_gui_astrometry::gui_go_priam [button $actions.go_priam -text "1. Priam" \
                  -borderwidth 2 -takefocus 1 -command "::bdi_gui_astrometry::go_priam"]
               pack $actions.go_priam -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+                 -padx 5 -pady 5 -ipadx 2 -ipady 2 -expand 0
 
               set ::bdi_gui_astrometry::gui_get_ephem [button $actions.get_ephem -text "2. Ephemerides" \
                  -borderwidth 2 -takefocus 1 -command "::bdi_gui_astrometry::go_ephem"]
               pack $actions.get_ephem -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+                 -padx 5 -pady 5 -ipadx 2 -ipady 2 -expand 0
 
               set ::bdi_gui_astrometry::gui_generer_rapport [button $actions.generer_rapport -text "3. Generer Rapport" \
                  -borderwidth 2 -takefocus 1 -command "::bdi_gui_astrometry::create_reports"]
               pack $actions.generer_rapport -side left -anchor e \
-                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+                 -padx 5 -pady 5 -ipadx 2 -ipady 2 -expand 0
 
 
          #--- Cree un frame pour afficher les tables et les onglets
@@ -2438,6 +2429,10 @@ namespace eval bdi_gui_astrometry {
             set dates [frame $onglets.list.dates]
             pack $dates -in $onglets.list -expand yes -fill both 
             $onglets.list add $dates -text "Dates"
+
+            set astrom [frame $onglets.list.astrom]
+            pack $astrom -in $onglets.list -expand yes -fill both 
+            $onglets.list add $astrom -text "Astrometry"
 
             set ephem [frame $onglets.list.ephem]
             pack $ephem -in $onglets.list -expand yes -fill both 
@@ -2479,6 +2474,28 @@ namespace eval bdi_gui_astrometry {
               pack $wcs -in $onglets_dates.list -expand yes -fill both 
               $onglets_dates.list add $wcs -text "WCS"
 
+         #--- Onglet ASTROMETRY
+         set onglets_astrom [frame $astrom.onglets -borderwidth 1 -cursor arrow -relief groove]
+         pack $onglets_astrom -in $astrom -side top -expand yes -fill both -padx 10 -pady 5
+
+            set opts [frame $onglets_astrom.opts]
+            pack $opts -in $onglets_astrom -anchor c -expand 0 -fill none -padx 10 -pady 10
+
+               label $opts.title -text "Parametres pour la reduction astrometrique" -borderwidth 1 -relief solid -font $bddconf(font,arial_10_b) 
+               frame $opts.blank -width 15 -height 15
+               label $opts.labo -text "Axes orientation: "
+               entry $opts.valo -relief sunken -textvariable ::bdi_tools_astrometry::orient -width 3
+               label $opts.labd -text "Degree of polynom: "
+               entry $opts.vald -relief sunken -textvariable ::bdi_tools_astrometry::polydeg -width 3
+   
+               grid $opts.title -sticky nsew
+               grid configure $opts.title -columnspan 2 -ipadx 10 -ipady 10 -padx 10 -pady 10
+               grid $opts.blank
+               grid $opts.labo $opts.valo -sticky nsw -pady 5
+               grid configure $opts.labo -sticky nse -padx 5
+               grid $opts.labd $opts.vald -sticky nsw -pady 5
+               grid configure $opts.labd -sticky nse -padx 5
+
          #--- Onglet EPHEMERIDES
          set onglets_ephem [frame $ephem.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets_ephem -in $ephem -side top -expand yes -fill both -padx 10 -pady 5
@@ -2498,7 +2515,7 @@ namespace eval bdi_gui_astrometry {
                pack $onglets_ephem_imcce -in $imcce -side top -expand 0 -fill x -padx 5 -pady 5 -anchor n
  
                   checkbutton $onglets_ephem_imcce.use -highlightthickness 0 -text " Calculer les ephemerides IMCCE" \
-                      -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::use_ephem_imcce 
+                     -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::use_ephem_imcce 
                   pack $onglets_ephem_imcce.use -in $onglets_ephem_imcce -side top -padx 5 -pady 2 -anchor w
 
                   set block [frame $onglets_ephem_imcce.prgme -borderwidth 0 -cursor arrow -relief groove]
@@ -2555,14 +2572,14 @@ namespace eval bdi_gui_astrometry {
                   pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 3
                      label $block.lab -text "Destinataire : " -width 12
                      pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
-                     entry $block.val -relief sunken -textvariable ::bdi_jpl::destinataire
+                     entry $block.val -relief sunken -textvariable ::bdi_tools_jpl::destinataire
                      pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
                   set block [frame $onglets_ephem_jpl.subj  -borderwidth 0 -cursor arrow -relief groove]
                   pack $block -in $onglets_ephem_jpl -side top -expand 0 -fill x -padx 2 -pady 3
                         label $block.lab -text "Sujet : " -width 12
                         pack $block.lab -side left -padx 3 -pady 1 -anchor w -fill x
-                        entry $block.val -relief sunken -textvariable ::bdi_jpl::sujet
+                        entry $block.val -relief sunken -textvariable ::bdi_tools_jpl::sujet
                         pack $block.val -side left -padx 3 -pady 1 -anchor w -fill x -expand 1
 
                   #set ::bdi_gui_astrometry::getjpl_send $onglets_ephem_jpl.sendtext
@@ -3163,15 +3180,7 @@ namespace eval bdi_gui_astrometry {
 
       # Au lancement, charge les donnees
       ::bdi_gui_astrometry::affich_gestion
-      
-      
-      
+
    }
-
-
-proc toto { } {
-
-
-}
 
 }

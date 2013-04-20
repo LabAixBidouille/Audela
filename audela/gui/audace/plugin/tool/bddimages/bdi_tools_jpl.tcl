@@ -1,14 +1,20 @@
-#--------------------------------------------------
-# source /usr/local/src/audela/gui/audace/plugin/tool/bddimages/bdi_jpl.tcl
-#--------------------------------------------------
-#
-# Fichier        : bdi_jpl.tcl
-# Description    : Calcul des ephemerides JPL
-# Auteur         : J. Berthier <berthier@imcce.fr> et F. Vachier <fv@imcce.fr>
-# Mise à jour $Id: bdi_tools.tcl 6795 2011-02-26 16:05:27Z fredvachier $
-#
-namespace eval bdi_jpl {
-   package provide bdi_jpl 1.0
+## @file bdi_tools_jpl.tcl
+#  @brief     Outils pour le calcul des ephemerides des Sso avec Horizon@JPL
+#  @author    J. Berthier <berthier@imcce.fr> et F. Vachier <fv@imcce.fr>
+#  @version   1.0
+#  @date      2013
+#  @copyright GNU Public License.
+#  @par Ressource 
+#  @code  source [file join $audace(rep_install) gui audace plugin tool bddimages bdi_tools_jpl.tcl]
+#  @endcode
+
+# Mise à jour $Id: bdi_tools_jpl.tcl 9228 2013-03-20 16:24:43Z fredvachier $
+
+#============================================================
+## Declaration du namespace \c bdi_tools_jpl .
+#  @brief     Outils pour le calcul des ephemerides des Sso avec Horizon@JPL
+namespace eval bdi_tools_jpl {
+   package provide bdi_tools_jpl 1.0
 
    variable destinataire "horizons@ssd.jpl.nasa.gov"
    variable sujet "JOB"
@@ -22,7 +28,7 @@ namespace eval bdi_jpl {
 #  @param list_dates array Liste des dates JJ de calcul
 #  @param iau_code string Code UAI du lieu
 #  @return string Job a soumettre au systeme Horizons@JPL
-proc ::bdi_jpl::create { sso_name list_dates iau_code } {
+proc ::bdi_tools_jpl::create { sso_name list_dates iau_code } {
 
    upvar $list_dates dates
    
@@ -66,22 +72,11 @@ proc ::bdi_jpl::create { sso_name list_dates iau_code } {
 
 
 #----------------------------------------------------------------------------
-## Fonction envoyant le mail a Horizons@JPL pour demander le calcul
-# des ephemerides du corps du systeme solaire
-#  @TODO
-proc ::bdi_jpl::send { } {
-
-
-
-} 
-
-
-#----------------------------------------------------------------------------
 ## Lecture des donnees renvoyees par Horizons@JPL pour extraire
 # les coordonnees du corps du systeme solaire
 #  @param recv string message renvoye par Horizons@JPL
 #  @return array ephemerides calculees par Horizons@JPL
-proc ::bdi_jpl::read { recv ephem } {
+proc ::bdi_tools_jpl::read { recv ephem } {
 
    upvar $ephem eph
 

@@ -996,8 +996,8 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       }
 
       # Sauvegarde du cata XML
-      gren_info "Enregistrement du cata XML: $cataxml\n"
       if {$::tools_cata::create_cata == 1} {
+         gren_info "Enregistrement du cata XML: $cataxml\n"
          ::tools_cata::save_cata $listsources $tabkey $cataxml
       }
       
