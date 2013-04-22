@@ -555,7 +555,7 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::grab_sources { { tbl "" } } {
 
-      set log 1
+      set log 0
 
       global audace
 
@@ -1753,71 +1753,7 @@ namespace eval cata_gestion_gui {
 
 
 
-
-
-# Anciennement ::cata_gestion_gui::psf_popup_auto_go
- 
-   proc ::cata_gestion_gui::psf_popup_auto_go { list_id } {
-
-      #gren_info "id_current_image = $::tools_cata::id_current_image \n"
-     
-      set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-
-      set fields  [lindex $::tools_cata::current_listsources 0]
-      set sources [lindex $::tools_cata::current_listsources 1]
-      set nd_sources [llength $list_id]
-
-      #gren_info "Sources selectionnees ($nd_sources): \n"
-      set pass "no"
-
-      set cpt 0      
-      foreach id $list_id {
-         incr cpt
-         ::cata_gestion_gui::set_popupprogress $cpt $nd_sources
-         #gren_info "ID = $id\n"
-         set s [lindex $sources [expr $id - 1 ]]
-         #gren_info "S=$s\n"
-         set err [ catch {set r [::psf_tools::method_global s $::psf_tools::psf_threshold $::psf_tools::psf_limitradius $::psf_tools::psf_saturation $::audace(bufNo)]} msg ]
-         if {$err} {
-            #::console::affiche_erreur "*ERREUR PSF no_gui: $msg\n"
-            #::console::affiche_erreur "*ERREUR PSF no_gui: $err\n"
-         } else {
-            set pos [lsearch -index 0 $s "ASTROID"]
-            if {$pos != -1} { set name [lindex [lindex [lindex $s $pos] 2] 24] } else { set name "noname"}
-            #gren_info "NEW PSF ($id) $name\n"
-            #gren_info "AVS [lindex $sources [expr $id - 1 ] ]\n"
-            set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
-            #gren_info "APS [lindex $sources [expr $id - 1 ] ]\n"
-            set pass "yes"
-         }
-
-      }
-
-      if {$pass=="no"} { return }
-
-      set pos [lsearch -index 0 $fields "ASTROID"]
-      if {$pos!=-1} {
-         set fields [lreplace $fields $pos $pos [::analyse_source::get_fieldastroid]]
-      } else {
-         set fields [linsert $fields end [::analyse_source::get_fieldastroid]]
-      }
-      
-      set ::tools_cata::current_listsources [list $fields $sources]
-      ::psf_tools::set_mag ::tools_cata::current_listsources
-      
-      
-      set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-      ::tools_cata::current_listsources_to_tklist
-      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
-      ::cata_gestion_gui::charge_image_directaccess
-
-   }
-   
-   
-   
-   
+  
    
 
 
@@ -1941,16 +1877,7 @@ namespace eval cata_gestion_gui {
 
       if {$pass=="no"} { return }
 
-      set pos [lsearch -index 0 $fields "ASTROID"]
-      if {$pos!=-1} {
-         #gren_info "Remplacement des champs fields ASTROID\n"
-         set fields [lreplace $fields $pos $pos [::bdi_tools_psf::get_fields_sources_astroid]]
-      } else {
-         #gren_info "Ajout des champs fields ASTROID\n"
-         set fields [linsert $fields end [::bdi_tools_psf::get_fields_sources_astroid]]
-      }
-      
-      set ::tools_cata::current_listsources [list $fields $sources]
+      ::bdi_tools_psf::set_fields_astroid listsources
       
       ::bdi_tools_psf::set_mag ::tools_cata::current_listsources
       
@@ -2158,6 +2085,7 @@ namespace eval cata_gestion_gui {
       set color red
       set width 2
       cleanmark
+      gren_info "Nb selected images: [llength [$w curselection]]\n"
       foreach select [$w curselection] {
          set id [lindex [$w get $select] 0]
          set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]

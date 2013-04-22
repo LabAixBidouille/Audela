@@ -1420,10 +1420,17 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 # Anciennement ::gui_cata::push_img_list
 
    proc ::tools_cata::push_img_list {  } {
+
       set ::tools_cata::img_list_sav         $::tools_cata::img_list
       set ::tools_cata::current_image_sav    $::tools_cata::current_image
       set ::tools_cata::id_current_image_sav $::tools_cata::id_current_image
       set ::tools_cata::create_cata_sav      $::tools_cata::create_cata
+
+      array unset ::tools_cata::cata_list_sav
+      if {[info exists ::gui_cata::cata_list]} {
+         array set ::tools_cata::cata_list_sav  [array get ::gui_cata::cata_list]
+      }
+
    }
 
 
@@ -1441,10 +1448,17 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 # Anciennement ::gui_cata::pop_img_list
 
    proc ::tools_cata::pop_img_list {  } {
+
       set ::tools_cata::img_list         $::tools_cata::img_list_sav
       set ::tools_cata::current_image    $::tools_cata::current_image_sav
       set ::tools_cata::id_current_image $::tools_cata::id_current_image_sav
       set ::tools_cata::create_cata      $::tools_cata::create_cata_sav
+
+      array unset ::gui_cata::cata_list
+      if {[info exists ::tools_cata::cata_list_sav]} {
+         array set ::gui_cata::cata_list  [array get ::tools_cata::cata_list_sav]
+      } 
+
    }
 
 

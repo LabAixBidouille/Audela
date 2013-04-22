@@ -282,6 +282,8 @@ namespace eval bdi_gui_gestion_source {
       ::bdi_gui_psf::init_current_psf [::bdi_tools_psf::get_astroid_othf_from_source $s]
       if {$err_psf!=""} {
          set ::gui_cata::current_psf(err_psf) $err_psf
+      } else {
+         ::bdi_tools_psf::set_fields_astroid ::tools_cata::current_listsources
       }
       
       ::bdi_gui_gestion_source::maj_catalogues

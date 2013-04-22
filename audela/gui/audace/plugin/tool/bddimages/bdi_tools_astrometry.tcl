@@ -337,6 +337,13 @@ proc ::bdi_tools_astrometry::exec_priam { } {
 }
 
 
+
+
+
+
+
+
+
 #----------------------------------------------------------------------------
 ## Astrometrie: Extraction des resultats astrometriques obtenus avec Priam
 # @param file string Nom du fichier contenant les resultats generes par Priam
@@ -524,8 +531,6 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
             ::bdi_tools_psf::set_by_key othf "dec"     $dec
             ::bdi_tools_psf::set_by_key othf "res_ra"  $res_ra
             ::bdi_tools_psf::set_by_key othf "res_dec" $res_dec
-            ::bdi_tools_psf::set_by_key othf "omc_ra"  $omc_ra
-            ::bdi_tools_psf::set_by_key othf "omc_dec" $omc_dec
             set astroid [lreplace $astroid 2 2 $othf]
             set s [lreplace $s $idcata $idcata $astroid]
             set sources [lreplace $sources $id $id $s]
@@ -974,6 +979,10 @@ proc ::bdi_tools_astrometry::create_vartab { } {
 }
 
 
+
+
+
+
 #----------------------------------------------------------------------------
 # CALCUL DES STATISTIQUES
 #----------------------------------------------------------------------------
@@ -1030,6 +1039,8 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       }
 
       set nb       [llength $::bdi_tools_astrometry::listref($name)]
+      
+      set nbm      [llength $m]
       set nbrho    [llength $rho]
       if {$nbrho > 0} {
          #gren_erreur "rho = $rho\n"
@@ -1053,25 +1064,32 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$nb > 0} {
          set ma     [format "%.6f" [::math::statistics::mean  $a    ]]
          set md     [format "%.5f" [::math::statistics::mean  $d    ]]
-         set mm     [format "%.3f" [::math::statistics::mean  $m    ]]
          set merr_x [format "%.3f" [::math::statistics::mean  $err_x]]
          set merr_y [format "%.3f" [::math::statistics::mean  $err_y]]
       } else {
          set ma     ""
          set md     ""
-         set mm     ""
          set merr_x ""
          set merr_y ""
       }
       if {$nb > 1} {
          set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
          set sd       [format "%.3f" [::math::statistics::stdev $d  ]]
-         set sm       [format "%.3f" [::math::statistics::stdev $m  ]]
       } else {
          set sa       ""
          set sd       ""
-         set sm       ""
       }
+      
+      set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
+      if {$err} {
+         set mm ""
+      }
+      set err [ catch {set sm [format "%.3f" [::math::statistics::stdev $m]]} msg ]
+      if {$err} {
+         set sm ""
+      }
+      
+      
       set ::bdi_tools_astrometry::tabref($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm $merr_x $merr_y]
    }
 
@@ -1125,24 +1143,28 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$nb > 0} {
          set ma     [format "%.6f" [::math::statistics::mean  $a    ]]
          set md     [format "%.5f" [::math::statistics::mean  $d    ]]
-         set mm     [format "%.3f" [::math::statistics::mean  $m    ]]
          set merr_x [format "%.3f" [::math::statistics::mean  $err_x]]
          set merr_y [format "%.3f" [::math::statistics::mean  $err_y]]
       } else {
          set ma     ""
          set md     ""
-         set mm     ""
          set merr_x ""
          set merr_y ""
       }
       if {$nb > 1} {
          set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
          set sd       [format "%.3f" [::math::statistics::stdev $d  ]]
-         set sm       [format "%.3f" [::math::statistics::stdev $m  ]]
       } else {
          set sa       ""
          set sd       ""
-         set sm       ""
+      }
+      set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
+      if {$err} {
+         set mm ""
+      }
+      set err [ catch {set sm [format "%.3f" [::math::statistics::stdev $m]]} msg ]
+      if {$err} {
+         set sm ""
       }
 
       set ::bdi_tools_astrometry::tabscience($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm $merr_x $merr_y ]
@@ -1196,24 +1218,28 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$nb > 0} {
          set ma     [format "%.6f" [::math::statistics::mean  $a    ]]
          set md     [format "%.5f" [::math::statistics::mean  $d    ]]
-         set mm     [format "%.3f" [::math::statistics::mean  $m    ]]
          set merr_x [format "%.3f" [::math::statistics::mean  $err_x]]
          set merr_y [format "%.3f" [::math::statistics::mean  $err_y]]
       } else {
          set ma     ""
          set md     ""
-         set mm     ""
          set merr_x ""
          set merr_y ""
       }
       if {$nb > 1} {
          set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
          set sd       [format "%.3f" [::math::statistics::stdev $d  ]]
-         set sm       [format "%.3f" [::math::statistics::stdev $m  ]]
       } else {
          set sa       ""
          set sd       ""
-         set sm       ""
+      }
+      set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
+      if {$err} {
+         set mm ""
+      }
+      set err [ catch {set sm [format "%.3f" [::math::statistics::stdev $m]]} msg ]
+      if {$err} {
+         set sm ""
       }
 
       set ::bdi_tools_astrometry::tabdate($date) [list $date $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
@@ -1272,7 +1298,6 @@ proc ::bdi_tools_astrometry::save_images { } {
       set ident [bddimages_image_identification $idbddimg]
       set fileimg  [lindex $ident 1]
       set filecata [lindex $ident 3]
-
 
       # Maj du buffer
       buf$::audace(bufNo) load $fileimg

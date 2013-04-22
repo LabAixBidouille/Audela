@@ -438,6 +438,26 @@ namespace eval bdi_tools_psf {
 
 
    #------------------------------------------------------------
+   ## Cette fonction ajoute les champs ASTROID a la liste Fields
+   # qui nomme chaque champs d'un catalogue ASTROID dans une 
+   # listsources
+   # @param p_listsources pointeur de variable de type listsources
+   # @return void
+   #
+   proc ::bdi_tools_psf::set_fields_astroid { p_listsources } {
+   
+      upvar $p_listsources listsources
+      
+      set fields [lindex $listsources 0]
+      set pos [lsearch -index 0 $fields "ASTROID"]
+      if {$pos == -1 } {
+         lappend fields [::bdi_tools_psf::get_fields_sources_astroid]
+      }
+      set listsources [lreplace $listsources 0 0 $fields]
+      return
+   }
+
+   #------------------------------------------------------------
    ## Fonction qui modifie les champs commonfields d'une source ASTROID
    # a partir de ses champs otherfields
    # @param p_s pointeur d'une source qui sera modifiee
@@ -627,19 +647,10 @@ namespace eval bdi_tools_psf {
       }
 
       if {$pass=="no"} { return }
-      set pos [lsearch -index 0 $fields "ASTROID"]
-      if {$pos!=-1} {
-         set fields [lreplace $fields $pos $pos [::bdi_tools_psf::get_fields_sources_astroid]]
-      } else {
       
-         set fields [linsert $fields end [::bdi_tools_psf::get_fields_sources_astroid]]
-      }
-      
-      set listsources [list $fields $sources]
+      ::bdi_tools_psf::set_fields_astroid listsources
       ::bdi_tools_psf::set_mag listsources
       
-      #gren_erreur "[lsearch -index 0 [lindex $listsources {1 2 }] "ASTROID"]\n"
-      #gren_erreur "[lindex $listsources {1 2 8 2 25}]\n"
       return
    }
 
@@ -655,6 +666,7 @@ namespace eval bdi_tools_psf {
       ::bdi_tools_psf::set_mag_usno_r listsources
 
    }
+
 
 
    proc ::bdi_tools_psf::set_mag_usno_r { send_listsources } {
@@ -693,7 +705,8 @@ namespace eval bdi_tools_psf {
             }
          }
       }
-      #gren_info "nb data = [llength $tabflux] == [llength $tabmag] \n"
+      gren_info "nb data = [llength $tabmaginst] == [llength $tabmagcata] \n"
+      if {[llength $tabmaginst]==0||[llength $tabmagcata]==0} {return}
       set median_maginst [::math::statistics::median $tabmaginst ]
       set median_magcata [::math::statistics::median $tabmagcata ]
       set const_mag      [expr $median_magcata - $median_maginst]
