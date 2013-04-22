@@ -102,6 +102,8 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_bdd) ".fits.gz"
    set bddconf(extension_tmp) ".fit"
 
+   set tcl_precision 17
+
 }
 
 #------------------------------------------------------------

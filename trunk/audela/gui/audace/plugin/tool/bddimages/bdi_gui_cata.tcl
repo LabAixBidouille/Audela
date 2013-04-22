@@ -1345,8 +1345,9 @@ return
             }
             incr u
          }
-         
       }
+      # centrer la visu
+      ::confVisu::setPos $::audace(visuNo) [ buf$::audace(bufNo) radec2xy [list $ra $dec] ]
 
    }
 
@@ -1573,6 +1574,10 @@ return
          }
          
       }
+      # centrer la visu
+      ::confVisu::setPos $::audace(visuNo) [ buf$::audace(bufNo) radec2xy [list $ra $dec] ]
+
+      
 
    }
 

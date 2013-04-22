@@ -1627,6 +1627,13 @@ namespace eval bdi_gui_astrometry {
             append strdate "#Object = $name\n"
             append strdate "#midepoch         x pixel  y pixel  xerr     yerr   xfwhm  yfwhm\n"
             foreach dateimg $::bdi_tools_astrometry::listscience($name) {
+            
+               # Rend effectif le crop du graphe
+               if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
+                  if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
+               }
+            
+            
                set midepoch $::tools_cata::date2midate($dateimg)
                set err [ catch { set astroid [::bdi_tools::get_astroid $dateimg $name] } msg ]
                if {$err} {

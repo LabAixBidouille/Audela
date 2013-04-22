@@ -120,6 +120,22 @@ proc ::bdi_tools_priam::add_source2localcat {key onesource} {
 
    # Recupere les donnees a ecrire
    switch $cata {
+      "IMG" {
+         # Uniquement pour faire un wcs avec priam (cf creation cata - Manuel)
+         set ra  [mc_angle2hms [lindex $otherfields 8]]
+         set dec [mc_angle2dms [lindex $otherfields 9] 90]
+         set mag        0
+         set ra_err     10
+         set dec_err    10
+         set ra_pm      0
+         set dec_pm     0
+         set ra_pm_err  0
+         set dec_pm_err 0
+         set refepoch   2451545.50
+         set typeS      "?"
+         set paral      0
+         set vitrad     0
+      }
       "UCAC2" {
          # 1 = ra_deg, 2 = dec_deg, 3 = U2Rmag_mag
          set ra  [mc_angle2hms [lindex $otherfields 1]]

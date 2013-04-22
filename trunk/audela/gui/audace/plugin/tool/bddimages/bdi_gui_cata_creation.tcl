@@ -808,24 +808,47 @@ namespace eval gui_cata_creation {
 
 
 
+   proc ::gui_cata_creation::manual_create_wcs_test {  } {
+
+      gren_info "manual_create_wcs_test\n"
+
+      for {set i 1} {$i<=7} {incr i} {
+         set ::gui_cata::man_xy_star($i) ""
+      }
+      for {set i 1} {$i<=7} {incr i} {
+         set ::gui_cata::man_ad_star($i) ""
+      }
+      set ::gui_cata::man_xy_star(1) "756.27 962.93"
+      set ::gui_cata::man_xy_star(2) "730.72 511.74"
+      set ::gui_cata::man_xy_star(3) "345.60 717.79"
+      set ::gui_cata::man_xy_star(4) "711.30 668.55"
+      set ::gui_cata::man_xy_star(5) "213.40 438.23"
+      set ::gui_cata::man_ad_star(1) "265.002279 -15.459027"
+      set ::gui_cata::man_ad_star(2) "265.005853 -15.514163"
+      set ::gui_cata::man_ad_star(3) "265.054556 -15.488658"
+      set ::gui_cata::man_ad_star(4) "265.008090 -15.494978"
+      set ::gui_cata::man_ad_star(5) "265.071672 -15.522862"
+   }
+
+
+
+
    #------------------------------------------------------------
    ## Creation de la calibration WCS d'une image en mode manuel,
    # a partir des etoiles (et de leurs references) definies dans
    # la GUI (onglet Manuel). L'astrometrie est calculee par Priam.
    # @return void
    #
-   proc ::gui_cata_creation::manual_create_wcs_obsolete {  } {
+   proc ::gui_cata_creation::manual_create_wcs {  } {
 
       global bddconf
 
       ::tools_cata::push_img_list
-      $::gui_cata::gui_enrimg configure -state disabled
+
+      $::gui_cata::gui_enrimg    configure -state disabled
       $::gui_cata::gui_creercata configure -state disabled
       
       gren_info "Creation Manuelle du WCS\n"
-
-      set ::tools_astrometry::science ""
-      set ::tools_astrometry::reference ""
 
       set sources {}
       set fieldimg [list "IMG" [list "ra" "dec" "err_pos" "mag" "err_mag"] [::tools_cata::get_img_fields] ]
@@ -851,32 +874,8 @@ namespace eval gui_cata_creation {
       
       gren_info "     Mesure des PSF\n"
       
-      ::psf_gui::psf_listsources_no_auto listsources $::bdi_tools_psf::psf_threshold $::bdi_tools_psf::psf_radius $::bdi_tools_psf::psf_saturation
-      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
-
-      if {[::bddimages_liste::lexist $::tools_cata::current_image "listsources" ]==0} {
-         set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "listsources" $listsources]
-      } else {
-         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "listsources" $listsources]
-      }
-      
-      set ::tools_astrometry::reference ""
-
-      # Creation des fichiers et lancement de Priam
-
-
- #  #  #       
- #  #  #       
- #  #  #       
- #  #  #       
- #  #  #       
- # @warning CA ne va plus fonctionner ici , car les champs astroid sont modulable : par ::bdi_tools_psf::get_otherfields_astroid
- #  #  #       
- #  #  #       
- #  #  #       
- #  #  #       
- #  #  #       
-
+      ::bdi_tools_psf::get_psf_listsources listsources
+      gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       gren_info "     Creation des fichiers et lancement de Priam\n"
       set id 0
@@ -884,58 +883,45 @@ namespace eval gui_cata_creation {
       foreach s $ls {
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
-            set a [lindex $s $x]
-            set b [lindex $a 2]
-            set b [lreplace $b 25 25 "R"]
-            set b [lreplace $b 27 27 "IMG"]
-            set a [lreplace $a 2 2 $b] 
-            set s [lreplace $s $x $x $a]
+            set astroid [lindex $s $x]
+            set othf [lindex $astroid 2]
+            ::bdi_tools_psf::set_by_key othf "flagastrom" "R"
+            ::bdi_tools_psf::set_by_key othf "cataastrom" "IMG"
+            set astroid [lreplace $astroid 2 2 $othf] 
+            set s [lreplace $s $x $x $astroid]
             set ls [lreplace $ls $id $id $s]
          }
          incr id
       }
       set listsources [lreplace $listsources 1 1 $ls]
 
-      set err [catch {::priam::create_file_oldformat "new" 1 ::tools_cata::current_image listsources } msg ]
-
-      if {$err} {
-         gren_erreur "Error: gui_cata_creation::manual_create_wcs: impossible de creer le fichier Priam: $err -> $msg\n"
-         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
-         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-         ::tools_cata::pop_img_list
-         return
-      }
 
       set ::tools_cata::img_list [list $::tools_cata::current_image]
+      array unset ::gui_cata::cata_list
+      set ::gui_cata::cata_list(1) $listsources
 
-      set err [catch {
-          set ::tools_astrometry::last_results_file [::priam::launch_priam]
-          gren_info "new Priam file: $::tools_astrometry::last_results_file\n"
-          ::tools_astrometry::extract_priam_results $::tools_astrometry::last_results_file
-      } msg ]
-      
-      if {$err} {
-         gren_erreur "Error: gui_cata_creation::manual_create_wcs: calcul WCS en erreur: $err ->  $msg\n"
-         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
-         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-         ::tools_cata::pop_img_list
-         return
+
+      set tt0 [clock clicks -milliseconds]
+      ::bdi_tools_astrometry::init_priam
+      ::bdi_tools_astrometry::exec_priam
+      gren_info "Determination de la solution astrometrique (Priam) en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
+
+      foreach vals $::tools_cata::new_astrometry(1) {
+         buf$::audace(bufNo) setkwd $vals
       }
 
-      set ::tools_cata::current_listsources $::gui_cata::cata_list(1)
-      ::manage_source::imprim_3_sources $::tools_cata::current_listsources
-
-      # WCS dans l image
+      set key [list "BDDIMAGES WCS" "Y" "string" "Y | N | ? (WCS performed)" ""]
+      buf$::audace(bufNo) setkwd $key
 
       set filename [::bddimages_liste::lget $::tools_cata::current_image filename]
       set filename [string range $filename 0 [expr [string last .gz $filename] -1]]
       set file [file join $bddconf(dirtmp) $filename]
-      set key [list "BDDIMAGES WCS" "Y" "string" "Y | N | ? (WCS performed)" ""]
-      buf$::audace(bufNo) setkwd $key
-      saveima $file
-      loadima $file
+      gren_info  "file = $file\n"
 
       gren_info "     Enregistrement du WCS dans l'image $file\n"
+
+      saveima $file
+      loadima $file
 
       # Obtention du nouvel header
       set err [catch {set tabkey [::bdi_tools_image::get_tabkey_from_buffer] } msg ]
@@ -950,15 +936,374 @@ namespace eval gui_cata_creation {
       ::tools_cata::pop_img_list
 
       set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "tabkey" $tabkey]
+
+      # Insertion de l image
+
+#         set idbddimg   [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
+#         gren_info "idbddimg = $idbddimg\n"
+#         set ident [bddimages_image_identification $idbddimg]
+#         gren_info "ident = $idbddimg\n"
+#
+#         gren_info "     Efface l image dans la base et le disque\n"
+#
+#         bddimages_image_delete_fromsql $ident
+#         bddimages_image_delete_fromdisk $ident
+#
+#         gren_info "     Insere l image dans la base\n"
+#         # insere l image et le cata dans la base filecata
+#         set errnum [catch {set r [insertion_solo $file]} msg ]
+#         if {$errnum==0} {
+#            set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image idbddimg $r]
+#            gren_info "insertion ok = $msg\n"
+#         } else {
+#            gren_erreur "insertion erreur = $err $msg\n"
+#         }
+#
+#         set errnum [catch {file delete -force $filetmp} msg ]
+
+#         set errnum [catch {set list_keys [buf$::audace(bufNo) getkwds]} msg ]
+#         set tabkey {}
+#         foreach key $list_keys {
+#            set garde "ok"
+#            if {$key==""} {set garde "no"}
+#            foreach rekey $tabkey {
+#               if {$key==$rekey} {set garde "no"}
+#            }
+#            if {$garde=="ok"} {
+#               lappend tabkey [list $key [buf$::audace(bufNo) getkwd $key] ]
+#            }
+#         }
+#
+#         set result  [bddimages_entete_preminforecon $tabkey]
+#         set err     [lindex $result 0]
+#         set $tabkey [lindex $result 1]
+#         set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image tabkey $tabkey]
+
+      # finalisation gui
+
       set ::gui_cata::color_wcs $::gui_cata::color_button_good
 
-      $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-      $::gui_cata::gui_enrimg configure -state normal
+      $::gui_cata::gui_wcs       configure -bg $::gui_cata::color_wcs
+      $::gui_cata::gui_enrimg    configure -state normal
       $::gui_cata::gui_creercata configure -state normal
+
+return
+
+      # exemple cas d erreur
+      set err 0      
+      if {$err} {
+         gren_erreur "Error: blabla $err ->  $msg\n"
+         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+         ::tools_cata::pop_img_list
+         return
+      }
 
    }
 
+   proc ::gui_cata_creation::get_wcs_fields {  } {
+      return [list EQUINOX RADESYS CTYPE1  CTYPE2  LONPOLE CUNIT1  CUNIT2  CRPIX1  CRPIX2  FOCLEN \
+              RA      DEC     CRVAL1  CRVAL2  CDELT1  CDELT2  CROTA2  CD1_1   CD1_2   CD2_1   CD2_2 ]
+   }
+   
+   
+   proc ::gui_cata_creation::paste_wcs {  } {
 
+      if {[info exists ::gui_cata_creation::wcs_to_paste]} {
+         set lh [::gui_cata_creation::get_wcs_fields]
+         foreach key $lh {
+            buf$::audace(bufNo) setkwd $::gui_cata_creation::wcs_to_paste($key)
+         }
+         $::gui_cata::gui_enrimg    configure -state normal
+         saveima i
+         loadima i
+      }
+   }
+
+   proc ::gui_cata_creation::copy_wcs {  } {
+      
+      array unset ::gui_cata_creation::wcs_to_paste
+      set lh [::gui_cata_creation::get_wcs_fields]
+      foreach key $lh {
+         set ::gui_cata_creation::wcs_to_paste($key) [buf$::audace(bufNo) getkwd $key]
+      }
+      $::gui_cata::gui_paste_wcs configure -state normal
+      
+ 
+   }
+
+   proc ::gui_cata_creation::voir_wcs {  } {
+
+      set lh [::gui_cata_creation::get_wcs_fields]
+      foreach key $lh {
+         gren_info "[buf$::audace(bufNo) getkwd $key]\n"
+         
+      }
+   }
+
+   proc ::gui_cata_creation::modif_centre_arcsec { x y } {
+
+      set kra  [buf$::audace(bufNo) getkwd "CRVAL1"]
+      set kdec [buf$::audace(bufNo) getkwd "CRVAL2"]
+      set ra   [lindex $kra 1]
+      set dec  [lindex $kdec 1]
+
+      gren_info "avant  RA DEC : $ra $dec\n"
+      set radec [buf$::audace(bufNo) xy2radec {512 512}]
+      gren_info "Centre : $radec\n"
+
+      set ra   [expr $ra + $x/3600.]
+      set dec  [expr $dec + $y/3600.]
+      set kra  [lreplace $kra 1 1 $ra]
+      set kdec [lreplace $kdec 1 1 $dec]
+      buf$::audace(bufNo) setkwd $kra 
+      buf$::audace(bufNo) setkwd $kdec
+      
+      saveima i
+      loadima i
+      
+      gren_info "apres  RA DEC : $ra $dec\n"
+      set radec [buf$::audace(bufNo) xy2radec {512 512}]
+      gren_info "Centre : $radec\n"
+   }
+
+
+
+
+   proc ::gui_cata_creation::voir_usno {  } {
+
+      global bddconf
+      
+      set scale_x [lindex [buf$::audace(bufNo) getkwd "CD1_1" ] 1]
+      set scale_y [lindex [buf$::audace(bufNo) getkwd "CD2_2" ] 1]
+      set naxis1  [lindex [buf$::audace(bufNo) getkwd "NAXIS1" ] 1]
+      set naxis2  [lindex [buf$::audace(bufNo) getkwd "NAXIS2" ] 1]
+      set xcent   [expr $naxis1/2.0]
+      set ycent   [expr $naxis2/2.0]
+
+      set a       [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+      set ra      [lindex $a 0]
+      set dec     [lindex $a 1]
+      set radius  [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+      
+      #gren_info "RA = $ra\n"
+      #gren_info "DEC = $dec\n"
+      #gren_info "RADIUS = $radius\n"
+      
+      #set radius 1
+      
+      set usnoa2 [csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius]
+      set usnoa2 [::manage_source::set_common_fields $usnoa2 USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
+      
+      
+      set fields  [lindex $usnoa2 0]
+      set sources [lindex $usnoa2 1]
+      set newsources ""
+      set tabmag ""
+      set id 0
+      foreach s $sources {
+         foreach cata $s {
+            if { [lindex $cata 0] == "USNOA2" } {
+               set cm [lindex $cata 1]
+               set ra [lindex $cm 0]
+               set dec [lindex $cm 1]
+               set mag [lindex $cm 3]
+               if {$ra != "" && $dec != ""} {
+                  set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                  set x [lindex $img_xy 0]
+                  set y [lindex $img_xy 1]
+                  if {$x > 0 && $x < $naxis1 && $y > 0 && $y < $naxis2} {
+                     lappend newsource $s
+                     lappend tabmag [list $id $mag]
+                     incr id
+                  }
+               }
+            }
+         }
+      }
+      set usnoa2 [list $fields $newsource]
+      
+      set tabmag [lsort -index 1 $tabmag]
+      
+      set nbs [::manage_source::get_nb_sources_by_cata $usnoa2 "USNOA2"]
+      #gren_info "$nbs Sources USNOA2 extraites -> ROLLUP = [::manage_source::get_nb_sources_rollup $usnoa2]\n"
+      
+      affich_rond $usnoa2 "USNOA2" $::gui_cata::color_usnoa2  $::gui_cata::size_usnoa2
+      
+      set cpt 0
+      foreach x $tabmag {
+         set id [lindex $x 0]
+         
+         set ra  [lindex $usnoa2 [list 1 $id 0 1 0]]
+         set dec [lindex $usnoa2 [list 1 $id 0 1 1]]
+         
+         affich_un_rond $ra $dec red 2
+         incr cpt
+         if {$cpt>100} {break}
+      }
+      
+      gren_info "Circle Green : $nbs USNOA2 STARS\n"
+      gren_info "Circle Red : 100 brighests USNOA2 STARS\n"
+   }
+
+
+
+
+   proc ::gui_cata_creation::manual_priam {  } {
+
+      global bddconf
+
+      cleanmark
+
+      ::tools_cata::push_img_list
+      
+      set tabkey  [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
+      set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
+      set naxis1  [lindex [::bddimages_liste::lget $tabkey NAXIS1 ] 1]
+      set naxis2  [lindex [::bddimages_liste::lget $tabkey NAXIS2 ] 1]
+      set xcent   [expr $naxis1/2.0]
+      set ycent   [expr $naxis2/2.0]
+
+      set a       [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+      set ra      [lindex $a 0]
+      set dec     [lindex $a 1]
+      set radius  [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
+      
+      #gren_info "RA = $ra\n"
+      #gren_info "DEC = $dec\n"
+      #gren_info "RADIUS = $radius\n"
+      
+      #set radius 1
+      
+      set usnoa2 [csusnoa2 $::tools_cata::catalog_usnoa2 $ra $dec $radius]
+      set usnoa2 [::manage_source::set_common_fields $usnoa2 USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
+      
+      set fields  [lindex $usnoa2 0]
+      set sources [lindex $usnoa2 1]
+      set newsources ""
+      set tabmag ""
+      set id 0
+      foreach s $sources {
+         foreach cata $s {
+            if { [lindex $cata 0] == "USNOA2" } {
+               set cm [lindex $cata 1]
+               set ra [lindex $cm 0]
+               set dec [lindex $cm 1]
+               set mag [lindex $cm 3]
+               if {$ra != "" && $dec != ""} {
+                  set img_xy [ buf$::audace(bufNo) radec2xy [ list $ra $dec ] ]
+                  set x [lindex $img_xy 0]
+                  set y [lindex $img_xy 1]
+                  if {$x > 0 && $x < $naxis1 && $y > 0 && $y < $naxis2} {
+                     lappend newsources $s
+                     lappend tabmag [list $id $mag]
+                     incr id
+                  }
+               }
+            }
+         }
+      }
+      set usnoa2 [list $fields $newsources]
+      
+      
+      set tabmag [lsort -index 1 $tabmag]
+      
+      set newsources ""
+      set cpt 0
+      foreach x $tabmag {
+         set id [lindex $x 0]
+         set s [lindex $usnoa2 [list 1 $id]]
+         set ra  [lindex $s { 0 1 0 } ]
+         set dec [lindex $s { 0 1 1 } ]
+
+         set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
+         
+         if {$err || $err_psf != ""} {
+            continue
+         }
+         
+         set x  [lsearch -index 0 $s "ASTROID"]
+         if {$x>=0} {
+            set astroid [lindex $s $x]
+            set othf [lindex $astroid 2]
+            ::bdi_tools_psf::set_by_key othf "flagastrom" "R"
+            ::bdi_tools_psf::set_by_key othf "cataastrom" "USNOA2"
+            set astroid [lreplace $astroid 2 2 $othf] 
+            set s [lreplace $s $x $x $astroid]
+            lappend newsources $s
+            affich_un_rond $ra $dec green 2
+            incr cpt
+         }
+         if {$cpt>99} {break}
+      }
+
+      set usnoa2 [list $fields $newsources]
+      if {$cpt > 0} {::bdi_tools_psf::set_fields_astroid usnoa2}
+      set nbs [::manage_source::get_nb_sources_by_cata $usnoa2 "USNOA2"]
+      gren_info "$nbs Sources USNOA2 extraites -> ROLLUP = [::manage_source::get_nb_sources_rollup $usnoa2]\n"
+
+      
+
+
+
+      set ::tools_cata::img_list [list $::tools_cata::current_image]
+      array unset ::gui_cata::cata_list
+      set ::gui_cata::cata_list(1) $usnoa2
+
+
+      set tt0 [clock clicks -milliseconds]
+      ::bdi_tools_astrometry::init_priam
+      ::bdi_tools_astrometry::exec_priam
+      gren_info "Determination de la solution astrometrique (Priam) en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
+
+      foreach vals $::tools_cata::new_astrometry(1) {
+         buf$::audace(bufNo) setkwd $vals
+      }
+
+      set key [list "BDDIMAGES WCS" "Y" "string" "Y | N | ? (WCS performed)" ""]
+      buf$::audace(bufNo) setkwd $key
+
+      set filename [::bddimages_liste::lget $::tools_cata::current_image filename]
+      set filename [string range $filename 0 [expr [string last .gz $filename] -1]]
+      set file [file join $bddconf(dirtmp) $filename]
+      gren_info  "file = $file\n"
+
+      gren_info "     Enregistrement du WCS dans l'image $file\n"
+
+      saveima $file
+      loadima $file
+
+      # Obtention du nouvel header
+      set err [catch {set tabkey [::bdi_tools_image::get_tabkey_from_buffer] } msg ]
+      if {$err} {
+         gren_erreur "Error: gui_cata_creation::manual_create_wcs: tabkey non charge: $err -> $msg\n"
+         set ::gui_cata::color_wcs $::gui_cata::color_button_bad
+         $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
+         ::tools_cata::pop_img_list
+         return
+      }
+
+      ::tools_cata::pop_img_list
+
+      set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "tabkey" $tabkey]
+
+      # affiche etoiles de ref
+      
+      affich_rond $usnoa2 "USNOA2" red  2
+      
+
+      # finalisation gui
+
+      set ::gui_cata::color_wcs $::gui_cata::color_button_good
+
+      $::gui_cata::gui_wcs       configure -bg $::gui_cata::color_wcs
+      $::gui_cata::gui_enrimg    configure -state normal
+      $::gui_cata::gui_creercata configure -state normal
+
+      gren_info "Fin...\n"
+
+   }
 
    #------------------------------------------------------------
    ## Creation des cata d'une image en mode manuel.
@@ -966,6 +1311,9 @@ namespace eval gui_cata_creation {
    #
    proc ::gui_cata_creation::manual_create_cata {  } {
 
+      global bddconf
+      
+      
       ::tools_cata::push_img_list
 
       set ::tools_cata::create_cata 0
@@ -985,12 +1333,7 @@ namespace eval gui_cata_creation {
 
       # Extraction Resultat Sextractor et Creation de la liste
       set fields [list [list IMG [list ra dec poserr mag magerr] \
-                 [list id flag xpos ypos instr_mag err_mag flux_sex \
-                 err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 \
-                 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius \
-                 background_sex x2_momentum_sex y2_momentum_sex \
-                 xy_momentum_sex major_axis_sex minor_axis_sex \
-                 position_angle_sex fwhm_sex flag_sex]]]
+                 [::tools_cata::get_img_fields]]]
       set sources {}
       set chan [open "catalog.cat" r]
       while {[gets $chan line] >= 0} {
@@ -1177,7 +1520,7 @@ namespace eval gui_cata_creation {
       set ::tools_cata::current_listsources [list $fields $newsources]
 
       # Resultats des magnitudes 
-      ::manage_source::get_fields_from_sources $::tools_cata::current_listsources
+      #::manage_source::get_fields_from_sources $::tools_cata::current_listsources
 
       set log 0
 
@@ -1208,7 +1551,7 @@ namespace eval gui_cata_creation {
       #set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
       #::manage_source::imprim_3_sources $::tools_cata::current_listsources
       set ::tools_cata::current_listsources [::manage_source::extract_catalog $::tools_cata::current_listsources "IMG"]
-      #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      #gren_info "rollupsE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
 # Obtention du CATA
       if {[::tools_cata::get_cata] == false} {
@@ -1217,13 +1560,26 @@ namespace eval gui_cata_creation {
       } else {
          set ::gui_cata::color_cata $::gui_cata::color_button_good
          $::gui_cata::gui_cata configure -bg $::gui_cata::color_cata
+
+         set imgfilename [::bddimages_liste::lget $::tools_cata::current_image filename]
+         set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+         set cataxml "${f}_cata.xml"
+
+         # Sauvegarde du cata XML
+         gren_info "Enregistrement du cata XML: $cataxml\n"
+         set votable [::votableUtil::list2votable $::tools_cata::current_listsources $tabkey]
+         set fxml [open $cataxml "w"]
+         puts $fxml $votable
+         close $fxml
       }
+
 
       #gren_info "rollupE = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
 
       $::gui_cata::gui_enrimg configure -state normal
       ::tools_cata::pop_img_list
 
+      gren_info "Fin...\n"
    }
 
 
@@ -1243,11 +1599,14 @@ namespace eval gui_cata_creation {
       set dirimgfilename [::bddimages_liste::lget $::tools_cata::current_image "dirfilename"]
       set imgfilebase [file join $bddconf(dirbase) $dirimgfilename $imgfilename]
 
+      set imgfilename [::bddimages_liste::lget $::tools_cata::current_image filename]
+      set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+      set cataxml "${f}_cata.xml"
+
       set imgfilename [unzipedfilename $imgfilename]
       set imgfiletmp [file join $bddconf(dirtmp) $imgfilename]
-      set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
-      set catafiletmp "${f}_cata.xml"
-   
+
+    
       gren_info "Verification image $idbddimg\n"
 
       set ident [bddimages_image_identification $idbddimg]
@@ -1324,7 +1683,9 @@ namespace eval gui_cata_creation {
 
          # Insertion du cata
          gren_info "Verification cata pour idbddimg=$idbddimg\n"
-         if {![file exists $catafiletmp]} {
+         gren_info "catafile : $cataxml\n"
+         
+         if {![file exists $cataxml]} {
             ::console::affiche_erreur "Le fichier cata n existe pas\n"
          } else {
             if {$log} {gren_info "Le fichier cata existe dans tmp\n"}
@@ -1334,7 +1695,7 @@ namespace eval gui_cata_creation {
             if {$catafilebase == -1 } {
                if {$log} {gren_info "cata n existe pas dans la base\n"}     
                # insertion du CATA
-               set errnum [catch {set r [insertion_solo $catafiletmp]} msg ]
+               set errnum [catch {set r [insertion_solo $cataxml]} msg ]
                catch {gren_info "$errnum : $msg : $r"}
                if {$errnum==0} {
                   gren_info "\nInsertion reussie\n"
@@ -2172,18 +2533,42 @@ namespace eval gui_cata_creation {
                         button $visu.clean  -borderwidth 1 -text "Clean XY" -command "cleanmark"
                         pack $visu.clean -in $visu -side top -anchor c -fill x
 
-                  frame $manuel.entr.buttons -borderwidth 0 -cursor arrow -relief groove
-                  pack $manuel.entr.buttons -in $manuel.entr -side top -pady 10
+                  frame $manuel.entr.buttons0 -borderwidth 0 -cursor arrow -relief groove
+                  pack $manuel.entr.buttons0 -in $manuel.entr -side top -pady 10
                 
-                     button $manuel.entr.buttons.creerwcs -borderwidth 1  \
-                        -command "::gui_cata_creation::manual_create_wcs" -text "Creer WCS"
-                     pack $manuel.entr.buttons.creerwcs -in $manuel.entr.buttons -side left -anchor e -expand 0 
-                     set ::gui_cata::gui_creercata [button $manuel.entr.buttons.creercata -borderwidth 1  \
+                     button $manuel.entr.buttons0.creerwcs -borderwidth 1  \
+                        -command "::gui_cata_creation::copy_wcs" -text "Copy WCS"
+                     pack $manuel.entr.buttons0.creerwcs -in $manuel.entr.buttons0 -side left -anchor e -expand 0 
+                     set ::gui_cata::gui_paste_wcs [button $manuel.entr.buttons0.priam -borderwidth 1  \
+                        -command "::gui_cata_creation::paste_wcs" -text "Paste WCS" -state disabled]
+                     pack $manuel.entr.buttons0.priam -in $manuel.entr.buttons0 -side left -anchor e -expand 0 
+                     set ::gui_cata::gui_voir_wcs [button $manuel.entr.buttons0.voir_wcs -borderwidth 1  \
+                        -command "::gui_cata_creation::voir_wcs" -text "Voir WCS" -state normal]
+                     pack $manuel.entr.buttons0.voir_wcs -in $manuel.entr.buttons0 -side left -anchor e -expand 0 
+
+                  frame $manuel.entr.buttons1 -borderwidth 0 -cursor arrow -relief groove
+                  pack $manuel.entr.buttons1 -in $manuel.entr -side top -pady 10
+                
+                     button $manuel.entr.buttons1.creerwcs -borderwidth 1  \
+                        -command "::gui_cata_creation::manual_create_wcs" -text "Basic WCS"
+                     pack $manuel.entr.buttons1.creerwcs -in $manuel.entr.buttons1 -side left -anchor e -expand 0 
+                     button $manuel.entr.buttons1.voirusno -borderwidth 1  \
+                        -command "::gui_cata_creation::voir_usno" -text "Voir USNOA2"
+                     pack $manuel.entr.buttons1.voirusno -in $manuel.entr.buttons1 -side left -anchor e -expand 0 
+                     button $manuel.entr.buttons1.priam -borderwidth 1  \
+                        -command "::gui_cata_creation::manual_priam" -text "Priam WCS" 
+                     pack $manuel.entr.buttons1.priam -in $manuel.entr.buttons1 -side left -anchor e -expand 0 
+
+
+                  frame $manuel.entr.buttons2 -borderwidth 0 -cursor arrow -relief groove
+                  pack $manuel.entr.buttons2 -in $manuel.entr -side top -pady 10
+                
+                     set ::gui_cata::gui_creercata [button $manuel.entr.buttons2.creercata -borderwidth 1  \
                         -command "::gui_cata_creation::manual_create_cata" -text "Creer Cata" -state disabled]
-                     pack $manuel.entr.buttons.creercata -in $manuel.entr.buttons -side left -anchor e -expand 0 
-                     set ::gui_cata::gui_enrimg [button $manuel.entr.buttons.enrimg -borderwidth 1 \
+                     pack $manuel.entr.buttons2.creercata -in $manuel.entr.buttons2 -side left -anchor e -expand 0 
+                     set ::gui_cata::gui_enrimg [button $manuel.entr.buttons2.enrimg -borderwidth 1 \
                         -command "::gui_cata_creation::manual_insert_img" -text "Insertion Image" -state disabled]
-                     pack $manuel.entr.buttons.enrimg -in $manuel.entr.buttons -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons2.enrimg -in $manuel.entr.buttons2 -side left -anchor e -expand 0 
 
 
          #-----------------------------------------------------------------------
