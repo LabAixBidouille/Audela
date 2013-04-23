@@ -403,8 +403,10 @@ namespace eval cata_gestion_gui {
 
       # Affiche l'image courante
       ::gui_cata::affiche_current_image
+
       # Affiche le cata
-      ::gui_cata::affiche_cata
+      # ::gui_cata::affiche_cata
+
       # Trace du repere E/N dans l'image
       set cdelt1 [lindex [::bddimages_liste::lget $tabkey CDELT1] 1]
       set cdelt2 [lindex [::bddimages_liste::lget $tabkey CDELT2] 1]
@@ -503,6 +505,9 @@ namespace eval cata_gestion_gui {
 
         # Separateur
         $popupTbl add separator
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "PSF manuel -> ASTROID" -command "::cata_gestion_gui::psf_popup_manuel $tbl" -state normal
 
         # Edite la liste selectionnee
         $popupTbl add command -label "PSF Auto -> ASTROID" -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
@@ -1767,7 +1772,7 @@ namespace eval cata_gestion_gui {
 
 # Anciennement ::gui_cata::psf_popup_auto
  
-   proc ::cata_gestion_gui::psf_popup_auto { tbl } {
+   proc ::cata_gestion_gui::psf_popup_manuel { tbl } {
 
       #gren_info "psf_popup_auto tbl = $tbl \n"
 
@@ -1784,8 +1789,16 @@ namespace eval cata_gestion_gui {
 
 
 
+   proc ::cata_gestion_gui::psf_popup_auto { tbl } {
 
+      set list_id ""
+      foreach select [$tbl curselection] {
+         lappend list_id [lindex [$tbl get $select] 0]
+      }
       
+      ::cata_gestion_gui::psf_auto_go "popup" $list_id
+   
+   }
 
 
 
@@ -1805,6 +1818,7 @@ namespace eval cata_gestion_gui {
          ::cata_gestion_gui::psf_auto_go_one "oneimage"
       }
       if {$type == "popup"} {
+      
       }
       if {$type == "all"} {
          ::cata_gestion_gui::psf_auto_go_all
@@ -2085,19 +2099,30 @@ namespace eval cata_gestion_gui {
       set color red
       set width 2
       cleanmark
-      gren_info "Nb selected images: [llength [$w curselection]]\n"
+      gren_info "Nbs selected images: [llength [$w curselection]]\n"
       foreach select [$w curselection] {
          set id [lindex [$w get $select] 0]
          set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]
          set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
          #gren_info "line = [$w get $select]\n"
          #gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
-         #gren_info "ra dec = $ra $dec\n"
+         gren_info "ra dec = $ra $dec\n"
          affich_un_rond $ra $dec $color $width
       }
+
+      set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+      set xy [::bdi_tools_psf::get_xy s ]
+      gren_info "xy = $xy\n"
+      ::confVisu::setPos $::audace(visuNo) $xy
+      
       return
 
    }
+
+
+
+
+
 
 
 
@@ -2170,6 +2195,7 @@ namespace eval cata_gestion_gui {
             $menubar.catalog.menu add command -label "Photometrie" -command "" -state disabled
             $menubar.catalog.menu add separator
             $menubar.catalog.menu add command -label "Verifier" -command "::gui_verifcata::run" -state normal
+            $menubar.catalog.menu add command -label "Effacer" -command "::gui_cata_delete::run" -state normal
             $menubar.catalog.menu add command -label "Personnel" -command "" -state disabled
             $menubar.catalog.menu add command -label "Astroid" -command "" -state disabled
             $menubar.catalog.menu add separator

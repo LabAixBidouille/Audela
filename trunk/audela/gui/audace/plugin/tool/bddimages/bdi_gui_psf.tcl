@@ -190,4 +190,194 @@ namespace eval bdi_gui_psf {
 
 
 
+
+
+
+
+
+   proc ::bdi_gui_psf::get_list_col { } {
+      return [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec ]
+   }
+
+
+
+
+   proc ::bdi_gui_psf::get_pos_col { key } {
+
+      set list_of_columns [::psf_gui::get_list_col]
+
+      set cpt 0
+      foreach c $list_of_columns {
+         if {$c==$key} {
+            return $cpt
+         }
+         incr cpt
+      }
+      return -1
+   }
+
+   proc ::bdi_gui_psf::graph_with_error { key err_key } {
+
+         set delta $::gui_cata::current_psf($err_key)
+         set y0    $::gui_cata::current_psf($key)
+         #gren_info "$key = $y0 ; delta = $delta\n"
+         set ymin  [list [expr $y0 - $delta] [expr $y0 - $delta] ]
+         set ymax  [list [expr $y0 + $delta] [expr $y0 + $delta] ]
+         set x0    [ list 0 $::bdi_tools_psf::psf_limitradius ]
+         set h [::plotxy::plot $x0 $ymin .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 2]
+         set h [::plotxy::plot $x0 $ymax .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 2]
+
+   }
+
+
+   proc ::bdi_gui_psf::graph { key } {
+    
+      set ::bdi_gui_psf::graph_current_key $key
+
+      set x ""
+      set y ""
+
+      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         
+         #catch { gren_erreur "$radius $::bdi_tools_psf::graph_results($radius,err)\n" }
+         
+         if {[info exists ::bdi_tools_psf::graph_results($radius,$key)]} {
+            if {$::bdi_tools_psf::graph_results($radius,err)==0} {
+               lappend x $radius
+               lappend y $::bdi_tools_psf::graph_results($radius,$key)
+            }
+         }
+      }
+      
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+     
+
+      # Affichage de la valeur obtenue sous forme d'une ligne horizontale
+      set x0 [ list 0 $::bdi_tools_psf::psf_limitradius ]
+      set y0 [ list $::gui_cata::current_psf($key) $::gui_cata::current_psf($key)]
+      set h [::plotxy::plot $x0 $y0 .]
+      plotxy::sethandler $h [list -color black -linewidth 2]
+
+      # Affichage des erreurs pour XSM
+      if {$key == "xsm" } {
+         ::bdi_gui_psf::graph_with_error "xsm" "err_xsm"
+      }
+      # Affichage des erreurs pour YSM
+      if {$key == "ysm" } {
+         ::bdi_gui_psf::graph_with_error "ysm" "err_ysm"
+      }
+      # Affichage des erreurs pour FLUX
+      if {$key == "flux" } {
+         ::bdi_gui_psf::graph_with_error "flux" "err_flux"
+      }
+      # Affichage des erreurs pour SKY
+      if {$key == "sky" } {
+         ::bdi_gui_psf::graph_with_error "sky" "err_sky"
+      }
+
+
+
+
+      array set point [list 0 . 1 o 2 + 3 . 4 + 5 o ]
+      array set color [list 0 "#18ad86" 1 yellow 2 green 3 blue 4 red 5 black ]
+      array set line  [list 0 1 1 0 2 0 3 0 4 0 5 0 ]
+
+      set h [::plotxy::plot $x $y .]
+      plotxy::sethandler $h [list -color "#18ad86" -linewidth 1]
+     
+      
+   } 
+
+
+
+   proc ::bdi_gui_psf::takall {  } {
+
+      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         if {$::bdi_tools_psf::graph_results($radius,err)==10} {
+            set ::bdi_tools_psf::graph_results($radius,err)==0
+         }
+      }
+       if { [winfo exists .audace.plotxy1] } {
+          ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
+       }
+
+   } 
+
+
+
+
+   proc ::bdi_gui_psf::setval { } {
+
+      if { [winfo exists .audace.plotxy1] } {
+         gren_info "current graph on  $::bdi_gui_psf::graph_current_key \n"
+      }
+      set key $::bdi_gui_psf::graph_current_key
+
+      set err [ catch {set rect [::plotxy::get_selected_region]} msg]
+      if {$err} {
+         return
+      }
+      set x1 [lindex $rect 0]
+      set x2 [lindex $rect 2]
+      set y1 [lindex $rect 1]
+      set y2 [lindex $rect 3]
+      
+      if {$x1>$x2} {
+         set t $x1
+         set x1 $x2
+         set x2 $t
+      }
+      if {$y1>$y2} {
+         set t $y1
+         set y1 $y2
+         set y2 $t
+      }
+ 
+
+      # on crop
+      set cpt 0
+      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         if {$::bdi_tools_psf::graph_results($radius,err)==0} {
+            incr cpt
+            if {$radius < $x1 || $x2 < $radius } {
+               set ::bdi_tools_psf::graph_results($radius,err) 10
+               incr cpt -1
+               continue
+            }
+            set val [lindex $::bdi_tools_psf::graph_results($radius,$key)] 
+            if {$val < $y1 || $y2 < $val } {
+               set ::bdi_tools_psf::graph_results($radius,err) 10
+               incr cpt -1
+            }
+         }
+      }
+      gren_info "Nb radius stat crop = $cpt \n "
+
+return 
+      
+      set othf [::bdi_tools_methodes_psf::globale_stat ::bdi_tools_psf::graph_results]
+      
+      array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::psf_tools::psf_limitradius 0]
+      set ::gui_cata::psf_best_sol [::psf_tools::method_global_sol sol]
+
+      set flagastroid [::psf_tools::add_astroid ::gui_cata::psf_source ::gui_cata::psf_best_sol $::gui_cata::psf_name_source]
+      gren_info "Astroid = $flagastroid\n"
+            
+      set ::gui_cata::psf_add_astroid $flagastroid
+
+      ::psf_tools::result_photom_methode $::gui_cata::psf_best_sol
+      
+      ::psf_gui::graph $key
+      
+      ::psf_gui::affichage_des_ronds_dans_imagette
+
+
+   } 
+
+
 }

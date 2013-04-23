@@ -161,7 +161,7 @@ namespace eval ::manage_source {
           foreach cata $s {
              if {[string toupper [lindex $cata 0]] != $catadem} {
                lappend news $cata
-                incr cpt
+               incr cpt
              }
           }
           lappend newsources $news
@@ -180,6 +180,9 @@ namespace eval ::manage_source {
 
       return [list $newfields $newsources]
    }
+
+
+
 
    #------------------------------------------------------------
    ## Fonction qui supprime le catalogue ASTROID d'une source

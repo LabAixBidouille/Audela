@@ -58,8 +58,8 @@ namespace eval bdi_gui_astrometry {
    #----------------------------------------------------------------------------
    ## Fonction qui est appelee lors d'un clic gauche dans la table
    # des references (parent / table de gauche)
-   #  \param w    selection tklist
-   #  \param args argument non utilise
+   #  @param w    selection tklist
+   #  @param args argument non utilise
    proc ::bdi_gui_astrometry::cmdButton1Click_srpt { w args } {
 
       foreach select [$w curselection] {
@@ -85,6 +85,11 @@ namespace eval bdi_gui_astrometry {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Fonction qui est appelee lors d'un clic gauche dans la table
+   # des sciences (parent / table de gauche)
+   #  @param w    selection tklist
+   #  @param args argument non utilise
    proc ::bdi_gui_astrometry::cmdButton1Click_sspt { w args } {
 
       foreach select [$w curselection] {
@@ -109,6 +114,11 @@ namespace eval bdi_gui_astrometry {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Fonction qui est appelee lors d'un clic gauche dans la table
+   # des dates et sources (parent / table de gauche)
+   #  @param w    selection tklist
+   #  @param args argument non utilise
    proc ::bdi_gui_astrometry::cmdButton1Click_dspt { w args } {
 
       foreach select [$w curselection] {
@@ -129,6 +139,11 @@ namespace eval bdi_gui_astrometry {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Fonction qui est appelee lors d'un clic gauche dans la table
+   # des dates et sources (enfant / table de droite)
+   #  @param w    selection tklist
+   #  @param args argument non utilise
    proc ::bdi_gui_astrometry::cmdButton1Click_dset { w args } {
 
       foreach select [$w curselection] {
@@ -146,6 +161,11 @@ namespace eval bdi_gui_astrometry {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Fonction qui est appelee lors d'un clic gauche dans la table
+   # des dates et wcs (parent / table de gauche)
+   #  @param w    selection tklist
+   #  @param args argument non utilise
    proc ::bdi_gui_astrometry::cmdButton1Click_dwpt { w args } {
 
       foreach select [$w curselection] {
