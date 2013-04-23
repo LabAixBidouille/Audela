@@ -1493,7 +1493,7 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
          unset ::gui_cata::cataid
       }
 
-      set commonfields ""
+      set commonfields {ra dec poserr mag magerr}
       set idcata 0
       set list_id ""
       foreach f $fields {
@@ -1506,11 +1506,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
             set list_id [linsert $list_id 0 $idcata]
          } else {
             set list_id [linsert $list_id end $idcata]
-         }
-         if {$c=="IMG"} {
-            foreach cc [lindex $f 1] {
-               lappend commonfields $cc
-            }
          }
       }
       

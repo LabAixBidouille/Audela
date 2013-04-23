@@ -49,6 +49,16 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Initialisation des variables de namespace pour la Fenetre
+   # de traitement des psf des sources.
+   #  @details   le passage en argument de la variable worklist
+   #             permet de traiter une liste de sources independamment d'une 
+   #             liste d'images. Dans la GUI les boutons Next et Prev, passe 
+   #             de sources en sources pouvant etre sur les memes images ou non.
+   #  @sa        bdi_gui_gestion_source::run
+   #  @param     worklist liste valeur d'identifiant de source et ou d images.
+   #  @return    void
    proc ::bdi_gui_gestion_source::init { work_list } {
 
       ::bdi_gui_psf::inittoconf
@@ -116,6 +126,7 @@ namespace eval bdi_gui_gestion_source {
       set ::bdi_gui_gestion_source::work_list $work_list
       set ::tools_cata::id_current_image -1
       
+      return
    }
 
 
@@ -123,11 +134,28 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   proc ::bdi_gui_gestion_source::fermer { } {
+      
+      if { [winfo exists $::cata_gestion_gui::fen] } {
+         gren_info "Fenetre gestion des catalogues existe\n"
+         ::cata_gestion_gui::charge_image_directaccess
+      }
+      destroy $::bdi_gui_gestion_source::fen
+   }
 
 
 
 
 
+
+   #----------------------------------------------------------------------------
+   ## Procedure de chargement de la prochaine source dans la fenetre de 
+   # traitement des psf des sources.
+   #  @sa        bdi_gui_gestion_source::prev
+   #  @sa        bdi_gui_gestion_source::next
+   #  @sa        bdi_gui_gestion_source::focus_source
+   #  @param     forceids optionnel identifiant de source pour un affichage force.
+   #  @return    void
    proc ::bdi_gui_gestion_source::work_charge { {forceids ""} } {
 
       
@@ -144,9 +172,9 @@ namespace eval bdi_gui_gestion_source {
       if {$nb >= 1} {
          set idd [lindex $work 0]
          if {$::tools_cata::id_current_image == $idd} {
-            # L image est deja affichée
+            # L image est deja affichee
          } else {
-            # L image affichée n est pas la bonne
+            # L image affichee n est pas la bonne
             set ::tools_cata::id_current_image $idd
             set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image-1]]
             set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -184,7 +212,7 @@ namespace eval bdi_gui_gestion_source {
       
 
       if {$ids > -1} {
-         # centre l objet demandé dans la visu
+         # centre l objet demande dans la visu
          set s [lindex [lindex $::tools_cata::current_listsources 1] [expr $ids - 1] ]
          set r [::bdi_gui_gestion_source::grab_sources_getsource $ids $s ]
          set err   [lindex $r 0]
@@ -199,6 +227,7 @@ namespace eval bdi_gui_gestion_source {
       
       #gren_info "work_id = $::bdi_gui_gestion_source::work_id\n"
       #gren_info "work_nb_list = $::bdi_gui_gestion_source::work_nb_list\n"
+      return
 
    }
 
@@ -210,6 +239,11 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Passe a la source suivante dans la worklist
+   #  @sa        bdi_gui_gestion_source::next
+   #  @param     void
+   #  @return    void
    proc ::bdi_gui_gestion_source::prev { } {
 
       if {$::bdi_gui_gestion_source::work_id > 0 } {
@@ -218,15 +252,23 @@ namespace eval bdi_gui_gestion_source {
       } else {
          gren_erreur "au bout\n"
       }
+      return
    }
 
+   #----------------------------------------------------------------------------
+   ## Revient a la source precedente dans la worklist
+   #  @sa        bdi_gui_gestion_source::prev
+   #  @param     void
+   #  @return    void
    proc ::bdi_gui_gestion_source::next { } {
+
       if {$::bdi_gui_gestion_source::work_id < [expr $::bdi_gui_gestion_source::work_nb_list-1]} {
          incr ::bdi_gui_gestion_source::work_id
          ::bdi_gui_gestion_source::work_charge
       } else {
          gren_erreur "au bout\n"
       }
+      return
    }
 
 
@@ -235,9 +277,18 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Action du bouton PSF de la GUI de traitement des sources.
+   # Effectue une mesure du profil stellaire sur la source identifiee auparavent.
+   #  @details   la source doit imperativement etre identifiee puisque la mesure
+   #             de psf s'effectue sur une variable de type "source" : 
+   #             s = { { IMG {commonfields} {otherfields} } { ASTROID ... } }
+   #  @details   Cette procedure agit directement sur tools_cata::current_listsources   
+   #  @sa        bdi_tools_psf::get_psf_source
+   #  @param     void
+   #  @return    void
    proc ::bdi_gui_gestion_source::psf { } {
 
-   
       set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
       if {$err>0 || $rect==""} {
          set getbox "no"
@@ -284,6 +335,11 @@ namespace eval bdi_gui_gestion_source {
          set ::gui_cata::current_psf(err_psf) $err_psf
       } else {
          ::bdi_tools_psf::set_fields_astroid ::tools_cata::current_listsources
+         cleanmark
+         set xy [::bdi_tools_psf::get_xy_astroid s]
+         if {$xy != -1} {
+            affich_un_rond_xy [lindex $xy 0] [lindex $xy 1] green 7 2
+         }
       }
       
       ::bdi_gui_gestion_source::maj_catalogues
@@ -291,6 +347,7 @@ namespace eval bdi_gui_gestion_source {
       set onglets $::bdi_gui_gestion_source::fen.appli.onglets
       $onglets.nb select $onglets.nb.f1
       
+      return
       
    }
 
@@ -308,6 +365,13 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche la liste des catalogues d'une ou plusieurs sources dans l'onglet
+   # "Catalogues" ainsi que les boutons de selection pour l'affichage des catalogues
+   # pour une seule source selectionne
+   #  @details   Cette procedure utilise la liste  bdi_gui_gestion_source::gui_catalogues_data
+   #  @param     void
+   #  @return    void
    proc ::bdi_gui_gestion_source::maj_catalogues {  } {
 
       # recupere la liste des sources de l image courante
@@ -330,7 +394,7 @@ namespace eval bdi_gui_gestion_source {
          foreach cata $s {
             set ra0  [lindex [lindex $cata 1] 0]
             set dec0 [lindex [lindex $cata 1] 1]
-            gren_info "[lindex $cata 0] : $ra0 $dec0\n"
+            #gren_info "[lindex $cata 0] : $ra0 $dec0\n"
             set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
             set x [lindex $xy 0]
             set y [lindex $xy 1]
@@ -385,16 +449,21 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche la liste des catalogues d'une source dans l'onglet "Catalogues" 
+   #  @details   Cette procedure remplit la liste  bdi_gui_gestion_source::gui_catalogues_data
+   #  @sa        bdi_gui_gestion_source::grab_sources_getbox
+   #  @param     ids   position de la source dans la "listsource"
+   #  @param     s     variable de type "source"
+   #  @return    liste dont les elements contiennent la position x et y de la source dans l image
    proc ::bdi_gui_gestion_source::grab_sources_getsource { ids s } {
 
       set color red
       set width 2
       cleanmark
 
-         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-         #::bdi_tools_psf::gren_astroid othf
-
-
+      set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+      #::bdi_tools_psf::gren_astroid othf
 
       set ::bdi_gui_gestion_source::gui_catalogues_data ""
 
@@ -412,7 +481,7 @@ namespace eval bdi_gui_gestion_source {
       foreach cata $s {
          set ra0  [lindex [lindex $cata 1] 0]
          set dec0 [lindex [lindex $cata 1] 1]
-         gren_info "[lindex $cata 0] $ra0 $dec0 " 
+         gren_info "[lindex $cata 0] " 
          set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
          set x [lindex $xy 0]
          set y [lindex $xy 1]
@@ -431,6 +500,15 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche la liste des catalogues d'une (ou des) source dans l'onglet "Catalogues" 
+   #  Les sources pouvant etre contenue dans une getbox c est a dire a l issue du tracer
+   #  d'un carre dans la visu
+   #  @details   Cette procedure remplit la liste  bdi_gui_gestion_source::gui_catalogues_data
+   #  @sa        bdi_gui_gestion_source::grab_sources_getbox
+   #  @param     ids   position de la source dans la "listsource"
+   #  @param     s     variable de type "source"
+   #  @return    liste dont les elements contiennent la position x et y de la source dans l image
    proc ::bdi_gui_gestion_source::grab_sources_getbox {  } {
  
       set color red
@@ -527,16 +605,26 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Recentre la source identifiee par la variable ::gui_cata::psf_name_source
+   #  @param     void
+   #  @return    void
    proc ::bdi_gui_gestion_source::focus_source {  } {
       if {$::gui_cata::psf_id_source != ""} {
          catch {
             set id [::manage_source::name2ids ::gui_cata::psf_name_source ::tools_cata::current_listsources]
-            gren_info "ids = $id\n"
             ::bdi_gui_gestion_source::select_source $::gui_cata::psf_id_source
             ::bdi_gui_gestion_source::work_charge $::gui_cata::psf_id_source
          }
       }
+      return
    }
+
+
+
+
+
+
 
 
 
@@ -657,7 +745,7 @@ namespace eval bdi_gui_gestion_source {
 
       # Affichage des boutons des catalogues
       if { $aff!="Ambigue" } {
-         # bouton et list des cata des sources grabées
+         # bouton et list des cata des sources grabees
          array unset ::bdi_gui_gestion_source::butcata
          set i 0
          foreach mycata $s {
@@ -682,7 +770,7 @@ namespace eval bdi_gui_gestion_source {
       ::bdi_gui_gestion_source::selectall $::bdi_gui_gestion_source::gui_catalogues.tbl
 
 
-      # onglets direct en cas d ambiguité
+      # onglets direct en cas d ambiguite
       if { $aff=="Ambigue" } {
          set onglets $::bdi_gui_gestion_source::fen.appli.onglets
          $onglets.nb select $onglets.nb.f6
@@ -986,23 +1074,31 @@ namespace eval bdi_gui_gestion_source {
 
    proc ::bdi_gui_gestion_source::mode_manuel_save { } {
 
-       global bddconf
-       
-       gren_info "Maj id = $::tools_cata::id_current_image \n"
+      global bddconf
 
-       # Tabkey
-       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
-       set date   [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
-       set id $::tools_cata::date2id($date)
-       set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
+      gren_info "Maj id = $::tools_cata::id_current_image \n"
 
-       # Noms du fichier cata
-       set imgfilename    [::bddimages_liste::lget $::tools_cata::current_image filename]
-       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
-       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
-       set cataxml "${f}_cata.xml"
-       
-       ::tools_cata::save_cata $::tools_cata::current_listsources $tabkey $cataxml
+      # Tabkey
+      set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+      set date   [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
+      set id $::tools_cata::date2id($date)
+      set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
+
+      # Noms du fichier cata
+      set imgfilename    [::bddimages_liste::lget $::tools_cata::current_image filename]
+      set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+      set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+      set cataxml "${f}_cata.xml"
+
+      ::tools_cata::save_cata $::tools_cata::current_listsources $tabkey $cataxml
+
+      if { [winfo exists $::cata_gestion_gui::fen] } {
+         gren_info "Fenetre gestion des catalogues existe\n"
+         ::tools_cata::current_listsources_to_tklist
+         set ::gui_cata::tk_list($id,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($id,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($id,cataname)        [array get ::gui_cata::cataname]
+      }
 
    }
 
@@ -1343,7 +1439,7 @@ namespace eval bdi_gui_gestion_source {
       wm geometry $::bdi_gui_gestion_source::fen +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $::bdi_gui_gestion_source::fen 1 1
       wm title $::bdi_gui_gestion_source::fen "PSF"
-      wm protocol $::bdi_gui_gestion_source::fen WM_DELETE_WINDOW "destroy $::bdi_gui_gestion_source::fen"
+      wm protocol $::bdi_gui_gestion_source::fen WM_DELETE_WINDOW "::bdi_gui_gestion_source::fermer"
 
       set frm $::bdi_gui_gestion_source::fen.appli
 
@@ -1482,10 +1578,8 @@ namespace eval bdi_gui_gestion_source {
                   set values [ frame $block.valuesleft -borderwidth 0 -cursor arrow -relief groove ]
                   pack $values -in $block -anchor n -side left -expand 1 -fill both -padx 10 -pady 2
                           
-                         set cpt 0
-                         foreach key [::bdi_tools_psf::get_fields_current_psf]  {
-                              incr cpt
-                              if {$cpt > $cptmed } {break}
+                         foreach key [::bdi_tools_psf::get_fields_current_psf_left]  {
+
                               set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                               pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
 
@@ -1495,7 +1589,7 @@ namespace eval bdi_gui_gestion_source {
                                       set active active
                                    }
                                    button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "::bdi_gui_gestion_source::graph $key" 
+                                      -command "::bdi_gui_psf::graph $key" 
                                    label $value.lab1 -text " = " 
                                    label $value.lab2 -textvariable ::gui_cata::current_psf($key)
                                    grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
@@ -1504,21 +1598,18 @@ namespace eval bdi_gui_gestion_source {
                   set values [ frame $block.valuesright -borderwidth 0 -cursor arrow -relief groove ]
                   pack $values -in $block -anchor n -side right -expand 1 -fill both -padx 10 -pady 2
 
-                         set cpt 0
-                         foreach key [::bdi_tools_psf::get_fields_current_psf] {
-                              incr cpt
-                              if {$cpt <= $cptmed } {continue}
+                         foreach key [::bdi_tools_psf::get_fields_current_psf_right] {
 
                               set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
                               pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
 
-                                   if {$key=="err_flux"||$key=="radius"} {
+                                   if {$key=="err_flux"||$key=="radius"||$key=="err_sky"||$key=="pixmax"} {
                                       set active disabled
                                    } else {
                                       set active active
                                    }
                                    button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "::bdi_gui_gestion_source::graph $key" 
+                                      -command "::bdi_gui_psf::graph $key" 
                                    label $value.lab1 -text " = " 
                                    label $value.lab2 -textvariable ::gui_cata::current_psf($key)
                                    grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
@@ -1528,9 +1619,9 @@ namespace eval bdi_gui_gestion_source {
               pack $actions -in $results -anchor c -side top 
 
                    button $actions.takall -state active -text "Select All Radius" -relief "raised" \
-                        -command "::bdi_gui_gestion_source::takall"
+                        -command "::bdi_gui_psf::takall"
                    button $actions.crop -state active -text "Crop" -relief "raised" \
-                        -command "::bdi_gui_gestion_source::setval"
+                        -command "::bdi_gui_psf::setval"
                    grid $actions.takall $actions.crop -sticky nsw -pady 3
                    
          # onglets : methodes
@@ -1653,7 +1744,7 @@ namespace eval bdi_gui_gestion_source {
          set actionspied [frame $frm.actionspied -borderwidth 0 -cursor arrow -relief groove]
          pack $actionspied -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             button $actionspied.fermer -state active -text "Fermer" -relief "raised" -command "destroy $::bdi_gui_gestion_source::fen"
+             button $actionspied.fermer -state active -text "Fermer" -relief "raised" -command "::bdi_gui_gestion_source::fermer"
              pack   $actionspied.fermer -in $actionspied -side right -anchor w -padx 0
 
 
@@ -1665,7 +1756,6 @@ namespace eval bdi_gui_gestion_source {
 
 
    }
-
 
 
 

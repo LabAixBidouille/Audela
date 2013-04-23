@@ -242,6 +242,24 @@ namespace eval bdi_tools_psf {
       return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" "flux" "err_flux" "pixmax" \
                    "intensity" "sky" "err_sky" "snint" "radius" "rdiff"]
    }
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs 
+   # d'une source ASTROID sous la forme d'une variable current_psf
+   # qui sert pour l affichage de la colonne de gauche
+   # @return liste des champs d'une source ASTROID
+   #
+   proc ::bdi_tools_psf::get_fields_current_psf_left { } {
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" ]
+   }
+   #------------------------------------------------------------
+   ## Cette fonction renvoit les noms des champs 
+   # d'une source ASTROID sous la forme d'une variable current_psf
+   # qui sert pour l affichage de la colonne de droite
+   # @return liste des champs d'une source ASTROID
+   #
+   proc ::bdi_tools_psf::get_fields_current_psf_right { } {
+      return [list "flux" "err_flux" "pixmax" "intensity" "sky" "err_sky" "snint" "radius" "rdiff"]
+   }
 
 
 
@@ -411,6 +429,28 @@ namespace eval bdi_tools_psf {
       return [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
    }
 
+   #------------------------------------------------------------
+   ## Fonction qui renvoit les coordonnees X Y de la source
+   # dont le catalogue ASTROID est present 
+   # les coordonnees X et Y sont celles mesurees dans l'image
+   # lors de l'ajustement de la PSF
+   # @param s pointeur de la source envoyee en argument
+   # @return {x y} la liste des coordonnees pixels de la source
+   #
+   proc ::bdi_tools_psf::get_xy_astroid { p_s  } {
+
+      upvar $p_s s
+
+      set pos [lsearch -index 0 $s "ASTROID"]
+      if { $pos != -1 } {
+         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+         set xsm [::bdi_tools_psf::get_val othf "xsm"]
+         set ysm [::bdi_tools_psf::get_val othf "ysm"]
+         return [list $xsm $ysm]
+      } else {
+         return -1
+      }
+   }
 
 
 

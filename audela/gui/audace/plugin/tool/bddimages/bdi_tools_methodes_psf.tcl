@@ -163,9 +163,21 @@ namespace eval bdi_tools_methodes_psf {
          }
       }
 
-      # Solution
       set listfield [list xsm ysm fwhmx fwhmy fwhm flux pixmax intensity sky err_sky snint rdiff ra dec]
 
+      # Graphes
+      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         set ::bdi_tools_psf::graph_results($radius,err) $results($radius,err)
+         if {$results($radius,err)==0} {
+            foreach field $listfield {
+               set pos [::bdi_tools_psf::get_id_astroid $field]
+               set ::bdi_tools_psf::graph_results($radius,$field) [lindex $results($radius) $pos]
+            }
+         }
+      }
+
+      # Solution
+      set listfield [list xsm ysm fwhmx fwhmy fwhm flux pixmax intensity sky err_sky snint rdiff ra dec]
       foreach field $listfield {
          set tab ""
          for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
@@ -174,7 +186,7 @@ namespace eval bdi_tools_methodes_psf {
                lappend tab [lindex $results($radius) $pos]
             }
          }
-         # Stat 
+         # Stat
          set taboid($field) [::math::statistics::mean $tab]
          if {$field=="xsm"} {
             set taboid(err_xsm) [ expr 2.0 * [::math::statistics::stdev $tab] ]
@@ -184,6 +196,9 @@ namespace eval bdi_tools_methodes_psf {
          }
          if {$field=="flux"} {
             set taboid(err_flux) [ expr 2.0 * [::math::statistics::stdev $tab] ]
+         }
+         if {$field=="sky"} {
+            set taboid(err_sky) [ expr 2.0 * [::math::statistics::stdev $tab] ]
          }
       }
 
@@ -199,7 +214,41 @@ namespace eval bdi_tools_methodes_psf {
 
 
 
+   proc ::bdi_tools_methodes_psf::globale_stat { p_results } {
+      
+      set listfield [list xsm ysm fwhmx fwhmy fwhm flux pixmax intensity sky err_sky snint rdiff ra dec]
+      foreach field $listfield {
+         set tab ""
+         for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+            if {$results($radius,err)==0} {
+               lappend tab $results($radius,$field)
+            }
+         }
+         # Stat
+         set taboid($field) [::math::statistics::mean $tab]
+         if {$field=="xsm"} {
+            set taboid(err_xsm) [ expr 2.0 * [::math::statistics::stdev $tab] ]
+         }
+         if {$field=="ysm"} {
+            set taboid(err_ysm) [ expr 2.0 * [::math::statistics::stdev $tab] ]
+         }
+         if {$field=="flux"} {
+            set taboid(err_flux) [ expr 2.0 * [::math::statistics::stdev $tab] ]
+         }
+         if {$field=="sky"} {
+            set taboid(err_sky) [ expr 2.0 * [::math::statistics::stdev $tab] ]
+         }
+      }
+      
+      set taboid(err_psf)    ""
+      set othf [::bdi_tools_psf::get_astroid_null]
+      foreach key [::bdi_tools_psf::get_basic_fields] {
+         ::bdi_tools_psf::set_by_key othf $key $taboid($key)
+      }
+      return $othf
+      
 
+   }
 
 
 
