@@ -155,7 +155,7 @@ namespace eval bdi_tools_methodes_psf {
       for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
          if {$results($radius,err)==0} {
             set r  [lindex $results($radius) $pos_flux]
-            set d [expr abs($r - $median_fwhm)]
+            set d [expr abs($r - $median_flux)]
             if {$d < $dmin } {
                set taboid(radius) $radius
                set dmin $d 
@@ -216,6 +216,14 @@ namespace eval bdi_tools_methodes_psf {
 
    proc ::bdi_tools_methodes_psf::globale_stat { p_results } {
       
+      upvar $p_results results
+      
+      set valmax 10000000000
+
+      gren_info "results = [array get results]\n"
+      
+
+
       set listfield [list xsm ysm fwhmx fwhmy fwhm flux pixmax intensity sky err_sky snint rdiff ra dec]
       foreach field $listfield {
          set tab ""
@@ -239,6 +247,20 @@ namespace eval bdi_tools_methodes_psf {
             set taboid(err_sky) [ expr 2.0 * [::math::statistics::stdev $tab] ]
          }
       }
+
+      set dmin $valmax
+      set taboid(radius) 0
+      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         if {$results($radius,err)==0} {
+            set r  $results($radius,flux)
+            set d [expr abs($r - $taboid(flux))]
+            if {$d < $dmin } {
+               set taboid(radius) $radius
+               set dmin $d 
+            }
+         }
+      }
+
       
       set taboid(err_psf)    ""
       set othf [::bdi_tools_psf::get_astroid_null]
