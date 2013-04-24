@@ -593,8 +593,8 @@ namespace eval bdi_tools_psf {
          "globale" {
             set err [ catch { set othf [::bdi_tools_methodes_psf::globale [lindex $xy 0] [lindex $xy 1] $::audace(bufNo)] } msg ]
             if {$err} {
-               gren_erreur "err = $err\n"
-               gren_erreur "msg = $msg\n"
+               #gren_erreur "err = $err\n"
+               #gren_erreur "msg = $msg\n"
                return -code 10 "Globale PSF impossible"
                
             }

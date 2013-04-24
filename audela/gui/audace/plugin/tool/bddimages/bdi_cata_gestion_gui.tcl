@@ -199,15 +199,18 @@ namespace eval cata_gestion_gui {
          for { set j 0 } { $j < $nbcol} { incr j } {
             set current_columns [lindex $::gui_cata::tklist_list_of_columns($idcata) $j]
             $::cata_gestion_gui::frmtable($idcata).tbl insertcolumns end 0 [lindex $current_columns 1] left
-            $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure $j -sortmode dictionary
+            $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure $j -sortmode real
          }
 
          #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
          if { [ $::cata_gestion_gui::frmtable($idcata).tbl columncount ] != "0" } {
-            $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure 0 -sortmode dictionary
+            $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure 0 -sortmode real
          }
          foreach col {5 6 7 8 9} {
-             $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode dictionary
+             $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode real
+         }
+         foreach col {1 2 3 4 } {
+             $::cata_gestion_gui::frmtable($idcata).tbl columnconfigure $col -background ivory -sortmode ascii
          }
 
          foreach line $::gui_cata::tklist($idcata) {
@@ -524,8 +527,9 @@ namespace eval cata_gestion_gui {
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <Control-Key-a> [ list ::cata_gestion_gui::selectall $tbl ]
-      bind $tbl <<ListboxSelect>> [ list ::cata_gestion_gui::cmdButton1Click %W ]
+      bind $tbl <<ListboxSelect>>          [ list ::cata_gestion_gui::cmdButton1Click %W ]
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
+      bind [$tbl bodypath] <Key-u>         [ list ::cata_gestion_gui::unset_flag $tbl ]
       
    }
 
@@ -1890,11 +1894,16 @@ namespace eval cata_gestion_gui {
       }
 
       if {$pass=="no"} { return }
-
-      ::bdi_tools_psf::set_fields_astroid listsources
       
+      set ::tools_cata::current_listsources [lreplace $::tools_cata::current_listsources 1 1 $sources]
+      ::bdi_tools_psf::set_fields_astroid ::tools_cata::current_listsources
+      
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
       ::bdi_tools_psf::set_mag ::tools_cata::current_listsources
       
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+
       # pack les resultats
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       
@@ -1945,6 +1954,10 @@ namespace eval cata_gestion_gui {
          
       }
 
+      ::tools_cata::current_listsources_to_tklist
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
 
       set ::cata_gestion_gui::directaccess 1
       ::cata_gestion_gui::charge_image_directaccess
@@ -2106,13 +2119,13 @@ namespace eval cata_gestion_gui {
          set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
          #gren_info "line = [$w get $select]\n"
          #gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
-         gren_info "ra dec = $ra $dec\n"
+         #gren_info "ra dec = $ra $dec\n"
          affich_un_rond $ra $dec $color $width
       }
 
       set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
       set xy [::bdi_tools_psf::get_xy s ]
-      gren_info "xy = $xy\n"
+      #gren_info "xy = $xy\n"
       ::confVisu::setPos $::audace(visuNo) $xy
       
       return

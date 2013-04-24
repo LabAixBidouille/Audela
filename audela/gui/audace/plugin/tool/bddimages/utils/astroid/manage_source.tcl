@@ -601,10 +601,9 @@ namespace eval ::manage_source {
           }
           
           if {$pass == "yes" } {
-             gren_info "X Y = $x $y | $kelcata | RA DEC = $ra $dec\n"
-             gren_info "affich_un_rond_xy $x $y \"blue\" 1 1"
-             gren_info "affich_un_rond $ra $dec \"red\" 2"
-             
+             #gren_info "X Y = $x $y | $kelcata | RA DEC = $ra $dec\n"
+             #gren_info "affich_un_rond_xy $x $y \"blue\" 1 1"
+             #gren_info "affich_un_rond $ra $dec \"red\" 2"
           }
        }
    return [list $fields $newsources]

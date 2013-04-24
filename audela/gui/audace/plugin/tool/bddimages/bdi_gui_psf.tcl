@@ -234,6 +234,20 @@ namespace eval bdi_gui_psf {
 
    proc ::bdi_gui_psf::graph { key } {
     
+      # graph de log
+      if {1 == 1} {
+         for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+            if {[info exists ::bdi_tools_psf::graph_results($radius,$key)]} {
+               if {$::bdi_tools_psf::graph_results($radius,err)==10} {
+                  gren_erreur "$radius $::bdi_tools_psf::graph_results($radius,err)\n"
+               }
+               if {$::bdi_tools_psf::graph_results($radius,err)==0} {
+                  gren_info "$radius $::bdi_tools_psf::graph_results($radius,err)\n"
+               }
+            }
+         }
+      }            
+
       set ::bdi_gui_psf::graph_current_key $key
 
       set x ""
@@ -266,10 +280,20 @@ namespace eval bdi_gui_psf {
       # Affichage des erreurs pour XSM
       if {$key == "xsm" } {
          ::bdi_gui_psf::graph_with_error "xsm" "err_xsm"
+         set y0 $::gui_cata::current_psf($key)
+         set h 0.1
+         set axis [::plotxy::axis]
+         set axis [lreplace $axis 2 3 [expr $y0 - $h/2.] [expr $y0 + $h/2.] ]
+         ::plotxy::axis $axis
       }
       # Affichage des erreurs pour YSM
       if {$key == "ysm" } {
          ::bdi_gui_psf::graph_with_error "ysm" "err_ysm"
+         set y0 $::gui_cata::current_psf($key)
+         set h 0.1
+         set axis [::plotxy::axis]
+         set axis [lreplace $axis 2 3 [expr $y0 - $h/2.] [expr $y0 + $h/2.] ]
+         ::plotxy::axis $axis
       }
       # Affichage des erreurs pour FLUX
       if {$key == "flux" } {
@@ -295,16 +319,32 @@ namespace eval bdi_gui_psf {
 
 
 
-   proc ::bdi_gui_psf::takall {  } {
+   proc ::bdi_gui_psf::takall_obsolete {  } {
 
+      # graph de log
+      if {1 == 1} {
+         gren_info "valeur avant takall\n"
+         for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+            if {[info exists ::bdi_tools_psf::graph_results($radius,err)]} {
+               if {$::bdi_tools_psf::graph_results($radius,err)==10} {
+                  gren_erreur "$radius $::bdi_tools_psf::graph_results($radius,err)\n"
+               }
+               if {$::bdi_tools_psf::graph_results($radius,err)==0} {
+                  gren_info "$radius $::bdi_tools_psf::graph_results($radius,err)\n"
+               }
+            }
+         }
+      }            
+
+      # remet tout a 0
       for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
          if {$::bdi_tools_psf::graph_results($radius,err)==10} {
-            set ::bdi_tools_psf::graph_results($radius,err)==0
+            set ::bdi_tools_psf::graph_results($radius,err) 0
          }
       }
-       if { [winfo exists .audace.plotxy1] } {
-          ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
-       }
+      if { [winfo exists .audace.plotxy1] } {
+         ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
+      }
 
    } 
 
@@ -358,9 +398,31 @@ namespace eval bdi_gui_psf {
       }
       gren_info "Nb radius stat crop = $cpt \n "
 
-return 
-      
+
       set othf [::bdi_tools_methodes_psf::globale_stat ::bdi_tools_psf::graph_results]
+
+      set i  [expr $::gui_cata::psf_id_source - 1]
+
+      set s [lindex [lindex $::tools_cata::current_listsources 1] $i ]
+
+      ::bdi_tools_psf::set_astroid_in_source s othf
+
+      set lf [lindex $::tools_cata::current_listsources 0]
+      set ls [lindex $::tools_cata::current_listsources 1]
+      set ls [lreplace $ls $i $i $s]
+      set ::tools_cata::current_listsources [list $lf $ls]
+
+      ::bdi_gui_psf::init_current_psf $othf
+      ::bdi_gui_gestion_source::maj_catalogues
+
+      if { [winfo exists .audace.plotxy1] } {
+         ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
+      }
+
+      cleanmark
+      affich_un_rond_xy $::gui_cata::current_psf(xsm) $::gui_cata::current_psf(ysm) green $::gui_cata::current_psf(radius) 2
+
+return 
       
       array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::psf_tools::psf_limitradius 0]
       set ::gui_cata::psf_best_sol [::psf_tools::method_global_sol sol]

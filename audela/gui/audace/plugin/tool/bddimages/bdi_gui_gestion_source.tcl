@@ -140,6 +140,11 @@ namespace eval bdi_gui_gestion_source {
          gren_info "Fenetre gestion des catalogues existe\n"
          ::cata_gestion_gui::charge_image_directaccess
       }
+      if { [winfo exists .audace.plotxy1] } {
+         destroy .audace.plotxy1
+      }
+
+
       destroy $::bdi_gui_gestion_source::fen
    }
 
@@ -338,7 +343,7 @@ namespace eval bdi_gui_gestion_source {
          cleanmark
          set xy [::bdi_tools_psf::get_xy_astroid s]
          if {$xy != -1} {
-            affich_un_rond_xy [lindex $xy 0] [lindex $xy 1] green 7 2
+            affich_un_rond_xy [lindex $xy 0] [lindex $xy 1] green $::gui_cata::current_psf(radius) 2
          }
       }
       
@@ -346,6 +351,11 @@ namespace eval bdi_gui_gestion_source {
 
       set onglets $::bdi_gui_gestion_source::fen.appli.onglets
       $onglets.nb select $onglets.nb.f1
+
+
+      if { [winfo exists .audace.plotxy1] } {
+         ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
+      }
       
       return
       
@@ -682,7 +692,7 @@ namespace eval bdi_gui_gestion_source {
    proc ::bdi_gui_gestion_source::gestion_mode_manuel_grab { {ids ""} } {
 
       $::bdi_gui_gestion_source::fen.appli.actions1.save configure -state normal
-      $::bdi_gui_gestion_source::fen.appli.actions1.new  configure -state disabled
+      #$::bdi_gui_gestion_source::fen.appli.actions1.new  configure -state disabled
       set ::gui_cata::nb_butcata 0
 
       set ::gui_cata::psf_id_source ""
@@ -1208,6 +1218,71 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   proc ::bdi_gui_gestion_source::savenextpsf_img {  } {
+      ::bdi_gui_gestion_source::mode_manuel_save
+      ::bdi_gui_gestion_source::next
+      ::bdi_gui_gestion_source::psf
+   }
+   proc ::bdi_gui_gestion_source::nextpsf_img {  } {
+      ::bdi_gui_gestion_source::next
+      ::bdi_gui_gestion_source::psf
+   }
+
+
+   proc ::bdi_gui_gestion_source::gestion_mode_manuel_new {  } {
+
+      set names { "" toto titi tutu }
+
+      set ::bdi_gui_gestion_source::fennew .newsource
+      if { [winfo exists $::bdi_gui_gestion_source::fennew] } {
+         wm withdraw $::bdi_gui_gestion_source::fennew
+         wm deiconify $::bdi_gui_gestion_source::fennew
+         focus $::bdi_gui_gestion_source::fennew
+         return
+      }
+      toplevel $::bdi_gui_gestion_source::fennew -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::bdi_gui_gestion_source::fennew ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::bdi_gui_gestion_source::fennew ] "+" ] 2 ]
+      wm geometry $::bdi_gui_gestion_source::fennew +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::bdi_gui_gestion_source::fennew 1 1
+      wm title $::bdi_gui_gestion_source::fennew "New Source"
+      wm protocol $::bdi_gui_gestion_source::fennew WM_DELETE_WINDOW "destroy $::bdi_gui_gestion_source::fennew"
+
+      set frm $::bdi_gui_gestion_source::fennew.appli
+
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::bdi_gui_gestion_source::fennew -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+         set block  [frame $frm.nom_source -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             label $block.lab1 -text "Nom de la source : " 
+             pack  $block.lab1 -side left -padx 2 -pady 0
+             
+             entry $block.nom -relief sunken -width 11
+             pack  $block.nom -side left -padx 2 -pady 0
+ 
+         set block  [frame $frm.ancien_nom -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             ComboBox $block.combo \
+                -width 50 -height [llength $names] \
+                -relief sunken -borderwidth 1 -editable 0 -width 10 \
+                -textvariable myname \
+                -values $names
+             pack  $block.combo -side left -padx 2 -pady 0
+
+         set block  [frame $frm.action -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         
+            button $block.ok -state active -text "Appliquer" -relief "raised" \
+               -command ""
+            pack   $block.ok -in $block -side right -anchor w -padx 0
+            button $block.fermer -state active -text "Fermer" -relief "raised" \
+               -command "destroy $::bdi_gui_gestion_source::fennew"
+            pack   $block.fermer -in $block -side right -anchor w -padx 0
+   }
+
 
 
 
@@ -1489,7 +1564,7 @@ namespace eval bdi_gui_gestion_source {
                   -command "::bdi_gui_gestion_source::focus_source"
                  pack   $actions.foc -side left -padx 0
 
-                 button $actions.new -state disabled -text "New" -relief "raised" \
+                 button $actions.new -state active -text "New" -relief "raised" \
                   -command "::bdi_gui_gestion_source::gestion_mode_manuel_new"
                  pack   $actions.new -side left -padx 0
 
@@ -1508,12 +1583,12 @@ namespace eval bdi_gui_gestion_source {
                   -command "::bdi_gui_gestion_source::next"
                  pack   $actions.next -side left -padx 0
 
-                 button $actions.nextauto -state disabled -text "Next & Auto" -relief "raised" \
-                  -command "::bdi_gui_gestion_source::nextauto_img"
+                 button $actions.nextauto -state active -text "Next & PSF" -relief "raised" \
+                  -command "::bdi_gui_gestion_source::nextpsf_img"
                  pack   $actions.nextauto -side left -padx 0
 
-                 button $actions.savenextauto -state disabled -text "Save & Next & Auto" -relief "raised" \
-                  -command "::bdi_gui_gestion_source::savenextauto_img"
+                 button $actions.savenextauto -state active -text "Save & Next & PSF" -relief "raised" \
+                  -command "::bdi_gui_gestion_source::savenextpsf_img"
                  pack   $actions.savenextauto -side left -padx 0
  
          set actions [frame $frm.actions3 -borderwidth 1 -cursor arrow -relief groove]
@@ -1618,11 +1693,9 @@ namespace eval bdi_gui_gestion_source {
               set actions [frame $results.actions -borderwidth 0 -cursor arrow -relief groove]
               pack $actions -in $results -anchor c -side top 
 
-                   button $actions.takall -state active -text "Select All Radius" -relief "raised" \
-                        -command "::bdi_gui_psf::takall"
                    button $actions.crop -state active -text "Crop" -relief "raised" \
                         -command "::bdi_gui_psf::setval"
-                   grid $actions.takall $actions.crop -sticky nsw -pady 3
+                   grid $actions.crop -sticky nsw -pady 3
                    
          # onglets : methodes
 
