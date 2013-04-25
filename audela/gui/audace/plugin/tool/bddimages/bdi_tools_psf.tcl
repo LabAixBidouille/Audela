@@ -149,43 +149,43 @@ namespace eval bdi_tools_psf {
    }
 
 
-#  0    "xsm" 
-#  1    "ysm" 
-#  2    "err_xsm" 
-#  3    "err_ysm" 
-#  4    "fwhmx" 
-#  5    "fwhmy" 
-#  6    "fwhm" 
-#  7    "flux" 
-#  8    "err_flux" 
-#  9    "pixmax"
-#  10   "intensity" 
-#  11   "sky" 
-#  12   "err_sky" 
-#  13   "snint" 
-#  14   "radius" 
-#  15   "rdiff" 
-#  16   "err_psf" 
-#  17   "ra" 
-#  18   "dec"
-#  19   "res_ra" 
-#  20   "res_dec" 
-#  21   "omc_ra" 
-#  22   "omc_dec" 
-#  23   "mag" 
-#  24   "err_mag" 
-#  25   "name" 
-#  26   "flagastrom" 
-#  27   "flagphotom" 
-#  28   "cataastrom"
-#  29   "cataphotom"
-#  
    #------------------------------------------------------------
    ## Cette fonction renvoit les noms des champs d'une source
    # ASTROID sous la forme des other field
    # c est la liste de tous les parametres que l'on peut 
    # en tirer par la mesure photocentrique. mais aussi de l'astrometrie
    # ainsi que les parametres de gestion 
+   # Structure :
+   #  0    "xsm" 
+   #  1    "ysm" 
+   #  2    "err_xsm" 
+   #  3    "err_ysm" 
+   #  4    "fwhmx" 
+   #  5    "fwhmy" 
+   #  6    "fwhm" 
+   #  7    "flux" 
+   #  8    "err_flux" 
+   #  9    "pixmax"
+   #  10   "intensity" 
+   #  11   "sky" 
+   #  12   "err_sky" 
+   #  13   "snint" 
+   #  14   "radius" 
+   #  15   "rdiff" 
+   #  16   "err_psf" 
+   #  17   "ra" 
+   #  18   "dec"
+   #  19   "res_ra" 
+   #  20   "res_dec" 
+   #  21   "omc_ra" 
+   #  22   "omc_dec" 
+   #  23   "mag" 
+   #  24   "err_mag" 
+   #  25   "name" 
+   #  26   "flagastrom" 
+   #  27   "flagphotom" 
+   #  28   "cataastrom"
+   #  29   "cataphotom"
    # @return liste des champs d'une source ASTROID
    #
    proc ::bdi_tools_psf::get_otherfields_astroid { } {
@@ -380,10 +380,11 @@ namespace eval bdi_tools_psf {
    }
 
    #------------------------------------------------------------
-   ## cree un tableau taboid des element de la liste otherfield
-   # @param taboid pointeur du tableau qui va etre cree
-   # @param othf pointeur de la liste qui va etre lue
-   # @return void
+   ## retourne la valeur d'un element de la liste otherfield
+   # en fournissant le nom de sa cle
+   # @param p_othf pointeur de la liste qui va etre lue
+   # @param key  nom de la cle
+   # @return valeur de la cle
    #
    proc ::bdi_tools_psf::get_val { p_othf key } {
 
@@ -530,6 +531,8 @@ namespace eval bdi_tools_psf {
         set astroid [lindex $s $posastr]
         set astroid [lreplace $astroid 1 1 $commonf]
         set s [lreplace $s $posastr $posastr $astroid]
+        # cas d'un objet dans le catalogue USER intimement lie a ASTROID
+        ::bdi_tools_cata_user::set_common_fields_on_source s
       }
       
    }
@@ -706,6 +709,11 @@ namespace eval bdi_tools_psf {
       ::bdi_tools_psf::set_mag_usno_r listsources
 
    }
+
+
+
+
+
 
 
 
