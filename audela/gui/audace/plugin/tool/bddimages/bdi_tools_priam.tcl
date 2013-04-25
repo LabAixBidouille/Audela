@@ -402,6 +402,9 @@ proc ::bdi_tools_priam::add_newsciencemes {p_img p_tabsources} {
       set fwhmx   [lindex $otherfields 4]
       set fwhmy   [lindex $otherfields 5]
       set flux    [lindex $otherfields 7]
+      if {$err_xsm==""} {set err_xsm 0.1}
+      if {$err_ysm==""} {set err_ysm 0.1}
+      if {$flux==""} {set flux 0}
       # Ecriture de la source -> science.mes
       puts $chan0 "$ar $xsm $err_xsm $ysm $err_ysm $fwhmx $fwhmy $flux $key"
    }

@@ -926,12 +926,17 @@ namespace eval bdi_gui_astrometry {
             set delta   [format "%+.8f" [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  7]]
 
             set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  8]
-            if {$val==""} {set mag ""} else {set mag $val}
-            set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  9]
-            if {$val==""} {set err_mag ""} else {set err_mag $val}
+            if {$val==""} {set mag "-"} else {set mag $val}
 
-            set err_x   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 10]]
-            set err_y   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 11]]
+            set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  9]
+            if {$val==""} {set err_mag "-"} else {set err_mag $val}
+
+            set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  10]
+            if {$val==""} {set err_x "-"} else {set err_x $val}
+
+            set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  11]
+            if {$val==""} {set err_y "-"} else {set err_y $val}
+
             set fwhm_x  [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 12]]
             set fwhm_y  [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 13]]
             set ra_hms  [::bdi_tools_astrometry::convert_txt_hms [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 6]]
@@ -1517,8 +1522,12 @@ namespace eval bdi_gui_astrometry {
             set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  9]
             if {$val==""} {set mag_err ""} else {set mag_err $val}
 
-            set err_x   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 10]]
-            set err_y   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 11]]
+            set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  10]
+            if {$val==""} {set err_x ""} else {set err_x $val}
+
+            set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  11]
+            if {$val==""} {set err_y ""} else {set err_y $val}
+
             set fwhm_x  [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 12]]
             set fwhm_y  [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg) 13]]
 

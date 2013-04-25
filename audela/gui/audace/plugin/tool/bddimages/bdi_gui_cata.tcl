@@ -772,6 +772,7 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields $listsources NOMAD1  { RAJ2000 DECJ2000 errDec magV 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources SKYBOT  { ra de errpos magV 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
+      ::bdi_tools_cata_user::set_common_fields_on_listsources listsources
 
       set ::tools_cata::nb_img     [::manage_source::get_nb_sources_by_cata $listsources IMG]
       set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
