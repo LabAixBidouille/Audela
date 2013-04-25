@@ -2117,13 +2117,17 @@ namespace eval cata_gestion_gui {
          set id [lindex [$w get $select] 0]
          set ra [lindex [$w get $select] [::gui_cata::get_pos_col ra]]
          set dec [lindex [$w get $select] [::gui_cata::get_pos_col dec]]
-         #gren_info "line = [$w get $select]\n"
-         #gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
-         #gren_info "ra dec = $ra $dec\n"
+         gren_info "line = [$w get $select]\n"
+         gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
+         gren_info "ra dec = $ra $dec\n"
          affich_un_rond $ra $dec $color $width
       }
 
       set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
+      gren_info "ls = [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]\n"
+      gren_info "id = $id\n"
+      gren_info "s = $s\n"
+      
       set xy [::bdi_tools_psf::get_xy s ]
       #gren_info "xy = $xy\n"
       ::confVisu::setPos $::audace(visuNo) $xy

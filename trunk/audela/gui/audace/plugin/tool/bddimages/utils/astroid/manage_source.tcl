@@ -281,7 +281,7 @@ namespace eval ::manage_source {
 
    proc ::manage_source::namable { mysource } {
 
-      set list_of_cata [list SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 ASTROID IMG]
+      set list_of_cata [list USER SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 ASTROID IMG]
       foreach cata $list_of_cata {
           foreach mycata $mysource {
              if {[lindex $mycata 0] == $cata} {
@@ -311,6 +311,10 @@ namespace eval ::manage_source {
       
          if {[string toupper [lindex $cata 0]] == $mycata} {
 
+            if {$mycata=="USER"} {
+               return "USER_[string trim [lindex [lindex $cata 2] 1] ]"
+            }
+            
             if {$mycata=="IMG"} {
                set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
                set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]

@@ -63,6 +63,7 @@ namespace eval bdi_gui_gestion_source {
 
       ::bdi_gui_psf::inittoconf
       
+      set ::bdi_gui_gestion_source::new_names ""
       
       #gren_erreur "work_list = $work_list\n"
       
@@ -345,6 +346,7 @@ namespace eval bdi_gui_gestion_source {
          if {$xy != -1} {
             affich_un_rond_xy [lindex $xy 0] [lindex $xy 1] green $::gui_cata::current_psf(radius) 2
          }
+         #gren_info "s = $s \n"
       }
       
       ::bdi_gui_gestion_source::maj_catalogues
@@ -1228,11 +1230,88 @@ namespace eval bdi_gui_gestion_source {
       ::bdi_gui_gestion_source::psf
    }
 
+   proc ::bdi_gui_gestion_source::set_new_name {  } {
+      #$gui_name configure -text $myname
+      gren_info "name = $::bdi_gui_gestion_source::new_name \n"
+   }
+   
+   proc ::bdi_gui_gestion_source::apply_new_name {  } {
+
+      if {$::bdi_gui_gestion_source::new_name == ""} {
+         gren_erreur "name = $::bdi_gui_gestion_source::new_name \n"
+         gren_erreur "mobile = $::bdi_gui_gestion_source::new_mobile \n"
+         tk_messageBox -message "Veuillez entrer une nom valide" -type ok
+         return
+      }
+
+
+      #$gui_name configure -text $myname
+      gren_info "name = $::bdi_gui_gestion_source::new_name \n"
+      gren_info "mobile = $::bdi_gui_gestion_source::new_mobile \n"
+
+      set pos [lsearch $::bdi_gui_gestion_source::new_names $::bdi_gui_gestion_source::new_name]
+      if { $pos == -1 } {
+         lappend ::bdi_gui_gestion_source::new_names $::bdi_gui_gestion_source::new_name
+      }
+      
+
+      # creation d'une nouvelle source { {"USER" {common} {mobile name} } }
+      set s [list [::bdi_tools_cata_user::new $::bdi_gui_gestion_source::new_mobile $::bdi_gui_gestion_source::new_name] ]
+      
+      # recupere la getbox 
+      set err [ catch {set rect  [ ::confVisu::getBox $::audace(visuNo) ]} msg ]
+      if {$err>0 || $rect==""} {
+         if {$::bdi_tools_psf::psf_methode=="fitgauss"} {
+            tk_messageBox -message "Veuillez selectionner un carré dans l'image" -type ok
+            return
+         }
+      }
+      
+      set othf [::bdi_tools_methodes_psf::fitgauss $rect $::audace(bufNo)]
+      gren_info "othf = $othf \n"
+
+      set ra  [::bdi_tools_psf::get_val othf "ra"]
+      set dec [::bdi_tools_psf::get_val othf "dec"]
+      set xsm [::bdi_tools_psf::get_val othf "xsm"]
+      set ysm [::bdi_tools_psf::get_val othf "ysm"]
+      affich_un_rond_xy $xsm $ysm green 10 2
+
+      ::bdi_tools_psf::set_astroid_in_source s othf
+      ::bdi_tools_cata_user::set_common_fields_on_source s
+
+      set lf [lindex $::tools_cata::current_listsources 0]
+      set ls [lindex $::tools_cata::current_listsources 1]
+      lappend ls $s
+      set ::tools_cata::current_listsources [list $lf $ls]
+      ::bdi_tools_cata_user::set_fields ::tools_cata::current_listsources
+      
+      
+      
+      set ids [llength $ls]
+      ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids
+      
+      
+
+      destroy $::bdi_gui_gestion_source::fennew
+      return
+   }
+
+
+
+
+
+
+
+
+
+
+
 
    proc ::bdi_gui_gestion_source::gestion_mode_manuel_new {  } {
 
-      set names { "" toto titi tutu }
-
+      #set ::bdi_gui_gestion_source::new_names ""
+      set ::bdi_gui_gestion_source::new_mobile 0
+      
       set ::bdi_gui_gestion_source::fennew .newsource
       if { [winfo exists $::bdi_gui_gestion_source::fennew] } {
          wm withdraw $::bdi_gui_gestion_source::fennew
@@ -1259,24 +1338,37 @@ namespace eval bdi_gui_gestion_source {
              label $block.lab1 -text "Nom de la source : " 
              pack  $block.lab1 -side left -padx 2 -pady 0
              
-             entry $block.nom -relief sunken -width 11
+             set gui_name [entry $block.nom -relief sunken -width 11 \
+                              -textvariable ::bdi_gui_gestion_source::new_name \
+                              -validate all \
+                              -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 } \
+                          ]
              pack  $block.nom -side left -padx 2 -pady 0
- 
+
+         set block  [frame $frm.mobile_source -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             checkbutton $block.mobile -highlightthickness 0 -text "  Objet mobile" -variable ::bdi_gui_gestion_source::new_mobile
+             pack  $block.mobile -side top -padx 2 -pady 0
+
          set block  [frame $frm.ancien_nom -borderwidth 0 -cursor arrow -relief groove]
          pack $block -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             ComboBox $block.combo \
-                -width 50 -height [llength $names] \
-                -relief sunken -borderwidth 1 -editable 0 -width 10 \
-                -textvariable myname \
-                -values $names
-             pack  $block.combo -side left -padx 2 -pady 0
+             menubutton $block.menu -relief raised -borderwidth 2 -textvariable ::bdi_gui_gestion_source::new_name \
+                   -menu $block.menu.list
+             pack $block.menu -in $block -side left -anchor w -padx 3 -pady 3
+
+             set menuconfig [menu $block.menu.list -tearoff 0]
+             foreach myconf $::bdi_gui_gestion_source::new_names {
+                $menuconfig add radiobutton -label $myconf -value $myconf -variable ::bdi_gui_gestion_source::new_name \
+                   -command "::bdi_gui_gestion_source::set_new_name"
+             }
 
          set block  [frame $frm.action -borderwidth 0 -cursor arrow -relief groove]
          pack $block -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
          
             button $block.ok -state active -text "Appliquer" -relief "raised" \
-               -command ""
+               -command "::bdi_gui_gestion_source::apply_new_name"
             pack   $block.ok -in $block -side right -anchor w -padx 0
             button $block.fermer -state active -text "Fermer" -relief "raised" \
                -command "destroy $::bdi_gui_gestion_source::fennew"
