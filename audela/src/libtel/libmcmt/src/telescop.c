@@ -2093,7 +2093,8 @@ int mytel_motor_move_start(struct telprop *tel) {
 int mytel_motor_move_stop(struct telprop *tel) {
 	char s[1024];
 	if ((tel->move_direction[0]=='n')||(tel->move_direction[0]=='N')||(tel->move_direction[0]=='s')||(tel->move_direction[0]=='S')) {
-		if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
+		//if ((tel->status==STATUS_MOVE_SLOW)&&(telthread->motor==MOTOR_ON)) {
+		if (tel->status==STATUS_MOVE_SLOW) {
 			sprintf(s,"set envoi \"E1 53\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
 		} else {
 			sprintf(s,"set envoi \"E1 F0\" ; set res [envoi $envoi] ; set clair [mcmthexa_decode $envoi $res]"); mytel_tcleval(tel,s);
