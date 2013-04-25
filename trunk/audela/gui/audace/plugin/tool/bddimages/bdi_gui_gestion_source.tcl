@@ -1268,7 +1268,6 @@ namespace eval bdi_gui_gestion_source {
       }
       
       set othf [::bdi_tools_methodes_psf::fitgauss $rect $::audace(bufNo)]
-      gren_info "othf = $othf \n"
 
       set ra  [::bdi_tools_psf::get_val othf "ra"]
       set dec [::bdi_tools_psf::get_val othf "dec"]
@@ -1284,8 +1283,18 @@ namespace eval bdi_gui_gestion_source {
       lappend ls $s
       set ::tools_cata::current_listsources [list $lf $ls]
       ::bdi_tools_cata_user::set_fields ::tools_cata::current_listsources
-      
-      
+
+      gren_info "field current_listsources =[lindex  $::tools_cata::current_listsources 0] \n"
+
+      # mise a jour des donnees dans les variable de namespace
+      set $::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      ::tools_cata::current_listsources_to_tklist
+
+      # mise a jour des donnees dans la gui tklist
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+      set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+            
       
       set ids [llength $ls]
       ::bdi_gui_gestion_source::gestion_mode_manuel_grab $ids

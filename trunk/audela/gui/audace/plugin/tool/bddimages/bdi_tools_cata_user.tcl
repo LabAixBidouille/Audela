@@ -205,6 +205,8 @@ namespace eval bdi_tools_cata_user {
       set pos [lsearch -index 0 $fields "USER"]
       if {$pos == -1 } {
          lappend fields [::bdi_tools_cata_user::get_fields_sources]
+      } else {
+         set fields [lreplace $fields $pos $pos [::bdi_tools_cata_user::get_fields_sources] ]
       }
       set listsources [lreplace $listsources 0 0 $fields]
       return

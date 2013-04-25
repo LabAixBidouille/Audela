@@ -2124,7 +2124,8 @@ namespace eval cata_gestion_gui {
       }
 
       set s [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
-      gren_info "ls = [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]\n"
+      #gren_info "ls = [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]\n"
+      #gren_info "fieldlist =[lindex  $::gui_cata::cata_list($::tools_cata::id_current_image) 0] \n"
       gren_info "id = $id\n"
       gren_info "s = $s\n"
       
