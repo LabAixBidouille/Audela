@@ -708,6 +708,7 @@ proc ::votable::getFieldFromKey { table key } {
       SKYBOT  { set f [::votable::getFieldFromKey_SKYBOT $key] }
       OVNI    { set f [::votable::getFieldFromKey_OVNI $key] }
       ASTROID { set f [::votable::getFieldFromKey_ASTROID $key] }
+      USER    { set f [::votable::getFieldFromKey_USER $key] }
       default { set f [::votable::getFieldFromKey_DEFAULT $key] }
    }
 }
@@ -2900,6 +2901,41 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::DATATYPE \"char\"" \
                        "$::votable::Field::ARRAYSIZE \"32\"" \
                        "$::votable::Field::WIDTH \"32\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue USER
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_USER { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID USER.${key}" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      name {
+         set description "Source name or designation"
+         set ucd "meta.id;meta.main"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
+      }
+      mobile {
+         set description "Set to 1 to define a mobile object, else 0."
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"int\"" \
+                       "$::votable::Field::WIDTH \"1\"" \
+                       "$::votable::Field::UNIT \"-\""
       }
       default {
          # si $key n'est pas reconnu alors on renvoie des listes vides
