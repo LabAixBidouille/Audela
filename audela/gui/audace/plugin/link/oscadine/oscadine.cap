@@ -33,8 +33,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(oscadine,titre)                     "Oscadine"
    set caption(oscadine,settingsTitle)             "Parametri"
-   set caption(oscadine,shutdownLed)               "# Eteindre la led de fonctionnement"
-   set caption(oscadine,hideOverscan)              "# Masquer l'overscan"
+   set caption(oscadine,shutdownLed)               "Spegnere il led di funzionamento"
+   set caption(oscadine,hideOverscan)              "Nascondi l'overscan"
    set caption(oscadine,websiteLabel)              "Sito Web di riferimento:"
    set caption(oscadine,websiteURL)                "http://www.oscadi.com"
 
