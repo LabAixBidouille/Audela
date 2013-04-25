@@ -613,6 +613,7 @@ proc ::bdi_tools_astrometry::init_ephem_imcce { name list_dates } {
          set cmd "$::bdi_tools_astrometry::imcce_ephemcc asteroide $ephnom -j $filedate 1 -tp 1 -te 1 -tc 5 -uai $::bdi_tools_astrometry::rapport_uai_code -d 1 -e utc --julien"
       }
       "IMG" -
+      "USER" -
       "ASTROID" {
          set cmd ""
       }
@@ -625,11 +626,26 @@ proc ::bdi_tools_astrometry::init_ephem_imcce { name list_dates } {
    }
    puts $chan0 $cmd
    close $chan0
-
+   
    # Retourne le nom du fichier de cmde
-   return $cmdfile
-
+   if {$cmd == "" } {
+      return -code 1 "No ephemeris for this target"
+   } else {
+      return $cmdfile
+   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #----------------------------------------------------------------------------
@@ -657,14 +673,25 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
       }
 
       # Initialise les calculs d'ephemerides pour l'objet
-      set cmdfile [::bdi_tools_astrometry::init_ephem_imcce $name list_dates]
+      set err [ catch {set cmdfile [::bdi_tools_astrometry::init_ephem_imcce $name list_dates] } msg ]
+      if {$err} {
+         gren_erreur "Erreur init_ephem_imcce : $msg\n"
+         foreach {midepoch dateimg} [array get list_dates] {
+            set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) [list $midepoch "-" "-" "-" "-"]
+         }
+         return -code 0 $msg
+      }
 
       # Calcul des ephemerides de l'objet
       gren_info " - Calcul des ephemerides (IMCCE) de l'objet $name ... "
       set tt0 [clock clicks -milliseconds]
       set err [catch {exec sh $cmdfile} msg]
       gren_info "en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
+            gren_info "err = $err\n"
+            gren_info "msg = $msg\n"
+            gren_info "cmdfile = $cmdfile\n"
       if { $err } {
+            gren_info "dateimg = $name $dateimg $midepoch\n"
          gren_erreur "ERROR ephemcc #$err: $msg\n"
          foreach {midepoch dateimg} [array get list_dates] {
             set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) [list $midepoch "-" "-" "-" "-"]
@@ -673,6 +700,7 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
          array unset ephem
          set cata [lindex [split $name "_"] 0]
          foreach line [split $msg "\n"] {
+            gren_info "line = $line\n"
             set line [string trim $line]
             set c [string index $line 0]
             if {$c == "#"} {continue}
@@ -688,6 +716,7 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
                   if {$am == "---"} { set am "" }
                }
                "IMG" -
+               "USER" -
                "ASTROID" {
                   set jd "-"
                   set ra "-"
@@ -708,6 +737,7 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
          }
          # Sauvegarde des ephemerides de l'objet courant
          foreach {midepoch dateimg} [array get list_dates] {
+         
             set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) $ephem($midepoch)
          }
       }

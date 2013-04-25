@@ -153,6 +153,35 @@ namespace eval bdi_tools_cata_user {
          return
    }
 
+   proc ::bdi_tools_cata_user::set_common_fields_on_listsources { p_listsources } {
+
+      upvar $p_listsources listsources
+      
+      set lf [lindex $listsources 0]
+      set ls [lindex $listsources 1]
+      set i 0
+      foreach s $ls {
+         if {[::bdi_tools_cata_user::exist s]} {
+            ::bdi_tools_cata_user::set_common_fields_on_source s
+            set ls [lreplace $ls $i $i $s]
+         }
+         incr i
+      }
+      set listsources [list $lf $ls]
+      return
+   }
+
+
+   proc ::bdi_tools_cata_user::exist { p_s } {
+
+      upvar $p_s s
+      set pos [lsearch -index 0 $s "USER"]
+      if {$pos == -1 } {
+         return 0
+      } else {
+         return 1
+      }
+   }
 
    #------------------------------------------------------------
    ## Fonction qui retourne les champs otherfield d ASTROID

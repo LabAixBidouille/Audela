@@ -1303,6 +1303,15 @@ namespace eval bdi_gui_gestion_source {
 
       destroy $::bdi_gui_gestion_source::fennew
       return
+
+
+      set name_cata [::manage_source::namable $s]
+      gren_info 
+      set name_source [::manage_source::naming $s $name_cata]
+
+
+
+
    }
 
 

@@ -625,8 +625,10 @@ namespace eval bdi_tools_psf {
       
       # on nomme la source
       set name_cata [::manage_source::namable $s]
+      gren_erreur "name_cata = $name_cata\n"
       if {$name_cata!=""} {
          set name_source [::manage_source::naming $s $name_cata]
+         gren_erreur "name_source = $name_source\n"
          ::bdi_tools_psf::set_by_key othf_old "name" $name_source
       }
 
@@ -634,6 +636,7 @@ namespace eval bdi_tools_psf {
       set err_psf [::bdi_tools_psf::get_val othf_old "err_psf"]
       if {$err_psf == "" } {
          ::bdi_tools_psf::set_astroid_in_source s othf_old
+         gren_info "s = $s\n"
       } else {
          gren_erreur "Erreur PSF\n"
       }
