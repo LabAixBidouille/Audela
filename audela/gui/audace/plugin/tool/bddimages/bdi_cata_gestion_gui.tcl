@@ -1366,12 +1366,6 @@ namespace eval cata_gestion_gui {
    }
  
  
- 
- 
- 
- 
- 
- 
 # Anciennement ::gui_cata::unset_flag
  
    proc ::cata_gestion_gui::unset_flag { tbl } {
@@ -1404,27 +1398,21 @@ namespace eval cata_gestion_gui {
 
                set a [lindex $sources [expr $id - 1]]
                set x [lsearch -index 0 $a "ASTROID"]
-               set astroid [lindex $a $x]
+               if {$x != -1} {
+                  set astroid [lindex $a $x]
+                  set astroid_oth [lindex $astroid 2]
 
-               set b [lindex $astroid 2]
-               set pos [expr [::gui_cata::get_pos_col flagphotom $idcata] - 10]
-               #gren_info "pos flagphotom= $pos\n"
-               set b [lreplace $b $pos $pos $flag]
-               set pos [expr [::gui_cata::get_pos_col cataphotom $idcata] - 10]
-               #gren_info "pos cataphotom= $pos\n"
-               set b [lreplace $b $pos $pos $flag]
-               set pos [expr [::gui_cata::get_pos_col flagastrom $idcata] - 10]
-               #gren_info "pos flagastrom= $pos\n"
-               set b [lreplace $b $pos $pos $flag]
-               set pos [expr [::gui_cata::get_pos_col cataastrom $idcata] - 10]
-               #gren_info "pos cataastrom= $pos\n"
-               set b [lreplace $b $pos $pos $flag]
+                  ::bdi_tools_psf::set_by_key astroid_oth "flagphotom" $flag
+                  ::bdi_tools_psf::set_by_key astroid_oth "cataphotom" $flag
+                  ::bdi_tools_psf::set_by_key astroid_oth "flagastrom" $flag
+                  ::bdi_tools_psf::set_by_key astroid_oth "cataastrom" $flag
 
-               set astroid [lreplace $astroid 2 2 $b]
-               set a [lreplace $a $x $x $astroid]
+                  set astroid [lreplace $astroid 2 2 $astroid_oth]
+                  set a [lreplace $a $x $x $astroid]
 
-               set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
-               set ::tools_cata::current_listsources [list $fields $sources]
+                  set sources [lreplace $sources [expr $id - 1] [expr $id - 1] $a]
+                  set ::tools_cata::current_listsources [list $fields $sources]                  
+               }
                
             }
 
@@ -2127,7 +2115,7 @@ namespace eval cata_gestion_gui {
       #gren_info "ls = [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]\n"
       #gren_info "fieldlist =[lindex  $::gui_cata::cata_list($::tools_cata::id_current_image) 0] \n"
       gren_info "id = $id\n"
-      gren_info "s = $s\n"
+      #gren_info "s = $s\n"
       
       set xy [::bdi_tools_psf::get_xy s ]
       #gren_info "xy = $xy\n"

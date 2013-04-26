@@ -282,6 +282,7 @@ namespace eval bdi_tools_methodes_psf {
 
    proc ::bdi_tools_methodes_psf::basic { x y radius bufNo } {
 
+#gren_erreur "radius = $radius\n"
 
          set xs0         [expr int($x - $radius)]
          set ys0         [expr int($y - $radius)]
@@ -297,7 +298,6 @@ namespace eval bdi_tools_methodes_psf {
          set taboid(ysm)         [lindex $valeurs 5]
 
          set taboid(radius)      $radius
-
          set xs0         [expr int($taboid(xsm) - $radius)]
          set ys0         [expr int($taboid(ysm) - $radius)]
          set xs1         [expr int($taboid(xsm) + $radius)]

@@ -589,6 +589,7 @@ namespace eval bdi_tools_psf {
          }
 
          "basic" {
+            gren_info "psf_radius = $::gui_cata::psf_radius\n"
             set othf [::bdi_tools_methodes_psf::basic [lindex $xy 0] [lindex $xy 1] $::bdi_tools_psf::psf_radius $::audace(bufNo)]
             set fields [::bdi_tools_psf::get_basic_fields]
          }
@@ -636,7 +637,7 @@ namespace eval bdi_tools_psf {
       set err_psf [::bdi_tools_psf::get_val othf_old "err_psf"]
       if {$err_psf == "" } {
          ::bdi_tools_psf::set_astroid_in_source s othf_old
-         gren_info "s = $s\n"
+         #gren_info "s = $s\n"
       } else {
          gren_erreur "Erreur PSF\n"
       }

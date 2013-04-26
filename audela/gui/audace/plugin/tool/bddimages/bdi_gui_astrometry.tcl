@@ -758,6 +758,46 @@ namespace eval bdi_gui_astrometry {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    proc ::bdi_gui_astrometry::create_report_txt {  } {
 
       # Reset du graphe
@@ -1029,7 +1069,7 @@ namespace eval bdi_gui_astrometry {
             if {$ra_imcce_deg  != "-"} {set ra_imcce_deg  [format "%.8f" $ra_imcce_deg]}
             if {$dec_imcce_deg != "-"} {set dec_imcce_deg [format "%.8f" $dec_imcce_deg]}
             if {$h_imcce_deg   != "-"} {set h_imcce_deg   [format "%.8f" $h_imcce_deg]}
-            if {$am_imcce_deg  != "-"} {set am_imcce_deg  [format "%.8f" $am_imcce_deg]}
+            if {$am_imcce_deg  != "-" && $am_imcce_deg != ""} {set am_imcce_deg  [format "%.8f" $am_imcce_deg]}
             if {$ra_jpl_deg    != "-"} {set ra_jpl_deg    [format "%.8f" $ra_jpl_deg ]}
             if {$dec_jpl_deg   != "-"} {set dec_jpl_deg   [format "%.8f" $dec_jpl_deg]}
 
@@ -1689,8 +1729,13 @@ namespace eval bdi_gui_astrometry {
                }
                set x      [format "%.3f" [lindex $astroid 0]]
                set y      [format "%.3f" [lindex $astroid 1]]
-               set err_x  [format "%.3f" [lindex $astroid 2]]
-               set err_y  [format "%.3f" [lindex $astroid 3]]
+
+            set val [lindex $astroid 2]
+            if {$val==""} {set err_x "-"} else {set err_x [format "%.3f" $val]}
+
+            set val [lindex $astroid 3]
+            if {$val==""} {set err_y "-"} else {set err_y [format "%.3f" $val]}
+
                set fwhm_x [format "%.1f" [lindex $astroid 4]]
                set fwhm_y [format "%.1f" [lindex $astroid 5]]
                

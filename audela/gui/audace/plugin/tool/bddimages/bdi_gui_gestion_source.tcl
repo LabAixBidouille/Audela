@@ -351,8 +351,8 @@ namespace eval bdi_gui_gestion_source {
       
       ::bdi_gui_gestion_source::maj_catalogues
 
-      set onglets $::bdi_gui_gestion_source::fen.appli.onglets
-      $onglets.nb select $onglets.nb.f1
+      #set onglets $::bdi_gui_gestion_source::fen.appli.onglets
+      #$onglets.nb select $onglets.nb.f1
 
 
       if { [winfo exists .audace.plotxy1] } {
@@ -1843,8 +1843,9 @@ namespace eval bdi_gui_gestion_source {
                      entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
 
                      label $block.radl -text "Rayon : " 
-                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
-                         -command "::bdi_gui_gestion_source::one_psf_crop"
+                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius \
+                         -textvariable ::bdi_tools_psf::psf_radius -width 3 \
+                         -command "::bdi_gui_gestion_source::psf"
                      pack  $block.radiusc -side left 
                      $block.radiusc set 15
                    
