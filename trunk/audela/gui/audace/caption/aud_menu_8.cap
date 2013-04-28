@@ -97,7 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,tutorial3)                 "Fotometría"
    set caption(audace,menu,tutorial4)                 "Simulador de imágenes y calculador de tiempos de exposición"
    set caption(audace,menu,tutorial5)                 "Analisis de datos sobre explosiones gamma"
-   set caption(audace,menu,tutorial6)                 "# Détermination des paramètres électroniques d'une caméra CCD"
+   set caption(audace,menu,tutorial6)                 "Determinación de parametros electrónicos de una cámara CCD"
    set caption(audace,menu,site_audela)               "Sitio Web"
    set caption(audace,menu,site_internet)             "Sitio Web (Internet)"
    set caption(audace,menu,site_dd)                   "Sitio Web (copia de disco duro)"
