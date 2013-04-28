@@ -122,7 +122,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Acceso correcto"
    set caption(carteducielv3,no_connect)              "Conexión a Cartas Celestes abortada."
    set caption(carteducielv3,no_object_select)        "No hay objeto seleccionado en el mapa."
-   set caption(carteducielv3,wrong_version)           "# You are using an outdated version of Sky Charts.\nPlease update to version 3.9 at least."
+   set caption(carteducielv3,wrong_version)           "Esta usando una versión anticuada de Cartas Celestes.\nPor favor actualice a la versión 3.9 o superior."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {

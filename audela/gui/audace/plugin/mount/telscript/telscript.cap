@@ -64,7 +64,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,parcourir)               "..."
    set caption(telscript,dossier)                 "Desde la carpeta:"
    set caption(telscript,telname)                 "Nombre"
-   set caption(telscript,debug)                   "# Interface graphique de débug du T940"
+   set caption(telscript,debug)                   "Interface gráfica de debug del T940"
    set caption(telscript,raquette_tel)            "Controlador virtual"
 
    set caption(telscript,2points)                 ":"
