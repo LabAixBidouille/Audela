@@ -10,7 +10,7 @@
 #
 # --- Reference guide
 # meteosensor_open $type $port $name ?$parameters?
-#    type : AAG WXT520 ARDUINO1 VANTAGEPRO BOLTWOOD LACROSSE SIMULATION
+#    type : AAG WXT520 ARDUINO1 VANTAGEPRO BOLTWOOD LACROSSE SENTINEL_SKYMONITOR SIMULATION 
 #    port : com1, etc.
 #    name : a word to identify the connection opened
 #  return the name if opening is OK
@@ -102,12 +102,16 @@ proc meteosensor_open { type port name {parameters ""} } {
       fetch3600_open $port
       set audace(meteosensor,private,$name,channel) undefined
       set audace(meteosensor,private,$name,typeu) $typeu
+   } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
+		sentinel_skymonitor_open
+      set audace(meteosensor,private,$name,channel) undefined
+      set audace(meteosensor,private,$name,typeu) $typeu
    } elseif {$typeu=="SIMULATION"} {
       simulationmeteo_open
       set audace(meteosensor,private,$name,channel) undefined
       set audace(meteosensor,private,$name,typeu) $typeu
    } else {
-      error "Type not supported. Valid types are: AAG, WXT520, ARDUINO1, VANTAGEPRO, BOLTWOOD, LACROSSE, SIMULATION"
+      error "Type not supported. Valid types are: AAG, WXT520, ARDUINO1, VANTAGEPRO, BOLTWOOD, LACROSSE, SENTINEL_SKYMONITOR SIMULATION"
    }
    return $name
 }
@@ -154,6 +158,8 @@ proc meteosensor_get { name } {
       set res [boltwood_read]
    } elseif {$typeu=="LACROSSE"} {
       set res [fetch3600_read]
+   } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
+      set res [sentinel_skymonitor_read]		
    } elseif {$typeu=="SIMULATION"} {
       set res [simulationmeteo_read]
    }
@@ -177,6 +183,8 @@ proc meteosensor_getstandard { name } {
       set keys      "CloudSkyCondition CloudSkyTemp   CloudOutsideTemp        -      -        -               CloudWetFlag"
    } elseif {$typeu=="LACROSSE"} {
       set keys      "-                 -              OutsideTemp             WinDir WinSpeed OutsideHumidity PrecipitableWater"
+   } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
+		set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
    } elseif {$typeu=="SIMULATION"} {
       set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
    }
@@ -230,7 +238,7 @@ proc meteosensor_close { name } {
          unset audace(meteosensor,private,$name,typeu)
       }
    }
-   if {($typeu=="BOLTWOOD")||($typeu=="LACROSSE")||($typeu=="SIMULATION")} {
+   if {($typeu=="BOLTWOOD")||($typeu=="LACROSSE")||($typeu=="SENTINEL_SKYMONITOR")||($typeu=="SIMULATION")} {
       unset audace(meteosensor,private,$name,channel)
       unset audace(meteosensor,private,$name,typeu)
    }
@@ -1637,6 +1645,145 @@ proc fetch3600_read { } {
       set err 0
    }
    return $msg
+}
+
+# ===========================================================================
+# ===========================================================================
+# ====== Sentinel driven by SkyMonitor.exe
+# ===========================================================================
+# ===========================================================================
+# Install the software SkyMonitor.exe and configure it to generate a text file
+
+proc sentinel_skymonitor_open { } {
+   global env
+   package require twapi
+   set pgm_tolaunch "SkyMonitor.exe"
+   set folder_tolaunch "Shelyak/Sentinel"
+   set pidfore 0
+   set pids [twapi::get_process_ids]
+   foreach pid $pids {
+      catch {set name [twapi::get_process_name $pid]}
+      if {$name==$pgm_tolaunch} {
+         set pidfore $pid
+         # return "$pgm_tolaunch already launched"
+			return ""
+      }
+   }
+   if {$pidfore==0} {
+      if {[catch {set env_program_files $env(ProgramFiles)}]==1} {
+         set env_program_files C:/Program Files
+      }
+      set fic [file normalize "${env_program_files}/${folder_tolaunch}/${pgm_tolaunch}"]
+      if {[file exists $fic]==1} {
+         twapi::create_process $fic
+			after 2000
+         #return "$pgm_tolaunch launched"
+			return ""
+      }
+   }
+   #return "$pgm_tolaunch not found"	
+}
+
+proc sentinel_skymonitor_read { {filename ""} } {
+   global env
+	if {$filename==""} {
+		if {[catch {set env_documents $env(HOME)}]==1} {
+			set env_documents C:/Users/
+		}
+		set dossiers [glob -nocomplain [file normalize "$env_documents/*"]]
+		foreach dossier $dossiers {
+			set k [string first Documents $dossier]
+			if {$k>0} {
+				break
+			}
+		}
+		if {$k==-1} {
+			return ""
+		}
+		set fic "${dossier}/Sentinel/Datas/infodata.txt"
+	} else {
+		set fic $filename
+	}
+   if {[file exists $fic]==0} {
+      return ""
+   }
+   set err [catch {
+		set f [open $fic r]
+		set lignes [split [read $f] \n]
+		close $f
+   } msg ]
+   set textes ""
+   if {$err==0} {
+		set y 2000
+		set m 1
+		set d 1
+		set hh 0
+		set mm 0
+		set ss 0
+		foreach ligne $lignes {
+			set key [lindex $ligne 0]
+			set val [lindex $ligne 2]
+			if {[string compare $key "DateYear"]==0} { set y $val } 
+			if {[string compare $key "DateMonth"]==0} { set m $val } 
+			if {[string compare $key "DateDay"]==0} { set d $val } 
+			if {[string compare $key "DateHour"]==0} { set hh $val } 
+			if {[string compare $key "DateMin"]==0} { set mm $val } 
+			if {[string compare $key "DateSec"]==0} { set ss $val } 
+		}
+		set texte [mc_date2iso8601 [list $y $m $d $hh $mm $ss]]
+      lappend textes $texte
+		foreach ligne $lignes {
+			set key [lindex $ligne 0]
+			set kequal [lsearch -exact $ligne =]
+			if {$kequal==-1} {
+				continue
+			}
+			set val [lindex $ligne [expr $kequal+1]]
+			set unit [lrange $ligne 1 [expr $kequal-1]]
+			regsub -all \\( $unit "" a ; set unit $a
+			regsub -all \\) $unit "" a ; set unit $a
+			regsub -all °C $unit "Celcius" a ; set unit $a
+			regsub -all ° $unit "degrees" a ; set unit $a
+			regsub -all % $unit "percent" a ; set unit $a
+			regsub -all %RH $unit "percent" a ; set unit $a
+			set texte ""
+			if {[string compare $key "TempSkyIR"]==0} { 
+				set texte "SkyTemp $val $unit"
+				lappend textes $texte
+				if {$val<-20} {
+					set texte "SkyCover Clear text"
+				} elseif {$val<-7} {
+					set texte "SkyCover Cloudy text"
+				} else {
+					set texte "SkyCover VeryCloudy text"
+				}
+				lappend textes $texte
+			} 
+			if {[string compare $key "TempExt"]==0} { 
+				set texte "OutTemp $val" ; lappend texte $unit
+				lappend textes $texte
+			}
+			if {[string compare $key "WinDirection"]==0} { 
+				set texte "WinDir $val" ; lappend texte $unit
+				lappend textes $texte
+			}
+			if {[string compare $key "WindSpeedGust"]==0} { 
+				set texte "WinSpeed $val" ; lappend texte $unit
+				lappend textes $texte
+			}
+			if {[string compare $key "Humidity"]==0} { 
+				set texte "Humidity $val" ; lappend texte $unit
+				lappend textes $texte
+			}
+			if {[string compare $key "RainFall"]==0} { 
+				set texte "Water $val" ; lappend texte $unit
+				lappend textes $texte
+			}
+			set texte "$key $val" ; lappend texte $unit
+			lappend textes $texte
+		}
+   }
+   return $textes
 }
 
 # ===========================================================================
