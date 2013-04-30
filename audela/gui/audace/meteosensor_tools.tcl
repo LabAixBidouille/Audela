@@ -104,6 +104,7 @@ proc meteosensor_open { type port name {parameters ""} } {
       set audace(meteosensor,private,$name,typeu) $typeu
    } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
 		sentinel_skymonitor_open
+		sentinel_skymonitor_gain
       set audace(meteosensor,private,$name,channel) undefined
       set audace(meteosensor,private,$name,typeu) $typeu
    } elseif {$typeu=="SIMULATION"} {
@@ -1684,7 +1685,19 @@ proc sentinel_skymonitor_open { } {
    #return "$pgm_tolaunch not found"	
 }
 
+proc sentinel_skymonitor_gain { {value ""} } {
+   global audace
+	if {[info exists audace(meteosensor_sentinel_skymonitor,gain)]==0} {
+		set audace(meteosensor_sentinel_skymonitor,gain) 762
+	}
+	if {$value!=""} {
+		set audace(meteosensor_sentinel_skymonitor,gain) $value
+	}
+	return $audace(meteosensor_sentinel_skymonitor,gain)
+}
+
 proc sentinel_skymonitor_read { {filename ""} } {
+   global audace
    global env
 	if {$filename==""} {
 		if {[catch {set env_documents $env(HOME)}]==1} {
@@ -1732,6 +1745,25 @@ proc sentinel_skymonitor_read { {filename ""} } {
 		}
 		set texte [mc_date2iso8601 [list $y $m $d $hh $mm $ss]]
       lappend textes $texte
+		set temp_ext 10
+		# Un gain est appliqué à la mesure interne du capteur; ce gain
+		# peut être modifié dans l'onglet de configuration; les valeurs
+		# typiques sont entre 400 et 800. Si vous sentez que la courbe de
+		# mesure des nuages est trop corrélée avec celle de la mesure de
+		# température extérieure, vous pouvez baisser la valeur de gain. 
+		# Si elle est anti-corrélée, vous pouvez l'augmenter.
+		set gain [sentinel_skymonitor_gain]
+		foreach ligne $lignes {
+			set key [lindex $ligne 0]
+			set kequal [lsearch -exact $ligne =]
+			if {$kequal==-1} {
+				continue
+			}
+			set val [lindex $ligne [expr $kequal+1]]
+			if {[string compare $key "TempExt"]==0} { 
+				set temp_ext $val
+			}
+		}
 		foreach ligne $lignes {
 			set key [lindex $ligne 0]
 			set kequal [lsearch -exact $ligne =]
@@ -1748,11 +1780,12 @@ proc sentinel_skymonitor_read { {filename ""} } {
 			regsub -all %RH $unit "percent" a ; set unit $a
 			set texte ""
 			if {[string compare $key "TempSkyIR"]==0} { 
-				set texte "SkyTemp $val $unit"
+				set valcor [format %.2f [expr ($val-$temp_ext)*$gain/1000.]]
+				set texte "SkyTemp $valcor $unit"
 				lappend textes $texte
-				if {$val<-20} {
+				if {$valcor<-20} {
 					set texte "SkyCover Clear text"
-				} elseif {$val<-7} {
+				} elseif {$valcor<-7} {
 					set texte "SkyCover Cloudy text"
 				} else {
 					set texte "SkyCover VeryCloudy text"
@@ -1782,6 +1815,8 @@ proc sentinel_skymonitor_read { {filename ""} } {
 			set texte "$key $val" ; lappend texte $unit
 			lappend textes $texte
 		}
+		set texte "Gain $gain" ; lappend texte "/1000"
+		lappend textes $texte		
    }
    return $textes
 }
