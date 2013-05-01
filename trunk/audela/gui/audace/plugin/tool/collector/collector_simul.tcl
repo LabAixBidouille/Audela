@@ -137,6 +137,11 @@
       variable private
       variable myKeywords
 
+      set list_of_kwd [list NAXIS1 NAXIS2 RA DEC CRVAL1 CRVAL2 CRPIX1 CRPIX2 \
+         DATE-OBS MJD-OBS EXPOSURE FOCLEN CROTA2 FILTER FILTERNU FWHM \
+         PIXSIZE1 PIXSIZE2 CDELT1 CDELT2 CD1_1 CD1_2 CD2_1 CD2_2 \
+         AIRPRESS TEMPAIR DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
+
       #--   raccourcis
       foreach var [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
          bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter \
@@ -158,12 +163,15 @@
 
       set filternu 1
 
-      lassign $gps -> obs-long sens obs-lat obs-elev
-      lassign [obsCoord2SiteCoord "$gps"] sitelong sitelat siteelev
-      set geodsys WGS84
+      if {$gps ne "-"} {
+         lassign $gps -> obs-long sens obs-lat obs-elev
+         lassign [obsCoord2SiteCoord "$gps"] sitelong sitelat siteelev
+         set geodsys WGS84
+         lappend list_of_kwd OBS-ELEV OBS-LAT OBS-LONG SITELONG SITELAT SITEELEV GEODSYS
+      }
 
       set date-obs $tu
-      set mjd-obs $jd
+      set mjd-obs [expr { $jd-2400000.5 }]
       set exposure $t
 
       lassign [mc_radec2altaz $ra $dec $gps ${date-obs}] elev
@@ -172,16 +180,10 @@
       set swcreate "[::audela::getPluginTitle] $::audela(version)"
       set confname "myConf"
 
-      set list_of_kwd [list NAXIS1 NAXIS2 RA DEC CRVAL1 CRVAL2 CRPIX1 CRPIX2 \
-         DATE-OBS MJD-OBS EXPOSURE OBS-ELEV OBS-LAT OBS-LONG \
-         APTDIA FOCLEN CROTA2 FILTER FILTERNU FWHM PIXSIZE1 PIXSIZE2 \
-         CDELT1 CDELT2 CD1_1 CD1_2 CD2_1 CD2_2 \
-         OBSERVER SITENAME SITELONG SITELAT SITEELEV \
-         GEODSYS AIRPRESS TEMPAIR \
-         TELESCOP DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
-
       #--   complete la liste des mots cles si leur valeur significative
-      set optKwd [list temprose "-" hygro "-" winddir "-" windsp "-" isospeed "-" origin "" iau_code ""]
+      set optKwd [list aptdia "-" isospeed "-" hygro "-" iau_code "" \
+         observer "-" origin "" sitename "-" telescop "-" temprose "-" \
+         winddir "-" windsp "-"]
       foreach {var val} $optKwd {
          if {[set $var] ne "$val"} {
             lappend list_of_kwd [string toupper $var]

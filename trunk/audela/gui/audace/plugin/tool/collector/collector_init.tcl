@@ -35,6 +35,7 @@
 
       if {[info exists private(precedent)] && $new_image eq "$private(precedent)"} {return}
 
+      set private(crota2) 0.
       set ext [file extension $new_image]
       set bufNo [visu$visuNo buf]
 
@@ -146,7 +147,7 @@
          default  {  if {$audace(telNo) == 0} {
                         #--   collecte et assigne les donnees dans l'image
                         lassign [getImgData $bufNo] private(ra) private(dec) private(equinox) \
-                           private(naxis1) private(naxis2) private(bin1) private(bin2) \
+                           private(naxis1) private(naxis2) private(bin1) private(bin2) -> -> \
                            private(crota2) private(crval1) private(crval2) \
                            private(crpix1) private(crpix2) private(pixsize1) private(pixsize2)
                      }
@@ -179,9 +180,9 @@
 
          lassign $result private(bin1) private(bin2) private(naxis1) private(naxis2) private(pixsize1) private(pixsize2)
 
-         if {$private(crota2) in [list "" "-"]} {
-            set private(crota2) 0
-         }
+         #if {$private(crota2) eq "-"} {
+         #   set private(crota2) "0."
+         #}
 
          set t $::audace(etc,input,ccd,t)
          set audace(etc,param,ccd,bin1) 1
