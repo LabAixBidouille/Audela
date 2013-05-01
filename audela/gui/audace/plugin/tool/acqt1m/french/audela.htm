@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Acquisition (T1M)</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 01 mai 2013</p>
+
+<h1>Audela version de developpement</h1>
+
+   <h2>Subversion & Sourceforge</h2>
+
+      <pre>
+
+      == Sourceforge et Clés SSH ==
+
+         Pour eviter d avoir a retaper systematiquement 
+         le mdp a chaque commit, il faut "echanger" les 
+         cles ssh entre le server sourceforge et la machine locale.
+
+         sur la machine locale en tant qu'utilisateur t1m
+         se mettre dans le repertoire ~/.ssh
+
+         taper la commande : 
+         > ssh-keygen -t dsa -C "fredvachier@shell.sf.net"
+
+         ceci cree 2 fichiers : 
+         id_dsa : la clé privée
+         id_dsa.pub : la clé publique
+
+         aller sur le site :  https://sourceforge.net/account/services
+         puis Edit SSH Keys for Shell/CVS
+         copier le contenu du fichier id_dsa.pub 
+         (en faisant bien attention qu il n y ait pas 
+         de retour chariot dans la ligne)
+         puis cliquer sur update.
+
+         retour a la page : https://sourceforge.net/account/services
+         verifier qu il y a bien au moins 1 clé prise en compte
+
+      == Telecharger une copie de travail en tant que developpeur du projet ==
+         
+         se mettre dans /data/develop
+
+         svn checkout --username=fredvachiersvn+ssh://fredvachier@svn.code.sf.net/p/audela/code/trunk/audela audela
+
+** Compilation en 64 bits :
+
+ ./configure --with-tcl=/usr/lib64 --with-tk=/usr/lib64 --with-ffmpeg --with-tls --enable-threads
+
+make external
+make contrib
+make
+
+-----
+** probleme mysqltcl
+
+mysqltcl peut merder : audela/src/external/mysqltcl/mysqltcl-3.05
+
+./configure  --with-tcl=/usr/lib64 --enable-64bit --with-mysql-lib=/usr/lib64
+make
+root> make install
+
+revenir en user
+
+cp libmysqltcl3.05.so dans audela/bin/libmysqltcl.so
+
+    </pre>
+
+
+
+  <h2>Mise à jour</h2>
+
+    <pre>
+
+      == Commande Zypper == 
+      
+         Ouvrir une console 
+         se connecter en tant que <b>root</b>
+         taper la commande : 
+         
+           > zypper update
+
+      == Reboot == 
+
+    </pre>
+
+
+
+  <h2>Cartes graphiques</h2>
+
+
+    <h3>Carte Nvidia</h3>
+
+    <pre>
+
+      == Yast2 == 
+      
+         lancer Yast2
+         
+      == Depots de logiciels == 
+         
+         Ajouter 
+         
+         Depots communautaires 
+         
+         Suivant
+         
+         Cocher : nVidia Graphics Drivers
+         
+         Ok
+         
+         Importer la clé GnuPg -> Faire Confiance
+         
+      == Mise a jour en ligne == 
+
+         Rechercher : nvidia
+         et verifier qu'il y a plusieurs nouveaux paquets a installer.
+         
+         a cette date pour les pc d acquisition et de traitement
+         on peut voir :
+         
+            nvidia-computeG03
+            nvidia-gfxG03-kmp-desktop
+            x11-video-nvidiaG03
+
+         Accepter
+         
+         Continuer
+         
+      == Reboot == 
+         
+      
+    </pre>
+
+
+  <h2>Paquetages additionnels</h2>
+
+    <pre>
+
+      == Lancer la commande Zypper suivante == 
+      
+         zypper install \
+            
+gsl 
+gsl-devel 
+libusb1_0-devel 
+libusb-compat-devel
+
+
+
+    </pre>
+
+
