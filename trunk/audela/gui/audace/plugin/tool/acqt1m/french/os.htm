@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Acquisition (T1M)</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 01 mai 2013</p>
+
+<h1>openSUSE 12.3 x86_64</h1>
+
+   <h2>Installation a partir du DVD</h2>
+
+      <pre>
+
+      == Environement graphique ==
+      
+         Ne pas cocher Gnome ni KDE
+         Choisir Autres : cocher LXDE
+
+      == Date et Heure ==
+      
+         Choisir ETC
+         Cocher horloge materielle sur UTC
+    
+      == Choix des paquetages ==
+      
+         Base Developpement
+         C/C++ Developpement
+         Linux Kernel Developpement
+         Tcl/Tk Developpement
+      
+      == Renseigner les parametres reseaux ==
+      
+         se referer au document interne à ce sujet
+      
+      == Ne pas effectuer de mise a jour en ligne ==
+      
+      == Reboot == 
+
+         Il arrive parfois qu apres le premier reboot, le reseau s'initialise mal.
+         pour regler le probleme : rebooter une seconde fois
+      
+         verifiez le reseau avec firefox , ajouter www.planmou.com/liens 
+         comme page de demarrage
+         
+         La machine est prete
+
+    </pre>
+
+
+
+  <h2>Mise à jour</h2>
+
+    <pre>
+
+      == Commande Zypper == 
+      
+         Ouvrir une console 
+         se connecter en tant que <b>root</b>
+         taper la commande : 
+         
+           > zypper update
+
+      == Reboot == 
+
+    </pre>
+
+
+
+  <h2>Cartes graphiques</h2>
+
+
+    <h3>Carte Nvidia</h3>
+
+    <pre>
+
+      == Yast2 == 
+      
+         lancer Yast2
+         
+      == Depots de logiciels == 
+         
+         Ajouter 
+         
+         Depots communautaires 
+         
+         Suivant
+         
+         Cocher : nVidia Graphics Drivers
+         
+         Ok
+         
+         Importer la clé GnuPg -> Faire Confiance
+         
+      == Mise a jour en ligne == 
+
+         Rechercher : nvidia
+         et verifier qu'il y a plusieurs nouveaux paquets a installer.
+         
+         a cette date pour les pc d acquisition et de traitement
+         on peut voir :
+         
+            nvidia-computeG03
+            nvidia-gfxG03-kmp-desktop
+            x11-video-nvidiaG03
+
+         Accepter
+         
+         Continuer
+         
+      == Reboot == 
+         
+      
+    </pre>
+
+
+  <h2>Paquetages additionnels</h2>
+
+    <pre>
+
+      == Lancer la commande Zypper suivante == 
+      
+         zypper install \
+            
+gsl 
+gsl-devel 
+libusb1_0-devel 
+libusb-compat-devel
+
+
+
+    </pre>
+
+
