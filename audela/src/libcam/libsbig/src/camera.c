@@ -849,9 +849,9 @@ void cam_update_window(struct camprop *cam)
         cam->y2 = maxy - 1;
 
     cam->w = (cam->x2 - cam->x1 + 1) / cam->binx;
-    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
+    //cam->x2 = cam->x1 + cam->w * cam->binx - 1;
     cam->h = (cam->y2 - cam->y1 + 1) / cam->biny;
-    cam->y2 = cam->y1 + cam->h * cam->biny - 1;
+    //cam->y2 = cam->y1 + cam->h * cam->biny - 1;
 }
 
 void sbig_cam_update_windowtrack(struct camprop *cam)
@@ -874,9 +874,9 @@ void sbig_cam_update_windowtrack(struct camprop *cam)
         cam->y2track = maxy - 1;
 
     cam->wtrack = (cam->x2track - cam->x1track + 1) / cam->binxtrack;
-    cam->x2track = cam->x1track + cam->wtrack * cam->binxtrack - 1;
+    //cam->x2track = cam->x1track + cam->wtrack * cam->binxtrack - 1;
     cam->htrack = (cam->y2track - cam->y1track + 1) / cam->binytrack;
-    cam->y2track = cam->y1track + cam->htrack * cam->binytrack - 1;
+    //cam->y2track = cam->y1track + cam->htrack * cam->binytrack - 1;
 }
 
 void sbig_cam_start_exptrack(struct camprop *cam, char *amplionoff)
