@@ -47,111 +47,53 @@
 
          svn checkout --username=fredvachiersvn+ssh://fredvachier@svn.code.sf.net/p/audela/code/trunk/audela audela
 
-** Compilation en 64 bits :
+      == Telecharger une copie de travail en tant que utilisateur anonyme ==
 
- ./configure --with-tcl=/usr/lib64 --with-tk=/usr/lib64 --with-ffmpeg --with-tls --enable-threads
-
-make external
-make contrib
-make
-
------
-** probleme mysqltcl
-
-mysqltcl peut merder : audela/src/external/mysqltcl/mysqltcl-3.05
-
-./configure  --with-tcl=/usr/lib64 --enable-64bit --with-mysql-lib=/usr/lib64
-make
-root> make install
-
-revenir en user
-
-cp libmysqltcl3.05.so dans audela/bin/libmysqltcl.so
-
+         a faire
+         
     </pre>
 
 
+  <h2>Compilation</h2>
 
-  <h2>Mise à jour</h2>
+      <h3>64 bits</h2>
 
-    <pre>
+      <pre>
+     
+      cd /data/develop/audela/src
+      ./configure --with-tcl=/usr/lib64 --with-tk=/usr/lib64 --with-ffmpeg --with-tls --enable-threads
+      make external
+      make contrib
+      make
 
-      == Commande Zypper == 
-      
-         Ouvrir une console 
-         se connecter en tant que <b>root</b>
-         taper la commande : 
+      </pre>
+
+
+     <h3>32 bits</h3>
+
+      <pre>
+         a faire
+      </pre>
          
-           > zypper update
+     <h3>mysqltcl</h3>
 
-      == Reboot == 
+      <pre>
 
-    </pre>
-
-
-
-  <h2>Cartes graphiques</h2>
-
-
-    <h3>Carte Nvidia</h3>
-
-    <pre>
-
-      == Yast2 == 
-      
-         lancer Yast2
+         il arrive souvent que mysqltcl se compile pas bien
+         pour y remedier : 
          
-      == Depots de logiciels == 
-         
-         Ajouter 
-         
-         Depots communautaires 
-         
-         Suivant
-         
-         Cocher : nVidia Graphics Drivers
-         
-         Ok
-         
-         Importer la clé GnuPg -> Faire Confiance
-         
-      == Mise a jour en ligne == 
+         cd /data/develop/audela/src/external/mysqltcl/mysqltcl-3.05
+         ./configure  --with-tcl=/usr/lib64 --enable-64bit --with-mysql-lib=/usr/lib64
+         make
+         sudo make install
+         cp libmysqltcl3.05.so dans /data/develop/audela/bin/libmysqltcl.so
 
-         Rechercher : nvidia
-         et verifier qu'il y a plusieurs nouveaux paquets a installer.
-         
-         a cette date pour les pc d acquisition et de traitement
-         on peut voir :
-         
-            nvidia-computeG03
-            nvidia-gfxG03-kmp-desktop
-            x11-video-nvidiaG03
-
-         Accepter
-         
-         Continuer
-         
-      == Reboot == 
-         
-      
-    </pre>
-
-
-  <h2>Paquetages additionnels</h2>
-
-    <pre>
-
-      == Lancer la commande Zypper suivante == 
-      
-         zypper install \
-            
-gsl 
-gsl-devel 
-libusb1_0-devel 
-libusb-compat-devel
+      </pre>
 
 
 
-    </pre>
 
 
+</body>
+
+</html>
