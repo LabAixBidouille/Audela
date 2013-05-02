@@ -47,10 +47,11 @@
          return
       }
 
+      set listCam [list "GenikaAstro" "GENICAP-RECORD" "LUCAM-RECORDER" "PlxCapture"]
       if {[regexp {(Canon).+} [lindex [buf$bufNo getkwd CAMERA] 1]] == 1} {
          #--   detection des image issues de Canon
          set private(image) "type1"
-      } elseif {[string trim [lindex [buf$bufNo getkwd INPUTFMT] 1]] eq "SER"} {
+      } elseif {[lindex [buf$bufNo getkwd SWCREATE] 1] in $listCam} {
          #--   detection des image SER
          set private(image) "type2"
       } else {
