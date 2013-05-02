@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Acquisition (T1M)</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 01 mai 2013</p>
+
+<h1>SDK Andor 2.84.30003</h1>
+<h1>Specifique a la camera Ikon-L</h1>
+
+  <h3>Preparation pour l'utilisateur t1m</h3>
+
+      <pre>
+      === Utilisateur t1m : accès au port série
+
+         ls -l /dev/ttyS0
+         crw-rw---- 1 root dialout 4, 64  1 mai   19:20 /dev/ttyS0
+
+         Vérifier que l'utilisateur t1m est dans le groupe dialout :
+
+         dans un terminal utiliser la commande 'id' :
+         uid=1000(t1m) gid=100(users) groups=100(users),16(dialout),17(audio),33(video)
+
+         Si ce n'est pas le cas utiliser yast pour l'y ajouter ; il est
+         ensuite nécessaire de déconnecter l'utilisateur et de le reconnecter.
+
+      == Yast2 ==
+         Gestion des groupes ete des utilisateurs
+         doubleclic sur t1m
+         detail
+         cocher "dialout"
+         Ok & Ok
+      </pre>
+
+  <h3>Compilation SDK</h3>
+
+      <pre>
+      === Compilation et installation du pilote Andor ===
+
+      cd /data/develop/audela/src/libcam/libandorusb/driverAndor
+
+      sudo ./install_andor
+      et choisir l'option 5 : All USB Cameras
+
+      Editer /etc/udev/rules.d/andor.rules pour
+      remplacer SYSFS{idVendor}=="136e", MODE="0666"
+      par       ATTR{idVendor}=="136e", MODE="0666"
+      </pre>
+
+  <h3>Compilation Driver Audela</h3>
+
+      <pre>
+      cd /data/develop/audela/src/libcam/libandorusb/linux
+      make
+      </pre>
+
+
+  <h3>Redemarrage</h3>
+
+      <pre>
+=== Redémarrer le PC ===
+
+ Suite à l'installation des pilotes Andor et Meinberg, les éléments
+ suivants ont été ajoutés au système :
+  - des modules pour le noyau Linux
+  - des librairies dans /usr/local/lib
+  - des règles d'accès au périphériques (/etc/udev)
+
+ Seul un redémarrage permet d'être certain que l'ensemble de ces modifications
+ fonctionne correctement.
+      </pre>
+
+
+  <h3>Configuration de Audela</h3>
+
+      <pre>
+
+      == Configuration par l'interface graphique Audace
+
+      Depuis un terminal, lancer /usr/local/src/audela/bin/audela.sh
+
+      Dans le menu "Configuration / Camera" sélectionner l'onglet "AndorUSB" et
+      ajuster les paramètres :
+
+      Répertoire contenant les fichiers de configuration : /usr/local/etc/andor
+      
+       [X] Inverser Haut/Bas
+       [X] Inverser Gauche/Droite
+       [X] Refroisissement à la température de -50°C
+       Fonctionnement de l'obturateur : Synchro
+       Délai d'ouverture de l'obturateur : 0 ms
+       Délai de fermetrue de l'obturateur : 30 ms
+
+       Cliquer sur [Ok]
+
+      En bas à droite de la fenêtre, on doit lire : "Caméra A : DZ936_BV"
+
+      Si, dans le terminal, le message suivant s'affiche :
+      
+       open() failed: No such file or directory
+       c'est que :
+
+        - la caméra n'est pas branchée
+
+        - la librairie andorusb n'a pas chargé la bonne version de la libusb
+          (note : je n'ai pas réussi à reproduire cette erreur)
+
+        - les paquets suivant n'ont pas ete installé
+              
+               libusb1_0-devel 
+               libusb-compat-devel 
+
+      Si la caméra est bien détectée, aller dans le menu "Camera / Acquisition(T1M)".
+      </pre>
+
+  <h3>Point à vérifier en cas de problèmes</h3>
+  
+      <pre>
+      La commande lsusb doit lister un périphérique dont l'identifiant est 136e:000c
+      par exemple
+      Bus 002 Device 007: ID 136e:000c
+
+      Vérifier que le fichier est en lecture/ecriture par tous les utilisateurs.
+      ls -l /dev/bus/usb/002/007
+      crw-rw-rw- 1 root root 189, 134  7 oct.  01:00 /dev/bus/usb/002/007
+
+      Vérifier la présence du fichier /etc/udev/rules.d/andor.rules contenant la ligne
+      ATTRS{idVendor}=="136e", MODE="0666"
+      </pre>
+  
+
+
+</body>
+
+</html>

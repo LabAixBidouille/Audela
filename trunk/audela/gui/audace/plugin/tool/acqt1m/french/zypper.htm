@@ -1,0 +1,55 @@
+rpm -qa > maliste
+cat maliste | zypper install
+
+
+
+list packages
+   > rpm -qa
+
+list packages contents
+   > rpm -ql
+
+configure network interfaces
+   > man ifcfg
+   > /etc/sysconfig/network/ifcfg-eth0
+
+concise list of installable packages
+   > zypper search 
+   
+get info on package   
+   > zypper info 
+   > rpm -qi
+
+install or update package
+   > zypper install
+
+Mettre a jour tous les paquetages installés
+   > zypper update
+
+refresh package cache
+   > zypper refresh
+   
+install build dependencies of a package   
+   > zypper build-deps-install
+   
+find package for uninstalled file
+   > webpin
+
+online search packages by file
+  -> packages.opensuse-community.org
+
+search installable packages by name
+   > zypper search
+
+search installable package descriptions
+   > zypper search -d
+   
+strip version from package   
+  -> sed -e 's/-[^-]\+-[^-]\+$//'   
+   
+package download cache
+  -> /var/cache/zypper/RPMS
+
+
+zypper search -d
+
