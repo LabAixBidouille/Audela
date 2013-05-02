@@ -1,55 +1,73 @@
-rpm -qa > maliste
-cat maliste | zypper install
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Acquisition (T1M)</title>
+</head>
 
+<body>
+<p class="date">Date de mise &agrave; jour : 01 mai 2013</p>
 
-list packages
-   > rpm -qa
+<h1>Zypper</h1>
 
-list packages contents
-   > rpm -ql
+      <pre>
+      == Cloner une distrib
 
-configure network interfaces
-   > man ifcfg
-   > /etc/sysconfig/network/ifcfg-eth0
+      PC1 : rpm -qa > maliste
+      PC2 : cat maliste | zypper install
 
-concise list of installable packages
-   > zypper search 
-   
-get info on package   
-   > zypper info 
-   > rpm -qi
+      == list packages
+         > rpm -qa
 
-install or update package
-   > zypper install
+      == list packages contents
+         > rpm -ql
 
-Mettre a jour tous les paquetages installés
-   > zypper update
+      == configure network interfaces
+         > man ifcfg
+         > /etc/sysconfig/network/ifcfg-eth0
 
-refresh package cache
-   > zypper refresh
-   
-install build dependencies of a package   
-   > zypper build-deps-install
-   
-find package for uninstalled file
-   > webpin
+      == concise list of installable packages
+         > zypper search 
 
-online search packages by file
-  -> packages.opensuse-community.org
+      == get info on package   
+         > zypper info 
+         > rpm -qi
 
-search installable packages by name
-   > zypper search
+      == install or update package
+         > zypper install
 
-search installable package descriptions
-   > zypper search -d
-   
-strip version from package   
-  -> sed -e 's/-[^-]\+-[^-]\+$//'   
-   
-package download cache
-  -> /var/cache/zypper/RPMS
+      == Mettre a jour tous les paquetages installés
+         > zypper update
 
+      == refresh package cache
+         > zypper refresh
 
-zypper search -d
+      == install build dependencies of a package   
+         > zypper build-deps-install
 
+      == find package for uninstalled file
+         > webpin
+
+      == online search packages by file
+        -> packages.opensuse-community.org
+
+      == search installable packages by name
+         > zypper search
+
+      == search installable package descriptions
+         > zypper search -d
+
+      == strip version from package   
+        -> sed -e 's/-[^-]\+-[^-]\+$//'   
+
+      == package download cache
+        -> /var/cache/zypper/RPMS
+
+      == zypper search -d
+
+     </pre>
+
+</body>
+
+</html>
