@@ -185,7 +185,7 @@ proc meteosensor_getstandard { name } {
    } elseif {$typeu=="LACROSSE"} {
       set keys      "-                 -              OutsideTemp             WinDir WinSpeed OutsideHumidity PrecipitableWater"
    } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
-		set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
+		set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        RainState"
    } elseif {$typeu=="SIMULATION"} {
       set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
    }
@@ -496,7 +496,7 @@ proc aag_read { channel name} {
    } else {
       set com Dry
    }
-   lappend ress [list PrecipitableWater $com text "Rain or Wet or Dry"]
+   lappend ress [list Precipitable $com text "Rain or Wet or Dry"]
    set units Frequency
    lappend ress [list RainSensorFrequency $val $units "Rain frequency counter"]
    # --- return results
@@ -1781,6 +1781,7 @@ proc sentinel_skymonitor_read { {filename ""} } {
 			set texte ""
 			if {[string compare $key "TempSkyIR"]==0} { 
 				set valcor [format %.2f [expr ($val-$temp_ext)*$gain/1000.]]
+				set valcor [format %.2f [expr ($val*$gain/1000.-$temp_ext)]]
 				set texte "SkyTemp $valcor $unit"
 				lappend textes $texte
 				if {$valcor<-20} {
@@ -1809,7 +1810,12 @@ proc sentinel_skymonitor_read { {filename ""} } {
 				lappend textes $texte
 			}
 			if {[string compare $key "RainFall"]==0} { 
-				set texte "Water $val" ; lappend texte $unit
+				if {$val=="No"} {
+					set valcor Dry
+				} else {
+					set valcor Rain
+				}
+				set texte "RainState $valcor" ; lappend texte $unit
 				lappend textes $texte
 			}
 			set texte "$key $val" ; lappend texte $unit
