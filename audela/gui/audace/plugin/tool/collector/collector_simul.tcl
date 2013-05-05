@@ -356,11 +356,13 @@
       variable private
       global caption conf
 
+      set This $private(This).kwd
+
+      if {[winfo exists $This]} {destroy $This}
       if {![info exists conf(collector,kwdposition)]} {
          set conf(collector,kwdposition) "400x115+100+100"
       }
 
-      set This $private(This).kwd
       toplevel $This
       wm resizable $This 1 1
       wm title $This "$caption(collector,kwds)"
