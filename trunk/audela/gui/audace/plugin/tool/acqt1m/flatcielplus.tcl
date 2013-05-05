@@ -870,7 +870,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
       ::acqt1m::pop_gui $visuNo
       ::console::affiche_resultat "POP GUI\n"
-
+      file delete -force mesurefond.fit
       ::acqt1m_flatcielplus::fermerAffichageChoixFiltres $visuNo
       set ::conf(acqt1m,avancement1,position) $private(avancement1,position)
       ::acqt1m_flatcielplus::recupPositionAcqAutoFlat
@@ -1042,7 +1042,8 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
    #------------------------------------------------------------
    proc ::acqt1m_flatcielplus::acqFlat { visuNo idfiltre } {
 
-      variable private
+      variable private 
+      global panneau
 
       # Comptage des flats
       ::acqt1m_flatcielplus::majBouton2 $idfiltre -1
@@ -1069,6 +1070,8 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
       ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,limitexptime) $private(limitexptime)\n"
       ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,exptimemini) $private(exptimemini)\n"
       ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,fondflat1) $fondflat\n"
+
+      set panneau(acqt1m,$visuNo,object) "FLAT"
 
       set buffer buf[ ::confVisu::getBufNo $visuNo ]
 
@@ -1310,7 +1313,11 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
                $buffer setkwd [list "IMAGETYP" "Flat" string "Image type" "" ]
                $buffer setkwd [list "OBJECT"   "FLAT" string "" "" ]
                $buffer setkwd [list "FILTER"   [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2] string "" "" ]
-               saveima $filelong $visuNo
+               
+               set nom   [lindex [::acqt1m::get_filename $visuNo] 1]
+               saveima $nom $visuNo
+               #saveima $filelong $visuNo
+               
                ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,enregistre) $filelong\n"
                set enr 1
                incr num
