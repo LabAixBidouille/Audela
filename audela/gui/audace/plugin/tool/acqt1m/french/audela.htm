@@ -43,7 +43,7 @@
 
       == Telecharger une copie de travail en tant que developpeur du projet ==
          
-         se mettre dans /data/develop
+         se mettre dans /srv/develop
 
          svn checkout --username=fredvachiersvn+ssh://fredvachier@svn.code.sf.net/p/audela/code/trunk/audela audela
 
@@ -60,7 +60,7 @@
 
       <pre>
      
-      cd /data/develop/audela/src
+      cd /srv/develop/audela/src
       ./configure --with-tcl=/usr/lib64 --with-tk=/usr/lib64 --with-ffmpeg --with-tls --enable-threads
       make external
       make contrib
@@ -82,16 +82,28 @@
          il arrive souvent que mysqltcl se compile pas bien
          pour y remedier : 
          
-         cd /data/develop/audela/src/external/mysqltcl/mysqltcl-3.05
+         cd /srv/develop/audela/src/external/mysqltcl/mysqltcl-3.05
          ./configure  --with-tcl=/usr/lib64 --enable-64bit --with-mysql-lib=/usr/lib64
          make
          sudo make install
-         cp libmysqltcl3.05.so dans /data/develop/audela/bin/libmysqltcl.so
+         cp libmysqltcl3.05.so /srv/develop/audela/bin/libmysqltcl.so
 
       </pre>
 
 
+  <h2>FAQ</h2>
 
+
+    <h4>Erreur de connexion a MySql</h4>
+
+      <pre>
+      == ERREUR == 
+      # Erreur de connexion a MySql <1> <invalid command name "::mysql::connect">
+      # Connexion echouee : Erreur de connexion a MySql <1> <invalid command name "::mysql::connect">
+
+      == REPONSE == 
+      revoir l installation dee mysqltcl
+      </pre>
 
 
 </body>

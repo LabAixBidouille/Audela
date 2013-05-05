@@ -104,6 +104,11 @@ set caption(acqt1m,filtre)                    "Filter: "
 set caption(acqt1m,extensionFITS)             "Files Extension FITS:"
 set caption(acqt1m,rechargeScripts)           "Reload Scripts\n\n"
 
+set caption(acqt1m,ccdtemp)                   "CCD Temp"
+set caption(acqt1m,saturation)                "Saturation"
+set caption(acqt1m,clean)                     "Clean Marks"
+set caption(acqt1m,astroid)                   "Astroid"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 

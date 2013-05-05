@@ -18,86 +18,24 @@ namespace eval ::cycle {
 
 
 
-
-
-
-
-
-   proc KOI13 { } {
+   proc ::cycle::init { } {
 
       variable private
 
-      set private(object)         "KOI-13"
-      set private(bin)            "1x1"
-      set private(ra)             "19:07:53.09"
-      set private(dec)            "+46:52:6.10"
-      # Liste le mouvement de la roue, [Filtre Exposure nbimg]
-      set private(roue)           [list [list "Us" 60 1] [list "Gs" 3 5] [list "Rs" 1.5 10] [list "Is" 1.5 10] [list "Zs" 3 5] ]
+      ::mycycle::use
    
-   }
+      set private(object)  $::cycle::object
+      set private(ra)      $::cycle::ra 
+      set private(dec)     $::cycle::dec
+      set private(roue)    $::cycle::roue
 
-
-
-
-   proc Comete { } {
-
-      variable private
-
-      set private(object)         "67P"      
-      set private(bin)            "2x2"
-      set private(ra)             "19:07:53.09"
-      set private(dec)            "+46:52:6.10"
-   
-      # Liste le mouvement de la roue, [Filtre Exposure nbimg]
-      set private(roue)           [list [list "Us" 60 1] [list "Gs" 3 5] [list "Rs" 1.5 10] [list "Is" 1.5 10] [list "Zs" 3 5] ]
-   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   proc init { } {
-
-      ::cycle::KOI13
-   
       # obturateur = 0 : Ouvert, 1 : Fermer, 2 : Synchro
       set private(obt)            2
       # obturateur = 2 : Serie d'image
       set private(mode)           2
    }
+
+
 
 
 
@@ -156,7 +94,33 @@ namespace eval ::cycle {
       global panneau
 
       ::console::affiche_resultat "$::caption(cycle,lancement)\n"
+      incr ::cycle::go
+      
       ::cycle::init
+
+      ::console::affiche_resultat "------------------------\n"
+      ::console::affiche_resultat "--Definition du cycle --\n"
+      ::console::affiche_resultat "------------------------\n"
+      foreach l $private(roue) {
+
+         set panneau(acqt1m,$visuNo,filtrecourant) [lindex $l 0]
+         set panneau(acqt1m,$visuNo,pose)          [lindex $l 1]
+         set panneau(acqt1m,$visuNo,nb_images)     [lindex $l 2]
+         set panneau(acqt1m,$visuNo,bin)           [lindex $l 3]
+         set panneau(acqt1m,$visuNo,index) 1
+
+         ::console::affiche_resultat "Image Nb=$panneau(acqt1m,$visuNo,nb_images) Filtre=$panneau(acqt1m,$visuNo,filtrecourant) Expo=$panneau(acqt1m,$visuNo,pose) Bin=$panneau(acqt1m,$visuNo,bin)\n"
+      }
+      ::console::affiche_resultat "------------------------\n"
+
+      if {$::cycle::go >= 2} {
+         ::console::affiche_resultat "Demarrage du cycle \n"
+         set ::cycle::go 0
+      } else {
+         ::console::affiche_resultat "Le prochain clic demarre le cycle \n"
+         return
+      }
+
       set ::cycle::stop 0
       
       # Evenement pour la GUI
@@ -172,11 +136,11 @@ namespace eval ::cycle {
       set panneau(acqt1m,$visuNo,object) $private(object)
       ::console::affiche_resultat "OBJECT=$panneau(acqt1m,$visuNo,object)\n"
 
-      set panneau(acqt1m,$visuNo,bin) $private(bin)
-      ::console::affiche_resultat "BIN=$panneau(acqt1m,$visuNo,bin)\n"
+      #set panneau(acqt1m,$visuNo,bin) $private(bin)
+      #::console::affiche_resultat "BIN=$panneau(acqt1m,$visuNo,bin)\n"
 
-      set panneau(acqt1m,$visuNo,binning) $private(bin)
-      ::console::affiche_resultat "BIN=$panneau(acqt1m,$visuNo,binning)\n"
+      #set panneau(acqt1m,$visuNo,binning) $private(bin)
+      #::console::affiche_resultat "BIN=$panneau(acqt1m,$visuNo,binning)\n"
 
       set panneau(acqt1m,$visuNo,mode_en_cours) [ lindex $panneau(acqt1m,$visuNo,list_mode) [ expr $private(mode) - 1 ] ]
       ::console::affiche_resultat "MODE_EN_COURS=$panneau(acqt1m,$visuNo,mode_en_cours)\n"
@@ -195,7 +159,6 @@ namespace eval ::cycle {
       set panneau(acqt1m,$visuNo,obt) $private(obt)
       ::console::affiche_resultat "OBTURATEUR=$panneau(acqt1m,$visuNo,obt,$panneau(acqt1m,$visuNo,obt))\n"
 
-      ::acqt1m::changebinning $visuNo   
       ::acqt1m::setShutter $visuNo $panneau(acqt1m,$visuNo,obt)
 
       # Initialisation de la roue a filtre
@@ -204,19 +167,29 @@ namespace eval ::cycle {
 
      ::console::affiche_resultat "\n"
 
+      set panneau(acqt1m,$visuNo,index) 1
+      set panneau(acqt1m,$visuNo,verifier_index_depart) 0
+      
       while {1==1} {
 
-         ::cycle::init
-
          foreach l $private(roue) {
+
+            # permet de modifier les temps de pose sans arreter les cycles
+            # modifer le code 
+            # et recharger les cycles 
+            ::cycle::init
+
 
             set panneau(acqt1m,$visuNo,filtrecourant) [lindex $l 0]
             set panneau(acqt1m,$visuNo,pose)          [lindex $l 1]
             set panneau(acqt1m,$visuNo,nb_images)     [lindex $l 2]
-            set panneau(acqt1m,$visuNo,index) 1
+            set panneau(acqt1m,$visuNo,bin)           [lindex $l 3]
+            set panneau(acqt1m,$visuNo,binning)       "[lindex $l 3]x[lindex $l 3]"
+            ::acqt1m::changebinning $visuNo   
+
             #::console::affiche_resultat "index=$panneau(acqt1m,$visuNo,index)\n" 
 
-            ::console::affiche_resultat "Image Nb=$panneau(acqt1m,$visuNo,nb_images) Filtre=$panneau(acqt1m,$visuNo,filtrecourant) Expo=$panneau(acqt1m,$visuNo,pose)\n"
+            ::console::affiche_resultat "Image Nb=$panneau(acqt1m,$visuNo,nb_images) Filtre=$panneau(acqt1m,$visuNo,filtrecourant) Expo=$panneau(acqt1m,$visuNo,pose) Bin=$panneau(acqt1m,$visuNo,bin)\n"
 
             # Changement du Filtre
             ::t1m_roue_a_filtre::changeFiltreInfini $visuNo
