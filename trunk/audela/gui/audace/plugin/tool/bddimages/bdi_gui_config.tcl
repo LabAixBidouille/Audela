@@ -694,7 +694,7 @@ proc ::bdi_gui_config::createDialog { } {
          checkbutton $cataconf.ucac3_check -highlightthickness 0 -text "  UCAC3" -variable ::tools_cata::use_ucac3
             entry $cataconf.ucac3_dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 50
          checkbutton $cataconf.ucac4_check -highlightthickness 0 -text "  UCAC4" -variable ::tools_cata::use_ucac4
-            entry $cataconf.ucac4_dir -relief sunken -textvariable ::tools_cata::catalog_ucac3 -width 50
+            entry $cataconf.ucac4_dir -relief sunken -textvariable ::tools_cata::catalog_ucac4 -width 50
          checkbutton $cataconf.ppmx_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmx
             entry $cataconf.ppmx_dir -relief sunken -textvariable ::tools_cata::catalog_ppmx -width 50
          checkbutton $cataconf.ppmxl_check -highlightthickness 0 -text "  PPMXL" -variable ::tools_cata::use_ppmxl
