@@ -71,9 +71,8 @@ An offset (in MB) from the DMA_ADDRESS field can also be set using the DMA_OFFSE
 USB Camera requirements
 -----------------------
 
-Kernel versions 2.4.X do not fully support usb devices, therefore it is recommended that one of the 2.6 series of kernels is used. The Andor USB system depends on the libusb library and so must be installed in your distribution. From a command prompt type 'whereis libusb' to check if the library is already installed. If not it may be available as a package from your distribution installation disk or website. It may also be obtained from http://libusb.sourceforge.net/. libusb also depends on the usbfs filesystem being mounted. libusb is released under the GNU Lesser General Public License; see file LIBUSBLICENSE for details on this. 
+Kernel versions 2.4.X do not fully support usb devices and issues have been seen when using 3.X.X therefore it is recommended that one of the 2.6 series of kernels is used. The Andor USB system depends on the libusb library and so must be installed in your distribution. From a command prompt type 'whereis libusb' to check if the library is already installed. If not it may be available as a package from your distribution installation disk or website. It may also be obtained from http://libusb.sourceforge.net/. libusb also depends on the usbfs filesystem being mounted. libusb is released under the GNU Lesser General Public License; see file LIBUSBLICENSE for details on this. 
 
-IMPORTANT:: The files *.hex files must also be located in the directory from which the executable is run.
 
 
 Error Code DRV_USB_INTERRUPT_ENDPOINT_ERROR

@@ -344,6 +344,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
    /* --- setup electronic parameters --- */
    cam_setup_electronic(cam);
+   // printf("cam init\n");
 
    return 0;
 }
@@ -358,6 +359,7 @@ int cam_close(struct camprop *cam)
       return 1;
    }
    return 0;
+   // printf("cam close\n");
 }
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
@@ -436,6 +438,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
               get_status(cam->drv_status));
       return;
    }
+   printf("Start exposure : %f sec ",exptime);
 }
 
 void cam_stop_exp(struct camprop *cam)
@@ -459,6 +462,7 @@ void cam_stop_exp(struct camprop *cam)
       }
    }
    SetShutter(type, mode, cam->closingtime, cam->openingtime);
+   // printf("stop expo\n");
    return;
 }
 
@@ -475,7 +479,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    long size;
    int k;
 
-printf("CAMREAD CCD\n");
+   // printf("CAMREAD CCD\n");
 
    if(p == NULL)
       return;
@@ -483,7 +487,7 @@ printf("CAMREAD CCD\n");
    h = cam->h;
    w = cam->w;
 
-printf("h=%d w=%d\n",h,w);
+   // printf("h=%d w=%d\n",h,w);
 
    pix = (unsigned short *) p;
 
@@ -499,13 +503,13 @@ printf("h=%d w=%d\n",h,w);
    }
    while(sortie == 0);
 
-printf("FIN BOUCLE WHILE\n");
+   // printf("FIN Acquisition\n");
 
 
    /* --- importation de l'image --- */
       size = (long) (w) * (long) (h);
       cam->drv_status = GetAcquiredData16(pix, size);
-  printf("GETACQUIREDDATA FINI : drv_status=%d size=%ld\n",cam->drv_status,size);
+      // printf("GETACQUIREDDATA FINI : drv_status=%d size=%ld\n",cam->drv_status,size);
 
       if(cam->drv_status != DRV_SUCCESS)
       {
@@ -524,12 +528,13 @@ printf("FIN BOUCLE WHILE\n");
          }
       }
 
-printf("READacq FINI\n");
+   printf("READacq FINI %d . %s\n", cam->drv_status, get_status(cam->drv_status));
    return;
 }
 
 void cam_shutter_on(struct camprop *cam)
 {
+   // printf("cam_shutter_on : ");
    int type = 1, mode = 1;
    /* --- --- */
    cam->drv_status =
@@ -538,13 +543,16 @@ void cam_shutter_on(struct camprop *cam)
    {
       sprintf(cam->msg, "Error %d. %s", cam->drv_status,
               get_status(cam->drv_status));
+      printf("erreur %d. %s\n",cam->drv_status,get_status(cam->drv_status));
       return;
    }
+   // printf("ok\n");
    return;
 }
 
 void cam_shutter_off(struct camprop *cam)
 {
+   // printf("cam_shutter_off : ");
    int type = 1, mode = 2;
    /* --- --- */
    cam->drv_status =
@@ -553,46 +561,57 @@ void cam_shutter_off(struct camprop *cam)
    {
       sprintf(cam->msg, "Error %d. %s", cam->drv_status,
               get_status(cam->drv_status));
+      printf("erreur %d. %s\n",cam->drv_status,get_status(cam->drv_status));
       return;
    }
+   // printf("ok\n");
    return;
 }
 
 void cam_measure_temperature(struct camprop *cam)
 {
+   return;
    int temperature;
    cam->drv_status = GetTemperature(&temperature);
    cam->temperature = temperature;
    sprintf(cam->msg, "Status %d. %s", cam->drv_status,get_status(cam->drv_status));
+   printf("cam_measure_temperature %d. %s\n",cam->drv_status,get_status(cam->drv_status));
    return;
 }
 
 void cam_cooler_on(struct camprop *cam)
 {
+   // printf("cam_cooler_on : ");
    cam->drv_status = CoolerON();
    if(cam->drv_status != DRV_SUCCESS)
    {
       sprintf(cam->msg, "Error %d. %s", cam->drv_status,
               get_status(cam->drv_status));
+      printf("erreur %d. %s\n",cam->drv_status,get_status(cam->drv_status));
       return;
    }
+   // printf("ok\n");
    return;
 }
 
 void cam_cooler_off(struct camprop *cam)
 {
+   // printf("cam_cooler_off : ");
    cam->drv_status = CoolerOFF();
    if(cam->drv_status != DRV_SUCCESS)
    {
       sprintf(cam->msg, "Error %d. %s", cam->drv_status,
               get_status(cam->drv_status));
+      printf("erreur %d. %s\n",cam->drv_status,get_status(cam->drv_status));
       return;
    }
+   // printf("ok\n");
    return;
 }
 
 void cam_cooler_check(struct camprop *cam)
 {
+   // printf("cam_cooler_check : ");
    /* ---  --- */
    if(cam->check_temperature <= cam->minTemp)
    {
@@ -607,8 +626,11 @@ void cam_cooler_check(struct camprop *cam)
    {
       sprintf(cam->msg, "Error %d. %s", cam->drv_status,
               get_status(cam->drv_status));
+      printf("erreur %d. %s\n",cam->drv_status,get_status(cam->drv_status));
       return;
    }
+   // printf("ok\n");
+   return;
 }
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
@@ -850,7 +872,7 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
 
 #define MSG_DRV_ERROR_CODES "20001 : "
 #define MSG_DRV_P1INVALID "20066: "
-#define MSG_DRV_SUCCESS "20002 : "
+#define MSG_DRV_SUCCESS "SUCCESS"
 #define MSG_DRV_P2INVALID "20067: "
 #define MSG_DRV_VXDNOTINSTALLED "20003 : "
 #define MSG_DRV_P3INVALID "20068: "
@@ -930,8 +952,9 @@ void cam_setup_exposure(struct camprop *cam, float *texptime, float *taccumtime,
 #define MSG_DRV_BINNING_ERROR "20099: "
 #define MSG_DRV_DRIVER_ERRORS "20065 : "
 #define MSG_DRV_INVALID_AMPLIFIER "20100: Not a valid amplifier."
+#define MSG_DRV_TEMP_DRIFT "20XXX: Temperature had stabilized but has since drifted."
+#define MSG_DRV_TEMP_NOT_STABILIZED "20035: Temperature reached but not stabilized."
 
-   
 char * get_status(int st)
 {
    switch(st)
@@ -941,14 +964,18 @@ char * get_status(int st)
       case DRV_ERROR_ACK:           return MSG_DRV_ERROR_ACK; break;
       case DRV_TEMP_OFF:            return MSG_DRV_TEMPERATURE_OFF; break;
       case DRV_TEMP_STABILIZED:     return MSG_DRV_TEMPERATURE_STABILIZED; break;
+      /*
+      On decide que si la temperature n est pas atteinte c est pas grave. on maitrise !
       case DRV_TEMP_NOT_REACHED:    return MSG_DRV_TEMPERATURE_NOT_REACHED; break;
-      case DRV_TEMP_DRIFT:          return MSG_DRV_NOT_INITIALIZED; break;
-      case DRV_TEMP_NOT_STABILIZED: return MSG_DRV_NOT_INITIALIZED; break;
-      case DRV_SUCCESS:             return MSG_DRV_NOT_INITIALIZED; break;
-      case DRV_P1INVALID:           return MSG_DRV_NOT_INITIALIZED; break;
-      case DRV_P2INVALID:           return MSG_DRV_NOT_INITIALIZED; break;
-      case DRV_P3INVALID:           return MSG_DRV_NOT_INITIALIZED; break;
-      case DRV_P4INVALID:           return MSG_DRV_NOT_INITIALIZED; break;
+      */
+      case DRV_TEMP_NOT_REACHED:    return MSG_DRV_TEMPERATURE_NOT_REACHED; break;
+      case DRV_TEMP_DRIFT:          return MSG_DRV_TEMP_DRIFT; break;
+      case DRV_TEMP_NOT_STABILIZED: return MSG_DRV_TEMP_NOT_STABILIZED; break;
+      case DRV_SUCCESS:             return MSG_DRV_SUCCESS; break;
+      case DRV_P1INVALID:           return MSG_DRV_P1INVALID; break;
+      case DRV_P2INVALID:           return MSG_DRV_P2INVALID; break;
+      case DRV_P3INVALID:           return MSG_DRV_P3INVALID; break;
+      case DRV_P4INVALID:           return MSG_DRV_P4INVALID; break;
       default: break;
    }
    

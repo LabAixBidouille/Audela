@@ -31,7 +31,7 @@
 #include "andor.h"
 #include "pld.h"
 
-int andor_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long ulArg)
+int andor_ioctl(struct file *filp, unsigned int cmd, unsigned long ulArg)
 {
   int iCardNo;
   unsigned char* pucConfig;
@@ -46,7 +46,7 @@ int andor_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsign
 
   pucConfig = kmalloc(256*sizeof(unsigned char), GFP_KERNEL);
 
-  iCardNo = MINOR(inode->i_rdev);
+  iCardNo = MINOR(filp->f_mapping->host->i_rdev);
 
   switch(cmd)
   {
@@ -231,7 +231,7 @@ int andor_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsign
     iErr = AndorGetIRQ(iCardNo, ulArg, ulAndorData1);
     break;
   case ANDOR_IOC_HARD_RESET:
-    iErr = andor_release(inode, filp);
+    iErr = andor_release(filp->f_mapping->host, filp);
     break;
   default:
     iErr = -EINVAL;

@@ -113,7 +113,7 @@ if(DMA_MODE==0){
 else{
   //Work out Size to be allowed for each image
   if(DMA_SIZE==0){
-    if(dma_first_size==0){
+    if(dma_first_size==0 || (dma_first_size < pulData[0])){
       dma_first_size = pulData[0];
     }
     sz = dma_first_size;
@@ -134,12 +134,12 @@ else{
 
   virt = ioremap(dma_addr, sz);
 
-  if (virt == NULL) {
-    printk("<7>andordrvlx: Failed to allocate DMA region 0\n");
-    printk("<7>andordrvlx: DMA Addr [0x08X]  Size [%u bytes]\n", dma_addr, sz);    
-    printk("<7>andordrvlx: See INSTALL file, 'Supported Kernels'\n");
-    return -EFAULT;
-  }
+    if (virt == NULL) {
+      printk("<7>andordrvlx: Failed to allocate DMA region 0\n");
+      printk("<7>andordrvlx: DMA Addr [%lX] Size [%u bytes]\n", dma_addr, sz);    
+      printk("<7>andordrvlx: See INSTALL file, 'Supported Kernels'\n");
+      return -EFAULT;
+    }
     
   gpAndorDev[iCardNo].AndorDMABuffer[0].VirtualAdd = virt;
   gpAndorDev[iCardNo].AndorDMABuffer[0].Physical = dma_addr;
@@ -171,7 +171,7 @@ if(DMA_MODE==0){
 else{
   //Work out Size to be allowed for each image
   if(DMA_SIZE==0){
-    if(dma_first_size==0){
+    if(dma_first_size==0 || (dma_first_size < pulData[0])){
       dma_first_size = pulData[0];
     }
     sz = dma_first_size;
@@ -192,11 +192,11 @@ else{
 
   virt = ioremap(dma_addr, sz);
 
-  if (virt == NULL) {
-    printk("<7>andordrvlx: Failed to allocate DMA region 1\n");
-    printk("<7>andordrvlx: DMA Addr [0x08X]  Size [%u bytes]\n", dma_addr, sz);    
-    printk("<7>andordrvlx: See Readme section 'Supported Kernels'\n");
-    return -EFAULT;
+    if (virt == NULL) {
+      printk("<7>andordrvlx: Failed to allocate DMA region 1\n");
+      printk("<7>andordrvlx: DMA Addr [%lX]  Size [%u bytes]\n", dma_addr, sz);    
+      printk("<7>andordrvlx: See Readme section 'Supported Kernels'\n");
+      return -EFAULT;
   }
   
   gpAndorDev[iCardNo].AndorDMABuffer[1].VirtualAdd = virt;

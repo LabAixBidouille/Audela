@@ -65,7 +65,8 @@ static ulong ulAddr[] = {
 };
 
 struct file_operations andor_fops = {
-   ioctl: andor_ioctl,
+   unlocked_ioctl: andor_ioctl,
+   compat_ioctl: andor_ioctl,
    mmap: andor_mmap,
    open: andor_open,
    release: andor_release,

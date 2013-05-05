@@ -79,6 +79,12 @@ echo "Removing include files from $installdir/include..."
 if [ -d $installdir/include ]
 then
   rm -f $installdir/include/atmcdLXd.h
+  rm -f $installdir/include/ATSIFIO.h
+  rm -f $installdir/include/ATSIFTypes.h
+  rm -f $installdir/include/ATSIFErrorCodes.h
+  rm -f $installdir/include/ATSIFProperties.h
+  rm -f $installdir/include/ATPrimitiveTypes.h
+  rm -f $installdir/include/ATLibraryExport.h
 fi
 
 #remove help files
@@ -86,6 +92,7 @@ echo "Removing help files from $installdir/doc..."
 if [ -d $installdir/doc ]
 then
   rm -f "$installdir/doc/Software Development Kit.pdf"
+  rm -f "$installdir/doc/Andor SIF API.doc"
 fi
 
 #remove library files
@@ -93,6 +100,7 @@ echo "Removing library files from $installdir/lib..."
 if [ -d $installdir/lib ]
 then
   rm -f $installdir/lib/libatusbfs.* $installdir/lib/libandor.*
+  rm -f $installdir/lib/libatusbfs.* $installdir/lib/libatsifio.*
 fi
 
 #update the system library cache

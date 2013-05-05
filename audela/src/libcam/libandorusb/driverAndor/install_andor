@@ -11,8 +11,8 @@ echo "Select your CCD Type from the following list:"
 echo "1. CCD"
 echo "2. ICCD"
 echo "3. iStar"
-echo "4. iXon"
-echo "5. All USB Cameras"
+echo "4. PCI iXon"
+echo "5. All USB Cameras (including iXon Ultra)"
 
 read type
 type=${type:0:1}
@@ -33,8 +33,8 @@ udev_dir=/etc/udev
 ###########################################################################
 
 ANDORMAJOR=2
-ANDORMINOR=84
-ANDORRELEASE=30003
+ANDORMINOR=94
+ANDORRELEASE=30009
 ANDORBUILD=0
 
 #ANDORUSBMAJOR=1
@@ -108,25 +108,32 @@ then
 	fi
 	
 	cd src/driver
-	KVER=`uname -r | awk -F. '{print $2}'`
+	KVER=`uname -r | awk -F. '{print $1}'`
+	KREV=`uname -r | awk -F. '{print $2}'`
 	rm -f Makefile
 	rm -f build.txt
 	
 	echo "Building Driver module..."
-	if [ $KVER = 4 ]
+	if [ $KVER = 2 ] && [ $KREV = 4 ]
 	then
 		FILE="andordrvlx.o"
 		cp Makefile2.4 Makefile
 		make clean >null
 		make 2>>build.txt >>build.txt
-	elif [ $KVER = 6 ]
+	elif [ $KVER = 2 ] && [ $KREV = 6 ]
+	then
+		FILE="andordrvlx.ko"
+		cp Makefile2.6 Makefile
+		make clean >null
+		make 2>>build.txt >>build.txt
+	elif [ $KVER = 3 ]
 	then
 		FILE="andordrvlx.ko"
 		cp Makefile2.6 Makefile
 		make clean >null
 		make 2>>build.txt >>build.txt
 	else
-		echo "Kernel Minor version $KVER not supported"
+		echo "Kernel Minor version $KVER.$KREV not supported"
 		exit 8
 	fi
 	
@@ -231,7 +238,11 @@ fi
 lib5=`echo $?`
 /sbin/ldconfig -p 2>&1 | grep libstdc++.so.6 1>/dev/null
 lib6=`echo $?`
-PLAT="x86_64"
+PLAT=`uname -i`
+if [ $PLAT = "unknown" ]
+then
+       PLAT=`uname -m`
+fi
 SDKLIB=""
 #USBLIB=""
 if [ $lib6 = 0 ]
@@ -240,11 +251,13 @@ then
 	if [ $PLAT = "x86_64" ]
   	then
   		echo "Platform: 64 bit"
-		SDKLIB=libandor-stdc++6-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+		SDKLIB=libandor-stdc++6-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+		SIFLIB=libatsifio-stdc++6-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
 #		USBLIB=libatusbfs-stdc++6-x86_64.so.$ANDORUSBMAJOR.$ANDORUSBMINOR.$ANDORUSBRELEASE.$ANDORUSBBUILD	
 	else
   		echo "Platform: 32 bit"
-		SDKLIB=libandor-stdc++6-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+		SDKLIB=libandor-stdc++6-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+		SIFLIB=libatsifio-stdc++6-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
 #		USBLIB=libatusbfs-stdc++6-i386.so.$ANDORUSBMAJOR.$ANDORUSBMINOR.$ANDORUSBRELEASE.$ANDORUSBBUILD	
 	fi
 elif [ $lib5 = 0 ]
@@ -253,11 +266,13 @@ then
 	if [ $PLAT = "x86_64" ]
   	then
   		echo "Platform: 64 bit"
-		SDKLIB=libandor-stdc++5-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+		SDKLIB=libandor-stdc++5-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+		SIFLIB=libatsifio-stdc++5-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
 #		USBLIB=libatusbfs-stdc++5-x86_64.so.$ANDORUSBMAJOR.$ANDORUSBMINOR.$ANDORUSBRELEASE.$ANDORUSBBUILD 
 	else
   		echo "Platform: 32 bit"
-		SDKLIB=libandor-stdc++5-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+		SDKLIB=libandor-stdc++5-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+		SIFLIB=libatsifio-stdc++5-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD  
 #		USBLIB=libatusbfs-stdc++5-i386.so.$ANDORUSBMAJOR.$ANDORUSBMINOR.$ANDORUSBRELEASE.$ANDORUSBBUILD 
 	fi
 else
@@ -281,6 +296,8 @@ rm -f $install_dir/lib/libandor.so
 
 cp lib/$SDKLIB $install_dir/lib/libandor.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
 ln -s $install_dir/lib/libandor.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD $install_dir/lib/libandor.so
+cp lib/$SIFLIB $install_dir/lib/libatsifio.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+ln -s $install_dir/lib/libatsifio.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD $install_dir/lib/libatsifio.so
 
 
 #if [ $bustype -eq 1 ]
@@ -313,6 +330,7 @@ then
 fi
 
 cp doc/*.pdf $install_dir/doc
+cp doc/*.doc $install_dir/doc
 
 echo "installing SDK header file into $install_dir/include..."
 if [ ! -d $install_dir/include ]
@@ -321,6 +339,12 @@ then
 fi
 
 cp include/atmcdLXd.h $install_dir/include
+cp include/ATSIFIO.h $install_dir/include
+cp include/ATSIFTypes.h $install_dir/include
+cp include/ATSIFErrorCodes.h $install_dir/include
+cp include/ATSIFProperties.h $install_dir/include
+cp include/ATLibraryExport.h $install_dir/include
+cp include/ATPrimitiveTypes.h $install_dir/include
 
 echo "installing configuration files into $install_dir/etc/andor..."
 if [ ! -d $install_dir/etc/andor ]

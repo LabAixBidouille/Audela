@@ -56,7 +56,7 @@ Supported Kernels
 
 Some kernels have issues which can cause problems with our driver and SDK. Always try to use the latest SDK version for most support and note the following known problem kernel versions.
 
-- There are USB issues with kernel versions 2.6.23.xx & 2.6.24.xx for USB cameras. Customers should avoid these kernel versions and use higher versions when using USB cameras.
+- There are USB issues with kernel versions 2.6.23.xx & 2.6.24.xx and potentially 3.x.x.xx (still investigating) for USB cameras. Customers should avoid these kernel versions when using USB cameras.
 
 - There are issues with the "mem=" option in kernel version 2.6.24.xx to 2.6.26.xx. This causes incorrect behaviour when using PCI cameras in DMA_MODE 1 (iXons included). Customers shoulde use 2.6.23.xx and lower or 2.6.27.xx and higher when using PCI based systems. If not, kernel crashes will be seen in SDK versions 2.82.30002.0 and earlier. In later versions user space applications will freeze on acquisition and kernel errors will be reported but the kernel will not crash.
 
@@ -170,11 +170,14 @@ Systems with greater than 3GB of RAM
 
 NOTE: Only applicable to PCI systems.
 
+Option 1
+--------
+
 When using DMA_MODE=1 and adding "mem=" to your boot loader, you will not able to set "mem=" to a value greater than approximately 3GB (it varies slightly from system to system). The Andor PCI card cannot utilize memory addresses above 4GB and the operating system cannot mark off regions below 4GB for driver usage while still using memory above 4GB for general application use. This means that to use an Andor PCI card in a system with over 3GB of RAM, you will need to use "mem=3000" and the memory above 3GB cannot be used by the operating system.
 
 It may be possible to overcome this issue, however, by rebuilding the Andor driver module with an alternate configuration. The driver can be compiled so that the DMA occurs in a region of memory allocated by a call to "get_free_pages". This is currently used in DMA_MODE=0 (line transfer mode) but this function has a limit to the amount of memory it can allocate and this is why it is normally not used for image DMA transfer.
 
-The memory allocation is specified as an order-of-2 pages and the limit for earlier kernels was 5 (i.e. 2^5 = 32 pages, 4KB pages equates to 128KB). In the Andor code we have defined the order as 5 thus limiting the allocation to 128KB. This is fine for line transfers but not for image transfers. More modern kernels, with systems being fitted with larger memory footprints, have a higher maximum order (2 to the power of 10 or 11 which equates to 4MB or 8MB). By modifying the define, DMA_PAGE_ORD (line 34), in "andor.c" to a different value and changing line 91 from,
+The memory allocation is specified as an order-of-2 pages and the limit for earlier kernels was 5 (i.e. 2^5 = 32 pages, 4KB pages equates to 128KB). In the Andor code we have defined the order as 5 thus limiting the allocation to 128KB. This is fine for line transfers but not for image transfers. More modern kernels, with systems being fitted with larger memory footprints, have a higher maximum order (2 to the power of 10 or 11 which equates to 4MB or 8MB). By modifying the define, DMA_PAGE_ORD (line 34), in "andor.c" to a different value and changing lines 91,150 and 222 from,
 
       if (DMA_MODE == 0) {
       
@@ -194,3 +197,17 @@ By looking in your kernel source you should be able to see what your maximum ord
 
 WARNING: Note that the reason this limit is in place is because the memory allocation may fail the larger it gets i.e. it is more unlikely to find a contiguous block of the size requested. Increasing the value may cause your operating system to become unstable or your camera software to fail. This warning should be considered when attempting this mod.
 
+Option 2
+--------
+
+It may be possible to update the kernel to reserve an area of memory by adding  "memmap=?M\$????M" to the kernel boot command line in GRUB.  This reserves ?MB of RAM at the Physical address ????M so that it will not be used by the Kernel and is free to be accessed for DMA.   
+Example demonstarting reserving 8MB of memory at 1024M physical address (assuming GRUB2):
+  open /etc/default/grub as superuser;
+  find and edit GRUB_CMDLINE_LINUX_DEFAULT as follows - GRUB_CMDLINE_LINUX_DEFAULT="quiet splash memmap=8M\\\$1024M"
+Note the escape character('\') as it is important the correct number (3) of these are included.
+  Save and close the file;
+  run update-grub.
+
+To ensure the PCI driver uses the reserved memory it is necessary to add the DMA_SIZE and DMA_ADDRESS parameters to the module load script in /etc/rc.local like so: DMA_ADDRESS=1024 DMA_SIZE=8.
+
+WARNING: This has not been fully verified to work for all systems and is therefore not guaranteed.
