@@ -570,11 +570,16 @@ namespace eval bdi_tools_psf {
    # @param s pointeur d'une source qui se verra modifiee
    # @return void
    #
-   proc ::bdi_tools_psf::get_psf_source { p_s } {
+   proc ::bdi_tools_psf::get_psf_source { p_s  { manual "no" } } {
 
       upvar $p_s s
       
-      set xy       [::bdi_tools_psf::get_xy s]
+      if {$manual == "yes" } {
+         set xy  [list [lindex $s {0 2 2}] [lindex $s {0 2 3}] ]
+      } else {
+         set xy  [::bdi_tools_psf::get_xy s]
+      }
+
       set othf_old [::bdi_tools_psf::get_astroid_othf_from_source $s]
       set p        [::bdi_tools_psf::get_otherfields_astroid]
       if {[llength $othf_old ] !=  [llength $p ]} {
@@ -595,10 +600,11 @@ namespace eval bdi_tools_psf {
          }
 
          "globale" {
+            #gren_info "xy = $xy\n"
             set err [ catch { set othf [::bdi_tools_methodes_psf::globale [lindex $xy 0] [lindex $xy 1] $::audace(bufNo)] } msg ]
             if {$err} {
-               #gren_erreur "err = $err\n"
-               #gren_erreur "msg = $msg\n"
+               gren_erreur "err = $err\n"
+               gren_erreur "msg = $msg\n"
                return -code 10 "Globale PSF impossible"
                
             }
@@ -612,6 +618,7 @@ namespace eval bdi_tools_psf {
          }
       
       }
+       #gren_info "othf = $othf\n"
       
       # Affichage des resultats dans la console
       #::bdi_tools_psf::gren_astroid othf
@@ -626,10 +633,10 @@ namespace eval bdi_tools_psf {
       
       # on nomme la source
       set name_cata [::manage_source::namable $s]
-      gren_erreur "name_cata = $name_cata\n"
+       #gren_erreur "name_cata = $name_cata\n"
       if {$name_cata!=""} {
          set name_source [::manage_source::naming $s $name_cata]
-         gren_erreur "name_source = $name_source\n"
+         #gren_erreur "name_source = $name_source\n"
          ::bdi_tools_psf::set_by_key othf_old "name" $name_source
       }
 
@@ -637,7 +644,7 @@ namespace eval bdi_tools_psf {
       set err_psf [::bdi_tools_psf::get_val othf_old "err_psf"]
       if {$err_psf == "" } {
          ::bdi_tools_psf::set_astroid_in_source s othf_old
-         #gren_info "s = $s\n"
+          #gren_info "s = $s\n"
       } else {
          gren_erreur "Erreur PSF\n"
       }
@@ -663,7 +670,7 @@ namespace eval bdi_tools_psf {
    # ::analyse_source::psf
    # Mesure de PSF d'une source
    #
-   proc ::bdi_tools_psf::get_psf_listsources { p_listsources } {
+   proc ::bdi_tools_psf::get_psf_listsources { p_listsources { manual "no" } } {
    
       upvar $p_listsources listsources
     
@@ -672,7 +679,7 @@ namespace eval bdi_tools_psf {
       set pass "no"
       set id 0     
       foreach s $sources {
-         set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
+         set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s $manual] } msg ]
          
          if {$id == -1} {
             gren_info "err=$err\n"
@@ -681,6 +688,7 @@ namespace eval bdi_tools_psf {
          }
          
          if {$err} {
+              gren_erreur "err=$err $msg\n"
             ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
             if { $err_psf != ""} {
@@ -689,13 +697,16 @@ namespace eval bdi_tools_psf {
                set pass "yes"
             }
          }
+         #gren_info "s = $s\n"
          set sources [lreplace $sources $id $id $s]
          incr id
       }
-
       if {$pass=="no"} { return }
       
+      set listsources [list $fields $sources]
       ::bdi_tools_psf::set_fields_astroid listsources
+
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
       ::bdi_tools_psf::set_mag listsources
       
       return

@@ -874,7 +874,7 @@ namespace eval gui_cata_creation {
       
       gren_info "     Mesure des PSF\n"
       
-      ::bdi_tools_psf::get_psf_listsources listsources
+      ::bdi_tools_psf::get_psf_listsources listsources "yes"
       gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       gren_info "     Creation des fichiers et lancement de Priam\n"
