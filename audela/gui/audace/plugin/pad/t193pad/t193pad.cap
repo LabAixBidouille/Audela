@@ -74,7 +74,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,stopGoto)          "STOP"
    set caption(t193pad,RA)                "AD"
    set caption(t193pad,DEC)               "Déc."
-   set caption(t193pad,activeFleches)     "# Activer les flèches\ndu clavier"
+   set caption(t193pad,activeFleches)     "Abilita i tasti\nfreccia"
 
    set caption(t193pad,moteur_foc)        "Motore della focheggiamento"
    set caption(t193pad,gotoFoc)           "GOTO focheg."
