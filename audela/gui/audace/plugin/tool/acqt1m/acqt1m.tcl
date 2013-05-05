@@ -2766,7 +2766,7 @@ proc ::acqt1m::dernierFichier { visuNo } {
 
 proc ::acqt1m::get_filename { visuNo } {
 
-   global panneau
+   global panneau audace
 
    set bufNo [ visu$visuNo buf ]
    set key [ buf$bufNo getkwd "DATE-OBS" ]
@@ -2818,9 +2818,15 @@ proc ::acqt1m::get_filename { visuNo } {
       set dec [mc_angle2deg $panneau(acqt1m,$visuNo,dec)]
       buf$bufNo setkwd [list "DEC" $dec float "Declination" "degrees"]
    }
+
+   # hauteur du soleil
+   set t [lindex [mc_ephem sun now -equinox apparent] 0]
+   set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $audace(posobs,observateur,gps) now] 1]
+   gren_info "Sun Elev = [mc_angle2dms $sunelev string 2]\n"
+   buf$bufNo setkwd [list "SUNELEV" $sunelev float "Sun Elevation" "degrees"]
    
-  
-   if {$panneau(acqt1m,$visuNo,launchastroid)} {
+        
+   if {$panneau(acqt1m,$visuNo,launchastroid) && $type=="IMG"} {
        ::t1mastroid::astroid_acqu $visuNo
    }
 

@@ -31,9 +31,9 @@ set paramhorloge(new,dec)    "$paramhorloge(dec)"
 #--- Create the toplevel window
 set base .horloge_astro
 toplevel $base -class Toplevel
-wm geometry $base 700x520+10+10
+wm geometry $base 700x530+10+10
 wm focusmodel $base passive
-wm minsize $base 700 520
+wm minsize $base 700 530
 wm resizable $base 1 1
 wm deiconify $base
 wm title $base "$caption(horloge_astro,titre)"
@@ -88,6 +88,13 @@ proc calcul { } {
          set secz "$caption(horloge_astro,horizon)"
       }
       $base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"
+      
+      set t [lindex [mc_ephem sun now -equinox apparent] 0]
+      set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $paramhorloge(home) now] 1]
+      set sunelev [mc_angle2dms $sunelev string 2]
+      
+      
+      $base.f.lab_sunlev configure -text "Sun Elev =  ${sunelev}"
       update
       #--- An infinite loop to change the language interactively
       after 1000 ::calcul
@@ -104,10 +111,6 @@ proc met_a_jour { } {
 }
 
 frame $base.f -bg $paramhorloge(color,back)
-   label $base.f.lab_titre \
-      -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-      -font $paramhorloge(font) -text "$caption(horloge_astro,titre)"
-   pack $base.f.lab_titre
    #---
    label $base.f.lab_tu \
       -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
@@ -155,6 +158,10 @@ frame $base.f -bg $paramhorloge(color,back)
       -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
       -font $paramhorloge(font)
    pack $base.f.lab_secz -fill none -pady 2
+   label $base.f.lab_sunlev \
+      -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
+      -font $paramhorloge(font)
+   pack $base.f.lab_sunlev -fill none -pady 2
 pack $base.f -fill both
 
 bind $base.f.ra.ent1 <Enter> { met_a_jour }

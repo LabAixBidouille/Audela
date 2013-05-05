@@ -44,8 +44,10 @@ namespace eval ::t1mastroid {
 
       gren_info "ra = $ra   dec = $dec \n"
 
-      set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $audace(rep_userCatalogUsnoa2) -del_tmp_files 0 -yes_visu 0]} msg]
-
+      set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $audace(rep_userCatalogUsnoa2) -del_tmp_files 1 -yes_visu 0]} msg]
+      
+      file delete -force config.param config.sex default.nnw tt.log
+      
       if {$erreur} {
          if {[info exists nbstars]} {
             if {[string is integer -strict $nbstars]} {
@@ -123,6 +125,7 @@ namespace eval ::t1mastroid {
       global audace panneau
 
       set erreur [catch {set nbstars [calibwcs * * * * * USNO $audace(rep_userCatalogUsnoa2) -del_tmp_files 1 -yes_visu 0]} msg]
+      file delete -force config.param config.sex default.nnw tt.log
 
       if {$erreur} {
          if {[info exists nbstars]} {
