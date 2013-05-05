@@ -18,6 +18,7 @@ the CCD. The image is saved in file image.bmp*/
 #  include <fstream.h>
 #endif
 
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "atmcdLXd.h"

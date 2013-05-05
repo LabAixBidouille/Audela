@@ -143,8 +143,7 @@ extern struct Andor_Dev gpAndorDev[];
 
 int andor_open(struct inode *inode, struct file *filp);
 int andor_release(struct inode *inode, struct file *filp);
-int andor_ioctl(struct inode *inode, struct file *filp,
-              unsigned int cmd, unsigned long arg);
+int andor_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
 int andor_fasync(int fd, struct file *filp, int mode);
 int andor_mmap(struct file *file, struct vm_area_struct *vma);
 int init_device(struct pci_dev* pciDev, int iCardNo);
