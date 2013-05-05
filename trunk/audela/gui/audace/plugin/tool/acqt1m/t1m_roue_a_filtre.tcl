@@ -432,6 +432,17 @@ namespace eval ::t1m_roue_a_filtre {
       global panneau
 
       set filtre $panneau(acqt1m,$visuNo,filtrecourant)
+      set pass "no"
+      for { set i 1 } {$i <= 9} {incr i} {
+         if {$filtre == [lindex $::t1m_roue_a_filtre::private(filtre,$i) 2]} {
+            set pass "yes"
+            break
+         }
+      }
+      if {$pass == "no"} {
+         ::t1m_roue_a_filtre::initFiltre $visuNo
+         return
+      }
 
       while {1==1} {
 

@@ -155,12 +155,7 @@ namespace eval ::acqt1m_offsetdark {
       }
 
 
-      set private(rep_images) [ file join $::audace(rep_images) "CALIB" ]
-      if { [file exists $private(rep_images)]==0} {
-         if { [ catch {file mkdir $private(rep_images)} msg] } {
-             ::console::affiche_erreur "$::caption(acqt1m_flatcielplus,msgRepertoire) $private(rep_images)/n"
-         }
-      }
+      set private(rep_images) $::audace(rep_images)
 
    }
 
@@ -650,6 +645,9 @@ namespace eval ::acqt1m_offsetdark {
 
       gren_info "\n\n nbimg = $::acqt1m_offsetdark::nbimg \n"
 
+      ::acqt1m::push_gui $visuNo
+      ::console::affiche_resultat "PUSH GUI\n"
+
 
       for {set x 0} {$x<$::acqt1m_offsetdark::nbtotal} {incr x} {
 
@@ -677,6 +675,9 @@ namespace eval ::acqt1m_offsetdark {
 
          }
       }
+
+      ::acqt1m::pop_gui $visuNo
+      ::console::affiche_resultat "POP GUI\n"
 
    }
 

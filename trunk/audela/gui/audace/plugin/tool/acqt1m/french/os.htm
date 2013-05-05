@@ -155,14 +155,24 @@
          rmdir src
          ln -s /data/src src
          chown -R t1m:users /usr/local
-   
+
+     </pre>
+
+  <h3>/srv/develop</h3>
+
+     <pre>
+      == Utilisateur root ==
+
+         cd /srv
+         ln -s /data/develop .
+
      </pre>
 
   <h3>Nedit</h3>
 
      <pre>
       == Utilisateur t1m ==
-       
+
          cd /usr/local/bin
          ln -s /usr/local/src/nedit-5.5-Linux-x86/nedit .
          ln -s /usr/local/src/nedit-5.5-Linux-x86/nc .
@@ -171,9 +181,9 @@
          mkdir .nedit
               cd .nedit
          vi nedit.rc
-   
+
          copier le contenu du fichier <a href="nedit.rc">nedit.rc</a>
-     
+
       == Utilisateur root ==
 
          su 
@@ -205,6 +215,13 @@
          vi .eclipse-rc
          copier le contenu du fichier <a href=".eclipse-rc">.eclipse-rc</a>
 
+      == Utilisateur root ==
+         cd
+         nedit .prompt
+         Modifier la ligne 45 : 
+            local USR_COLOUR=${GREEN}
+         par
+            local USR_COLOUR=${RED}
      </pre>
 
   <h3>Economiseur d'ecran</h3>
@@ -258,6 +275,32 @@
       aller sur la page : http://localhost/phpmyadmin
       entrer le mot de passe root
       enregister le mot de passe dans firefox
+     </pre>
+
+  <h3>Firefox</h3>
+
+     <pre>
+      == Firefox ==
+         
+         Outils / Modules Complementaires
+         Rechercher Xmarks
+         Installer
+         Redemarrer Firefox
+         "Cliquer Ici pour terminer l installation"
+         
+      == Xmarks ==
+         Dans Firefox : Outils / Xmarks / Parametres
+         Lancer l assistant de parametrage
+         User & Pass
+         decocher tout ce qui est proposé
+         Cocher : Conserver les donnees serveur supprimer celle de l ordinateur
+         Terminer
+
+      == Telechargement ==
+         Outils -> Preferences 
+         General
+         Telechargement
+         [X] Enregistrer les fichiers dans le dossier /home/t1m/Documents/Téléchargements
      </pre>
 
 

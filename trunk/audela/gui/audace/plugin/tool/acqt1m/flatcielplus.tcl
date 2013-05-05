@@ -666,6 +666,9 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
    proc ::acqt1m_flatcielplus::acqAutoFlat { visuNo } {
       variable private
 
+      ::acqt1m::push_gui $visuNo
+      ::console::affiche_resultat "PUSH GUI\n"
+
       ::acqt1m_flatcielplus::initTexteBoutonFiltre
 
       if { [ winfo exists $::audace(base).selection_filtre ] } {
@@ -865,6 +868,10 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
    proc ::acqt1m_flatcielplus::fermerAcqAutoFlat { visuNo } {
       variable private
 
+      ::acqt1m::pop_gui $visuNo
+      ::console::affiche_resultat "POP GUI\n"
+
+      ::acqt1m_flatcielplus::fermerAffichageChoixFiltres $visuNo
       set ::conf(acqt1m,avancement1,position) $private(avancement1,position)
       ::acqt1m_flatcielplus::recupPositionAcqAutoFlat
       destroy $::audace(base).selection_filtre
@@ -1074,10 +1081,13 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
          $::audace(base).selection_filtre.a2.lb2 configure -text [$private($visuNo,camera) shutter]
       }
       #--- Declenchement de l'acquisition
-      ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatcielplus::attendImage $visuNo" $exptime
+      puts "acquisition dark start"
+      ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatcielplus::attendImage fen $visuNo" $exptime
       #--- J'attends la fin de l'acquisition
       vwait ::acqt1m_flatcielplus::private(finAquisition)
+      puts "acquisition dark stop"
       $buffer save "mesurefond"
+      puts "acquisition dark save"
 
       set stat  [$buffer stat]
       set dark  [lindex $stat 4]
@@ -1099,6 +1109,8 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
       for {set id 0} {$id<$private(mynbflat)} {incr id} {
 
+      puts "flat start loop"
+
          if {$private(demande_stop)==1} {break}
 
          #--- Initialisation d'une variable
@@ -1116,12 +1128,16 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
                # Fond du ciel
                set exptime 1
                ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,mesureCiel) [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2] :\n"
+      puts "acquisition window $xmin $ymin $xmax $ymax"
                $private($visuNo,camera) window [list $xmin $ymin $xmax $ymax]
                #--- Declenchement de l'acquisition
-               ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatcielplus::attendImage $visuNo" $exptime
+      puts "acquisition flat start"
+               ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatcielplus::attendImage fen $visuNo" $exptime
                #--- J'attends la fin de l'acquisition
                vwait ::acqt1m_flatcielplus::private(finAquisition)
+      puts "acquisition flat stop"
                $buffer save "mesurefond"
+      puts "acquisition flat save"
 
                set stat  [$buffer stat]
                set ciel  [lindex $stat 4]
@@ -1131,12 +1147,16 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
                if {[expr $ciel+$stdev]<$private(maxdyn)} {
 
+                  puts "[expr $ciel+$stdev] < $private(maxdyn)"
+                  
                   #--- image non saturee
                   set exptime [format "%0.1f" [expr $fondflat/($ciel - $dark)]]
                   if {$exptime<0} {
                      ::console::affiche_resultat "\n\n$::caption(acqt1m_flatcielplus,probleme)\n"
                      ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,verification)\n"
-                     exit
+                     puts "exptime = $exptime"
+                     set exptime 1
+                     continue
                   }
 
                   #--- comparaison du temps d'exposition avec les limites mini et maxi
@@ -1190,6 +1210,9 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
                } else {
 
+                  puts "[expr $ciel+$stdev] >= $private(maxdyn)"
+                  
+                  
                   #--- Saturation on divise le temps d'exposition par 3
                   set exptime [format "%0.1f" [expr $exptime / 3.]]
 
@@ -1227,6 +1250,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
 
          }
 
+      puts "flat lo"
 
          #--- Bouton Stop Auto Flats actif
          if [ winfo exists $::audace(base).selection_filtre ] {
@@ -1239,11 +1263,13 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
          $private($visuNo,camera) window [list 1 1 [lindex $private(nbcells) 0] [lindex $private(nbcells) 1] ]
          $private($visuNo,camera) shutter synchro
          #--- Declenchement de l'acquisition
-         ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatcielplus::attendImage $visuNo" $exptime
+         ::camera::acquisition $private($visuNo,camItem) "::acqt1m_flatcielplus::attendImage img $visuNo" $exptime
          #--- Je lance la boucle d'affichage de l'avancement
          after 10 ::acqt1m_flatcielplus::dispTime $visuNo $exptime
          #--- J'attends la fin de l'acquisition
          vwait ::acqt1m_flatcielplus::private(finAquisition)
+
+      puts "flat la"
 
          set stat   [$buffer stat]
          set pixmin [lindex $stat 3]
@@ -1264,6 +1290,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
          set fondflat [expr $private(maxdyn) * ($fondflat/$private(maxdyn) + $offset)]
          ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,fondflat2) $fondflat\n"
 
+      puts "flat ici et la"
 
          set enr 0
          while {$enr == 0 && $ciel>1} {
@@ -1291,6 +1318,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
             }
          }
 
+      puts "flat sici"
          if {$num>$private(mynbflat)} {
 
             bell
@@ -1352,14 +1380,14 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
    # attendImage
    #    Controle de la thread d'acquisition
    #------------------------------------------------------------
-   proc ::acqt1m_flatcielplus::attendImage { visuNo message args } {
+   proc ::acqt1m_flatcielplus::attendImage { type visuNo message args } {
       variable private
 
       switch $message {
          "autovisu" {
             #--- ce message signale que l'image est prete dans le buffer
             #--- on peut l'afficher sans attendre la fin complete de la thread de la camera
-            ::confVisu::autovisu $visuNo
+            if {$type == "img"} {::confVisu::autovisu $visuNo}
          }
          "acquisitionResult" {
             #--- ce message signale que la thread de la camera a termine completement l'acquisition

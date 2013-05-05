@@ -10,6 +10,7 @@
 #==============================================================
 
 namespace eval ::acqt1m {
+
    package provide acqt1m 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -36,27 +37,47 @@ namespace eval ::acqt1m {
 
 
 proc ::acqt1m::ressource { } {
-   global audace caption
 
-   ::console::affiche_resultat "$caption(acqt1m,rechargeScripts)"
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1mSetup.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m dlgshiftt1m.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m gps.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.cap ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m offsetdark.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m configuration.tcl ]\""
+      global audace caption
 
-   if {$::tcl_platform(os)=="Linux"} {
-      load libmeinberg[info sharedlibextension]
+      ::console::affiche_resultat "$caption(acqt1m,rechargeScripts)"
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1m.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m cycle.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m t1m_roue_a_filtre.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m acqt1mSetup.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m dlgshiftt1m.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m gps.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m flatcielplus.cap ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m offsetdark.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m configuration.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m mycycle.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m astroid.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m horloge_astro2.tcl ]\""
+
+      # bddimages
+      source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid visu.tcl ]
+      source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid manage_source.tcl ]
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata.tcl ]\""
+      source [file join $audace(rep_install) gui audace plugin tool bddimages utils astroid get_skybot.tcl]
+
+      package require math::statistics
+      load libcatalog[info sharedlibextension]
+
+      if {$::tcl_platform(os)=="Linux"} {
+         set err [catch {load libmeinberg[info sharedlibextension]} msg]
+         if {$err} {
+            gren_erreur "Meinberg ERR = $err ($msg)\n"
+         }
+      }
+
+      set ::cycle::go 0
+
    }
-}
 
 
 
@@ -298,7 +319,6 @@ proc ::acqt1m::getPluginProperty { propertyName } {
 #------------------------------------------------------------
 proc ::acqt1m::getPluginTitle { } {
    global caption
-
    return "$caption(acqt1m,titre)"
 }
 
@@ -458,6 +478,7 @@ proc ::acqt1m::initPlugin { tkbase } {
 
 #***** Procedure Demarrageacqt1m ********************************
 proc ::acqt1m::Demarrageacqt1m { visuNo } {
+
    global audace caption
 
    #--- Creation du sous-repertoire a la date du jour
@@ -526,6 +547,7 @@ proc ::acqt1m::Demarrageacqt1m { visuNo } {
 
 #***** Procedure Arretacqt1m ************************************
 proc ::acqt1m::Arretacqt1m { visuNo } {
+
    global audace caption panneau
 
    #--- Fermeture du fichier de log
@@ -569,6 +591,7 @@ proc ::acqt1m::Arretacqt1m { visuNo } {
 
 #***** Procedure initExtensionList ********************************
 proc ::acqt1m::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
+
    global caption conf panneau
 
    #--- Mise a jour de l'extension par defaut
@@ -600,6 +623,7 @@ proc ::acqt1m::initExtensionList { visuNo { a "" } { b "" } { c "" } } {
 
 #***** Procedure adaptOutilAcqt1m *******************************
 proc ::acqt1m::adaptOutilAcqt1m { visuNo args } {
+
    global conf panneau
 
    set panneau(acqt1m,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
@@ -678,6 +702,7 @@ proc ::acqt1m::adaptOutilAcqt1m { visuNo args } {
 
 #***** Procedure chargerVariable *******************************
 proc ::acqt1m::chargerVariable { visuNo } {
+
    variable parametres
 
    #--- Ouverture du fichier de parametres
@@ -730,7 +755,9 @@ proc ::acqt1m::chargerVariable { visuNo } {
 
 #***** Procedure enregistrerVariable ***************************
 proc ::acqt1m::enregistrerVariable { visuNo } {
+
    variable parametres
+
    global panneau
 
    #---
@@ -801,6 +828,7 @@ proc ::acqt1m::push_gui { visuNo } {
       set parametres_sav(acqt1m,$visuNo,indexer)                               $panneau(acqt1m,$visuNo,indexer)                           
       set parametres_sav(acqt1m,$visuNo,save_file_log)                         $panneau(acqt1m,$visuNo,save_file_log)                     
       set parametres_sav(acqt1m,$visuNo,index)                                 $panneau(acqt1m,$visuNo,index)                             
+      set parametres_sav(acqt1m,$visuNo,verifier_index_depart)                 $panneau(acqt1m,$visuNo,verifier_index_depart)                             
       set parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)    $panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)
       set parametres_sav(acqt1m,$visuNo,avancement_acq)                        $panneau(acqt1m,$visuNo,avancement_acq)                    
       set parametres_sav(acqt1m,$visuNo,indexerContinue)                       $panneau(acqt1m,$visuNo,indexerContinue)                   
@@ -834,6 +862,7 @@ proc ::acqt1m::push_gui { visuNo } {
          ::console::affiche_resultat "indexer                            = $parametres_sav(acqt1m,$visuNo,indexer)                           \n"
          ::console::affiche_resultat "save_file_log                      = $parametres_sav(acqt1m,$visuNo,save_file_log)                     \n"
          ::console::affiche_resultat "index                              = $parametres_sav(acqt1m,$visuNo,index)                             \n"
+         ::console::affiche_resultat "verifier_index_depart              = $parametres_sav(acqt1m,$visuNo,verifier_index_depart)             \n"
          ::console::affiche_resultat "enregistrer_acquisiton_interrompue = $parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)\n"
          ::console::affiche_resultat "avancement_acq                     = $parametres_sav(acqt1m,$visuNo,avancement_acq)                    \n"
          ::console::affiche_resultat "indexerContinue                    = $parametres_sav(acqt1m,$visuNo,indexerContinue)                   \n"
@@ -921,6 +950,7 @@ proc ::acqt1m::pop_gui { visuNo } {
       set panneau(acqt1m,$visuNo,indexer)                            $parametres_sav(acqt1m,$visuNo,indexer)                               
       set panneau(acqt1m,$visuNo,save_file_log)                      $parametres_sav(acqt1m,$visuNo,save_file_log)                         
       set panneau(acqt1m,$visuNo,index)                              $parametres_sav(acqt1m,$visuNo,index)                                 
+      set panneau(acqt1m,$visuNo,verifier_index_depart)              $parametres_sav(acqt1m,$visuNo,verifier_index_depart)                                 
       set panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue) $parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)    
       set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)                        
       set panneau(acqt1m,$visuNo,indexerContinue)                    $parametres_sav(acqt1m,$visuNo,indexerContinue)                       
@@ -935,6 +965,7 @@ proc ::acqt1m::pop_gui { visuNo } {
 
       ::acqt1m::changebinning $visuNo   
       ::acqt1m::setShutter $visuNo $panneau(acqt1m,$visuNo,obt)
+      
       ::t1m_roue_a_filtre::changeFiltreInfini $visuNo
 
       return
@@ -1263,6 +1294,7 @@ proc ::acqt1m::testParametreAcquisition { visuNo } {
 
    #--- Tester si une camera est bien selectionnee
    if { [ ::confVisu::getCamItem $visuNo ] == "" } {
+      set ::cycle::stop 1
       ::audace::menustate disabled
       set choix [ tk_messageBox -title $caption(acqt1m,pb) -type ok \
          -message $caption(acqt1m,selcam) ]
@@ -2304,6 +2336,7 @@ proc ::acqt1m::Go { visuNo } {
 #    rien
 #------------------------------------------------------------
 proc ::acqt1m::callbackAcquisition { visuNo message args } {
+
    switch $message {
       "autovisu" {
          #--- ce message signale que l'image est prete dans le buffer
@@ -2740,13 +2773,43 @@ proc ::acqt1m::get_filename { visuNo } {
    set iso [lindex $key 1]
    set ctrl [ scan $iso "%4s-%2s-%2sT%2s:%2s:%2s.%3s" a m j h min sec ms ]
 
+   set obj [string trim [string tolower $panneau(acqt1m,$visuNo,object)] ]
+   set filtre $panneau(acqt1m,$visuNo,filtrecourant)
+   set bin $panneau(acqt1m,$visuNo,binning)
+
+   switch $obj {
+      "flat" -
+      "plat"   { 
+               set type "FLAT"
+               set object "FLAT"
+               set dirfinal "CALIB/"
+               }
+      "offset" -
+      "bias"   {
+               set type "OFFSET" 
+               set object "OFFSET"
+               set dirfinal "CALIB/"
+               set filtre "none"
+               }
+      "dark" -
+      "noir"   {
+               set type "DARK"
+               set object "DARK"
+               set dirfinal "CALIB/"
+               set filtre "none"
+               }
+      default  {
+               set type "IMG"
+               set object [string trim $panneau(acqt1m,$visuNo,object)]
+               set dirfinal ""
+               }
+   }
+
    buf$bufNo setkwd [list "TELESCOP" "t1m" string "Telescop name" ""]
-   buf$bufNo setkwd [list "FILTER" $panneau(acqt1m,$visuNo,filtrecourant) string "Filter used" ""]
-   buf$bufNo setkwd [list "OBJECT" $panneau(acqt1m,$visuNo,object) string "Name or catalog number of object being imaged" ""]
+   buf$bufNo setkwd [list "FILTER" $filtre string "Filter used" ""]
+   buf$bufNo setkwd [list "OBJECT" $object string "Name or catalog number of object being imaged" ""]
    buf$bufNo setkwd [list "CCDGAIN" "4.8" float "CCD gain" "electrons/adu"]
-   #buf$bufNo setkwd [list "CCDTEMP" [cam1 temperature] float "CCD temperature" "degrees celsius"]
-   #buf$bufNo setkwd [list "FOCLEN" 12.662879 float "Focal length" "meter"]
-   #buf$bufNo setkwd [list "CROTA2" 0 float "Position angle" "deg"]
+   
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
       set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
       buf$bufNo setkwd [list "RA" $ra float "Right Ascension" "degrees"]
@@ -2755,22 +2818,36 @@ proc ::acqt1m::get_filename { visuNo } {
       set dec [mc_angle2deg $panneau(acqt1m,$visuNo,dec)]
       buf$bufNo setkwd [list "DEC" $dec float "Declination" "degrees"]
    }
+   
+  
+   if {$panneau(acqt1m,$visuNo,launchastroid)} {
+       ::t1mastroid::astroid_acqu $visuNo
+   }
 
-   #set key [ buf$bufNo getkwd "BIN1" ]
-   #set bin1 [lindex $key 1]
-   #if {$bin1!=""} {
-   #   set size [expr 13.5 * $bin1]
-   #   buf$bufNo setkwd [list "PIXSIZE1" $size float "Pixel size x" "micrometer"]
-   #}
-   #set key [ buf$bufNo getkwd "BIN2" ]
-   #set bin2 [lindex $key 1]
-   #if {$bin2!=""} {
-   #   set size [expr 13.5 * $bin2]
-   #   buf$bufNo setkwd [list "PIXSIZE2" $size float "Pixel size y" "micrometer"]
-   #}
+
+   # Champs BDDIMAGES
+   ::bddimagesAdmin::bdi_setcompat $bufNo
+   set key [buf$bufNo getkwd "BDDIMAGES STATE"]
+   set key [lreplace $key 1 1 "RAW"]
+   buf$bufNo setkwd $key
+   
+   set key [buf$bufNo getkwd "BDDIMAGES TYPE"]
+   set key [lreplace $key 1 1 $type]
+   buf$bufNo setkwd $key
+
+   if {$dirfinal!=""} {
+      set rep [ file join $::audace(rep_images) "CALIB" ]
+      if { [file exists $rep]==0} {
+         if { [ catch {file mkdir $rep} msg] } {
+             ::console::affiche_erreur "$::caption(acqt1m_flatcielplus,msgRepertoire) $rep/n"
+         }
+      }
+   }
 
    #--- Generer le nom du fichier
-   return [list $bufNo "T1M_${a}${m}${j}_${h}${min}${sec}_${ms}_$panneau(acqt1m,$visuNo,object)_Filtre_$panneau(acqt1m,$visuNo,filtrecourant)_bin$panneau(acqt1m,$visuNo,binning)"]
+   return [list $bufNo \
+                "${dirfinal}T1M_${a}${m}${j}_${h}${min}${sec}_${ms}_${object}_Filtre_${filtre}_bin${bin}"\
+                ]
 }
 
 
@@ -2824,6 +2901,7 @@ proc ::acqt1m::SauveUneImage { visuNo } {
    set filenamelist [::acqt1m::get_filename $visuNo]
    set nom   [lindex $filenamelist 1]
    set bufNo [lindex $filenamelist 0]
+
    ::console::affiche_resultat "nom = $nom\n"
 
    #--- Pour eviter un nom de fichier qui commence par un blanc
@@ -3377,11 +3455,13 @@ proc ::acqt1m::recup_position_1 { visuNo } {
 
 #***** Affichage de la fenetre de configuration de WebCam ************
 proc ::acqt1m::webcamConfigure { visuNo } {
+
    global audace caption
 
    set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
    if { $result == "1" } {
       if { [ ::confVisu::getCamItem $visuNo ] == "" } {
+         set ::cycle::stop 1
          ::audace::menustate disabled
          set choix [ tk_messageBox -title $caption(acqt1m,pb) -type ok \
             -message $caption(acqt1m,selcam) ]
@@ -3454,21 +3534,105 @@ proc ::acqt1m::gps_open { visuNo } {
 
 
 
+proc ::acqt1m::ccdtemp { visuNo } {
+      
+      global  panneau
+      
+      set camNo $panneau(acqt1m,$visuNo,camNo)
+      if { $camNo == "0" } {
+         ::console::affiche_resultat "il n y a pas de camera\n"
+      } else {
+         set state [ cam$camNo cooler ]
+         if {$state != "off"} {
+            set cons [lindex $state 1]
+            if {[string is double $cons]} {
+               set cons [format "%.1f" $cons]
+               set cons "Consigne = $cons °C"
+            } else {
+               set cons ""
+            }
+            set state "on"
+         }
+         set err [catch {set temp  [format "%.1f" [ cam$camNo native GetTemperature ] ] } msg ]
+         if {$err} {
+            gren_erreur "$err $msg\n"
+            return
+         }
+         #set cons  [format "%.1f" [ cam$camNo cooler check  ] ]
+         ::console::affiche_resultat "Refroidissement ($state)  Temperature CCD = $temp °C  $cons\n"
+      }
+}
 
 
+   proc ::acqt1m::saturation { visuNo } {
+
+      set max 50000
+
+      set bufNo  [ ::confVisu::getBufNo $visuNo ]
+      set naxis1 [ lindex [ buf$bufNo getkwd NAXIS1 ] 1 ]
+      set naxis2 [ lindex [ buf$bufNo getkwd NAXIS2 ] 1 ]
+
+      affich_un_rond_xy [expr int($naxis1/2)] [expr int($naxis2/2)] "yellow" 5 1
+
+      set err [ catch {set rect  [ ::confVisu::getBox $visuNo ]} msg ]
+      if {$err>0 || $rect==""} {
+         tk_messageBox -message "Veuillez selectionner un carré dans l'image" -type ok
+         return
+      }
+      set x1 [lindex $rect 0]
+      set y1 [lindex $rect 1]
+      set x2 [lindex $rect 2]
+      set y2 [lindex $rect 3]
+      
+      if {$x1<$x2} {
+        set xa $x1
+        set xb $x2
+      } else {
+        set xa $x2
+        set xb $x1
+      }
+      if {$y1<$y2} {
+        set ya $y1
+        set yb $y2
+      } else {
+        set ya $y2
+        set yb $y1
+      }
+      
+      set step [expr ( ( $xb - $xa + 1) / 10)]
+      set pass [expr $step + $xa - 1 ]
+      set cpt 0
+#      ::console::affiche_resultat "Recherche des Pixels satures\n"
+#      ::console::affiche_resultat ".# .# .# .# .# .# .# .# .# .#\n"
+      for {set x $xa} {$x <= $xb} {incr x} {
+         if {$x > $pass} {
+#            ::console::affiche_resultat "."
+            incr pass $step
+         }
+         for {set y $ya} {$y <= $yb} {incr y} {
+         
+            set a [buf$bufNo getpix [list $x $y]]
+            set adu [lindex $a 1]
+            if {$adu > $max} {
+              #::console::affiche_resultat "$x $y $adu \n"
+              affich_un_rond_xy $x $y "red" 2 2
+              incr cpt
+            }
+         }
+      }
+#      ::console::affiche_resultat "\n"
+      ::console::affiche_resultat "Nb saturated pixel : $cpt \n"
+   }
 
 
-
-
-
-
-
-
-
-
-
-
-
+   proc ::acqt1m::horloge_astro {  } {
+      
+      global audace
+      
+      if {![winfo exists .horloge_astro]} {
+         horloge_astro2
+      }
+   }
 
 
 
@@ -3756,6 +3920,10 @@ $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
 
       #--- Frame traitement special
       frame $panneau(acqt1m,$visuNo,This).special -borderwidth 2 -relief ridge
+         #--- Bouton Horloge astro
+         button $panneau(acqt1m,$visuNo,This).special.horloge -text "Horloge Astro" \
+            -command "::acqt1m::horloge_astro"
+         pack $panneau(acqt1m,$visuNo,This).special.horloge -side top -fill x -expand true
          #--- Bouton OFFSET/DARK
          button $panneau(acqt1m,$visuNo,This).special.offsetdark -text "OFFSET/DARK" \
             -command "::acqt1m_offsetdark::run $visuNo"
@@ -3768,6 +3936,31 @@ $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
          button $panneau(acqt1m,$visuNo,This).special.cyclepose -text "$caption(acqt1m,cycle)" \
             -command "::cycle::run $visuNo"
          pack $panneau(acqt1m,$visuNo,This).special.cyclepose -side top -fill x -expand true
+         #--- Bouton Astroid
+   
+         frame $panneau(acqt1m,$visuNo,This).special.astroid -borderwidth 2 -relief ridge
+         pack $panneau(acqt1m,$visuNo,This).special.astroid -side top -fill x -expand true
+
+            checkbutton $panneau(acqt1m,$visuNo,This).special.astroid.check -pady 0 \
+                  -variable panneau(acqt1m,$visuNo,launchastroid)
+            pack $panneau(acqt1m,$visuNo,This).special.astroid.check -side left -fill x -expand true
+
+            button $panneau(acqt1m,$visuNo,This).special.astroid.manuel -text "$caption(acqt1m,astroid)" \
+               -command "::t1mastroid::astroid $visuNo"
+            pack $panneau(acqt1m,$visuNo,This).special.astroid.manuel -side left -fill x -expand true
+
+         #--- Bouton CCD Temp
+         button $panneau(acqt1m,$visuNo,This).special.ccdtemp -text "$caption(acqt1m,ccdtemp)" \
+            -command "::acqt1m::ccdtemp $visuNo"
+         pack $panneau(acqt1m,$visuNo,This).special.ccdtemp -side top -fill x -expand true
+         #--- Bouton Saturation
+         button $panneau(acqt1m,$visuNo,This).special.saturation -text "$caption(acqt1m,saturation)" \
+            -command "::acqt1m::saturation $visuNo"
+         pack $panneau(acqt1m,$visuNo,This).special.saturation -side top -fill x -expand true
+         #--- Bouton Clean
+         button $panneau(acqt1m,$visuNo,This).special.clean -text "$caption(acqt1m,clean)" \
+            -command "cleanmark"
+         pack $panneau(acqt1m,$visuNo,This).special.clean -side top -fill x -expand true
          #--- Bouton Ressource
          button $panneau(acqt1m,$visuNo,This).special.ressource -text "$caption(acqt1m,ressource)" \
             -command "::acqt1m::ressource"
@@ -3778,3 +3971,45 @@ $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
       ::confColor::applyColor $panneau(acqt1m,$visuNo,This)
 }
 
+
+
+proc subcrop { a b x y } {
+
+   set bufnoa [::buf::create]
+   set bufnob [::buf::create]
+   buf$bufnoa load $a
+   buf$bufnob load $b
+   
+   set naxis1 [ lindex [ buf$bufnoa getkwd NAXIS1 ] 1 ]
+   set naxis2 [ lindex [ buf$bufnoa getkwd NAXIS2 ] 1 ]
+   
+   if {$x > 0} { 
+      buf$bufnoa window [list $x 1 $naxis1 $naxis2]
+      buf$bufnob window [list 1 1 [expr $naxis1-$x+1] $naxis2]
+   }
+   if {$x < 0} {
+      set x [expr -$x]
+      buf$bufnoa window [list 1 1 [expr $naxis1-$x+1] $naxis2]
+      buf$bufnob window [list $x 1 $naxis1 $naxis2]
+   }
+   if {$y > 0} { 
+      buf$bufnoa window [list 1 $y $naxis1 $naxis2]
+      buf$bufnob window [list 1 1 $naxis1 [expr $naxis2-$y+1]]
+   }
+   if {$y < 0} {
+      set y [expr -$y]
+      buf$bufnoa window [list 1 1 $naxis1 [expr $naxis2-$y+1]]
+      buf$bufnob window [list 1 $y $naxis1 $naxis2]
+   }
+
+   buf$bufnob save b
+   buf$bufnoa save a
+   buf1 load a
+   buf1 sub b
+   buf1 save c
+   loadima c 
+   ::buf::delete  $bufnoa
+   ::buf::delete  $bufnob
+   
+
+}
