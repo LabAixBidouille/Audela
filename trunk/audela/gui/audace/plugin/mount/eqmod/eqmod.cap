@@ -102,22 +102,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Controllo"
    set caption(eqmod,raquette_tel)           "Pulsantiera a schermo"
 
-   set caption(eqmod,config_tube)            "# Configuration du tube :"
+   set caption(eqmod,config_tube)            "Configurazione del tubo:"
    set caption(eqmod,tube_ouest)             "Tubo a ovest"
    set caption(eqmod,tube_est)               "Tubo a est"
 
-   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,pos_tube)               "Posizione attuale del tubo:"
    set caption(eqmod,ouest)                  "Ovest"
    set caption(eqmod,est)                    "Est"
    set caption(eqmod,nord)                   "Nord"
    set caption(eqmod,sud)                    "Sud"
-   set caption(eqmod,pole_nord)              "# Pôle Nord"
-   set caption(eqmod,pole_sud)               "# Pôle Sud"
+   set caption(eqmod,pole_nord)              "Polo Nord"
+   set caption(eqmod,pole_sud)               "Polo Sud"
 
-   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
-   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
-   set caption(eqmod,limite_est)             "# Vers l'est (en h)"
-   set caption(eqmod,limite_ouest)           "# Vers l'ouest (en h)"
+   set caption(eqmod,retournement)           "Soglie di capovolgimento per un GOTO System:"
+   set caption(eqmod,reference)              "Distanza al Meridiano:"
+   set caption(eqmod,limite_est)             "Verso est (in h)"
+   set caption(eqmod,limite_ouest)           "Verso Ovest (in h)"
 
    set caption(eqmod,moteur_on)              "Motore On"
    set caption(eqmod,N/A)                    "------"
@@ -128,7 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Posizione Dec.:"
    set caption(eqmod,valeurDefaut)           "Valore di default:"
 
-   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
+   set caption(eqmod,positionMonture)        "Posizione della montatura:"
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
    set caption(eqmod,2points)                ":"
 
