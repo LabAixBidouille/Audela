@@ -125,7 +125,7 @@ set caption(ser2fits,hlp)                               "Help"
 set caption(ser2fits,close)                             "Close"
 set caption(ser2fits,attention)                         "Warning"
 set caption(ser2fits,no_ser)                            "No .SER file in this folder."
-set caption(ser2fits,invalid)                           "%s is not a valid input for %s !"
+set caption(ser2fits,invalid)                           "%s is not a valid input for %s!"
 
 set caption(pretraitement,all)                          "Convert all files"
 set caption(pretraitement,renum)                        "Renumber output images"
@@ -541,7 +541,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,close)                          "Chiudere"
    set caption(ser2fits,attention)                      "Attenzione"
    set caption(ser2fits,no_ser)                         "# Il n'y a pas de fichier .SER dans ce répertoire."
-   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s!"
 
    set caption(pretraitement,all)                       "Converti tutti i file"
    set caption(pretraitement,renum)                     "Ri-numerazione file in uscita"
@@ -957,7 +957,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,close)                          "Schließen"
    set caption(ser2fits,attention)                      "Achtung"
    set caption(ser2fits,no_ser)                         "# Il n'y a pas de fichier .SER dans ce répertoire."
-   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s!"
 
    set caption(pretraitement,all)                       "Alle Dateien konvertieren"
    set caption(pretraitement,renum)                     "Ausgabebilder wiedernummerieren"
@@ -1165,7 +1165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,close)                          "Fechar"
    set caption(ser2fits,attention)                      "Aviso"
    set caption(ser2fits,no_ser)                         "# Il n'y a pas de fichier .SER dans ce répertoire."
-   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s!"
 
    set caption(pretraitement,all)                       "Converter todos os ficheiros"
    set caption(pretraitement,renum)                     "Renumerar imagens de saída"
@@ -1373,7 +1373,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,close)                          "Luk"
    set caption(ser2fits,attention)                      "Advarsel"
    set caption(ser2fits,no_ser)                         "# Il n'y a pas de fichier .SER dans ce répertoire."
-   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s !"
+   set caption(ser2fits,invalid)                        "# %s n'est pas une entrée valide pour %s!"
 
    set caption(pretraitement,all)                       "Konverter alle filer"
    set caption(pretraitement,renum)                     "Giv output-billeder nyt nummer"
@@ -1581,7 +1581,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,close)                          "Close"
    set caption(ser2fits,attention)                      "Warning"
    set caption(ser2fits,no_ser)                         "No .SER file in this folder."
-   set caption(ser2fits,invalid)                        "%s is not a valid input for %s !"
+   set caption(ser2fits,invalid)                        "%s is not a valid input for %s!"
 
    set caption(pretraitement,all)                       "Convert all files"
    set caption(pretraitement,renum)                     "Renumber output images"
@@ -1789,7 +1789,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ser2fits,close)                          "Close"
    set caption(ser2fits,attention)                      "Warning"
    set caption(ser2fits,no_ser)                         "No .SER file in this folder."
-   set caption(ser2fits,invalid)                        "%s is not a valid input for %s !"
+   set caption(ser2fits,invalid)                        "%s is not a valid input for %s!"
 
    set caption(pretraitement,all)                       "Convert all files"
    set caption(pretraitement,renum)                     "Renumber output images"
