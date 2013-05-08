@@ -34,7 +34,7 @@
 # meteosensor_open AAG com1 cs1
 # # cs1
 # meteosensor_get cs1
-# # {SkyTemperature 20.83 Celcius {Sky temperature measured by an infrared sensor}} {SkyCover VeryCloudy text {A word that describes sky conditions}} {CloudSensorTemperature 24.73 Celcius Warm} {LDR 1535.3 kohms {Light Dependent Resistor}} {Brightness Light text {A word that describes brightness conditions}} {RainSensorTemperature 26.24 Warm} {PrecipitableWater Dry text {Rain or Wet or Dry}}
+# # {SkyTemperature 20.83 Celsius {Sky temperature measured by an infrared sensor}} {SkyCover VeryCloudy text {A word that describes sky conditions}} {CloudSensorTemperature 24.73 Celsius Warm} {LDR 1535.3 kohms {Light Dependent Resistor}} {Brightness Light text {A word that describes brightness conditions}} {RainSensorTemperature 26.24 Warm} {PrecipitableWater Dry text {Rain or Wet or Dry}}
 # meteosensor_close cs1
 # #
 #
@@ -431,7 +431,7 @@ proc aag_read { channel name} {
    } else {
       set com VeryCloudy
    }
-   set units Celcius
+   set units Celsius
    lappend ress [list SkyTemperature $val $units "Sky temperature measured by an infrared sensor"]
    lappend ress [list SkyCover $com text "A word that describes sky conditions"]
    # --- SensorTemp (small size sensor)
@@ -447,7 +447,7 @@ proc aag_read { channel name} {
    } else {
       set com VeryHot
    }
-   set units Celcius
+   set units Celsius
    lappend ress [list CloudSensorTemperature $val $units "$com"]
    # --- Light Dependent Resistor (medium size sensor)
    set res [aag_send $channel C $tempo]
@@ -482,7 +482,7 @@ proc aag_read { channel name} {
    } else {
       set com VeryHot
    }
-   set units Celcius
+   set units Celsius
    lappend ress [list RainSensorTemperature [format %.2f $TRain] "$com"]
    # --- Rain (large sensor)
    set res [aag_send $channel E $tempo]
@@ -684,8 +684,8 @@ proc wxt520_read { channel } {
       set res "$month $day $year $hour $min"
       set date "[format %04d $year]-[format %02d $month]-[format %02d $day]T[format %02d $hour]:[format %02d $min]:00"
       lappend resultat [list StationTime $date ISO8601 "Date of the last measurement"]
-      lappend resultat [list OutsideTemp [format %.1f $tempext] Celcius ""]
-      lappend resultat [list InsideTemp [format %.1f $tempint] Celcius ""]
+      lappend resultat [list OutsideTemp [format %.1f $tempext] Celsius ""]
+      lappend resultat [list InsideTemp [format %.1f $tempint] Celsius ""]
       lappend resultat [list OutsideHumidity [format %.1f $humext] Percent ""]
       lappend resultat [list HailRate [format %.1f $hailrate] impatcs/hour ""]
       lappend resultat [list Barometer [format %.1f $pression] mbar ""]
@@ -693,7 +693,7 @@ proc wxt520_read { channel } {
       lappend resultat [list WindSpeed [format %.1f $vitvent] m/s ""]
       lappend resultat [list WindDir [format %.1f $dirvent] deg "N=0, E=90"]
       lappend resultat [list WindDirCardinal $pcard text "Cadinal symbol of wind direction"]
-      lappend resultat [list DewPt [format %.1f $dewtemp] Celcius "Dew point"]
+      lappend resultat [list DewPt [format %.1f $dewtemp] Celsius "Dew point"]
    } ms ]
    if {$er==1} {
       error "Meteo problem ($ms)"
@@ -1048,8 +1048,8 @@ proc vantagepro_read { f name} {
    set er [catch {
       set date [mc_date2iso8601 now]
       lappend resultat [list StationTime $date ISO8601 "Date of the last measurement"]
-      lappend resultat [list OutsideTemp [format %.1f $tempext] Celcius ""]
-      lappend resultat [list InsideTemp [format %.1f $tempint] Celcius ""]
+      lappend resultat [list OutsideTemp [format %.1f $tempext] Celsius ""]
+      lappend resultat [list InsideTemp [format %.1f $tempint] Celsius ""]
       lappend resultat [list OutsideHumidity [format %.1f $humext] Percent ""]
       lappend resultat [list InsideHumidity [format %.1f $humint] Percent ""]
       lappend resultat [list Barometer [format %.1f $pression] mbar ""]
@@ -1057,7 +1057,7 @@ proc vantagepro_read { f name} {
       lappend resultat [list WindSpeed [format %.2f $vitvent] m/s ""]
       lappend resultat [list WindDir [format %.1f $dirvent] deg "N=0, E=90"]
       lappend resultat [list WindDirCardinal $pcard text "Cadinal symbol of wind direction"]
-      lappend resultat [list DewPt [format %.1f $dewtemp] Celcius "Dew point"]
+      lappend resultat [list DewPt [format %.1f $dewtemp] Celsius "Dew point"]
    } ms ]
    if {$er==1} {
       error "Bad date ($ms)"
@@ -1243,14 +1243,14 @@ proc vantagepronport_read { f g } {
       set res "$month $day $year $hour $min"
       set date "[format %04d $year]-[format %02d $month]-[format %02d $day]T[format %02d $hour]:[format %02d $min]:00"
       lappend resultat [list StationTime $date ISO8601 "Date of the last measurement"]
-      lappend resultat [list OutsideTemp [format %.1f $tempext] Celcius ""]
-      lappend resultat [list InsideTemp [format %.1f $tempint] Celcius ""]
+      lappend resultat [list OutsideTemp [format %.1f $tempext] Celsius ""]
+      lappend resultat [list InsideTemp [format %.1f $tempint] Celsius ""]
       lappend resultat [list OutsideHumidity [format %.1f $humext] Percent ""]
       lappend resultat [list Barometer [format %.1f $pression] mbar ""]
       lappend resultat [list WindSpeed [format %.1f $vitvent] m/s ""]
       lappend resultat [list WindDir [format %.1f $dirvent] deg "N=0, E=90"]
       lappend resultat [list WindDirCardinal $pcard text "Cadinal symbol of wind direction"]
-      lappend resultat [list DewPt [format %.1f $dewtemp] Celcius "Dew point"]
+      lappend resultat [list DewPt [format %.1f $dewtemp] Celsius "Dew point"]
    } ms ]
    if {$er==1} {
       error "Bad date ($ms)"
@@ -1294,11 +1294,11 @@ proc boltwood_read { filename } {
       set textes ""
       set texte "CloudStationTime [lindex $datas 0]T[lindex $datas 1] ISO8601 \"Date of the last measurement\""
       lappend textes $texte
-      set texte "CloudSkyTemp [lindex $datas 3] Celcius \"\""
+      set texte "CloudSkyTemp [lindex $datas 3] Celsius \"\""
       lappend textes $texte
-      set texte "CloudInsideTemp [lindex $datas 4] Celcius \"\""
+      set texte "CloudInsideTemp [lindex $datas 4] Celsius \"\""
       lappend textes $texte
-      set texte "CloudOutsideTemp [lindex $datas 5] Celcius \"\""
+      set texte "CloudOutsideTemp [lindex $datas 5] Celsius \"\""
       lappend textes $texte
       set texte "Heater [lindex $datas 6] percent \"\""
       lappend textes $texte
@@ -1659,30 +1659,31 @@ proc sentinel_skymonitor_open { } {
    global env
    package require twapi
    set pgm_tolaunch "SkyMonitor.exe"
-   set folder_tolaunch "Shelyak/Sentinel"
+   set folder_tolaunch [ file join Shelyak Sentinel ]
    set pidfore 0
    set pids [twapi::get_process_ids]
    foreach pid $pids {
       catch {set name [twapi::get_process_name $pid]}
       if {$name==$pgm_tolaunch} {
          set pidfore $pid
-         # return "$pgm_tolaunch already launched"
+         ::console::disp "$pgm_tolaunch already launched.\n"
          return ""
       }
    }
    if {$pidfore==0} {
       if {[catch {set env_program_files $env(ProgramFiles)}]==1} {
-         set env_program_files C:/Program Files
+         set env_program_files [ file join C Program Files ]
       }
-      set fic [file normalize "${env_program_files}/${folder_tolaunch}/${pgm_tolaunch}"]
+      set fic [file normalize [ file join ${env_program_files} ${folder_tolaunch} ${pgm_tolaunch} ]]
       if {[file exists $fic]==1} {
          twapi::create_process $fic
          after 2000
-         #return "$pgm_tolaunch launched"
+         ::console::disp "$pgm_tolaunch launched.\n"
          return ""
+      } else {
+         ::console::disp "$pgm_tolaunch not found.\n"
       }
    }
-   #return "$pgm_tolaunch not found"
 }
 
 proc sentinel_skymonitor_gain { {value ""} } {
@@ -1774,10 +1775,130 @@ proc sentinel_skymonitor_read { {filename ""} } {
          set unit [lrange $ligne 1 [expr $kequal-1]]
          regsub -all \\( $unit "" a ; set unit $a
          regsub -all \\) $unit "" a ; set unit $a
-         regsub -all °C $unit "Celcius" a ; set unit $a
+         regsub -all °C $unit "Celsius" a ; set unit $a
          regsub -all ° $unit "degrees" a ; set unit $a
          regsub -all % $unit "percent" a ; set unit $a
          regsub -all %RH $unit "percent" a ; set unit $a
+         set texte ""
+         if {[string compare $key "TempSkyIR"]==0} {
+            set valcor [format %.2f [expr ($val-$temp_ext)*$gain/1000.]]
+            set valcor [format %.2f [expr ($val*$gain/1000.-$temp_ext)]]
+            set texte "SkyTemp $valcor $unit"
+            lappend textes $texte
+            if {$valcor<-20} {
+               set texte "SkyCover Clear text"
+            } elseif {$valcor<-7} {
+               set texte "SkyCover Cloudy text"
+            } else {
+               set texte "SkyCover VeryCloudy text"
+            }
+            lappend textes $texte
+         }
+         if {[string compare $key "TempExt"]==0} {
+            set texte "OutTemp $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "WinDirection"]==0} {
+            set texte "WinDir $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "WindSpeedGust"]==0} {
+            set texte "WinSpeed $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "Humidity"]==0} {
+            set texte "Humidity $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "RainFall"]==0} {
+            if {$val=="No"} {
+               set valcor Dry
+            } else {
+               set valcor Rain
+            }
+            set texte "RainState $valcor" ; lappend texte $unit
+            lappend textes $texte
+         }
+         set texte "$key $val" ; lappend texte $unit
+         lappend textes $texte
+      }
+      set texte "Gain $gain" ; lappend texte "/1000"
+      lappend textes $texte
+   }
+   return $textes
+}
+
+proc sentinel_skymonitor_read_standard { {filename ""} } {
+   global audace caption
+   global env
+   if {$filename==""} {
+      set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+      set env_documents [ file normalize $mesDocuments ]
+      set fic [ file join $env_documents Sentinel Datas infodata.txt ]
+   } else {
+      set fic $filename
+   }
+   if {[file exists $fic]==0} {
+      return ""
+   }
+   set err [catch {
+      set f [open $fic r]
+      set lignes [split [read $f] \n]
+      close $f
+   } msg ]
+   set textes ""
+   if {$err==0} {
+      set y 2000
+      set m 1
+      set d 1
+      set hh 0
+      set mm 0
+      set ss 0
+      foreach ligne $lignes {
+         set key [lindex $ligne 0]
+         set val [lindex $ligne 2]
+         if {[string compare $key "DateYear"]==0} { set y $val }
+         if {[string compare $key "DateMonth"]==0} { set m $val }
+         if {[string compare $key "DateDay"]==0} { set d $val }
+         if {[string compare $key "DateHour"]==0} { set hh $val }
+         if {[string compare $key "DateMin"]==0} { set mm $val }
+         if {[string compare $key "DateSec"]==0} { set ss $val }
+      }
+      set texte [mc_date2iso8601 [list $y $m $d $hh $mm $ss]]
+      lappend textes $texte
+      set temp_ext 10
+      # Un gain est appliqué à la mesure interne du capteur; ce gain
+      # peut être modifié dans l'onglet de configuration; les valeurs
+      # typiques sont entre 400 et 800. Si vous sentez que la courbe de
+      # mesure des nuages est trop corrélée avec celle de la mesure de
+      # température extérieure, vous pouvez baisser la valeur de gain.
+      # Si elle est anti-corrélée, vous pouvez l'augmenter.
+      set gain [sentinel_skymonitor_gain]
+      foreach ligne $lignes {
+         set key [lindex $ligne 0]
+         set kequal [lsearch -exact $ligne =]
+         if {$kequal==-1} {
+            continue
+         }
+         set val [lindex $ligne [expr $kequal+1]]
+         if {[string compare $key "TempExt"]==0} {
+            set temp_ext $val
+         }
+      }
+      foreach ligne $lignes {
+         set key [lindex $ligne 0]
+         set kequal [lsearch -exact $ligne =]
+         if {$kequal==-1} {
+            continue
+         }
+         set val [lindex $ligne [expr $kequal+1]]
+         set unit [lrange $ligne 1 [expr $kequal-1]]
+         regsub -all \\( $unit "" a ; set unit $a
+         regsub -all \\) $unit "" a ; set unit $a
+         regsub -all °C $unit "$caption(meteosensor_tools,celsius)" a ; set unit $a
+         regsub -all ° $unit "$caption(meteosensor_tools,degres)" a ; set unit $a
+         regsub -all % $unit "$caption(meteosensor_tools,pourcent)" a ; set unit $a
+         regsub -all %RH $unit "$caption(meteosensor_tools,pourcent)" a ; set unit $a
          set texte ""
          if {[string compare $key "TempSkyIR"]==0} {
             set valcor [format %.2f [expr ($val-$temp_ext)*$gain/1000.]]
@@ -1838,7 +1959,7 @@ proc simulationmeteo_open { } {
    set values [list Clear -20 10 0 2 60 Dry]
    set ranges [list {Clear Cloudy VeryCloudy} {real number} {real number} {real number 0 to 360. 0=N, 90=E} {real positive number} {real number 0 to 100} {Dry Wet Rain}]
    set comments [list "Sky cover" "Sky temperature" "Outside temperature" "0=North 90=east" "Wind speed" "Humidity" "Dry or Wet or Rain"]
-   set units [list text Celcius Celcius deg m/s Percent text]
+   set units [list text Celsius Celsius deg m/s Percent text]
    set superkeys [list keys values ranges comments units]
    set n [llength $superkeys]
    for {set k 0} {$k<$n} {incr k} {
