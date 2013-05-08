@@ -192,7 +192,7 @@ set caption(pretraitement,image_a_choisir)              "To an Image on the Hard
 
 set caption(convfltr,titre)                             "Spatial Convolution"
 set caption(convfltr,selectfiltr)                       "Filter"
-set caption(convfltr,normalise)                         "Keep Dynamics"
+set caption(convfltr,normalise)                         "Keep Dynamic"
 set caption(convfltr,attention)                         "Warning"
 set caption(convfltr,appliquer)                         "Apply"
 set caption(convfltr,ok)                                "OK"
@@ -1648,7 +1648,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(convfltr,titre)                          "Spatial Convolution"
    set caption(convfltr,selectfiltr)                    "Filter"
-   set caption(convfltr,normalise)                      "Keep Dynamics"
+   set caption(convfltr,normalise)                      "Keep Dynamic"
    set caption(convfltr,attention)                      "Warning"
    set caption(convfltr,appliquer)                      "Apply"
    set caption(convfltr,ok)                             "OK"
@@ -1856,7 +1856,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(convfltr,titre)                          "Spatial Convolution"
    set caption(convfltr,selectfiltr)                    "Filter"
-   set caption(convfltr,normalise)                      "Keep Dynamics"
+   set caption(convfltr,normalise)                      "Keep Dynamic"
    set caption(convfltr,attention)                      "Warning"
    set caption(convfltr,appliquer)                      "Apply"
    set caption(convfltr,ok)                             "OK"

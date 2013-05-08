@@ -104,7 +104,7 @@ set caption(acqt1m,filtre)                    "Filter: "
 set caption(acqt1m,extensionFITS)             "Files Extension FITS:"
 set caption(acqt1m,rechargeScripts)           "Reload Scripts\n\n"
 
-set caption(acqt1m,ccdtemp)                   "CCD Temp"
+set caption(acqt1m,ccdtemp)                   "CCD Temperature"
 set caption(acqt1m,saturation)                "Saturation"
 set caption(acqt1m,clean)                     "Clean Marks"
 set caption(acqt1m,astroid)                   "Astroid"
@@ -205,6 +205,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Extension des fichiers FITS :"
    set caption(acqt1m,rechargeScripts)        "Re-charge les scripts\n\n"
 
+   set caption(acqt1m,ccdtemp)                "Température du CCD"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,astroid)                "# Astroid"
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -301,6 +306,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Estensione del file FITS:"
    set caption(acqt1m,rechargeScripts)        "Rilancia gli script\n\n"
 
+   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
+   set caption(acqt1m,saturation)             "# Saturation"
+   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,astroid)                "# Astroid"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -396,6 +406,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,filtre)                 "Filtro: "
    set caption(acqt1m,extensionFITS)          "Extensión del ficheros FITS:"
    set caption(acqt1m,rechargeScripts)        "Recargar scripts\n\n"
+
+   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
+   set caption(acqt1m,saturation)             "# Saturation"
+   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,astroid)                "# Astroid"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -494,6 +509,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Erweiterung Dateien FITS:"
    set caption(acqt1m,rechargeScripts)        "Skripten neu laden \n\n"
 
+   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
+   set caption(acqt1m,saturation)             "# Saturation"
+   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,astroid)                "# Astroid"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -590,6 +610,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Extensão do ficheiros FITS:"
    set caption(acqt1m,rechargeScripts)        "Recarregar scripts\n\n"
 
+   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
+   set caption(acqt1m,saturation)             "# Saturation"
+   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,astroid)                "# Astroid"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -684,6 +709,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,filtre)                 "Filter: "
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
    set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
+
+   set caption(acqt1m,ccdtemp)                "CCD Temperature"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Clean Marks"
+   set caption(acqt1m,astroid)                "Astroid"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -780,6 +810,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
    set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
+   set caption(acqt1m,ccdtemp)                "CCD Temperature"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Clean Marks"
+   set caption(acqt1m,astroid)                "Astroid"
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -874,6 +909,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,filtre)                 "Filter: "
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
    set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
+
+   set caption(acqt1m,ccdtemp)                "CCD Temperature"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Clean Marks"
+   set caption(acqt1m,astroid)                "Astroid"
 
 }
 
