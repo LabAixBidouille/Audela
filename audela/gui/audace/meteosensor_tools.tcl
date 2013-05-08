@@ -10,7 +10,7 @@
 #
 # --- Reference guide
 # meteosensor_open $type $port $name ?$parameters?
-#    type : AAG WXT520 ARDUINO1 VANTAGEPRO BOLTWOOD LACROSSE SENTINEL_SKYMONITOR SIMULATION 
+#    type : AAG WXT520 ARDUINO1 VANTAGEPRO BOLTWOOD LACROSSE SENTINEL_SKYMONITOR SIMULATION
 #    port : com1, etc.
 #    name : a word to identify the connection opened
 #  return the name if opening is OK
@@ -103,8 +103,8 @@ proc meteosensor_open { type port name {parameters ""} } {
       set audace(meteosensor,private,$name,channel) undefined
       set audace(meteosensor,private,$name,typeu) $typeu
    } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
-		sentinel_skymonitor_open
-		sentinel_skymonitor_gain
+      sentinel_skymonitor_open
+      sentinel_skymonitor_gain
       set audace(meteosensor,private,$name,channel) undefined
       set audace(meteosensor,private,$name,typeu) $typeu
    } elseif {$typeu=="SIMULATION"} {
@@ -160,7 +160,7 @@ proc meteosensor_get { name } {
    } elseif {$typeu=="LACROSSE"} {
       set res [fetch3600_read]
    } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
-      set res [sentinel_skymonitor_read]		
+      set res [sentinel_skymonitor_read]
    } elseif {$typeu=="SIMULATION"} {
       set res [simulationmeteo_read]
    }
@@ -185,7 +185,7 @@ proc meteosensor_getstandard { name } {
    } elseif {$typeu=="LACROSSE"} {
       set keys      "-                 -              OutsideTemp             WinDir WinSpeed OutsideHumidity PrecipitableWater"
    } elseif {$typeu=="SENTINEL_SKYMONITOR"} {
-		set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        RainState"
+      set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        RainState"
    } elseif {$typeu=="SIMULATION"} {
       set keys      "SkyCover          SkyTemp        OutTemp                 WinDir WinSpeed Humidity        Water"
    }
@@ -1667,7 +1667,7 @@ proc sentinel_skymonitor_open { } {
       if {$name==$pgm_tolaunch} {
          set pidfore $pid
          # return "$pgm_tolaunch already launched"
-			return ""
+         return ""
       }
    }
    if {$pidfore==0} {
@@ -1677,152 +1677,152 @@ proc sentinel_skymonitor_open { } {
       set fic [file normalize "${env_program_files}/${folder_tolaunch}/${pgm_tolaunch}"]
       if {[file exists $fic]==1} {
          twapi::create_process $fic
-			after 2000
+         after 2000
          #return "$pgm_tolaunch launched"
-			return ""
+         return ""
       }
    }
-   #return "$pgm_tolaunch not found"	
+   #return "$pgm_tolaunch not found"
 }
 
 proc sentinel_skymonitor_gain { {value ""} } {
    global audace
-	if {[info exists audace(meteosensor_sentinel_skymonitor,gain)]==0} {
-		set audace(meteosensor_sentinel_skymonitor,gain) 762
-	}
-	if {$value!=""} {
-		set audace(meteosensor_sentinel_skymonitor,gain) $value
-	}
-	return $audace(meteosensor_sentinel_skymonitor,gain)
+   if {[info exists audace(meteosensor_sentinel_skymonitor,gain)]==0} {
+      set audace(meteosensor_sentinel_skymonitor,gain) 762
+   }
+   if {$value!=""} {
+      set audace(meteosensor_sentinel_skymonitor,gain) $value
+   }
+   return $audace(meteosensor_sentinel_skymonitor,gain)
 }
 
 proc sentinel_skymonitor_read { {filename ""} } {
    global audace
    global env
-	if {$filename==""} {
-		if {[catch {set env_documents $env(HOME)}]==1} {
-			set env_documents C:/Users/
-		}
-		set dossiers [glob -nocomplain [file normalize "$env_documents/*"]]
-		foreach dossier $dossiers {
-			set k [string first Documents $dossier]
-			if {$k>0} {
-				break
-			}
-		}
-		if {$k==-1} {
-			return ""
-		}
-		set fic "${dossier}/Sentinel/Datas/infodata.txt"
-	} else {
-		set fic $filename
-	}
+   if {$filename==""} {
+      if {[catch {set env_documents $env(HOME)}]==1} {
+         set env_documents C:/Users/
+      }
+      set dossiers [glob -nocomplain [file normalize "$env_documents/*"]]
+      foreach dossier $dossiers {
+         set k [string first Documents $dossier]
+         if {$k>0} {
+            break
+         }
+      }
+      if {$k==-1} {
+         return ""
+      }
+      set fic "${dossier}/Sentinel/Datas/infodata.txt"
+   } else {
+      set fic $filename
+   }
    if {[file exists $fic]==0} {
       return ""
    }
    set err [catch {
-		set f [open $fic r]
-		set lignes [split [read $f] \n]
-		close $f
+      set f [open $fic r]
+      set lignes [split [read $f] \n]
+      close $f
    } msg ]
    set textes ""
    if {$err==0} {
-		set y 2000
-		set m 1
-		set d 1
-		set hh 0
-		set mm 0
-		set ss 0
-		foreach ligne $lignes {
-			set key [lindex $ligne 0]
-			set val [lindex $ligne 2]
-			if {[string compare $key "DateYear"]==0} { set y $val } 
-			if {[string compare $key "DateMonth"]==0} { set m $val } 
-			if {[string compare $key "DateDay"]==0} { set d $val } 
-			if {[string compare $key "DateHour"]==0} { set hh $val } 
-			if {[string compare $key "DateMin"]==0} { set mm $val } 
-			if {[string compare $key "DateSec"]==0} { set ss $val } 
-		}
-		set texte [mc_date2iso8601 [list $y $m $d $hh $mm $ss]]
+      set y 2000
+      set m 1
+      set d 1
+      set hh 0
+      set mm 0
+      set ss 0
+      foreach ligne $lignes {
+         set key [lindex $ligne 0]
+         set val [lindex $ligne 2]
+         if {[string compare $key "DateYear"]==0} { set y $val }
+         if {[string compare $key "DateMonth"]==0} { set m $val }
+         if {[string compare $key "DateDay"]==0} { set d $val }
+         if {[string compare $key "DateHour"]==0} { set hh $val }
+         if {[string compare $key "DateMin"]==0} { set mm $val }
+         if {[string compare $key "DateSec"]==0} { set ss $val }
+      }
+      set texte [mc_date2iso8601 [list $y $m $d $hh $mm $ss]]
       lappend textes $texte
-		set temp_ext 10
-		# Un gain est appliqué à la mesure interne du capteur; ce gain
-		# peut être modifié dans l'onglet de configuration; les valeurs
-		# typiques sont entre 400 et 800. Si vous sentez que la courbe de
-		# mesure des nuages est trop corrélée avec celle de la mesure de
-		# température extérieure, vous pouvez baisser la valeur de gain. 
-		# Si elle est anti-corrélée, vous pouvez l'augmenter.
-		set gain [sentinel_skymonitor_gain]
-		foreach ligne $lignes {
-			set key [lindex $ligne 0]
-			set kequal [lsearch -exact $ligne =]
-			if {$kequal==-1} {
-				continue
-			}
-			set val [lindex $ligne [expr $kequal+1]]
-			if {[string compare $key "TempExt"]==0} { 
-				set temp_ext $val
-			}
-		}
-		foreach ligne $lignes {
-			set key [lindex $ligne 0]
-			set kequal [lsearch -exact $ligne =]
-			if {$kequal==-1} {
-				continue
-			}
-			set val [lindex $ligne [expr $kequal+1]]
-			set unit [lrange $ligne 1 [expr $kequal-1]]
-			regsub -all \\( $unit "" a ; set unit $a
-			regsub -all \\) $unit "" a ; set unit $a
-			regsub -all °C $unit "Celcius" a ; set unit $a
-			regsub -all ° $unit "degrees" a ; set unit $a
-			regsub -all % $unit "percent" a ; set unit $a
-			regsub -all %RH $unit "percent" a ; set unit $a
-			set texte ""
-			if {[string compare $key "TempSkyIR"]==0} { 
-				set valcor [format %.2f [expr ($val-$temp_ext)*$gain/1000.]]
-				set valcor [format %.2f [expr ($val*$gain/1000.-$temp_ext)]]
-				set texte "SkyTemp $valcor $unit"
-				lappend textes $texte
-				if {$valcor<-20} {
-					set texte "SkyCover Clear text"
-				} elseif {$valcor<-7} {
-					set texte "SkyCover Cloudy text"
-				} else {
-					set texte "SkyCover VeryCloudy text"
-				}
-				lappend textes $texte
-			} 
-			if {[string compare $key "TempExt"]==0} { 
-				set texte "OutTemp $val" ; lappend texte $unit
-				lappend textes $texte
-			}
-			if {[string compare $key "WinDirection"]==0} { 
-				set texte "WinDir $val" ; lappend texte $unit
-				lappend textes $texte
-			}
-			if {[string compare $key "WindSpeedGust"]==0} { 
-				set texte "WinSpeed $val" ; lappend texte $unit
-				lappend textes $texte
-			}
-			if {[string compare $key "Humidity"]==0} { 
-				set texte "Humidity $val" ; lappend texte $unit
-				lappend textes $texte
-			}
-			if {[string compare $key "RainFall"]==0} { 
-				if {$val=="No"} {
-					set valcor Dry
-				} else {
-					set valcor Rain
-				}
-				set texte "RainState $valcor" ; lappend texte $unit
-				lappend textes $texte
-			}
-			set texte "$key $val" ; lappend texte $unit
-			lappend textes $texte
-		}
-		set texte "Gain $gain" ; lappend texte "/1000"
-		lappend textes $texte		
+      set temp_ext 10
+      # Un gain est appliqué à la mesure interne du capteur; ce gain
+      # peut être modifié dans l'onglet de configuration; les valeurs
+      # typiques sont entre 400 et 800. Si vous sentez que la courbe de
+      # mesure des nuages est trop corrélée avec celle de la mesure de
+      # température extérieure, vous pouvez baisser la valeur de gain.
+      # Si elle est anti-corrélée, vous pouvez l'augmenter.
+      set gain [sentinel_skymonitor_gain]
+      foreach ligne $lignes {
+         set key [lindex $ligne 0]
+         set kequal [lsearch -exact $ligne =]
+         if {$kequal==-1} {
+            continue
+         }
+         set val [lindex $ligne [expr $kequal+1]]
+         if {[string compare $key "TempExt"]==0} {
+            set temp_ext $val
+         }
+      }
+      foreach ligne $lignes {
+         set key [lindex $ligne 0]
+         set kequal [lsearch -exact $ligne =]
+         if {$kequal==-1} {
+            continue
+         }
+         set val [lindex $ligne [expr $kequal+1]]
+         set unit [lrange $ligne 1 [expr $kequal-1]]
+         regsub -all \\( $unit "" a ; set unit $a
+         regsub -all \\) $unit "" a ; set unit $a
+         regsub -all °C $unit "Celcius" a ; set unit $a
+         regsub -all ° $unit "degrees" a ; set unit $a
+         regsub -all % $unit "percent" a ; set unit $a
+         regsub -all %RH $unit "percent" a ; set unit $a
+         set texte ""
+         if {[string compare $key "TempSkyIR"]==0} {
+            set valcor [format %.2f [expr ($val-$temp_ext)*$gain/1000.]]
+            set valcor [format %.2f [expr ($val*$gain/1000.-$temp_ext)]]
+            set texte "SkyTemp $valcor $unit"
+            lappend textes $texte
+            if {$valcor<-20} {
+               set texte "SkyCover Clear text"
+            } elseif {$valcor<-7} {
+               set texte "SkyCover Cloudy text"
+            } else {
+               set texte "SkyCover VeryCloudy text"
+            }
+            lappend textes $texte
+         }
+         if {[string compare $key "TempExt"]==0} {
+            set texte "OutTemp $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "WinDirection"]==0} {
+            set texte "WinDir $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "WindSpeedGust"]==0} {
+            set texte "WinSpeed $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "Humidity"]==0} {
+            set texte "Humidity $val" ; lappend texte $unit
+            lappend textes $texte
+         }
+         if {[string compare $key "RainFall"]==0} {
+            if {$val=="No"} {
+               set valcor Dry
+            } else {
+               set valcor Rain
+            }
+            set texte "RainState $valcor" ; lappend texte $unit
+            lappend textes $texte
+         }
+         set texte "$key $val" ; lappend texte $unit
+         lappend textes $texte
+      }
+      set texte "Gain $gain" ; lappend texte "/1000"
+      lappend textes $texte
    }
    return $textes
 }
