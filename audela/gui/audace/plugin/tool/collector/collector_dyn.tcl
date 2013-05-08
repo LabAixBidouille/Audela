@@ -62,6 +62,12 @@
 
       set error 10
       set private(ncfz) [getNewCriticalFocusZone $private(fond) $private(aptdia) $private(seeing) $error]
+      set ncfz [getNewCriticalFocusZone $private(fond) $private(aptdia) $private(seeing) $error]
+      if {$ncfz ne "-"} {
+         set private(ncfz) [format %0.1f $ncfz]
+      } else {
+         set private(ncfz) $ncfz
+      }
    }
 
    #------------------------------------------------------------
