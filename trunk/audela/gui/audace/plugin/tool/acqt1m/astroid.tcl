@@ -2,7 +2,7 @@
 # Fichier : astroid.tcl
 # Description : Observation en automatique
 # Auteur : Frédéric Vachier
-# Mise à jour $Id: cycle.tcl 8401 2012-06-26 00:57:45Z fredvachier $
+# Mise à jour $Id$
 #
 # source audace/plugin/tool/acqt1m/cycle.tcl
 #

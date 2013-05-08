@@ -4,7 +4,7 @@ proc horloge_astro2 {} {
 # Fichier : horloge_asro.tcl
 # Description : Horloge de l'astronome
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: horloge_astro.tcl 6795 2011-02-26 16:05:27Z michelpujol $
+# Mise à jour $Id$
 #
 
 #---
