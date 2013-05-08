@@ -218,8 +218,8 @@
       dict set dicokwd CD1_2     {CD1_2 %s double {Coord. transf. matrix CD12} deg/pixel}
       dict set dicokwd CD2_1     {CD2_1 %s double {Coord. transf. matrix CD21} deg/pixel}
       dict set dicokwd CD2_2     {CD2_2 %s double {Coord. transf. matrix CD22} deg/pixel}
-      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along naxis1} deg/pixel}
-      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along naxis2} deg/pixel}
+      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along Naxis1} deg/pixel}
+      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along Naxis2} deg/pixel}
       dict set dicokwd CONFNAME  {CONFNAME %s string {Instrument Setup} {}}
       dict set dicokwd CROTA2    {CROTA2 %s float {Position angle of North} deg}
       dict set dicokwd CRPIX1    {CRPIX1 %s float {Reference pixel for Naxis1} pixel}
