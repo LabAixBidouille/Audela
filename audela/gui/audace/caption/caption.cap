@@ -80,6 +80,10 @@ set caption(sectiongraph,refreshAuto)                 "Auto Refresh After Image 
 set caption(sectiongraph,refreshManuel)               "Refresh Now"
 set caption(sectiongraph,values)                      " | Mean: %s | Median: %s | Standard Deviation: %s"
 
+set caption(meteosensor_tools,celsius)                "Celsius"
+set caption(meteosensor_tools,degres)                 "degrees"
+set caption(meteosensor_tools,pourcent)               "percent"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -151,6 +155,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshAuto)              "Rafraîchissement automatique lors du changement de l'image"
    set caption(sectiongraph,refreshManuel)            "Rafraîchir maintenant"
    set caption(sectiongraph,values)                   " | Moyenne : %s | Médiane : %s | Ecart-type : %s"
+
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "degrés"
+   set caption(meteosensor_tools,pourcent)            "pourcent"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -224,6 +232,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshManuel)            "Aggiornamento immediato"
    set caption(sectiongraph,values)                   " | Media: %s | Mediana: %s | Scarto tipico: %s"
 
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "gradi"
+   set caption(meteosensor_tools,pourcent)            "percento"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -297,6 +308,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshManuel)            "Refrescar ahora"
    set caption(sectiongraph,values)                   " | Media: %s | Mediana: %s | Desviación típica: %s"
 
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "grados"
+   set caption(meteosensor_tools,pourcent)            "porciento"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -370,6 +384,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshManuel)            "Jetzt auffrischen"
    set caption(sectiongraph,values)                   " | Mittelwert: %s | Medianwert: %s | Typische Abweichung: %s"
 
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "Graden"
+   set caption(meteosensor_tools,pourcent)            "Prozent"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -443,6 +460,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshManuel)            "Actualizar agora"
    set caption(sectiongraph,values)                   " | Média: %s | Mediana: %s | Desvio Padrão: %s"
 
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "graus"
+   set caption(meteosensor_tools,pourcent)            "porcento"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -516,6 +536,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshManuel)            "Opdatér nu"
    set caption(sectiongraph,values)                   " | Middelværdi: %s | Median: %s | Standardafvigelse: %s"
 
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "grader"
+   set caption(meteosensor_tools,pourcent)            "procent"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -589,6 +612,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshManuel)            "Refresh Now"
    set caption(sectiongraph,values)                   " | Mean: %s | Median: %s | Standard Deviation: %s"
 
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "degrees"
+   set caption(meteosensor_tools,pourcent)            "percent"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -661,6 +687,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sectiongraph,refreshAuto)              "Auto Refresh After Image Change"
    set caption(sectiongraph,refreshManuel)            "Refresh Now"
    set caption(sectiongraph,values)                   " | Mean: %s | Median: %s | Standard Deviation: %s"
+
+   set caption(meteosensor_tools,celsius)             "Celsius"
+   set caption(meteosensor_tools,degres)              "degrees"
+   set caption(meteosensor_tools,pourcent)            "percent"
 
 }
 
