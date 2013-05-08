@@ -2320,6 +2320,7 @@ proc simulationmeteo_read { } {
 # readCumulus
 # Return : list of some interesting values (with units)
 # Parameter : none
+# used by Collector
 # ===========================================================================
 proc readCumulus { } {
 
@@ -2400,6 +2401,76 @@ proc readCumulus { } {
    lappend msg [list $windspeed $windUnits]           ; #--   Wind speed
    lappend msg [list $windbearing $windBearingUnits]  ; #--   Wind bearing
    lappend msg [list $pressure $pressureUnits]        ; #--   Atmospheric pressure
+
+   return $msg
+}
+
+# ===========================================================================
+# readSentinelFile
+# read ../Sentinel/Datas/infodata.txt
+# Return : list of some interesting values (with units)
+# Parameter : none
+# used by Collector
+# ===========================================================================
+proc readSentinelFile {} {
+
+   set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+   set env_documents [ file normalize $mesDocuments ]
+
+   set fileName "[file join $env_documents Sentinel Datas infodata.txt]"
+   if {[catch {set fileID [open $fileName r]} ErrInfo]} {
+      return "$ErrInfo"
+   }
+   set sentineldata [split [read $fileID] \n]
+   close $fileID
+
+   #--   sentinelData example :
+   #Fileversion          = 1.01
+   #DateYear             = 2013
+   #DateMonth            = 4
+   #DateDay              = 30
+   #DateHour             = 23
+   #DateMin              = 59
+   #DateSec              = 42
+   #TempExt (°C)         = 16.58
+   #Humidity (%RH)       = 70.9
+   #DewPoint (°C)        = 11.24
+   #TempRainSensor (°C)  = 24.23
+   #TempSkyIR   (°C)     = 5.70
+   #TempDetectorIR (°C)  = 27.64
+   #RainFall             = No
+   #WindSpeedGust (km/h) = 2.2
+   #WinDirection (°)     = 23
+   #PowerDry (%)         = 0
+   #PowerIn (V)          = 13.71
+   #LighLevel (Log a.u)  = -1.233
+   #LighLevel (Mag/sec²) = 15.48
+
+   foreach data $sentineldata {
+      lassign [split $data "="] title value
+      lassign [split $title " "] title units
+      set title [string trim $title]
+      set $title $value
+      if {$units ne ""} {
+         regsub -all {[\(\)]} $units "" units
+         set ${title}Units $units
+      }
+   }
+
+   set date "$DateDay/$DateMonth/$DateYear"
+   set time "$DateHour:$DateMin:$DateSec"
+   set HumidityUnits "%"
+   set WindSpeedGust [format %0.1f [expr { $WindSpeedGust*1000/3600 }]]
+   set WindSpeedGustUnits "m/s"
+
+   set msg {}
+   lappend msg [list $date $time]                         ; #--   Time Stamp
+   lappend msg [list $TempExt $TempExtUnits]              ; #--   Outside temmperature
+   lappend msg [list $Humidity $HumidityUnits]            ; #--   Outside Relative Humidity
+   lappend msg [list $DewPoint $DewPointUnits]            ; #--   DewPoint
+   lappend msg [list $WindSpeedGust $WindSpeedGustUnits]  ; #--   Wind speed
+   lappend msg [list $WinDirection $WinDirectionUnits]    ; #--   Wind bearing
+   lappend msg [list 101325 Pa]                           ; #--   Atmospheric pressure
 
    return $msg
 }
