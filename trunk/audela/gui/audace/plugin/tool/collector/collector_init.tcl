@@ -483,10 +483,11 @@
    #  si toutes les conditions sont reunies
    #  sinon desactive
    #------------------------------------------------------------
-   proc onChangeMeteo { } {
+   proc onChangeMeteo { {do ""} } {
       variable private
 
-      if {$private(meteo) == 0 && $private(meteoAcc) ne "" || [file exists $private(meteoAcc)] == 0} {
+      if {$private(meteo) == 0 && $private(meteoAcc) ne "" || [file exists $private(meteoAcc)] == 0 \
+         || $do eq "stop"} {
 
          #--   tous les autres cas, initialisation par defaut
          lassign [list 16.85 - - - - 101325] private(tempair) private(hygro) \

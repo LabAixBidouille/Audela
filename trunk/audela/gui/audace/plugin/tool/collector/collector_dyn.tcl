@@ -302,19 +302,23 @@
          infodata.txt {set result [readSentinelFile $private(meteoAcc)]}
       }
 
+      #--   arrete si le nb de valeurs n'est pas bon
       if {[llength $result] != 7} {
-         onchangeCumulus stop
+         onChangeMeteo stop
          return
       }
 
-      #--   isole l'heure de realtime en secondes
-      lassign [lindex $result 0] date time
+      #--   compare les dates
+      set t1 [mc_date2jd [lindex $result 0]]
+      set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
+      set deltaTime [expr { $t2-$t1 }]
+      set seuil [expr { 10.*$private(cycle)/86400 }]
 
       #--   arrete l'ecart est superieur au temps de rafraichissement
-      #if {[expr { [clock seconds]-[clock scan $time -timezone :localtime] }] > [expr { 2*$private(cycle) }]} {
-      #   onchangeCumulus stop
-      #   return
-      #}
+      if {$deltaTime > $seuil} {
+         onChangeMeteo stop
+         return
+      }
 
       #--   analyse les valeurs
       #--   elimine les unites
