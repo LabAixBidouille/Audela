@@ -231,6 +231,12 @@
             -variable ::collector::private($child) -onvalue 1 -offvalue 0 \
             -command "::collector::onChangeMeteo"
          grid $onglet.$child -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady 3
+
+         ttk::entry $onglet.cycle -textvariable ::collector::private(cycle) \
+            -width 7 -justify right
+         grid $onglet.cycle -row $row -column 1 -sticky e -padx 10
+         bind $onglet.cycle <Leave> [list ::collector::testNumeric $child]
+
          return
 
       } elseif {$child in [list modifGps modifOptic modifRep search modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
@@ -412,6 +418,7 @@
       set conf(collector,catname) $private(catname)
       set conf(collector,sensname) $private(sensname)
       set conf(collector,meteoAcc) $private(meteoAcc)
+      set conf(collector,cycle) $private(cycle)
       regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(collector,position)
 
       set conf(collector,colors) [list $private(colFond) $private(colReticule) \
@@ -447,8 +454,8 @@
       lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
 
       #--   conf par defaut et confToWidget
-      set listConf [list catname sensname meteoAcc cam position]
-      set listDefault [list "MICROCAT" "realtime.txt" "" " " "+800+500"]
+      set listConf [list catname cycle sensname meteoAcc cam position]
+      set listDefault [list "MICROCAT" 20 "realtime.txt" "" " " "+800+500"]
       foreach topic $listConf value $listDefault {
          if {![info exists conf(collector,$topic)]} {
              set conf(collector,$topic) $value

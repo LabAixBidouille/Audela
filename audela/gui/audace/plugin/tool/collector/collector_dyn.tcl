@@ -307,13 +307,11 @@
          return
       }
 
-      set cycle 20000 ; # microsecondes
-
       #--   isole l'heure de realtime en secondes
       lassign [lindex $result 0] date time
 
       #--   arrete l'ecart est superieur au temps de rafraichissement
-      #if {[expr { [clock seconds]-[clock scan $time -timezone :localtime] }] > [expr { 2*$cycle }]} {
+      #if {[expr { [clock seconds]-[clock scan $time -timezone :localtime] }] > [expr { 2*$private(cycle) }]} {
       #   onchangeCumulus stop
       #   return
       #}
@@ -327,7 +325,7 @@
 
       #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
       #     pour que le Sud corresponde a 0°
-
+      set cycle [expr { $private(cycle)*1000 }] ; #convertit en ms
       after $cycle ::collector::refreshMeteo
     }
 
