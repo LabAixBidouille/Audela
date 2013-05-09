@@ -173,7 +173,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193pad,sud)               "S"
    set caption(t193pad,est)               "Ø"
    set caption(t193pad,ouest)             "V"
-   set caption(t193pad,activeFleches)     "# Activer les flèches\ndu clavier"
+   set caption(t193pad,activeFleches)     "Aktiver\npiletasterne"
 
    set caption(t193pad,goto)              "GOTO"
    set caption(t193pad,stopGoto)          "STOP"

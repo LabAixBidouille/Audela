@@ -119,7 +119,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,telescope)           "Montering"
    set caption(superpad,non_connecte)        "ikke tilsluttet"
    set caption(superpad,ErrorMessageTitle)   "Fejl"
-   set caption(superpad,activeFleches)       "# Activer les flèches du clavier"
+   set caption(superpad,activeFleches)       "Aktiver piletasterne"
    set caption(superpad,buttonSkyMap)        "Kort"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
