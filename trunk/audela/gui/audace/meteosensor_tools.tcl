@@ -2385,9 +2385,8 @@ proc readCumulus { {fileName ""} } {
    if {$tempUnits eq "C"} {
       set tempUnits "°C"
    }
-   ::console::affiche_resultat "$windbearing\n"
 
-   set windbearing [expr { fmod($windbearing,360) }]
+   set windbearing [expr { int(fmod($windbearing,360)) }]
    set windBearingUnits "°"
    if {$pressureUnits eq "hPa"} {
       set pressure [expr { $pressure*100 }] ; #-- Pa
