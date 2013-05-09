@@ -2322,27 +2322,25 @@ proc simulationmeteo_read { } {
 # Parameter : none
 # used by Collector
 # ===========================================================================
-proc readCumulus { } {
-
-   package require twapi
+proc readCumulus { {fileName ""} } {
 
    #--   Cumulus works only on Windows platform
    if {$::tcl_platform(os) == "Linux" || $::tcl_platform(os) == "Darwin"} {
       return
    }
 
-   set dir ""
-   foreach pid [twapi::get_process_ids] {
-      if {[twapi::process_exists $pid -name cumulus.exe] == 1} {
-         set dir [file dirname [twapi::get_process_path $pid]]
-         break
+   if {$fileName eq ""} {
+      package require twapi
+      set dir ""
+      foreach pid [twapi::get_process_ids] {
+         if {[twapi::process_exists $pid -name cumulus.exe] == 1} {
+            set dir [file dirname [twapi::get_process_path $pid]]
+            break
+         }
       }
-   }
-
-   if {$dir ne ""} {
-      set fileName [file join $dir realtime.txt]
-   } else {
-      return "cumulus.exe not alive"
+      if {$dir ne ""} {
+         set fileName [file join $dir realtime.txt]
+      }
    }
 
    set msg [list answer example {27/11/12 10:47:27} {5.8 °C} {89 %} {4.1 °C} {1.0 m/s} {315 °} {99970.0 Pa}]
@@ -2387,6 +2385,9 @@ proc readCumulus { } {
    if {$tempUnits eq "C"} {
       set tempUnits "°C"
    }
+   ::console::affiche_resultat "$windbearing\n"
+
+   set windbearing [expr { fmod($windbearing,360) }]
    set windBearingUnits "°"
    if {$pressureUnits eq "hPa"} {
       set pressure [expr { $pressure*100 }] ; #-- Pa
@@ -2412,12 +2413,14 @@ proc readCumulus { } {
 # Parameter : none
 # used by Collector
 # ===========================================================================
-proc readSentinelFile {} {
+proc readSentinelFile { {fileName ""} } {
 
-   set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
-   set env_documents [ file normalize $mesDocuments ]
+   if {$fileName eq ""} {
+      set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+      set env_documents [ file normalize $mesDocuments ]
+      set fileName "[file join $env_documents Sentinel Datas infodata.txt]"
+   }
 
-   set fileName "[file join $env_documents Sentinel Datas infodata.txt]"
    if {[catch {set fileID [open $fileName r]} ErrInfo]} {
       return "$ErrInfo"
    }
@@ -2454,6 +2457,7 @@ proc readSentinelFile {} {
       if {$units ne ""} {
          regsub -all {[\(\)]} $units "" units
          set ${title}Units $units
+
       }
    }
 
@@ -2462,6 +2466,8 @@ proc readSentinelFile {} {
    set HumidityUnits "%"
    set WindSpeedGust [format %0.1f [expr { $WindSpeedGust*1000/3600 }]]
    set WindSpeedGustUnits "m/s"
+   set WinDirection [expr { $WinDirection+180 } ]
+   set WinDirection [expr { int(fmod($WinDirection,360)) } ]
 
    set msg {}
    lappend msg [list $date $time]                         ; #--   Time Stamp
