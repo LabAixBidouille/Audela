@@ -18,7 +18,7 @@
    # ::collector::modifyRep               combobox du choix du catalogue
    # ::collector::refreshNotebook         configTraceRaDec
    # ::collector::refreshCoordsJ2000      initTarget, refreshNotebook, doUnPark et doPark
-   # ::collector::refreshCumulus          initAtm
+   # ::collector::refreshMeteo          initAtm
    # ::collector::computeTelSpeed         refreshNotebook
 
    #---------------------------------------------------------------------------
@@ -233,11 +233,11 @@
    #------------------------------------------------------------
    proc modifyRep {} {
       variable private
-      global conf caption
+      global audace
 
-      switch -exact [lsearch $caption(collector,catalog) $private(catname)] {
-         0  { set private(access) $conf(rep_userCatalogMicrocat)}
-         1  { set private(access) $conf(rep_userCatalogUsnoa2)}
+      switch -exact $private(catname) {
+         MICROCAT { set private(catAcc) $audace(rep_userCatalogMicrocat)}
+         USNO     { set private(catAcc) $audace(rep_userCatalogUsnoa2)}
       }
    }
 
@@ -290,28 +290,33 @@
    }
 
    #------------------------------------------------------------
-   #  refreshCumulus : mise a jour de 'Météo'
-   #  Lit les donnees de realtime.txt
+   #  refreshMeteo : mise a jour de 'Météo'
+   #  Lit les donnees de realtime.txt ou de infodata.txt
    #  Note : la temperature et la pression sont des variables de hip2tel
    #------------------------------------------------------------
-   proc refreshCumulus { } {
+   proc refreshMeteo { } {
       variable private
 
-      set result [readCumulus]
+      switch -exact $private(sensname) {
+         realtime.txt {set result [readCumulus $private(meteoAcc)]}
+         infodata.txt {set result [readSentinelFile $private(meteoAcc)]}
+      }
 
       if {[llength $result] != 7} {
          onchangeCumulus stop
          return
       }
 
+      set cycle 20000 ; # microsecondes
+
       #--   isole l'heure de realtime en secondes
       lassign [lindex $result 0] date time
 
       #--   arrete l'ecart est superieur au temps de rafraichissement
-      if {[expr { [clock seconds]-[clock scan $time -timezone :localtime] }] > 30} {
-         onchangeCumulus stop
-         return
-      }
+      #if {[expr { [clock seconds]-[clock scan $time -timezone :localtime] }] > [expr { 2*$cycle }]} {
+      #   onchangeCumulus stop
+      #   return
+      #}
 
       #--   analyse les valeurs
       #--   elimine les unites
@@ -323,7 +328,7 @@
       #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
       #     pour que le Sud corresponde a 0°
 
-      after 1000 ::collector::refreshCumulus
+      after $cycle ::collector::refreshMeteo
     }
 
    #------------------------------------------------------------
