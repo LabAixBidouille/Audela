@@ -15,6 +15,7 @@
    # ::collector::modifyBand              combobox des filtres
    # ::collector::modifyCamera            combobox du choix de la camera
    # ::collector::modifyPriority          combobox du choix de la priorite, modifyBand, modifyCamera, computeTslMoon, updateInfo et updateEtc
+   # ::collector::modifyRep               combobox du choix du catalogue
    # ::collector::refreshNotebook         configTraceRaDec
    # ::collector::refreshCoordsJ2000      initTarget, refreshNotebook, doUnPark et doPark
    # ::collector::refreshCumulus          initAtm
@@ -224,6 +225,20 @@
 
       #-- conversion de fwhm (arcsec) en (pixels)
       set private(fwhm) [format %0.2f [expr { $fwhm / $audace(etc,comp1,cdelt1) } ]]
+   }
+
+   #------------------------------------------------------------
+   #  modifyRep
+   #  Met a jour le chemin d'acces du repertoire choisi
+   #------------------------------------------------------------
+   proc modifyRep {} {
+      variable private
+      global conf caption
+
+      switch -exact [lsearch $caption(collector,catalog) $private(catname)] {
+         0  { set private(access) $conf(rep_userCatalogMicrocat)}
+         1  { set private(access) $conf(rep_userCatalogUsnoa2)}
+      }
    }
 
    #------------------------------------------------------------
