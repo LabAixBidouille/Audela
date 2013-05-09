@@ -89,7 +89,7 @@
 
       #--   liste les boutons
       set private(buttonList) [list cmd.syn cmd.special cmd.dss cmd.close cmd.hlp \
-       n.local.modifGps n.optic.modifOptic n.config.search n.kwds.modifObs \
+       n.local.modifGps n.optic.modifOptic n.config.modifRep n.kwds.modifObs \
        n.kwds.editKwds n.kwds.writeKwds n.config.realtime n.config.dispEtc n.config.simulimage ]
 
       set this $::audace(base).info
@@ -135,9 +135,9 @@
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
       if { $::tcl_platform(platform) == "windows" } {
-         set configChildren [list catname access search separator1 meteo cumulus realtime separator2 dispEtc simulimage]
+         set configChildren [list catname access modifRep separator1 meteo cumulus realtime separator2 dispEtc simulimage]
       } else {
-         set configChildren [list catname access search separator1 dispEtc simulimage]
+         set configChildren [list catname access modifRep separator1 dispEtc simulimage]
       }
 
       #--   construit le notebook dans cet ordre
@@ -198,6 +198,7 @@
       set private(meteo) 0
 
       onChangeImage $visuNo
+      modifyRep
 
       #--- La fenetre est active
       focus $this
@@ -236,7 +237,7 @@
          grid $onglet.$child -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady 3
          return
 
-      } elseif {$child in [list modifGps modifOptic search realtime modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
+      } elseif {$child in [list modifGps modifOptic modifRep realtime modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
 
          ttk::button $w -text "$caption(collector,$child)"
          switch -exact $child {
@@ -246,7 +247,7 @@
             modifOptic {$w configure -command "::confOptic::run $visuNo" -width 7 -padding {2 30}
                         grid $w -row 0 -column 2 -rowspan 3
                        }
-            search     {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
+            modifRep   {$w configure -command "::cwdWindow::run \"$audace(base).cwdWindow\"" -width 7 -padding {2 2}
                         grid $w -row 1 -column 2
                        }
             realtime   {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
@@ -319,7 +320,7 @@
                         set cmd "return"
                     }
             catname  {  set values $caption(collector,catalog)
-                        set cmd "return"
+                        set cmd "::collector::modifyRep"
                      }
          }
 
@@ -344,6 +345,7 @@
 
       #--   initialise la variable
       if {![info exists private($child)]} {set private($child) "-"}
+      if {$child eq "crota2"} {set private($child) "0."}
    }
 
    #------------------------------------------------------------
@@ -408,7 +410,6 @@
       configAddRemoveListener $visuNo remove
 
       #--   equivalent de widgetToConf
-      set conf(collector,access) $private(access)
       set conf(collector,catname) $private(catname)
       if {$private(cumulus) ne ""} {
          set conf(collector,cumulus) $private(cumulus)
@@ -448,8 +449,8 @@
       lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
 
       #--   conf par defaut et confToWidget
-      set listConf [list catname access cumulus cam position]
-      set listDefault [list "MICROCAT" "[file join $audace(rep_userCatalog) microcat]" "" " " "+800+500"]
+      set listConf [list catname cumulus cam position]
+      set listDefault [list "MICROCAT" "" " " "+800+500"]
       foreach topic $listConf value $listDefault {
          if {![info exists conf(collector,$topic)]} {
              set conf(collector,$topic) $value
@@ -586,6 +587,8 @@
       variable private
       global audace caption conf
 
+      ::console::affiche_resultat "$this\n"
+
       set dirname [tk_chooseDirectory -title "$caption(collector,access)" \
          -initialdir $audace(rep_userCatalog) -parent $this]
 
@@ -593,7 +596,7 @@
          append dirname /
       }
 
-      if {[lindex [split $this "."] end] eq "search"} {
+      if {[lindex [split $this "."] end] eq "modifRep"} {
          if {$dirname ne ""} {
             set private(access) "$dirname"
          } else {
