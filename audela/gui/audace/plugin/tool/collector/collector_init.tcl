@@ -17,7 +17,7 @@
    # ::collector::onChangeCam          configAddRemoveListener
    # ::collector::onChangeObserver     ::confPosObs::addPosObsListener et conf(posobs,observateur,gps)
    # ::collector::onChangeObjName      onChangeMount
-   # ::collector::onChangeMeteo      refreshMeteo
+   # ::collector::onChangeMeteo        refreshMeteo
 
    #------------------------------------------------------------
    #  onChangeImage :
@@ -480,7 +480,7 @@
 
    #------------------------------------------------------------
    #  onChangeMeteo  :
-   #  si toutes les conditions ont reunies
+   #  si toutes les conditions sont reunies
    #  sinon desactive
    #------------------------------------------------------------
    proc onChangeMeteo { } {

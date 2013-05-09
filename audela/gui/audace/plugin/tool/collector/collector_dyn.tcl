@@ -18,7 +18,7 @@
    # ::collector::modifyRep               combobox du choix du catalogue
    # ::collector::refreshNotebook         configTraceRaDec
    # ::collector::refreshCoordsJ2000      initTarget, refreshNotebook, doUnPark et doPark
-   # ::collector::refreshMeteo          initAtm
+   # ::collector::refreshMeteo            initAtm
    # ::collector::computeTelSpeed         refreshNotebook
 
    #---------------------------------------------------------------------------
