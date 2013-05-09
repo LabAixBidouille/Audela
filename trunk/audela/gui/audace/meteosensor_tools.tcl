@@ -2024,13 +2024,13 @@ proc sentinel_tensionV { valint } {
    return $tensionV
 }
 
-# Conversion of a tension (tensionV) to a temperature expressed in Celcius (tempC):
+# Conversion of a tension (tensionV) to a temperature expressed in Celsius (tempC):
 proc sentinel_tempC { tensionV } {
    set tempC [expr ($tensionV-1.375) / (0.0225)]
    return $tempC
 }
 
-# Conversion of a tension (tensionV) to an infrared temperature expressed in Celcius (tempskyC):
+# Conversion of a tension (tensionV) to an infrared temperature expressed in Celsius (tempskyC):
 proc sentinel_tempskyC { tensionV } {
    set t1 -17
    set v1 [expr 1.2+1]
@@ -2042,7 +2042,7 @@ proc sentinel_tempskyC { tensionV } {
    return $tempskyC
 }
 
-# Conversion of a tension (tensionV) to an sky temperature expressed in Celcius (tempIRC):
+# Conversion of a tension (tensionV) to an sky temperature expressed in Celsius (tempIRC):
 proc sentinel_tempIRC { tensionV } {
    set B   3964
    set Ro  30000
@@ -2127,7 +2127,7 @@ proc sentinel_read { f name } {
    #console::affiche_resultat "Temperature of the sky detector = [format %.2f $can_temp] °C\n"
    set rain [lindex $datas 18]
    #console::affiche_resultat "Rain = [format %.0f $rain] (0=rain 1=dry)\n"
-   set texte "OutTemp $ext_temp" ; lappend texte "Celcius"
+   set texte "OutTemp $ext_temp" ; lappend texte "Celsius"
    lappend textes $texte
    set texte "Voltage $power" ; lappend texte "Volts"
    lappend textes $texte
@@ -2135,9 +2135,9 @@ proc sentinel_read { f name } {
    lappend textes $texte
    set texte "Date $date" ; lappend texte "ISO8601"
    lappend textes $texte
-   set texte "RainTemp $rain_temp" ; lappend texte "Celcius"
+   set texte "RainTemp $rain_temp" ; lappend texte "Celsius"
    lappend textes $texte
-   set texte "SkyTemp $sky_temp" ; lappend texte "Celcius"
+   set texte "SkyTemp $sky_temp" ; lappend texte "Celsius"
    lappend textes $texte
    set valcor $sky_temp
    if {$valcor<-20} {
@@ -2148,7 +2148,7 @@ proc sentinel_read { f name } {
       set texte "SkyCover VeryCloudy text"
    }
    lappend textes $texte
-   set texte "IRSensorTemp $can_temp" ; lappend texte "Celcius"
+   set texte "IRSensorTemp $can_temp" ; lappend texte "Celsius"
    lappend textes $texte
    set texte "Rain $rain" ; lappend texte "boolean"
    lappend textes $texte
