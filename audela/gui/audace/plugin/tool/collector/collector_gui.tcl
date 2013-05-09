@@ -229,7 +229,7 @@
 
          ttk::checkbutton $onglet.$child -text "$caption(collector,$child)" \
             -variable ::collector::private($child) -onvalue 1 -offvalue 0 \
-            -command "::collector::onChangeMeteo"
+            -command "::collector::onChangeMeteo activ"
          grid $onglet.$child -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady 3
 
          ttk::entry $onglet.cycle -textvariable ::collector::private(cycle) \
