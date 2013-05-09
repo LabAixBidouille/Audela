@@ -17,7 +17,7 @@
    # ::collector::onChangeCam          configAddRemoveListener
    # ::collector::onChangeObserver     ::confPosObs::addPosObsListener et conf(posobs,observateur,gps)
    # ::collector::onChangeObjName      onChangeMount
-   # ::collector::onchangeCumulus      refreshCumulus
+   # ::collector::onChangeMeteo      refreshMeteo
 
    #------------------------------------------------------------
    #  onChangeImage :
@@ -280,7 +280,7 @@
       $notebook select $notebook.tlscp
 
       #--   active le rafraichissement de la meteo
-      onchangeCumulus
+      onChangeMeteo
 
       lassign [getTelConnexion] private(product) private(telname) \
          hasCoordinates hasControlSuivi
@@ -479,18 +479,14 @@
    }
 
    #------------------------------------------------------------
-   #  onchangeCumulus  :
-   #  active la lecture des parametres meteo si le telescope est actif
-   #  et si les autres conditions ont reunies
+   #  onChangeMeteo  :
+   #  si toutes les conditions ont reunies
    #  sinon desactive
    #------------------------------------------------------------
-   proc onchangeCumulus { } {
+   proc onChangeMeteo { } {
       variable private
 
-      set notebook $private(This).n
-
-      if {[$notebook tab $notebook.tlscp -state] eq "hidden" || $private(meteo) == 0 \
-         && $private(cumulus) ne "" || [file exists $private(cumulus)] == 0} {
+      if {$private(meteo) == 0 && $private(meteoAcc) ne "" || [file exists $private(meteoAcc)] == 0} {
 
          #--   tous les autres cas, initialisation par defaut
          lassign [list 16.85 - - - - 101325] private(tempair) private(hygro) \
@@ -498,12 +494,12 @@
 
          #--   arrete la mise a jour
          #--   pas d'importance si pas active
-         after cancel ::collector::refreshCumulus
+         after cancel ::collector::refreshMeteo
 
       } else {
 
          #--   demarre la mise a jour
-         refreshCumulus
+         refreshMeteo
 
       }
    }
