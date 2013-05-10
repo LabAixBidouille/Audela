@@ -338,22 +338,23 @@ dans l'onglet correspondant.</td>
 param&#232;tres suivants :
 <ul>
 <li>Nom du catalogue {USNO|MICROCAT}, valeur par d&#233;faut
-MICROCAT.</li>
-<li>Chemin de son r&#233;pertoire, valeur par d&#233;faut [file
-join $audace(rep_userCatalog) microcat]. Son r&#233;glage est
-indispensable pour les fonctions <b>Synth&#233;tiser</b> et
-<b>Baguette magique</b>.</li>
+MICROCAT. Son r&#233;glage est indispensable pour les fonctions 
+<b>Synth&#233;tiser</b> et <b>Baguette magique</b>.</li>
+<li>Le chemin du r&#233;pertoire peut &#234;tre modifi&#233; par la commande 
+du menu <b>Configuration/R&#233;pertoires</b> ou &#224; l'aide du bouton <b>Modifier</b>.</li>
 <li>Un bouton &#224; cocher pour activer la lecture des
-param&#232;tres m&#233;t&#233;orologiques lorsque le
-t&#233;lescope est connect&#233;. Si le bouton est
-d&#233;coch&#233; ou si le le t&#233;lescope n'est pas
-connect&#233;, ou encore si les donn&#233;es de la sation ne sont
-pas accessibles, la temp&#233;rature et la pression
+param&#232;tres m&#233;t&#233;orologiques &#224; la fr&#233;quence 
+d&#233;finie par l'utilisateur. Si le bouton est
+d&#233;coch&#233; ou si les donn&#233;es de la station sont
+invalides ou inaccessibles, la temp&#233;rature et la pression
 atmosph&#233;rique sont mises &#224; leur valeur par d&#233;faut
 mais sont modifiables par l'utilisateur.</li>
-<li>Chemin d'accc&#232;s au fichier <b>realtime.txt</b>
-associ&#233; &#224; une station m&#233;t&#233;o lisible par
-<a href="#cumulus"><b>Cumulus</b></a>.</li>
+<li>L'utilisateur peut choisir d'exploiter les donn&#233;es de <b>Sentinel</b> 
+(fichier infodata.txt) ou de <a href="#cumulus"><b>Cumulus</b></a> (fichier realtime.txt).
+L'utilisateur doit d&#233;finir le chemin d'accc&#232;s au fichier.</li>
+<li>Le choix du catalogue d'&#233;toiles, l'intervalle de 
+lecture des donn&#233;es m&#233;t&#233;o, le nom du fichier 
+et son chemin d'acc&#232;s sont m&#233;moris&#233;s.</li>
 </ul>
 <p>Il comporte &#233;galement deux boutons :</p>
 <ul>
@@ -584,9 +585,14 @@ C'est bien pratique si les images sont acquises avec un APN ou
 une cam&#233;ra non reconnues par Aud'ACE.</p>
 <h2><a name="cumulus" id="cumulus">15. Lecture de stations
 m&#233;t&#233;o</a></h2>
-<p>Le logiciel <a href="http://sandaysoft.com/products/cumulus"><b>Cumulus</b></a>
-gratuit permet de lire les informations fournies par <a href="http://wiki.sandaysoft.com/a/Supported_Devices">les stations
-suivantes</a> :</p>
+<ul>
+<li>La station </b>Sentinel</b> peut alimenter l'onglet <b>M&#233;t&#233;o</b> 
+&#224; l'exception de la pression atmosph&#233;rique 
+qui est maintenue &#224; sa valeur par d&#233;faut.</li>
+<li>Le logiciel <a href="http://sandaysoft.com/products/cumulus"><b>Cumulus</b></a>
+gratuit permet de lire les informations fournies par 
+<a href="http://wiki.sandaysoft.com/a/Supported_Devices">les stations
+suivantes</a> :
 <ul>
 <li><b>Davis Range</b> : Vantage Pro, Vantage Pro 2, Vantage
 Vue</li>
@@ -607,9 +613,10 @@ informations.<br />
 Collector d&#233;code ce fichier pour y pr&#233;lever la
 temp&#233;rature ext&#233;rieure, la pression atmosph&#233;rique
 relative, la temp&#233;rature de ros&#233;e et l'hygrom&#233;trie
-ext&#233;rieure gr&#226;ce &#224; la fonction <b>readCumulus</b>.
-<p>Si <b>Cumulus</b> est ferm&#233; durant l'ouverture de
-<b>Collector</b> la console en rendra compte par le messsage <b>#
-cumulus.exe not alive</b> et les variables correspondantes sont
-remises &#224; leur valeur par d&#233;faut.</p>
+ext&#233;rieure gr&#226;ce &#224; la fonction <b>readCumulus</b></li>.
+<li>Si les donn&#233;es sont invalides (fichier inaccessible ou 
+horodatage d&#233;pass&#233;) la lecture est interrompue 
+et les variables correspondantes sont
+remises &#224; leur valeur par d&#233;faut.</li>
+</ul>
 </body></html>
