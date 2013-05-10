@@ -229,7 +229,7 @@
 
          ttk::checkbutton $onglet.$child -text "$caption(collector,$child)" \
             -variable ::collector::private($child) -onvalue 1 -offvalue 0 \
-            -command "::collector::onChangeMeteo activ"
+            -command "::collector::onChangeMeteo"
          grid $onglet.$child -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady 3
 
          ttk::entry $onglet.cycle -textvariable ::collector::private(cycle) \
@@ -325,7 +325,7 @@
                         set cmd "::collector::modifyRep"
                      }
             sensname {  set values $caption(collector,sensor)
-                        set cmd "return"
+                        set cmd "::collector::onChangeMeteo"
                      }
          }
 
