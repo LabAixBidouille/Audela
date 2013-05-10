@@ -486,22 +486,30 @@
    proc onChangeMeteo { {do ""} } {
       variable private
 
-      if {$private(meteo) == 0 && $private(meteoAcc) ne "" || [file exists $private(meteoAcc)] == 0 \
-         || $do eq "stop"} {
+      if {$private(meteo) == 0 || $do eq "stop" || [file exists $private(meteoAcc)] == 0 \
+         || $private(meteoAcc) eq ""} {
+
+         #--   decoche la checkbox et arrete la lecture
+         if {[info exists private(afterID)]} {
+            after cancel ::collector::refreshMeteo
+            unset private(afterID)
+         }
+         set private(meteo) 0
 
          #--   tous les autres cas, initialisation par defaut
          lassign [list 16.85 - - - - 101325] private(tempair) private(hygro) \
             private(temprose) private(winddir) private(windsp)  private(airpress)
 
-         #--   arrete la mise a jour
-         #--   pas d'importance si pas active
-         after cancel ::collector::refreshMeteo
-
       } else {
+
+         #--   arrete si incoherence entre le nom du fichier et son chemin
+         if {[file tail $private(meteoAcc)] ne "$private(sensname)"} {
+            set private(meteo) 0
+            return
+         }
 
          #--   demarre la mise a jour
          refreshMeteo
-
       }
    }
 

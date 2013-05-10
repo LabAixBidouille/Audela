@@ -297,25 +297,24 @@
    proc refreshMeteo { } {
       variable private
 
+      #--   arrete si incoherence entre le nom du fichier et son chemin
+      if {[file tail $private(meteoAcc)] ne "$private(sensname)"} {
+         onChangeMeteo stop
+         return
+      }
+
       switch -exact $private(sensname) {
          realtime.txt {set result [readCumulus $private(meteoAcc)]}
          infodata.txt {set result [readSentinelFile $private(meteoAcc)]}
       }
 
-      #--   arrete si le nb de valeurs n'est pas bon
-      if {[llength $result] != 7} {
-         onChangeMeteo stop
-         return
-      }
-
-      #--   compare les dates
-      set t1 [mc_date2jd [lindex $result 0]]
+      #--   compare les dates jd et arrete si l'ecart est superieur 10 cycles
+      #     ou si le nb de donnes est incorrect
+      set t1 [lindex $result 0]
       set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
-      set deltaTime [expr { $t2-$t1 }]
+      set delatTime [expr { $t2-$t1 }]
       set seuil [expr { 10.*$private(cycle)/86400 }]
-
-      #--   arrete l'ecart est superieur au temps de rafraichissement
-      if {$deltaTime > $seuil} {
+      if {[llength $result] != 7 || $delatTime > $seuil} {
          onChangeMeteo stop
          return
       }
@@ -329,6 +328,7 @@
 
       #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
       #     pour que le Sud corresponde a 0°
+
       set cycle [expr { $private(cycle)*1000 }] ; #convertit en ms
       after $cycle ::collector::refreshMeteo
     }
