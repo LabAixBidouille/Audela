@@ -2382,11 +2382,11 @@ proc readCumulus { {fileName ""} } {
       windUnits tempUnits pressureUnits
 
    regsub -all "/" $date " " date
-   lassign $date day month year
-   set year [expr { $year+2000}]
+   lassign $date DateDay DateMonth DateYear
+   set DateYear [expr { $DateYear+2000}]
    regsub -all ":" $time " " time
-   lassign $time hour min sec
-   set date "$year $month $day $hour $min $sec"
+   lassign $time DateHour DateMin DateSec
+   set horodate [mc_date2jd [list $DateYear $DateMonth $DateDay $DateHour $DateMin $DateSec]]
 
    #--   values and units formating
    if {$tempUnits eq "C"} {
@@ -2401,7 +2401,7 @@ proc readCumulus { {fileName ""} } {
    }
 
    set msg {}
-   lappend msg $date                                  ; #--   Time Stamp
+   lappend msg $horodate                              ; #--   Time Stamp
    lappend msg [list $outsidetemp $tempUnits]         ; #--   Outside temmperature
    lappend msg [list $outsidehumidity "%"]            ; #--   Outside Relative Humidity
    lappend msg [list $dewpoint $tempUnits]            ; #--   DewPoint
@@ -2468,7 +2468,8 @@ proc readSentinelFile { {fileName ""} } {
    }
 
    #--   format gregorien
-   set date "$DateYear $DateMonth $DateDay $DateHour $DateMin $DateSec"
+   set horodate [mc_date2jd [list $DateYear $DateMonth $DateDay $DateHour $DateMin $DateSec]]
+
    set HumidityUnits "%"
    set WindSpeedGust [format %0.1f [expr { $WindSpeedGust*1000/3600 }]]
    set WindSpeedGustUnits "m/s"
@@ -2476,7 +2477,7 @@ proc readSentinelFile { {fileName ""} } {
    set WinDirection [expr { int(fmod($WinDirection,360)) } ]
 
    set msg {}
-   lappend msg $date                                      ; #--   Time Stamp
+   lappend msg $horodate                                  ; #--   Time Stamp
    lappend msg [list $TempExt $TempExtUnits]              ; #--   Outside temmperature
    lappend msg [list $Humidity $HumidityUnits]            ; #--   Outside Relative Humidity
    lappend msg [list $DewPoint $DewPointUnits]            ; #--   DewPoint
