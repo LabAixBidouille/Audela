@@ -3670,12 +3670,9 @@ namespace eval ::ser2fits {
       buf$bufNo save $header
       buf$bufNo clear
 
-      #--   etape 2 : si le fichier d'info .ser.txt existe
-      set txtExist [file exists $private(src).txt]
-      #--   extrait les mots cles et les dates du fichier .ser.txt vers l'array bd
-      if {$txtExist == 1} {
-         readSerInfoFile $private(src).txt
-      }
+      #--   etape 2 : si le fichier d'info .txt existe
+      #--   extrait les mots cles et les dates du fichier .txt vers l'array bd
+      set txtExist [readSerInfoFile [file rootname $private(src)]]
 
       #--   a partir de l'array bd cree le fichier des mots cles a incorporer dans le header
       buildKwdFile $kwdFile
@@ -3699,7 +3696,7 @@ namespace eval ::ser2fits {
          extractImg $fileName $startAdress $bitpix
       }
 
-      #--   etape 4 : si le fichier d'info .ser.txt existe
+      #--   etape 4 : si le fichier d'info .txt existe
       #     incorpore la date de prise de vue dans chaque image
       if {$txtExist == 1 || [lindex [array get bd $start] 1] ne ""} {
          for {set i $start} {$i <= $end} {incr i} {
@@ -3762,110 +3759,158 @@ namespace eval ::ser2fits {
 
    #------------------------------------------------------------
    #  readSerInfoFile
-   #  Extrait les valeurs des mots cles du fichier .SER.TXT
-   #  Parameter : chemin complet du fichier .ser.txt d'info
+   #  Extrait les valeurs des mots cles du fichier .TXT
+   #  Parameter : chemin complet du fichier .txt d'info
+   #  Return : 0 (no file) 1 ok
    #------------------------------------------------------------
    proc readSerInfoFile { infoFile } {
       variable private
       variable bd
 
+      set logFile [file join $infoFile.txt]
+      if {![file exists $logFile]} {
+         return 0
+      }
+
+      set acqSoft [lindex [lindex [array get bd SWCREATE] 1] 1]
       #--   liste les rubriques a rechercher
-      set listParam [list "Diametre" "Telescope" "Début" "Fin" "F/D" "Modèle" \
-         "Taille" "Planete" "Exposition" "Filtre" "Binning" "Image"]
+      if {$acqSoft eq "GenikaAstro"} {
+         set listParam [list "Active filter" "Object" "Diameter" "Native F/D" Amplifier\
+            "Pixel size" "Exposure in µS" "BinX" "BinY"]
+      } elseif {$acqSoft eq "GENICAP-RECORD"} {
+         set listParam [list "Diametre" "Telescope" "Début" "Fin" "F/D" "Modèle" \
+            "Taille" "Planete" "Exposition" "Filtre" "Binning" "Image"]
+      } else {
+         #--   ignore tout des fchiers LUCAM-RECORDER et PlxCapture
+         return 0
+      }
 
-      set fd [open $infoFile r]
+      set fd [open $logFile r]
+      set contenu [split [read $fd] \n]
+      close $fd
 
-      while {![eof $fd]} {
+      foreach param $listParam {
 
-         gets $fd title
+         set k [lsearch -regexp $contenu $param]
+         if {$k == -1} {continue}
+         lassign [split [lindex $contenu $k] ":"] -> value
+         set value [string trim $value]
+         if {$value eq ""} {continue}
 
-         #--   detecte un nom de rubrique
-         set endOfWord [expr { [string first " " $title]-1 }]
-         set rubrique [ string range $title 0 $endOfWord ]
+         #--   remplace la virgule par un point
+         regsub "," $value "." value
 
-         if {$rubrique ni $listParam} {
-            continue
-         }
+         if {$acqSoft eq "GenikaAstro"} {
 
-         #--   isole le nom et la valeur
-         set index [string first ":" $title]
-         set value [string trimright [string range $title [incr index 2] end]]
-
-         if {[regexp -all {(Image)} $title] ==0} {
-
-            #--   extrait les mots cles
-            switch -exact $rubrique {
-               Telescope   {  set data [list TELESCOP [format [formatKeyword TELESCOP] $value]]}
-               Diametre    {  set diametre [expr { $value/1000. }]
-                              set data [list APTDIA [format [formatKeyword APTDIA] $diametre]]}
-               Début       {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_start
-                              set data [list DATE-BEG [format [formatKeyword "DATE-BEG"] $date_start]]
+            switch -exact $param {
+               Diameter    {  set aptdia [expr { $value/1000. }]
+                              array set bd [list  APTDIA [format [formatKeyword  APTDIA] $aptdia]]
                            }
-               Fin         {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_end
-                              set data [list DATE-END [format [formatKeyword "DATE-END"] $date_end]]
+               "Native F/D" { set fond $value;}
+               Amplifier   {  regsub "x" $value "" amplifier}
+               Object      {  array set bd [list OBJECT [format [formatKeyword OBJECT] Planete]]
+                              array set bd [list OBJNAME [format [formatKeyword OBJNAME] $value]]
                            }
-               F/D         {  set fond $value ; set data [list FOND $value]}
-               Modèle      {  set data [list DETNAM [format [formatKeyword DETNAM] $value]]}
-               Taille      {  set xpixsz $value ; set ypixsz $value
-                              set data [list XPIXSZ [format [formatKeyword XPIXSZ] $xpixsz]]
+               Filter      {  array set bd [list FILTER [format [formatKeyword FILTER] $value]]}
+               BinX        {  set bin1 $value
+                              array set bd [list BIN1 [format [formatKeyword BIN1] $value]]}
+               BinY        {  set bin2 $value
+                              array set bd [list BIN2 [format [formatKeyword BIN2] $value]]
                            }
-               Planete     {  if {$value ne ""} {
-                                 set data [list OBJECT [format [formatKeyword OBJECT] Planete]]
-                                 set objname $value
-                              }
+               "Pixel size" {  set pixsize1 $value ; set pixsize2 $value
+                              array set bd [list  PIXSIZE1 [format [formatKeyword  PIXSIZE1] $value]]
+                              array set bd [list  PIXSIZE2 [format [formatKeyword  PIXSIZE2] $value]]
                            }
-               Exposition  {  set value [expr { $value/1000. }]
-                              set data [list EXPOSURE [format [formatKeyword EXPOSURE] $value]]}
-               Filtre      {  if {$value ne "pas de filtre"} {set value C}
-                              set data [list FILTER [format [formatKeyword FILTER] $value]]
-                           }
-               Binning     {  set bin1 $value ; set bin2 $value
-                              set data [list BIN1 [format [formatKeyword BIN1] $value]]
+               "Exposure in µS" {set exposure [expr { $value/1000000. }]
+                              array set bd [list EXPOSURE [format [formatKeyword EXPOSURE] $exposure]]
                            }
             }
 
-            #--   recupere le contenu dans un array
-            array set bd $data
+         } elseif {$acqSoft eq "GENICAP-RECORD"} {
 
-         } else {
-            #--   identifie le N° de l'image
-            regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
-            lassign [formatDateObs4GENICAP_RECORD $value] datemjd
-            array set bd [list $imgNo [format [formatKeyword "MJD-OBS"] $datemjd]]
+
+            if {[regexp -all {(Image)} $title] ==0} {
+
+               #--   extrait les mots cles
+               switch -exact $param {
+                  Telescope   {  array set bd [list TELESCOP [format [formatKeyword TELESCOP] $value]]}
+                  Diametre    {  set aptdia [expr { $value/1000. }]
+                                 array set bd [list APTDIA [format [formatKeyword APTDIA] $aptdia]]
+                              }
+                  Début       {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_start
+                                 set data [list DATE-BEG [format [formatKeyword "DATE-BEG"] $date_start]]
+                              }
+                  Fin         {  lassign [formatDateObs4GENICAP_RECORD $value] -> date_end
+                                 set data [list DATE-END [format [formatKeyword "DATE-END"] $date_end]]
+                              }
+                  F/D         {  set fond $value}
+                  Modèle      {  array set bd [list DETNAM [format [formatKeyword DETNAM] $value]]}
+                  Taille      {  set xpixsz $value ; set ypixsz $value
+                                 array set bd [list XPIXSZ [format [formatKeyword XPIXSZ] $xpixsz]]
+                                 array set bd [list YPIXSZ [format [formatKeyword YPIXSZ] $ypixsz]]
+                              }
+                  Planete     {  array set bd [list OBJECT [format [formatKeyword OBJECT] Planete]]
+                                 array set bd [list OBJNAME [format [formatKeyword OBJNAME] $objname]]
+                              }
+                  Exposition  {  set value [expr { $value/1000. }]
+                                 array set bd [list EXPOSURE [format [formatKeyword EXPOSURE] $value]]}
+                  Filtre      {  if {$value ne "pas de filtre"} {set value C}
+                                 array set bd [list FILTER [format [formatKeyword FILTER] $value]]
+                              }
+                  Binning     {  set bin1 $value ; set bin2 $value
+                                 array set bd [list BIN1 [format [formatKeyword BIN1] $bin1]]
+                                 set pixsize1 [expr { $bin1 * $xpixsz }]
+                                 array set bd [list PIXSIZE1 [format [formatKeyword PIXSIZE1] $pixsize1]]
+                                 array set bd [list BIN2 [format [formatKeyword BIN2] $bin2]]
+                                 set pixsize2 [expr { $bin2 * $ypixsz }]
+                                 array set bd [list PIXSIZE2 [format [formatKeyword PIXSIZE2] $pixsize2]]
+                              }
+               }
+
+            } else {
+               #--   identifie le N° de l'image
+               regsub -all {[a-zA-Z:\s]} [string range $title 0 $index] "" imgNo
+               lassign [formatDateObs4GENICAP_RECORD $value] datemjd
+               array set bd [list $imgNo [format [formatKeyword "MJD-OBS"] $datemjd]]
+            }
          }
       }
 
-      chan close $fd
+      #--   complete la bd
+      if {[info exist aptdia] == 1 && [info exist fond] == 1} {
+         set foclen [expr { $fond*$aptdia }]
+         if {[info exist amplifier]} {
+            set foclen [expr { $foclen*$amplifier }]
+         }
+         array set bd [list FOCLEN [format [formatKeyword FOCLEN] $foclen]]
+      }
 
-      if {$imgNo > 1} {
-         set mediane [getTimeElapse $imgNo]
+      if {$private(frameCount) > 1 } {
+         if {$acqSoft eq "GenikaAstro"} {
+            for {set i 1} {$i <= $private(frameCount)} {incr i} {
+               #--   pm : la date est la fin d'exposition
+               set datemjd [lindex [lindex [array get bd $i] 1] 1]
+               #--   retire le temps d'exposition
+               set datemjd [expr { $datemjd-$exposure/86400 }]
+               #--   met a jour la bd
+               array set bd [list $i [format [formatKeyword "MJD-OBS"] $datemjd]]
+            }
+         }
+
+         set mediane [getTimeElapse $private(frameCount)]
          #--   donne le temps entre images
          array set bd [list TELAPSE [format [formatKeyword "TELAPSE"] $mediane]]
       }
 
-      #--   complete la bd
-      if {[info exist diametre] == 1 && [info exists fond] == 1 && $diametre ne "" && $fond ne ""} {
-         set foclen [expr { $fond*$diametre }]
-         array set bd [list FOCLEN [format [formatKeyword FOCLEN] $foclen]]
-         #--   supprime ce mot cle
-         array unset bd FOND
-      }
-      array set bd [list BIN2 [format [formatKeyword BIN2] $bin2]]
-      array set bd [list YPIXSZ [format [formatKeyword YPIXSZ] $ypixsz]]
-      set pixsize1 [expr { $bin1 * $xpixsz }]
-      array set bd [list PIXSIZE1 [format [formatKeyword PIXSIZE1] $pixsize1]]
-      set pixsize2 [expr { $bin2 * $ypixsz }]
-      array set bd [list PIXSIZE2 [format [formatKeyword PIXSIZE2] $pixsize2]]
-      if {[info exists objname] && $objname ne ""} {
-         array set bd [list OBJNAME [format [formatKeyword OBJNAME] $objname]]
-      }
       lassign [getCdelt $private(naxis1) $private(naxis2) $pixsize1 $pixsize2 $foclen] cdeltx cdelty
       array set bd [list CDELT1 [format [formatKeyword CDELT1] $cdeltx]]
       array set bd [list CDELT2 [format [formatKeyword CDELT2] $cdelty]]
 
       #foreach kwd [lsort -ascii [array names bd]] {
-      #  ::console::affiche_resultat "[array get bd $kwd]\n"
+      #   ::console::affiche_resultat "[array get bd $kwd]\n"
       #}
+
+      return 1
    }
 
    #------------------------------------------------------------
@@ -3909,15 +3954,13 @@ namespace eval ::ser2fits {
       global audace caption
 
       array unset bd
-
-      set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u ' "" Observeur "" Instrument "" Telescope ""]
       set file [file join $audace(rep_images) [$w get]]
 
       set fileID [open $file r]
       fconfigure $fileID -blocking 0 -buffering none -buffersize 1 \
          -encoding utf-8 -eofchar {} -translation auto
 
-      #--   va a la fin du fichier
+     #--   va a la fin du fichier
       seek $fileID 0 end
 
       #--   recupere l'adresse
@@ -3926,7 +3969,7 @@ namespace eval ::ser2fits {
       seek $fileID 0 start
 
       #--   decode les champs du header
-      #     14 caracteres pour record (logiciel de capture) ; #--   GENICAP-RECORD - LUCAM-RECORDER - PlxCapture
+      #     14 caracteres pour record (logiciel de capture) ; #--   GENICAP-RECORD - GenikaAstro - LUCAM-RECORDER - PlxCapture
       #      1 entier de 32 bits pour LuID, non exploite
       #      1 entier de 32 bits pour ColorID (=0 pour monochrome), non exploite
       #      1 entier de 32 bits pour LittleEndian (0 -->donnees BigEndian)
@@ -3939,19 +3982,23 @@ namespace eval ::ser2fits {
       #     40 caracteres pour Telescope
       #      8 bytes pour DateTime
       #      8 bytes pour DateTimeUTC
-      binary scan [read $fileID 162] a14iiiiiiia40a40a40 record LuID ColorID LittleEndian \
+      binary scan [read $fileID 162] A14iiiiiiiA40A40A40 record LuID ColorID LittleEndian \
          naxis1 naxis2 PixelDepth FrameCount Observeur Instrument Telescope
 
       #--   traite les chaines de caracteres
-      foreach kwd [list record Observeur Instrument Telescope] {
+      set entities [list à a â a ç c é e è e ê e ë e î i ï i ô o ö o û u ü u ü u ' "" Observeur "" Instrument "" Telescope ""]
+      foreach kwd [list record Observeur Instrument Telescope ] {
          #--   modifie les caracteres indesirables
          set $kwd [string map -nocase $entities [set $kwd]]
          #--   ote les espaces superflus
-         set $kwd [list [string trim [set $kwd]]]
+         set $kwd [string trim [set $kwd]]
+         if {[llength [set $kwd]] > 1} {
+            set $kwd [list [set $kwd]]
+         }
          #--   rem : pour les mots sans interet la definition est une liste vide
       }
 
-      #--   si la profondeur est de 12, il faut 2 bytes/pixel
+      #--   si la profondeur est de 8, il faut 1 byte/pixel sinon 2
       if {$PixelDepth == 8} {
          set BytePerPixel 1
          set bitpix 8
@@ -3966,10 +4013,14 @@ namespace eval ::ser2fits {
       #--   configure le channel
       fconfigure $fileID -encoding binary
 
-      #--   decode l'horodatage (8 bytes) de la fin de prise de vues
-      binary scan [read $fileID 8] w count100ns
-      lassign [formatDateTime $count100ns] -> endDateTime
-      array set bd [list DATE-END [format [formatKeyword "DATE-END"] $endDateTime]]
+      #--   decode l'horodatage (8 bytes) de debut de prise de vues en temps local
+      binary scan [read $fileID 8] w localCount100ns
+      #--   decode l'horodatage (8 bytes) de debut de prise de vues en temps tu
+      binary scan [read $fileID 8] w tuCount100ns
+      lassign [formatDateTime $tuCount100ns] -> startDateTime ; #-- temps TU
+      array set bd [list DATE-BEG [format [formatKeyword "DATE-BEG"] $startDateTime]]
+      #--   calcule la difference
+      set deltaT [expr { $localCount100ns-$tuCount100ns }]
 
       #--   calcule l'offset pour atteindre la fin des images
       set endOfImages [expr { 178+$FrameCount*$ImageSize } ]
@@ -3977,21 +4028,23 @@ namespace eval ::ser2fits {
       #--   va a la fin des images pour decoder l'horodatage de chacune
       seek $fileID $endOfImages start
       if {$endOfFile != $endOfImages} {
+
+         #--   attention : l'horodatage est la fin de prise de vue en temps local
          for {set imgNo 1} {$imgNo <= $FrameCount} {incr imgNo} {
             seek $fileID [expr { $endOfImages+($imgNo-1)*8 }] start
             #--   lit 8 bytes en LittleEndian
             binary scan [read $fileID 8] w count100ns
-            lassign [formatDateTime $count100ns] datemjd
+            #--   passe en temps TU
+            set count100ns [expr { $count100ns-$deltaT }]
+            lassign [formatDateTime $count100ns] datemjd datett
             array set bd [list $imgNo [format [formatKeyword "MJD-OBS"] $datemjd]]
             #--   memorise l'horodatage du debut
-            if {$imgNo == 1} {
-               set datefirst $datemjd
-               set dateStart [expr { $datefirst - 1./86400 }]
-               set dateStart [mc_date2iso8601 $dateStart]
+            if {$imgNo == $FrameCount} {
+               array set bd [list DATE-END [format [formatKeyword "DATE-END"] $datett]]
             }
          }
          #--   si plus d'une image
-         if {$FrameCount >1} {
+         if {$FrameCount > 1} {
             set mediane [getTimeElapse $FrameCount]
          }
       }
@@ -4003,27 +4056,24 @@ namespace eval ::ser2fits {
          #--   donne le temps entre images
          array set bd [list TELAPSE [format [formatKeyword "TELAPSE"] $mediane]]
       }
-      if {[info exists dateStart]} {
-         #--   assimile l'horodatage de debut a celle de la premiere image
-         array set bd [list DATE-BEG [format [formatKeyword "DATE-BEG"] $dateStart]]
+      if {$Instrument ne ""} {
+         array set bd [list INSTRUME [format [formatKeyword INSTRUME] "$Instrument"]]
       }
-      if {$Instrument ne "{}"} {
-         array set bd [list INSTRUME [format [formatKeyword INSTRUME] $Instrument]]
+      if {$Observeur ne ""} {
+         array set bd [list OBSERVER [format [formatKeyword OBSERVER] "$Observeur"]]
       }
-      if {$Observeur ne "{}"} {
-         array set bd [list OBSERVER [format [formatKeyword OBSERVER] $Observeur]]
-      }
-      if {$Telescope ne "{}"} {
+      if {$Telescope ne ""} {
          array set bd [list TELESCOP [format [formatKeyword TELESCOP] $Telescope]]
       }
-      array set bd [list SWCREATE [format [formatKeyword SWCREATE] $record]]
-      array set bd [list SWMODIFY [format [formatKeyword SWMODIFY] AudeLA]]
+      if {$record ne ""} {
+         array set bd [list SWCREATE [format [formatKeyword SWCREATE] "$record"]]
+      }
+      array set bd [list SWMODIFY [format [formatKeyword SWMODIFY] "AudeLA"]]
 
       #--   met a jour les variables dans la fenetre
-      set private(racine) [file rootname $private(choice)]
-      set private(start) 1
-      set private(end) $FrameCount
-
+      #set private(racine) [file rootname $private(choice)]
+      #set private(start) 1
+      #set private(end) $FrameCount
       set private(frameCount) $FrameCount
       set private(imageSize) $ImageSize
       set private(naxis1) $naxis1
@@ -4379,8 +4429,8 @@ namespace eval ::ser2fits {
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
       dict set dicokwd BZERO     {BZERO %s int {offset data range to that of unsigned short} {}}
-      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along naxis1} deg/pixel}
-      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along naxis2} deg/pixel}
+      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along Naxis1} deg/pixel}
+      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along Naxis2} deg/pixel}
       dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of video.FITS standard} {ISO 8601}}
       dict set dicokwd DATE-END  {DATE-END %s string {End of video.FITS standard} {ISO 8601}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
