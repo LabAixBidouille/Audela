@@ -1,4 +1,7 @@
 set visuNo 1
+global conf
+set prevExt $conf(extension,defaut)
+set conf(extension,defaut) .fit
 set bufNo [::confVisu::getBufNo $visuNo]
 #--   le nom de la tablelist des fichiers
 set w ".audace.prtr.usr.choix.tablelist"
@@ -6,7 +9,6 @@ set w ".audace.prtr.usr.choix.tablelist"
 set z ".audace.prtr.usr.table"
 
 variable SETUP {
-   set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
    ::blt::vector create attendu mesure temp -watchunset 1
    foreach file {rz_rgbr_8 rz_rgbr_15} {
@@ -477,7 +479,7 @@ test ecreter_les_extremes_ligne_de_commande {ecreter rz_rgbr_8} -constraints {AU
    ::blt::vector create attendu1 attendu2 mesure1 mesure2 -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
    loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
- set coord1 [list 110 100]
+   set coord1 [list 110 100]
    set coord2 [list 227 108]
    attendu1 set [lrange [buf$bufNo getpix $coord1] 1 end]
    attendu2 set [lrange [buf$bufNo getpix $coord2] 1 end]
@@ -519,3 +521,4 @@ test ecreter_les_extremes_ligne_de_commande {ecreter rz_rgbr_8} -constraints {AU
    ::blt::vector destroy attendu1 attendu2 mesure1 mesure2
 } -result "6"
 
+set conf(extension,defaut) $prevExt
