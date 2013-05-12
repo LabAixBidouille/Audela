@@ -81,7 +81,7 @@ test carte_de_champ {traite m45_champ.fit} -constraints {AUDACE} -setup {
 
    #--   controle
    #--   je verifie que l'angle est correct
-   if { $::fieldchart(Inclin) eq "358.43855284677545" } { incr result }
+   if { $::fieldchart(Inclin) > "358.438552846" } { incr result }
 
    return $result
 } -cleanup {
