@@ -35,7 +35,7 @@
       lassign $private(match_wcs) match_wcs ra dec pixsize1 pixsize2 foclen
 
       if {$match_wcs != 0} {
-         if {[catch {createImg $ra $dec $pixsize1 $pixsize2 $foclen $private(fwhm) $private(catname) $private(access) } ErrInfo]} {
+         if {[catch {createImg $ra $dec $pixsize1 $pixsize2 $foclen $private(fwhm) $private(catname) $private(catAcc) } ErrInfo]} {
             #--   efface le buffer
             ::confVisu::deleteImage $visuNo
             ::console::affiche_resultat "$ErrInfo"
@@ -126,7 +126,7 @@
       configButtons disabled
       update
 
-      calibrationAstro $bufNo $ext $private(access) $private(catname)
+      calibrationAstro $bufNo $ext $private(catAcc) $private(catname)
    }
 
    #--------------------------------------------------------------------------
