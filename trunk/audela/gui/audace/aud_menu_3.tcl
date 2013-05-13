@@ -3886,7 +3886,7 @@ namespace eval ::ser2fits {
       }
 
       if {$private(frameCount) > 1 } {
-         if {$acqSoft eq "GenikaAstro"} {
+         if {$acqSoft in [list GENICAP_RECORD GenikaAstro]} {
             for {set i 1} {$i <= $private(frameCount)} {incr i} {
                #--   pm : la date est la fin d'exposition
                set datemjd [lindex [lindex [array get bd $i] 1] 1]
