@@ -3953,6 +3953,9 @@ namespace eval ::ser2fits {
       variable bd
       global audace caption
 
+      #--   rafraichit le nom generique
+      set private(racine) [file rootname $private(choice)]
+
       array unset bd
       set file [file join $audace(rep_images) [$w get]]
 
@@ -4260,6 +4263,7 @@ namespace eval ::ser2fits {
       pack $this.cmd -side bottom -fill both
 
       #--   bindings
+
       bind $this.fr1.start <Leave> {::ser2fits::testIndex start}
       bind $this.fr1.end <Leave> {::ser2fits::testIndex end}
       bind $this.fr1.racine <Leave> {::ser2fits::testRacine}
