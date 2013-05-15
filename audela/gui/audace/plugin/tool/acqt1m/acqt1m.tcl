@@ -55,6 +55,7 @@ proc ::acqt1m::ressource { } {
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m offsetdark.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m configuration.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m mycycle.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m astroid.cap ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m astroid.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqt1m horloge_astro2.tcl ]\""
 
@@ -800,12 +801,12 @@ proc ::acqt1m::push_gui { visuNo } {
    global panneau
 
 
-      # Mode Debug ++
+      #Â Mode Debug ++
       if {1==1} {
          ::console::affiche_resultat "Lecture des parametres de la GUI\n"
          ::console::affiche_resultat "\n"
          foreach {x y} [ array get panneau ] {
-            set ok [ string first "acqt1m" $x ] 
+            set ok [ string first "acqt1m" $x ]
             if {$ok>-1} {::console::affiche_resultat "$x = $y\n"}
          }
       }
@@ -820,29 +821,29 @@ proc ::acqt1m::push_gui { visuNo } {
       set parametres_sav(acqt1m,$visuNo,obt)                                   $panneau(acqt1m,$visuNo,obt)
       set parametres_sav(acqt1m,$visuNo,avancement_acq)                        $panneau(acqt1m,$visuNo,avancement_acq)
       set parametres_sav(acqt1m,$visuNo,enregistrer)                           $panneau(acqt1m,$visuNo,enregistrer)
-      set parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)              $panneau(acqt1m,$visuNo,verifier_ecraser_fichier)          
-      set parametres_sav(acqt1m,$visuNo,nb_images)                             $panneau(acqt1m,$visuNo,nb_images)                         
-      set parametres_sav(acqt1m,$visuNo,ra)                                    $panneau(acqt1m,$visuNo,ra)                                
-      set parametres_sav(acqt1m,$visuNo,object)                                $panneau(acqt1m,$visuNo,object)                            
-      set parametres_sav(acqt1m,$visuNo,pose_en_cours)                         $panneau(acqt1m,$visuNo,pose_en_cours)                     
-      set parametres_sav(acqt1m,$visuNo,indexer)                               $panneau(acqt1m,$visuNo,indexer)                           
-      set parametres_sav(acqt1m,$visuNo,save_file_log)                         $panneau(acqt1m,$visuNo,save_file_log)                     
-      set parametres_sav(acqt1m,$visuNo,index)                                 $panneau(acqt1m,$visuNo,index)                             
-      set parametres_sav(acqt1m,$visuNo,verifier_index_depart)                 $panneau(acqt1m,$visuNo,verifier_index_depart)                             
+      set parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)              $panneau(acqt1m,$visuNo,verifier_ecraser_fichier)
+      set parametres_sav(acqt1m,$visuNo,nb_images)                             $panneau(acqt1m,$visuNo,nb_images)
+      set parametres_sav(acqt1m,$visuNo,ra)                                    $panneau(acqt1m,$visuNo,ra)
+      set parametres_sav(acqt1m,$visuNo,object)                                $panneau(acqt1m,$visuNo,object)
+      set parametres_sav(acqt1m,$visuNo,pose_en_cours)                         $panneau(acqt1m,$visuNo,pose_en_cours)
+      set parametres_sav(acqt1m,$visuNo,indexer)                               $panneau(acqt1m,$visuNo,indexer)
+      set parametres_sav(acqt1m,$visuNo,save_file_log)                         $panneau(acqt1m,$visuNo,save_file_log)
+      set parametres_sav(acqt1m,$visuNo,index)                                 $panneau(acqt1m,$visuNo,index)
+      set parametres_sav(acqt1m,$visuNo,verifier_index_depart)                 $panneau(acqt1m,$visuNo,verifier_index_depart)
       set parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)    $panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)
-      set parametres_sav(acqt1m,$visuNo,avancement_acq)                        $panneau(acqt1m,$visuNo,avancement_acq)                    
-      set parametres_sav(acqt1m,$visuNo,indexerContinue)                       $panneau(acqt1m,$visuNo,indexerContinue)                   
-      set parametres_sav(acqt1m,$visuNo,binning)                               $panneau(acqt1m,$visuNo,binning)                           
-      set parametres_sav(acqt1m,$visuNo,pose)                                  $panneau(acqt1m,$visuNo,pose)                              
-      set parametres_sav(acqt1m,$visuNo,enregistrer)                           $panneau(acqt1m,$visuNo,enregistrer)                       
-      set parametres_sav(acqt1m,$visuNo,attente_pose)                          $panneau(acqt1m,$visuNo,attente_pose)                      
-      set parametres_sav(acqt1m,$visuNo,filtrecourant)                         $panneau(acqt1m,$visuNo,filtrecourant)                     
-      set parametres_sav(acqt1m,$visuNo,dec)                                   $panneau(acqt1m,$visuNo,dec)                               
-      set parametres_sav(acqt1m,$visuNo,session_ouverture)                     $panneau(acqt1m,$visuNo,session_ouverture)                 
-      set parametres_sav(acqt1m,$visuNo,alarme_fin_serie)                      $panneau(acqt1m,$visuNo,alarme_fin_serie)                  
+      set parametres_sav(acqt1m,$visuNo,avancement_acq)                        $panneau(acqt1m,$visuNo,avancement_acq)
+      set parametres_sav(acqt1m,$visuNo,indexerContinue)                       $panneau(acqt1m,$visuNo,indexerContinue)
+      set parametres_sav(acqt1m,$visuNo,binning)                               $panneau(acqt1m,$visuNo,binning)
+      set parametres_sav(acqt1m,$visuNo,pose)                                  $panneau(acqt1m,$visuNo,pose)
+      set parametres_sav(acqt1m,$visuNo,enregistrer)                           $panneau(acqt1m,$visuNo,enregistrer)
+      set parametres_sav(acqt1m,$visuNo,attente_pose)                          $panneau(acqt1m,$visuNo,attente_pose)
+      set parametres_sav(acqt1m,$visuNo,filtrecourant)                         $panneau(acqt1m,$visuNo,filtrecourant)
+      set parametres_sav(acqt1m,$visuNo,dec)                                   $panneau(acqt1m,$visuNo,dec)
+      set parametres_sav(acqt1m,$visuNo,session_ouverture)                     $panneau(acqt1m,$visuNo,session_ouverture)
+      set parametres_sav(acqt1m,$visuNo,alarme_fin_serie)                      $panneau(acqt1m,$visuNo,alarme_fin_serie)
 
 
-      # Mode Debug
+      #Â Mode Debug
       if {1==1} {
          ::console::affiche_resultat "Lecture des parametres de la GUI\n"
          ::console::affiche_resultat "mode           = $parametres_sav(acqt1m,$visuNo,mode)\n"
@@ -881,8 +882,8 @@ proc ::acqt1m::push_gui { visuNo } {
       # acqt1m,1,demande_arret = 0
       # acqt1m,1,nb_images = 5
       # acqt1m,1,sauve_img_interrompue = 0
-      # acqt1m,1,format = 
-      # acqt1m,1,ra = 
+      # acqt1m,1,format =
+      # acqt1m,1,ra =
       # acqt1m,1,object = test
       # acqt1m,1,pose_en_cours = 0
       # acqt1m,1,mode = 2
@@ -899,16 +900,15 @@ proc ::acqt1m::push_gui { visuNo } {
       # acqt1m,1,enregistrer = 0
       # acqt1m,1,attente_pose = 0
       # acqt1m,1,obt = 1
-      # acqt1m,1,mode_en_cours = Une série
+      # acqt1m,1,mode_en_cours = Une sè±©e
       # acqt1m,1,filtrecourant = Rs
       # acqt1m,1,filtrelist = Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs Large B V R Us Gs Rs Is Zs
       # acqt1m,1,obt,0 = Ouvert
-      # acqt1m,1,obt,1 = Fermé
-      # acqt1m,1,obt,2 = Synchro
-      # acqt1m,1,dec = 
+      # acqt1m,1,obt,1 = Fermçˆ      # acqt1m,1,obt,2 = Synchro
+      # acqt1m,1,dec =
       # acqt1m,1,session_ouverture = 0
       # acqt1m,1,alarme_fin_serie = 1
-      
+
       return
 }
 
@@ -934,38 +934,38 @@ proc ::acqt1m::pop_gui { visuNo } {
       ::console::affiche_resultat "MODE=$panneau(acqt1m,$visuNo,mode)\n"
 
 
-      set panneau(acqt1m,$visuNo,mode)                               $parametres_sav(acqt1m,$visuNo,mode)    
-      set panneau(acqt1m,$visuNo,mode_en_cours)                      $parametres_sav(acqt1m,$visuNo,mode_en_cours)    
-      set panneau(acqt1m,$visuNo,pose)                               $parametres_sav(acqt1m,$visuNo,pose)                                  
-      set panneau(acqt1m,$visuNo,binning)                            $parametres_sav(acqt1m,$visuNo,bin)                                   
-      set panneau(acqt1m,$visuNo,format)                             $parametres_sav(acqt1m,$visuNo,format)                                
-      set panneau(acqt1m,$visuNo,obt)                                $parametres_sav(acqt1m,$visuNo,obt)                                   
-      set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)                        
-      set panneau(acqt1m,$visuNo,enregistrer)                        $parametres_sav(acqt1m,$visuNo,enregistrer)                           
-      set panneau(acqt1m,$visuNo,verifier_ecraser_fichier)           $parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)              
-      set panneau(acqt1m,$visuNo,nb_images)                          $parametres_sav(acqt1m,$visuNo,nb_images)                             
-      set panneau(acqt1m,$visuNo,ra)                                 $parametres_sav(acqt1m,$visuNo,ra)                                    
-      set panneau(acqt1m,$visuNo,object)                             $parametres_sav(acqt1m,$visuNo,object)                                
-      set panneau(acqt1m,$visuNo,pose_en_cours)                      $parametres_sav(acqt1m,$visuNo,pose_en_cours)                         
-      set panneau(acqt1m,$visuNo,indexer)                            $parametres_sav(acqt1m,$visuNo,indexer)                               
-      set panneau(acqt1m,$visuNo,save_file_log)                      $parametres_sav(acqt1m,$visuNo,save_file_log)                         
-      set panneau(acqt1m,$visuNo,index)                              $parametres_sav(acqt1m,$visuNo,index)                                 
-      set panneau(acqt1m,$visuNo,verifier_index_depart)              $parametres_sav(acqt1m,$visuNo,verifier_index_depart)                                 
-      set panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue) $parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)    
-      set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)                        
-      set panneau(acqt1m,$visuNo,indexerContinue)                    $parametres_sav(acqt1m,$visuNo,indexerContinue)                       
-      set panneau(acqt1m,$visuNo,binning)                            $parametres_sav(acqt1m,$visuNo,binning)                               
-      set panneau(acqt1m,$visuNo,pose)                               $parametres_sav(acqt1m,$visuNo,pose)                                  
-      set panneau(acqt1m,$visuNo,enregistrer)                        $parametres_sav(acqt1m,$visuNo,enregistrer)                           
-      set panneau(acqt1m,$visuNo,attente_pose)                       $parametres_sav(acqt1m,$visuNo,attente_pose)                          
-      set panneau(acqt1m,$visuNo,filtrecourant)                      $parametres_sav(acqt1m,$visuNo,filtrecourant)                         
-      set panneau(acqt1m,$visuNo,dec)                                $parametres_sav(acqt1m,$visuNo,dec)                                   
-      set panneau(acqt1m,$visuNo,session_ouverture)                  $parametres_sav(acqt1m,$visuNo,session_ouverture)                     
-      set panneau(acqt1m,$visuNo,alarme_fin_serie)                   $parametres_sav(acqt1m,$visuNo,alarme_fin_serie)                      
+      set panneau(acqt1m,$visuNo,mode)                               $parametres_sav(acqt1m,$visuNo,mode)
+      set panneau(acqt1m,$visuNo,mode_en_cours)                      $parametres_sav(acqt1m,$visuNo,mode_en_cours)
+      set panneau(acqt1m,$visuNo,pose)                               $parametres_sav(acqt1m,$visuNo,pose)
+      set panneau(acqt1m,$visuNo,binning)                            $parametres_sav(acqt1m,$visuNo,bin)
+      set panneau(acqt1m,$visuNo,format)                             $parametres_sav(acqt1m,$visuNo,format)
+      set panneau(acqt1m,$visuNo,obt)                                $parametres_sav(acqt1m,$visuNo,obt)
+      set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)
+      set panneau(acqt1m,$visuNo,enregistrer)                        $parametres_sav(acqt1m,$visuNo,enregistrer)
+      set panneau(acqt1m,$visuNo,verifier_ecraser_fichier)           $parametres_sav(acqt1m,$visuNo,verifier_ecraser_fichier)
+      set panneau(acqt1m,$visuNo,nb_images)                          $parametres_sav(acqt1m,$visuNo,nb_images)
+      set panneau(acqt1m,$visuNo,ra)                                 $parametres_sav(acqt1m,$visuNo,ra)
+      set panneau(acqt1m,$visuNo,object)                             $parametres_sav(acqt1m,$visuNo,object)
+      set panneau(acqt1m,$visuNo,pose_en_cours)                      $parametres_sav(acqt1m,$visuNo,pose_en_cours)
+      set panneau(acqt1m,$visuNo,indexer)                            $parametres_sav(acqt1m,$visuNo,indexer)
+      set panneau(acqt1m,$visuNo,save_file_log)                      $parametres_sav(acqt1m,$visuNo,save_file_log)
+      set panneau(acqt1m,$visuNo,index)                              $parametres_sav(acqt1m,$visuNo,index)
+      set panneau(acqt1m,$visuNo,verifier_index_depart)              $parametres_sav(acqt1m,$visuNo,verifier_index_depart)
+      set panneau(acqt1m,$visuNo,enregistrer_acquisiton_interrompue) $parametres_sav(acqt1m,$visuNo,enregistrer_acquisiton_interrompue)
+      set panneau(acqt1m,$visuNo,avancement_acq)                     $parametres_sav(acqt1m,$visuNo,avancement_acq)
+      set panneau(acqt1m,$visuNo,indexerContinue)                    $parametres_sav(acqt1m,$visuNo,indexerContinue)
+      set panneau(acqt1m,$visuNo,binning)                            $parametres_sav(acqt1m,$visuNo,binning)
+      set panneau(acqt1m,$visuNo,pose)                               $parametres_sav(acqt1m,$visuNo,pose)
+      set panneau(acqt1m,$visuNo,enregistrer)                        $parametres_sav(acqt1m,$visuNo,enregistrer)
+      set panneau(acqt1m,$visuNo,attente_pose)                       $parametres_sav(acqt1m,$visuNo,attente_pose)
+      set panneau(acqt1m,$visuNo,filtrecourant)                      $parametres_sav(acqt1m,$visuNo,filtrecourant)
+      set panneau(acqt1m,$visuNo,dec)                                $parametres_sav(acqt1m,$visuNo,dec)
+      set panneau(acqt1m,$visuNo,session_ouverture)                  $parametres_sav(acqt1m,$visuNo,session_ouverture)
+      set panneau(acqt1m,$visuNo,alarme_fin_serie)                   $parametres_sav(acqt1m,$visuNo,alarme_fin_serie)
 
-      ::acqt1m::changebinning $visuNo   
+      ::acqt1m::changebinning $visuNo
       ::acqt1m::setShutter $visuNo $panneau(acqt1m,$visuNo,obt)
-      
+
       ::t1m_roue_a_filtre::changeFiltreInfini $visuNo
 
       return
@@ -1728,20 +1728,19 @@ proc ::acqt1m::Go { visuNo } {
 
             #--- Verifie que le filtre correspond
             set sortie "no"
-            set msg    "Les filtres du boitier et celui de Audela ne correspondent pas.\n\n"
-            append msg "1. de temps en temps la connexion au boitier s'initialise mal : appuyer sur REESSAYER\n\n"
-            append msg "2. C est une maladresse de votre part car vous avez touche le boitier : appuyer sur ANNULER et cliquez sur le bouton 'Filtre :'\n\n"
-            append msg "3. Vous avez perdu la connexion au boitier, vous savez ce que vous faites, et vous assumez le champs "
-            append msg "   FILTER='$panneau(acqt1m,$visuNo,filtrecourant)' dans le header des images :  appuyer sur IGNORER\n"
+            set msg    "$caption(acqt1m,message1)\n\n"
+            append msg "$caption(acqt1m,message2)\n\n"
+            append msg "$caption(acqt1m,message3)\n\n"
+            append msg "$caption(acqt1m,message4)"
+            append msg "   FILTER='$panneau(acqt1m,$visuNo,filtrecourant)' $caption(acqt1m,message5)\n"
 
             while {$sortie=="no"} {
-
                set verif [::t1m_roue_a_filtre::verifFiltre $panneau(acqt1m,$visuNo,filtrecourant)]
                if {$verif=="yes"} {
                   # ok on est tout bon !
                   set sortie "yes"
                } else {
-                  set reponse [tk_messageBox -message $msg -default retry -icon warning -title "ATTENTION - WARNING - ACHTUNG !" -type abortretryignore]
+                  set reponse [tk_messageBox -message $msg -default retry -icon warning -title "$caption(acqt1m,attention+)" -type abortretryignore]
                   if { $reponse == "abort"} {
                      return
                   }
@@ -1752,8 +1751,6 @@ proc ::acqt1m::Go { visuNo } {
                   }
                }
             }
-
-
 
             #--- Verrouille les boutons du mode "serie"
             $panneau(acqt1m,$visuNo,This).mode.serie.nb.entr configure -state disabled
@@ -2779,14 +2776,14 @@ proc ::acqt1m::get_filename { visuNo } {
 
    switch $obj {
       "flat" -
-      "plat"   { 
+      "plat"   {
                set type "FLAT"
                set object "FLAT"
                set dirfinal "CALIB/"
                }
       "offset" -
       "bias"   {
-               set type "OFFSET" 
+               set type "OFFSET"
                set object "OFFSET"
                set dirfinal "CALIB/"
                set filtre "none"
@@ -2809,7 +2806,7 @@ proc ::acqt1m::get_filename { visuNo } {
    buf$bufNo setkwd [list "FILTER" $filtre string "Filter used" ""]
    buf$bufNo setkwd [list "OBJECT" $object string "Name or catalog number of object being imaged" ""]
    buf$bufNo setkwd [list "CCDGAIN" "4.8" float "CCD gain" "electrons/adu"]
-   
+
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
       set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
       buf$bufNo setkwd [list "RA" $ra float "Right Ascension" "degrees"]
@@ -2824,8 +2821,8 @@ proc ::acqt1m::get_filename { visuNo } {
    set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $audace(posobs,observateur,gps) now] 1]
    gren_info "Sun Elev = [mc_angle2dms $sunelev string 2]\n"
    buf$bufNo setkwd [list "SUNELEV" $sunelev float "Sun Elevation" "degrees"]
-   
-        
+
+
    if {$panneau(acqt1m,$visuNo,launchastroid) && $type=="IMG"} {
        ::t1mastroid::astroid_acqu $visuNo
    }
@@ -2836,7 +2833,7 @@ proc ::acqt1m::get_filename { visuNo } {
    set key [buf$bufNo getkwd "BDDIMAGES STATE"]
    set key [lreplace $key 1 1 "RAW"]
    buf$bufNo setkwd $key
-   
+
    set key [buf$bufNo getkwd "BDDIMAGES TYPE"]
    set key [lreplace $key 1 1 $type]
    buf$bufNo setkwd $key
@@ -3541,9 +3538,9 @@ proc ::acqt1m::gps_open { visuNo } {
 
 
 proc ::acqt1m::ccdtemp { visuNo } {
-      
+
       global  panneau
-      
+
       set camNo $panneau(acqt1m,$visuNo,camNo)
       if { $camNo == "0" } {
          ::console::affiche_resultat "il n y a pas de camera\n"
@@ -3553,7 +3550,7 @@ proc ::acqt1m::ccdtemp { visuNo } {
             set cons [lindex $state 1]
             if {[string is double $cons]} {
                set cons [format "%.1f" $cons]
-               set cons "Consigne = $cons °C"
+               set cons "Consigne = $cons Â°C"
             } else {
                set cons ""
             }
@@ -3565,12 +3562,13 @@ proc ::acqt1m::ccdtemp { visuNo } {
             return
          }
          #set cons  [format "%.1f" [ cam$camNo cooler check  ] ]
-         ::console::affiche_resultat "Refroidissement ($state)  Temperature CCD = $temp °C  $cons\n"
+         ::console::affiche_resultat "Refroidissement ($state)  Temperature CCD = $temp Â°C  $cons\n"
       }
 }
 
 
    proc ::acqt1m::saturation { visuNo } {
+      global caption
 
       set max 50000
 
@@ -3582,14 +3580,14 @@ proc ::acqt1m::ccdtemp { visuNo } {
 
       set err [ catch {set rect  [ ::confVisu::getBox $visuNo ]} msg ]
       if {$err>0 || $rect==""} {
-         tk_messageBox -message "Veuillez selectionner un carré dans l'image" -type ok
+         tk_messageBox -message "$caption(acqt1m,select_carre)" -type ok -title $caption(acqt1m,saturation)
          return
       }
       set x1 [lindex $rect 0]
       set y1 [lindex $rect 1]
       set x2 [lindex $rect 2]
       set y2 [lindex $rect 3]
-      
+
       if {$x1<$x2} {
         set xa $x1
         set xb $x2
@@ -3604,7 +3602,7 @@ proc ::acqt1m::ccdtemp { visuNo } {
         set ya $y2
         set yb $y1
       }
-      
+
       set step [expr ( ( $xb - $xa + 1) / 10)]
       set pass [expr $step + $xa - 1 ]
       set cpt 0
@@ -3616,7 +3614,7 @@ proc ::acqt1m::ccdtemp { visuNo } {
             incr pass $step
          }
          for {set y $ya} {$y <= $yb} {incr y} {
-         
+
             set a [buf$bufNo getpix [list $x $y]]
             set adu [lindex $a 1]
             if {$adu > $max} {
@@ -3632,9 +3630,9 @@ proc ::acqt1m::ccdtemp { visuNo } {
 
 
    proc ::acqt1m::horloge_astro {  } {
-      
+
       global audace
-      
+
       if {![winfo exists .horloge_astro]} {
          horloge_astro2
       }
@@ -3927,11 +3925,11 @@ $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
       #--- Frame traitement special
       frame $panneau(acqt1m,$visuNo,This).special -borderwidth 2 -relief ridge
          #--- Bouton Horloge astro
-         button $panneau(acqt1m,$visuNo,This).special.horloge -text "Horloge Astro" \
+         button $panneau(acqt1m,$visuNo,This).special.horloge -text "$caption(acqt1m,horloge_astro)" \
             -command "::acqt1m::horloge_astro"
          pack $panneau(acqt1m,$visuNo,This).special.horloge -side top -fill x -expand true
          #--- Bouton OFFSET/DARK
-         button $panneau(acqt1m,$visuNo,This).special.offsetdark -text "OFFSET/DARK" \
+         button $panneau(acqt1m,$visuNo,This).special.offsetdark -text "$caption(acqt1m,offset_dark)" \
             -command "::acqt1m_offsetdark::run $visuNo"
          pack $panneau(acqt1m,$visuNo,This).special.offsetdark -side top -fill x -expand true
          #--- Bouton Flat auto +
@@ -3943,7 +3941,7 @@ $panneau(acqt1m,$visuNo,This).gps.but  configure -bg "green"
             -command "::cycle::run $visuNo"
          pack $panneau(acqt1m,$visuNo,This).special.cyclepose -side top -fill x -expand true
          #--- Bouton Astroid
-   
+
          frame $panneau(acqt1m,$visuNo,This).special.astroid -borderwidth 2 -relief ridge
          pack $panneau(acqt1m,$visuNo,This).special.astroid -side top -fill x -expand true
 
@@ -3985,11 +3983,11 @@ proc subcrop { a b x y } {
    set bufnob [::buf::create]
    buf$bufnoa load $a
    buf$bufnob load $b
-   
+
    set naxis1 [ lindex [ buf$bufnoa getkwd NAXIS1 ] 1 ]
    set naxis2 [ lindex [ buf$bufnoa getkwd NAXIS2 ] 1 ]
-   
-   if {$x > 0} { 
+
+   if {$x > 0} {
       buf$bufnoa window [list $x 1 $naxis1 $naxis2]
       buf$bufnob window [list 1 1 [expr $naxis1-$x+1] $naxis2]
    }
@@ -3998,7 +3996,7 @@ proc subcrop { a b x y } {
       buf$bufnoa window [list 1 1 [expr $naxis1-$x+1] $naxis2]
       buf$bufnob window [list $x 1 $naxis1 $naxis2]
    }
-   if {$y > 0} { 
+   if {$y > 0} {
       buf$bufnoa window [list 1 $y $naxis1 $naxis2]
       buf$bufnob window [list 1 1 $naxis1 [expr $naxis2-$y+1]]
    }
@@ -4013,9 +4011,9 @@ proc subcrop { a b x y } {
    buf1 load a
    buf1 sub b
    buf1 save c
-   loadima c 
+   loadima c
    ::buf::delete  $bufnoa
    ::buf::delete  $bufnob
-   
 
 }
+

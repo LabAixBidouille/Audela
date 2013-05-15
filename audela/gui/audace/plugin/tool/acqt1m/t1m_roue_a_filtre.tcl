@@ -2,12 +2,16 @@
 # Fichier : t1m_roue_a_filtre.tcl
 # Description : Pilotage de la roue a filtres du T1m - Observation en automatique
 # Camera : Script optimise pour une Andor ikon-L
-# Auteur : Frédéric Vachier
-# Mise à jour $Id$
+# Auteur : FrÃ©dÃ©ric Vachier
+# Mise Ã  jour $Id$
 #
-# source audace/plugin/tool/acqt1m/flat_t1m_auto.tcl
+# source audace/plugin/tool/acqt1m/t1m_roue_a_filtre.tcl
 #
 
+#============================================================
+# Declaration du namespace t1m_roue_a_filtre
+#    initialise le namespace
+#============================================================
 namespace eval ::t1m_roue_a_filtre {
 
 
@@ -29,7 +33,7 @@ namespace eval ::t1m_roue_a_filtre {
 
    #--- Procedure d'initialisation de la liste des filtres
    proc ::t1m_roue_a_filtre::init { } {
-      
+
       ::t1m_roue_a_filtre::init_roue
       set ::t1m_roue_a_filtre::log 0
       set ::t1m_roue_a_filtre::stopcpt 50
@@ -87,10 +91,10 @@ namespace eval ::t1m_roue_a_filtre {
 
 
       # Initialise la roue a filtres
-      if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "getFiltre: Ouvre le Socket\n"}
+      if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "$::caption(t1m_roue_a_filtre,ouvre_socket)\n"}
       set err [ catch { set tty [open "/dev/ttyS0" r+] } ]
       if { $err == 1 } {
-         ::console::affiche_resultat "roue Non Initialisee\n"
+         ::console::affiche_resultat "$::caption(t1m_roue_a_filtre,roueNonInitialise)\n"
          return
       }
 
@@ -105,7 +109,7 @@ namespace eval ::t1m_roue_a_filtre {
       while {$state=="reading"} {
          after 100
          set char [read $tty 10]
-         if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WSMODE:$char $state $cpt"}
+         if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WSMODE: $char $state $cpt"}
          if {[lsearch -exact $char "!"] == 0} {
             set passinit "yes"
             break
@@ -127,7 +131,7 @@ namespace eval ::t1m_roue_a_filtre {
          while {$state=="reading"} {
             after 100
             set char [read $tty 10]
-            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WFILTR:$char"}
+            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WFILTR: $char"}
             if {[llength $char] == 1} {
                set passfiltre "yes"
                break
@@ -150,7 +154,7 @@ namespace eval ::t1m_roue_a_filtre {
          while {$state=="reading"} {
             after 100
             set char [read $tty 10]
-            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WEXITS:$char"}
+            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WEXITS: $char"}
             if {[lsearch -exact $char "END"] == 0} {
                set passclose "yes"
                break
@@ -168,7 +172,7 @@ namespace eval ::t1m_roue_a_filtre {
       set filtre "unknown"
       if {$passfiltre=="yes"} {
          for { set idfiltre 1 } {$idfiltre <= 9} {incr idfiltre} {
-            #::console::affiche_resultat  "$idfiltre - [lindex $private(filtre,$idfiltre) 2]\n"
+            #::console::affiche_resultat "$idfiltre - [lindex $private(filtre,$idfiltre) 2]\n"
             if {$idfiltre==$idgetfiltre} {
                set filtre [lindex $private(filtre,$idfiltre) 2]
                break
@@ -201,7 +205,7 @@ namespace eval ::t1m_roue_a_filtre {
 
 
    #--- Procedure de changement de filtre
-   proc ::t1m_roue_a_filtre::changeFiltre { visuNo } {
+  proc ::t1m_roue_a_filtre::changeFiltre { visuNo } {
       variable private
       global panneau
 
@@ -221,7 +225,7 @@ namespace eval ::t1m_roue_a_filtre {
          }
       }
 
-      if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "changeFiltre: Ouvre le Socket\n"}
+      if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "$::caption(t1m_roue_a_filtre,ouvre_socket1)\n"}
       # Initialise la roue a filtres
       set err [ catch { set tty [open "/dev/ttyS0" r+] } ]
       if { $err == 1 } {
@@ -240,7 +244,7 @@ namespace eval ::t1m_roue_a_filtre {
       while {$state=="reading"} {
          after 100
          set char [read $tty 10]
-         if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WSMODE:$char"}
+         if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WSMODE: $char"}
          if {[lsearch -exact $char "!"] == 0} {
             set passinit "yes"
             break
@@ -252,7 +256,7 @@ namespace eval ::t1m_roue_a_filtre {
       }
       if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WSMODE: $passinit $state\n"}
 
-      # change le filtre 
+      # change le filtre
       if {$passinit=="yes"} {
          puts -nonewline $tty "WGOTO$idfiltre"
          set state "reading"
@@ -261,7 +265,7 @@ namespace eval ::t1m_roue_a_filtre {
          while {$state=="reading"} {
             after 100
             set char [read $tty 10]
-            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WGOTO:$char"}
+            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WGOTO: $char"}
             if {[lsearch -exact $char "*"] == 0} {
                set passgoto "yes"
                break
@@ -284,7 +288,7 @@ namespace eval ::t1m_roue_a_filtre {
          while {$state=="reading"} {
             after 100
             set char [read $tty 10]
-            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WFILTR:$char"}
+            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WFILTR: $char"}
             if {[llength $char] == 1} {
                set passfiltre "yes"
                break
@@ -307,7 +311,7 @@ namespace eval ::t1m_roue_a_filtre {
          while {$state=="reading"} {
             after 100
             set char [read $tty 10]
-            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WEXITS:$char"}
+            if {$::t1m_roue_a_filtre::log} {::console::affiche_resultat "WEXITS: $char"}
             if {[lsearch -exact $char "END"] == 0} {
                set passclose "yes"
                break
@@ -328,7 +332,7 @@ namespace eval ::t1m_roue_a_filtre {
                if {$passclose=="yes"} {
                   if {$idfiltre == $idgetfiltre} {
                      set pass "yes"
-                  } 
+                  }
                }
             }
          }
@@ -365,7 +369,7 @@ namespace eval ::t1m_roue_a_filtre {
       # Initialise la roue a filtres
       set err [ catch { set tty [open "/dev/ttyS0" r+] } ]
       if { $err == 1 } {
-         ::console::affiche_resultat "roueNonInitialise\n"
+         ::console::affiche_resultat "$::caption(t1m_roue_a_filtre,roueNonInitialise)\n"
          return
       }
 
@@ -379,7 +383,7 @@ namespace eval ::t1m_roue_a_filtre {
       while {$state=="reading"} {
          after 100
          set char [read $tty 10]
-         ::console::affiche_resultat "WSMODE:$char"
+         ::console::affiche_resultat "WSMODE: $char"
          if {[lsearch -exact $char "!"] == 0} {
             set pass "yes"
             break
@@ -396,7 +400,7 @@ namespace eval ::t1m_roue_a_filtre {
       while {$state=="reading"} {
          after 100
          set char [read $tty 10]
-         ::console::affiche_resultat "WFILTR:$char"
+         ::console::affiche_resultat "WFILTR: $char"
          if {[llength $char] == 1} {
             set pass "yes"
             break
@@ -414,7 +418,7 @@ namespace eval ::t1m_roue_a_filtre {
       while {$state=="reading"} {
          after 100
          set char [read $tty 10]
-         ::console::affiche_resultat "WEXITS:$char"
+         ::console::affiche_resultat "WEXITS: $char"
          if {[lsearch -exact $char "END"] == 0} {
             set pass "yes"
             break
@@ -464,7 +468,7 @@ namespace eval ::t1m_roue_a_filtre {
          } else {
             break
          }
-         
+
       }
 
    }
@@ -499,7 +503,7 @@ namespace eval ::t1m_roue_a_filtre {
       variable private
 
       set ::t1m_roue_a_filtre::stopcpt 50
-      
+
       ::t1m_roue_a_filtre::initFiltre $visuNo
       for { set i 1 } {$i <= 9} {incr i} {
          set line  [format "Nomcourt=%-3s Nom=%-10s sensdebutnuit=%s largeur=%s centre=%s \n" \
@@ -512,13 +516,6 @@ namespace eval ::t1m_roue_a_filtre {
       }
 
    }
-
-
-
-
-
-
-
 
 }
 

@@ -91,8 +91,14 @@ set caption(acqt1m,lance_simu)                "Run the Simulation:\n"
 set caption(acqt1m,fin_simu)                  "Stop the Simulation.\n"
 set caption(acqt1m,avancement_acq)            "Acquisition\nProgress"
 set caption(acqt1m,buttonShiftConfig)         "Shift"
+set caption(acqt1m,horloge_astro)             "Astro-clock"
+set caption(acqt1m,offset_dark)               "OFFSET/DARK"
 set caption(acqt1m,flatAuto)                  "Automatic Flat\nField Frames"
 set caption(acqt1m,cycle)                     "Cycle"
+set caption(acqt1m,astroid)                   "Astroid"
+set caption(acqt1m,ccdtemp)                   "CCD Temperature"
+set caption(acqt1m,saturation)                "Saturation"
+set caption(acqt1m,clean)                     "Clean Marks"
 set caption(acqt1m,ressource)                 "Reload Scripts"
 set caption(acqt1m,acquisitionError)          "Acquisition Error. See details in the Terminal screen."
 
@@ -104,10 +110,14 @@ set caption(acqt1m,filtre)                    "Filter: "
 set caption(acqt1m,extensionFITS)             "Files Extension FITS:"
 set caption(acqt1m,rechargeScripts)           "Reload Scripts\n\n"
 
-set caption(acqt1m,ccdtemp)                   "CCD Temperature"
-set caption(acqt1m,saturation)                "Saturation"
-set caption(acqt1m,clean)                     "Clean Marks"
-set caption(acqt1m,astroid)                   "Astroid"
+set caption(acqt1m,select_carre)              "Select a square in the image."
+set caption(acqt1m,attention+)                "WARNING"
+
+set caption(acqt1m,message1)                  "The box and AudeLA filters do not match:"
+set caption(acqt1m,message2)                  "1. The connection to the box may be incorrectly initialized - Press RETRY."
+set caption(acqt1m,message3)                  "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+set caption(acqt1m,message4)                  "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
+set caption(acqt1m,message5)                  "in image header - Press IGNORE ."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -192,8 +202,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Fin de la simulation.\n"
    set caption(acqt1m,avancement_acq)         "Avancement de\nl'acquisition"
    set caption(acqt1m,buttonShiftConfig)      "Décalage"
+   set caption(acqt1m,horloge_astro)          "Horloge Astro"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Flats Auto"
    set caption(acqt1m,cycle)                  "Cycle"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "Température du CCD"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Effacer les marques"
    set caption(acqt1m,ressource)              "Re-charge les scripts"
    set caption(acqt1m,acquisitionError)       "Erreur à l'acquisition. Détails dans la Console."
 
@@ -205,10 +221,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Extension des fichiers FITS :"
    set caption(acqt1m,rechargeScripts)        "Re-charge les scripts\n\n"
 
-   set caption(acqt1m,ccdtemp)                "Température du CCD"
-   set caption(acqt1m,saturation)             "Saturation"
-   set caption(acqt1m,clean)                  "# Clean Marks"
-   set caption(acqt1m,astroid)                "# Astroid"
+   set caption(acqt1m,select_carre)           "Veuillez sélectionner un carré dans l'image."
+   set caption(acqt1m,attention+)             "ATTENTION"
+
+   set caption(acqt1m,message1)               "Les filtres du boitier et ceux d'AudeLA ne correspondent pas :"
+   set caption(acqt1m,message2)               "1. De temps en temps la connexion avec le boitier s'initialise mal : Appuyer sur REESSAYER."
+   set caption(acqt1m,message3)               "2. C'est une maladresse de votre part car vous avez touché le boitier : Appuyer sur ANNULER et cliquer sur le bouton 'Filtre :'."
+   set caption(acqt1m,message4)               "3. Vous avez perdu la connexion avec le boitier, vous savez ce que vous faîtes et vous êtes sûr que tout est OK."
+   set caption(acqt1m,message5)               "dans l'en-tête des images : Appuyer sur IGNORER."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -293,8 +313,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Fine della simulazione.\n"
    set caption(acqt1m,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqt1m,buttonShiftConfig)      "Spostamento"
+   set caption(acqt1m,horloge_astro)          "# Horloge Astro"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Flat Field automatici"
    set caption(acqt1m,cycle)                  "Ciclo"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "CCD Temperatura"
+   set caption(acqt1m,saturation)             "Saturazione"
+   set caption(acqt1m,clean)                  "# Clean Marks"
    set caption(acqt1m,ressource)              "Rilancia gli script"
    set caption(acqt1m,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
 
@@ -306,10 +332,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Estensione del file FITS:"
    set caption(acqt1m,rechargeScripts)        "Rilancia gli script\n\n"
 
-   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
-   set caption(acqt1m,saturation)             "# Saturation"
-   set caption(acqt1m,clean)                  "# Clean Marks"
-   set caption(acqt1m,astroid)                "# Astroid"
+   set caption(acqt1m,select_carre)           "# Veuillez sélectionner un carré dans l'image."
+   set caption(acqt1m,attention+)             "ATTENZIONE"
+
+   set caption(acqt1m,message1)               "# Les filtres du boitier et ceux d'AudeLA ne correspondent pas :"
+   set caption(acqt1m,message2)               "# 1. De temps en temps la connexion avec le boitier s'initialise mal : Appuyer sur REESSAYER."
+   set caption(acqt1m,message3)               "# 2. C'est une maladresse de votre part car vous avez touché le boitier : Appuyer sur ANNULER et cliquer sur le bouton 'Filtre :'."
+   set caption(acqt1m,message4)               "# 3. Vous avez perdu la connexion avec le boitier, vous savez ce que vous faîtes et vous êtes sûr que tout est OK."
+   set caption(acqt1m,message5)               "# dans l'en-tête des images : Appuyer sur IGNORER."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -394,8 +424,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Parar la simulación .\n"
    set caption(acqt1m,avancement_acq)         "Progreso de la\nadquisición"
    set caption(acqt1m,buttonShiftConfig)      "Desplazam."
+   set caption(acqt1m,horloge_astro)          "Astro Reloj"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Tomas de Flat\nautomaticas"
    set caption(acqt1m,cycle)                  "Ciclo"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "Temperatura CCD"
+   set caption(acqt1m,saturation)             "Saturación"
+   set caption(acqt1m,clean)                  "Limpiar marcas"
    set caption(acqt1m,ressource)              "Recargar scripts"
    set caption(acqt1m,acquisitionError)       "Error de adquisición. Ver detalles en la Consola."
 
@@ -407,10 +443,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Extensión del ficheros FITS:"
    set caption(acqt1m,rechargeScripts)        "Recargar scripts\n\n"
 
-   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
-   set caption(acqt1m,saturation)             "# Saturation"
-   set caption(acqt1m,clean)                  "# Clean Marks"
-   set caption(acqt1m,astroid)                "# Astroid"
+   set caption(acqt1m,select_carre)           "Seleccionar un cuadrado en la imagen."
+   set caption(acqt1m,attention+)             "AVISO"
+
+   set caption(acqt1m,message1)               "La caja y los filtros AudeLA no coinciden:"
+   set caption(acqt1m,message2)               "1. De vez en cuando la conexión con la caja se inicializa mal: Presionar REINTENTAR."
+   set caption(acqt1m,message3)               "2. Hay un error porque tocó la caja: Presionar CANCELAR y click en el boton 'Filtro:'."
+   set caption(acqt1m,message4)               "3. Perdida conexión con la caja. Revise los pasos y asegúrese de que todo es correcto."
+   set caption(acqt1m,message5)               "en cabecera de imagen: Presionar IGNORAR."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -495,9 +535,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Ende der Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqt1m,buttonShiftConfig)      "Verschiebung"
+   set caption(acqt1m,horloge_astro)          "# Horloge Astro"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,image,acquisition)      "Aud'ACE - Belichtung von"
    set caption(acqt1m,flatAuto)               "Automatische\nFlat Field Bild"
    set caption(acqt1m,cycle)                  "Zyklus"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "Temperatur CCD"
+   set caption(acqt1m,saturation)             "Sättigung"
+   set caption(acqt1m,clean)                  "# Clean Marks"
    set caption(acqt1m,ressource)              "Skripten neu laden "
    set caption(acqt1m,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
 
@@ -509,10 +555,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Erweiterung Dateien FITS:"
    set caption(acqt1m,rechargeScripts)        "Skripten neu laden \n\n"
 
-   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
-   set caption(acqt1m,saturation)             "# Saturation"
-   set caption(acqt1m,clean)                  "# Clean Marks"
-   set caption(acqt1m,astroid)                "# Astroid"
+   set caption(acqt1m,select_carre)           "# Veuillez sélectionner un carré dans l'image."
+   set caption(acqt1m,attention+)             "ACHTUNG"
+
+   set caption(acqt1m,message1)               "# Les filtres du boitier et ceux d'AudeLA ne correspondent pas :"
+   set caption(acqt1m,message2)               "# 1. De temps en temps la connexion avec le boitier s'initialise mal : Appuyer sur REESSAYER."
+   set caption(acqt1m,message3)               "# 2. C'est une maladresse de votre part car vous avez touché le boitier : Appuyer sur ANNULER et cliquer sur le bouton 'Filtre :'."
+   set caption(acqt1m,message4)               "# 3. Vous avez perdu la connexion avec le boitier, vous savez ce que vous faîtes et vous êtes sûr que tout est OK."
+   set caption(acqt1m,message5)               "# dans l'en-tête des images : Appuyer sur IGNORER."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -597,8 +647,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Fim da simulação.\n"
    set caption(acqt1m,avancement_acq)         "Adiantamento da\naquisição"
    set caption(acqt1m,buttonShiftConfig)      "Deslocamento"
+   set caption(acqt1m,horloge_astro)          "# Horloge Astro"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Flat Field\nautomático"
    set caption(acqt1m,cycle)                  "Ciclo"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "Temperatura do CCD"
+   set caption(acqt1m,saturation)             "Saturação"
+   set caption(acqt1m,clean)                  "# Clean Marks"
    set caption(acqt1m,ressource)              "Recarregar scripts"
    set caption(acqt1m,acquisitionError)       "Erro na aquisição. Ver detalhes na Consola."
 
@@ -610,10 +666,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Extensão do ficheiros FITS:"
    set caption(acqt1m,rechargeScripts)        "Recarregar scripts\n\n"
 
-   set caption(acqt1m,ccdtemp)                "# CCD Temperature"
-   set caption(acqt1m,saturation)             "# Saturation"
-   set caption(acqt1m,clean)                  "# Clean Marks"
-   set caption(acqt1m,astroid)                "# Astroid"
+   set caption(acqt1m,select_carre)           "# Veuillez sélectionner un carré dans l'image."
+   set caption(acqt1m,attention+)             "AVISO"
+
+   set caption(acqt1m,message1)               "# Les filtres du boitier et ceux d'AudeLA ne correspondent pas :"
+   set caption(acqt1m,message2)               "# 1. De temps en temps la connexion avec le boitier s'initialise mal : Appuyer sur REESSAYER."
+   set caption(acqt1m,message3)               "# 2. C'est une maladresse de votre part car vous avez touché le boitier : Appuyer sur ANNULER et cliquer sur le bouton 'Filtre :'."
+   set caption(acqt1m,message4)               "# 3. Vous avez perdu la connexion avec le boitier, vous savez ce que vous faîtes et vous êtes sûr que tout est OK."
+   set caption(acqt1m,message5)               "# dans l'en-tête des images : Appuyer sur IGNORER."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -697,8 +757,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Stop the Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Acquisition\nProgress"
    set caption(acqt1m,buttonShiftConfig)      "Shift"
+   set caption(acqt1m,horloge_astro)          "Astro-clock"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Automatic Flat\nField Frames"
    set caption(acqt1m,cycle)                  "Cycle"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "CCD Temperature"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Clean Marks"
    set caption(acqt1m,ressource)              "Reload Scripts"
    set caption(acqt1m,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
@@ -710,10 +776,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
    set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
-   set caption(acqt1m,ccdtemp)                "CCD Temperature"
-   set caption(acqt1m,saturation)             "Saturation"
-   set caption(acqt1m,clean)                  "Clean Marks"
-   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,select_carre)           "Select a square in the image."
+   set caption(acqt1m,attention+)             "WARNING"
+
+   set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
+   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+   set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
+   set caption(acqt1m,message5)               "in image header - Press IGNORE ."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -797,8 +867,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Stop the Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Acquisition\nProgress"
    set caption(acqt1m,buttonShiftConfig)      "Shift"
+   set caption(acqt1m,horloge_astro)          "Astro-clock"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Automatic Flat\nField Frames"
    set caption(acqt1m,cycle)                  "Cycle"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "CCD Temperature"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Clean Marks"
    set caption(acqt1m,ressource)              "Reload Scripts"
    set caption(acqt1m,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
@@ -810,10 +886,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
    set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
-   set caption(acqt1m,ccdtemp)                "CCD Temperature"
-   set caption(acqt1m,saturation)             "Saturation"
-   set caption(acqt1m,clean)                  "Clean Marks"
-   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,select_carre)           "Select a square in the image."
+   set caption(acqt1m,attention+)             "WARNING"
+
+   set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
+   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+   set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
+   set caption(acqt1m,message5)               "in image header - Press IGNORE ."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -897,8 +977,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Stop the Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Acquisition\nProgress"
    set caption(acqt1m,buttonShiftConfig)      "Shift"
+   set caption(acqt1m,horloge_astro)          "Astro-clock"
+   set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Automatic Flat\nField Frames"
    set caption(acqt1m,cycle)                  "Cycle"
+   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,ccdtemp)                "CCD Temperature"
+   set caption(acqt1m,saturation)             "Saturation"
+   set caption(acqt1m,clean)                  "Clean Marks"
    set caption(acqt1m,ressource)              "Reload Scripts"
    set caption(acqt1m,acquisitionError)       "Acquisition Error. See details in the Terminal screen."
 
@@ -910,10 +996,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Files Extension FITS:"
    set caption(acqt1m,rechargeScripts)        "Reload Scripts\n\n"
 
-   set caption(acqt1m,ccdtemp)                "CCD Temperature"
-   set caption(acqt1m,saturation)             "Saturation"
-   set caption(acqt1m,clean)                  "Clean Marks"
-   set caption(acqt1m,astroid)                "Astroid"
+   set caption(acqt1m,select_carre)           "Select a square in the image."
+   set caption(acqt1m,attention+)             "WARNING"
+
+   set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
+   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+   set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
+   set caption(acqt1m,message5)               "in image header - Press IGNORE ."
 
 }
 
