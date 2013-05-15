@@ -15,6 +15,8 @@ set caption(t1m_roue_a_filtre,filtre)               "Filter:"
 set caption(t1m_roue_a_filtre,changeFiltre)         "Change the filter:"
 set caption(t1m_roue_a_filtre,roueNonInitialise)    "Filter wheel not initialized"
 set caption(t1m_roue_a_filtre,probleme)             "Warning: Problem with the filter wheel which should be reset"
+set caption(t1m_roue_a_filtre,ouvre_socket)         "getFiltre: Opens the Socket."
+set caption(t1m_roue_a_filtre,ouvre_socket1)        "changeFiltre: Opens the Socket."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -23,6 +25,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Change le filtre :"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "La roue à filtres n'a pas été initialisée"
    set caption(t1m_roue_a_filtre,probleme)          "Attention : Problème avec la roue à filtres qui doit être réinitialisée"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre : Ouvre le Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre : Ouvre le Socket."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -31,6 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Cambiare il filtro:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "La ruota portafiltri non è stata inizializzata"
    set caption(t1m_roue_a_filtre,probleme)          "Attenzione: Probelma con ruota portafiltri - Re-inizializzare"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "# getFiltre : Ouvre le Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "# changeFiltre : Ouvre le Socket."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -39,6 +45,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Cambiar filtro:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "Rueda de filtros no inicializada"
    set caption(t1m_roue_a_filtre,probleme)          "Atención: Problema con la rueda de filtros, debe ser reinicializada"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre: Abrir el Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre: Abrir el Socket."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -47,6 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Filter Änderungen:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "Filterrad nicht initialisiert"
    set caption(t1m_roue_a_filtre,probleme)          "Achtung: Problem mit das Filterrad das reinitialisiert werden soll"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "# getFiltre : Ouvre le Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "# changeFiltre : Ouvre le Socket."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -55,6 +65,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Mudar o filtro:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "A roda de filtros não foi iniciada"
    set caption(t1m_roue_a_filtre,probleme)          "Aviso: Problema com a roda de filtros, a qual deve ser reiniciada"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "# getFiltre : Ouvre le Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "# changeFiltre : Ouvre le Socket."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -63,6 +75,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Change the filter:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "Filter wheel not initialized"
    set caption(t1m_roue_a_filtre,probleme)          "Warning: Problem with the filter wheel which should be reset"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre: Opens the Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre: Opens the Socket."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -71,6 +85,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Change the filter:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "Filter wheel not initialized"
    set caption(t1m_roue_a_filtre,probleme)          "Warning: Problem with the filter wheel which should be reset"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre: Opens the Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre: Opens the Socket."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -79,6 +95,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Change the filter:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "Filter wheel not initialized"
    set caption(t1m_roue_a_filtre,probleme)          "Warning: Problem with the filter wheel which should be reset"
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre: Opens the Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre: Opens the Socket."
 
 }
 
