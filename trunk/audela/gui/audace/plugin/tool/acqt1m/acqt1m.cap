@@ -115,7 +115,7 @@ set caption(acqt1m,attention+)                "WARNING"
 
 set caption(acqt1m,message1)                  "The box and AudeLA filters do not match:"
 set caption(acqt1m,message2)                  "1. The connection to the box may be incorrectly initialized - Press RETRY."
-set caption(acqt1m,message3)                  "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+set caption(acqt1m,message3)                  "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
 set caption(acqt1m,message4)                  "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
 set caption(acqt1m,message5)                  "in image header - Press IGNORE ."
 
@@ -781,7 +781,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
    set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
-   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
    set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
    set caption(acqt1m,message5)               "in image header - Press IGNORE ."
 
@@ -891,7 +891,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
    set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
-   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
    set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
    set caption(acqt1m,message5)               "in image header - Press IGNORE ."
 
@@ -1001,7 +1001,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
    set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
-   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the "Filter:" button."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
    set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
    set caption(acqt1m,message5)               "in image header - Press IGNORE ."
 
