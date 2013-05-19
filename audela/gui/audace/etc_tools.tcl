@@ -139,6 +139,7 @@ proc etc_set_array_cameras { } {
    array set cameras [list {ProLine 50100}        {8176 6132  6e-6    6e-6   0.003 1.5  11.5 0.2  1}]
    #
    array set cameras [list {ProLine 230 Midband}  {2048 2048 15e-6   15e-6   0.4   1.5   9.5 0.85 1}]
+   array set cameras [list {ProLine 3041 Broadband} {2048 2048 15e-6 15e-6   0.3   1.5   8   0.85 1}]
    array set cameras [list {ProLine 4240 Midband} {2048 2048 13.5e-6 13.5e-6 0.2   1.5   8   0.85 1}]
    array set cameras [list {ProLine 4720}         {1024 1024 13e-6   13e-6   0.02  1.5  10   0.85 1}]
    array set cameras [list {ProLine 4710 Deep D.} {1024 1024 13e-6   13e-6   7     1.5  10   0.9  1}]
