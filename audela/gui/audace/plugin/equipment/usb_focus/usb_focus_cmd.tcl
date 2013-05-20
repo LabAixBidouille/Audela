@@ -273,13 +273,13 @@ proc ::usb_focus::goto { } {
    ::usb_focus::setState disabled
 
    #--   calcule l'ecart
-   set dif [expr { $widget(target)-$widget(position) }]
+   set dif [expr { $widget(target)-[string trimleft $widget(position) 0] }]
 
    #--   formate le nombre de pas
    set n [format "%05d" [expr {abs($dif) }]]
 
    #--   definit le sens
-   if {$dif > 0} {
+   if {$dif < 0} {
       set cmd I$n
    } else {
       set cmd O$n
@@ -353,7 +353,8 @@ proc ::usb_focus::getTemperature { } {
    ::usb_focus::writePort FTMPRO
 
    #--   acquit == "T=+/-xy.z LFCR" ; longueur 9 car
-   regsub -all {[T=]} [::usb_focus::waitAnswer 9] "" widget(temperature)
+   regsub -all {[T=]} [::usb_focus::waitAnswer 9] "" temperature
+   set widget(temperature) "$temperature °C"
 }
 
 #------------------------------------------------------------
