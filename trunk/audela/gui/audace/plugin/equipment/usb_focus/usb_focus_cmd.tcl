@@ -30,6 +30,7 @@
 #  ::usb_focus::initFromChip
 #  ::usb_focus::activeCmd
 #  ::usb_focus::stopMove
+#  ::usb_focus::trimZero
 
 #  Notes :
 #  1) la liaison est asynchrone et geree par fileevent
@@ -193,26 +194,28 @@ proc ::usb_focus::getConf { } {
       coef step widget(version) maxstep
 
    #--   ote les 0 inutiles
-   if {$coef < 0} {
-      set widget(coef) "-[string trimleft $coef 0]"
-   } else {
-      set widget(coef) "+[string trimleft $coef 0]"
-   }
-   set private(prev,coef) $widget(coef)
-
-   set step "[string trimleft $step 0]"
-   if {[llength $step] ==0} {
-      set step 0
-   }
-   set widget(step) $step
+   set widget(step) [::usb_focus::trimZero $step]
    set private(prev,step) $widget(step)
 
-   set maxstep "[string trimleft $maxstep 0]"
-   if {[llength $maxstep] ==0} {
-      set maxstep 0
-   }
-   set widget(maxstep) $maxstep
+   set widget(maxstep) [::usb_focus::trimZero $maxstep]
    set private(prev,maxstep) $widget(maxstep)
+
+   set coef [::usb_focus::trimZero $coef]
+   #--   complete coef avec le sign
+   ::usb_focus::writePort FTxxxA
+
+   #--   acquit == "A=x" : longueur 3 car
+   regsub -all {[A=]} [::usb_focus::waitAnswer 3] "" sign
+
+   if {$sign == 0} {
+      set widget(coef) "-$coef"
+   } else {
+      set widget(coef) "+$coef"
+   }
+
+   if {$widget(coef) == $private(prev,coef)} {
+      ::console::affiche_resultat "ok\n"
+   }
 }
 
 #------------------------------------------------------------
@@ -223,15 +226,13 @@ proc ::usb_focus::getConf { } {
 proc ::usb_focus::setCoefTemp { } {
    variable widget
 
-   set toSet $widget(coef)
-
-   if {$toSet < 0} {
+   if {$widget(coef) < 0} {
       set sign 0
    } else {
       set sign 1
    }
 
-   set n [format "%03d" [expr { abs($toSet) }]]
+   set n [format "%03d" [expr { abs($widget(coef)) }]]
    ::usb_focus::writePort  FLX$n
 
    after 50
@@ -242,23 +243,20 @@ proc ::usb_focus::setCoefTemp { } {
    ::usb_focus::writePort FREADA
 
    #--   acquit == "A=0xyz" : longueur 9 car
-   set answer [::usb_focus::waitAnswer 6]
-   set coef [string range $answer 3 5]
+   set coef [string range [::usb_focus::waitAnswer 6] 3 5]
    set coef [string trimleft $coef 0]
 
    ::usb_focus::writePort FTxxxA
 
    #--   acquit == "A=x" : longueur 3 car
-   set answer [::usb_focus::waitAnswer 3]
-
-   set sign [string index $answer 2]
+   regsub -all {[A=]} [::usb_focus::waitAnswer 3] "" sign
    if {$sign ==1} {
       set widget(coef) "+$coef"
    } else {
       set widget(coef) "-$coef"
    }
 
-   if {$toSet == $widget(coef)} {
+   if {$widget(coef) == $private(prev,coef)} {
       ::console::affiche_resultat "ok\n"
    }
 }
@@ -400,7 +398,7 @@ proc ::usb_focus::createPort { port } {
 
    if { $::tcl_platform(platform) == "unix" } {
       set port [ string tolower [ string trim $port ] ]
-      set num [ expr [ string index $port 3 ] - 1 ]
+     set num [ expr [ string index $port 3 ] - 1 ]
       set port /dev/ttyS$num
    }
 
@@ -531,4 +529,18 @@ proc ::usb_focus::stopMove { } {
    set answer [::usb_focus::readPort 3]
 
    ::usb_focus::getPosition
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::trimZero
+#     ote les zeo inutiles
+#------------------------------------------------------------
+proc ::usb_focus::trimZero { val } {
+
+   set val "[string trimleft $val 0]"
+   if {[llength $val ] ==0} {
+      set $val  0
+   }
+
+   return $val
 }
