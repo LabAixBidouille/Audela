@@ -97,12 +97,9 @@ proc ::usb_focus::initPlugin { } {
    global conf
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
-   #paramList [list port start rate maxstep stepincr motorspeed nbstep]
    if {![info exists conf(usb_focus)]} {
-      set conf(usb_focus) [list "" 1 65535 1 4 1 10]
-   } elseif {"" in $conf(usb_focus)} {
-      #--   specifique au debug
-      set conf(usb_focus) [list "" 1 65535 1 4 1 10]
+      #--   liste du port COM et de step
+      set conf(usb_focus) [list "" 10]
    }
 
    if {![info exists conf(usb_focus,start)]} {
@@ -110,12 +107,8 @@ proc ::usb_focus::initPlugin { } {
    }
 
    #--- variables locales
+   ::usb_focus::initVar
    set private(frm)         ""
-   set private(linkNo)      "0"
-   set private(temperature) "-"
-   set private(tty)         "-"
-   set private(mode)        "-"
-   set private(tempo)       "200" ; # temporisation du port serie
 }
 
 #------------------------------------------------------------
@@ -141,15 +134,8 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    set private(frm) $frm
 
-   #--- je copie les donnees de conf(...) dans les variables widget(...)
-   lassign $conf(usb_focus) widget(port) widget(rate) widget(maxstep) \
-      widget(stepincr) widget(motorspeed) widget(motorsens) widget(nbstep)
-
-   #--- initialise les autres variables provisoires
-   set widget(version)  "-"
-   set widget(target)   ""
-   set widget(position) "-"
-   set private(prev,maxstep) $widget(maxstep)
+   #--- je copie les donnees de conf(...)
+   lassign $conf(usb_focus) widget(port) widget(nbstep)
 
    #--- Prise en compte des liaisons
    set linkList [::confLink::getLinkLabels { "serialport" } ]
@@ -171,14 +157,14 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    #--- Creation du frame contenant les commandes de usb_focus
    set f [frame $frm.frame1 -borderwidth 0 -relief raised]
-   pack $f -side top -fill x
+   pack $frm.frame1 -side top -fill x
 
    #--   frame de la com
    labelframe $f.link -borderwidth 2 -text $caption(usb_focus,link)
 
       #--- Label de la liaison
       label $f.link.labelPort -text "$caption(usb_focus,port)"
-      grid $f.link.labelPort -row 0 -column 0 -padx 10 -sticky w
+      grid $f.link.labelPort -row 0 -column 0 -padx 5 -sticky w
 
       #--- Choix de la liaison
       ComboBox $f.link.port \
@@ -194,184 +180,201 @@ proc ::usb_focus::fillConfigPage { frm } {
 
       #--- Bouton de configuration de la liaison
       button $f.link.configure -text "$caption(usb_focus,configure)" -relief raised \
-         -command {::confLink::run ::usb_focus::widget(port) {"serialport"} $caption(usb_focus,label)}
-      grid $f.link.configure -row 0 -column 2 -padx 10 -pady 5 -sticky ew
+         -command "::confLink::run ::usb_focus::widget(port) {\"serialport\"} \"$caption(usb_focus,label)\""
+      grid $f.link.configure -row 0 -column 2 -padx 5 -pady 5 -sticky ew
 
-      #--- Frequence de lecture
-      LabelEntry  $f.link.rate -label "$caption(usb_focus,rate)  " \
-         -labeljustify left -width 4 -justify right \
-         -textvariable ::usb_focus::widget(rate)
-      #--   prevoir une proc de controle
-      grid  $f.link.rate -row 1 -column 0 -columnspan 2 -padx 10 -pady 5
-
-   grid $f.link -row 0 -column 0 -padx 10 -pady 10 -sticky w
+   grid $f.link -row 0 -column 0 -padx 10 -pady 5 -sticky w
 
    #--- Version du microcontroleur
-   LabelEntry  $f.version -label "$caption(usb_focus,version) " \
-      -labeljustify left -width 5 -justify right -font {helvetica 12 bold} \
-      -state disabled -textvariable ::usb_focus::widget(version)
-   grid  $f.version -row 1 -column 0 -columnspan 2 -padx 10 -pady 5 -sticky w
+   frame $f.chip
 
-   #--- Bouton Reset
-   button $f.reset -text "$caption(usb_focus,reset)" -relief raised \
-         -command { ::usb_focus::reset }
-   grid $f.reset -row 1 -column 2 -padx 10 -pady 5 -sticky w
+      #--- Label N° de version
+      label $f.chip.labelVersion -text "$caption(usb_focus,version)"
+      grid $f.chip.labelVersion -row 0 -column 0 -padx 5 -pady 5 -sticky w
+
+      #--- N° de version
+      entry  $f.chip.version -width 5 -justify right -state disabled \
+         -textvariable ::usb_focus::widget(version)
+      grid  $f.chip.version -row 0 -column 1 -padx 5 -pady 5 -sticky w
+
+      #--- Bouton Reset
+      button $f.chip.reset -text "$caption(usb_focus,reset)" -relief raised \
+            -command "::usb_focus::reset"
+      grid $f.chip.reset -row 0 -column 2 -padx 5 -pady 5 -sticky w
+
+   grid $f.chip -row 1 -column 0 -padx 5 -pady 5 -sticky ew
 
    #--   frame du moteur
    labelframe $f.motor -borderwidth 2 -text $caption(usb_focus,motor)
 
-      #--   constitue les listes
-      set stepList [list $caption(usb_focus,halfstep) $caption(usb_focus,fullstep)]
-      set speedList [list 2 3 4 5 6 7 8 9]
-      set sensList [list $caption(usb_focus,neg) $caption(usb_focus,pos)]
-
-      set width [::tkutil::lgEntryComboBox $stepList]
-
       #--- Label du nombre de pas
       label $f.motor.labelStep -text "$caption(usb_focus,maxstep)"
-      grid $f.motor.labelStep -row 0 -column 0 -padx 10 -pady 5
+      grid $f.motor.labelStep -row 0 -column 0 -padx 5 -pady 5 -sticky w
 
-      #--- Nombre de pas
-      entry $f.motor.maxstep -width $width -justify right \
+      #--- Nombre de pas maxi
+      entry $f.motor.maxstep -width 10 -justify right \
          -textvariable ::usb_focus::widget(maxstep)
-      bind $f.motor.maxstep <Leave> [list "::usb_focus::setMaxPos"]
-      grid $f.motor.maxstep -row 0 -column 1 -padx 10 -pady 5 -sticky w
+      grid $f.motor.maxstep -row 0 -column 1 -padx 5 -pady 5 -sticky w
 
-      #--- Label de l'increment
-      label $f.motor.labelIncrStep -text "$caption(usb_focus,step)"
-      grid $f.motor.labelIncrStep -row 1 -column 0 -padx 10 -pady 5 -sticky w
-
-      #--- Choix de l'increment
-      set widget(step) [lindex $stepList $widget(stepincr)]
-      ComboBox $f.motor.incrStep \
-         -width $width \
-         -height 2 \
-         -relief sunken         \
-         -borderwidth 1         \
-         -editable 0            \
-         -textvariable ::usb_focus::widget(step) \
-         -modifycmd "::usb_focus::setStep $f.motor.incrStep" \
-         -values $stepList
-      grid $f.motor.incrStep -row 1 -column 1 -padx 10 -pady 5 -sticky w
+      #--- Bouton de setmaxi
+      button $f.motor.setmax -text "$caption(usb_focus,set)" -relief raised \
+         -width 4 -command "::usb_focus::setMaxPos"
+      grid $f.motor.setmax -row 0 -column 2 -padx 5
 
       #--- Label de la vitesse
       label $f.motor.labelSpeed -text "$caption(usb_focus,motorspeed)"
-      grid $f.motor.labelSpeed -row 2 -column 0 -padx 10 -pady 5 -sticky w
+      grid $f.motor.labelSpeed -row 1 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- Vitesse de deplacement
-      ComboBox $f.motor.speed \
-         -width $width \
-         -height 8 \
-         -relief sunken         \
-         -borderwidth 1         \
-         -editable 0            \
+      ComboBox $f.motor.speed -width 4 -height 8 -relief sunken -borderwidth 1 -editable 0 \
          -textvariable ::usb_focus::widget(motorspeed) \
          -modifycmd "::usb_focus::setSpeed" \
-         -values $speedList
-     grid $f.motor.speed -row 2 -column 1 -padx 10 -pady 10 -sticky w
+         -values [list 2 3 4 5 6 7 8 9]
+      grid $f.motor.speed -row 1 -column 1 -padx 5 -sticky e
+
+      #--- Label de l'increment
+      label $f.motor.labelIncrStep -text "$caption(usb_focus,step)"
+      grid $f.motor.labelIncrStep -row 2 -column 0 -padx 5 -pady 5 -sticky w
+
+      radiobutton $f.motor.halfstep -text "$caption(usb_focus,halfstep)" \
+         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 0 \
+         -command "::usb_focus::setSpeedIncr"
+      grid $f.motor.halfstep -row 2 -column 1 -padx 5 -sticky w
+
+      radiobutton $f.motor.fullstep -text "$caption(usb_focus,fullstep)" \
+         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 1 \
+         -command "::usb_focus::setSpeedIncr"
+      grid $f.motor.fullstep -row 2 -column 2 -padx 5 -sticky w
 
       #--- Label du sens de rotation
       label $f.motor.labelRot -text "$caption(usb_focus,motorrot)"
-      grid $f.motor.labelRot -row 3 -column 0 -padx 10 -pady 5 -sticky w
+      grid $f.motor.labelRot -row 3 -column 0 -padx 5 -pady 5 -sticky w
 
-      #--- Sens de rotation
-      set widget(rot) [lindex $sensList $widget(motorsens)]
-      ComboBox $f.motor.rot \
-         -width [expr { [::tkutil::lgEntryComboBox $sensList]*3/4 }] \
-         -height 2 \
-         -relief sunken         \
-         -borderwidth 1         \
-         -editable 0            \
-         -textvariable ::usb_focus::widget(rot) \
-         -modifycmd "::usb_focus::setRot $f.motor.rot" \
-         -values $sensList
-      grid $f.motor.rot -row 3 -column 1 -columnspan 2 -padx 10 -pady 5 -sticky w
+      set clockwise [image create photo]
+      $clockwise configure -data {R0lGODlhGAAYAIIAMWyRQqDPFMnfebTReYyzQPj69nOqH5ysjCwAAAAAGAAY
+         AAIDnVi63P4wSnfAhKIIYMC4y1ABZBB4l1AZAcsGhCVtr2nb8rMRJt/bBELk
+         wPIJjkeeYVgbDAgdT1By8AUGhk8BAJ00DRnFIBepwUANsO0AGQicjhqB7YiR
+         APSF2gRuYG9kBXstB2EFYzcBeQoHAQI2HQeSHDd9DQSPkAabiVgPT5mJN2OG
+         fpg/P0dZElgHbldOAjFaE09Bt1NoChm8EQkAOw==}
 
-   grid $f.motor -row 2 -column 0 -padx 10 -pady 10 -sticky w
+      radiobutton $f.motor.clockwise -image $clockwise \
+         -indicatoron 1 -variable ::usb_focus::widget(motorsens) -value 0 \
+         -command "::usb_focus::setRot"
+      grid $f.motor.clockwise -row 3 -column 1 -padx 5 -sticky w
+
+      set anticlockwise [image create photo]
+      $anticlockwise configure -data {R0lGODlhGAAYAIIAMWyRQqDPFMnfebTReYyzQPj69nOqH5ysjCwAAAAAGAAY
+         AAIDnVi6LOWOyVkGufjSOcwZQjCMAgEMm2KFARG8riAYKLW+eP4OQCQRrJdh
+         aNB1JodA0AA4OAFFnMGnmEoPPp7uILEKqZXoC9DFEbgTE2CNXngDbQloNBG3
+         UilxJ0vGFw4uOzQKAAQGfgd6FkwnGniJLS8yky6HKQKFMGZmBHiYdjoBfZcH
+         UAFFUSZ+CwOlawBjNasKEFAnsxSluLu8qwkAOw==}
+
+      radiobutton $f.motor.anticlockwise -image $anticlockwise \
+         -indicatoron 1 -variable ::usb_focus::widget(motorsens) -value 1 \
+         -command "::usb_focus::setRot"
+      grid $f.motor.anticlockwise -row 3 -column 2 -padx 5 -sticky w
+
+   grid $f.motor -row 2 -column 0 -padx 10 -pady 5 -sticky w
+
+   #--   frame de la temperature
+   labelframe $f.temp -borderwidth 2 -text $caption(usb_focus,temperature)
+
+      #--- Label de la temperature
+      label $f.temp.labelTemp -text "$caption(usb_focus,actuelle)"
+      grid $f.temp.labelTemp -row 0 -column 0 -padx 5 -pady 10 -sticky w
+
+      #--- Temperature
+      entry $f.temp.temperature -width 5 -justify right -state disabled \
+         -textvariable ::usb_focus::widget(temperature)
+      grid $f.temp.temperature -row 0 -column 1 -padx 5 -sticky ew
+
+      checkbutton $f.temp.mode -text "$caption(usb_focus,tempmode)" \
+         -indicatoron 1 -onvalue 1 -offvalue 0 \
+         -variable ::usb_focus::widget(tempmode) \
+         -command "::usb_focus::setTempMod"
+      grid $f.temp.mode -row 1 -column 0 -sticky w
+
+      #--- Label du coefficient
+      label $f.temp.labelTempCoef -text "$caption(usb_focus,tempcoef)"
+      grid $f.temp.labelTempCoef -row 2 -column 0 -padx 5 -pady 5 -sticky w
+
+      #--- Coefficient
+      entry $f.temp.coef -width 5 -justify right \
+         -textvariable ::usb_focus::widget(coef)
+      grid $f.temp.coef -row 2 -column 1 -padx 5 -sticky w
+
+      #--- Bouton de set coeftemp
+      button $f.temp.setcoef -text "$caption(usb_focus,set)" -relief raised \
+         -width 4 -command "::usb_focus::setCoefTemp"
+      grid $f.temp.setcoef -row 2 -column 2 -padx 5
+
+      #--- Label du coefficient
+      label $f.temp.labelTempStep -text "$caption(usb_focus,tempstep)"
+      grid $f.temp.labelTempStep -row 3 -column 0 -padx 5 -pady 5 -sticky w
+
+      #--- Coefficient
+      entry $f.temp.step -width 5 -justify right \
+         -textvariable ::usb_focus::widget(step)
+      grid $f.temp.step -row 3 -column 1 -padx 5 -sticky e
+
+      #--- Bouton de set steptemp
+      button $f.temp.setstep -text "$caption(usb_focus,set)" -relief raised \
+         -width 4 -command "::usb_focus::setSeuilTemp"
+      grid $f.temp.setstep -row 3 -column 2 -padx 5
+
+   grid $f.temp -row 2 -column 1 -padx 10 -pady 5 -sticky w
 
    #--   frame de la position
    labelframe $f.pos -borderwidth 2 -text $caption(usb_focus,position)
 
       #--- Label de la position actuelle
       label $f.pos.labelPosAct -text "$caption(usb_focus,actuelle)"
-      grid $f.pos.labelPosAct -row 0 -column 0 -padx 10 -pady 5 -sticky w
+      grid $f.pos.labelPosAct -row 0 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- Position actuelle
       entry $f.pos.posact -width 10 -justify right -state disabled \
          -textvariable ::usb_focus::widget(position)
-      grid $f.pos.posact -row 0 -column 1 -padx 10 -sticky ew
+      grid $f.pos.posact -row 0 -column 1 -padx 5 -sticky ew
 
       #--- Label de la position cible
       label $f.pos.labelTarget -text "$caption(usb_focus,target) "
-      grid $f.pos.labelTarget -row 1 -column 0 -padx 10 -sticky w
+      grid $f.pos.labelTarget -row 1 -column 0 -padx 5 -sticky w
 
       #--- Position cible
       entry $f.pos.target -width 6 -justify right \
          -textvariable ::usb_focus::widget(target)
-      grid $f.pos.target -row 1 -column 1 -padx 10 -pady 5 -sticky ew
+      grid $f.pos.target -row 1 -column 1 -padx 5 -pady 5 -sticky ew
 
       #--  bouton Goto
-      button $f.pos.goto -text "$caption(usb_focus,goto)" -relief raised -width 5
-      bind $f.pos.goto <ButtonPress-1> { ::usb_focus::goto }
-      grid $f.pos.goto -row 1 -column 2 -padx 10 -pady 5 -sticky ew
+      button $f.pos.goto -text "$caption(usb_focus,goto)" -relief raised -width 5 \
+         -command "::usb_focus::goto"
+      grid $f.pos.goto -row 1 -column 2 -padx 5 -pady 5 -sticky ew
 
       #--  bouton Stop
-      button $f.pos.stop -text "$caption(usb_focus,stopmove)" -relief raised -width 5
-      bind $f.pos.stop <ButtonPress-1> { ::usb_focus::stopMove }
-      grid $f.pos.stop -row 1 -column 3 -padx 10 -sticky ew
+      button $f.pos.stop -text "$caption(usb_focus,stopmove)" -relief raised -width 5 \
+         -command "::usb_focus::stopMove"
+      grid $f.pos.stop -row 1 -column 3 -padx 5 -sticky ew
 
       #--- Label des pas
       label $f.pos.labelStep -text "$caption(usb_focus,nbstep) "
-      grid $f.pos.labelStep -row 2 -column 0 -padx 10 -pady 5 -sticky w
+      grid $f.pos.labelStep -row 2 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- nombre de pas
-      entry $f.pos.step -width 6 -justify right \
+      entry $f.pos.nbstep -width 6 -justify right \
          -textvariable ::usb_focus::widget(nbstep)
-      grid $f.pos.step -row 2 -column 1 -padx 10 -sticky w
+      grid $f.pos.nbstep -row 2 -column 1 -padx 5 -sticky w
 
       #--  bouton -
-      button $f.pos.decrease -text "-" -relief raised -width "5"
-      bind $f.pos.decrease <ButtonPress-1> { ::usb_focus::move "-" }
-      grid $f.pos.decrease -row 2 -column 2 -padx 10 -pady 5 -sticky ew
+      button $f.pos.decrease -text "-" -relief raised -width "5" \
+         -command "::usb_focus::move -"
+      grid $f.pos.decrease -row 2 -column 2 -padx 5 -pady 5 -sticky ew
 
       #--  bouton +
-      button $f.pos.increase -text "+" -relief raised -width "5"
-      bind $f.pos.increase <ButtonPress-1> { ::usb_focus::move "+" }
-      grid $f.pos.increase -row 2 -column 3 -padx 10 -pady 5 -sticky ew
+      button $f.pos.increase -text "+" -relief raised -width "5" \
+         -command "::usb_focus::move +"
+      grid $f.pos.increase -row 2 -column 3 -padx 5 -pady 5 -sticky ew
 
-    grid $f.pos -row 3 -column 0 -columnspan 4 -padx 10 -pady 10 -sticky w
-
-    #--   frame de la temperature
-    labelframe $f.temp -borderwidth 2 -text $caption(usb_focus,temperature)
-
-      #--- Label de la temperature
-      label $f.temp.labelTemp -text "$caption(usb_focus,actuelle)"
-      grid $f.temp.labelTemp -row 0 -column 0 -padx 10 -pady 10 -sticky w
-
-      #--- Temperature
-      entry $f.temp.temperature -width 5 -justify right -state disabled \
-         -textvariable ::usb_focus::private(temperature)
-      grid $f.temp.temperature -row 0 -column 1 -padx 10 -sticky ew
-
-      #--- Label du coefficient
-      label $f.temp.labelTempCoef -text "$caption(usb_focus,tempcoef)"
-      grid $f.temp.labelTempCoef -row 1 -column 0 -padx 10 -pady 5 -sticky w
-
-      #--- Coefficient
-      entry $f.temp.tempCoef -width 5 -justify right \
-         -textvariable ::usb_focus::widget(coeftemp)
-      grid $f.temp.tempCoef -row 1 -column 1 -padx 10 -sticky w
-
-      #--- Label du coefficient
-      label $f.temp.labelTempStep -text "$caption(usb_focus,tempstep)"
-      grid $f.temp.labelTempStep -row 2 -column 0 -padx 10 -pady 5 -sticky w
-
-      #--- Coefficient
-      entry $f.temp.tempStep -width 5 -justify right \
-         -textvariable ::usb_focus::widget(steptemp)
-      grid $f.temp.tempStep -row 2 -column 1 -padx 10 -sticky e
-
-   grid $f.temp -row 4 -column 0 -columnspan 4 -padx 10 -pady 10 -sticky w
+   grid $f.pos -row 3 -column 0 -padx 10 -pady 5 -sticky w
 
    #--- Frame du site web, du bouton Arreter et du checkbutton creer au demarrage
    frame $frm.frame2 -borderwidth 0 -relief flat
@@ -396,6 +399,9 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    pack $frm.frame2 -side bottom -fill x
 
+   #--   inhibe toutes les commandes et entrees
+   ::usb_focus::setState disabled
+
    #--- Mise a jour
    ::usb_focus::onChangeLink
 
@@ -411,8 +417,6 @@ proc ::usb_focus::fillConfigPage { frm } {
 #------------------------------------------------------------
 proc ::usb_focus::onChangeLink { } {
 
-   #--   inhibe toutes les commandes et entrees
-   ::usb_focus::setState disabled
 }
 
 #------------------------------------------------------------
@@ -426,8 +430,7 @@ proc ::usb_focus::configurePlugin { } {
    global conf
 
    #--- copie les variables des widgets dans le tableau conf()
-   set conf(usb_focus) [list $widget(port) $widget(rate) $widget(maxstep) \
-      $widget(stepincr) $widget(motorspeed) $widget(motorsens) $widget(nbstep)]
+   set conf(usb_focus) [list $widget(port) $widget(nbstep)]
 }
 
 #------------------------------------------------------------
@@ -438,9 +441,18 @@ proc ::usb_focus::configurePlugin { } {
 #------------------------------------------------------------
 proc ::usb_focus::createPlugin { } {
    variable widget
+   variable private
 
-   #--   cree le port et initialise les variables memorisees
-   ::usb_focus::createPort $widget(port)
+   #--   cree le port et initialise les variables en cas de reussite
+   if {[::usb_focus::createPort $widget(port)]} {
+      #--   initialise les variables avec les valeurs memorisees
+      ::usb_focus::initValues
+
+      #--- cree la liaison du focuser
+      #   (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
+      #     indispensable pour les tests isReady
+      set private(linkNo) [::confLink::create $widget(port) "focuser" "USB_Focus" "" -noopen]
+   }
 }
 
 #------------------------------------------------------------
@@ -451,15 +463,11 @@ proc ::usb_focus::createPlugin { } {
 #------------------------------------------------------------
 proc ::usb_focus::deletePlugin { } {
    variable widget
-   variable private
 
    ::usb_focus::configurePlugin
-
-   #--- je ferme la liaison du focuser
+   ::confLink::delete $widget(port) "focuser" "USB_Focus"
    ::usb_focus::closePort
 
-   ::confLink::delete $widget(port) "focuser" "USB_Focus"
-   set private(linkNo) "0"
 }
 
 #------------------------------------------------------------
@@ -504,18 +512,115 @@ proc ::usb_focus::incrementSpeed { } {
 
 #------------------------------------------------------------
 #  ::usb_focus::setState
-#     incremente la vitesse du focus
+#     Inhibe les commandes lors de la creation du widget et de l'arret
+#     Desinhibe les commandes lors de la creation du port
 #
 #  return nothing
 #------------------------------------------------------------
 proc ::usb_focus::setState { state } {
    variable private
+   global conf
 
-   set childList [list link.rate reset motor.maxstep motor.incrStep \
-       motor.speed  motor.rot pos.target pos.goto pos.stop pos.step \
-       pos.decrease pos.increase temp.tempCoef temp.tempStep]
-   foreach child $childList {
-      $private(frm).frame1.$child configure -state $state
+   set w $private(frm).frame1
+
+   if {$state eq "normal"} {
+      lassign $conf(usb_focus) -> widget(nbstep)
+   }
+
+   set entryList [list "motor.maxstep" "pos.target" "pos.nbstep" "temp.coef" "temp.step"]
+   foreach entr $entryList {
+      if {[winfo exists $w.$entr]}  {
+         if {$state eq "normal"} {
+            lassign [split $entr "."] -> param
+            bind $w.$entr <Leave> [list ::usb_focus::verifValue $param]
+          } else {
+            bind $w.$entr <Leave> ""
+         }
+         $w.$entr configure -state $state
+      }
+   }
+
+   set buttonList [list chip.reset motor.setmax motor.speed \
+      motor.halfstep motor.fullstep pos.goto pos.stop \
+      motor.clockwise motor.anticlockwise pos.decrease \
+      pos.increase temp.mode temp.setcoef temp.setstep]
+   foreach but $buttonList {
+      $w.$but configure -state $state
    }
 }
 
+#------------------------------------------------------------
+#  ::usb_focus::initVar
+#     Initialise quelques variables lors du lancement
+#     et lors de la fermeture du port
+#
+#  return nothing
+#------------------------------------------------------------
+proc ::usb_focus::initVar {} {
+   variable widget
+   variable private
+
+   set private(tty)           ""
+   set private(linkNo)        0
+   set private(prev,maxstep)  ""
+   set private(prev,target)   ""
+   set private(prev,nbstep)   ""
+   set private(prev,coef)     ""
+   set private(prev,step)     ""
+   set widget(version)        ""
+   set widget(motorspeed)     0
+   set widget(stepincr)       1
+   set widget(motorsens)      0
+   set widget(maxstep)        ""
+   set widget(position)       ""
+   set widget(target)         "0"
+   set widget(nbstep)         ""
+   set widget(temperature)    ""
+   set widget(mode)           0
+   set widget(coef)           ""
+   set widget(step)           ""
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::verifValueValue
+#     Verifie une valeur numerique et sa limite
+#     +Message d'alerte si erreur+Retablit l'ancienne valeur
+#  return nothing
+#------------------------------------------------------------
+proc ::usb_focus::verifValue { v } {
+   variable widget
+   variable private
+   global caption
+
+   set err 0
+
+   #--   toutes les valeurs (a l'exception de coef) doivent etre positives
+   if { $v in [list maxstep target nbstep step] && $widget($v) < 0} {
+      set err 1
+   }
+
+   #--   definit la limite superieure
+   switch -exact $v {
+      maxstep  { set limite 65535 ; # steps }
+      target   { set limite 65535 ; # steps }
+      nbstep   { set limite 65535 ; # steps }
+      coef     { set limite 999 ; # steps/°C }
+      step     { set limite 999 ; # steps }
+   }
+
+   #--   toutes les valeurs absolues doivent etre <= limite
+   if {[expr { abs($widget($v)) }] > $limite} {
+      set err 1
+   }
+
+   if {$err == 0 } {
+      #--   memorise la nouvelle valeur
+      set private(prev,$v) $widget($v)
+   } else {
+      tk_messageBox -title $caption(usb_focus,attention)\
+         -icon error -type ok -message "[format $caption(usb_focus,limit) $limite]"
+      #--   retablit l'ancienne valeur en cas d'erreur
+      set widget($v) $private(prev,$v)
+   }
+
+}
