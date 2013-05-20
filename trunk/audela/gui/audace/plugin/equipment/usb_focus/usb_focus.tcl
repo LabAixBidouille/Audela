@@ -110,8 +110,6 @@ proc ::usb_focus::initPlugin { } {
       set conf(usb_focus,start) "0"
    }
 
-   #--- variables locales
-   ::usb_focus::initVar
    set private(frm)         ""
 }
 
@@ -140,6 +138,9 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    #--- je copie les donnees de conf(...)
    lassign $conf(usb_focus) widget(port) widget(nbstep)
+
+   #--- variables locales
+   ::usb_focus::initLocalVar
 
    #--- Prise en compte des liaisons
    set linkList [::confLink::getLinkLabels { "serialport" } ]
@@ -455,8 +456,8 @@ proc ::usb_focus::createPlugin { } {
    #--   cree le port et initialise les variables en cas de reussite
    if {[::usb_focus::createPort $widget(port)]} {
 
-      #--   initialise les variables avec les valeurs memorisees
-      ::usb_focus::initValues
+      #--   inhibe les commandes
+      ::usb_focus::setState normal
 
       #--- cree la liaison du focuser
       #   (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
@@ -476,7 +477,12 @@ proc ::usb_focus::deletePlugin { } {
 
    ::usb_focus::configurePlugin
    ::confLink::delete $widget(port) "focuser" "USB_Focus"
+   #--   ferme le port serie
    ::usb_focus::closePort
+   #--   reinitialise les variable private et widget
+   ::usb_focus::initLocalVar
+   #--   inhibe les commandes
+   ::usb_focus::setState disabled
 }
 
 #------------------------------------------------------------
@@ -529,16 +535,12 @@ proc ::usb_focus::incrementSpeed { } {
 #------------------------------------------------------------
 proc ::usb_focus::setState { state } {
    variable private
-   global conf
 
    set w $private(frm).frame1
 
-   if {$state eq "normal"} {
-      lassign $conf(usb_focus) -> widget(nbstep)
-   }
-
    #--   traite les saisies
-   set entryList [list "motor.maxstep" "pos.target" "pos.nbstep" "temp.coef" "temp.step"]
+   set entryList [list "motor.maxstep" "pos.target" "pos.nbstep" \
+      "temp.coef" "temp.step"]
    foreach entr $entryList {
       if {[winfo exists $w.$entr]}  {
          if {$state eq "normal"} {
@@ -563,24 +565,27 @@ proc ::usb_focus::setState { state } {
          $w.$but configure -state $state
       }
    }
+
+   update
 }
 
 #------------------------------------------------------------
-#  ::usb_focus::initVar
+#  ::usb_focus::initLocalVar
 #     Initialise quelques variables lors du lancement
 #     et lors de la fermeture du port
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::usb_focus::initVar {} {
+proc ::usb_focus::initLocalVar {} {
    variable widget
    variable private
+   global conf
 
    set private(tty)           ""
    set private(linkNo)        0
    set private(prev,maxstep)  ""
    set private(prev,target)   ""
-   set private(prev,nbstep)   ""
+   set private(prev,nbstep)   [lindex $conf(usb_focus) 1]
    set private(prev,coef)     ""
    set private(prev,step)     ""
    set widget(version)        ""
@@ -590,7 +595,7 @@ proc ::usb_focus::initVar {} {
    set widget(maxstep)        ""
    set widget(position)       ""
    set widget(target)         "0"
-   set widget(nbstep)         ""
+   set widget(nbstep)         $private(prev,nbstep)
    set widget(temperature)    ""
    set widget(mode)           0
    set widget(coef)           ""
