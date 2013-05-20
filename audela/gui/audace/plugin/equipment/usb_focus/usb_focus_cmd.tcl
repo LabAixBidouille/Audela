@@ -27,7 +27,7 @@
 #  ::usb_focus::waitAnswer
 #  ::usb_focus::readPort
 #  ::usb_focus::closePort
-#  ::usb_focus::initValues
+#  ::usb_focus::initFromChip
 #  ::usb_focus::activeCmd
 #  ::usb_focus::stopMove
 
@@ -41,6 +41,8 @@
 #     ne retournent rien; SGETAL est appellee pour rafraichir les valeurs concernees
 #  5) les valeurs numeriques transmises au chip ont un format fixe et sont precedees avec des 0
 #     ces 0 sont otes poir l'affichage et retablit pour le codage
+#  6) les commandes qui prennent un temps appreciable (move, goto, setTempMod)
+#     provoquent l'inhibtion des commandes, liberees a la fin de la proc
 
 #------------------------------------------------------------
 #  ::usb_focus::reset
@@ -191,19 +193,26 @@ proc ::usb_focus::getConf { } {
       coef step widget(version) maxstep
 
    #--   ote les 0 inutiles
-   if {$step < 0} {
+   if {$coef < 0} {
       set widget(coef) "-[string trimleft $coef 0]"
    } else {
       set widget(coef) "+[string trimleft $coef 0]"
    }
    set private(prev,coef) $widget(coef)
-   set widget(step) "[string trimleft $step 0]"
+
+   set step "[string trimleft $step 0]"
+   if {[llength $step] ==0} {
+      set step 0
+   }
+   set widget(step) $step
    set private(prev,step) $widget(step)
-   set widget(maxstep) "[string trimleft $maxstep 0]"
+
+   set maxstep "[string trimleft $maxstep 0]"
+   if {[llength $maxstep] ==0} {
+      set maxstep 0
+   }
+   set widget(maxstep) $maxstep
    set private(prev,maxstep) $widget(maxstep)
-
-   console::affiche_resultat " [string trimleft "00000" 0] \n"
-
 }
 
 #------------------------------------------------------------
@@ -262,6 +271,9 @@ proc ::usb_focus::setCoefTemp { } {
 proc ::usb_focus::goto { } {
    variable widget
 
+   #--   inhibe les commandes
+   ::usb_focus::setState disabled
+
    #--   calcule l'ecart
    set dif [expr { $widget(target)-$widget(position) }]
 
@@ -280,6 +292,9 @@ proc ::usb_focus::goto { } {
    #--   acquit == "*LFCR" ; longueur 3 car
    set answer [::usb_focus::waitAnswer 3]
    ::usb_focus::getPosition
+
+   #--   libere les commandes
+   ::usb_focus::setState normal
 }
 
 #------------------------------------------------------------
@@ -290,6 +305,9 @@ proc ::usb_focus::goto { } {
 #------------------------------------------------------------
 proc ::usb_focus::move { command } {
    variable widget
+
+   #--   inhibe les commandes
+   ::usb_focus::setState disabled
 
    #--   formate n a la longueur voulue
    set n [format "%05d" $widget(nbstep)]
@@ -306,6 +324,9 @@ proc ::usb_focus::move { command } {
    set answer [::usb_focus::waitAnswer 3]
 
    ::usb_focus::getPosition
+
+   #--   libere les commandes
+   ::usb_focus::setState normal
 }
 
 #------------------------------------------------------------
@@ -354,9 +375,15 @@ proc ::usb_focus::setTempMod { } {
          }
       1  {  ::usb_focus::writePort FAUTOM ; # demarre le mode de compensation automatique
 
+            #--   inhibe les commandes
+            #::usb_focus::setState disabled
+
             #--   acquit == "A..P=wxyz LFCR + T=+/-xy.z LFCR"
             regsub -all {[APT=]} [::usb_focus::waitAnswer 21] " " answer
             lassign $answer widget(position) widget(temperature)
+
+            #--   libere les commandes
+            #::usb_focus::setState normal
          }
    }
 }
@@ -384,9 +411,10 @@ proc ::usb_focus::createPort { port } {
       chan configure $tty -mode "19200,n,8,1" \
          -blocking 0 -buffering none
       } errmsg]} {
-      ::console::affiche_resultat "err $errmsg\n"
+      ::console::affiche_resultat "error : $errmsg\n"
       return 0
   } else {
+      ::usb_focus::initFromChip
       return 1
   }
 }
@@ -400,7 +428,6 @@ proc ::usb_focus::writePort { command } {
    variable private
 
    chan puts -nonewline $private(tty) $command
-   #--   force la sortie
    chan flush $private(tty)
 }
 
@@ -444,22 +471,19 @@ proc ::usb_focus::closePort { } {
 
    if {$private(tty) ne ""} {
       chan close $private(tty)
-      ::usb_focus::initVar
-      #--   inhibe les commandes
-      ::usb_focus::setState disabled
    }
 }
 
 #------------------------------------------------------------
-#  ::usb_focus::initValues
+#  ::usb_focus::initFromChip
 #     Met a jour la fenetre avec les valeurs lues dans le chip
-#     Lancee apres ::usb_focus::createPort
+#     Lancee par ::usb_focus::createPort
 #------------------------------------------------------------
-proc ::usb_focus::initValues {} {
+proc ::usb_focus::initFromChip {} {
    variable private
 
    #--   initialise le mode
-  ::usb_focus::writePort FMMODE
+   ::usb_focus::writePort FMMODE
 
    #--   acquit == "!LFCR" ; longueur 3 car
    set answer [::usb_focus::waitAnswer 3]
