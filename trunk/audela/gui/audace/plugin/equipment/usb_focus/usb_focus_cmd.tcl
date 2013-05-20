@@ -14,21 +14,22 @@
 #  ::usb_focus::setSpeed
 #  ::usb_focus::setSpeedIncr
 #  ::usb_focus::setRot
+#  ::usb_focus::setSeuilTemp
+#  ::usb_focus::getConf
+#  ::usb_focus::setCoefTemp
 #  ::usb_focus::getPosition
+#  ::usb_focus::getTemperature
 #  ::usb_focus::goto
-#  ::usb_focus::stopMove
 #  ::usb_focus::move
 #  ::usb_focus::getTemperature
 #  ::usb_focus::setTempMod
-#  ::usb_focus::setCoefTemp
-#  ::usb_focus::setSeuilTemp
-#  ::usb_focus::getConf
 #  ::usb_focus::createPort
 #  ::usb_focus::waitAnswer
 #  ::usb_focus::readPort
 #  ::usb_focus::closePort
 #  ::usb_focus::initValues
 #  ::usb_focus::activeCmd
+#  ::usb_focus::stopMove
 
 #  Notes :
 #  1) la liaison est asynchrone et geree par fileevent
@@ -143,182 +144,6 @@ proc ::usb_focus::setRot { } {
 }
 
 #------------------------------------------------------------
-#  ::usb_focus::getPosition
-#     Demande la position
-#
-#------------------------------------------------------------
-proc ::usb_focus::getPosition { } {
-   variable widget
-
-   ::usb_focus::writePort FPOSRO
-
-   #--   acquit == "P=vwxyz LFCR" ; longueur 9 car
-   set answer [::usb_focus::waitAnswer 9]
-   regexp -all {.+([0-9]{5}).+} $answer match position
-   set widget(position) [string trimleft $position 0]
-   if {$widget(position) eq ""} {
-      set widget(position) 0
-   }
-   update
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::goto
-#     envoie le focaliseur a moteur pas a pas a une position predeterminee
-#     Commande du bouton GOTO
-#------------------------------------------------------------
-proc ::usb_focus::goto { } {
-   variable widget
-
-   #--   calcule l'ecart
-   set dif [expr { $widget(target)-$widget(position) }]
-
-   #--   formate le nombre de pas
-   set n [format "%05d" [expr {abs($dif) }]]
-
-   #--   definit le sens
-   if {$dif > 0} {
-      set cmd I$n
-   } else {
-      set cmd O$n
-   }
-
-   ::usb_focus::writePort $cmd
-
-   #--   acquit == "*LFCR" ; longueur 3 car
-   set answer [::usb_focus::waitAnswer 3]
-   ::usb_focus::getPosition
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::stopMove
-#     Arrete le mouvement
-#     Commande du bouton STOP
-#------------------------------------------------------------
-proc ::usb_focus::stopMove { } {
-
-   ::usb_focus::writePort QUITx
-
-   #--   acquit *LFCR
-   #::usb_focus::readPort 3
-
-   ::usb_focus::getPosition
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::move
-#     Commande des boutons + -
-#     si command = "-" , demarre le mouvement du focus en intra focale
-#     si command = "+" , demarre le mouvement du focus en extra focale
-#------------------------------------------------------------
-proc ::usb_focus::move { command } {
-   variable widget
-
-   #--   formate n a la longueur voulue
-   set n [format "%05d" $widget(nbstep)]
-
-   if {$command eq "+"} {
-      set cmd O$n
-   } else {
-      set cmd I$n
-   }
-
-   ::usb_focus::writePort $cmd
-
-   #--   acquit *LFCR
-   set answer [::usb_focus::waitAnswer 3]
-
-   ::usb_focus::getPosition
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::getTemperature
-#     Demande la temperature
-#
-#------------------------------------------------------------
-proc ::usb_focus::getTemperature { } {
-   variable widget
-
-   ::usb_focus::writePort FTMPRO
-
-   #--   acquit == "T=+/-xy.z LFCR" ; longueur 9 car
-   set answer [::usb_focus::waitAnswer 9]
-   regexp -all {.+([\+.0-9]{4}).+} $answer match widget(temperature)
-   update
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::setTempMod
-#     Commande du radiobutton de selection du mode automatique
-#
-#------------------------------------------------------------
-proc ::usb_focus::setTempMod { } {
-   variable widget
-
-   ::console::affiche_resultat "setTempMod $widget(tempmode)\n"
-
-   #--   selectionne la commande
-   switch -exact $widget(tempmode) {
-      0  {  ::usb_focus::writePort FMANUA ; # stoppe le mode auto
-            #--   acquit == "!LFCR" ; longueur 3 car
-            set answer [::usb_focus::waitAnswer 3]
-         }
-      1  {  ::usb_focus::writePort FAUTOM ; # demarre le mode de compensation automatique
-            #--   acquit == "P=wxyz LFCR + T=+/-xy.z LFCR"
-            set answer [::usb_focus::waitAnswer 19]
-         }
-   }
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::setCoefTemp
-#     Fixe le coefficient de compensation lie a la temperature
-#     Commande du bouton SET
-#------------------------------------------------------------
-proc ::usb_focus::setCoefTemp { } {
-   variable widget
-
-   set toSet $widget(coef)
-
-   if {$toSet < 0} {
-      set sign 0
-   } else {
-      set sign 1
-   }
-
-   set n [format "%03d" [expr { abs($toSet) }]]
-   ::usb_focus::writePort  FLX$n
-
-   after 50
-   ::usb_focus::writePort FZSIG$sign
-
-   #--   verification
-   after 50
-   ::usb_focus::writePort FREADA
-
-   #--   acquit == "A=0xyz" : longueur 9 car
-   set answer [::usb_focus::waitAnswer 6]
-   set coef [string range $answer 3 5]
-   set coef [string trimleft $coef 0]
-
-   ::usb_focus::writePort FTxxxA
-
-   #--   acquit == "A=x" : longueur 3 car
-   set answer [::usb_focus::waitAnswer 3]
-
-   set sign [string index $answer 2]
-   if {$sign ==1} {
-      set widget(coef) "+$coef"
-   } else {
-      set widget(coef) "-$coef"
-   }
-
-   if {$toSet == $widget(coef)} {
-      ::console::affiche_resultat "ok\n"
-   }
-}
-
-#------------------------------------------------------------
 #  ::usb_focus::setSeuilTemp
 #     Fixe le seuil min de compensation
 #
@@ -375,9 +200,165 @@ proc ::usb_focus::getConf { } {
    set widget(step) "[string trimleft $step 0]"
    set private(prev,step) $widget(step)
    set widget(maxstep) "[string trimleft $maxstep 0]"
-   set private(prev,maxstep)  $widget(maxstep)
+   set private(prev,maxstep) $widget(maxstep)
 
-   update
+   console::affiche_resultat " [string trimleft "00000" 0] \n"
+
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::setCoefTemp
+#     Fixe le coefficient de compensation lie a la temperature
+#     Commande du bouton SET
+#------------------------------------------------------------
+proc ::usb_focus::setCoefTemp { } {
+   variable widget
+
+   set toSet $widget(coef)
+
+   if {$toSet < 0} {
+      set sign 0
+   } else {
+      set sign 1
+   }
+
+   set n [format "%03d" [expr { abs($toSet) }]]
+   ::usb_focus::writePort  FLX$n
+
+   after 50
+   ::usb_focus::writePort FZSIG$sign
+
+   #--   verification
+   after 50
+   ::usb_focus::writePort FREADA
+
+   #--   acquit == "A=0xyz" : longueur 9 car
+   set answer [::usb_focus::waitAnswer 6]
+   set coef [string range $answer 3 5]
+   set coef [string trimleft $coef 0]
+
+   ::usb_focus::writePort FTxxxA
+
+   #--   acquit == "A=x" : longueur 3 car
+   set answer [::usb_focus::waitAnswer 3]
+
+   set sign [string index $answer 2]
+   if {$sign ==1} {
+      set widget(coef) "+$coef"
+   } else {
+      set widget(coef) "-$coef"
+   }
+
+   if {$toSet == $widget(coef)} {
+      ::console::affiche_resultat "ok\n"
+   }
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::goto
+#     envoie le focaliseur a moteur pas a pas a une position predeterminee
+#     Commande du bouton GOTO
+#------------------------------------------------------------
+proc ::usb_focus::goto { } {
+   variable widget
+
+   #--   calcule l'ecart
+   set dif [expr { $widget(target)-$widget(position) }]
+
+   #--   formate le nombre de pas
+   set n [format "%05d" [expr {abs($dif) }]]
+
+   #--   definit le sens
+   if {$dif > 0} {
+      set cmd I$n
+   } else {
+      set cmd O$n
+   }
+
+   ::usb_focus::writePort $cmd
+
+   #--   acquit == "*LFCR" ; longueur 3 car
+   set answer [::usb_focus::waitAnswer 3]
+   ::usb_focus::getPosition
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::move
+#     Commande des boutons + -
+#     si command = "-" , demarre le mouvement du focus en intra focale
+#     si command = "+" , demarre le mouvement du focus en extra focale
+#------------------------------------------------------------
+proc ::usb_focus::move { command } {
+   variable widget
+
+   #--   formate n a la longueur voulue
+   set n [format "%05d" $widget(nbstep)]
+
+   if {$command eq "+"} {
+      set cmd O$n
+   } else {
+      set cmd I$n
+   }
+
+   ::usb_focus::writePort $cmd
+
+   #--   acquit *LFCR
+   set answer [::usb_focus::waitAnswer 3]
+
+   ::usb_focus::getPosition
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::getPosition
+#     Demande la position
+#
+#------------------------------------------------------------
+proc ::usb_focus::getPosition { } {
+   variable widget
+
+   ::usb_focus::writePort FPOSRO
+
+   #--   acquit == "P=vwxyz LFCR" ; longueur 9 car
+   regsub -all {[P=]} [::usb_focus::waitAnswer 9] "" widget(position)
+
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::getTemperature
+#     Demande la temperature
+#
+#------------------------------------------------------------
+proc ::usb_focus::getTemperature { } {
+   variable widget
+
+   ::usb_focus::writePort FTMPRO
+
+   #--   acquit == "T=+/-xy.z LFCR" ; longueur 9 car
+   regsub -all {[T=]} [::usb_focus::waitAnswer 9] "" widget(temperature)
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::setTempMod
+#     Commande du radiobutton de selection du mode automatique
+#
+#------------------------------------------------------------
+proc ::usb_focus::setTempMod { } {
+   variable widget
+
+   #--   selectionne la commande
+   switch -exact $widget(tempmode) {
+      0  {  ::usb_focus::writePort FMANUA ; # stoppe le mode auto
+
+            #--   acquit == "!LFCR" ; longueur 3 car
+            set answer [::usb_focus::waitAnswer 3]
+         }
+      1  {  ::usb_focus::writePort FAUTOM ; # demarre le mode de compensation automatique
+
+            #--   acquit == "A..P=wxyz LFCR + T=+/-xy.z LFCR"
+            regsub -all {[APT=]} [::usb_focus::waitAnswer 21] " " answer
+            lassign $answer widget(position) widget(temperature)
+         }
+   }
 }
 
 #------------------------------------------------------------
@@ -448,8 +429,8 @@ proc ::usb_focus::readPort { tty nbcar } {
    global usb_focus_answer
 
    chan configure $tty -blocking 1
-   set usb_focus_answer [chan read $tty $nbcar]
-   #::console::affiche_resultat "readPort $usb_focus_answer [string length $usb_focus_answer]\n"
+   regsub -all {[\n\r]} [chan read $tty $nbcar] "" usb_focus_answer
+   ::console::affiche_resultat "readPort $usb_focus_answer [string length $usb_focus_answer]\n"
    chan configure $tty -blocking 0
 }
 
@@ -472,7 +453,7 @@ proc ::usb_focus::closePort { } {
 #------------------------------------------------------------
 #  ::usb_focus::initValues
 #     Met a jour la fenetre avec les valeurs lues dans le chip
-#     Lancee par ::usb_focus::createPort
+#     Lancee apres ::usb_focus::createPort
 #------------------------------------------------------------
 proc ::usb_focus::initValues {} {
    variable private
@@ -490,11 +471,12 @@ proc ::usb_focus::initValues {} {
    ::usb_focus::getPosition
    ::usb_focus::getTemperature
 
-   #--   desinhibe les commandes
-   #--   (si aucune erreur)
+   #--   desinhibe les commandes (si aucune erreur)
    ::usb_focus::setState normal
    update
 }
+
+#------------------  a verifier -----------------------------
 
 #------------------------------------------------------------
 #  ::usb_focus::activeCmd
@@ -510,4 +492,19 @@ proc ::usb_focus::activeCmd { cmd {n ""} } {
    #--   acquit == ALFCR
    set answer [::usb_focus::readPort 3]
    ::console::affiche_resultat "activeCmd $answer\n"
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::stopMove
+#     Arrete le mouvement
+#     Commande du bouton STOP
+#------------------------------------------------------------
+proc ::usb_focus::stopMove { } {
+
+   ::usb_focus::writePort QUITx
+
+   #--   acquit *LFCR
+   set answer [::usb_focus::readPort 3]
+
+   ::usb_focus::getPosition
 }

@@ -516,7 +516,8 @@ proc ::usb_focus::possedeControleEtendu { } {
 #------------------------------------------------------------
 proc ::usb_focus::incrementSpeed { } {
 
-   #-- non implemente
+   #-- non implemente du fait du selecteur de vitesses
+   #   et sa proc ::usb_focus::setSpeed
 }
 
 #------------------------------------------------------------
