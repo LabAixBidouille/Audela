@@ -109,14 +109,14 @@ proc etc_set_array_cameras { } {
    array set cameras [list {STT-8300M}            {3326 2504  5.4e-6  5.4e-6 0.02  0.37  9.3 0.45 1}]
    array set cameras [list {STT-1603ME}           {1536 1024  9e-6    9e-6   0.1   2.3  15.0 0.75 1}]
    array set cameras [list {STT-3200ME}           {2184 1472  6.8e-6  6.8e-6 0.06  1.0  10.0 0.75 1}]
-   # 
+   #
    array set cameras [list {STXL-11002}           {4008 2672  9e-6    9e-6   0.5   0.87 11   0.45 1}]
    array set cameras [list {STXL-6303E}           {3072 2048  9e-6    9e-6   0.3   1.47 11   0.65 1}]
    #
    array set cameras [list {STX-16803}            {4096 4096  9e-6    9e-6   0.02  1.27 10   0.6  1}]
    #
    array set cameras [list {ST-2000XM}            {1600 1200  7.4e-6  7.4e-6 0.1   0.6   7.9 0.35 1}]
-   
+
    # --- Princeton
    array set cameras [list {Peregrine 486}        {4096 4096 15e-6   15e-6   0.01  1.8  10   0.9  1}]
 
@@ -143,7 +143,7 @@ proc etc_set_array_cameras { } {
    array set cameras [list {ProLine 4240 Midband} {2048 2048 13.5e-6 13.5e-6 0.2   1.5   8   0.85 1}]
    array set cameras [list {ProLine 4720}         {1024 1024 13e-6   13e-6   0.02  1.5  10   0.85 1}]
    array set cameras [list {ProLine 4710 Deep D.} {1024 1024 13e-6   13e-6   7     1.5  10   0.9  1}]
-   
+
    # --- Atik
    array set cameras [list {Atik Titan}           {659 494   7.4e-6  7.4e-6   0.2   1.5   5   0.6  1}]
    array set cameras [list {Atik 314E}            {1392 1040 4.65e-6 4.65e-6  0.2   1.5   3   0.6  1}]
