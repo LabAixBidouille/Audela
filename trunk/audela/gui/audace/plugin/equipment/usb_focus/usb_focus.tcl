@@ -198,7 +198,7 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.chip.labelVersion -row 0 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- N° de version
-      entry  $f.chip.version -width 5 -justify right -state disabled \
+      label $f.chip.version -width 5 -justify left \
          -textvariable ::usb_focus::widget(version)
       grid  $f.chip.version -row 0 -column 1 -padx 5 -pady 5 -sticky w
 
@@ -217,14 +217,14 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.motor.labelStep -row 0 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- Nombre de pas maxi
-      entry $f.motor.maxstep -width 10 -justify right \
+      entry $f.motor.maxstep -width 6 -justify right \
          -textvariable ::usb_focus::widget(maxstep)
       grid $f.motor.maxstep -row 0 -column 1 -padx 5 -pady 5 -sticky w
 
       #--- Bouton de setmaxi
       button $f.motor.setmax -text "$caption(usb_focus,set)" -relief raised \
          -width 4 -command "::usb_focus::setMaxPos"
-      grid $f.motor.setmax -row 0 -column 2 -padx 5
+      grid $f.motor.setmax -row 0 -column 2 -padx 5 -sticky w
 
       #--- Label de la vitesse
       label $f.motor.labelSpeed -text "$caption(usb_focus,motorspeed)"
@@ -235,7 +235,7 @@ proc ::usb_focus::fillConfigPage { frm } {
          -textvariable ::usb_focus::widget(motorspeed) \
          -modifycmd "::usb_focus::setSpeed" \
          -values [list 2 3 4 5 6 7 8 9]
-      grid $f.motor.speed -row 1 -column 1 -padx 5 -sticky e
+      grid $f.motor.speed -row 1 -column 1 -padx 5 -sticky w
 
       #--- Label de l'increment
       label $f.motor.labelIncrStep -text "$caption(usb_focus,step)"
@@ -289,9 +289,8 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.temp.labelTemp -row 0 -column 0 -padx 5 -pady 10 -sticky w
 
       #--- Temperature
-      entry $f.temp.temperature -width 5 -justify right -state disabled \
-         -textvariable ::usb_focus::widget(temperature)
-      grid $f.temp.temperature -row 0 -column 1 -padx 5 -sticky ew
+      label $f.temp.temperature -textvariable ::usb_focus::widget(temperature)
+      grid $f.temp.temperature -row 0 -column 1 -padx 5 -sticky e
 
       checkbutton $f.temp.mode -text "$caption(usb_focus,tempmode)" \
          -indicatoron 1 -onvalue 1 -offvalue 0 \
@@ -306,7 +305,7 @@ proc ::usb_focus::fillConfigPage { frm } {
       #--- Coefficient
       entry $f.temp.coef -width 5 -justify right \
          -textvariable ::usb_focus::widget(coef)
-      grid $f.temp.coef -row 2 -column 1 -padx 5 -sticky w
+      grid $f.temp.coef -row 2 -column 1 -padx 5 -sticky e
 
       #--- Bouton de set coeftemp
       button $f.temp.setcoef -text "$caption(usb_focus,set)" -relief raised \
@@ -337,9 +336,8 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.pos.labelPosAct -row 0 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- Position actuelle
-      entry $f.pos.posact -width 10 -justify right -state disabled \
-         -textvariable ::usb_focus::widget(position)
-      grid $f.pos.posact -row 0 -column 1 -padx 5 -sticky ew
+      label $f.pos.posact -textvariable ::usb_focus::widget(position)
+      grid $f.pos.posact -row 0 -column 1 -padx 5 -sticky e
 
       #--- Label de la position cible
       label $f.pos.labelTarget -text "$caption(usb_focus,target) "
