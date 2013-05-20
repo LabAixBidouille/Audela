@@ -102,6 +102,10 @@ proc ::usb_focus::initPlugin { } {
       set conf(usb_focus) [list "" 10]
    }
 
+   if {[lindex $conf(usb_focus) 1] eq ""} {
+      set conf(usb_focus) [lreplace $conf(usb_focus) 1 1 10]
+   }
+
    if {![info exists conf(usb_focus,start)]} {
       set conf(usb_focus,start) "0"
    }
@@ -399,8 +403,10 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    pack $frm.frame2 -side bottom -fill x
 
-   #--   inhibe toutes les commandes et entrees
-   ::usb_focus::setState disabled
+   #--   inhibe toutes les commandes et entrees si le lien n'a pas ete cree
+   if {[::confLink::getLinkLabels $widget(port)] eq ""} {
+      ::usb_focus::setState disabled
+   }
 
    #--- Mise a jour
    ::usb_focus::onChangeLink
@@ -443,8 +449,12 @@ proc ::usb_focus::createPlugin { } {
    variable widget
    variable private
 
+   #--   empeche la tentative d'ouvrir le port deja ouvert
+   if {$private(linkNo) == 1} { return }
+
    #--   cree le port et initialise les variables en cas de reussite
    if {[::usb_focus::createPort $widget(port)]} {
+
       #--   initialise les variables avec les valeurs memorisees
       ::usb_focus::initValues
 
@@ -467,7 +477,6 @@ proc ::usb_focus::deletePlugin { } {
    ::usb_focus::configurePlugin
    ::confLink::delete $widget(port) "focuser" "USB_Focus"
    ::usb_focus::closePort
-
 }
 
 #------------------------------------------------------------
@@ -527,25 +536,31 @@ proc ::usb_focus::setState { state } {
       lassign $conf(usb_focus) -> widget(nbstep)
    }
 
+   #--   traite les saisies
    set entryList [list "motor.maxstep" "pos.target" "pos.nbstep" "temp.coef" "temp.step"]
    foreach entr $entryList {
       if {[winfo exists $w.$entr]}  {
          if {$state eq "normal"} {
             lassign [split $entr "."] -> param
+            #--   cree les binding
             bind $w.$entr <Leave> [list ::usb_focus::verifValue $param]
           } else {
+            #--   supprime les binding
             bind $w.$entr <Leave> ""
          }
          $w.$entr configure -state $state
       }
    }
 
+   #--   traite les boutons
    set buttonList [list chip.reset motor.setmax motor.speed \
       motor.halfstep motor.fullstep pos.goto pos.stop \
       motor.clockwise motor.anticlockwise pos.decrease \
       pos.increase temp.mode temp.setcoef temp.setstep]
    foreach but $buttonList {
-      $w.$but configure -state $state
+      if {[winfo exists $w.$but]} {
+         $w.$but configure -state $state
+      }
    }
 }
 
@@ -568,7 +583,7 @@ proc ::usb_focus::initVar {} {
    set private(prev,coef)     ""
    set private(prev,step)     ""
    set widget(version)        ""
-   set widget(motorspeed)     0
+   set widget(motorspeed)     ""
    set widget(stepincr)       1
    set widget(motorsens)      0
    set widget(maxstep)        ""
@@ -622,5 +637,4 @@ proc ::usb_focus::verifValue { v } {
       #--   retablit l'ancienne valeur en cas d'erreur
       set widget($v) $private(prev,$v)
    }
-
 }
