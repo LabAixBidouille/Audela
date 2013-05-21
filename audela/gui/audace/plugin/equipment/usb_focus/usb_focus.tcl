@@ -498,7 +498,7 @@ proc ::usb_focus::deletePlugin { } {
 proc ::usb_focus::isReady { } {
    variable private
 
-   if { $private(linkNo) != "0" } {
+   if {[info exists private(linkNo)] && $private(linkNo) != "0" } {
       return 1
    } else {
       return 0
@@ -537,7 +537,7 @@ proc ::usb_focus::incrementSpeed { } {
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::usb_focus::setState { state } {
+proc ::usb_focus::setState { state {limited 0} } {
    variable private
 
    set w $private(frm).frame1
@@ -561,9 +561,13 @@ proc ::usb_focus::setState { state } {
 
    #--   traite les boutons
    set buttonList [list chip.reset motor.setmax motor.speed \
-      motor.halfstep motor.fullstep pos.goto pos.stop \
+      motor.halfstep motor.fullstep pos.goto \
       motor.clockwise motor.anticlockwise pos.decrease \
       pos.increase temp.mode temp.setcoef temp.setstep]
+   #--   si limited == 1, laisse le bouton STOP normal
+   if {$limited == 0} {
+      lappend buttonList pos.stop
+   }
    foreach but $buttonList {
       if {[winfo exists $w.$but]} {
          $w.$but configure -state $state
