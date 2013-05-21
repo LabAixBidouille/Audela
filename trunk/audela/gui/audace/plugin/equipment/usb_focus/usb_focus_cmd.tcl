@@ -150,9 +150,8 @@ proc ::usb_focus::setSeuilTemp { } {
    variable widget
    variable private
 
-   set private(attendu) [lreplace $private(attendu) 4 4 $n]
-
    set n [format "%03d" $widget(step)]
+   set private(attendu) [lreplace $private(attendu) 4 4 $n]
    set private(command) "SMA$n"
    ::usb_focus::writePort
 
