@@ -139,9 +139,6 @@ proc ::usb_focus::fillConfigPage { frm } {
    #--- je copie les donnees de conf(...)
    lassign $conf(usb_focus) widget(port) widget(nbstep)
 
-   #--- variables locales
-   ::usb_focus::initLocalVar
-
    #--- Prise en compte des liaisons
    set linkList [::confLink::getLinkLabels { "serialport" } ]
 
@@ -157,8 +154,11 @@ proc ::usb_focus::fillConfigPage { frm } {
    } else {
       #--- si la liste est vide
       #--- je desactive l'option focuser
-      set private(port) ""
+      set widget(port) ""
    }
+
+   #--- variables locales
+   #::usb_focus::initLocalVar
 
    #--- Creation du frame contenant les commandes de usb_focus
    set f [frame $frm.frame1 -borderwidth 0 -relief raised]
@@ -402,8 +402,11 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    pack $frm.frame2 -side bottom -fill x
 
-   #--   inhibe toutes les commandes et entrees si le lien n'a pas ete cree
-   if {[::confLink::getLinkLabels $widget(port)] eq ""} {
+   #--   filtre l'action si le lien a deja ete cree
+   if {![info exists private(linkNo)]} {
+      #--- initialise les variables locales
+      ::usb_focus::initLocalVar
+      #--- inhibe les commandes en attendant la creation du port
       ::usb_focus::setState disabled
    }
 
@@ -449,7 +452,7 @@ proc ::usb_focus::createPlugin { } {
    variable private
 
    #--   empeche la tentative d'ouvrir le port deja ouvert
-   if {$private(linkNo) == 1} { return }
+   if {$private(linkNo) != 0} { return }
 
    #--   cree le port et initialise les variables en cas de reussite
    if {[::usb_focus::createPort $widget(port)]} {
@@ -475,10 +478,13 @@ proc ::usb_focus::deletePlugin { } {
 
    ::usb_focus::configurePlugin
    ::confLink::delete $widget(port) "focuser" "USB_Focus"
+
    #--   ferme le port serie
    ::usb_focus::closePort
+
    #--   reinitialise les variable private et widget
    ::usb_focus::initLocalVar
+
    #--   inhibe les commandes
    ::usb_focus::setState disabled
 }
