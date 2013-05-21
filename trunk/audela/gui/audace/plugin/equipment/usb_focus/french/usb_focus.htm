@@ -7,9 +7,82 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 16 mai 2013</p>
+<p class="date">Date de mise &agrave; jour : 21 mai 2013</p>
 <h1>Focaliseur USB_FOCUS</h1>
-
-
+Pour de plus amples informations sur ce focaliseur voir le site
+de <a href="http://www.usb-foc.us/"><b>USB_Focus</b></a>.
+<h2>1. Connexion</h2>
+<p>Si port s&#233;rie n'est pas connect&#233; (avant le lancement
+ou apr&#232;s un arr&#234;t), toutes les commandes sont
+inhib&#233;es &#224; l'exception du choix du port :</p>
+<p><img style="width: 600px; height: 499px;" alt="" src=
+"images/usb_focus0.gif" /></p>
+<p>Apr&#232;s lancement ou lors de l'ouverture du panneau (si
+l'&#233;quipement n'a pas &#233;t&#233; arr&#234;t&#233;), toutes
+les commandes sont lib&#233;r&#233;es :</p>
+<p><img style="width: 600px; height: 499px;" alt="" src=
+"images/usb_focus1.gif" /></p>
+<p>Les param&#232;tres sont renseign&#233;s avec les valeurs lues
+dans le microprocesseur du focuser.</p>
+<h2>2. Informations et commandes disponibles</h2>
+<p>Les quatre groupes de commandes sont les suivants :</p>
+<ul>
+<li><b>Logiciel du microprocesseur</b> : le N&#176; de version
+n'appara&#238;t qu'apr&#232;s connexion. Un bouton <b>RESET</b>
+permet de r&#233;tablir les param&#232;tres "usine".</li>
+<li><b>R&#233;glages du moteur</b> : ils permettent un
+r&#233;glage fin adapt&#233; au montage de l'utilisateur. Sont
+disponibles :
+<ul>
+<li>La course maximale, exprim&#233;e en pas. Par d&#233;faut ce
+nombre est de 65535. Un bouton <b>SET</b> permet de modifier ce
+r&#233;glage.</li>
+<li>La vitese de d&#233;placement : un s&#233;lecteur permet de
+choisir une valeur entre 2 (la plus lente) et 9 (la plus
+rapide).</li>
+<li>L'incr&#233;ment : &#224; chosir entre demi-pas ou pas
+entier.</li>
+<li>Le sens de rotation : &#224; choisir entre le sens des
+aiguilles d'une montre ou l'inverse.</li>
+</ul>
+</li>
+<li><b>R&#233;glages de la compensation li&#233;e &#224; la
+temp&#233;rature</b> : la temp&#233;rature affich&#233;e est
+celle d&#233;tect&#233;e par le capteur externe au bo&#238;tier.
+Un s&#233;lecteur permet d'activer ou non la compensation &#224;
+effectuer lors de variations de temp&#233;rature. Sont &#224;
+indiquer le coefficient (pas /&#176;C) et le sensibilit&#233;
+(seuil en dessous duquel il n'y a pas de correction). Le
+coefficient (pas le seuil) peut &#234;tre positif ou
+n&#233;gatif. Tant que le mode de compensation automatique est
+enclench&#233;, les autres commandes sont inhib&#233;es.</li>
+<li><b>D&#233;placement</b> : La position actuelle est
+affich&#233;e. Deux modes de d&#233;placement sont utilisables :
+<ul>
+<li><b>mode absolue</b> : indiquer la position &#224; atteindre
+puis appuyer sur <b>GOTO</b>.</li>
+<li><b>mode incr&#233;mental</b> : indique le d&#233;placement
+&#224; effectuer, en nombre de pas, et s&#233;lectionner le sens
+{+|-}.</li>
+</ul>
+Durant le d&#233;placement, les commandes sont
+inhib&#233;es.</li>
+</ul>
+<h2>3. Contr&#244;le des saisies</h2>
+<ul>
+<li>nombre maximum de pas : nombre entier positif inf&#233;rieur
+&#224; 65535,</li>
+<li>coefficient de compensation : nombre entier positif ou
+n&#233;gatif, inf&#233;rieur &#224; ???,</li>
+<li>seuiil de sensibilit&#233; : nombre entier positif
+inf&#233;rieur &#224; ???,</li>
+<li>position absolue : nombre entier positif inf&#233;rieur au
+nombre maximum de pas,</li>
+<li>pas de d&#233;placement : nombre entier positif ; le
+d&#233;placement r&#233;el ne peut &#234;tre sup&#233;rieur au
+nombre maximum,</li>
+</ul>
+</li>
+</ul>
 </body>
 </html>
