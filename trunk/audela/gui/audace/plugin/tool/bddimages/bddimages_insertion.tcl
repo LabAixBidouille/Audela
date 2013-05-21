@@ -298,6 +298,9 @@ namespace eval bddimages_insertion {
      wm protocol $This WM_DELETE_WINDOW { ::bddimages_insertion::stop }
    }
 
+
+
+
    proc ::bddimages_insertion::stop_to_fermer { } {
 
       variable This
@@ -773,39 +776,46 @@ namespace eval bddimages_insertion {
    #
    #--------------------------------------------------
    proc Affiche_Results { } {
+   
       variable This
       global audace caption color
       global bddconf popupTbl
       global valMinFiltre valMaxFiltre
 
-      set liste_titres [ lindex $bddconf(liste) 0 ]
-      for { set i 0 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
-         set format [ ::bddimages_insertion::cmdFormatColumn [ lindex $liste_titres $i ] ]
-         $::bddimages_insertion::This.frame7.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] [ lindex $format 2 ]
-    	 }
+      catch {
 
-      #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
-      if { [ $::bddimages_insertion::This.frame7.tbl columncount ] != "0" } {
-         $::bddimages_insertion::This.frame7.tbl columnconfigure 1 -sortmode dictionary
-      }
+         set liste_titres [ lindex $bddconf(liste) 0 ]
+         for { set i 0 } { $i <= [ expr [ llength $liste_titres ] - 1 ] } { incr i } {
+            set format [ ::bddimages_insertion::cmdFormatColumn [ lindex $liste_titres $i ] ]
+            $::bddimages_insertion::This.frame7.tbl insertcolumns end [ lindex $format 0 ] [ lindex $format 1 ] [ lindex $format 2 ]
+         }
 
-      #--- Extraction du resultat
-      set bddconf(j) 0
-      for { set i 1 } { $i <= [ expr [ llength $bddconf(liste) ] - 1 ] } { incr i } {
-         set objet($i) [ lindex $bddconf(liste) $i ]
-         for { set j 0 } { $j <= [ expr [ llength $objet($i) ] - 1 ] } { incr j } {
-            $::bddimages_insertion::This.frame7.tbl insert end [ lindex $objet($i) $j ]
+         #--- Classement des objets par ordre alphabetique sans tenir compte des majuscules/minuscules
+         if { [ $::bddimages_insertion::This.frame7.tbl columncount ] != "0" } {
+            $::bddimages_insertion::This.frame7.tbl columnconfigure 1 -sortmode dictionary
          }
-      }
-      #---
-      if { [ $::bddimages_insertion::This.frame7.tbl columncount ] != "0" } {
-         #--- Les noms des objets sont en bleu
-         for { set i 0 } { $i <= [ expr $bddconf(j) - 1 ] } { incr i } {
-            $::bddimages_insertion::This.frame7.tbl cellconfigure $i,1 -fg $color(blue)
+
+         #--- Extraction du resultat
+         set bddconf(j) 0
+         for { set i 1 } { $i <= [ expr [ llength $bddconf(liste) ] - 1 ] } { incr i } {
+            set objet($i) [ lindex $bddconf(liste) $i ]
+            for { set j 0 } { $j <= [ expr [ llength $objet($i) ] - 1 ] } { incr j } {
+               $::bddimages_insertion::This.frame7.tbl insert end [ lindex $objet($i) $j ]
+            }
          }
-         #--- Trie par ordre alphabetique de la premiere colonne
-         ::bddimages_insertion::cmdSortColumn $::bddimages_insertion::This.frame7.tbl 1
+         #---
+         if { [ $::bddimages_insertion::This.frame7.tbl columncount ] != "0" } {
+            #--- Les noms des objets sont en bleu
+            for { set i 0 } { $i <= [ expr $bddconf(j) - 1 ] } { incr i } {
+               $::bddimages_insertion::This.frame7.tbl cellconfigure $i,1 -fg $color(blue)
+            }
+            #--- Trie par ordre alphabetique de la premiere colonne
+            ::bddimages_insertion::cmdSortColumn $::bddimages_insertion::This.frame7.tbl 1
+         }
+
+      
       }
+      
    }
 
 }
