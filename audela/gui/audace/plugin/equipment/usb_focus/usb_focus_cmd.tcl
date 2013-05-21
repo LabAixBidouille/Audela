@@ -37,13 +37,12 @@
 #  2) ::usb_focus::createPort retourne {0|1} selon l'echec ou la reussite
 #  3) ::usb_focus::waitAnswer retourne la valeur lue sur le port serie
 #     pour exploitation par les commandes de decodage et d'affichage des valeurs
-#     ces commandes ne retournent rien
 #  4) les microcommandes SEERAZ, Mnnnnn, SMO00n, SMAnnn, SMSTPF, SMSTPD, SMROTH, SMROTT
 #     ne retournent rien; SGETAL est appellee pour rafraichir les valeurs concernees
 #  5) les valeurs numeriques transmises au chip ont un format fixe et sont precedees avec des 0
 #     ces 0 sont otes poir l'affichage et retablit pour le codage
 #  6) les commandes qui prennent un temps appreciable (move, goto, setTempMod)
-#     provoquent l'inhibtion des commandes, liberees a la fin de la proc
+#     provoquent l'inhibtion des commandes; elles sont liberees a la fin de la proc
 
 #------------------------------------------------------------
 #  ::usb_focus::reset
@@ -56,7 +55,7 @@ proc ::usb_focus::reset { } {
 
    ::usb_focus::writePort "SEERAZ"
 
-   #--   liste des valeurs par defaut du chip :
+   #--   liste des valeurs par defaut du chip, dans l'ordre :
    #  motorsens stepincr motorspeed coef step version maxstep
    set private(attendu) [list 0 1 2 015 010 1217 65535]
    ::usb_focus::getConf
@@ -173,7 +172,7 @@ proc ::usb_focus::getConf { } {
 
    ::usb_focus::writePort SGETAL
 
-   #--   acquit == longueur 28 car
+   #--   reponse attendue == longueur 28 car
    set answer [::usb_focus::waitAnswer 28]
    regsub -all {[C=-]} $answer " " answer
    set private(values) [string trimleft $answer " "]
@@ -184,6 +183,7 @@ proc ::usb_focus::getConf { } {
       set private(attendu) $private(values)
    } else {
       if {![::struct::set equal $private(attendu) $private(values)]} {
+         #--   message console si une commande n'a pas ete executee
          ::console::affiche_resultat "\nattendu $private(attendu)\nobtenu $private(values)\n"
       } else {
          ::console::affiche_resultat "ok\n"
@@ -204,7 +204,7 @@ proc ::usb_focus::getConf { } {
    #--   complete coef avec le sign
    ::usb_focus::writePort FTxxxA
 
-   #--   acquit == "A=x" : longueur 3 car
+   #--   reponse attendue == "A=x" : longueur 3 car
    regsub -all {[A=]} [::usb_focus::waitAnswer 3] "" sign
 
    if {$sign == 0} {
@@ -225,6 +225,7 @@ proc ::usb_focus::getConf { } {
 #------------------------------------------------------------
 proc ::usb_focus::setCoefTemp { } {
    variable widget
+   variable private
 
    if {$widget(coef) < 0} {
       set sign 0
@@ -235,20 +236,20 @@ proc ::usb_focus::setCoefTemp { } {
    set n [format "%03d" [expr { abs($widget(coef)) }]]
    ::usb_focus::writePort  FLX$n
 
-   after 50
+   #after 50
    ::usb_focus::writePort FZSIG$sign
 
    #--   verification
-   after 50
+   #after 50
    ::usb_focus::writePort FREADA
 
-   #--   acquit == "A=0xyz" : longueur 9 car
+   #--   reponse attendue == "A=0xyz" : longueur 9 car
    set coef [string range [::usb_focus::waitAnswer 6] 3 5]
    set coef [string trimleft $coef 0]
 
    ::usb_focus::writePort FTxxxA
 
-   #--   acquit == "A=x" : longueur 3 car
+   #--   reponse attendue == "A=x" : longueur 3 car
    regsub -all {[A=]} [::usb_focus::waitAnswer 3] "" sign
    if {$sign ==1} {
       set widget(coef) "+$coef"
@@ -287,7 +288,7 @@ proc ::usb_focus::goto { } {
 
    ::usb_focus::writePort $cmd
 
-   #--   acquit == "*LFCR" ; longueur 3 car
+   #--   reponse attendue == "*LFCR" ; longueur 3 car
    set answer [::usb_focus::waitAnswer 3]
    ::usb_focus::getPosition
 
@@ -318,7 +319,7 @@ proc ::usb_focus::move { command } {
 
    ::usb_focus::writePort $cmd
 
-   #--   acquit *LFCR
+   #--   reponse attendue *LFCR
    set answer [::usb_focus::waitAnswer 3]
 
    ::usb_focus::getPosition
@@ -337,9 +338,8 @@ proc ::usb_focus::getPosition { } {
 
    ::usb_focus::writePort FPOSRO
 
-   #--   acquit == "P=vwxyz LFCR" ; longueur 9 car
+   #--   reponse attendue == "P=vwxyz LFCR" ; longueur 9 car
    regsub -all {[P=]} [::usb_focus::waitAnswer 9] "" widget(position)
-
 }
 
 #------------------------------------------------------------
@@ -352,7 +352,7 @@ proc ::usb_focus::getTemperature { } {
 
    ::usb_focus::writePort FTMPRO
 
-   #--   acquit == "T=+/-xy.z LFCR" ; longueur 9 car
+   #--   reponse attendue == "T=+/-xy.z LFCR" ; longueur 9 car
    regsub -all {[T=]} [::usb_focus::waitAnswer 9] "" temperature
    set widget(temperature) "$temperature °C"
 }
@@ -369,7 +369,7 @@ proc ::usb_focus::setTempMod { } {
    switch -exact $widget(tempmode) {
       0  {  ::usb_focus::writePort FMANUA ; # stoppe le mode auto
 
-            #--   acquit == "!LFCR" ; longueur 3 car
+            #--   reponse attendue == "!LFCR" ; longueur 3 car
             set answer [::usb_focus::waitAnswer 3]
          }
       1  {  ::usb_focus::writePort FAUTOM ; # demarre le mode de compensation automatique
@@ -377,7 +377,7 @@ proc ::usb_focus::setTempMod { } {
             #--   inhibe les commandes
             #::usb_focus::setState disabled
 
-            #--   acquit == "A..P=wxyz LFCR + T=+/-xy.z LFCR"
+            #--   reponse attendue == "A..P=wxyz LFCR + T=+/-xy.z LFCR"
             regsub -all {[APT=]} [::usb_focus::waitAnswer 21] " " answer
             lassign $answer widget(position) widget(temperature)
 
@@ -399,7 +399,7 @@ proc ::usb_focus::createPort { port } {
 
    if { $::tcl_platform(platform) == "unix" } {
       set port [ string tolower [ string trim $port ] ]
-     set num [ expr [ string index $port 3 ] - 1 ]
+      set num [ expr [ string index $port 3 ] - 1 ]
       set port /dev/ttyS$num
    }
 
@@ -410,7 +410,10 @@ proc ::usb_focus::createPort { port } {
       chan configure $tty -mode "19200,n,8,1" \
          -blocking 0 -buffering none
       } errmsg]} {
+
+      #--   message d'erreur
       ::console::affiche_resultat "error : $errmsg\n"
+
       return 0
   } else {
       ::usb_focus::initFromChip
@@ -455,8 +458,11 @@ proc ::usb_focus::readPort { tty nbcar } {
    global usb_focus_answer
 
    chan configure $tty -blocking 1
+
+   #--   ote les LF et CR dans l'ensemble du message
    regsub -all {[\n\r]} [chan read $tty $nbcar] "" usb_focus_answer
-   ::console::affiche_resultat "readPort $usb_focus_answer [string length $usb_focus_answer]\n"
+
+   #::console::affiche_resultat "readPort $usb_focus_answer [string length $usb_focus_answer]\n"
    chan configure $tty -blocking 0
 }
 
@@ -484,7 +490,7 @@ proc ::usb_focus::initFromChip {} {
    #--   initialise le mode
    ::usb_focus::writePort FMMODE
 
-   #--   acquit == "!LFCR" ; longueur 3 car
+   #--   reponse attendue == "!LFCR" ; longueur 3 car
    set answer [::usb_focus::waitAnswer 3]
 
    #--   lit les parametres de conf de usb_focus
@@ -503,16 +509,16 @@ proc ::usb_focus::initFromChip {} {
 
 #------------------------------------------------------------
 #  ::usb_focus::activeCmd
-#     Transmet l'orde et attend l'acquit
+#     Transmet l'orde et attend l'reponse attendue
 #
-#  return answer {!|*} ; ! pour le mode, * acquit
+#  return answer {!|*} ; ! pour le mode, * reponse attendue
 #------------------------------------------------------------
 proc ::usb_focus::activeCmd { cmd {n ""} } {
    variable private
 
    ::usb_focus::writePort FAMODE
 
-   #--   acquit == ALFCR
+   #--   reponse attendue == ALFCR
    set answer [::usb_focus::readPort 3]
    ::console::affiche_resultat "activeCmd $answer\n"
 }
@@ -526,7 +532,7 @@ proc ::usb_focus::stopMove { } {
 
    ::usb_focus::writePort QUITx
 
-   #--   acquit *LFCR
+   #--   reponse attendue *LFCR
    set answer [::usb_focus::readPort 3]
 
    ::usb_focus::getPosition
