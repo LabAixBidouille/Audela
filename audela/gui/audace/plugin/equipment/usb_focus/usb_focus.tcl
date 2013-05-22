@@ -639,8 +639,8 @@ proc ::usb_focus::verifValue { v } {
    #--   definit la limite superieure
    switch -exact $v {
       maxstep  { set limite 65535 ; # steps }
-      target   { set limite 65535 ; # steps }
-      nbstep   { set limite 65535 ; # steps }
+      target   { set limite $widget(maxstep) ; # steps }
+      nbstep   { set limite $widget(maxstep) ; # steps }
       coef     { set limite 999 ; # steps/°C }
       step     { set limite 999 ; # steps }
    }
