@@ -275,7 +275,7 @@ proc ::usb_focus::move { command } {
 
    if {$command eq "+"} {
       if {[expr { $widget(maxstep)+$d }]  > $position} {
-         set widget(nbstep) [expr { $widget(maxstep-$d }]
+         set widget(nbstep) [expr { $widget(maxstep)-$d }]
       }
       set private(command) O[format "%05d" $widget(nbstep)]
    } else {
@@ -528,7 +528,7 @@ proc ::usb_focus::initFromChip {} {
 #------------------------------------------------------------
 proc ::usb_focus::writeControl_1 { } {
    ::usb_focus::writePort
-   after 100
+   #after 100
    ::usb_focus::refreshAll
 }
 
@@ -545,7 +545,6 @@ proc ::usb_focus::writeControl_2 { } {
 
    #--   reponse attendue "*LFCR" ou "!LFCR" ; longueur 3 car
    if {[::usb_focus::waitAnswer 3] in [list "*" "!"]} {
-      after 50
       ::usb_focus::getPosition
    }
 
@@ -555,7 +554,7 @@ proc ::usb_focus::writeControl_2 { } {
 
 #------------------------------------------------------------
 #  ::usb_focus::trimZero
-#     ote les zeo inutiles
+#     ote les zero inutiles
 #------------------------------------------------------------
 proc ::usb_focus::trimZero { val } {
 
