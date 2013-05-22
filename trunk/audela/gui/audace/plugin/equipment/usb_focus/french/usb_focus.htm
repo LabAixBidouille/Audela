@@ -66,12 +66,13 @@ affich&#233;e. Deux modes de d&#233;placement sont utilisables :
 <ul>
 <li><b>mode absolue</b> : indiquer la position &#224; atteindre
 puis appuyer sur <b>GOTO</b>.</li>
-<li><b>mode incr&#233;mental</b> : indique le d&#233;placement
+<li><b>mode incr&#233;mental</b> : indiquer le d&#233;placement
 &#224; effectuer, en nombre de pas, et s&#233;lectionner le sens
 {+|-}.</li>
 </ul>
-Durant le d&#233;placement, les commandes sont
-inhib&#233;es.</li>
+Durant le d&#233;placement, les commandes sont inhib&#233;es,
+&#224; l'exception du bouton <b>STOP</b> qui permet d'interrompre
+un mouvement absolu ou incr&#233;mental.</li>
 </ul>
 <h2>3. Contr&#244;le des saisies</h2>
 <ul>
@@ -83,9 +84,11 @@ n&#233;gatif, inf&#233;rieur &#224; ???,</li>
 inf&#233;rieur &#224; ???,</li>
 <li>position absolue : nombre entier positif inf&#233;rieur au
 nombre maximum de pas,</li>
-<li>pas de d&#233;placement : nombre entier positif ; le
-d&#233;placement r&#233;el ne peut &#234;tre sup&#233;rieur au
-nombre maximum,</li>
+<li>pas de d&#233;placement : nombre entier positif ; si le
+d&#233;placement demand&#233; conduit &#224; une position
+sup&#233;rieure au maximum ou inf&#233;rieur &#224; 0, le nombre
+de pas est corrig&#233; en temps r&#233;el et le mouvement
+ex&#233;cut&#233;.</li>
 </ul>
 </body>
 </html>

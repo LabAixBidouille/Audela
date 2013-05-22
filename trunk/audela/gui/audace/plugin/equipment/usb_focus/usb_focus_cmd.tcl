@@ -12,23 +12,27 @@
 #  ::usb_focus::reset
 #  ::usb_focus::setMaxPos
 #  ::usb_focus::setSpeed
-#  ::usb_focus::setSpeedIncr
+#  ::usb_focus::setStepIncr
 #  ::usb_focus::setRot
-#  ::usb_focus::setSeuilTemp
-#  ::usb_focus::refreshAll
 #  ::usb_focus::setCoefTemp
-#  ::usb_focus::getPosition
-#  ::usb_focus::getTemperature
+#  ::usb_focus::setSeuilTemp
+#  ::usb_focus::setTempMod
+#  ::usb_focus::setManualMode
+#  ::usb_focus::setAutoMode
 #  ::usb_focus::goto
 #  ::usb_focus::move
 #  ::usb_focus::stopMove
+#  ::usb_focus::getPosition
 #  ::usb_focus::getTemperature
-#  ::usb_focus::setTempMod
+#  ::usb_focus::getTempCoef
+#  ::usb_focus::refreshAll
 #  ::usb_focus::createPort
 #  ::usb_focus::waitAnswer
 #  ::usb_focus::readPort
 #  ::usb_focus::closePort
 #  ::usb_focus::initFromChip
+#  ::usb_focus::writeControl_1
+#  ::usb_focus::writeControl_2
 #  ::usb_focus::trimZero
 
 #  Notes :
@@ -57,7 +61,7 @@ proc ::usb_focus::reset { } {
    set private(attendu) [list 0 1 2 015 010 1217 65535]
 
    set private(command) "SEERAZ"
-   ::usb_focus::writeControl1
+   ::usb_focus::writeControl_1
 }
 
 #------------------------------------------------------------
@@ -75,7 +79,7 @@ proc ::usb_focus::setMaxPos { } {
    set private(attendu) [lreplace $private(attendu) 6 6 $formatValue]
 
    set private(command) "M$formatValue"
-   ::usb_focus::writeControl1
+   ::usb_focus::writeControl_1
 }
 
 #------------------------------------------------------------
@@ -90,26 +94,26 @@ proc ::usb_focus::setSpeed { } {
    set private(attendu) [lreplace $private(attendu) 2 2 $widget(motorspeed)]
 
    set private(command) "SMO00$widget(motorspeed)"
-   ::usb_focus::writeControl1
+   ::usb_focus::writeControl_1
 }
 
 #------------------------------------------------------------
-#  ::usb_focus::setSpeedIncr
+#  ::usb_focus::setStepIncr
 #     Fixe l'increment en half ou full step
 #     Commande de la combox de selection de l'increment
 #------------------------------------------------------------
-proc ::usb_focus::setSpeedIncr { } {
+proc ::usb_focus::setStepIncr { } {
    variable widget
    variable private
 
    set private(attendu) [lreplace $private(attendu) 1 1 $widget(stepincr)]
 
-   #--   commute les sens et la valeur
+   #--   commute half/full step
    switch -exact $widget(stepincr) {
       0  { set private(command) "SMSTPD" ; # half step }
       1  { set private(command) "SMSTPF" ; # full step }
    }
-   ::usb_focus::writeControl1
+   ::usb_focus::writeControl_1
 }
 
 #------------------------------------------------------------
@@ -123,87 +127,12 @@ proc ::usb_focus::setRot { } {
 
    set private(attendu) [lreplace $private(attendu) 0 0 $widget(motorsens)]
 
-   #--   commute les sens et la valeur
+   #--   commute le sens horaire/antihoraire
    switch -exact $widget(motorsens) {
       0  { set private(command) "SMROTH" ; # clockwise }
       1  { set private(command) "SMROTT" ; # anticlockwise }
    }
-   ::usb_focus::writeControl1
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::setSeuilTemp
-#     Fixe le seuil min de compensation
-#
-#------------------------------------------------------------
-proc ::usb_focus::setSeuilTemp { } {
-   variable widget
-   variable private
-
-   set n [format "%03d" $widget(step)]
-   set private(attendu) [lreplace $private(attendu) 4 4 $n]
-   set private(command) "SMA$n"
-   ::usb_focus::writeControl1
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::refreshAll
-#     Demande les parametres de configuration
-#
-#------------------------------------------------------------
-proc ::usb_focus::refreshAll { } {
-   variable widget
-   variable private
-
-   set private(command) "SGETAL"
-   ::usb_focus::writePort
-
-   #--   reponse attendue == longueur 28 car
-   set answer [::usb_focus::waitAnswer 28]
-   regsub -all {[C=-]} $answer " " answer
-   set private(values) [string trimleft $answer " "]
-
-   #--   verifie qu'il n'y a pas d'erreur
-   package require struct::set
-   if {[::usb_focus::isReady] == 0} {
-      set private(attendu) $private(values)
-   } else {
-      if {![::struct::set equal $private(attendu) $private(values)]} {
-         #--   message console si une commande n'a pas ete executee
-         ::console::affiche_resultat "\nattendu $private(attendu)\nobtenu $private(values)\n"
-      } else {
-         ::console::affiche_resultat "ok\n"
-      }
-   }
-
-   #--   formate les valeurs
-   lassign $private(values) widget(motorsens) widget(stepincr) widget(motorspeed) \
-      coef step widget(version) maxstep
-
-   #--   ote les 0 inutiles
-   set widget(step) [::usb_focus::trimZero $step]
-   set private(prev,step) $widget(step)
-
-   set widget(maxstep) [::usb_focus::trimZero $maxstep]
-   set private(prev,maxstep) $widget(maxstep)
-
-   set coef [::usb_focus::trimZero $coef]
-   #--   complete coef avec le sign
-    set private(command) "FTxxxA"
-   ::usb_focus::writePort
-
-   #--   reponse attendue == "A=x" : longueur 3 car
-   regsub -all {[A=]} [::usb_focus::waitAnswer 3] "" sign
-
-   if {$sign == 0} {
-      set widget(coef) "-$coef"
-   } else {
-      set widget(coef) "+$coef"
-   }
-
-   #--   affiche la position et la temperature
-   ::usb_focus::getPosition
-   ::usb_focus::getTemperature
+   ::usb_focus::writeControl_1
 }
 
 #------------------------------------------------------------
@@ -229,29 +158,82 @@ proc ::usb_focus::setCoefTemp { } {
    set private(command) "FZSIG$sign"
    ::usb_focus::writePort
 
-   after 50
-   #--   verification
-   set private(command) "FREADA"
+   ::usb_focus::getTempCoef
+
+   if {$widget(coef) != $private(prev,coef)} {
+      ::console::affiche_resultat "setCoefTemp : error\n"
+   }
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::setSeuilTemp
+#     Fixe le seuil min de compensation
+#
+#------------------------------------------------------------
+proc ::usb_focus::setSeuilTemp { } {
+   variable widget
+   variable private
+
+   set n [format "%03d" $widget(step)]
+   set private(attendu) [lreplace $private(attendu) 4 4 $n]
+   set private(command) "SMA$n"
+   ::usb_focus::writeControl_1
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::setTempMod
+#     Commande du radiobutton de selection du mode manuel/automatique
+#
+#------------------------------------------------------------
+proc ::usb_focus::setTempMod { } {
+   variable widget
+
+   #--   selectionne la commande
+   switch -exact $widget(tempmode) {
+      0  {  ::usb_focus::setManualMode }
+      1  {  ::usb_focus::setAutoMode }
+   }
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::setManualMode
+#     Stoppe le mode auto
+#
+#------------------------------------------------------------
+proc ::usb_focus::setManualMode { } {
+   variable private
+
+   set private(command) "FMANUA"
    ::usb_focus::writePort
 
-   after 50
+   #--   reponse attendue "*LFCR" ou "!LFCR" ; longueur 3 car
+   if {[::usb_focus::waitAnswer 3] in [list "*" "!"]} {
+      ::usb_focus::getPosition
+   }
 
-   #--   reponse attendue == "A=0xyz" : longueur 6 car
-   set coef [string trimleft [::usb_focus::waitAnswer 6] 0]
+   #--   libere toutes les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState normal manual
+}
 
-   set private(command) "FTxxxA"
+#------------------------------------------------------------
+#  ::usb_focus::setAutoMode
+#     Demarre le mode de compensation automatique
+#
+#------------------------------------------------------------
+proc ::usb_focus::setAutoMode { } {
+   variable widget
+   variable private
+
+   #--   inhibe les commandes a l'exception du Mode
+   ::usb_focus::setState disabled auto
+
+   set private(command) "FAUTOM"
    ::usb_focus::writePort
 
-   #--   reponse attendue == "A=x" : longueur 3 car
-   if {[::usb_focus::waitAnswer 3] == 1} {
-      set widget(coef) "+$coef"
-   } else {
-      set widget(coef) "-$coef"
-   }
-
-   if {$widget(coef) == $private(prev,coef)} {
-      ::console::affiche_resultat "ok\n"
-   }
+   #--   reponse attendue == "P=wxyz LFCRT=+/-xy.z LFCR"
+   set answer [::usb_focus::waitAnswer 21]
+   set widget(position) [string range $answer 0 4]
+   set widget(temperature) [string range $answer 5 end]
 }
 
 #------------------------------------------------------------
@@ -263,11 +245,11 @@ proc ::usb_focus::goto { } {
    variable widget
    variable private
 
-   #--   calcule l'ecart
-   set dif [expr { $widget(target)-[string trimleft $widget(position) 0] }]
+   set position [::usb_focus::trimZero $widget(position)]
 
-   #--   formate le nombre de pas
-   set n [format "%05d" [expr {abs($dif) }]]
+   #--   calcule la valeur absolue de l'ecart et formate le resultat
+   set dif [expr { $widget(target)-$position }]
+   set n [format "%05d" [expr { abs($dif) }]]
 
    #--   definit le sens
    if {$dif < 0} {
@@ -275,7 +257,7 @@ proc ::usb_focus::goto { } {
    } else {
       set private(command) O$n
    }
-   ::usb_focus::writeControl2
+   ::usb_focus::writeControl_2
 }
 
 #------------------------------------------------------------
@@ -288,15 +270,21 @@ proc ::usb_focus::move { command } {
    variable widget
    variable private
 
-   #--   formate n a la longueur voulue
-   set n [format "%05d" $widget(nbstep)]
+   set d $widget(nbstep)
+   set position [::usb_focus::trimZero $widget(position)]
 
    if {$command eq "+"} {
-      set private(command) O$n
+      if {[expr { $widget(maxstep)+$d }]  > $position} {
+         set widget(nbstep) [expr { $widget(maxstep-$d }]
+      }
+      set private(command) O[format "%05d" $widget(nbstep)]
    } else {
-      set private(command) I$n
+      if {$d > $position} {
+         set widget(nbstep) $position
+      }
+      set private(command) I[format "%05d" $widget(nbstep)]
    }
-   ::usb_focus::writeControl2
+   ::usb_focus::writeControl_2
 }
 
 #------------------------------------------------------------
@@ -307,9 +295,16 @@ proc ::usb_focus::move { command } {
 proc ::usb_focus::stopMove { } {
    variable private
 
-   #--   delai d'attente avant de prendre la position ????
    set private(command) "FQUITx"
-   ::usb_focus::writeControl2
+   ::usb_focus::writePort
+
+   #--   reponse attendue "*" ; longueur 1 car
+   if {[::usb_focus::waitAnswer 6] eq "**"} {
+      ::usb_focus::getPosition
+   }
+
+   #--   libere toutes les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState normal manual
 }
 
 #------------------------------------------------------------
@@ -345,36 +340,74 @@ proc ::usb_focus::getTemperature { } {
 }
 
 #------------------------------------------------------------
-#  ::usb_focus::setTempMod
-#     Commande du radiobutton de selection du mode automatique
+#  ::usb_focus::getTempCoef
+#     Demande le coefficient de compensation
 #
 #------------------------------------------------------------
-proc ::usb_focus::setTempMod { } {
+proc ::usb_focus::getTempCoef {} {
    variable widget
    variable private
 
-   #--   selectionne la commande
-   switch -exact $widget(tempmode) {
-      0  {  set private(command) "FMANUA" ; # stoppe le mode auto
-            ::usb_focus::writePort
+   #-- demande la valeur aboslue du coef
+   set private(command) "FREADA"
+   ::usb_focus::writePort
 
-            #--   reponse attendue == "!LFCR" ; longueur 3 car
-            set answer [::usb_focus::waitAnswer 3]
-         }
-      1  {  set private(command) "FAUTOM" ; # demarre le mode de compensation automatique
-            ::usb_focus::writePort
+   #--   reponse attendue == "A=0xyz" : longueur 6 car
+   set coef [string trimleft [::usb_focus::waitAnswer 6] 0]
 
-            #--   inhibe les commandes
-            #::usb_focus::setState disabled 1
+   #-- demande lle signe
+   set private(command) "FTxxxA"
+   ::usb_focus::writePort
 
-            #--   reponse attendue == "A..P=wxyz LFCR + T=+/-xy.z LFCR"
-            regsub -all {[APT=]} [::usb_focus::waitAnswer 21] " " answer
-            lassign $answer widget(position) widget(temperature)
-
-            #--   libere les commandes
-            #::usb_focus::setState normal 1
-         }
+   #--   reponse attendue == "A=x" : longueur 3 car
+   if {[::usb_focus::waitAnswer 3] == 1} {
+      set widget(coef) "+$coef"
+   } else {
+      set widget(coef) "-$coef"
    }
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::refreshAll
+#     Demande les parametres de configuration
+#
+#------------------------------------------------------------
+proc ::usb_focus::refreshAll { } {
+   variable widget
+   variable private
+
+   set private(command) "SGETAL"
+   ::usb_focus::writePort
+
+   #--   reponse attendue == longueur 28 car
+   set private(values) [string map {"-" " "} [::usb_focus::waitAnswer 28]]
+
+   #--   verifie qu'il n'y a pas d'erreur
+   package require struct::set
+   if {[::usb_focus::isReady] == 0} {
+      set private(attendu) $private(values)
+   } else {
+      if {![::struct::set equal $private(attendu) $private(values)]} {
+         #--   message console si une commande n'a pas ete executee
+         ::console::affiche_resultat "\nattendu $private(attendu)\nobtenu $private(values)\n"
+      }
+   }
+
+   #--   formate les valeurs
+   lassign $private(values) widget(motorsens) widget(stepincr) widget(motorspeed) \
+      coef step widget(version) maxstep
+
+   #--   ote les 0 inutiles
+   set widget(step) [::usb_focus::trimZero $step]
+   set private(prev,step) $widget(step)
+
+   set widget(maxstep) [::usb_focus::trimZero $maxstep]
+   set private(prev,maxstep) $widget(maxstep)
+
+   #--   affiche la position, la temperature et le coef de compensation
+   ::usb_focus::getTempCoef
+   ::usb_focus::getPosition
+   ::usb_focus::getTemperature
 }
 
 #------------------------------------------------------------
@@ -447,17 +480,20 @@ proc ::usb_focus::readPort { tty nbcar } {
    variable private
    global usb_focus_answer
 
-   set entities [list "\n" "" "\r" "" A "" T "" P "" = "" " " ""]
+   set entities [list "\n" "" "\r" "" A "" T "" P "" C "" = "" " " ""]
 
    chan configure $tty -blocking 1
    #--   ote les LF et CR dans l'ensemble du message
    set answer [chan read $tty $nbcar]
    chan configure $tty -blocking 0
-   #regsub -all {[\n\r]} $answer "" usb_focus_answer
+   if {$answer eq "A=err"} {
+      ::console::affiche_resultat "USB_Focus error\n"
+   }
    set usb_focus_answer [string map $entities $answer]
 
    #--   debug
-   ::console::affiche_resultat "$private(command) --> $usb_focus_answer [string length $answer] [string length $usb_focus_answer]\n"
+   #::console::affiche_resultat "$private(command) --> $usb_focus_answer \
+   #   [string length $answer] [string length $usb_focus_answer]\n"
 }
 
 #------------------------------------------------------------
@@ -482,19 +518,39 @@ proc ::usb_focus::closePort { } {
 proc ::usb_focus::initFromChip {} {
    variable private
 
-   #--   initialise le mode
-   set private(command) "FMANUA"
+   ::usb_focus::setManualMode
+   ::usb_focus::refreshAll
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::writeControl_1
+#   Controle avec les parametres de conf de usb_focus et la position
+#------------------------------------------------------------
+proc ::usb_focus::writeControl_1 { } {
+   ::usb_focus::writePort
+   after 100
+   ::usb_focus::refreshAll
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::writeControl_2
+#   Controle la position
+#------------------------------------------------------------
+proc ::usb_focus::writeControl_2 { } {
+
+   #--   inhibe les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState disabled stop
 
    ::usb_focus::writePort
 
-   #--   reponse attendue == "!LFCR" ; longueur 3 car
-   set answer [::usb_focus::waitAnswer 3]
+   #--   reponse attendue "*LFCR" ou "!LFCR" ; longueur 3 car
+   if {[::usb_focus::waitAnswer 3] in [list "*" "!"]} {
+      after 50
+      ::usb_focus::getPosition
+   }
 
-   #--   lit les parametres de conf de usb_focus
-   ::usb_focus::refreshAll
-
-   #--   desinhibe les commandes
-   ::usb_focus::setState normal
+   #--   libere toutes les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState normal manual
 }
 
 #------------------------------------------------------------
@@ -504,38 +560,11 @@ proc ::usb_focus::initFromChip {} {
 proc ::usb_focus::trimZero { val } {
 
    set val "[string trimleft $val 0]"
-   if {[llength $val ] ==0} {
-      set $val  0
+   if {[llength $val] ==0} {
+      set val  0
    }
 
    return $val
 }
 
-#------------------------------------------------------------
-#  ::usb_focus::writeControl1
-#   Controle avec les parametres de conf de usb_focus et la position
-#------------------------------------------------------------
-proc ::usb_focus::writeControl1 { } {
-   ::usb_focus::writePort
-   ::usb_focus::refreshAll
-}
-
-#------------------------------------------------------------
-#  ::usb_focus::writeControl2
-#   Controle  avec le retour
-#------------------------------------------------------------
-proc ::usb_focus::writeControl2 { } {
-
-   #--   inhibe les commandes
-   ::usb_focus::setState disabled 1
-
-   ::usb_focus::writePort
-
-   #--   reponse attendue "*LFCR" ou "!LFCR" ; longueur 3 car
-   if {[::usb_focus::waitAnswer 3] in [list "*" "!"]} {
-      ::usb_focus::getPosition
-      #--   libere les commandes
-      ::usb_focus::setState normal 1
-   }
-}
 
