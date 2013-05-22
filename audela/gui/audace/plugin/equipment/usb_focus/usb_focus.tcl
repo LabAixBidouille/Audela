@@ -243,12 +243,12 @@ proc ::usb_focus::fillConfigPage { frm } {
 
       radiobutton $f.motor.halfstep -text "$caption(usb_focus,halfstep)" \
          -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 0 \
-         -command "::usb_focus::setSpeedIncr"
+         -command "::usb_focus::setStepIncr"
       grid $f.motor.halfstep -row 2 -column 1 -padx 5 -sticky w
 
       radiobutton $f.motor.fullstep -text "$caption(usb_focus,fullstep)" \
          -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 1 \
-         -command "::usb_focus::setSpeedIncr"
+         -command "::usb_focus::setStepIncr"
       grid $f.motor.fullstep -row 2 -column 2 -padx 5 -sticky w
 
       #--- Label du sens de rotation
@@ -407,7 +407,7 @@ proc ::usb_focus::fillConfigPage { frm } {
       #--- initialise les variables locales
       ::usb_focus::initLocalVar
       #--- inhibe les commandes en attendant la creation du port
-      ::usb_focus::setState disabled
+      ::usb_focus::setState disabled all
    }
 
    #--- Mise a jour
@@ -457,9 +457,6 @@ proc ::usb_focus::createPlugin { } {
    #--   cree le port et initialise les variables en cas de reussite
    if {[::usb_focus::createPort $widget(port)]} {
 
-      #--   inhibe les commandes
-      ::usb_focus::setState normal
-
       #--- cree la liaison du focuser
       #   (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
       #     indispensable pour les tests isReady
@@ -486,7 +483,7 @@ proc ::usb_focus::deletePlugin { } {
    ::usb_focus::initLocalVar
 
    #--   inhibe les commandes
-   ::usb_focus::setState disabled
+   ::usb_focus::setState disabled all
 }
 
 #------------------------------------------------------------
@@ -559,19 +556,30 @@ proc ::usb_focus::setState { state {limited 0} } {
       }
    }
 
-   #--   traite les boutons
+   #--   traite tous les boutons
    set buttonList [list chip.reset motor.setmax motor.speed \
-      motor.halfstep motor.fullstep pos.goto \
+      motor.halfstep motor.fullstep pos.goto pos.stop \
       motor.clockwise motor.anticlockwise pos.decrease \
       pos.increase temp.mode temp.setcoef temp.setstep]
-   #--   si limited == 1, laisse le bouton STOP normal
-   if {$limited == 0} {
-      lappend buttonList pos.stop
-   }
    foreach but $buttonList {
       if {[winfo exists $w.$but]} {
          $w.$but configure -state $state
       }
+   }
+
+   #--   gere les exceptions
+   switch -exact  $limited {
+      manual {  #--   inhibe le bouton STOP
+                $w.pos.stop configure -state disabled
+             }
+      auto   {  #--   desinhibe le radiobutton du Mode
+                $w.temp.mode configure -state normal
+             }
+      stop   {  #--   desinhibe le bouton STOP
+                $w.pos.stop configure -state normal
+             }
+      all    {  #--   ne fait aucune correction
+             }
    }
 
    update
