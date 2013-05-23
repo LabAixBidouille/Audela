@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 22 mai 2013</p>
+<p class="date">Date de mise &agrave; jour : 23 mai 2013</p>
 <h1>Focaliseur USB_FOCUS</h1>
 Merci &#224; Vinvent Auvray pour les informations sur ce
 focaliseur ; voir le <a href="http://www.usb-foc.us/"><b>site
@@ -28,13 +28,15 @@ bouton <b>STOP</b> qui n'est actif qu'en cas de d&#233;placement
 <p><img style="width: 600px; height: 499px;" alt="" src=
 "images/usb_focus1.gif" /></p>
 <p>Les param&#232;tres sont renseign&#233;s avec les valeurs lues
-dans le microprocesseur du focuser.</p>
+dans le microcontr&#244;leur du focuser.</p>
 <h2>2. Informations et commandes disponibles</h2>
 <p>Les quatre groupes de commandes sont les suivants :</p>
 <ul>
 <li><b>Logiciel du microprocesseur</b> : le N&#176; de version
 n'appara&#238;t qu'apr&#232;s connexion. Un bouton <b>RESET</b>
-permet de r&#233;tablir les param&#232;tres "usine".</li>
+permet de r&#233;tablir les param&#232;tres "usine". Les
+param&#232;tres "utilisateur" sont m&#233;moris&#233;s dans le
+microcontr&#244;leur et rappel&#233;s lors de la connexion.</li>
 <li><b>R&#233;glages du moteur</b> : ils permettent un
 r&#233;glage fin adapt&#233; au montage de l'utilisateur. Sont
 disponibles :
@@ -82,8 +84,8 @@ un mouvement absolu ou incr&#233;mental.</li>
 n&#233;gatif, inf&#233;rieur &#224; ???,</li>
 <li>seuiil de sensibilit&#233; : nombre entier positif
 inf&#233;rieur &#224; ???,</li>
-<li>position absolue : nombre entier positif inf&#233;rieur au
-nombre maximum de pas,</li>
+<li>position absolu : nombre entier positif inf&#233;rieur ou 
+&#233;gal au nombre maximum de pas,</li>
 <li>pas de d&#233;placement : nombre entier positif ; si le
 d&#233;placement demand&#233; conduit &#224; une position
 sup&#233;rieure au maximum ou inf&#233;rieur &#224; 0, le nombre
