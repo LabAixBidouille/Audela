@@ -98,7 +98,7 @@ proc ::usb_focus::initPlugin { } {
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
    if {![info exists conf(usb_focus)]} {
-      #--   liste du port COM et de step
+      #--   liste du port COM et du nombre de pas
       set conf(usb_focus) [list "" 10]
    }
 
@@ -156,9 +156,6 @@ proc ::usb_focus::fillConfigPage { frm } {
       #--- je desactive l'option focuser
       set widget(port) ""
    }
-
-   #--- variables locales
-   #::usb_focus::initLocalVar
 
    #--- Creation du frame contenant les commandes de usb_focus
    set f [frame $frm.frame1 -borderwidth 0 -relief raised]
@@ -296,7 +293,7 @@ proc ::usb_focus::fillConfigPage { frm } {
          -indicatoron 1 -onvalue 1 -offvalue 0 \
          -variable ::usb_focus::widget(tempmode) \
          -command "::usb_focus::setTempMod"
-      grid $f.temp.mode -row 1 -column 0 -sticky w
+      grid $f.temp.mode -row 1 -column 0 -columnspan 3 -sticky w
 
       #--- Label du coefficient
       label $f.temp.labelTempCoef -text "$caption(usb_focus,tempcoef)"
@@ -313,18 +310,18 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.temp.setcoef -row 2 -column 2 -padx 5
 
       #--- Label du coefficient
-      label $f.temp.labelTempStep -text "$caption(usb_focus,tempstep)"
+      label $f.temp.labelTempStep -text "$caption(usb_focus,tempseuil)"
       grid $f.temp.labelTempStep -row 3 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- Coefficient
-      entry $f.temp.step -width 5 -justify right \
-         -textvariable ::usb_focus::widget(step)
-      grid $f.temp.step -row 3 -column 1 -padx 5 -sticky e
+      entry $f.temp.seuil -width 5 -justify right \
+         -textvariable ::usb_focus::widget(seuil)
+      grid $f.temp.seuil -row 3 -column 1 -padx 5 -sticky e
 
       #--- Bouton de set steptemp
-      button $f.temp.setstep -text "$caption(usb_focus,set)" -relief raised \
+      button $f.temp.setseuil -text "$caption(usb_focus,set)" -relief raised \
          -width 4 -command "::usb_focus::setSeuilTemp"
-      grid $f.temp.setstep -row 3 -column 2 -padx 5
+      grid $f.temp.setseuil -row 3 -column 2 -padx 5
 
    grid $f.temp -row 2 -column 1 -padx 10 -pady 5 -sticky w
 
@@ -409,6 +406,10 @@ proc ::usb_focus::fillConfigPage { frm } {
       #--- inhibe les commandes en attendant la creation du port
       ::usb_focus::setState disabled all
    }
+   if {$widget(tempmode) == 1} {
+      #--- inhibe les commandes en attendant la creation du port
+      ::usb_focus::setState disabled auto
+   }
 
    #--- Mise a jour
    ::usb_focus::onChangeLink
@@ -455,7 +456,7 @@ proc ::usb_focus::createPlugin { } {
    if {$private(linkNo) != 0} { return }
 
    #--   cree le port et initialise les variables en cas de reussite
-   if {[::usb_focus::createPort $widget(port)]} {
+   if {$widget(port) ne "" && [::usb_focus::createPort $widget(port)]} {
 
       #--- cree la liaison du focuser
       #   (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
@@ -541,7 +542,7 @@ proc ::usb_focus::setState { state {limited 0} } {
 
    #--   traite les saisies
    set entryList [list "motor.maxstep" "pos.target" "pos.nbstep" \
-      "temp.coef" "temp.step"]
+      "temp.coef" "temp.seuil"]
    foreach entr $entryList {
       if {[winfo exists $w.$entr]}  {
          if {$state eq "normal"} {
@@ -560,7 +561,7 @@ proc ::usb_focus::setState { state {limited 0} } {
    set buttonList [list chip.reset motor.setmax motor.speed \
       motor.halfstep motor.fullstep pos.goto pos.stop \
       motor.clockwise motor.anticlockwise pos.decrease \
-      pos.increase temp.mode temp.setcoef temp.setstep]
+      pos.increase temp.mode temp.setcoef temp.setseuil]
    foreach but $buttonList {
       if {[winfo exists $w.$but]} {
          $w.$but configure -state $state
@@ -603,7 +604,7 @@ proc ::usb_focus::initLocalVar {} {
    set private(prev,target)   ""
    set private(prev,nbstep)   [lindex $conf(usb_focus) 1]
    set private(prev,coef)     ""
-   set private(prev,step)     ""
+   set private(prev,seuil)     ""
    set widget(version)        ""
    set widget(motorspeed)     ""
    set widget(stepincr)       1
@@ -615,7 +616,7 @@ proc ::usb_focus::initLocalVar {} {
    set widget(temperature)    ""
    set widget(mode)           0
    set widget(coef)           ""
-   set widget(step)           ""
+   set widget(seuil)           ""
 }
 
 #------------------------------------------------------------
@@ -632,7 +633,7 @@ proc ::usb_focus::verifValue { v } {
    set err 0
 
    #--   toutes les valeurs (a l'exception de coef) doivent etre positives
-   if { $v in [list maxstep target nbstep step] && $widget($v) < 0} {
+   if { $v in [list maxstep target nbstep seuil] && $widget($v) < 0} {
       set err 1
    }
 
@@ -642,7 +643,7 @@ proc ::usb_focus::verifValue { v } {
       target   { set limite $widget(maxstep) ; # steps }
       nbstep   { set limite $widget(maxstep) ; # steps }
       coef     { set limite 999 ; # steps/°C }
-      step     { set limite 999 ; # steps }
+      seuil     { set limite 999 ; # steps }
    }
 
    #--   toutes les valeurs absolues doivent etre <= limite
