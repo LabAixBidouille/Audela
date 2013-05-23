@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,telescope)           "Montierung"
    set caption(superpad,non_connecte)        "nicht verbun."
    set caption(superpad,ErrorMessageTitle)   "Irrtum"
-   set caption(superpad,activeFleches)       "# Activer les flèches du clavier"
+   set caption(superpad,activeFleches)       "Pfeiltasten aktivieren"
    set caption(superpad,buttonSkyMap)        "Karte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"

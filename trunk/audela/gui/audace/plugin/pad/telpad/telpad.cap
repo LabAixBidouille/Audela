@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telpad,sud)           "S"
    set caption(telpad,est)           "O"
    set caption(telpad,ouest)         "W"
-   set caption(telpad,activeFleches) "# Activer les flèches\ndu clavier"
+   set caption(telpad,activeFleches) "Pfeiltasten\naktivieren"
 
    set caption(telpad,moteur_foc)    "Fokussierung Motor"
 

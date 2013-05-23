@@ -29,7 +29,7 @@ set caption(eqmod,sud)                       "South"
 set caption(eqmod,pole_nord)                 "North Pole"
 set caption(eqmod,pole_sud)                  "South Pole"
 
-set caption(eqmod,retournement)              "Flip Limits for a GOTO System:"
+set caption(eqmod,retournement)              "Flip Limits for a GOTO:"
 set caption(eqmod,reference)                 "Distance to Meridian:"
 set caption(eqmod,limite_est)                "To the East (in h)"
 set caption(eqmod,limite_ouest)              "To the West (in h)"
@@ -186,22 +186,22 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,controle)               "Kontroll"
    set caption(eqmod,raquette_tel)           "Hand Kontroller am Bildschirm"
 
-   set caption(eqmod,config_tube)            "# Configuration du tube :"
+   set caption(eqmod,config_tube)            "Rohr Einstellungen:"
    set caption(eqmod,tube_ouest)             "Rohr nach West"
    set caption(eqmod,tube_est)               "Rohr nach Ost"
 
-   set caption(eqmod,pos_tube)               "# Position actuelle du tube :"
+   set caption(eqmod,pos_tube)               "Rohr aktuelle Position:"
    set caption(eqmod,ouest)                  "West"
    set caption(eqmod,est)                    "Ost"
    set caption(eqmod,nord)                   "Nord"
    set caption(eqmod,sud)                    "Sud"
-   set caption(eqmod,pole_nord)              "# Pôle Nord"
-   set caption(eqmod,pole_sud)               "# Pôle Sud"
+   set caption(eqmod,pole_nord)              "Nordpol"
+   set caption(eqmod,pole_sud)               "Südpol"
 
-   set caption(eqmod,retournement)           "# Limites de retournement pour un GOTO :"
-   set caption(eqmod,reference)              "# Ecarts par rapport au méridien :"
-   set caption(eqmod,limite_est)             "# Vers l'est (en h)"
-   set caption(eqmod,limite_ouest)           "# Vers l'ouest (en h)"
+   set caption(eqmod,retournement)           "Flip Grenzen für einen GOTO:"
+   set caption(eqmod,reference)              "Entfernung zum Meridian:"
+   set caption(eqmod,limite_est)             "Zum Osten (in h)"
+   set caption(eqmod,limite_ouest)           "Zum Westen (in h)"
 
    set caption(eqmod,moteur_on)              "Motor On"
    set caption(eqmod,N/A)                    "------"
@@ -212,7 +212,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Dek. Position:"
    set caption(eqmod,valeurDefaut)           "Standardwert:"
 
-   set caption(eqmod,positionMonture)        "# Localisation de la monture :"
+   set caption(eqmod,positionMonture)        "Montierung Ort:"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
 
@@ -282,7 +282,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,pole_nord)              "North Pole"
    set caption(eqmod,pole_sud)               "South Pole"
 
-   set caption(eqmod,retournement)           "Flip Limits for a GOTO System:"
+   set caption(eqmod,retournement)           "Flip Limits for a GOTO:"
    set caption(eqmod,reference)              "Distance to Meridian:"
    set caption(eqmod,limite_est)             "To the East (in h)"
    set caption(eqmod,limite_ouest)           "To the West (in h)"
@@ -324,7 +324,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,pole_nord)              "North Pole"
    set caption(eqmod,pole_sud)               "South Pole"
 
-   set caption(eqmod,retournement)           "Flip Limits for a GOTO System:"
+   set caption(eqmod,retournement)           "Flip Limits for a GOTO:"
    set caption(eqmod,reference)              "Distance to Meridian:"
    set caption(eqmod,limite_est)             "To the East (in h)"
    set caption(eqmod,limite_ouest)           "To the West (in h)"
@@ -366,7 +366,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,pole_nord)              "North Pole"
    set caption(eqmod,pole_sud)               "South Pole"
 
-   set caption(eqmod,retournement)           "Flip Limits for a GOTO System:"
+   set caption(eqmod,retournement)           "Flip Limits for a GOTO:"
    set caption(eqmod,reference)              "Distance to Meridian:"
    set caption(eqmod,limite_est)             "To the East (in h)"
    set caption(eqmod,limite_ouest)           "To the West (in h)"
