@@ -151,7 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv3,gagne)                   "Zugriff gelungen"
    set caption(carteducielv3,no_connect)              "Der Anschluß zu der Sternkarten ist durchgefallen."
    set caption(carteducielv3,no_object_select)        "Kein Ziel auf die Karte gewählt."
-   set caption(carteducielv3,wrong_version)           "# You are using an outdated version of Sky Charts.\nPlease update to version 3.9 at least."
+   set caption(carteducielv3,wrong_version)           "Sie benutzen eine veraltete Version von Sternkarten.\nBitte auf mindestens Version 3.9 aktualisieren."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

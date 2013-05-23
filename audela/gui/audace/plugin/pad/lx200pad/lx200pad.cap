@@ -41,7 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Ihre Größe"
-   set caption(lx200pad,activeFleches) "# Activer les flèches\ndu clavier"
+   set caption(lx200pad,activeFleches) "Pfeiltasten\naktivieren"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

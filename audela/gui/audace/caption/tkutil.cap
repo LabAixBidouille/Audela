@@ -360,7 +360,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tkutil,editer_site_web)      "Webseite"
    set caption(tkutil,editer_avi)           "Video"
    set caption(tkutil,editer_csv)           "CSV"
-   set caption(tkutil,editer_atos)          "# Ouvrir un projet ATOS"
+   set caption(tkutil,editer_atos)          "Ein ATOS Projekt öffnen"
    set caption(tkutil,editer_catalogue)     "Ein Benutzer Katalog öffnen"
    set caption(tkutil,editeur_script)       "Skripten Editor:"
    set caption(tkutil,editeur_pdf)          "Hinweisen ansehen (.pdf):"

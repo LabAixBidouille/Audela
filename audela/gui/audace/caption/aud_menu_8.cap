@@ -122,7 +122,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,tutorial3)                 "Lichtmessung"
    set caption(audace,menu,tutorial4)                 "Bild Simulator und Belichtungszeit Rechner"
    set caption(audace,menu,tutorial5)                 "Daten über Gamma-Ray Platzen Analyse"
-   set caption(audace,menu,tutorial6)                 "# Détermination des paramètres électroniques d'une caméra CCD"
+   set caption(audace,menu,tutorial6)                 "Über elektronische Parameter einer CCD-Kamera Bestimmung"
    set caption(audace,menu,site_audela)               "Webseite"
    set caption(audace,menu,site_internet)             "Webseite (Internet)"
    set caption(audace,menu,site_dd)                   "Webseite (auf die Festplatte nachbilden)"
