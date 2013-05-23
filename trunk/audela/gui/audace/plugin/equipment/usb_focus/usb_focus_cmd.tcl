@@ -57,7 +57,7 @@ proc ::usb_focus::reset { } {
    variable private
 
    #--   liste des valeurs par defaut du chip, dans l'ordre :
-   #  motorsens stepincr motorspeed coef step version maxstep
+   #  motorsens stepincr motorspeed coef seuil version maxstep
    set private(attendu) [list 0 1 2 015 010 1217 65535]
 
    set private(command) "SEERAZ"
@@ -161,7 +161,7 @@ proc ::usb_focus::setCoefTemp { } {
    ::usb_focus::getTempCoef
 
    if {$widget(coef) != $private(prev,coef)} {
-      ::console::affiche_resultat "setCoefTemp : error\n"
+      ::console::affiche_resultat "setCoefTemp : error\n\n"
    }
 }
 
@@ -174,10 +174,16 @@ proc ::usb_focus::setSeuilTemp { } {
    variable widget
    variable private
 
-   set n [format "%03d" $widget(step)]
+   set private(prev,seuil) $widget(seuil)
+
+   set n [format "%03d" $widget(seuil)]
    set private(attendu) [lreplace $private(attendu) 4 4 $n]
    set private(command) "SMA$n"
    ::usb_focus::writeControl_1
+
+   if {$widget(seuil) != $private(prev,seuil)} {
+      ::console::affiche_resultat "setSeuilTemp : error\n\n"
+   }
 }
 
 #------------------------------------------------------------
@@ -215,6 +221,7 @@ proc ::usb_focus::setManualMode { } {
 proc ::usb_focus::setAutoMode { } {
    variable widget
    variable private
+   global caption
 
    #--   inhibe les commandes a l'exception du Mode
    ::usb_focus::setState disabled auto
@@ -222,10 +229,10 @@ proc ::usb_focus::setAutoMode { } {
    set private(command) "FAUTOM"
    ::usb_focus::writePort
 
-   #--   reponse attendue == "P=wxyz LFCRT=+/-xy.z LFCR"
+   #--   reponse attendue == "P=wxyz LFCRT=+/-xy.z LFCR"; longueur 21 car
    set answer [::usb_focus::waitAnswer 21]
    set widget(position) [string range $answer 0 4]
-   set widget(temperature) "[string range $answer 5 end] °C"
+   set widget(temperature) [format $caption(usb_focus,deg_c) [string range $answer 5 end]]
 }
 
 #------------------------------------------------------------
@@ -295,9 +302,8 @@ proc ::usb_focus::stopMove { } {
    set private(command) "FQUITx"
    ::usb_focus::writePort
 
-   #--   reponse attendue "*" ; longueur 1 car
-   if {[::usb_focus::waitAnswer 6] eq "*LFCR*LFCR"} {
-      after 50
+   #--   reponse attendue == "*LFCR*LFCR" ; longueur 6 car
+   if {[::usb_focus::waitAnswer 6] eq "**"} {
       ::usb_focus::getPosition
    }
 
@@ -363,6 +369,7 @@ proc ::usb_focus::getTempCoef {} {
    } else {
       set widget(coef) "-$coef"
    }
+   set private(prev,coef) $widget(coef)
 }
 
 #------------------------------------------------------------
@@ -393,14 +400,15 @@ proc ::usb_focus::refreshAll { } {
 
    #--   formate les valeurs
    lassign $private(values) widget(motorsens) widget(stepincr) widget(motorspeed) \
-      coef step widget(version) maxstep
+      coef seuil widget(version) maxstep
 
    #--   ote les 0 inutiles
-   set widget(step) [::usb_focus::trimZero $step]
-   set private(prev,step) $widget(step)
-
    set widget(maxstep) [::usb_focus::trimZero $maxstep]
+   set widget(seuil) [::usb_focus::trimZero $seuil]
+
+   #--   rafraichit ces variables
    set private(prev,maxstep) $widget(maxstep)
+   set private(prev,seuil) $widget(seuil)
 
    #--   affiche la position, la temperature et le coef de compensation
    ::usb_focus::getTempCoef
