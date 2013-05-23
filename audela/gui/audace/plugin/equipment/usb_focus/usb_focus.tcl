@@ -242,12 +242,12 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.motor.labelIncrStep -row 2 -column 0 -padx 5 -pady 5 -sticky w
 
       radiobutton $f.motor.halfstep -text "$caption(usb_focus,halfstep)" \
-         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 0 \
+         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 1 \
          -command "::usb_focus::setStepIncr"
       grid $f.motor.halfstep -row 2 -column 1 -padx 5 -sticky w
 
       radiobutton $f.motor.fullstep -text "$caption(usb_focus,fullstep)" \
-         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 1 \
+         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 0 \
          -command "::usb_focus::setStepIncr"
       grid $f.motor.fullstep -row 2 -column 2 -padx 5 -sticky w
 
@@ -289,7 +289,7 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.temp.labelTemp -row 0 -column 0 -padx 5 -pady 10 -sticky w
 
       #--- Temperature
-      label $f.temp.temperature -textvariable ::usb_focus::widget(temperature)
+      label $f.temp.temperature  -textvariable ::usb_focus::widget(temperature)
       grid $f.temp.temperature -row 0 -column 1 -padx 5 -sticky e
 
       checkbutton $f.temp.mode -text "$caption(usb_focus,tempmode)" \

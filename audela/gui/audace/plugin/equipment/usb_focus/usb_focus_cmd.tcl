@@ -110,8 +110,8 @@ proc ::usb_focus::setStepIncr { } {
 
    #--   commute half/full step
    switch -exact $widget(stepincr) {
-      0  { set private(command) "SMSTPD" ; # half step }
-      1  { set private(command) "SMSTPF" ; # full step }
+      0  { set private(command) "SMSTPF" ; # full step }
+      1  { set private(command) "SMSTPD" ; # half step }
    }
    ::usb_focus::writeControl_1
 }
@@ -204,15 +204,7 @@ proc ::usb_focus::setManualMode { } {
    variable private
 
    set private(command) "FMANUA"
-   ::usb_focus::writePort
-
-   #--   reponse attendue "*LFCR" ou "!LFCR" ; longueur 3 car
-   if {[::usb_focus::waitAnswer 3] in [list "*" "!"]} {
-      ::usb_focus::getPosition
-   }
-
-   #--   libere toutes les commandes, a l'exception du bouton STOP
-   ::usb_focus::setState normal manual
+   ::usb_focus::writeControl_2
 }
 
 #------------------------------------------------------------
@@ -233,22 +225,24 @@ proc ::usb_focus::setAutoMode { } {
    #--   reponse attendue == "P=wxyz LFCRT=+/-xy.z LFCR"
    set answer [::usb_focus::waitAnswer 21]
    set widget(position) [string range $answer 0 4]
-   set widget(temperature) [string range $answer 5 end]
+   set widget(temperature) "[string range $answer 5 end] °C"
 }
 
 #------------------------------------------------------------
 #  ::usb_focus::goto
 #     Envoie le focaliseur a moteur pas a pas a une position predeterminee
 #     Commande du bouton GOTO
+#     si necessaire, le deplacement est corrige pour rester dans les limites {0|maxstep)
 #------------------------------------------------------------
 proc ::usb_focus::goto { } {
    variable widget
    variable private
 
+   set d $widget(target)
    set position [::usb_focus::trimZero $widget(position)]
 
    #--   calcule la valeur absolue de l'ecart et formate le resultat
-   set dif [expr { $widget(target)-$position }]
+   set dif [expr { $d-$position }]
    set n [format "%05d" [expr { abs($dif) }]]
 
    #--   definit le sens
@@ -265,6 +259,7 @@ proc ::usb_focus::goto { } {
 #     Commande des boutons + -
 #     si command = "-" , demarre le mouvement du focus en intra focale
 #     si command = "+" , demarre le mouvement du focus en extra focale
+#     si necessaire, le deplacement est corrige pour rester dans les limites {0|maxstep)
 #------------------------------------------------------------
 proc ::usb_focus::move { command } {
    variable widget
@@ -274,13 +269,15 @@ proc ::usb_focus::move { command } {
    set position [::usb_focus::trimZero $widget(position)]
 
    if {$command eq "+"} {
-      if {[expr { $widget(maxstep)+$d }]  > $position} {
-         set widget(nbstep) [expr { $widget(maxstep)-$d }]
+      set nbstepMax [expr { $widget(maxstep)-$position }]
+      if {$d > $nbstepMax} {
+         set widget(nbstep) $nbstepMax
       }
       set private(command) O[format "%05d" $widget(nbstep)]
-   } else {
-      if {$d > $position} {
-         set widget(nbstep) $position
+   } elseif {$command eq "-"} {
+      set nbstepMax [expr { abs(0-$position) }]
+      if {$d > $nbstepMax} {
+         set widget(nbstep) $nbstepMax
       }
       set private(command) I[format "%05d" $widget(nbstep)]
    }
@@ -299,7 +296,8 @@ proc ::usb_focus::stopMove { } {
    ::usb_focus::writePort
 
    #--   reponse attendue "*" ; longueur 1 car
-   if {[::usb_focus::waitAnswer 6] eq "**"} {
+   if {[::usb_focus::waitAnswer 6] eq "*LFCR*LFCR"} {
+      after 50
       ::usb_focus::getPosition
    }
 
@@ -528,7 +526,6 @@ proc ::usb_focus::initFromChip {} {
 #------------------------------------------------------------
 proc ::usb_focus::writeControl_1 { } {
    ::usb_focus::writePort
-   #after 100
    ::usb_focus::refreshAll
 }
 

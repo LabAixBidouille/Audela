@@ -37,7 +37,7 @@ set caption(usb_focus,tempcoef)              "Compensation coefficient (step/°C
 set caption(usb_focus,tempstep)              "# Seuil de sensibilité (step)"
 
 set caption(usb_focus,attention)             "Warning"
-set caption(usb_focus,limit)                 "Must be an integer <= %s."
+set caption(usb_focus,limit)                 "The value to enter must be an integer <= %s."
 set caption(usb_focus,site_web)              "Reference Web Site:"
 set caption(usb_focus,site_web_ref)          "http://www.usb-foc.us/"
 set caption(usb_focus,arreter)               "Stop"
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "Seuil de sensibilité (pas)"
 
    set caption(usb_focus,attention)          "Attention"
-   set caption(usb_focus,limit)              "Doit être un entier <= %s."
+   set caption(usb_focus,limit)              "La valeur à saisir doit être un entier <= %s."
    set caption(usb_focus,site_web)           "Site Web de référence :"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Arrêter"
@@ -107,7 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (pas)"
 
    set caption(usb_focus,attention)          "Attenzione"
-   set caption(usb_focus,limit)              "Deve essere un intero <= %s."
+   set caption(usb_focus,limit)              "Il valore da selezionare dovra essere un intero <= %s."
    set caption(usb_focus,site_web)           "Sito Web di riferimento:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Fermare"
@@ -142,7 +142,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (pas)"
 
    set caption(usb_focus,attention)          "Aviso"
-   set caption(usb_focus,limit)              "Debe ser un entero <= %s."
+   set caption(usb_focus,limit)              "El valor a entrar debe estar un entero <= %s."
    set caption(usb_focus,site_web)           "Sitio Web de referencia:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Parar"
@@ -177,7 +177,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (pas)"
 
    set caption(usb_focus,attention)          "Achtung"
-   set caption(usb_focus,limit)              "Muss ein Ganz sein <= %s."
+   set caption(usb_focus,limit)              "Der Erfassende Wert muss ein Ganz sein <= %s."
    set caption(usb_focus,site_web)           "Referenz Webseite:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Halten"
@@ -212,7 +212,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (pas)"
 
    set caption(usb_focus,attention)          "Aviso"
-   set caption(usb_focus,limit)              "Deve ser um inteiro <= %s."
+   set caption(usb_focus,limit)              "O valor a seleccionar deve ser um inteiro <= %s."
    set caption(usb_focus,site_web)           "Site Web de referência:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Parar"
@@ -247,7 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (pas)"
 
    set caption(usb_focus,attention)          "Warning"
-   set caption(usb_focus,limit)              "Skal være et helt tal <= %s."
+   set caption(usb_focus,limit)              "The value to enter must be an integer <= %s."
    set caption(usb_focus,site_web)           "Henvisning til Websider:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Stop"
@@ -282,10 +282,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (step)"
 
    set caption(usb_focus,attention)          "Warning"
-   set caption(usb_focus,limit)              "Must be an integer <= %s."
+   set caption(usb_focus,limit)              "The value to enter must be an integer <= %s."
    set caption(usb_focus,site_web)           "Reference Web Site:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
-  set caption(usb_focus,arreter)            "Stop"
+   set caption(usb_focus,arreter)            "Stop"
    set caption(usb_focus,creer_au_demarrage) "Next time software is run connect this equipment automatically"
 
 # *************** Version russe *******************************
@@ -317,7 +317,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,tempstep)           "# Seuil de sensibilité (step)"
 
    set caption(usb_focus,attention)          "Warning"
-   set caption(usb_focus,limit)              "Must be an integer <= %s."
+   set caption(usb_focus,limit)              "The value to enter must be an integer <= %s."
    set caption(usb_focus,site_web)           "Reference Web Site:"
    set caption(usb_focus,site_web_ref)       "http://www.usb-foc.us/"
    set caption(usb_focus,arreter)            "Stop"
