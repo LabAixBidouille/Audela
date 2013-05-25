@@ -458,17 +458,11 @@ proc ::focuserjmi::setSpeed { { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focuserjmi::possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus (AudeCom)
+#     retourne 1 si la monture possede un controle etendu du focus
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focuserjmi::possedeControleEtendu { } {
-   global conf
-
-   if { $conf(telescope) == "audecom" } {
-      set result "1"
-   } else {
-      set result "0"
-   }
+   set result "0"
 }
 
 #------------------------------------------------------------
