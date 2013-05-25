@@ -514,7 +514,7 @@ proc ::usb_focus::possedeControleEtendu { } {
    if { $conf(telescope) == "audecom" } {
       set result "1"
    } else {
-      set result "0"
+      set result "1"
    }
 }
 
@@ -570,14 +570,20 @@ proc ::usb_focus::setState { state {limited 0} } {
 
    #--   gere les exceptions
    switch -exact  $limited {
-      manual {  #--   inhibe le bouton STOP
-                $w.pos.stop configure -state disabled
+      manual {  if {[winfo exists $w.$but]} {
+                  #--   inhibe le bouton STOP
+                  $w.pos.stop configure -state disabled
+                }
              }
-      auto   {  #--   desinhibe le radiobutton du Mode
-                $w.temp.mode configure -state normal
+      auto   {  if {[winfo exists $w.$but]} {
+                  #--   desinhibe le radiobutton du Mode
+                  $w.temp.mode configure -state normal
+                }
              }
-      stop   {  #--   desinhibe le bouton STOP
-                $w.pos.stop configure -state normal
+      stop   {  if {[winfo exists $w.$but]} {
+                  #--   desinhibe le bouton STOP
+                  $w.pos.stop configure -state normal
+                }
              }
       all    {  #--   ne fait aucune correction
              }
