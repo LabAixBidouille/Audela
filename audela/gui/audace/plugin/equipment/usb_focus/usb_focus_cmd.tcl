@@ -221,7 +221,7 @@ proc ::usb_focus::setManualMode { } {
 proc ::usb_focus::setAutoMode { } {
    variable widget
    variable private
-   global caption
+   global audace caption
 
    #--   inhibe les commandes a l'exception du Mode
    ::usb_focus::setState disabled auto
@@ -233,6 +233,9 @@ proc ::usb_focus::setAutoMode { } {
    set answer [::usb_focus::waitAnswer 21]
    set widget(position) [string range $answer 0 4]
    set widget(temperature) [format $caption(usb_focus,deg_c) [string range $answer 5 end]]
+
+   #--   recopie la valeur vers la variable audace apres avoir ote les 0 inutiles
+   set audace(focus,currentFocus) [::usb_focus::trimZero $widget(position)]
 }
 
 #------------------------------------------------------------
@@ -241,9 +244,15 @@ proc ::usb_focus::setAutoMode { } {
 #     Commande du bouton GOTO
 #     si necessaire, le deplacement est corrige pour rester dans les limites {0|maxstep)
 #------------------------------------------------------------
-proc ::usb_focus::goto { } {
+proc ::usb_focus::goto { {blocking} } {
    variable widget
    variable private
+   global audace
+
+   if {$::panneau(foc,focuser) eq "usb_focus"} {
+      #--   recopie la valeur de la cible
+      set widget(target) $audace(focus,targetFocus)
+   }
 
    set d $widget(target)
    set position [::usb_focus::trimZero $widget(position)]
@@ -319,12 +328,16 @@ proc ::usb_focus::stopMove { } {
 proc ::usb_focus::getPosition { } {
    variable widget
    variable private
+   global audace
 
    set private(command) "FPOSRO"
    ::usb_focus::writePort
 
    #--   reponse attendue == "P=vwxyz LFCR" ; longueur 9 car
    set widget(position) [::usb_focus::waitAnswer 9]
+
+   #--   recopie la valeur vers la variable audace apres avoir ote les 0 inutiles
+   set audace(focus,currentFocus) [::usb_focus::trimZero $widget(position)]
 }
 
 #------------------------------------------------------------
