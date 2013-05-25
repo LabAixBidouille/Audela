@@ -221,13 +221,7 @@ proc ::focusert193::goto { blocking } {
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focusert193::possedeControleEtendu { } {
-   global conf
-
-   if { $conf(telescope) == "t193" } {
-      set result "1"
-   } else {
-      set result "0"
-   }
+   set result "0"
 }
 
 #------------------------------------------------------------

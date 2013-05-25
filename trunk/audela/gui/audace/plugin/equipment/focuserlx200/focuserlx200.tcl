@@ -277,13 +277,13 @@ proc ::focuserlx200::setSpeed { { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focuserlx200::possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus (AudeCom)
+#     retourne 1 si la monture possede un controle etendu du focus (LX200 modele AudeCom)
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focuserlx200::possedeControleEtendu { } {
    global conf
 
-   if { $conf(telescope) == "audecom" } {
+   if { $conf(telescope) == "lx200" && $conf(lx200,modele) == "AudeCom" } {
       set result "1"
    } else {
       set result "0"
