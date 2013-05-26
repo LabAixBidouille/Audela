@@ -69,7 +69,7 @@ proc ::focus::setSpeed { focuserLabel { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focus::goto
-#     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom)
+#     envoie le focaliseur a moteur pas a pas a une position predeterminee (AudeCom + USB_Foc)
 #------------------------------------------------------------
 proc ::focus::goto { focuserLabel { blocking 0 } { gotoButton "" } } {
    variable private
@@ -146,7 +146,7 @@ proc ::focus::surveille_goto { focuserLabel position } {
 
 #------------------------------------------------------------
 #  ::focus::displayCurrentPosition
-#     affiche la position du moteur pas a pas si elle existe (AudeCom)
+#     affiche la position du moteur pas a pas si elle existe (AudeCom + USB_Foc)
 #------------------------------------------------------------
 proc ::focus::displayCurrentPosition { focuserLabel } {
    if { "$focuserLabel" != "" } {
@@ -168,7 +168,7 @@ proc ::focus::initPosition { focuserLabel } {
 
 #------------------------------------------------------------
 #  ::focus::getPosition
-#     initialise la position du focuser a 0
+#     affiche la position du moteur pas a pas si elle existe
 #------------------------------------------------------------
 proc ::focus::getPosition { focuserLabel } {
    if { "$focuserLabel" != "" } {
@@ -178,7 +178,7 @@ proc ::focus::getPosition { focuserLabel } {
 
 #------------------------------------------------------------
 #  ::focus::possedeControleEtendu
-#     retourne 1 si le telescope possede un controle etendu du focus (AudeCom)
+#     retourne 1 si le telescope possede un controle etendu du focus (AudeCom + USB_Foc)
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focus::possedeControleEtendu { focuserLabel } {
