@@ -20,8 +20,13 @@
 #     isReady           : Informe de l'etat de fonctionnement du plugin
 #
 # Procedures specifiques a ce plugin :
-#     displayCurrentPosition : Affiche la position courante du focaliseur
+#     displayCurrentPosition : Retourne la position courante du focaliseur
+#     getPosition            : Retourne la position courante du focaliseur
+#     goto                   : Envoie le focaliseur a la position audace(focus,targetFocus)
 #     incrementSpeed         : Incremente la vitesse du focaliseur et appelle la procedure setSpeed
+#     initPosition           : Initialise la position du focaliseur a moteur pas a pas a 0
+#     move                   : Demarre/arrete le mouvement du focaliseur
+#     possedeControleEtendu  : Retourne 1 si le focaliseur possede un controle etendu du focus, sinon 0
 #     setSpeed               : Change la vitesse du focaliseur
 #
 
@@ -336,6 +341,9 @@ proc ::focuseraudecom::getPosition { } {
       } else {
          set focPosition [ string trimleft [ lindex $focPosition 0 ] - ]
          set focPosition [ string trimleft [ lindex $focPosition 0 ] 0 ]
+         if { $focPosition == "" } {
+            set focPosition "0"
+         }
          set currentPosition [ expr 0 - $focPosition ]
       }
       return $currentPosition
