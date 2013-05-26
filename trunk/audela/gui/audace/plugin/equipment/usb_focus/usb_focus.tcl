@@ -20,6 +20,9 @@
 #     isReady           : Informe de l'etat de fonctionnement du plugin
 #
 # Procedures specifiques a ce plugin :
+#     displayCurrentPosition : Affiche la position courante du focaliseur
+#     incrementSpeed         : Incremente la vitesse du focaliseur et appelle la procedure setSpeed
+#     setSpeed               : Change la vitesse du focaliseur
 #
 
 namespace eval ::usb_focus {
@@ -505,17 +508,11 @@ proc ::usb_focus::isReady { } {
 
 #------------------------------------------------------------
 #  ::usb_focus::possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus (AudeCom)
+#     retourne 1 si le focuser possede un controle etendu du focus
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::usb_focus::possedeControleEtendu { } {
-   global conf
-
-   if { $conf(telescope) == "audecom" } {
-      set result "1"
-   } else {
-      set result "1"
-   }
+   set result "1"
 }
 
 #------------------------------------------------------------

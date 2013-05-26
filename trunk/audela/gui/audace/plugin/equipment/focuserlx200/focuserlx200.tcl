@@ -13,6 +13,7 @@
 #     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
 #     getPluginType     : Retourne le type de plugin
 #     getPluginOS       : Retourne les OS sous lesquels le plugin fonctionne
+#     getPluginProperty : Retourne la propriete du plugin
 #     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
 #     configurePlugin   : Configure le plugin
 #     stopPlugin        : Arrete le plugin et libere les ressources occupees
@@ -79,6 +80,20 @@ proc ::focuserlx200::getPluginType { } {
 #------------------------------------------------------------
 proc ::focuserlx200::getPluginOS { } {
    return [ list Windows Linux Darwin ]
+}
+
+#------------------------------------------------------------
+#  ::focuserlx200::getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::focuserlx200::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function { return "acquisition" }
+   }
 }
 
 #------------------------------------------------------------
@@ -277,17 +292,11 @@ proc ::focuserlx200::setSpeed { { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focuserlx200::possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus (LX200 modele AudeCom)
+#     retourne 1 si le focuser possede un controle etendu du focus
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focuserlx200::possedeControleEtendu { } {
-   global conf
-
-   if { $conf(telescope) == "lx200" && $conf(lx200,modele) == "AudeCom" } {
-      set result "1"
-   } else {
-      set result "0"
-   }
+   set result "0"
 }
 
 #------------------------------------------------------------

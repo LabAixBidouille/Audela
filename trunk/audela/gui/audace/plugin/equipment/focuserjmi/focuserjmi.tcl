@@ -458,7 +458,7 @@ proc ::focuserjmi::setSpeed { { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focuserjmi::possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus
+#     retourne 1 si le focuser possede un controle etendu du focus
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focuserjmi::possedeControleEtendu { } {
