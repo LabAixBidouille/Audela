@@ -20,7 +20,7 @@
 #     isReady           : Informe de l'etat de fonctionnement du plugin
 #
 # Procedures specifiques a ce plugin :
-#     displayCurrentPosition : Retourne la position courante du focaliseur
+#     displayCurrentPosition : Affiche la position courante du focaliseur
 #     getPosition            : Retourne la position courante du focaliseur
 #     goto                   : Envoie le focaliseur a la position audace(focus,targetFocus)
 #     incrementSpeed         : Incremente la vitesse du focaliseur et appelle la procedure setSpeed
