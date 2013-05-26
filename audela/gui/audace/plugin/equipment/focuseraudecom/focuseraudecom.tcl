@@ -13,12 +13,16 @@
 #     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
 #     getPluginType     : Retourne le type de plugin
 #     getPluginOS       : Retourne les OS sous lesquels le plugin fonctionne
+#     getPluginProperty : Retourne la propriete du plugin
 #     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
 #     configurePlugin   : Configure le plugin
 #     stopPlugin        : Arrete le plugin et libere les ressources occupees
 #     isReady           : Informe de l'etat de fonctionnement du plugin
 #
 # Procedures specifiques a ce plugin :
+#     displayCurrentPosition : Affiche la position courante du focaliseur
+#     incrementSpeed         : Incremente la vitesse du focaliseur et appelle la procedure setSpeed
+#     setSpeed               : Change la vitesse du focaliseur
 #
 
 namespace eval ::focuseraudecom {
@@ -79,6 +83,20 @@ proc ::focuseraudecom::getPluginType { } {
 #------------------------------------------------------------
 proc ::focuseraudecom::getPluginOS { } {
    return [ list Windows Linux Darwin ]
+}
+
+#------------------------------------------------------------
+#  ::focuseraudecom::getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::focuseraudecom::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function { return "acquisition" }
+   }
 }
 
 #------------------------------------------------------------
@@ -281,6 +299,9 @@ proc ::focuseraudecom::displayCurrentPosition { } {
    } else {
       set currentPosition [ string trimleft [ lindex $currentPosition 0 ] - ]
       set currentPosition [ string trimleft [ lindex $currentPosition 0 ] 0 ]
+      if { $currentPosition == "" } {
+         set currentPosition "0"
+      }
       set audace(focus,currentFocus) [ expr 0 - $currentPosition ]
    }
    if { $audace(focus,currentFocus) == "" } {
@@ -396,16 +417,10 @@ proc ::focuseraudecom::setSpeed { { value "0" } } {
 
 #------------------------------------------------------------
 #  ::focuseraudecom::possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus (AudeCom)
+#     retourne 1 si le focuser possede un controle etendu du focus
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focuseraudecom::possedeControleEtendu { } {
-   global conf
-
-   if { $conf(telescope) == "audecom" } {
-      set result "1"
-   } else {
-      set result "0"
-   }
+   set result "1"
 }
 

@@ -13,6 +13,7 @@
 #     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
 #     getPluginType     : Retourne le type de plugin
 #     getPluginOS       : Retourne les OS sous lesquels le plugin fonctionne
+#     getPluginProperty : Retourne la propriete du plugin
 #     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
 #     configurePlugin   : Configure le plugin
 #     stopPlugin        : Arrete le plugin et libere les ressources occupees
@@ -79,6 +80,20 @@ proc ::focusert193::getPluginType { } {
 #------------------------------------------------------------
 proc ::focusert193::getPluginOS { } {
    return [ list Windows Linux Darwin ]
+}
+
+#------------------------------------------------------------
+#  ::focusert193::getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::focusert193::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function { return "acquisition" }
+   }
 }
 
 #------------------------------------------------------------
@@ -217,7 +232,7 @@ proc ::focusert193::goto { blocking } {
 
 #------------------------------------------------------------
 #  possedeControleEtendu
-#     retourne 1 si la monture possede un controle etendu du focus (T193)
+#     retourne 1 si le focuser possede un controle etendu du focus
 #     retourne 0 sinon
 #------------------------------------------------------------
 proc ::focusert193::possedeControleEtendu { } {
