@@ -149,9 +149,8 @@ namespace eval ::foc {
    proc adaptOutilFoc { { a "" } { b "" } { c "" } } {
       variable This
 
-      if { [ ::focus::possedeControleEtendu $::panneau(foc,focuser) ] == "1" } {
+      if { [ ::focus::possedeControleEtendu $::panneau(foc,focuser) ] == "1"} {
          #--- Avec controle etendu
-         set ::panneau(foc,focuser) "focuseraudecom"
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
@@ -162,9 +161,21 @@ namespace eval ::foc {
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         if {$::panneau(foc,focuser) eq "usb_focus"} {
+            pack forget $This.fra5.but1
+            ::focus::displayCurrentPosition $::panneau(foc,focuser) ; #usb_focus
+            #--   modifie la commande du bouton en appelant la cmd focus en mode non bloquant
+            $This.fra5.but2 configure -command { ::focus::goto usb_focus 0 }
+            #--   modifie la commande validation de la saisie
+            $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
+            pack forget $This.fra5.but3
+         } else {
+            #--   sans effet si la commande est deja configuree comme cela
+            $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
+            $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
+         }
       } else {
          #--- Sans controle etendu
-         set ::panneau(foc,focuser) "focuserlx200"
          pack forget $This.fra5.lab1
          pack forget $This.fra5.but1
          pack forget $This.fra5.fra1.lab1
@@ -175,9 +186,6 @@ namespace eval ::foc {
          pack forget $This.fra5.but3
       }
       $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
-
-      #--- Je configure la combobox du focuser
-      ::confEqt::setValueFrameFocuserTool $This.fra4.focuser $::panneau(foc,focuser)
    }
 
    #------------------------------------------------------------
@@ -188,6 +196,7 @@ namespace eval ::foc {
       variable This
 
       trace add variable ::conf(telescope) write ::foc::adaptOutilFoc
+      trace add variable ::confEqt::private(variablePluginName) write ::foc::adaptOutilFoc
       pack $This -side left -fill y
       ::foc::adaptOutilFoc
    }
@@ -227,6 +236,7 @@ namespace eval ::foc {
       }
 
       #--- Arret de la surveillance de la variable conf(telescope)
+      trace remove variable :::confEqt::private(variablePluginName) write ::foc::adaptOutilFoc
       trace remove variable ::conf(telescope) write ::foc::adaptOutilFoc
 
       #---
@@ -650,7 +660,7 @@ namespace eval ::foc {
          $This.fra5.but3 configure -relief groove -text $panneau(foc,initialise)
          update
          #--- Met le compteur de foc a zero et rafraichit les affichages
-         ::focus::initPosition  $::panneau(foc,focuser)
+         ::focus::initPosition $::panneau(foc,focuser)
          set audace(focus,currentFocus) "0"
          $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
          set audace(focus,targetFocus) ""
@@ -664,6 +674,11 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdSeTrouveA (focuseraudecom)
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
    proc cmdSeTrouveA { } {
       variable This
       global audace panneau
@@ -687,6 +702,13 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdSeDeplaceA
+   #    Affiche la fenetre indiquant les limites du focaliseur
+   #    commande du bouton "Aller à" (focuseraudecom et usb_focus)
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
    proc cmdSeDeplaceA { } {
       variable This
       global audace panneau
@@ -728,8 +750,21 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # formatFoc
+   #    Affiche la fenetre indiquant les limites du focaliseur
+   #    commande specifique a audeCOM et a USB_Focus
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
    proc formatFoc { } {
       global audace caption
+
+      #--   definit les limites
+      switch -exact $::panneau(foc,focuser) {
+         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+         usb_focus          {set limite1 0      ; set limite2 65535 }
+      }
 
       if [ winfo exists $audace(base).formatfoc ] {
          destroy $audace(base).formatfoc
@@ -743,10 +778,8 @@ namespace eval ::foc {
       wm resizable $audace(base).formatfoc 0 0
 
       #--- Cree l'affichage du message
-      label $audace(base).formatfoc.lab1 -text "$caption(foc,formatfoc1)"
-      pack $audace(base).formatfoc.lab1 -padx 10 -pady 2
-      label $audace(base).formatfoc.lab2 -text "$caption(foc,formatfoc2)"
-      pack $audace(base).formatfoc.lab2 -padx 10 -pady 2
+      label $audace(base).formatfoc.lab -text "[format $caption(foc,formatfoc) $limite1 $limite2]"
+      pack $audace(base).formatfoc.lab -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).formatfoc
@@ -755,8 +788,21 @@ namespace eval ::foc {
       ::confColor::applyColor $audace(base).formatfoc
    }
 
+   #------------------------------------------------------------
+   # limiteFoc
+   #    Affiche la fenetre d'erreur en cas de depassement des limites
+   #    commande specifique a audeCOM et a USB_Focus
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
    proc limiteFoc { } {
       global audace caption
+
+      #--   definit les limites
+      switch -exact $::panneau(foc,focuser) {
+         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+         usb_focus          {set limite1 0      ; set limite2 65535 }
+      }
 
       if [ winfo exists $audace(base).limitefoc ] {
          destroy $audace(base).limitefoc
@@ -770,15 +816,13 @@ namespace eval ::foc {
       wm resizable $audace(base).limitefoc 0 0
 
       #--- Cree l'affichage du message
-      label $audace(base).limitefoc.lab1 -text "$caption(foc,limitefoc1)"
-      pack $audace(base).limitefoc.lab1 -padx 10 -pady 2
-      if { $audace(focus,targetFocus) > "32767" } {
-         label $audace(base).limitefoc.lab2 -text "$caption(foc,limitefoc2)"
-         pack $audace(base).limitefoc.lab2 -padx 10 -pady 2
-      } else {
-         label $audace(base).limitefoc.lab2 -text "$caption(foc,limitefoc3)"
-         pack $audace(base).limitefoc.lab2 -padx 10 -pady 2
+      if { $audace(focus,targetFocus) > "limite2" } {
+         set texte [format $caption(foc,limitefoc) $limite2]"
+      } elseif { $audace(focus,targetFocus) < "limite1" } {
+         set texte [format $caption(foc,limitefoc) $limite2]"
       }
+      label $audace(base).limitefoc.lab -text $texte
+      pack $audace(base).limitefoc.lab -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
       focus $audace(base).limitefoc
@@ -999,6 +1043,15 @@ proc focBuildIF { This } {
          #--- Frame focuser
          ::confEqt::createFrameFocuserTool $This.fra4.focuser ::panneau(foc,focuser)
          pack $This.fra4.focuser -in $This.fra4 -anchor nw -side top -padx 4 -pady 1
+
+         #--   je lis la configuration de la commande de la combobox
+         set oldCmd [$This.fra4.focuser.list configure -modifycmd]
+         #--   je lis la commande ecrite par la proc ::confEqt::createFrameFocuserTool
+         set cmd [lindex $oldCmd 4]
+         #--   j'ajoute l'instruction ::foc::adaptOutilFoc
+         append cmd "; ::foc::adaptOutilFoc"
+         #--   je modifie la commande de la combobox
+         $This.fra4.focuser.list configure -modifycmd $cmd
 
          #--- Label pour moteur focus
          label $This.fra4.lab1 -text $panneau(foc,motorfoc) -relief flat
