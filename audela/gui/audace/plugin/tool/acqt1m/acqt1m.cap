@@ -535,7 +535,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Ende der Simulation.\n"
    set caption(acqt1m,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqt1m,buttonShiftConfig)      "Verschiebung"
-   set caption(acqt1m,horloge_astro)          "# Horloge Astro"
+   set caption(acqt1m,horloge_astro)          "Astrozeit Uhr"
    set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,image,acquisition)      "Aud'ACE - Belichtung von"
    set caption(acqt1m,flatAuto)               "Automatische\nFlat Field Bild"
@@ -543,7 +543,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,astroid)                "Astroid"
    set caption(acqt1m,ccdtemp)                "Temperatur CCD"
    set caption(acqt1m,saturation)             "Sättigung"
-   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,clean)                  "Marken löschen"
    set caption(acqt1m,ressource)              "Skripten neu laden "
    set caption(acqt1m,acquisitionError)       "Belichtung Irrtum. Siehe Details auf der Konsole."
 
@@ -555,14 +555,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Erweiterung Dateien FITS:"
    set caption(acqt1m,rechargeScripts)        "Skripten neu laden \n\n"
 
-   set caption(acqt1m,select_carre)           "# Veuillez sélectionner un carré dans l'image."
+   set caption(acqt1m,select_carre)           "Bitte wählen Sie einen Quadrat im Bild."
    set caption(acqt1m,attention+)             "ACHTUNG"
 
-   set caption(acqt1m,message1)               "# Les filtres du boitier et ceux d'AudeLA ne correspondent pas :"
-   set caption(acqt1m,message2)               "# 1. De temps en temps la connexion avec le boitier s'initialise mal : Appuyer sur REESSAYER."
-   set caption(acqt1m,message3)               "# 2. C'est une maladresse de votre part car vous avez touché le boitier : Appuyer sur ANNULER et cliquer sur le bouton 'Filtre :'."
-   set caption(acqt1m,message4)               "# 3. Vous avez perdu la connexion avec le boitier, vous savez ce que vous faîtes et vous êtes sûr que tout est OK."
-   set caption(acqt1m,message5)               "# dans l'en-tête des images : Appuyer sur IGNORER."
+   set caption(acqt1m,message1)               "Die Filter der Gehäuse und von AudeLA stimmen nicht überein:"
+   set caption(acqt1m,message2)               "1. Von Zeit zu Zeit wird die Verbindung mit der Gehäuse falsch initialisiert: Drücken Sie auf WIEDERHOLEN."
+   set caption(acqt1m,message3)               "2. Dies ist ein Fehler auf Ihrer Seite, weil Sie die Gehäuse berührt haben: Drücken Sie CANCEL, und klicken Sie auf die Schaltfläche 'Filter'."
+   set caption(acqt1m,message4)               "3. Sie haben den Zusammenhang mit der Gehäuse verloren, Sie wissen was Sie tun, und sind sicher dass alles in Ordnung ist."
+   set caption(acqt1m,message5)               "in den Bilder Header: Drücken Sie IGNORIEREN."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
