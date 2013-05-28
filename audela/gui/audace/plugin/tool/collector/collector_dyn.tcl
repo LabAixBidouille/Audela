@@ -69,6 +69,8 @@
       } else {
          set private(ncfz) $ncfz
       }
+
+      set private(focus_pos) $::audace(focus,currentFocus)
    }
 
    #------------------------------------------------------------
