@@ -66,7 +66,7 @@
       #--   liste les variables exclusivement label (resultat de calculs ou affichage simple)
       #--   non modifiables par l'utilisateur
       set private(labels) [list equinox true raTel decTel azTel elevTel haTel error \
-         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt ncfz \
+         telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt ncfz focus_pos \
          temprose hygro winddir windsp fwhm secz airmass aptdia foclen fond resolution \
          telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code catAcc meteoAcc]
 
@@ -89,7 +89,7 @@
 
       #--   liste les boutons
       set private(buttonList) [list cmd.syn cmd.special cmd.dss cmd.close cmd.hlp \
-         n.local.modifGps n.optic.modifOptic n.kwds.modifObs n.kwds.editKwds n.kwds.writeKwds \
+         n.local.modifGps n.optic.modifOptic n.optic.modifFocus n.kwds.modifObs n.kwds.editKwds n.kwds.writeKwds \
          n.config.modifRep n.config.search n.config.dispEtc n.config.simulimage ]
 
       set this $::audace(base).info
@@ -130,7 +130,7 @@
       set poseChildren [list bin1 bin2 cdelt1 cdelt2 naxis1 naxis2 fov1 fov2 crota2]
       set localChildren [list gps modifGps tu jd tsl moonphas moonalt]
       set atmChildren [list tempair temprose hygro airpress winddir windsp seeing fwhm secz airmass]
-      set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz psf filter]
+      set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz focus_pos modifFocus psf filter]
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli isospeed]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
@@ -216,7 +216,7 @@
       set w $onglet.$child
 
       #--   corrige row pour certaines lignes
-      if {$child in [list tu aptdia foclen sitename]} {incr row -1}
+      if {$child in [list tu aptdia foclen modifFocus sitename]} {incr row -1}
 
       if {[regexp {(separator).} $child] == 1} {
 
@@ -239,7 +239,7 @@
 
          return
 
-      } elseif {$child in [list modifGps modifOptic modifRep search modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
+      } elseif {$child in [list modifGps modifOptic modifFocus modifRep search modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
 
          ttk::button $w -text "$caption(collector,$child)"
          switch -exact $child {
@@ -269,6 +269,9 @@
                        }
             simulimage {$w configure -command "::audace::showHelpItem \"$::audace(rep_doc_html)/french/12tutoriel\" \"1030tutoriel_simulimage1.htm\""
                         grid $w -row $row -column 1
+                       }
+            modifFocus {$w configure -command "set ::panneau(foc,focuser) $::confEqt::private(selectedFocuser); ::confEqt::run ::panneau(foc,focuser) focuser"
+                        grid $w -row $row -column 2
                        }
          }
          grid configure $w -padx 5 -pady 5 -sticky news
@@ -481,11 +484,14 @@
       ::confVisu::${op}CameraListener $visuNo "::collector::onChangeCam $bufNo"
       #---  trace les changements de configuration optique
       ::confOptic::${op}OpticListener "::collector::onChangeOptic $bufNo"
+      #---  trace les changements de position du focuser
+      trace $op variable ::audace(focus,currentFocus) write "::collector::onChangeOptic $bufNo"
       #---  trace la connexion d'un telescope
       ::confTel::${op}MountListener "::collector::onChangeMount $visuNo"
       #---  trace les changements de Observateur et de la position de l'observateur
       ::confPosObs::${op}PosObsListener "::collector::onChangeObserver $bufNo"
       trace $op variable conf(posobs,observateur,gps) write "::collector::onChangeObserver $bufNo"
+
    }
 
    #---------------------------------------------------------------------------

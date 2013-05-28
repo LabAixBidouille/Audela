@@ -246,6 +246,8 @@
       #--   dans les deux cas, calcule et met a jour le ratio F/D et le pouvoir separateur
       computeOptic
 
+      set private(focus_pos) $::audace(focus,currentFocus)
+
       set private(psf)  [expr {$audace(etc,param,optic,Fwhm_psf_opt)*1e6}]
 
       #--   met a jour les parametres de etc_tools
