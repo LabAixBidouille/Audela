@@ -270,7 +270,7 @@
             simulimage {$w configure -command "::audace::showHelpItem \"$::audace(rep_doc_html)/french/12tutoriel\" \"1030tutoriel_simulimage1.htm\""
                         grid $w -row $row -column 1
                        }
-            modifFocus {$w configure -command "set ::panneau(foc,focuser) $::confEqt::private(selectedFocuser); ::confEqt::run ::panneau(foc,focuser) focuser"
+            modifFocus {$w configure -command "::collector::callFocuser"
                         grid $w -row $row -column 2
                        }
          }
@@ -587,6 +587,22 @@
                      }
                      cmdParkMode $w.coords
                   }
+      }
+   }
+
+   #---------------------------------------------------------------------------
+   #  callFocuser
+   #  Commande du bouton 'Modifier' (focuser)
+   #---------------------------------------------------------------------------
+   proc callFocuser {} {
+
+      if {$::confEqt::private(selectedFocuser) ne "Pas de focuser"} {
+         set ::panneau(foc,focuser) $::confEqt::private(selectedFocuser)
+         #--   ouvre le panneau du Focuser actif
+         ::confEqt::run ::panneau(foc,focuser) focuser
+      } else {
+         #--   ouvre le panneau des Focuser sur AudeCom
+         ::confEqt::run "" focuser
       }
    }
 
