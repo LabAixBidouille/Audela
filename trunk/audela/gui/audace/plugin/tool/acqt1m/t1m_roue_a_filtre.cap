@@ -55,8 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Filter Änderungen:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "Filterrad nicht initialisiert"
    set caption(t1m_roue_a_filtre,probleme)          "Achtung: Problem mit das Filterrad das reinitialisiert werden soll"
-   set caption(t1m_roue_a_filtre,ouvre_socket)      "# getFiltre : Ouvre le Socket."
-   set caption(t1m_roue_a_filtre,ouvre_socket1)     "# changeFiltre : Ouvre le Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre: Öffnet den Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre: Öffnet den Socket."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
