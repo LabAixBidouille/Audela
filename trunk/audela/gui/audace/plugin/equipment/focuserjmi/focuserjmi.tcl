@@ -347,7 +347,7 @@ proc ::focuserjmi::deletePlugin { } {
 proc ::focuserjmi::isReady { } {
    variable private
 
-   if { $private(linkNo) != "0" } {
+   if { [info exists private(linkNo)] && $private(linkNo) != "0" } {
       return 1
    } else {
       return 0
