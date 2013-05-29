@@ -596,9 +596,11 @@
    #---------------------------------------------------------------------------
    proc callFocuser {} {
 
-      if {$::confEqt::private(selectedFocuser) ne "Pas de focuser"} {
-         set ::panneau(foc,focuser) $::confEqt::private(selectedFocuser)
-         #--   ouvre le panneau du Focuser actif
+      set focuserNamespace $::confEqt::private(selectedFocuser)
+      set isReady 0
+      if {$focuserNamespace ne "Pas de focuser" && [::$focuserNamespace\::isReady]} {
+         #--   ouvre le panneau du fcosuer actif
+         set ::panneau(foc,focuser) $focuserNamespace
          ::confEqt::run ::panneau(foc,focuser) focuser
       } else {
          #--   ouvre le panneau des Focuser sur AudeCom
