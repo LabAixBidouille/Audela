@@ -488,7 +488,7 @@ proc ::usb_focus::deletePlugin { } {
    #--   ferme le port serie
    ::usb_focus::closePort
 
-  #--   reinitialise les variable private et widget
+   #--   reinitialise les variable private et widget
    ::usb_focus::initLocalVar
 
    #--   inhibe les commandes
@@ -669,3 +669,4 @@ proc ::usb_focus::verifValue { v } {
       set widget($v) $private(prev,$v)
    }
 }
+
