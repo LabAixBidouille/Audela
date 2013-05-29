@@ -407,8 +407,8 @@ proc ::usb_focus::fillConfigPage { frm } {
 
    pack $frm.frame2 -side bottom -fill x
 
-   #--   filtre l'action si le lien a deja ete cree
-   if {![info exists private(linkNo)]} {
+   #--   filtre l'action si le lien n'a pas ete cree ou s'il est nul
+   if {![info exists private(linkNo)] || $private(linkNo) ==0} {
       #--- initialise les variables locales
       ::usb_focus::initLocalVar
       #--- inhibe les commandes en attendant la creation du port
@@ -488,7 +488,7 @@ proc ::usb_focus::deletePlugin { } {
    #--   ferme le port serie
    ::usb_focus::closePort
 
-   #--   reinitialise les variable private et widget
+  #--   reinitialise les variable private et widget
    ::usb_focus::initLocalVar
 
    #--   inhibe les commandes
@@ -612,7 +612,7 @@ proc ::usb_focus::initLocalVar {} {
    set private(prev,target)   ""
    set private(prev,nbstep)   [lindex $conf(usb_focus) 1]
    set private(prev,coef)     ""
-   set private(prev,seuil)     ""
+   set private(prev,seuil)    ""
    set widget(version)        ""
    set widget(motorspeed)     ""
    set widget(stepincr)       1
@@ -624,7 +624,7 @@ proc ::usb_focus::initLocalVar {} {
    set widget(temperature)    ""
    set widget(mode)           0
    set widget(coef)           ""
-   set widget(seuil)           ""
+   set widget(seuil)          ""
 }
 
 #------------------------------------------------------------
@@ -651,7 +651,7 @@ proc ::usb_focus::verifValue { v } {
       target   { set limite $widget(maxstep) ; # steps }
       nbstep   { set limite $widget(maxstep) ; # steps }
       coef     { set limite 999 ; # steps/°C }
-      seuil     { set limite 999 ; # steps }
+      seuil    { set limite 999 ; # steps }
    }
 
    #--   toutes les valeurs absolues doivent etre <= limite
