@@ -114,10 +114,10 @@ set caption(acqt1m,select_carre)              "Select a square in the image."
 set caption(acqt1m,attention+)                "WARNING"
 
 set caption(acqt1m,message1)                  "The box and AudeLA filters do not match:"
-set caption(acqt1m,message2)                  "1. The connection to the box may be incorrectly initialized - Press RETRY."
-set caption(acqt1m,message3)                  "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
+set caption(acqt1m,message2)                  "1. The connection to the box may be incorrectly initialized: Press RETRY."
+set caption(acqt1m,message3)                  "2. You made a mistake because you touched the box: Press CANCEL and click on the 'Filter:' button."
 set caption(acqt1m,message4)                  "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
-set caption(acqt1m,message5)                  "in image header - Press IGNORE."
+set caption(acqt1m,message5)                  "in image header: Press IGNORE."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -241,8 +241,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,pose)                   "Posa"
    set caption(acqt1m,sec)                    "sec."
    set caption(acqt1m,objet)                  "Oggetto"
-   set caption(acqt1m,ra)                     "AD"
-   set caption(acqt1m,dec)                    "Déc."
+   set caption(acqt1m,ra)                     "AR"
+   set caption(acqt1m,dec)                    "Dec."
    set caption(acqt1m,obt)                    "Ott."
    set caption(acqt1m,GO)                     "GO CCD"
    set caption(acqt1m,uneimage)               "Una immagine"
@@ -313,14 +313,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,fin_simu)               "Fine della simulazione.\n"
    set caption(acqt1m,avancement_acq)         "Avanzamento\nacquisizione"
    set caption(acqt1m,buttonShiftConfig)      "Spostamento"
-   set caption(acqt1m,horloge_astro)          "# Horloge Astro"
+   set caption(acqt1m,horloge_astro)          "Astro-orologio"
    set caption(acqt1m,offset_dark)            "OFFSET/DARK"
    set caption(acqt1m,flatAuto)               "Flat Field automatici"
    set caption(acqt1m,cycle)                  "Ciclo"
    set caption(acqt1m,astroid)                "Astroid"
    set caption(acqt1m,ccdtemp)                "CCD Temperatura"
    set caption(acqt1m,saturation)             "Saturazione"
-   set caption(acqt1m,clean)                  "# Clean Marks"
+   set caption(acqt1m,clean)                  "Pulisci marcature"
    set caption(acqt1m,ressource)              "Rilancia gli script"
    set caption(acqt1m,acquisitionError)       "Errore di acquisizione. Vedere i dettagli sul Console."
 
@@ -332,14 +332,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,extensionFITS)          "Estensione del file FITS:"
    set caption(acqt1m,rechargeScripts)        "Rilancia gli script\n\n"
 
-   set caption(acqt1m,select_carre)           "# Veuillez sélectionner un carré dans l'image."
+   set caption(acqt1m,select_carre)           "Seleziona un quadrato nell'immagine."
    set caption(acqt1m,attention+)             "ATTENZIONE"
 
-   set caption(acqt1m,message1)               "# Les filtres du boitier et ceux d'AudeLA ne correspondent pas :"
-   set caption(acqt1m,message2)               "# 1. De temps en temps la connexion avec le boitier s'initialise mal : Appuyer sur REESSAYER."
-   set caption(acqt1m,message3)               "# 2. C'est une maladresse de votre part car vous avez touché le boitier : Appuyer sur ANNULER et cliquer sur le bouton 'Filtre :'."
-   set caption(acqt1m,message4)               "# 3. Vous avez perdu la connexion avec le boitier, vous savez ce que vous faîtes et vous êtes sûr que tout est OK."
-   set caption(acqt1m,message5)               "# dans l'en-tête des images : Appuyer sur IGNORER."
+   set caption(acqt1m,message1)               "I filtri del box e quelli di AudeLA non corrispondono:"
+   set caption(acqt1m,message2)               "1. Il collegamento con il box può essere non correttamente inizializzato: Premere RIPROVA."
+   set caption(acqt1m,message3)               "2. Hai commesso un errore perché hai toccato il box: Premere CANCEL e clicca sul pulsante 'Filtro'."
+   set caption(acqt1m,message4)               "3. La connessione col box è persa, sai cosa stai facendo e sei sicuro che sia tutto OK."
+   set caption(acqt1m,message5)               "nell'intestazione dell'immagine: Premere IGNORA."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -780,10 +780,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,attention+)             "WARNING"
 
    set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
-   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
-   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
+   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized: Press RETRY."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box: Press CANCEL and click on the 'Filter:' button."
    set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
-   set caption(acqt1m,message5)               "in image header - Press IGNORE."
+   set caption(acqt1m,message5)               "in image header: Press IGNORE."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -890,10 +890,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,attention+)             "WARNING"
 
    set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
-   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
-   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
+   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized: Press RETRY."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box: Press CANCEL and click on the 'Filter:' button."
    set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
-   set caption(acqt1m,message5)               "in image header - Press IGNORE."
+   set caption(acqt1m,message5)               "in image header: Press IGNORE."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -1000,10 +1000,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,attention+)             "WARNING"
 
    set caption(acqt1m,message1)               "The box and AudeLA filters do not match:"
-   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized - Press RETRY."
-   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box - Press CANCEL and click on the 'Filter:' button."
+   set caption(acqt1m,message2)               "1. The connection to the box may be incorrectly initialized: Press RETRY."
+   set caption(acqt1m,message3)               "2. You made a mistake because you touched the box: Press CANCEL and click on the 'Filter:' button."
    set caption(acqt1m,message4)               "3. Connection to the box is lost. You know what you're doing and you're sure everything is OK."
-   set caption(acqt1m,message5)               "in image header - Press IGNORE."
+   set caption(acqt1m,message5)               "in image header: Press IGNORE."
 
 }
 

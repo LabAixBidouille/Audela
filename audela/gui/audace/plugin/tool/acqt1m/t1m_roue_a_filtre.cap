@@ -35,8 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t1m_roue_a_filtre,changeFiltre)      "Cambiare il filtro:"
    set caption(t1m_roue_a_filtre,roueNonInitialise) "La ruota portafiltri non è stata inizializzata"
    set caption(t1m_roue_a_filtre,probleme)          "Attenzione: Probelma con ruota portafiltri - Re-inizializzare"
-   set caption(t1m_roue_a_filtre,ouvre_socket)      "# getFiltre : Ouvre le Socket."
-   set caption(t1m_roue_a_filtre,ouvre_socket1)     "# changeFiltre : Ouvre le Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket)      "getFiltre: Apri il Socket."
+   set caption(t1m_roue_a_filtre,ouvre_socket1)     "changeFiltre: Apri il Socket."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
