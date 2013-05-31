@@ -4362,6 +4362,16 @@ void CBuffer::Fwhm2d(int x1, int y1, int x2, int y2,
 				      fwhmx0, fwhmy0);
 }
 
+void CBuffer::psfimcce(int x1, int y1, int x2, int y2,
+                            double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
+                            double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
+                            double fwhmx0, double fwhmy0)
+{
+   pix->psfimcce(x1, y1, x2, y2,
+                      maxx, posx, fwhmx, fondx, errx,
+                      maxy, posy, fwhmy, fondy, erry,
+                      fwhmx0, fwhmy0);
+}
 
 //***************************************************
 // unifybg

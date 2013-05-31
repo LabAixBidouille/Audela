@@ -1,7 +1,8 @@
 
 OUTPUT   = libaudela.so
 
-SRC = $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
+SRC = $(SRCDIR)/psfimcce_nr.cpp $(SRCDIR)/psfimcce_funcs.cpp $(SRCDIR)/psfimcce.cpp \
+      $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  $(SRCDIR)/setip.cpp \
       $(SRCDIR)/fitskw.cpp $(SRCDIR)/history.cpp $(SRCDIR)/ping.cpp \
       $(SRCDIR)/libstd.cpp $(SRCDIR)/pool_tcl.cpp $(SRCDIR)/stats.cpp \
@@ -39,6 +40,7 @@ $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 	cp -f ../src/cfile.h   ../../include
 	cp -f ../src/libtt.h   ../../include
 	cp -f ../src/libstd.h   ../../include
+	cp -f ../src/psfimcce.h   ../../include
 
 all: $(OUTPUT)
 
