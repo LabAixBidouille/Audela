@@ -125,10 +125,13 @@ namespace eval bdi_gui_psf {
                      entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
 
                      label $block.radl -text "Rayon : " 
-                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius -textvariable ::gui_cata::psf_radius -width 3 \
+                     set sav $::bdi_tools_psf::psf_radius
+                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius -textvariable ::bdi_tools_psf::psf_radius -width 3 \
                          -command ""
                      pack  $block.radiusc -side left 
-                     $block.radiusc set 15
+              
+                     set ::bdi_tools_psf::psf_radius $sav
+                     $block.radiusc set $::bdi_tools_psf::psf_radius
 
                      grid $block.satl  $block.satv  -sticky nsw -pady 3
                      grid $block.thrl  $block.thrv  -sticky nsw -pady 3

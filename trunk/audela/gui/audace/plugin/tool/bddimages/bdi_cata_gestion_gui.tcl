@@ -1839,7 +1839,8 @@ namespace eval cata_gestion_gui {
    proc ::cata_gestion_gui::psf_auto_go_one { { worktype "oneimage" } { nd_sources "" } { current "" } } {
 
       #gren_info "id_current_image = $::tools_cata::id_current_image \n"
-      gren_info "ASTROID sur l'image\n"
+      gren_info "ASTROID sur l'image $::tools_cata::id_current_image\n"
+      puts "ASTROID sur l'image $::tools_cata::id_current_image"
       
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
@@ -1864,15 +1865,20 @@ namespace eval cata_gestion_gui {
          #gren_info "ID = $id\n"
          #gren_info "S=$s\n"
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
-
-         set name [::manage_source::naming $s [::manage_source::namable $s] ]
+         
+         if {$id==0} {
+            gren_info "S=$s\n"
+            set name [::manage_source::naming $s [::manage_source::namable $s] ]
+            gren_erreur "$id ($name)-> ($err) ($err_psf) ($msg)\n"
+         }
+         #set name [::manage_source::naming $s [::manage_source::namable $s] ]
 
          #gren_erreur "$id ($name)-> ($err) ($err_psf) ($msg)\n"
          if {$err} {
             ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
             if { $err_psf != ""} {
-               gren_erreur "*ERREUR PSF err_psf: $err_psf\n"
+               gren_erreur "*ERREUR PSF err_psf ($id): $err_psf\n"
             } else {
                set pass "yes"
             }
@@ -2108,6 +2114,7 @@ namespace eval cata_gestion_gui {
          gren_info "line = [$w get $select]\n"
          gren_info "pos ra dec = [::gui_cata::get_pos_col ra] [::gui_cata::get_pos_col dec]\n"
          gren_info "ra dec = $ra $dec\n"
+         if {$ra==""||$dec==""} {return}
          affich_un_rond $ra $dec $color $width
       }
 

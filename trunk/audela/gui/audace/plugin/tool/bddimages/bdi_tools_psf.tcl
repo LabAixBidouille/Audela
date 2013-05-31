@@ -594,8 +594,9 @@ namespace eval bdi_tools_psf {
          }
 
          "basic" {
-            gren_info "psf_radius = $::gui_cata::psf_radius\n"
+            #gren_info "psf_radius = $::bdi_tools_psf::psf_radius\n"
             set othf [::bdi_tools_methodes_psf::basic [lindex $xy 0] [lindex $xy 1] $::bdi_tools_psf::psf_radius $::audace(bufNo)]
+            if {$othf==-1} {return -code 10 "Globale PSF impossible"}
             set fields [::bdi_tools_psf::get_basic_fields]
          }
 
@@ -618,7 +619,7 @@ namespace eval bdi_tools_psf {
          }
       
       }
-       #gren_info "othf = $othf\n"
+      #gren_info "othf = $othf\n"
       
       # Affichage des resultats dans la console
       #::bdi_tools_psf::gren_astroid othf
@@ -647,6 +648,7 @@ namespace eval bdi_tools_psf {
           #gren_info "s = $s\n"
       } else {
          gren_erreur "Erreur PSF\n"
+         return -code 5 $err_psf
       }
       return $err_psf
    }

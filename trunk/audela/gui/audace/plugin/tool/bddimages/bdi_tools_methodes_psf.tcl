@@ -289,7 +289,9 @@ namespace eval bdi_tools_methodes_psf {
          set xs1         [expr int($x + $radius)]
          set ys1         [expr int($y + $radius)]
 
-         set valeurs     [buf$bufNo fitgauss [ list $xs0 $ys0 $xs1 $ys1 ] ]
+#         set valeurs     [buf$bufNo fitgauss2d [ list $xs0 $ys0 $xs1 $ys1 ] ]
+         set valeurs     [buf$bufNo psfimcce [ list $xs0 $ys0 $xs1 $ys1 ] ]
+         
          set taboid(fwhmx)       [lindex $valeurs 2]
          set taboid(fwhmy)       [lindex $valeurs 6]
          set taboid(fwhm)        [expr ($taboid(fwhmx) + $taboid(fwhmy))/2.]
