@@ -101,6 +101,7 @@ int cmdExtension(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdpsfimcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdClipmin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -149,6 +150,7 @@ static struct cmditem cmdlist[] = {
    {(char*)"fitellip", (Tcl_CmdProc *)cmdTtFitellip},
    {(char*)"fitgauss", (Tcl_CmdProc *)cmdFitGauss},
    {(char*)"fitgauss2d", (Tcl_CmdProc *)cmdFitGauss2d},
+   {(char*)"psfimcce", (Tcl_CmdProc *)cmdpsfimcce},
    {(char*)"flux", (Tcl_CmdProc *)cmdAstroPhot},
    {(char*)"fwhm", (Tcl_CmdProc *)cmdFwhm},
    {(char*)"getkwd", (Tcl_CmdProc *)cmdGetKwd},
@@ -4942,6 +4944,140 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    delete[] ligne;
    return retour;
 }
+
+
+
+
+
+
+
+
+
+int cmdpsfimcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   CBuffer *buffer;          // Buffer de travail pour cette fonction.
+   char **listArgv;          // Liste des argulents passes a getpix.
+   int listArgc;             // Nombre d'elements dans la liste des coordonnees.
+   char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
+   int retour;               // Code d'erreur de retour.
+   int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   double maxx, maxy;        // Valeur des maximas en x et y.
+   double posx, posy;        // Position en x et y du photocentre.
+   double fwhmx, fwhmy;      // Fwhm dans les deux axes de la gaussienne.
+   double fondx, fondy;      // Fonds en x et y.
+   double errx, erry;        // Erreurs sur les modelisations.
+   int temp,naxis1,naxis2;
+   int sub,k;
+   double fwhmx0=0., fwhmy0=0.; // Fwhm contrainte dans les deux axes de la gaussienne.
+   ligne = new char[1000];
+
+   if(argc<3) {
+      sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      sub=0;
+      if (argc>=4) {
+         for (k=3;k<argc;k++) {
+            if (strcmp(argv[k],"-sub")==0) {
+               sub=1;
+            }
+            if (strcmp(argv[k],"-fwhmx")==0) {
+               if ((k+1)<argc) {
+                  fwhmx0=(double)atof(argv[k+1]);
+               }
+            }
+            if (strcmp(argv[k],"-fwhmy")==0) {
+               if ((k+1)<argc) {
+                  fwhmy0=(double)atof(argv[k+1]);
+               }
+            }
+         }
+      }
+      if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
+         sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else if(listArgc!=4) {
+         sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      } else {
+         if(Tcl_GetInt(interp,listArgv[0],&x1)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\nx1 must be an integer",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,listArgv[1],&y1)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\ny1 must be an integer",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,listArgv[2],&x2)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\nx2 must be an integer",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(Tcl_GetInt(interp,listArgv[3],&y2)!=TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\ny2 must be an integer",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else {
+            buffer = (CBuffer*)clientData;
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
+            try {
+               buffer->psfimcce(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
+                                     &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
+               posx = posx +1;
+               posy = posy +1;
+               sprintf(ligne,"%f %f %f %f %f %f %f %f",maxx,posx,fwhmx,fondx,maxy,posy,fwhmy,fondy);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_OK;
+               if (sub==1) {
+                  buffer->SyntheGauss(posx-1.,posy-1.,-maxx,-maxy,fwhmx,fwhmy,0.);
+               }
+               retour = TCL_OK;
+            } catch(const CError& e) {
+               sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+               retour = TCL_ERROR;
+            }
+         }
+         Tcl_Free((char*)listArgv);
+      }
+   }
+
+   delete[] ligne;
+   return retour;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //==============================================================================
 // buf$i stat --

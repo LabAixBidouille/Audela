@@ -175,6 +175,10 @@ public:
             double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
             double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
 		    double fwhmx0, double fwhmy0);
+   void psfimcce(int x1, int y1, int x2, int y2,
+             double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
+             double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
+             double fwhmx0, double fwhmy0);
    void GetDataType(TDataType *dt);
    int  GetHeight();
    CFitsKeywords* GetKeywords() {return keywords;};

@@ -874,7 +874,7 @@ void CPixels::Fwhm(int x1, int y1, int x2, int y2,
 void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
                   double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
                   double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-				  double fwhmx0, double fwhmy0)
+                  double fwhmx0, double fwhmy0)
 {
    double **iXY;
    int i, j;
@@ -947,6 +947,112 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
    free(iXY);
    free(ppixels);
 }
+
+
+
+// loadima i
+// buf1 psfimcce {426 863 477 903}
+void CPixels::psfimcce(int x1, int y1, int x2, int y2,
+                       double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
+                       double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
+				           double fwhmx0, double fwhmy0)
+{
+   double **iXY;
+   int i, j;
+   double pxy[8];
+   TYPE_PIXELS pixel;
+   TYPE_PIXELS *ppixels;
+   int width, height;
+   int naxis1, naxis2;
+   int ssquare, x1n, y1n, x2n, y2n;
+
+   naxis1 = this->GetWidth();
+   naxis2 = this->GetHeight();
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
+   if((x1<0)||(x2<0)||(x1>naxis1-1)||(x2>naxis1-1)) {
+      throw CError( ELIBSTD_X1X2_NOT_IN_1NAXIS1);
+   }
+   if((y1<0)||(y2<0)||(y1>naxis2-1)||(y2>naxis2-1)) {
+      throw CError( ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);
+   }
+
+   if(x1>x2) {i = x2; x2 = x1; x1 = i;}
+   if(y1>y2) {i = y2; y2 = y1; y1 = i;}
+
+   //printf("1: x,y(1) = %d %d ; x,y(2) = %d %d => %d %d\n",x1,y1,x2,y2,x2-x1,y2-y1);
+
+   // Reduit la zone selectionnee au carre de plus petite dimension
+   ssquare = x2-x1;
+   if (ssquare>y2-y1) { ssquare = y2-y1; }
+
+   // Coordonnees de la zone carree qui a ete selectionnee
+   x1n = x1 + (x2-x1-ssquare)/2;
+   y1n = y1 + (y2-y1-ssquare)/2;
+   x2n = x1 + (x2-x1+ssquare)/2;
+   y2n = y1 + (y2-y1+ssquare)/2;
+   x1 = x1n;
+   y1 = y1n;
+   x2 = x2n;
+   y2 = y2n;
+
+   width = x2-x1+1;
+   height = y2-y1+1;
+   
+   //printf("2: x,y(1) = %d %d ; x,y(2) = %d %d => %d %d :: %d \n",x1,y1,x2,y2,width,height,ssquare);
+
+
+   ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
+   // Yassine
+   //GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppixels);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void *) ppixels);
+   iXY = (double**)calloc(width,sizeof(double));
+   for(i=0;i<width;i++) {
+      *(iXY+i) = (double*)calloc(height,sizeof(double));
+   }
+
+   //--- Mise a zero des deux buffers de binning
+   for(i=0;i<width;i++) {
+      for(j=0;j<height;j++) {
+         iXY[i][j]=(double)0.;
+      }
+   }
+   for(j=0;j<height;j++) {
+      for(i=0;i<width;i++) {
+         pixel = *(ppixels+width*j+i);
+         iXY[i][j] += (double)pixel;
+         //printf ("iXY[%d][%d] = %f; \n", i,j,iXY[i][j]);
+      }
+   }
+
+   // Appelle a la methode d'ajustement
+   //printf("call_psfimcce\n");
+   call_psfimcce(width-1, iXY, pxy);
+
+
+   *maxx  = pxy[0];
+   *posx  = pxy[1] + x1;
+   *fwhmx = pxy[2];
+   *fondx = pxy[3];
+
+   *maxy  = pxy[4];
+   *posy  = pxy[5] + y1;
+   *fwhmy = pxy[6];
+   *fondy = pxy[7];
+
+   for(i=0;i<width;i++) {
+      free(*(iXY+i));
+   }
+   free(iXY);
+   free(ppixels);
+}
+
 
 TPixelClass CPixels::getPixelClass() {
    return CLASS_GRAY;
