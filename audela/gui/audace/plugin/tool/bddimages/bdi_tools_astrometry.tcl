@@ -736,9 +736,20 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
             set ephem([format "%18.10f" $jd]) [list $jd $ra $dec $h $am]
          }
          # Sauvegarde des ephemerides de l'objet courant
+         array set ::bdi_tools_astrometry::ephemsav [array get ephem]
+         gren_info "ephem = [array get ephem]\n"
+         set a [array get ephem]
+         if {$a==""} {
+            gren_erreur "No ephemeris for this body\n"
+            continue
+         }
          foreach {midepoch dateimg} [array get list_dates] {
          
             set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) $ephem($midepoch)
+
+#ephem(2456298.4971990511)
+# mc_date2iso8601 2456298.4971990511 -> 2013-01-05T23:55:57.998
+
          }
       }
 
@@ -1013,6 +1024,71 @@ proc ::bdi_tools_astrometry::create_vartab { } {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #----------------------------------------------------------------------------
 # CALCUL DES STATISTIQUES
 #----------------------------------------------------------------------------
@@ -1094,13 +1170,9 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$nb > 0} {
          set ma     [format "%.6f" [::math::statistics::mean  $a    ]]
          set md     [format "%.5f" [::math::statistics::mean  $d    ]]
-         set merr_x [format "%.3f" [::math::statistics::mean  $err_x]]
-         set merr_y [format "%.3f" [::math::statistics::mean  $err_y]]
       } else {
          set ma     ""
          set md     ""
-         set merr_x ""
-         set merr_y ""
       }
       if {$nb > 1} {
          set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
@@ -1108,6 +1180,16 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       } else {
          set sa       ""
          set sd       ""
+      }
+
+
+      set err [ catch {set merr_x [format "%.3f" [::math::statistics::mean $err_x]]} msg ]
+      if {$err} {
+         set merr_x ""
+      }
+      set err [ catch {set merr_y [format "%.3f" [::math::statistics::mean $err_y]]} msg ]
+      if {$err} {
+         set merr_y ""
       }
       
       set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
@@ -1173,13 +1255,9 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$nb > 0} {
          set ma     [format "%.6f" [::math::statistics::mean  $a    ]]
          set md     [format "%.5f" [::math::statistics::mean  $d    ]]
-         set merr_x [format "%.3f" [::math::statistics::mean  $err_x]]
-         set merr_y [format "%.3f" [::math::statistics::mean  $err_y]]
       } else {
          set ma     ""
          set md     ""
-         set merr_x ""
-         set merr_y ""
       }
       if {$nb > 1} {
          set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
@@ -1187,6 +1265,14 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       } else {
          set sa       ""
          set sd       ""
+      }
+      set err [ catch {set merr_x [format "%.3f" [::math::statistics::mean $err_x]]} msg ]
+      if {$err} {
+         set merr_x ""
+      }
+      set err [ catch {set merr_y [format "%.3f" [::math::statistics::mean $err_y]]} msg ]
+      if {$err} {
+         set merr_y ""
       }
       set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
       if {$err} {
@@ -1248,13 +1334,9 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$nb > 0} {
          set ma     [format "%.6f" [::math::statistics::mean  $a    ]]
          set md     [format "%.5f" [::math::statistics::mean  $d    ]]
-         set merr_x [format "%.3f" [::math::statistics::mean  $err_x]]
-         set merr_y [format "%.3f" [::math::statistics::mean  $err_y]]
       } else {
          set ma     ""
          set md     ""
-         set merr_x ""
-         set merr_y ""
       }
       if {$nb > 1} {
          set sa       [format "%.3f" [::math::statistics::stdev $a  ]]
@@ -1262,6 +1344,14 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       } else {
          set sa       ""
          set sd       ""
+      }
+      set err [ catch {set merr_x [format "%.3f" [::math::statistics::mean $err_x]]} msg ]
+      if {$err} {
+         set merr_x ""
+      }
+      set err [ catch {set merr_y [format "%.3f" [::math::statistics::mean $err_y]]} msg ]
+      if {$err} {
+         set merr_y ""
       }
       set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
       if {$err} {
