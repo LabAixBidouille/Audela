@@ -10,8 +10,8 @@ namespace eval ::horizon {
 }
 
 #------------------------------------------------------------
-# fillConfigPage { }
-#  fenetre de horizon
+# run { }
+#  lance la fenetre de l'horizon
 #------------------------------------------------------------
 proc ::horizon::run { visuNo {tkbase ""} } {
    variable private
@@ -73,8 +73,8 @@ proc ::horizon::getLabel { } {
 proc ::horizon::showHelp { } {
    variable private
 
-   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::horizon::getPluginType ] ] \
-      [ ::horizon::getPluginDirectory ] [ ::horizon::getPluginHelp ]
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi2::getPluginType ] ] \
+      [ ::modpoi2::getPluginDirectory ] [ ::modpoi2::getPluginHelp ]
 }
 
 #------------------------------------------------------------
@@ -91,7 +91,7 @@ proc ::horizon::closeWindow { visuNo } {
 
 #------------------------------------------------------------
 # fillConfigPage { }
-#  fenetre de horizon
+#  fenetre de l'horizon
 #------------------------------------------------------------
 proc ::horizon::fillConfigPage { frm visuNo } {
    variable private
