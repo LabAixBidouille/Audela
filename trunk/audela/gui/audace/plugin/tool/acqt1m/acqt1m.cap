@@ -335,10 +335,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqt1m,select_carre)           "Seleziona un quadrato nell'immagine."
    set caption(acqt1m,attention+)             "ATTENZIONE"
 
-   set caption(acqt1m,message1)               "I filtri del box e quelli di AudeLA non corrispondono:"
+   set caption(acqt1m,message1)               "I filtri della scatola e quelli di AudeLA non corrispondono:"
    set caption(acqt1m,message2)               "1. Il collegamento con il box può essere non correttamente inizializzato: Premere RIPROVA."
-   set caption(acqt1m,message3)               "2. Hai commesso un errore perché hai toccato il box: Premere CANCEL e clicca sul pulsante 'Filtro'."
-   set caption(acqt1m,message4)               "3. La connessione col box è persa, sai cosa stai facendo e sei sicuro che sia tutto OK."
+   set caption(acqt1m,message3)               "2. Hai commesso un errore perché hai toccato il box: Premi CANCEL e clicca sul pulsante 'Filtro'."
+   set caption(acqt1m,message4)               "3. La connessione col box è persa, Sai cosa stai facendo e sei sicuro che sia tutto OK."
    set caption(acqt1m,message5)               "nell'intestazione dell'immagine: Premere IGNORA."
 
 # *************** Version espagnole ***************************

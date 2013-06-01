@@ -66,7 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astroid,erreur_7)                         "get_skybot: ERRORE 7"
    set caption(astroid,erreur_MSG)                       "get_skybot:        NUM:"
    set caption(astroid,erreur_NUM)                       "get_skybot:        MSG:"
-   set caption(astroid,erreur_analyse)                   "# Erreur d'analyse de la VOTable SkyBoT."
+   set caption(astroid,erreur_analyse)                   "Errore dell'analisi del VOTable SkyBoT."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
