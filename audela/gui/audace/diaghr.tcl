@@ -11,12 +11,12 @@
 # diagramme couleur/magnitude avec une courbe d'isochrones superposee eventuellement
 #
 # exemple sur Messier 35:
-# source audace/diaghr.tcl ; diaghr_extract m35v2 m35r2 6h9m9s +24d20m 15. V R
-# source audace/diaghr.tcl ; diaghr_plot "" 0 0 0.95 V R 7e8 8 1
+# source $audace(rep_install)/gui/audace/diaghr.tcl ; diaghr_extract m35v2 m35r2 6h9m9s +24d20m 15. V R
+# source $audace(rep_install)/gui/audace/diaghr.tcl ; diaghr_plot "" 0 0 0.95 V R 7e8 8 1
 #
 # exemple sur Messier 67:
-# source audace/diaghr.tcl ; diaghr_extract m67v2 m67r2 8h51m23s +11d49m22s 10. V R
-# source audace/diaghr.tcl ; diaghr_plot "" 0 0 0.95 V R 2.5e9 9.97 0
+# source $audace(rep_install)/gui/audace/diaghr.tcl ; diaghr_extract m67v2 m67r2 8h51m23s +11d49m22s 10. V R
+# source $audace(rep_install)/gui/audace/diaghr.tcl ; diaghr_plot "" 0 0 0.95 V R 2.5e9 9.97 0
 #
 
 # -------------------------------------------------------------------------------------------------
@@ -27,6 +27,7 @@
 # * file_image_2 : fichier FITS de l'image numero 2
 # * ra_center : coordonnee RA du centre de la region a mesurer (Angle).
 # * dec_center : coordonnee DEC du centre de la region a mesurer (Angle).
+# * radius_arcmin : rayon de calcul pour isoler les étoiles de l'amas du reste de l'image.
 # * color1 : Symbole du filtre de l'image 1 si l'on souhaite effectuer une calibration photometrique par NOMAD1.
 # * color2 : Symbole du filtre de l'image 1 si l'on souhaite effectuer une calibration photometrique par NOMAD1.
 #
@@ -298,7 +299,7 @@ proc diaghr_extract { file_image_1 file_image_2 ra_center dec_center radius_arcm
             #
             incr n
             if {($nn>$m)&&($cmag==1)} {
-               set star [vo_neareststar $ra $dec]
+               set star [lindex [vo_neareststar $ra $dec] 0]
                set catara  [lindex $star 1]
                set catadec [lindex $star 2]
                set sepangle [expr 3600.*[lindex [mc_sepangle $ra $dec $catara $catadec] 0]]
@@ -348,7 +349,7 @@ proc diaghr_extract { file_image_1 file_image_2 ra_center dec_center radius_arcm
 # proc diaghr_plot pour dessiner un diagramme couleur/magnitude et superposer un isochrone.
 #
 # Entrees :
-# * fic_hr : nom du fichier ([pwd]/hr.txt par defaut) genere prealablement par la fonction diaghr_extract
+# * fic_hr : nom du fichier ($audace(rep_images)/hr.txt par defaut) genere prealablement par la fonction diaghr_extract
 # col1 : RA (deg)
 # col2 : DEC (deg)
 # col3 : mag1
@@ -404,7 +405,7 @@ proc diaghr_plot { {fic_hr ""} {offmag1 0} {offmag2 0} {xaxis 0.95} {color1 V} {
          lappend mag12s $mag12
          incr n
          if {($nn>$m)&&($cmag==1)} {
-            set star [vo_neareststar $ra $dec]
+            set star [lindex [vo_neareststar $ra $dec] 0]
             set catara  [lindex $star 1]
             set catadec [lindex $star 2]
             set sepangle [expr 3600.*[lindex [mc_sepangle $ra $dec $catara $catadec] 0]]
@@ -452,12 +453,12 @@ proc diaghr_plot { {fic_hr ""} {offmag1 0} {offmag2 0} {xaxis 0.95} {color1 V} {
    set x1 [lindex $res $n1]
    set x2 [lindex $res $n2]
    catch {::plotxy::clf}
-   ::plotxy::plotbackground #FFFFFF
-   ::plotxy::bgcolor #FFFFFF
    ::plotxy::plot $mag12s $mag1s r.
    ::plotxy::ydir reverse
    ::plotxy::xlabel "${color1}-${color2}"
    ::plotxy::ylabel "${color1}"
+   ::plotxy::plotbackground #FFFFFF
+   ::plotxy::bgcolor #FFFFFF
    set res [::plotxy::axis]
    set y1 [lindex $res 2]
    set y2 [lindex $res 3]
