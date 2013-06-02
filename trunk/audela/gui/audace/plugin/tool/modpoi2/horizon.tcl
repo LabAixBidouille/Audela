@@ -343,9 +343,8 @@ proc ::horizon::deleteHorizon { visuNo } {
    }
 
    #--- je demande la confirmation de la suppression
-   set result [tk_messageBox -message "$::caption(modpoi2,horizon,confirmDeleteConfig): $::conf(horizon,$horizonId,name)" \
+   set result [tk_messageBox -message "[format $::caption(modpoi2,horizon,confirmDeleteConfig) $::conf(horizon,$horizonId,name)]" \
        -type okcancel -icon question -title $::caption(modpoi2,horizon,title)]
-
    if { $result == "ok" } {
       #--- je supprime le nom de la configuration dans la combo
       set tkCombo $::horizon::private($visuNo,frm).config.combo
@@ -363,8 +362,7 @@ proc ::horizon::deleteHorizon { visuNo } {
          incr index -1
       }
       $tkCombo setvalue "@$index"
-      ::horizon::onSelectConfig $visuNo
-
+      ::horizon::onSelectHorizon $visuNo
    }
 }
 
@@ -392,7 +390,7 @@ proc ::horizon::displayHorizon { visuNo } {
    set x [lindex $horizons 0]
    set y [lindex $horizons 1]
    ::plotxy::plot $x $y r
-   ::plotxy::title  "$::caption(modpoi2,horizon,title)"
+   ::plotxy::title  "$::conf(horizon,$horizonId,name) $::audace(posobs,observateur,gps)"
    ::plotxy::xlabel "$::caption(modpoi2,azimutDeg)"
    ::plotxy::ylabel "$::caption(modpoi2,elevationDeg)"
    ::plotxy::position {20 20 800 400}
