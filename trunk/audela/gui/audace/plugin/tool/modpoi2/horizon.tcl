@@ -71,8 +71,6 @@ proc ::horizon::getLabel { } {
 #  affiche l'aide de la fenêtre de horizon
 #------------------------------------------------------------
 proc ::horizon::showHelp { } {
-   variable private
-
    ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi2::getPluginType ] ] \
       [ ::modpoi2::getPluginDirectory ] [ ::modpoi2::getPluginHelp ]
 }
@@ -86,7 +84,6 @@ proc ::horizon::closeWindow { visuNo } {
 
    #--- je sauve la taille et la position de la fenetre
    set ::conf(horizon,position) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
-
 }
 
 #------------------------------------------------------------
@@ -97,7 +94,7 @@ proc ::horizon::fillConfigPage { frm visuNo } {
    variable private
 
    #--- Je memorise la reference de la frame
-   set private($visuNo,frm)      $frm
+   set private($visuNo,frm) $frm
 
    #--- Frame select config
    TitleFrame $frm.config -borderwidth 2 -relief ridge -text $::caption(modpoi2,horizon,selectHorizon)
@@ -198,7 +195,6 @@ proc ::horizon::fillConfigPage { frm visuNo } {
 #----------------------------------------------------------------------------
 proc ::horizon::apply { visuNo } {
    variable private
-   variable widget
 
    set private(closeWindow) 1
 
@@ -219,24 +215,25 @@ proc ::horizon::apply { visuNo } {
       lappend coordinates $line
    }
 
-   set ::conf(horizon,$horizonId,name)   $private(name)
-   set ::conf(horizon,$horizonId,type)   $private(type)
-   set ::conf(horizon,$horizonId,coordinates)   $coordinates
+   set ::conf(horizon,$horizonId,name)        $private(name)
+   set ::conf(horizon,$horizonId,type)        $private(type)
+   set ::conf(horizon,$horizonId,coordinates) $coordinates
 
   ::horizon::displayHorizon $visuNo
 }
 
 proc ::horizon::onSelectHorizon { visuNo } {
    variable private
+
    set tkCombo $private($visuNo,frm).config.combo
 
    #--- je recupere l'identifiant de l'horizon correspondant la ligne selectionne dans la combobox
    set horizonId [getHorizonIdentifiant [$tkCombo get]]
    set ::conf(horizon,currentHorizon) $horizonId
 
-   set private(name)         $::conf(horizon,$horizonId,name)
-   set private(type)         $::conf(horizon,$horizonId,type)
-   set private(coordinates)  $::conf(horizon,$horizonId,coordinates)
+   set private(name)        $::conf(horizon,$horizonId,name)
+   set private(type)        $::conf(horizon,$horizonId,type)
+   set private(coordinates) $::conf(horizon,$horizonId,coordinates)
 
    $private($visuNo,coordText) delete 1.0 end
    if { $private(type)  == "ALTAZ" } {
@@ -255,7 +252,6 @@ proc ::horizon::onSelectHorizon { visuNo } {
          $private($visuNo,coordText) insert end "$coord\n"
       }
    }
-
 }
 
 ##------------------------------------------------------------
@@ -307,7 +303,7 @@ proc ::horizon::createHorizon { visuNo } {
 
    #--- j'initialise les parametres de l'horizon avec ceux de la horizon par defaut
    set ::conf(horizon,$horizonId,name) $horizonName
-   set ::conf(horizon,$horizonId,type) "ALTAZ"
+   set ::conf(horizon,$horizonId,type) "$::horizon::nameDialog::private(type)"
    set ::conf(horizon,$horizonId,coordinates) ""
 
    #--- j'ajoute la nouvelle config dans la combo
@@ -329,8 +325,6 @@ proc ::horizon::copyHorizon { visuNo } {
 }
 
 proc ::horizon::deleteHorizon { visuNo } {
-   variable private
-
    #--- je recupere le nom de la configuration courante
    set horizonId $::conf(horizon,currentHorizon)
 
@@ -345,6 +339,7 @@ proc ::horizon::deleteHorizon { visuNo } {
    #--- je demande la confirmation de la suppression
    set result [tk_messageBox -message "[format $::caption(modpoi2,horizon,confirmDeleteConfig) $::conf(horizon,$horizonId,name)]" \
        -type okcancel -icon question -title $::caption(modpoi2,horizon,title)]
+
    if { $result == "ok" } {
       #--- je supprime le nom de la configuration dans la combo
       set tkCombo $::horizon::private($visuNo,frm).config.combo
@@ -369,13 +364,12 @@ proc ::horizon::deleteHorizon { visuNo } {
 proc ::horizon::importHorizon { visuNo } {
 
 }
+
 proc ::horizon::exportHorizon { visuNo } {
 
 }
 
 proc ::horizon::displayHorizon { visuNo } {
-   variable private
-
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
    set coordinates $::conf(horizon,$horizonId,coordinates)
@@ -409,8 +403,6 @@ proc ::horizon::displayHorizon { visuNo } {
 #   identifiant de la horizon
 #------------------------------------------------------------
 proc ::horizon::getHorizonIdentifiant { name } {
-   variable private
-
    #--- je fabrique l'identifiant a partie du nom en replacant les caracteres interdits pas un "_"
    set horizonId ""
    for { set i 0 } { $i < [string length $name] } { incr i } {
@@ -438,8 +430,6 @@ proc ::horizon::getHorizonIdentifiant { name } {
 #   horizon 4
 #------------------------------------------------------------
 proc ::horizon::getHorizon { home } {
-   variable private
-
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
    set coordinates $::conf(horizon,$horizonId,coordinates)
@@ -455,7 +445,6 @@ proc ::horizon::getHorizon { home } {
 # @return nom de l'horizon
 #------------------------------------------------------------
 proc ::horizon::getHorizonName { } {
-   variable private
    set horizonId $::conf(horizon,currentHorizon)
    return $::conf(horizon,$horizonId,name)
 }
@@ -507,6 +496,7 @@ proc ::horizon::nameDialog::getLabel { } {
 #------------------------------------------------------------
 proc ::horizon::nameDialog::apply { visuNo } {
    variable private
+
    #--- rien a enregistrer
    #--- cette fonction existe pour faire apparaitre le bouton "OK"
 }
@@ -531,7 +521,7 @@ proc ::horizon::nameDialog::closeWindow { visuNo } {
 proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
    variable private
 
-   set private(name)  ""
+   set private(name) ""
 
    #---Widget de saisie du nom de l'horizon.
    #--- le parametre -validatecommand renvoi vers une procedure qui controle le contenu du widget
@@ -540,18 +530,19 @@ proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
       -labeljustify left -width 5 -justify left -editable true \
       -textvariable ::horizon::nameDialog::private(name) \
       -validate all -validatecommand { ::horizon::nameDialog::validateConfigName %W %V %P %s }
-   pack $frm.name  -side left -fill x -expand 1 -padx 2
+   pack $frm.name  -side top -fill x -expand 1 -padx 2
 
    radiobutton $frm.altaz -highlightthickness 0 -padx 0 -pady 0 -state normal \
       -text $::caption(modpoi2,horizon,ALTAZ) \
       -value "ALTAZ" \
       -variable ::horizon::nameDialog::private(type)
+   pack $frm.altaz -side left -padx 10
 
    radiobutton $frm.hadec -highlightthickness 0 -padx 0 -pady 0 -state normal \
       -text $::caption(modpoi2,horizon,HADEC) \
       -value "HADEC" \
       -variable ::horizon::nameDialog::private(type)
-
+   pack $frm.hadec -side right -padx 10
 }
 
 #------------------------------------------------------------
@@ -564,9 +555,7 @@ proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
 #    1 : control OK
 #    0 : contrl failed
 #------------------------------------------------------------
-proc ::horizon::nameDialog::validateConfigName {  win event X oldX  } {
-   variable private
-
+proc ::horizon::nameDialog::validateConfigName { win event X oldX } {
    switch $event {
       key {
          if { [string is print $X ] == 0 && $X != " " } {
