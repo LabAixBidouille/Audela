@@ -138,7 +138,7 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             ###   ::console::disp "ra=[lindex $coords 0] dec=[lindex $coords 1] ha=[lindex $coords 2] az=[lindex $coords 3] el=[lindex $coords 4]\n"
             ###}
 
-            set private(star$k,selected)   1
+            set private(star$k,selected)  1
          } else {
             set private(star$k,raApp)     ""
             set private(star$k,deApp)     ""
@@ -1342,6 +1342,10 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $private(g,base)
 
+   #--   inhibe les commandes (liberees si un tel est actif)
+   $private(g,base).goto configure state disabled
+   ::modpoi2::wizard::modpoi_setState disabled
+
    set pressure 101325
    set temperature 290
    set date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
@@ -1403,6 +1407,14 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #--- je memorie les conditions d'observation
    set private(star$amerIndex,pressure)    $pressure
    set private(star$amerIndex,temperature) $temperature
+
+   if {$::audace(telNo) ==0} {
+      ::confTel::run
+      vwait ::audace(telNo)
+   }
+   #--   libere les commandes
+   $private(g,base).goto configure state normal
+   ::modpoi2::wizard::modpoi_setState normal
 
    #--- pointage de l'étoile
    ::modpoi2::wizard::modpoi_goto
@@ -1785,7 +1797,8 @@ proc ::modpoi2::wizard::displayMap { visuNo } {
    set x [lindex $private(horizons) 0]
    set y [lindex $private(horizons) 1]
    ::plotxy::plot $x $y r
-   ::plotxy::title  "$::caption(modpoi2,horizon,title)"
+   set horizonName [::horizon::getHorizonName]
+   ::plotxy::title "$horizonName $::audace(posobs,observateur,gps)"
    ::plotxy::xlabel "$::caption(modpoi2,azimutDeg)"
    ::plotxy::ylabel "$::caption(modpoi2,elevationDeg)"
    ::plotxy::position {20 20 800 400}
@@ -1891,13 +1904,7 @@ proc ::modpoi2::wizard::modpoi_goto { } {
    #--- je transforme le bouton GOTO en bouton STOP GOTO
    $private(g,base).goto configure -text $::caption(modpoi2,wiz4,stopGoto) \
       -command "::modpoi2::wizard::modpoi_stopGoto"
-   $private(g,base).fra.n.canv1PoliceInvariant  configure -state disabled
-   $private(g,base).fra.we.canv1PoliceInvariant configure -state disabled
-   $private(g,base).fra.we.canv2PoliceInvariant configure -state disabled
-   $private(g,base).fra.s.canv1PoliceInvariant  configure -state disabled
-   $private(g,base).fra.we.labPoliceInvariant   configure -state disabled
-   $private(g,base).fra_bottom.but_prev         configure -state disabled
-   $private(g,base).fra_bottom.but_next         configure -state disabled
+   ::modpoi2::wizard::modpoi_setState disabled
 
    set amerIndex $private(amerIndex)
    if { $::audace(telNo) != 0} {
@@ -1914,20 +1921,14 @@ proc ::modpoi2::wizard::modpoi_goto { } {
       }
    } else {
       ::confTel::run
+      vwait ::audace(telNo)
    }
 
    #--- je transforme le bouton STOP GOTO en bouton GOTO
    $private(g,base).goto configure -text $::caption(modpoi2,wiz4,goto) \
       -command "::modpoi2::wizard::modpoi_goto"
    #--- j'active les boutons N S E W
-   $private(g,base).fra.n.canv1PoliceInvariant  configure -state normal
-   $private(g,base).fra.we.canv1PoliceInvariant configure -state normal
-   $private(g,base).fra.we.canv2PoliceInvariant configure -state normal
-   $private(g,base).fra.s.canv1PoliceInvariant  configure -state normal
-   $private(g,base).fra.we.labPoliceInvariant   configure -state normal
-   $private(g,base).fra_bottom.but_prev         configure -state normal
-   $private(g,base).fra_bottom.but_next         configure -state normal
-
+   ::modpoi2::wizard::modpoi_setState normal
    ::telescope::afficheCoord
 
    #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000.0 du catalogue et du telescope pour avoir un apercu)
@@ -1950,18 +1951,30 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
    #--- je transforme le bouton STOP GOTO en bouton GOTO
    $private(g,base).goto configure -text $::caption(modpoi2,wiz4,goto) \
       -command "::modpoi2::wizard::modpoi_goto"
-   $private(g,base).fra.n.canv1PoliceInvariant  configure -state normal
-   $private(g,base).fra.we.canv1PoliceInvariant configure -state normal
-   $private(g,base).fra.we.canv2PoliceInvariant configure -state normal
-   $private(g,base).fra.s.canv1PoliceInvariant  configure -state normal
-   $private(g,base).fra.we.labPoliceInvariant   configure -state normal
-   $private(g,base).fra_bottom.but_prev         configure -state normal
-   $private(g,base).fra_bottom.but_next         configure -state normal
+   ::modpoi2::wizard::modpoi_setState normal
 
    #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000.0 du catalogue et du telescope pour avoir un apercu)
    set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
    set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
+}
+
+#-------------------------------------------------------------------------------
+# modpoi_setState
+#   gere l'etat des boutons de la raquette
+#-------------------------------------------------------------------------------
+proc ::modpoi2::wizard::modpoi_setState { state } {
+   variable private
+
+   set base $private(g,base)
+
+   $base.fra.n.canv1PoliceInvariant  configure -state $state
+   $base.fra.we.canv1PoliceInvariant configure -state $state
+   $base.fra.we.canv2PoliceInvariant configure -state $state
+   $base.fra.s.canv1PoliceInvariant  configure -state $state
+   $base.fra.we.labPoliceInvariant   configure -state $state
+   $base.fra_bottom.but_prev         configure -state $state
+   $base.fra_bottom.but_next         configure -state $state
 }
 
 #-------------------------------------------------------------------------------
