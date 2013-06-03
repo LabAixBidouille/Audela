@@ -780,9 +780,9 @@ void CPixels::fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart
 }
 
 void CPixels::Fwhm(int x1, int y1, int x2, int y2,
-                  double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-                  double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-				  double fwhmx0, double fwhmy0)
+                   double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
+                   double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
+				       double fwhmx0, double fwhmy0)
 {
    TYPE_PIXELS *iX, *iY;
    int i, j;
@@ -928,7 +928,6 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
       }
    }
 
-
    fitgauss2d(width,height,iXY,pxy,errx);
    erry=errx;
 
@@ -949,22 +948,51 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
 }
 
 
-
-// loadima i
-// buf1 psfimcce {426 863 477 903}
+/*******************************************************************
+ * Ajustement complet d'une gaussienne 2d avec prise en compte de  
+ * l'orientation
+ * 
+ * ENTREES :
+ *  x1,y1,x2,y2 : coordonnees en pixel de la zone d'ajustement
+ * 
+ * SORTIES
+ *   xsm = position y du maximum de la gaussienne
+ *   ysm = position y du maximum de la gaussienne
+ *   err_xsm = erreur sur la position x du maximum de la gaussienne
+ *   err_ysm = erreur sur la position y du maximum de la gaussienne
+ *   fwhmx = FWHM x
+ *   fwhmy = FWHM y
+ *   fwhm = FWHM moyenne
+ *   flux = flux de la source
+ *   err_flux = erreur sur le flux de la source
+ *   pixmax = pixel d'intensite maximum
+ *   intensity = intensite maximum de la gaussienne
+ *   sky = intensite du fond de ciel
+ *   err_sky = erreur sur l'intensite du fond de ciel
+ *   snint = 
+ *   radius = 
+ *   rdiff =
+ *   err_psf = 
+ * 
+ * Usage test: buf1 psfimcce {426 863 477 903}
+ ********************************************************************/
 void CPixels::psfimcce(int x1, int y1, int x2, int y2,
-                       double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-                       double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-				           double fwhmx0, double fwhmy0)
+                       double *xsm, double *ysm, double *err_xsm, double *err_ysm,
+                       double *fwhmx, double *fwhmy, double *fwhm, double *flux,
+                       double *err_flux, double *pixmax, double *intensity, double *sky,
+                       double *err_sky, double *snint, double *radius, double *rdiff,
+                       double *err_psf)
 {
+
    double **iXY;
    int i, j;
-   double pxy[8];
+   double pxy[17];
    TYPE_PIXELS pixel;
    TYPE_PIXELS *ppixels;
    int width, height;
    int naxis1, naxis2;
    int ssquare, x1n, y1n, x2n, y2n;
+   double **residus, **synthetic;
 
    naxis1 = this->GetWidth();
    naxis2 = this->GetHeight();
@@ -1007,10 +1035,7 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    
    //printf("2: x,y(1) = %d %d ; x,y(2) = %d %d => %d %d :: %d \n",x1,y1,x2,y2,width,height,ssquare);
 
-
    ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
-   // Yassine
-   //GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppixels);
    GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void *) ppixels);
    iXY = (double**)calloc(width,sizeof(double));
    for(i=0;i<width;i++) {
@@ -1031,21 +1056,29 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
       }
    }
 
-   // Appelle a la methode d'ajustement
-   //printf("call_psfimcce\n");
-   call_psfimcce(width-1, iXY, pxy);
+   // Appel de la methode d'ajustement
+   psfimcce_compute(width-1, iXY, pxy, residus, synthetic);
 
+   // Results from psfimcce_compute :
+   *xsm       =  pxy[0] + x1;
+   *ysm       =  pxy[1] + y1;
+   *err_xsm   =  pxy[2];
+   *err_ysm   =  pxy[3];
+   *fwhmx     =  pxy[4];
+   *fwhmy     =  pxy[5];
+   *fwhm      =  pxy[6];
+   *flux      =  pxy[7];
+   *err_flux  =  pxy[8];
+   *pixmax    =  pxy[9];
+   *intensity =  pxy[10];
+   *sky       =  pxy[11];
+   *err_sky   =  pxy[12];
+   *snint     =  pxy[13];
+   *radius    =  pxy[14];
+   *rdiff     =  pxy[15];
+   *err_psf   =  pxy[16];
 
-   *maxx  = pxy[0];
-   *posx  = pxy[1] + x1;
-   *fwhmx = pxy[2];
-   *fondx = pxy[3];
-
-   *maxy  = pxy[4];
-   *posy  = pxy[5] + y1;
-   *fwhmy = pxy[6];
-   *fondy = pxy[7];
-
+   // Clean memory
    for(i=0;i<width;i++) {
       free(*(iXY+i));
    }
@@ -1360,4 +1393,3 @@ int CPixels::util_qsort_double(double *x,int kdeb,int n,int *index)
       return(0);
    }
 }
-

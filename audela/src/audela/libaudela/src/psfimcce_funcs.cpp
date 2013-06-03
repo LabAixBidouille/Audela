@@ -22,28 +22,140 @@
 #include "psfimcce.h"
 #include <math.h>
 
-
 /*
-a[1] = sky
-a[2] = intensity
-a[3] = x0
-a[4] = y0
-a[5] = sigx
-a[6] = sigy
-a[7] = theta
+   #  0    "xsm" 
+   #  1    "ysm" 
+   #  2    "err_xsm" 
+   #  3    "err_ysm" 
+   #  4    "fwhmx" 
+   #  5    "fwhmy" 
+   #  6    "fwhm" 
+   #  7    "flux" 
+   #  8    "err_flux" 
+   #  9    "pixmax"
+   #  10   "intensity" 
+   #  11   "sky" 
+   #  12   "err_sky" 
+   #  13   "snint" 
+   #  14   "radius" 
+   #  15   "rdiff" 
+   #  16   "err_psf" 
+   #  17   "ra" 
+   #  18   "dec"
+   #  19   "res_ra" 
+   #  20   "res_dec" 
+   #  21   "omc_ra" 
+   #  22   "omc_dec" 
+   #  23   "mag" 
+   #  24   "err_mag" 
+   #  25   "name" 
+   #  26   "flagastrom" 
+   #  27   "flagphotom" 
+   #  28   "cataastrom"
+   #  29   "cataphotom"
 */
 
-void coeff2param (int npt, float **zs, float *a, float *p)
+void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties, float **synthetic, float **residus)
 {
+   float flux, pixmax;
+   int i,j;
+   float *dyda;
 
-p[0]=a[2];               // maxx 
-p[1]=a[3];               // posx 
-p[2]=a[5]*2.35482;   // fwhmx
-p[3]=a[1];               // fondx
-p[4]=a[2];               // maxy 
-p[5]=a[4];               // posy 
-p[6]=a[6]*2.35482;   // fondy
-p[7]=a[1];               // fwhmy
+/*
+   Gaussienne Synthtetique
+*/
+   dyda = vector(1,MA);
+   for(i=1;i<=npt;i++) {
+      for(j=1;j<=npt;j++) {
+         fgauss1_2d(i, j, a, &synthetic[i][j], dyda, MA);
+      }
+   }
+   free_vector(dyda,1,MA);
+
+/*
+   Gaussienne Residuelle
+*/
+   for(i=1;i<=npt;i++) {
+      for(j=1;j<=npt;j++) {
+         residus[i][j] = synthetic[i][j] - zs[i][j];
+      }
+   }
+
+/*
+   Calcul du flux integre
+*/
+   flux = 0;
+   for(i=1;i<=npt;i++) {
+      for(j=1;j<=npt;j++) {
+         flux+=synthetic[i][j]-a[1];
+      }
+   }
+/*
+   Calcul du pixmax
+*/
+   pixmax = zs[1][1];
+   for (i=1; i <= npt; i++) {
+      for (j=1; j <= npt; j++) {
+         if (pixmax < zs[i][j]) {
+            pixmax = zs[i][j];
+         }
+      }
+   }
+
+/*
+   Parametre de la forme ASTROID
+*/
+   //  0    "xsm" 
+   p[0] = a[3];
+
+   //  1    "ysm" 
+   p[1] = a[4];
+
+   //  2    "err_xsm" 
+   p[2] = uncertainties[3];
+
+   //  3    "err_ysm" 
+   p[3] = uncertainties[4];
+
+   //  4    "fwhmx" 
+   p[4] = a[5]*2.35482;
+
+   //  5    "fwhmy" 
+   p[5] = a[6]*2.35482;
+
+   //  6    "fwhm" 
+   p[6] = sqrt((p[4]*p[4]+p[5]*p[5])/2.0);
+
+   //  7    "flux" 
+   p[7] = a[2] * 2 * M_PI * a[5] * a[6];
+   
+   //  8    "err_flux" 
+   p[8] = 0;
+
+   //  9    "pixmax"
+   p[9] = pixmax;
+
+   //  10   "intensity" 
+   p[10] = a[2];
+
+   //  11   "sky" 
+   p[11] = a[1];
+
+   //  12   "err_sky" 
+   p[12] = uncertainties[1];
+
+   //  13   "snint" 
+   p[13] = p[7] / sqrt( p[7] + npt * a[1] );
+
+   //  14   "radius" 
+   p[14] = (int) (npt/2);
+
+   //  15   "rdiff" 
+   p[15] = 0;
+
+   //  16   "err_psf" 
+   p[16] = 0;
+
 
 }
 
@@ -213,7 +325,7 @@ void minmax (float  **z, float *min, float *max, float *x, float *y, int npt)
 
 
 
-void fit_gauss2D (int npt, float **zs, float *a) 
+void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties) 
 {
    int i, j, k, itst, n, cpt, log;
    float *dyda;
@@ -260,16 +372,10 @@ void fit_gauss2D (int npt, float **zs, float *a)
          sig[i][j]=0.001;
       }
    }
-//   myprint(sig,npt);
 
-	for (i=1;i<=MA;i++) ia[i]=1;
-   ia[1]=1;
-   ia[2]=1;
-   ia[3]=1;
-   ia[4]=1;
-   ia[5]=1;
-   ia[6]=1;
-   ia[7]=1;
+	for (i=1;i<=MA;i++) {
+		ia[i] = 1;
+	}
 
    /*
      Nouvelle forme des parametres a ajuster (on a soustrait le fond)
@@ -288,7 +394,7 @@ void fit_gauss2D (int npt, float **zs, float *a)
      Lancement des iterations generales
    */
    cpt=0;
-	for (n=1;n<=4;n++) {
+	for (n=1;n<=3;n++) {
 
       k = 0;
 
@@ -385,21 +491,22 @@ void fit_gauss2D (int npt, float **zs, float *a)
    }
    a[1] = sky;
 
+	for (i=1;i<=MA;i++) uncertainties[i] = sqrt(covar[i][i]);
+
    if (log) { 
-      printf("chisq: %f \n",chisq);
-      printf("nb mrqmin: %d \n",cpt);
-      printf("nb loop: %d \n",n);
-	   printf("\nUncertainties:\n");
-	   for (i=1;i<=MA;i++) printf("      %d   ",ia[i]);  printf("\n");
-	   for (i=1;i<=MA;i++) printf("    a[%d]  ",i); printf("\n");
-	   for (i=1;i<=MA;i++) printf("%9.4f ",sqrt(covar[i][i]));
-	   printf("\n");
-   }
-   
+		printf("chisq: %f \n",chisq);
+		printf("nb mrqmin: %d \n",cpt);
+		printf("nb loop: %d \n",n);
+		printf("\nUncertainties:\n");
+		for (i=1;i<=MA;i++) printf("      %d   ",ia[i]);  printf("\n");
+		for (i=1;i<=MA;i++) printf("    a[%d]  ",i); printf("\n");
+		for (i=1;i<=MA;i++) printf("%9.4f ",sqrt(covar[i][i]));
+		printf("\n");
+	}
+
 	free_matrix(z,1,npt,1,npt);
 	free_matrix(residus,1,npt,1,npt);
 	free_matrix(sig,1,npt,1,npt);
-
    free_vector(dyda,1,MA);
 	free_matrix(alpha,1,MA,1,MA);
 	free_matrix(covar,1,MA,1,MA);
@@ -409,11 +516,3 @@ void fit_gauss2D (int npt, float **zs, float *a)
    return;
 
  }
-
-
-
-
-
-
-
-

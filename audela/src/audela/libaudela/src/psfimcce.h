@@ -71,8 +71,8 @@ void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 	int ma, float **alpha, float beta[], float *chisq,
 	void (*funcs)(float, float, float [], float *, float [], int));
 
-void fit_gauss2D (int npt, float **zs, float *a); 
-void coeff2param (int npt, float **zs, float *a, float *p);
+void fit_gauss2D(int npt, float **zs, float *a, float *uncertainties); 
+void coeff2param(int npt, float **zs, float *a, float *p, float *uncertainties, float **synthetic, float **residus);
 
 
 #else /* ANSI */

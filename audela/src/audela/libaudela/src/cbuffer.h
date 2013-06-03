@@ -168,17 +168,19 @@ public:
    void FillAstromParams();
    void FreeBuffer(int keep_keywords);
    void Fwhm(int x1, int y1, int x2, int y2,
-            double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-            double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-		    double fwhmx0, double fwhmy0);
-   void Fwhm2d(int x1, int y1, int x2, int y2,
-            double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-            double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-		    double fwhmx0, double fwhmy0);
-   void psfimcce(int x1, int y1, int x2, int y2,
              double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
              double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
              double fwhmx0, double fwhmy0);
+   void Fwhm2d(int x1, int y1, int x2, int y2,
+               double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
+               double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
+               double fwhmx0, double fwhmy0);
+   void psfimcce(int x1, int y1, int x2, int y2,
+                 double *xsm, double *ysm, double *err_xsm, double *err_ysm,
+                 double *fwhmx, double *fwhmy, double *fwhm, double *flux,
+                 double *err_flux, double *pixmax, double *intensity, double *sky,
+                 double *err_sky, double *snint,double *radius, double *rdiff,
+                 double *err_psf);
    void GetDataType(TDataType *dt);
    int  GetHeight();
    CFitsKeywords* GetKeywords() {return keywords;};

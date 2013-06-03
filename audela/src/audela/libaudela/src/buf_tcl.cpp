@@ -101,7 +101,7 @@ int cmdExtension(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdpsfimcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdClipmin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -150,7 +150,6 @@ static struct cmditem cmdlist[] = {
    {(char*)"fitellip", (Tcl_CmdProc *)cmdTtFitellip},
    {(char*)"fitgauss", (Tcl_CmdProc *)cmdFitGauss},
    {(char*)"fitgauss2d", (Tcl_CmdProc *)cmdFitGauss2d},
-   {(char*)"psfimcce", (Tcl_CmdProc *)cmdpsfimcce},
    {(char*)"flux", (Tcl_CmdProc *)cmdAstroPhot},
    {(char*)"fwhm", (Tcl_CmdProc *)cmdFwhm},
    {(char*)"getkwd", (Tcl_CmdProc *)cmdGetKwd},
@@ -179,6 +178,7 @@ static struct cmditem cmdlist[] = {
    {(char*)"phot", (Tcl_CmdProc *)cmdAstroPhot},
    {(char*)"photom", (Tcl_CmdProc *)cmdPhotom},
    {(char*)"pointer", (Tcl_CmdProc *)cmdPointer},
+   {(char*)"psfimcce", (Tcl_CmdProc *)cmdPsfImcce},
    {(char*)"radec2xy", (Tcl_CmdProc *)cmdRadec2xy},
    {(char*)"rot", (Tcl_CmdProc *)cmdTtRot},
    {(char*)"save", (Tcl_CmdProc *)cmdLoadSave},
@@ -4839,7 +4839,7 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    int listArgc;             // Nombre d'elements dans la liste des coordonnees.
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
-   int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   int x1, y1, x2, y2;       // Coordonnees de la fenetre.
    double maxx, maxy;        // Valeur des maximas en x et y.
    double posx, posy;        // Position en x et y du photocentre.
    double fwhmx, fwhmy;      // Fwhm dans les deux axes de la gaussienne.
@@ -4921,8 +4921,10 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                y2 = temp;
             }
             try {
-               buffer->Fwhm2d(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
-                  &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
+               buffer->Fwhm2d(x1-1,y1-1,x2-1,y2-1,
+                              &maxx,&posx,&fwhmx,&fondx,&errx,
+                              &maxy,&posy,&fwhmy,&fondy,&erry,
+                              fwhmx0,fwhmy0);
                posx = posx +1;
                posy = posy +1;
                sprintf(ligne,"%f %f %f %f %f %f %f %f",maxx,posx,fwhmx,fondx,maxy,posy,fwhmy,fondy);
@@ -4946,26 +4948,24 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 }
 
 
+//==============================================================================
 
-
-
-
-
-
-
-int cmdpsfimcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-   CBuffer *buffer;          // Buffer de travail pour cette fonction.
-   char **listArgv;          // Liste des argulents passes a getpix.
-   int listArgc;             // Nombre d'elements dans la liste des coordonnees.
-   char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
-   int retour;               // Code d'erreur de retour.
-   int x1, y1, x2, y2;      // Coordonnees de la fenetre.
-   double maxx, maxy;        // Valeur des maximas en x et y.
-   double posx, posy;        // Position en x et y du photocentre.
-   double fwhmx, fwhmy;      // Fwhm dans les deux axes de la gaussienne.
-   double fondx, fondy;      // Fonds en x et y.
-   double errx, erry;        // Erreurs sur les modelisations.
+   CBuffer *buffer;             // Buffer de travail pour cette fonction.
+   char **listArgv;             // Liste des argulents passes a getpix.
+   int listArgc;                // Nombre d'elements dans la liste des coordonnees.
+   char *ligne;                 // Ligne affectee dans le resultat de la commande TCL.
+   int retour;                  // Code d'erreur de retour.
+   int x1, y1, x2, y2;          // Coordonnees de la fenetre.
+   double xsm, ysm;             // Positions en x et y du photocentre
+   double err_xsm, err_ysm;     // Erreur sur les positions en x et y du photocentre
+   double fwhmx, fwhmy, fwhm;   // Fwhm dans les deux axes de la gaussienne, et fwhm moyenne
+   double flux, err_flux;       // Flux et erreur sur le flux de la source
+   double pixmax, intensity;    // Pixel d'intensite max et intensite maximum
+   double sky, err_sky;         // Flux du fond de ciel et erreur sur le flux
+   double snint, radius, rdiff; //
+   double err_psf;              // 
    int temp,naxis1,naxis2;
    int sub,k;
    double fwhmx0=0., fwhmy0=0.; // Fwhm contrainte dans les deux axes de la gaussienne.
@@ -5042,15 +5042,18 @@ int cmdpsfimcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                y2 = temp;
             }
             try {
-               buffer->psfimcce(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
-                                     &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
-               posx = posx +1;
-               posy = posy +1;
-               sprintf(ligne,"%f %f %f %f %f %f %f %f",maxx,posx,fwhmx,fondx,maxy,posy,fwhmy,fondy);
+               buffer->psfimcce(x1-1,y1-1,x2-1,y2-1,
+                                &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
+                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint,&radius,
+                                &rdiff, &err_psf);
+               xsm = xsm +1;
+               ysm = ysm +1;
+               sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f",xsm,ysm,err_xsm,err_ysm,fwhmx,fwhmy,flux,err_flux,sky,err_sky);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
                if (sub==1) {
-                  buffer->SyntheGauss(posx-1.,posy-1.,-maxx,-maxy,fwhmx,fwhmy,0.);
+                  // TODO
+                  buffer->SyntheGauss(xsm-1.0,ysm-1.0,-intensity,-intensity,fwhmx,fwhmy,0.);
                }
                retour = TCL_OK;
             } catch(const CError& e) {
@@ -5065,18 +5068,6 @@ int cmdpsfimcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    delete[] ligne;
    return retour;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //==============================================================================
