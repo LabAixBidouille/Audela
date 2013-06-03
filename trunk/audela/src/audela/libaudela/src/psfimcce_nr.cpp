@@ -26,9 +26,6 @@
 #include "psfimcce.h"
 #include <math.h>
 
-
-
-
 float gasdev(long *idum)
 {
 	float ran1(long *idum);

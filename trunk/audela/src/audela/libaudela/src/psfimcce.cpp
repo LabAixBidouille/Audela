@@ -23,49 +23,45 @@
 #include "psfimcce.h"
 #include <math.h>
 
-// loadima i
-// buf1 psfimcce {426 863 477 903}
-void CPixels::call_psfimcce(int npt, double **z, double *p)
+void CPixels::psfimcce_compute(int npt, double **z, double *p, double **residus, double **synthetic)
 {
+   int i, j;
    float *a, *pr;
+   float *uncertainties;
    float **zs;
-   int i,j;
-   
-   a  = vector(1,MA);
-   pr  = vector(0,7);
-	zs = matrix(1,npt,1,npt);
+	float **fsynthetic, **fresidus;
 
+   a  = vector(1,MA);
+   pr = vector(0,16);
+	zs = matrix(1,npt,1,npt);
+	uncertainties = vector(1,MA);
+ 	fsynthetic = matrix(1,npt,1,npt);
+	fresidus = matrix(1,npt,1,npt);
+
+	/* Affectation de (float)zs a partir de (double)z */
    for(i=1;i<=npt;i++) {
       for(j=1;j<=npt;j++) {
          zs[i][j] = (float)z[i][j];
       }
    }
 
-   //printf("calcul = %d\n",npt);
-   fit_gauss2D(npt,zs,a); 
-   coeff2param(npt, zs, a, pr);
+	/* Ajustement de la gaussienne */
+   fit_gauss2D(npt, zs, a, uncertainties);
+	/* Calcul des parametres */
+   coeff2param(npt, zs, a, pr, uncertainties, fsynthetic, fresidus);
 
-   p[0] = pr[0];
-   p[1] = pr[1];
-   p[2] = pr[2];
-   p[3] = pr[3];
-   p[4] = pr[4];
-   p[5] = pr[5];
-   p[6] = pr[6];
-   p[7] = pr[7];
+	/* Affectation des parametres */
+	for(i=0;i<=16;i++) {
+		p[i] = pr[i];
+	}
 
-/*
-   printf("coeff\n");
-	for (i=1;i<=MA;i++) printf("  a[%d]  ",i); printf("\n");
-	for (i=1;i<=MA-1;i++) printf("%9.4f ",a[i]); 
-   printf("%9.4f ",a[7] / M_PI * (float)180 ); 
-   printf("\n");
-*/
+   /* Clean memory */
    free_vector(a,1,MA);
-   free_vector(pr,0,7);
+   free_vector(pr,0,16);
 	free_matrix(zs,1,npt,1,npt);
+	free_vector(uncertainties,1,MA);
+	free_matrix(fsynthetic,1,npt,1,npt);
+	free_matrix(fresidus,1,npt,1,npt);
 
-
-//   printf("toto = %d\n", MA);
    return;
 }

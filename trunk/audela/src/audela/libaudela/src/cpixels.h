@@ -72,9 +72,11 @@ public:
                double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
 				   double fwhmx0, double fwhmy0);
    void psfimcce(int x1, int y1, int x2, int y2,
-                 double *maxx, double *posx, double *fwhmx, double *fondx, double *errx,
-                 double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
-				     double fwhmx0, double fwhmy0);
+                 double *xsm, double *ysm, double *err_xsm, double *err_ysm,
+                 double *fwhmx, double *fwhmy, double *fwhm, double *flux,
+                 double *err_flux, double *pixmax, double *intensity, double *sky,
+                 double *err_sky, double *snint,double *radius, double *rdiff,
+                 double *err_psf);
    virtual int  GetHeight(void)=0;
    virtual int  GetPlanes(void)=0;
    virtual int  GetWidth(void)=0;
@@ -127,8 +129,7 @@ protected:
    void fitgauss1d_a(int n,double *y,double *p,double *ecart);
    void fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart);
 
-   void psfimcce(int sizex, int sizey, double **y, double *p, double *errx, double *erry);
-   void call_psfimcce(int npt, double **z, double *p);
+   void psfimcce_compute(int npt, double **z, double *p, double **residus, double **synthetic);
 
    static const char  *  PixelClassName [];
    static const char  *  PixelFormatName [];
