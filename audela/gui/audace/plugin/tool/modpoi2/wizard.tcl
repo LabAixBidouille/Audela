@@ -1343,7 +1343,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    ::confColor::applyColor $private(g,base)
 
    #--   inhibe les commandes (liberees si un tel est actif)
-   $private(g,base).goto configure state disabled
+   $private(g,base).goto configure -state disabled
    ::modpoi2::wizard::modpoi_setState disabled
 
    set pressure 101325
@@ -1413,7 +1413,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
       vwait ::audace(telNo)
    }
    #--   libere les commandes
-   $private(g,base).goto configure state normal
+   $private(g,base).goto configure -state normal
    ::modpoi2::wizard::modpoi_setState normal
 
    #--- pointage de l'étoile
