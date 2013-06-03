@@ -96,7 +96,7 @@ proc ::modpoi2::main::closeWindow { visuNo } {
          "1" {
             #--- choix enregistrer sous
             set fileName [onSaveAs $visuNo]
-            if { $fielName == "" } {
+            if { $fileName == "" } {
                #--- l'utilisateur a abandonne l'enregistrement
                #--- je retourne "0" pour empecher de fermer le fenetre
                return 0
