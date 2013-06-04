@@ -175,7 +175,7 @@ proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
    file delete -force -- $fname_out
    if { $::tcl_platform(os) == "Linux" } {
       set errnum [catch {
-         exec gunzip -c $fname_in > $fname_out
+         eval exec gunzip -c $fname_in > $fname_out
       } msgzip ]
    } else {
       set errnum [catch {
@@ -215,7 +215,7 @@ proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
    # Zip le fichier
    if { $::tcl_platform(os) == "Linux" } {
       set errnum [catch {
-         exec gzip -c $fname_in > $fname_out
+         eval exec gzip -c $fname_in > $fname_out
       } msgzip ]
    } else {
       set errnum [catch {
