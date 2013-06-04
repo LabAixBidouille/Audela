@@ -681,6 +681,7 @@ namespace eval bdi_tools_psf {
       set pass "no"
       set id 0     
       foreach s $sources {
+gren_erreur "id = $id\n"
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s $manual] } msg ]
          
          if {$id == -1} {
