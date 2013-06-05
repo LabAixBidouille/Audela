@@ -1,4 +1,4 @@
-The library libpixci.so is thought to control all the cameras that use a PIXCI card in their acquisition system.
+The library libepix.so is thought to control all the cameras that use an EPIX PIXCI card in their acquisition system.
 
 The current version only supports the camera RAPTOR Osprey OS4MPc-CL. Indeed, the acquisition is controlled by libkxclib, but the configuration of the different parameters of the acquisition is different for every camera.
 This version mixes camera-dependent and camera-independent code.
