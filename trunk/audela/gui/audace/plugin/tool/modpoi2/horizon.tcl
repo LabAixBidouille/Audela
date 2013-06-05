@@ -274,6 +274,7 @@ proc ::horizon::getHorizonList { } {
    return [lsort -dictionary $horizonList ]
 }
 
+
 proc ::horizon::createHorizon { visuNo } {
    variable private
 
@@ -320,11 +321,7 @@ proc ::horizon::createHorizon { visuNo } {
    onSelectHorizon $visuNo
 }
 
-proc ::horizon::copyHorizon { visuNo } {
-
-}
-
-proc ::horizon::deleteHorizon { visuNo } {
+proc ::horizon::deleteHorizon { } {
    #--- je recupere le nom de la configuration courante
    set horizonId $::conf(horizon,currentHorizon)
 
@@ -361,7 +358,11 @@ proc ::horizon::deleteHorizon { visuNo } {
    }
 }
 
-proc ::horizon::importHorizon { visuNo } {
+proc ::horizon::importHorizon { } {
+
+}
+
+proc ::horizon::copyHorizon { } {
 
 }
 
@@ -397,8 +398,15 @@ proc ::horizon::exportHorizon { visuNo } {
    azimut sort elevation
 
    #--   sauve le fichier
-   set fileName [file join $::audace(rep_travail) $horizonId.txt]
+   set fileName [file join $::audace(rep_home) modpoi horizon $horizonId.txt]
    set fileID [open $fileName w]
+   puts $fileID "# Horizon description file for Carte du Ciel"
+   puts $fileID "#"
+   puts $fileID "# File format :"
+   puts $fileID "# Azimuth(integer) Altitude"
+   puts $fileID "#"
+   puts $fileID "# Be sure to begin at the North horizon (azimuth 0)"
+   puts $fileID "# Intermediate missing value are interpolated"
    foreach az $azimut(:) elev $elevation(:) {
       puts $fileID "[expr { int($az) }] [expr { int($elev) }]"
    }
@@ -407,6 +415,12 @@ proc ::horizon::exportHorizon { visuNo } {
    blt::vector destroy azimut elevation
 }
 
+#------------------------------------------------------------
+# ::horizon::displayHorizon
+#   affiche l'horizon
+# Parameters : visuNo
+# Return :
+#------------------------------------------------------------
 proc ::horizon::displayHorizon { visuNo } {
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
@@ -414,7 +428,6 @@ proc ::horizon::displayHorizon { visuNo } {
    set horizons [mc_horizon $::audace(posobs,observateur,gps) $type $coordinates]
 
    #--- Visualise la carte des points d'amer
-   ###set figureNo [expr $visuNo + 10]
    set figureNo [::plotxy::figure $visuNo]
    ::plotxy::clf $figureNo
 
