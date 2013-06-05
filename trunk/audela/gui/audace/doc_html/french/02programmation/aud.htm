@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
-  
+
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>Fonctions du namespace audace</title>
 
-  
+
 </head><body>
 <p class="date">Date de mise à jour : 02 avril 2011</p>
 
@@ -118,6 +118,10 @@ l'actuel dispClock1. Elle sera exécutée dans le namespace de base (::),
 qui lui n'a pas de commande ::dispClock1 (d'où la nécessité de préciser
 ::audace::dispClock1).</p>
 
+<h3><a name="autovisu" id="autovisu"></a> ::audace::autovisu</h3>
+
+<p>Rafraîchit l'affichage dans la visu.</p>
+
 <h3> ::audace::charger</h3>
 
 <p>Cette commande fait appel directement à la commande loadima (sans
@@ -170,7 +174,7 @@ normal ou disabled. Par exemple, ::audace::menustate disabled rend tous
 les menus inactifs, et donc on ne peut plus lancer les actions
 correspondantes.</p>
 
-<h3> ::audace::cursor cursor (renvoie vers ::confVisu::cursor visuNo
+<h3><a name="cursor" id="cursor"></a> ::audace::cursor cursor (renvoie vers ::confVisu::cursor visuNo
 cursor)<br />
 </h3>
 
@@ -180,7 +184,7 @@ Ainsi le curseur "target" est une cible formé de deux cercles
 concentriques. Reportez vous à la documentation de TK pour connaître la
 liste des curseurs disponibles.</p>
 
-<h3> ::audace::bg couleur (renvoie vers ::confVisu::bg visuNo couleur)<br />
+<h3><a name="bg" id="bg"></a> ::audace::bg couleur (renvoie vers ::confVisu::bg visuNo couleur)<br />
 </h3>
 
 <p>Commande qui permet de modifier la couleur de fond du canvas de la
@@ -219,7 +223,7 @@ la fonction screen2Canvas.</p>
 <p>Cette commande réalise l'opération inverse de la commande précédente.<br />
 </p>
 
-<h3>::audace::date_sys2ut ?Date?</h3>
+<h3><a name="date_sys2ut" id="date_sys2ut"></a>::audace::date_sys2ut ?Date?</h3>
 
 <p>Retourne la date TU sous la forme d'une liste YYYY MM DD hh mm ss.</p>
 
