@@ -115,6 +115,12 @@ proc ::modpoi2::deletePluginInstance { visuNo } {
 proc ::modpoi2::startTool { visuNo } {
    variable private
 
+   set rep [file join $::audace(rep_home) modpoi horizon]
+   if {![file exists $rep]} {
+      #--   cree le repertoire horizon
+      file mkdir "$rep"
+   }
+
    #--- j'affiche la fentre principale
    ::modpoi2::main::run $visuNo $private(tkbase)
 }
