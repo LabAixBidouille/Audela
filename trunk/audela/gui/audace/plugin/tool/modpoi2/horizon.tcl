@@ -139,7 +139,7 @@ proc ::horizon::fillConfigPage { frm visuNo } {
       pack $frm.config.import -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton export horizon
-      Button $frm.config.export -text $::caption(modpoi2,horizon,exportHorizon) -command "::horizon::exportHorizon $visuNo" -state disabled
+      Button $frm.config.export -text $::caption(modpoi2,horizon,exportHorizon) -command "::horizon::exportHorizon $visuNo" -state normal
       pack $frm.config.export -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
    pack $frm.config -side top -fill x -expand 0
@@ -365,8 +365,46 @@ proc ::horizon::importHorizon { visuNo } {
 
 }
 
+#------------------------------------------------------------
+# ::horizon::exportHorizon
+#   cree un fichier txt contenant les couples {azimut elevation}
+#   qui sert a definir l'horizon pour Cartes du Ciel
+# Parameters : visuNo
+# Return :
+#------------------------------------------------------------
 proc ::horizon::exportHorizon { visuNo } {
 
+   #--   calcule l'horizon degre/par degre
+   set horizonId $::conf(horizon,currentHorizon)
+   set type $::conf(horizon,$horizonId,type)
+   set coordinates $::conf(horizon,$horizonId,coordinates)
+   set horizons [mc_horizon $::audace(posobs,observateur,gps) $type $coordinates]
+
+   blt::vector create azimut elevation -watchunset 1
+   #--   extrait l'azimut
+   azimut set [lindex $horizons 0]
+   #--   extrait l'elevation
+   elevation set [lindex $horizons 1]
+   #--   ajoute 180°, pour la reference de l'azimut Nord=0°
+   azimut expr { azimut+180 }
+   #--   filtre les valeurs superieures à 360
+   set indexes [azimut search 360 540]
+   for {set i [lindex $indexes 0]} {$i <= [lindex $indexes end]} {incr i} {
+      #--   ote 360°
+      set azimut($i) [expr { $azimut($i)-360 }]
+   }
+   #--   tri l'azimut et l'elevation par ordre croissant
+   azimut sort elevation
+
+   #--   sauve le fichier
+   set fileName [file join $::audace(rep_travail) $horizonId.txt]
+   set fileID [open $fileName w]
+   foreach az $azimut(:) elev $elevation(:) {
+      puts $fileID "[expr { int($az) }] [expr { int($elev) }]"
+   }
+   close $fileID
+
+   blt::vector destroy azimut elevation
 }
 
 proc ::horizon::displayHorizon { visuNo } {
