@@ -2,7 +2,7 @@
 # Fichier : epix.tcl
 # Description : Configuration de la camera Raptor
 # Auteur : Frederic VACHIER
-# Mise à jour $Id: epix.tcl 8879 2012-12-14 22:56:07Z robertdelmas  $
+# Mise à jour $Id$
 #
 
 #TODO: rewrite all the file for the epix camera
@@ -84,26 +84,26 @@ proc ::epix::initPlugin { } {
    global audace conf caption
 
    #--- Initialise les variables de la camera Raptor OSPREY
-   if { ! [ info exists conf(epix,tec) ] }        { set conf(epix,tec)        "1" }
-   if { ! [ info exists conf(epix,framerate) ] }    { set conf(epix,framerate)    "37.5" }
-   if { ! [ info exists conf(epix,config) ] }      { set conf(epix,config)      "" }
-   if { ! [ info exists conf(epix,mirh) ] }        { set conf(epix,mirh)        "0" }
-   if { ! [ info exists conf(epix,mirv) ] }        { set conf(epix,mirv)        "0" }
-   if { ! [ info exists conf(epix,CMOStemp) ] }        { set conf(epix,CMOStemp)        "" }
-   if { ! [ info exists conf(epix,exposure) ] } { set conf(epix,exposure) "0.001" }
-   if { ! [ info exists conf(epix,roi_x1) ] }   { set conf(epix,roi_x1) "0" }
-   if { ! [ info exists conf(epix,roi_y1) ] }   { set conf(epix,roi_y1) "0" }
-   if { ! [ info exists conf(epix,roi_x2 ] }   { set conf(epix,roi_x2) "2047" }
-   if { ! [ info exists conf(epix,roi_y2) ] }   { set conf(epix,roi_y2) "2047" }
-	 if { ! [ info exists conf(epix,binning) ] } { set conf(epix,binning) "1" }
-   if { ! [ info exists conf(epix,extconfig) ] } { set conf(epix,extconfig) "0" }
-   if { ! [ info exists conf(epix,hdr) ] } { set conf(epix,hdr) "0" }
-   if { ! [ info exists conf(epix,videomode) ] } { set conf(epix,videomode) "ffr" }
+   if { ! [ info exists conf(epix,tec) ] }         { set conf(epix,tec)       "1" }
+   if { ! [ info exists conf(epix,framerate) ] }   { set conf(epix,framerate) "37.5" }
+   if { ! [ info exists conf(epix,config) ] }      { set conf(epix,config)    "" }
+   if { ! [ info exists conf(epix,mirh) ] }        { set conf(epix,mirh)      "0" }
+   if { ! [ info exists conf(epix,mirv) ] }        { set conf(epix,mirv)      "0" }
+   if { ! [ info exists conf(epix,CMOStemp) ] }    { set conf(epix,CMOStemp)  "" }
+   if { ! [ info exists conf(epix,exposure) ] }    { set conf(epix,exposure)  "0.001" }
+   if { ! [ info exists conf(epix,roi_x1) ] }      { set conf(epix,roi_x1)    "0" }
+   if { ! [ info exists conf(epix,roi_y1) ] }      { set conf(epix,roi_y1)    "0" }
+   if { ! [ info exists conf(epix,roi_x2 ] }       { set conf(epix,roi_x2)    "2047" }
+   if { ! [ info exists conf(epix,roi_y2) ] }      { set conf(epix,roi_y2)    "2047" }
+   if { ! [ info exists conf(epix,binning) ] }     { set conf(epix,binning)   "1" }
+   if { ! [ info exists conf(epix,extconfig) ] }   { set conf(epix,extconfig) "0" }
+   if { ! [ info exists conf(epix,hdr) ] }         { set conf(epix,hdr)       "0" }
+   if { ! [ info exists conf(epix,videomode) ] }   { set conf(epix,videomode) "ffr" }
 
    #--- Initialisation
-   set private(A,camNo) "0"
-   set private(B,camNo) "0"
-   set private(C,camNo) "0"
+   set private(A,camNo)  "0"
+   set private(B,camNo)  "0"
+   set private(C,camNo)  "0"
    set private(CMOStemp) "$caption(epix,temperature_CCD)"
 }
 
@@ -116,21 +116,21 @@ proc ::epix::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la camera Andor dans le tableau private(...)
-   set private(tec)        $conf(epix,tec)
-	 set private(framerate)		$conf(epix,framerate)
+   set private(tec)         $conf(epix,tec)
+   set private(framerate)   $conf(epix,framerate)
    set private(config)      $conf(epix,config)
    set private(extconfig)   $conf(epix,extconfig)
    set private(mirh)        $conf(epix,mirh)
    set private(mirv)        $conf(epix,mirv)
    set private(CMOStemp)    $conf(epix,CMOStemp)
-	 set private(exposure)		$conf(epix,exposure)
+   set private(exposure)    $conf(epix,exposure)
    set private(roi_x1)      $conf(epix,roi_x1)
    set private(roi_y1)      $conf(epix,roi_y1)
    set private(roi_x2)      $conf(epix,roi_x2)
    set private(roi_y2)      $conf(epix,roi_y2)
    set private(hdr)         $conf(epix,hdr)
    set private(videomode)   $conf(epix,videomode)
-   set private(binning) "$conf(epix,binning)x$conf(epix,binning)"
+   set private(binning)     "$conf(epix,binning)x$conf(epix,binning)"
 }
 
 #
@@ -142,21 +142,21 @@ proc ::epix::widgetToConf { camItem } {
    global caption conf
 
    #--- Memorise la configuration de la camera Raptor dans le tableau conf(epix,...)
-   set conf(epix,tec)        $private(tec)
-	 set conf(epix,framerate)		$private(framerate)
+   set conf(epix,tec)         $private(tec)
+   set conf(epix,framerate)   $private(framerate)
    set conf(epix,config)      $private(config)
    set conf(epix,extconfig)   $private(extconfig)
    set conf(epix,mirh)        $private(mirh)
    set conf(epix,mirv)        $private(mirv)
    set conf(epix,CMOStemp)    $private(CMOStemp)
-	 set conf(epix,exposure)		$private(exposure)
+   set conf(epix,exposure)    $private(exposure)
    set conf(epix,roi_x1)      $private(roi_x1)
    set conf(epix,roi_y1)      $private(roi_y1)
    set conf(epix,roi_x2)      $private(roi_x2)
    set conf(epix,roi_y2)      $private(roi_y2)
    set conf(epix,hdr)         $private(hdr)
    set conf(epix,videomode)   $private(videomode)
-   set conf(epix,binning)			[ string index $private(binning) 0 ]
+   set conf(epix,binning)     [ string index $private(binning) 0 ]
 }
 
 #
@@ -182,13 +182,13 @@ proc ::epix::fillConfigPage { frm camItem } {
    frame $frm.frame1 -borderwidth 0 -relief raised
 
       #--- Video format file definition
-      frame $frm.frame1.frame1 -borderwidth 0 -relief raised 
+      frame $frm.frame1.frame1 -borderwidth 0 -relief raised
 
          checkbutton $frm.frame1.frame1.check -text "$caption(epix,extconfig)" -highlightthickness 0 -variable ::epix::private(extconfig) -command "::epix::extconfig $camItem"
          pack $frm.frame1.frame1.check -anchor w -side top -padx 10 -pady 1
 
-   			label $frm.frame1.frame1.lab2 -text "$caption(epix,config)"
-	   		pack $frm.frame1.frame1.lab2 -anchor center -side left -padx 1
+         label $frm.frame1.frame1.lab2 -text "$caption(epix,config)"
+         pack $frm.frame1.frame1.lab2 -anchor center -side left -padx 1
 
          entry $frm.frame1.frame1.host -width 30 -textvariable ::epix::private(config) -state disabled
          pack $frm.frame1.frame1.host -anchor center -side left -padx 1
@@ -227,10 +227,10 @@ proc ::epix::fillConfigPage { frm camItem } {
          pack $frm.frame1.frame2.frame2.lab1 -anchor center -side left -padx 2
 
          entry $frm.frame1.frame2.frame2.roi_y1 -width 4 -textvariable ::epix::private(roi_y1) -state disabled
-         pack $frm.frame1.frame2.frame2.roi_y1 -anchor center -side left -padx 2 
+         pack $frm.frame1.frame2.frame2.roi_y1 -anchor center -side left -padx 2
 
          pack $frm.frame1.frame2.frame2 -side top -fill both -expand 1 -anchor center -pady 2
-      
+
          #--- Frame roi_x2
          frame $frm.frame1.frame2.frame3 -borderwidth 0 -relief raised
 
@@ -238,10 +238,10 @@ proc ::epix::fillConfigPage { frm camItem } {
          pack $frm.frame1.frame2.frame3.lab1 -anchor center -side left -padx 2
 
          entry $frm.frame1.frame2.frame3.roi_x2 -width 4 -textvariable ::epix::private(roi_x2) -state disabled
-         pack $frm.frame1.frame2.frame3.roi_x2 -anchor center -side left -padx 2 
+         pack $frm.frame1.frame2.frame3.roi_x2 -anchor center -side left -padx 2
 
          pack $frm.frame1.frame2.frame3 -side top -fill both -expand 1 -anchor center -pady 2
-      
+
          #--- Frame roi_y2
          frame $frm.frame1.frame2.frame4 -borderwidth 0 -relief raised
 
@@ -255,7 +255,7 @@ proc ::epix::fillConfigPage { frm camItem } {
 
       pack $frm.frame1.frame2 -side left -fill none -expand 1 -anchor center
 
-			#--- Frame binning
+      #--- Frame binning
       frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
       label $frm.frame1.frame3.lab1 -text "Binning"
@@ -352,9 +352,9 @@ proc ::epix::fillConfigPage { frm camItem } {
             ComboBox $frm.frame2.frame2.frame2.frame2.bin -width 10 -height [ llength $list_binning ] -relief sunken -borderwidth 1 -editable 0 -textvariable ::epix::private(videomode) -values $list_binning
             pack $frm.frame2.frame2.frame2.frame2.bin -anchor center -side top -padx 10 -pady 5
 
-            pack $frm.frame2.frame2.frame2.frame2 -side top -fill both -expand 1 -anchor center         
+            pack $frm.frame2.frame2.frame2.frame2 -side top -fill both -expand 1 -anchor center
 
-         pack $frm.frame2.frame2.frame2 -side top -fill none -expand 1 -anchor center         
+         pack $frm.frame2.frame2.frame2 -side top -fill none -expand 1 -anchor center
 
       pack $frm.frame2.frame2 -side top -fill both -expand 1 -anchor center
 
@@ -378,28 +378,28 @@ proc ::epix::configureCamera { camItem bufNo } {
       }
       #--- Je mets conf(epix,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
-			if {$private(config) eq ""} {
+      if {$private(config) eq ""} {
          set camNo [ cam::create epix -debug_directory $::audace(rep_log) ]
       } else {
          set camNo [ cam::create epix -debug_directory $::audace(rep_log) -config $conf(epix,config) $conf(epix,roi_x1) $conf(epix,roi_y1) $conf(epix,roi_x2) $conf(epix,roi_y2) $conf(epix,binning) $conf(epix,binning) ]
-			}
+      }
       #--- Je change de variable
       set private($camItem,camNo) $camNo
       #--- Je configure l'exposition
       cam$camNo exposure $conf(epix,exposure)
       #--- Je configure le refroidissement
-      
+
       #--- J'associe le buffer de la visu
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(epix,mirh)
       cam$camNo mirrorv $conf(epix,mirv)
-			#--- Je configure le frame rate
-			cam$camNo framerate $conf(epix,framerate)
-			#--- Je configure la ROI
-			#cam$camNo roi $conf(epix,roi)
-			#--- Je configure le binning
-			#cam$camNo bin $conf(epix,binning)
+      #--- Je configure le frame rate
+      cam$camNo framerate $conf(epix,framerate)
+      #--- Je configure la ROI
+      #cam$camNo roi $conf(epix,roi)
+      #--- Je configure le binning
+      #cam$camNo bin $conf(epix,binning)
       #--- Je mesure la temperature du capteur CMOS
       ::epix::dispTempCMOS $camItem
    } ]
@@ -441,8 +441,8 @@ proc ::epix::dispTempCMOS { camItem } {
       set temp_cmos ""
       set private(CMOStemp) "$caption(epix,temperature_CCD) $temp_cmos"
    }
-	 console::affiche_entete $private(CMOStemp)
-	 console::affiche_saut "\n"
+   console::affiche_entete $private(CMOStemp)
+   console::affiche_saut "\n"
 }
 
 #
@@ -461,8 +461,6 @@ proc ::epix::setTempCCD { camItem } {
 
    return "$conf(epix,temp)"
 }
-
-
 
 #
 # ::epix::explore

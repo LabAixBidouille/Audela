@@ -1,6 +1,6 @@
 #
 # Fichier : epix.cap
-# Mise a jour $Id: epix.cap 6914 2011-03-11 15:59:18Z robertdelmas  $
+# Mise a jour $Id$
 #
 
 #=========================================================================
@@ -16,8 +16,8 @@ global caption langage
 set caption(epix,camera)                       "EPIX"
 
 set caption(epix,config)                       "Video Format File"
-set caption(epix,extconfig)								 "External Video Format File"
-set caption(epix,browse)	                     "..."
+set caption(epix,extconfig)                    "External Video Format File"
+set caption(epix,browse)                       "..."
 set caption(epix,folder)                       "From Folder:"
 set caption(epix,mirror_x)                     "Top/Bottom Reversal"
 set caption(epix,mirror_y)                     "Left/Right Reversal"
@@ -35,8 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "Fichier de Format Video"
-   set caption(epix,extconfig)              "Fichier externe de Format Video"
-   set caption(epix,browse)                 "..."
+   set caption(epix,extconfig)                 "Fichier externe de Format Video"
+   set caption(epix,browse)                    "..."
    set caption(epix,folder)                    "A partir du dossier :"
    set caption(epix,mirror_x)                  "Inverser Haut/Bas"
    set caption(epix,mirror_y)                  "Inverser Gauche/Droite"
@@ -54,18 +54,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "File di formato Video"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "Dalla cartella:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "Dalla cartella:"
    set caption(epix,mirror_x)                  "Inversione Alto/Basso"
    set caption(epix,mirror_y)                  "Inversione Sinistra/Destra"
    set caption(epix,temperature_CCD)           "CMOS Temperatura:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -77,18 +77,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,obtu_synchro)              "Sincro"
 
    set caption(epix,config)                    "Fichero de configuracion"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "Desde la carpeta:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "Desde la carpeta:"
    set caption(epix,mirror_x)                  "Invertir Arriba/Abajo"
    set caption(epix,mirror_y)                  "Invertir Izquierda/Derecha"
    set caption(epix,temperature_CCD)           "Temperatura CMOS:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -96,18 +96,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "Video Format file"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "Vom Unterlagen:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "Vom Unterlagen:"
    set caption(epix,mirror_x)                  "Oben/Unten umkehren"
    set caption(epix,mirror_y)                  "Links/Rechts umkehren"
    set caption(epix,temperature_CCD)           "Temperatur CMOS:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -115,18 +115,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "Ficheiro de configuração"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "Da Pasta:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "Da Pasta:"
    set caption(epix,mirror_x)                  "Inverter Cima/Baixo"
    set caption(epix,mirror_y)                  "Inverter Esquerda/Direita"
    set caption(epix,temperature_CCD)           "Temperatura do CMOS:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -134,18 +134,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "Video Format File"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "From Folder:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "From Folder:"
    set caption(epix,mirror_x)                  "Top/Bottom Reversal"
    set caption(epix,mirror_y)                  "Left/Right Reversal"
    set caption(epix,temperature_CCD)           "CMOS Temperature:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -153,18 +153,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "Video Format File"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "From Folder:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "From Folder:"
    set caption(epix,mirror_x)                  "Top/Bottom Reversal"
    set caption(epix,mirror_y)                  "Left/Right Reversal"
    set caption(epix,temperature_CCD)           "CMOS Temperature:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -172,18 +172,18 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epix,camera)                    "EPIX"
 
    set caption(epix,config)                    "Video Format File"
-   set caption(epix,extconfig)								 "External Video Format File"
-   set caption(epix,browse)                 "..."
-   set caption(epix,folder)                   "From Folder:"
+   set caption(epix,extconfig)                 "External Video Format File"
+   set caption(epix,browse)                    "..."
+   set caption(epix,folder)                    "From Folder:"
    set caption(epix,mirror_x)                  "Top/Bottom Reversal"
    set caption(epix,mirror_y)                  "Left/Right Reversal"
    set caption(epix,temperature_CCD)           "CMOS Temperature:"
    set caption(epix,deg_c)                     "°C"
 
-   set caption(epix,framerate)                    "Frame rate"
-   set caption(epix,exposure)                     "Exposure time"
-   set caption(epix,hdr)                          "High Dynamic Range"
-   set caption(epix,videomode)                    "Video Mode"
+   set caption(epix,framerate)                 "Frame rate"
+   set caption(epix,exposure)                  "Exposure time"
+   set caption(epix,hdr)                       "High Dynamic Range"
+   set caption(epix,videomode)                 "Video Mode"
 
 }
 
