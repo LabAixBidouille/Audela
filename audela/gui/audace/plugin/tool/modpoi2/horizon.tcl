@@ -328,7 +328,7 @@ proc ::horizon::createHorizon { visuNo } {
    onSelectHorizon $visuNo
 }
 
-proc ::horizon::deleteHorizon { } {
+proc ::horizon::deleteHorizon { visuNo } {
    #--- je recupere le nom de la configuration courante
    set horizonId $::conf(horizon,currentHorizon)
 
