@@ -130,9 +130,9 @@ proc ::horizon::fillConfigPage { frm visuNo } {
       $frm.config.combo setvalue "@$index"
 
       #--- Bouton copy horizon
-      #Button $frm.config.copy -text $::caption(modpoi2,horizon,copyHorizon) \
-      #   -command "::horizon::copyHorizon $visuNo" -state disabled
-      #pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
+      Button $frm.config.copy -text $::caption(modpoi2,horizon,copyHorizon) \
+         -command "::horizon::copyHorizon $visuNo" -state normal
+      pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton delete horizon
       Button $frm.config.delete -text $::caption(modpoi2,horizon,deleteHorizon) \
@@ -229,6 +229,11 @@ proc ::horizon::apply { visuNo } {
   ::horizon::displayHorizon $visuNo
 }
 
+
+#------------------------------------------------------------
+# ::horizon::onSelectHorizon
+#  affiche la configuration de l'horizon selectionne
+#------------------------------------------------------------
 proc ::horizon::onSelectHorizon { visuNo } {
    variable private
 
@@ -245,23 +250,18 @@ proc ::horizon::onSelectHorizon { visuNo } {
    $private($visuNo,coordText) delete 1.0 end
    if { $private(type)  == "ALTAZ" } {
      #--- j'affiche les coordonnées
-     ###$private($visuNo,coordTable) delete 0 end
-
      foreach altaz $private(coordinates) {
-
-        ###$private($visuNo,coordTable) insert end $altaz
         $private($visuNo,coordText) insert end "$altaz\n"
      }
    } else {
-      ###$private($visuNo,coordTable) delete 0 end
       foreach coord $private(coordinates) {
-         ###$private($visuNo,coordTable) insert end $coord
          $private($visuNo,coordText) insert end "$coord\n"
       }
    }
 }
 
-##------------------------------------------------------------
+#------------------------------------------------------------
+#::horizon::getHorizonList
 # Retourne la liste des horizons
 #
 # Exemple : { defaut {T60 Pic du Midi } {Saint Veran } }
@@ -281,12 +281,18 @@ proc ::horizon::getHorizonList { } {
    return [lsort -dictionary $horizonList ]
 }
 
-
+#------------------------------------------------------------
+# ::horizon::createHorizon
+#   Cree un horizon -nom,type) mais sans coordonnees
+# Parameters : visuNo
+# Return :
+#------------------------------------------------------------
 proc ::horizon::createHorizon { visuNo } {
    variable private
 
    set parent [winfo toplevel $private($visuNo,frm)]
    set result [::horizon::nameDialog::run $parent $visuNo $::caption(modpoi2,horizon,createHorizon)]
+
    if { $result == 0 } {
       #--- j'abandonne la creation
       return
@@ -328,6 +334,12 @@ proc ::horizon::createHorizon { visuNo } {
    onSelectHorizon $visuNo
 }
 
+#------------------------------------------------------------
+# ::horizon::deleteHorizon
+#   supprime un horizon
+# Parameters : visuNo
+# Return :
+#------------------------------------------------------------
 proc ::horizon::deleteHorizon { visuNo } {
    #--- je recupere le nom de la configuration courante
    set horizonId $::conf(horizon,currentHorizon)
@@ -369,8 +381,39 @@ proc ::horizon::importHorizon { } {
 
 }
 
-proc ::horizon::copyHorizon { } {
+#------------------------------------------------------------
+# ::horizon::copyHorizon
+#   cree un nouvel horizon avec les valeurs de l'ancien
+# Parameters : visuNo
+# Return :
+#------------------------------------------------------------
+proc ::horizon::copyHorizon { visuNo } {
+   variable private
 
+   #--   recopie le type et les valeurs de l'horizon courant
+   set horizonId $::conf(horizon,currentHorizon)
+   set type $::conf(horizon,$horizonId,type)
+   set coordinates $::conf(horizon,$horizonId,coordinates)
+
+   #--   cree un nouvel horizon dont les coordonnees sont vides
+   #-    mais le nom est selectionne (currentHorizon)
+   ::horizon::createHorizon $visuNo
+
+   #--   recupere l'ID de l'horizon courant
+   set currentHorizonId $::conf(horizon,currentHorizon)
+
+   if {$currentHorizonId ne "$horizonId"} {
+      #--   si l'utilisateur a valide le nouveau nom
+
+      #--   force le type
+      set ::conf(horizon,$currentHorizonId,type) "$type"
+
+      #--   recopie les coordonnees
+      set ::conf(horizon,$currentHorizonId,coordinates) $coordinates
+
+      #--   reselectionne cet horizon pour afficher les coordonnees
+      ::horizon::onSelectHorizon $visuNo
+   }
 }
 
 #------------------------------------------------------------
@@ -429,9 +472,11 @@ proc ::horizon::exportHorizon { visuNo } {
 # Return :
 #------------------------------------------------------------
 proc ::horizon::displayHorizon { visuNo } {
+
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
    set coordinates $::conf(horizon,$horizonId,coordinates)
+
    set horizons [mc_horizon $::audace(posobs,observateur,gps) $type $coordinates]
 
    #--- Visualise la carte des points d'amer
