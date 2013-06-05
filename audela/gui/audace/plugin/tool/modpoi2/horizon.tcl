@@ -97,12 +97,15 @@ proc ::horizon::fillConfigPage { frm visuNo } {
    set private($visuNo,frm) $frm
 
    #--- Frame select config
-   TitleFrame $frm.config -borderwidth 2 -relief ridge -text $::caption(modpoi2,horizon,selectHorizon)
+   TitleFrame $frm.config -borderwidth 2 -relief ridge \
+      -text $::caption(modpoi2,horizon,selectHorizon)
+
       #--- Liste des horizons
       set horizonList [::horizon::getHorizonList]
 
       #--- Bouton create new horizon
-      Button $frm.config.create -text $::caption(modpoi2,horizon,createHorizon) -command "::horizon::createHorizon $visuNo"
+      Button $frm.config.create -text $::caption(modpoi2,horizon,createHorizon) \
+         -command "::horizon::createHorizon $visuNo"
       pack $frm.config.create -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- j'affiche la liste des horizons
@@ -127,19 +130,23 @@ proc ::horizon::fillConfigPage { frm visuNo } {
       $frm.config.combo setvalue "@$index"
 
       #--- Bouton copy horizon
-      Button $frm.config.copy -text $::caption(modpoi2,horizon,copyHorizon) -command "::horizon::copyHorizon $visuNo"
-      pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
+      #Button $frm.config.copy -text $::caption(modpoi2,horizon,copyHorizon) \
+      #   -command "::horizon::copyHorizon $visuNo" -state disabled
+      #pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton delete horizon
-      Button $frm.config.delete -text $::caption(modpoi2,horizon,deleteHorizon) -command "::horizon::deleteHorizon $visuNo"
+      Button $frm.config.delete -text $::caption(modpoi2,horizon,deleteHorizon) \
+         -command "::horizon::deleteHorizon $visuNo" -state normal
       pack $frm.config.delete -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton import horizon
-      Button $frm.config.import -text $::caption(modpoi2,horizon,importHorizon) -command "::horizon::importHorizon $visuNo" -state disabled
-      pack $frm.config.import -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
+      #Button $frm.config.import -text $::caption(modpoi2,horizon,importHorizon) \
+      #   -command "::horizon::importHorizon $visuNo" -state disabled
+      #pack $frm.config.import -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
       #--- Bouton export horizon
-      Button $frm.config.export -text $::caption(modpoi2,horizon,exportHorizon) -command "::horizon::exportHorizon $visuNo" -state normal
+      Button $frm.config.export -text $::caption(modpoi2,horizon,exportHorizon) \
+         -command "::horizon::exportHorizon $visuNo" -state normal
       pack $frm.config.export -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
 
    pack $frm.config -side top -fill x -expand 0
