@@ -1073,7 +1073,9 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    }
 
    // Appel de la methode d'ajustement
+   printf("\npsfimcce_compute: ");
    psfimcce_compute(width-1, iXY, pxy, residus, synthetic);
+   printf("OK\n");
 
    // Results from psfimcce_compute :
    *xsm       =  pxy[0] + x1;
