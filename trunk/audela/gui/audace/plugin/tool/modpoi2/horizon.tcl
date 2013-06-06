@@ -17,7 +17,8 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x200+250+75" }
+   #if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x200+250+75" }
+   if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x250+250+75" }
    if { ! [ info exists ::conf(horizon,currentHorizon) ] }      { set ::conf(horizon,currentHorizon)      "default" }
 
    if { ! [ info exists ::conf(horizon,default,name) ] }        { set ::conf(horizon,default,name)        "default" }
@@ -105,8 +106,9 @@ proc ::horizon::fillConfigPage { frm visuNo } {
 
       #--- Bouton create new horizon
       Button $frm.config.create -text $::caption(modpoi2,horizon,createHorizon) \
-         -command "::horizon::createHorizon $visuNo"
-      pack $frm.config.create -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
+         -command "::horizon::createHorizon $visuNo" -width 15
+      pack $frm.config.create -in [$frm.config getframe] \
+         -side left -fill none -expand 0 -padx 5
 
       #--- j'affiche la liste des horizons
       ComboBox $frm.config.combo \
@@ -114,7 +116,7 @@ proc ::horizon::fillConfigPage { frm visuNo } {
          -relief sunken -borderwidth 1 -editable 0 \
          -modifycmd "::horizon::onSelectHorizon $visuNo" \
          -values $horizonList
-      pack $frm.config.combo -in [$frm.config getframe] -side left -fill none -padx 2
+      pack $frm.config.combo -in [$frm.config getframe] -side left -fill none -padx 5
       if { [info exists ::conf(horizon,$::conf(horizon,currentHorizon),name)] != 0 } {
          set index [lsearch $horizonList $::conf(horizon,$::conf(horizon,currentHorizon),name)]
          if { $index == -1 } {
@@ -131,25 +133,38 @@ proc ::horizon::fillConfigPage { frm visuNo } {
 
       #--- Bouton copy horizon
       Button $frm.config.copy -text $::caption(modpoi2,horizon,copyHorizon) \
-         -command "::horizon::copyHorizon $visuNo" -state normal
-      pack $frm.config.copy -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
+         -command "::horizon::copyHorizon $visuNo" -width 10
+      pack $frm.config.copy -in [$frm.config getframe] \
+         -side left -fill none -expand 0 -padx 5
 
       #--- Bouton delete horizon
       Button $frm.config.delete -text $::caption(modpoi2,horizon,deleteHorizon) \
-         -command "::horizon::deleteHorizon $visuNo" -state normal
-      pack $frm.config.delete -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
-
-      #--- Bouton import horizon
-      #Button $frm.config.import -text $::caption(modpoi2,horizon,importHorizon) \
-      #   -command "::horizon::importHorizon $visuNo" -state disabled
-      #pack $frm.config.import -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
-
-      #--- Bouton export horizon
-      Button $frm.config.export -text $::caption(modpoi2,horizon,exportHorizon) \
-         -command "::horizon::exportHorizon $visuNo" -state normal
-      pack $frm.config.export -in [$frm.config getframe] -side left -fill none -expand 0 -padx 2
+         -command "::horizon::deleteHorizon $visuNo" -width 10
+      pack $frm.config.delete -in [$frm.config getframe] \
+         -side left -fill none -expand 0 -padx 5
 
    pack $frm.config -side top -fill x -expand 0
+
+   #--- Frame select skychart
+   frame $frm.skychart -borderwidth 2 -relief ridge
+      #--- Bouton import horizon
+      Button $frm.skychart.import -text $::caption(modpoi2,horizon,importHorizon) \
+         -command "::horizon::importHorizon $visuNo $frm.skychart.import"
+      pack $frm.skychart.import -side left -fill none -expand 0 -padx 10
+      #--- Bouton export horizon
+      Button $frm.skychart.export -text $::caption(modpoi2,horizon,exportHorizon) \
+         -command "::horizon::exportHorizon $visuNo"
+      pack $frm.skychart.export -side right -fill none -expand 0 -padx 10
+   pack $frm.skychart -after $frm.config -fill both -expand 1
+
+   #--   configure l'etat des boutons en fonction de l'existence de SkyChart
+   if {[file exists $::conf(carteducielv3,binarypath)]} {
+      $frm.skychart.import configure -state normal
+      $frm.skychart.export configure -state normal
+   }  else {
+      $frm.skychart.import configure -state disabled
+      $frm.skychart.export configure -state disabled
+   }
 
    frame $frm.type -borderwidth 2 -relief ridge
       label $frm.type.label -text $::caption(modpoi2,horizon,type)
@@ -158,7 +173,6 @@ proc ::horizon::fillConfigPage { frm visuNo } {
       pack $frm.type.value -side left -fill none -expand 0 -padx 2
    pack $frm.type -side top -fill x -expand 0
 
-   ###set private($visuNo,coordTable) $frm.coord.table
    set private($visuNo,coordText) $frm.coord.text
 
    TitleFrame $frm.coord  -borderwidth 2 -relief ridge -text $::caption(modpoi2,horizon,coordinate)
@@ -207,7 +221,7 @@ proc ::horizon::apply { visuNo } {
 
    set horizonId $::conf(horizon,currentHorizon)
 
-   #--- je recupere la liste des raies de reference
+   #--- je recupere la liste des noms d'horizon
    set a [$private($visuNo,coordText) get 1.0 {end -1ch}]
    set b [split $a "\n"]
    set coordinates [list ]
@@ -377,10 +391,6 @@ proc ::horizon::deleteHorizon { visuNo } {
    }
 }
 
-proc ::horizon::importHorizon { } {
-
-}
-
 #------------------------------------------------------------
 # ::horizon::copyHorizon
 #   cree un nouvel horizon avec les valeurs de l'ancien
@@ -417,13 +427,101 @@ proc ::horizon::copyHorizon { visuNo } {
 }
 
 #------------------------------------------------------------
+# ::horizon::importHorizon
+#   cree un horizon Aud'ACE a partir d'un horizon de Cartes du Ciel
+# Parameters : visuNo et nom du parent
+# Return :
+#------------------------------------------------------------
+proc ::horizon::importHorizon { visuNo this } {
+
+   set parent $::horizon::::private($visuNo,frm).skychart.import
+   set initialDir "[file join [file dirname $::conf(carteducielv3,binarypath)] data horizon]"
+
+   set fileName [tk_getOpenFile -initialdir "$initialDir" -defaultextension .txt \
+      -title "$::caption(modpoi2,horizon,path))" -parent $this ]
+
+   #--   arrete si le nom est vide ou son extension pas egale a .txt
+   if {$fileName eq "" || [file extension $fileName]  ne ".txt"} {
+      return
+   }
+
+   #--   formate le nom du nouvel horizon
+   set horizonName [file rootname [file tail $fileName]]
+   #--- je fabrique l'identifiant a partie du nom en replacant les caracteres interdits pas un "_"
+   set horizonId [getHorizonIdentifiant $horizonName]
+
+   #--- je verifie que cet horizon n'existe pas deja
+   if { [info exists ::conf(horizon,$horizonId,name)] == 1 } {
+      tk_messageBox -message $::caption(modpoi2,horizon,errorExistingName) \
+         -icon error -title $::caption(modpoi2,horizon,title)
+     return
+   }
+
+   #--- j'initialise les parametres de l'horizon avec ceux de la horizon par defaut
+   set ::conf(horizon,$horizonId,name) $horizonName
+   set ::conf(horizon,$horizonId,type) "ALTAZ"
+   set ::conf(horizon,$horizonId,coordinates) ""
+
+   #--   recupere les valeurs
+   blt::vector create azimut elevation -watchunset 1
+   set fileID [open $fileName r]
+   while {![eof $fileID]} {
+      gets $fileID line
+      if {[llength $line] == 2} {
+         lassign $line az elev
+         #--   azimut et elevation doivente etre des entiers
+         if {[string is integer $az] &&  [string is integer $elev]} {
+            azimut append $az
+            elevation append $elev
+         }
+      }
+   }
+   close $fileID
+
+   #--   arrete si absence de valeurs
+   if {[azimut length] == 0} {
+      return
+   }
+
+   #--   ajoute 180°, pour la reference de l'azimut Sud=0°
+   azimut expr { azimut+180 }
+   #--   filtre les valeurs superieures à 360
+   set indexes [azimut search 360 540]
+   for {set i [lindex $indexes 0]} {$i <= [lindex $indexes end]} {incr i} {
+      #--   ote 360°
+      set azimut($i) [expr { $azimut($i)-360 }]
+   }
+   #--   tri l'azimut et l'elevation par ordre croissant
+   azimut sort elevation
+
+   #--   configure les coordonnees
+   foreach az $azimut(:) elev $elevation(:) {
+      lappend ::conf(horizon,$horizonId,coordinates) [list [expr { int($az) }] [expr { int($elev)}] ]
+   }
+    blt::vector destroy azimut elevation
+
+   #--- j'ajoute la nouvelle config dans la combo
+   set tkCombo $::horizon::private($visuNo,frm).config.combo
+   set horizonList [$tkCombo cget -values]
+   lappend horizonList $horizonName
+   set horizonList [lsort $horizonList]
+   $tkCombo configure -values $horizonList -height [ llength $horizonList ]
+
+   #--- je selectionne la nouvelle liste dans la combo
+   set index [lsearch $horizonList $horizonName]
+   $tkCombo setvalue "@$index"
+   #--- j'affiche les valeurs dans les widgets
+   onSelectHorizon $visuNo
+}
+
+#------------------------------------------------------------
 # ::horizon::exportHorizon
 #   cree un fichier txt contenant les couples {azimut elevation}
 #   qui sert a definir l'horizon pour Cartes du Ciel
 # Parameters : visuNo
 # Return :
 #------------------------------------------------------------
-proc ::horizon::exportHorizon { visuNo } {
+proc ::horizon::exportHorizon { $visuNo } {
 
    #--   calcule l'horizon degre/par degre
    set horizonId $::conf(horizon,currentHorizon)
@@ -476,7 +574,6 @@ proc ::horizon::displayHorizon { visuNo } {
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
    set coordinates $::conf(horizon,$horizonId,coordinates)
-
    set horizons [mc_horizon $::audace(posobs,observateur,gps) $type $coordinates]
 
    #--- Visualise la carte des points d'amer
