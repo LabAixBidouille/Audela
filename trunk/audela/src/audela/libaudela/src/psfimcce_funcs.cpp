@@ -87,7 +87,7 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    flux = 0;
    for(i=1;i<=npt;i++) {
       for(j=1;j<=npt;j++) {
-         flux+=synthetic[i][j]-a[1];
+         flux += synthetic[i][j]-a[1];
       }
    }
 /*

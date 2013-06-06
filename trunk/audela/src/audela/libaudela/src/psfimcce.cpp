@@ -23,20 +23,17 @@
 #include "psfimcce.h"
 #include <math.h>
 
-void CPixels::psfimcce_compute(int npt, double **z, double *p, double **residus, double **synthetic)
+void CPixels::psfimcce_compute(int npt, double **z, double *p, float **residus, float **synthetic)
 {
    int i, j;
    float *a, *pr;
    float *uncertainties;
    float **zs;
-	float **fsynthetic, **fresidus;
 
    a  = vector(1,MA);
-   pr = vector(0,16);
+   pr = vector(0,NB_PARAM);
 	zs = matrix(1,npt,1,npt);
 	uncertainties = vector(1,MA);
- 	fsynthetic = matrix(1,npt,1,npt);
-	fresidus = matrix(1,npt,1,npt);
 
 	/* Affectation de (float)zs a partir de (double)z */
    for(i=1;i<=npt;i++) {
@@ -48,20 +45,18 @@ void CPixels::psfimcce_compute(int npt, double **z, double *p, double **residus,
 	/* Ajustement de la gaussienne */
    fit_gauss2D(npt, zs, a, uncertainties);
 	/* Calcul des parametres */
-   coeff2param(npt, zs, a, pr, uncertainties, fsynthetic, fresidus);
+   coeff2param(npt, zs, a, pr, uncertainties, synthetic, residus);
 
 	/* Affectation des parametres */
-	for(i=0;i<=16;i++) {
+	for(i=0;i<=NB_PARAM;i++) {
 		p[i] = pr[i];
 	}
 
    /* Clean memory */
    free_vector(a,1,MA);
-   free_vector(pr,0,16);
+   free_vector(pr,0,NB_PARAM);
 	free_matrix(zs,1,npt,1,npt);
 	free_vector(uncertainties,1,MA);
-	free_matrix(fsynthetic,1,npt,1,npt);
-	free_matrix(fresidus,1,npt,1,npt);
 
    return;
 }
