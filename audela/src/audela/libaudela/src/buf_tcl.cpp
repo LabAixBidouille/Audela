@@ -4966,7 +4966,7 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    double sky, err_sky;         // Flux du fond de ciel et erreur sur le flux
    double snint, radius, rdiff; //
    double err_psf;              // 
-   int temp,naxis1,naxis2;
+   //int temp,naxis1,naxis2;
    int sub,k;
    double fwhmx0=0., fwhmy0=0.; // Fwhm contrainte dans les deux axes de la gaussienne.
    ligne = new char[1000];
@@ -5021,34 +5021,14 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
-            naxis1 = buffer->GetWidth();
-            naxis2 = buffer->GetHeight();
-            if (x1<1) {x1=1;}
-            if (x2<1) {x2=1;}
-            if (y1<1) {y1=1;}
-            if (y2<1) {y2=1;}
-            if (x1>naxis1) {x1=naxis1;}
-            if (x2>naxis1) {x2=naxis1;}
-            if (y1>naxis2) {y1=naxis2;}
-            if (y2>naxis2) {y2=naxis2;}
-            if (x1 > x2) {
-               temp = x1;
-               x1 = x2;
-               x2 = temp;
-            }
-            if (y1 > y2) {
-               temp = y1;
-               y1 = y2;
-               y2 = temp;
-            }
             try {
-               buffer->psfimcce(x1-1,y1-1,x2-1,y2-1,
-                                &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
-                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint,&radius,
-                                &rdiff, &err_psf);
-               xsm = xsm +1;
-               ysm = ysm +1;
-               sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f",xsm,ysm,err_xsm,err_ysm,fwhmx,fwhmy,flux,err_flux,sky,err_sky);
+               buffer->psfimcce(x1,y1,x2,y2, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
+                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint,&radius, &rdiff, &err_psf);
+               //xsm = xsm +1;
+               //ysm = ysm +1;
+               sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+                       xsm, ysm, err_xsm, err_ysm, fwhmx, fwhmy, fwhm, flux, err_flux,
+                       pixmax, intensity, sky, err_sky, snint, radius, rdiff, err_psf);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
                if (sub==1) {

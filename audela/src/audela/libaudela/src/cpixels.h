@@ -129,7 +129,7 @@ protected:
    void fitgauss1d_a(int n,double *y,double *p,double *ecart);
    void fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart);
 
-   void psfimcce_compute(int npt, double **z, double *p, double **residus, double **synthetic);
+   void psfimcce_compute(int npt, double **z, double *p, float **residus, float **synthetic);
 
    static const char  *  PixelClassName [];
    static const char  *  PixelFormatName [];
