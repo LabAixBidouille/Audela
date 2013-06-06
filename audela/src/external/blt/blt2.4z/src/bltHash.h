@@ -39,7 +39,7 @@
 
 #ifndef BLT_INT_H
 #ifndef SIZEOF_LONG
-#define SIZEOF_LONG 4
+#define SIZEOF_LONG 8
 #endif
 #ifndef SIZEOF_LONG_LONG
 #define SIZEOF_LONG_LONG 8
@@ -48,10 +48,10 @@
 #define SIZEOF_INT 4
 #endif
 #ifndef SIZEOF_VOID_P
-#define SIZEOF_VOID_P 4
+#define SIZEOF_VOID_P 8
 #endif
 #ifndef HAVE_INTTYPES_H
-#if 0
+#if 1
 #define HAVE_INTTYPES_H 1
 #endif
 #endif
