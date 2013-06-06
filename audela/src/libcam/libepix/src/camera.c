@@ -50,6 +50,33 @@
 #include <signal.h>
 #endif
 
+// Ajout AK
+#if defined(OS_WIN)
+#include <signal.h> 
+#ifndef _SIG_SIGSET_T_DEFINED
+typedef int sigset_t;
+#define _SIG_SIGSET_T_DEFINED
+int gettimeofday(struct timeval* p, void* tz) {
+    ULARGE_INTEGER ul; // As specified on MSDN.
+    FILETIME ft;
+    // Returns a 64-bit value representing the number of
+    // 100-nanosecond intervals since January 1, 1601 (UTC).
+    GetSystemTimeAsFileTime(&ft);
+    // Fill ULARGE_INTEGER low and high parts.
+    ul.LowPart = ft.dwLowDateTime;
+    ul.HighPart = ft.dwHighDateTime;
+    // Convert to microseconds.
+    ul.QuadPart /= 10ULL;
+    // Remove Windows to UNIX Epoch delta.
+    ul.QuadPart -= 11644473600000000ULL;
+    // Modulo to retrieve the microseconds.
+    p->tv_usec = (long) (ul.QuadPart % 1000000LL);
+    // Divide to retrieve the seconds.
+    p->tv_sec = (long) (ul.QuadPart / 1000000LL);
+    return 0;
+}
+#endif
+
 #include <time.h>
 
 //meinberg
@@ -185,6 +212,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	int ret,kk;
 	int x1,y1,x2,y2;
 	int binx,biny;
+#if defined(OS_WIN)
+	HANDLE hwin;
+#endif
 
 	//cam->status = 0;
 
@@ -357,18 +387,34 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	}*/
 
 	//SIGUSR2 at the end of lecture
+#if defined(OS_WIN)
+	hwin = pxd_eventCapturedFieldCreate(0x1);
+	if (hwin) {
+		pxd_mesgFaultText(0x1,cam->msg,2048);
+		return 9;
+	}
+#else
 	ret = pxd_eventCapturedFieldCreate(0x1,SIGUSR2,0);
 	if (ret) {
 		pxd_mesgFaultText(0x1,cam->msg,2048);
 		return 9;
 	}
+#endif
 
 	//SIGUSR1 at the end of integration
+#if defined(OS_WIN)
+	hwin = pxd_eventFieldCreate(0x1);
+	if (hwin) {
+		pxd_mesgFaultText(0x1,cam->msg,2048);
+		return 10;
+	}
+#else
 	ret = pxd_eventFieldCreate(0x1,SIGUSR1,0);
 	if (ret) {
 		pxd_mesgFaultText(0x1,cam->msg,2048);
 		return 10;
 	}
+#endif
 
 	sigemptyset(&mask);
 	sigaddset(&mask,SIGUSR2);

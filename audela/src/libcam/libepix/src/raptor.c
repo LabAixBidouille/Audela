@@ -24,6 +24,12 @@
  * Commands to send to the camera Raptor Photonics OSPREY
  */
 
+#include "sysexp.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #include "raptor.h"
 #include "serial.h"
 #include "xcliball.h"
