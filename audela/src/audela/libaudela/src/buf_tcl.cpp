@@ -4964,76 +4964,120 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    double flux, err_flux;       // Flux et erreur sur le flux de la source
    double pixmax, intensity;    // Pixel d'intensite max et intensite maximum
    double sky, err_sky;         // Flux du fond de ciel et erreur sur le flux
-   double snint, radius, rdiff; //
-   double err_psf;              // 
+   double snint;                // 
+   int radius;                  // Rayon d'ouverture de la zone de mesure
+   double rdiff;                // Distance quadratique entre le photocentre mesure et le centre de la zone de mesure
+   int err_psf;                 // Different de zero si la mesure de PSF n'est pas correcte
+   float **residus = NULL;      // Buffer image des residus apres mesure de la PSF
+   float **synthetic = NULL;    // Buffer image de la PSF ajsute
+
    //int temp,naxis1,naxis2;
-   int sub,k;
-   double fwhmx0=0., fwhmy0=0.; // Fwhm contrainte dans les deux axes de la gaussienne.
+   int sub, i, k, temp;
+   int ssquare, x1n, y1n, x2n, y2n;
+   int width, height;
+   int naxis1, naxis2;
    ligne = new char[1000];
 
    if(argc<3) {
-      sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
-      sub=0;
+      sub = 0;
       if (argc>=4) {
          for (k=3;k<argc;k++) {
             if (strcmp(argv[k],"-sub")==0) {
-               sub=1;
-            }
-            if (strcmp(argv[k],"-fwhmx")==0) {
-               if ((k+1)<argc) {
-                  fwhmx0=(double)atof(argv[k+1]);
-               }
-            }
-            if (strcmp(argv[k],"-fwhmy")==0) {
-               if ((k+1)<argc) {
-                  fwhmy0=(double)atof(argv[k+1]);
-               }
+               sub = 1;
             }
          }
       }
-      if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
+      if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv) != TCL_OK) {
          sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
-      } else if(listArgc!=4) {
+      } else if(listArgc != 4) {
          sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       } else {
-         if(Tcl_GetInt(interp,listArgv[0],&x1)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\nx1 must be an integer",argv[0],argv[1]);
+         if(Tcl_GetInt(interp,listArgv[0],&x1) != TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub?\nx1 must be an integer",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-         } else if(Tcl_GetInt(interp,listArgv[1],&y1)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\ny1 must be an integer",argv[0],argv[1]);
+         } else if(Tcl_GetInt(interp,listArgv[1],&y1) != TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub?\ny1 must be an integer",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-         } else if(Tcl_GetInt(interp,listArgv[2],&x2)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\nx2 must be an integer",argv[0],argv[1]);
+         } else if(Tcl_GetInt(interp,listArgv[2],&x2) != TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub?\nx2 must be an integer",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
-         } else if(Tcl_GetInt(interp,listArgv[3],&y2)!=TCL_OK) {
-            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\ny2 must be an integer",argv[0],argv[1]);
+         } else if(Tcl_GetInt(interp,listArgv[3],&y2) != TCL_OK) {
+            sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub?\ny2 must be an integer",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
+            // Recupere les dimensions de l'image courante
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
+            // Sanity checks
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) { temp = x1; x1 = x2; x2 = temp; }
+            if (y1 > y2) { temp = y1; y1 = y2; y2 = temp; }
+            // Reduit la zone selectionnee au carre de plus petite dimension
+            ssquare = x2-x1;
+            if (ssquare > y2-y1) { ssquare = y2-y1; }
+            // Coordonnees de la zone carree qui a ete selectionnee
+            x1n = x1 + (x2-x1-ssquare)/2;
+            y1n = y1 + (y2-y1-ssquare)/2;
+            x2n = x1 + (x2-x1+ssquare)/2;
+            y2n = y1 + (y2-y1+ssquare)/2;
+            x1 = x1n;
+            y1 = y1n;
+            x2 = x2n;
+            y2 = y2n;
+            // Dimension de la zone analysee
+            width = x2-x1+1;
+            height = y2-y1+1;
+
             try {
+               // Allocation des buffers residus et synthetic
+               residus = (float **) malloc((height)*sizeof(float *));
+               synthetic = (float **) malloc((height)*sizeof(float *));
+               for(i=0;i<height;i++) {
+                  residus[i] = (float *) malloc(width*sizeof(float));
+                  synthetic[i] = (float *) malloc(width*sizeof(float));
+               }
+               if (!residus || !synthetic) {
+                  throw CError(ELIBSTD_CANNOT_CREATE_BUFFER);
+               }
+               // Mesure dela PSF
                buffer->psfimcce(x1,y1,x2,y2, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
-                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &rdiff, &err_psf);
-               //xsm = xsm +1;
-               //ysm = ysm +1;
-               sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &rdiff, &err_psf,
+                                &*residus, &*synthetic);
+               // Expression du resultat pour retour dans la fct Tcl
+               sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %d",
                        xsm, ysm, err_xsm, err_ysm, fwhmx, fwhmy, fwhm, flux, err_flux,
                        pixmax, intensity, sky, err_sky, snint, radius, rdiff, err_psf);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-               retour = TCL_OK;
-               if (sub==1) {
+               // TODO : affichage des residus et PSF synthetic ;
+               // En attendant, destruction des buffers
+               for(i=0;i<height;i++) {
+                  free(*(residus+i));
+                  free(*(synthetic+i));
+               }
+               free(residus);
+               free(synthetic);
+               if (sub == 1) {
                   // TODO
-                  buffer->SyntheGauss(xsm-1.0,ysm-1.0,-intensity,-intensity,fwhmx,fwhmy,0.);
                }
                retour = TCL_OK;
             } catch(const CError& e) {

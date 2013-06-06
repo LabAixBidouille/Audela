@@ -179,8 +179,8 @@ public:
                  double *xsm, double *ysm, double *err_xsm, double *err_ysm,
                  double *fwhmx, double *fwhmy, double *fwhm, double *flux,
                  double *err_flux, double *pixmax, double *intensity, double *sky,
-                 double *err_sky, double *snint,double *radius, double *rdiff,
-                 double *err_psf);
+                 double *err_sky, double *snint, int *radius, double *rdiff,
+                 int *err_psf, float **residus, float **synthetic);
    void GetDataType(TDataType *dt);
    int  GetHeight();
    CFitsKeywords* GetKeywords() {return keywords;};
