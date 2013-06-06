@@ -1090,9 +1090,9 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    *sky       =  pxy[11];
    *err_sky   =  pxy[12];
    *snint     =  pxy[13];
-   *radius    =  pxy[14];
-   *rdiff     =  pxy[15];
-   *err_psf   =  pxy[16];
+   *radius    =  pxy[14]; // TODO int
+   *rdiff     =  pxy[15]; // TODO a calculer ici
+   *err_psf   =  pxy[16]; // TODO int
 
    //---------------
    printf("\nSynthetic:\n");
