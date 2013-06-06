@@ -75,8 +75,8 @@ public:
                  double *xsm, double *ysm, double *err_xsm, double *err_ysm,
                  double *fwhmx, double *fwhmy, double *fwhm, double *flux,
                  double *err_flux, double *pixmax, double *intensity, double *sky,
-                 double *err_sky, double *snint,double *radius, double *rdiff,
-                 double *err_psf);
+                 double *err_sky, double *snint, int *radius, double *rdiff,
+                 int *err_psf, float **residus, float **synthetic);
    virtual int  GetHeight(void)=0;
    virtual int  GetPlanes(void)=0;
    virtual int  GetWidth(void)=0;
@@ -90,8 +90,8 @@ public:
    virtual void GetPixelsVisu( int x1,int y1,int x2, int y2,
                   int mirrorX, int mirrorY, float *cuts,
                   unsigned char *palette[3], unsigned char *ptr)=0;
-   void         Histogram(int n, float *adus, float *meanadus, long *histo,
-                          int ismini,float mini,int ismaxi,float maxi);
+   void Histogram(int n, float *adus, float *meanadus, long *histo,
+                  int ismini,float mini,int ismaxi,float maxi);
    virtual int  IsPixelsReady(void)=0;
    virtual void Log(float coef, float offset)=0;
    virtual void MergePixels(TColorPlane plane, int pixels)=0;

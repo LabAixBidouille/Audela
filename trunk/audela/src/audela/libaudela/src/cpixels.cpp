@@ -970,9 +970,11 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
  *   sky = intensite du fond de ciel
  *   err_sky = erreur sur l'intensite du fond de ciel
  *   snint = 
- *   radius = 
- *   rdiff =
- *   err_psf = 
+ *   radius = rayon d'ouverture de la zone mesuree
+ *   rdiff = distance quadratique entre le photocentre mesure et le centre de la zone de mesure
+ *   err_psf = different de zero si la mesure de PSF n'est pas correcte
+ *   residus = buffer image des residus apres mesure de la PSF
+ *   synthetic = buffer image de la PSF ajsute
  * 
  * Usage test: buf1 psfimcce {426 863 477 903}
  ********************************************************************/
@@ -980,8 +982,8 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
                        double *xsm, double *ysm, double *err_xsm, double *err_ysm,
                        double *fwhmx, double *fwhmy, double *fwhm, double *flux,
                        double *err_flux, double *pixmax, double *intensity, double *sky,
-                       double *err_sky, double *snint, double *radius, double *rdiff,
-                       double *err_psf)
+                       double *err_sky, double *snint, int *radius, double *rdiff,
+                       int *err_psf, float **residus, float **synthetic)
 {
 
    int i, j, itemp;
@@ -991,8 +993,6 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    int width, height;
    int naxis1, naxis2;
    int ssquare, x1n, y1n, x2n, y2n;
-   float **residus = NULL;
-   float **synthetic = NULL;
    double **iXY;
 
    // La zone definie dans l'image est comprise entre 1 et naxis
@@ -1008,13 +1008,9 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    if (y2>naxis2) {y2=naxis2;}
    if (x1>x2) {itemp = x2; x2 = x1; x1 = itemp;}
    if (y1>y2) {itemp = y2; y2 = y1; y1 = itemp;}
-
-   printf("1: x,y(1) = %d %d ; x,y(2) = %d %d => %d %d\n",x1,y1,x2,y2,x2-x1+1,y2-y1+1);
-
    // Reduit la zone selectionnee au carre de plus petite dimension
    ssquare = x2-x1;
    if (ssquare > y2-y1) { ssquare = y2-y1; }
-
    // Coordonnees de la zone carree qui a ete selectionnee
    x1n = x1 + (x2-x1-ssquare)/2;
    y1n = y1 + (y2-y1-ssquare)/2;
@@ -1024,12 +1020,11 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    y1 = y1n;
    x2 = x2n;
    y2 = y2n;
-
+   // Dimensions (carre) de la zone d'analyse
    width = x2-x1+1;
    height = y2-y1+1;
 
-   printf("2: x,y(1) = %d %d ; x,y(2) = %d %d => %d %d :: %d \n",x1,y1,x2,y2,width,height,ssquare);
-
+   // Recupere la zone de l'image a analyser
    ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
    GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) ppixels);
 
@@ -1038,7 +1033,6 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    for(i=0;i<width;i++) {
       *(iXY+i) = (double*) calloc(height,sizeof(double));
    }
-
    // Affectation du buffer image
    for(j=0;j<height;j++) {
       for(i=0;i<width;i++) {
@@ -1047,7 +1041,8 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
       }
    }
 
-   //---------------
+   //-- DEBUG ------
+/*
    printf("Source analysee:\n");
    printf("       ");
    for(i=0;i<width;i++) printf("%2d   ",i);
@@ -1059,27 +1054,15 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
       }
       printf("\n");
    }
+*/
    //---------------
 
-   // Allocation des matrices residus et synthetic
-   residus = (float **) malloc((height)*sizeof(float *));
-   synthetic = (float **) malloc((height)*sizeof(float *));
-   for(i=0;i<height;i++) {
-      residus[i] = (float *) malloc(width*sizeof(float));
-      synthetic[i] = (float *) malloc(width*sizeof(float));
-   }
-   if (!residus || !synthetic) {
-      throw CError(ELIBSTD_CANNOT_CREATE_BUFFER);
-   }
-
    // Appel de la methode d'ajustement
-   printf("\npsfimcce_compute: ");
    psfimcce_compute(width-1, iXY, pxy, residus, synthetic);
-   printf("OK\n");
 
    // Results from psfimcce_compute :
-   *xsm       =  pxy[0] + x1;
-   *ysm       =  pxy[1] + y1;
+   *xsm       =  pxy[0] + x1 + 1;
+   *ysm       =  pxy[1] + y1 + 1;
    *err_xsm   =  pxy[2];
    *err_ysm   =  pxy[3];
    *fwhmx     =  pxy[4];
@@ -1092,11 +1075,12 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    *sky       =  pxy[11];
    *err_sky   =  pxy[12];
    *snint     =  pxy[13];
-   *radius    =  pxy[14]; // TODO int
-   *rdiff     =  pxy[15]; // TODO a calculer ici
-   *err_psf   =  pxy[16]; // TODO int
+   *radius    =  (int) pxy[14];
+   *rdiff     =  sqrt( pow( x1+(x2-x1)/2.0 - *xsm, 2) + pow( y1+(y2-y1)/2.0 - *ysm, 2) );
+   *err_psf   =  (int) pxy[16];
 
-   //---------------
+   //-- DEBUG ------
+/*
    printf("\nSynthetic:\n");
    printf("       ");
    for(i=1;i<width;i++) printf("%2d   ",i);
@@ -1108,9 +1092,6 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
       }
       printf("\n");
    }
-   //---------------
-
-   //---------------
    printf("\nResidus:\n");
    printf("       ");
    for(i=1;i<width;i++) printf("%2d   ",i);
@@ -1122,6 +1103,7 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
       }
       printf("\n");
    }
+*/
    //---------------
 
    // Clean memory
