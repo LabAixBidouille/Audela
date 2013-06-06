@@ -496,7 +496,7 @@ proc ::horizon::importHorizon { visuNo this } {
 
    #--   configure les coordonnees
    foreach az $azimut(:) elev $elevation(:) {
-      lappend ::conf(horizon,$horizonId,coordinates) [list [expr { int($az) }] [expr { int($elev)}] ]
+      lappend ::conf(horizon,$horizonId,coordinates) [list $az $elev]
    }
     blt::vector destroy azimut elevation
 
