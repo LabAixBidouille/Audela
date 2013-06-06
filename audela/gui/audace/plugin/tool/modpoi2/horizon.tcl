@@ -590,8 +590,9 @@ proc ::horizon::displayHorizon { visuNo } {
    ::plotxy::position {20 20 800 400}
    ::plotxy::hold on
 
-   $::plotxy(fig$figureNo,parent).xy axis configure x -stepsize 30
-   $::plotxy(fig$figureNo,parent).xy grid configure -hide no -dashes { 2 2 }
+   $::plotxy(fig$figureNo,parent).xy axis configure x -stepsize 45
+   $::plotxy(fig$figureNo,parent).xy axis configure y -stepsize 15 -min 0 -max 90
+   $::plotxy(fig$figureNo,parent).xy grid configure -hide no -dashes { 1 2 }
 }
 
 #------------------------------------------------------------
