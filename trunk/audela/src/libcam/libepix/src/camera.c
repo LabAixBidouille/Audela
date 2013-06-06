@@ -76,6 +76,7 @@ int gettimeofday(struct timeval* p, void* tz) {
     return 0;
 }
 #endif
+#endif
 
 #include <time.h>
 
