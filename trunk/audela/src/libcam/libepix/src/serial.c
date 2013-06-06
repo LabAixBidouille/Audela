@@ -25,6 +25,12 @@
  * for the Raptor Photonics Osprey camera
  */
 
+#include "sysexp.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #include <time.h>
 #include "serial.h"
 #include <stdio.h>
