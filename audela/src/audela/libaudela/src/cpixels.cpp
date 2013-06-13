@@ -998,14 +998,14 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    // La zone definie dans l'image est comprise entre 1 et naxis
    naxis1 = this->GetWidth();
    naxis2 = this->GetHeight();
-   if (x1<1) {x1=1;}
-   if (x2<1) {x2=1;}
-   if (y1<1) {y1=1;}
-   if (y2<1) {y2=1;}
-   if (x1>naxis1) {x1=naxis1;}
-   if (x2>naxis1) {x2=naxis1;}
-   if (y1>naxis2) {y1=naxis2;}
-   if (y2>naxis2) {y2=naxis2;}
+   if (x1<0) {x1=0;}
+   if (x2<0) {x2=0;}
+   if (y1<0) {y1=0;}
+   if (y2<0) {y2=0;}
+   if (x1>naxis1-1) {x1=naxis1-1;}
+   if (x2>naxis1-1) {x2=naxis1-1;}
+   if (y1>naxis2-1) {y1=naxis2-1;}
+   if (y2>naxis2-1) {y2=naxis2-1;}
    if (x1>x2) {itemp = x2; x2 = x1; x1 = itemp;}
    if (y1>y2) {itemp = y2; y2 = y1; y1 = itemp;}
    // Reduit la zone selectionnee au carre de plus petite dimension
@@ -1020,9 +1020,11 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    y1 = y1n;
    x2 = x2n;
    y2 = y2n;
+
    // Dimensions (carre) de la zone d'analyse
    width = x2-x1+1;
    height = y2-y1+1;
+   printf("w,h = %d x %d -> %d %d %d %d \n",width,height,x1,y1,x2,y2);
 
    // Recupere la zone de l'image a analyser
    ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
@@ -1042,19 +1044,21 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    }
 
    //-- DEBUG ------
-/*
-   printf("Source analysee:\n");
-   printf("       ");
-   for(i=0;i<width;i++) printf("%2d   ",i);
-   printf("\n");
-   for(i=0;i<width;i++) {
-      printf("%2d : ",i);
-      for(j=0;j<height;j++) {
-         printf("%4.0f ",iXY[i][j]);
-      }
-      printf("\n");
-   }
-*/
+//   printf("Source analysee:\n");
+//   printf("       ");
+//   for(i=0;i<width;i++) printf("%2d   ",i);
+//   printf("\n");
+//FILE *file;
+//file = fopen("/usr/local/src/audela/bin/img.dat","w");
+//   for(i=0;i<width;i++) {
+//      printf("%2d : ",i);
+//      for(j=0;j<height;j++) {
+//         fprintf(file,"img[%d][%d] = %4.0f ;\n",i,j,iXY[i][j]);
+//         fwrite(&iXY[i][j],sizeof(double),1,file); 
+//      }
+//      printf("\n");
+//   }
+//fclose(file);
    //---------------
 
    // Appel de la methode d'ajustement
@@ -1076,7 +1080,6 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    *err_sky   =  pxy[12];
    *snint     =  pxy[13];
    *radius    =  (int) pxy[14];
-   *rdiff     =  sqrt( pow( x1+(x2-x1)/2.0 - *xsm, 2) + pow( y1+(y2-y1)/2.0 - *ysm, 2) );
    *err_psf   =  (int) pxy[16];
 
    //-- DEBUG ------

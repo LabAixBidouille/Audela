@@ -5068,7 +5068,7 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   throw CError(ELIBSTD_CANNOT_CREATE_BUFFER);
                }
                // Mesure dela PSF
-               buffer->psfimcce(x1,y1,x2,y2, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
+               buffer->psfimcce(x1-1,y1-1,x2-1,y2-1, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
                                 &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &err_psf,
                                 &*residus, &*synthetic);
                // Expression du resultat pour retour dans la fct Tcl
