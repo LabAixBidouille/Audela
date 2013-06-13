@@ -58,52 +58,32 @@
 void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties, float **synthetic, float **residus)
 {
    float flux, pixmax;
-   int i,j;
    float *dyda;
+   int i, j;
 
-/*
-   Gaussienne Synthtetique
-*/
-   dyda = vector(1,MA);
-   for(i=0;i<npt;i++) {
-      for(j=0;j<npt;j++) {
-         fgauss1_2d(i, j, a, &synthetic[i][j], dyda, MA);
-      }
-   }
-   free_vector(dyda,1,MA);
-
-/*
-   Gaussienne Residuelle
-*/
-   for(i=0;i<npt;i++) {
-      for(j=0;j<npt;j++) {
-         residus[i][j] = synthetic[i][j] - zs[i][j];
-      }
-   }
-
-/*
-   Calcul du flux integre
-*/
    flux = 0;
-   for(i=0;i<npt;i++) {
-      for(j=0;j<npt;j++) {
-         flux+=synthetic[i][j]-a[1];
-      }
-   }
-/*
-   Calcul du pixmax
-*/
    pixmax = zs[1][1];
-   for (i=0; i < npt; i++) {
-      for (j=0; j < npt; j++) {
+   dyda = vector(1,MA);
+
+   for(i=0; i<npt; i++) {
+      for(j=0; j<npt; j++) {
+         /* Gaussienne Synthtetique */
+         fgauss1_2d(i, j, a, &synthetic[i][j], dyda, MA);
+         /* Gaussienne Residuelle */
+         residus[i][j] = synthetic[i][j] - zs[i][j];
+         /* Calcul du flux integre */
+         flux += synthetic[i][j]-a[1];
+         /* Calcul du pixmax */
          if (pixmax < zs[i][j]) {
             pixmax = zs[i][j];
          }
       }
    }
 
+   free_vector(dyda,1,MA);
+
 /*
-   Parametre de la forme ASTROID
+   Parametres au format ASTROID
 */
    //  0    "xsm" 
    p[0] = a[3];
@@ -150,12 +130,9 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    //  14   "radius" 
    p[14] = (int) (npt/2);
 
-   //  15   "rdiff" 
-   p[15] = 0;
-
    //  16   "err_psf" 
-   p[16] = 0;
-
+   p[15] = 0;
+   if (isnan(p[0]) || isnan(p[1])) p[15] = 2;
 
 }
 
@@ -165,8 +142,8 @@ void fgauss(float x, float a[], float *y, float dyda[], int na)
 	int i;
 	float fac,ex,arg;
 
-	*y=0.0;
-	for (i=1;i<=na-1;i+=3) {
+	*y = 0.0;
+	for (i=1; i<=na-1; i+=3) {
 		arg=(x-a[i+1])/a[i+2];
 		ex=exp(-arg*arg);
 		fac=a[i]*ex*2.0*arg;

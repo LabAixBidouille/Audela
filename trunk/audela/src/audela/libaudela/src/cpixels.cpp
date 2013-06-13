@@ -953,7 +953,7 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
  * l'orientation
  * 
  * ENTREES :
- *  x1,y1,x2,y2 : coordonnees en pixel de la zone d'ajustement
+ *  x1,y1,x2,y2 : coordonnees en pixel de la zone d'ajustement (entre 0 et naxis-1)
  * 
  * SORTIES
  *   xsm = position y du maximum de la gaussienne
@@ -971,11 +971,19 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
  *   err_sky = erreur sur l'intensite du fond de ciel
  *   snint = 
  *   radius = rayon d'ouverture de la zone mesuree
- *   rdiff = distance quadratique entre le photocentre mesure et le centre de la zone de mesure
  *   err_psf = different de zero si la mesure de PSF n'est pas correcte
  *   residus = buffer image des residus apres mesure de la PSF
  *   synthetic = buffer image de la PSF ajsute
- * 
+ *
+ * Remarque: si la zone d'analyse depasse les limites physiques de l'image
+ * (e.g. <0 ou >naxis-1) alors la fonction renvoie le code err_psf=1
+ *
+ * Codes d'erreur err_psf:
+ *   0: no error
+ *   1: source trop proche du bord de l'image
+ *   2: x ou y NaN
+ *   3: x ou y en dehors de l'image
+ *   
  * Usage test: buf1 psfimcce {426 863 477 903}
  ********************************************************************/
 void CPixels::psfimcce(int x1, int y1, int x2, int y2,
@@ -990,14 +998,19 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    double pxy[17];
    TYPE_PIXELS pixel;
    TYPE_PIXELS *ppixels;
-   int width, height;
+   int width, height, lradius;
    int naxis1, naxis2;
    int ssquare, x1n, y1n, x2n, y2n;
    double **iXY;
 
-   // La zone definie dans l'image est comprise entre 1 et naxis
+   // Redefinie la zone tq x1<x2 et y1<y2
+   if (x1>x2) {itemp = x2; x2 = x1; x1 = itemp;}
+   if (y1>y2) {itemp = y2; y2 = y1; y1 = itemp;}
+
+   // Verifie que la zone est comprise entre 0 et naxis-1
    naxis1 = this->GetWidth();
    naxis2 = this->GetHeight();
+/*
    if (x1<0) {x1=0;}
    if (x2<0) {x2=0;}
    if (y1<0) {y1=0;}
@@ -1006,8 +1019,7 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    if (x2>naxis1-1) {x2=naxis1-1;}
    if (y1>naxis2-1) {y1=naxis2-1;}
    if (y2>naxis2-1) {y2=naxis2-1;}
-   if (x1>x2) {itemp = x2; x2 = x1; x1 = itemp;}
-   if (y1>y2) {itemp = y2; y2 = y1; y1 = itemp;}
+*/
    // Reduit la zone selectionnee au carre de plus petite dimension
    ssquare = x2-x1;
    if (ssquare > y2-y1) { ssquare = y2-y1; }
@@ -1024,97 +1036,99 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    // Dimensions (carre) de la zone d'analyse
    width = x2-x1+1;
    height = y2-y1+1;
-   printf("w,h = %d x %d -> %d %d %d %d \n",width,height,x1,y1,x2,y2);
+   lradius = width/2;
+   if (height < width) { lradius = height/2; }
+   //printf("w,h = %d x %d -> %d %d %d %d -> %d\n",width,height,x1,y1,x2,y2,lradius);
 
-   // Recupere la zone de l'image a analyser
-   ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
-   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) ppixels);
+   if (x1 < 0 || x2 > naxis1-1 || y1 < 0 || y2 > naxis2-1) {
 
-   // Allocation du buffer contenant l'image a analyser
-   iXY = (double**) calloc(width,sizeof(double));
-   for(i=0;i<width;i++) {
-      *(iXY+i) = (double*) calloc(height,sizeof(double));
-   }
-   // Affectation du buffer image
-   for(j=0;j<height;j++) {
+      *xsm       =  0.0;
+      *ysm       =  0.0;
+      *err_xsm   =  0.0;
+      *err_ysm   =  0.0;
+      *fwhmx     =  0.0;
+      *fwhmy     =  0.0;
+      *fwhm      =  0.0;
+      *flux      =  0.0;
+      *err_flux  =  0.0;
+      *pixmax    =  0.0;
+      *intensity =  0.0;
+      *sky       =  0.0;
+      *err_sky   =  0.0;
+      *snint     =  0.0;
+      *radius    =  lradius;
+      *err_psf   =  1;
+
+   } else {
+   
+      // Recupere la zone de l'image a analyser
+      ppixels = (TYPE_PIXELS *) malloc(width * height * sizeof(TYPE_PIXELS));
+      GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) ppixels);
+   
+      // Allocation du buffer contenant l'image a analyser
+      iXY = (double**) calloc(width,sizeof(double));
       for(i=0;i<width;i++) {
-         pixel = *(ppixels+width*j+i);
-         iXY[i][j] = (double) pixel;
+         *(iXY+i) = (double*) calloc(height,sizeof(double));
       }
-   }
-
-   //-- DEBUG ------
-//   printf("Source analysee:\n");
-//   printf("       ");
-//   for(i=0;i<width;i++) printf("%2d   ",i);
-//   printf("\n");
-//FILE *file;
-//file = fopen("/usr/local/src/audela/bin/img.dat","w");
-//   for(i=0;i<width;i++) {
-//      printf("%2d : ",i);
-//      for(j=0;j<height;j++) {
-//         fprintf(file,"img[%d][%d] = %4.0f ;\n",i,j,iXY[i][j]);
-//         fwrite(&iXY[i][j],sizeof(double),1,file); 
-//      }
-//      printf("\n");
-//   }
-//fclose(file);
-   //---------------
-
-   // Appel de la methode d'ajustement
-   psfimcce_compute(width, iXY, pxy, residus, synthetic);
-
-   // Results from psfimcce_compute :
-   *xsm       =  pxy[0] + x1 + 1;
-   *ysm       =  pxy[1] + y1 + 1;
-   *err_xsm   =  pxy[2];
-   *err_ysm   =  pxy[3];
-   *fwhmx     =  pxy[4];
-   *fwhmy     =  pxy[5];
-   *fwhm      =  pxy[6];
-   *flux      =  pxy[7];
-   *err_flux  =  pxy[8];
-   *pixmax    =  pxy[9];
-   *intensity =  pxy[10];
-   *sky       =  pxy[11];
-   *err_sky   =  pxy[12];
-   *snint     =  pxy[13];
-   *radius    =  (int) pxy[14];
-   *err_psf   =  (int) pxy[16];
-
-   //-- DEBUG ------
+      // Affectation du buffer image
+      for(j=0;j<height;j++) {
+         for(i=0;i<width;i++) {
+            pixel = *(ppixels+width*j+i);
+            iXY[i][j] = (double) pixel;
+         }
+      }
+   
+      //-- DEBUG ------
 /*
-   printf("\nSynthetic:\n");
-   printf("       ");
-   for(i=1;i<width;i++) printf("%2d   ",i);
-   printf("\n");
-   for(i=1;i<width;i++) {
-      printf("%2d : ",i);
-      for(j=1;j<height;j++) {
-         printf("%4.0f ",synthetic[i][j]);
-      }
+      printf("Source analysee:\n");
+      printf("       ");
+      for(i=0;i<width;i++) printf("%2d   ",i);
       printf("\n");
-   }
-   printf("\nResidus:\n");
-   printf("       ");
-   for(i=1;i<width;i++) printf("%2d   ",i);
-   printf("\n");
-   for(i=1;i<width;i++) {
-      printf("%2d : ",i);
-      for(j=1;j<height;j++) {
-         printf("%4.0f ",residus[i][j]);
+      FILE *file;
+      file = fopen("/usr/local/src/audela/bin/img.dat","w");
+      for(i=0;i<width;i++) {
+         printf("%2d : ",i);
+         for(j=0;j<height;j++) {
+            fprintf(file,"img[%d][%d] = %4.0f ;\n",i,j,iXY[i][j]);
+            fwrite(&iXY[i][j],sizeof(double),1,file); 
+         }
+         printf("\n");
       }
-      printf("\n");
-   }
+      fclose(file);
 */
-   //---------------
+      //---------------
+   
+      // Appel de la methode d'ajustement
+      psfimcce_compute(width, iXY, pxy, residus, synthetic);
+   
+      // Results from psfimcce_compute :
+      *xsm       =  pxy[0] + x1 + 1;
+      *ysm       =  pxy[1] + y1 + 1;
+      *err_xsm   =  pxy[2];
+      *err_ysm   =  pxy[3];
+      *fwhmx     =  pxy[4];
+      *fwhmy     =  pxy[5];
+      *fwhm      =  pxy[6];
+      *flux      =  pxy[7];
+      *err_flux  =  pxy[8];
+      *pixmax    =  pxy[9];
+      *intensity =  pxy[10];
+      *sky       =  pxy[11];
+      *err_sky   =  pxy[12];
+      *snint     =  pxy[13];
+      *radius    =  (int) pxy[14];
+      *err_psf   =  (int) pxy[15];
+      if (*xsm < 0 || *xsm > naxis1-1) { *err_psf = 3; }
+      if (*ysm < 0 || *ysm > naxis2-1) { *err_psf = 3; }
 
-   // Clean memory
-   for(i=0;i<width;i++) {
-      free(*(iXY+i));
+      // Clean memory
+      for(i=0;i<width;i++) {
+         free(*(iXY+i));
+      }
+      free(iXY);
+      free(ppixels);
    }
-   free(iXY);
-   free(ppixels);
+
 }
 
 

@@ -4970,7 +4970,6 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    float **residus = NULL;      // Buffer image des residus apres mesure de la PSF
    float **synthetic = NULL;    // Buffer image de la PSF ajsute
 
-   //int temp,naxis1,naxis2;
    int sub, i, k, temp;
    int ssquare, x1n, y1n, x2n, y2n;
    int width, height;
@@ -5020,77 +5019,94 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             // Recupere les dimensions de l'image courante
             naxis1 = buffer->GetWidth();
             naxis2 = buffer->GetHeight();
-            // Sanity checks
-            if (x1 < 1 || x2 <1 || y1 < 1 || y2 < 1) {
-               err_psf = 1;
-            }
-            if (x1 > naxis1 || x2 > naxis1 || y1 > naxis2 || y2 > naxis2) {
-               err_psf = 1;
-            }
-
-
-
-            if (x1<1) {x1=1;}
-            if (x2<1) {x2=1;}
-            if (y1<1) {y1=1;}
-            if (y2<1) {y2=1;}
-            if (x1>naxis1) {x1=naxis1;}
-            if (x2>naxis1) {x2=naxis1;}
-            if (y1>naxis2) {y1=naxis2;}
-            if (y2>naxis2) {y2=naxis2;}
+            // Redefini les coordonnees de la zone image tq x1<x2 et y1<y2
             if (x1 > x2) { temp = x1; x1 = x2; x2 = temp; }
             if (y1 > y2) { temp = y1; y1 = y2; y2 = temp; }
-            // Reduit la zone selectionnee au carre de plus petite dimension
-            ssquare = x2-x1;
-            if (ssquare > y2-y1) { ssquare = y2-y1; }
-            // Coordonnees de la zone carree qui a ete selectionnee
-            x1n = x1 + (x2-x1-ssquare)/2;
-            y1n = y1 + (y2-y1-ssquare)/2;
-            x2n = x1 + (x2-x1+ssquare)/2;
-            y2n = y1 + (y2-y1+ssquare)/2;
-            x1 = x1n;
-            y1 = y1n;
-            x2 = x2n;
-            y2 = y2n;
-            // Dimension de la zone analysee
-            width = x2-x1+1;
-            height = y2-y1+1;
+            // Verifie que la zone choisie ne depasse pas les dimensions de l'image
+            if (x1 < 1 || x2 > naxis1 || y1 < 1 || y2 > naxis2) {
 
-            try {
-               // Allocation des buffers residus et synthetic
-               residus = (float **) malloc((height)*sizeof(float *));
-               synthetic = (float **) malloc((height)*sizeof(float *));
-               for(i=0;i<height;i++) {
-                  residus[i] = (float *) malloc(width*sizeof(float));
-                  synthetic[i] = (float *) malloc(width*sizeof(float));
+               err_psf = 1;
+               // Dimension de la zone analysee
+               width = x2-x1+1;
+               height = y2-y1+1;
+               radius = width/2;
+               if (height < width) { radius = height/2; }
+
+            } else {
+
+               err_psf = 0;
+               // Reduit la zone selectionnee au carre de plus petite dimension
+               ssquare = x2-x1;
+               if (ssquare > y2-y1) { ssquare = y2-y1; }
+               // Coordonnees de la zone carree qui a ete selectionnee
+               x1n = x1 + (x2-x1-ssquare)/2;
+               y1n = y1 + (y2-y1-ssquare)/2;
+               x2n = x1 + (x2-x1+ssquare)/2;
+               y2n = y1 + (y2-y1+ssquare)/2;
+               x1 = x1n;
+               y1 = y1n;
+               x2 = x2n;
+               y2 = y2n;
+               // Dimension de la zone analysee
+               width = x2-x1+1;
+               height = y2-y1+1;
+               if (x1 < 1 || x2 > naxis1 || y1 < 1 || y2 > naxis2) {
+                  err_psf = 1;
+                  radius = width/2;
+                  if (height < width) { radius = height/2; }
                }
-               if (!residus || !synthetic) {
-                  throw CError(ELIBSTD_CANNOT_CREATE_BUFFER);
+
+            }
+
+            // Analyse de la zone
+            if (err_psf == 0) {
+
+               try {
+                  // Allocation des buffers residus et synthetic
+                  residus = (float **) malloc((height)*sizeof(float *));
+                  synthetic = (float **) malloc((height)*sizeof(float *));
+                  for(i=0;i<height;i++) {
+                     residus[i] = (float *) malloc(width*sizeof(float));
+                     synthetic[i] = (float *) malloc(width*sizeof(float));
+                  }
+                  if (!residus || !synthetic) {
+                     throw CError(ELIBSTD_CANNOT_CREATE_BUFFER);
+                  }
+                  // Mesure dela PSF
+                  buffer->psfimcce(x1-1,y1-1,x2-1,y2-1, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
+                                   &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &err_psf,
+                                   &*residus, &*synthetic);
+                  // Expression du resultat pour retour dans la fct Tcl
+                  sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %d",
+                          xsm, ysm, err_xsm, err_ysm, fwhmx, fwhmy, fwhm, flux, err_flux,
+                          pixmax, intensity, sky, err_sky, snint, radius, err_psf);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  // TODO : traiter le retour de err_psf
+                  // TODO : affichage des residus et PSF synthetic ;
+                  // En attendant, destruction des buffers
+                  for(i=0;i<height;i++) {
+                     free(*(residus+i));
+                     free(*(synthetic+i));
+                  }
+                  free(residus);
+                  free(synthetic);
+                  if (sub == 1) {
+                     // TODO
+                  }
+                  retour = TCL_OK;
+               } catch(const CError& e) {
+                  sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+                  retour = TCL_ERROR;
                }
-               // Mesure dela PSF
-               buffer->psfimcce(x1-1,y1-1,x2-1,y2-1, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
-                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &err_psf,
-                                &*residus, &*synthetic);
+
+            } else {
+
+               // Renvoie le resultat directement
                // Expression du resultat pour retour dans la fct Tcl
-               sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %d",
-                       xsm, ysm, err_xsm, err_ysm, fwhmx, fwhmy, fwhm, flux, err_flux,
-                       pixmax, intensity, sky, err_sky, snint, radius, err_psf);
+               sprintf(ligne,"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 %d %d", radius, err_psf);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-               // TODO : affichage des residus et PSF synthetic ;
-               // En attendant, destruction des buffers
-               for(i=0;i<height;i++) {
-                  free(*(residus+i));
-                  free(*(synthetic+i));
-               }
-               free(residus);
-               free(synthetic);
-               if (sub == 1) {
-                  // TODO
-               }
                retour = TCL_OK;
-            } catch(const CError& e) {
-               sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
-               retour = TCL_ERROR;
+
             }
          }
          Tcl_Free((char*)listArgv);
