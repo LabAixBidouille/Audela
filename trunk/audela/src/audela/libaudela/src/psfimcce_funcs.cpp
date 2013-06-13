@@ -425,7 +425,7 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
 		   else if (fabs(ochisq-chisq) < 0.001)
 			   itst++;
 
-		   if (itst < 4 && k < 100) continue;
+		   if (itst < 4 && k < 30) continue;
 
 		   alamda=0.0;
          mrqmin2D(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda);
