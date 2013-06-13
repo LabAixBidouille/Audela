@@ -1603,13 +1603,13 @@ namespace eval bdi_gui_gestion_source {
       
 
       set spinlist ""
-      for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius} {incr i} {lappend spinlist $i}
+      for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius_max} {incr i} {lappend spinlist $i}
       set ::bdi_gui_gestion_source::visucrop ""
       set ::bdi_gui_gestion_source::bufcrop  ""
       
       
       set spinlist ""
-      for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius} {incr i} {lappend spinlist $i}
+      for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius_max} {incr i} {lappend spinlist $i}
 
       set ::bdi_gui_gestion_source::fen .psf
       if { [winfo exists $::bdi_gui_gestion_source::fen] } {
@@ -1864,7 +1864,7 @@ namespace eval bdi_gui_gestion_source {
                      entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
 
                      label $block.radl -text "Limite du Rayon : " 
-                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius -relief sunken -width 5
+                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius_max -relief sunken -width 5
                    
                      grid $block.satl  $block.satv  -sticky nsw -pady 3
                      grid $block.thrl  $block.thrv  -sticky nsw -pady 3
@@ -1940,16 +1940,6 @@ namespace eval bdi_gui_gestion_source {
 
 
    }
-
-
-
-
-
-
-
-
-
-
 
 
 

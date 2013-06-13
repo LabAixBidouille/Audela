@@ -94,7 +94,7 @@ namespace eval bdi_gui_psf {
 
       
       set spinlist ""
-      for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius} {incr i} {lappend spinlist $i}
+      for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius_max} {incr i} {lappend spinlist $i}
       
       # configuration par onglets
       set block [frame $frm.conf -borderwidth 0 -cursor arrow -relief groove]
@@ -113,7 +113,6 @@ namespace eval bdi_gui_psf {
 
               ttk::notebook::enableTraversal $meth_onglets.nb
 
-
               # configuration photombasic
               set block [frame $ongl(2).conf -borderwidth 0 -cursor arrow -relief groove]
               pack $block -in $ongl(2) -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
@@ -126,7 +125,7 @@ namespace eval bdi_gui_psf {
 
                      label $block.radl -text "Rayon : " 
                      set sav $::bdi_tools_psf::psf_radius
-                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius -textvariable ::bdi_tools_psf::psf_radius -width 3 \
+                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius_max -textvariable ::bdi_tools_psf::psf_radius -width 3 \
                          -command ""
                      pack  $block.radiusc -side left 
               
@@ -147,13 +146,16 @@ namespace eval bdi_gui_psf {
                      label $block.thrl -text "Threshold (arcsec): " 
                      entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
 
-                     label $block.radl -text "Limite du Rayon : " 
-                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius -relief sunken -width 5
+                     label $block.radl1 -text "Limite min du Rayon : " 
+                     entry $block.radv1 -textvariable ::bdi_tools_psf::psf_limitradius_min -relief sunken -width 5
 
-                     grid $block.satl  $block.satv  -sticky nsw -pady 3
-                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
-                     grid $block.radl  $block.radv  -sticky nsw -pady 3
+                     label $block.radl2 -text "Limite max du Rayon : " 
+                     entry $block.radv2 -textvariable ::bdi_tools_psf::psf_limitradius_max -relief sunken -width 5
 
+                     grid $block.satl   $block.satv  -sticky nsw -pady 3
+                     grid $block.thrl   $block.thrv  -sticky nsw -pady 3
+                     grid $block.radl1  $block.radv1 -sticky nsw -pady 3
+                     grid $block.radl2  $block.radv2 -sticky nsw -pady 3
 
 
       set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
@@ -194,10 +196,6 @@ namespace eval bdi_gui_psf {
 
 
 
-
-
-
-
    proc ::bdi_gui_psf::get_list_col { } {
       return [list xsm ysm err_xsm err_ysm fwhmx fwhmy fwhm fluxintegre errflux pixmax intensite sigmafond snint snpx delta rdiff ra dec ]
    }
@@ -224,9 +222,9 @@ namespace eval bdi_gui_psf {
          set delta $::gui_cata::current_psf($err_key)
          set y0    $::gui_cata::current_psf($key)
          #gren_info "$key = $y0 ; delta = $delta\n"
-         set ymin  [list [expr $y0 - $delta] [expr $y0 - $delta] ]
-         set ymax  [list [expr $y0 + $delta] [expr $y0 + $delta] ]
-         set x0    [ list 0 $::bdi_tools_psf::psf_limitradius ]
+         set ymin [list [expr $y0 - $delta] [expr $y0 - $delta] ]
+         set ymax [list [expr $y0 + $delta] [expr $y0 + $delta] ]
+         set x0   [list 0 $::bdi_tools_psf::psf_limitradius_max]
          set h [::plotxy::plot $x0 $ymin .]
          plotxy::sethandler $h [list -color "#808080" -linewidth 2]
          set h [::plotxy::plot $x0 $ymax .]
@@ -239,7 +237,7 @@ namespace eval bdi_gui_psf {
     
       # graph de log
       if {1 == 1} {
-         for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         for {set radius $::bdi_tools_psf::psf_limitradius_min} {$radius < $::bdi_tools_psf::psf_limitradius_max} {incr radius} {
             if {[info exists ::bdi_tools_psf::graph_results($radius,$key)]} {
                if {$::bdi_tools_psf::graph_results($radius,err)==10} {
                   gren_erreur "$radius $::bdi_tools_psf::graph_results($radius,err)\n"
@@ -256,7 +254,7 @@ namespace eval bdi_gui_psf {
       set x ""
       set y ""
 
-      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+      for {set radius $::bdi_tools_psf::psf_limitradius_min} {$radius < $::bdi_tools_psf::psf_limitradius_max} {incr radius} {
          
          #catch { gren_erreur "$radius $::bdi_tools_psf::graph_results($radius,err)\n" }
          
@@ -275,8 +273,8 @@ namespace eval bdi_gui_psf {
      
 
       # Affichage de la valeur obtenue sous forme d'une ligne horizontale
-      set x0 [ list 0 $::bdi_tools_psf::psf_limitradius ]
-      set y0 [ list $::gui_cata::current_psf($key) $::gui_cata::current_psf($key)]
+      set x0 [list 0 $::bdi_tools_psf::psf_limitradius_max]
+      set y0 [list $::gui_cata::current_psf($key) $::gui_cata::current_psf($key)]
       set h [::plotxy::plot $x0 $y0 .]
       plotxy::sethandler $h [list -color black -linewidth 2]
 
@@ -327,7 +325,7 @@ namespace eval bdi_gui_psf {
       # graph de log
       if {1 == 1} {
          gren_info "valeur avant takall\n"
-         for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+         for {set radius $::bdi_tools_psf::psf_limitradius_min} {$radius < $::bdi_tools_psf::psf_limitradius_max} {incr radius} {
             if {[info exists ::bdi_tools_psf::graph_results($radius,err)]} {
                if {$::bdi_tools_psf::graph_results($radius,err)==10} {
                   gren_erreur "$radius $::bdi_tools_psf::graph_results($radius,err)\n"
@@ -340,7 +338,7 @@ namespace eval bdi_gui_psf {
       }            
 
       # remet tout a 0
-      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+      for {set radius $::bdi_tools_psf::psf_limitradius_min} {$radius < $::bdi_tools_psf::psf_limitradius_max} {incr radius} {
          if {$::bdi_tools_psf::graph_results($radius,err)==10} {
             set ::bdi_tools_psf::graph_results($radius,err) 0
          }
@@ -384,7 +382,7 @@ namespace eval bdi_gui_psf {
 
       # on crop
       set cpt 0
-      for {set radius 1} {$radius < $::bdi_tools_psf::psf_limitradius} {incr radius} {
+      for {set radius $::bdi_tools_psf::psf_limitradius_min} {$radius < $::bdi_tools_psf::psf_limitradius_max} {incr radius} {
          if {$::bdi_tools_psf::graph_results($radius,err)==0} {
             incr cpt
             if {$radius < $x1 || $x2 < $radius } {
@@ -427,7 +425,7 @@ namespace eval bdi_gui_psf {
 
 return 
       
-      array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::psf_tools::psf_limitradius 0]
+      array set sol [::psf_tools::method_global_stat ::psf_tools::graph_results $::psf_tools::psf_limitradius_max 0]
       set ::gui_cata::psf_best_sol [::psf_tools::method_global_sol sol]
 
       set flagastroid [::psf_tools::add_astroid ::gui_cata::psf_source ::gui_cata::psf_best_sol $::gui_cata::psf_name_source]

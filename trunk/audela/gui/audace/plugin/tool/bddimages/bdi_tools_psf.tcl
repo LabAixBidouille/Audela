@@ -29,7 +29,8 @@ namespace eval bdi_tools_psf {
 
    variable psf_saturation
    variable psf_threshold
-   variable psf_limitradius
+   variable psf_limitradius_min
+   variable psf_limitradius_max
    variable psf_radius
    variable psf_rect
    variable psf_methode
@@ -80,11 +81,18 @@ namespace eval bdi_tools_psf {
             set ::bdi_tools_psf::psf_threshold 2
          }
       }
-      if {! [info exists ::bdi_tools_psf::psf_limitradius] } {
-         if {[info exists conf(bddimages,cata,psf,limitradius)]} {
-            set ::bdi_tools_psf::psf_limitradius $conf(bddimages,cata,psf,limitradius)
+      if {! [info exists ::bdi_tools_psf::psf_limitradius_min] } {
+         if {[info exists conf(bddimages,cata,psf,limitradius_min)]} {
+            set ::bdi_tools_psf::psf_limitradius_min $conf(bddimages,cata,psf,limitradius_min)
          } else {
-            set ::bdi_tools_psf::psf_limitradius 50
+            set ::bdi_tools_psf::psf_limitradius_min 10
+         }
+      }
+      if {! [info exists ::bdi_tools_psf::psf_limitradius_max] } {
+         if {[info exists conf(bddimages,cata,psf,limitradius_max)]} {
+            set ::bdi_tools_psf::psf_limitradius_max $conf(bddimages,cata,psf,limitradius_max)
+         } else {
+            set ::bdi_tools_psf::psf_limitradius_max 40
          }
       }
       if {! [info exists ::bdi_tools_psf::psf_methode] } {
@@ -108,13 +116,14 @@ namespace eval bdi_tools_psf {
       global conf
    
       # Conf cata psf
-      set conf(bddimages,cata,psf,create)       $::bdi_tools_psf::use_psf
-      set conf(bddimages,cata,psf,globale)      $::bdi_tools_psf::use_global
-      set conf(bddimages,cata,psf,saturation)   $::bdi_tools_psf::psf_saturation
-      set conf(bddimages,cata,psf,radius)       $::bdi_tools_psf::psf_radius
-      set conf(bddimages,cata,psf,threshold)    $::bdi_tools_psf::psf_threshold
-      set conf(bddimages,cata,psf,limitradius)  $::bdi_tools_psf::psf_limitradius
-      set conf(bddimages,cata,psf,methode)      $::bdi_tools_psf::psf_methode
+      set conf(bddimages,cata,psf,create)          $::bdi_tools_psf::use_psf
+      set conf(bddimages,cata,psf,globale)         $::bdi_tools_psf::use_global
+      set conf(bddimages,cata,psf,saturation)      $::bdi_tools_psf::psf_saturation
+      set conf(bddimages,cata,psf,radius)          $::bdi_tools_psf::psf_radius
+      set conf(bddimages,cata,psf,threshold)       $::bdi_tools_psf::psf_threshold
+      set conf(bddimages,cata,psf,limitradius_min) $::bdi_tools_psf::psf_limitradius_min
+      set conf(bddimages,cata,psf,limitradius_max) $::bdi_tools_psf::psf_limitradius_max
+      set conf(bddimages,cata,psf,methode)         $::bdi_tools_psf::psf_methode
    }
 
 
@@ -679,9 +688,11 @@ namespace eval bdi_tools_psf {
       set fields  [lindex $listsources 0]
       set sources [lindex $listsources 1]
       set pass "no"
-      set id 0     
+      set id 0
       foreach s $sources {
-gren_erreur "id = $id\n"
+
+         gren_erreur "Mesure source $id / [llength $sources]\n"
+
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s $manual] } msg ]
          
          if {$id == -1} {
@@ -816,7 +827,7 @@ gren_erreur "id = $id\n"
       set median_maginst [::math::statistics::median $tabmaginst ]
       set median_magcata [::math::statistics::median $tabmagcata ]
       set const_mag      [expr $median_magcata - $median_maginst]
-      set mag_err [format "%.3f" [::math::statistics::mean $tabmag] ]
+      set mag_err        [format "%.3f" [::math::statistics::mean $tabmag] ]
 
   # calcul toutes les sources
 
@@ -855,10 +866,4 @@ gren_erreur "id = $id\n"
       return
    }
 
-
-
-
 }
-
-
-
