@@ -1125,8 +1125,7 @@ return
 
                 checkbutton $ppmx.check -highlightthickness 0 \
                       -variable ::gui_cata::gui_ppmx -state normal  \
-                      -command "::gui_cata::affiche_cata"\
-                      -state disable
+                      -command "::gui_cata::affiche_cata"
                 pack $ppmx.check -in $ppmx -side left -padx 3 -pady 3 -anchor w 
                 label $ppmx.name -text "PPMX :" -width 14 -anchor e
                 pack $ppmx.name -in $ppmx -side left -padx 3 -pady 3 -anchor w 
@@ -1144,8 +1143,7 @@ return
 
                 checkbutton $ppmxl.check -highlightthickness 0 \
                       -variable ::gui_cata::gui_ppmxl -state normal  \
-                      -command "::gui_cata::affiche_cata" \
-                      -state disable
+                      -command "::gui_cata::affiche_cata" 
                 pack $ppmxl.check -in $ppmxl -side left -padx 3 -pady 3 -anchor w 
                 label $ppmxl.name -text "PPMXL :" -width 14 -anchor e
                 pack $ppmxl.name -in $ppmxl -side left -padx 3 -pady 3 -anchor w 
@@ -1181,8 +1179,7 @@ return
 
                 checkbutton $nomad1.check -highlightthickness 0 \
                       -variable ::gui_cata::gui_nomad1 -state normal  \
-                      -command "::gui_cata::affiche_cata"\
-                      -state disable
+                      -command "::gui_cata::affiche_cata"
                 pack $nomad1.check -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
                 label $nomad1.name -text "NOMAD1 :" -width 14 -anchor e
                 pack $nomad1.name -in $nomad1 -side left -padx 3 -pady 3 -anchor w 
