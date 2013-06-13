@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #define MA 7
-#define NB_PARAM 16
+#define NB_PARAM 15
 
 static float sqrarg;
 #define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)

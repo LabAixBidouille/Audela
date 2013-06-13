@@ -4371,7 +4371,7 @@ void CBuffer::psfimcce(int x1, int y1, int x2, int y2,
 {
    pix->psfimcce(x1, y1, x2, y2,
                  xsm, ysm, err_xsm, err_ysm, fwhmx, fwhmy, fwhm, flux,
-                 err_flux, pixmax, intensity, sky, err_sky, snint,radius,
+                 err_flux, pixmax, intensity, sky, err_sky, snint, radius,
 					  err_psf, residus, synthetic);
 }
 
