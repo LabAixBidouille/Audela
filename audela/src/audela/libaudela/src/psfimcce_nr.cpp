@@ -248,9 +248,9 @@ void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 		beta[j]=0.0;
 	}
 	*chisq=0.0;
-	for (ix=1;ix<=ndata;ix++) {
+	for (ix=0;ix<ndata;ix++) {
 
-	   for (iy=1;iy<=ndata;iy++) {
+	   for (iy=0;iy<ndata;iy++) {
 
 		   (*funcs)(x[ix],y[iy],a,&zmod,dyda,ma);
 		   sig2i=1.0/(sig[ix][iy]*sig[ix][iy]);

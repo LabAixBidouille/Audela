@@ -75,8 +75,8 @@ public:
                  double *xsm, double *ysm, double *err_xsm, double *err_ysm,
                  double *fwhmx, double *fwhmy, double *fwhm, double *flux,
                  double *err_flux, double *pixmax, double *intensity, double *sky,
-                 double *err_sky, double *snint, int *radius, double *rdiff,
-                 int *err_psf, float **residus, float **synthetic);
+                 double *err_sky, double *snint, int *radius, int *err_psf, 
+                 float **residus, float **synthetic);
    virtual int  GetHeight(void)=0;
    virtual int  GetPlanes(void)=0;
    virtual int  GetWidth(void)=0;
