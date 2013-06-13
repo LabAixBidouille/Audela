@@ -65,8 +65,8 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    Gaussienne Synthtetique
 */
    dyda = vector(1,MA);
-   for(i=1;i<=npt;i++) {
-      for(j=1;j<=npt;j++) {
+   for(i=0;i<npt;i++) {
+      for(j=0;j<npt;j++) {
          fgauss1_2d(i, j, a, &synthetic[i][j], dyda, MA);
       }
    }
@@ -75,8 +75,8 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
 /*
    Gaussienne Residuelle
 */
-   for(i=1;i<=npt;i++) {
-      for(j=1;j<=npt;j++) {
+   for(i=0;i<npt;i++) {
+      for(j=0;j<npt;j++) {
          residus[i][j] = synthetic[i][j] - zs[i][j];
       }
    }
@@ -85,17 +85,17 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    Calcul du flux integre
 */
    flux = 0;
-   for(i=1;i<=npt;i++) {
-      for(j=1;j<=npt;j++) {
-         flux += synthetic[i][j]-a[1];
+   for(i=0;i<npt;i++) {
+      for(j=0;j<npt;j++) {
+         flux+=synthetic[i][j]-a[1];
       }
    }
 /*
    Calcul du pixmax
 */
    pixmax = zs[1][1];
-   for (i=1; i <= npt; i++) {
-      for (j=1; j <= npt; j++) {
+   for (i=0; i < npt; i++) {
+      for (j=0; j < npt; j++) {
          if (pixmax < zs[i][j]) {
             pixmax = zs[i][j];
          }
@@ -292,9 +292,9 @@ void myprint (float  **z, int npt)
 
    printf("       "); for(i=1;i<=npt;i++) printf("%2d   ",i); printf("\n");
 
-   for(i=1;i<=npt;i++) {
+   for(i=0;i<npt;i++) {
       printf("%2d : ",i);
-      for(j=1;j<=npt;j++) {
+      for(j=0;j<npt;j++) {
          printf("%4.0f ",z[i][j]);
       }
       printf("\n");
@@ -311,8 +311,8 @@ void minmax (float  **z, float *min, float *max, float *x, float *y, int npt)
 
    *min = z[1][1];
    *max = z[1][1];
-   for (i=1; i <= npt; i++) {
-      for (j=1; j <= npt; j++) {
+   for (i=0; i < npt; i++) {
+      for (j=0; j < npt; j++) {
          if (*min > z[i][j]) *min = z[i][j];
          if (*max < z[i][j]) {
             *max = z[i][j];
@@ -342,12 +342,12 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
    dyda    = vector(1,MA);
 	covar   = matrix(1,MA,1,MA);
 	alpha   = matrix(1,MA,1,MA);
-	z       = matrix(1,npt,1,npt);
-	residus = matrix(1,npt,1,npt);
+	z       = matrix(0,npt-1,0,npt-1);
+	residus = matrix(0,npt-1,0,npt-1);
 	ia      = ivector(1,MA);
-	sig     = matrix(1,npt,1,npt);
-	x       = vector(1,npt);
-	y       = vector(1,npt);
+	sig     = matrix(0,npt-1,0,npt-1);
+	x       = vector(0,npt-1);
+	y       = vector(0,npt-1);
 
 
    /* Calcul mini maxi de z */
@@ -357,18 +357,11 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
    /*
      Nouvelle forme de la gaussienne a ajuster. on lui retire un fond.
    */
-   for (i=1; i <= npt; i++) {
+   for (i=0; i < npt; i++) {
       x[i] = i;
       y[i] = i;
-   }
-   for (i=1; i <= npt; i++) {
-      for (j=1; j <= npt; j++) {
+      for (j=0; j < npt; j++) {
          z[i][j] = zs[i][j] - min;
-      }
-   }
-
-   for(i=1;i<=npt;i++) {
-      for(j=1;j<=npt;j++) {
          sig[i][j]=0.001;
       }
    }
@@ -420,7 +413,7 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
 	         for (i=1;i<=MA;i++) printf("%9.4f",a[i]);
 	         printf("\n");
          }
-         
+
          k++;
 		   ochisq=chisq;
 
@@ -431,7 +424,8 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
 			   itst=0;
 		   else if (fabs(ochisq-chisq) < 0.001)
 			   itst++;
-		   if (itst < 4) continue;
+
+		   if (itst < 4 && k < 100) continue;
 
 		   alamda=0.0;
          mrqmin2D(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda);
@@ -456,8 +450,8 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
         Calcul du nouveau sky
       */
       mean = 0;
-      for(i=1;i<=npt;i++) {
-         for(j=1;j<=npt;j++) {
+      for(i=0;i<npt;i++) {
+         for(j=0;j<npt;j++) {
             fgauss1_2d(x[i], y[j], a, &z[i][j], dyda, MA);
             residus[i][j] = sky + z[i][j] - zs[i][j];
             mean += residus[i][j];
@@ -475,8 +469,8 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
       /*
         On enleve le sky
       */
-      for(i=1;i<=npt;i++) {
-         for(j=1;j<=npt;j++) {
+      for(i=0;i<npt;i++) {
+         for(j=0;j<npt;j++) {
             z[i][j] = zs[i][j] - sky;
          }
       }
@@ -504,15 +498,15 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
 		printf("\n");
 	}
 
-	free_matrix(z,1,npt,1,npt);
-	free_matrix(residus,1,npt,1,npt);
-	free_matrix(sig,1,npt,1,npt);
+	free_matrix(z,0,npt-1,0,npt-1);
+	free_matrix(residus,0,npt-1,0,npt-1);
+	free_matrix(sig,0,npt-1,0,npt-1);
    free_vector(dyda,1,MA);
 	free_matrix(alpha,1,MA,1,MA);
 	free_matrix(covar,1,MA,1,MA);
 	free_ivector(ia,1,MA);
-	free_vector(y,1,npt);
-	free_vector(x,1,npt);
+	free_vector(y,0,npt-1);
+	free_vector(x,0,npt-1);
    return;
 
  }

@@ -4966,7 +4966,6 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    double sky, err_sky;         // Flux du fond de ciel et erreur sur le flux
    double snint;                // 
    int radius;                  // Rayon d'ouverture de la zone de mesure
-   double rdiff;                // Distance quadratique entre le photocentre mesure et le centre de la zone de mesure
    int err_psf;                 // Different de zero si la mesure de PSF n'est pas correcte
    float **residus = NULL;      // Buffer image des residus apres mesure de la PSF
    float **synthetic = NULL;    // Buffer image de la PSF ajsute
@@ -5022,6 +5021,15 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             naxis1 = buffer->GetWidth();
             naxis2 = buffer->GetHeight();
             // Sanity checks
+            if (x1 < 1 || x2 <1 || y1 < 1 || y2 < 1) {
+               err_psf = 1;
+            }
+            if (x1 > naxis1 || x2 > naxis1 || y1 > naxis2 || y2 > naxis2) {
+               err_psf = 1;
+            }
+
+
+
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -5061,12 +5069,12 @@ int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                }
                // Mesure dela PSF
                buffer->psfimcce(x1,y1,x2,y2, &xsm, &ysm, &err_xsm, &err_ysm, &fwhmx, &fwhmy, &fwhm, &flux,
-                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &rdiff, &err_psf,
+                                &err_flux, &pixmax, &intensity, &sky, &err_sky, &snint, &radius, &err_psf,
                                 &*residus, &*synthetic);
                // Expression du resultat pour retour dans la fct Tcl
                sprintf(ligne,"%f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %f %d",
                        xsm, ysm, err_xsm, err_ysm, fwhmx, fwhmy, fwhm, flux, err_flux,
-                       pixmax, intensity, sky, err_sky, snint, radius, rdiff, err_psf);
+                       pixmax, intensity, sky, err_sky, snint, radius, err_psf);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                // TODO : affichage des residus et PSF synthetic ;
                // En attendant, destruction des buffers

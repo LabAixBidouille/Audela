@@ -982,8 +982,8 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
                        double *xsm, double *ysm, double *err_xsm, double *err_ysm,
                        double *fwhmx, double *fwhmy, double *fwhm, double *flux,
                        double *err_flux, double *pixmax, double *intensity, double *sky,
-                       double *err_sky, double *snint, int *radius, double *rdiff,
-                       int *err_psf, float **residus, float **synthetic)
+                       double *err_sky, double *snint, int *radius, int *err_psf,
+                       float **residus, float **synthetic)
 {
 
    int i, j, itemp;
@@ -1058,7 +1058,7 @@ void CPixels::psfimcce(int x1, int y1, int x2, int y2,
    //---------------
 
    // Appel de la methode d'ajustement
-   psfimcce_compute(width-1, iXY, pxy, residus, synthetic);
+   psfimcce_compute(width, iXY, pxy, residus, synthetic);
 
    // Results from psfimcce_compute :
    *xsm       =  pxy[0] + x1 + 1;

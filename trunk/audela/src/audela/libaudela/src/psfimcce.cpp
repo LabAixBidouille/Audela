@@ -32,12 +32,12 @@ void CPixels::psfimcce_compute(int npt, double **z, double *p, float **residus, 
 
    a  = vector(1,MA);
    pr = vector(0,NB_PARAM);
-	zs = matrix(1,npt,1,npt);
+	zs = matrix(0,npt-1,0,npt-1);
 	uncertainties = vector(1,MA);
 
 	/* Affectation de (float)zs a partir de (double)z */
-   for(i=1;i<=npt;i++) {
-      for(j=1;j<=npt;j++) {
+   for(i=0;i<npt;i++) {
+      for(j=0;j<npt;j++) {
          zs[i][j] = (float)z[i][j];
       }
    }
@@ -55,7 +55,7 @@ void CPixels::psfimcce_compute(int npt, double **z, double *p, float **residus, 
    /* Clean memory */
    free_vector(a,1,MA);
    free_vector(pr,0,NB_PARAM);
-	free_matrix(zs,1,npt,1,npt);
+	free_matrix(zs,0,npt-1,0,npt-1);
 	free_vector(uncertainties,1,MA);
 
    return;
