@@ -12,12 +12,12 @@ namespace eval ::horizon {
 #------------------------------------------------------------
 # run { }
 #  lance la fenetre de l'horizon
+# Parameters : visuNo
 #------------------------------------------------------------
 proc ::horizon::run { visuNo {tkbase ""} } {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   #if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x200+250+75" }
    if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x250+250+75" }
    if { ! [ info exists ::conf(horizon,currentHorizon) ] }      { set ::conf(horizon,currentHorizon)      "default" }
 
@@ -26,20 +26,20 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    if { ! [ info exists ::conf(horizon,default,coordinates) ] } { set ::conf(horizon,default,coordinates) {{0 0}} }
 
    set coordinates ""
-   lappend coordinates [list  90 [mc_angle2deg 23h00] [mc_angle2deg 13h00]]
-   lappend coordinates [list  80 [mc_angle2deg 21h45] [mc_angle2deg 12h50]]
-   lappend coordinates [list  70 [mc_angle2deg 20h45] [mc_angle2deg 12h00]]
-   lappend coordinates [list  60 [mc_angle2deg 20h00] [mc_angle2deg 11h30]]
-   lappend coordinates [list  50 [mc_angle2deg 19h30] [mc_angle2deg 10h30]]
-   lappend coordinates [list  40 [mc_angle2deg 18h30] [mc_angle2deg  9h00]]
-   lappend coordinates [list  30 [mc_angle2deg 18h00] [mc_angle2deg  7h50]]
-   lappend coordinates [list  20 [mc_angle2deg 19h00] [mc_angle2deg  7h00]]
-   lappend coordinates [list  10 [mc_angle2deg 19h20] [mc_angle2deg  6h30]]
-   lappend coordinates [list   0 [mc_angle2deg 20h00] [mc_angle2deg  6h00]]
-   lappend coordinates [list -10 [mc_angle2deg 20h20] [mc_angle2deg  5h00]]
-   lappend coordinates [list -20 [mc_angle2deg 21h00] [mc_angle2deg  3h30]]
-   lappend coordinates [list -30 [mc_angle2deg 22h00] [mc_angle2deg  3h10]]
-   lappend coordinates [list -40 [mc_angle2deg 23h00] [mc_angle2deg  2h30]]
+   lappend coordinates [list  90 [string trim [mc_angle2deg 23h00]] [string trim [mc_angle2deg 13h00]]]
+   lappend coordinates [list  80 [string trim [mc_angle2deg 21h45]] [string trim [mc_angle2deg 12h50]]]
+   lappend coordinates [list  70 [string trim [mc_angle2deg 20h45]] [string trim [mc_angle2deg 12h00]]]
+   lappend coordinates [list  60 [string trim [mc_angle2deg 20h00]] [string trim [mc_angle2deg 11h30]]]
+   lappend coordinates [list  50 [string trim [mc_angle2deg 19h30]] [string trim [mc_angle2deg 10h30]]]
+   lappend coordinates [list  40 [string trim [mc_angle2deg 18h30]] [string trim [mc_angle2deg  9h00]]]
+   lappend coordinates [list  30 [string trim [mc_angle2deg 18h00]] [string trim [mc_angle2deg  7h50]]]
+   lappend coordinates [list  20 [string trim [mc_angle2deg 19h00]] [string trim [mc_angle2deg  7h00]]]
+   lappend coordinates [list  10 [string trim [mc_angle2deg 19h20]] [string trim [mc_angle2deg  6h30]]]
+   lappend coordinates [list   0 [string trim [mc_angle2deg 20h00]] [string trim [mc_angle2deg  6h00]]]
+   lappend coordinates [list -10 [string trim [mc_angle2deg 20h20]] [string trim [mc_angle2deg  5h00]]]
+   lappend coordinates [list -20 [string trim [mc_angle2deg 21h00]] [string trim [mc_angle2deg  3h30]]]
+   lappend coordinates [list -30 [string trim [mc_angle2deg 22h00]] [string trim [mc_angle2deg  3h10]]]
+   lappend coordinates [list -40 [string trim [mc_angle2deg 23h00]] [string trim [mc_angle2deg  2h30]]]
 
    if { ! [ info exists ::conf(horizon,OHP_T193,name) ] }        { set ::conf(horizon,OHP_T193,name)        "OHP T193" }
    if { ! [ info exists ::conf(horizon,OHP_T193,type) ] }        { set ::conf(horizon,OHP_T193,type)        "HADEC" }
@@ -64,7 +64,7 @@ proc ::horizon::run { visuNo {tkbase ""} } {
 proc ::horizon::getLabel { } {
    global caption
 
-   return $::caption(modpoi2,horizon,title)
+   return $caption(modpoi2,horizon,title)
 }
 
 #------------------------------------------------------------
@@ -72,6 +72,7 @@ proc ::horizon::getLabel { } {
 #  affiche l'aide de la fenêtre de horizon
 #------------------------------------------------------------
 proc ::horizon::showHelp { } {
+
    ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi2::getPluginType ] ] \
       [ ::modpoi2::getPluginDirectory ] [ ::modpoi2::getPluginHelp ]
 }
@@ -90,6 +91,7 @@ proc ::horizon::closeWindow { visuNo } {
 #------------------------------------------------------------
 # fillConfigPage { }
 #  fenetre de l'horizon
+# Parameters : frame et visuNo
 #------------------------------------------------------------
 proc ::horizon::fillConfigPage { frm visuNo } {
    variable private
@@ -212,23 +214,18 @@ proc ::horizon::fillConfigPage { frm visuNo } {
 
 #----------------------------------------------------------------------------
 # apply
-#    met à jour les variables et les widgets quand on applique les modifications d'une configuration
+#    met à jour les variables et les widgets
+#    quand on applique les modifications d'une configuration
+# Parameters : visuNo
 #----------------------------------------------------------------------------
 proc ::horizon::apply { visuNo } {
    variable private
 
    set private(closeWindow) 1
 
-   set horizonId $::conf(horizon,currentHorizon)
-
-   #--- je recupere la liste des noms d'horizon
-   set a [$private($visuNo,coordText) get 1.0 {end -1ch}]
-   set b [split $a "\n"]
    set coordinates [list ]
    foreach line [split [$private($visuNo,coordText) get 1.0 {end -1ch}] "\n"] {
-      if { $line == "" } {
-         continue
-      }
+      if { $line == "" } {continue}
       if { [ llength $line ] != 2 && $private(type) == "ALTAZ"
         || [ llength $line ] != 3 && $private(type) == "HADEC"  } {
          continue
@@ -236,6 +233,7 @@ proc ::horizon::apply { visuNo } {
       lappend coordinates $line
    }
 
+   set horizonId $::conf(horizon,currentHorizon)
    set ::conf(horizon,$horizonId,name)        $private(name)
    set ::conf(horizon,$horizonId,type)        $private(type)
    set ::conf(horizon,$horizonId,coordinates) $coordinates
@@ -243,10 +241,10 @@ proc ::horizon::apply { visuNo } {
   ::horizon::displayHorizon $visuNo
 }
 
-
 #------------------------------------------------------------
 # ::horizon::onSelectHorizon
 #  affiche la configuration de l'horizon selectionne
+# Parameters : visuNo
 #------------------------------------------------------------
 proc ::horizon::onSelectHorizon { visuNo } {
    variable private
@@ -285,7 +283,7 @@ proc ::horizon::onSelectHorizon { visuNo } {
 # @public
 #------------------------------------------------------------
 proc ::horizon::getHorizonList { } {
-   #--- Liste des configurations
+
    set horizonList [list]
    foreach configPath [array names ::conf horizon,*,name] {
       set horizonId [lindex [split $configPath "," ] 1]
@@ -297,9 +295,8 @@ proc ::horizon::getHorizonList { } {
 
 #------------------------------------------------------------
 # ::horizon::createHorizon
-#   Cree un horizon -nom,type) mais sans coordonnees
+#   Cree un horizon -nom,type mais sans coordonnees
 # Parameters : visuNo
-# Return :
 #------------------------------------------------------------
 proc ::horizon::createHorizon { visuNo } {
    variable private
@@ -352,9 +349,9 @@ proc ::horizon::createHorizon { visuNo } {
 # ::horizon::deleteHorizon
 #   supprime un horizon
 # Parameters : visuNo
-# Return :
 #------------------------------------------------------------
 proc ::horizon::deleteHorizon { visuNo } {
+
    #--- je recupere le nom de la configuration courante
    set horizonId $::conf(horizon,currentHorizon)
 
@@ -395,7 +392,6 @@ proc ::horizon::deleteHorizon { visuNo } {
 # ::horizon::copyHorizon
 #   cree un nouvel horizon avec les valeurs de l'ancien
 # Parameters : visuNo
-# Return :
 #------------------------------------------------------------
 proc ::horizon::copyHorizon { visuNo } {
    variable private
@@ -430,7 +426,6 @@ proc ::horizon::copyHorizon { visuNo } {
 # ::horizon::importHorizon
 #   cree un horizon Aud'ACE a partir d'un horizon de Cartes du Ciel
 # Parameters : visuNo et nom du parent
-# Return :
 #------------------------------------------------------------
 proc ::horizon::importHorizon { visuNo this } {
 
@@ -519,7 +514,6 @@ proc ::horizon::importHorizon { visuNo this } {
 #   cree un fichier txt contenant les couples {azimut elevation}
 #   qui sert a definir l'horizon pour Cartes du Ciel
 # Parameters : visuNo
-# Return :
 #------------------------------------------------------------
 proc ::horizon::exportHorizon { $visuNo } {
 
@@ -567,7 +561,6 @@ proc ::horizon::exportHorizon { $visuNo } {
 # ::horizon::displayHorizon
 #   affiche l'horizon
 # Parameters : visuNo
-# Return :
 #------------------------------------------------------------
 proc ::horizon::displayHorizon { visuNo } {
 
@@ -606,6 +599,7 @@ proc ::horizon::displayHorizon { visuNo } {
 #   identifiant de la horizon
 #------------------------------------------------------------
 proc ::horizon::getHorizonIdentifiant { name } {
+
    #--- je fabrique l'identifiant a partie du nom en replacant les caracteres interdits pas un "_"
    set horizonId ""
    for { set i 0 } { $i < [string length $name] } { incr i } {
@@ -633,6 +627,7 @@ proc ::horizon::getHorizonIdentifiant { name } {
 #   horizon 4
 #------------------------------------------------------------
 proc ::horizon::getHorizon { home } {
+
    set horizonId $::conf(horizon,currentHorizon)
    set type $::conf(horizon,$horizonId,type)
    set coordinates $::conf(horizon,$horizonId,coordinates)
@@ -642,12 +637,12 @@ proc ::horizon::getHorizon { home } {
 
 #------------------------------------------------------------
 # getHorizonName
-#
 # retourne le nom de l'horizon pas defaut
 #
 # @return nom de l'horizon
 #------------------------------------------------------------
 proc ::horizon::getHorizonName { } {
+
    set horizonId $::conf(horizon,currentHorizon)
    return $::conf(horizon,$horizonId,name)
 }
@@ -696,9 +691,9 @@ proc ::horizon::nameDialog::getLabel { } {
 #------------------------------------------------------------
 # config::apply
 #   enregistre la valeur des widgets
+# Parameters : visuNo
 #------------------------------------------------------------
 proc ::horizon::nameDialog::apply { visuNo } {
-   variable private
 
    #--- rien a enregistrer
    #--- cette fonction existe pour faire apparaitre le bouton "OK"
@@ -707,6 +702,7 @@ proc ::horizon::nameDialog::apply { visuNo } {
 #------------------------------------------------------------
 # config::closeWindow
 #   ferme la fenetre
+# Parameters : visuNo
 #------------------------------------------------------------
 proc ::horizon::nameDialog::closeWindow { visuNo } {
    variable private
@@ -718,8 +714,7 @@ proc ::horizon::nameDialog::closeWindow { visuNo } {
 #------------------------------------------------------------
 # config::fillConfigPage
 #   cree les widgets de la fenetre
-#
-#   return rien
+# Parameters : frame et visuNo
 #------------------------------------------------------------
 proc ::horizon::nameDialog::fillConfigPage { frm visuNo } {
    variable private
