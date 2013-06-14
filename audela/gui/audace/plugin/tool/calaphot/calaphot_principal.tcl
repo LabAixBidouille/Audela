@@ -73,8 +73,8 @@ namespace eval ::CalaPhot {
         # set pas_a_pas 1
 
         set version_majeure 7
-        set version_mineure 1
-        set version_indice "20120911"
+        set version_mineure 2
+        set version_indice "20130614"
         set numero_version_abrege [ format "v%d.%d" $version_majeure $version_mineure ]
         set numero_version_complet [ format "v%d.%d.%s" $version_majeure $version_mineure $version_indice ]
 
@@ -2293,7 +2293,7 @@ namespace eval ::CalaPhot {
             }
             Message debug "sfd=%d\n" $sfd
             if { $sfd < 10 } {
-                # Pas assez de rectangles (moins de 10% sont valides, on diminue le critère de sélection
+                # Pas assez de rectangles (moins de 10% sont valides), on diminue le critère de sélection
                 set k [ expr $k - 0.1 ]
                 if { $k < 0.1 } {
                     # C'est une image quasiment vide !
