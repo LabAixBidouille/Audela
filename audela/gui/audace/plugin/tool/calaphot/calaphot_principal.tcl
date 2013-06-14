@@ -2250,36 +2250,56 @@ namespace eval ::CalaPhot {
 
         set largeur [ LargeurImage $mem ]
         set hauteur [ HauteurImage $mem ]
-        set dl [ expr $largeur / 20 ]
-        set dh [ expr $hauteur / 20 ]
+
+        # Recherche de la dynamique de l'image
+        set stats [ buf$mem stat [ list 1 1 $largeur $hauteur ] ]
+        set max [ lindex $stats 2 ]
+        set moy_image [ lindex $stats 4 ]
+        set dyn_image [ expr $max - $moy_image ]
+        Message debug "max=%.1f moy=%.1f dyn=%.1f\n" $max $moy_image $dyn_image
+
+        # L'image est divisée en 100 rectangles
+        set dl [ expr $largeur / 10 ]
+        set dh [ expr $hauteur / 10 ]
         set fwhm_valide 0
-        set k 100.0
+        set k 0.9
         while { $fwhm_valide == 0 } {
             set sf 0
             set sfd 0
             Message debug "k=%f\n" $k
             for { set h 0 } { $h < 10 } { incr h } {
                 for { set l 0 } { $l < 10 } { incr l } {
-                    set r [ list [ expr $l * $dl + 1 ] [ expr $h * $dh + 1 ] [ expr ( $l + 1 ) * $dl ] [ expr ( $h + 1 ) * $dh ] ]
+                    set x1 [ expr $l * $dl + 1 ]
+                    set y1 [ expr $h * $dh + 1 ]
+                    set x2 [ expr ( $l + 1 ) * $dl ]
+                    set y2 [ expr ( $h + 1 ) * $dh ]
+                    set r [ list $x1 $y1 $x2 $y2 ]
+                    # Recherche de la dynamique dans le rectangle
                     set stats [ buf$mem stat $r ]
                     set max [ lindex $stats 2 ]
-                    set moy [ lindex $stats 4 ]
-                    if { $max > [ expr $moy * $k ] } {
+                    # Message debug "h=%d l=%d (x1=%d y1=%d x2=%d y2=%d) max=%.1f\n" $h $l $x1 $y1 $x2 $y2 $max
+
+                    if { $max > [ expr $moy_image + $dyn_image * $k ] } {
+                        # Dans ce rectangle, il semble y avoir des étoiles.
                         set f [ buf$mem fwhm $r ]
                         set fm [ expr max( [ lindex $f 0 ], [ lindex $f 1 ] ) ]
+                        # sf = somme des fwhm locaux
                         set sf [ expr $sf + $fm ]
+                        # sfd = nombre de rectangles valides
                         incr sfd
-                        # Message debug "h=%d l=%d n=%d max=%f moy=%f fwhm=%f\n" $h $l $sfd $max $moy $fm
+                        Message debug "h=%d l=%d (x1=%d y1=%d x2=%d y2=%d) max=%.1f fwhm=%.1f\n" $h $l $x1 $y1 $x2 $y2 $max $fm
                     }
                 }
             }
             Message debug "sfd=%d\n" $sfd
             if { $sfd < 10 } {
-                set k [ expr $k * 0.5 ]
-                if { $k < 2 } {
+                # Pas assez de rectangles (moins de 10% sont valides, on diminue le critère de sélection
+                set k [ expr $k - 0.1 ]
+                if { $k < 0.1 } {
+                    # C'est une image quasiment vide !
                     set fwhm_valide -1
                     set fwhm 0
-                    Message probleme "k=%f sfd=%d FWHM=%f\n" $k $sfd $fwhm
+                    Message probleme "Problème pour le calcul de FWHM : k=%f sfd=%d FWHM=%f\n" $k $sfd $fwhm
                 }
             } else {
                 set fwhm [ expr $sf / $sfd ]
