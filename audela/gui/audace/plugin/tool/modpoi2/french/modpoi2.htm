@@ -8,7 +8,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Modèle de pointage V2</title></head><body>
-<p class="date">Date de mise à jour : 06 juin 2013</p>
+<p class="date">Date de mise à jour : 14 juin 2013</p>
 <h1>Modèle de pointage V2</h1>
 <p>Le pointage d'un télescope est réalisé à
 partir de coordonnées lues dans des catalogues. Ces
@@ -60,20 +60,27 @@ l'horizon choisi dans le format choisi.</td>
 <td><img style="width: 323px; height: 200px;" alt="" src="images/horizonNomme.gif" /></td>
 </tr>
 <tr>
-<td>Ici le modèle d'horizon est <b>ALTAZ</b>. Dans la
-fenêtre <b>Coordonnées</b>, entrer la liste des couples
-de valeurs {azimut - élévation} en degrés
-caractérisant la ligne d'horizon locale. Rappel, <b>le SUD a
-pour azimut 0°</b>.<br />
-Le format de données HADEC est un triplet {angle de
-déclinaison (-90° à +90°) - angle horaire du
+<td>Ici le mod&#232;le d'horizon est <b>ALTAZ</b>. Dans la
+fen&#234;tre <b>Coordonn&#233;es</b>, entrer la liste des couples
+de valeurs {azimut - &#233;l&#233;vation} en degr&#233;s
+caract&#233;risant la ligne d'horizon locale.<br />
+Le format de donn&#233;es HADEC est un triplet {angle de
+d&#233;clinaison (-90&#176; &#224; +90&#176;) - angle horaire du
 couchant (Ouest) - angle horaire du levant (Est)}.<br />
-Bien que cela n'ait pas beaucoup de sens, on peut écrire les angles avec de décimales.</td>
-<td><img style="width: 323px; height: 200px;" alt="" src="images/horizonCoord.gif" /></td>
+<b>Notes</b> :
+<ul>
+<li><b>le SUD a pour azimut 0&#176;</b>,</li>
+<li>n'indiquer que les points caract&#233;ristiques,
+l'interpolation fera le reste,</li>
+<li>l'ordre de saisie des azimut n'a pas d'importance,</li>
+<li>bien que cela n'ait pas beaucoup de sens, les angles acceptent des d&#233;cimales.</li>
+</ul>
+</td>
+<td><img style="width: 323px; height: 200px;" alt="" src=
+"images/horizonCoord.gif" /></td>
 </tr>
 <tr>
-<td>N'indiquer que les points caractéristiques,
-l'interpolation fera le reste. Après vérification de la
+<td>Après vérification de la
 liste, l'appui sur <b>OK</b> provoque l'affichage du profil sur
 les 360° de l'horizon tel que défini.<br />
 Le titre rappelle le nom de l'horizon et les coordonnées GPS
@@ -86,7 +93,8 @@ d'erreur. A ce stade l'horizon comporte un nom et des
 coordonnées. Appuyer sur <b>Fermer</b> pour revenir au
 modèle de pointage.<br />
 Pas d'inquiétude : <b>Aud'ACE</b> a mémorisé cet
-horizon.<br />
+horizon dans le r&#233;pertoire <b>$audace(rep_home)/modpoi</b> 
+sous forme de fiche au format .xml.<br />
 A tout moment il est possible de modifier une coordonnée ou
 de redessiner le graphique.<br /></td>
 </tr>

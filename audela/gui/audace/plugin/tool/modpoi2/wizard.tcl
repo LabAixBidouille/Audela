@@ -15,7 +15,6 @@ namespace eval ::modpoi2::wizard {
 #
 # @param visuNo
 # @param starList  ( amerAz amerEl name raCat deCat equinoxCat date raObs deObs pressure temperature )
-#
 #------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
    variable private
@@ -132,6 +131,7 @@ proc ::modpoi2::wizard::modpoi_wiz { visuNo { starList "" } } {
             set private(star$k,elApp)   [lindex $coords 4]
             set private(star$k,raShift) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,raObs)] - [mc_angle2deg $private(star$k,raApp)] ]]
             set private(star$k,deShift) [expr 60.0 * [mc_anglescomp [mc_angle2deg $private(star$k,deObs)] - [mc_angle2deg $private(star$k,deApp)] ]]
+
             ###if { $k < 6} {
             ###   ::console::disp "mc_hip2tel { $hipRecord } $private(star$k,date) { $private(home) } $private(star$k,pressure) $private(star$k,temperature)\n"
             ###   ::console::disp "coords=$coords \n"
@@ -536,7 +536,6 @@ proc ::modpoi2::wizard::modpoi_wiz1c { } {
 # donnees en entree
 #   private(stars,nb)
 #   private(star$k,starname)
-
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz2 { } {
    global caption color
@@ -786,18 +785,15 @@ proc ::modpoi2::wizard::createButton { tkTable row col w } {
 #    w            : nom Tk du bouton
 #------------------------------------------------------------------------------
 proc ::modpoi2::wizard::deleteButton { tkTable row col w } {
-   variable private
-
-   #--- je supprime le bouton
    destroy $w
 }
 
 #------------------------------------------------------------------------------
 # createCheckbutton
 #    cree un checkbutton dans la table
-#    le
 #
 # Parametres :
+#    state        : etat {normal|disabled}
 #    tkTable      : nom Tk de la table
 #    row          : numero de ligne
 #    col          : numero de colonne
@@ -828,8 +824,8 @@ proc ::modpoi2::wizard::createCheckbutton { state tkTable row col w } {
 proc ::modpoi2::wizard::onSelectCheckButton { w k} {
    variable private
 
-   #--- je recipere le nom de la varible qui contient l'etat du bouton
-   set variableName [ $w cget -variable]
+   #--- je recupere le nom de la varible qui contient l'etat du bouton
+   set variableName [$w cget -variable]
    set selected [set $variableName]
 
    if { $selected == 1 } {
@@ -853,11 +849,7 @@ proc ::modpoi2::wizard::onSelectCheckButton { w k} {
 #    w            : nom Tk du bouton
 #------------------------------------------------------------------------------
 proc ::modpoi2::wizard::deleteCheckbutton { tkTable row col w } {
-   variable private
-
-   #--- je supprime le checkbutton et sa variable
    destroy $w
-
 }
 
 #------------------------------------------------------------------------------
@@ -871,15 +863,11 @@ proc ::modpoi2::wizard::deleteCheckbutton { tkTable row col w } {
 #    value        : 0 ou 1 ou -1 (inactif)
 #------------------------------------------------------------------------------
 proc ::modpoi2::wizard::setCheckbutton { tkTable lineName columnName value } {
-   variable private
+
    set w [ $tkTable windowpath $lineName,$columnName]
    switch $value {
-       1 {
-         $w select
-       }
-       0 {
-          $w deselect
-       }
+       1    { $w select }
+       0    { $w deselect }
    }
 }
 
@@ -889,7 +877,8 @@ proc ::modpoi2::wizard::setCheckbutton { tkTable lineName columnName value } {
 #
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::onSelectAmer { tkAmerTable } {
-variable private
+   variable private
+
    #--- je recupere la ligne slectionnee par l'utilisateur
    set k [lindex [$tkAmerTable curselection] 0]
    if { $k != "" } {
@@ -913,12 +902,11 @@ variable private
 # modpoi_wiz3
 #   selection d'une etoile proche du point d'amer
 #   et affiche les boutons faire un centrage
-#
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
-   global caption
    variable private
    variable hip_catalog
+   global caption
 
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
@@ -1128,10 +1116,10 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
 #-------------------------------------------------------------------------------
 # onSelectStar
 #   selection d'une etoile proche
-#
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::onSelectStar { tkStarTable } {
-variable private
+   variable private
+
    #--- je recupere la ligne slectionnee par l'utilisateur
    set rowIndex [lindex [$tkStarTable curselection] 0]
    if { $rowIndex == "" } {
@@ -1146,11 +1134,10 @@ variable private
 #-------------------------------------------------------------------------------
 # modpoi_wiz4
 #   pointage et centrage d'une etoile
-#
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz4 { } {
-   global caption
    variable private
+   global caption
 
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
@@ -1435,11 +1422,10 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
 #-------------------------------------------------------------------------------
 # modpoi_wiz5
 #   calcule les coefficients
-#
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz5 { } {
-   global caption
    variable private
+   global caption
 
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
@@ -1553,12 +1539,10 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
 #-------------------------------------------------------------------------------
 # modpoi_wiz5b
 #   affiche le resultat du calcul du modele de pointage
-#
 #-------------------------------------------------------------------------------
-
 proc ::modpoi2::wizard::modpoi_wiz5b { } {
-   global caption
    variable private
+   global caption
 
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
@@ -1628,7 +1612,6 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
 # modpoi_wiz6
 #   termine le widzard
 #   copie les resultats dans la fenetre principale
-#
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_wiz6 { } {
    variable private
@@ -1657,9 +1640,6 @@ proc ::modpoi2::wizard::modpoi_wiz6 { } {
 #------------------------------------------------------------
 # checkCamera
 #    verifie les parametres de la camera
-#
-# @param visuNo numero de la visu
-#
 #------------------------------------------------------------
 proc ::modpoi2::wizard::checkCamera {  } {
    variable private
@@ -1690,9 +1670,6 @@ proc ::modpoi2::wizard::checkCamera {  } {
 # checkStarNb
 #    recherche les points d'amer
 #    et verifie le nombre d'etoiles
-#
-# @param visuNo numero de la visu
-#
 #------------------------------------------------------------
 proc ::modpoi2::wizard::checkStarNb { } {
    variable private
@@ -1759,9 +1736,13 @@ proc ::modpoi2::wizard::checkStarNb { } {
          set private(stars,nb) ""
       }
    }
-
 }
 
+#-------------------------------------------------------------------------------
+# displayMap
+#   affiche la carte d'horizon avec les etoiles
+# parametre : N° visu
+#-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::displayMap { visuNo } {
    variable private
 
@@ -1790,7 +1771,6 @@ proc ::modpoi2::wizard::displayMap { visuNo } {
       #--- bind de l'evenement  <ButtonPress-1>
       $::plotxy(fig$figureNo,parent).xy element bind line_fig${figureNo}_${num} <ButtonPress-1> { ::modpoi2::wizard::onButtonPressMap %x %y   }
       incr num
-
    }
 
    #--- visualisation de l'horizon
@@ -1803,24 +1783,34 @@ proc ::modpoi2::wizard::displayMap { visuNo } {
    ::plotxy::ylabel "$::caption(modpoi2,elevationDeg)"
    ::plotxy::position {20 20 800 400}
 
-   $::plotxy(fig$figureNo,parent).xy axis configure x -stepsize 30
-   $::plotxy(fig$figureNo,parent).xy grid configure -hide no -dashes { 2 2 }
+   $::plotxy(fig$figureNo,parent).xy axis configure x -stepsize 45
+   $::plotxy(fig$figureNo,parent).xy grid configure -hide no -dashes { 1 2 }
+   $::plotxy(fig$figureNo,parent).xy axis configure y -stepsize 15 -min 0 -max 90
+   $::plotxy(fig$figureNo,parent).xy axis configure x2 -stepsize 45
+   $::plotxy(fig$figureNo,parent).xy axis configure y2 -stepsize 15 -min 0 -max 90
 }
 
+#-------------------------------------------------------------------------------
+# hideMap
+#   ferme la carte d'horizon avec les etoiles
+# parametre : N° visu
+#-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::hideMap { visuNo } {
-   variable private
-
    ::plotxy::clf $visuNo
-
 }
 
+#-------------------------------------------------------------------------------
+# onButtonPressMap
+#
+# parametre :
+#-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::onButtonPressMap { x y } {
    variable private
 
    if { [winfo exists $private(g,base).amer.table ] } {
       #--- je cherche l'element qui est pres du curseur de la souris
       if {[$::audace(base).plotxy1.xy element closest $x $y click]} {
-          #--- je recupere le numero point d'amer qui est dans le lable de l'element
+          #--- je recupere le numero point d'amer qui est dans le label de l'element
           set k [$::audace(base).plotxy1.xy element cget $click(name) -label]
           if { $k != "" } {
              #--- je recupere les coordonnees du point d'amer
@@ -1882,6 +1872,7 @@ proc ::modpoi2::wizard::showSelectedAmer { amerAz amerEl starAz starEl} {
 # @elevation hauteur du point d'amer (en degres)
 #------------------------------------------------------------
 proc ::modpoi2::wizard::hideSelectedAmer { } {
+
    if { [$::audace(base).plotxy1.xy element exists selectedAmer ] == 1 } {
       $::audace(base).plotxy1.xy element  delete selectedAmer
    }
@@ -1944,12 +1935,13 @@ proc ::modpoi2::wizard::modpoi_goto { } {
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_stopGoto {  } {
    variable private
+   global caption
 
    #--- j'arrete le goto
    ::telescope::stopGoto ""
 
    #--- je transforme le bouton STOP GOTO en bouton GOTO
-   $private(g,base).goto configure -text $::caption(modpoi2,wiz4,goto) \
+   $private(g,base).goto configure -text $caption(modpoi2,wiz4,goto) \
       -command "::modpoi2::wizard::modpoi_goto"
    ::modpoi2::wizard::modpoi_setState normal
 
@@ -1962,6 +1954,7 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
 #-------------------------------------------------------------------------------
 # modpoi_setState
 #   gere l'etat des boutons de la raquette
+# parametre : state (normal|disabled}
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::modpoi_setState { state } {
    variable private
@@ -2054,7 +2047,7 @@ proc ::modpoi2::wizard::modpoi_coord { } {
       set private(star$k,deShiftTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
    } else {
       set private(star$k,raShiftTest) ""
-      set private(star$k,deShiftTest) ""
+     set private(star$k,deShiftTest) ""
    }
 
    #--- j'enregistre la liste des étoiles et le modèle dans un fichier temporaire
@@ -2064,6 +2057,7 @@ proc ::modpoi2::wizard::modpoi_coord { } {
 #-------------------------------------------------------------------------------
 # closeWindow
 #   memorise la position de la fenetre avant da fermeture
+#  parametre : N° visu
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::closeWindow { visuNo } {
    variable private
@@ -2086,7 +2080,7 @@ proc ::modpoi2::wizard::closeWindow { visuNo } {
 #   enregistre le modele dans un fichier temporaire temp.xml
 #-------------------------------------------------------------------------------
 proc ::modpoi2::wizard::saveModel { } {
-variable private
+   variable private
 
    set fileName [ file join $::audace(rep_home) modpoi temp.xml ]
    set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
