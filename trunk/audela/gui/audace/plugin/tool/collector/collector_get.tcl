@@ -751,8 +751,7 @@
    proc getNewCriticalFocusZone { fond aptdia seeing error } {
 
       set ncfz "-"
-      if {[info exists $fond] && [info exists $aptdia]} {
-
+      if {$fond ne "-" && $aptdia ne "-"} {
          set constante 0.00225 ; # micrometers/arc second/millimeter
          set ncfz [format %0.1f [expr { $constante*$seeing*sqrt($error)*$fond*$fond*$aptdia*1000 } ]] ;#-- microns
       }
