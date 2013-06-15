@@ -908,6 +908,8 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
    variable hip_catalog
    global caption
 
+   ::console::affiche_resultat "modpoi_wiz3 $amerIndex\n"
+
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
           destroy $children
@@ -1947,6 +1949,7 @@ proc ::modpoi2::wizard::modpoi_stopGoto {  } {
 
    #--- j'affiche l'ecart en arcminute (ecart enre les coordonnees J2000.0 du catalogue et du telescope pour avoir un apercu)
    set radecObs [tel$::audace(telNo) radec coord -equinox NOW]
+   set amerIndex $private(amerIndex)
    set private(deltah) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 0] - $private(star$amerIndex,raApp)]]]
    set private(deltad) [format "%.3f" [expr 60.0 * [mc_anglescomp [lindex $radecObs 1] - $private(star$amerIndex,deApp)]]]
 }
