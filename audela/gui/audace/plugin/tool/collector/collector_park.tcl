@@ -221,8 +221,8 @@
          $w2.lab_elev $w2.parkelev $w2.parkside -side left -padx 2
 
       #--   initialisation des variables
-      $w2.mode current 6
-      $w2.parkside current 1
+      $w2.mode current 6      ; #--  zenith
+      $w2.parkside current 0  ; #--  tube cote ouest
 
       #------------- frame du garage -----------------------
 
