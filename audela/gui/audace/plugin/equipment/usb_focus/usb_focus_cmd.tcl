@@ -255,6 +255,10 @@ proc ::usb_focus::goto { {blocking} } {
    }
 
    set d $widget(target)
+
+   #--   arrete si la valeur est vide
+   if {$d eq ""} {return}
+
    set position [::usb_focus::trimZero $widget(position)]
 
    #--   calcule la valeur absolue de l'ecart et formate le resultat
