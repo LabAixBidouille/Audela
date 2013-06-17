@@ -939,6 +939,9 @@ proc grb_gcnc { args } {
    {"IAC80" "IAC-80" 80} \
    {" INT " "INT" 250} \
    {"ISAS " "ISAS" 130} \
+   {"IRSF " "IRSF" 140} \
+   {"ISON-NM" "ISON-NM" 45} \
+   {"iTelescope T21" "iTelescope-T21" 43} \
    {"K-380" "K-380" 380} \
    {"KAIT" "KAIT" 76} \
    {"KANAZAWA" "Kanazawa" 30} \
