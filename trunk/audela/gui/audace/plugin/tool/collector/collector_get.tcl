@@ -16,7 +16,7 @@
    # ::collector::getObject         Mots cles   onChangeObjName
 
    # ::collector::getCoordJ2000     Cible       initTarget
-   # ::collector::getTrueCoordinates Cible      computeCoordNow
+   # ::collector::getTrueCoordinates Cible      computeTelCoord
    # ::collector::getCdeltFov       Vue         computeCdeltFov
    # ::collector::getImgCenterRaDec Vue         getImgData
    # ::collector::getMatchWCS       Vue         initPose
@@ -351,7 +351,7 @@
    #  Retourne        : Ra et Dec (equinoxe J2000.0) formatees
    #  Parametres (une seule liste)
    #      deux coordonnees et TypeObs, couples :  {ra dec} EQUATORIAL ou {az elev} ALTAZ ou {hour_angle dec} HADEC
-   #      datejd      : date JD
+   #      dateTU      : date TU
    #      home        : gps
    #      airpress    : atmospheric pressure (Pa)
    #      temperature : °K
@@ -386,19 +386,19 @@
    #  Derive de viseur_polaire_taka.tcl/viseurPolaireTaka::HA_Polaire
    #     Output :
    #         rav,decv : true coordinates ((hms,dms))
-   #         ha  : true hour angle (hms)
    #         az : true azimut (degrees)
    #         elev : true altitude (degrees)
+   #         ha  : true hour angle (degrees)
    #---------------------------------------------------------------------------
    proc getTrueCoordinates { data } {
 
       lassign $data ra_hms dec_dms datetu home airpress temperature
 
-      set symbols  { IH ID NP CH ME MA FO HF DAF TF }
+      set symbols  [list IH ID NP CH ME MA FO HF DAF TF]
       set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
-
       set hipRecord    [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
-      set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $symbols $nulCoeff -model_only 1 -refraction 1]
+      set drift 0
+      set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $symbols $nulCoeff -model_only 1 -refraction 1 -drift $drift]
 
       #--   pm prend les valeurs avec modele
       lassign [lrange $result 10 14] ra_angle dec_angle ha az elev
@@ -406,8 +406,7 @@
       #--- formate les resultats
       set raTel [mc_angle2hms $ra_angle 360 zero 2 auto string]
       set decTel [mc_angle2dms $dec_angle 90 zero 2 + string]
-      lassign [mc_angle2hms $ha 360] h m s
-      set haTel [format "%02dh%02dm%02ds" $h $m [expr { int($s) }]]
+      set haTel [format "%0.4f" $ha]
 
       #--   si l'elevation est tres proche de 90 --> zenith
       if {$elev > 89.99} {set az 0.0}
@@ -532,7 +531,7 @@
       set tsl "-"
 
       if {"-" ni [list $datetu $home]} {
-         lassign [mc_date2lst $datetu $home] h m s
+         lassign [mc_date2lst $datetu $home -format hms] h m s
          set tsl [format "%02dh%02dm%02ds" $h $m [expr {int($s)}]]
       }
 
@@ -726,21 +725,6 @@
       }
 
       return [list $sitelong $sitelat $siteelev]
-   }
-
-   #------------------------------------------------------------
-   #  getHrzDec
-   #  Retourne la valeur de la declinaison (en degres) de l'horizon
-   #  Parametres : latitude en degres et angle horaire (en hms)
-   #------------------------------------------------------------
-   proc getHrzDec { latitude ha } {
-
-      set lat_rad [mc_angle2rad $latitude]
-      set ha_rad [mc_angle2rad $ha]
-      set tanHrz [expr { -cos($ha_rad) / tan($lat_rad) }]
-      set decHrz [expr { atan($tanHrz) * 180/(4*atan(1.)) }]
-
-      return $decHrz
    }
 
    #---------------------------------------------------------------------------
