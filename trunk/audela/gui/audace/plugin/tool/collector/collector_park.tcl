@@ -73,6 +73,8 @@
 
       #--   desinhibe les widgets appropries
       configParkWidget $w $modeNo $german !disabled
+
+      set private(telInitialise) 1
    }
 
    #---------------------------- parquage ----------------------
@@ -164,9 +166,11 @@
 
       set private(park) 0
       set private(parkAuto) 0
+      set private(telInitialise) 0
 
       #--   desinhibe les widgets appropries
       configParkWidget $w $modeNo $german !disabled
+
    }
 
    #------------------------------------------------------------
@@ -269,19 +273,17 @@
       set modeNo [$w.mode current]
       set sideIndex [$w.parkside current]
       set german $private(german)
-      set az 0.0
-      set elev 0.0
 
       switch -exact $modeNo {
-         0  {  set elev 1.0 ; #-- Horizon Sud  erreur "below horizon" si elev = 0}
-         1  {  set az 270.0 ; set elev 7.0 ; #-- Horizon Est erreur "below horizon" si elev < 7}
-         2  {  set az 90.0 ; #-- Horizon Ouest Ok }
-         3  {  set az 180.0 ; #-- Horizon Nord Ok}
-         4  {  set elev $latitude ; #-- Equateur Sud Ok }
-         5  {  set az 180.0 ; set elev [expr {-90+$latitude}] ; #-- Equateur Nord }
-         6  {  set elev 90 ; #-- Zenith Ok }
-         7  {  set az 180.0 ; set elev $latitude ; #-- Pôle Nord Ok}
-         8  {  set az 180.0 ; set elev -$latitude ; #-- Pôle Sud}
+         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud  erreur "below horizon" si elev = 0}
+         1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est erreur "below horizon" si elev < 7}
+         2  {  set az 90.0 ; set elev 0.0                      ; #-- Horizon Ouest Ok }
+         3  {  set az 180.0 ; set elev 0.0                     ; #-- Horizon Nord Ok}
+         4  {  set az 0.0 ; set elev $latitude                 ; #-- Equateur Sud Ok }
+         5  {  set az 180.0 ; set elev [expr {-90+$latitude}]  ; #-- Equateur Nord }
+         6  {  set az 0.0 ; set elev 90                        ; #-- Zenith Ok }
+         7  {  set az 180.0 ; set elev $latitude               ; #-- Pôle Nord Ok}
+         8  {  set az 180.0 ; set elev -$latitude              ; #-- Pôle Sud}
          9  {  #--   choix Utilisateur
                if {[info exists conf($private(product),park)] == 1} {
                   set data $conf($product,park)
