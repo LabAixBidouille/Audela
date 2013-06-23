@@ -6,279 +6,317 @@
 #
 
    # nom proc                          utilisee par
-   # ::collector::refreshMyTel         computeCoordNow
-   # ::collector::rotateItem           refreshMyTel
-   # ::collector::rotateDec            refreshMyTel
+   # ::collector::refreshMyTel         refreshNotebook
+   # ::collector::rotateCW             refreshMyTel
+   # ::collector::rotateOTA            refreshMyTel
    # ::collector::makeSafeTel          refreshMyTel
-   # ::collector::shiftButee           binding
-   # ::collector::buildOngletGerman    createMyNoteBook
-   # ::collector::setColor             buildOngletPosTel
+   # ::collector::getMountSide         refreshMyTel
    # ::collector::initMyTel            doUnPark
-   # ::collector::refreshMountSide     refreshMyTel
+   # ::collector::showTelescope        buildOngletGerman et initMyTel
    # ::collector::getGermanSide        doUnPark et doPark
+   # ::collector::buildOngletGerman    createMyNoteBook
+   # ::collector::buildShowValues      buildOngletGerman
+   # ::collector::buildGrid            buildOngletGerman
+   # ::collector::buildSector          buildOngletGerman
+   # ::collector::shiftButee           binding
+   # ::collector::builColorLegend      buildOngletGerman
+   # ::collector::setColor             buildOngletPosTel
 
    #------------------------------------------------------------
    #  refreshMyTel
    #  Deplace la position du telescope sur le symbole d'une monture allemande
+   #  Duree : < 400 microsecondes sauf si cote du tube est rafraichit
    #------------------------------------------------------------
    proc refreshMyTel { } {
       variable private
+      global audace caption
 
       set canv $private(canvas)
-      set tags [$canv gettags myTelAD]
-      if {[llength $tags] !=4} {
-         return
+      if {![winfo exists $canv]} {return}
+
+      set decTel [mc_angle2deg $private(decTel)]
+      set haTel $private(haTel)
+
+      set newAnglePos [expr { fmod($haTel+180,360) } ]
+      lassign [rotateCW $canv $newAnglePos] xc yc
+
+      set angleZ [expr { fmod(450-$haTel,360) }]
+      rotateOTA $canv $angleZ $decTel $xc $yc
+
+      #-- rafaichit le cote du tube toutes le 10 secondes
+      regsub -all {[-T:]} $private(tu) " " horodate
+      if {[expr { fmod([lindex $horodate 5],10) }] == 0} {
+         set private(side) [getMountSide $private(product)]
       }
 
-      set ha $private(haTel)
-      set elev $private(elevTel)
-      set dec [mc_angle2deg $private(decTel)]
-
-      #--   module AD
-      lassign $tags -> -> oldHa oldLhTel
-
-      #--   par defaut, pas de changement
-      set newLhTel $oldLhTel
-
-      #--   calcul la difference d'angle horaire
-      set deltaHa [mc_anglescomp $oldHa - $ha]
-
-      if {$deltaHa > 350} {
-         #--   franchissement de 360° -> 0°
-         set deltaHa [expr { $deltaHa - 360. }]
-      } elseif {$deltaHa < -350 } {
-         #--   franchissement 0°-> 360°
-         set deltaHa [expr { $deltaHa + 360. }]
-      }
-
-      if {[expr { abs($deltaHa) }] < 20} {
-
-         #---  rotation de l'item autour du centre du canvas,
-         rotateItem $canv telescope 100 100 $deltaHa
-
-         set newLhTel [expr { $oldLhTel - $deltaHa/15 } ]
-         if {$newLhTel < -12} {
-            set newLhTel [expr { $newLhTel + 12 }]
-         }
-
-         #--   met a jour les tags
-         $canv itemconfigure myTelAD -tags [lreplace $tags 2 3 $ha $newLhTel]
-
-      } else {
-         return
-      }
-
-      #--   calcule l'angle polaire = distance avec le pole Nord
-      set thetaTel [expr { 90.0 - $dec }]
-
-      #--   calcule l'angle polaire de l'horizon
-      set decHrz [getHrzDec [lindex $private(gps) 3] $ha]
-      set thetaHrz [expr { 90 - $decHrz }]
-
-      #--   l'angle polaire est positif a l'Est, negatif a l'Ouest
-      if {$private(lhTel) > 0} {
-         set thetaTel [expr { -$thetaTel }]
-         set thetaHrz [expr { -$thetaHrz }]
-      }
-
-      #--   coordonnnees de l'extremite mobile de myTelAD
-      lassign [$canv coords myTelAD] xc yc
-
-      #--   angle complementaire a 180° de lhTel
-      set angleZ [expr { 180 - $newLhTel * 15 }]
-      set angleZ [expr { fmod($angleZ,180) }]
-
-      rotateDec $canv myTelDEC [mc_angle2rad $angleZ] $dec
-
-      set private(lhTel) [format %0.2f $newLhTel]
-      set private(thetaTel) [format %0.2f $thetaTel]
-      set private(thetaHrz) [format %0.2f $thetaHrz]
-      set private(side) [refreshMountSide $private(product)]
-
-      makeSafeTel $newLhTel $private(buteeWest) $private(buteeEast) [expr { abs(90-$dec) }] [expr { abs($thetaHrz) }]
-   }
-
-   #------------------------------------------------------------
-   #  rotateDec
-   #
-   #  Parametres :
-   #       canv - Path name of the canvas
-   #       tagOrId - what to rotate
-   #       angleZ - radian
-   #       dec - degrees
-   #------------------------------------------------------------
-   proc rotateDec { canv tagOrId angleZ dec} {
-
-      set dec [mc_angle2rad $dec]
-
-      lassign [$canv gettags $tagOrId] -> -> halfBase halfHeight
-      lassign [$canv coords $tagOrId] x0 y0 x1 y1 x2 y2
-
-      #--   centre de rotation
-      set xc [expr { ($x0 + ($x1+$x2)/2)/2. }]
-      set yc [expr { ($y0 + ($y1+$y2)/2)/2. }]
-
-      #---  distance au centre du triangle
-      set dX [expr { $halfHeight*cos($dec)*cos($angleZ) }]
-      set dY [expr { $halfHeight*cos($dec)*sin($angleZ) }]
-
-      #---  demi base du triangle
-      set deltaX [expr { $halfBase*sin($angleZ) }]
-      set deltaY [expr { $halfBase*cos($angleZ) }]
-
-      #---  coordonnees de la pointe du triangle
-      set x1 [expr { $xc + $dX }]
-      set y1 [expr { $yc + $dY }]
-
-      #---  coordonnees d'un point de la base
-      set x2 [expr { $xc - $dX - $deltaX }]
-      set y2 [expr { $yc - $dY + $deltaY }]
-
-      #---  coordonnees du second point de la base
-      set x3 [expr { $xc - $dX + $deltaX }]
-      set y3 [expr { $yc - $dY - $deltaY }]
-
-      $canv coord $tagOrId $x1 $y1 $x2 $y2 $x3 $y3
+      makeSafeTel
    }
 
    #----------------------------------------------------------------------
-   # rotateItem -- Rotates a canvas item any angle about an arbitrary point.
-   # Works by rotating the coordinates of the object. Thus it works with:
-   #  o polygon
-   #  o line
-   # It DOES NOT work correctly with:
-   #  o rectangle
-   #  o oval and arcs
-   #  o text
-   #
-   # Parameters:
-   #       canv - Path name of the canvas
-   #       tagOrId - what to rotate -- may be composite items
-   #       Ox, Oy - origin to rotate around
-   #       angle - degrees clockwise to rotate by
-   #
-   # Results:
-   #       Returns nothing
-   #
-   # Side effects:
-   #       Rotates a canvas item by ANGLE degrees clockwise
-   #
-   #  source : adapte de http://wiki.tcl.tk/8595 RotateItem
+   # rotateCW
+   #  Tourne l'axe des contrepoids CW
+   #  Parametres  : canvas et angle de position (degres)
+   #  Duree : 120 microsecondes
    #----------------------------------------------------------------------
-   proc rotateItem { canv tagOrId Ox Oy angle} {
+   proc rotateCW { canv angle } {
 
-      set angle [mc_angle2rad $angle] ;# Radians
+      set tagOrId CW
 
-      foreach id [$canv find withtag $tagOrId] {     ;# Do each component separately
-        set xy {}
-        foreach {x y} [$canv coords $id] {
-            # rotates vector (Ox,Oy)->(x,y) by angle clockwise
-            set x [expr {$x - $Ox}]             ;# Shift to origin
-            set y [expr {$y - $Oy}]
+      lassign [$canv gettags $tagOrId] -> -> prevAngle
+      lassign [$canv coords $tagOrId] x1 y1 xc yc
+      #--   filtre les valeurs anormales
+      if {[expr { abs($angle-$prevAngle) }] < 10} {
 
-            set xx [expr {$x * cos($angle) - $y * sin($angle)}] ;# Rotate
-            set yy [expr {$x * sin($angle) + $y * cos($angle)}]
+         set angle_rad [mc_angle2rad $angle] ;# Radians
 
-            set xx [expr {$xx + $Ox}]           ;# Shift back
-            set yy [expr {$yy + $Oy}]
-            lappend xy $xx $yy
-        }
-        $canv coords $id $xy
+         #--   coordonnees de l'extremite mobile
+         set x1 [expr { $xc+65*cos($angle_rad) }]
+         set y1 [expr { $yc-65*sin($angle_rad) }]
+         $canv coords $tagOrId $x1 $y1 $xc $yc
+
+         #--   memorise l'angle en degres
+         $canv itemconfigure $tagOrId -tags [lreplace [$canv gettags $tagOrId] 2 2 $angle]
+      }
+
+      return [list $x1 $y1]
+   }
+
+   #------------------------------------------------------------
+   #  rotateOTA
+   #   Tourne le tube OTA
+   #  Parametres : canv, angleZ (degres) et dec (degres) et
+   #  coordonnes du centre de rotation de OTA
+   #  Duree : 160 microsecondes
+   #------------------------------------------------------------
+   proc rotateOTA { canv angleZ decTel xc yc } {
+
+      set tagOrId OTA
+      lassign [$canv gettags $tagOrId] -> -> halfBase halfHeight -> -> prevDec
+
+      if { [expr { abs($prevDec-$decTel) }] < 10} {
+
+         set angleZ [mc_angle2rad $angleZ]
+         set dec_rad [mc_angle2rad $decTel]
+
+         #---  distance au centre du triangle
+         set dX [expr { $halfHeight*cos($dec_rad)*cos($angleZ) }]
+         set dY [expr { $halfHeight*cos($dec_rad)*sin($angleZ) }]
+
+         #--   coordonnees de la pointe du triangle
+         set x1 [expr { $xc+$dX }]
+         set y1 [expr { $yc+$dY }]
+
+         #---  ecart par rapport a la demi base du triangle
+         set deltaX [expr { $halfBase*sin($angleZ) }]
+         set deltaY [expr { $halfBase*cos($angleZ) }]
+
+         #--   coordonnees du mimieu de la base
+         set xcBase [expr { $xc-$dX }]
+         set ycBase [expr { $yc-$dY }]
+
+         #--   coordonnees du premier point de la base
+         set x2 [expr { $xcBase-$deltaX }]
+         set y2 [expr { $ycBase+$deltaY }]
+
+         #--   coordonnees du second point de la base
+         set x3 [expr { $xcBase+$deltaX }]
+         set y3 [expr { $ycBase-$deltaY }]
+
+         $canv coord $tagOrId $x1 $y1 $x2 $y2 $x3 $y3
+         set tags [lreplace [$canv gettags OTA] 4 5 $xcBase $ycBase]
+         $canv itemconfigure $tagOrId -tags [lreplace [$canv gettags OTA] 4 6 $xcBase $ycBase $decTel]
       }
    }
 
    #------------------------------------------------------------
    #  makeSafeTel
-   #  Arrete le telescope s'il atteint l'une des butees Est ou Ouest ou a l'Horizon
+   #  Arrete le telescope s'il atteint l'une des butees Est ou Ouest ou l'Horizon
+   #  Duree : 30 microsecondes
    #------------------------------------------------------------
-   proc makeSafeTel { lhTel buteeWest buteeEast thetaTel thetaHrz} {
+   proc makeSafeTel { } {
+      variable private
       global audace caption
 
-      if {$lhTel >= $buteeWest || $lhTel <= $buteeEast || $thetaTel > $thetaHrz \
-         && $audace(telescope,controle) eq "$caption(telescope,suivi_marche)"} {
+      set deltaAngle1 [mc_anglescomp $private(buteeWest) - $private(haTel)]
+      set deltaAngle2 [mc_anglescomp $private(buteeEast) - $private(haTel)]
 
+      if { ($private(elevTel) < $private(elevInf) || $deltaAngle1 <= 0 || $deltaAngle2 <= 0) \
+         && $audace(telescope,controle) eq "$caption(telescope,suivi_marche)"} {
          #--   rem : la fonction verifie que le telescope a la capacite de controler le suivi
          ::telescope::controleSuivi "$caption(telescope,suivi_marche)"
       }
    }
 
    #------------------------------------------------------------
-   #  shiftButee
-   #  Déplace la butée sur le cercle
-   #  Binding associee aux deux butees
+   #  getMountSide
+   #  Parametre : nom de la monture
+   #  Retourne : cote de la monture
+   #  Duree : 250 millisecondes
    #------------------------------------------------------------
-   proc shiftButee { visuNo w x y } {
-      variable private
+   proc getMountSide { mount {telNo 1} } {
+      global caption
 
-      lassign [$w itemcget [$w find withtag current] -tags]  -> TagOrId
-
-      set startOld [lindex [$w gettags West] 2]
-      set endOld [lindex [$w gettags East] 2 ]
-
-      set distanceX [expr { $x-100 }]
-      set distanceY [expr { $y-100 }] ; # toujours >= 0 car en dessous du centre
-
-      #--   identifie le centre de la butee
-      lassign [::polydraw::center $visuNo $w $TagOrId] x1 y1
-
-      #--   calcule l'angle reel en rad
-      set angleRad [expr { acos($distanceX/hypot($distanceX,$distanceY)) }]
-
-      #--   calcule la position sur le cercle
-      set rayon 60
-      set dx [expr { 100 + $rayon*cos($angleRad) - $x1 }]
-      set dy [expr { 100 + $rayon*sin($angleRad) - $y1 }]
-
-      #--   deplace la butee
-      $w move $TagOrId $dx $dy
-
-      #--   calcule l'angle retrograde, Est = 0°
-      set newAngle [expr { 360 - $angleRad * 180/(4*atan(1.)) } ]
-
-      #--   rafraichit la valeur de la butee
-      if {$TagOrId eq "West"} {
-         if {$newAngle <= 180 || $newAngle >= 270} {
-            #--   arrete si pas dans le quadrant (180°,270°) sens direct
-            return
-         }
-         set lh [expr { $newAngle/15 -6 }]
-         set start $newAngle
-         set extent [expr { $endOld - $newAngle }]
-      } elseif {$TagOrId eq "East"} {
-         if {$newAngle <= 270 || $newAngle >= 360} {
-            #--   arrete si pas dans le quadrant (270°,360°) sens direct
-            return
-         }
-         set lh [expr { -30 + $newAngle/15 }]
-         set start $startOld
-         set extent [expr { $newAngle - $startOld }]
+      switch -exact $mount {
+            temma {  set telSide [tel$telNo german]
+                     lassign $caption(collector,parkOptSide) ouest est
+                     set side [string map [list W $ouest E $est ] $telSide]
+                  }
+            eqmod {  set telSide [tel$telNo orientation]
+                     set ouest $caption(eqmod,tube_ouest)
+                     set est $caption(eqmod,tube_est)
+                     set side [string map [list w $ouest e $est ] $telSide]
+                  }
+            default { set side "?"}
       }
 
-      #--   met a jour les donnees
-      $w itemconfigure $TagOrId -tags [list butee $TagOrId $newAngle]
-      $w itemconfigure sector -start $start -extent $extent
-      set private(butee$TagOrId) [format "%02.2f" $lh]
+      return $side
+   }
+
+   #------------------------------------------------------------
+   #  initMyTel
+   #  Initialise la position du telescope sur le symbole d'une monture allemande
+   #  Parametres : mode (index de la combobox du choix du mode d'initialisation)
+   #     et side (côte ou se trouve le tube E ou W)
+   #------------------------------------------------------------
+   proc initMyTel { mode side } {
+      variable private
+
+      set canv $private(canvas)
+      set haTel $private(haTel) ; #--  degres
+      set decTel [mc_angle2deg $private(decTel)]
+
+      #--   positionne le symbole en position Zénith Ouest
+      $canv coord CW 35 100 100 100
+      $canv coord OTA 35 160 25 40 45 40
+
+      #--   angle = angle de position de l'axe CV
+      if {$mode in [list 1 2 7 8]} {
+         #-- cas : Horizon Est, Horizon Ouest, Pôle Nord, Pôle Sud
+         set angle 270.0
+      } elseif {$mode in [list 0 3 4 5 6]} {
+        #-- cas : Horizon Sud, Horizon Nord, Equateur Sud, Equateur Nord, Zenith
+        if {$side eq "W" } {
+            set angle 180.0
+         } elseif {$side eq "E"} {
+            set angle 90.0
+         }
+      } else {
+         #--   mode Utilisateur
+         set angle $ha
+      }
+
+      #--   met a jour les tags de l'axe
+      set tags [$canv gettags CW]
+      lappend tags $angle
+      $canv itemconfigure CW -tags $tags
+
+      lassign [rotateCW $canv [expr { fmod($haTel+180,360) } ] ] xc yc
+
+      #--   met a jour les tags du tube
+      set tags [$canv gettags OTA]
+      lappend tags $decTel
+      $canv itemconfigure OTA -tags $tags
+
+      set angleZ [expr { fmod(450-$haTel,360) }]
+      rotateOTA $canv $angleZ $decTel $xc $yc
+
+      #--   demasque le telescope
+      showTelescope $canv 1 $private(colTel) $private(colFond)
+
+      #--   met a jour le cote du tube
+      set private(side) [getMountSide $private(product)]
+   }
+
+   #------------------------------------------------------------
+   #  showTelescope
+   #  Gere l'alternance de l'affichage entre item(s) et bitmap
+   #  Parametres  : todo {1 = affiche | 0 = masque}
+   #                unmaskColor couleur pour demasquer (couleur du bitmap , couleur de remplissage pour -fill)
+   #                maskColor couleur pour masquer (couleur du fond pour un bitmap , "" pour -fill)
+   #------------------------------------------------------------
+   proc showTelescope { canv todo unmaskColor maskColor } {
+
+      if {$todo == 1} {
+         #--   masque le ? et demasque le telescope
+         $canv itemconfigure question -foreground $maskColor
+         $canv itemconfigure telescope -fill $unmaskColor
+      } else {
+         #--   demasque le ? et masque le telescope
+         $canv itemconfigure question -foreground $unmaskColor
+         $canv itemconfigure telescope -fill $maskColor
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getGermanSide
+   #  Retourne le cote ou se trouve le tube, l'index de la combobox
+   #  et la position litterale pour un telescope Temma
+   #------------------------------------------------------------
+   proc getGermanSide { {telNo 1} } {
+      global caption
+
+      set telSide [tel$telNo german]
+      set sideIndex [string map [list W 0 E 1] $telSide]
+      set side "[lindex $caption(collector,parkOptSide) $sideIndex]"
+
+      return [list $telSide $sideIndex $side]
    }
 
    #------------------------------------------------------------
    #  buildOngletGerman
    #  Cree l'onglet 'Monture Allemande'
+   #  Parametres : chemin et visuNo
    #------------------------------------------------------------
    proc buildOngletGerman { w visuNo } {
       variable private
+
+      buildShowValues $w
+
+      #---  definit le centre {100,100} et le rayon de la grille
+      set xc 100
+      set yc 100
+      set rayon 60
+      set canv [buildGrid $w 200 200 $xc $yc $rayon]
+
+      #--   axe du contrepoids (CW) en position horizontale (Zénith Ouest)
+      set cwLength 65 ; # rayon+5
+      $canv create line [expr { $xc-$cwLength }] $yc $xc $yc -fill "" \
+         -width 4 -smooth 1 -tags [list telescope CW]
+
+      #--   tube optique OTA
+      #--   demi base du triangle (pixels)
+      set halfbase 10
+      #--   demi hauteur du triangle (pixels)
+      set halfHeight 60
+      #--   coordonnees du centre de la base du triangle
+      set xcBase 35
+      set ycBase 40
+      $canv create polygon $xcBase [expr { $yc+$halfHeight}] \
+         [expr { $xcBase-$halfbase }] [expr { $yc-$halfHeight}] \
+         [expr { $xcBase+$halfbase }] [expr { $yc-$halfHeight}] \
+         -fill "" -width 20 \
+         -tags [list telescope OTA $halfbase $halfHeight $xcBase $ycBase]
+
+      buildSector $visuNo $xc $yc $rayon ; #-- secteur interdit
+      builColorLegend $w ; #-- legende des couleurs
+
+      showTelescope $canv 0 $private(colButee) $private(colFond)
+   }
+
+   #------------------------------------------------------------
+   #  buildShowValues
+   #  Construit l'affichage des valeurs
+   #  Parametres : chemin
+   #------------------------------------------------------------
+   proc buildShowValues { w } {
+      variable private
       global conf caption
-
-      #::console::affiche_resultat "$private(colFond) $private(colReticule) \
-      #   $private(colTel) $private(colButee) $private(colSector)\n"
-
-      set private(hautInf) $conf(cata,haut_inf)
-      set private(hautSup) $conf(cata,haut_sup)
 
       label $w.postel -text "$caption(collector,postel)"
       grid $w.postel -row 0 -column 0 -columnspan 5 -sticky ew
 
       set r 1
-      foreach z [list hautInf hautSup buteeWest buteeEast lhTel thetaTel thetaHrz] {
+      foreach z [list elevInf buteeWest buteeEast] {
          label $w.lab_$z -text "$caption(collector,$z)"
          grid $w.lab_$z -row $r -column 0 -padx {5 0} -sticky w
          label $w.$z -textvariable ::collector::private($z)
@@ -290,18 +328,28 @@
       incr row
       grid columnconfigure $w {0 1} -pad 10
 
+      set private(elevInf) $conf(cata,haut_inf)
+   }
+
+   #------------------------------------------------------------
+   #  buildGrid
+   #  Construit la grille avec les annotations
+   #  Parametres : largeur et hauteur du canvas,
+   #  coordonnees du centre du cercle er rayon
+   #------------------------------------------------------------
+   proc  buildGrid { w x y xc yc rayon } {
+      variable private
+      global caption
+
       set canv $w.gr_polaire_color_invariant
       set private(canvas) $canv
 
       #---  cree le canvas
-      canvas $canv -width 200 -height 200 -borderwidth 2 -bg $private(colFond)
+      canvas $canv -width $x -height $y -borderwidth 2 -bg $private(colFond)
       grid $canv -row 1 -column 2 -rowspan 9 -padx 10
 
-      #---  cree un cercle de centre {100,100}
-      set xc 100
-      set yc 100
-      set rayon 60 ;
-      $canv create oval [expr {$xc-$rayon}] [expr {$yc-$rayon}] [expr {$xc+$rayon}] [expr {$yc+$rayon}] \
+      $canv create oval [expr {$xc-$rayon}] [expr {$yc-$rayon}] \
+         [expr {$xc+$rayon}] [expr {$yc+$rayon}] \
          -outline $private(colReticule) -width 2 -tags [list cercle]
 
       #---   gradue en heures
@@ -330,43 +378,40 @@
       }
 
       #---   annote Ouest et Est et Meridien
-      $canv create text 10 100 -text "$caption(collector,west)" -tags [list reticule texte]\
-         -fill $private(colReticule) -font {Arial 8}
-      $canv create text 190 100 -text "$caption(collector,east)" -tags [list reticule texte] \
-         -fill $private(colReticule) -font {Arial 8}
+      $canv create text 10 100 -text "$caption(collector,west)" -font {Arial 8} \
+         -fill $private(colReticule) -tags [list reticule texte]
+      $canv create text 190 100 -text "$caption(collector,east)" -font {Arial 8} \
+         -fill $private(colReticule) -tags [list reticule texte]
       $canv create line 100 0 100 200 -width 1 -dash {2 4} -tags [list reticule texte] \
          -fill $private(colReticule)
 
       #--   cree un ? pour marquer l'absence d'info
       $canv create bitmap 100 80 -bitmap question -state normal \
-         -anchor center -foreground $private(colButee) \
-         -tags question
+         -anchor center -foreground $private(colButee) -tags question
 
-      #--    cree les symboles du telescope en mode Zénith Ouest
-      #--   axe horaire
-      $canv create line 35 100 100 100 -fill "" -width 4 -smooth 1 \
-         -tags [list telescope myTelAD]
-      #--   symbole (triangle) du telescope
-      set xc
-      set yc 100
-      #--   demi base du triangle (pixels)
-      set halfbase 10
-      #--   demi hauteur du triangle (pixels)
-      set halfHeight 60
-      $canv create polygon 35 160 25 40 45 40 -fill "" -width 20 \
-         -tags [list telescope myTelDEC $halfbase $halfHeight]
+      return $canv
+   }
 
-      showTelescope $canv 0 $private(colButee) $private(colFond)
+   #------------------------------------------------------------
+   #  buildSector
+   #  Construit les butees et le secteur interdit
+   #  Parametres : rayon du cercle
+   #------------------------------------------------------------
+   proc buildSector { visuNo xc yc rayon } {
+      variable private
+
+      set canv $private(canvas)
 
       #---   secteur interdit (angles comptes dans le sens retrograde)
-      set angleStart [expr { (6+$private(buteeWest))*15 }]
-      set angleEnd [expr { 450+$private(buteeEast)*15 }]
+      set angleStart [expr { $private(buteeWest)+180 }]
+      set angleEnd [expr { $private(buteeEast)+90 }]
 
       #--   calcule la longueur de l'arc
       set extent [expr { $angleEnd - $angleStart }]
-      $canv create arc [expr {$xc-$rayon+1}] [expr {$yc-$rayon+1}] [expr {$xc+$rayon-1}] [expr {$yc+$rayon-1}] \
-         -style pieslice -width 1 -start $angleStart -extent $extent -fill $private(colSector) \
-         -tags [list sector]
+      $canv create arc [expr {$xc-$rayon+1}] [expr {$yc-$rayon+1}] \
+         [expr {$xc+$rayon-1}] [expr {$yc+$rayon-1}] \
+         -style pieslice -fill $private(colSector) -width 1 \
+         -start $angleStart -extent $extent -tags [list sector]
 
       #--   cree la butee Ouest
       set angleW [mc_angle2rad $angleStart]
@@ -383,6 +428,77 @@
          -fill $private(colButee) -tags [list butee East $angleEnd]
 
       $canv bind butee <ButtonRelease-1> "::collector::shiftButee $visuNo %W %x %y"
+   }
+
+   #------------------------------------------------------------
+   #  shiftButee
+   #  Déplace la butée sur le cercle
+   #  Binding associee aux deux butees
+   #------------------------------------------------------------
+   proc shiftButee { visuNo w x y } {
+      variable private
+
+      lassign [$w itemcget [$w find withtag current] -tags]  -> TagOrId
+
+      #--   recupere les HA des butees Ouest et Est
+      set startOld [lindex [$w gettags West] 2]
+      set endOld [lindex [$w gettags East] 2 ]
+
+      set distanceX [expr { $x-100 }]
+      set distanceY [expr { $y-100 }] ; # toujours >= 0 car en dessous du centre
+
+      #--   calcule l'angle reel en rad
+      set angleRad [expr { acos($distanceX/hypot($distanceX,$distanceY)) }]
+
+      #--   identifie le centre de la butee active
+      lassign [$w coord $TagOrId] x1 y1 x2 y2
+      set x1 [expr  { ($x1+$x2)/2 }]
+      set y1 [expr  { ($y1+$y2)/2 }]
+
+      #--   calcule la position sur le cercle
+      set rayon 60
+      set dx [expr { 100 + $rayon*cos($angleRad) - $x1 }]
+      set dy [expr { 100 + $rayon*sin($angleRad) - $y1 }]
+
+      #--   calcule l'angle retrograde, Est = 0°
+      set newAngle [expr { 360 - $angleRad * 180/(4*atan(1.)) } ]
+
+      #--   rafraichit la valeur de la butee
+      if {$TagOrId eq "West"} {
+         if {$newAngle <= 180 || $newAngle >= 270} {
+            #--   arrete si pas dans le quadrant (180°,270°) sens direct
+            return
+         }
+          set ha [expr { fmod($newAngle-180,360) }]
+         set start $newAngle
+         set extent [expr { $endOld - $newAngle }]
+      } elseif {$TagOrId eq "East"} {
+         if {$newAngle <= 270 || $newAngle >= 360} {
+            #--   arrete si pas dans le quadrant (270°,360°) sens direct
+            return
+         }
+         set ha [expr { fmod($newAngle-90,360) }]
+         set start $startOld
+         set extent [expr { $newAngle - $startOld }]
+      }
+
+      #--   deplace la butee
+      $w move $TagOrId $dx $dy
+
+      #--   met a jour les donnees
+      $w itemconfigure $TagOrId -tags [list butee $TagOrId $newAngle]
+      $w itemconfigure sector -start $start -extent $extent
+      set private(butee$TagOrId) [format "%02.2f" $ha]
+   }
+
+   #------------------------------------------------------------
+   #  builColorLegend
+   #  Construit la legende des couleurs
+   #  Parametres : chemin
+   #------------------------------------------------------------
+   proc builColorLegend { w } {
+      variable private
+      global caption
 
       #--   affiche la legende des couleurs
       label $w.legende -text "$caption(collector,legende)"
@@ -432,112 +548,3 @@
          }
       }
    }
-
-   #------------------------------------------------------------
-   #  initMyTel
-   #  Initialise la position du telescope sur le symbole d'une monture allemande
-   #  Parametres : mode (index de la combobox du choix du mode d'initialisation)
-   #     et side (côte ou se trouve le tube E ou W)
-   #  Complete les tags avec l'angle horaire (hms) et la longitude horaire (en heures)
-   #------------------------------------------------------------
-   proc initMyTel { mode side } {
-      variable private
-      global conf
-
-      set w $private(canvas)
-      set dec [mc_angle2deg $private(decTel)]
-      set ha $private(haTel)
-
-      #--   repositionne le symbole en position Zénith Ouest
-      $w coord myTelAD 35 100 100 100
-      $w coord myTelDEC 35 160 25 40 45 40
-
-      #--   deltaRot = difference d'angle (retrograde) graphique de AD
-      #--   lhTel = difference d'angle (retrograde) graphique de AD
-
-      if {$mode in [list 1 2 7 8]} {
-         set lhTel 0.00
-         set deltaRot 90
-      } elseif {$mode in [list 0 3 4 5 6]} {
-        if {$side eq "W" } {
-            set lhTel 6.00
-            set deltaRot 0
-         } elseif {$side eq "E"} {
-            set lhTel -6.00
-            set deltaRot 180
-         }
-      } else {
-         #--   mode Utilisateur
-         set lhTel [expr { [mc_angle2deg $ha] / 15 }]
-         set deltaRot [mc_anglescomp 24h00m00s - $ha]
-      }
-
-      showTelescope $w 1 $private(colTel) $private(colFond)
-
-      #--   tourne les deux a partir de la position Zénith Ouest
-      rotateItem $w telescope 100 100 $deltaRot
-      $w itemconfigure myTelAD -tags [list telescope myTelAD $ha $lhTel]
-   }
-
-   #------------------------------------------------------------
-   #  showTelescope
-   #  Gere l'alternance de l'affichage entre item(s) et bitmap
-   #  Parametres  : todo {1 = affiche | 0 = masque}
-   #                unmaskColor couleur pour demasquer (couleur du bitmap , couleur de remplissage pour -fill)
-   #                maskColor couleur pour masquer (couleur du fond pour un bitmap , "" pour -fill)
-   #------------------------------------------------------------
-   proc showTelescope { canv todo unmaskColor maskColor } {
-
-   #::console::affiche_resultat "showTelescope todo $todo unmaskColor $unmaskColor maskColor $maskColor\n"
-
-      if {$todo == 1} {
-         #--   masque le ? et demasque le telescope
-         $canv itemconfigure question -foreground $maskColor
-         $canv itemconfigure telescope -fill $unmaskColor
-      } else {
-         #--   demasque le ? et masque le telescope
-         $canv itemconfigure question -foreground $unmaskColor
-         $canv itemconfigure telescope -fill $maskColor
-      }
-   }
-
-   #------------------------------------------------------------
-   #  refreshMountSide
-   #  Retourne : cote de la monture
-   #  Parametre : nom de la monture
-   #------------------------------------------------------------
-   proc refreshMountSide { mount {telNo 1} } {
-      global caption
-
-      switch -exact $mount {
-            temma {  set telSide [tel$telNo german]
-                     lassign $caption(collector,parkOptSide) ouest est
-                     set side [string map [list W $ouest E $est ] $telSide]
-                  }
-            eqmod {  set telSide [tel$telNo orientation]
-                     set ouest $caption(eqmod,tube_ouest)
-                     set est $caption(eqmod,tube_est)
-                     set side [string map [list w $ouest e $est ] $telSide]
-                  }
-            default { set side "?"}
-      }
-
-      return $side
-   }
-
-   #------------------------------------------------------------
-   #  getGermanSide
-   #  Retourne le cote ou se trouve le tube, l'index de la combobox
-   #  et la position litterale pour un telescope Temma
-   #------------------------------------------------------------
-   proc getGermanSide { } {
-      global audace caption
-
-      set telNo $audace(telNo)
-      set telSide [tel$telNo german]
-      set sideIndex [string map [list W 0 E 1] $telSide]
-      set side "[lindex $caption(collector,parkOptSide) $sideIndex]"
-
-      return [list $telSide $sideIndex $side]
-   }
-
