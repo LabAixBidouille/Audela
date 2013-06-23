@@ -190,6 +190,7 @@
       $this.n.dynamic.prior current 0
       $this.n.kwds.imagetyp current 3
       set private(objname) "mySky"
+      set private(telInitialise) 0
 
       set private(meteo) 0
 
@@ -452,7 +453,7 @@
          private(colTel) private(colButee) private(colSector)
 
       if {![info exists conf(collector,butees)]} {
-         set conf(collector,butees) [list +6.10 -6.10]
+         set conf(collector,butees) [list 90 270]
       }
       lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
 
