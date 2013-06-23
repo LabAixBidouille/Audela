@@ -98,14 +98,11 @@
    proc computeCenterPixVal { } {
       variable private
 
-      #--   raccourcis
-      foreach v [list naxis1 naxis2 ra dec] {set $v $private($v)}
+      set private(crpix1) [expr { $private(naxis1)/2. } ]
+      set private(crpix2) [expr { $private(naxis2)/2. } ]
 
-      set private(crpix1) [expr { $naxis1 / 2. } ]
-      set private(crpix2) [expr { $naxis2 / 2. } ]
-
-      set private(crval1) [string trim [mc_angle2deg $ra]]
-      set private(crval2) [string trim [mc_angle2deg $dec]]
+      set private(crval1) [string trim [mc_angle2deg $private(ra)]]
+      set private(crval2) [string trim [mc_angle2deg $private(dec)]]
    }
 
    #------------------------------------------------------------
@@ -115,13 +112,10 @@
    proc computeTslMoon { } {
       variable private
 
-      #--   raccourcis
-      foreach v [list tu gps] {set $v $private($v)}
+      set private(jd) [mc_date2jd $private(tu)]
+      set private(tsl) [getTsl $private(tu) $private(gps)]
 
-      set private(jd) [mc_date2jd $tu]
-      set private(tsl) [getTsl $tu $gps]
-
-      lassign [getMoonAge $private(jd) $gps] \
+      lassign [getMoonAge $private(jd) $private(gps)] \
          private(moonphas) private(moonalt) private(moon_age)
 
       etc_params_set moon_age $private(moon_age)
@@ -136,12 +130,8 @@
    proc computeTelCoord { } {
       variable private
 
-      set dateTu $private(tu)
-      set home $private(gps)
-      set airpress $private(airpress)
       set tempK [expr { 273.15 + $private(tempair) }]
-      set data [list $private(ra) $private(dec) $dateTu $home $airpress tempK]
-
+      set data [list $private(ra) $private(dec) $private(tu) $private(gps) $private(airpress) $tempK]
       if {"-" in $data} {return}
 
       lassign [getTrueCoordinates $data] private(raTel) private(decTel) \
@@ -253,7 +243,9 @@
       variable private
       global audace
 
-      #--   met a jour les coordonnees vises à partir des coordonnees du telescope
+      if {$private(telInitialise) ==0} {return}
+
+      #--   met a jour les coordonnees visees a partir des coordonnees du telescope
       refreshCoordsJ2000 $audace(telescope,getra) $audace(telescope,getdec) EQUATORIAL
 
       computeTelSpeed
