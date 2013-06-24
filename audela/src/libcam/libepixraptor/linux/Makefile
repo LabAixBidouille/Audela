@@ -1,6 +1,6 @@
 LIBCAM = 1
 
-OUTPUT = libepix.so
+OUTPUT = libepixraptor.so
 
 SRC = $(LIBCAMDIR)/util.c $(LIBCAMDIR)/libcam.c
 SRC += $(SRCDIR)/camera.c $(SRCDIR)/camtcl.c
