@@ -7,13 +7,11 @@
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-#TODO: rewrite the file for the epixraptor camera
-
 global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(epixraptor,camera)                       "EPIX"
+set caption(epixraptor,camera)                       "EPIX - Raptor"
 
 set caption(epixraptor,config)                       "Video Format File"
 set caption(epixraptor,extconfig)                    "External Video Format File"
@@ -32,7 +30,7 @@ set caption(epixraptor,videomode)                    "Video Mode"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "Fichier de Format Video"
    set caption(epixraptor,extconfig)                 "Fichier externe de Format Video"
@@ -51,7 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "File di formato Video"
    set caption(epixraptor,extconfig)                 "External Video Format File"
@@ -70,7 +68,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,obtu_ouvert)               "Abierto"
    set caption(epixraptor,obtu_ferme)                "Cerrado"
@@ -93,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "Video Format file"
    set caption(epixraptor,extconfig)                 "External Video Format File"
@@ -112,7 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "Ficheiro de configuração"
    set caption(epixraptor,extconfig)                 "External Video Format File"
@@ -131,7 +129,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "Video Format File"
    set caption(epixraptor,extconfig)                 "External Video Format File"
@@ -150,7 +148,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "Video Format File"
    set caption(epixraptor,extconfig)                 "External Video Format File"
@@ -169,7 +167,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(epixraptor,camera)                    "EPIX"
+   set caption(epixraptor,camera)                    "EPIX - Raptor"
 
    set caption(epixraptor,config)                    "Video Format File"
    set caption(epixraptor,extconfig)                 "External Video Format File"
