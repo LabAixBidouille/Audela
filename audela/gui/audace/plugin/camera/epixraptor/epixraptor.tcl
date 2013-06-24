@@ -1,11 +1,9 @@
 #
 # Fichier : epixraptor.tcl
 # Description : Configuration de la camera Raptor
-# Auteur : Frederic VACHIER
+# Auteur : Matteo SCHIAVON
 # Mise à jour $Id$
 #
-
-#TODO: rewrite all the file for the epixraptor camera
 
 namespace eval ::epixraptor {
    package provide epixraptor 1.0
@@ -115,7 +113,7 @@ proc ::epixraptor::confToWidget { } {
    variable private
    global caption conf
 
-   #--- Recupere la configuration de la camera Andor dans le tableau private(...)
+   #--- Recupere la configuration de la camera Raptor dans le tableau private(...)
    set private(tec)         $conf(epixraptor,tec)
    set private(framerate)   $conf(epixraptor,framerate)
    set private(config)      $conf(epixraptor,config)
@@ -161,7 +159,7 @@ proc ::epixraptor::widgetToConf { camItem } {
 
 #
 # ::epixraptor::fillConfigPage
-#    Interface de configuration de la camera Andor
+#    Interface de configuration de la camera Raptor
 #
 proc ::epixraptor::fillConfigPage { frm camItem } {
    variable private
@@ -361,11 +359,14 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
    pack $frm.frame2 -side left -fill both -expand 1
 
    #::epixraptor::dispTempCMOS
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #
 # ::epixraptor::configureCamera
-#    Configure la camera Andor en fonction des donnees contenues dans les variables conf(epixraptor,...)
+#    Configure la camera Raptor en fonction des donnees contenues dans les variables conf(epixraptor,...)
 #
 proc ::epixraptor::configureCamera { camItem bufNo } {
    variable private
@@ -414,7 +415,7 @@ proc ::epixraptor::configureCamera { camItem bufNo } {
 
 #
 # ::epixraptor::stop
-#    Arrete la camera Andor
+#    Arrete la camera Raptor
 #
 proc ::epixraptor::stop { camItem } {
    variable private
