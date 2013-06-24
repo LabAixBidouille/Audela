@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded epix 1.0 [ list source [ file join $dir epix.tcl ] ]
+package ifneeded epixraptor 1.0 [ list source [ file join $dir epixraptor.tcl ] ]
 
