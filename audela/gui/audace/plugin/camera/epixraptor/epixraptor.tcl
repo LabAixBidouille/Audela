@@ -1,69 +1,69 @@
 #
-# Fichier : epix.tcl
+# Fichier : epixraptor.tcl
 # Description : Configuration de la camera Raptor
 # Auteur : Frederic VACHIER
 # Mise à jour $Id$
 #
 
-#TODO: rewrite all the file for the epix camera
+#TODO: rewrite all the file for the epixraptor camera
 
-namespace eval ::epix {
-   package provide epix 1.0
+namespace eval ::epixraptor {
+   package provide epixraptor 1.0
 
    #--- Charge le fichier caption
-   source [ file join [file dirname [info script]] epix.cap ]
+   source [ file join [file dirname [info script]] epixraptor.cap ]
 }
 
 #
-# ::epix::getPluginTitle
+# ::epixraptor::getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
-proc ::epix::getPluginTitle { } {
+proc ::epixraptor::getPluginTitle { } {
    global caption
 
-   return "$caption(epix,camera)"
+   return "$caption(epixraptor,camera)"
 }
 
 #
-# ::epix::getPluginHelp
+# ::epixraptor::getPluginHelp
 #    Retourne la documentation du plugin
 #
-proc ::epix::getPluginHelp { } {
-   return "epix.htm"
+proc ::epixraptor::getPluginHelp { } {
+   return "epixraptor.htm"
 }
 
 #
-# ::epix::getPluginType
+# ::epixraptor::getPluginType
 #    Retourne le type du plugin
 #
-proc ::epix::getPluginType { } {
+proc ::epixraptor::getPluginType { } {
    return "camera"
 }
 
 #
-# ::epix::getPluginOS
+# ::epixraptor::getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
-proc ::epix::getPluginOS { } {
+proc ::epixraptor::getPluginOS { } {
    return [ list Linux ]
 }
 
 #
-# ::epix::getCamNo
+# ::epixraptor::getCamNo
 #    Retourne le numero de la camera
 #
-proc ::epix::getCamNo { camItem } {
+proc ::epixraptor::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
 }
 
 #
-# ::epix::isReady
+# ::epixraptor::isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
-proc ::epix::isReady { camItem } {
+proc ::epixraptor::isReady { camItem } {
    variable private
 
    if { $private($camItem,camNo) == "0" } {
@@ -76,94 +76,94 @@ proc ::epix::isReady { camItem } {
 }
 
 #
-# ::epix::initPlugin
-#    Initialise les variables conf(epix,...)
+# ::epixraptor::initPlugin
+#    Initialise les variables conf(epixraptor,...)
 #
-proc ::epix::initPlugin { } {
+proc ::epixraptor::initPlugin { } {
    variable private
    global audace conf caption
 
    #--- Initialise les variables de la camera Raptor OSPREY
-   if { ! [ info exists conf(epix,tec) ] }         { set conf(epix,tec)       "1" }
-   if { ! [ info exists conf(epix,framerate) ] }   { set conf(epix,framerate) "37.5" }
-   if { ! [ info exists conf(epix,config) ] }      { set conf(epix,config)    "" }
-   if { ! [ info exists conf(epix,mirh) ] }        { set conf(epix,mirh)      "0" }
-   if { ! [ info exists conf(epix,mirv) ] }        { set conf(epix,mirv)      "0" }
-   if { ! [ info exists conf(epix,CMOStemp) ] }    { set conf(epix,CMOStemp)  "" }
-   if { ! [ info exists conf(epix,exposure) ] }    { set conf(epix,exposure)  "0.001" }
-   if { ! [ info exists conf(epix,roi_x1) ] }      { set conf(epix,roi_x1)    "0" }
-   if { ! [ info exists conf(epix,roi_y1) ] }      { set conf(epix,roi_y1)    "0" }
-   if { ! [ info exists conf(epix,roi_x2 ] }       { set conf(epix,roi_x2)    "2047" }
-   if { ! [ info exists conf(epix,roi_y2) ] }      { set conf(epix,roi_y2)    "2047" }
-   if { ! [ info exists conf(epix,binning) ] }     { set conf(epix,binning)   "1" }
-   if { ! [ info exists conf(epix,extconfig) ] }   { set conf(epix,extconfig) "0" }
-   if { ! [ info exists conf(epix,hdr) ] }         { set conf(epix,hdr)       "0" }
-   if { ! [ info exists conf(epix,videomode) ] }   { set conf(epix,videomode) "ffr" }
+   if { ! [ info exists conf(epixraptor,tec) ] }         { set conf(epixraptor,tec)       "1" }
+   if { ! [ info exists conf(epixraptor,framerate) ] }   { set conf(epixraptor,framerate) "37.5" }
+   if { ! [ info exists conf(epixraptor,config) ] }      { set conf(epixraptor,config)    "" }
+   if { ! [ info exists conf(epixraptor,mirh) ] }        { set conf(epixraptor,mirh)      "0" }
+   if { ! [ info exists conf(epixraptor,mirv) ] }        { set conf(epixraptor,mirv)      "0" }
+   if { ! [ info exists conf(epixraptor,CMOStemp) ] }    { set conf(epixraptor,CMOStemp)  "" }
+   if { ! [ info exists conf(epixraptor,exposure) ] }    { set conf(epixraptor,exposure)  "0.001" }
+   if { ! [ info exists conf(epixraptor,roi_x1) ] }      { set conf(epixraptor,roi_x1)    "0" }
+   if { ! [ info exists conf(epixraptor,roi_y1) ] }      { set conf(epixraptor,roi_y1)    "0" }
+   if { ! [ info exists conf(epixraptor,roi_x2 ] }       { set conf(epixraptor,roi_x2)    "2047" }
+   if { ! [ info exists conf(epixraptor,roi_y2) ] }      { set conf(epixraptor,roi_y2)    "2047" }
+   if { ! [ info exists conf(epixraptor,binning) ] }     { set conf(epixraptor,binning)   "1" }
+   if { ! [ info exists conf(epixraptor,extconfig) ] }   { set conf(epixraptor,extconfig) "0" }
+   if { ! [ info exists conf(epixraptor,hdr) ] }         { set conf(epixraptor,hdr)       "0" }
+   if { ! [ info exists conf(epixraptor,videomode) ] }   { set conf(epixraptor,videomode) "ffr" }
 
    #--- Initialisation
    set private(A,camNo)  "0"
    set private(B,camNo)  "0"
    set private(C,camNo)  "0"
-   set private(CMOStemp) "$caption(epix,temperature_CCD)"
+   set private(CMOStemp) "$caption(epixraptor,temperature_CCD)"
 }
 
 #
-# ::epix::confToWidget
+# ::epixraptor::confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
-proc ::epix::confToWidget { } {
+proc ::epixraptor::confToWidget { } {
    variable private
    global caption conf
 
    #--- Recupere la configuration de la camera Andor dans le tableau private(...)
-   set private(tec)         $conf(epix,tec)
-   set private(framerate)   $conf(epix,framerate)
-   set private(config)      $conf(epix,config)
-   set private(extconfig)   $conf(epix,extconfig)
-   set private(mirh)        $conf(epix,mirh)
-   set private(mirv)        $conf(epix,mirv)
-   set private(CMOStemp)    $conf(epix,CMOStemp)
-   set private(exposure)    $conf(epix,exposure)
-   set private(roi_x1)      $conf(epix,roi_x1)
-   set private(roi_y1)      $conf(epix,roi_y1)
-   set private(roi_x2)      $conf(epix,roi_x2)
-   set private(roi_y2)      $conf(epix,roi_y2)
-   set private(hdr)         $conf(epix,hdr)
-   set private(videomode)   $conf(epix,videomode)
-   set private(binning)     "$conf(epix,binning)x$conf(epix,binning)"
+   set private(tec)         $conf(epixraptor,tec)
+   set private(framerate)   $conf(epixraptor,framerate)
+   set private(config)      $conf(epixraptor,config)
+   set private(extconfig)   $conf(epixraptor,extconfig)
+   set private(mirh)        $conf(epixraptor,mirh)
+   set private(mirv)        $conf(epixraptor,mirv)
+   set private(CMOStemp)    $conf(epixraptor,CMOStemp)
+   set private(exposure)    $conf(epixraptor,exposure)
+   set private(roi_x1)      $conf(epixraptor,roi_x1)
+   set private(roi_y1)      $conf(epixraptor,roi_y1)
+   set private(roi_x2)      $conf(epixraptor,roi_x2)
+   set private(roi_y2)      $conf(epixraptor,roi_y2)
+   set private(hdr)         $conf(epixraptor,hdr)
+   set private(videomode)   $conf(epixraptor,videomode)
+   set private(binning)     "$conf(epixraptor,binning)x$conf(epixraptor,binning)"
 }
 
 #
-# ::epix::widgetToConf
+# ::epixraptor::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::epix::widgetToConf { camItem } {
+proc ::epixraptor::widgetToConf { camItem } {
    variable private
    global caption conf
 
-   #--- Memorise la configuration de la camera Raptor dans le tableau conf(epix,...)
-   set conf(epix,tec)         $private(tec)
-   set conf(epix,framerate)   $private(framerate)
-   set conf(epix,config)      $private(config)
-   set conf(epix,extconfig)   $private(extconfig)
-   set conf(epix,mirh)        $private(mirh)
-   set conf(epix,mirv)        $private(mirv)
-   set conf(epix,CMOStemp)    $private(CMOStemp)
-   set conf(epix,exposure)    $private(exposure)
-   set conf(epix,roi_x1)      $private(roi_x1)
-   set conf(epix,roi_y1)      $private(roi_y1)
-   set conf(epix,roi_x2)      $private(roi_x2)
-   set conf(epix,roi_y2)      $private(roi_y2)
-   set conf(epix,hdr)         $private(hdr)
-   set conf(epix,videomode)   $private(videomode)
-   set conf(epix,binning)     [ string index $private(binning) 0 ]
+   #--- Memorise la configuration de la camera Raptor dans le tableau conf(epixraptor,...)
+   set conf(epixraptor,tec)         $private(tec)
+   set conf(epixraptor,framerate)   $private(framerate)
+   set conf(epixraptor,config)      $private(config)
+   set conf(epixraptor,extconfig)   $private(extconfig)
+   set conf(epixraptor,mirh)        $private(mirh)
+   set conf(epixraptor,mirv)        $private(mirv)
+   set conf(epixraptor,CMOStemp)    $private(CMOStemp)
+   set conf(epixraptor,exposure)    $private(exposure)
+   set conf(epixraptor,roi_x1)      $private(roi_x1)
+   set conf(epixraptor,roi_y1)      $private(roi_y1)
+   set conf(epixraptor,roi_x2)      $private(roi_x2)
+   set conf(epixraptor,roi_y2)      $private(roi_y2)
+   set conf(epixraptor,hdr)         $private(hdr)
+   set conf(epixraptor,videomode)   $private(videomode)
+   set conf(epixraptor,binning)     [ string index $private(binning) 0 ]
 }
 
 #
-# ::epix::fillConfigPage
+# ::epixraptor::fillConfigPage
 #    Interface de configuration de la camera Andor
 #
-proc ::epix::fillConfigPage { frm camItem } {
+proc ::epixraptor::fillConfigPage { frm camItem } {
    variable private
    global audace caption
 
@@ -171,7 +171,7 @@ proc ::epix::fillConfigPage { frm camItem } {
    set private(frm) $frm
 
    #--- confToWidget
-   ::epix::confToWidget
+   ::epixraptor::confToWidget
 
    #--- Supprime tous les widgets de l'onglet
    foreach i [ winfo children $frm ] {
@@ -184,16 +184,16 @@ proc ::epix::fillConfigPage { frm camItem } {
       #--- Video format file definition
       frame $frm.frame1.frame1 -borderwidth 0 -relief raised
 
-         checkbutton $frm.frame1.frame1.check -text "$caption(epix,extconfig)" -highlightthickness 0 -variable ::epix::private(extconfig) -command "::epix::extconfig $camItem"
+         checkbutton $frm.frame1.frame1.check -text "$caption(epixraptor,extconfig)" -highlightthickness 0 -variable ::epixraptor::private(extconfig) -command "::epixraptor::extconfig $camItem"
          pack $frm.frame1.frame1.check -anchor w -side top -padx 10 -pady 1
 
-         label $frm.frame1.frame1.lab2 -text "$caption(epix,config)"
+         label $frm.frame1.frame1.lab2 -text "$caption(epixraptor,config)"
          pack $frm.frame1.frame1.lab2 -anchor center -side left -padx 1
 
-         entry $frm.frame1.frame1.host -width 30 -textvariable ::epix::private(config) -state disabled
+         entry $frm.frame1.frame1.host -width 30 -textvariable ::epixraptor::private(config) -state disabled
          pack $frm.frame1.frame1.host -anchor center -side left -padx 1
 
-         button $frm.frame1.frame1.explore -text "$caption(epix,browse)" -width 1 -command ::epix::explore -state disabled
+         button $frm.frame1.frame1.explore -text "$caption(epixraptor,browse)" -width 1 -command ::epixraptor::explore -state disabled
          pack $frm.frame1.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
       pack $frm.frame1.frame1 -side top -fill none -anchor n
@@ -215,7 +215,7 @@ proc ::epix::fillConfigPage { frm camItem } {
          label $frm.frame1.frame2.frame1.lab1 -text "x1"
          pack $frm.frame1.frame2.frame1.lab1 -anchor center -side left -padx 2
 
-         entry $frm.frame1.frame2.frame1.roi_x1 -width 4 -textvariable ::epix::private(roi_x1) -state disabled
+         entry $frm.frame1.frame2.frame1.roi_x1 -width 4 -textvariable ::epixraptor::private(roi_x1) -state disabled
          pack $frm.frame1.frame2.frame1.roi_x1 -anchor center -side left -padx 2
 
          pack $frm.frame1.frame2.frame1 -side top -fill both -expand 1 -anchor center -pady 2
@@ -226,7 +226,7 @@ proc ::epix::fillConfigPage { frm camItem } {
          label $frm.frame1.frame2.frame2.lab1 -text "y1"
          pack $frm.frame1.frame2.frame2.lab1 -anchor center -side left -padx 2
 
-         entry $frm.frame1.frame2.frame2.roi_y1 -width 4 -textvariable ::epix::private(roi_y1) -state disabled
+         entry $frm.frame1.frame2.frame2.roi_y1 -width 4 -textvariable ::epixraptor::private(roi_y1) -state disabled
          pack $frm.frame1.frame2.frame2.roi_y1 -anchor center -side left -padx 2
 
          pack $frm.frame1.frame2.frame2 -side top -fill both -expand 1 -anchor center -pady 2
@@ -237,7 +237,7 @@ proc ::epix::fillConfigPage { frm camItem } {
          label $frm.frame1.frame2.frame3.lab1 -text "x2"
          pack $frm.frame1.frame2.frame3.lab1 -anchor center -side left -padx 2
 
-         entry $frm.frame1.frame2.frame3.roi_x2 -width 4 -textvariable ::epix::private(roi_x2) -state disabled
+         entry $frm.frame1.frame2.frame3.roi_x2 -width 4 -textvariable ::epixraptor::private(roi_x2) -state disabled
          pack $frm.frame1.frame2.frame3.roi_x2 -anchor center -side left -padx 2
 
          pack $frm.frame1.frame2.frame3 -side top -fill both -expand 1 -anchor center -pady 2
@@ -248,7 +248,7 @@ proc ::epix::fillConfigPage { frm camItem } {
          label $frm.frame1.frame2.frame4.lab1 -text "y2"
          pack $frm.frame1.frame2.frame4.lab1 -anchor center -side left -padx 2
 
-         entry $frm.frame1.frame2.frame4.roi_y2 -width 4 -textvariable ::epix::private(roi_y2) -state disabled
+         entry $frm.frame1.frame2.frame4.roi_y2 -width 4 -textvariable ::epixraptor::private(roi_y2) -state disabled
          pack $frm.frame1.frame2.frame4.roi_y2 -anchor center -side left -padx 2
 
          pack $frm.frame1.frame2.frame4 -side top -fill both -expand 1 -anchor center -pady 2
@@ -262,7 +262,7 @@ proc ::epix::fillConfigPage { frm camItem } {
       pack $frm.frame1.frame3.lab1 -anchor center -side top -pady 2
 
       set list_binning [ list "1x1" "2x2" "4x4" ]
-      ComboBox $frm.frame1.frame3.bin -width 10 -height [ llength $list_binning ] -relief sunken -borderwidth 1 -editable 0 -textvariable ::epix::private(binning) -values $list_binning -state disabled
+      ComboBox $frm.frame1.frame3.bin -width 10 -height [ llength $list_binning ] -relief sunken -borderwidth 1 -editable 0 -textvariable ::epixraptor::private(binning) -values $list_binning -state disabled
       pack $frm.frame1.frame3.bin -anchor center -side top -padx 10 -pady 5
 
       pack $frm.frame1.frame3 -side left -fill none -expand 1 -anchor center
@@ -279,12 +279,12 @@ proc ::epix::fillConfigPage { frm camItem } {
          frame $frm.frame2.frame1.frame1 -borderwidth 0 -relief raised
 
          #--- Mirror in x and in y
-         checkbutton $frm.frame2.frame1.frame1.mirx -text "$caption(epix,mirror_x)" -highlightthickness 0 \
-            -variable ::epix::private(mirh)
+         checkbutton $frm.frame2.frame1.frame1.mirx -text "$caption(epixraptor,mirror_x)" -highlightthickness 0 \
+            -variable ::epixraptor::private(mirh)
          pack $frm.frame2.frame1.frame1.mirx -anchor w -side top -padx 20 -pady 10
 
-         checkbutton $frm.frame2.frame1.frame1.miry -text "$caption(epix,mirror_y)" -highlightthickness 0 \
-            -variable ::epix::private(mirv)
+         checkbutton $frm.frame2.frame1.frame1.miry -text "$caption(epixraptor,mirror_y)" -highlightthickness 0 \
+            -variable ::epixraptor::private(mirv)
          pack $frm.frame2.frame1.frame1.miry -anchor w -side top -padx 20 -pady 10
 
          pack $frm.frame2.frame1.frame1 -side top -fill none -expand 1 -anchor center
@@ -293,7 +293,7 @@ proc ::epix::fillConfigPage { frm camItem } {
          #frame $frm.frame2.frame1.frame2 -borderwidth 0 -relief raised
 
          #-- CMOS sensor temperature
-         #label $frm.frame2.frame1.frame2.cmostemp -textvariable ::epix::private(CMOStemp)
+         #label $frm.frame2.frame1.frame2.cmostemp -textvariable ::epixraptor::private(CMOStemp)
          #pack $frm.frame2.frame1.frame2.cmostemp -side top -fill x -padx 20 -pady 5
 
          #pack $frm.frame2.frame1.frame2 -side top -fill none -expand 1 -anchor center
@@ -309,10 +309,10 @@ proc ::epix::fillConfigPage { frm camItem } {
             #--- Exposure time
             frame $frm.frame2.frame2.frame1.frame1 -borderwidth 0 -relief raised
 
-            label $frm.frame2.frame2.frame1.frame1.lab1 -text "$caption(epix,exposure)"
+            label $frm.frame2.frame2.frame1.frame1.lab1 -text "$caption(epixraptor,exposure)"
             pack $frm.frame2.frame2.frame1.frame1.lab1 -anchor center -side left -padx 5 -pady 5
 
-            entry $frm.frame2.frame2.frame1.frame1.exp -width 8 -textvariable ::epix::private(exposure)
+            entry $frm.frame2.frame2.frame1.frame1.exp -width 8 -textvariable ::epixraptor::private(exposure)
             pack $frm.frame2.frame2.frame1.frame1.exp -anchor center -side left -padx 5 -pady 5
 
             pack $frm.frame2.frame2.frame1.frame1 -side top -fill none -expand 1 -anchor center
@@ -320,8 +320,8 @@ proc ::epix::fillConfigPage { frm camItem } {
             #--- High dynamic range
             frame $frm.frame2.frame2.frame1.frame2 -borderwidth 0 -relief raised
 
-            checkbutton $frm.frame2.frame2.frame1.frame2.hdr -text "$caption(epix,hdr)" -highlightthickness 0 \
-               -variable ::epix::private(hdr)
+            checkbutton $frm.frame2.frame2.frame1.frame2.hdr -text "$caption(epixraptor,hdr)" -highlightthickness 0 \
+               -variable ::epixraptor::private(hdr)
             pack $frm.frame2.frame2.frame1.frame2.hdr -side top -fill none -expand 1 -anchor center
 
             pack $frm.frame2.frame2.frame1.frame2 -side top -fill none -expand 1 -anchor center
@@ -334,10 +334,10 @@ proc ::epix::fillConfigPage { frm camItem } {
             #--- Frame rate
             frame $frm.frame2.frame2.frame2.frame1 -borderwidth 0 -relief raised
 
-            label $frm.frame2.frame2.frame2.frame1.lab1 -text "$caption(epix,framerate)"
+            label $frm.frame2.frame2.frame2.frame1.lab1 -text "$caption(epixraptor,framerate)"
             pack $frm.frame2.frame2.frame2.frame1.lab1 -anchor w -side left -padx 5 -pady 5
 
-            entry $frm.frame2.frame2.frame2.frame1.fr -width 5 -textvariable ::epix::private(framerate)
+            entry $frm.frame2.frame2.frame2.frame1.fr -width 5 -textvariable ::epixraptor::private(framerate)
             pack $frm.frame2.frame2.frame2.frame1.fr -anchor center -side left -padx 5 -pady 5
 
             pack $frm.frame2.frame2.frame2.frame1 -side top -fill none -expand 1 -anchor center
@@ -345,11 +345,11 @@ proc ::epix::fillConfigPage { frm camItem } {
             #--- Video mode (FFR or ITR)
             frame $frm.frame2.frame2.frame2.frame2 -borderwidth 0 -relief raised
 
-            label $frm.frame2.frame2.frame2.frame2.lab1 -text "$caption(epix,videomode)"
+            label $frm.frame2.frame2.frame2.frame2.lab1 -text "$caption(epixraptor,videomode)"
             pack $frm.frame2.frame2.frame2.frame2.lab1 -anchor center -side left -padx 5 -pady 5
 
             set list_binning [ list "ffr" "itr" ]
-            ComboBox $frm.frame2.frame2.frame2.frame2.bin -width 10 -height [ llength $list_binning ] -relief sunken -borderwidth 1 -editable 0 -textvariable ::epix::private(videomode) -values $list_binning
+            ComboBox $frm.frame2.frame2.frame2.frame2.bin -width 10 -height [ llength $list_binning ] -relief sunken -borderwidth 1 -editable 0 -textvariable ::epixraptor::private(videomode) -values $list_binning
             pack $frm.frame2.frame2.frame2.frame2.bin -anchor center -side top -padx 10 -pady 5
 
             pack $frm.frame2.frame2.frame2.frame2 -side top -fill both -expand 1 -anchor center
@@ -360,14 +360,14 @@ proc ::epix::fillConfigPage { frm camItem } {
 
    pack $frm.frame2 -side left -fill both -expand 1
 
-   #::epix::dispTempCMOS
+   #::epixraptor::dispTempCMOS
 }
 
 #
-# ::epix::configureCamera
-#    Configure la camera Andor en fonction des donnees contenues dans les variables conf(epix,...)
+# ::epixraptor::configureCamera
+#    Configure la camera Andor en fonction des donnees contenues dans les variables conf(epixraptor,...)
 #
-proc ::epix::configureCamera { camItem bufNo } {
+proc ::epixraptor::configureCamera { camItem bufNo } {
    variable private
    global caption conf
 
@@ -376,47 +376,47 @@ proc ::epix::configureCamera { camItem bufNo } {
       if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
          error "" "" "CameraUnique"
       }
-      #--- Je mets conf(epix,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
+      #--- Je mets conf(epixraptor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
       #--- Je cree la camera
       if {$private(config) eq ""} {
-         set camNo [ cam::create epix -debug_directory $::audace(rep_log) ]
+         set camNo [ cam::create epixraptor -debug_directory $::audace(rep_log) ]
       } else {
-         set camNo [ cam::create epix -debug_directory $::audace(rep_log) -config $conf(epix,config) $conf(epix,roi_x1) $conf(epix,roi_y1) $conf(epix,roi_x2) $conf(epix,roi_y2) $conf(epix,binning) $conf(epix,binning) ]
+         set camNo [ cam::create epixraptor -debug_directory $::audace(rep_log) -config $conf(epixraptor,config) $conf(epixraptor,roi_x1) $conf(epixraptor,roi_y1) $conf(epixraptor,roi_x2) $conf(epixraptor,roi_y2) $conf(epixraptor,binning) $conf(epixraptor,binning) ]
       }
       #--- Je change de variable
       set private($camItem,camNo) $camNo
       #--- Je configure l'exposition
-      cam$camNo exposure $conf(epix,exposure)
+      cam$camNo exposure $conf(epixraptor,exposure)
       #--- Je configure le refroidissement
 
       #--- J'associe le buffer de la visu
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
-      cam$camNo mirrorh $conf(epix,mirh)
-      cam$camNo mirrorv $conf(epix,mirv)
+      cam$camNo mirrorh $conf(epixraptor,mirh)
+      cam$camNo mirrorv $conf(epixraptor,mirv)
       #--- Je configure le frame rate
-      cam$camNo framerate $conf(epix,framerate)
+      cam$camNo framerate $conf(epixraptor,framerate)
       #--- Je configure la ROI
-      #cam$camNo roi $conf(epix,roi)
+      #cam$camNo roi $conf(epixraptor,roi)
       #--- Je configure le binning
-      #cam$camNo bin $conf(epix,binning)
+      #cam$camNo bin $conf(epixraptor,binning)
       #--- Je mesure la temperature du capteur CMOS
-      ::epix::dispTempCMOS $camItem
+      ::epixraptor::dispTempCMOS $camItem
    } ]
 
    if { $catchResult == "1" } {
       #--- En cas d'erreur, je libere toutes les ressources allouees
-      ::epix::stop $camItem
+      ::epixraptor::stop $camItem
       #--- Je transmets l'erreur a la procedure appelante
       return -code error -errorcode $::errorCode -errorinfo $::errorInfo
    }
 }
 
 #
-# ::epix::stop
+# ::epixraptor::stop
 #    Arrete la camera Andor
 #
-proc ::epix::stop { camItem } {
+proc ::epixraptor::stop { camItem } {
    variable private
 
    #--- J'arrete la camera
@@ -427,46 +427,46 @@ proc ::epix::stop { camItem } {
 }
 
 #
-# ::epix::dispTempCMOS
+# ::epixraptor::dispTempCMOS
 #    Affiche la temperature du capteur CMOS
 #
-proc ::epix::dispTempCMOS { camItem } {
+proc ::epixraptor::dispTempCMOS { camItem } {
    variable private
    global caption
 
    if { [ catch { set temp_cmos [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
       set temp_cmos [ format "%+5.2f" $temp_cmos ]
-      set private(CMOStemp)   "$caption(epix,temperature_CCD) $temp_cmos $caption(epix,deg_c)"
+      set private(CMOStemp)   "$caption(epixraptor,temperature_CCD) $temp_cmos $caption(epixraptor,deg_c)"
    } else {
       set temp_cmos ""
-      set private(CMOStemp) "$caption(epix,temperature_CCD) $temp_cmos"
+      set private(CMOStemp) "$caption(epixraptor,temperature_CCD) $temp_cmos"
    }
    console::affiche_entete $private(CMOStemp)
    console::affiche_saut "\n"
 }
 
 #
-# ::epix::checkConfigRefroidissement
+# ::epixraptor::checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
-proc ::epix::checkConfigRefroidissement { } {
+proc ::epixraptor::checkConfigRefroidissement { } {
 }
 
 #
-# ::epix::setTempCCD
+# ::epixraptor::setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
-proc ::epix::setTempCCD { camItem } {
+proc ::epixraptor::setTempCCD { camItem } {
    global conf
 
-   return "$conf(epix,temp)"
+   return "$conf(epixraptor,temp)"
 }
 
 #
-# ::epix::explore
+# ::epixraptor::explore
 #    Procedure pour designer les fichiers de configuration
 #
-proc ::epix::explore { } {
+proc ::epixraptor::explore { } {
    variable private
    global audace caption
 
@@ -477,15 +477,15 @@ proc ::epix::explore { } {
 
    set inDir [ file join /usr local xcap data ]
 
-   set private(config) [ tk_getOpenFile -title "$caption(epix,folder)" \
+   set private(config) [ tk_getOpenFile -title "$caption(epixraptor,folder)" \
       -initialdir $inDir -parent [ winfo toplevel $private(frm) ] -defaultextension {.fmt} -filetypes $types ]
 }
 
 #
-# ::epix::enable_config
+# ::epixraptor::enable_config
 #    Enables or disables ROI and binning
 #
-proc ::epix::extconfig { camNo } {
+proc ::epixraptor::extconfig { camNo } {
    variable private
 
    if { [ info exists private(frm) ] } {
@@ -499,12 +499,12 @@ proc ::epix::extconfig { camNo } {
          $frm.frame1.frame1.host configure -state normal
          $frm.frame1.frame1.explore configure -state normal
       } else {
-         set ::epix::private(roi_x1) "0"
-         set ::epix::private(roi_y1) "0"
-         set ::epix::private(roi_x2) "2047"
-         set ::epix::private(roi_y2) "2047"
-         set ::epix::private(config) ""
-         set ::epix::private(binning) "1x1"
+         set ::epixraptor::private(roi_x1) "0"
+         set ::epixraptor::private(roi_y1) "0"
+         set ::epixraptor::private(roi_x2) "2047"
+         set ::epixraptor::private(roi_y2) "2047"
+         set ::epixraptor::private(config) ""
+         set ::epixraptor::private(binning) "1x1"
          $frm.frame1.frame3.bin configure -state disabled
          $frm.frame1.frame2.frame1.roi_x1 configure -state disabled
          $frm.frame1.frame2.frame2.roi_y1 configure -state disabled
@@ -515,16 +515,16 @@ proc ::epix::extconfig { camNo } {
       }
    }
 
-   ::epix::widgetToConf $camNo
+   ::epixraptor::widgetToConf $camNo
 
 }
 
 #
-# ::epix::extract_config
+# ::epixraptor::extract_config
 #    Procedure that extract the ROI and the binning from the current file
 #
 #
-# ::epix::getPluginProperty
+# ::epixraptor::getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -550,7 +550,7 @@ proc ::epix::extconfig { camNo } {
 # product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
-proc ::epix::getPluginProperty { camItem propertyName } {
+proc ::epixraptor::getPluginProperty { camItem propertyName } {
    variable private
 
    switch $propertyName {
