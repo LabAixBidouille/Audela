@@ -47,8 +47,9 @@ struct camprop {
 		int dynamicRange; //1 if Dynamic range mode, 0 if normal mode
 		int videoMode; // 1 if Fixed Frame Rate, 0 if Integrate then Read
 		int cur_buf;
-//TODO: put manufacturer data in the new file (in external/raptor)
 		// manufacturer data
+		// ---> the manufacturer data depend are camera-specific 
+		//      they must be modified if the camera is changed
 		char microVersion[7];
 		char fpgaVersion[7];
 		int serialNumber;

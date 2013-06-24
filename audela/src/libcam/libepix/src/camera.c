@@ -102,14 +102,6 @@ static void handler_acquisition(int signal) {
 	char error[50];
 	acqbuf++;
 	gettimeofday (&t_acq, NULL);
-	//strftime(message, 45, "%Y-%m-%dT%H:%M:%S",gmtime ((const time_t*)(&t_acq.tv_sec)));
-	//printf("\nGot frame %d at %s.%06d\n",acqbuf,message,t_acq.tv_usec);
-	/*if (gps) {
-		if (mbg_read(error,message) < 0) {
-			printf("ERROR: %s\n",error);
-		}
-		printf("Frame %d got at %s\n",buf,message);
-	}*/
 }
 
 //handler of SIGUSR2
@@ -119,8 +111,6 @@ static void handler_lecture(int signal) {
   readbuf++;
 	gettimeofday (&t_lect, NULL);
 	usr_interrupt = 1;
-	//strftime(message, 45, "%Y-%m-%dT%H:%M:%S",gmtime ((const time_t*)(&t_lect.tv_sec)));
-	//printf("Frame %d read in buffer %d at %s.%06d\n",readbuf,pxd_capturedBuffer(0x1),message,t_lect.tv_usec);
 	if ( buf < maxbuf )
 		ts[buf] = t_acq;
 	else
@@ -134,8 +124,8 @@ static void handler_lecture(int signal) {
  */
 
 struct camini CAM_INI[] = {
-    {"Raptor Photonics OSPREY",			/* camera name */
-     "raptor",        /* camera product */
+    {"EPIX + Raptor Photonics OSPREY",			/* camera name */
+     "epixraptor",        /* camera product */
      "OS4NPc-CL",			/* ccd name */
      2048, 2048,			/* maxx maxy */
      0, 0,			/* overscans x??? */
@@ -217,8 +207,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	HANDLE hwin;
 #endif
 
-	//cam->status = 0;
-
 	memset(cam->config,0,256);
 
 	//decode the options of cam::create
@@ -254,6 +242,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 		}
 
 		//default video mode dependent parameters
+		// ---> they change according to the camera
 		cam->maxw = 2048;
 		cam->maxh = 2048;
 		cam->minx = 0;
@@ -294,7 +283,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 		return 11;
 	}
 
-//TODO: put these 3 functions in initSerialConnection
 	//Serial init
 	ret = serialInit();
 	if (ret) {
@@ -315,10 +303,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 		sprintf(cam->msg,"getData returns %d",ret);
 		return 4;
 	}
-//TODO: END
 
-//TODO: the costraints are given by the camera driver to the pixci driver
 	//constraints (video mode independent)
+	// ---> they change according to the camera
 	maxbuf = cam->max_buf = cam_get_maxfb();
 	cam->max_exposure = cam_max_exposure();
 	cam->min_exp_dyn = 0.42;
@@ -326,6 +313,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	cam->max_frameRate = cam_max_framerate(cam->h);
  
 	//initial parameters (video mode independent)
+	// ---> they change according to the camera
 	cam->exptime=0.001;
 	cam->capabilities.videoMode = 1;
 	cam->video=0;
@@ -339,6 +327,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	}
 
 	//default image parameters
+	// ---> they can change according to the camera
 	strcpy(cam->pixels_classe,"CLASS_GRAY");
 	strcpy(cam->pixels_format,"FORMAT_USHORT");
 	strcpy(cam->pixels_compression,"COMPRESS_NONE");
@@ -349,43 +338,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 	//initializes the timestamp structures
 	ts = (struct timeval *)calloc(cam->max_buf+1,sizeof(struct timeval));
-
-	//printf("xdim = %d\nydim = %d\n",pxd_imageXdim(),pxd_imageYdim());
-
-	//initializes Meinberg gps
-	/*cam->has_gps = 0;
-	if ( mbg_open(cam->msg) == 0 ) {
-		t_gps = (struct timeval *)calloc(cam->max_buf,sizeof(struct timeval));
-		printf("Connection with meinberg is open\n");
-		mbg_reset(cam->msg);
-		cam->has_gps = 1;
-	}
-	gps = cam->has_gps;*/
-
-	/*cam_set_binning(cam->binx,cam->biny,cam);
-	
-	cam_update_window(cam);
-
-	//set exposure time
-	ret = setExposure(cam->exptime);
-	if (ret) {
-		sprintf(cam->msg, "setExposure returns %d\n", ret);
-		return 6;
-	}
-
-	//set frame rate
-	ret = setFrameRate(cam->frameRate);
-	if (ret) {
-		sprintf(cam->msg, "setFrameRate returns %d\n", ret);
-		return 7;
-	}
-
-	//set trigger mode to external (no acquisition)
-	ret = setTrigger(0x00);
-	if (ret) {
-		sprintf(cam->msg, "setTrigger returns %d\n", ret);
-		return 8;
-	}*/
 
 	//SIGUSR2 at the end of lecture
 #if defined(OS_WIN)
@@ -423,9 +375,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	signal(SIGUSR2,handler_lecture);
 	signal(SIGUSR1,handler_acquisition);
 
-	//get the camera settings
-	//getSettings(cam);
-
 	return 0;
 
 }
@@ -435,11 +384,6 @@ int cam_close(struct camprop * cam)
 	int ret;
 
 	free(ts);
-
-	/*if (cam->has_gps) {
-		free(t_gps);
-		mbg_close(cam->msg);
-	}*/
 
 	ret = pxd_PIXCIclose();
 	if (ret) {
@@ -475,7 +419,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		return;
 	}
 
-//TODO: change setTrigger arguments -> SINGLE, FIXED_FRAME_RATE, INTEGRATE_THEN_READ := @max_framerate
 	usr_interrupt=0;
 	//set trigger mode to snapshot (single acquisition via snapshot)
 	ret = setTrigger(TRG_SNAP);
@@ -490,20 +433,11 @@ void cam_stop_exp(struct camprop *cam)
 {
 	int ret;
 
-//TODO: change setTrigger arguments -> SINGLE, FIXED_FRAME_RATE, INTEGRATE_THEN_READ := @max_framerate
 	ret = setTrigger(TRG_ABORT);
 	if (ret) {
 		sprintf(cam->msg,"Trigger abort failed");
 		return;
 	}
-
-	// abort the current exposition
-/*	ret = pxd_goAbortLive(0x1);
-	if (ret) {
-		pxd_mesgFaultText(0x1,cam->msg,2048);
-		return;
-	}*/
-
 
 }
 
@@ -514,12 +448,10 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	struct timeval t,texp,tbeg;
 
 	sigprocmask(SIG_BLOCK,&mask,&oldmask);
-	while (!usr_interrupt) //{
-		//printf("wait for sig, usr_interrupt = %d\n",usr_interrupt);
-		sigsuspend(&oldmask); //}
+	while (!usr_interrupt) {
+		sigsuspend(&oldmask);
+	}
 	sigprocmask(SIG_UNBLOCK,&mask,NULL);
-
-	//usleep(24000);
 
 	//set the window to the current ROI size
 	cam_update_window(cam);
@@ -528,14 +460,11 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	buf = cam->max_buf;
 
 	//copy the data from the last frame buffer to the buffer p
-	//ret = pxd_readushort(0x1,cam->cur_buf,cam->x1,cam->y1,cam->x2,cam->y2,p,cam->w*cam->h,"Grey");
 	ret = pxd_readushort(0x1,cam->max_buf,0,0,-1,-1,p,cam->w*cam->h,"Grey");
 	if ( ret<0 ) {
 		pxd_mesgFaultText(0x1,cam->msg,2048);
 		return;
 	}
-
-	//cam_realign(p,(cam->x2-cam->x1+1),(cam->y2-cam->y1+1));
 
 	//print the computer date (taken from the pixci driver)
 	t = ts[cam->max_buf];
@@ -583,7 +512,6 @@ void cam_measure_temperature(struct camprop *cam)
 	int ret;
 	int t_ADC;
 
-//TODO: getSensorTemp, a function that must return a double containing the effective temperature
 	ret = getCMOStemp(&t_ADC);
 	if (ret) {
 		sprintf(cam->msg, "getCMOStemp returns %d\n", ret);
@@ -638,9 +566,6 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 	int ret;
 	uchar mode;
 
-	//sprintf(cam->msg, "You must change video mode in order to set binning");
-
-//TODO: setBinning in the raptor interface
 	if (binx == biny) {
 		switch (binx) {
 			case 1:	mode = BIN_1x1;
@@ -653,11 +578,11 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 								return;
 		}
 		if ( binx < cam->minbinx ) {
-			sprintf(cam->msg,"This binning is not available in the current video mode");
+			sprintf(cam->msg,"This binning is not available in the current video mode\nYou must change video mode if you want to change binning");
 			return;
 		}
 		if ( binx > cam->maxbinx ) {
-			sprintf(cam->msg,"This binning is not available in the current video mode");
+			sprintf(cam->msg,"This binning is not available in the current video mode\nYou must change video mode if you want to change binning");
 			return;
 		}
 	}
@@ -674,9 +599,6 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 
 	cam->binx = binx;
 	cam->biny = biny;
-
-	//sprintf(cam->msg,"You must change video mode if you want to change binning");
-	//return;
 
 }
 
@@ -726,8 +648,8 @@ void cam_update_window(struct camprop *cam)
 /* Ces fonctions sont tres specifiques a chaque camera.             */
 /* ================================================================ */
 
-//TODO: this function must be in the raptor interface
 //get all the invariable data (FPGA and micro version, FPGA ROM)
+// ---> extremely dependent on the camera used
 int getData(struct camprop *cam) {
 	int ret;
 	uchar data[18];
@@ -763,7 +685,6 @@ int cam_set_roi(struct camprop *cam, int x1, int y1, int x2, int y2) {
 	h = y2 - y1 + 1;
 
 	if ((x1 != cam->minx) || (y1 != cam->miny) || (w != cam->maxw) || (h != cam->maxh)) {
-		//sprintf(cam->msg, "The size and position of the ROI is not compatible with the current video mode");
 		sprintf(cam->msg,"You must change viedo mode in order to change ROI");
 		return -2;
 	}
@@ -972,8 +893,6 @@ int cam_get_framebuffer(struct camprop *cam, int fb, unsigned short *p) {
 		return ret;
 	}
 
-	//cam_realign(p,w,h);
-
 	cam_update_window(cam);
 
 	return 0;
@@ -1033,7 +952,6 @@ int cam_video_start(struct camprop *cam) {
 		return -5;
 	}
 
-//TODO: setTrigger must be changed (see cam_init() function)
 	if (cam->videoMode)
 		mode = TRG_FFR;
 	else
@@ -1067,7 +985,6 @@ int cam_video_pause(struct camprop *cam) {
 		return -1;
 	}
 
-//TODO: modify setTrigger
 	ret = setTrigger(0x00);
 	if (ret<0) {
 		sprintf(cam->msg,"setTrigger returns %d",ret);
@@ -1140,7 +1057,6 @@ int cam_live_start(struct camprop *cam) {
 		return -5;
 	}
 
-//TODO: modify setTrigger
 	if (cam->videoMode)
 		mode = TRG_FFR;
 	else

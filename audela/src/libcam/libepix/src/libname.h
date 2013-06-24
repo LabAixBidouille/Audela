@@ -27,21 +27,21 @@
  * Nom du point d'entree de la librairie, doit etre Xx_Init pour une librairie libxx
  * (la majuscule est importante pour permettre un chargement par load libxx).
  */
-#define CAM_ENTRYPOINT Epix_Init
+#define CAM_ENTRYPOINT Epixraptor_Init
 
 /*
  * Informations sur le driver, le nom est celui qui apparait quand on fait "package names"
  * et la version apparait avec la commande Tcl "package require libxx"
  */
-#define CAM_LIBNAME "libepix"
+#define CAM_LIBNAME "libepixraptor"
 #define CAM_LIBVER "1.0"
 
 /*
  * Initialisation d'informations indispensables pour la librairie xx.
  */
-#define CAM_DRIVNAME "epix"
+#define CAM_DRIVNAME "epixraptor"
 
-#define CAM_INI epix_cam_ini
-#define CAM_DRV epix_cam_drv
+#define CAM_INI epixraptor_cam_ini
+#define CAM_DRV epixraptor_cam_drv
 
 #endif

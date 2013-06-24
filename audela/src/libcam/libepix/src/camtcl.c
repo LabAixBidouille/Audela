@@ -390,7 +390,6 @@ int cmdCamReset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 	int result = TCL_OK;
 
-//TODO: change name to microReset (maybe doReset or only reset)	
 	if ( microReset() != 0 ) {
 		Tcl_SetResult(interp,"Unable to reset the camera",TCL_VOLATILE);
 		result = TCL_ERROR;
@@ -536,8 +535,6 @@ int cmdCamVideoMode(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 	char line[256];
 	uchar mode;
 	struct camprop *cam;
-
-//TODO: modify setTrigger (see camera.c)
 
 	cam = (struct camprop *) clientData;
 
