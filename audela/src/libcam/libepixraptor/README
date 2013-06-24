@@ -1,7 +1,7 @@
-The library libepix.so is thought to control all the cameras that use an EPIX PIXCI card in their acquisition system.
-
-The current version only supports the camera RAPTOR Osprey OS4MPc-CL. Indeed, the acquisition is controlled by libkxclib, but the configuration of the different parameters of the acquisition is different for every camera.
+The library libepixraptor.so supports the camera RAPTOR Osprey OS4MPc-CL. Indeed, the acquisition is controlled by libkxclib, but the configuration of the different parameters of the acquisition is different for every camera.
 This version mixes camera-dependent and camera-independent code.
 
-The final system will have an interface common to all the cameras and some functions that implement the comunication protocol with the camera itself.
-The choice of the functions behind the interface will be performed at the configuration of the camera (probably using pointers to functions).
+The camera dependent code consists on the communication protocol between the software and the camera and on some camera parameters.
+
+If you want to add another camera that uses the same acquisition card, you must create a folder "libepixOTHER" and copy there the content of libepixraptor.
+Then, you must rewrite the files "raptor.c" and "serial.c", that contain the communication protocol, and possibly modify the files "raptor.h", "serial.h", "camera.h" and "camera.c" if you must change the interface for communicating with the camera.
