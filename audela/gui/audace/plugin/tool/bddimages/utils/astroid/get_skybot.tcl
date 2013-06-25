@@ -45,7 +45,7 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    while { ! $skybot_answered } {
    
       #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel au conesearch"
-      # gren_info "$voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) $voconf(observer)"
+      #gren_info "$voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) $voconf(observer)\n"
 
       set err [ catch { vo_skybotconesearch $voconf(date_image) $voconf(centre_ad_image)   \
                                             $voconf(centre_dec_image) $voconf(taille_champ_calcul) \
@@ -90,7 +90,6 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    }
    set voconf(fields) $skybot_fields
 
-
    set skybot_list2 {}
    set common_fields [list ra dec poserr mag magerr]
    set fields [list [list "SKYBOT" $common_fields $skybot_fields] ] 
@@ -120,7 +119,8 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    }
    
    set skybot_list2 [list $fields $skybot_list2]
-   
+#gren_erreur "$skybot_list2\n"
+
    ::dom::destroy $votable
 
    if {$cpt == 0} {
