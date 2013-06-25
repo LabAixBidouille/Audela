@@ -628,7 +628,7 @@
 
    #---------------------------------------------------------------------------
    #  hideTel
-   #  masque les onglets Monture et Allmande
+   #  masque les onglets Monture et Equatorial
    #---------------------------------------------------------------------------
    proc hideTel { notebook } {
       variable private
