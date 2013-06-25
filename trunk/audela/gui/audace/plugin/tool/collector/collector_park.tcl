@@ -15,6 +15,7 @@
    # ::collector::updateTlscp             doUnPark et doPark
    # ::collector::confirmPark             doUnPark et doPark
    # ::collector::configParkWidget        doUnPark et doPark
+   # ::collector::getGermanSide           doUnPark et doPark
 
    #----------------------------deparquage/initialisation-----------------------
 
@@ -28,10 +29,12 @@
       global audace conf caption
 
        #--   raccourcis
-      foreach v [list product telname german ra dec parkMode parkaz parkelev] {set $v $private($v)}
+      foreach v [list product telname german parkMode parkaz parkelev] {set $v $private($v)}
 
       set telNo $audace(telNo)
+      set equinox "J2000.0"
       set w $private(This).n.tlscp
+
       if {$german == 1} {
          set mountside [string map [list 0 W 1 E] [$w.coords.parkside current]]
       }
@@ -40,15 +43,20 @@
       #--   inhibe les widgets appropries
       configParkWidget $w $modeNo $german disabled
 
-      #--   met a jour les coordonnees
+      #--   met a jour les coordonnees J2000.0 pointees
       refreshCoordsJ2000 $parkaz $parkelev ALTAZ
+
+      #--raccourcis des nouvelles cordonnees J2000.0
+      set ra $private(ra)
+      set dec $private(dec)
 
       #--   rafraichit le panneau telescope
       updateTlscp $ra $dec $parkMode
+
       if {$german == 1} {
-         ::telescope::match [list $ra $dec] "J2000.0" $mountside
+         ::telescope::match [list $ra $dec] $equinox $mountside
        } else {
-         ::telescope::match [list $ra $dec] "J2000.0"
+         ::telescope::match [list $ra $dec] $equinox
       }
 
       #--   bascule vers Suivi On
@@ -59,8 +67,9 @@
       if {$german == 1} {
          tel$telNo german $mountside
          lassign [getGermanSide] telSide telIndex side
-         confirmPark unpark $telname $parkMode $parkaz $parkelev $ra $dec $side
+         #--   initialise le graphique
          initMyTel $modeNo $telSide
+         confirmPark unpark $telname $parkMode $parkaz $parkelev $ra $dec $equinox $side
       } else {
          confirmPark unpark $telname $parkMode $parkaz $parkelev $ra $dec
       }
@@ -273,17 +282,19 @@
       set modeNo [$w.mode current]
       set sideIndex [$w.parkside current]
       set german $private(german)
+      set elev_pole $latitude
+      set elev_equat [expr {90-$latitude}]
 
       switch -exact $modeNo {
-         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud  erreur "below horizon" si elev = 0}
-         1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est erreur "below horizon" si elev < 7}
-         2  {  set az 90.0 ; set elev 0.0                      ; #-- Horizon Ouest Ok }
-         3  {  set az 180.0 ; set elev 0.0                     ; #-- Horizon Nord Ok}
-         4  {  set az 0.0 ; set elev $latitude                 ; #-- Equateur Sud Ok }
-         5  {  set az 180.0 ; set elev [expr {-90+$latitude}]  ; #-- Equateur Nord }
-         6  {  set az 0.0 ; set elev 90                        ; #-- Zenith Ok }
-         7  {  set az 180.0 ; set elev $latitude               ; #-- Pôle Nord Ok}
-         8  {  set az 180.0 ; set elev -$latitude              ; #-- Pôle Sud}
+         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud }
+         1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est}
+         2  {  set az 90.0 ; set elev 0.0                      ; #-- Horizon Ouest}
+         3  {  set az 180.0 ; set elev 0.0                     ; #-- Horizon Nord}
+         4  {  set az 0.0 ; set elev $elev_equat               ; #-- Equateur Sud}
+         5  {  set az 180.0 ; set elev -$elev_equat            ; #-- Equateur Nord}
+         6  {  set az 0.0 ; set elev 90                        ; #-- Zenith}
+         7  {  set az 180.0 ; set elev $latitude               ; #-- Pôle Nord}
+         8  {  set az 180.0 ; set elev [expr {-180+$elev_pole}]; #-- Pôle Sud}
          9  {  #--   choix Utilisateur
                if {[info exists conf($private(product),park)] == 1} {
                   set data $conf($product,park)
@@ -411,4 +422,22 @@
          $w.$child state $state
       }
    }
+
+   #------------------------------------------------------------
+   #  getGermanSide
+   #  Retourne le cote ou se trouve le tube, l'index de la combobox
+   #  et la position litterale pour un telescope Temma
+   #------------------------------------------------------------
+   proc getGermanSide { {telNo 1} } {
+      global caption
+
+      set telSide [tel$telNo german]
+      set sideIndex [string map [list W 0 E 1] $telSide]
+      set side "[lindex $caption(collector,parkOptSide) $sideIndex]"
+
+      return [list $telSide $sideIndex $side]
+  }
+
+
+
 
