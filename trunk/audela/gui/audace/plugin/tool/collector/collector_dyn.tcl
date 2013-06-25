@@ -135,7 +135,7 @@
       if {"-" in $data} {return}
 
       lassign [getTrueCoordinates $data] private(raTel) private(decTel) \
-         private(haTel)  private(azTel)  private(elevTel)
+         private(haTel) private(azTel)  private(elevTel)
 
       #--   rafaichit secz et airmass de l'onglet Atmosphere
       lassign [getSecz $private(elevTel)] private(secz) private(airmass)
@@ -267,13 +267,10 @@
 
       #--   rafraichit TU et JD
       lassign [getDateTUJD [::audace::date_sys2ut now]] private(tu) private(jd)
-      set dateTu $private(tu)
-      set home $private(gps)
-      set airpress $private(airpress)
-      set tempK [expr { 273.15 + $private(tempair) }]
 
       #--   prepare la liste des donnees
-      set record [list $coord1 $coord2 $TypeObs $dateTu $home $airpress $tempK]
+      set tempK [expr { 273.15 + $private(tempair) }]
+      set record [list $coord1 $coord2 $TypeObs $private(tu) $private(gps) $private(airpress) $tempK]
 
       #--   coordonnees J2000 du telescope
       lassign [getCoordJ2000 $record] private(ra) private(dec)
