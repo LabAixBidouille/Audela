@@ -571,14 +571,6 @@ namespace eval tools_cata {
 
 
 
-
-
-
-
-
-
-
-
    proc ::tools_cata::get_catafilename { img type } {
 
       global bddconf
@@ -627,47 +619,24 @@ namespace eval tools_cata {
 
       global bddconf
 
-      set xml [string range $catafile 0 [expr [string last .gz $catafile] -1]]
-      set tmpfile [file join $bddconf(dirtmp) [file tail $xml] ]
-      
-      lassign [::bdi_tools::gunzip $catafile $tmpfile] errnum msgzip
-
-      if {$errnum} {
-         file delete -force -- $tmpfile
-         return -code 1 "Err extraction $catafile -> $tmpfile with msg: $msgzip"
+      if {[file extension $catafile] == ".gz"} {
+         set xml [string range $catafile 0 [expr [string last .gz $catafile] -1]]
+         set tmpfile [file join $bddconf(dirtmp) [file tail $xml]]
+         lassign [::bdi_tools::gunzip $catafile $tmpfile] errnum msgzip
+         if {$errnum == 1} {
+            file delete -force -- $tmpfile
+            return -code 1 "Erreur extraction cata $catafile -> $tmpfile with msg: $msgzip"
+         } elseif {$msgzip == 0} {
+            return -code 1 "Erreur extraction cata $catafile -> $tmpfile : gunzip n'a rien dezippe!"
+         }
+      } else {
+         set tmpfile [file join $bddconf(dirtmp) [file tail $catafile]]
+         if {$tmpfile != $catafile} {
+            file copy -force -- "$catafile" "$tmpfile"
+         }
       }
       return $tmpfile
    }
-
-
-
-
-
-
-proc ::tools_cata::extract_cata_xml_old { catafile } {
-
-  global bddconf
-
-      # copy catafile vers tmp
-      set destination [file join $bddconf(dirtmp) [file tail $catafile]]
-      #gren_info "destination = $destination\n"
-      set errnum [catch {file copy "$catafile" "$destination" ; gunzip "$destination"} msgzip ]
-      #gren_info "errnum = $errnum\n"
-      #gren_info "msgzip = $msgzip\n"
-      
-      # gunzip catafile de tmp
-      # return le nom de fichier
-      return [file rootname $destination]
- }
- 
- 
-
-
-
-
-
-
-
 
 
 
@@ -689,41 +658,41 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set res [regexp -all -inline -- $motif $data]
       set cpt 1
       foreach { table name nrows } $res {
-#gren_erreur "----------------------------------------------------------------\n"
-#gren_info "$cpt  :  \n"
-#gren_info "Name => $name  \n"
-#gren_info "nrows  => $nrows  \n"
-#gren_info "TABLE => $table  \n"
+#gren_debug "----------------------------------------------------------------\n"
+#gren_debug "$cpt  :  \n"
+#gren_debug "Name => $name  \n"
+#gren_debug "nrows  => $nrows  \n"
+#gren_debug "TABLE => $table  \n"
          set res [ ::tools_cata::get_table $name $table ]
-#gren_info "TABLE res => $res  \n"
+#gren_debug "TABLE res => $res  \n"
 #set ftmp  [lindex [lindex $res 0] 2]
 #set ftmp [lrange $ftmp 1 end]
 #set ftmp [list  [lindex [lindex $res 0] 0]   [lindex [lindex $res 0] 1]  $ftmp]  
-#gren_info "TABLE => $ftmp  \n"
+#gren_debug "TABLE => $ftmp  \n"
 
          lappend fields [lindex $res 0]
          set asource [lindex $res 1]
          foreach x $asource {
             set idcataspec [lindex $x 0]
             set val [lindex $x 1]
-            #gren_info "$idcataspec = $val\n"
+            #gren_debug "$idcataspec = $val\n"
             if {![info exists tsource($idcataspec)]} {
-               #gren_info "set $idcataspec => $val  \n"
+               #gren_debug "set $idcataspec => $val  \n"
                set tsource($idcataspec) [list [list $name {} $val]]
             } else {
-               #gren_info "app $idcataspec => $val  \n"
+               #gren_debug "app $idcataspec => $val  \n"
                lappend tsource($idcataspec) [list $name {} $val]
             }
          }
          incr cpt
       }
       
-#gren_info "tsource => [array get tsource]  \n"
+#gren_debug "tsource => [array get tsource]  \n"
       set tab [array get tsource]
       set lso {}
       set cpt 0
       foreach val $tab {
-         #gren_info "vals [expr $cpt%2] => $val \n"
+         #gren_debug "vals [expr $cpt%2] => $val \n"
          if {[expr $cpt%2] == 0 } {
             # indice
          } else {
@@ -746,22 +715,17 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
    proc ::tools_cata::get_table { name table } {
 
-
       set motif  "<vot:FIELD(?:.*?)name=\"(.+?)\"(?:.*?)</vot:FIELD>"
 
       set res [regexp -all -inline -- $motif $table ]
-      #gren_info "== res $res \n"
       set cpt 1
       set listfield ""
       foreach { x y } $res {
-         #gren_info "== $cpt  : $y \n"
-         
          if {$y != "idcataspec.$name"} { lappend listfield $y }
          incr cpt
       }
       
       set listfield [list $name [list ra dec poserr mag magerr] $listfield]
-      #gren_info "== listfield $listfield \n"
 
       set motiftr  "<vot:TR>(.*?)</vot:TR>"
       set motiftd  "<vot:TD>(.*?)</vot:TD>"
@@ -770,8 +734,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
       set cpt 1
       set lls ""
       foreach { a x } $tr {
-         #gren_info "TR-> $cpt  : a: $a x: $x \n"
-         #gren_info "TR-> $cpt \n"
          set x [string map { "<vot:TD/>" "<vot:TD></vot:TD>" } $x]
          set td [regexp -all -inline -- $motiftd $x ]
          set u 0
@@ -784,12 +746,10 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
             }
             incr u
          }
-         #gren_info "$idcataspec : $ls\n"
          lappend lls [list $idcataspec $ls]
          incr cpt
       }
       
-      #gren_info "lls = $lls \n"
       return [list $listfield $lls]
    }
 
@@ -797,32 +757,22 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
 
 
-
-
-
- 
-
    proc ::tools_cata::get_cata {  } {
 
       global bddconf
 
-
       set tt0 [clock clicks -milliseconds]
-
 
       # Noms du fichier et du repertoire du cata TXT
       set imgfilename [::bddimages_liste::lget $::tools_cata::current_image filename]
-
-      gren_info "image qui va etre traitee : $imgfilename \n"
-
       set imgdirfilename [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
+
+      gren_msg "Analyse de l'image: $imgfilename\n"
+
       # Definition du nom du cata XML
       set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
       set cataxml "${f}_cata.xml"
-
-      gren_info "  -> cata dans tmp : $cataxml \n"
-
-      set a $::tools_cata::current_image
+      gren_info "  Cata image: $cataxml \n"
 
       # Liste des champs du header de l'image
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
@@ -1406,12 +1356,6 @@ proc ::tools_cata::extract_cata_xml_old { catafile } {
 
       return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2] $c] + 1]
    }
-
-
-
-
-
-
 
 
 

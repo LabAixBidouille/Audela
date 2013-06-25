@@ -25,6 +25,7 @@ namespace eval ::bddimages {
 
    global audace
    variable This
+   variable log_level
 
    #--- Chargement des captions
    source [ file join [file dirname [info script]] bddimages_go.cap ]
@@ -103,6 +104,8 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_tmp) ".fit"
 
    set tcl_precision 17
+
+   set ::bddimages::log_level "Info"
 
 }
 
@@ -425,6 +428,19 @@ proc ::bddimages::bddimagesBuildIF { This } {
             -command {::bddimages::ressource}
          pack $This.ressource.but1 -in $This.ressource -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
+      #--- Frame du bouton log
+      frame $This.log -borderwidth 1 -relief groove
+      pack $This.log -side top -fill x
+
+         #--- Bouton de choix du niveau de log
+         label $This.log.lab -text "Log:" 
+         menubutton $This.log.b -menu $This.log.b.m -textvar ::bddimages::log_level -width 10 -relief groove
+         menu $This.log.b.m -tearoff 0
+         $This.log.b.m add command -label "No"    -command {set ::bddimages::log_level "No"}
+         $This.log.b.m add command -label "Info"  -command {set ::bddimages::log_level "Info"}
+         $This.log.b.m add command -label "Debug" -command {set ::bddimages::log_level "Debug"}
+         grid $This.log.lab $This.log.b -pady 5 -ipadx 3 -ipady 3
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Coloration du menubouton du choix de la bdd
@@ -436,13 +452,37 @@ proc ::bddimages::bddimagesBuildIF { This } {
 
 }
 
+#------------------------------------------------------------
+## Impression d'un message dans la console
+# @return void
+#
+proc gren_msg { msg } {
+   ::console::affiche_resultat "$msg"
+}
+
 
 #------------------------------------------------------------
-## Impression d'un message d'info dans la console
+## Impression d'un message d'info dans la console si la variable log_level vaut Info ou Debug
 # @return void
 #
 proc gren_info { msg } {
-   ::console::affiche_resultat "$msg" 
+   if {$::bddimages::log_level == "Info" || $::bddimages::log_level == "Debug"} {
+      ::console::affiche_resultat "$msg"
+   }
+}
+
+
+#------------------------------------------------------------
+## Impression d'un message de debug dans la console si la variable log_level vaut Debug
+# @return void
+#
+proc gren_debug { msg } {
+   global audace
+   if {$::bddimages::log_level == "Debug"} {
+      $audace(Console).txt1 tag configure style_debug -foreground blue
+      $audace(Console).txt1 insert end "# Debug > " style_debug
+      $audace(Console).txt1 insert end "$msg"
+   }
 }
 
 
@@ -451,5 +491,6 @@ proc gren_info { msg } {
 # @return void
 #
 proc gren_erreur { msg } {
-   ::console::affiche_erreur "$msg" 
+   ::console::affiche_erreur "$msg"
 }
+

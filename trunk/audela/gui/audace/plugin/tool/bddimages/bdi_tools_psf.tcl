@@ -616,7 +616,6 @@ namespace eval bdi_tools_psf {
                gren_erreur "err = $err\n"
                gren_erreur "msg = $msg\n"
                return -code 10 "Globale PSF impossible"
-               
             }
             set fields [::bdi_tools_psf::get_globale_fields]
          }
@@ -656,7 +655,7 @@ namespace eval bdi_tools_psf {
          ::bdi_tools_psf::set_astroid_in_source s othf_old
           #gren_info "s = $s\n"
       } else {
-         gren_erreur "Erreur PSF\n"
+         #gren_erreur "Erreur PSF\n"
          return -code 5 $err_psf
       }
       return $err_psf
@@ -691,7 +690,7 @@ namespace eval bdi_tools_psf {
       set id 0
       foreach s $sources {
 
-         gren_erreur "Mesure source $id / [llength $sources]\n"
+         #gren_erreur "Mesure source $id / [llength $sources]\n"
 
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s $manual] } msg ]
          
@@ -702,7 +701,7 @@ namespace eval bdi_tools_psf {
          }
          
          if {$err} {
-              gren_erreur "err=$err $msg\n"
+            #gren_erreur "err=$err $msg\n"
             ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
             if { $err_psf != ""} {

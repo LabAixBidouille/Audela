@@ -160,26 +160,25 @@ proc ::bdi_tools::sexa2dec { x {f "1"} } {
 # @param fname_out string Nom complet du fichier de sortie /data/fi.fits
 # @return liste composee of errnum and msgzip
 #
-proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
+proc ::bdi_tools::gunzip_old { fname_in {fname_out ""} } {
    set ext [file extension $fname_in]
-   if {$ext!=".gz"} {
+   if {$ext != ".gz"} {
       set fname_in ${fname_in}.gz
    }
    set ext [file extension $fname_out]
-   if {$ext==".gz"} {
+   if {$ext == ".gz"} {
       set fname_out [file rootname $fname_out]
    }
-   if {$fname_out==""} {
+   if {$fname_out == ""} {
       set fname_out [file rootname $fname_in]
    }
    file delete -force -- $fname_out
    if { $::tcl_platform(os) == "Linux" } {
-      set errnum [catch {
-         eval exec gunzip -c $fname_in > $fname_out
-      } msgzip ]
+      set cmd {gunzip -c $fname_in > $fname_out}
+      set errnum [catch { eval exec $cmd } msgzip ]
    } else {
       set errnum [catch {
-         if {$fname_in!="${fname_out}.gz"} {
+         if {$fname_in != "${fname_out}.gz"} {
             file copy -force -- "$fname_in" "${fname_out}.gz"
             ::gunzip ${fname_out}.gz
          } else {
@@ -190,13 +189,38 @@ proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
    return [list $errnum $msgzip]
 }
 
+proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
+
+   if {$fname_out == ""} {
+      set fname_out [file rootname $fname_in]
+   } else {
+      if {[file extension $fname_out] == ".gz"} {
+         set fname_out [file rootname $fname_out]
+      }
+   }
+
+   # Force l'effacement du fichier out
+   file delete -force -- $fname_out
+   
+   set errnum [catch {
+      if {$fname_in == "${fname_out}.gz"} {
+         ::gunzip $fname_in
+      } else {
+         file copy -force -- "$fname_in" "${fname_out}.gz"
+         ::gunzip ${fname_out}.gz
+      }
+   } msgzip ]
+
+   return [list $errnum $msgzip]
+}
+
 #------------------------------------------------------------
 ## Fonction gzip compatible multi OS
 # @param fname_in string nom complet du fichier a gziper /data/fi.fits
 # @param fname_out string nom complet du fichier de sortie /data/fi.fits.gz
 # @return list composed of errnum and msgzip
 #
-proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
+proc ::bdi_tools::gzip_old { fname_in {fname_out ""} } {
    set ext [file extension $fname_in]
    if {$ext == ".gz"} {
       set fname_in [file rootname $fname_in]
@@ -214,9 +238,8 @@ proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
    file delete -force -- $fname_out0
    # Zip le fichier
    if { $::tcl_platform(os) == "Linux" } {
-      set errnum [catch {
-         eval exec gzip -c $fname_in > $fname_out
-      } msgzip ]
+      set cmd {gzip -c $fname_in > $fname_out}
+      set errnum [catch { eval exec $cmd } msgzip ]
    } else {
       set errnum [catch {
          if {$fname_out!="${fname_in}.gz"} {
@@ -225,6 +248,32 @@ proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
          ::gzip "[file rootname $fname_out]"
       } msgzip ]
    }
+   return [list $errnum $msgzip]
+}
+
+
+proc ::bdi_tools::gzip { fname_in {fname_out ""} } {
+
+   if {$fname_out == ""} {
+      set fname_out ${fname_in}.gz
+   } else {
+      if {[file extension $fname_out] != ".gz"} {
+         set fname_out ${fname_out}.gz
+      }
+   }
+
+   # Force l'effacement du fichier out
+   file delete -force -- $fname_out
+
+   set errnum [catch {
+      if {$fname_out == "${fname_in}.gz"} {
+         ::gzip $fname_in
+      } else {
+         file copy -force -- "$fname_in" "[file rootname $fname_out]"
+         ::gzip [file rootname $fname_out]
+      }
+   } msgzip ]
+
    return [list $errnum $msgzip]
 }
 

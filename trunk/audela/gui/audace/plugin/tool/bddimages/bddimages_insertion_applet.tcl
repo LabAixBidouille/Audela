@@ -132,7 +132,7 @@ proc insertion { This } {
    }
 
    # Autre Mode d insertion
-   ::console::affiche_resultat "Insertion ... \n"
+   gren_info "Insertion ... \n"
 
    # Verifie que des fichiers a inserer ont ete selectionnes
    if { ! [ info exists bddconf(listetotale) ] } {
@@ -224,7 +224,7 @@ proc insertion_auto { } {
    set bddconf(nbimgerr) 0
    set bddconf(nbimgins) 0
 
-   ::console::affiche_resultat "Insertion Automatique \n"
+   gren_info "Insertion Automatique \n"
 
    set fichlock "$conf(bddimages,dirinco)/lock"
 
@@ -371,12 +371,9 @@ proc insertion_solo { nomfich } {
    global caption
    global entetelog
 
-   #::console::affiche_resultat "Insertion Solo : $nomfich \n"
-
    set fichlock "$conf(bddimages,dirinco)/lock"
-
    if {[file exists $fichlock]==1} {
-      ::console::affiche_resultat "Insertion Solo : BDI lock : inserez plus tard \n"
+      gren_info "Insertion Solo : BDI locked : inserez plus tard \n"
       return -code 1
    }
 
@@ -389,7 +386,7 @@ proc insertion_solo { nomfich } {
    set sizefich  [lindex $result 5]
    set tabkey    [lindex $result 6]
 
-   #::console::affiche_resultat "site : $site \n"
+   gren_debug "Site : $site \n"
 
    set fic [file tail $nomfich]
    set entetelog $fic
@@ -416,8 +413,9 @@ proc insertion_solo { nomfich } {
 
    set ligne [list $etat $nomfich $dateiso $site $sizefich $erreur $tabkey]
 
-#   ::console::affiche_resultat "Insertion Solo : erreur=$erreur\n"
-#   ::console::affiche_resultat "Insertion Solo : ligne=$ligne\n"
+   gren_debug "Insertion Solo : erreur = $erreur\n"
+   gren_debug "Insertion Solo : ligne = $ligne\n"
+
    if {$erreur == 0} {
       # Ici se fait l'Insertion de l image
       set liste     [bddimages_insertion_unfich $ligne]
@@ -426,7 +424,7 @@ proc insertion_solo { nomfich } {
       set newid     [lindex $liste 2]
       set msg       [lindex $liste 3]
       set typefich  [lindex $liste 4]
-      ::console::affiche_resultat "Insertion Solo : $nomfich ($typefich: id->$newid)\n"
+      gren_info "Insertion Solo : $nomfich ($typefich: id->$newid)\n"
       if {$err==-1} {return -code 2 ""}
    }
 
