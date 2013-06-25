@@ -360,12 +360,13 @@
 
       lassign $record angle1 angle2 TypeObs dateTu home airpress tempair
 
-      set symbols  { IH ID NP CH ME MA FO HF DAF TF }
-      set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
-
       #--   pm avec les options -model_only 1 -refraction 1, les coordonnees sont corrigées de
       #  la nutation, de l'aberration diurne, de la precession, de l'aberration annuelle et de le refraction
-      lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $airpress $tempair $symbols $nulCoeff -model_only 1 -refraction 1] \
+      #set symbols  { IH ID NP CH ME MA FO HF DAF TF }
+      #set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
+      #lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $airpress $tempair $symbols $nulCoeff -model_only 1 -refraction 1] \
+      #   raDeg decDeg
+      lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $airpress $tempair -model_only 1 -refraction 1] \
          raDeg decDeg
 
       set ra2000 [mc_angle2hms $raDeg 360 zero 2 auto string]
