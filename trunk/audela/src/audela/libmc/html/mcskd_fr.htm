@@ -12,7 +12,7 @@
 <center><b><font size="+3">LIB MC</font></b> <br>
 Planification des observations avec
 la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
-version 20130322<br>
+version 20130627<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -53,6 +53,9 @@ peut ainsi d&eacute;terminer les meilleures p&eacute;riodes
 d"observation ou bien d&eacute;terminer les moments de passage derriere
 un obstable d&eacute;finit par une ligne d'horizon (avec la fonction <span
  style="font-weight: bold;">mc_horizon</span>).</p>
+<p>La fonction <span style="font-weight: bold;">mc_scheduler</span>
+g&eacute;n&egrave;re un planning de nuit pour enchainer des
+s&eacute;quences en tenant compte de quotas et de priorit&eacute;s.</p>
 <hr style="width: 100%; height: 2px;">
 <h2 style="text-align: center;">MANUEL DE REFERENCE</h2>
 <br>
@@ -70,7 +73,10 @@ r&eacute;sultats pour la prochaine p&eacute;riode rise2rise.<br>
 <span style="font-weight: bold;">mc_obsconditions</span> :
 G&eacute;n&egrave;re un fichier qui permet de suivre les conditions
 d'observation d'un objet sur une p&eacute;riode mer2mer.<br>
-<span style="font-weight: bold;"></span><br>
+<span style="font-weight: bold;">mc_scheduler</span> :
+g&eacute;n&egrave;re un planning de nuit pour enchainer des
+s&eacute;quences en tenant compte de quotas et de priorit&eacute;s<br>
+<br>
 <span style="font-weight: bold;"></span>Liste de type Sequence : Le
 type Sequence est une liste qui d&eacute;finit un cr&eacute;neau de
 dates dans lequel on sp&eacute;cifie des coordonn&eacute;es &agrave;
@@ -320,6 +326,79 @@ now 20 +26} } } [expr 60./86400] "test.txt"<br>
 2455181.98449 264.66&nbsp;&nbsp;&nbsp; 0.50 +23.70&nbsp;&nbsp;&nbsp;
 0.79 +20.51 176.78&nbsp; 234.20&nbsp; +1.34 244.52&nbsp; 20.14
 +26.06&nbsp;&nbsp; +4.41 122.18 123.36</p>
+<ul>
+  <li><span style="font-weight: bold;">mc_scheduler</span> :
+g&eacute;n&egrave;re un planning de nuit pour enchainer des
+s&eacute;quences en tenant compte de quotas et de priorit&eacute;s</li>
+</ul>
+<p>D&eacute;finition :</p>
+<p>mc_scheduler Date Home Sequences ?type_Horizon Horizon?
+?-output_type 0|1? ?-output_file filename? ?-log_file filename?
+?-haset_limit Angle? ?-harise_limit Angle? ?-decinf_limit Angle?
+?-decsup_limit Angle? ?-azset_limit Angle? ?-azrise_limit Angle?
+?-elevinf_limit Angle? ?-elevsup_limit Angle?<br>
+</p>
+<p>Date : date actuelle</p>
+<p>Home : Localisation du t&eacute;lescope</p>
+<p>Sequences : liste des s&eacute;quences qu'il faut planifier.<br>
+</p>
+<p>type_Horizon :&nbsp;ALTAZ=Les coordonn&eacute;es de List_coords sont
+de
+type altaz. HADEC=Les coordonn&eacute;es de type hadec.</p>
+<p>Horizon : D&eacute;finition de points critiques limitant
+l'observation &agrave; l'horizon. Si Type_coords=ALTAZ, List_coords est
+une liste compos&eacute;e d'&eacute;l&eacute;ments de type {azimut
+elevation} exprim&eacute;s en degr&eacute;s.&nbsp;Si Type_coords=HADEC,
+List_coords est une liste compos&eacute;e d'&eacute;l&eacute;ments de
+type {d&eacute;clinaison angle_horaire_est angle_horaire_ouest}
+exprim&eacute;s en degr&eacute;s. </p>
+-output_type 0|1 : 0=no output_file 1=output file (usualy set to 1)<br>
+-output_file filename : Filename of outputs <br>
+-log_file filename : Log file name. It is a very long and verbose file
+that describe the logic of the scheduling.<br>
+-haset_limit Angle : Western limit hour angle<br>
+-harise_limit Angle : Eastern limit hour angle<br>
+-decinf_limit Angle : Southern limit declinason<br>
+-decsup_limit Angle : Nothern limit declination<br>
+-azset_limit Angle : Western limit azimut angle<br>
+-azrise_limit Angle : Eastern limit azimut angle<br>
+-elevinf_limit Angle : Lower limit elevation angle<br>
+-elevsup_limit Angle : Upper limit elevation angle<br>
+<p>Sorties :&nbsp;</p>
+<p>Fichier texte (-output_file filename)</p>
+Col 1 : idseq (order number in the input Sequence list)<br>
+Col 2 : jd_slew_start_with_slew (Julian day of the start of telescope
+slew)<br>
+Col 3 : jd_slew_start_without_slew<br>
+Col 4 : jd_acq_start (Julian day of the start of acquisition)<br>
+Col 5 : jd_acq_end (Julian day of the end of acquisition)<br>
+Col 6 : jd_elev_max (Julian day of the maximum elevation during the
+night)<br>
+Col 7 : order (Sequence order of the scheduling)<br>
+Col 8 : percent_quota_used (Percent of quota used after this sequence)<br>
+Col 9 : az_acq_start (azimut at the time of observation start)<br>
+Col 10 : elev_acq_start (elevation at the time of observation start)<br>
+Col 11 : ha_acq_start (hour angle at the time of observation start)<br>
+Col 12 : ra_acq_start (right ascension at the time of observation start)<br>
+Col 13 : dec_acq_start (declinasion at the time of observation start)<br>
+Col 14 : az_acq_end (azimut at the time of observation stop)<br>
+Col 15 : elev_acq_end (elevation at the time of observation stop)<br>
+Col 16 : ha_acq_end (hour angle at the time of observation stop)<br>
+Col 17 : ra_acq_end (right ascension at the time of observation stop)<br>
+Col 18 : dec_acq_end (declinasion at the time of observation stop)<br>
+<br>
+Example:<br>
+<br>
+set seqs ""<br>
+lappend seqs [list {AXE_0 {now 2h31m +41d25m} IDUSER 0 UPRIORITY 80
+UQUOTA 50 DELAY_EXPOSURES 120} ]<br>
+lappend seqs [list {AXE_0 {now 23h56m +03d15m} IDUSER 0 UPRIORITY 80
+UQUOTA 50 DELAY_EXPOSURES 200} ]<br>
+lappend seqs [list {AXE_0 {now 13h06m +03d15m} IDUSER 1 UPRIORITY 70
+UQUOTA 30 DELAY_EXPOSURES 60} ]<br>
+<p>mc_scheduler now {GPS 2 E 43.345 148} $seqs&nbsp;-output_type&nbsp;1
+-output_file c:/tmp/schedule.txt -log_file
+c:/tmp/schedule.log&nbsp;-elevinf_limit 20&nbsp;-elevsup_limit 85</p>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <h2>MANUEL UTILISATEUR</h2>
