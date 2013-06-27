@@ -55,7 +55,16 @@ un obstable d&eacute;finit par une ligne d'horizon (avec la fonction <span
  style="font-weight: bold;">mc_horizon</span>).</p>
 <p>La fonction <span style="font-weight: bold;">mc_scheduler</span>
 g&eacute;n&egrave;re un planning de nuit pour enchainer des
-s&eacute;quences en tenant compte de quotas et de priorit&eacute;s.</p>
+s&eacute;quences en tenant compte de quotas et de priorit&eacute;s.
+Before running the mc_scheduler function one must define a list of
+sequences. We call "sequence" a basic observation block asked by an
+astronomer. Many constraints can be defined as attributes for each
+sequence (limits, priority, quota, etc.). The mc_scheduler function
+generates an ASCII file. Each line define an observation refered a
+given input sequence. The scheduler is based on priority and quotas in
+order to mix observation of many astronomers that wants to share time
+of the same telescope.<br>
+</p>
 <hr style="width: 100%; height: 2px;">
 <h2 style="text-align: center;">MANUEL DE REFERENCE</h2>
 <br>
