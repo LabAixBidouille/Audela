@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Pilotage de la datation GPS
 # Auteur : Frederic Vachier
-# Mise à jour $Id: gps.tcl 8401 2012-06-26 00:57:45Z fredvachier $
+# Mise à jour $Id$
 #
 # source audace/plugin/tool/acqt1m/gps.tcl
 #
@@ -18,11 +18,6 @@ namespace eval ::gps {
    variable flagsync
    variable antenna
    variable flagantenna
-
-
-
-
-
 
 
    proc ::gps::open { } {
@@ -72,6 +67,7 @@ namespace eval ::gps {
 
       return 0
    }
+
 
    proc ::gps::reset { } {
       if { ! [ info exists ::gps::flag ] } {
@@ -124,11 +120,8 @@ namespace eval ::gps {
       }
       if { $::gps::flagsync == 1 && $::gps::flagantenna == 1} { set ::gps::flag 1 }
 
-
       return $date
    }
-
-
 
 
    proc ::gps::read { } {
@@ -139,7 +132,7 @@ namespace eval ::gps {
          return ERROR
       } else {
          #::console::disp "meinberg_gps read OK\n"
-      } 
+      }
 
       set e [split $r ";"]
       #foreach a $e {
@@ -172,7 +165,6 @@ namespace eval ::gps {
    }
 
 
-
    proc ::gps::getdate { bufNo gpsend pcend exposure {gpsbg ""} } {
 
       set log 0
@@ -201,7 +193,7 @@ namespace eval ::gps {
          set gpsbeg ""
          set gpsbegusec ""
          set ::gps::flag 0
-         set gpspc       -99999 
+         set gpspc       -99999
          set dateobs $pcbeg$pcbegusec
          set dateend $pcend
       }
@@ -212,7 +204,6 @@ namespace eval ::gps {
          set dateobs $gpsbeg
          set infogps "BEGIN-END"
       }
-
 
       if {$log} {
          gren_info "** HEADER \n"
@@ -249,7 +240,6 @@ namespace eval ::gps {
 
       return $::gps::flag
    }
-
 
 # Fin NameSpace
 }

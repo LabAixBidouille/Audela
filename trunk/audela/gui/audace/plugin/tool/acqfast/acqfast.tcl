@@ -2,7 +2,7 @@
 # Fichier : acqfast.tcl
 # Description : Outil d'acquisition specifique pour la camera Raptor OSPREY
 # Auteur : Matteo Schiavon
-# Mise à jour $Id: acqfast.tcl 8960 2013-01-06 16:11:41Z alainklotz $
+# Mise à jour $Id$
 #
 
 #==============================================================
@@ -145,13 +145,13 @@ proc ::acqfast::createPluginInstance { { in "" } { visuNo 1 } } {
 #------------------------------------------------------------
 proc ::acqfast::deletePluginInstance { visuNo } {
    global conf panneau
-   
+
    #--- Je desactive la surveillance de la connexion d'une camera
    ::confVisu::removeCameraListener $visuNo "::acqfast::adaptOutilAcqfast $visuNo"
    #--- Je desactive la surveillance de l'ajout ou de la suppression d'une extension
    trace remove variable ::audace(extensionList) write "::acqfast::initExtensionList $visuNo"
 
-   
+
    destroy $panneau(acqfast,$visuNo,This)
 }
 
@@ -656,7 +656,7 @@ proc ::acqfast::testParametreAcquisition { visuNo } {
    return $integre
 }
 
-  
+
 
 #**** Fonctions du cycle de travail**********
 proc ::acqfast::cycleinit { visuNo } {
@@ -687,7 +687,7 @@ proc ::acqfast::cycleinit { visuNo } {
 #            ::acqfast::display $visuNo $s
 #         }
 #      }
-#      
+#
 #      set l [ ::gps::fastread ]
 #      if {( [ tsv::get gps first ] == 1 ) && ( $l != " " )} {
 #         set l [lreplace $l 0 0]
@@ -746,7 +746,7 @@ proc ::acqfast::cyclegps { visuNo } {
    foreach a $l {
       puts $a
    }
-   
+
    #foreach a $l0 {
    #   puts $a
    #}
@@ -824,7 +824,7 @@ proc ::acqfast::cyclearretgps { visuNo acq r } {
          set panneau(acqfast,$visuNo,date_gps,begin) [lreplace $panneau(acqfast,$visuNo,date_gps,begin) [ expr $last-$cancel+1] $last]
       }
    }
-  
+
 
    if { $panneau(acqfast,$visuNo,cycle,action) == "1" } {
       #--- j'enregistre la pause de l'acquisition dans le fichier de log
@@ -869,7 +869,7 @@ proc ::acqfast::cyclecamstart { visuNo } {
       if { $panneau(acqfast,$visuNo,mode) == "0" } {
          cam$camNo framerate $panneau(acqfast,$visuNo,framerate)
       }
-      set panneau(acqfast,$visuNo,framerate) [ cam$camNo framerate ]      
+      set panneau(acqfast,$visuNo,framerate) [ cam$camNo framerate ]
       cam$camNo exposure $panneau(acqfast,$visuNo,pose)
       set panneau(acqfast,$visuNo,pose) [ cam$camNo exposure ]
 
@@ -936,7 +936,7 @@ proc ::acqfast::cycleboucle { visuNo } {
                      ::acqfast::cyclelivestart $visuNo
                      set panneau(acqfast,$visuNo,cycle,state) "LIVE"
                      set panneau(acqfast,$visuNo,cycle,action) "0"
-                   }                     
+                   }
                default {
                      #set panneau(acqfast,$visuNo,cycle,action) "0"
                    }
@@ -996,7 +996,7 @@ proc ::acqfast::cycleboucle { visuNo } {
                 }
                 #puts "LIVE"
              }
-    } 
+    }
 
    after 250 ::acqfast::cycleboucle $visuNo
 
@@ -1118,7 +1118,7 @@ proc ::acqfast::Stop { visuNo } {
    #--- si on est dans le mode live, il se limite a l'arreter
    #if { [ tsv::get video live ] == "1" } {
    #   set count [cam$camNo livestop]
-   #   thread::send -async $panneau(acqfast,$visuNo,threadid) [ thread::wait ]      
+   #   thread::send -async $panneau(acqfast,$visuNo,threadid) [ thread::wait ]
    #   tsv::set video live "0"
    #} elseif { [ tsv::get gps stop ] == "0" } {
    #   #--- arret de l'acquisition
@@ -1142,7 +1142,7 @@ proc ::acqfast::Stop { visuNo } {
    #   }
 
    #}
-   
+
    #--- je reactive les parametres de configuration
    $panneau(acqfast,$visuNo,This).pose.entr configure -state normal
    $panneau(acqfast,$visuNo,This).video.mode.but configure -state normal
@@ -1162,7 +1162,7 @@ proc ::acqfast::Stop { visuNo } {
    #set panneau(acqfast,$visuNo,video_en_cours) "0"
 
    set panneau(acqfast,$visuNo,cycle,action) "2"
-  
+
 }
 #***** Fin de la procedure Stop *****************************
 
@@ -1213,7 +1213,7 @@ proc ::acqfast::Pause { visuNo } {
 
    set panneau(acqfast,$visuNo,cycle,action) "1"
 
-   
+
 
 
 }
@@ -1232,7 +1232,7 @@ proc ::acqfast::Live { visuNo } {
 
    set local(visuNo) $visuNo
 
-      
+
 
 
    #--- je verifie l'integrite des parametres
@@ -1266,7 +1266,7 @@ proc ::acqfast::Live { visuNo } {
    #--- prend le frame maximale
    set panneau(acqfast,$visuNo,maxframe) [ cam$camNo maxbuffer ]
    #puts $panneau(acqfast,$visuNo,maxframe)
-   
+
    set panneau(acqfast,$visuNo,cycle,action) "3"
 
 
@@ -1286,7 +1286,7 @@ proc ::acqfast::ChangeMode { visuNo } {
    set modes [list "ffr" "itr"]
    set panneau(acqfast,$visuNo,mode) [lsearch $panneau(acqfast,$visuNo,list_mode) "$panneau(acqfast,$visuNo,mode_en_cours)"]
    set mode [lindex $modes $panneau(acqfast,$visuNo,mode)]
-   
+
    if { $mode == "ffr" } {
       $panneau(acqfast,$visuNo,This).video.framerate.entr configure -state normal
    } else {
@@ -1300,7 +1300,7 @@ proc ::acqfast::ChangeMode { visuNo } {
 
 }
 #***** Fin changement du mode video **********
-   
+
 
 #***** Procedure d'ouverture de la connection GPS
 proc ::acqfast::gps_open { visuNo } {
@@ -1388,7 +1388,7 @@ proc ::acqfast::SauveImages { visuNo } {
       set videomode "Integrate Then Read"
       set framerate [cam$camNo maxframerate]
    }
-   
+
 
    set curbuf 1
    set panneau(acqfast,$visuNo,enreg_en_cours) 1
@@ -1467,11 +1467,11 @@ proc ::acqfast::SauveImages { visuNo } {
       file delete $::acqfast::fichier_backup
    }
 
-   
+
 
 }
 #***** Fin de la procedure de sauvegarde de l' image *************
-   
+
 #***** Procedure d'affichage d'une barre de progression ********
 proc ::acqfast::avancementEnreg { visuNo { buf } } {
    global caption color panneau
@@ -1480,7 +1480,7 @@ proc ::acqfast::avancementEnreg { visuNo { buf } } {
       #--- je supprime la fenetre s'il n'y a plus de pose en cours
       destroy $panneau(acqfast,$visuNo,base).progress
       return
-   } 
+   }
 
 
    #--- Recuperation de la position de la fenetre
@@ -1600,7 +1600,7 @@ proc ::acqfast::Message { visuNo niveau args } {
             #--- Force l'ecriture immediate sur le disque
             flush $::acqfast::backup_id($visuNo)
         }
-      }         
+      }
       default {
          set b [ list "%s\n" $caption(acqfast,pbmesserr) ]
          ::console::disp [ eval [ concat {format} $b ] ]
@@ -1637,7 +1637,7 @@ proc ::acqfast::display { visuNo frnum } {
 
    global panneau
 
-   set camNo $panneau(acqfast,$visuNo,camNo) 
+   set camNo $panneau(acqfast,$visuNo,camNo)
 
    cam$camNo getframebuffer $frnum
    ::confVisu::autovisu $visuNo
@@ -1757,7 +1757,7 @@ proc ::acqfast::acqfastBuildIF { visuNo } {
 
    #--- Trame du mode d'acquisition
    frame $panneau(acqfast,$visuNo,This).mode -borderwidth 5 -relief ridge
-   
+
       #--- Trame du bouton Start/Pause
       frame $panneau(acqfast,$visuNo,This).go_stop -borderwidth 0 -relief ridge
          Button $panneau(acqfast,$visuNo,This).go_stop.but -text $caption(acqfast,start) -height 2 \
@@ -1862,7 +1862,7 @@ proc ::acqfast::acqfastBuildIF { visuNo } {
 
          pack $panneau(acqfast,$visuNo,This).display.live -side top -fill x
 
-            
+
 
          frame $panneau(acqfast,$visuNo,This).display.frame -borderwidth 2 -relief ridge
             label $panneau(acqfast,$visuNo,This).display.frame.lab -text $caption(acqfast,frame)
