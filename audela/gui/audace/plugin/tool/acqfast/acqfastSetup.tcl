@@ -2,7 +2,7 @@
 # Fichier : acqfastSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise à jour $Id: acqfastSetup.tcl 7548 2011-08-20 08:07:36Z robertdelmas  $
+# Mise à jour $Id$
 #
 
 namespace eval ::acqfastSetup {
@@ -181,7 +181,6 @@ namespace eval ::acqfastSetup {
             pack $panneau(acqfast,$visuNo,acqfastSetup).frame3.frame7.frame12 -side left
 
          pack $panneau(acqfast,$visuNo,acqfastSetup).frame3.frame7 -side top -fill both -expand 1
-
 
       pack $panneau(acqfast,$visuNo,acqfastSetup).frame3 -side top -fill both -expand 1
    }
