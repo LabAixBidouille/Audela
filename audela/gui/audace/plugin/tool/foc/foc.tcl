@@ -112,9 +112,22 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc createPanel { this } {
       variable This
-      global caption panneau
+      global conf caption panneau
 
       set This $this
+
+      #--- Initialisation de la position du graphique
+      if { ! [ info exists conf(visufoc,position) ] } {
+         set conf(visufoc,position) "+200+0"
+      }
+      #--- Initialisation de la position de la fenetre
+      if { ! [ info exists conf(parafoc,position) ] } {
+         set conf(parafoc,position) "+500+75"
+      }
+      #--- Initialisation de la position de la fenetre
+      if { ! [ info exists conf(foc,avancement,position) ] } {
+         set conf(foc,avancement,position) "+120+315"
+      }
 
       #---
       set panneau(foc,titre)            "$caption(foc,focalisation)"
@@ -409,6 +422,10 @@ namespace eval ::foc {
 
    }
 
+   #------------------------------------------------------------
+   # attendImage
+   #  sous processus de cmdAcq
+   #------------------------------------------------------------
    proc attendImage { message args } {
       global audace panneau
 
@@ -455,6 +472,10 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # avancementPose
+   #  sous processus de cmdAcq et de dispTime
+   #------------------------------------------------------------
    proc avancementPose { t } {
       global audace caption color conf panneau
 
@@ -464,13 +485,10 @@ namespace eval ::foc {
       }
 
       #--- Recuperation de la position de la fenetre
-      ::foc::recupPositionAvancementPose
+      ::foc::closePositionAvancementPose
 
       #--- Initialisation de la barre de progression
       set cpt "100"
-
-      #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(foc,avancement,position) ] } { set conf(foc,avancement,position) "+120+315" }
 
       #---
       if { [ winfo exists $audace(base).progress_pose ] != "1" } {
@@ -525,9 +543,12 @@ namespace eval ::foc {
 
          #---
          if { $panneau(foc,pose_en_cours) == "0" } {
+
             #--- Je supprime la fenetre s'il n'y a plus de pose en cours
-            destroy $audace(base).progress_pose
+            ::foc::closePositionAvancementPose
+
          } else {
+
             if { $panneau(foc,demande_arret) == "0" } {
                if { $t > "0" } {
                   $audace(base).progress_pose.lab_status configure -text "$t $caption(foc,sec) / \
@@ -545,24 +566,32 @@ namespace eval ::foc {
             place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
                -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
             update
+
          }
 
       }
 
    }
 
-   proc recupPositionAvancementPose { } {
+   #------------------------------------------------------------
+   # closePositionAvancementPose
+   #   ferme la fenetre d'avancement de la pose st sauve sa position
+   #------------------------------------------------------------
+   proc closePositionAvancementPose { } {
       global audace conf
 
       if [ winfo exists $audace(base).progress_pose ] {
          #--- Determination de la position de la fenetre
-         set geometry [ wm geometry $audace(base).progress_pose ]
-         set deb [ expr 1 + [ string first + $geometry ] ]
-         set fin [ string length $geometry ]
-         set conf(foc,avancement,position) "+[ string range $geometry $deb $fin ]"
+         regsub {([0-9]+x[0-9]+)} [ wm geometry $audace(base).progress_pose ] "" conf(foc,avancement,position)
+         #--- Je supprime la fenetre s'il n'y a plus de pose en cours
+         destroy $audace(base).progress_pose
       }
    }
 
+   #------------------------------------------------------------
+   # cmdStop
+   #  cmd du bouton STOP/RAZ
+   #------------------------------------------------------------
    proc cmdStop { } {
       variable This
       global audace caption panneau
@@ -603,9 +632,12 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdSauveLog
+   #  sous processus de cmdStop
+   # Parametre : chemin du fichier
+   #------------------------------------------------------------
    proc cmdSauveLog { namefile } {
-      global panneau
-
      if [ catch { open [ file join $::audace(rep_log) $namefile ] w } fileId ] {
         return
      } else {
@@ -614,7 +646,12 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdSpeed
+   #
+   #------------------------------------------------------------
    proc cmdSpeed { } {
+
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
          if { $::panneau(foc,focuser) != "" } {
@@ -630,6 +667,10 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdFocus
+   #
+   #------------------------------------------------------------
    proc cmdFocus { command } {
       variable This
 
@@ -651,6 +692,10 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdInitFoc
+   #  cmd du bouton 'Initialisation'
+   #------------------------------------------------------------
    proc cmdInitFoc { } {
       variable This
       global audace panneau
@@ -750,6 +795,8 @@ namespace eval ::foc {
       }
    }
 
+   #------------   fenetre affichant les limites  --------------
+
    #------------------------------------------------------------
    # formatFoc
    #    Affiche la fenetre indiquant les limites du focaliseur
@@ -831,6 +878,13 @@ namespace eval ::foc {
       ::confColor::applyColor $audace(base).limitefoc
    }
 
+   #------------   fenetre affichant les valeurs  --------------
+
+   #------------------------------------------------------------
+   # qualiteFoc
+   #    affiche la valeur des parametres dans une fenetre
+   # Parametres : les valeurs a afficher
+   #------------------------------------------------------------
    proc qualiteFoc { } {
       global audace caption conf panneau
 
@@ -838,8 +892,6 @@ namespace eval ::foc {
       if [ winfo exists $audace(base).parafoc ] {
          ::foc::fermeQualiteFoc
       }
-      #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(parafoc,position) ] } { set conf(parafoc,position) "+500+75" }
       #--- Creation de la fenetre
       toplevel $audace(base).parafoc
       wm transient $audace(base).parafoc $audace(base)
@@ -864,20 +916,28 @@ namespace eval ::foc {
       ::confColor::applyColor $audace(base).parafoc
    }
 
+   #------------------------------------------------------------
+   # fermeQualiteFoc
+   #    ferme la fenetre de la qualite et sauve sa position
+   #  Parametre : chemin de la fenetre
+   #------------------------------------------------------------
    proc fermeQualiteFoc { } {
       global audace conf
 
       #--- Determination de la position de la fenetre
-      set geometry [ wm geometry $audace(base).parafoc ]
-      set deb [ expr 1 + [ string first + $geometry ] ]
-      set fin [ string length $geometry ]
-      set conf(parafoc,position) "+[ string range $geometry $deb $fin ]"
+      regsub {([0-9]+x[0-9]+)} [wm geometry $audace(base).parafoc] "" conf(parafoc,position)
+
       #--- Fermeture de la fenetre
       destroy $audace(base).parafoc
    }
-
 }
 
+#------------   gestion du graphique classique ------------------
+
+#------------------------------------------------------------
+# focGraphe
+#    cree le fenetre graphique de suivi des parametres de focalisation
+#------------------------------------------------------------
 proc focGraphe { } {
    global audace caption conf panneau
 
@@ -885,8 +945,7 @@ proc focGraphe { } {
    if [ winfo exists $audace(base).visufoc ] {
       fermeGraphe
    }
-   #--- Initialisation de la position de la fenetre
-   if { ! [ info exists conf(visufoc,position) ] } { set conf(visufoc,position) "+200+0" }
+
    #--- Creation et affichage des graphes
    if { [ winfo exists $audace(base).visufoc ] == "0" } {
       package require BLT
@@ -915,18 +974,10 @@ proc focGraphe { } {
    }
 }
 
-proc fermeGraphe { } {
-   global audace conf
-
-   #--- Determination de la position de la fenetre
-   set geometry [ wm geometry $audace(base).visufoc ]
-   set deb [ expr 1 + [ string first + $geometry ] ]
-   set fin [ string length $geometry ]
-   set conf(visufoc,position) "+[ string range $geometry $deb $fin ]"
-   #--- Fermeture de la fenetre
-   destroy $audace(base).visufoc
-}
-
+#------------------------------------------------------------
+# visuf
+#    cree un graphique de suivi d'un parametre
+#------------------------------------------------------------
 proc visuf { win_name x y { title "" } { yesno "yes" } } {
    global audace
 
@@ -965,6 +1016,21 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
       $audace(base).visufoc.$win_name axis configure y2 -min [ lindex $ly 0 ] -max [ lindex $ly 1 ]
       pack $audace(base).visufoc.$win_name
    }
+}
+
+#------------------------------------------------------------
+# fermeGraphe
+#    ferme la fenetre des graphes et sauve la position
+#  Parametre : chemin de la fenetre
+#------------------------------------------------------------
+proc fermeGraphe { } {
+   global audace conf
+
+   #--- Determination de la position de la fenetre
+   regsub {([0-9]+x[0-9]+)} [wm geometry $audace(base).visufoc] "" conf(visufoc,position)
+
+#--- Fermeture de la fenetre
+   destroy $audace(base).visufoc
 }
 
 #------------------------------------------------------------
@@ -1134,7 +1200,7 @@ proc focBuildIF { This } {
                -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
             pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
             bind $This.fra5.fra2.ent3 <Enter> { ::foc::formatFoc }
-            bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
+           bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
 
             #--- Label pas
             label $This.fra5.fra2.lab4 -text $panneau(foc,pas) -relief flat
@@ -1167,7 +1233,7 @@ proc focBuildIF { This } {
 
      pack $This.fra6 -side top -fill x
 
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+     #--- Mise a jour dynamique des couleurs
+     ::confColor::applyColor $This
 }
 
