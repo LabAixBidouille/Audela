@@ -669,14 +669,14 @@ int ascomcamSetupDialog(const char * ascomDiverName, char * errorMsg)
    HRESULT hr;
    hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
    if (FAILED(hr)) { 
-      sprintf(errorMsg, "setupDialog error CoInitializeEx hr=%X",hr);
+      sprintf(errorMsg, "Camera %s not found: setupDialog error CoInitializeEx hr=0x%X",ascomDiverName,hr);
       ascomcam_log(LOG_ERROR,errorMsg);
       return 1;
    }
    AscomInterfacesLib::ICameraPtr cameraPtr = NULL;
    hr = cameraPtr.CreateInstance((LPCSTR)ascomDiverName);
    if ( FAILED(hr) ) {
-      sprintf(errorMsg, "setupDialog error CreateInstance hr=%X",hr);
+      sprintf(errorMsg, "Camera %s not found: setupDialog error CreateInstance hr=0x%X",ascomDiverName,hr);
       ascomcam_log(LOG_ERROR,errorMsg);
       CoUninitialize();
       return 1;    

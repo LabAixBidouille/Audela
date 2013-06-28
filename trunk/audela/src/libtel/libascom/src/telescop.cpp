@@ -253,14 +253,14 @@ int mytel_setupDialog(const char * ascomDiverName, char * errorMsg )
    HRESULT hr;
    hr = CoInitializeEx(NULL,COINIT_APARTMENTTHREADED);
    if (FAILED(hr)) { 
-      sprintf(errorMsg, "setupDialog error CoInitializeEx hr=%X",hr);
+      sprintf(errorMsg, "Mount %s not found: setupDialog error CoInitializeEx hr=0x%X",ascomDiverName,hr);
       return 1;
    }
    
    AscomInterfacesLib::ITelescopePtr telescopePtr = NULL;
    hr = telescopePtr.CreateInstance((LPCSTR)ascomDiverName);
    if ( FAILED(hr) ) {
-      sprintf(errorMsg, "setupDialog error CreateInstance hr=%X",hr);
+      sprintf(errorMsg, "Mount %s not found: setupDialog error CreateInstance hr=0x%X",ascomDiverName,hr);
       CoUninitialize();
       return 1;    
    } 
