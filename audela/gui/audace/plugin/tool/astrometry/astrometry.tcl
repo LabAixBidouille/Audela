@@ -113,7 +113,7 @@ namespace eval ::astrometry {
    proc deletePluginInstance { visuNo } {
       variable astrom
 
-      if { [winfo exists $astrom(This) ] } {
+      if [winfo exists $astrom(This) ] {
          #--- je ferme la fenetre si l'utilisateur ne l'a pas deja fait
          ::astrometry::quit $visuNo
       }
@@ -124,6 +124,9 @@ namespace eval ::astrometry {
    #    affiche la fenetre de l'outil
    #------------------------------------------------------------
    proc startTool { visuNo } {
+      #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
+      ::confVisu::addFileNameListener $visuNo "::astrometry::updatewcs"
+      ::confVisu::addFileNameListener $visuNo "::astrometry::update_keywords"
       #--- J'ouvre la fenetre
       ::astrometry::create $visuNo
    }
@@ -174,12 +177,20 @@ namespace eval ::astrometry {
 
       #--- Recherche une image dans le buffer
       if { [ buf$audace(bufNo) imageready ] == "0" } {
+         #--- Supprime les procedures appelees si on charge une image
+         ::confVisu::removeFileNameListener $visuNo "::astrometry::update_keywords"
+         ::confVisu::removeFileNameListener $visuNo "::astrometry::updatewcs"
+         #--- Sortie anticipee
          tk_messageBox -message "$caption(astrometry,error_no_image)" -title "$caption(astrometry,title)" -icon error
          return
       }
 
-      #--- Recherche du type d'image
+      #--- Recherche le type de l'image
       if { [lindex [buf$audace(bufNo) getkwd NAXIS ] 1] == "1" } {
+         #--- Supprime les procedures appelees si on charge une image
+         ::confVisu::removeFileNameListener $visuNo "::astrometry::update_keywords"
+         ::confVisu::removeFileNameListener $visuNo "::astrometry::updatewcs"
+         #--- Sortie anticipee
          tk_messageBox -message "$caption(astrometry,error_spectrum)" -title "$caption(astrometry,title)" -icon error
          return
       }
@@ -209,7 +220,7 @@ namespace eval ::astrometry {
       button $astrom(This).but1 -text "$caption(astrometry,wcs,[lindex $astrom(typewcs) 0])" \
          -command {::astrometry::wcs_pack +}
       pack $astrom(This).but1 -in $astrom(This) -anchor center -fill x -pady 10 -ipadx 15 -padx 5 -ipady 5
-      #--- Frames from the differents tpye of WCS
+      #--- Frames from the differents type of WCS
       frame $astrom(This).wcs
       pack $astrom(This).wcs -in $astrom(This) -anchor center -fill x
       foreach wcs $astrom(typewcs) {
@@ -323,9 +334,6 @@ namespace eval ::astrometry {
       set astrom(currenttypecal) [lindex $astrom(typecal) 0]
       ::astrometry::cal_pack $astrom(currenttypecal)
 
-      #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::astrometry::updatewcs"
-
       #--- Focus
       focus $astrom(This)
 
@@ -339,7 +347,8 @@ namespace eval ::astrometry {
    proc quit { visuNo } {
       variable astrom
 
-      #--- Supprime la procedure appelee si on charge une image
+      #--- Supprime les procedures appelees si on charge une image
+      ::confVisu::removeFileNameListener $visuNo "::astrometry::update_keywords"
       ::confVisu::removeFileNameListener $visuNo "::astrometry::updatewcs"
       #--- Supprime les fichiers de configuration necessaire a Sextractor
       deleteFileConfigSextractor
@@ -401,8 +410,7 @@ namespace eval ::astrometry {
          set k 0
          foreach kwd $kwdscan {
             if { $astrom(wcsvalues,$kwd) == "" } {
-               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" \
-                  -icon error
+               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" -icon error
                return 1
             }
             incr k
@@ -414,8 +422,7 @@ namespace eval ::astrometry {
          set k 0
          foreach kwd $kwdscan {
             if { $astrom(wcsvalues,$kwd) == "" } {
-               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" \
-                  -icon error
+               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" -icon error
                return 1
             }
             incr k
@@ -427,8 +434,7 @@ namespace eval ::astrometry {
          set k 0
          foreach kwd $kwdscan {
             if { $astrom(wcsvalues,$kwd) == "" } {
-               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" \
-                  -icon error
+               tk_messageBox -message "$caption(astrometry,empty_keywords)" -title "$caption(astrometry,title)" -icon error
                return 1
             }
             incr k
@@ -437,7 +443,7 @@ namespace eval ::astrometry {
       }
    }
 
-   proc update_keywords { } {
+   proc update_keywords { args } {
       variable astrom
       global audace
 
@@ -688,7 +694,7 @@ namespace eval ::astrometry {
                if { $astrom(cattype) == "$caption(astrometry,cat,usno)" } {
                   ::astrometry::search_cata_USNO
                } else {
-                  tk_messageBox -message "$caption(astrometry,erreur_catalog)" -icon error
+                  tk_messageBox -message "$caption(astrometry,erreur_catalog)" -title "$caption(astrometry,title)" -icon error
                }
             }
             #--- Suppression des fichiers temporaires
@@ -728,8 +734,17 @@ namespace eval ::astrometry {
          set erreur [ catch { calibrate_from_file $::astrometry::astrom(reffile) } msg ]
          if { $erreur == "1" } {
             if {$silent=="no"} {
-               tk_messageBox -message "$caption(astrometry,erreur_file)" -icon error
+               tk_messageBox -message "$caption(astrometry,erreur_file)" -title "$caption(astrometry,title)" -icon error
             }
+            #--- Suppression des fichiers temporaires
+            if { $astrom(delete_files) == "1" } {
+               ::astrometry::delete_lst
+            }
+            #--- Suppression des images temporaires
+            if { $astrom(delete_images) == "1" } {
+               ::astrometry::delete_dummy
+            }
+            #---
             $astrom(This).status.labURL configure -text ""
             update
             return
@@ -894,16 +909,21 @@ namespace eval ::astrometry {
    proc keyword { wcs kwd } {
       variable astrom
 
-      frame $astrom(This).wcs.${wcs}.fra_${kwd}
-         label $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -text ${kwd} -width 10
-         pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -side left
-         entry $astrom(This).wcs.${wcs}.fra_${kwd}.ent \
-            -textvariable ::astrometry::astrom(wcsvalues,${kwd}) -width 26
-         pack $astrom(This).wcs.${wcs}.fra_${kwd}.ent -side left
-         label $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 \
+      if [ winfo exists $astrom(This).wcs.${wcs}.fra_${kwd} ] {
+         $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 configure \
             -text "$astrom(wcsunits,${kwd}) ($astrom(wcscomments,${kwd}))"
-         pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 -side left
-      pack $astrom(This).wcs.${wcs}.fra_${kwd} -anchor center -fill x
+      } else {
+         frame $astrom(This).wcs.${wcs}.fra_${kwd}
+            label $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -text ${kwd} -width 10
+            pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -side left
+            entry $astrom(This).wcs.${wcs}.fra_${kwd}.ent \
+               -textvariable ::astrometry::astrom(wcsvalues,${kwd}) -width 26
+            pack $astrom(This).wcs.${wcs}.fra_${kwd}.ent -side left
+            label $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 \
+               -text "$astrom(wcsunits,${kwd}) ($astrom(wcscomments,${kwd}))"
+            pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 -side left
+         pack $astrom(This).wcs.${wcs}.fra_${kwd} -anchor center -fill x
+      }
    }
 
    proc modifydirname { } {
@@ -1193,14 +1213,6 @@ namespace eval ::astrometry {
    proc closeJpeg { } {
       variable astrom
 
-      #--- Verifie si la variable existe
-      if { ! [ info exists astrom(This_check) ] } {
-         return
-      }
-      #--- Verifie si la fenetre existe
-      if { ! [ winfo exist $astrom(This_check) ] } {
-         return
-      }
       #--- Supprime les fichiers temporaires
       if { $astrom(delete_files) == "1" } {
          ::astrometry::delete_lst
@@ -1208,6 +1220,14 @@ namespace eval ::astrometry {
       #--- Supprime les images temporaires
       if { $astrom(delete_images) == "1" } {
          ::astrometry::delete_dummy
+      }
+      #--- Verifie si la variable existe
+      if { ! [ info exists astrom(This_check) ] } {
+         return
+      }
+      #--- Verifie si la fenetre existe
+      if { ! [ winfo exist $astrom(This_check) ] } {
+         return
       }
       #--- Supprime la visu
       visu::delete $astrom(visuNo)
