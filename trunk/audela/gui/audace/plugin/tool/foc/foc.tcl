@@ -130,27 +130,19 @@ namespace eval ::foc {
       }
 
       #---
-      set panneau(foc,titre)            "$caption(foc,focalisation)"
-      set panneau(foc,aide)             "$caption(foc,help_titre)"
-      set panneau(foc,aide1)            "$caption(foc,help_titre1)"
-      set panneau(foc,acq)              "$caption(foc,acquisition)"
       set panneau(foc,menu)             "$caption(foc,centrage)"
       set panneau(foc,centrage_fenetre) "1"
       set panneau(foc,compteur)         "0"
       set panneau(foc,bin)              "1"
       set panneau(foc,exptime)          "2"
-      set panneau(foc,secondes)         "$caption(foc,seconde)"
       set panneau(foc,go)               "$caption(foc,go)"
       set panneau(foc,stop)             "$caption(foc,stop)"
       set panneau(foc,raz)              "$caption(foc,raz)"
       set panneau(foc,focuser)          "focuserlx200"
-      set panneau(foc,motorfoc)         "$caption(foc,moteur_focus)"
-      set panneau(foc,position)         "$caption(foc,pos_focus)"
       set panneau(foc,trouve)           "$caption(foc,se_trouve)"
       set panneau(foc,pas)              "$caption(foc,pas)"
       set panneau(foc,deplace)          "$caption(foc,aller_a)"
       set panneau(foc,initialise)       "$caption(foc,init)"
-      set panneau(foc,graphe)           "$caption(foc,graphe)"
       set panneau(foc,dispTimeAfterId)  ""
       set panneau(foc,pose_en_cours)    "0"
       set panneau(foc,demande_arret)    "0"
@@ -449,6 +441,10 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # dispTime
+   #  compte a rebours du temps d'exposition
+   #------------------------------------------------------------
    proc dispTime { } {
       global audace panneau
 
@@ -583,6 +579,7 @@ namespace eval ::foc {
       if [ winfo exists $audace(base).progress_pose ] {
          #--- Determination de la position de la fenetre
          regsub {([0-9]+x[0-9]+)} [ wm geometry $audace(base).progress_pose ] "" conf(foc,avancement,position)
+
          #--- Je supprime la fenetre s'il n'y a plus de pose en cours
          destroy $audace(base).progress_pose
       }
@@ -651,7 +648,6 @@ namespace eval ::foc {
    #
    #------------------------------------------------------------
    proc cmdSpeed { } {
-
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
          if { $::panneau(foc,focuser) != "" } {
@@ -930,14 +926,15 @@ namespace eval ::foc {
       #--- Fermeture de la fenetre
       destroy $audace(base).parafoc
    }
+
 }
 
-#------------   gestion du graphique classique ------------------
+#------------   gestion du graphique classique -----------------
 
-#------------------------------------------------------------
+#---------------------------------------------------------------
 # focGraphe
 #    cree le fenetre graphique de suivi des parametres de focalisation
-#------------------------------------------------------------
+#---------------------------------------------------------------
 proc focGraphe { } {
    global audace caption conf panneau
 
@@ -1029,7 +1026,7 @@ proc fermeGraphe { } {
    #--- Determination de la position de la fenetre
    regsub {([0-9]+x[0-9]+)} [wm geometry $audace(base).visufoc] "" conf(visufoc,position)
 
-#--- Fermeture de la fenetre
+   #--- Fermeture de la fenetre
    destroy $audace(base).visufoc
 }
 
@@ -1047,11 +1044,11 @@ proc focBuildIF { This } {
 
          #--- Bouton du titre
          Button $This.fra1.but -borderwidth 1 \
-            -text "$panneau(foc,aide1)\n$panneau(foc,titre)" \
+            -text "$caption(foc,help_titre1)\n$$caption(foc,focalisation)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::foc::getPluginType ] ] \
                [ ::foc::getPluginDirectory ] [ ::foc::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(foc,aide)
+         DynamicHelp::add $This.fra1.but -text $caption(foc,help_titre)
 
       pack $This.fra1 -side top -fill x
 
@@ -1059,7 +1056,7 @@ proc focBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Label pour acquistion
-         label $This.fra2.lab1 -text $panneau(foc,acq) -relief flat
+         label $This.fra2.lab1 -text $caption(foc,acquisition) -relief flat
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Menu
@@ -1088,7 +1085,7 @@ proc focBuildIF { This } {
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label secondes
-            label $This.fra2.fra1.lab1 -text $panneau(foc,secondes) -relief flat
+            label $This.fra2.fra1.lab1 -text $caption(foc,seconde) -relief flat
             pack $This.fra2.fra1.lab1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra2.fra1 -in $This.fra2 -anchor center -fill none
@@ -1120,7 +1117,8 @@ proc focBuildIF { This } {
          $This.fra4.focuser.list configure -modifycmd $cmd
 
          #--- Label pour moteur focus
-         label $This.fra4.lab1 -text $panneau(foc,motorfoc) -relief flat
+         label $This.fra4.lab1 -text $caption(foc,moteur_focus) -relief flat
+
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1
 
          #--- Create the buttons '- +'
@@ -1166,7 +1164,7 @@ proc focBuildIF { This } {
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Label pour la position focus
-         label $This.fra5.lab1 -text $panneau(foc,position) -relief flat
+         label $This.fra5.lab1 -text $$caption(foc,pos_focus) -relief flat
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
 
          #--- Bouton "Se trouve à"
@@ -1218,7 +1216,7 @@ proc focBuildIF { This } {
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Bouton GRAPHE
-         button $This.fra3.but1 -borderwidth 2 -text $panneau(foc,graphe) -command { focGraphe }
+         button $This.fra3.but1 -borderwidth 2 -text $caption(foc,graphe) -command { focGraphe }
          pack $This.fra3.but1 -in $This.fra3 -side bottom -fill x -padx 5 -pady 5 -ipadx 15 -ipady 2
 
       pack $This.fra3 -side top -fill x
