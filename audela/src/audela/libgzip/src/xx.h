@@ -72,7 +72,9 @@
 /**              DEFINITION DES PROTOTYPES DES FONCTIONS                  **/
 /***************************************************************************/
 /***************************************************************************/
-
+#if defined (OS_WIN) 
+char *strndup (const char *s, size_t n);
+#endif
 
 #endif
 
