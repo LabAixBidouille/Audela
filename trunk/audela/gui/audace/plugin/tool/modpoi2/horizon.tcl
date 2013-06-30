@@ -26,20 +26,20 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    if { ! [ info exists ::conf(horizon,default,coordinates) ] } { set ::conf(horizon,default,coordinates) {{0 0}} }
 
    set coordinates ""
-   lappend coordinates [list  90 [string trim [mc_angle2deg 23h00]] [string trim [mc_angle2deg 13h00]]]
-   lappend coordinates [list  80 [string trim [mc_angle2deg 21h45]] [string trim [mc_angle2deg 12h50]]]
-   lappend coordinates [list  70 [string trim [mc_angle2deg 20h45]] [string trim [mc_angle2deg 12h00]]]
-   lappend coordinates [list  60 [string trim [mc_angle2deg 20h00]] [string trim [mc_angle2deg 11h30]]]
-   lappend coordinates [list  50 [string trim [mc_angle2deg 19h30]] [string trim [mc_angle2deg 10h30]]]
-   lappend coordinates [list  40 [string trim [mc_angle2deg 18h30]] [string trim [mc_angle2deg  9h00]]]
-   lappend coordinates [list  30 [string trim [mc_angle2deg 18h00]] [string trim [mc_angle2deg  7h50]]]
-   lappend coordinates [list  20 [string trim [mc_angle2deg 19h00]] [string trim [mc_angle2deg  7h00]]]
-   lappend coordinates [list  10 [string trim [mc_angle2deg 19h20]] [string trim [mc_angle2deg  6h30]]]
-   lappend coordinates [list   0 [string trim [mc_angle2deg 20h00]] [string trim [mc_angle2deg  6h00]]]
-   lappend coordinates [list -10 [string trim [mc_angle2deg 20h20]] [string trim [mc_angle2deg  5h00]]]
-   lappend coordinates [list -20 [string trim [mc_angle2deg 21h00]] [string trim [mc_angle2deg  3h30]]]
-   lappend coordinates [list -30 [string trim [mc_angle2deg 22h00]] [string trim [mc_angle2deg  3h10]]]
-   lappend coordinates [list -40 [string trim [mc_angle2deg 23h00]] [string trim [mc_angle2deg  2h30]]]
+   lappend coordinates [list  90 [mc_angle2deg 23h00] [mc_angle2deg 13h00]]
+   lappend coordinates [list  80 [mc_angle2deg 21h45] [mc_angle2deg 12h50]]
+   lappend coordinates [list  70 [mc_angle2deg 20h45] [mc_angle2deg 12h00]]
+   lappend coordinates [list  60 [mc_angle2deg 20h00] [mc_angle2deg 11h30]]
+   lappend coordinates [list  50 [mc_angle2deg 19h30] [mc_angle2deg 10h30]]
+   lappend coordinates [list  40 [mc_angle2deg 18h30] [mc_angle2deg  9h00]]
+   lappend coordinates [list  30 [mc_angle2deg 18h00] [mc_angle2deg  7h50]]
+   lappend coordinates [list  20 [mc_angle2deg 19h00] [mc_angle2deg  7h00]]
+   lappend coordinates [list  10 [mc_angle2deg 19h20] [mc_angle2deg  6h30]]
+   lappend coordinates [list   0 [mc_angle2deg 20h00] [mc_angle2deg  6h00]]
+   lappend coordinates [list -10 [mc_angle2deg 20h20] [mc_angle2deg  5h00]]
+   lappend coordinates [list -20 [mc_angle2deg 21h00] [mc_angle2deg  3h30]]
+   lappend coordinates [list -30 [mc_angle2deg 22h00] [mc_angle2deg  3h10]]
+   lappend coordinates [list -40 [mc_angle2deg 23h00] [mc_angle2deg  2h30]]
 
    if { ! [ info exists ::conf(horizon,OHP_T193,name) ] }        { set ::conf(horizon,OHP_T193,name)        "OHP T193" }
    if { ! [ info exists ::conf(horizon,OHP_T193,type) ] }        { set ::conf(horizon,OHP_T193,type)        "HADEC" }
