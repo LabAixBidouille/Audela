@@ -1,4 +1,4 @@
-/* libyd.h
+/* licatalog.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -80,6 +80,8 @@ int cmd_tcl_csppmx  (ClientData clientData, Tcl_Interp *interp, int argc, char *
 int cmd_tcl_csppmxl (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 /* NOMAD1 catalog */
 int cmd_tcl_csnomad1(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+/* WFIBC catalog */
+int cmd_tcl_cswfibc (ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif /* __LIBCATALOGH__ */
 

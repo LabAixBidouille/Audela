@@ -1,19 +1,23 @@
-/*
- * useful.c
- *
- *  Created on: Dec 19, 2011
- *      Author: Y. Damerdji
+/**
+ * @file useful.c
+ * @brief Some useful and common methods for the whole library
+ * @author Y. Damerdji
+ * @version   1.0
+ * @date      Dec 19, 2011
+ * @copyright GNU Public License.
+ * @par Ressource
+ * @endcode
  */
 
 #include "useful.h"
 
-/*=========================================================*/
-/* Decode inputs */
-/*=========================================================*/
+/* ============================================================================= */
+/* Decode inputs : this method is common for all cmd_tcl_cs{catalog} methods
+ * It defines the usage of the cone search methods                               */
+/* ============================================================================= */
 int decodeInputs(char* const outputLogChar, const int argc, char* const argv[],
 		char* const pathToCatalog, double* const ra, double* const dec, double* const radius,
 		double* const magBright, double* const magFaint) {
-
 
 	if((argc == 2) && (strcmp(argv[1],"-h") == 0)) {
 		sprintf(outputLogChar,"Help usage: %s pathOfCatalog ra(deg) dec(deg) radius(arcmin) ?magnitudeFaint(mag)? ?magnitudeBright(mag)?",
@@ -249,6 +253,73 @@ int xget2(unsigned char * const a, const int b, const int length, const int max,
 	value = xtra2[value-(max+1)];
 
 	return(value);
+}
+
+/**
+ * Fill the search zone {RA,DEC} in Degrees
+ */
+void fillSearchZoneRaDecDeg(searchZoneRaDecDeg* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin) {
+
+	const double radiusInDeg           = radiusInArcMin / DEG2ARCMIN;
+	double ratio;
+	double tmpValue;
+	double radiusRa;
+
+	theSearchZone->decStartInDeg       = decInDeg - radiusInDeg;
+	theSearchZone->decEndInDeg         = decInDeg + radiusInDeg;
+
+	if((theSearchZone->decStartInDeg  <= DEC_SOUTH_POLE_DEG) && (theSearchZone->decEndInDeg >= DEC_NORTH_POLE_DEG)) {
+
+		theSearchZone->decStartInDeg   = DEC_SOUTH_POLE_DEG;
+		theSearchZone->decEndInDeg     = DEC_NORTH_POLE_DEG;
+		theSearchZone->raStartInDeg    = START_RA_DEG;
+		theSearchZone->raEndInDeg      = COMPLETE_RA_DEG;
+		theSearchZone->isArroundZeroRa = 0;
+
+	} else if(theSearchZone->decStartInDeg <= DEC_SOUTH_POLE_DEG) {
+
+		theSearchZone->decStartInDeg        = DEC_SOUTH_POLE_DEG;
+		theSearchZone->raStartInDeg         = START_RA_DEG;
+		theSearchZone->raEndInDeg           = COMPLETE_RA_DEG;
+		theSearchZone->isArroundZeroRa      = 0;
+
+	} else if(theSearchZone->decEndInDeg   >= DEC_NORTH_POLE_DEG) {
+
+		theSearchZone->decEndInDeg          = DEC_NORTH_POLE_DEG;
+		theSearchZone->raStartInDeg         = START_RA_DEG;
+		theSearchZone->raEndInDeg           = COMPLETE_RA_DEG;
+		theSearchZone->isArroundZeroRa      = 0;
+
+	} else {
+
+		radiusRa                           = radiusInDeg / cos(decInDeg * DEC2RAD);
+		tmpValue                           = raInDeg  - radiusRa;
+		ratio                              = tmpValue / COMPLETE_RA_DEG;
+		ratio                              = floor(ratio) * COMPLETE_RA_DEG;
+		tmpValue                          -= ratio;
+		theSearchZone->raStartInDeg        = tmpValue;
+
+		tmpValue                           = raInDeg  + radiusRa;
+		ratio                              = tmpValue / COMPLETE_RA_DEG;
+		ratio                              = floor(ratio) * COMPLETE_RA_DEG;
+		tmpValue                          -= ratio;
+		theSearchZone->raEndInDeg          = tmpValue;
+
+		theSearchZone->isArroundZeroRa     = 0;
+
+		if(theSearchZone->raStartInDeg     >  theSearchZone->raEndInDeg) {
+			theSearchZone->isArroundZeroRa = 1;
+		}
+	}
+
+	if(DEBUG) {
+		printf("mySearchZonePPMX.decStart            = %f\n",theSearchZone->decStartInDeg);
+		printf("mySearchZonePPMX.decEnd              = %f\n",theSearchZone->decEndInDeg);
+		printf("mySearchZonePPMX.raStart             = %f\n",theSearchZone->raStartInDeg);
+		printf("mySearchZonePPMX.raEnd               = %f\n",theSearchZone->raEndInDeg);
+		printf("mySearchZonePPMX.isArroundZeroRa     = %d\n",theSearchZone->isArroundZeroRa);
+	}
 }
 
 /**
@@ -563,6 +634,20 @@ void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const doub
 	if(DEBUG) {
 		printf("mySearchZonePPMX.magnitudeStart      = %d\n",magnitudeBox->magnitudeStartInDeciMag);
 		printf("mySearchZonePPMX.magnitudeEnd        = %d\n",magnitudeBox->magnitudeEndInDeciMag);
+	}
+}
+
+/**
+ * Fill the magnitude box in magnitude
+ */
+void fillMagnitudeBoxMag(magnitudeBoxMag* const magnitudeBox, const double magMin, const double magMax) {
+
+	magnitudeBox->magnitudeStartInMag = magMin;
+	magnitudeBox->magnitudeEndInMag   = magMax;
+
+	if(DEBUG) {
+		printf("mySearchZonePPMX.magnitudeStart      = %d\n",magnitudeBox->magnitudeStartInMag);
+		printf("mySearchZonePPMX.magnitudeEnd        = %d\n",magnitudeBox->magnitudeEndInMag);
 	}
 }
 
