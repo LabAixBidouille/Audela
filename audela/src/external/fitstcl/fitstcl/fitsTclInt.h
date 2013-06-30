@@ -50,8 +50,8 @@
 
 typedef struct {
    int    numCols;
-   long   numRows;
-   long   rowLen;
+   LONGLONG numRows;
+   LONGLONG rowLen;
    char   **colName;
    char   **colType;
    int    *colDataType;
@@ -74,7 +74,7 @@ typedef struct {
 typedef struct {
    int    bitpix;
    int    naxes;
-   long   *naxisn;
+   LONGLONG *naxisn;
    char   **axisUnit;
    double bscale;
    double bzero;
@@ -296,6 +296,23 @@ EXTERN int saveVectorTableToAscii( FitsFD *curFile,
 				   char *sepString,
 				   int ifVariableVec);
 
+EXTERN int saveVectorTableRowToAscii( FitsFD *curFile,
+			  	   char *filename,
+				   char *fileStatus,
+				   int fRow,
+				   int nRows,
+				   int fCol,
+				   int nCols,
+				   int baseColNum,
+				   int ifCSV,
+				   int ifPrintRow,
+				   char *sepString,
+				   int ifVariableVec,
+                                   char *colFormat,
+                                   int dataType,
+                                   FILE *fPtr,
+                                   int ifFixedFormat);
+
 EXTERN int varSaveToTable (FitsFD *curFile,
 			   int     colNum,
 			   long    firstRow,
@@ -427,10 +444,10 @@ EXTERN int imageBlockLoad_1D( FitsFD *curFile,
 
 EXTERN int imageBlockLoad( FitsFD *curFile,
 			   char *varName,
-			   long fRow,
-			   long nRow,
-			   long fCol,
-			   long nCol,
+			   LONGLONG fRow,
+			   LONGLONG nRow,
+			   LONGLONG fCol,
+			   LONGLONG nCol,
 			   long slice,
                            long cslice);
 
@@ -452,6 +469,13 @@ EXTERN int fitsGetWcsMatrix( FitsFD *curFile,
                              int cols[],
                              char dest );
 
+EXTERN int fitsGetWcsMatrixAlt( FitsFD *curFile,
+                             fitsfile *fptr, 
+                             Tcl_Obj *listObj, 
+                             int nDims,
+                             int cols[],
+                             char dest );
+
 EXTERN int fitsFileGetWcsMatrix( FitsFD *curFile,
                                  fitsfile *dummyFile,
                                  int nDims,
@@ -462,6 +486,13 @@ EXTERN int fitsGetWcsPair( FitsFD *curFile,
                            int Col1,
                            int Col2,
                            char dest );
+
+EXTERN int fitsGetWcsPairAlt( FitsFD *curFile,
+                              fitsfile *fptr,
+                              Tcl_Obj *listObj,
+                              int Col1,
+                              int Col2,
+                              char dest );
 
 EXTERN int fitsTableGetWcsOld( FitsFD *curFile,
 			       int RAColNum,

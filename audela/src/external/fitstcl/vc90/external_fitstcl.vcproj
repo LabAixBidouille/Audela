@@ -377,6 +377,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\fitstcl\wcslib\wcstrig.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

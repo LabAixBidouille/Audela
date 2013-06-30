@@ -1412,11 +1412,11 @@ if test "${enable_static+set}" = set; then
 
 fi;
 
-### modif michel
-###TCL_LIB=`echo $TCL_PATH | sed 's:.*tcl8:tcl8:' | sed 's:.[0-9]/unix$::'`
-###TK_LIB=`echo $TK_PATH | sed 's:.*tk8:tk8:' | sed 's:.[0-9]/unix$::'`
-TCL_LIB=tcl8.5
-TK_LIB=tk8.5
+TCL_LIB=`echo $TCL_PATH | sed 's:.*tcl8:tcl8:' | sed 's:.[0-9]/unix$::'`
+TK_LIB=`echo $TK_PATH | sed 's:.*tk8:tk8:' | sed 's:.[0-9]/unix$::'`
+
+
+
 
 
 if test $lhea_shared = yes; then

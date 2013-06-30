@@ -8,7 +8,7 @@ dnl ----------------------------------------------------------------------------
 
 AC_INIT
 AC_CONFIG_SRCDIR([Makefile.in])
-AC_REVISION($Revision: 1.1 $)
+AC_REVISION($Revision: 1.16 $)
 AC_PREREQ(2.59)
 
 if test $cache_file = ./config.cache; then

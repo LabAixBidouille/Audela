@@ -1,5 +1,5 @@
 # FITS TCL makefile.in
-# $Id: Makefile.in,v 1.3 2009-11-17 09:28:34 jacquesmichelet Exp $
+# $Id: Makefile.in,v 1.17 2006/09/25 15:27:02 irby Exp $
 
 #----------------------------------------------------------------------------
 # Definitions:
@@ -12,14 +12,17 @@ SHARED_CFILE	= tclShared.c
 
 OBJECTS		= ${CFILES:.c=.o}
 LOCAL_OBJ	= ${OBJECTS} ${SHARED_CFILE:.c=.o}
-### modif michel
-###SHARED_OBJ	= ${LOCAL_OBJ} ${CFITSIO_DIR}/*.o
-SHARED_OBJ	= ${LOCAL_OBJ}
+
+CFITSIO_OBJ_TMP	= ${shell if [ -f ${CFITSIO_DIR}/Makefile ]; then ${MAKE} -f ${CFITSIO_DIR}/Makefile cfitsioLibObjs; fi | grep buffers}
+
+CFITSIO_OBJ	= ${shell if [ "x${CFITSIO_OBJ_TMP}" != "x" ]; then echo ${CFITSIO_OBJ_TMP}; fi | sed "s: : ${CFITSIO_DIR}/:g" | sed "s:^:${CFITSIO_DIR}/:"}
+
+SHARED_OBJ	= ${LOCAL_OBJ} ${CFITSIO_OBJ}
 
 STATIC_LIB	= lib${LIBRARY}.a
 SHARED_LIB	= lib${LIBRARY}${SHLIB_SUFFIX}
 
-IFLAGS		= -I${CFITSIO_DIR} -I${TCL_INC_PATH}
+IFLAGS		= -I${CFITSIO_DIR} -I${TCL_INC_PATH} -I./
 
 #----------------------------------------------------------------------------
 # Configurable macros:
@@ -28,19 +31,17 @@ INSTALLDIR	= @prefix@
 CC		= @CC@
 RANLIB		= @RANLIB@
 CFLAGS		= @CFLAGS@
-DEFS		= @DEFS@
+DEFS		= @DEFS@ -DWCSTRIG_MACRO
 C_LIB_OPTION	= @C_LIB_OPTION@
 SHLIB_SUFFIX	= @SHLIB_SUFFIX@
 SHLIB_LD 	= @SHLIB_LD@
-LD_FLAGS 	= @LD_FLAGS@ -Wl,-rpath=$(INSTALLDIR)/lib
+LD_FLAGS 	= @LD_FLAGS@
 
 TCL_INC_PATH	= @TCL_INC_PATH@
 TCL_LIB_PATH	= @TCL_PATH@
 TCL_LIB		= @TCL_LIB@
 CFITSIO_DIR	= @CFITSIODIR@
-### modif michel
-###SHLIB_LD_LIBS 	= @LIBS@ @SHLIB_LD_LIBS@
-SHLIB_LD_LIBS 	= @LIBS@ @SHLIB_LD_LIBS@ -L${INSTALLDIR}/lib -lcfitsio
+SHLIB_LD_LIBS 	= @LIBS@ @SHLIB_LD_LIBS@
 
 #----------------------------------------------------------------------------
 # Targets:
@@ -103,7 +104,7 @@ distclean: clean
 #----------------------------------------------------------------------------
 # Make target which outputs the list of the .o contained in the fitsTcl lib
 # useful to build a single big shared library containing Tcl/Tk and other
-# extensions.  used for the Tcl Plugin.
+# extensions.  used for the Tcl Plugin. 
 #----------------------------------------------------------------------------
 fitstclLibObjs:
 	@echo ${OBJECTS}
@@ -113,13 +114,7 @@ fitstclLibObjs:
 	${CC} -c ${CFLAGS} ${DEFS} ${IFLAGS} $<
 
 #
-# $Log: not supported by cvs2svn $
-# Revision 1.2  2009/11/14 17:10:14  michelpujol
-# modification pour utiliser la librairie dynamique libcfitsio.so au lieu d'inclure les *.o de cfitsio
-#
-# Revision 1.1  2009/03/14 11:23:18  michelpujol
-# source de libfitstcl pour compilation avec TCL8.5 et machine 64 bits
-#
+# $Log: Makefile.in,v $
 # Revision 1.17  2006/09/25 15:27:02  irby
 # Do not remove wcssub.o prior to creating libfitstcl.  As of cfitsio
 # v3.004 the wcssub routine is needed by fitsTcl.

@@ -23,7 +23,7 @@ int isFitsCmd( ClientData clientData,
 	       int argc,
 	       char *const argv[])
 {
-   char simple[6];
+   char simple[10];
    int i;
    FILE *fitsPtr;
    

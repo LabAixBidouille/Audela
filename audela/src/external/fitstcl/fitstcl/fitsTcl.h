@@ -9,9 +9,9 @@
 #ifndef FITSTCL
 #define FITSTCL
 
-#define FITSTCL_VERSION "2.2"
+#define FITSTCL_VERSION "2.3"
 #define FITSTCL_MAJOR_VERSION  2
-#define FITSTCL_MINOR_VERSION  2
+#define FITSTCL_MINOR_VERSION  3
 #define FITSTCL_SERIAL         0
 
 #include <tcl.h>
