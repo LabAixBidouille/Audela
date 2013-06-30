@@ -6,14 +6,6 @@
 # Mise à jour $Id$
 #
 
-#--- Initialisation de variables
-set ::graphik(compteur) {}
-set ::graphik(inten)    {}
-set ::graphik(fwhmx)    {}
-set ::graphik(fwhmy)    {}
-set ::graphik(contr)    {}
-set ::graphik(fichier)  ""
-
 #============================================================
 # Declaration du namespace foc
 #    initialise le namespace
@@ -129,7 +121,7 @@ namespace eval ::foc {
          set conf(foc,avancement,position) "+120+315"
       }
 
-      #---
+      #--- Initialisation de variables
       set panneau(foc,menu)             "$caption(foc,centrage)"
       set panneau(foc,centrage_fenetre) "1"
       set panneau(foc,compteur)         "0"
@@ -147,6 +139,7 @@ namespace eval ::foc {
       set panneau(foc,pose_en_cours)    "0"
       set panneau(foc,demande_arret)    "0"
       set panneau(foc,avancement_acq)   "1"
+      set panneau(foc,fichier)          ""
 
       focBuildIF $This
    }
@@ -232,11 +225,6 @@ namespace eval ::foc {
 
       #--- Initialisation des variables et fermeture des fenetres auxiliaires
       set panneau(foc,compteur) "0"
-      set ::graphik(compteur)   {}
-      set ::graphik(inten)      {}
-      set ::graphik(fwhmx)      {}
-      set ::graphik(fwhmy)      {}
-      set ::graphik(contr)      {}
       if [ winfo exists $audace(base).parafoc ] {
          destroy $audace(base).parafoc
       }
@@ -383,30 +371,40 @@ namespace eval ::foc {
             $This.fra2.but2 configure -text $panneau(foc,stop)
             update
             incr panneau(foc,compteur)
-            lappend ::graphik(compteur) $panneau(foc,compteur)
             #--- Statistiques
             set s [ stat ]
             set maxi [ lindex $s 2 ]
             set fond [ lindex $s 7 ]
             set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
             set inten [ format "%.0f" [ expr $maxi-$fond ] ]
-            lappend ::graphik(inten) $inten
-            lappend ::graphik(contr) $contr
             #--- Fwhm
             set naxis1 [ expr [ lindex [ $buffer getkwd NAXIS1 ] 1 ]-0 ]
             set naxis2 [ expr [ lindex [ $buffer getkwd NAXIS2 ] 1 ]-0 ]
             set box [ list 1 1 $naxis1 $naxis2 ]
-            set f [ $buffer fwhm $box ]
-            lassign $f fwhmx fwhmy
-            lappend ::graphik(fwhmx) $fwhmx
-            lappend ::graphik(fwhmy) $fwhmy
+            lassign [ $buffer fwhm $box ] fwhmx fwhmy
 
             #--- Graphique
-            append ::graphik(fichier) "$inten $fwhmx $fwhmy $contr \n"
-            visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" no
-            visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" no
-            visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" no
-            visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
+            append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
+
+            ::vx append $panneau(foc,compteur)
+            ::vyg_fwhmx append $fwhmx
+            ::vyg_fwhmy append $fwhmy
+            ::vyg_inten append $inten
+            ::vyg_contr append $contr
+
+            set w $audace(base).visufoc.g_fwhmx
+            set lx [ $w axis limits x ]
+
+            #--- Affichage des 20 dernieres mesures glissantes
+            set index [ lindex $x [ expr [ llength $x ] - 1 ] ]
+            if { $index > 20 } {
+               $w axis configure x  -min [ expr $index - 19 ] -max $index
+               $w axis configure x2 -min [ expr $index - 19 ] -max $index
+            }
+
+            set ly [ $w axis limits y ]
+            $w axis configure y2 -min [ lindex $ly 0 ] -max [ lindex $ly 1 ]
+
             #--- Valeurs a l'ecran
             ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
             update
@@ -609,14 +607,8 @@ namespace eval ::foc {
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
             set panneau(foc,compteur) "0"
-            set ::graphik(compteur)   {}
-            set ::graphik(inten)      {}
-            set ::graphik(fwhmx)      {}
-            set ::graphik(fwhmy)      {}
-            set ::graphik(contr)      {}
             destroy $audace(base).parafoc
             destroy $audace(base).visufoc
-            update
          } else {
             #--- Je positionne l'indicateur d'arret de la pose
             set panneau(foc,demande_arret) "1"
@@ -637,6 +629,7 @@ namespace eval ::foc {
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
             update
          }
+         update
       } else {
          ::confCam::run
       }
@@ -648,10 +641,12 @@ namespace eval ::foc {
    # Parametre : chemin du fichier
    #------------------------------------------------------------
    proc cmdSauveLog { namefile } {
-     if [ catch { open [ file join $::audace(rep_log) $namefile ] w } fileId ] {
-        return
-     } else {
-         puts -nonewline $fileId $::graphik(fichier)
+      global panneau
+
+      if [ catch { open [ file join $::audace(rep_log) $namefile ] w } fileId ] {
+         return
+      } else {
+         puts -nonewline $fileId $panneau(foc,fichier)
          close $fileId
       }
    }
@@ -976,18 +971,14 @@ proc focGraphe { } {
       wm geometry $this $conf(visufoc,position)
       wm protocol $this WM_DELETE_WINDOW { ::foc::fermeGraphe }
       #---
-      ::blt::graph $this.g_inten
-      ::blt::graph $this.g_fwhmx
-      ::blt::graph $this.g_fwhmy
-      ::blt::graph $this.g_contr
-      visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" no
-      visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" no
-      visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" no
-      visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
+      visuf $this g_inten "$caption(foc,intensite_adu)"
+      visuf $this g_fwhmx "$caption(foc,fwhm_x)"
+      visuf $this g_fwhmy "$caption(foc,fwhm_y)"
+      visuf $this g_contr "$caption(foc,contrast_adu)"
       update
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).visufoc
+      ::confColor::applyColor $this
    }
 }
 
@@ -995,44 +986,25 @@ proc focGraphe { } {
 # visuf
 #    cree un graphique de suivi d'un parametre
 #------------------------------------------------------------
-proc visuf { win_name x y { title "" } { yesno "yes" } } {
-   global audace
+proc visuf { base win_name title } {
 
-   if { [ winfo exists $audace(base).visufoc.$win_name ] == "1" } {
-      ::blt::vector delete vx$win_name
-      ::blt::vector delete vy$win_name
-      catch { $audace(base).visufoc.$win_name element delete line1 }
-      ::blt::vector create vx$win_name
-      vx$win_name set $x
-      ::blt::vector create vy$win_name
-      vy$win_name set $y
-      $audace(base).visufoc.$win_name element create line1 -xdata vx$win_name -ydata vy$win_name
-      $audace(base).visufoc.$win_name legend configure -hide yes
-      $audace(base).visufoc.$win_name axis configure y -title "$title"
-      $audace(base).visufoc.$win_name axis configure x -hide $yesno
-      if { $yesno == "yes" } {
-         set h 110
-      } else {
-         set h 140
-      }
-      $audace(base).visufoc.$win_name configure -height $h
-      $audace(base).visufoc.$win_name axis configure x  -hide no -subdivision 0
-      $audace(base).visufoc.$win_name axis configure x2 -hide no -subdivision 0
-      set lx [ $audace(base).visufoc.$win_name axis limits x ]
-      #--- Affichage des 20 dernieres mesures glissantes
-      set index [ lindex $x [ expr [ llength $x ] - 1 ] ]
-      if { $index > 20 } {
-         $audace(base).visufoc.$win_name axis configure x  -min [ expr $index - 19 ] -max $index -stepsize 1
-         $audace(base).visufoc.$win_name axis configure x2 -min [ expr $index - 19 ] -max $index -stepsize 1
-      } else {
-         $audace(base).visufoc.$win_name axis configure x  -min 1 -max 20 -stepsize 1
-         $audace(base).visufoc.$win_name axis configure x2 -min 1 -max 20 -stepsize 1
-      }
-      $audace(base).visufoc.$win_name axis configure y2 -hide no
-      set ly [ $audace(base).visufoc.$win_name axis limits y ]
-      $audace(base).visufoc.$win_name axis configure y2 -min [ lindex $ly 0 ] -max [ lindex $ly 1 ]
-      pack $audace(base).visufoc.$win_name
+   set frm $base.$win_name
+
+   #--   ::vx (compteur) est commun a tous les graphes
+   if {"::vx" ni [blt::vector names]} {
+      ::blt::vector create ::vx -watchunset 1
    }
+   ::blt::vector create ::vy$win_name -watchunset 1
+
+   ::blt::graph $frm
+   $frm element create line1 -xdata ::vx -ydata ::vy$win_name
+   $frm axis configure x -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
+   $frm axis configure x2 -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
+   $frm axis configure y -title "$title" -hide no -min 0 -max 1
+   $frm axis configure y2 -hide no -min 0 -max 1
+   $frm legend configure -hide yes
+   $frm configure -height 140
+   pack $frm
 }
 
 #------------------------------------------------------------
