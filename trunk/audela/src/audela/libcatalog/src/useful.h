@@ -138,8 +138,8 @@ typedef struct {
 } magnitudeBoxDeciMag;
 /* Mag */
 typedef struct {
-	int  magnitudeStartInMag;
-	int  magnitudeEndInMag;
+	double  magnitudeStartInMag;
+	double  magnitudeEndInMag;
 } magnitudeBoxMag;
 
 #define DEBUG 0
