@@ -320,11 +320,10 @@ namespace eval ::foc {
          if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)
-            update
          } else {
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)
-            update
          }
+         update
       } else {
          ::confCam::run
       }
@@ -898,32 +897,36 @@ namespace eval ::foc {
    proc qualiteFoc { inten fwhmx fwhmy contr } {
       global audace caption conf panneau
 
+      set this $audace(base).parafoc
+
       #--- Fenetre d'affichage des parametres de la foc
-      if [ winfo exists $audace(base).parafoc ] {
+      if [ winfo exists $this ] {
          ::foc::fermeQualiteFoc
       }
+
       #--- Creation de la fenetre
-      toplevel $audace(base).parafoc
-      wm transient $audace(base).parafoc $audace(base)
-      wm resizable $audace(base).parafoc 0 0
-      wm title $audace(base).parafoc "$caption(foc,focalisation)"
-      wm geometry $audace(base).parafoc $conf(parafoc,position)
-      wm protocol $audace(base).parafoc WM_DELETE_WINDOW ::foc::fermeQualiteFoc
+      toplevel $this
+      wm transient $this $audace(base)
+      wm resizable $this 0 0
+      wm title $this "$caption(foc,focalisation)"
+      wm geometry $this $conf(parafoc,position)
+      wm protocol $this WM_DELETE_WINDOW ::foc::fermeQualiteFoc
+
       #--- Cree les etiquettes
-      label $audace(base).parafoc.lab1 -text "$panneau(foc,compteur)"
-      pack $audace(base).parafoc.lab1 -padx 10 -pady 2
-      label $audace(base).parafoc.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
-      pack $audace(base).parafoc.lab2 -padx 5 -pady 2
-      label $audace(base).parafoc.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
-      pack $audace(base).parafoc.lab3 -padx 5 -pady 2
-      label $audace(base).parafoc.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
-      pack $audace(base).parafoc.lab4 -padx 5 -pady 2
-      label $audace(base).parafoc.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
-      pack $audace(base).parafoc.lab5 -padx 5 -pady 2
+      label $this.lab1 -text "$panneau(foc,compteur)"
+      pack $this.lab1 -padx 10 -pady 2
+      label $this.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
+      pack $this.lab2 -padx 5 -pady 2
+      label $this.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
+      pack $this.lab3 -padx 5 -pady 2
+      label $this.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
+      pack $this.lab4 -padx 5 -pady 2
+      label $this.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
+      pack $this.lab5 -padx 5 -pady 2
       update
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).parafoc
+      ::confColor::applyColor $this
    }
 
    #------------------------------------------------------------
@@ -942,7 +945,6 @@ namespace eval ::foc {
       #--- Fermeture de la fenetre
       destroy $w
    }
-
 }
 
 #------------   gestion du graphique classique -----------------
@@ -954,28 +956,30 @@ namespace eval ::foc {
 proc focGraphe { } {
    global audace caption conf panneau
 
+   set this $audace(base).visufoc
+
    #--- Fenetre d'affichage des parametres de la foc
-   if [ winfo exists $audace(base).visufoc ] {
+   if [ winfo exists $this ] {
       fermeGraphe
    }
 
    #--- Creation et affichage des graphes
-   if { [ winfo exists $audace(base).visufoc ] == "0" } {
+   if { [ winfo exists $this ] == "0" } {
       package require BLT
       #--- Creation de la fenetre
-      toplevel $audace(base).visufoc
-      wm title $audace(base).visufoc "$caption(foc,titre_graphe)"
+      toplevel $this
+      wm title $this "$caption(foc,titre_graphe)"
       if { $panneau(foc,exptime) > "2" } {
-         wm transient $audace(base).visufoc $audace(base)
+         wm transient $this $audace(base)
       }
-      wm resizable $audace(base).visufoc 1 1
-      wm geometry $audace(base).visufoc $conf(visufoc,position)
-      wm protocol $audace(base).visufoc WM_DELETE_WINDOW { fermeGraphe }
+      wm resizable $this 1 1
+      wm geometry $this $conf(visufoc,position)
+      wm protocol $this WM_DELETE_WINDOW { ::foc::fermeGraphe }
       #---
-      ::blt::graph $audace(base).visufoc.g_inten
-      ::blt::graph $audace(base).visufoc.g_fwhmx
-      ::blt::graph $audace(base).visufoc.g_fwhmy
-      ::blt::graph $audace(base).visufoc.g_contr
+      ::blt::graph $this.g_inten
+      ::blt::graph $this.g_fwhmx
+      ::blt::graph $this.g_fwhmy
+      ::blt::graph $this.g_contr
       visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" no
       visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" no
       visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" no
@@ -1050,7 +1054,7 @@ proc fermeGraphe { } {
 
 #------------------------------------------------------------
 # focBuildIF
-#    cree la fenetre de l'outil
+#    cree le panneau de l'outil
 #------------------------------------------------------------
 proc focBuildIF { This } {
    global audace caption panneau
@@ -1062,7 +1066,7 @@ proc focBuildIF { This } {
 
          #--- Bouton du titre
          Button $This.fra1.but -borderwidth 1 \
-            -text "$caption(foc,help_titre1)\n$$caption(foc,focalisation)" \
+            -text "$caption(foc,help_titre1)\n$caption(foc,focalisation)" \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::foc::getPluginType ] ] \
                [ ::foc::getPluginDirectory ] [ ::foc::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
@@ -1215,7 +1219,7 @@ proc focBuildIF { This } {
                -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
             pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
             bind $This.fra5.fra2.ent3 <Enter> { ::foc::formatFoc }
-           bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
+            bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
 
             #--- Label pas
             label $This.fra5.fra2.lab4 -text $panneau(foc,pas) -relief flat
