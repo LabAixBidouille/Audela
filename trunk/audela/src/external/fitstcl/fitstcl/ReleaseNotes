@@ -1,3 +1,10 @@
+July, 2009: Release of fitsTcl v2.3 (part of fv5.3)
+
+   * Fix large FITS file crashing and displaying summary/header issue.
+   * Fix opening FITS files in read-only mode issue.
+
+=====================================================================
+
 September, 2007: Release of fitsTcl v2.2 (part of fv5.0)
 
    * Allow Long Long type (64 bits integer) in Windows.

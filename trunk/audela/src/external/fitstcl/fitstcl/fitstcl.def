@@ -2,8 +2,8 @@ LIBRARY    fitstcl.dll
 EXETYPE WINDOWS
 
 EXPORTS
-    Fitstcl_Init
-    fitsDispatch
+	Fitstcl_Init
+	fitsDispatch
 	fitsTcl_close
 	fitsTcl_move
 	fitsTcl_dump
@@ -115,7 +115,6 @@ EXPORTS
 	updateFirst
 	Table_calAbsXPos
 	Table_updateCell
-	fits_comp_img
 	imcomp_init_table
 	imcomp_calc_max_elem
 	imcomp_compress_image
@@ -181,7 +180,6 @@ EXPORTS
 	uncompress2mem_from_mem
 	uncompress2file
 	compress2mem_from_mem
-	longest_match
 	file_init
 	file_setoptions
 	file_getoptions
@@ -916,3 +914,6 @@ EXPORTS
 	ffpi4b
 	ffpr4b
 	ffpr8b
+	
+	
+	

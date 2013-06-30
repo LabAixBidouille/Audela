@@ -25,6 +25,7 @@
  */
 
 #include "fitsTclInt.h"
+#include "wcslib/wcstrig.h"
 #include <limits.h>
 
 /* on some systems, e.g. linux, SUNs DBL_MAX is in float.h */
@@ -81,7 +82,7 @@ int fitsLoadHDU( FitsFD *curFile )
    int i,status=0;
    int simple,extend;
    long pcount, gcount, rowlen, varidat;
-   long tbcol[FITS_COLMAX];
+   LONGLONG tbcol[FITS_COLMAX];
    char tmpStr[80];
    char tmpKey[FLEN_KEYWORD];
    Tcl_HashEntry *thisEntry; 
@@ -97,7 +98,7 @@ int fitsLoadHDU( FitsFD *curFile )
 
    case IMAGE_HDU:
 
-      ffghpr(curFile->fptr,
+      ffghprll(curFile->fptr,
 	     FITS_MAXDIMS,
 	     &simple,
 	     &curFile->CHDUInfo.image.bitpix,
@@ -109,7 +110,7 @@ int fitsLoadHDU( FitsFD *curFile )
 
    case ASCII_TBL:
 
-      ffghtb(curFile->fptr,
+      ffghtbll(curFile->fptr,
 	     FITS_COLMAX,
 	     &curFile->CHDUInfo.table.rowLen,
 	     &curFile->CHDUInfo.table.numRows,
@@ -123,7 +124,7 @@ int fitsLoadHDU( FitsFD *curFile )
       
    case BINARY_TBL:
       
-      ffghbn(curFile->fptr,
+      ffghbnll(curFile->fptr,
 	     FITS_COLMAX,
 	     &curFile->CHDUInfo.table.numRows,
 	     &curFile->CHDUInfo.table.numCols,
@@ -1633,10 +1634,10 @@ int imageBlockLoad_1D( FitsFD *curFile,
 
 int imageBlockLoad( FitsFD *curFile,
 		    char *varName,
-		    long fRow,
-		    long nRow,
-		    long fCol,
-		    long nCol,
+		    LONGLONG fRow,
+		    LONGLONG nRow,
+		    LONGLONG fCol,
+		    LONGLONG nCol,
 		    long slice,
                     long cslice)
 {
@@ -1650,13 +1651,15 @@ int imageBlockLoad( FitsFD *curFile,
    double defaultDouble = 0.0;
    
    int ptrFlag, status;
-   long tmpIndex, i,j;
+   LONGLONG tmpIndex, i,j;
    char tmpStr[80];
    char varIndex[80];
    int anyNul;        
-   long blc[FITS_MAXDIMS], trc[FITS_MAXDIMS], incrc[FITS_MAXDIMS];
+   LONGLONG blc[FITS_MAXDIMS], trc[FITS_MAXDIMS];
+   long blc_l[FITS_MAXDIMS], trc_l[FITS_MAXDIMS];
+   long incrc[FITS_MAXDIMS];
    int naxes, flip=0;
-   long xDim, yDim;
+   LONGLONG xDim, yDim;
    char result[80];
    char colFormat[80];
    Tcl_Obj *valObj;
@@ -1711,6 +1714,8 @@ int imageBlockLoad( FitsFD *curFile,
        blc[i] = 1;
        trc[i] = 1;
        incrc[i] = 1;
+       blc_l[i] = (long) blc[i];
+       trc_l[i] = (long) trc[i];
    }
 
    if( flip ) {
@@ -1722,6 +1727,9 @@ int imageBlockLoad( FitsFD *curFile,
       trc[0]   = fCol+nCol-1;
       incrc[0] = 1;
    }
+
+   blc_l[0] = (long) blc[0];
+   trc_l[0] = (long) trc[0];
    
    if( naxes>1 ) {
      if( flip ) {
@@ -1739,15 +1747,21 @@ int imageBlockLoad( FitsFD *curFile,
       incrc[1] = 1;
 */
       
+      blc_l[1] = (long) blc[1];
+      trc_l[1] = (long) trc[1];
       if( naxes>2 ) {
 	 blc[2]   = slice;
 	 trc[2]   = slice;
 	 incrc[2] = 1;
 	 
+         blc_l[2] = (long) blc[2];
+         trc_l[2] = (long) trc[2];
          if ( cslice > 1 ) {
 	    blc[3] = cslice;
 	    trc[3] = cslice;
 	    incrc[i] = 1;
+            blc_l[3] = (long) blc[2];
+            trc_l[3] = (long) trc[2];
          }
       }
    }
@@ -1760,6 +1774,10 @@ int imageBlockLoad( FitsFD *curFile,
 
    status    = 0;
    nullArray = (char *) ckalloc(nCol*nRow*sizeof(char));
+/*
+fprintf(stdout, "case: <%d>\n", curFile->CHDUInfo.image.dataType);
+fflush(stdout);
+*/
    switch ( curFile->CHDUInfo.image.dataType ) {
 
    case TDOUBLE:
@@ -1770,8 +1788,8 @@ int imageBlockLoad( FitsFD *curFile,
 	     1,
 	     curFile->CHDUInfo.image.naxes,
 	     curFile->CHDUInfo.image.naxisn,
-	     blc,
-	     trc,
+	     blc_l,
+	     trc_l,
 	     incrc,
 	     dblData,
 	     nullArray,
@@ -1787,13 +1805,13 @@ int imageBlockLoad( FitsFD *curFile,
       }	     
       
       if( ptrFlag ) {
-	 sprintf(result, PTRFORMAT " %d %ld", dblData, 4, nCol*nRow);
+	 sprintf(result, PTRFORMAT " %d %lld", dblData, 4, nCol*nRow);
 	 Tcl_SetResult(curFile->interp,result,TCL_VOLATILE);
       } else {
 	 for ( i=0; i< nCol; i++ ) {
 	    for ( j=0; j< nRow; j++ ) {
 	       tmpIndex = j*nCol + i;
-	       sprintf(varIndex,"%ld,%ld", fCol+i-1, fRow+j-1);
+	       sprintf(varIndex,"%lld,%lld", fCol+i-1, fRow+j-1);
 	       if ( nullArray[tmpIndex] ) {
                   valObj = Tcl_NewStringObj("NULL",-1);
 	       } else {
@@ -1814,8 +1832,8 @@ int imageBlockLoad( FitsFD *curFile,
 	      1,
 	      curFile->CHDUInfo.image.naxes,
 	      curFile->CHDUInfo.image.naxisn,
-	      blc,
-	      trc,
+	      blc_l,
+	      trc_l,
 	      incrc,
 	      longlongData,
 	      nullArray,
@@ -1831,13 +1849,13 @@ int imageBlockLoad( FitsFD *curFile,
       }	     
       
       if( ptrFlag ) {
-	 sprintf(result, PTRFORMAT " %d %ld", longlongData, 4, nCol*nRow);
+	 sprintf(result, PTRFORMAT " %d %lld", longlongData, 4, nCol*nRow);
 	 Tcl_SetResult(curFile->interp,result,TCL_VOLATILE);
       } else {
 	 for ( i=0; i< nCol; i++ ) {
 	    for ( j=0; j< nRow; j++ ) {
 	       tmpIndex = j*nCol + i;
-	       sprintf(varIndex,"%ld,%ld", fCol+i-1, fRow+j-1);
+	       sprintf(varIndex,"%lld,%lld", fCol+i-1, fRow+j-1);
 	       if ( nullArray[tmpIndex] ) {
                   valObj = Tcl_NewStringObj("NULL",-1);
 	       } else {
@@ -1863,8 +1881,8 @@ int imageBlockLoad( FitsFD *curFile,
 	     1,
 	     curFile->CHDUInfo.image.naxes,
 	     curFile->CHDUInfo.image.naxisn,
-	     blc,
-	     trc,
+	     blc_l,
+	     trc_l,
 	     incrc,
 	     floatData,
 	     nullArray,
@@ -1879,13 +1897,13 @@ int imageBlockLoad( FitsFD *curFile,
       } 
       
       if( ptrFlag ) {
-	 sprintf(result, PTRFORMAT " %d %ld", floatData, 3, nCol*nRow);
+	 sprintf(result, PTRFORMAT " %d %lld", floatData, 3, nCol*nRow);
 	 Tcl_SetResult(curFile->interp,result,TCL_VOLATILE);
       } else {
 	 for ( i=0; i< nCol; i++ ) {
 	    for ( j=0; j< nRow; j++ ) {
 	       tmpIndex = j*nCol + i;
-	       sprintf(varIndex,"%ld,%ld", fCol+i-1, fRow+j-1);
+	       sprintf(varIndex,"%lld,%lld", fCol+i-1, fRow+j-1);
 	       if ( nullArray[tmpIndex] ) {
                   valObj = Tcl_NewStringObj("NULL",-1);
 	       } else {
@@ -1907,8 +1925,8 @@ int imageBlockLoad( FitsFD *curFile,
 	     1,
 	     curFile->CHDUInfo.image.naxes,
 	     curFile->CHDUInfo.image.naxisn,
-	     blc,
-	     trc,
+	     blc_l,
+	     trc_l,
 	     incrc,
 	     intData,
 	     nullArray,
@@ -1923,13 +1941,13 @@ int imageBlockLoad( FitsFD *curFile,
       } 
 
       if( ptrFlag ) {
-	 sprintf(result, PTRFORMAT " %d %ld", intData, 2, nCol*nRow);
+	 sprintf(result, PTRFORMAT " %d %lld", intData, 2, nCol*nRow);
 	 Tcl_SetResult(curFile->interp,result,TCL_VOLATILE);
       } else {
 	 for ( i=0; i< nCol; i++ ) {
 	    for ( j=0; j< nRow; j++ ) {
 	       tmpIndex = j*nCol + i;
-	       sprintf(varIndex,"%ld,%ld", fCol+i-1, fRow+j-1);
+	       sprintf(varIndex,"%lld,%lld", fCol+i-1, fRow+j-1);
 	       if ( nullArray[tmpIndex] ) {
                   valObj = Tcl_NewStringObj("NULL",-1);
 	       } else {
@@ -1951,8 +1969,8 @@ int imageBlockLoad( FitsFD *curFile,
 	     1,
 	     curFile->CHDUInfo.image.naxes,
 	     curFile->CHDUInfo.image.naxisn,
-	     blc,
-	     trc,
+	     blc_l,
+	     trc_l,
 	     incrc,
 	     shortData,
 	     nullArray,
@@ -1967,13 +1985,13 @@ int imageBlockLoad( FitsFD *curFile,
       } 
       
       if( ptrFlag ) {
-	 sprintf(result, PTRFORMAT " %d %ld", shortData, 1, nCol*nRow);
+	 sprintf(result, PTRFORMAT " %d %lld", shortData, 1, nCol*nRow);
 	 Tcl_SetResult(curFile->interp,result,TCL_VOLATILE);
       } else {
 	 for ( i=0; i< nCol; i++ ) {
 	    for ( j=0; j< nRow; j++ ) {
 	       tmpIndex = j*nCol + i;
-	       sprintf(varIndex,"%ld,%ld", fCol+i-1, fRow+j-1);
+	       sprintf(varIndex,"%lld,%lld", fCol+i-1, fRow+j-1);
 	       if ( nullArray[tmpIndex] ) {
                   valObj = Tcl_NewStringObj("NULL",-1);
 	       } else {
@@ -1995,8 +2013,8 @@ int imageBlockLoad( FitsFD *curFile,
 	     1,
 	     curFile->CHDUInfo.image.naxes,
 	     curFile->CHDUInfo.image.naxisn,
-	     blc,
-	     trc,
+	     blc_l,
+	     trc_l,
 	     incrc,
 	     byteData,
 	     nullArray,
@@ -2011,13 +2029,13 @@ int imageBlockLoad( FitsFD *curFile,
       } 
 
       if( ptrFlag ) {
-	 sprintf(result, PTRFORMAT " %d %ld", byteData, 0, nCol*nRow);
+	 sprintf(result, PTRFORMAT " %d %lld", byteData, 0, nCol*nRow);
 	 Tcl_SetResult(curFile->interp,result,TCL_VOLATILE);
       } else {
 	 for ( i=0; i< nCol; i++ ) {
 	    for ( j=0; j< nRow; j++ ) {
 	       tmpIndex = j*nCol + i;
-	       sprintf(varIndex,"%ld,%ld", fCol+i-1, fRow+j-1);
+	       sprintf(varIndex,"%lld,%lld", fCol+i-1, fRow+j-1);
 	       if ( nullArray[tmpIndex] ) {
                   valObj = Tcl_NewStringObj("NULL",-1);
 	       } else {
@@ -3663,7 +3681,7 @@ int fitsPutKwds( FitsFD *curFile,
    char comm[FLEN_COMMENT];
    int i, hdtype;
    int status = 0;
-  
+   
    if ( ifFormat == 1 ) {  
       if( !strncmp(inCard,"HIERARCH ",9) ) inCard+=9;
       ffgthd(inCard, card, &hdtype, &status);
@@ -3963,17 +3981,72 @@ int saveVectorTableToAscii( FitsFD *curFile,
       fprintf(fPtr, sepString);
     }
 
-    for ( k = fCol; k <= (fCol+nCols-1); k++ ) {
-      
-      switch ( dataType ) {
+    saveVectorTableRowToAscii(curFile, filename, fileStatus, m, 1, fCol, nCols, baseColNum, ifCSV,
+                              ifPrintRow, sepString, ifVariableVec, colFormat, dataType, fPtr, 0);
+
+    if ( ifCSV == 1)
+      fprintf(fPtr, "\"");
+    fprintf(fPtr,"\n");
+  }
+  fclose(fPtr);
+  return TCL_OK;
+}
+
+int saveVectorTableRowToAscii( FitsFD *curFile,
+                               char *filename,
+                               char *fileStatus,
+                               int fRow,
+                               int nRows,
+                               int fCol,
+                               int nCols,
+                               int baseColNum,
+                               int ifCSV,
+                               int ifPrintRow,
+                               char *sepString,
+                               int ifVariableVec,
+                               char *colFormat,
+                               int dataType,
+                               FILE *fPtr,
+                               int ifFixedFormat)
+
+{
+  char outFStr[80];
+  LONGLONG k,m;
+  int anyf;
+  char **cValue;
+  short  shtValue[1];
+  int    intValue[1];
+  long   longValue[1];
+  LONGLONG longlongValue[1];
+  double dblValue[1];
+  float  fValue[1];
+  char   xValue[1];
+  double dblComplex[2];
+  float  fltComplex[2];
+  char nullArray[1];
+  char strNullVal[]="NULL";
+  unsigned char binValue[1];
+  char lValue[1];
+  char cplxFormat[80];
+  char outputStr[80];
+  int  tmpInt;
+  char varIndex[80];
+  int status=0;
+  char errMsg[160];
+  int naxis;
+  long naxes[3];
+ 
+  for ( k = fCol; k <= (fCol+nCols-1); k++ ) {
+    
+    switch ( dataType ) {
 	
-      case TSTRING:
+    case TSTRING:
 	tmpInt = curFile->CHDUInfo.table.strSize[ baseColNum-1 ]+1;
 	cValue = (char **) makeContigArray(2, tmpInt, 'c');
 	
 	ffgcls(curFile->fptr,
 	       baseColNum,
-	       m,
+	       fRow,
 	       k,
 	       1,
 	       1,
@@ -3992,12 +4065,12 @@ int saveVectorTableToAscii( FitsFD *curFile,
 	ckfree( (char *) cValue[0]);
 	ckfree( (char *) cValue);
 	break;
-      
+    
 	/* not implemented yet */
-      case TLOGICAL:
+    case TLOGICAL:
 	ffgcfl(curFile->fptr,
 	       baseColNum,
-	       m,
+	       fRow,
 	       k,
 	       1,
 	       lValue,
@@ -4018,11 +4091,11 @@ int saveVectorTableToAscii( FitsFD *curFile,
 	  }
 	}
 	break;
-      
-      case TBIT:
+    
+    case TBIT:
 	ffgcx(curFile->fptr,
 	      baseColNum,
-	      m,
+	      fRow,
 	      k,
 	      1,
 	      xValue,
@@ -4035,13 +4108,13 @@ int saveVectorTableToAscii( FitsFD *curFile,
 	} 
 	break; 
 	
-      case TBYTE:
-      case TSHORT:
-      case TINT:
-      case TLONG:
+    case TBYTE:
+    case TSHORT:
+    case TINT:
+    case TLONG:
 	ffgcfj(curFile->fptr,
 	       baseColNum,
-	       m,
+	       fRow,
 	       k,
 	       1,
 	       longValue,
@@ -4058,12 +4131,12 @@ int saveVectorTableToAscii( FitsFD *curFile,
 	  sprintf(outputStr,colFormat,longValue[0]);
 	}
 	break;
-      
-      case TFLOAT:
-      case TDOUBLE:
+    
+    case TFLOAT:
+    case TDOUBLE:
 	ffgcfd(curFile->fptr,
 	       baseColNum,
-	       m,
+	       fRow,
 	       k,
 	       1,
 	       dblValue,
@@ -4089,11 +4162,11 @@ int saveVectorTableToAscii( FitsFD *curFile,
 	  }
 	} 
 	break;
-      
-      case TLONGLONG:
+    
+    case TLONGLONG:
 	ffgcfjj(curFile->fptr,
 	        baseColNum,
-	        m,
+	        fRow,
 	        k,
 	        1,
 	        longlongValue,
@@ -4110,23 +4183,19 @@ int saveVectorTableToAscii( FitsFD *curFile,
 	  strcpy(outputStr,longlongValue[0]);
 	} 
 	break;
-      
+    
 
-      default:
+    default:
 	sprintf(errMsg,"ERROR");
 	Tcl_SetResult(curFile->interp,errMsg,TCL_VOLATILE);
 	return TCL_ERROR;
-      }
-
-      fprintf(fPtr, outputStr);
-      if ( k != (fCol+nCols-1) )
-	fprintf(fPtr, sepString);
     }
-    if ( ifCSV == 1)
-      fprintf(fPtr, "\"");
-    fprintf(fPtr,"\n");
+
+    fprintf(fPtr, outputStr);
+    if ( k != (fCol+nCols-1) )
+       fprintf(fPtr, sepString);
   }
-  fclose(fPtr);
+
   return TCL_OK;
 }
 
@@ -4164,6 +4233,7 @@ int saveTableToAscii( FitsFD *curFile,
    int m, j, k;
    char rowFormatStr[10];
    char **outFStr;
+   char **tmpFStr;
    char **colFStr;
    char  **cValue;
    short shtValue[1];
@@ -4180,11 +4250,17 @@ int saveTableToAscii( FitsFD *curFile,
    char lValue[1];
    char *outputStr;
    char errMsg[80];
+   long tmplong[1];
    int  tmpInt;
    int  anyf;  
+   int cnt;
    int status=0;
    /* create a minimum large enough to encompass the row string */
    int maxWidth = 8;
+   char colFormat[80];
+   int dataType;
+   int ifVariableVec;
+
 
    if ( ifCSV == 1) {
      sepString = (char *) ckalloc(4);
@@ -4193,6 +4269,7 @@ int saveTableToAscii( FitsFD *curFile,
 
    /* outFStr pads columns with extra spaces in Fixed Format */
    outFStr = (char **) makeContigArray(nCols, 80, 'c');
+   tmpFStr = (char **) makeContigArray(nCols, 80, 'c');
    colFStr = (char **) makeContigArray(nCols, 80, 'c');
    for (k=0; k< nCols; k++) {
      if ( ifFixedFormat == 1) {
@@ -4222,24 +4299,45 @@ int saveTableToAscii( FitsFD *curFile,
 	  strcpy(outputStr,"Row");
 	  fprintf(fPtr,rowFormatStr,outputStr);
 	}
-	for (k=0; k< nCols; k++)
+	for (k=0; k< nCols; k++) {
+          tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[k]-1 ];
+          if ( tmpInt != 1 ) {
+             if ( ifFixedFormat == 1 ) {
+                sprintf(outFStr[k]," %%%ds", strSize[k] * tmpInt - (tmpInt - 1)); 
+             }
+          }
 	  fprintf(fPtr,outFStr[k],curFile->CHDUInfo.table.colName[colNums[k]-1]);
+        }
 	fprintf(fPtr,"\n");
 
 	if ( ifPrintRow == 1 ) {
 	  strcpy(outputStr,"  ");
 	  fprintf(fPtr,rowFormatStr,outputStr);
 	}
-	for (k=0; k< nCols; k++)
+	for (k=0; k< nCols; k++) {
+          tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[k]-1 ];
+          if ( tmpInt != 1 ) {
+             if ( ifFixedFormat == 1 ) {
+                sprintf(outFStr[k]," %%%ds", strSize[k] * tmpInt - (tmpInt - 1)); 
+             }
+          }
 	  fprintf(fPtr,outFStr[k],curFile->CHDUInfo.table.colType[colNums[k]-1]);
+        }
 	fprintf(fPtr,"\n");
 	
 	if ( ifPrintRow == 1 ) {
 	  strcpy(outputStr,"  ");
 	  fprintf(fPtr,rowFormatStr,outputStr);
 	}
-	for (k=0; k< nCols; k++)
+	for (k=0; k< nCols; k++) {
+          tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[k]-1 ];
+          if ( tmpInt != 1 ) {
+             if ( ifFixedFormat == 1 ) {
+                sprintf(outFStr[k]," %%%ds", strSize[k] * tmpInt - (tmpInt - 1)); 
+             }
+          }
 	  fprintf(fPtr,outFStr[k],curFile->CHDUInfo.table.colUnit[colNums[k]-1]);
+        }
 	fprintf(fPtr,"\n");
       }
 
@@ -4253,16 +4351,37 @@ int saveTableToAscii( FitsFD *curFile,
       }
       fprintf(fPtr,"\n");
 
-      for (k=0; k< nCols; k++)
+      for (k=0; k< nCols; k++) {
+         tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[k]-1 ];
+         if ( tmpInt != 1 ) {
+            if ( ifFixedFormat == 1 ) {
+               sprintf(outFStr[k]," %%%ds", strSize[k] * tmpInt - (tmpInt - 1)); 
+            }
+         }
 	 fprintf(fPtr,outFStr[k],curFile->CHDUInfo.table.colName[colNums[k]-1]);
+      }
       fprintf(fPtr,"\n");
 
-      for (k=0; k< nCols; k++)
+      for (k=0; k< nCols; k++) {
+         tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[k]-1 ];
+         if ( tmpInt != 1 ) {
+            if ( ifFixedFormat == 1 ) {
+               sprintf(outFStr[k]," %%%ds", strSize[k] * tmpInt - (tmpInt - 1)); 
+            }
+         }
 	 fprintf(fPtr,outFStr[k],curFile->CHDUInfo.table.colType[colNums[k]-1]);
+      }
       fprintf(fPtr,"\n");
 
-      for (k=0; k< nCols; k++)
+      for (k=0; k< nCols; k++) {
+         tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[k]-1 ];
+         if ( tmpInt != 1 ) {
+            if ( ifFixedFormat == 1 ) {
+               sprintf(outFStr[k]," %%%ds", strSize[k] * tmpInt - (tmpInt - 1)); 
+            }
+         }
 	 fprintf(fPtr,outFStr[k],curFile->CHDUInfo.table.colUnit[colNums[k]-1]);
+      }
       fprintf(fPtr,"\n");
 
    } else {  /*  Append data only to file  */
@@ -4293,299 +4412,316 @@ int saveTableToAscii( FitsFD *curFile,
       }
       for (j=0; j< nCols; j++) {
 
-	 switch (curFile->CHDUInfo.table.colDataType[colNums[j]-1]) {
-
-	 case TSTRING:
-	    ffgcls(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   1,
-		   strNullVal,
-		   cValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else {
-	      sprintf(outputStr,colFStr[j],cValue[0]);
-	    } 
-	    break;
-
-	 case TLOGICAL:
-	    ffgcfl(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   lValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       sprintf(outputStr,colFStr[j],"U");
-	    } else {
-	      if( lValue[0] ) {
-		sprintf(outputStr,colFStr[j],"T");
-	      } else {
-		sprintf(outputStr,colFStr[j],"F");
-	      }
-	    }
-	    break;
-
-	 case TBIT:
-	    ffgcfb(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   binValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	      sprintf(outputStr,colFStr[j],binValue[0]);
-	    }
-	    break;
-
-	 case TBYTE:
-	    ffgcfb(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   binValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	       sprintf(outputStr,colFStr[j],binValue[0]);
-	    }
-	    break;
-
-	 case TSHORT:
-	    ffgcfi(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   1,
-		   1,
-		   shtValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	       sprintf(outputStr,colFStr[j],shtValue[0]);
-	    }
-	    break;
-
-	 case TINT:
-	    ffgcfk(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   1,
-		   1,
-		   intValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	       sprintf(outputStr,colFStr[j],intValue[0]);
-	    }
-	    break;
-
-	 case TLONG:
-	    ffgcfj(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   longValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	       sprintf(outputStr,colFStr[j],longValue[0]);
-	    }
-	    break;
-
-	 case TFLOAT:
-	    ffgcfe(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   fValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	       sprintf(outputStr,colFStr[j],fValue[0]);
-	    }
-	    break;
-
-	 case TDOUBLE:
-	    ffgcfd(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   dblValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-	       if (strchr(colFStr[j],'d') !=NULL) {
-		  sprintf(outputStr, "%.0f", dblValue[0]);
-		  tmpInt = atoi(outputStr);
-		  sprintf(outputStr,colFStr[j],tmpInt);
-	       } else  {
-		  sprintf(outputStr,colFStr[j],dblValue[0]);
-	       }
-	    }
-	    break;
-
-         case TLONGLONG:
-	    ffgcfjj(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   longlongValue,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL");
-	    } else {
-#ifdef __WIN32__
-               sprintf(outputStr,"%I64d",longlongValue[0]);
-#else
-               sprintf(outputStr,"%lld",longlongValue[0]);
-#endif
-	       /* strcpy(outputStr,longlongValue[0]); */
-	    }
-	    break;
-
-	 case TCOMPLEX:
-	    ffgcfc(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   fltComplex,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL, NULL");
-	    } else {
-	       sprintf(outputStr,"%.5f, %.5f",fltComplex[0],fltComplex[1]);
-	    }
-	    break;
-
-	 case TDBLCOMPLEX:
-	    ffgcfm(curFile->fptr,
-		   colNums[j],
-		   m+fRow,
-		   felem,
-		   1,
-		   dblComplex,
-		   nullArray,
-		   &anyf,
-		   &status);
-	    if ( status > 0 ) {
-	       strcpy(outputStr," ");
-	       status = 0;
-	       ffcmsg();
-	    } else if( anyf ) {
-	       strcpy(outputStr,"NULL, NULL");
-	    } else {
-	       sprintf(outputStr,"%.8f, %.8f",dblComplex[0],
-		       dblComplex[1]);
-	    }
-	    break;
-
-	 default:
-	    sprintf(errMsg,"Unrecognized colType: %d for column %d\n",
-		    colTypes[j],colNums[j]);
-	    Tcl_SetResult(curFile->interp,errMsg,TCL_VOLATILE);
-	    ckfree( (char *) outFStr[0]);
-	    ckfree( (char *) colFStr[0]);
-	    ckfree( (char *) outFStr);
-	    ckfree( (char *) colFStr);
-	    ckfree( (char *) cValue[0]);
-	    ckfree( (char *) cValue);
-	    ckfree( (char *) outputStr );
-	    fclose(fPtr);
-	    return TCL_ERROR;
-	 }
-	 fprintf(fPtr, outFStr[j], outputStr);
-	 if ( ifFixedFormat == 0 ) {
-	   if ( j != nCols-1 )
-	     /* print sepString if we're not on last column */
-	     fprintf(fPtr, sepString);
-	 }
+        tmpInt = curFile->CHDUInfo.table.vecSize[ colNums[j]-1 ];
+        if ( tmpInt != 1 ) {
+           dataType = curFile->CHDUInfo.table.colDataType[colNums[j]-1];
+           ifVariableVec = 0;
+           if ( ifFixedFormat == 1 ) {
+	      fprintf(fPtr,"%3s"," ");
+           }
+           saveVectorTableRowToAscii(curFile, filename, fileStatus, m+1, 1, 1, tmpInt, colNums[j], ifCSV,
+                                     0, sepString, ifVariableVec, colFStr[j], dataType, fPtr, ifFixedFormat);
+           if ( ifFixedFormat == 0 ) {
+              if ( j < nCols-1 ) {
+	         fprintf(fPtr,sepString);
+              }
+           }
+          
+        } else {
+          switch (curFile->CHDUInfo.table.colDataType[colNums[j]-1]) {
+   
+          case TSTRING:
+   	    ffgcls(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   1,
+   		   strNullVal,
+   		   cValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else {
+   	      sprintf(outputStr,colFStr[j],cValue[0]);
+   	    } 
+   	    break;
+   
+   	 case TLOGICAL:
+   	    ffgcfl(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   lValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       sprintf(outputStr,colFStr[j],"U");
+   	    } else {
+   	      if( lValue[0] ) {
+   		sprintf(outputStr,colFStr[j],"T");
+   	      } else {
+   		sprintf(outputStr,colFStr[j],"F");
+   	      }
+   	    }
+   	    break;
+   
+   	 case TBIT:
+   	    ffgcfb(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   binValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	      sprintf(outputStr,colFStr[j],binValue[0]);
+   	    }
+   	    break;
+   
+   	 case TBYTE:
+   	    ffgcfb(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   binValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	       sprintf(outputStr,colFStr[j],binValue[0]);
+   	    }
+   	    break;
+   
+   	 case TSHORT:
+   	    ffgcfi(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   1,
+   		   1,
+   		   shtValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	       sprintf(outputStr,colFStr[j],shtValue[0]);
+   	    }
+   	    break;
+   
+   	 case TINT:
+   	    ffgcfk(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   1,
+   		   1,
+   		   intValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	       sprintf(outputStr,colFStr[j],intValue[0]);
+   	    }
+   	    break;
+   
+   	 case TLONG:
+   	    ffgcfj(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   longValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	       sprintf(outputStr,colFStr[j],longValue[0]);
+   	    }
+   	    break;
+   
+   	 case TFLOAT:
+   	    ffgcfe(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   fValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	       sprintf(outputStr,colFStr[j],fValue[0]);
+   	    }
+   	    break;
+   
+   	 case TDOUBLE:
+   	    ffgcfd(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   dblValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+   	       if (strchr(colFStr[j],'d') !=NULL) {
+   		  sprintf(outputStr, "%.0f", dblValue[0]);
+   		  tmpInt = atoi(outputStr);
+   		  sprintf(outputStr,colFStr[j],tmpInt);
+   	       } else  {
+   		  sprintf(outputStr,colFStr[j],dblValue[0]);
+   	       }
+   	    }
+   	    break;
+   
+            case TLONGLONG:
+   	    ffgcfjj(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   longlongValue,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL");
+   	    } else {
+ #ifdef __WIN32__
+                  sprintf(outputStr,"%I64d",longlongValue[0]);
+ #else
+                  sprintf(outputStr,"%lld",longlongValue[0]);
+ #endif
+   	       /* strcpy(outputStr,longlongValue[0]); */
+   	    }
+   	    break;
+   
+   	 case TCOMPLEX:
+   	    ffgcfc(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   fltComplex,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL, NULL");
+   	    } else {
+   	       sprintf(outputStr,"%.5f, %.5f",fltComplex[0],fltComplex[1]);
+   	    }
+   	    break;
+   
+   	 case TDBLCOMPLEX:
+   	    ffgcfm(curFile->fptr,
+   		   colNums[j],
+   		   m+fRow,
+   		   felem,
+   		   1,
+   		   dblComplex,
+   		   nullArray,
+   		   &anyf,
+   		   &status);
+   	    if ( status > 0 ) {
+   	       strcpy(outputStr," ");
+   	       status = 0;
+   	       ffcmsg();
+   	    } else if( anyf ) {
+   	       strcpy(outputStr,"NULL, NULL");
+   	    } else {
+   	       sprintf(outputStr,"%.8f, %.8f",dblComplex[0],
+   		       dblComplex[1]);
+   	    }
+   	    break;
+   
+   	 default:
+   	    sprintf(errMsg,"Unrecognized colType: %d for column %d\n",
+   		    colTypes[j],colNums[j]);
+   	    Tcl_SetResult(curFile->interp,errMsg,TCL_VOLATILE);
+   	    ckfree( (char *) outFStr[0]);
+   	    ckfree( (char *) colFStr[0]);
+   	    ckfree( (char *) outFStr);
+   	    ckfree( (char *) colFStr);
+   	    ckfree( (char *) cValue[0]);
+   	    ckfree( (char *) cValue);
+   	    ckfree( (char *) outputStr );
+   	    fclose(fPtr);
+   	    return TCL_ERROR;
+   	 }
+   	 fprintf(fPtr, outFStr[j], outputStr);
+   	 if ( ifFixedFormat == 0 ) {
+   	   if ( j != nCols-1 )
+   	     /* print sepString if we're not on last column */
+   	     fprintf(fPtr, sepString);
+   	 }
+        }
       }
-      if ( ifCSV == 1 ) {
-	fprintf(fPtr, "\"");
+      if (ifCSV == 1) {
+         fprintf(fPtr,"\"");
       }
       fprintf(fPtr,"\n");
    }
@@ -4760,7 +4896,10 @@ int saveImageToAscii( FitsFD *curFile,
 	 return TCL_ERROR;
       }	     
       
+      for (j=0; j < nRows; j++ ) {
+/*
       for (j=nRows-1; j>=0; j-- ) {
+*/
 	if ( ifCSV == 1 )
 	  fprintf(fPtr, "\"");
 	if ( ifPrintRow == 1 ) {
@@ -4811,7 +4950,10 @@ int saveImageToAscii( FitsFD *curFile,
 	 return TCL_ERROR;
       }	     
       
+      for (j=0; j < nRows; j++ ) {
+/*
       for (j=nRows-1; j>=0; j-- ) {
+*/
 	if ( ifCSV == 1 )
 	  fprintf(fPtr, "\"");
 	if ( ifPrintRow == 1 ) {
@@ -4864,7 +5006,10 @@ int saveImageToAscii( FitsFD *curFile,
 	 return TCL_ERROR;
       } 
 
+      for (j=0; j < nRows; j++ ) {
+/*
       for (j=nRows-1; j>=0; j-- ) {
+*/
 	if ( ifCSV == 1)
 	  fprintf(fPtr, "\"");
 	if ( ifPrintRow == 1) {
@@ -4914,7 +5059,10 @@ int saveImageToAscii( FitsFD *curFile,
 	 return TCL_ERROR;
       } 
       
+      for (j=0; j < nRows; j++ ) {
+/*
       for (j=nRows-1; j>=0; j-- ) {
+*/
 	if ( ifCSV == 1)
 	  fprintf(fPtr, "\"");
 	if ( ifPrintRow == 1) {
@@ -4964,7 +5112,10 @@ int saveImageToAscii( FitsFD *curFile,
 	 return TCL_ERROR;
       } 
 
+      for (j=0; j < nRows; j++ ) {
+/*
       for (j=nRows-1; j>=0; j-- ) {
+*/
 	if ( ifCSV == 1)
 	  fprintf(fPtr, "\"");
 	if ( ifPrintRow == 1) {
@@ -5014,7 +5165,10 @@ int saveImageToAscii( FitsFD *curFile,
 	 return TCL_ERROR;
       } 
       
+      for (j=0; j < nRows; j++ ) {
+/*
       for (j=nRows-1; j>=0; j-- ) {
+*/
 	if ( ifCSV == 1)
 	  fprintf(fPtr, "\"");
 	if ( ifPrintRow == 1) {
@@ -5761,9 +5915,9 @@ int fitsFileGetWcsMatrix( FitsFD *curFile, fitsfile *dummyFile, int naxis, int a
                if( row<2 ) {
                   /*  Do 2-D rotation  */
                   if( row==col ) {
-                     matrix[row][col] = delt[col] * cos( rot );
+                     matrix[row][col] = delt[col] * cosd( rot );
                   } else {
-                     matrix[row][col] = delt[col] * sin( rot );
+                     matrix[row][col] = delt[col] * sind( rot );
                      if( row==0 )
                         matrix[row][col] = - matrix[row][col];
                   }
@@ -5942,9 +6096,9 @@ int fitsGetWcsMatrix( FitsFD *curFile, int naxis, int axes[], char dest )
                if( row<2 ) {
                   /*  Do 2-D rotation  */
                   if( row==col ) {
-                     matrix[row][col] = delt[col] * cos( rot );
+                     matrix[row][col] = delt[col] * cosd( rot );
                   } else {
-                     matrix[row][col] = delt[col] * sin( rot );
+                     matrix[row][col] = delt[col] * sind( rot );
                      if( row==0 )
                         matrix[row][col] = - matrix[row][col];
                   }
@@ -6012,6 +6166,395 @@ int fitsGetWcsMatrix( FitsFD *curFile, int naxis, int axes[], char dest )
    ffcmsg();
    return TCL_OK;
 }
+
+int fitsGetWcsMatrixAlt( FitsFD *curFile, fitsfile *fptr, Tcl_Obj *listObj, int naxis, int axes[], char dest )
+{
+   int status = 0;
+   int foundCD= 0;
+   int foundTp= 0;
+   int foundBK= 0;
+   int endBK= 0;
+   int i = 0;
+   double refVal[FITS_MAXDIMS], refPix[FITS_MAXDIMS];
+   double delt[FITS_MAXDIMS], rot, tmp;
+   double matrix[FITS_MAXDIMS][FITS_MAXDIMS];
+   int row, col, axisNum[FITS_MAXDIMS];
+   char keyword[FLEN_VALUE];
+   char axisType[FITS_MAXDIMS][FLEN_VALUE];
+   Tcl_Obj *data[5];
+   int isImage;
+   static char *Keys[2][7] = {
+      { "TCTYP", "TCUNI", "TCRVL", "TCRPX", "TCD", "TCDLT", "TCROT" },
+      { "CTYPE", "CUNIT", "CRVAL", "CRPIX", "CD",  "CDELT", "CROTA" }
+   };
+   enum { cType=0, cUnit, cRefVal, cRefPix, cMatrix, cDelta, cRota };
+   
+   /* Init Variables */
+
+   if( naxis ) {
+      isImage = 0;
+      for( row=0; row<naxis; row++ ) axisNum[row] = axes[row];
+   } else {
+      isImage = 1;
+      naxis   = 2;
+      for( row=0; row<naxis; row++ ) axisNum[row] = row+1;
+   }
+   for( row=0; row<naxis; row++ ) {
+      refVal[row] = refPix[row] = 0.0;
+      for( col=0; col<naxis; col++ )
+         matrix[row][col] = ( row==col ? 1.0 : 0.0 );
+   }
+
+   /*  Grab any existing WCS keywords.  Use defaults for missing values  */
+   
+   for( row=0; row<naxis; row++ ) {
+      sprintf(keyword, "%s%d%c", Keys[isImage][cRefVal],axisNum[row], dest);
+      ffgkyd(fptr, keyword, refVal+row, NULL, &status);
+      if( status==KEY_NO_EXIST ) status = 0;
+
+      sprintf(keyword, "%s%d%c", Keys[isImage][cRefPix], axisNum[row], dest);
+      ffgkyd(fptr, keyword, refPix+row, NULL, &status);
+      if( status==KEY_NO_EXIST ) status = 0;
+   
+      sprintf(keyword, "%s%d%c", Keys[isImage][cType], axisNum[row], dest);
+      axisType[row][0] = '\0';
+      ffgkys(fptr, keyword, axisType[row], NULL, &status);
+      if( status==KEY_NO_EXIST ) {
+         status = 0;
+         memset(axisType[row], '\0', FITS_MAXDIMS * FITS_MAXDIMS );
+         foundTp++;
+      } else if( !status ) {
+         /* Pan: find out if a break point "-" exist */
+         foundBK = 0;
+         for ( i=0; i< strlen(axisType[row]); i++) {
+             if (axisType[row][i] == '-')
+             {
+                foundBK = 1;
+                break;
+             }
+         }
+         /* Pan: if( strlen(axisType[row])==8 && axisType[row][4]=='-' ) */
+         /* if( strlen(axisType[row])==8 && foundBK == 1) */
+         if( foundBK == 1)
+            foundTp++;
+      }
+
+      for( col=0; col<naxis; col++ ) {
+         sprintf(keyword,"%s%d_%d%c", Keys[isImage][cMatrix],
+                 axisNum[row],axisNum[col],dest);
+         ffgkyd(fptr, keyword, &matrix[row][col], NULL, &status);
+         if( status==0 )
+            foundCD = 1;
+         else if( status==KEY_NO_EXIST )
+            status = 0;
+      }
+   }
+
+   if( !foundCD ) {
+      rot = 0.0;
+      if( naxis>1 ) {
+         sprintf(keyword,"%s%d%c", Keys[isImage][cRota], axisNum[1], dest);
+         ffgkyd(fptr, keyword, &rot,   NULL, &status);
+         if( status==KEY_NO_EXIST ) {
+            /*  Try other column  */
+            status = 0;
+            if( !isImage ) {
+               sprintf(keyword,"%s%d%c", Keys[isImage][cRota], axisNum[0], dest);
+               ffgkyd(fptr, keyword, &rot,NULL, &status);
+               if( status==KEY_NO_EXIST ) status=0; else rot = -rot;
+            }
+         }
+         rot *= 1.745329252e-2;
+      }
+
+      for( col=0; col<naxis; col++ ) {
+         delt[col] = 1.0;
+         sprintf(keyword, "%s%d%c", Keys[isImage][cDelta], axisNum[col], dest);
+         ffgkyd(fptr, keyword, delt+col, NULL, &status);
+         if( status==KEY_NO_EXIST ) status = 0;
+
+         if( col<2 ) {
+            for( row=0; row<naxis; row++ ) {
+               if( row<2 ) {
+                  /*  Do 2-D rotation  */
+                  if( row==col ) {
+                     matrix[row][col] = delt[col] * cosd( rot );
+                  } else {
+                     matrix[row][col] = delt[col] * sind( rot );
+                     if( row==0 )
+                        matrix[row][col] = - matrix[row][col];
+                  }
+               }
+            }
+         } else {
+            matrix[col][col] = delt[col];
+         }
+      }
+   }
+   
+   data[0] = Tcl_NewListObj(0,NULL);
+   data[1] = Tcl_NewListObj(0,NULL);
+   data[2] = Tcl_NewListObj(0,NULL);
+   data[3] = Tcl_NewListObj(0,NULL);
+   /* if( foundTp != naxis ) { */
+   if( foundTp <= 0) {
+      data[4] = Tcl_NewStringObj("none",-1);
+   } else {
+      data[4] = Tcl_NewListObj(0,NULL);
+   }
+   for( row=0; row<naxis; row++ ) {
+      Tcl_ListObjAppendElement(curFile->interp, data[0],
+                               Tcl_NewDoubleObj(refVal[row]) );
+      Tcl_ListObjAppendElement(curFile->interp, data[1],
+                               Tcl_NewDoubleObj(refPix[row]) );
+      for( col=0; col<naxis; col++ )
+         Tcl_ListObjAppendElement(curFile->interp, data[2],
+                                  Tcl_NewDoubleObj(matrix[row][col]) );
+      /* if( foundTp == naxis ) { */
+      if( foundTp > 0 ) {
+
+         /* Pan: find out where the break point "-" is */
+         foundBK = 0;
+         endBK = -1;
+         for ( i=0; i< strlen(axisType[row]); i++) {
+             if (foundBK == 0 && axisType[row][i] == '-')
+             {
+                foundBK = 1;
+             }
+             if ( foundBK == 1 && axisType[row][i] != '-' ) {
+                endBK = i - 1;
+                break;
+             }
+         }
+
+/*         Tcl_ListObjAppendElement(curFile->interp, data[4],
+                                  Tcl_NewStringObj(axisType[row]+endBK,-1) ); */
+         if ( endBK >= 0 ) {
+            Tcl_ListObjAppendElement(curFile->interp, data[4],
+                                     Tcl_NewStringObj(axisType[row]+endBK,-1) );
+         } else {
+            Tcl_ListObjAppendElement(curFile->interp, data[4], Tcl_NewListObj(0,NULL));
+         }
+
+         for( col=endBK; col>0 && axisType[row][col]=='-'; )
+            axisType[row][col--] = '\0';
+      }
+      Tcl_ListObjAppendElement(curFile->interp, data[3],
+                               Tcl_NewStringObj(axisType[row],-1) );
+   }
+
+   Tcl_ListObjAppendElement( curFile->interp, listObj, Tcl_NewListObj(5,data) );
+   Tcl_SetObjResult(curFile->interp, listObj);
+   
+   ffcmsg();
+   return TCL_OK;
+}
+
+int fitsGetWcsPairAlt( FitsFD *curFile, fitsfile *fptr, Tcl_Obj *listObj, int Col1, int Col2, char dest )
+{
+   int status = 0;
+   int swap   = 0;
+   double
+      xrval = 0.0,
+      yrval = 0.0,
+      xrpix = 0.0,
+      yrpix = 0.0,
+      xinc  = 1.0,
+      yinc  = 1.0,
+      rot   = 0.0;
+   char ctype[FLEN_VALUE], ctemp[FLEN_VALUE];
+   char keyword[FLEN_VALUE];
+   double matrix[FITS_MAXDIMS][FITS_MAXDIMS],temp;
+   int anyKeysFnd;
+   Tcl_Obj *data[9];
+   int isImage;
+   static char *Keys[2][7] = {
+      { "TCTYP", "TCUNI", "TCRVL", "TCRPX", "TCD", "TCDLT", "TCROT" },
+      { "CTYPE", "CUNIT", "CRVAL", "CRPIX", "CD",  "CDELT", "CROTA" }
+   };
+   enum { cType=0, cUnit, cRefVal, cRefPix, cMatrix, cDelta, cRota };
+   
+   if( Col1 && Col2 ) {
+      isImage = 0;
+   } else {
+      isImage = 1;
+      Col1 = 1;
+      Col2 = 2;
+   }
+
+   /*  Grab any existing WCS keywords.  Use defaults for missing values  */
+   
+   sprintf(keyword, "%s%d%c", Keys[isImage][cRefVal], Col1, dest);
+   ffgkyd(fptr, keyword, &xrval, NULL, &status);
+   if( status==KEY_NO_EXIST ) status = 0;
+   
+   sprintf(keyword, "%s%d%c", Keys[isImage][cRefVal], Col2, dest);
+   ffgkyd(fptr, keyword, &yrval, NULL, &status);
+   if( status==KEY_NO_EXIST ) status = 0;
+   
+   sprintf(keyword, "%s%d%c", Keys[isImage][cRefPix], Col1, dest);
+   ffgkyd(fptr, keyword, &xrpix, NULL, &status);
+   if( status==KEY_NO_EXIST ) status = 0;
+   
+   sprintf(keyword, "%s%d%c", Keys[isImage][cRefPix], Col2, dest);
+   ffgkyd(fptr, keyword, &yrpix, NULL, &status);
+   if( status==KEY_NO_EXIST ) status = 0;
+   
+   anyKeysFnd = 0;
+   sprintf(keyword, "%s%d%c", Keys[isImage][cDelta], Col1, dest);
+   ffgkyd(fptr, keyword, &xinc,  NULL, &status);
+   if( status==KEY_NO_EXIST ) status = 0; else anyKeysFnd++;
+   
+   sprintf(keyword, "%s%d%c", Keys[isImage][cDelta], Col2, dest);
+   ffgkyd(fptr, keyword, &yinc,  NULL, &status);
+   if( status==KEY_NO_EXIST ) status = 0; else anyKeysFnd++;
+   
+   sprintf(keyword, "%s%d%c", Keys[isImage][cRota], Col2, dest);
+   ffgkyd(fptr, keyword, &rot,   NULL, &status);
+   if( status==KEY_NO_EXIST ) {
+      /*  Try other column  */
+      status = 0;
+      if( !isImage ) {
+         sprintf(keyword, "%s%d%c", Keys[isImage][cRota], Col1, dest);
+         ffgkyd(fptr, keyword, &rot, NULL, &status);
+         if( status==KEY_NO_EXIST ) {
+            status=0;
+         } else {
+            rot = -rot;
+            anyKeysFnd++;
+         }
+      }
+   } else
+      anyKeysFnd++;
+   
+   if( ! anyKeysFnd ) { /* Couldn't find old-style keys; look for new-style */
+      anyKeysFnd = 0;
+      matrix[0][0] = 1.0;
+      sprintf(keyword, "%s%d_%d%c", Keys[isImage][cMatrix], Col1, Col1, dest);
+      ffgkyd(fptr, keyword, &matrix[0][0],  NULL, &status);
+      if( status==KEY_NO_EXIST ) status = 0; else anyKeysFnd++;
+
+      matrix[1][1] = 1.0;
+      sprintf(keyword, "%s%d_%d%c", Keys[isImage][cMatrix], Col2, Col2, dest);
+      ffgkyd(fptr, keyword, &matrix[1][1],  NULL, &status);
+      if( status==KEY_NO_EXIST ) status = 0; else anyKeysFnd++;
+
+      matrix[0][1] = 0.0;
+      sprintf(keyword, "%s%d_%d%c", Keys[isImage][cMatrix], Col1, Col2, dest);
+      ffgkyd(fptr, keyword, &matrix[0][1],  NULL, &status);
+      if( status==KEY_NO_EXIST ) status = 0; else anyKeysFnd++;
+
+      matrix[1][0] = 0.0;
+      sprintf(keyword, "%s%d_%d%c", Keys[isImage][cMatrix], Col2, Col1, dest);
+      ffgkyd(fptr, keyword, &matrix[1][0],  NULL, &status);
+      if( status==KEY_NO_EXIST ) status = 0; else anyKeysFnd++;
+
+      if( anyKeysFnd ) {
+
+         /* Modified from CFITSIO... compute old-style from new-style */
+
+         double phia, phib;
+         double pi = 3.1415926535897932;
+
+         /* there are 2 ways to compute the angle: */
+         phia = atan2d( matrix[1][0], matrix[0][0]);
+         phib = atan2d(-matrix[0][1], matrix[1][1]);
+         
+         /* ensure that phia <= phib */
+         temp = minvalue(phia, phib);
+         phib = maxvalue(phia, phib);
+         phia = temp;
+         
+         /* there is a possible 180 degree ambiguity in the angles */
+         /* so add 180 degress to the smaller value if the values  */
+         /* differ by more than 90 degrees = pi/2 radians.         */
+         /* (Later, we may decide to take the other solution by    */
+         /* subtracting 180 degrees from the larger value).        */
+         
+         if( (phib - phia) > (pi * 0.5) )
+            phia += pi;
+         
+         if( fabs(phia - phib) > 0.0002 ) {
+            /* angles don't agree, so looks like there is some skewness */
+            /* between the axes.  Return with an error to be safe.      */
+            /* PDW: Lets just ignore this and give the best estimate we can.
+                    status = APPROX_WCS_KEY; */
+         }
+         
+         phia = (phia + phib) * 0.5;  /* use the average of the 2 values */
+         temp = cosd(phia);
+         if( fabs(temp)<0.1 ) {
+            temp = sind(phia);
+            xinc = matrix[1][0] / temp;
+            yinc =-matrix[0][1] / temp;
+         } else {
+            xinc = matrix[0][0] / temp;
+            yinc = matrix[1][1] / temp;
+         }
+         rot  = phia * 180. / pi;
+         
+         /* common usage is to have a positive yinc value.  If it is */
+         /* negative, then subtract 180 degrees from rot and negate  */
+         /* both xinc and yinc.  */
+         
+         if( yinc < 0 ) {
+            xinc = -xinc;
+            yinc = -yinc;
+            rot -= 180.0;
+         }
+
+      } /* else keep default delt/rot = 1/0 */
+         
+   }
+
+   /*  Read both RA and DEC CTYPs to check that they both exist and agree  */
+
+   sprintf(keyword, "%s%d%c", Keys[isImage][cType], Col1, dest);
+   ffgkys(fptr, keyword, ctype,  NULL, &status);
+   sprintf(keyword, "%s%d%c", Keys[isImage][cType], Col2, dest);
+   ffgkys(fptr, keyword, ctemp,  NULL, &status);
+   if( status || strlen(ctype)<5 || strlen(ctemp)<5
+       || strcmp(ctype+4,ctemp+4) ) {
+      strcpy(ctype,"none"); status = 0;
+   } else {
+      if( !strncmp(ctype, "DEC-", 4) || !strncmp(ctype+1, "LAT", 3) ) {
+         /*   RA/Dec are swapped!!!  */
+         swap = 1;
+      }
+      /* copy the projection type string */
+      strncpy(ctype, &ctype[4], 4);
+      ctype[4] = '\0';
+   }
+
+   data[0] = Tcl_NewDoubleObj(xrval);
+   data[1] = Tcl_NewDoubleObj(yrval);
+   data[2] = Tcl_NewDoubleObj(xrpix);
+   data[3] = Tcl_NewDoubleObj(yrpix);
+   data[4] = Tcl_NewDoubleObj(xinc);
+   data[5] = Tcl_NewDoubleObj(yinc);
+   data[6] = Tcl_NewDoubleObj(rot);
+   data[7] = Tcl_NewStringObj(ctype,-1);
+
+/*
+fprintf(stdout, "xrval: %20.15f, yrval: %20.15f, xrpix: %20.15f, yrpix: %20.15f, xinc: %20.15f, yinc: %20.15f, rot: %20.15f: %20.15f\n", xrval, yrval, xrpix, yrpix, xinc, yinc, rot);
+fflush(stdout); 
+*/
+   if( userOptions.wcsSwap ) {
+      data[8] = Tcl_NewBooleanObj( swap );
+      Tcl_ListObjAppendElement(curFile->interp, listObj, Tcl_NewListObj(9,data) );
+   } else {
+      Tcl_ListObjAppendElement(curFile->interp, listObj, Tcl_NewListObj(8,data) );
+   }
+   
+   ffcmsg();
+   Tcl_SetObjResult(curFile->interp, listObj);
+
+   return TCL_OK;
+}
+
+
+/* extract the world coordinate from a table  */
+/*    (Old behavior... deprecated)            */
 
 /* extract the world coordinate from an image header */
 
@@ -6122,8 +6665,8 @@ int fitsGetWcsPair( FitsFD *curFile, int Col1, int Col2, char dest )
          double pi = 3.1415926535897932;
 
          /* there are 2 ways to compute the angle: */
-         phia = atan2( matrix[1][0], matrix[0][0]);
-         phib = atan2(-matrix[0][1], matrix[1][1]);
+         phia = atan2d( matrix[1][0], matrix[0][0]);
+         phib = atan2d(-matrix[0][1], matrix[1][1]);
          
          /* ensure that phia <= phib */
          temp = minvalue(phia, phib);
@@ -6147,9 +6690,9 @@ int fitsGetWcsPair( FitsFD *curFile, int Col1, int Col2, char dest )
          }
          
          phia = (phia + phib) * 0.5;  /* use the average of the 2 values */
-         temp = cos(phia);
+         temp = cosd(phia);
          if( fabs(temp)<0.1 ) {
-            temp = sin(phia);
+            temp = sind(phia);
             xinc = matrix[1][0] / temp;
             yinc =-matrix[0][1] / temp;
          } else {
