@@ -68,7 +68,7 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    for(i=0; i<npt; i++) {
       for(j=0; j<npt; j++) {
          /* Gaussienne Synthtetique */
-         fgauss1_2d(i, j, a, &synthetic[i][j], dyda, MA);
+         fgauss1_2d((float)i, (float)j, a, &synthetic[i][j], dyda, MA);
          /* Gaussienne Residuelle */
          residus[i][j] = synthetic[i][j] - zs[i][j];
          /* Calcul du flux integre */
@@ -98,16 +98,16 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    p[3] = uncertainties[4];
 
    //  4    "fwhmx" 
-   p[4] = a[5]*2.35482;
+   p[4] = (float)(a[5]*2.35482);
 
    //  5    "fwhmy" 
-   p[5] = a[6]*2.35482;
+   p[5] = (float)(a[6]*2.35482);
 
    //  6    "fwhm" 
-   p[6] = sqrt((p[4]*p[4]+p[5]*p[5])/2.0);
+   p[6] = (float)(sqrt((p[4]*p[4]+p[5]*p[5])/2.0));
 
    //  7    "flux" 
-   p[7] = a[2] * 2 * M_PI * a[5] * a[6];
+   p[7] = (float)(a[2] * 2 * M_PI * a[5] * a[6]);
    
    //  8    "err_flux" 
    p[8] = 0;
@@ -128,7 +128,7 @@ void coeff2param (int npt, float **zs, float *a, float *p, float *uncertainties,
    p[13] = p[7] / sqrt( p[7] + npt * a[1] );
 
    //  14   "radius" 
-   p[14] = (int) (npt/2);
+   p[14] = (float)((int) (npt/2));
 
    //  16   "err_psf" 
    p[15] = 0;
@@ -146,7 +146,7 @@ void fgauss(float x, float a[], float *y, float dyda[], int na)
 	for (i=1; i<=na-1; i+=3) {
 		arg=(x-a[i+1])/a[i+2];
 		ex=exp(-arg*arg);
-		fac=a[i]*ex*2.0*arg;
+		fac=(float)(a[i]*ex*2.0*arg);
 		*y += a[i]*ex;
 		dyda[i]=ex;
 		dyda[i+1]=fac/a[i+2];
@@ -170,7 +170,7 @@ void fgauss1(float x, float a[], float *y, float dyda[], int na)
    //printf("fgauss1 A : %f %f %f %f \n",a[1],a[2],a[3],a[4]);
 	arg=(x-a[3])/a[4];
 	ex=exp(-arg*arg);
-	fac=a[2]*ex*2.0*arg;
+	fac=(float)(a[2]*ex*2.0*arg);
 	*y = a[1]+a[2]*ex;
 	dyda[1]=1;
 	dyda[2]=ex;
@@ -199,7 +199,7 @@ void fgauss3(float x, float a[], float *y, float dyda[], int na)
 
 	arg=(x-a[2])/a[3];
 	ex=exp(-arg*arg);
-	fac=a[1]*ex*2.0*arg;
+	fac=(float)(a[1]*ex*2.0*arg);
 	*y = a[1]*ex;
 	dyda[1]=ex;
 	dyda[2]=fac/a[3];
@@ -293,8 +293,8 @@ void minmax (float  **z, float *min, float *max, float *x, float *y, int npt)
          if (*min > z[i][j]) *min = z[i][j];
          if (*max < z[i][j]) {
             *max = z[i][j];
-            *x = i;
-            *y = j;
+            *x = (float)i;
+            *y = (float)j;
          }
       }
    }
@@ -335,11 +335,11 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
      Nouvelle forme de la gaussienne a ajuster. on lui retire un fond.
    */
    for (i=0; i < npt; i++) {
-      x[i] = i;
-      y[i] = i;
+      x[i] = (float)i;
+      y[i] = (float)i;
       for (j=0; j < npt; j++) {
          z[i][j] = zs[i][j] - min;
-         sig[i][j]=0.001;
+         sig[i][j]=(float)0.001;
       }
    }
 
@@ -354,7 +354,7 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
    a[2] = max-min;
    a[3] = x0;
    a[4] = y0;
-   a[5] = 1.1;
+   a[5] = (float)1.1;
    a[6] = 1.0;
    a[7] = 0 * M_PI / (float)180;
 
