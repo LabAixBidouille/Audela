@@ -79,6 +79,14 @@
 #define STRING_COMMON_LENGTH 1024
 
 /* Search zones structures */
+/* {RA,DEC} in DEGREE */
+typedef struct {
+	double  raStartInDeg;
+	double  raEndInDeg;
+	double  decStartInDeg;
+	double  decEndInDeg;
+	char isArroundZeroRa;
+} searchZoneRaDecDeg;
 /* {RA,DEC} in MAS */
 typedef struct {
 	int  raStartInMas;
@@ -128,6 +136,11 @@ typedef struct {
 	short int  magnitudeStartInDeciMag;
 	short int  magnitudeEndInDeciMag;
 } magnitudeBoxDeciMag;
+/* Mag */
+typedef struct {
+	int  magnitudeStartInMag;
+	int  magnitudeEndInMag;
+} magnitudeBoxMag;
 
 #define DEBUG 0
 
@@ -143,6 +156,8 @@ short convertBig2LittleEndianForShort(short int l);
 void convertBig2LittleEndianForArrayOfShort(short int* const inputArray, const int length);
 int sumNumberOfElements(const int* const inputArray,const int indexStart,const int indexEnd);
 int findComponentNumber(const int* const sortedArrayOfValues, const int lengthOfArray, const int value);
+void fillSearchZoneRaDecDeg(searchZoneRaDecDeg* const theSearchZone, const double raInDeg,const double decInDeg,
+		const double radiusInArcMin);
 void fillSearchZoneRaDecMas(searchZoneRaDecMas* const theSearchZone, const double raInDeg,const double decInDeg,
 		const double radiusInArcMin);
 void fillSearchZoneRaSpdMas(searchZoneRaSpdMas* const theSearchZone, const double raInDeg,const double decInDeg,
@@ -154,6 +169,7 @@ void fillSearchZoneRaSpdCas(searchZoneRaSpdCas* const theSearchZone, const doubl
 void fillMagnitudeBoxMilliMag(magnitudeBoxMilliMag* const magnitudeBox, const double magMin, const double magMax);
 void fillMagnitudeBoxCentiMag(magnitudeBoxCentiMag* const magnitudeBox, const double magMin, const double magMax);
 void fillMagnitudeBoxDeciMag(magnitudeBoxDeciMag* const magnitudeBox, const double magMin, const double magMax);
+void fillMagnitudeBoxMag(magnitudeBoxMag* const magnitudeBox, const double magMin, const double magMax);
 /* Francois Ochsenbein's methods */
 int getBits(unsigned char * const a, const int b, const int length);
 int xget4(unsigned char * const a, const int b, const int length, const int max, const int * const xtra4);
