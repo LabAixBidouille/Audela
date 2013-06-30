@@ -3,7 +3,7 @@
 include ../../Makefile.defs
 
 DIR = fitstcl
-CFITSIO=$(ROOT)/external/cfitsio/cfitsio3210
+CFITSIO=$(ROOT)/external/cfitsio/cfitsio3340
 
 
 #
