@@ -23,13 +23,25 @@
 
 #include <stdio.h>
 
+/* --- definition de l'operating systeme (OS) employe pour compiler    ---*/
+#include "sysexp.h"
+
+/* To use defined math.h constants M_* and isnan for Windows */
+#if defined (OS_WIN) 
+#define _USE_MATH_DEFINES
+#include <float.h>
+#define isnan(x) _isnan(x)
+#define isinf(x) (!_finite(x))
+#define fpu_error(x) (isinf(x) || isnan(x))
+#endif
+
 #define MA 7
 #define NB_PARAM 15
 
 static float sqrarg;
 #define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
 
-#if defined(__STDC__) || defined(ANSI) || defined(NRANSI) /* ANSI */
+#if defined(__STDC__) || defined(ANSI) || defined(NRANSI) || defined (OS_WIN) /* ANSI */
 
 void nrerror(char error_text[]);
 float *vector(long nl, long nh);

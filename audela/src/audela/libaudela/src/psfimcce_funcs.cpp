@@ -434,7 +434,7 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
             mean += residus[i][j];
          }
       }
-      mean = mean / pow(npt,2) ;
+      mean = mean / pow((float)npt,2) ;
       
       if (log) printf("mean = %f a1 = %f\n",mean,a[1]);
 
