@@ -1675,9 +1675,6 @@ void CPixelsRgb::NOffset(float offset)
 void CPixelsRgb::Offset(float offset)
 {
 
-   int datatype;
-   char *s;
-
    throw CError(ELIBSTD_NOT_IMPLEMENTED);
 
    /*

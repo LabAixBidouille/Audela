@@ -36,11 +36,11 @@ float gasdev(long *idum)
 	if (*idum < 0) iset=0;
 	if  (iset == 0) {
 		do {
-			v1=2.0*ran1(idum)-1.0;
-			v2=2.0*ran1(idum)-1.0;
+			v1=(float)(2.0*ran1(idum)-1.0);
+			v2=(float)(2.0*ran1(idum)-1.0);
 			rsq=v1*v1+v2*v2;
 		} while (rsq >= 1.0 || rsq == 0.0);
-		fac=sqrt(-2.0*log(rsq)/rsq);
+		fac=(float)(sqrt(-2.0*log(rsq)/rsq));
 		gset=v1*fac;
 		iset=1;
 		return v2*fac;
@@ -105,8 +105,8 @@ void gaussj(float **a, int n, float **b, int m)
         subtil non ?
         if (a[icol][icol] == 0.0) nrerror("gaussj: Singular Matrix");
       */
-      if (a[icol][icol] == 0.0) pivinv=1.0e-10;
-		pivinv=1.0/a[icol][icol];
+      if (a[icol][icol] == 0.0) pivinv=(float)1.0e-10;
+		pivinv=(float)(1.0/a[icol][icol]);
 		a[icol][icol]=1.0;
 		for (l=1;l<=n;l++) a[icol][l] *= pivinv;
 		for (l=1;l<=m;l++) b[icol][l] *= pivinv;
@@ -147,7 +147,7 @@ void mrqcof(float x[], float y[], float sig[], int ndata, float a[], int ia[],
 	*chisq=0.0;
 	for (i=1;i<=ndata;i++) {
 		(*funcs)(x[i],a,&ymod,dyda,ma);
-		sig2i=1.0/(sig[i]*sig[i]);
+		sig2i=(float)(1.0/(sig[i]*sig[i]));
 		dy=y[i]-ymod;
 		for (j=0,l=1;l<=ma;l++) {
 			if (ia[l]) {
@@ -187,14 +187,14 @@ void mrqmin(float x[], float y[], float sig[], int ndata, float a[], int ia[],
 		for (mfit=0,j=1;j<=ma;j++)
 			if (ia[j]) mfit++;
 		oneda=matrix(1,mfit,1,1);
-		*alamda=0.001;
+		*alamda=(float)0.001;
 		mrqcof(x,y,sig,ndata,a,ia,ma,alpha,beta,chisq,funcs);
 		ochisq=(*chisq);
 		for (j=1;j<=ma;j++) atry[j]=a[j];
 	}
 	for (j=1;j<=mfit;j++) {
 		for (k=1;k<=mfit;k++) covar[j][k]=alpha[j][k];
-		covar[j][j]=alpha[j][j]*(1.0+(*alamda));
+		covar[j][j]=(float)(alpha[j][j]*(1.0+(*alamda)));
 		oneda[j][1]=beta[j];
 	}
 	gaussj(covar,mfit,oneda,1);
@@ -212,7 +212,7 @@ void mrqmin(float x[], float y[], float sig[], int ndata, float a[], int ia[],
 		if (ia[l]) atry[l]=a[l]+da[++j];
 	mrqcof(x,y,sig,ndata,atry,ia,ma,covar,da,chisq,funcs);
 	if (*chisq < ochisq) {
-		*alamda *= 0.1;
+		*alamda *= (float)0.1;
 		ochisq=(*chisq);
 		for (j=1;j<=mfit;j++) {
 			for (k=1;k<=mfit;k++) alpha[j][k]=covar[j][k];
@@ -237,7 +237,7 @@ void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 	int ma, float **alpha, float beta[], float *chisq,
 	void (*funcs)(float, float, float [], float *, float [], int))
 {
-	int ix,iy,j,k,l,m,n,mfit=0;
+	int ix,iy,j,k,l,m,mfit=0;
 	float zmod,wt,sig2i,dy,*dyda;
 
 	dyda = vector(1,ma);
@@ -253,7 +253,7 @@ void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 	   for (iy=0;iy<ndata;iy++) {
 
 		   (*funcs)(x[ix],y[iy],a,&zmod,dyda,ma);
-		   sig2i=1.0/(sig[ix][iy]*sig[ix][iy]);
+		   sig2i=(float)1.0/(sig[ix][iy]*sig[ix][iy]);
 		   dy=z[ix][iy]-zmod;
 		   for (j=0,l=1;l<=ma;l++) {
 			   if (ia[l]) {
@@ -301,14 +301,14 @@ void mrqmin2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 		for (mfit=0,j=1;j<=ma;j++)
 			if (ia[j]) mfit++;
 		oneda=matrix(1,mfit,1,1);
-		*alamda=0.001;
+		*alamda=(float)0.001;
 		mrqcof2D(x,y,z,sig,ndata,a,ia,ma,alpha,beta,chisq,funcs);
 		ochisq=(*chisq);
 		for (j=1;j<=ma;j++) atry[j]=a[j];
 	}
 	for (j=1;j<=mfit;j++) {
 		for (k=1;k<=mfit;k++) covar[j][k]=alpha[j][k];
-		covar[j][j]=alpha[j][j]*(1.0+(*alamda));
+		covar[j][j]=(float)(alpha[j][j]*(1.0+(*alamda)));
 		oneda[j][1]=beta[j];
 	}
 
@@ -328,7 +328,7 @@ void mrqmin2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 		if (ia[l]) atry[l]=a[l]+da[++j];
 	mrqcof2D(x,y,z,sig,ndata,atry,ia,ma,covar,da,chisq,funcs);
 	if (*chisq < ochisq) {
-		*alamda *= 0.1;
+		*alamda *= (float)0.1;
 		ochisq=(*chisq);
 		for (j=1;j<=mfit;j++) {
 			for (k=1;k<=mfit;k++) alpha[j][k]=covar[j][k];
@@ -378,7 +378,7 @@ float ran1(long *idum)
 	j=iy/NDIV;
 	iy=iv[j];
 	iv[j] = *idum;
-	if ((temp=AM*iy) > RNMX) return RNMX;
+	if ((temp=(float)(AM*iy)) > RNMX) return (float)RNMX;
 	else return temp;
 }
 #undef IA
