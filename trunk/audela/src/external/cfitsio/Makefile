@@ -1,7 +1,7 @@
 .PHONY: build install clean distclean
 
 include ../../Makefile.defs
-DIR = cfitsio3210
+DIR = cfitsio3340
 
 build:
 	@if test ! -e $(DIR)/Makefile || test ../../Makefile.defs -nt $(DIR)/Makefile; then \
