@@ -616,6 +616,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\src\psfimcce.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\psfimcce_funcs.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\psfimcce_nr.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\setip.cpp"
 				>
 				<FileConfiguration
@@ -818,6 +830,10 @@
 			</File>
 			<File
 				RelativePath="..\src\palette.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\psfimcce.h"
 				>
 			</File>
 			<File
