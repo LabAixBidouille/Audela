@@ -48,7 +48,7 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="4"
+				DebugInformationFormat="0"
 				CompileAs="1"
 			/>
 			<Tool
@@ -211,6 +211,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cswfibc.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\libcatalog.c"
 				>
 			</File>
@@ -230,10 +234,6 @@
 				RelativePath="..\src\useful.c"
 				>
 			</File>
-			<File
-                RelativePath="..\src\cswfibc.c"
-                >
-            </File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -257,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cswfibc.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\libcatalog.h"
 				>
 			</File>
@@ -272,10 +276,6 @@
 				RelativePath="..\src\useful.h"
 				>
 			</File>
-			<File
-                RelativePath="..\src\cswfibc.h"
-                >
-            </File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
