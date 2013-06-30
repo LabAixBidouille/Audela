@@ -151,6 +151,10 @@ namespace eval ::foc {
       focBuildIF $This
    }
 
+   #------------------------------------------------------------
+   # adaptOutilFoc
+   #    adapte automatiquement l'interface graphique de l'outil
+   #------------------------------------------------------------
    proc adaptOutilFoc { { a "" } { b "" } { c "" } } {
       variable This
 
@@ -248,6 +252,10 @@ namespace eval ::foc {
       pack forget $This
    }
 
+   #------------------------------------------------------------
+   # cmdGo
+   #    lance le processus d'acquisition
+   #------------------------------------------------------------
    proc cmdGo { } {
       variable This
       global audace caption panneau
@@ -322,6 +330,10 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # cmdAcq
+   #    lance une acquisition
+   #------------------------------------------------------------
    proc cmdAcq { } {
       variable This
       global audace caption panneau
@@ -377,27 +389,27 @@ namespace eval ::foc {
             set s [ stat ]
             set maxi [ lindex $s 2 ]
             set fond [ lindex $s 7 ]
-            set ::contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
-            set ::inten [ format "%.0f" [ expr $maxi-$fond ] ]
-            lappend ::graphik(inten) $::inten
-            lappend ::graphik(contr) $::contr
+            set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
+            set inten [ format "%.0f" [ expr $maxi-$fond ] ]
+            lappend ::graphik(inten) $inten
+            lappend ::graphik(contr) $contr
             #--- Fwhm
             set naxis1 [ expr [ lindex [ $buffer getkwd NAXIS1 ] 1 ]-0 ]
             set naxis2 [ expr [ lindex [ $buffer getkwd NAXIS2 ] 1 ]-0 ]
             set box [ list 1 1 $naxis1 $naxis2 ]
             set f [ $buffer fwhm $box ]
-            set ::fwhmx [ lindex $f 0 ]
-            set ::fwhmy [ lindex $f 1 ]
-            lappend ::graphik(fwhmx) $::fwhmx
-            lappend ::graphik(fwhmy) $::fwhmy
+            lassign $f fwhmx fwhmy
+            lappend ::graphik(fwhmx) $fwhmx
+            lappend ::graphik(fwhmy) $fwhmy
+
             #--- Graphique
-            append ::graphik(fichier) "$::inten $::fwhmx $::fwhmy $::contr \n"
+            append ::graphik(fichier) "$inten $fwhmx $fwhmy $contr \n"
             visuf g_inten $::graphik(compteur) $::graphik(inten) "$caption(foc,intensite_adu)" no
             visuf g_fwhmx $::graphik(compteur) $::graphik(fwhmx) "$caption(foc,fwhm_x)" no
             visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" no
             visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
             #--- Valeurs a l'ecran
-            ::foc::qualiteFoc
+            ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
             update
             after idle ::foc::cmdAcq
          }
@@ -416,7 +428,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # attendImage
-   #  sous processus de cmdAcq
+   #    sous processus de cmdAcq
    #------------------------------------------------------------
    proc attendImage { message args } {
       global audace panneau
@@ -443,7 +455,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # dispTime
-   #  compte a rebours du temps d'exposition
+   #    compte a rebours du temps d'exposition
    #------------------------------------------------------------
    proc dispTime { } {
       global audace panneau
@@ -470,7 +482,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # avancementPose
-   #  sous processus de cmdAcq et de dispTime
+   #    sous processus de cmdAcq et de dispTime
    #------------------------------------------------------------
    proc avancementPose { t } {
       global audace caption color conf panneau
@@ -571,23 +583,25 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # closePositionAvancementPose
-   #   ferme la fenetre d'avancement de la pose st sauve sa position
+   #    ferme la fenetre d'avancement de la pose st sauve sa position
    #------------------------------------------------------------
    proc closePositionAvancementPose { } {
       global audace conf
 
+      set w $audace(base).progress
+
       if [ winfo exists $audace(base).progress_pose ] {
          #--- Determination de la position de la fenetre
-         regsub {([0-9]+x[0-9]+)} [ wm geometry $audace(base).progress_pose ] "" conf(foc,avancement,position)
+         regsub {([0-9]+x[0-9]+)} [ wm geometry $w ] "" conf(foc,avancement,position)
 
          #--- Je supprime la fenetre s'il n'y a plus de pose en cours
-         destroy $audace(base).progress_pose
+         destroy $w
       }
    }
 
    #------------------------------------------------------------
    # cmdStop
-   #  cmd du bouton STOP/RAZ
+   #    cmd du bouton STOP/RAZ
    #------------------------------------------------------------
    proc cmdStop { } {
       variable This
@@ -631,7 +645,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # cmdSauveLog
-   #  sous processus de cmdStop
+   #    sous processus de cmdStop
    # Parametre : chemin du fichier
    #------------------------------------------------------------
    proc cmdSauveLog { namefile } {
@@ -690,7 +704,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # cmdInitFoc
-   #  cmd du bouton 'Initialisation'
+   #    cmd du bouton 'Initialisation'
    #------------------------------------------------------------
    proc cmdInitFoc { } {
       variable This
@@ -881,7 +895,7 @@ namespace eval ::foc {
    #    affiche la valeur des parametres dans une fenetre
    # Parametres : les valeurs a afficher
    #------------------------------------------------------------
-   proc qualiteFoc { } {
+   proc qualiteFoc { inten fwhmx fwhmy contr } {
       global audace caption conf panneau
 
       #--- Fenetre d'affichage des parametres de la foc
@@ -898,13 +912,13 @@ namespace eval ::foc {
       #--- Cree les etiquettes
       label $audace(base).parafoc.lab1 -text "$panneau(foc,compteur)"
       pack $audace(base).parafoc.lab1 -padx 10 -pady 2
-      label $audace(base).parafoc.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $::inten"
+      label $audace(base).parafoc.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
       pack $audace(base).parafoc.lab2 -padx 5 -pady 2
-      label $audace(base).parafoc.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $::fwhmx"
+      label $audace(base).parafoc.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
       pack $audace(base).parafoc.lab3 -padx 5 -pady 2
-      label $audace(base).parafoc.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $::fwhmy"
+      label $audace(base).parafoc.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
       pack $audace(base).parafoc.lab4 -padx 5 -pady 2
-      label $audace(base).parafoc.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $::contr"
+      label $audace(base).parafoc.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
       pack $audace(base).parafoc.lab5 -padx 5 -pady 2
       update
 
@@ -915,16 +929,18 @@ namespace eval ::foc {
    #------------------------------------------------------------
    # fermeQualiteFoc
    #    ferme la fenetre de la qualite et sauve sa position
-   #  Parametre : chemin de la fenetre
+   # Parametre : chemin de la fenetre
    #------------------------------------------------------------
    proc fermeQualiteFoc { } {
       global audace conf
 
+      set w $audace(base).parafoc
+
       #--- Determination de la position de la fenetre
-      regsub {([0-9]+x[0-9]+)} [wm geometry $audace(base).parafoc] "" conf(parafoc,position)
+      regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(parafoc,position)
 
       #--- Fermeture de la fenetre
-      destroy $audace(base).parafoc
+      destroy $w
    }
 
 }
@@ -1018,16 +1034,18 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
 #------------------------------------------------------------
 # fermeGraphe
 #    ferme la fenetre des graphes et sauve la position
-#  Parametre : chemin de la fenetre
+# Parametre : chemin de la fenetre
 #------------------------------------------------------------
 proc fermeGraphe { } {
    global audace conf
 
+   set w $audace(base).visufoc
+
    #--- Determination de la position de la fenetre
-   regsub {([0-9]+x[0-9]+)} [wm geometry $audace(base).visufoc] "" conf(visufoc,position)
+   regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(visufoc,position)
 
    #--- Fermeture de la fenetre
-   destroy $audace(base).visufoc
+   destroy $w
 }
 
 #------------------------------------------------------------
@@ -1118,7 +1136,6 @@ proc focBuildIF { This } {
 
          #--- Label pour moteur focus
          label $This.fra4.lab1 -text $caption(foc,moteur_focus) -relief flat
-
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1
 
          #--- Create the buttons '- +'
