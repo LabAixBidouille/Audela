@@ -16,10 +16,11 @@ set version $a
 #set version 2.0.1
 set makes {audela bin}
 #set makes {audela bin src ros}
+# potential problem with src
 
 set rosfiles ""
 if {[lsearch -exact $makes ros]>=0} {
-	set base "[file dirname [info script]]/../../../"
+	set base "[file normalize [file dirname [info script]]/../../../../]/"
 	set rosfiles [glob -nocomplain ${base}ros*]
 }
 set newlist ""
@@ -33,7 +34,6 @@ foreach rosfile $rosfiles {
 	lappend newlist $rosfile
 }
 set makes $newlist
-
 
 proc analdir { base } {
    global tab result resultfile f base0 make
@@ -131,7 +131,11 @@ proc analdir { base } {
             if {$make=="audela"} {
 	            append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
             } else {
-	            append result "\"$thisfile\" \"$name3\"\n"
+               if {([string range $make 0 2]=="ros")} {
+                  append result "\"$thisfile\" \"${make}/${name3}\"\n"
+               } else {
+                  append result "\"$thisfile\" \"${name3}\"\n"
+               }
             }
          }
       }
@@ -154,17 +158,14 @@ proc analdir { base } {
             } else {
                set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
             }
-            #::console::affiche_resultat ">>>> $thisfile => $make => [lindex $repertoires 1] / [lindex $repertoires 2]\n"
+            ::console::affiche_resultat ">>>> $thisfile => $make => [lindex $repertoires 1] / [lindex $repertoires 2]\n"
             if {(($make=="audela")||($make=="bin")) && !( ([lindex $repertoires 1]=="gui") || ([lindex $repertoires 1]=="bin") || ([lindex $repertoires 1]=="lib") || ([lindex $repertoires 1]=="images") ) } {
-               continue
-            } elseif { (($make!="audela")&&($make!="bin")) && ($make!=[lindex $repertoires 1]) } {
-	            #::console::affiche_resultat ">>>> EXPLORATION\n"
                continue
             }
             if {($make=="ros") && ( ([lindex $repertoires 2]=="logs") || ([lindex $repertoires 2]=="ressources") || ([lindex $repertoires 2]=="catalogs") || ([lindex $repertoires 2]=="data") || ([lindex $repertoires 2]=="extinctionmaps")  ) } {
 	            continue
             }
-            #::console::affiche_resultat "= $thisfile"
+            ::console::affiche_resultat "= $thisfile"
 				if { ([file tail $thisfile] != "CVS") && ([file tail $thisfile] != ".svn") && ([file tail $thisfile] != "Debug") && ([file tail $thisfile] != "Release") && ([file tail $thisfile] != "Output") } {
 					analdir $thisfile
 				}
@@ -178,8 +179,16 @@ global tab result resultfile f base0 make level
 foreach make $makes {
 
    ::console::affiche_resultat "make $make\n"
-	set base "[file dirname [info script]]/../../../"
-	set base0 "$base"
+   set base "[file normalize [file dirname [info script]]/../../../]/"
+   set base0 "$base"
+	if {($make=="src")} {
+      set base2 "[file normalize [file dirname [info script]]/../../../]/${make}/"
+      set base0 "$base2"
+   }
+	if {([string range $make 0 2]=="ros")} {
+      set base2 "[file normalize [file dirname [info script]]/../../../../]/${make}/"
+      set base0 "$base2"
+   }
 	set tab 0
 	if {$base=="."} {
 	   set base [pwd]
@@ -199,7 +208,7 @@ foreach make $makes {
 		# --- efface les fichiers en trop dans bin
 		file delete -force "${base}/bin/audela.log"
 		#file delete _force "${base}/bin/audace.txt"
-	}
+   }
 
 	if {$make=="audela"} {
 		set resultfile "${base}/src/tools/innosetup/audela-${version}.iss"
@@ -246,12 +255,17 @@ foreach make $makes {
 		set f [open $resultfile a]
 		puts -nonewline $f "$result"
 		close $f
+      
 	} else {
-		set resultfile "${base}src/tools/innosetup/audela_${make}-${version}.txt"
+
+      set resultfile "${base}src/tools/innosetup/audela_${make}-${version}.txt"
 		file delete -force -- "$resultfile"
 		set result ""
-		analdir $base
-
+      if {($make=="src")||([string range $make 0 2]=="ros")} {
+         analdir $base2
+      } else {
+         analdir $base
+      }
 		file delete -force -- ${base}/src/tools/innosetup/audela_${make}-${version}.zip
 		set f [open $resultfile r]
 		set lignes [split [read $f] \n]
@@ -261,7 +275,7 @@ foreach make $makes {
 				continue
 			}
 			file mkdir [file dirname "${base}src/tools/innosetup/Output/[lindex $ligne 1]"]
-			file copy -force -- "[lindex $ligne 0]" "${base}src/tools/innosetup/Output/[lindex $ligne 1]"
+			catch {file copy -force -- "[lindex $ligne 0]" "${base}src/tools/innosetup/Output/[lindex $ligne 1]"}
 		   #::console::affiche_resultat "$lignexe\n"
 		}
 		if {$make!="bin"} {
