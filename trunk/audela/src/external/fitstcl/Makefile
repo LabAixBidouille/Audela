@@ -2,7 +2,7 @@
 
 include ../../Makefile.defs
 
-DIR = fitstcl
+DIR = fitstcl21
 CFITSIO=$(ROOT)/external/cfitsio/cfitsio3340
 
 

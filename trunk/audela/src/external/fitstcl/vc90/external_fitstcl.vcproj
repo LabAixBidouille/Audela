@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\include\win;..\..\cfitsio\cfitsio3210"
+				AdditionalIncludeDirectories="..\..\include;..\..\include\win;..\..\cfitsio\cfitsio3340"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;_CRT_SECURE_NO_WARNINGS;__WIN32__;_export=__cdecl"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -83,7 +83,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib"
 				GenerateManifest="false"
-				ModuleDefinitionFile="..\fitstcl\fitstcl.def"
+				ModuleDefinitionFile="..\fitstcl23\fitstcl.def"
 				ProgramDatabaseFile=".\Release/libfitstcl.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -148,7 +148,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3210"
+				AdditionalIncludeDirectories="..\..\include,..\..\include\win,..\..\cfitsio\cfitsio3340"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_USRDLL;FITSTCL_EXPORTS;_CRT_SECURE_NO_WARNINGS;__WIN32__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -180,7 +180,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib"
-				ModuleDefinitionFile="..\fitstcl\fitstcl.def"
+				ModuleDefinitionFile="..\fitstcl23\fitstcl.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/libfitstcl.pdb"
 				RandomizedBaseAddress="1"
@@ -220,7 +220,7 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\fitstcl\fitsCmds.c"
+				RelativePath="..\fitstcl23\fitsCmds.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -242,7 +242,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\fitstcl\fitsInit.c"
+				RelativePath="..\fitstcl23\fitsInit.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -264,7 +264,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\fitstcl\fitsIO.c"
+				RelativePath="..\fitstcl23\fitsIO.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -286,7 +286,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\fitstcl\fitsTcl.c"
+				RelativePath="..\fitstcl23\fitsTcl.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -308,33 +308,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\fitstcl\fitstcl.def"
+				RelativePath="..\fitstcl23\fitstcl.def"
 				>
 			</File>
 			<File
-				RelativePath="..\fitstcl\fitsUtils.c"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\fitstcl\fvTcl.c"
+				RelativePath="..\fitstcl23\fitsUtils.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -356,7 +334,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\fitstcl\tclShared.c"
+				RelativePath="..\fitstcl23\fvTcl.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -378,7 +356,29 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\fitstcl\wcslib\wcstrig.c"
+				RelativePath="..\fitstcl23\tclShared.c"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\fitstcl23\wcslib\wcstrig.c"
 				>
 			</File>
 		</Filter>
@@ -386,11 +386,11 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath="..\fitstcl\fitsTcl.h"
+				RelativePath="..\fitstcl23\fitsTcl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\fitstcl\fitsTclInt.h"
+				RelativePath="..\fitstcl23\fitsTclInt.h"
 				>
 			</File>
 		</Filter>
