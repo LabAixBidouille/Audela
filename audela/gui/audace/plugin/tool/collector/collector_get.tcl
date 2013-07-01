@@ -160,10 +160,12 @@
             set sens [string index $sitelong 0]
             #--   transforme la longitude en angle
             set sitelong [string range $sitelong 1 end]
-            set longitude [string trim [mc_angle2deg $sitelong] ]
+            set longitude [mc_angle2deg $sitelong]
+
             #--   transforme la latitude en angle
             set sitelat [string range $sitelat 1 end]
-            set latitude [string trim [mc_angle2deg $sitelat]]
+            set latitude [mc_angle2deg $sitelat]
+
             set tel_gps "GPS $longitude $sens $latitude $siteelev"
          }
       }
@@ -459,8 +461,8 @@
          return [lrepeat 4 -]
       }
 
-      set crval1 [string trim [mc_angle2deg $ra]]
-      set crval2 [string trim [mc_angle2deg $dec]]
+      set crval1 [mc_angle2deg $ra]
+      set crval2 [mc_angle2deg $dec]
 
       set pi [ expr { 4 * atan(1) } ]
 
