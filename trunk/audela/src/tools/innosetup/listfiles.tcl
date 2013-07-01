@@ -158,14 +158,14 @@ proc analdir { base } {
             } else {
                set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
             }
-            ::console::affiche_resultat ">>>> $thisfile => $make => [lindex $repertoires 1] / [lindex $repertoires 2]\n"
-            if {(($make=="audela")||($make=="bin")) && !( ([lindex $repertoires 1]=="gui") || ([lindex $repertoires 1]=="bin") || ([lindex $repertoires 1]=="lib") || ([lindex $repertoires 1]=="images") ) } {
+            #::console::affiche_resultat ">>>> $thisfile => $make => [lindex $repertoires 1] / [lindex $repertoires 2]\n"
+            if {(($make=="audela")||($make=="bin")) && !( ([lindex $repertoires 1]=="gui") || ([lindex $repertoires 1]=="bin") || ([lindex $repertoires 1]=="doc") || ([lindex $repertoires 1]=="lib") || ([lindex $repertoires 1]=="images") ) } {
                continue
             }
             if {($make=="ros") && ( ([lindex $repertoires 2]=="logs") || ([lindex $repertoires 2]=="ressources") || ([lindex $repertoires 2]=="catalogs") || ([lindex $repertoires 2]=="data") || ([lindex $repertoires 2]=="extinctionmaps")  ) } {
 	            continue
             }
-            ::console::affiche_resultat "= $thisfile"
+            #::console::affiche_resultat "= $thisfile"
 				if { ([file tail $thisfile] != "CVS") && ([file tail $thisfile] != ".svn") && ([file tail $thisfile] != "Debug") && ([file tail $thisfile] != "Release") && ([file tail $thisfile] != "Output") } {
 					analdir $thisfile
 				}
