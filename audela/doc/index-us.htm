@@ -11,12 +11,13 @@
 <h1>AudeLA&nbsp;</h1>
 <h2>A software and a Tcl/Tk extension for astronomy </h2>
 <h1> 1. Introduction</h1>
-<p><a href="http://www.audela.org">AudeLA</a> is a standalone software
+<p><a href="http://www.audela.org">AudeLA</a> is a standalone
+astronomical software
 and an<a href="http://wiki.tcl.tk/940"> extension</a> of the <a
  href="http://www.tcl.tk/">Tcl/Tk langage</a>.&nbsp;</p>
 As a Tcl/Tk extension, AudeLA provides a set of astronomical functions
 to drive modern instruments (telescopes and cameras). Celestial
-mechanics and image processing and analyzong are also included in the
+mechanics and image processing are also included in the
 set of Tcl/Tk extension commands.<br />
 <br />
 AudeLA is distributed with a graphical interface&nbsp;which is called
@@ -27,7 +28,8 @@ Any Tcl/Tk script can be executed in a AudeLA process. It opens the
 possibility to personalize the software without any limit. All the
 devices of an observatory can be driven by AudeLA.<br />
 <h1>2. Using AudeLA as a standalone software</h1>
-Download the last&nbsp;version of the binary installation. Linux and
+Download the<a href="http://www.audela.org"> last&nbsp;version of the
+binary installation</a>. Linux and
 Windows versions are available.<br />
 This is a simpliest way to discover AudeLA and to use it for
 astronomical observations.<br />
@@ -37,7 +39,8 @@ The Aud'ACE graphical interface provides a window to display images and
 a terminal window to execute Tcl/Tk scripts.<br />
 <br />
 AudeLA uses professional librairies to manipulate data (FITSIO,
-Sextractor) and can read stellar catalogs (USNO, UCAC, Tycho, NOMAD1
+Sextractor, Virtual Observatory service access) and can read many
+stellar catalogs (USNO, UCAC, Tycho, NOMAD1
 etc.)<br />
 <br />
 AudeLA drives:<br />
@@ -50,6 +53,13 @@ Hi-SIS, Kitty, QSI, SBig, Starlight, Webcams.</li>
 &nbsp;port, serial port, QuickRemote, Velleman</li>
   <li>Focusers : AudeCOm, JMI, LX200, LhiresIII</li>
 </ul>
+The Aud'ACE graphical interface provides tens of thematic tools to
+acquire images (video, guiding, eShel spectrometer, etc.) drive
+telescopes (King, pointing model, etc.) and to analyze data
+(calibrations, extracting light curves, searching for supernovae,
+etc.).
+<ul>
+</ul>
 <h1>3. Using AudeLA as a CGI in a web service</h1>
 From the binary installation it is possible to deploy AudeLA as a CGI
 web service.<br />
@@ -57,9 +67,10 @@ To deploy AudeLA as a CGI, execute the following command in the
 terminal window: <br />
 <pre>source $audace(rep_install)/bin/cgi_install.tcl ; ::cgi_install::run</pre>
 Fill the form and valid the Deploy button.<br />
-Read the help in the folder audela/gui/cgi<br />
+Read the help in the folder <a href="../gui/cgi">audela/gui/cgi</a><br />
 <h1>4. Write your own scripts to drive your observatory</h1>
-The Tcl/Tk script langage provides the way to add new functions or to
+The<a href="http://www.tcl.tk/man/"> Tcl/Tk script langage</a> provides
+the way to add new functions or to
 execute series a commands to drive the devices of your observatory all
 over the nights.<br />
 For example, to acquire 100 images of 10 seconds with binning 2x2, you
