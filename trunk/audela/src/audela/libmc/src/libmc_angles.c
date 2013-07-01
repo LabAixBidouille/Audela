@@ -28,7 +28,7 @@ int Cmd_mctcl_xy2lonlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /* mc_xy2lonlat 0 0 0 0.1 100 100 50 100 100                                */
 /* mc_xy2lonlat 0 0 0 0.5 100 100 50 100 111.1803                           */
 /****************************************************************************/
-   char s[100];
+   char s[100],ss[100];
    double lc,bc,p,f,xc,yc,rc,i,j,pui,ls,bs;
    double lon,lat,visibility;
 
@@ -66,7 +66,10 @@ int Cmd_mctcl_xy2lonlat(ClientData clientData, Tcl_Interp *interp, int argc, cha
       ls*=(DR);
       bs*=(DR);
       mc_map_xy2lonlat(lc,bc,p,f,xc,yc,rc,ls,bs,pui,i,j,&lon,&lat,&visibility);
-      sprintf(s,"%s %s %s",mc_d2s(lon/(DR)),mc_d2s(lat/(DR)),mc_d2s(visibility));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(lon/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(lat/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(visibility)); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
    }
    return TCL_OK;
@@ -77,7 +80,7 @@ int Cmd_mctcl_lonlat2xy(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /* conversion des coordonnees sur la planete vers un pixel (x,y)            */
 /* mc_lonlat2xy 0 0 0 0 100 100 50 0 0                                      */
 /****************************************************************************/
-   char s[100];
+   char s[100],ss[100];
    double lc,bc,p,f,xc,yc,rc,pui,ls,bs,lon,lat;
    double i,j,visibility;
 
@@ -117,7 +120,10 @@ int Cmd_mctcl_lonlat2xy(ClientData clientData, Tcl_Interp *interp, int argc, cha
       lon*=(DR);
       lat*=(DR);
       mc_map_lonlat2xy(lc,bc,p,f,xc,yc,rc,ls,bs,pui,lon,lat,&i,&j,&visibility);
-      sprintf(s,"%s %s %s",mc_d2s(i),mc_d2s(j),mc_d2s(visibility));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(i)); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(j)); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(visibility)); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
    }
    return TCL_OK;
@@ -140,7 +146,7 @@ int Cmd_mctcl_baryvel(ClientData clientData, Tcl_Interp *interp, int argc, char 
 /****************************************************************************/
 
    double longi,rhocosphip,rhosinphip,asd2,dec2;
-   char s[100];
+   char s[255],ss[255];
    int planete;
    double v,x,y,z,vx,vy,vz,jj,asd,dec,equinox;
 
@@ -171,7 +177,14 @@ int Cmd_mctcl_baryvel(ClientData clientData, Tcl_Interp *interp, int argc, char 
       mc_precad(equinox,asd,dec,jj,&asd2,&dec2);
       /* --- calcul --- */
       mc_baryvel(jj,planete,longi,rhocosphip,rhosinphip,asd2,dec2,&x,&y,&z,&vx,&vy,&vz,&v);
-      sprintf(s,"%s {%s %s %s %s %s %s}",mc_d2s(v*(UA)/86400000.),mc_d2s(x),mc_d2s(y),mc_d2s(z),mc_d2s(vx*(UA)/86400000.),mc_d2s(vy*(UA)/86400000.),mc_d2s(vz*(UA)/86400000.));
+		strcpy(s,"");
+		sprintf(ss,"%s { ",mc_d2s(v*(UA)/86400000.)); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(x)); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(y)); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(z)); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(vx*(UA)/86400000.)); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(vy*(UA)/86400000.)); strcat(s,ss);
+		sprintf(ss,"%s }",mc_d2s(vz*(UA)/86400000.)); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
    }
    return TCL_OK;
@@ -261,7 +274,7 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
    double latitude,altitude,longi,rhocosphip,rhosinphip;
    char geosysin[100],geosysout[100];
    int in=0,out=0,k,compute_h;
-   char s[100];
+   char s[100],ss[100];
    double a_wgs84,f_wgs84,a_ed50,f_ed50,a1,f1,a2,f2,a,f,ee,b;
    double dX,dY,dZ,X1,Y1,Z1,X2,Y2,Z2;
    double sinphi,cosphi,sinlon,coslon,h,W,N,phi0,phi2,delta;
@@ -317,7 +330,10 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
          /* latitude,altitude,longi*/
          longi=longi/(DR);
          latitude=latitude/(DR);
-	      sprintf(s,"%s %s %s",mc_d2s(longi),mc_d2s(latitude),mc_d2s(altitude));
+			strcpy(s,"");
+			sprintf(ss,"%s ",mc_d2s(longi)); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(latitude)); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(altitude)); strcat(s,ss);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
@@ -374,9 +390,18 @@ int Cmd_mctcl_home2geosys(ClientData clientData, Tcl_Interp *interp, int argc, c
       longi=longi/(DR);
       latitude=phi2/(DR);
       if (compute_h==0) {
-         sprintf(s,"%s %s %s",mc_d2s(longi),mc_d2s(latitude),mc_d2s(altitude));
+         //sprintf(s,"%s %s %s",mc_d2s(longi),mc_d2s(latitude),mc_d2s(altitude));
+			strcpy(s,"");
+			sprintf(ss,"%s ",mc_d2s(longi)); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(latitude)); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(altitude)); strcat(s,ss);
       } else {
-         sprintf(s,"%s %s %s %s",mc_d2s(longi),mc_d2s(latitude),mc_d2s(altitude),mc_d2s(h));
+         //sprintf(s,"%s %s %s %s",mc_d2s(longi),mc_d2s(latitude),mc_d2s(altitude),mc_d2s(h));
+			strcpy(s,"");
+			sprintf(ss,"%s ",mc_d2s(longi)); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(latitude)); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(altitude)); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(h)); strcat(s,ss);
       }
       Tcl_SetResult(interp,s,TCL_VOLATILE);
    }
@@ -391,7 +416,7 @@ int Cmd_mctcl_home2gps(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 {
    int result;
-   char s[255],sens[10];
+   char s[255],sens[10],ss[255];
    double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
 
    if(argc<=1) {
@@ -403,7 +428,11 @@ int Cmd_mctcl_home2gps(ClientData clientData, Tcl_Interp *interp, int argc, char
 		if (result==TCL_ERROR) {
          Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
 		} else {
-         sprintf(s,"GPS %s %s %s %s",mc_d2s(longitude/(DR)),sens,mc_d2s(latitude/(DR)),mc_d2s(altitude));
+			strcpy(s,"GPS ");
+			sprintf(ss,"%s ",mc_d2s(longitude/(DR))); strcat(s,ss);
+			sprintf(ss,"%s ",sens); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(latitude/(DR))); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(altitude)); strcat(s,ss);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          result = TCL_OK;
 		}
@@ -418,7 +447,7 @@ int Cmd_mctcl_home2mpc(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 {
    int result;
-   char s[255],sens[10];
+   char s[255],sens[10],ss[255];
    double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
 
    if(argc<=1) {
@@ -430,7 +459,10 @@ int Cmd_mctcl_home2mpc(ClientData clientData, Tcl_Interp *interp, int argc, char
 		if (result==TCL_ERROR) {
          Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
 		} else {
-         sprintf(s,"MPC %s %s %s",mc_d2s(longmpc/(DR)),mc_d2s(rhocosphip),mc_d2s(rhosinphip));
+			strcpy(s,"MPC ");
+			sprintf(ss,"%s ",mc_d2s(longmpc/(DR))); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(rhocosphip)); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(rhosinphip)); strcat(s,ss);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          result = TCL_OK;
 		}
@@ -449,7 +481,7 @@ mc_homecep { GPS 0 E 40 1000 } 0.03703 0.19683
 /****************************************************************************/
 {
    int result;
-   char s[255],sens[10];
+   char s[255],sens[10],ss[255];
    double longitude,latitude,altitude,longmpc,rhocosphip,rhosinphip;
 	double xp,yp;
 	double cl,sl,cp,sp,cu,su,cv,sv;
@@ -488,7 +520,11 @@ mc_homecep { GPS 0 E 40 1000 } 0.03703 0.19683
 			} else {
 				strcpy(sens,"W");
 			}
-         sprintf(s,"GPS %s %s %s %s",mc_d2s(longitude),sens,mc_d2s(latitude/(DR)),mc_d2s(altitude));
+			strcpy(s,"GPS ");
+			sprintf(ss,"%s ",mc_d2s(longitude/(DR))); strcat(s,ss);
+			sprintf(ss,"%s ",sens); strcat(s,ss);
+			sprintf(ss,"%s ",mc_d2s(latitude/(DR))); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(altitude)); strcat(s,ss);
 			Tcl_DStringAppend(&res,s,-1);
 			Tcl_DStringResult(interp,&res);
 			Tcl_DStringFree(&res);
@@ -770,7 +806,7 @@ int Cmd_mctcl_xy2radec(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 {
    mc_ASTROM p;
-   char s[524];
+   char s[524],ss[100];
    int result,retour;
    double x,y,asd,dec;
 
@@ -787,7 +823,9 @@ int Cmd_mctcl_xy2radec(ClientData clientData, Tcl_Interp *interp, int argc, char
      if(retour!=TCL_OK) return retour;
      mctcl_listfield2mc_astrom(interp,argv[3],&p);
      mc_util_astrom_xy2radec(&p,x-1.,y-1.,&asd,&dec);
-     sprintf(s,"%s %s",mc_d2s(asd/(DR)),mc_d2s(dec/(DR)));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(asd/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(dec/(DR))); strcat(s,ss);
      Tcl_SetResult(interp,s,TCL_VOLATILE);
      result = TCL_OK;
    }
@@ -1505,7 +1543,7 @@ int Cmd_mctcl_radec2altaz(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double ra,dec,longi,rhocosphip,rhosinphip,jj;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1537,8 +1575,11 @@ int Cmd_mctcl_radec2altaz(ClientData clientData, Tcl_Interp *interp, int argc, c
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(az/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(h/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1554,7 +1595,7 @@ int Cmd_mctcl_altaz2radec(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double ra,dec,longi,rhocosphip,rhosinphip,jj;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1586,8 +1627,11 @@ int Cmd_mctcl_altaz2radec(ClientData clientData, Tcl_Interp *interp, int argc, c
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g %.12g",ra/(DR),dec/(DR),ha/(DR),parallactic/(DR));
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(ra/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(dec/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1603,7 +1647,7 @@ int Cmd_mctcl_hadec2altaz(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double dec,longi,rhocosphip,rhosinphip;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1632,7 +1676,11 @@ int Cmd_mctcl_hadec2altaz(ClientData clientData, Tcl_Interp *interp, int argc, c
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(az/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(h/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1648,7 +1696,7 @@ int Cmd_mctcl_altaz2hadec(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double dec,longi,rhocosphip,rhosinphip;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1677,8 +1725,10 @@ int Cmd_mctcl_altaz2hadec(ClientData clientData, Tcl_Interp *interp, int argc, c
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/	   
       /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g",ha/(DR),dec/(DR),parallactic/(DR));
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(dec/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1694,7 +1744,7 @@ int Cmd_mctcl_radec2altalt(ClientData clientData, Tcl_Interp *interp, int argc, 
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double ra,dec,longi,rhocosphip,rhosinphip,jj;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1726,8 +1776,11 @@ int Cmd_mctcl_radec2altalt(ClientData clientData, Tcl_Interp *interp, int argc, 
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(az/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(h/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1743,7 +1796,7 @@ int Cmd_mctcl_hadec2altalt(ClientData clientData, Tcl_Interp *interp, int argc, 
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double dec,longi,rhocosphip,rhosinphip;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1772,7 +1825,11 @@ int Cmd_mctcl_hadec2altalt(ClientData clientData, Tcl_Interp *interp, int argc, 
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(az/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(h/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1788,7 +1845,7 @@ int Cmd_mctcl_altalt2hadec(ClientData clientData, Tcl_Interp *interp, int argc, 
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double dec,longi,rhocosphip,rhosinphip;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1817,8 +1874,10 @@ int Cmd_mctcl_altalt2hadec(ClientData clientData, Tcl_Interp *interp, int argc, 
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/	   
       /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g",ha/(DR),dec/(DR),parallactic/(DR));
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(dec/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -1834,7 +1893,7 @@ int Cmd_mctcl_altalt2radec(ClientData clientData, Tcl_Interp *interp, int argc, 
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result;
    double ra,dec,longi,rhocosphip,rhosinphip,jj;
    double ha,latitude,altitude,az,h,parallactic;
@@ -1866,8 +1925,11 @@ int Cmd_mctcl_altalt2radec(ClientData clientData, Tcl_Interp *interp, int argc, 
       /* --- test ---*/
       /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g %.12g %.12g %.12g",ra/(DR),dec/(DR),ha/(DR),parallactic/(DR));
-      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(ra/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(dec/(DR))); strcat(s,ss);
+		sprintf(ss,"%s ",mc_d2s(ha/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(parallactic/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -2014,7 +2076,7 @@ int Cmd_mctcl_radec2xy(ClientData clientData, Tcl_Interp *interp, int argc, char
 /****************************************************************************/
 {
    mc_ASTROM p;
-   char s[524];
+   char s[524],ss[100];
    int result,retour;
    double x,y,asd,dec;
 
@@ -2031,7 +2093,9 @@ int Cmd_mctcl_radec2xy(ClientData clientData, Tcl_Interp *interp, int argc, char
      if(retour!=TCL_OK) return retour;
      mctcl_listfield2mc_astrom(interp,argv[3],&p);
      mc_util_astrom_radec2xy(&p,asd*(DR),dec*(DR),&x,&y);
-     sprintf(s,"%s %s",mc_d2s(x+1.),mc_d2s(y+1.));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(x+1.)); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(y+1.)); strcat(s,ss);
      Tcl_SetResult(interp,s,TCL_VOLATILE);
      result = TCL_OK;
    }
@@ -2527,7 +2591,7 @@ int Cmd_mctcl_sepangle(ClientData clientData, Tcl_Interp *interp, int argc, char
 /* Si Units=D alors les entrees et les sorties sont en degres.              */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result,retour;
    double ra1,dec1,ra2,dec2,dist,posangle;
    char units[50];
@@ -2563,7 +2627,9 @@ int Cmd_mctcl_sepangle(ClientData clientData, Tcl_Interp *interp, int argc, char
         dist/=(DR);
         posangle/=(DR);
      }
-     sprintf(s,"%s %s",mc_d2s(dist),mc_d2s(posangle));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(dist)); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(posangle)); strcat(s,ss);
      Tcl_SetResult(interp,s,TCL_VOLATILE);
      result=TCL_OK;
    }
@@ -3161,7 +3227,7 @@ int Cmd_mctcl_nexstar2angles(ClientData clientData, Tcl_Interp *interp, int argc
 /*  string                                                                  */
 /****************************************************************************/
 {
-   char s[524],ultima[15],aa[9];
+   char s[524],ultima[15],aa[9],ss[100];
    int result,a[9],len,nibble,bits,offset;
    double x,ra=0.,dec=0.,coef;
    int k,kk;
@@ -3230,7 +3296,9 @@ int Cmd_mctcl_nexstar2angles(ClientData clientData, Tcl_Interp *interp, int argc
            if (dec>180) { dec=dec-360.; }
         }        
       }
-      sprintf(s,"%s %s",mc_d2s(ra),mc_d2s(dec));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(ra)); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(dec)); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -3249,7 +3317,7 @@ int Cmd_mctcl_anglesep(ClientData clientData, Tcl_Interp *interp, int argc, char
 /* Si Units=R alors les entrees et les sorties sont en radians.             */
 /****************************************************************************/
 {
-   char s[524];
+   char s[524],ss[100];
    int result,argcc;
    char **argvv=NULL;
    double ra1=0.,dec1=0.,ra2=0.,dec2=0.,dist,posangle;
@@ -3277,7 +3345,9 @@ int Cmd_mctcl_anglesep(ClientData clientData, Tcl_Interp *interp, int argc, char
          dist/=(DR);
          posangle/=(DR);
       }
-      sprintf(s,"%.12g %.12g",dist,posangle);
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(dist)); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(posangle)); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result=TCL_OK;
    }
@@ -3400,7 +3470,7 @@ int Cmd_mctcl_precessradec(ClientData clientData, Tcl_Interp *interp, int argc, 
 /****************************************************************************/
    double jjfrom=0.,jjto=0.,jjepoch=0.,asd2=0.,dec2=0.,radeg,decdeg,pradeg,pdecdeg;
    int result=TCL_ERROR,valid=1;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc;
 
@@ -3448,7 +3518,9 @@ int Cmd_mctcl_precessradec(ClientData clientData, Tcl_Interp *interp, int argc, 
       /* --- calcul de la precession ---*/
       mc_precad(jjfrom,radeg*DR,decdeg*DR,jjto,&asd2,&dec2);
       /* --- sortie des résultats ---*/
-	   sprintf(s,"%s %s",mc_d2s(asd2/(DR)),mc_d2s(dec2/(DR)));
+		strcpy(s,"");
+		sprintf(ss,"%s ",mc_d2s(asd2/(DR))); strcat(s,ss);
+		sprintf(ss,"%s",mc_d2s(dec2/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
 	}
@@ -3468,7 +3540,7 @@ int Cmd_mctcl_nutationradec(ClientData clientData, Tcl_Interp *interp, int argc,
 /****************************************************************************/
    double jjfrom=0.,asd2=0.,dec2=0.,radeg,decdeg;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc,k,sens=1;
 
@@ -3492,7 +3564,9 @@ int Cmd_mctcl_nutationradec(ClientData clientData, Tcl_Interp *interp, int argc,
             /* --- calcul de la nutation ---*/
             mc_nutradec(jjfrom,radeg*DR,decdeg*DR,&asd2,&dec2,sens);
             /* --- sortie des résultats ---*/
-	         sprintf(s,"%s %s",mc_d2s(asd2/(DR)),mc_d2s(dec2/(DR)));
+				strcpy(s,"");
+				sprintf(ss,"%s ",mc_d2s(asd2/(DR))); strcat(s,ss);
+				sprintf(ss,"%s",mc_d2s(dec2/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
@@ -3520,7 +3594,7 @@ int Cmd_mctcl_aberrationradec(ClientData clientData, Tcl_Interp *interp, int arg
 /****************************************************************************/
    double jjfrom=0.,asd2=0.,dec2=0.,radeg,decdeg;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc,choix=0,k,sens=1;
    double longi=0.,rhocosphip=0.,rhosinphip=0.;
@@ -3566,7 +3640,9 @@ int Cmd_mctcl_aberrationradec(ClientData clientData, Tcl_Interp *interp, int arg
                mc_aberration_eterms(jjfrom,radeg*DR,decdeg*DR,&asd2,&dec2,sens);
 			}
             /* --- sortie des résultats ---*/
-	        sprintf(s,"%s %s",mc_d2s(asd2/(DR)),mc_d2s(dec2/(DR)));
+			strcpy(s,"");
+			sprintf(ss,"%s ",mc_d2s(asd2/(DR))); strcat(s,ss);
+			sprintf(ss,"%s",mc_d2s(dec2/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
@@ -3593,7 +3669,7 @@ int Cmd_mctcl_annualparallaxradec(ClientData clientData, Tcl_Interp *interp, int
 /****************************************************************************/
    double jjfrom=0.,asd2=0.,dec2=0.,radeg,decdeg;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc;
    double plx=0.;
@@ -3615,7 +3691,9 @@ int Cmd_mctcl_annualparallaxradec(ClientData clientData, Tcl_Interp *interp, int
             /* --- calcul de la parallaxe annuelle ---*/
             mc_parallaxe_stellaire(jjfrom,radeg*DR,decdeg*DR,&asd2,&dec2,plx);
             /* --- sortie des résultats ---*/
-            sprintf(s,"%s %s",mc_d2s(asd2/(DR)),mc_d2s(dec2/(DR)));
+				strcpy(s,"");
+				sprintf(ss,"%s ",mc_d2s(asd2/(DR))); strcat(s,ss);
+				sprintf(ss,"%s",mc_d2s(dec2/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
@@ -3642,7 +3720,7 @@ int Cmd_mctcl_radec2galactic(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
    double jjfrom=0.,jjto,asd2=0.,dec2=0.,radeg,decdeg,lon,lat;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc;
 
@@ -3667,7 +3745,9 @@ int Cmd_mctcl_radec2galactic(ClientData clientData, Tcl_Interp *interp, int argc
             /* --- (ra,dec)2000 -> galactic  ---*/
             mc_radec2galactic(asd2,dec2,&lon,&lat);
             /* --- sortie des résultats ---*/
-	         sprintf(s,"%s %s",mc_d2s(lon/(DR)),mc_d2s(lat/(DR)));
+				strcpy(s,"");
+				sprintf(ss,"%s ",mc_d2s(lon/(DR))); strcat(s,ss);
+				sprintf(ss,"%s",mc_d2s(lat/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
@@ -3694,7 +3774,7 @@ int Cmd_mctcl_galactic2radec(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
    double jjfrom=0.,jjto=0.,asd2=0.,dec2=0.,ra,dec,lon,lat;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc;
 
@@ -3719,7 +3799,9 @@ int Cmd_mctcl_galactic2radec(ClientData clientData, Tcl_Interp *interp, int argc
             /* --- calcul de la precession ---*/
             mc_precad(jjfrom,ra,dec,jjto,&asd2,&dec2);
             /* --- sortie des résultats ---*/
-	         sprintf(s,"%s %s",mc_d2s(asd2/(DR)),mc_d2s(dec2/(DR)));
+				strcpy(s,"");
+				sprintf(ss,"%s ",mc_d2s(asd2/(DR))); strcat(s,ss);
+				sprintf(ss,"%s",mc_d2s(dec2/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
@@ -3746,7 +3828,7 @@ int Cmd_mctcl_radec2ecliptic(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
    double jjfrom=0.,/*jjto=0.,*/asd2=0.,dec2=0.,radeg,decdeg,lon,lat;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc;
    double eps,r,x,y,z;
@@ -3776,7 +3858,9 @@ int Cmd_mctcl_radec2ecliptic(ClientData clientData, Tcl_Interp *interp, int argc
             mc_xyz2lbr(x,y,z,&lon,&lat,&r);
             lon=fmod(lon+4*PI,(2*PI));
             /* --- sortie des résultats ---*/
-	         sprintf(s,"%s %s",mc_d2s(lon/(DR)),mc_d2s(lat/(DR)));
+				strcpy(s,"");
+				sprintf(ss,"%s ",mc_d2s(lon/(DR))); strcat(s,ss);
+				sprintf(ss,"%s",mc_d2s(lat/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
@@ -3803,7 +3887,7 @@ int Cmd_mctcl_ecliptic2radec(ClientData clientData, Tcl_Interp *interp, int argc
 /****************************************************************************/
    double jjfrom=0.,jjto=0.,asd2=0.,dec2=0.,lon,lat;
    int result=TCL_ERROR;
-   char s[100];
+   char s[100],ss[100];
    char **argvv=NULL;
    int argcc;
    double eps,r,x,y,z;
@@ -3833,7 +3917,9 @@ int Cmd_mctcl_ecliptic2radec(ClientData clientData, Tcl_Interp *interp, int argc
             mc_xyz2lbr(x,y,z,&asd2,&dec2,&r);
             asd2=fmod(asd2+4*PI,(2*PI));
             /* --- sortie des résultats ---*/
-	         sprintf(s,"%s %s",mc_d2s(asd2/(DR)),mc_d2s(dec2/(DR)));
+				strcpy(s,"");
+				sprintf(ss,"%s ",mc_d2s(asd2/(DR))); strcat(s,ss);
+				sprintf(ss,"%s",mc_d2s(dec2/(DR))); strcat(s,ss);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             result = TCL_OK;
          } else {
