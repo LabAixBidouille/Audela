@@ -189,7 +189,7 @@
          buf$bufNo setkwd [format [formatKeyword $kwd] $val]
       }
 
-      calibrationAstro $bufNo $ext $private(access) $private(catname)
+      calibrationAstro $bufNo $ext $private(catAcc) $private(catname)
       saveima [file join $::audace(rep_images) dss$ext]
       extractDataFromComment $bufNo
 
