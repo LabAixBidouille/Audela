@@ -45,6 +45,8 @@
 //#include <mbgioctl.h>
 //#include <pcpsdefs.h>
 
+#define MAX_BUF 583
+
 LANGUAGE language;
 CTRY ctry;
 
@@ -54,6 +56,7 @@ MBG_DEV_HANDLE dh ;
 double date=-1;
 double DateGps;
 char DateGpst[150];
+int channel=0;
         
 
 static const char *ref_name[N_PCPS_REF]= PCPS_REF_NAMES_ENG;
@@ -641,34 +644,40 @@ int Cmd_meinbergtcl_gps(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /* I/O with GPS cards                                                  */
 /****************************************************************************/
 /* type of card curently read : meinberg
-meinberg_gps open 
+meinberg_gps open ?-channel?
 meinberg_gps reset 
 meinberg_gps read 
-meinberg_gps close 
+meinberg_gps close
+meinberg_gps fastread
 */
 /****************************************************************************/
 {
 
-   char s[1000];
+   char s[16384];
    int mode,k,i,devices_found,c,hd;
    static PCPS_DEV dev;
    PCPS_UCAP_ENTRIES ucap_entries;
    PCPS_TIME t;
-   char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], p[10];
+   char year[5], month[5], day[5], hour[5], minute[5], sec[5], msec[5], usec[5], p[10];
    char ws[200];
+   // used in fastread
+	 int rc,j;
 
 
    strcpy(s,"");
    
    
    if(argc<2) {
-      sprintf(s,"Usage: %s open|reset|read|close", argv[0]);
+      sprintf(s,"Usage: %s open ?-channel?|reset|read|close|fastread", argv[0]);
    } else {
       
       /* --- decodage des arguments ---*/
       mode=0;
       if (strcmp(argv[1],"open")==0) {
          mode=1;
+         if ((argc>2) && (strcmp(argv[2],"-channel")==0)) {
+            channel=1;
+         }
       }
       else if (strcmp(argv[1],"reset")==0) {
          mode=2;
@@ -681,6 +690,9 @@ meinberg_gps close
       }
       else if (strcmp(argv[1],"status")==0) {
          mode=5;
+      }
+      else if (strcmp(argv[1],"fastread")==0) {
+         mode=6;
       }
       if (mode==0) {
          sprintf(s,"Usage: %s open|read|close", argv[0]);
@@ -797,9 +809,11 @@ meinberg_gps close
                strcpy(sec,p);
                for (k=21;k<=23;k++) { p[k-21]=ws[k]; } ; p[k-21]='\0';
                strcpy(msec,p);
+               for (k=24;k<=26;k++) { p[k-24]=ws[k]; } ; p[k-24]='\0';
+               strcpy(usec,p);
                hd=atoi(hour);
                sprintf(hour,"%2.2d",hd);
-               sprintf(DateGpst,"%s-%s-%sT%s:%s:%s.%s", year, month, day, hour, minute, sec, msec );
+               sprintf(DateGpst,"%s-%s-%sT%s:%s:%s.%s%s", year, month, day, hour, minute, sec, msec, usec );
                date=1;
             }
             
@@ -842,7 +856,111 @@ meinberg_gps close
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
-      
+			/* --- fastread ---*/
+      if (mode==6) {
+        PCPS_HR_TIME ucap_event[MAX_BUF];
+
+        if ( dh == MBG_INVALID_DEV_HANDLE ) {
+          sprintf(s,"%s No GPS device Meinberg",s);
+          Tcl_SetResult(interp,s,TCL_VOLATILE);
+          return TCL_ERROR;
+        }
+
+        // see mbggpscap.c in Meinberg driver
+        if ( _pcps_has_ucap( &dev ) ) {
+          PCPS_UCAP_ENTRIES ucap_entries;
+          if ( mbg_get_ucap_entries( dh, &ucap_entries ) == MBG_SUCCESS ) {
+            if ( ucap_entries.max )
+              ucap_entries.max--;
+            } else {
+            sprintf(s,"Unable to get meinberg entries");
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+          }
+
+          if ( ucap_entries.used == 0 ) {
+            //sprintf(s,"No GPS event");
+            show_status2(s,dh,&dev);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_OK;
+          }
+
+          for (j=0;j<MAX_BUF;j++) {
+            //PCPS_HR_TIME ucap_event;
+            rc = mbg_get_ucap_event( dh, &ucap_event[j] );
+            if ( mbg_ioctl_err( rc, "mbg_get_ucap_event" ) ) {
+              sprintf(s,"Unable to get ucap event");
+              Tcl_SetResult(interp,s,TCL_VOLATILE);
+              return TCL_ERROR;
+            }
+
+            if ( ucap_event[j].tstamp.sec || ucap_event[j].tstamp.frac ) {
+              //mbg_str_pcps_hr_tstamp_utc( ws, sizeof( ws ), &ucap_event[j] );
+              //printf("Event: %s\n",ws);
+              if ( ucap_event[j].status & PCPS_UCAP_OVERRUN ) {
+                sprintf(s,"Capture overrun: the events have occurred too fast");
+                Tcl_SetResult(interp,s,TCL_VOLATILE);
+                return TCL_ERROR;
+              }
+              if ( ucap_event[j].status & PCPS_UCAP_BUFFER_FULL ) {
+                sprintf(s,"Buffer overrun: events lost");
+                Tcl_SetResult(interp,s,TCL_VOLATILE);
+                return TCL_ERROR;
+              }
+              continue;
+            } else {
+              //printf("Read %d events\n",read);
+              //printf("ucap_event is %u bytes while ws string is %u bytes\n",sizeof(PCPS_HR_TIME),strlen(ws));
+              break;
+            }
+
+          }
+
+          if ( j >= MAX_BUF ) {
+            sprintf(s,"Internal buffer overrun");
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+          }
+				
+          //printf("Read %d events\n",j);
+
+          strcpy(s,"");
+
+          for (i=0; i<j; i++) {
+            // Format function taken from mbgutil.h
+            mbg_str_pcps_hr_tstamp_utc( ws, sizeof( ws ), &ucap_event[i] );
+               
+            // format iso
+            for (k=6;k<=9;k++) { p[k-6]=ws[k];    }; p[k-6]='\0';
+            strcpy(year,p); 
+            for (k=3;k<=4;k++) { p[k-3]=ws[k]; } ; p[k-3]='\0';
+            strcpy(month,p);
+            for (k=0;k<=1;k++) { p[k]=ws[k]; } ; p[k]='\0';
+            strcpy(day,p);
+            for (k=12;k<=13;k++) { p[k-12]=ws[k]; } ; p[k-12]='\0';
+            strcpy(hour,p);
+            for (k=15;k<=16;k++) { p[k-15]=ws[k]; } ; p[k-15]='\0';
+            strcpy(minute,p);
+            for (k=18;k<=19;k++) { p[k-18]=ws[k]; } ; p[k-18]='\0';
+            strcpy(sec,p);
+            for (k=21;k<=23;k++) { p[k-21]=ws[k]; } ; p[k-21]='\0';
+            strcpy(msec,p);
+            for (k=24;k<=26;k++) { p[k-24]=ws[k]; } ; p[k-24]='\0';
+            strcpy(usec,p);
+            hd=atoi(hour);
+            sprintf(hour,"%2.2d",hd);
+            sprintf(s,"%s %s-%s-%sT%s:%s:%s.%s%s", s, year, month, day, hour, minute, sec, msec, usec );
+            if (channel==1) {
+              sprintf(s,"%sX%i",s,ucap_event[i].signal); 
+            }
+          }
+
+          //sprintf(s,"%s\nRead %d events",s,j);
+					
+          show_status2(s,dh,&dev);
+          Tcl_SetResult(interp,s,TCL_VOLATILE);
+          return TCL_OK;
+        }
+      }
 
    }
     
