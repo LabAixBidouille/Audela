@@ -2,6 +2,7 @@ LIBRARY    fitstcl.dll
 EXETYPE WINDOWS
 
 EXPORTS
+   Fitstcl_Init
 	fitsDispatch
 	fitsTcl_close
 	fitsTcl_move
