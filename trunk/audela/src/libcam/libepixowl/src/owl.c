@@ -29,6 +29,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
+#include <libcam/util.h>
 
 #include "owl.h"
 #include "serial.h"
@@ -62,28 +63,30 @@ int serialInit() {
 */
 int microReset() {
 	int ret;
-	uchar status;
+	//uchar status;
 
 	ret = ser_reset();
 	if (ret<0)
 		return ret;
 
-	usleep(10000);
+	libcam_sleep(10); // 10 ms
 
 	do {
 		ret = ser_set_state(ACK_ON|ENABLE_COMMS,2);
 	} while (ret != 0);
 
 	ret = ser_set_state(ACK_ON|UNHOLD_FPGA,2);
-	printf("%d\n",ret);
+	//printf("%d\n",ret);
 	if (ret<0)
 		return ret;
 
-	do {
+	//do {} while ( ! (status & FPGA_BOOTED) );
+	/*
+		libcam_sleep(1);
 		ret = ser_get_status(&status,2);
 		if (ret<0)
 			return ret;
-	} while ( ! (status & FPGA_BOOTED) );
+	*/
 
 	ret = ser_set_state(ACK_ON|UNHOLD_FPGA,2);
 	if (ret<0)
@@ -170,14 +173,14 @@ int setFrameRate(double frate) {
 int setExposure(double exp) {
 	int r;
 	uchar i;
-	uint64 cycles;
+	uint32 cycles;
 	uchar *p_cycles;
 
-	cycles = (uint64)((CLOCK_EXP)*exp);
+	cycles = (uint32)((CLOCK_EXP)*exp);
 	p_cycles = (uchar *)&cycles;
 
-	for (i=0; i<5; i++) {
-		r = ser_write_reg(0xee+i,p_cycles[4-i],2);
+	for (i=0; i<4; i++) {
+		r = ser_write_reg(0xee+i,p_cycles[3-i],2);
 		if ( r<0 )
 			return r;
 	}
@@ -309,13 +312,13 @@ int setDynamicRange(uchar mode) {
 	Behaviour:
 		set the TEC temperature
 */
-int setTECtemp(int temp) {
-	ushort t;
+int setTECtemp(ushort dac) {
+	uchar *pdac;
+	
+	dac = dac << 4;
+	pdac = (uchar *)&dac;
 
-	t = (ushort)temp;
-
-	t = t << 4;
-	return ser_set_tec_point(&temp,2);
+	return ser_set_tec_point(pdac,2);
 }
 
 /* int setNUC(uchar mode)
@@ -350,7 +353,7 @@ int setAutoLevel(int level) {
 	int r;
 	uchar i;
 	uint16 l;
-	uchar *pg;
+	uchar *pl;
 
 	l = (uint16)level;
 	l = l << 2;
@@ -566,13 +569,13 @@ int getFrameRate(double *frate) {
 int getExposure(double *exp) {
 	int r;
 	uchar i;
-	uint64 cycles=0;
+	uint32 cycles=0;
 	uchar *p_cycles;
 
 	p_cycles = (uchar *)&cycles;
 
-	for (i=0; i<5; i++) {
-		r = ser_read_reg(0xed+i,&p_cycles[4-i],2);
+	for (i=0; i<4; i++) {
+		r = ser_read_reg(0xee+i,&p_cycles[3-i],2);
 		if ( r<0 )
 			return r;
 	}
@@ -627,7 +630,7 @@ int getGain(int *gain) {
 */
 int getPCBtemp(double *temp) {
 	int r;
-	uchar i;
+	//uchar i;
 	uchar data[2];
 	double t;
 
@@ -635,8 +638,8 @@ int getPCBtemp(double *temp) {
 	if ( r<0 )
 		return r;
 
-	t = 0.5*( (data[0]&0x80) >> 7 )
-	t += (double)data[1]
+	t = 0.5*( (data[0]&0x80) >> 7 );
+	t += (double)data[1];
 
 	*temp = t;
 
@@ -657,7 +660,7 @@ int getPCBtemp(double *temp) {
 */
 int getCMOStemp(int *temp) {
 	int r;
-	uchar i;
+	//uchar i;
 	uchar data[2];
 	ushort *t;
 
@@ -667,7 +670,7 @@ int getCMOStemp(int *temp) {
 
 	t = (ushort *)data;
 
-	*temp=t;
+	*temp=(int)*t;
 
 	return 0;
 }
@@ -894,7 +897,7 @@ int getTECtemp(int *temp) {
 	ushort *pt;
 	int r;
 
-	r = ser_get_tec_point(&data,2);
+	r = ser_get_tec_point(data,2);
 	if (r<0)
 		return r;
 
@@ -940,10 +943,11 @@ int getAutoLevel(int *level) {
 	uchar data[2];
 
 	for (i=0; i<2; i++) {
-		r = ser_read_reg(0x23+i,data[1-i],2);
+		r = ser_read_reg(0x23+i,&data[1-i],2);
 		if ( r<0 )
 			return r;
 	}
+	pl=(uint16*)data;
 
 	*pl = *pl >> 2;
 	*level = *pl;
@@ -979,7 +983,6 @@ int getPeakAver(uchar *mode) {
 	Behaviour:
 		get the AGC speed
 */
-#ifndef H_RAPTOR
 int getAGCspeed(uchar *speed) {
 	return ser_read_reg(0x2f,speed,2);
 }
@@ -996,6 +999,6 @@ int getAGCspeed(uchar *speed) {
 	Behaviour:
 		get the ROI appearance
 */
-int setROIappearence(uchar *mode) {
+int getROIappearence(uchar *mode) {
 	return ser_read_reg(0x31,mode,2);
 }

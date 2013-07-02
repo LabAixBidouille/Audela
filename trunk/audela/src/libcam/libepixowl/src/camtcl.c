@@ -38,7 +38,7 @@
 #include "camtcl.h"
 #include <libcam/util.h>
 
-#include "raptor.h"
+#include "owl.h"
 
 //void AcqRead(ClientData clientData);
 extern struct camini CAM_INI[];
@@ -111,7 +111,7 @@ int cmdCamExposure(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	if (argc == 2) {
 		if ( getExposure(&exp) == 0 ) {
-			cam->exptime=exp;
+			cam->exptime=(float)exp;
 			sprintf(line,"%f",exp);
 			Tcl_SetResult(interp,line,TCL_VOLATILE);
 			result = TCL_OK;
@@ -184,7 +184,7 @@ int cmdCamRoi(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 			Tcl_SetResult(interp,line,TCL_VOLATILE);
 			result = TCL_ERROR;
 		} else {
-			if ((Tcl_GetInt(interp,listArgv[0],&x1) != TCL_OK) || (y2<0)){
+			if ((Tcl_GetInt(interp,listArgv[0],&x1) != TCL_OK) || (x1<0)){
 				sprintf(line,"Usage: %s %s {x1 y1 x2 y2}\nx1 : must be a positive integer",argv[0],argv[1]);
 				Tcl_SetResult(interp,line,TCL_VOLATILE);
 				result = TCL_ERROR;
@@ -231,12 +231,13 @@ int cmdCamDynamicRange(ClientData clientData, Tcl_Interp *interp, int argc, char
 	int result = TCL_OK;
 	char line[256];
 	struct camprop *cam;
-	uchar dyn;
+	//uchar dyn;
   double exp=0.;
 
 	cam = (struct camprop *) clientData;
 
 	if (argc == 2) {
+      /*
 		if ( getDynamicRange(&dyn) == 0 ) {
 			if ( dyn==HIGH_DYNAMIC ) {
 				sprintf(line,"dynamic range on");
@@ -251,6 +252,7 @@ int cmdCamDynamicRange(ClientData clientData, Tcl_Interp *interp, int argc, char
 			Tcl_SetResult(interp,cam->msg,TCL_VOLATILE);
 			result = TCL_ERROR;
 		}
+		*/
 	} else if (argc == 3) {
 		if (strcmp(argv[2],"on")==0) {
 			if ( cam_set_dynamic(cam,1) == 0 ) {
@@ -283,6 +285,7 @@ int cmdCamDynamicRange(ClientData clientData, Tcl_Interp *interp, int argc, char
 
 	return result;
 }
+
 
 //load the image in frame buffer fb in the current camera buffer
 int cmdCamGetFrameBuffer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
@@ -394,6 +397,7 @@ int cmdCamReset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 		Tcl_SetResult(interp,"Unable to reset the camera",TCL_VOLATILE);
 		result = TCL_ERROR;
 	}
+	return result;
 
 }
 
@@ -450,11 +454,12 @@ int cmdCamDigitalGain(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	* start a video sequence
 	*
 */
+/*
 int cmdCamVideoStart(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
 	char line[256];
-	uchar mode;
+	//uchar mode;
 	struct camprop *cam;
 
 	cam = (struct camprop *) clientData;
@@ -470,12 +475,14 @@ int cmdCamVideoStart(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 	return result;
 }
+*/
 
 /**
 	* cmdCamVideoStop
 	* stop a video sequence
 	*
 */
+/*
 int cmdCamVideoStop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
@@ -497,12 +504,14 @@ int cmdCamVideoStop(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	return result;
 }
+*/
 
 /**
 	* cmdCamVideoPause
 	* pause a video sequence
 	*
 */
+/*
 int cmdCamVideoPause(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
@@ -523,12 +532,13 @@ int cmdCamVideoPause(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 	return result;
 }
-
+*/
 /**
 	* cmdCamVideoMode
 	* sets the video mode (FFR or ITR)
 	*
 */
+/*
 int cmdCamVideoMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
@@ -601,8 +611,10 @@ int cmdCamVideoMode(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	return result;
 }
+*/
 
 //get the frame buffer time stamp
+/*
 int cmdCamGetBufferTs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
@@ -638,6 +650,7 @@ int cmdCamGetBufferTs(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	return result;
 
 }
+*/
 
 //get the buffer where the next video image will be saved
 //(a video lets it to zero until it is paused)
@@ -656,6 +669,7 @@ int cmdCamCurrentBuffer(ClientData clientData, Tcl_Interp *interp, int argc, cha
 }
 
 //get the buffer where the last image has been saved
+/*
 int cmdCamLastBuffer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	char line[512];
@@ -669,6 +683,7 @@ int cmdCamLastBuffer(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	return TCL_OK;
 
 }
+*/
 
 //get the maximum available frame buffer
 int cmdCamMaxBuffer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
@@ -720,11 +735,12 @@ int cmdCamMaxExposure(ClientData clientData, Tcl_Interp *interp, int argc, char 
 	* start a live sequence (show video but does not save it nor timestamps)
 	*
 */
+/*
 int cmdCamLiveStart(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
 	char line[256];
-	uchar mode;
+	//uchar mode;
 	struct camprop *cam;
 
 	cam = (struct camprop *) clientData;
@@ -740,12 +756,13 @@ int cmdCamLiveStart(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	return result;
 }
-
+*/
 /**
 	* cmdCamLiveStop
 	* stop a live video
 	*
 */
+/*
 int cmdCamLiveStop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 
 	int result = TCL_OK;
@@ -766,4 +783,4 @@ int cmdCamLiveStop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 
 	return result;
 }
-
+*/

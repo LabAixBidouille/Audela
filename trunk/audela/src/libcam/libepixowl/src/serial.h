@@ -44,5 +44,6 @@ int ser_get_micro(uchar *version, time_t timeout);
 int ser_read_eeprom(uchar *res, uchar n_res, time_t timeout);
 int ser_set_tec_point(uchar *val, time_t timeout);
 int ser_get_tec_point(uchar *val, time_t timeout);
+int ser_reset();
 
 #endif //H_SERIAL

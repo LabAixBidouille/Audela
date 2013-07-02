@@ -41,7 +41,7 @@
 #include "camera.h"
 #include <libcam/util.h>
 
-#include "raptor.h"
+#include "owl.h"
 #include "xcliball.h"
 //meinberg
 //#include <meinberg.h>
@@ -83,6 +83,7 @@ int gettimeofday(struct timeval* p, void* tz) {
 //meinberg
 //static int gps;
 
+#if defined (OS_LIN)
 struct timeval t_acq,t_lect/*,t_acq_gps*/;
 static volatile sig_atomic_t usr_interrupt=0;
 static sigset_t mask,oldmask;
@@ -98,15 +99,15 @@ struct timeval *ts/*,*t_gps*/;
 
 //handler of SIGUSR1
 static void handler_acquisition(int signal) {
-	char message[50];
-	char error[50];
+	//char message[50];
+	//char error[50];
 	acqbuf++;
 	gettimeofday (&t_acq, NULL);
 }
 
 //handler of SIGUSR2
 static void handler_lecture(int signal) {
-	char message[50];
+	//char message[50];
 	buf++;
   readbuf++;
 	gettimeofday (&t_lect, NULL);
@@ -116,7 +117,7 @@ static void handler_lecture(int signal) {
 	else
 		ts[maxbuf] = t_acq;
 }
-
+#endif
 	
 /*
  *  Definition of different cameras supported by this driver
@@ -201,8 +202,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
 	int ret,kk;
-	int x1,y1,x2,y2;
-	int binx,biny;
+	double d;
+	//int x1,y1,x2,y2;
+	//int binx,biny;
 #if defined(OS_WIN)
 	HANDLE hwin;
 #endif
@@ -235,7 +237,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 					
 	if ( strlen(cam->config) == 0 ) {
 		//Default Pixci init
-		ret = pxd_PIXCIopen("","Default","");
+		ret = pxd_PIXCIopen("","","");
 		if (ret) {
 			pxd_mesgFaultText(0x1,cam->msg,2048);
 			return 1;
@@ -243,12 +245,12 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 		//default video mode dependent parameters
 		// ---> they change according to the camera
-		cam->maxw = 2048;
-		cam->maxh = 2048;
+		cam->maxw = 640;
+		cam->maxh = 512;
 		cam->minx = 0;
 		cam->miny = 0;
-		cam->maxx = 2047;
-		cam->maxy = 2047;
+		cam->maxx = 639;
+		cam->maxy = 511;
 		cam->minbinx = 1;
 		cam->minbiny = 1;
 		cam->maxbinx = 1;
@@ -257,21 +259,26 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 		//default parameters
 		cam->x1=0;
 		cam->y1=0;
-		cam->x2=2047;
-		cam->y2=2047;
-		cam->h=2048;
-		cam->w=2048;
+		cam->x2=639;
+		cam->y2=511;
+		cam->h=512;
+		cam->w=640;
 		cam->binx=1;
 		cam->biny=1;
 	} else {
 		//Pixci init with external config file
-		ret = pxd_PIXCIopen("","",cam->config);
+		ret = pxd_PIXCIopen("","Default",cam->config);
 		if (ret) {
 			pxd_mesgFaultText(0x1,cam->msg,2048);
 			return 1;
 		}
 
 	}
+
+	kk=pxd_imageXdim();
+	kk=pxd_imageYdim();
+	kk=pxd_imageZdim();
+	d=pxd_imageAspectRatio();
 
 	//Check if the video format match the entered configuration
 	if ( (cam->w/cam->binx) != pxd_imageXdim() ) {
@@ -306,19 +313,19 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
 	//constraints (video mode independent)
 	// ---> they change according to the camera
-	maxbuf = cam->max_buf = cam_get_maxfb();
+	/*maxbuf = */ cam->max_buf = cam_get_maxfb();
 	cam->max_exposure = cam_max_exposure();
 	cam->min_exp_dyn = 0.42;
 	cam->max_gain = 128;
-	cam->max_frameRate = cam_max_framerate(cam->h);
+	cam->max_frameRate = 60;
  
 	//initial parameters (video mode independent)
 	// ---> they change according to the camera
-	cam->exptime=0.001;
+	cam->exptime=(float)0.001;
 	cam->capabilities.videoMode = 1;
 	cam->video=0;
 	cam->gain=1;
-	acqbuf=buf=cam->cur_buf=0;
+	/*acqbuf=buf=*/ cam->cur_buf=0;
 	cam->frameRate = 37.5;
 	cam->videoMode = 1;
 
@@ -336,13 +343,15 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	cam->pixel_data = NULL;
 	strcpy(cam->msg,"");
 
+#if defined (OS_LIN)
 	//initializes the timestamp structures
 	ts = (struct timeval *)calloc(cam->max_buf+1,sizeof(struct timeval));
+#endif
 
 	//SIGUSR2 at the end of lecture
 #if defined(OS_WIN)
-	hwin = pxd_eventCapturedFieldCreate(0x1);
-	if (hwin) {
+	cam->hEvent = pxd_eventCapturedFieldCreate(0x1);
+	if (cam->hEvent==NULL) {
 		pxd_mesgFaultText(0x1,cam->msg,2048);
 		return 9;
 	}
@@ -357,7 +366,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	//SIGUSR1 at the end of integration
 #if defined(OS_WIN)
 	hwin = pxd_eventFieldCreate(0x1);
-	if (hwin) {
+	if (hwin==NULL) {
 		pxd_mesgFaultText(0x1,cam->msg,2048);
 		return 10;
 	}
@@ -369,11 +378,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 	}
 #endif
 
+
+#if defined (OS_LIN)
 	sigemptyset(&mask);
 	sigaddset(&mask,SIGUSR2);
 
 	signal(SIGUSR2,handler_lecture);
 	signal(SIGUSR1,handler_acquisition);
+#endif
 
 	return 0;
 
@@ -383,7 +395,9 @@ int cam_close(struct camprop * cam)
 {
 	int ret;
 
+#if defined (OS_LIN)
 	free(ts);
+#endif
 
 	ret = pxd_PIXCIclose();
 	if (ret) {
@@ -410,8 +424,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	}
 
 	cam->video=0;
-	readbuf = acqbuf = cam->cur_buf = 0;
-	buf = cam->max_buf;
+	/*readbuf = acqbuf = */ cam->cur_buf = 0;
+	/* buf = cam->max_buf; */
 	//snap an image
 	ret = pxd_goSnap(0x1,cam->max_buf);
 	if (ret) {
@@ -419,9 +433,12 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		return;
 	}
 
+#if defined (OS_LIN)
 	usr_interrupt=0;
+#endif
 	//set trigger mode to snapshot (single acquisition via snapshot)
-	ret = setTrigger(TRG_SNAP);
+	//ret = setTrigger(TRG_SNAP);
+	ret = setTrigger(TRG_INT);
 	if (ret) {
 		sprintf(cam->msg, "setTrigger returns %d", ret);
 		return;
@@ -433,7 +450,8 @@ void cam_stop_exp(struct camprop *cam)
 {
 	int ret;
 
-	ret = setTrigger(TRG_ABORT);
+	//ret = setTrigger(TRG_ABORT);
+	ret = setTrigger(TRG_INT);
 	if (ret) {
 		sprintf(cam->msg,"Trigger abort failed");
 		return;
@@ -444,7 +462,9 @@ void cam_stop_exp(struct camprop *cam)
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
 	int ret;
-	char message[50];
+	//char message[50];
+
+#if defined (OS_LIN)
 	struct timeval t,texp,tbeg;
 
 	sigprocmask(SIG_BLOCK,&mask,&oldmask);
@@ -452,12 +472,16 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 		sigsuspend(&oldmask);
 	}
 	sigprocmask(SIG_UNBLOCK,&mask,NULL);
+#endif
+#if defined(OS_WIN)
+	WaitForSingleObject(cam->hEvent, INFINITE);
+#endif
 
 	//set the window to the current ROI size
 	cam_update_window(cam);
 
 	// save the single mode image in the last buffer
-	buf = cam->max_buf;
+	/*buf = cam->max_buf;*/
 
 	//copy the data from the last frame buffer to the buffer p
 	ret = pxd_readushort(0x1,cam->max_buf,0,0,-1,-1,p,cam->w*cam->h,"Grey");
@@ -466,6 +490,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 		return;
 	}
 
+#if defined (OS_LIN)
 	//print the computer date (taken from the pixci driver)
 	t = ts[cam->max_buf];
 	//end of the obeservation
@@ -487,6 +512,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
 	//reset the buffer count to zero
 	acqbuf = readbuf = buf = cam->cur_buf = 0;
+#endif
 
 }
 
@@ -525,7 +551,7 @@ void cam_cooler_on(struct camprop *cam)
 {
 	int ret;
 
-	ret = setTEC(TEC_ON);
+	ret = setTEC_AEXP(TEC_ON);
 	if (ret) {
 		sprintf(cam->msg, "setTEC(TEC_ON) returns %d\n", ret);
 		return;
@@ -536,7 +562,7 @@ void cam_cooler_off(struct camprop *cam)
 {
 	int ret;
 
-	ret = setTEC(TEC_OFF);
+	ret = setTEC_AEXP(TEC_OFF);
 	if (ret) {
 		sprintf(cam->msg, "setTEC(TEC_OFF) returns %d\n", ret);
 		return;
@@ -547,8 +573,13 @@ void cam_cooler_check(struct camprop *cam)
 {
 	int ret;
 	uchar TECmode;
+	ushort dac;
+	// cam->check_temperature
 
-	ret = getTEC(&TECmode);
+	dac = (ushort)((cam->check_temperature-0)/(40-0)*(cam->DAC_40-cam->DAC_0)+cam->DAC_0);
+
+	setTECtemp(dac);
+	ret = getTEC_AEXP(&TECmode);
 	if (ret) {
 		sprintf(cam->msg, "getTEC returns %d\n", ret);
 		return;
@@ -563,6 +594,7 @@ void cam_cooler_check(struct camprop *cam)
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
+	/*
 	int ret;
 	uchar mode;
 
@@ -599,6 +631,7 @@ void cam_set_binning(int binx, int biny, struct camprop *cam)
 
 	cam->binx = binx;
 	cam->biny = biny;
+	*/
 
 }
 
@@ -731,7 +764,7 @@ int cam_set_exposure(struct camprop *cam, double exp) {
 	e = (cam->dynamicRange) ? cam->min_exp_dyn : exp;
 
 	if ( setExposure(e) == 0 ) {
-		cam->exptime = e;
+		cam->exptime = (float)e;
 	}	else {
 		sprintf(cam->msg,"Unable to set exposure");
 		return -1;
@@ -924,11 +957,12 @@ double cam_max_framerate(int nlines) {
 
 //return the maximum exposure
 double cam_max_exposure() {
-	unsigned long maxex_cycles = 0xffffffffff;
+	unsigned long maxex_cycles = 0xffffffff;
 	return ((double)maxex_cycles)/80.e6;
 }
 
 //start a video sequence
+/*
 int cam_video_start(struct camprop *cam) {
 	int ret;
 	uchar mode;
@@ -1004,7 +1038,9 @@ int cam_get_curbuf() {
 void cam_set_zero() {
 	acqbuf = readbuf = 0;
 }
+*/
 
+#if defined (OS_LIN)
 //get the buffer timestamp
 int cam_get_bufferts(struct camprop *cam, int fb, char *date) {
 	struct timeval tv;
@@ -1079,3 +1115,4 @@ int cam_live_start(struct camprop *cam) {
 	cam->video=1;		
 
 }
+#endif
