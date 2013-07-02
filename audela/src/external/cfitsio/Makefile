@@ -18,7 +18,7 @@ install:
 	#--- copy libcfitsio.a and libcfitsio.so to $(ROOT)/external/lib
 	make -C $(DIR) install
 	#--- copy libcfitsio.so to $(ROOT)/../bin
-        cp $(DIR)/libcfitsio.so $(ROOT)/external/lib/
+	cp $(DIR)/libcfitsio.so $(ROOT)/external/lib/
 	cp $(ROOT)/external/lib/libcfitsio.so $(ROOT)/../bin
 
 clean:
