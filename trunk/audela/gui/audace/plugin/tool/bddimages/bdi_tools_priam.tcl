@@ -316,6 +316,25 @@ proc ::bdi_tools_priam::add_source2localcat {key onesource} {
          set paral 0
          set vitrad 0
       }
+      "WFIBC" {
+         # 1 = ra_deg, 2 = dec_deg, 10 = magR
+         set ra  [mc_angle2hms [lindex $otherfields 1]]
+         set dec [mc_angle2dms [lindex $otherfields 2] 90]
+         set mag [lindex $otherfields 10]
+         # 3 = err_ra, 4 = err_de
+         set ra_err  [lindex $otherfields 3]
+         set dec_err [lindex $otherfields 4]
+         # 11 = jd
+         set refepoch [lindex $otherfields 11]
+         # Autres champs non fournis par le catalogue
+         set ra_pm [lindex $otherfields 6]
+         set dec_pm [lindex $otherfields 7]
+         set ra_pm_err  [lindex $otherfields 8]
+         set dec_pm_err [lindex $otherfields 9]
+         set typeS "?"
+         set paral 0
+         set vitrad 0
+      }
    }
 
    # Ecriture de la source

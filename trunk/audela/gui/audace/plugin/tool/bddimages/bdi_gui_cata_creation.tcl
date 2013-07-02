@@ -505,6 +505,7 @@ namespace eval gui_cata_creation {
       set ::tools_cata::nb_ppmxl   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_2mass   0
+      set ::tools_cata::nb_wfibc   0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
 
@@ -1988,6 +1989,8 @@ return
                   entry $cataconf.nomad1_dir -relief flat -textvariable ::tools_cata::catalog_nomad1 -width 30 -state disabled
                checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
                   entry $cataconf.twomass_dir -relief flat -textvariable ::tools_cata::catalog_2mass -width 30 -state disabled
+               checkbutton $cataconf.wfibc_check -highlightthickness 0 -text "  WFIBC" -variable ::tools_cata::use_wfibc
+                  entry $cataconf.wfibc_dir -relief flat -textvariable ::tools_cata::catalog_wfibc -width 30 -state disabled
                frame $cataconf.blank -height 15
 
             grid $cataconf.skybot_check  $cataconf.skybot_dir  -sticky nsw -pady 3
@@ -2001,6 +2004,7 @@ return
             grid $cataconf.ppmxl_check   $cataconf.ppmxl_dir   -sticky nsw -pady 3
             grid $cataconf.nomad1_check  $cataconf.nomad1_dir  -sticky nsw -pady 3
             grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
+            grid $cataconf.wfibc_check   $cataconf.wfibc_dir   -sticky nsw -pady 3
             grid columnconfigure $cataconf 0 -pad 30
       
             #--- Cree un frame pour la liste des cata
@@ -2109,13 +2113,21 @@ return
                   spinbox $cataff.2mass_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
                      -textvariable ::gui_cata::size_2mass -command "::gui_cata::affiche_cata"
                   $cataff.2mass_radius set $::gui_cata::size_2mass_sav
+               checkbutton $cataff.wfibc_check -highlightthickness 0 -text "  WFIBC" \
+                  -variable ::gui_cata::gui_wfibc -command "::gui_cata::affiche_cata"
+                  label $cataff.wfibc_val -textvariable ::tools_cata::nb_wfibc -width 4
+                  button $cataff.wfibc_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_wfibc \
+                     -command "::gui_cata_creation::choose_color ::gui_cata::color_wfibc $cataff.wfibc_color"
+                  spinbox $cataff.wfibc_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -width 3 \
+                     -textvariable ::gui_cata::size_wfibc -command "::gui_cata::affiche_cata"
+                  $cataff.wfibc_radius set $::gui_cata::size_wfibc_sav
 
                frame $cataff.blank -height 15
 
             grid $cataff.img_check     $cataff.img_val     $cataff.img_color     $cataff.img_radius     -sticky nsw -pady 1
             grid $cataff.skybot_check  $cataff.skybot_val  $cataff.skybot_color  $cataff.skybot_radius  $cataff.astroid_check $cataff.astroid_val  $cataff.astroid_color $cataff.astroid_radius -sticky nsw -pady 1
             grid $cataff.blank                             
-            grid $cataff.usnoa2_check  $cataff.usnoa2_val  $cataff.usnoa2_color  $cataff.usnoa2_radius  -sticky nsw -pady 1
+            grid $cataff.usnoa2_check  $cataff.usnoa2_val  $cataff.usnoa2_color  $cataff.usnoa2_radius  $cataff.wfibc_check   $cataff.wfibc_val    $cataff.wfibc_color   $cataff.wfibc_radius   -sticky nsw -pady 1
             grid $cataff.tycho2_check  $cataff.tycho2_val  $cataff.tycho2_color  $cataff.tycho2_radius  $cataff.ucac3_check   $cataff.ucac3_val    $cataff.ucac3_color   $cataff.ucac3_radius   -sticky nsw -pady 1
             grid $cataff.ucac2_check   $cataff.ucac2_val   $cataff.ucac2_color   $cataff.ucac2_radius   $cataff.ucac4_check   $cataff.ucac4_val    $cataff.ucac4_color   $cataff.ucac4_radius   -sticky nsw -pady 1
             grid $cataff.ppmx_check    $cataff.ppmx_val    $cataff.ppmx_color    $cataff.ppmx_radius    $cataff.ppmxl_check   $cataff.ppmxl_val    $cataff.ppmxl_color   $cataff.ppmxl_radius   -sticky nsw -pady 1

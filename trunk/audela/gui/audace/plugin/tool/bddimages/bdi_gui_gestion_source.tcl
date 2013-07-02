@@ -1895,6 +1895,8 @@ namespace eval bdi_gui_gestion_source {
                   entry $cataconf.nomad1_dir -relief flat -textvariable ::tools_cata::catalog_nomad1 -width 30 -state disabled
                checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
                   entry $cataconf.twomass_dir -relief flat -textvariable ::tools_cata::catalog_2mass -width 30 -state disabled
+               checkbutton $cataconf.wfibc_check -highlightthickness 0 -text "  WFIBC" -variable ::tools_cata::use_wfibc
+                  entry $cataconf.wfibc_dir -relief flat -textvariable ::tools_cata::catalog_wfibc -width 30 -state disabled
                frame $cataconf.blank -height 15
 
             grid $cataconf.skybot_check  $cataconf.skybot_dir  -sticky nsw -pady 3
@@ -1908,6 +1910,7 @@ namespace eval bdi_gui_gestion_source {
             grid $cataconf.ppmxl_check   $cataconf.ppmxl_dir   -sticky nsw -pady 3
             grid $cataconf.nomad1_check  $cataconf.nomad1_dir  -sticky nsw -pady 3
             grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
+            grid $cataconf.wfibc_check   $cataconf.wfibc_dir   -sticky nsw -pady 3
  
             button $f4.go -state active -text "Conesearch" -relief "raised" \
                -command ""

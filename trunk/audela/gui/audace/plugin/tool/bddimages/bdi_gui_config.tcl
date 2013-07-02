@@ -703,6 +703,8 @@ proc ::bdi_gui_config::createDialog { } {
             entry $cataconf.nomad1_dir -relief sunken -textvariable ::tools_cata::catalog_nomad1 -width 50
          checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
             entry $cataconf.twomass_dir -relief sunken -textvariable ::tools_cata::catalog_2mass -width 50
+         checkbutton $cataconf.wfibc_check -highlightthickness 0 -text "  WFIBC" -variable ::tools_cata::use_wfibc
+            entry $cataconf.wfibc_dir -relief sunken -textvariable ::tools_cata::catalog_wfibc -width 50
 
       grid $cataconf.skybot_check  $cataconf.skybot_dir  -sticky nsw -pady 3
       grid $cataconf.blank
@@ -715,6 +717,7 @@ proc ::bdi_gui_config::createDialog { } {
       grid $cataconf.ppmxl_check   $cataconf.ppmxl_dir   -sticky nsw -pady 3
       grid $cataconf.nomad1_check  $cataconf.nomad1_dir  -sticky nsw -pady 3
       grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
+      grid $cataconf.wfibc_check   $cataconf.wfibc_dir   -sticky nsw -pady 3
       grid columnconfigure $cataconf 0 -pad 30
 
       #--- Cree un frame pour la liste des cata
@@ -787,22 +790,29 @@ proc ::bdi_gui_config::createDialog { } {
                -command "::bdi_gui_config::choose_color ::gui_cata::color_2mass $cataff.2mass_color"
             spinbox $cataff.2mass_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_2mass -width 3
             $cataff.2mass_radius set $::gui_cata::size_2mass_sav
+         label $cataff.wfibc_lab -text "* WFIBC"
+            button $cataff.wfibc_color -borderwidth 1 -relief groove -width 5 -bg $::gui_cata::color_wfibc \
+               -command "::bdi_gui_config::choose_color ::gui_cata::color_wfibc $cataff.wfibc_color"
+            spinbox $cataff.wfibc_radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_wfibc -width 3
+            $cataff.wfibc_radius set $::gui_cata::size_wfibc_sav
 
          frame $cataff.blank -width 15 -height 15
 
       grid $cataff.skybot_lab  $cataff.skybot_color  $cataff.skybot_radius $cataff.astroid_lab $cataff.astroid_color $cataff.astroid_radius -sticky nsw -pady 1
       grid $cataff.blank
       grid $cataff.img_lab     $cataff.img_color     $cataff.img_radius    $cataff.usnoa2_lab  $cataff.usnoa2_color  $cataff.usnoa2_radius  -sticky nsw -pady 1
-      grid $cataff.tycho2_lab  $cataff.tycho2_color  $cataff.tycho2_radius $cataff.ucac3_lab   $cataff.ucac3_color   $cataff.ucac3_radius -sticky nsw -pady 1
-      grid $cataff.ucac2_lab   $cataff.ucac2_color   $cataff.ucac2_radius  $cataff.ucac4_lab   $cataff.ucac4_color   $cataff.ucac4_radius -sticky nsw -pady 1
-      grid $cataff.ppmx_lab    $cataff.ppmx_color    $cataff.ppmx_radius   $cataff.ppmxl_lab   $cataff.ppmxl_color   $cataff.ppmxl_radius -sticky nsw -pady 1
-      grid $cataff.nomad1_lab  $cataff.nomad1_color  $cataff.nomad1_radius $cataff.2mass_lab   $cataff.2mass_color   $cataff.2mass_radius -sticky nsw -pady 1
+      grid $cataff.tycho2_lab  $cataff.tycho2_color  $cataff.tycho2_radius $cataff.ucac3_lab   $cataff.ucac3_color   $cataff.ucac3_radius   -sticky nsw -pady 1
+      grid $cataff.ucac2_lab   $cataff.ucac2_color   $cataff.ucac2_radius  $cataff.ucac4_lab   $cataff.ucac4_color   $cataff.ucac4_radius   -sticky nsw -pady 1
+      grid $cataff.ppmx_lab    $cataff.ppmx_color    $cataff.ppmx_radius   $cataff.ppmxl_lab   $cataff.ppmxl_color   $cataff.ppmxl_radius   -sticky nsw -pady 1
+      grid $cataff.nomad1_lab  $cataff.nomad1_color  $cataff.nomad1_radius $cataff.2mass_lab   $cataff.2mass_color   $cataff.2mass_radius   -sticky nsw -pady 1
+      grid $cataff.wfibc_lab   $cataff.wfibc_color   $cataff.wfibc_radius                                                                   -sticky nsw -pady 1
       grid columnconfigure $cataff 0 -pad 20
       grid columnconfigure $cataff 1 -pad 10
       grid columnconfigure $cataff 2 -pad 10
       grid columnconfigure $cataff 3 -pad 20
       grid columnconfigure $cataff 4 -pad 10
       grid columnconfigure $cataff 5 -pad 10
+      grid columnconfigure $cataff 6 -pad 10
 
 
    #----------------------------------------------------------------------------

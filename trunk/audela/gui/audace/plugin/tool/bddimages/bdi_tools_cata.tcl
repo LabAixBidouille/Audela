@@ -157,6 +157,7 @@ namespace eval tools_cata {
    variable use_ppmxl
    variable use_nomad1
    variable use_2mass
+   variable use_wfibc
 
    variable catalog_usnoa2
    variable catalog_tycho2
@@ -167,6 +168,7 @@ namespace eval tools_cata {
    variable catalog_ppmxl
    variable catalog_nomad1
    variable catalog_2mass
+   variable catalog_wfibc
 
    variable keep_radec
    variable create_cata
@@ -188,6 +190,7 @@ namespace eval tools_cata {
    variable nb_ppmxl
    variable nb_nomad1
    variable nb_2mass
+   variable nb_wfibc
 
    variable ra       
    variable dec      
@@ -221,6 +224,7 @@ namespace eval tools_cata {
       set ::tools_cata::nb_ucac4   0
       set ::tools_cata::nb_nomad1  0
       set ::tools_cata::nb_2mass   0
+      set ::tools_cata::nb_wfibc   0
       set ::tools_cata::nb_skybot  0
       set ::tools_cata::nb_astroid 0
 
@@ -286,6 +290,13 @@ namespace eval tools_cata {
             set ::tools_cata::use_2mass $conf(bddimages,cata,use_2mass)
          } else {
             set ::tools_cata::use_2mass 0
+         }
+      }
+      if {! [info exists ::tools_cata::use_wfibc] } {
+         if {[info exists conf(bddimages,cata,use_wfibc)]} {
+            set ::tools_cata::use_wfibc $conf(bddimages,cata,use_wfibc)
+         } else {
+            set ::tools_cata::use_wfibc 0
          }
       }
       if {! [info exists ::tools_cata::use_skybot] } {
@@ -360,11 +371,18 @@ namespace eval tools_cata {
             set ::tools_cata::catalog_2mass ""
          }
       }
+      if {! [info exists ::tools_cata::catalog_wfibc] } {
+         if {[info exists conf(bddimages,catfolder,wfibc)]} {
+            set ::tools_cata::catalog_wfibc $conf(bddimages,catfolder,wfibc)
+         } else {
+            set ::tools_cata::catalog_wfibc ""
+         }
+      }
 
       # Services
       if {! [info exists ::tools_cata::catalog_skybot] } {
          if {[info exists conf(bddimages,catfolder,skybot)]} {
-            set ::tools_cata::catalog_2mass $conf(bddimages,catfolder,skybot)
+            set ::tools_cata::catalog_skybot $conf(bddimages,catfolder,skybot)
          } else {
             set ::tools_cata::catalog_skybot "http://vo.imcce.fr/webservices/skybot/"
          }
@@ -468,6 +486,7 @@ namespace eval tools_cata {
       set conf(bddimages,catfolder,tycho2)              $::tools_cata::catalog_tycho2 
       set conf(bddimages,catfolder,nomad1)              $::tools_cata::catalog_nomad1 
       set conf(bddimages,catfolder,2mass)               $::tools_cata::catalog_2mass 
+      set conf(bddimages,catfolder,wfibc)               $::tools_cata::catalog_wfibc
       # Utilisation des catalogues
       set conf(bddimages,cata,use_usnoa2)               $::tools_cata::use_usnoa2
       set conf(bddimages,cata,use_ucac2)                $::tools_cata::use_ucac2
@@ -478,6 +497,7 @@ namespace eval tools_cata {
       set conf(bddimages,cata,use_tycho2)               $::tools_cata::use_tycho2
       set conf(bddimages,cata,use_nomad1)               $::tools_cata::use_nomad1
       set conf(bddimages,cata,use_2mass)                $::tools_cata::use_2mass
+      set conf(bddimages,cata,use_wfibc)                $::tools_cata::use_wfibc
       set conf(bddimages,cata,use_skybot)               $::tools_cata::use_skybot
      # Autres utilitaires
       set conf(bddimages,cata,keep_radec)               $::tools_cata::keep_radec
@@ -913,6 +933,18 @@ namespace eval tools_cata {
          set log 0
          set listsources [ identification $listsources IMG $twomass 2MASS $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_2mass [::manage_source::get_nb_sources_by_cata $listsources 2MASS]
+      }
+
+      if {$::tools_cata::use_wfibc} {
+         #gren_info "CMD: cswfibc $::tools_cata::catalog_wfibc $ra $dec $radius\n"
+         set wfibc [cswfibc $::tools_cata::catalog_wfibc $ra $dec $radius]
+         #gren_info "rollup = [::manage_source::get_nb_sources_rollup $wfibc]\n"
+         set wfibc [::manage_source::set_common_fields $wfibc WFIBC { RA_deg DEC_deg error_Delta magR error_magR }]
+         #::manage_source::imprim_3_sources $wfibc
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         set log 0
+         set listsources [ identification $listsources IMG $wfibc WFIBC $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
+         set ::tools_cata::nb_wfibc [::manage_source::get_nb_sources_by_cata $listsources WFIBC]
       }
 
       if {$::tools_cata::use_skybot} {

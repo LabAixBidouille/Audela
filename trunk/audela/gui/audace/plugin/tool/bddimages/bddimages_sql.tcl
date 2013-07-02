@@ -119,6 +119,8 @@ namespace eval bddimages_sql {
    set err [catch {load $lib} msg]
    if {$err==1} {
       set err [catch {package require mysqltcl} msg]
+   } else {
+      gren_erreur "Cannot load libmysqtcl[info sharedlibextension]\n"
    }
 #   load libyd[info sharedlibextension]
 

@@ -200,6 +200,7 @@ namespace eval gui_cata {
    variable gui_tycho2
    variable gui_nomad1
    variable gui_2mass
+   variable gui_wfibc
    variable gui_skybot
    variable gui_astroid
 
@@ -212,6 +213,7 @@ namespace eval gui_cata {
    variable size_ppmxl
    variable size_nomad1
    variable size_2mass
+   variable size_wfibc
    variable size_tycho2
    variable size_skybot
    variable size_astroid
@@ -226,6 +228,7 @@ namespace eval gui_cata {
    variable color_ppmxl  
    variable color_nomad1 
    variable color_2mass  
+   variable color_wfibc
    variable color_tycho2 
    variable color_skybot 
    variable color_ovni   
@@ -327,6 +330,13 @@ namespace eval gui_cata {
             set ::gui_cata::gui_2mass 0
          }
       }
+      if {! [info exists ::gui_cata::gui_wfibc] } {
+         if {[info exists conf(bddimages,cata,gui_wfibc)]} {
+            set ::gui_cata::gui_wfibc $conf(bddimages,cata,gui_wfibc)
+         } else {
+            set ::gui_cata::gui_wfibc 0
+         }
+      }
       if {! [info exists ::gui_cata::gui_skybot] } {
          if {[info exists conf(bddimages,cata,gui_skybot)]} {
             set ::gui_cata::gui_skybot $conf(bddimages,cata,gui_skybot)
@@ -424,6 +434,15 @@ namespace eval gui_cata {
       }
       set ::gui_cata::size_2mass_sav $::gui_cata::size_2mass
       
+      if {! [info exists ::gui_cata::size_wfibc] } {
+         if {[info exists conf(bddimages,cata,size_wfibc)]} {
+            set ::gui_cata::size_wfibc $conf(bddimages,cata,size_wfibc)
+         } else {
+            set ::gui_cata::size_wfibc 1
+         }
+      }
+      set ::gui_cata::size_wfibc_sav $::gui_cata::size_wfibc
+
       if {! [info exists ::gui_cata::size_tycho2] } {
          if {[info exists conf(bddimages,cata,size_tycho2)]} {
             set ::gui_cata::size_tycho2 $conf(bddimages,cata,size_tycho2)
@@ -542,6 +561,15 @@ namespace eval gui_cata {
       }
       set ::gui_cata::color_2mass_sav $::gui_cata::color_2mass
       
+      if {! [info exists ::gui_cata::color_wfibc] } {
+         if {[info exists conf(bddimages,cata,color_wfibc)]} {
+            set ::gui_cata::color_wfibc $conf(bddimages,cata,color_wfibc)
+         } else {
+            set ::gui_cata::color_wfibc "#b4b308"
+         }
+      }
+      set ::gui_cata::color_wfibc_sav $::gui_cata::color_wfibc
+
       if {! [info exists ::gui_cata::color_tycho2] } {
          if {[info exists conf(bddimages,cata,color_tycho2)]} {
             set ::gui_cata::color_tycho2 $conf(bddimages,cata,color_tycho2)
@@ -613,6 +641,7 @@ namespace eval gui_cata {
       set conf(bddimages,cata,gui_tycho2)  $::gui_cata::gui_tycho2
       set conf(bddimages,cata,gui_nomad1)  $::gui_cata::gui_nomad1
       set conf(bddimages,cata,gui_2mass)   $::gui_cata::gui_2mass
+      set conf(bddimages,cata,gui_wfibc)   $::gui_cata::gui_wfibc
       set conf(bddimages,cata,gui_skybot)  $::gui_cata::gui_skybot
       set conf(bddimages,cata,gui_astroid) $::gui_cata::gui_astroid
       
@@ -632,6 +661,7 @@ namespace eval gui_cata {
       set conf(bddimages,cata,size_nomad1)  $::gui_cata::size_nomad1
       set conf(bddimages,cata,size_tycho2)  $::gui_cata::size_tycho2
       set conf(bddimages,cata,size_2mass)   $::gui_cata::size_2mass
+      set conf(bddimages,cata,size_wfibc)   $::gui_cata::size_wfibc
       set conf(bddimages,cata,size_skybot)  $::gui_cata::size_skybot
       set conf(bddimages,cata,size_astroid) $::gui_cata::size_astroid
       set conf(bddimages,cata,size_ovni)    $::gui_cata::size_ovni
@@ -647,6 +677,7 @@ namespace eval gui_cata {
       set conf(bddimages,cata,color_nomad1)  $::gui_cata::color_nomad1
       set conf(bddimages,cata,color_tycho2)  $::gui_cata::color_tycho2
       set conf(bddimages,cata,color_2mass)   $::gui_cata::color_2mass
+      set conf(bddimages,cata,color_wfibc)   $::gui_cata::color_wfibc
       set conf(bddimages,cata,color_skybot)  $::gui_cata::color_skybot
       set conf(bddimages,cata,color_astroid) $::gui_cata::color_astroid
 
@@ -769,6 +800,7 @@ namespace eval gui_cata {
       set listsources [::tools_sources::set_common_fields $listsources PPMX    { RAJ2000 DECJ2000 errDec Vmag ErrVmag }]
       set listsources [::tools_sources::set_common_fields $listsources PPMXL   { RAJ2000 DECJ2000 errDec magR1 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources NOMAD1  { RAJ2000 DECJ2000 errDec magV 0.5 }]
+      set listsources [::tools_sources::set_common_fields $listsources WFIBC   { RA_deg DEC_deg error_Delta magR error_magR }]
       set listsources [::tools_sources::set_common_fields $listsources SKYBOT  { ra de errpos magV 0.5 }]
       set listsources [::tools_sources::set_common_fields $listsources ASTROID { ra dec 5.0 mag err_mag }]
       ::bdi_tools_cata_user::set_common_fields_on_listsources listsources
@@ -785,6 +817,7 @@ namespace eval gui_cata {
       set ::tools_cata::nb_ppmxl   [::manage_source::get_nb_sources_by_cata $listsources PPMXL]
       set ::tools_cata::nb_nomad1  [::manage_source::get_nb_sources_by_cata $listsources NOMAD1]
       set ::tools_cata::nb_2mass   [::manage_source::get_nb_sources_by_cata $listsources 2MASS]
+      set ::tools_cata::nb_wfibc   [::manage_source::get_nb_sources_by_cata $listsources WFIBC]
 
       set ::tools_cata::current_listsources $listsources
 
@@ -863,6 +896,7 @@ namespace eval gui_cata {
          if { $::gui_cata::gui_tycho2 } { affich_rond $::tools_cata::current_listsources TYCHO2 $::gui_cata::color_tycho2 $::gui_cata::size_tycho2 }
          if { $::gui_cata::gui_nomad1 } { affich_rond $::tools_cata::current_listsources NOMAD1 $::gui_cata::color_nomad1 $::gui_cata::size_nomad1 }
          if { $::gui_cata::gui_2mass  } { affich_rond $::tools_cata::current_listsources 2MASS  $::gui_cata::color_2mass  $::gui_cata::size_2mass  }
+         if { $::gui_cata::gui_wfibc  } { affich_rond $::tools_cata::current_listsources WFIBC  $::gui_cata::color_wfibc  $::gui_cata::size_wfibc  }
          if { $::gui_cata::gui_skybot } { affich_rond $::tools_cata::current_listsources SKYBOT $::gui_cata::color_skybot $::gui_cata::size_skybot }
 
          # Trace du repere E/N dans l'image
@@ -992,6 +1026,7 @@ return
       set ::tools_cata::nb_ppmxl [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources PPMXL]
       set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources NOMAD1]
       set ::tools_cata::nb_2mass [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources 2MASS]
+      set ::tools_cata::nb_wfibc [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources WFIBC]
       set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources SKYBOT]
       set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources ASTROID]
 
@@ -1207,6 +1242,24 @@ return
                 spinbox $twomass.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_2mass -command "::gui_cata::affiche_cata" -width 3
                 pack $twomass.radius -in $twomass -side left -anchor w
                 $twomass.radius set $::gui_cata::size_2mass_sav
+
+           #--- Cree un frame pour afficher WFIBC
+           set wfibc [frame $count.wfibc -borderwidth 0 -cursor arrow -relief groove]
+           pack $wfibc -in $count -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                checkbutton $wfibc.check -highlightthickness 0 \
+                      -variable ::gui_cata::gui_wfibc -state normal  \
+                      -command "::gui_cata::affiche_cata"
+                pack $wfibc.check -in $wfibc -side left -padx 3 -pady 3 -anchor w 
+                label $wfibc.name -text "WFIBC :" -width 14 -anchor e
+                pack $wfibc.name -in $wfibc -side left -padx 3 -pady 3 -anchor w 
+                label $wfibc.val -textvariable ::tools_cata::nb_wfibc -width 4
+                pack $wfibc.val -in $wfibc -side left -padx 3 -pady 3
+                button $wfibc.color -borderwidth 0 -takefocus 1 -bg $::gui_cata::color_wfibc -command ""
+                pack $wfibc.color -side left -anchor e -expand 0 
+                spinbox $wfibc.radius -value [ list 1 2 3 4 5 6 7 8 9 10 ] -textvariable ::gui_cata::size_wfibc -command "::gui_cata::affiche_cata" -width 3
+                pack $wfibc.radius -in $wfibc -side left -anchor w
+                $wfibc.radius set $::gui_cata::size_wfibc_sav
 
            #--- Cree un frame pour afficher SKYBOT
            set skybot [frame $count.skybot -borderwidth 0 -cursor arrow -relief groove]

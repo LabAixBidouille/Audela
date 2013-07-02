@@ -281,7 +281,7 @@ namespace eval ::manage_source {
 
    proc ::manage_source::namable { mysource } {
 
-      set list_of_cata [list USER SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 ASTROID IMG]
+      set list_of_cata [list USER SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 WFIBC ASTROID IMG]
       foreach cata $list_of_cata {
           foreach mycata $mysource {
              if {[lindex $mycata 0] == $cata} {
@@ -311,11 +311,11 @@ namespace eval ::manage_source {
       
          if {[string toupper [lindex $cata 0]] == $mycata} {
 
-            if {$mycata=="USER"} {
+            if {$mycata == "USER"} {
                return "USER_[string trim [lindex [lindex $cata 2] 1] ]"
             }
             
-            if {$mycata=="IMG"} {
+            if {$mycata == "IMG"} {
                set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
                set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]
                if {$dec > 0} {
@@ -325,7 +325,7 @@ namespace eval ::manage_source {
                return "IMG_${ra}${dec}"
             }
 
-            if {$mycata=="ASTROID"} {
+            if {$mycata == "ASTROID"} {
                set othf [lindex $cata 2]
                set ra  [format "%.6f" [::bdi_tools_psf::get_val othf "ra" ] ]
                set dec [format "%.6f" [::bdi_tools_psf::get_val othf "dec"] ]
@@ -336,58 +336,68 @@ namespace eval ::manage_source {
                return "ASTROID_${ra}${dec}"
             }
 
-            if {$mycata=="SKYBOT"} {
+            if {$mycata == "SKYBOT"} {
                set name [lindex [lindex $cata 2] 1] 
                set i [regsub -all {\W} $name "_" name] 
                set name "SKYBOT_[lindex [lindex $cata 2] 0]_$name"
                return $name
             }
 
-            if {$mycata=="UCAC4"} {
+            if {$mycata == "UCAC4"} {
                set id [lindex [lindex $cata 2] 0]
                return "UCAC4_$id"
             }
 
-            if {$mycata=="UCAC3"} {
+            if {$mycata == "UCAC3"} {
                set id [lindex [lindex $cata 2] 0]
                return "UCAC3_$id"
             }
 
-            if {$mycata=="UCAC2"} {
+            if {$mycata == "UCAC2"} {
                set id [lindex [lindex $cata 2] 0]
                return "UCAC2_$id"
             }
 
-            if {$mycata=="USNOA2"} {
+            if {$mycata == "USNOA2"} {
                set id [lindex [lindex $cata 2] 0]
                return "USNOA2_${id}"
             }
 
-            if {$mycata=="PPMX"} {
+            if {$mycata == "PPMX"} {
                set id [lindex [lindex $cata 2] 0]
                return "PPMX_${id}"
             }
 
-            if {$mycata=="PPMXL"} {
+            if {$mycata == "PPMXL"} {
                set id [lindex [lindex $cata 2] 0]
                return "PPMXL_${id}"
             }
 
-            if {$mycata=="NOMAD1"} {
+            if {$mycata == "NOMAD1"} {
                set id [lindex [lindex $cata 2] 0]
                return "NOMAD1_${id}"
             }
 
-            if {$mycata=="TYCHO2"} {
+            if {$mycata == "TYCHO2"} {
                set id1 [lindex [lindex $cata 2] 1]
                set id2 [lindex [lindex $cata 2] 2]
                set id3 [lindex [lindex $cata 2] 3]
                return "TYCHO2_${id1}_${id2}_${id3}"
             }
 
-            if {$mycata=="2MASS"} {
+            if {$mycata == "2MASS"} {
                set id [lindex [lindex $cata 2] 0]
                return "2MASS_$id"
+            }
+
+            if {$mycata == "WFIBC"} {
+               set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
+               set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]
+               if {$dec > 0} {
+                  set dec [regsub {\+} $dec ""]
+                  set dec "+$dec"
+                }
+               return "WFIBC_${ra}${dec}"
             }
 
          }
