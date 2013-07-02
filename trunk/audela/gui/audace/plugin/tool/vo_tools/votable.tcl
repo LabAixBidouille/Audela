@@ -705,6 +705,7 @@ proc ::votable::getFieldFromKey { table key } {
       PPMX    { set f [::votable::getFieldFromKey_PPMX $key] }
       PPMXL   { set f [::votable::getFieldFromKey_PPMXL $key] }
       2MASS   { set f [::votable::getFieldFromKey_2MASS $key] }
+      WFIBC   { set f [::votable::getFieldFromKey_WFIBC $key] }
       SKYBOT  { set f [::votable::getFieldFromKey_SKYBOT $key] }
       OVNI    { set f [::votable::getFieldFromKey_OVNI $key] }
       ASTROID { set f [::votable::getFieldFromKey_ASTROID $key] }
@@ -2474,7 +2475,7 @@ proc ::votable::getFieldFromKey_PPMXL { key } {
                set ucd "phot.mag;em.IR.K"
             }
          }
-         lappend field "$::votable::Field::UCD \"stat.error;ucd\"" \
+         lappend field "$::votable::Field::UCD \"stat.error;$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"8\"" \
                        "$::votable::Field::PRECISION \"3\"" \
@@ -2599,6 +2600,118 @@ proc ::votable::getFieldFromKey_2MASS { key } {
    }
    return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
 }
+
+
+#
+# Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue WFIBC
+# @access private
+# @param key nom de la colonne dont on veut construire l'element FIELD
+# @return liste liste contenant la definition du champ et sa description
+#
+proc ::votable::getFieldFromKey_WFIBC { key } {
+   # Id et Nom du champ
+   set field [list "$::votable::Field::ID PPMXL.${key}" "$::votable::Field::NAME $key"]
+   # Autres infos 
+   switch $key {
+      ID {
+         set description "PPMXL identifier (IAU convention HHMMSS.S+DDMMSS)"
+         lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::WIDTH \"16\""
+      }
+      RA_deg -
+      DEC_deg {
+         if {[string equal -nocase $key "RA_deg"]} {
+            set description "Right ascension at epoch J2000.0"
+         } else {
+            set description "Declination at epoch J2000.0"
+         }
+         lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"9\"" \
+                       "$::votable::Field::PRECISION \"5\"" \
+                       "$::votable::Field::UNIT \"deg\""
+      }
+      error_AlphaCosDelta -
+      error_Delta {
+         if {[string equal -nocase $key "error_AlphaCosDelta"]} {
+            set description "Mean error in RA*cos(DEC) at JD"
+            set ucd "stat.error;pos.eq.ra"
+         } else {
+            set description "Mean error in DEC at JD"
+            set ucd "stat.error;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"10\"" \
+                       "$::votable::Field::PRECISION \"6\"" \
+                       "$::votable::Field::UNIT \"mas\""
+      }
+      JD {
+         set description "Julian Date of observation"
+         lappend field "$::votable::Field::UCD \"time.epoch\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"12\"" \
+                       "$::votable::Field::PRECISION \"4\"" \
+                       "$::votable::Field::UNIT \"d\""
+      }
+      PM_AlphaCosDelta -
+      PM_Delta {
+         if {[string equal -nocase $key "PM_AlphaCosDelta"]} {
+            set description "Proper Motion in RA*cos(DEC)"
+            set ucd "pos.pm;pos.eq.ra"
+         } else {
+            set description "Proper motion in DEC"
+            set ucd "pos.pm;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mas/yr\""
+      }
+      error_PM_AlphaCosDelta -
+      error_PM_Delta {
+         if {[string equal -nocase $key "error_PM_AlphaCosDelta"]} {
+            set description "Mean error in RA proper motion (pmRA*cos(DEC))"
+            set ucd "stat.error;pos.pm;pos.eq.ra"
+         } else {
+            set description "Mean error in DEC proper motion"
+            set ucd "stat.error;pos.pm;pos.eq.dec"
+         }
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"6\"" \
+                       "$::votable::Field::PRECISION \"2\"" \
+                       "$::votable::Field::UNIT \"mas/yr\""
+      }
+      magR {
+         set description "R magnitude" 
+         set ucd "phot.mag;em.opt.R"
+         lappend field "$::votable::Field::UCD \"$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      error_magR {
+         set description "R magnitude uncertainty"
+         set ucd "phot.mag;em.IR.R"
+         lappend field "$::votable::Field::UCD \"stat.error;$ucd\"" \
+                       "$::votable::Field::DATATYPE \"float\"" \
+                       "$::votable::Field::WIDTH \"8\"" \
+                       "$::votable::Field::PRECISION \"3\"" \
+                       "$::votable::Field::UNIT \"mag\""
+      }
+      default {
+         # si $key n'est pas reconnu alors on renvoie des listes vides
+         set field ""
+         set description ""
+      }
+   }
+   return [list $field [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+}
+
 
 #
 # Construction des elements FIELDS en fonction de la cle de la colonne pour le catalogue SKYBOT
