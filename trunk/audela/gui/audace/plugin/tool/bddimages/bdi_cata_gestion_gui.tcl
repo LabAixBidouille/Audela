@@ -1804,16 +1804,22 @@ namespace eval cata_gestion_gui {
 
 # Anciennement ::cata_gestion_gui::psf_auto_go
 
-   proc ::cata_gestion_gui::psf_auto_go { type list_id } {
+   proc ::cata_gestion_gui::psf_auto_go { type list_id nd_sources} {
 
       if {$type == "one"} {
-         ::cata_gestion_gui::psf_auto_go_one "oneimage"
+         ::cata_gestion_gui::psf_auto_go_one "oneimage" $nd_sources
       }
       if {$type == "popup"} {
       
       }
       if {$type == "all"} {
-         ::cata_gestion_gui::psf_auto_go_all
+         ::cata_gestion_gui::psf_auto_go_all $nd_sources "listimage"
+      }
+      if {$type == "one_flag"} {
+         ::cata_gestion_gui::psf_auto_go_one "flag" $nd_sources
+      }
+      if {$type == "all_flag"} {
+         ::cata_gestion_gui::psf_auto_go_all $nd_sources "list_flag"
       }
 
    }
@@ -1841,7 +1847,7 @@ namespace eval cata_gestion_gui {
       #gren_info "id_current_image = $::tools_cata::id_current_image \n"
       gren_info "ASTROID sur l'image $::tools_cata::id_current_image\n"
       puts "ASTROID sur l'image $::tools_cata::id_current_image"
-      
+
       set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
 
       set fields  [lindex $::tools_cata::current_listsources 0]
@@ -1850,19 +1856,25 @@ namespace eval cata_gestion_gui {
       set pass "no"
       set id 0
 
-      if {$worktype == "oneimage" } {
-         set nd_sources [llength $sources]
+      if {$worktype == "oneimage" || $worktype == "flag" } {
          set current 0
-      } else {
-         set worktype "listimage"
       }
 
       #gren_info "Sources selectionnees ($nd_sources): \n"
       set current 
       foreach s $sources {
          incr id
+         
+         if {$worktype == "flag" || $worktype == "list_flag" } {
+            set pos [lsearch -index 0 $s "ASTROID"]
+            if {$pos==-1} { continue }
+            set othf [ lindex [lindex $s $pos] 2]
+            set flag [::bdi_tools_psf::get_val othf "flagastrom"]
+            if {$flag == ""} { continue }
+         }
+         
          ::cata_gestion_gui::set_popupprogress $current $nd_sources
-         #gren_info "ID = $id\n"
+         gren_info "ID = $id\n"
          #gren_info "S=$s\n"
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
          
@@ -1901,7 +1913,7 @@ namespace eval cata_gestion_gui {
       # pack les resultats
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       
-      if {$worktype == "oneimage" } {
+      if {$worktype == "oneimage" || $worktype == "flag"} {
          ::tools_cata::current_listsources_to_tklist
          set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
          set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
@@ -1927,15 +1939,10 @@ namespace eval cata_gestion_gui {
 
 
 
-# Anciennement ::cata_gestion_gui::psf_auto_go_all
 
-   proc ::cata_gestion_gui::psf_auto_go_all { } {
+   proc ::cata_gestion_gui::psf_auto_go_all { nd_sources { flag "" } } {
 
       #gren_info "id_current_image = $::tools_cata::id_current_image \n"
-      set nd_sources 0
-      for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
-         incr nd_sources [llength [lindex $::gui_cata::cata_list($i) 1]]
-      }
       set cpt 0
 
       set current 0
@@ -1944,7 +1951,7 @@ namespace eval cata_gestion_gui {
 
          set ::cata_gestion_gui::directaccess $::tools_cata::id_current_image
          ::cata_gestion_gui::charge_image_directaccess
-         set current [::cata_gestion_gui::psf_auto_go_one "listimage" $nd_sources $current]
+         set current [::cata_gestion_gui::psf_auto_go_one $flag $nd_sources $current]
          
       }
 
@@ -1995,6 +2002,34 @@ namespace eval cata_gestion_gui {
             incr nd_sources [llength [lindex $::gui_cata::cata_list($i) 1]]
          }
       }
+      if {$type == "one_flag"} {
+         set sources [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] 
+         set nd_sources 0
+         foreach s $sources {
+            set pos [lsearch -index 0 $s "ASTROID"]
+            if {$pos!=-1} {
+               set othf [ lindex [lindex $s $pos] 2]
+               set flag [::bdi_tools_psf::get_val othf "flagastrom"]
+               if {$flag != ""} {
+                  incr nd_sources
+               }
+            }
+         }
+      }
+      if {$type == "all_flag"} {
+         set nd_sources 0
+         for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
+            set sources [lindex $::gui_cata::cata_list($i) 1]
+            foreach s $sources {
+               set pos [lsearch -index 0 $s "ASTROID"]
+               if {$pos==-1} { continue }
+               set othf [ lindex [lindex $s $pos] 2]
+               set flag [::bdi_tools_psf::get_val othf "flagastrom"]
+               if {$flag == ""} { continue }
+               incr nd_sources
+            }
+         }
+      }
 
       set ::cata_gestion_gui::popupprogress 0
 
@@ -2040,7 +2075,7 @@ namespace eval cata_gestion_gui {
              pack   $data.fermer -side right -anchor c -padx 0 -padx 10 -pady 5
 
              button $data.go -state active -text "Go" -relief "raised" \
-                -command "::cata_gestion_gui::psf_auto_go $type $list_id  ; destroy $::gui_cata::fenpopuppsf"
+                -command "::cata_gestion_gui::psf_auto_go $type $list_id $nd_sources ; destroy $::gui_cata::fenpopuppsf"
              pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
 
 
@@ -2231,6 +2266,8 @@ namespace eval cata_gestion_gui {
              $menubar.psf.menu add command -label "Manuel sur l'image" -command "::bdi_gui_gestion_source::run current"
              $menubar.psf.menu add command -label "Auto sur l'image" -command "::cata_gestion_gui::psf_auto one"
              $menubar.psf.menu add command -label "Auto toutes images" -command "::cata_gestion_gui::psf_auto all"
+             $menubar.psf.menu add command -label "Auto sources Flag sur l'image" -command "::cata_gestion_gui::psf_auto one_flag"
+             $menubar.psf.menu add command -label "Auto sources Flag toutes images" -command "::cata_gestion_gui::psf_auto all_flag"
 
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
              pack $menubar.psf -side left
