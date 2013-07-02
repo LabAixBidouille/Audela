@@ -2610,11 +2610,11 @@ proc ::votable::getFieldFromKey_2MASS { key } {
 #
 proc ::votable::getFieldFromKey_WFIBC { key } {
    # Id et Nom du champ
-   set field [list "$::votable::Field::ID PPMXL.${key}" "$::votable::Field::NAME $key"]
+   set field [list "$::votable::Field::ID WFIBC.${key}" "$::votable::Field::NAME $key"]
    # Autres infos 
    switch $key {
       ID {
-         set description "PPMXL identifier (IAU convention HHMMSS.S+DDMMSS)"
+         set description "WFIBC identifier (IAU convention HHMMSS.S+DDMMSS)"
          lappend field "$::votable::Field::UCD \"meta.id;meta.number\"" \
                        "$::votable::Field::DATATYPE \"char\"" \
                        "$::votable::Field::WIDTH \"16\""
@@ -2622,9 +2622,9 @@ proc ::votable::getFieldFromKey_WFIBC { key } {
       RA_deg -
       DEC_deg {
          if {[string equal -nocase $key "RA_deg"]} {
-            set description "Right ascension at epoch J2000.0"
+            set description "ICRF Right ascension"
          } else {
-            set description "Declination at epoch J2000.0"
+            set description "ICRF Declination"
          }
          lappend field "$::votable::Field::UCD \"pos.eq.$key;meta.main\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -2645,7 +2645,7 @@ proc ::votable::getFieldFromKey_WFIBC { key } {
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"10\"" \
                        "$::votable::Field::PRECISION \"6\"" \
-                       "$::votable::Field::UNIT \"mas\""
+                       "$::votable::Field::UNIT \"arcsec\""
       }
       JD {
          set description "Julian Date of observation"
@@ -2658,35 +2658,35 @@ proc ::votable::getFieldFromKey_WFIBC { key } {
       PM_AlphaCosDelta -
       PM_Delta {
          if {[string equal -nocase $key "PM_AlphaCosDelta"]} {
-            set description "Proper Motion in RA*cos(DEC)"
+            set description "Proper Motion in RA*cos(DEC) (99.999 when not determined)"
             set ucd "pos.pm;pos.eq.ra"
          } else {
-            set description "Proper motion in DEC"
+            set description "Proper motion in DEC (99.999 when not determined)"
             set ucd "pos.pm;pos.eq.dec"
          }
          lappend field "$::votable::Field::UCD \"$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"6\"" \
                        "$::votable::Field::PRECISION \"2\"" \
-                       "$::votable::Field::UNIT \"mas/yr\""
+                       "$::votable::Field::UNIT \"arcsec/yr\""
       }
       error_PM_AlphaCosDelta -
       error_PM_Delta {
          if {[string equal -nocase $key "error_PM_AlphaCosDelta"]} {
-            set description "Mean error in RA proper motion (pmRA*cos(DEC))"
+            set description "Mean error in RA proper motion (pmRA*cos(DEC)) (99.999 when not determined)"
             set ucd "stat.error;pos.pm;pos.eq.ra"
          } else {
-            set description "Mean error in DEC proper motion"
+            set description "Mean error in DEC proper motion (99.999 when not determined)"
             set ucd "stat.error;pos.pm;pos.eq.dec"
          }
          lappend field "$::votable::Field::UCD \"$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
                        "$::votable::Field::WIDTH \"6\"" \
                        "$::votable::Field::PRECISION \"2\"" \
-                       "$::votable::Field::UNIT \"mas/yr\""
+                       "$::votable::Field::UNIT \"arcsec/yr\""
       }
       magR {
-         set description "R magnitude" 
+         set description "Observed R magnitude" 
          set ucd "phot.mag;em.opt.R"
          lappend field "$::votable::Field::UCD \"$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
@@ -2695,7 +2695,7 @@ proc ::votable::getFieldFromKey_WFIBC { key } {
                        "$::votable::Field::UNIT \"mag\""
       }
       error_magR {
-         set description "R magnitude uncertainty"
+         set description "Observed R magnitude uncertainty"
          set ucd "phot.mag;em.IR.R"
          lappend field "$::votable::Field::UCD \"stat.error;$ucd\"" \
                        "$::votable::Field::DATATYPE \"float\"" \
