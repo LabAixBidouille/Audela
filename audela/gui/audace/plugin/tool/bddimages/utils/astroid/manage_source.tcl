@@ -391,8 +391,8 @@ namespace eval ::manage_source {
             }
 
             if {$mycata == "WFIBC"} {
-               set ra  [format "%.6f" [lindex [lindex $cata 2] 8] ]
-               set dec [format "%.6f" [lindex [lindex $cata 2] 9] ]
+               set ra  [format "%.6f" [lindex [lindex $cata 2] 0] ]
+               set dec [format "%.6f" [lindex [lindex $cata 2] 1] ]
                if {$dec > 0} {
                   set dec [regsub {\+} $dec ""]
                   set dec "+$dec"
@@ -589,38 +589,38 @@ namespace eval ::manage_source {
    #
    proc ::manage_source::extract_sources_by_array { rect listsources } {
 
-       gren_info "ARRAY=$rect\n"
+      gren_info "ARRAY=$rect\n"
 
-       set fields  [lindex $listsources 0]
-       foreach s $fields { 
-             ::console::affiche_resultat "$s\n"
-             }
-       set newsources {}
-       set sources [lindex $listsources 1]
-       foreach s $sources {
-          set kelcata ""
-          set pass "no"
-          foreach cata $s {
-             append kelcata "[string toupper [lindex $cata 0]] "
-             if {[string toupper [lindex $cata 0]] == "IMG"} {
-               set x [lindex [lindex [lindex $s 0] 2] 2]
-               set y [lindex [lindex [lindex $s 0] 2] 3]
-               if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
-                  set pass "yes"
-                  lappend newsources $s
-                  set ra [lindex [lindex [lindex $s 0] 2] 8]
-                  set dec [lindex [lindex [lindex $s 0] 2] 9]
-               }
-             }
-          }
-          
-          if {$pass == "yes" } {
-             #gren_info "X Y = $x $y | $kelcata | RA DEC = $ra $dec\n"
-             #gren_info "affich_un_rond_xy $x $y \"blue\" 1 1"
-             #gren_info "affich_un_rond $ra $dec \"red\" 2"
-          }
-       }
-   return [list $fields $newsources]
+      set fields  [lindex $listsources 0]
+      foreach s $fields { 
+            ::console::affiche_resultat "$s\n"
+            }
+      set newsources {}
+      set sources [lindex $listsources 1]
+      foreach s $sources {
+         set kelcata ""
+         set pass "no"
+         foreach cata $s {
+            append kelcata "[string toupper [lindex $cata 0]] "
+            if {[string toupper [lindex $cata 0]] == "IMG"} {
+              set x [lindex [lindex [lindex $s 0] 2] 2]
+              set y [lindex [lindex [lindex $s 0] 2] 3]
+              if {$x > [lindex $rect 0] && $x < [lindex $rect 2] && $y > [lindex $rect 1] && $y < [lindex $rect 3]} {
+                 set pass "yes"
+                 lappend newsources $s
+                 set ra [lindex [lindex [lindex $s 0] 2] 8]
+                 set dec [lindex [lindex [lindex $s 0] 2] 9]
+              }
+            }
+         }
+         
+         if {$pass == "yes" } {
+            #gren_info "X Y = $x $y | $kelcata | RA DEC = $ra $dec\n"
+            #gren_info "affich_un_rond_xy $x $y \"blue\" 1 1"
+            #gren_info "affich_un_rond $ra $dec \"red\" 2"
+         }
+      }
+      return [list $fields $newsources]
    }
 
 
