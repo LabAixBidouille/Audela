@@ -1574,8 +1574,8 @@ proc simulimage {args} {
       incr k ; set elecmult 1             ; if {[llength $args] >= [expr 1+$k]} { set elecmult [lindex $args $k] }
       incr k ; set flat_type 0            ; if {[llength $args] >= [expr 1+$k]} { set flat_type [lindex $args $k] }
       incr k ; set newstar_type NONE      ; if {[llength $args] >= [expr 1+$k]} { set newstar_type [lindex $args $k] }
-      incr k ; set newstar_ra 0           ; if {[llength $args] >= [expr 1+$k]} { set newstar_ra [string trim [mc_angle2deg [lindex $args $k]]] }
-      incr k ; set newstar_dec 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_dec [string trim [mc_angle2deg [lindex $args $k] 90]] }
+      incr k ; set newstar_ra 0           ; if {[llength $args] >= [expr 1+$k]} { set newstar_ra [mc_angle2deg [lindex $args $k]]] }
+      incr k ; set newstar_dec 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_dec [mc_angle2deg [lindex $args $k] 90] }
       incr k ; set newstar_mag 0          ; if {[llength $args] >= [expr 1+$k]} { set newstar_mag [lindex $args $k] }
 
       #--- check les catalogues

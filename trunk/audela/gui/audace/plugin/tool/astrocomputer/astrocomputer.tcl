@@ -1017,8 +1017,9 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
             set objname [lindex $res 0]
             set norad [string range [string trim [lindex $objname 1]] 0 end-1]
             set objname "[string trim [lindex $objname 0]] ([string trim [lindex $objname 1]]) ([string trim [lindex $objname 2]])"
-            set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
-            set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
+            set ra  [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]
+            set dec [mc_angle2dms [lindex $res 2]  90 zero 1 + string]
+
             set elong [format %.2f [lindex $res 4]]
             set phase [format %.2f [lindex $res 5]]
             set fracill [lindex $res 6]
@@ -1031,8 +1032,8 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
          set type "mc_ephem"
          set res [lindex [mc_ephem $key $date {OBJENAME RA DEC DELTA MAG PHASE APPDIAMEQU LONGI LONGII ELONG} -topo $astrocomputer(siteinp)] 0]
          set objname [lindex $res 0]
-         set ra  [string trim [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]]
-         set dec [string trim [mc_angle2dms [lindex $res 2]  90 zero 1 + string]]
+         set ra  [mc_angle2hms [lindex $res 1] 360 zero 2 auto string]
+         set dec [mc_angle2dms [lindex $res 2]  90 zero 1 + string]
          set distua [format %.5f [lindex $res 3]]
          set mag [format %.2f [lindex $res 4]]
          set phase [format %.2f [lindex $res 5]]
@@ -1075,7 +1076,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    if {($objname!="")} {
       append resultat "Object = $objname\n"
    }
-   set hip [list 1 0 [string trim [mc_angle2deg $ra]] [string trim [mc_angle2deg $dec 90]] $equinox $epoch $mura $mudec $plx]
+   set hip [list 1 0 [mc_angle2deg $ra] [mc_angle2deg $dec 90] $equinox $epoch $mura $mudec $plx]
    #::console::affiche_resultat "hip=$hip\n\n"
    set res [mc_hip2tel $hip $date $astrocomputer(siteinp) 101325 290]
    append resultat "UTC Date = [mc_date2iso8601 $date]\n"
