@@ -1,0 +1,191 @@
+#
+# Fichier : epixowl.cap
+# Mise a jour $Id: epixowl.cap 9596 2013-06-24 12:09:45Z mschiav $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(epixowl,camera)                       "EPIX - OWL"
+
+set caption(epixowl,config)                       "Video Format File"
+set caption(epixowl,extconfig)                    "External Video Format File"
+set caption(epixowl,browse)                       "..."
+set caption(epixowl,folder)                       "From Folder:"
+set caption(epixowl,mirror_x)                     "Top/Bottom Reversal"
+set caption(epixowl,mirror_y)                     "Left/Right Reversal"
+set caption(epixowl,temperature_CCD)              "Sensor Temperature:"
+set caption(epixowl,deg_c)                        "°C"
+
+set caption(epixowl,framerate)                    "Frame rate"
+set caption(epixowl,exposure)                     "Exposure time"
+set caption(epixowl,hdr)                          "High Dynamic Range"
+set caption(epixowl,videomode)                    "Video Mode"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "Fichier de Format Video"
+   set caption(epixowl,extconfig)                 "Fichier externe de Format Video"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "A partir du dossier :"
+   set caption(epixowl,mirror_x)                  "Inverser Haut/Bas"
+   set caption(epixowl,mirror_y)                  "Inverser Gauche/Droite"
+   set caption(epixowl,temperature_CCD)           "Température du capteur:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Images par second"
+   set caption(epixowl,exposure)                  "Temps d'exposition"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Mode Vidéo"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "File di formato Video"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "Dalla cartella:"
+   set caption(epixowl,mirror_x)                  "Inversione Alto/Basso"
+   set caption(epixowl,mirror_y)                  "Inversione Sinistra/Destra"
+   set caption(epixowl,temperature_CCD)           "Temperatura del sensore:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,obtu_ouvert)               "Abierto"
+   set caption(epixowl,obtu_ferme)                "Cerrado"
+   set caption(epixowl,obtu_synchro)              "Sincro"
+
+   set caption(epixowl,config)                    "Fichero de configuracion"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "Desde la carpeta:"
+   set caption(epixowl,mirror_x)                  "Invertir Arriba/Abajo"
+   set caption(epixowl,mirror_y)                  "Invertir Izquierda/Derecha"
+   set caption(epixowl,temperature_CCD)           "Temperatura sensor:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "Video Format file"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "Vom Unterlagen:"
+   set caption(epixowl,mirror_x)                  "Oben/Unten umkehren"
+   set caption(epixowl,mirror_y)                  "Links/Rechts umkehren"
+   set caption(epixowl,temperature_CCD)           "Sensortemperatur:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "Ficheiro de configuração"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "Da Pasta:"
+   set caption(epixowl,mirror_x)                  "Inverter Cima/Baixo"
+   set caption(epixowl,mirror_y)                  "Inverter Esquerda/Direita"
+   set caption(epixowl,temperature_CCD)           "Temperatura do sensor:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "Video Format File"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "From Folder:"
+   set caption(epixowl,mirror_x)                  "Top/Bottom Reversal"
+   set caption(epixowl,mirror_y)                  "Left/Right Reversal"
+   set caption(epixowl,temperature_CCD)           "Sensor Temperature:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "Video Format File"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "From Folder:"
+   set caption(epixowl,mirror_x)                  "Top/Bottom Reversal"
+   set caption(epixowl,mirror_y)                  "Left/Right Reversal"
+   set caption(epixowl,temperature_CCD)           "Temperature sensor:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(epixowl,camera)                    "EPIX - OWL"
+
+   set caption(epixowl,config)                    "Video Format File"
+   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,browse)                    "..."
+   set caption(epixowl,folder)                    "From Folder:"
+   set caption(epixowl,mirror_x)                  "Top/Bottom Reversal"
+   set caption(epixowl,mirror_y)                  "Left/Right Reversal"
+   set caption(epixowl,temperature_CCD)           "Temperature sensor:"
+   set caption(epixowl,deg_c)                     "°C"
+
+   set caption(epixowl,framerate)                 "Frame rate"
+   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,hdr)                       "High Dynamic Range"
+   set caption(epixowl,videomode)                 "Video Mode"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
