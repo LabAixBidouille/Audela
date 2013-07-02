@@ -371,8 +371,10 @@ namespace eval ::div {
    #  Commande du bouton 'Aide'
    #---------------------------------------------------------------------------
    proc cmdHelp { $visuNo } {
+      global help
 
-      ::audace::showHelpItem $::help(dir,affichage) 1040palette.htm
+      #---
+      ::audace::showHelpItem "$help(dir,affichage)" "1040palette.htm"
    }
 
    #---------------------------------------------------------------------------

@@ -18,6 +18,14 @@
 
 global help
 
+#--- sous-repertoire invariant de l'aide
+set help(dir,docLibaudela)  [ file join doc libaudela ]
+set help(dir,docLibgsltcl)  [ file join doc libgsltcl ]
+set help(dir,docLibgzip)    [ file join doc libgzip ]
+set help(dir,docLibmc)      [ file join doc libmc ]
+set help(dir,docLibrgb)     [ file join doc librgb ]
+set help(dir,docLibtt)      [ file join doc libtt ]
+
 #--- sous-repertoires de l'aide (par langue)
 set help(dir,intro)         "01presentation"
 set help(dir,prog)          "02programming"
@@ -27,13 +35,13 @@ set help(dir,images)        "05images"
 set help(dir,analyse)       "07analysis"
 set help(dir,cameras)       "08camera"
 set help(dir,telescopes)    "09telescope"
-set help(dir,config)        "10setup/01audace"
-set help(dir,camera)        "10setup/02camera"
-set help(dir,mount)         "10setup/03mount"
-set help(dir,optic)         "10setup/04optic"
-set help(dir,equipment)     "10setup/05equipment"
-set help(dir,pad)           "10setup/06pad"
-set help(dir,chart)         "10setup/07chart"
+set help(dir,config)        [ file join 10setup 01audace ]
+set help(dir,camera)        [ file join 10setup 02camera ]
+set help(dir,mount)         [ file join 10setup 03mount ]
+set help(dir,optic)         [ file join 10setup 04optic ]
+set help(dir,equipment)     [ file join 10setup 05equipment ]
+set help(dir,pad)           [ file join 10setup 06pad ]
+set help(dir,chart)         [ file join 10setup 07chart ]
 set help(dir,config+)       "10setup"
 set help(dir,aide)          "11help"
 set help(dir,tutoriel)      "12tutorial"
@@ -48,13 +56,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set help(dir,analyse)    "07analyse"
    set help(dir,cameras)    "08camera"
    set help(dir,telescopes) "09telescope"
-   set help(dir,config)     "10configuration/01audace"
-   set help(dir,camera)     "10configuration/02camera"
-   set help(dir,mount)      "10configuration/03monture"
-   set help(dir,optic)      "10configuration/04optique"
-   set help(dir,equipment)  "10configuration/05equipement"
-   set help(dir,pad)        "10configuration/06raquette"
-   set help(dir,chart)      "10configuration/07carte"
+   set help(dir,config)     [ file join 10configuration 01audace ]
+   set help(dir,camera)     [ file join 10configuration 02camera ]
+   set help(dir,mount)      [ file join 10configuration 03monture ]
+   set help(dir,optic)      [ file join 10configuration 04optique ]
+   set help(dir,equipment)  [ file join 10configuration 05equipement ]
+   set help(dir,pad)        [ file join 10configuration 06raquette ]
+   set help(dir,chart)      [ file join 10configuration 07carte ]
    set help(dir,config+)    "10configuration"
    set help(dir,aide)       "11aide"
    set help(dir,tutoriel)   "12tutoriel"
@@ -62,6 +70,68 @@ if { [ string compare $langage "french" ] == "0" } {
 
 namespace eval ::audace {
 
+   #----------------------------------------------------------------------------------------
+   #  ::audace::showHelpDocLibrairy
+   #
+   #  ouvre la fenetre d'aide si elle n'est pas deja ouverte
+   #  puis affiche la page HTML demandee
+   #
+   #  parametres :
+   #     relativeFileName : repertoire du fichier d'aide
+   #     tag              : balise anchor dans la page HTML (optionel)
+   #
+   #  exemple : ::audace::showHelpDocLibrairy "$help(dir,docLibtt)" "ttus1-fr.htm" "ADD"
+   #  note : ne pas rajouter # devant le tag, il est rajoute automatiquement
+   #----------------------------------------------------------------------------------------
+   proc ::audace::showHelpDocLibrairy { { folderRelativeFileName "" } { relativeFileName "" } { tag "" } } {
+      global audace help
+
+      #--- J'affiche l'aide avec le navigateur selectionne
+      if { $::conf(editsite_htm,selectHelp) == "1" } {
+         #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
+         if { ( $::langage != "french" ) && ( $::langage != "english" ) } {
+            set audace(help_langage) "english"
+         } else {
+            set audace(help_langage) $::langage
+         }
+         if { $relativeFileName != "" } {
+            #--- J'affiche le fichier d'aide avec le navigateur selectionne
+            ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_install) \
+               $folderRelativeFileName $relativeFileName ] ]#$tag
+         } else {
+            #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
+            ::audace::Lance_Site_htm [ file join file:///[ file join $audace(rep_doc_html) $audace(help_langage) \
+               $help(dir,intro) "1010presentation.htm" ] ]
+         }
+         return
+      }
+
+      #--- J'affiche la fenetre si ce n'est pas deja fait
+      if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
+         ::audace::initHelp
+      }
+
+      if { [ winfo exists $audace(base).help ] } {
+         wm deiconify $audace(base).help
+      }
+
+      #--- J'attends que la fenetre d'aide soit creee
+      update
+
+      if { $relativeFileName != "" } {
+         #--- J'affiche le fichier d'aide
+         ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(rep_install) \
+            $folderRelativeFileName $relativeFileName ] 1 $tag
+      } else {
+         #--- Si le nom du fichier est absent, j'affiche le sommaire de l'aide
+         ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,intro) \
+            "1010presentation.htm" ] 1 ""
+      }
+
+      #--- Focus
+      focus $audace(help_window)
+
+   }
    #----------------------------------------------------------------------------------------
    #  ::audace::showHelpItem
    #
@@ -72,8 +142,8 @@ namespace eval ::audace {
    #     relativeFileName : repertoire du fichier d'aide
    #     tag              : balise anchor dans la page HTML (optionel)
    #
-   #  exemple : ::audace::showHelpItem "$help(dir,prog)" "ttus1-fr.htm" "ADD"
-   #  note : ne pas rajouter # devant item, il est rajoute automatiquement
+   #  exemple : ::audace::showHelpItem "$help(dir,images)" "1170kernel.htm" "conv_spatiale"
+   #  note : ne pas rajouter # devant le tag, il est rajoute automatiquement
    #----------------------------------------------------------------------------------------
    proc ::audace::showHelpItem { { folderRelativeFileName "" } { relativeFileName "" } { tag "" } } {
       global audace help
