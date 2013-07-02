@@ -32,10 +32,11 @@
 	{"setframebuffer", (Tcl_CmdProc *)cmdCamSetFrameBuffer}, \
 	{"reset", (Tcl_CmdProc *)cmdCamReset}, \
 	{"digitalgain", (Tcl_CmdProc *)cmdCamDigitalGain}, \
+
+/*
 	{"videostart", (Tcl_CmdProc *)cmdCamVideoStart}, \
 	{"videostop", (Tcl_CmdProc *)cmdCamVideoStop}, \
 	{"videopause", (Tcl_CmdProc *)cmdCamVideoPause}, \
-	{"videomode", (Tcl_CmdProc *)cmdCamVideoMode}, \
 	{"getbufferts", (Tcl_CmdProc *)cmdCamGetBufferTs}, \
 	{"currentbuffer", (Tcl_CmdProc *)cmdCamCurrentBuffer}, \
 	{"lastbuffer", (Tcl_CmdProc *)cmdCamLastBuffer}, \
@@ -44,7 +45,8 @@
 	{"maxexposure", (Tcl_CmdProc *)cmdCamMaxExposure}, \
 	{"livestart", (Tcl_CmdProc *)cmdCamLiveStart}, \
 	{"livestop", (Tcl_CmdProc *)cmdCamLiveStop}, \
-
+	{"videomode", (Tcl_CmdProc *)cmdCamVideoMode}, \
+*/
 
  /* === Specific commands for that camera === */
 int cmdCamFrameRate(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);

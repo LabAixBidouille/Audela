@@ -30,6 +30,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
+#include <libcam/util.h>
 
 #include <time.h>
 #include "serial.h"
@@ -81,7 +82,7 @@ int ser_read(uchar *buf_read, int n_read, time_t timeout) {
 		if ( r<0 )
 			return -2;
 		else if ( r==0 )
-			usleep(1000); // 1 ms
+			libcam_sleep(1); // 1 ms
 		else {
 			dataread += r;
 			if ( dataread==n_read )
@@ -165,7 +166,7 @@ int ser_write_reg(uchar reg, uchar val, time_t timeout) {
 	int r;
 	uchar inst[6] = {0x53, 0xe0, 0x02, 0x00, 0x00, ETX};
 	uchar ack;
-	time_t in_time;
+	//time_t in_time;
 
 	inst[3] = reg;
 	inst[4] = val;
@@ -268,7 +269,7 @@ int ser_read_temp_reg(uchar reg, uchar *data, time_t timeout) {
 	uchar resp[3];
 	uchar inst[4] = {0x53, 0x00, 0x02, ETX};
 
-	inst1[1] = reg;
+	inst[1] = reg;
 
 	ser_flush_buffer();
 
@@ -333,7 +334,7 @@ int ser_set_state(uchar mode, time_t timeout) {
 	int r,dataread=0;
 	uchar inst[3] = {0x4f, 0x00, ETX};
 	uchar ack;
-	time_t in_time;
+	//time_t in_time;
 
 	inst[1] = mode;
 
@@ -466,7 +467,8 @@ int ser_read_eeprom(uchar *res, uchar n_res, time_t timeout) {
 	if ( r<0 )
 		return r;
 
-	usleep(100000); //wait for the command to be executed
+	//usleep(100000); //wait for the command to be executed
+	libcam_sleep(100);
 
 	r = ser_read(&resp[0],1,timeout);
 	if ( r<0 )
@@ -484,7 +486,6 @@ int ser_read_eeprom(uchar *res, uchar n_res, time_t timeout) {
 	r = ser_read(resp,n_res+1,timeout);
 	if ( r<0 )
 		return r;
-Osprey
 	if ( resp[n_res] != ETX )
 		return -3;
 
@@ -516,7 +517,7 @@ int ser_set_tec_point(uchar *val, time_t timeout) {
 	int r;
 	uchar inst[7] = {0x53, 0x98, 0x03, 0x22, 0x00, 0x00, ETX};
 	uchar ack;
-	time_t in_time;
+	//time_t in_time;
 
 	inst[4] = val[1];
 	inst[5] = val[0];
@@ -558,9 +559,10 @@ int ser_set_tec_point(uchar *val, time_t timeout) {
 int ser_get_tec_point(uchar *val, time_t timeout) {
 	int r;
 	uchar inst1[5] = {0x53, 0x98, 0x01, 0x20, ETX};
-	uchar inst2[4] = {0x53, 0x99, 0x02, ETX}
-	uchar ack;
-	time_t in_time;
+	uchar inst2[4] = {0x53, 0x99, 0x02, ETX};
+	//uchar ack;
+	//time_t in_time;
+	uchar resp[3];
 
 	ser_flush_buffer();
 

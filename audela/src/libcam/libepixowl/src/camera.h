@@ -80,7 +80,9 @@ struct camprop {
 		//configuration file
 		char config[256];
 		//int has_gps;
-		
+#if defined(OS_WIN)
+		HANDLE hEvent;
+#endif
 };
 
 int getData(struct camprop *cam);
@@ -101,6 +103,7 @@ int cam_video_pause(struct camprop *cam);
 int cam_get_curbuf();
 void cam_set_zero();
 int cam_get_bufferts(struct camprop *cam, int fb, char *ts);
+int cam_set_dynamic(struct camprop *cam, int dyn);
 
 int cam_get_acquired();
 int cam_get_read();

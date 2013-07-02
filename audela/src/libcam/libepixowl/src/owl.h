@@ -50,9 +50,9 @@
 #define OFFSET_GAIN_CORRECTED 0x20
 #define NORMAL 								0x40
 #define OFFSET_GAIN_DARK			0x60
-#define 8_BIT_OFF_32					0x80
-#define 8_BIT_DARK						0xa0
-#define 8_BIT_GAIN_128				0xc0
+#define EIGHT_BIT_OFF_32					0x80
+#define EIGHT_BIT_DARK						0xa0
+#define EIGHT_BIT_GAIN_128				0xc0
 #define OFF_GAIN_DARK_BADPIX	0xe0
 
 // PEAK/Average
@@ -85,7 +85,7 @@ int setTrigger(uchar mode);
 int setGain(int gain);
 int setTriggerDelay(double delay);
 int setDynamicRange(uchar mode);
-int setTECtemp(int temp);
+int setTECtemp(ushort temp);
 int setNUC(uchar mode);
 int setAutoLevel(int level);
 int setPeakAver(uchar mode);
