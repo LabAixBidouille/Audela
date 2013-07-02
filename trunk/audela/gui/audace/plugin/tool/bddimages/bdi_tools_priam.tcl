@@ -318,19 +318,21 @@ proc ::bdi_tools_priam::add_source2localcat {key onesource} {
       }
       "WFIBC" {
          # 1 = ra_deg, 2 = dec_deg, 10 = magR
-         set ra  [mc_angle2hms [lindex $otherfields 1]]
-         set dec [mc_angle2dms [lindex $otherfields 2] 90]
-         set mag [lindex $otherfields 10]
+         set ra  [mc_angle2hms [lindex $otherfields 0]]
+         set dec [mc_angle2dms [lindex $otherfields 1] 90]
+         set mag [lindex $otherfields 9]
          # 3 = err_ra, 4 = err_de
-         set ra_err  [lindex $otherfields 3]
-         set dec_err [lindex $otherfields 4]
+         set ra_err  [expr [lindex $otherfields 2] * 1000.0]
+         set dec_err [expr [lindex $otherfields 3] * 1000.0]
          # 11 = jd
-         set refepoch [lindex $otherfields 11]
+         set refepoch [lindex $otherfields 4]
          # Autres champs non fournis par le catalogue
-         set ra_pm [lindex $otherfields 6]
-         set dec_pm [lindex $otherfields 7]
-         set ra_pm_err  [lindex $otherfields 8]
-         set dec_pm_err [lindex $otherfields 9]
+         set ra_pm  [expr [lindex $otherfields 5] / 15.0]
+         if {[expr [lindex $otherfields 5] / 99.999] == 1} { set ra_pm 0.0 }
+         set dec_pm [lindex $otherfields 6]
+         if {[expr [lindex $otherfields 6] / 99.999] == 1} { set dec_pm 0.0 }
+         set ra_pm_err 0.0
+         set dec_pm_err 0.0
          set typeS "?"
          set paral 0
          set vitrad 0
