@@ -234,7 +234,7 @@ namespace eval bdi_tools_methodes_psf {
       # Calcul de rdiff
       set taboid(rdiff) [expr sqrt((($taboid(xsm)-$x)**2 + ($taboid(ysm)-$y)**2)) / 2.0] 
 
-gren_info "x,y = $x,$y => xsm (err_xsm),yxm (err_ysm), fwhmx,fwhmy = $taboid(xsm) ($taboid(err_xsm)), $taboid(ysm) ($taboid(err_ysm)), $taboid(fwhmx), $taboid(fwhmy) -> radius = $radius ($taboid(rdiff))\n"
+# gren_info "x,y = $x,$y => xsm (err_xsm),yxm (err_ysm), fwhmx,fwhmy = $taboid(xsm) ($taboid(err_xsm)), $taboid(ysm) ($taboid(err_ysm)), $taboid(fwhmx), $taboid(fwhmy) -> radius = $radius ($taboid(rdiff))\n"
 
       # Gestion des cas de retour err_psf
       switch $taboid(err_psf) {
