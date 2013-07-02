@@ -41,7 +41,7 @@ proc ::bdi_gui_set_ref_science::inittoconf { } {
 
    ::bdi_gui_set_ref_science::clean
 
-   set ::bdi_gui_set_ref_science::list_cata [list SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS]
+   set ::bdi_gui_set_ref_science::list_cata [list SKYBOT UCAC2 UCAC3 UCAC4 TYCHO2 NOMAD1 PPMX PPMXL USNOA2 2MASS WFIBC]
    set ::bdi_gui_set_ref_science::progress 0
 
    if {! [info exists ::bdi_gui_set_ref_science::use_mask] } {
