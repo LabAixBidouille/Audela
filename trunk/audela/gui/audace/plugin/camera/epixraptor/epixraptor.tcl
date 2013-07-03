@@ -202,7 +202,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
          #--- ROI
          #frame $frm.frame1.frame2.frametitle -borderwidth 0 -relief raised
 
-         label $frm.frame1.frame2.lab1 -text "ROI"
+         label $frm.frame1.frame2.lab1 -text "$caption(epixraptor,ROI)"
          pack $frm.frame1.frame2.lab1 -anchor center -side top -pady 2
 
          #pack $frm.frame1.frame2.frametitle -side top -fill both -expand 1 -anchor n -pady 2
@@ -210,7 +210,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
          #--- Frame roi_x1
          frame $frm.frame1.frame2.frame1 -borderwidth 0 -relief raised
 
-         label $frm.frame1.frame2.frame1.lab1 -text "x1"
+         label $frm.frame1.frame2.frame1.lab1 -text "$caption(epixraptor,x1)"
          pack $frm.frame1.frame2.frame1.lab1 -anchor center -side left -padx 2
 
          entry $frm.frame1.frame2.frame1.roi_x1 -width 4 -textvariable ::epixraptor::private(roi_x1) -state disabled
@@ -221,7 +221,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
          #--- Frame roi_y1
          frame $frm.frame1.frame2.frame2 -borderwidth 0 -relief raised
 
-         label $frm.frame1.frame2.frame2.lab1 -text "y1"
+         label $frm.frame1.frame2.frame2.lab1 -text "$caption(epixraptor,y1)"
          pack $frm.frame1.frame2.frame2.lab1 -anchor center -side left -padx 2
 
          entry $frm.frame1.frame2.frame2.roi_y1 -width 4 -textvariable ::epixraptor::private(roi_y1) -state disabled
@@ -232,7 +232,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
          #--- Frame roi_x2
          frame $frm.frame1.frame2.frame3 -borderwidth 0 -relief raised
 
-         label $frm.frame1.frame2.frame3.lab1 -text "x2"
+         label $frm.frame1.frame2.frame3.lab1 -text "$caption(epixraptor,x2)"
          pack $frm.frame1.frame2.frame3.lab1 -anchor center -side left -padx 2
 
          entry $frm.frame1.frame2.frame3.roi_x2 -width 4 -textvariable ::epixraptor::private(roi_x2) -state disabled
@@ -243,7 +243,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
          #--- Frame roi_y2
          frame $frm.frame1.frame2.frame4 -borderwidth 0 -relief raised
 
-         label $frm.frame1.frame2.frame4.lab1 -text "y2"
+         label $frm.frame1.frame2.frame4.lab1 -text "$caption(epixraptor,y2)"
          pack $frm.frame1.frame2.frame4.lab1 -anchor center -side left -padx 2
 
          entry $frm.frame1.frame2.frame4.roi_y2 -width 4 -textvariable ::epixraptor::private(roi_y2) -state disabled
@@ -256,7 +256,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
       #--- Frame binning
       frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
-      label $frm.frame1.frame3.lab1 -text "Binning"
+      label $frm.frame1.frame3.lab1 -text "$caption(epixraptor,binning)"
       pack $frm.frame1.frame3.lab1 -anchor center -side top -pady 2
 
       set list_binning [ list "1x1" "2x2" "4x4" ]
