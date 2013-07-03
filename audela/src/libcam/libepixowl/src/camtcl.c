@@ -784,3 +784,59 @@ int cmdCamLiveStop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	return result;
 }
 */
+
+
+/**
+	* cmdCamNuc
+	* NUC
+	*
+*/
+int cmdCamNuc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+
+	int result = TCL_OK;
+	char line[256];
+	struct camprop *cam;
+	char comment[] = "0 {offset corrected} 1 {offset +gain corrected} 2 {Normal(Default)} 3 {offset +gain + Dark} 4 {8bit offset /32} 5 {8bit Dark *2^19} 6 {8bit gain /128} 7 {offset +gain + Dark +Bad PIXEL show}";
+	int nuc_mode_number,ret;
+	uchar mode;
+
+	cam = (struct camprop *) clientData;
+
+	if ( argc>=4 ) {
+		sprintf(line, "Usage: %s %s NUC_mode_number",argv[0],argv[1]);
+		Tcl_SetResult(interp,line,TCL_VOLATILE);
+		result = TCL_ERROR;
+	} else if (argc == 3) {
+		nuc_mode_number=atoi(argv[2]);
+		if ((nuc_mode_number<0)||(nuc_mode_number>7)) {
+			sprintf(line, "Bad NUC_mode_number: %s",comment);
+			Tcl_SetResult(interp,line,TCL_VOLATILE);
+			result = TCL_ERROR;
+		} else {
+			if (nuc_mode_number==0) { mode = OFFSET_CORRECTED; }
+			else if (nuc_mode_number==1) { mode = OFFSET_GAIN_CORRECTED; }
+			else if (nuc_mode_number==2) { mode = NORMAL; }
+			else if (nuc_mode_number==3) { mode = OFFSET_GAIN_DARK; }
+			else if (nuc_mode_number==4) { mode = EIGHT_BIT_OFF_32; }
+			else if (nuc_mode_number==5) { mode = EIGHT_BIT_DARK; }
+			else if (nuc_mode_number==6) { mode = EIGHT_BIT_GAIN_128; }
+			else if (nuc_mode_number==7) { mode = OFF_GAIN_DARK_BADPIX; }
+			ret = setNUC(mode);
+			if (ret) {
+			}
+		}
+	} else {
+		ret = getNUC(&mode);
+		if (mode==OFFSET_CORRECTED) { strcpy(line, "0 {offset corrected}"); }
+		else if (mode==OFFSET_GAIN_CORRECTED) { strcpy(line, "1 {offset +gain corrected}"); }
+		else if (mode==NORMAL) { strcpy(line, "2 {Normal(Default)}"); }
+		else if (mode==OFFSET_GAIN_DARK) { strcpy(line, "3 {offset +gain + Dark}"); }
+		else if (mode==EIGHT_BIT_OFF_32) { strcpy(line, "4 {8bit offset /32}"); }
+		else if (mode==EIGHT_BIT_DARK) { strcpy(line, "5 {8bit Dark *2^19}"); }
+		else if (mode==EIGHT_BIT_GAIN_128) { strcpy(line, "6 {8bit gain /128}"); }
+		else if (mode==OFF_GAIN_DARK_BADPIX) { strcpy(line, "7 {offset +gain + Dark +Bad PIXEL show}"); }
+		Tcl_SetResult(interp,line,TCL_VOLATILE);
+	}
+	return result;
+}
+

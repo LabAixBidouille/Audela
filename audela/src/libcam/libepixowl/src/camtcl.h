@@ -32,6 +32,7 @@
 	{"setframebuffer", (Tcl_CmdProc *)cmdCamSetFrameBuffer}, \
 	{"reset", (Tcl_CmdProc *)cmdCamReset}, \
 	{"digitalgain", (Tcl_CmdProc *)cmdCamDigitalGain}, \
+	{"nuc", (Tcl_CmdProc *)cmdCamNuc}, \
 
 /*
 	{"videostart", (Tcl_CmdProc *)cmdCamVideoStart}, \
@@ -69,5 +70,6 @@ int cmdCamMaxFrameRate(ClientData clientData, Tcl_Interp *interp, int argc, char
 int cmdCamMaxExposure(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCamLiveStart(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCamLiveStop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdCamNuc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

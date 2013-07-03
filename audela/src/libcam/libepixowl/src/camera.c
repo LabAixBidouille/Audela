@@ -125,14 +125,14 @@ static void handler_lecture(int signal) {
  */
 
 struct camini CAM_INI[] = {
-    {"EPIX + Raptor Photonics OSPREY",			/* camera name */
-     "epixraptor",        /* camera product */
-     "OS4NPc-CL",			/* ccd name */
-     2048, 2048,			/* maxx maxy */
+    {"EPIX + Raptor Photonics OWL",			/* camera name */
+     "epixowl",        /* camera product */
+     "Raptor OWL 1.7-CL-320",			/* ccd name */
+     640, 512,			/* maxx maxy */
      0, 0,			/* overscans x??? */
      0, 0,			/* overscans y??? */
-     5.5e-6, 5.5e-6,		/* photosite dim (m) */
-     4095.,			/* observed saturation */
+     15e-6, 15e-6,		/* photosite dim (m) */
+     16384.0,			/* observed saturation */
      1.,			/* filling factor */
      11.,			/* gain (e/adu)??? */
      7.,			/* readnoise (e)??? */
@@ -321,13 +321,13 @@ int cam_init(struct camprop *cam, int argc, char **argv)
  
 	//initial parameters (video mode independent)
 	// ---> they change according to the camera
-	cam->exptime=(float)0.001;
 	cam->capabilities.videoMode = 1;
 	cam->video=0;
 	cam->gain=1;
 	/*acqbuf=buf=*/ cam->cur_buf=0;
-	cam->frameRate = 37.5;
+	cam->frameRate = 5;
 	cam->videoMode = 1;
+	cam->exptime=(float)(1./(1+cam->frameRate));
 
 	if (cam_initialize(cam) != 0) {
 		return 5;
@@ -821,7 +821,6 @@ int cam_set_dynamic(struct camprop *cam, int dyn) {
 int cam_initialize(struct camprop *cam) {
 	int ret;
 
-
 	cam_set_binning(cam->binx,cam->biny,cam);
 	if ( strlen(cam->msg) != 0 ) {
 		sprintf(cam->msg, "cam_set_binning failed: %s\n",cam->msg);
@@ -858,7 +857,7 @@ int cam_initialize(struct camprop *cam) {
 		return -5;
 	}
 
-	//set standard dynamic
+	//set standard dynamic => 0 = high gain (1= low gain)
 	ret = cam_set_dynamic(cam,0);
 	if (ret) {
 		sprintf(cam->msg,"cam_set_dynamic failed");
@@ -871,6 +870,21 @@ int cam_initialize(struct camprop *cam) {
 	if (ret) {
 		sprintf(cam->msg, "setTrigger returns %d\n", ret);
 		return -6;
+	}
+
+	// thermoelectric cooler = on
+	// autoexposure = off
+	ret = setTEC_AEXP(TEC_ON|AEXP_OFF);
+	if (ret) {
+		sprintf(cam->msg, "setTEC_AEXP returns %d\n", ret);
+		return -8;
+	}
+
+	// nuc (no correction)
+	ret = setNUC(NORMAL);
+	if (ret) {
+		sprintf(cam->msg, "setNUC returns %d\n", ret);
+		return -9;
 	}
 
 	return 0;
