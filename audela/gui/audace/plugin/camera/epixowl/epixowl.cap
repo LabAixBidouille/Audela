@@ -22,8 +22,8 @@ set caption(epixowl,mirror_y)                     "Left/Right Reversal"
 set caption(epixowl,temperature_CCD)              "Sensor Temperature:"
 set caption(epixowl,deg_c)                        "°C"
 
-set caption(epixowl,framerate)                    "Frame rate"
-set caption(epixowl,exposure)                     "Exposure time"
+set caption(epixowl,framerate)                    "Frame Rate"
+set caption(epixowl,exposure)                     "Exposure Time"
 set caption(epixowl,hdr)                          "High Dynamic Range"
 set caption(epixowl,videomode)                    "Video Mode"
 
@@ -60,8 +60,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperatura del sensore:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
@@ -83,8 +83,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperatura sensor:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
@@ -102,8 +102,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Sensortemperatur:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
@@ -121,8 +121,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperatura do sensor:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
@@ -140,8 +140,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Sensor Temperature:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
@@ -159,8 +159,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperature sensor:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
@@ -178,8 +178,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperature sensor:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame rate"
-   set caption(epixowl,exposure)                  "Exposure time"
+   set caption(epixowl,framerate)                 "Frame Rate"
+   set caption(epixowl,exposure)                  "Exposure Time"
    set caption(epixowl,hdr)                       "High Dynamic Range"
    set caption(epixowl,videomode)                 "Video Mode"
 
