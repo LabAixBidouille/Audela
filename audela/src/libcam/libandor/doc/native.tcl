@@ -1,8 +1,9 @@
 #
-# source ../src/libcam/libandor/doc/native.tcl
+# source $audace(rep_install)/src/libcam/libandor/doc/native.tcl
 #
+# EXPNETTYPE unsigned int WINAPI GetDDGExternalOutputTime(at_u32 uiIndex, at_u64 * puiDelay, at_u64 * puiWidth);
 
-set fname "../src/external/include/Atmcd32d.h"
+set fname "$audace(rep_install)/src/external/include/Atmcd32d.h"
 set f [open "$fname" r]
 set lignes [split [read $f] \n]
 close $f
@@ -36,6 +37,9 @@ foreach ligne $lignes {
 		continue
 	}
 	set fonction_name [string range $fonc 0 [expr $k1-1]]
+	if {$fonction_name=="SetIsolatedCropModeEx"} {
+		continue
+	}
 	::console::affiche_resultat "FONCTION $fonction_name\n"
 	incr nbf
 	if {$nbf>2000} {
@@ -77,12 +81,16 @@ foreach ligne $lignes {
 		set n [llength $argu]
 		if {$n==1} { set n 2 }
 		set typeargu [lrange $argu 0 [expr $n-2]]
+::console::affiche_resultat "  typeargu=$typeargu\n"
 		# --- on affiche le resultat
 		if {$typeargu=="at_32"} {
 			set typeargu "long"
 		}
 		if {$typeargu=="at_u32"} {
 			set typeargu "unsigned long"
+		}
+		if {$typeargu=="at_u64"} {
+			set typeargu "unsigned long long"
 		}
 		if {($typeargu=="void")&&($pointeur==1)} {
 			set valid 0
@@ -178,6 +186,9 @@ foreach ligne $lignes {
 						append texte "            param_acap\[$k\]=(AndorCapabilities)atoi(argv\[$kk\]);\n"
 						append params "param_acap\[$k\]"
 					} elseif {$typeargu=="char"} {
+						append texte "            strcpy(param_char\[$k\],argv\[$kk\]);\n"
+						append params "param_char\[$k\]"
+					} elseif {$typeargu=="const char"} {
 						append texte "            strcpy(param_char\[$k\],argv\[$kk\]);\n"
 						append params "param_char\[$k\]"
 					} elseif {$typeargu=="double"} {
@@ -334,7 +345,7 @@ for {set k 0} {$k<$n} {incr k} {
 append texte "      return TCL_ERROR;\n"
 append texte "   \}\n"
 
-set fname "../src/libcam/libandor/doc/native.c"
+set fname "$audace(rep_install)/src/libcam/libandor/doc/native.c"
 set f [open "$fname" w]
 puts -nonewline $f $texte
 close $f

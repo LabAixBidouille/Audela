@@ -123,6 +123,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"EnableKeepCleans")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=EnableKeepCleans(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"FreeInternalMemory")==0) {
          FreeInternalMemory();
       } else if (strcmp(argv[2],"GetAcquiredData")==0) {
@@ -333,6 +352,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetBaselineClamp")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetBaselineClamp(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetBitDepth")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -463,6 +500,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetCountConvertWavelengthRange")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetCountConvertWavelengthRange(&param_float[0],&param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f %f ",param_float[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetCurrentCamera")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -495,6 +550,173 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGExternalOutputEnabled")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=GetDDGExternalOutputEnabled(param_ulong[0],&param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGExternalOutputPolarity")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=GetDDGExternalOutputPolarity(param_ulong[0],&param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGExternalOutputStepEnabled")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=GetDDGExternalOutputStepEnabled(param_ulong[0],&param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGExternalOutputTime")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=GetDDGExternalOutputTime(param_ulong[0],&param_int[1],&param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %d %d ",param_ulong[0],param_int[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGTTLGateWidth")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetDDGTTLGateWidth(param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGGateTime")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGGateTime(&param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGInsertionDelay")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGInsertionDelay(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGIntelligate")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGIntelligate(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGIOC")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGIOC(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -535,6 +757,42 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetDDGIOCNumberRequested")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGIOCNumberRequested(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGIOCPeriod")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGIOCPeriod(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetDDGIOCPulses")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -549,6 +807,155 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGIOCTrigger")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGIOCTrigger(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGOpticalWidthEnabled")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGOpticalWidthEnabled(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGLiteGlobalControlByte")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGLiteGlobalControlByte(param_uchar[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s ",param_uchar[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGLiteControlByte")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetDDGLiteControlByte(param_int[0],param_uchar[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %s ",param_int[0],param_uchar[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGLiteInitialDelay")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetDDGLiteInitialDelay(param_int[0],&param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGLitePulseWidth")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetDDGLitePulseWidth(param_int[0],&param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGLiteInterPulseDelay")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetDDGLiteInterPulseDelay(param_int[0],&param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGLitePulsesPerExposure")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetDDGLitePulsesPerExposure(param_int[0],&param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %ld ",param_int[0],param_ulong[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -573,6 +980,80 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetDDGStepCoefficients")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=GetDDGStepCoefficients(param_ulong[0],&param_double[1],&param_double[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %lf %lf ",param_ulong[0],param_double[1],param_double[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGWidthStepCoefficients")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=GetDDGWidthStepCoefficients(param_ulong[0],&param_double[1],&param_double[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %lf %lf ",param_ulong[0],param_double[1],param_double[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGStepMode")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGStepMode(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDDGWidthStepMode")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDDGWidthStepMode(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetDetector")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -592,6 +1073,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             };
          }
       } else if (strcmp(argv[2],"GetDICameraInfo")==0) {
+      } else if (strcmp(argv[2],"GetEMAdvanced")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetEMAdvanced(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetEMCCDGain")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -624,6 +1123,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetExternalTriggerTermination")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetExternalTriggerTermination(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -734,6 +1251,42 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetFrontEndStatus")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetFrontEndStatus(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetGateMode")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetGateMode(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -852,7 +1405,43 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetImages ")==0) {
+      } else if (strcmp(argv[2],"GetImageFlip")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetImageFlip(&param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetImageRotate")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetImageRotate(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetImages")==0) {
          if (argc<6) {
             sprintf(ligne,"Usage: %s %s %s long long unsigned long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -862,7 +1451,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             param_long[0]=(long)atol(argv[3]);
             param_long[1]=(long)atol(argv[4]);
             param_ulong[3]=(unsigned long)atol(argv[5]);
-            res=GetImages (param_long[0],param_long[1],&param_long[2],param_ulong[3],&param_long[4],&param_long[5]);
+            res=GetImages(param_long[0],param_long[1],&param_long[2],param_ulong[3],&param_long[4],&param_long[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -873,7 +1462,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetImages16 ")==0) {
+      } else if (strcmp(argv[2],"GetImages16")==0) {
          if (argc<6) {
             sprintf(ligne,"Usage: %s %s %s long long unsigned long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -883,7 +1472,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             param_long[0]=(long)atol(argv[3]);
             param_long[1]=(long)atol(argv[4]);
             param_ulong[3]=(unsigned long)atol(argv[5]);
-            res=GetImages16 (param_long[0],param_long[1],&param_WORD[2],param_ulong[3],&param_long[4],&param_long[5]);
+            res=GetImages16(param_long[0],param_long[1],&param_WORD[2],param_ulong[3],&param_long[4],&param_long[5]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -930,6 +1519,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetKeepCleanTime")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetKeepCleanTime(&param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetMaximumBinning")==0) {
          if (argc<5) {
             sprintf(ligne,"Usage: %s %s %s int int ",argv[0],argv[1],argv[2]);
@@ -968,7 +1575,61 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetMaximumNumberRingExposureTimes")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetMaximumNumberRingExposureTimes(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetMCPGain")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetMCPGain(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetMCPGainRange")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetMCPGainRange(&param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetMCPGainTable")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -976,7 +1637,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             param_int[0]=(int)atoi(argv[3]);
-            res=GetMCPGain(param_int[0],&param_int[1],&param_float[2]);
+            res=GetMCPGainTable(param_int[0],&param_int[1],&param_float[2]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1023,7 +1684,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetMostRecentColorImage16 ")==0) {
+      } else if (strcmp(argv[2],"GetMinimumNumberInSeries")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetMinimumNumberInSeries(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetMostRecentColorImage16")==0) {
          if (argc<5) {
             sprintf(ligne,"Usage: %s %s %s unsigned long int ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1032,7 +1711,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             strcpy(ligne,"");
             param_ulong[0]=(unsigned long)atol(argv[3]);
             param_int[1]=(int)atoi(argv[4]);
-            res=GetMostRecentColorImage16 (param_ulong[0],param_int[1],&param_WORD[2],&param_WORD[3],&param_WORD[4]);
+            res=GetMostRecentColorImage16(param_ulong[0],param_int[1],&param_WORD[2],&param_WORD[3],&param_WORD[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1043,7 +1722,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetMostRecentImage ")==0) {
+      } else if (strcmp(argv[2],"GetMostRecentImage")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1051,7 +1730,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             param_ulong[1]=(unsigned long)atol(argv[3]);
-            res=GetMostRecentImage (&param_long[0],param_ulong[1]);
+            res=GetMostRecentImage(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1062,7 +1741,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetMostRecentImage16 ")==0) {
+      } else if (strcmp(argv[2],"GetMostRecentImage16")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1070,7 +1749,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             param_ulong[1]=(unsigned long)atol(argv[3]);
-            res=GetMostRecentImage16 (&param_WORD[0],param_ulong[1]);
+            res=GetMostRecentImage16(&param_WORD[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1100,8 +1779,48 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetMetaDataInfo")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            res=GetMetaDataInfo(&param_stime[0],&param_float[1],param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%p %f %d ",&param_stime[0],param_float[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetMSTimingsEnabled")==0) {
          GetMSTimingsEnabled();
+      } else if (strcmp(argv[2],"GetRelativeImageTimes")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int unsigned int unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[3]=(int)atoi(argv[5]);
+            res=GetRelativeImageTimes(param_int[0],param_int[1],&param_int[2],param_int[3]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d %d ",param_int[0],param_int[1],param_int[2],param_int[3]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetNewData")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
@@ -1214,20 +1933,38 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetNumberAvailableImages ")==0) {
+      } else if (strcmp(argv[2],"GetNumberAvailableImages")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            res=GetNumberAvailableImages (&param_long[0],&param_long[1]);
+            res=GetNumberAvailableImages(&param_long[0],&param_long[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%ld %ld ",param_long[0],param_long[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetNumberDDGExternalOutputs")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetNumberDDGExternalOutputs(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -1306,20 +2043,38 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetNumberNewImages ")==0) {
+      } else if (strcmp(argv[2],"GetNumberNewImages")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            res=GetNumberNewImages (&param_long[0],&param_long[1]);
+            res=GetNumberNewImages(&param_long[0],&param_long[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%ld %ld ",param_long[0],param_long[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetNumberPhotonCountingDivisions")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetNumberPhotonCountingDivisions(&param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -1350,6 +2105,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             res=GetNumberRingExposureTimes(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetNumberIO")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetNumberIO(&param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1414,7 +2187,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetOldestImage ")==0) {
+      } else if (strcmp(argv[2],"GetOldestImage")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1422,7 +2195,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             param_ulong[1]=(unsigned long)atol(argv[3]);
-            res=GetOldestImage (&param_long[0],param_ulong[1]);
+            res=GetOldestImage(&param_long[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1433,7 +2206,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetOldestImage16 ")==0) {
+      } else if (strcmp(argv[2],"GetOldestImage16")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1441,13 +2214,31 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             param_ulong[1]=(unsigned long)atol(argv[3]);
-            res=GetOldestImage16 (&param_WORD[0],param_ulong[1]);
+            res=GetOldestImage16(&param_WORD[0],param_ulong[1]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d %ld ",param_WORD[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetPhosphorStatus")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetPhosphorStatus(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -1507,6 +2298,84 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetPreAmpGainText")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s int char* int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            strcpy(param_char[1],argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            res=GetPreAmpGainText(param_int[0],param_char[1],param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %s %d ",param_int[0],param_char[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetDualExposureTimes")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetDualExposureTimes(&param_float[0],&param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f %f ",param_float[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetQE")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s char* float unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[0],argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            res=GetQE(param_char[0],param_float[1],param_int[2],&param_float[3]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s %f %d %f ",param_char[0],param_float[1],param_int[2],param_float[3]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetReadOutTime")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetReadOutTime(&param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetRegisterDump")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -1543,14 +2412,72 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetSizeOfCircularBuffer ")==0) {
+      } else if (strcmp(argv[2],"GetSDK3Handle")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            res=GetSizeOfCircularBuffer (&param_long[0]);
+            res=GetSDK3Handle(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetSensitivity")==0) {
+         if (argc<7) {
+            sprintf(ligne,"Usage: %s %s %s int int int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            res=GetSensitivity(param_int[0],param_int[1],param_int[2],param_int[3],&param_float[4]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d %d %f ",param_int[0],param_int[1],param_int[2],param_int[3],param_float[4]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetShutterMinTimes")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetShutterMinTimes(&param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetSizeOfCircularBuffer")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetSizeOfCircularBuffer(&param_long[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1615,6 +2542,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"GetStartUpTime")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetStartUpTime(&param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetStatus")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -1623,6 +2568,24 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          } else {
             strcpy(ligne,"");
             res=GetStatus(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetTECStatus")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetTECStatus(&param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1705,20 +2668,79 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"GetTotalNumberImagesAcquired ")==0) {
+      } else if (strcmp(argv[2],"GetTotalNumberImagesAcquired")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            res=GetTotalNumberImagesAcquired (&param_long[0]);
+            res=GetTotalNumberImagesAcquired(&param_long[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%ld ",param_long[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetIODirection")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetIODirection(param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetIOLevel")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetIOLevel(param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetVersionInfo")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s AT_VersionInfoId char* unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            strcpy(param_char[1],argv[4]);
+            param_ulong[2]=(unsigned long)atol(argv[5]);
+            res=GetVersionInfo(param_int[0],param_char[1],param_ulong[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %s %ld ",param_int[0],param_char[1],param_ulong[2]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -1743,6 +2765,64 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             };
          }
       } else if (strcmp(argv[2],"GetVirtualDMAAddress")==0) {
+      } else if (strcmp(argv[2],"GetVSAmplitudeString")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s int char* ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            strcpy(param_char[1],argv[4]);
+            res=GetVSAmplitudeString(param_int[0],param_char[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %s ",param_int[0],param_char[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetVSAmplitudeFromString")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s char* ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[0],argv[3]);
+            res=GetVSAmplitudeFromString(param_char[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s %d ",param_char[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetVSAmplitudeValue")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=GetVSAmplitudeValue(param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"GetVSSpeed")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -1947,6 +3027,62 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"IsAmplifierAvailable")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=IsAmplifierAvailable(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"IsCoolerOn")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=IsCoolerOn(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"IsCountConvertModeAvailable")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=IsCountConvertModeAvailable(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"IsInternalMechanicalShutter")==0) {
          if (argc<3) {
             sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
@@ -2052,23 +3188,21 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       } else if (strcmp(argv[2],"PrepareAcquisition")==0) {
          PrepareAcquisition();
       } else if (strcmp(argv[2],"SaveAsBmp")==0) {
-         if (argc<7) {
-            sprintf(ligne,"Usage: %s %s %s char* char* long long ",argv[0],argv[1],argv[2]);
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s long long ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             return TCL_ERROR;
          } else {
             strcpy(ligne,"");
-            strcpy(param_char[0],argv[3]);
-            strcpy(param_char[1],argv[4]);
-            param_long[2]=(long)atol(argv[5]);
-            param_long[3]=(long)atol(argv[6]);
-            res=SaveAsBmp(param_char[0],param_char[1],param_long[2],param_long[3]);
+            param_long[2]=(long)atol(argv[3]);
+            param_long[3]=(long)atol(argv[4]);
+            res=SaveAsBmp(&param_int[0],&param_int[1],param_long[2],param_long[3]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_ERROR;
             } else {;
-               sprintf(ligne,"%s %s %ld %ld ",param_char[0],param_char[1],param_long[2],param_long[3]);
+               sprintf(ligne,"%d %d %ld %ld ",param_int[0],param_int[1],param_long[2],param_long[3]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -2448,6 +3582,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetCameraLinkMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetCameraLinkMode(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetCameraStatusEnable")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s DWORD ",argv[0],argv[1],argv[2]);
@@ -2463,6 +3616,26 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d ",param_DWORD[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetChargeShifting")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            res=SetChargeShifting(param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -2501,6 +3674,44 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetCountConvertMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetCountConvertMode(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetCountConvertWavelength")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_float[0]=(float)atof(argv[3]);
+            res=SetCountConvertWavelength(param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -2583,6 +3794,46 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetDACOutput")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s int int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            res=SetDACOutput(param_int[0],param_int[1],param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d ",param_int[0],param_int[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDACOutputScale")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetDACOutputScale(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetDDGAddress")==0) {
          if (argc<8) {
             sprintf(ligne,"Usage: %s %s %s BYTE BYTE BYTE BYTE BYTE ",argv[0],argv[1],argv[2]);
@@ -2602,6 +3853,87 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d %d %d %d %d ",param_BYTE[0],param_BYTE[1],param_BYTE[2],param_BYTE[3],param_BYTE[4]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGExternalOutputEnabled")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_ulong[1]=(unsigned long)atol(argv[4]);
+            res=SetDDGExternalOutputEnabled(param_ulong[0],param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGExternalOutputPolarity")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_ulong[1]=(unsigned long)atol(argv[4]);
+            res=SetDDGExternalOutputPolarity(param_ulong[0],param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGExternalOutputStepEnabled")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_ulong[1]=(unsigned long)atol(argv[4]);
+            res=SetDDGExternalOutputStepEnabled(param_ulong[0],param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGExternalOutputTime")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long unsigned long long unsigned long long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            res=SetDDGExternalOutputTime(param_ulong[0],param_int[1],param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %d %d ",param_ulong[0],param_int[1],param_int[2]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -2640,6 +3972,26 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%lf ",param_double[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGGateTime")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long long unsigned long long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            res=SetDDGGateTime(param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -2729,6 +4081,262 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             strcpy(ligne,"");
             param_ulong[0]=(unsigned long)atol(argv[3]);
             res=SetDDGIOCNumber(param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGIOCPeriod")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetDDGIOCPeriod(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGIOCTrigger")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=SetDDGIOCTrigger(param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGOpticalWidthEnabled")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=SetDDGOpticalWidthEnabled(param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGLiteGlobalControlByte")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned char ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_uchar[0],argv[3]);
+            res=SetDDGLiteGlobalControlByte(param_uchar[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s ",param_uchar[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGLiteControlByte")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId unsigned char ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            strcpy(param_uchar[1],argv[4]);
+            res=SetDDGLiteControlByte(param_int[0],param_uchar[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %s ",param_int[0],param_uchar[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGLiteInitialDelay")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            res=SetDDGLiteInitialDelay(param_int[0],param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGLitePulseWidth")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            res=SetDDGLitePulseWidth(param_int[0],param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGLiteInterPulseDelay")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            res=SetDDGLiteInterPulseDelay(param_int[0],param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %f ",param_int[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGLitePulsesPerExposure")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s AT_DDGLiteChannelId unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_ulong[1]=(unsigned long)atol(argv[4]);
+            res=SetDDGLitePulsesPerExposure(param_int[0],param_ulong[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %ld ",param_int[0],param_ulong[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGStepCoefficients")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long double double ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_double[1]=(double)atof(argv[4]);
+            param_double[2]=(double)atof(argv[5]);
+            res=SetDDGStepCoefficients(param_ulong[0],param_double[1],param_double[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %lf %lf ",param_ulong[0],param_double[1],param_double[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGWidthStepCoefficients")==0) {
+         if (argc<6) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long double double ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            param_double[1]=(double)atof(argv[4]);
+            param_double[2]=(double)atof(argv[5]);
+            res=SetDDGWidthStepCoefficients(param_ulong[0],param_double[1],param_double[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %lf %lf ",param_ulong[0],param_double[1],param_double[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGStepMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=SetDDGStepMode(param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDDGWidthStepMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=SetDDGWidthStepMode(param_ulong[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -2937,6 +4545,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetExternalTriggerTermination")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=SetExternalTriggerTermination(param_ulong[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld ",param_ulong[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetFanMode")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -3124,6 +4751,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetFrontEndEvent")==0) {
       } else if (strcmp(argv[2],"SetFullImage")==0) {
          if (argc<5) {
             sprintf(ligne,"Usage: %s %s %s int int ",argv[0],argv[1],argv[2]);
@@ -3343,7 +4971,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
-      } else if (strcmp(argv[2],"SetIsolatedCropMode ")==0) {
+      } else if (strcmp(argv[2],"SetIsolatedCropMode")==0) {
          if (argc<8) {
             sprintf(ligne,"Usage: %s %s %s int int int int int ",argv[0],argv[1],argv[2]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -3355,7 +4983,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             param_int[2]=(int)atoi(argv[5]);
             param_int[3]=(int)atoi(argv[6]);
             param_int[4]=(int)atoi(argv[7]);
-            res=SetIsolatedCropMode (param_int[0],param_int[1],param_int[2],param_int[3],param_int[4]);
+            res=SetIsolatedCropMode(param_int[0],param_int[1],param_int[2],param_int[3],param_int[4]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -3385,6 +5013,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetMCPGain")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetMCPGain(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetMCPGating")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -3405,6 +5052,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             };
          }
       } else if (strcmp(argv[2],"SetMessageWindow")==0) {
+      } else if (strcmp(argv[2],"SetMetaData")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetMetaData(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetMultiTrack")==0) {
          if (argc<6) {
             sprintf(ligne,"Usage: %s %s %s int int int ",argv[0],argv[1],argv[2]);
@@ -3441,6 +5107,54 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetMultiTrackHRange")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            res=SetMultiTrackHRange(param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetMultiTrackScan")==0) {
+         if (argc<13) {
+            sprintf(ligne,"Usage: %s %s %s int int int int int int int int int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            param_int[2]=(int)atoi(argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            param_int[4]=(int)atoi(argv[7]);
+            param_int[5]=(int)atoi(argv[8]);
+            param_int[6]=(int)atoi(argv[9]);
+            param_int[7]=(int)atoi(argv[10]);
+            param_int[8]=(int)atoi(argv[11]);
+            param_int[9]=(int)atoi(argv[12]);
+            res=SetMultiTrackScan(param_int[0],param_int[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_int[7],param_int[8],param_int[9]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d %d %d %d %d %d %d %d ",param_int[0],param_int[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_int[7],param_int[8],param_int[9]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -3527,6 +5241,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetNumberPrescans")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetNumberPrescans(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetOutputAmplifier")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -3536,6 +5269,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             strcpy(ligne,"");
             param_int[0]=(int)atoi(argv[3]);
             res=SetOutputAmplifier(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetOverlapMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetOverlapMode(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -3605,6 +5357,26 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetPhosphorEvent")==0) {
+      } else if (strcmp(argv[2],"SetPhotonCountingDivisions")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned long ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_ulong[0]=(unsigned long)atol(argv[3]);
+            res=SetPhotonCountingDivisions(param_ulong[0],&param_long[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld ",param_ulong[0],param_long[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetPixelMode")==0) {
          if (argc<5) {
             sprintf(ligne,"Usage: %s %s %s int int ",argv[0],argv[1],argv[2]);
@@ -3644,6 +5416,45 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetDualExposureTimes")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s float float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_float[0]=(float)atof(argv[3]);
+            param_float[1]=(float)atof(argv[4]);
+            res=SetDualExposureTimes(param_float[0],param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f %f ",param_float[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetDualExposureMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetDualExposureMode(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetRandomTracks")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -3672,6 +5483,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
             strcpy(ligne,"");
             param_int[0]=(int)atoi(argv[3]);
             res=SetReadMode(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetReadoutRegisterPacking")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetReadoutRegisterPacking(param_int[0]);
             if (res!=DRV_SUCCESS) {
                sprintf(ligne,"Error %d. %s",res,get_status(res));
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -3872,6 +5702,25 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetSpoolThreadCount")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetSpoolThreadCount(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else if (strcmp(argv[2],"SetStorageMode")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s long ",argv[0],argv[1],argv[2]);
@@ -3891,6 +5740,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetTECEvent")==0) {
       } else if (strcmp(argv[2],"SetTemperature")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -3910,6 +5760,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"SetTemperatureEvent")==0) {
       } else if (strcmp(argv[2],"SetTriggerMode")==0) {
          if (argc<4) {
             sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
@@ -3925,6 +5776,102 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_ERROR;
             } else {;
                sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetTriggerInvert")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=SetTriggerInvert(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"GetTriggerLevelRange")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=GetTriggerLevelRange(&param_float[0],&param_float[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f %f ",param_float[0],param_float[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetTriggerLevel")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_float[0]=(float)atof(argv[3]);
+            res=SetTriggerLevel(param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetIODirection")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            res=SetIODirection(param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"SetIOLevel")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            res=SetIOLevel(param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                return TCL_OK;
             };
@@ -4129,6 +6076,612 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
                return TCL_OK;
             };
          }
+      } else if (strcmp(argv[2],"OA_Initialize")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[1]=(int)atoi(argv[3]);
+            res=OA_Initialize(&param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_EnableMode")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_EnableMode(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetModeAcqParams")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_GetModeAcqParams(&param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetUserModeNames")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s char* ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[0],argv[3]);
+            res=OA_GetUserModeNames(param_char[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s ",param_char[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetPreSetModeNames")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s char* ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[0],argv[3]);
+            res=OA_GetPreSetModeNames(param_char[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s ",param_char[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetNumberOfUserModes")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_GetNumberOfUserModes(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetNumberOfPreSetModes")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_GetNumberOfPreSetModes(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetNumberOfAcqParams")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_GetNumberOfAcqParams(&param_int[0],&param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_AddMode")==0) {
+         if (argc<7) {
+            sprintf(ligne,"Usage: %s %s %s char* unsigned int char* unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[0],argv[3]);
+            param_int[1]=(int)atoi(argv[4]);
+            strcpy(param_char[2],argv[5]);
+            param_int[3]=(int)atoi(argv[6]);
+            res=OA_AddMode(param_char[0],param_int[1],param_char[2],param_int[3]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%s %d %s %d ",param_char[0],param_int[1],param_char[2],param_int[3]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_WriteToFile")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[1]=(int)atoi(argv[3]);
+            res=OA_WriteToFile(&param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_DeleteMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[1]=(int)atoi(argv[3]);
+            res=OA_DeleteMode(&param_int[0],param_int[1]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d ",param_int[0],param_int[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_SetInt")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s const int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            res=OA_SetInt(&param_int[0],&param_int[1],param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d ",param_int[0],param_int[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_SetFloat")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s const float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            res=OA_SetFloat(&param_int[0],&param_int[1],param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d ",param_int[0],param_int[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_SetString")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s char* const unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[2],argv[3]);
+            param_int[3]=(int)atoi(argv[4]);
+            res=OA_SetString(&param_int[0],&param_int[1],param_char[2],param_int[3]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %s %d ",param_int[0],param_int[1],param_char[2],param_int[3]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetInt")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_GetInt(&param_int[0],&param_int[1],&param_int[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %d ",param_int[0],param_int[1],param_int[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetFloat")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=OA_GetFloat(&param_int[0],&param_int[1],&param_float[2]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %f ",param_int[0],param_int[1],param_float[2]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"OA_GetString")==0) {
+         if (argc<5) {
+            sprintf(ligne,"Usage: %s %s %s char* const unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            strcpy(param_char[2],argv[3]);
+            param_int[3]=(int)atoi(argv[4]);
+            res=OA_GetString(&param_int[0],&param_int[1],param_char[2],param_int[3]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d %d %s %d ",param_int[0],param_int[1],param_char[2],param_int[3]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_SetMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s unsigned int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=Filter_SetMode(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_GetMode")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=Filter_GetMode(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_SetThreshold")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s float ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_float[0]=(float)atof(argv[3]);
+            res=Filter_SetThreshold(param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_GetThreshold")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=Filter_GetThreshold(&param_float[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%f ",param_float[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_SetDataAveragingMode")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=Filter_SetDataAveragingMode(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_GetDataAveragingMode")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=Filter_GetDataAveragingMode(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_SetAveragingFrameCount")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=Filter_SetAveragingFrameCount(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_GetAveragingFrameCount")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=Filter_GetAveragingFrameCount(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_SetAveragingFactor")==0) {
+         if (argc<4) {
+            sprintf(ligne,"Usage: %s %s %s int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[0]=(int)atoi(argv[3]);
+            res=Filter_SetAveragingFactor(param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"Filter_GetAveragingFactor")==0) {
+         if (argc<3) {
+            sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            res=Filter_GetAveragingFactor(&param_int[0]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%d ",param_int[0]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"PostProcessNoiseFilter")==0) {
+         if (argc<9) {
+            sprintf(ligne,"Usage: %s %s %s int int int float int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            param_int[3]=(int)atoi(argv[4]);
+            param_int[4]=(int)atoi(argv[5]);
+            param_float[5]=(float)atof(argv[6]);
+            param_int[6]=(int)atoi(argv[7]);
+            param_int[7]=(int)atoi(argv[8]);
+            res=PostProcessNoiseFilter(&param_long[0],&param_long[1],param_int[2],param_int[3],param_int[4],param_float[5],param_int[6],param_int[7]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld %d %d %d %f %d %d ",param_long[0],param_long[1],param_int[2],param_int[3],param_int[4],param_float[5],param_int[6],param_int[7]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"PostProcessCountConvert")==0) {
+         if (argc<12) {
+            sprintf(ligne,"Usage: %s %s %s int int int int int float float int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            param_int[3]=(int)atoi(argv[4]);
+            param_int[4]=(int)atoi(argv[5]);
+            param_int[5]=(int)atoi(argv[6]);
+            param_int[6]=(int)atoi(argv[7]);
+            param_float[7]=(float)atof(argv[8]);
+            param_float[8]=(float)atof(argv[9]);
+            param_int[9]=(int)atoi(argv[10]);
+            param_int[10]=(int)atoi(argv[11]);
+            res=PostProcessCountConvert(&param_long[0],&param_long[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_float[7],param_float[8],param_int[9],param_int[10]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld %d %d %d %d %d %f %f %d %d ",param_long[0],param_long[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_float[7],param_float[8],param_int[9],param_int[10]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"PostProcessPhotonCounting")==0) {
+         if (argc<9) {
+            sprintf(ligne,"Usage: %s %s %s int int int int int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            param_int[3]=(int)atoi(argv[4]);
+            param_int[4]=(int)atoi(argv[5]);
+            param_int[5]=(int)atoi(argv[6]);
+            param_int[7]=(int)atoi(argv[7]);
+            param_int[8]=(int)atoi(argv[8]);
+            res=PostProcessPhotonCounting(&param_long[0],&param_long[1],param_int[2],param_int[3],param_int[4],param_int[5],&param_float[6],param_int[7],param_int[8]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld %d %d %d %d %f %d %d ",param_long[0],param_long[1],param_int[2],param_int[3],param_int[4],param_int[5],param_float[6],param_int[7],param_int[8]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
+      } else if (strcmp(argv[2],"PostProcessDataAveraging")==0) {
+         if (argc<10) {
+            sprintf(ligne,"Usage: %s %s %s int int int int int int int ",argv[0],argv[1],argv[2]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            return TCL_ERROR;
+         } else {
+            strcpy(ligne,"");
+            param_int[2]=(int)atoi(argv[3]);
+            param_int[3]=(int)atoi(argv[4]);
+            param_int[4]=(int)atoi(argv[5]);
+            param_int[5]=(int)atoi(argv[6]);
+            param_int[6]=(int)atoi(argv[7]);
+            param_int[7]=(int)atoi(argv[8]);
+            param_int[8]=(int)atoi(argv[9]);
+            res=PostProcessDataAveraging(&param_long[0],&param_long[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_int[7],param_int[8]);
+            if (res!=DRV_SUCCESS) {
+               sprintf(ligne,"Error %d. %s",res,get_status(res));
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_ERROR;
+            } else {;
+               sprintf(ligne,"%ld %ld %d %d %d %d %d %d %d ",param_long[0],param_long[1],param_int[2],param_int[3],param_int[4],param_int[5],param_int[6],param_int[7],param_int[8]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               return TCL_OK;
+            };
+         }
       } else {
          found=0;
       }
@@ -4142,6 +6695,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"CoolerOFF ",NULL);
       Tcl_AppendResult(interp,"CoolerON ",NULL);
       Tcl_AppendResult(interp,"DemosaicImage ",NULL);
+      Tcl_AppendResult(interp,"EnableKeepCleans ",NULL);
       Tcl_AppendResult(interp,"FreeInternalMemory ",NULL);
       Tcl_AppendResult(interp,"GetAcquiredData ",NULL);
       Tcl_AppendResult(interp,"GetAcquiredData16 ",NULL);
@@ -4154,6 +6708,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"GetAmpMaxSpeed ",NULL);
       Tcl_AppendResult(interp,"GetAvailableCameras ",NULL);
       Tcl_AppendResult(interp,"GetBackground ",NULL);
+      Tcl_AppendResult(interp,"GetBaselineClamp ",NULL);
       Tcl_AppendResult(interp,"GetBitDepth ",NULL);
       Tcl_AppendResult(interp,"GetCameraEventStatus ",NULL);
       Tcl_AppendResult(interp,"GetCameraHandle ",NULL);
@@ -4161,76 +6716,132 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"GetCameraSerialNumber ",NULL);
       Tcl_AppendResult(interp,"GetCapabilities ",NULL);
       Tcl_AppendResult(interp,"GetControllerCardModel ",NULL);
+      Tcl_AppendResult(interp,"GetCountConvertWavelengthRange ",NULL);
       Tcl_AppendResult(interp,"GetCurrentCamera ",NULL);
       Tcl_AppendResult(interp,"GetCYMGShift ",NULL);
+      Tcl_AppendResult(interp,"GetDDGExternalOutputEnabled ",NULL);
+      Tcl_AppendResult(interp,"GetDDGExternalOutputPolarity ",NULL);
+      Tcl_AppendResult(interp,"GetDDGExternalOutputStepEnabled ",NULL);
+      Tcl_AppendResult(interp,"GetDDGExternalOutputTime ",NULL);
+      Tcl_AppendResult(interp,"GetDDGTTLGateWidth ",NULL);
+      Tcl_AppendResult(interp,"GetDDGGateTime ",NULL);
+      Tcl_AppendResult(interp,"GetDDGInsertionDelay ",NULL);
+      Tcl_AppendResult(interp,"GetDDGIntelligate ",NULL);
+      Tcl_AppendResult(interp,"GetDDGIOC ",NULL);
       Tcl_AppendResult(interp,"GetDDGIOCFrequency ",NULL);
       Tcl_AppendResult(interp,"GetDDGIOCNumber ",NULL);
+      Tcl_AppendResult(interp,"GetDDGIOCNumberRequested ",NULL);
+      Tcl_AppendResult(interp,"GetDDGIOCPeriod ",NULL);
       Tcl_AppendResult(interp,"GetDDGIOCPulses ",NULL);
+      Tcl_AppendResult(interp,"GetDDGIOCTrigger ",NULL);
+      Tcl_AppendResult(interp,"GetDDGOpticalWidthEnabled ",NULL);
+      Tcl_AppendResult(interp,"GetDDGLiteGlobalControlByte ",NULL);
+      Tcl_AppendResult(interp,"GetDDGLiteControlByte ",NULL);
+      Tcl_AppendResult(interp,"GetDDGLiteInitialDelay ",NULL);
+      Tcl_AppendResult(interp,"GetDDGLitePulseWidth ",NULL);
+      Tcl_AppendResult(interp,"GetDDGLiteInterPulseDelay ",NULL);
+      Tcl_AppendResult(interp,"GetDDGLitePulsesPerExposure ",NULL);
       Tcl_AppendResult(interp,"GetDDGPulse ",NULL);
+      Tcl_AppendResult(interp,"GetDDGStepCoefficients ",NULL);
+      Tcl_AppendResult(interp,"GetDDGWidthStepCoefficients ",NULL);
+      Tcl_AppendResult(interp,"GetDDGStepMode ",NULL);
+      Tcl_AppendResult(interp,"GetDDGWidthStepMode ",NULL);
       Tcl_AppendResult(interp,"GetDetector ",NULL);
+      Tcl_AppendResult(interp,"GetEMAdvanced ",NULL);
       Tcl_AppendResult(interp,"GetEMCCDGain ",NULL);
       Tcl_AppendResult(interp,"GetEMGainRange ",NULL);
+      Tcl_AppendResult(interp,"GetExternalTriggerTermination ",NULL);
       Tcl_AppendResult(interp,"GetFastestRecommendedVSSpeed ",NULL);
       Tcl_AppendResult(interp,"GetFIFOUsage ",NULL);
       Tcl_AppendResult(interp,"GetFilterMode ",NULL);
       Tcl_AppendResult(interp,"GetFKExposureTime ",NULL);
       Tcl_AppendResult(interp,"GetFKVShiftSpeed ",NULL);
       Tcl_AppendResult(interp,"GetFKVShiftSpeedF ",NULL);
+      Tcl_AppendResult(interp,"GetFrontEndStatus ",NULL);
+      Tcl_AppendResult(interp,"GetGateMode ",NULL);
       Tcl_AppendResult(interp,"GetHardwareVersion ",NULL);
       Tcl_AppendResult(interp,"GetHeadModel ",NULL);
       Tcl_AppendResult(interp,"GetHorizontalSpeed ",NULL);
       Tcl_AppendResult(interp,"GetHSSpeed ",NULL);
       Tcl_AppendResult(interp,"GetHVflag ",NULL);
       Tcl_AppendResult(interp,"GetID ",NULL);
-      Tcl_AppendResult(interp,"GetImages  ",NULL);
-      Tcl_AppendResult(interp,"GetImages16  ",NULL);
+      Tcl_AppendResult(interp,"GetImageFlip ",NULL);
+      Tcl_AppendResult(interp,"GetImageRotate ",NULL);
+      Tcl_AppendResult(interp,"GetImages ",NULL);
+      Tcl_AppendResult(interp,"GetImages16 ",NULL);
       Tcl_AppendResult(interp,"GetImagesPerDMA ",NULL);
       Tcl_AppendResult(interp,"GetIRQ ",NULL);
+      Tcl_AppendResult(interp,"GetKeepCleanTime ",NULL);
       Tcl_AppendResult(interp,"GetMaximumBinning ",NULL);
       Tcl_AppendResult(interp,"GetMaximumExposure ",NULL);
+      Tcl_AppendResult(interp,"GetMaximumNumberRingExposureTimes ",NULL);
       Tcl_AppendResult(interp,"GetMCPGain ",NULL);
+      Tcl_AppendResult(interp,"GetMCPGainRange ",NULL);
+      Tcl_AppendResult(interp,"GetMCPGainTable ",NULL);
       Tcl_AppendResult(interp,"GetMCPVoltage ",NULL);
       Tcl_AppendResult(interp,"GetMinimumImageLength ",NULL);
-      Tcl_AppendResult(interp,"GetMostRecentColorImage16  ",NULL);
-      Tcl_AppendResult(interp,"GetMostRecentImage  ",NULL);
-      Tcl_AppendResult(interp,"GetMostRecentImage16  ",NULL);
+      Tcl_AppendResult(interp,"GetMinimumNumberInSeries ",NULL);
+      Tcl_AppendResult(interp,"GetMostRecentColorImage16 ",NULL);
+      Tcl_AppendResult(interp,"GetMostRecentImage ",NULL);
+      Tcl_AppendResult(interp,"GetMostRecentImage16 ",NULL);
       Tcl_AppendResult(interp,"GetMSTimingsData ",NULL);
+      Tcl_AppendResult(interp,"GetMetaDataInfo ",NULL);
       Tcl_AppendResult(interp,"GetMSTimingsEnabled ",NULL);
+      Tcl_AppendResult(interp,"GetRelativeImageTimes ",NULL);
       Tcl_AppendResult(interp,"GetNewData ",NULL);
       Tcl_AppendResult(interp,"GetNewData16 ",NULL);
       Tcl_AppendResult(interp,"GetNewData8 ",NULL);
       Tcl_AppendResult(interp,"GetNewFloatData ",NULL);
       Tcl_AppendResult(interp,"GetNumberADChannels ",NULL);
       Tcl_AppendResult(interp,"GetNumberAmp ",NULL);
-      Tcl_AppendResult(interp,"GetNumberAvailableImages  ",NULL);
+      Tcl_AppendResult(interp,"GetNumberAvailableImages ",NULL);
+      Tcl_AppendResult(interp,"GetNumberDDGExternalOutputs ",NULL);
       Tcl_AppendResult(interp,"GetNumberDevices ",NULL);
       Tcl_AppendResult(interp,"GetNumberFKVShiftSpeeds ",NULL);
       Tcl_AppendResult(interp,"GetNumberHorizontalSpeeds ",NULL);
       Tcl_AppendResult(interp,"GetNumberHSSpeeds ",NULL);
-      Tcl_AppendResult(interp,"GetNumberNewImages  ",NULL);
+      Tcl_AppendResult(interp,"GetNumberNewImages ",NULL);
+      Tcl_AppendResult(interp,"GetNumberPhotonCountingDivisions ",NULL);
       Tcl_AppendResult(interp,"GetNumberPreAmpGains ",NULL);
       Tcl_AppendResult(interp,"GetNumberRingExposureTimes ",NULL);
+      Tcl_AppendResult(interp,"GetNumberIO ",NULL);
       Tcl_AppendResult(interp,"GetNumberVerticalSpeeds ",NULL);
       Tcl_AppendResult(interp,"GetNumberVSAmplitudes ",NULL);
       Tcl_AppendResult(interp,"GetNumberVSSpeeds ",NULL);
-      Tcl_AppendResult(interp,"GetOldestImage  ",NULL);
-      Tcl_AppendResult(interp,"GetOldestImage16  ",NULL);
+      Tcl_AppendResult(interp,"GetOldestImage ",NULL);
+      Tcl_AppendResult(interp,"GetOldestImage16 ",NULL);
+      Tcl_AppendResult(interp,"GetPhosphorStatus ",NULL);
       Tcl_AppendResult(interp,"GetPhysicalDMAAddress ",NULL);
       Tcl_AppendResult(interp,"GetPixelSize ",NULL);
       Tcl_AppendResult(interp,"GetPreAmpGain ",NULL);
+      Tcl_AppendResult(interp,"GetPreAmpGainText ",NULL);
+      Tcl_AppendResult(interp,"GetDualExposureTimes ",NULL);
+      Tcl_AppendResult(interp,"GetQE ",NULL);
+      Tcl_AppendResult(interp,"GetReadOutTime ",NULL);
       Tcl_AppendResult(interp,"GetRegisterDump ",NULL);
       Tcl_AppendResult(interp,"GetRingExposureRange ",NULL);
-      Tcl_AppendResult(interp,"GetSizeOfCircularBuffer  ",NULL);
+      Tcl_AppendResult(interp,"GetSDK3Handle ",NULL);
+      Tcl_AppendResult(interp,"GetSensitivity ",NULL);
+      Tcl_AppendResult(interp,"GetShutterMinTimes ",NULL);
+      Tcl_AppendResult(interp,"GetSizeOfCircularBuffer ",NULL);
       Tcl_AppendResult(interp,"GetSlotBusDeviceFunction ",NULL);
       Tcl_AppendResult(interp,"GetSoftwareVersion ",NULL);
       Tcl_AppendResult(interp,"GetSpoolProgress ",NULL);
+      Tcl_AppendResult(interp,"GetStartUpTime ",NULL);
       Tcl_AppendResult(interp,"GetStatus ",NULL);
+      Tcl_AppendResult(interp,"GetTECStatus ",NULL);
       Tcl_AppendResult(interp,"GetTemperature ",NULL);
       Tcl_AppendResult(interp,"GetTemperatureF ",NULL);
       Tcl_AppendResult(interp,"GetTemperatureRange ",NULL);
       Tcl_AppendResult(interp,"GetTemperatureStatus ",NULL);
-      Tcl_AppendResult(interp,"GetTotalNumberImagesAcquired  ",NULL);
+      Tcl_AppendResult(interp,"GetTotalNumberImagesAcquired ",NULL);
+      Tcl_AppendResult(interp,"GetIODirection ",NULL);
+      Tcl_AppendResult(interp,"GetIOLevel ",NULL);
+      Tcl_AppendResult(interp,"GetVersionInfo ",NULL);
       Tcl_AppendResult(interp,"GetVerticalSpeed ",NULL);
+      Tcl_AppendResult(interp,"GetVSAmplitudeString ",NULL);
+      Tcl_AppendResult(interp,"GetVSAmplitudeFromString ",NULL);
+      Tcl_AppendResult(interp,"GetVSAmplitudeValue ",NULL);
       Tcl_AppendResult(interp,"GetVSSpeed ",NULL);
       Tcl_AppendResult(interp,"GPIBReceive ",NULL);
       Tcl_AppendResult(interp,"GPIBSend ",NULL);
@@ -4243,6 +6854,9 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"InAuxPort ",NULL);
       Tcl_AppendResult(interp,"Initialize ",NULL);
       Tcl_AppendResult(interp,"InitializeDevice ",NULL);
+      Tcl_AppendResult(interp,"IsAmplifierAvailable ",NULL);
+      Tcl_AppendResult(interp,"IsCoolerOn ",NULL);
+      Tcl_AppendResult(interp,"IsCountConvertModeAvailable ",NULL);
       Tcl_AppendResult(interp,"IsInternalMechanicalShutter ",NULL);
       Tcl_AppendResult(interp,"IsPreAmpGainAvailable ",NULL);
       Tcl_AppendResult(interp,"IsTriggerModeAvailable ",NULL);
@@ -4270,21 +6884,45 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"SetBackground ",NULL);
       Tcl_AppendResult(interp,"SetBaselineClamp ",NULL);
       Tcl_AppendResult(interp,"SetBaselineOffset ",NULL);
+      Tcl_AppendResult(interp,"SetCameraLinkMode ",NULL);
       Tcl_AppendResult(interp,"SetCameraStatusEnable ",NULL);
+      Tcl_AppendResult(interp,"SetChargeShifting ",NULL);
       Tcl_AppendResult(interp,"SetComplexImage ",NULL);
       Tcl_AppendResult(interp,"SetCoolerMode ",NULL);
+      Tcl_AppendResult(interp,"SetCountConvertMode ",NULL);
+      Tcl_AppendResult(interp,"SetCountConvertWavelength ",NULL);
       Tcl_AppendResult(interp,"SetCropMode ",NULL);
       Tcl_AppendResult(interp,"SetCurrentCamera ",NULL);
       Tcl_AppendResult(interp,"SetCustomTrackHBin ",NULL);
       Tcl_AppendResult(interp,"SetDataType ",NULL);
+      Tcl_AppendResult(interp,"SetDACOutput ",NULL);
+      Tcl_AppendResult(interp,"SetDACOutputScale ",NULL);
       Tcl_AppendResult(interp,"SetDDGAddress ",NULL);
+      Tcl_AppendResult(interp,"SetDDGExternalOutputEnabled ",NULL);
+      Tcl_AppendResult(interp,"SetDDGExternalOutputPolarity ",NULL);
+      Tcl_AppendResult(interp,"SetDDGExternalOutputStepEnabled ",NULL);
+      Tcl_AppendResult(interp,"SetDDGExternalOutputTime ",NULL);
       Tcl_AppendResult(interp,"SetDDGGain ",NULL);
       Tcl_AppendResult(interp,"SetDDGGateStep ",NULL);
+      Tcl_AppendResult(interp,"SetDDGGateTime ",NULL);
       Tcl_AppendResult(interp,"SetDDGInsertionDelay ",NULL);
       Tcl_AppendResult(interp,"SetDDGIntelligate ",NULL);
       Tcl_AppendResult(interp,"SetDDGIOC ",NULL);
       Tcl_AppendResult(interp,"SetDDGIOCFrequency ",NULL);
       Tcl_AppendResult(interp,"SetDDGIOCNumber ",NULL);
+      Tcl_AppendResult(interp,"SetDDGIOCPeriod ",NULL);
+      Tcl_AppendResult(interp,"SetDDGIOCTrigger ",NULL);
+      Tcl_AppendResult(interp,"SetDDGOpticalWidthEnabled ",NULL);
+      Tcl_AppendResult(interp,"SetDDGLiteGlobalControlByte ",NULL);
+      Tcl_AppendResult(interp,"SetDDGLiteControlByte ",NULL);
+      Tcl_AppendResult(interp,"SetDDGLiteInitialDelay ",NULL);
+      Tcl_AppendResult(interp,"SetDDGLitePulseWidth ",NULL);
+      Tcl_AppendResult(interp,"SetDDGLiteInterPulseDelay ",NULL);
+      Tcl_AppendResult(interp,"SetDDGLitePulsesPerExposure ",NULL);
+      Tcl_AppendResult(interp,"SetDDGStepCoefficients ",NULL);
+      Tcl_AppendResult(interp,"SetDDGWidthStepCoefficients ",NULL);
+      Tcl_AppendResult(interp,"SetDDGStepMode ",NULL);
+      Tcl_AppendResult(interp,"SetDDGWidthStepMode ",NULL);
       Tcl_AppendResult(interp,"SetDDGTimes ",NULL);
       Tcl_AppendResult(interp,"SetDDGTriggerMode ",NULL);
       Tcl_AppendResult(interp,"SetDDGVariableGateStep ",NULL);
@@ -4295,6 +6933,7 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"SetEMClockCompensation ",NULL);
       Tcl_AppendResult(interp,"SetEMGainMode ",NULL);
       Tcl_AppendResult(interp,"SetExposureTime ",NULL);
+      Tcl_AppendResult(interp,"SetExternalTriggerTermination ",NULL);
       Tcl_AppendResult(interp,"SetFanMode ",NULL);
       Tcl_AppendResult(interp,"SetFastExtTrigger ",NULL);
       Tcl_AppendResult(interp,"SetFastKinetics ",NULL);
@@ -4315,23 +6954,33 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"SetImage ",NULL);
       Tcl_AppendResult(interp,"SetImageFlip ",NULL);
       Tcl_AppendResult(interp,"SetImageRotate ",NULL);
-      Tcl_AppendResult(interp,"SetIsolatedCropMode  ",NULL);
+      Tcl_AppendResult(interp,"SetIsolatedCropMode ",NULL);
       Tcl_AppendResult(interp,"SetKineticCycleTime ",NULL);
+      Tcl_AppendResult(interp,"SetMCPGain ",NULL);
       Tcl_AppendResult(interp,"SetMCPGating ",NULL);
+      Tcl_AppendResult(interp,"SetMetaData ",NULL);
       Tcl_AppendResult(interp,"SetMultiTrack ",NULL);
       Tcl_AppendResult(interp,"SetMultiTrackHBin ",NULL);
+      Tcl_AppendResult(interp,"SetMultiTrackHRange ",NULL);
+      Tcl_AppendResult(interp,"SetMultiTrackScan ",NULL);
       Tcl_AppendResult(interp,"SetNextAddress ",NULL);
       Tcl_AppendResult(interp,"SetNextAddress16 ",NULL);
       Tcl_AppendResult(interp,"SetNumberAccumulations ",NULL);
       Tcl_AppendResult(interp,"SetNumberKinetics ",NULL);
+      Tcl_AppendResult(interp,"SetNumberPrescans ",NULL);
       Tcl_AppendResult(interp,"SetOutputAmplifier ",NULL);
+      Tcl_AppendResult(interp,"SetOverlapMode ",NULL);
       Tcl_AppendResult(interp,"SetPCIMode ",NULL);
       Tcl_AppendResult(interp,"SetPhotonCounting ",NULL);
       Tcl_AppendResult(interp,"SetPhotonCountingThreshold ",NULL);
+      Tcl_AppendResult(interp,"SetPhotonCountingDivisions ",NULL);
       Tcl_AppendResult(interp,"SetPixelMode ",NULL);
       Tcl_AppendResult(interp,"SetPreAmpGain ",NULL);
+      Tcl_AppendResult(interp,"SetDualExposureTimes ",NULL);
+      Tcl_AppendResult(interp,"SetDualExposureMode ",NULL);
       Tcl_AppendResult(interp,"SetRandomTracks ",NULL);
       Tcl_AppendResult(interp,"SetReadMode ",NULL);
+      Tcl_AppendResult(interp,"SetReadoutRegisterPacking ",NULL);
       Tcl_AppendResult(interp,"SetRegisterDump ",NULL);
       Tcl_AppendResult(interp,"SetRingExposureTimes ",NULL);
       Tcl_AppendResult(interp,"SetShutter ",NULL);
@@ -4341,9 +6990,15 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"SetSingleTrack ",NULL);
       Tcl_AppendResult(interp,"SetSingleTrackHBin ",NULL);
       Tcl_AppendResult(interp,"SetSpool ",NULL);
+      Tcl_AppendResult(interp,"SetSpoolThreadCount ",NULL);
       Tcl_AppendResult(interp,"SetStorageMode ",NULL);
       Tcl_AppendResult(interp,"SetTemperature ",NULL);
       Tcl_AppendResult(interp,"SetTriggerMode ",NULL);
+      Tcl_AppendResult(interp,"SetTriggerInvert ",NULL);
+      Tcl_AppendResult(interp,"GetTriggerLevelRange ",NULL);
+      Tcl_AppendResult(interp,"SetTriggerLevel ",NULL);
+      Tcl_AppendResult(interp,"SetIODirection ",NULL);
+      Tcl_AppendResult(interp,"SetIOLevel ",NULL);
       Tcl_AppendResult(interp,"SetUSGenomics ",NULL);
       Tcl_AppendResult(interp,"SetVerticalRowBuffer ",NULL);
       Tcl_AppendResult(interp,"SetVerticalSpeed ",NULL);
@@ -4358,6 +7013,37 @@ int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       Tcl_AppendResult(interp,"WaitForAcquisitionByHandleTimeOut ",NULL);
       Tcl_AppendResult(interp,"WaitForAcquisitionTimeOut ",NULL);
       Tcl_AppendResult(interp,"WhiteBalance ",NULL);
+      Tcl_AppendResult(interp,"OA_Initialize ",NULL);
+      Tcl_AppendResult(interp,"OA_EnableMode ",NULL);
+      Tcl_AppendResult(interp,"OA_GetModeAcqParams ",NULL);
+      Tcl_AppendResult(interp,"OA_GetUserModeNames ",NULL);
+      Tcl_AppendResult(interp,"OA_GetPreSetModeNames ",NULL);
+      Tcl_AppendResult(interp,"OA_GetNumberOfUserModes ",NULL);
+      Tcl_AppendResult(interp,"OA_GetNumberOfPreSetModes ",NULL);
+      Tcl_AppendResult(interp,"OA_GetNumberOfAcqParams ",NULL);
+      Tcl_AppendResult(interp,"OA_AddMode ",NULL);
+      Tcl_AppendResult(interp,"OA_WriteToFile ",NULL);
+      Tcl_AppendResult(interp,"OA_DeleteMode ",NULL);
+      Tcl_AppendResult(interp,"OA_SetInt ",NULL);
+      Tcl_AppendResult(interp,"OA_SetFloat ",NULL);
+      Tcl_AppendResult(interp,"OA_SetString ",NULL);
+      Tcl_AppendResult(interp,"OA_GetInt ",NULL);
+      Tcl_AppendResult(interp,"OA_GetFloat ",NULL);
+      Tcl_AppendResult(interp,"OA_GetString ",NULL);
+      Tcl_AppendResult(interp,"Filter_SetMode ",NULL);
+      Tcl_AppendResult(interp,"Filter_GetMode ",NULL);
+      Tcl_AppendResult(interp,"Filter_SetThreshold ",NULL);
+      Tcl_AppendResult(interp,"Filter_GetThreshold ",NULL);
+      Tcl_AppendResult(interp,"Filter_SetDataAveragingMode ",NULL);
+      Tcl_AppendResult(interp,"Filter_GetDataAveragingMode ",NULL);
+      Tcl_AppendResult(interp,"Filter_SetAveragingFrameCount ",NULL);
+      Tcl_AppendResult(interp,"Filter_GetAveragingFrameCount ",NULL);
+      Tcl_AppendResult(interp,"Filter_SetAveragingFactor ",NULL);
+      Tcl_AppendResult(interp,"Filter_GetAveragingFactor ",NULL);
+      Tcl_AppendResult(interp,"PostProcessNoiseFilter ",NULL);
+      Tcl_AppendResult(interp,"PostProcessCountConvert ",NULL);
+      Tcl_AppendResult(interp,"PostProcessPhotonCounting ",NULL);
+      Tcl_AppendResult(interp,"PostProcessDataAveraging ",NULL);
       return TCL_ERROR;
    }
 

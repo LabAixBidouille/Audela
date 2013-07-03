@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libandor"
 	ProjectGUID="{D3BE9328-C0A4-4A31-9C2E-3112827701F9}"
 	TargetFrameworkVersion="0"
@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win,..\..\..\external\include"
+				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include,..\..\..\external\include\win"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				PrecompiledHeaderFile=".\Release/libandor.pch"
@@ -139,7 +139,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include\win,..\..\..\external\include"
+				AdditionalIncludeDirectories="..\src,..\..\..\include,..\..\..\external\include,..\..\..\external\include\win"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;USE_TCL_STUBS;USE_TK_STUBS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
