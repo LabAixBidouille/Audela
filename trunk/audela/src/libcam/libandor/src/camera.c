@@ -159,6 +159,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
       return 6;
    }
+   /* --- GetCapabilities(AndorCapabilities* caps) ---*/
+   cam->caps.ulSize = sizeof(AndorCapabilities);
+   GetCapabilities(&cam->caps);
 
    /* --- Get Head Model ---*/
    cam->drv_status=GetHeadModel(model);
@@ -321,7 +324,11 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
 			mode=1;
 		}		
 	}
-   cam->drv_status=SetShutter(type,mode,cam->closingtime,cam->openingtime);
+	if ( (cam->caps.ulFeatures & AC_FEATURES_SHUTTEREX) ) {
+	   cam->drv_status=SetShutterEx(type,mode,cam->closingtime,cam->openingtime,mode);
+	} else {
+	   cam->drv_status=SetShutter(type,mode,cam->closingtime,cam->openingtime);
+	}
    if(cam->drv_status!=DRV_SUCCESS) {
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
       return;

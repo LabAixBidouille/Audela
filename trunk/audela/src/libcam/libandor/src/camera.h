@@ -61,6 +61,7 @@ struct camprop {
 	int nbimages;
 	float cycletime;
 	char spoolname[2048];
+	AndorCapabilities caps;
 };
 
 void cam_setup_electronic(struct camprop *cam);
