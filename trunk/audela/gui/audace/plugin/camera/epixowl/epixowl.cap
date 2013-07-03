@@ -1,6 +1,6 @@
 #
 # Fichier : epixowl.cap
-# Mise a jour $Id: epixowl.cap 9596 2013-06-24 12:09:45Z mschiav $
+# Mise a jour $Id$
 #
 
 #=========================================================================
@@ -32,19 +32,19 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(epixowl,camera)                    "EPIX - OWL"
 
-   set caption(epixowl,config)                    "Fichier de Format Video"
-   set caption(epixowl,extconfig)                 "Fichier externe de Format Video"
+   set caption(epixowl,config)                    "Fichier du format vidéo"
+   set caption(epixowl,extconfig)                 "Fichier externe du format vidéo"
    set caption(epixowl,browse)                    "..."
    set caption(epixowl,folder)                    "A partir du dossier :"
    set caption(epixowl,mirror_x)                  "Inverser Haut/Bas"
    set caption(epixowl,mirror_y)                  "Inverser Gauche/Droite"
-   set caption(epixowl,temperature_CCD)           "Température du capteur:"
+   set caption(epixowl,temperature_CCD)           "Température du capteur :"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Images par second"
+   set caption(epixowl,framerate)                 "Images par seconde"
    set caption(epixowl,exposure)                  "Temps d'exposition"
-   set caption(epixowl,hdr)                       "High Dynamic Range"
-   set caption(epixowl,videomode)                 "Mode Vidéo"
+   set caption(epixowl,hdr)                       "Grande dynamique"
+   set caption(epixowl,videomode)                 "Mode vidéo"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
