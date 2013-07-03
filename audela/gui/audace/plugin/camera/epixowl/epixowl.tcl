@@ -2,7 +2,7 @@
 # Fichier : epixowl.tcl
 # Description : Configuration de la camera Epix OWL
 # Auteur : Matteo SCHIAVON
-# Mise à jour $Id: epixowl.tcl 9597 2013-06-24 12:14:07Z mschiav $
+# Mise à jour $Id$
 #
 
 namespace eval ::epixowl {
