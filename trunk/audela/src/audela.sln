@@ -300,6 +300,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeteltcl", "contrib\libet
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtelscript", "libtel\libtelscript\vc90\libtelscript.vcproj", "{9A9C2369-CD23-4678-8E27-8F39EA8E58C8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libepixowl", "libcam\libepixowl\vc90\libepixowl.vcproj", "{A328475B-AC69-4BA0-8580-62197E3B2EFC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_epix", "external\epix\vc90\external_epix.vcproj", "{1BF90705-9548-45E3-8995-5DA73C791146}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -685,6 +689,14 @@ Global
 		{9A9C2369-CD23-4678-8E27-8F39EA8E58C8}.Debug|Win32.Build.0 = Debug|Win32
 		{9A9C2369-CD23-4678-8E27-8F39EA8E58C8}.Release|Win32.ActiveCfg = Release|Win32
 		{9A9C2369-CD23-4678-8E27-8F39EA8E58C8}.Release|Win32.Build.0 = Release|Win32
+		{A328475B-AC69-4BA0-8580-62197E3B2EFC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A328475B-AC69-4BA0-8580-62197E3B2EFC}.Debug|Win32.Build.0 = Debug|Win32
+		{A328475B-AC69-4BA0-8580-62197E3B2EFC}.Release|Win32.ActiveCfg = Release|Win32
+		{A328475B-AC69-4BA0-8580-62197E3B2EFC}.Release|Win32.Build.0 = Release|Win32
+		{1BF90705-9548-45E3-8995-5DA73C791146}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1BF90705-9548-45E3-8995-5DA73C791146}.Debug|Win32.Build.0 = Debug|Win32
+		{1BF90705-9548-45E3-8995-5DA73C791146}.Release|Win32.ActiveCfg = Release|Win32
+		{1BF90705-9548-45E3-8995-5DA73C791146}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

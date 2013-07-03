@@ -83,16 +83,16 @@ proc ::epixowl::initPlugin { } {
 
    #--- Initialise les variables de la camera Raptor OSPREY
    if { ! [ info exists conf(epixowl,tec) ] }         { set conf(epixowl,tec)       "1" }
-   if { ! [ info exists conf(epixowl,framerate) ] }   { set conf(epixowl,framerate) "37.5" }
+   if { ! [ info exists conf(epixowl,framerate) ] }   { set conf(epixowl,framerate) "5" }
    if { ! [ info exists conf(epixowl,config) ] }      { set conf(epixowl,config)    "" }
    if { ! [ info exists conf(epixowl,mirh) ] }        { set conf(epixowl,mirh)      "0" }
    if { ! [ info exists conf(epixowl,mirv) ] }        { set conf(epixowl,mirv)      "0" }
    if { ! [ info exists conf(epixowl,CMOStemp) ] }    { set conf(epixowl,CMOStemp)  "" }
-   if { ! [ info exists conf(epixowl,exposure) ] }    { set conf(epixowl,exposure)  "0.001" }
+   if { ! [ info exists conf(epixowl,exposure) ] }    { set conf(epixowl,exposure)  "0.1" }
    if { ! [ info exists conf(epixowl,roi_x1) ] }      { set conf(epixowl,roi_x1)    "0" }
    if { ! [ info exists conf(epixowl,roi_y1) ] }      { set conf(epixowl,roi_y1)    "0" }
-   if { ! [ info exists conf(epixowl,roi_x2 ] }       { set conf(epixowl,roi_x2)    "2047" }
-   if { ! [ info exists conf(epixowl,roi_y2) ] }      { set conf(epixowl,roi_y2)    "2047" }
+   if { ! [ info exists conf(epixowl,roi_x2 ] }       { set conf(epixowl,roi_x2)    "639" }
+   if { ! [ info exists conf(epixowl,roi_y2) ] }      { set conf(epixowl,roi_y2)    "511" }
    if { ! [ info exists conf(epixowl,binning) ] }     { set conf(epixowl,binning)   "1" }
    if { ! [ info exists conf(epixowl,extconfig) ] }   { set conf(epixowl,extconfig) "0" }
    if { ! [ info exists conf(epixowl,hdr) ] }         { set conf(epixowl,hdr)       "0" }
@@ -502,8 +502,8 @@ proc ::epixowl::extconfig { camNo } {
       } else {
          set ::epixowl::private(roi_x1) "0"
          set ::epixowl::private(roi_y1) "0"
-         set ::epixowl::private(roi_x2) "2047"
-         set ::epixowl::private(roi_y2) "2047"
+         set ::epixowl::private(roi_x2) "639"
+         set ::epixowl::private(roi_y2) "511"
          set ::epixowl::private(config) ""
          set ::epixowl::private(binning) "1x1"
          $frm.frame1.frame3.bin configure -state disabled
@@ -555,17 +555,17 @@ proc ::epixowl::getPluginProperty { camItem propertyName } {
    variable private
 
    switch $propertyName {
-      binningList      { return [ list 1x1 2x2 4x4 ] }
+      binningList      { return [ list 1x1 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
-      dynamic          { return [ list 4095 0 ] }
+      dynamic          { return [ list 16384 0 ] }
       hasBinning       { return 0 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
-      hasShutter       { return 1 }
+      hasShutter       { return 0 }
       hasTempSensor    { return 1 }
-      hasSetTemp       { return 0 }
+      hasSetTemp       { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
