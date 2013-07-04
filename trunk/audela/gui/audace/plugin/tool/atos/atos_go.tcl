@@ -81,15 +81,15 @@ proc ::atos::initPlugin { tkbase } {
 
    ::atos::ressource
 
-   # foreach param $::atos_config::allparams {
-   #   if {[info exists conf(atos,$param)]} then { set atosconf($param) $conf(atos,$param) }
-   # }
+  # foreach param $::atos_config::allparams {
+  #    if {[info exists conf(atos,$param)]} then { set atosconf($param) $conf(atos,$param) }
+  # }
 
    set atosconf(bufno)    $audace(bufNo)
    set atosconf(rep_plug) [file join $audace(rep_plugin) tool atos ]
 
    if { [catch {load libavi[info sharedlibextension] }] } {
-          # ::console::affiche_erreur "La librairie libavi du plugin atos n'a pas pu etre chargee\n"
+      # ::console::affiche_erreur "La librairie libavi du plugin atos n'a pas pu etre chargee\n"
    }
    # ::console::affiche_resultat [::hello]
 }
@@ -99,7 +99,6 @@ proc ::atos::initPlugin { tkbase } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::atos::createPluginInstance { { in "" } { visuNo 1 } } {
-
    global audace caption conf panneau
 
    #--- Chargement des fichiers auxiliaires
@@ -127,7 +126,6 @@ proc ::atos::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Construction de l'interface
    ::atos::BuildIF $visuNo
-
 }
 
 #------------------------------------------------------------
@@ -161,19 +159,13 @@ proc ::atos::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos test.tcl                ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
-
 }
-
-
-
-
 
 #------------------------------------------------------------
 # ::atos::chargerVariable
 #    Chargement des variables
 #------------------------------------------------------------
 proc ::atos::chargerVariable { visuNo } {
-
    #--- Ouverture du fichier de parametres
    set fichier [ file join $::audace(rep_home) atos.ini ]
    if { [ file exists $fichier ] } {
@@ -182,11 +174,7 @@ proc ::atos::chargerVariable { visuNo } {
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::atos_setup::initToConf $visuNo
-
 }
-
-
-
 
 #------------------------------------------------------------
 # ::atos::deletePluginInstance
@@ -203,10 +191,13 @@ proc ::atos::deletePluginInstance { visuNo } {
 proc ::atos::startTool { { visuNo 1 } } {
    global panneau
 
-   variable This
+   #--- On cree la variable de configuration des mots cles
+   if { ! [ info exists ::conf(atos,keywordConfigName) ] } { set ::conf(atos,keywordConfigName) "default" }
+
+   #--- Je selectionne les mots cles selon les exigences de l'outil
+   ::atos::configToolKeywords $visuNo
 
    pack $panneau(atos,$visuNo,This) -side left -fill y
-
 }
 
 #------------------------------------------------------------
@@ -214,10 +205,10 @@ proc ::atos::startTool { { visuNo 1 } } {
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::atos::stopTool { { visuNo 1 } } {
-
    global panneau
-   variable This
 
+   #--- Je supprime la liste des mots clefs non modifiables
+   ::keyword::setKeywordState $visuNo $::conf(atos,keywordConfigName) [ list ]
 
    pack forget $panneau(atos,$visuNo,This)
 }
@@ -227,10 +218,9 @@ proc ::atos::stopTool { { visuNo 1 } } {
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
 proc ::atos::BuildIF { visuNo } {
+   global audace caption conf panneau
 
-      package require Img
-
-      global audace caption conf panneau
+   package require Img
 
    #--- Determination de la fenetre parente
    if { $visuNo == "1" } {
@@ -258,48 +248,49 @@ proc ::atos::BuildIF { visuNo } {
             -expand 0
          DynamicHelp::add $This.fra1.help -text $caption(atos_go,help_titre)
 
-
          #--- Creation du bouton
          image create photo .setup -format PNG -file [ file join $audace(rep_plugin) tool atos img setup.png ]
          button $This.fra1.setup -image .setup\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::atos_setup::run  $visuNo $base.atos_setup"
+            -command "::atos_setup::run $visuNo $base.atos_setup"
          pack $This.fra1.setup \
             -in $This.fra1 \
             -side top -anchor w \
             -expand 0
          DynamicHelp::add $This.fra1.setup -text $caption(atos_go,setup)
 
-
          #--- Creation du bouton
          image create photo .acq -format PNG -file [ file join $audace(rep_plugin) tool atos img acquisition.png ]
          button $This.fra1.acq -image .acq\
-            -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::atos_acq::run  $visuNo $base.atos_acquisition"
+            -borderwidth 2 -width 48 -height 48 -compound center -state normal \
+            -command "::atos_acq::run $visuNo $base.atos_acquisition"
          pack $This.fra1.acq \
             -in $This.fra1 \
             -side top -anchor w \
             -expand 0
          DynamicHelp::add $This.fra1.acq -text $caption(atos_go,acquisition)
-
+         if { $::tcl_platform(os) == "Linux" } {
+            $This.fra1.acq configure -state normal
+         } else {
+            $This.fra1.acq configure -state disabled
+         }
 
          #--- Creation du bouton
          image create photo .extract -format PNG -file [ file join $audace(rep_plugin) tool atos img extraction.png ]
          button $This.fra1.extract -image .extract\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::atos_extraction::run  $visuNo $base.atos_extraction"
+            -command "::atos_extraction::run $visuNo $base.atos_extraction"
          pack $This.fra1.extract \
             -in $This.fra1 \
             -side top -anchor w \
             -expand 0
          DynamicHelp::add $This.fra1.extract -text $caption(atos_go,extraction)
 
-
          #--- Creation du bouton
          image create photo .time -format PNG -file [ file join $audace(rep_plugin) tool atos img time.png ]
          button $This.fra1.time -image .time\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::atos_ocr::run  $visuNo $base.atos_ocr"
+            -command "::atos_ocr::run $visuNo $base.atos_ocr"
          pack $This.fra1.time \
             -in $This.fra1 \
             -side top -anchor w \
@@ -310,7 +301,7 @@ proc ::atos::BuildIF { visuNo } {
          image create photo .cdl -format PNG -file [ file join $audace(rep_plugin) tool atos img photom.png ]
          button $This.fra1.cdl -image .cdl\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::atos_cdl::run  $visuNo $base.atos_cdl"
+            -command "::atos_cdl::run $visuNo $base.atos_cdl"
          pack $This.fra1.cdl \
             -in $This.fra1 \
             -side top -anchor w \
@@ -321,68 +312,77 @@ proc ::atos::BuildIF { visuNo } {
          image create photo .analysis -format PNG -file [ file join $audace(rep_plugin) tool atos img cdl.png ]
          button $This.fra1.analysis -image .analysis\
             -borderwidth 2 -width 48 -height 48 -compound center \
-            -command "::atos_analysis_gui::run  $visuNo $base.atos_analysis"
+            -command "::atos_analysis_gui::run $visuNo $base.atos_analysis"
          pack $This.fra1.analysis \
             -in $This.fra1 \
             -side left -anchor w \
             -expand 0
          DynamicHelp::add $This.fra1.analysis -text $caption(atos_go,analysis)
 
-
-
      if { $::atos::parametres(atos,$visuNo,mode_debug)==1 } {
 
+         #--- Frame du titre
+         frame $This.fradev -borderwidth 2 -relief groove
+         pack $This.fradev -side top -fill x
 
+            #--- Creation du bouton
+            image create photo .test -format PNG -file [ file join $audace(rep_plugin) tool atos img test_mini.png ]
+            button $This.fradev.test -image .test\
+               -borderwidth 2 -width 10 -height 10 -compound center \
+               -command "::testprocedure::run"
+            pack $This.fradev.test \
+               -in $This.fradev \
+               -side left -anchor w \
+               -expand 0
+            DynamicHelp::add $This.fradev.test -text $caption(atos_go,test)
 
+            #--- Creation du bouton
+            image create photo .ressource -format PNG -file [ file join $audace(rep_plugin) tool atos img ressource_mini.png ]
+            button $This.fradev.ressource -image .ressource\
+               -borderwidth 2 -width 10 -height 10 -compound center \
+               -command "::atos::ressource"
+            pack $This.fradev.ressource \
+               -in $This.fradev \
+               -side left -anchor w \
+               -expand 0
+            DynamicHelp::add $This.fradev.ressource -text $caption(atos_go,ressource)
 
-      #--- Frame du titre
-      frame $This.fradev -borderwidth 2 -relief groove
-      pack $This.fradev -side top -fill x
+            #--- Creation du bouton
+            image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool atos img verif.png ]
+            button $This.fradev.verif -image .verif\
+               -borderwidth 2 -width 10 -height 10 -compound center \
+               -command "::atos_verif::run $visuNo $base.atos_verif"
+            pack $This.fradev.verif \
+               -in $This.fradev \
+               -side top -anchor w \
+               -expand 0
+            DynamicHelp::add $This.fradev.verif -text $caption(atos_go,verif)
 
-
-         #--- Creation du bouton
-         image create photo .test -format PNG -file [ file join $audace(rep_plugin) tool atos img test_mini.png ]
-         button $This.fradev.test -image .test\
-            -borderwidth 2 -width 10 -height 10 -compound center \
-            -command "::testprocedure::run"
-         pack $This.fradev.test \
-            -in $This.fradev \
-            -side left -anchor w \
-            -expand 0
-         DynamicHelp::add $This.fradev.test -text $caption(atos_go,test)
-
-
-         #--- Creation du bouton
-         image create photo .ressource -format PNG -file [ file join $audace(rep_plugin) tool atos img ressource_mini.png ]
-         button $This.fradev.ressource -image .ressource\
-            -borderwidth 2 -width 10 -height 10 -compound center \
-            -command "::atos::ressource"
-         pack $This.fradev.ressource \
-            -in $This.fradev \
-            -side left -anchor w \
-            -expand 0
-         DynamicHelp::add $This.fradev.ressource -text $caption(atos_go,ressource)
-
-
-         #--- Creation du bouton
-         image create photo .verif -format PNG -file [ file join $audace(rep_plugin) tool atos img verif.png ]
-         button $This.fradev.verif -image .verif\
-            -borderwidth 2 -width 10 -height 10 -compound center \
-            -command "::atos_verif::run  $visuNo $base.atos_verif"
-         pack $This.fradev.verif \
-            -in $This.fradev \
-            -side top -anchor w \
-            -expand 0
-         DynamicHelp::add $This.fradev.verif -text $caption(atos_go,verif)
-
-
-     }
-
-
+      }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
 
-proc gren_info { msg } { ::console::affiche_resultat "$msg" }
+#------------------------------------------------------------
+# configToolKeywords
+#    configure les mots cles FITS de l'outil
+#------------------------------------------------------------
+proc ::atos::configToolKeywords { visuNo { configName "" } } {
+   #--- Je traite la variable configName
+   if { $configName == "" } {
+      set configName $::conf(atos,keywordConfigName)
+   }
+
+   #--- Je selectionne les mots cles optionnels a ajouter dans les images
+   #--- Ce sont les mots cles CRPIX1, CRPIX2
+   ::keyword::selectKeywords $visuNo $configName [ list CRPIX1 CRPIX2 ]
+
+   #--- Je selectionne la liste des mots cles non modifiables
+   ::keyword::setKeywordState $visuNo $configName [ list CRPIX1 CRPIX2 ]
+}
+
+proc gren_info { msg } {
+   ::console::affiche_resultat "$msg"
+}
 
