@@ -13,6 +13,7 @@
 # bm_plot                : Trace un graphique simple avec plotxy a partir de 2 listes de valeurs
 # bm_addmotcleftxt       : Ajoute et initialise un mot clef et sa valeur
 # bm_autoflat            : Trouve le temps de pose optimal pour faire un flat d'une intensite moyenne donnee
+# bm_autoflat2           : Idem bm_autoflat mais avec limites de temps de pose
 # bm_cleanfit            : Remet en conformite les caracteres des mots clefs du header
 # bm_correctprism        : Met a la norme libfitsio les fichiers FITS issus de PRiSM
 # bm_cp                  : Copie d'un fichier d'un repertoire a un autre avec possibilite de renomage dans la foulee.
@@ -733,6 +734,91 @@ proc bm_autoflat { args } {
       }
    } else {
       ::console::affiche_erreur "Usage: bm_autoflat valeur_moyenne_recherchee tolerance duree_exposition_depart binning.\n\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+###############################################################################
+# Description : Trouve le temps de pose optimal pour faire un flat d'une intensite moyenne donnee
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 28-11-2006
+# Date de mise a jour : 09-05-2013 (Thierry NOEL)
+# Arguments : valeur moyenne desiree
+###############################################################################
+
+proc bm_autoflat2 { args } {
+   global audace
+   global conf
+
+   if { [llength $args] == 5 } {
+      set valmoy    [ lindex $args 0 ]
+      set tolerance [ lindex $args 1]
+      set dureeini  [ lindex $args 2 ]
+      set dureemax  [ lindex $args 3 ]
+      set binning   [ lindex $args 4 ]
+
+      #--- Conseil d'utilisation :
+      console::affiche_resultat "\n*** Durant la procédure, il est nécessaire de maintenir constant l'éclairement du télescope. ***\n\n"
+
+      #-- Premiere acquisition :
+      console::affiche_resultat "Première pose : ${dureeini}s...\n"
+      cam$audace(camNo) bin [ list $binning $binning ]
+      cam$audace(camNo) exptime $dureeini
+      cam$audace(camNo) acq
+      vwait status_cam$audace(camNo)
+      set moymes [ lindex [ buf$audace(bufNo) stat ] 6 ]
+      set testval [ expr $valmoy-$moymes ]
+      console::affiche_resultat "Première valeur moyenne : $moymes\n"
+      set duree $dureeini
+
+      #--- Boucle de recherche du temps par division ou multiplication par 2 du temps de pose
+      #bind all <Key-Escape> "::autoguider::stopSuivi  $visuNo"
+      set i 0
+      set iter ""
+      while { [expr abs($testval) ]!=0 } {
+         if { $testval==0 || [expr abs($testval)]<=$tolerance } {
+            console::affiche_resultat "\n\nLa pose idéale pour un flat de $moymes ADU vaut $duree s\n"
+            return $duree
+         } elseif { [expr abs($testval)]>$tolerance && $testval>0 } {
+            if {($duree>$dureemax)} {
+               console::affiche_resultat "Il n'y pas assez de lumière. Impossible de faire le flat ! \n"
+               console::affiche_resultat "Augmenter duree_exposition_max si possible. \n"
+               return 0
+            }
+            if {$iter=="dec"} {
+               incr i
+               set iter "inc"
+            }
+            set duree [ expr $duree*(1+pow(0.5,$i)) ]
+            console::affiche_resultat "Augmentation de la pose : ${duree}s...\n"
+            cam$audace(camNo) exptime $duree
+            cam$audace(camNo) acq
+            vwait status_cam$audace(camNo)
+            set moymes [ lindex [ buf$audace(bufNo) stat ] 6 ]
+            set testval [ expr $valmoy-$moymes ]
+            console::affiche_resultat "Valeur moyenne : $moymes ; Durée : $duree\n"
+         } elseif { [expr abs($testval)]>$tolerance && $testval<0 } {
+            if {$iter=="inc"} {
+               incr i
+               set iter "dec"
+            }
+            set duree [ expr $duree/(1+pow(0.5,($i+1))) ]
+            if {($duree<$dureeini)} {
+               console::affiche_resultat "Il y a trop de lumière. Impossible de faire le flat ! \n"
+               console::affiche_resultat "Diminuer duree_exposition_min si possible. \n"
+               return 0
+            }
+            console::affiche_resultat "Diminution de la pose : ${duree}s...\n"
+            cam$audace(camNo) exptime $duree
+            cam$audace(camNo) acq
+            vwait status_cam$audace(camNo)
+            set moymes [ lindex [ buf$audace(bufNo) stat ] 6 ]
+            set testval [ expr $valmoy-$moymes ]
+            console::affiche_resultat "Valeur moyenne : $moymes ; Durée : $duree\n"
+         }
+      }
+   } else {
+      ::console::affiche_erreur "Usage: bm_autoflat valeur_moyenne_recherchee tolerance duree_exposition_min duree_exposition_max binning.\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -2546,3 +2632,4 @@ proc bm_pretrait_21-12-2005 { args } {
 }
 #****************************************************************************#
 }
+
