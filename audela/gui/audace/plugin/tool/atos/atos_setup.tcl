@@ -40,7 +40,6 @@ namespace eval ::atos_setup {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,dir_prj) ] }                    { set ::atos::parametres(atos,$visuNo,dir_prj)                   "" }
    }
 
-
    #
    # atos_setup::run
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
@@ -102,7 +101,6 @@ namespace eval ::atos_setup {
       return "$caption(atos_setup,titre)"
    }
 
-
    #------------------------------------------------------------
    # ::atos::deletePluginInstance
    #    suppprime l'instance du plugin
@@ -141,17 +139,14 @@ namespace eval ::atos_setup {
 
       set ::atos_setup::demo_title "Téléchargement en cours"
       set ::atos_setup::demo_state disabled
-      
+
       $frm configure -text  $::atos_setup::demo_title
       $frm configure -state $::atos_setup::demo_state
-      
 
       $frm configure -text "Télécharger"
       $frm configure -state normal
-      
+
       return
-      
-      
 
       set msg "La Démo va créer un repertoire et un fichier dans votre repertoire projet\n"
       append msg "Une video de 76 Mo va etre telechargée dans ce repertoire\n"
@@ -159,11 +154,11 @@ namespace eval ::atos_setup {
       if {$res=="yes"} {
          ::console::affiche_resultat "ok\n"
       }
- 
+
       if {$::atos::parametres(atos,$visuNo,dir_prj)==""} {
          tk_messageBox -message "Veuillez choisir un repertoire Projet" -type ok
       }
-      
+
       set url "http://www.imcce.fr/~vachier/occultation/demo/sapphoseg.00.avi"
       #set url "http://www.imcce.fr/~vachier/occultation/demo/test"
 
@@ -174,22 +169,16 @@ namespace eval ::atos_setup {
       ::console::affiche_resultat "Debut du telechargement de [file tail $url]\n"
 
       set ::atos_setup::r [http::geturl $url -binary 1]
-      
+
       set fo [open $filename w]
       fconfigure $fo -translation binary
       puts -nonewline $fo [http::data $::atos_setup::r]
       close $fo
       ::http::cleanup $::atos_setup::r
-      
-      
-      
-      
+
       ::console::affiche_resultat "Got $url -> $filename"
 
    }
-
-
-
 
    #
    # atos_acq::chgdir
@@ -217,7 +206,6 @@ namespace eval ::atos_setup {
          set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
       }
 
-
       ::console::affiche_resultat $audace(rep_images)
 
       $This delete 0 end
@@ -236,7 +224,6 @@ namespace eval ::atos_setup {
       #--- Retourne l'item de la camera associee a la visu
       set camItem [ ::confVisu::getCamItem $visuNo ]
       set frms $panneau(atos,$visuNo,atos_setup)
-
 
       #--- Frame pour les commentaires
       frame $frms.frame3 -borderwidth 1 -relief raise
@@ -303,7 +290,7 @@ namespace eval ::atos_setup {
                entry $frms.frame3.screen_refresh.frm.value -width 5 -textvariable ::atos::parametres(atos,$visuNo,screen_refresh)
                pack $frms.frame3.screen_refresh.frm.value -side right -padx 5 -pady 0
                label $frms.frame3.screen_refresh.frm.lab -text "$caption(atos_setup,screen_refresh)"
-               pack $frms.frame3.screen_refresh.frm.lab -side right -padx 5 -pady 0 
+               pack $frms.frame3.screen_refresh.frm.lab -side right -padx 5 -pady 0
 
             pack $frms.frame3.screen_refresh.frm -side left
 
@@ -313,12 +300,12 @@ namespace eval ::atos_setup {
          frame $frms.frame3.ocr -borderwidth 0
 
             frame $frms.frame3.ocr.frm -borderwidth 0
-               button $frms.frame3.ocr.frm.but -text "test" -borderwidth 0 -command "" 
-               pack $frms.frame3.ocr.frm.but -side right -padx 5 -pady 0
-               entry $frms.frame3.ocr.frm.value -width 30 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr)
+               button $frms.frame3.ocr.frm.but -text "test" -borderwidth 1 -command ""
+               pack $frms.frame3.ocr.frm.but -side right -padx 5 -pady 0 -ipadx 10
+               entry $frms.frame3.ocr.frm.value -width 40 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr)
                pack $frms.frame3.ocr.frm.value -side right -padx 5 -pady 0
                label $frms.frame3.ocr.frm.lab -text "$caption(atos_setup,exec_ocr)"
-               pack $frms.frame3.ocr.frm.lab -side right -padx 5 -pady 0 
+               pack $frms.frame3.ocr.frm.lab -side right -padx 5 -pady 0
 
             pack $frms.frame3.ocr.frm -side left
 
@@ -331,7 +318,7 @@ namespace eval ::atos_setup {
                entry $frms.frame3.free_space.frm.value -width 5 -textvariable ::atos::parametres(atos,$visuNo,free_space)
                pack $frms.frame3.free_space.frm.value -side right -padx 5 -pady 0
                label $frms.frame3.free_space.frm.lab -text "$caption(atos_setup,free_space)"
-               pack $frms.frame3.free_space.frm.lab -side right -padx 5 -pady 0 
+               pack $frms.frame3.free_space.frm.lab -side right -padx 5 -pady 0
 
             pack $frms.frame3.free_space.frm -side left
 
@@ -343,10 +330,10 @@ namespace eval ::atos_setup {
             frame $frms.frame3.dir_prj.frm -borderwidth 0
                entry $frms.frame3.dir_prj.frm.value -width 40 -textvariable ::atos::parametres(atos,$visuNo,dir_prj)
                pack $frms.frame3.dir_prj.frm.value -side right -padx 5 -pady 0
-               button $frms.frame3.dir_prj.frm.but -text "..." -borderwidth 0 -command "::atos_setup::chgdir $frms.frame3.dir_prj.frm.value" 
+               button $frms.frame3.dir_prj.frm.but -text "..." -borderwidth 1 -command "::atos_setup::chgdir $frms.frame3.dir_prj.frm.value"
                pack $frms.frame3.dir_prj.frm.but -side right -padx 2 -pady 0
                label $frms.frame3.dir_prj.frm.lab -text "$caption(atos_setup,dir_prj)"
-               pack $frms.frame3.dir_prj.frm.lab -side right -padx 5 -pady 0 
+               pack $frms.frame3.dir_prj.frm.lab -side right -padx 5 -pady 0
 
             pack $frms.frame3.dir_prj.frm -side left
 
@@ -356,14 +343,13 @@ namespace eval ::atos_setup {
 #         frame $frms.frame3.demo -borderwidth 0
 #
 #            frame $frms.frame3.demo.frm -borderwidth 0
-#               button $frms.frame3.demo.frm.but -text "Télécharger" -borderwidth 1 -command "::atos_setup::demo $visuNo $frms.frame3.demo.frm.but" 
+#               button $frms.frame3.demo.frm.but -text "Télécharger" -borderwidth 1 -command "::atos_setup::demo $visuNo $frms.frame3.demo.frm.but"
 #               pack $frms.frame3.demo.frm.but -side right -padx 2 -pady 0
 #               label $frms.frame3.demo.frm.lab -text "Télécharger la demo : "
-#               pack $frms.frame3.demo.frm.lab -side right -padx 5 -pady 0 
+#               pack $frms.frame3.demo.frm.lab -side right -padx 5 -pady 0
 #            pack $frms.frame3.demo.frm -side left
 #
 #         pack $frms.frame3.demo -side top -fill both -expand 1
-
 
       # --
       pack $frms.frame3 -side top -fill both -expand 1
@@ -373,3 +359,4 @@ namespace eval ::atos_setup {
 
 #--- Initialisation au demarrage
 ::atos_setup::init
+
