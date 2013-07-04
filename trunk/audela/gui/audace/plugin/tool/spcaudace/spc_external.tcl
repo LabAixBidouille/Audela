@@ -62,15 +62,15 @@ proc spc_versionsite {} {
          wm geometry .spcv
          wm title .spcv "A newer SpcAudace release is available"
          wm transient .spcv .audace
-   
+
          #--- Textes d'avertissement
          label .spcv.lab -text "You should upgrade your SpcAudace!"
          pack .spcv.lab -expand true -expand true -fill both
-   
+
          #--- Sous-trame pour boutons
          frame .spcv.but
          pack .spcv.but -expand true -fill both
-   
+
          #--- Bouton "Ok"
          button .spcv.but.1 -command {set flagvs_ok 1} -text "OK"
          pack .spcv.but.1 -side left -expand true -fill both
@@ -149,13 +149,14 @@ proc spc_help {} {
     global spcaudace conf
 
     if { $conf(editsite_htm)!="" } {
-	if { [ file exists $spcaudace(spcdoc) ] } {
-	    set answer [ catch { exec $conf(editsite_htm) $spcaudace(spcdoc) & } ]
-	} else {
-	    set answer [ catch { exec $conf(editsite_htm) $spcaudace(sitedoc) & } ]
-	}
+        if { [ file exists $spcaudace(spcdoc) ] } {
+            ::audace::Lance_Site_htm [ file join file:///[ file join $::audace(rep_plugin) tool \
+                spcaudace doc "$spcaudace(spcdoc)" ] ]
+        } else {
+            set answer [ catch { exec $conf(editsite_htm) $spcaudace(sitedoc) & } ]
+        }
     } else {
-	::console::affiche_resultat "Configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la documentation d'SpcAudACE\n"
+        ::console::affiche_resultat "Configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la documentation d'SpcAudACE\n"
     }
 }
 #*********************************************************#
@@ -319,7 +320,7 @@ proc spc_spectrum {} {
 
     global spcaudace conf tcl_platform
 
-    if { $tcl_platform(os)=="Linux" } {	
+    if { $tcl_platform(os)=="Linux" } {
 	#set answer [ catch { exec xterm -r -e $spcaudace(spectrum)/spectrum & } ]
 	set answer [ catch { exec $spcaudace(spectrum)/spectrum_sh.tcl & } ]
 	::console::affiche_resultat "$answer\n"
