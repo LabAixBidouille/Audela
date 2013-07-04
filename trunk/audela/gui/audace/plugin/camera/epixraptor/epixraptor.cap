@@ -113,8 +113,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(epixraptor,camera)                    "EPIX - Raptor"
 
-   set caption(epixraptor,config)                    "Video Format file"
-   set caption(epixraptor,extconfig)                 "External Video Format File"
+   set caption(epixraptor,config)                    "Video Datei Format"
+   set caption(epixraptor,extconfig)                 "Externe Video Datei Format"
    set caption(epixraptor,browse)                    "..."
    set caption(epixraptor,folder)                    "Vom Unterlagen:"
    set caption(epixraptor,mirror_x)                  "Oben/Unten umkehren"
@@ -128,10 +128,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixraptor,temperature_CCD)           "Temperatur CMOS:"
    set caption(epixraptor,deg_c)                     "°C"
 
-   set caption(epixraptor,framerate)                 "Frame Rate"
-   set caption(epixraptor,exposure)                  "Exposure Time"
-   set caption(epixraptor,hdr)                       "High Dynamic Range"
-   set caption(epixraptor,videomode)                 "Video Mode"
+   set caption(epixraptor,framerate)                 "Bildfrequenz"
+   set caption(epixraptor,exposure)                  "Belichtungszeit"
+   set caption(epixraptor,hdr)                       "Hohen Dynamikumfang"
+   set caption(epixraptor,videomode)                 "Video Modus"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
