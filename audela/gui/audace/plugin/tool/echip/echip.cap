@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(echip,title)                  "Electronic Data"
+set caption(echip,title)                  "Electronic Parameters"
 
 set caption(echip,offset)                 "Offset Frame Generic Name"
 set caption(echip,dark)                   "Dark Frame Generic Name"
@@ -174,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # **************** Version danoise ****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(echip,title)               "Electronic Data"
+   set caption(echip,title)               "Electronic Parameters"
 
    set caption(echip,offset)              "Offset Frame Generic Name"
    set caption(echip,dark)                "Dark Frame Generic Name"
@@ -201,7 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(echip,title)               "Electronic Data"
+   set caption(echip,title)               "Electronic Parameters"
 
    set caption(echip,offset)              "Offset Frame Generic Name"
    set caption(echip,dark)                "Dark Frame Generic Name"
@@ -228,7 +228,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(echip,title)               "Electronic Data"
+   set caption(echip,title)               "Electronic Parameters"
 
    set caption(echip,offset)              "Offset Frame Generic Name"
    set caption(echip,dark)                "Dark Frame Generic Name"

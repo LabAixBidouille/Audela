@@ -113,7 +113,7 @@ proc ::supernovae::createPanel { this } {
    #--- Initialisation du nom de la fenetre
    set This $this
    #--- Initialisation des captions
-   set panneau(supernovae,titre)     "$caption(supernovae_go,supernovae)"
+   set panneau(supernovae,titre)     "$caption(supernovae_go,supernovae1)"
    set panneau(supernovae,aide)      "$caption(supernovae_go,help,titre)"
    set panneau(supernovae,aide1)     "$caption(supernovae_go,help,titre1)"
    set panneau(supernovae,recherche) "$caption(supernovae_go,recherche_sn)"
