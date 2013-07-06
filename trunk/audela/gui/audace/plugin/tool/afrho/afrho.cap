@@ -46,6 +46,7 @@ set caption(afrho,site_web_ref)              "http://pagesperso-orange.fr/fkomet
 
 set caption(afrho,attention)                 "Warning"
 set caption(afrho,rep-images)                "Images must come from the image folder\n(Setup --> Folders)."
+set caption(afrho,erreurCalAfr)              "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nError:"
 
 set caption(afrho,ok)                        "OK"
 set caption(afrho,appliquer)                 "Apply"
@@ -90,6 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Attention"
    set caption(afrho,rep-images)             "Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(afrho,erreurCalAfr)           "Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nErreur :"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Appliquer"
@@ -134,6 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Attenzione"
    set caption(afrho,rep-images)             "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Cartelle)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nErrore:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Applicare"
@@ -178,6 +181,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Aviso"
    set caption(afrho,rep-images)             "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Carpetas)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nError:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Aplicar"
@@ -222,6 +226,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Achtung"
    set caption(afrho,rep-images)             "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nIrrtum:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Anwenden"
@@ -266,6 +271,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Atenção"
    set caption(afrho,rep-images)             "As imagens têm que estar contidas na pasta de imagens\n(Configuração --> Pastas)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nErro:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Aplicar"
@@ -310,6 +316,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Warning"
    set caption(afrho,rep-images)             "Images must come from the image folder\n(Setup --> Folders)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nError:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Apply"
@@ -354,6 +361,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Warning"
    set caption(afrho,rep-images)             "Images must come from the image folder\n(Setup --> Folders)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nError:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Apply"
@@ -398,6 +406,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(afrho,attention)              "Warning"
    set caption(afrho,rep-images)             "Images must come from the image folder\n(Setup --> Folders)."
+   set caption(afrho,erreurCalAfr)           "# Image trop grande, veuillez la fenêtrer et recommencer l'analyse :\n\nError:"
 
    set caption(afrho,ok)                     "OK"
    set caption(afrho,appliquer)              "Apply"
