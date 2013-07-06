@@ -11,8 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(afrho,afrho)                     "AfRho"
-set caption(afrho,titre)                     "Comet: Calculation of AfRho value"
+set caption(afrho,afrho)                     "AfRho Parameter"
+set caption(afrho,titre)                     "Calculation of AfRho Value (Comet)"
 set caption(afrho,image_comete)              "Comet image to be analyzed"
 set caption(afrho,parcourir)                 "..."
 set caption(afrho,center)                    "Position of opto-center (pixels)"
@@ -56,8 +56,8 @@ set caption(afrho,aide)                      "Help"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Comète : Calcul du paramètre AfRho"
+   set caption(afrho,afrho)                  "Paramètre AfRho (Comète)"
+   set caption(afrho,titre)                  "Calcul du paramètre AfRho (Comète)"
    set caption(afrho,image_comete)           "Image de la comète à analyser"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "Position du photocentre (pixels)"
@@ -101,8 +101,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Cometa: Calcolo del valore AfRho"
+   set caption(afrho,afrho)                  "Parametro AfRho"
+   set caption(afrho,titre)                  "Calcolo del valore AfRho (Cometa)"
    set caption(afrho,image_comete)           "Immagine della cometa da analizzare"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "# Position of opto-center (pixels)"
@@ -146,8 +146,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Cometa: Calculo del parametro AfRho"
+   set caption(afrho,afrho)                  "Parámetro AfRho"
+   set caption(afrho,titre)                  "Calculo del parametro AfRho (Cometa)"
    set caption(afrho,image_comete)           "Imágen del cometa a analizar"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "# Position of opto-center (pixels)"
@@ -191,8 +191,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Komet: AfRho Wahl rechnen"
+   set caption(afrho,afrho)                  "AfRho Parameter"
+   set caption(afrho,titre)                  "AfRho Wahl rechnen (Komet)"
    set caption(afrho,image_comete)           "Komet Bild zu analysieren"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "# Position of opto-center (pixels)"
@@ -236,8 +236,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Cometa: Cálculo do parâmetro AfRho"
+   set caption(afrho,afrho)                  "Parâmetro AfRho"
+   set caption(afrho,titre)                  "Cálculo do parâmetro AfRho (Cometa)"
    set caption(afrho,image_comete)           "Imagem do cometa a analisar"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "# Position of opto-center (pixels)"
@@ -281,8 +281,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Comet: Calculation of AfRho value"
+   set caption(afrho,afrho)                  "AfRho Parameter"
+   set caption(afrho,titre)                  "Calculation of AfRho Value (Comet)"
    set caption(afrho,image_comete)           "Comet image to be analyzed"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "Position of opto-center (pixels)"
@@ -326,8 +326,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Comet: Calculation of AfRho value"
+   set caption(afrho,afrho)                  "AfRho Parameter"
+   set caption(afrho,titre)                  "Calculation of AfRho Value (Comet)"
    set caption(afrho,image_comete)           "Comet image to be analyzed"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "Position of opto-center (pixels)"
@@ -371,8 +371,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(afrho,afrho)                  "AfRho"
-   set caption(afrho,titre)                  "Comet: Calculation of AfRho value"
+   set caption(afrho,afrho)                  "AfRho Parameter"
+   set caption(afrho,titre)                  "Calculation of AfRho Value (Comet)"
    set caption(afrho,image_comete)           "Comet image to be analyzed"
    set caption(afrho,parcourir)              "..."
    set caption(afrho,center)                 "Position of opto-center (pixels)"

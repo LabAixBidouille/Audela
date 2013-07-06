@@ -11,7 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(supernovae_go,supernovae)        "Supernovae"
+set caption(supernovae_go,supernovae)        "Supernovae (Acquisiton & Viewer)"
+set caption(supernovae_go,supernovae1)       "Supernovae\n(Acquisiton &\nViewer)"
 set caption(supernovae_go,help,titre)        "Help for this Tool"
 set caption(supernovae_go,help,titre1)       "Help for the Tool:"
 set caption(supernovae_go,recherche_sn)      "Search for\nsupernovae"
@@ -21,7 +22,8 @@ set caption(supernovae_go,sn_visu)           "Sn View"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,supernovae)     "Supernovae (Acquisiton & Visionneuse)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Acquisiton &\nVisionneuse)"
    set caption(supernovae_go,help,titre)     "Aide de cet outil"
    set caption(supernovae_go,help,titre1)    "Aide de l'outil :"
    set caption(supernovae_go,recherche_sn)   "Recherche\nsupernovae"
@@ -31,7 +33,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,supernovae)     "Supernovae (Acquisizione & Visualizzatore)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Acquisizione &\nVisualizzatore)"
    set caption(supernovae_go,help,titre)     "Aiuto per questo tool"
    set caption(supernovae_go,help,titre1)    "Aiuto per lo tool:"
    set caption(supernovae_go,recherche_sn)   "Ricerca\nsupernovae"
@@ -41,7 +44,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,supernovae)     "Supernovae (Adquisición & Visor)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Adquisición &\nVisor)"
    set caption(supernovae_go,help,titre)     "Ayuda para esta herramienta"
    set caption(supernovae_go,help,titre1)    "Ajuda para del herramienta:"
    set caption(supernovae_go,recherche_sn)   "Buscar\nsupernovae"
@@ -51,7 +55,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,supernovae)     "Supernovae (Belichtung & Diabetrachter)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Belichtung &\nDiabetrachter)"
    set caption(supernovae_go,help,titre)     "Hilfe für dieses Gerät"
    set caption(supernovae_go,help,titre1)    "Hilfe für die Gerät:"
    set caption(supernovae_go,recherche_sn)   "Supernovae\nsuchen"
@@ -61,7 +66,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernova"
+   set caption(supernovae_go,supernovae)     "Supernovae (Aquisição & Visualizador)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Aquisição &\nVisualizador)"
    set caption(supernovae_go,help,titre)     "Ajuda para esta ferramenta"
    set caption(supernovae_go,help,titre1)    "Ajuda para del ferramenta:"
    set caption(supernovae_go,recherche_sn)   "Procurar\nsupernova"
@@ -71,7 +77,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernova"
+   set caption(supernovae_go,supernovae)     "Supernovae (Acquisiton & Seeren)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Acquisiton &\nSeeren)"
    set caption(supernovae_go,help,titre)     "Hjælp til dette værktøj"
    set caption(supernovae_go,help,titre1)    "Hjælp til i værktøj:"
    set caption(supernovae_go,recherche_sn)   "Søgning efter\nsupernova"
@@ -81,7 +88,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,supernovae)     "Supernovae (Acquisiton & Viewer)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Acquisiton &\nViewer)"
    set caption(supernovae_go,help,titre)     "Help for this Tool"
    set caption(supernovae_go,help,titre1)    "Help for the Tool:"
    set caption(supernovae_go,recherche_sn)   "Search for\nsupernovae"
@@ -91,7 +99,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(supernovae_go,supernovae)     "Supernovae"
+   set caption(supernovae_go,supernovae)     "Supernovae (Acquisiton & Viewer)"
+   set caption(supernovae_go,supernovae1)    "Supernovae\n(Acquisiton &\nViewer)"
    set caption(supernovae_go,help,titre)     "Help for this Tool"
    set caption(supernovae_go,help,titre1)    "Help for the Tool:"
    set caption(supernovae_go,recherche_sn)   "Search for\nsupernovae"
