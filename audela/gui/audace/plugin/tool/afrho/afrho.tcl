@@ -645,7 +645,7 @@ proc ::afrho::ok { } {
 #------------------------------------------------------------
 proc ::afrho::appliquer { } {
    variable widget
-   global audace
+   global audace caption
 
    #--- Gestion d'erreur
    if { $widget(filename) == "" } {
@@ -903,34 +903,40 @@ proc ::afrho::appliquer { } {
    puts -nonewline $f $t
    close $f
 
+   #--- Initialisation de la variable de gestion des erreurs
+   set catchError "0"
+
    if { $pathpwd != $pathimg } {
    #--- Cas ou les repertoires de travail et des images sont differents
 
       file copy -force [ file join ${pathimg} ${cometfilename}.cfg ] [ file join ${pathpwd} cal_afr.cfg ]
       file copy -force [ file join ${pathimg} [lindex $afrho(params,1,FILEIN) 0] ] [ file join ${pathpwd} [lindex $afrho(params,1,FILEIN) 0] ]
 
-      set err [catch {exec cal_afr.exe} msgs]
+      set catchError [catch {exec cal_afr.exe} msgs]
       ::console::affiche_resultat_bis "$msgs\n\n"
 
-      file copy -force [ file join ${pathpwd} [lindex $afrho(params,1,FILEOUT) 0] ] [ file join ${pathimg} [lindex $afrho(params,1,FILEOUT) 0] ]
-      file copy -force [ file join ${pathpwd} [lindex $afrho(params,4,RPFILE) 0] ] [ file join ${pathimg} [lindex $afrho(params,4,RPFILE) 0] ]
+      if { $catchError == "0" } {
+         file copy -force [ file join ${pathpwd} [lindex $afrho(params,1,FILEOUT) 0] ] [ file join ${pathimg} [lindex $afrho(params,1,FILEOUT) 0] ]
+         file copy -force [ file join ${pathpwd} [lindex $afrho(params,4,RPFILE) 0] ] [ file join ${pathimg} [lindex $afrho(params,4,RPFILE) 0] ]
+      }
 
    } elseif { $pathpwd == $pathimg } {
    #--- Cas ou les repertoires de travail et des images sont identiques
 
       file copy -force [ file join ${pathimg} ${cometfilename}.cfg ] [ file join ${pathimg} cal_afr.cfg ]
 
-      set err [catch {exec cal_afr.exe} msgs]
+      set catchError [catch {exec cal_afr.exe} msgs]
       ::console::affiche_resultat_bis "$msgs\n\n"
 
    }
 
-   set fileout [ file join ${pathimg} [lindex $afrho(params,4,RPFILE) 0] ]
-   set f [open $fileout r]
-   set lignes [split [read $f] \n]
-   close $f
-
-   set fileoutname [ file tail $fileout ]
+   if { $catchError == "0" } {
+      set fileout [ file join ${pathimg} [lindex $afrho(params,4,RPFILE) 0] ]
+      set f [open $fileout r]
+      set lignes [split [read $f] \n]
+      close $f
+      set fileoutname [ file tail $fileout ]
+   }
 
    #--- Suppression des fichiers temporaires
    if { [ file exists [ file join "$pathpwd" cal_afr.cfg ] ] } {
@@ -957,26 +963,34 @@ proc ::afrho::appliquer { } {
       file delete [ file join "$pathimg" [lindex $afrho(params,4,RPFILE) 0] ]
    }
 
-   set n      [expr [llength $lignes]-2]
-   set lignes [lrange $lignes 0 $n]
-   set res    [gsl_mtranspose $lignes]
+   if { $catchError == "0" } {
 
-   set x  [lindex $res 0]
-   set y1 [lindex $res 1]
-   set y2 [lindex $res 2]
-   set y3 [lindex $res 3]
+      set n      [expr [llength $lignes]-2]
+      set lignes [lrange $lignes 0 $n]
+      set res    [gsl_mtranspose $lignes]
 
-   #--- Graphique
-   ::plotxy::figure AfRho
-   ::plotxy::title "$fileoutname"
-   ::plotxy::plotbackground #FFFFFF
-   ::plotxy::plot $x $y1 r- 0
-   ::plotxy::hold on
-   ::plotxy::plot $x $y2 r: 0
-   ::plotxy::plot $x $y3 b 0
-   ::plotxy::position {40 40 600 600}
-   ::plotxy::xlabel "Radial distance (in pixels)"
-   ::plotxy::ylabel "Profile (in E-20 W/m^2/A)"
+      set x  [lindex $res 0]
+      set y1 [lindex $res 1]
+      set y2 [lindex $res 2]
+      set y3 [lindex $res 3]
+
+      #--- Graphique
+      ::plotxy::figure AfRho
+      ::plotxy::title "$fileoutname"
+      ::plotxy::plotbackground #FFFFFF
+      ::plotxy::plot $x $y1 r- 0
+      ::plotxy::hold on
+      ::plotxy::plot $x $y2 r: 0
+      ::plotxy::plot $x $y3 b 0
+      ::plotxy::position {40 40 600 600}
+      ::plotxy::xlabel "Radial distance (in pixels)"
+      ::plotxy::ylabel "Profile (in E-20 W/m^2/A)"
+
+   } else {
+
+      tk_messageBox -icon info -message "$caption(afrho,erreurCalAfr) $msgs" -title $caption(afrho,attention) -type ok
+
+   }
 
    #--- Recupere la position de la fenetre
    ::afrho::recupPosition
