@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(cmanimate,titre)                    "Animate (MASCOT)"
+set caption(cmanimate,titre)                    "Animate (MASCOT - ESO)"
 set caption(cmanimate,help_titre)               "Help for this Tool"
 set caption(cmanimate,help_titre1)              "Help for the Tool:"
 set caption(cmanimate,nom_generique)            "Generic Filename"
@@ -74,7 +74,7 @@ set caption(cmanimate,paranal)                  "Paranal Option"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animation (MASCOT)"
+   set caption(cmanimate,titre)                 "Animation (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Aide de cet outil"
    set caption(cmanimate,help_titre1)           "Aide de l'outil :"
    set caption(cmanimate,nom_generique)         "Nom générique"
@@ -137,7 +137,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animazione (MASCOT)"
+   set caption(cmanimate,titre)                 "Animazione (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Aiuto per questo tool"
    set caption(cmanimate,help_titre1)           "Aiuto per lo tool:"
    set caption(cmanimate,nom_generique)         "Nome generico"
@@ -200,7 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animación (MASCOT)"
+   set caption(cmanimate,titre)                 "Animación (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Ayuda para esta herramienta"
    set caption(cmanimate,help_titre1)           "Ajuda para del herramienta:"
    set caption(cmanimate,nom_generique)         "Nombre genérico"
@@ -263,7 +263,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animation (MASCOT)"
+   set caption(cmanimate,titre)                 "Animation (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Hilfe für dieses Gerät"
    set caption(cmanimate,help_titre1)           "Hilfe für die Gerät:"
    set caption(cmanimate,nom_generique)         "Gattungsnamen"
@@ -326,7 +326,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animação (MASCOT)"
+   set caption(cmanimate,titre)                 "Animação (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Ajuda para esta ferramenta"
    set caption(cmanimate,help_titre1)           "Ajuda para del ferramenta:"
    set caption(cmanimate,nom_generique)         "Nome genérico"
@@ -389,7 +389,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animate (MASCOT)"
+   set caption(cmanimate,titre)                 "Animate (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Help for this Tool"
    set caption(cmanimate,help_titre1)           "Help for the Tool:"
    set caption(cmanimate,nom_generique)         "Generic Filename"
@@ -452,7 +452,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animate (MASCOT)"
+   set caption(cmanimate,titre)                 "Animate (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Help for this Tool"
    set caption(cmanimate,help_titre1)           "Help for the Tool:"
    set caption(cmanimate,nom_generique)         "Generic Filename"
@@ -515,7 +515,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(cmanimate,titre)                 "Animate (MASCOT)"
+   set caption(cmanimate,titre)                 "Animate (MASCOT - ESO)"
    set caption(cmanimate,help_titre)            "Help for this Tool"
    set caption(cmanimate,help_titre1)           "Help for the Tool:"
    set caption(cmanimate,nom_generique)         "Generic Filename"

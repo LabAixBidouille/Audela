@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(cmaude,titre_mascot)                   "Acquisition (MASCOT)"
+set caption(cmaude,titre_mascot)                   "Acquisition (MASCOT - ESO)"
 set caption(cmaude,help_titre)                     "Help for this Tool"
 set caption(cmaude,help_titre1)                    "Help for the Tool:"
 set caption(cmaude,configuration)                  "Setup"
@@ -101,7 +101,7 @@ set caption(cmaude,mots_cles)                      "Keywords"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Aide de cet outil"
    set caption(cmaude,help_titre1)                 "Aide de l'outil :"
    set caption(cmaude,configuration)               "Configuration"
@@ -191,7 +191,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Acquisizione (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Acquisizione (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Aiuto per questo tool"
    set caption(cmaude,help_titre1)                 "Aiuto per lo tool:"
    set caption(cmaude,configuration)               "Configurazione"
@@ -281,7 +281,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Adquisición (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Adquisición (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Ayuda para esta herramienta"
    set caption(cmaude,help_titre1)                 "Ajuda para del herramienta:"
    set caption(cmaude,configuration)               "Configuración"
@@ -371,7 +371,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Belichtung (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Belichtung (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Hilfe für dieses Gerät"
    set caption(cmaude,help_titre1)                 "Hilfe für die Gerät:"
    set caption(cmaude,configuration)               "Konfiguration"
@@ -461,7 +461,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Aquisição (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Aquisição (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Ajuda para esta ferramenta"
    set caption(cmaude,help_titre1)                 "Ajuda para del ferramenta:"
    set caption(cmaude,configuration)               "Configuração"
@@ -551,7 +551,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Help for this Tool"
    set caption(cmaude,help_titre1)                 "Help for the Tool:"
    set caption(cmaude,configuration)               "Setup"
@@ -641,7 +641,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Help for this Tool"
    set caption(cmaude,help_titre1)                 "Help for the Tool:"
    set caption(cmaude,configuration)               "Setup"
@@ -731,7 +731,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Acquisition (MASCOT - ESO)"
    set caption(cmaude,help_titre)                  "Help for this Tool"
    set caption(cmaude,help_titre1)                 "Help for the Tool:"
    set caption(cmaude,configuration)               "Setup"

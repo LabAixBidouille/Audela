@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(sophie,titre)                            "Sophie"
+set caption(sophie,titre)                            "Sophie Spectrograph (OHP)"
 set caption(sophie,aide)                             "Help for this Tool"
 set caption(sophie,aide1)                            "Help for the Tool:"
 set caption(sophie,config)                           "Setup"
@@ -193,7 +193,7 @@ set caption(sophie,visuFibreA)                       "View of the A fiber"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Spectrographe Sophie (OHP)"
    set caption(sophie,aide)                          "Aide de cet outil"
    set caption(sophie,aide1)                         "Aide de l'outil :"
    set caption(sophie,config)                        "Configuration"
@@ -376,7 +376,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Spettrografo Sophie (OHP)"
    set caption(sophie,aide)                          "Aiuto per questo tool"
    set caption(sophie,aide1)                         "Aiuto per lo tool:"
    set caption(sophie,config)                        "Configurazione"
@@ -558,7 +558,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Espectrógrafo Sophie (OHP)"
    set caption(sophie,aide)                          "Ayuda para esta herramienta"
    set caption(sophie,aide1)                         "Ajuda para del herramienta:"
    set caption(sophie,config)                        "Configuración"
@@ -740,7 +740,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Sophie Spektrograph (OHP)"
    set caption(sophie,aide)                          "Hilfe für dieses Gerät"
    set caption(sophie,aide1)                         "Hilfe für die Gerät:"
    set caption(sophie,config)                        "Konfiguration"
@@ -922,7 +922,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Espectrógrafo Sophie (OHP)"
    set caption(sophie,aide)                          "Ajuda para esta ferramenta"
    set caption(sophie,aide1)                         "Ajuda para del ferramenta:"
    set caption(sophie,config)                        "Configuração"
@@ -1104,7 +1104,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Sophie Spectrograph (OHP)"
    set caption(sophie,aide)                          "Help for this Tool"
    set caption(sophie,aide1)                         "Help for the Tool:"
    set caption(sophie,config)                        "Setup"
@@ -1286,7 +1286,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Sophie Spectrograph (OHP)"
    set caption(sophie,aide)                          "Help for this Tool"
    set caption(sophie,aide1)                         "Help for the Tool:"
    set caption(sophie,config)                        "Setup"
@@ -1468,7 +1468,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(sophie,titre)                         "Sophie"
+   set caption(sophie,titre)                         "Sophie Spectrograph (OHP)"
    set caption(sophie,aide)                          "Help for this Tool"
    set caption(sophie,aide1)                         "Help for the Tool:"
    set caption(sophie,config)                        "Setup"
