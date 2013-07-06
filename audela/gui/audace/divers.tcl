@@ -2494,44 +2494,72 @@ proc decomp {args} {
       set filename [lindex $args 0]
 
       # Procédure principale
-      # A tout nom de fichier (avec ou sans le chemin) cette procédure renvoie [dossier nom_generique index extension compression]
-      set dossier [file dirname $filename]
-      # On ne garde que le nom du fichier
-      set filename [file tail $filename]
-      # On détermine quelle est l'extension du fichier
-      set ext [file extension $filename]
-      switch $ext {
-         ".gz" {
-            # Cas où le fichier est compressé
-            set gz ".gz"
-            # On tronque de l'extension .gz
-            set filename [file rootname $filename]
-            # On enregistre l'extension
-            set extension [file extension $filename]
+      if { [ string range $filename 0 0 ] == "." } {
+         # Cas ou filename ne contient que l'extension avec ou sans compression
+         set dossier "."
+         # On détermine quelle est l'extension du fichier
+         set ext [file extension $filename]
+         switch $ext {
+            ".gz" {
+               # Cas où le fichier est compressé
+               set gz ".gz"
+               # On enregistre l'extension
+               set extension [file rootname $filename]
+            }
+            ".bz2" {
+               # Cas où le fichier est compressé
+               set gz ".bz2"
+               # On enregistre l'extension
+               set extension [file rootname $filename]
+            }
+            default {
+               # Cas où le fichier n'est pas compressé
+               set gz ""
+               set extension $ext
+            }
          }
-         ".bz2" {
-            # Cas où le fichier est compressé
-            set gz ".bz2"
-            # On tronque de l'extension .bz2
-            set filename [file rootname $filename]
-            # On enregistre l'extension
-            set extension [file extension $filename]
+         # On ne garde que le nom du fichier
+         set nom_fichier ""
+         set index ""
+      } else {
+         # A tout nom de fichier (avec ou sans le chemin) cette procédure renvoie [dossier nom_generique index extension compression]
+         set dossier [file dirname $filename]
+         # On ne garde que le nom du fichier
+         set filename [file tail $filename]
+         # On détermine quelle est l'extension du fichier
+         set ext [file extension $filename]
+         switch $ext {
+            ".gz" {
+               # Cas où le fichier est compressé
+               set gz ".gz"
+               # On tronque de l'extension .gz
+               set filename [file rootname $filename]
+               # On enregistre l'extension
+               set extension [file extension $filename]
+            }
+            ".bz2" {
+               # Cas où le fichier est compressé
+               set gz ".bz2"
+               # On tronque de l'extension .bz2
+               set filename [file rootname $filename]
+               # On enregistre l'extension
+               set extension [file extension $filename]
+            }
+           default {
+               # Cas où le fichier n'est pas compressé
+               set gz ""
+               set extension $ext
+            }
          }
-         default {
-            # Cas où le fichier n'est pas compressé
-            set gz ""
-            set extension $ext
-         }
-      }
-
-      set nom_fichier [file rootname $filename]
-      # On sépare à présent le nom générique et l'index
-      set index ""
-      set continue [dernier_est_chiffre $nom_fichier]
-      while {$continue==1} {
-         set index [string index $nom_fichier [expr [string length $nom_fichier]-1]]$index
-         set nom_fichier [string range $nom_fichier 0 [expr [string length $nom_fichier]-2]]
+         set nom_fichier [file rootname $filename]
+         # On sépare à présent le nom générique et l'index
+         set index ""
          set continue [dernier_est_chiffre $nom_fichier]
+         while {$continue==1} {
+            set index [string index $nom_fichier [expr [string length $nom_fichier]-1]]$index
+            set nom_fichier [string range $nom_fichier 0 [expr [string length $nom_fichier]-2]]
+            set continue [dernier_est_chiffre $nom_fichier]
+         }
       }
       return [list $dossier $nom_fichier $index $extension $gz]
    } else {
