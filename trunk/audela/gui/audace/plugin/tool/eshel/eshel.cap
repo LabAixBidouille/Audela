@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(eshel,title)                                     "eShel"
+set caption(eshel,title)                                     "eShel Acquisition & Processing"
 set caption(eshel,acquisition)                               "Acquisition"
 set caption(eshel,session)                                   "Session"
 set caption(eshel,objname)                                   "Object"
@@ -229,7 +229,7 @@ set caption(eshel,process,serieAlreadyExist)                 "Series SERIESID=%s
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
+   set caption(eshel,title)                                  "Acquisition & Traitement eShel"
    set caption(eshel,acquisition)                            "Acquisition"
    set caption(eshel,session)                                "Session"
    set caption(eshel,objname)                                "Objet"
@@ -442,8 +442,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
-   set caption(eshel,acquisition)                            "# Acquisition"
+   set caption(eshel,title)                                  "Acquisizione & Trattamento eShel"
+   set caption(eshel,acquisition)                            "Acquisizione"
    set caption(eshel,session)                                "# Session"
    set caption(eshel,objname)                                "# Objet"
    set caption(eshel,acq,go)                                 "# GO ACQ"
@@ -649,8 +649,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
-   set caption(eshel,acquisition)                            "# Acquisition"
+   set caption(eshel,title)                                  "Adquisición & Procesando eShel"
+   set caption(eshel,acquisition)                            "Adquisición"
    set caption(eshel,session)                                "# Session"
    set caption(eshel,objname)                                "# Objet"
    set caption(eshel,acq,go)                                 "# GO ACQ"
@@ -856,8 +856,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
-   set caption(eshel,acquisition)                            "# Acquisition"
+   set caption(eshel,title)                                  "eShel Belichtung & Verarbeitung"
+   set caption(eshel,acquisition)                            "Belichtung"
    set caption(eshel,session)                                "# Session"
    set caption(eshel,objname)                                "# Objet"
    set caption(eshel,acq,go)                                 "# GO ACQ"
@@ -1063,8 +1063,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
-   set caption(eshel,acquisition)                            "# Acquisition"
+   set caption(eshel,title)                                  "Aquisição & Tratamento eShel"
+   set caption(eshel,acquisition)                            "Aquisição"
    set caption(eshel,session)                                "# Session"
    set caption(eshel,objname)                                "# Objet"
    set caption(eshel,acq,go)                                 "# GO ACQ"
@@ -1270,7 +1270,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
+   set caption(eshel,title)                                  "eShel Acquisition & Processing"
    set caption(eshel,acquisition)                            "Acquisition"
    set caption(eshel,session)                                "Session"
    set caption(eshel,objname)                                "Object"
@@ -1479,7 +1479,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
+   set caption(eshel,title)                                  "eShel Acquisition & Processing"
    set caption(eshel,acquisition)                            "Acquisition"
    set caption(eshel,session)                                "Session"
    set caption(eshel,objname)                                "Object"
@@ -1688,7 +1688,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(eshel,title)                                  "eShel"
+   set caption(eshel,title)                                  "eShel Acquisition & Processing"
    set caption(eshel,acquisition)                            "Acquisition"
    set caption(eshel,session)                                "Session"
    set caption(eshel,objname)                                "Object"

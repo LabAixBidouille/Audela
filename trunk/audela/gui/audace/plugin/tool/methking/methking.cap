@@ -12,7 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 # Partie methking
-set caption(methking,titre)                   "King"
+set caption(methking,titre)                   "King Method"
 set caption(methking,help,titre)              "Help for this Tool"
 set caption(methking,help,titre1)             "Help for the Tool:"
 set caption(methking,titre_console_1)         "Polar Alignment using the King Method"
@@ -184,7 +184,7 @@ set caption(methking,fin_etape_7)             "    Step 7 completed.\n\n"
 if { [ string compare $langage "french" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "Méthode de King"
    set caption(methking,help,titre)           "Aide de cet outil"
    set caption(methking,help,titre1)          "Aide de l'outil :"
    set caption(methking,titre_console_1)      "Session de mise en station par la méthode de King"
@@ -356,7 +356,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "Metodo di King"
    set caption(methking,help,titre)           "Aiuto per questo tool"
    set caption(methking,help,titre1)          "Aiuto per lo tool:"
    set caption(methking,titre_console_1)      "Sessione per stazionamento telescopio col metodo di King"
@@ -528,7 +528,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "Método King"
    set caption(methking,help,titre)           "Ayuda para esta herramienta"
    set caption(methking,help,titre1)          "Ajuda para del herramienta:"
    set caption(methking,titre_console_1)      "Alineamiento polar utilizando el método King"
@@ -700,7 +700,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "King Methode"
    set caption(methking,help,titre)           "Hilfe für dieses Gerät"
    set caption(methking,help,titre1)          "Hilfe für die Gerät:"
    set caption(methking,titre_console_1)      "Mit King Methode Einstellung Session"
@@ -872,7 +872,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "Método King"
    set caption(methking,help,titre)           "Ajuda para esta ferramenta"
    set caption(methking,help,titre1)          "Ajuda para del ferramenta:"
    set caption(methking,titre_console_1)      "Sessão de colocação em estação pelo método King"
@@ -1044,7 +1044,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "King Method"
    set caption(methking,help,titre)           "Help for this Tool"
    set caption(methking,help,titre1)          "Help for the Tool:"
    set caption(methking,titre_console_1)      "Polar Alignment using the King Method"
@@ -1216,7 +1216,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "King Method"
    set caption(methking,help,titre)           "Help for this Tool"
    set caption(methking,help,titre1)          "Help for the Tool:"
    set caption(methking,titre_console_1)      "Polar Alignment using the King Method"
@@ -1388,7 +1388,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    # Partie methking
-   set caption(methking,titre)                "King"
+   set caption(methking,titre)                "King Method"
    set caption(methking,help,titre)           "Help for this Tool"
    set caption(methking,help,titre1)          "Help for the Tool:"
    set caption(methking,titre_console_1)      "Polar Alignment using the King Method"
