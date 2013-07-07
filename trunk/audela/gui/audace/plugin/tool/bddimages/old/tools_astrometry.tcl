@@ -4,7 +4,7 @@
 #  \version   1.0
 #  \date      2013
 #  \copyright GNU Public License.
-#  \par Ressource 
+#  \par Ressource
 #  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages tools_astrometry.tcl]
 #  \endcode
 #  \todo      modifier le nom du fichier source -> bdi_tools_astrometry.tcl
@@ -193,11 +193,11 @@ namespace eval tools_astrometry {
    #----------------------------------------------------------------------------
 
    proc ::tools_astrometry::set_fields_astrom { send_astrom } {
-   
+
       upvar $send_astrom astrom
-      
+
       set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
-      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+      set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            mum            mum             percent            no            no            no          deg                                            no                           no                           }
       set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
       set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
       return
@@ -207,16 +207,16 @@ namespace eval tools_astrometry {
 
 
 
-   # ASTROID --   
-   # "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
-   # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+   # ASTROID --
+   # "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
+   # "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff"
    # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
-   # "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
+   # "flagastrom" "flagphotom" "cataastrom" "cataphotom"
 
    proc ::tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec name} {
-   
+
       set pass "no"
-      
+
       set stmp {}
       foreach cata $s {
          if {[lindex $cata 0] == "ASTROID"} {
@@ -307,7 +307,7 @@ namespace eval tools_astrometry {
                set comment [lindex $astrom(comments) $k]
                # gren_info "KWD: $key \n"
                # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
-               
+
                # TODO ::tools_astrometry::extract_priam_results :: Modif du tabkey de chaque image de img_list
                foreach kk [list FOCLEN RA DEC CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CD1_1 CD1_2 CD2_1 CD2_2 ] {
                   if {$kk == $key } {
@@ -320,7 +320,7 @@ namespace eval tools_astrometry {
                   }
                }
                lappend ::tools_cata::new_astrometry($id_current_image) [list $kwd $val $type $unit $comment]
-               
+
             }
          }
 
@@ -337,7 +337,7 @@ namespace eval tools_astrometry {
 
       }
       close $chan
-      
+
       if {$id_current_image == $nberr } {
          return -code 1 "ASTROMETRY FAILURE: no valid result provided by Priam"
       }
@@ -355,12 +355,12 @@ namespace eval tools_astrometry {
       foreach current_image $::tools_cata::img_list {
 
          incr id_current_image
-         
+
          set ex [::bddimages_liste::lexist $current_image "listsources"]
          if {$ex != 0} {
             gren_erreur "Attention listsources existe dans img_list et ce n'est plus necessaire\n"
-         } 
-         
+         }
+
          set current_listsources $::gui_cata::cata_list($id_current_image)
          set n [llength $catascience($id_current_image)]
          set fields [lindex $current_listsources 0]
@@ -390,7 +390,7 @@ namespace eval tools_astrometry {
                   set omc_ra  [expr ($ra  - [lindex [lindex $cata 1] 0])*3600.0]
                   set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
                }
-               
+
                set astroid [lindex $s $idcata]
                #gren_info "astroid = $astroid\n"
                set b [lindex $astroid 2]
@@ -436,7 +436,7 @@ namespace eval tools_astrometry {
                set sources [lreplace $sources $id $id $s]
             }
          }
- 
+
          set ::gui_cata::cata_list($id_current_image) [list $fields $sources]
 
       }
@@ -515,7 +515,7 @@ namespace eval tools_astrometry {
    }
 
 
-   ## Calcul des ephemerides IMCCE pour tous les objets SCIENCE pour toutes les dates 
+   ## Calcul des ephemerides IMCCE pour tous les objets SCIENCE pour toutes les dates
    # @return void
    proc ::tools_astrometry::get_ephem_imcce {  } {
 
@@ -580,7 +580,7 @@ namespace eval tools_astrometry {
    }
 
 
-   ## Calcul des ephemerides JPL pour un objet SCIENCE pour toutes les dates 
+   ## Calcul des ephemerides JPL pour un objet SCIENCE pour toutes les dates
    # @return void
    proc ::tools_astrometry::compose_ephem_jpl {  } {
 
@@ -601,7 +601,7 @@ namespace eval tools_astrometry {
       array unset ::tools_astrometry::ephem_jpl
       array unset list_dates
 
-      # Collecte des infos 
+      # Collecte des infos
       foreach {name y} [array get ::tools_astrometry::listscience] {
 
          if {[string compare $name $fname] != 0} { continue }
@@ -629,7 +629,7 @@ namespace eval tools_astrometry {
       ::bdi_tools::sendmail::compose_with_thunderbird $::bdi_jpl::destinataire $::bdi_jpl::sujet $jpl_job
 
       # Affichage dans la GUI (astrometrie->Ephemerides->JPL)
-#      $::gui_astrometry::getjpl_send delete 0.0 end  
+#      $::gui_astrometry::getjpl_send delete 0.0 end
 #      $::gui_astrometry::getjpl_send insert end "$jpl_job"
 
       # Mode manuel ...
@@ -729,7 +729,7 @@ namespace eval tools_astrometry {
 
          incr id_current_image
          set current_listsources $::gui_cata::cata_list($id_current_image)
- 
+
          set tabkey  [::bddimages_liste::lget $current_image "tabkey"]
          set dateiso [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
 
@@ -751,7 +751,7 @@ namespace eval tools_astrometry {
                gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
             }
             #gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
-            
+
             set s       [lindex [lindex $current_listsources 1] $id]
             set astroid [lindex $s $idcata]
             set b       [lindex $astroid 2]
@@ -792,7 +792,7 @@ namespace eval tools_astrometry {
                gren_info "Lect Science = $id $idcata $ar $ac $name\n"
             }
             #gren_info "Lect Science = $id $idcata $ar $ac $name\n"
-            
+
             set s       [lindex [lindex $current_listsources 1] $id]
             set astroid [lindex $s $idcata]
             set b       [lindex $astroid 2]
@@ -817,13 +817,13 @@ namespace eval tools_astrometry {
             lappend ::tools_astrometry::listscience($name) $dateiso
             lappend ::tools_astrometry::listdate($dateiso) $name
          }
-         
+
          gren_info "date = $dateiso "
          gren_info "nb science = [llength $list_id_science] "
          gren_info "nb ref = [llength $list_id_ref] \n"
 
       }
-   
+
    }
 
 
@@ -834,7 +834,7 @@ namespace eval tools_astrometry {
    #----------------------------------------------------------------------------
 
    # Calcul des statistiques sur les donnees d'astrometrie
-   #   0  nb        : nb d element 
+   #   0  nb        : nb d element
    #   1  mrho      : moyenne sur rho =  rayon des residu
    #   2  stdev_rho : stdev sur rho
    #   3  mra       : moyenne sur residu alpha
@@ -862,7 +862,7 @@ namespace eval tools_astrometry {
       set cpt 0
       foreach name [array names ::tools_astrometry::listref] {
 
-         incr cpt 
+         incr cpt
 
          set rho ""
          set a   ""
@@ -931,7 +931,7 @@ namespace eval tools_astrometry {
             lappend err_x [lindex $::tools_astrometry::tabval($name,$date) 10]
             lappend err_y [lindex $::tools_astrometry::tabval($name,$date) 11]
          }
-         
+
          set nb     [llength $::tools_astrometry::listscience($name)]
          set mrho   [format "%.3f" [::math::statistics::mean  $rho]]
          set mra    [format "%.3f" [::math::statistics::mean  $ra ]]
@@ -1007,7 +1007,7 @@ namespace eval tools_astrometry {
 
          set ::tools_astrometry::tabdate($date) [list $date $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm]
       }
-      
+
    }
 
 
@@ -1022,11 +1022,11 @@ namespace eval tools_astrometry {
 
 
 
-# ASTROID --   
-# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
-# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# ASTROID --
+# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff"
 # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
-# "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
+# "flagastrom" "flagphotom" "cataastrom" "cataphotom"
 
    #----------------------------------------------------------------------------
    # SAUVEGARDE GLOBALE DES INFORMATIONS (image, CATA)
@@ -1035,11 +1035,11 @@ namespace eval tools_astrometry {
    proc ::tools_astrometry::save { form } {
 
       global bddconf audace
-  
+
       gren_info "FORMAT:$form\n"
-      
-      # Fichier au format TXT 
-      
+
+      # Fichier au format TXT
+
       if {$form=="TXT"} {
 
          if {[info exists tag]} {unset tag}
@@ -1059,11 +1059,11 @@ namespace eval tools_astrometry {
                   if {[lindex $cata 0] == "ASTROID"} {
                      set astroid [lindex $cata 2]
 
-# ASTROID --   
-# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
-# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+# ASTROID --
+# "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
+# "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff"
 # "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
-# "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
+# "flagastrom" "flagphotom" "cataastrom" "cataphotom"
 
                      set xsm         [lindex $astroid  0]
                      set ysm         [lindex $astroid  1]
@@ -1111,19 +1111,19 @@ namespace eval tools_astrometry {
                      close $chan0
                      break
                   }
-                  
+
                }
-               
+
             }
 
             incr id_current_image
          }
-         
+
          gren_info "s $s\n"
 
       }
 
-      # Fichier au format MPC 
+      # Fichier au format MPC
       if {$form=="MPC"} {
       }
 
@@ -1167,7 +1167,7 @@ namespace eval tools_astrometry {
          # Progression
          ::tools_astrometry::set_savprogress $id_current_image $::tools_cata::nb_img_list
          if { $::tools_astrometry::savannul } { break }
-         
+
          # Tabkey
          set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
          set tabkey   [::bddimages_liste::lget $current_image "tabkey"]
@@ -1178,7 +1178,7 @@ namespace eval tools_astrometry {
          set cataxml "${f}_cata.xml"
 
          # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
-         
+
          set ident [bddimages_image_identification $idbddimg]
          set fileimg  [lindex $ident 1]
          set filecata [lindex $ident 3]
@@ -1192,7 +1192,7 @@ namespace eval tools_astrometry {
          }
 
          set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
-         
+
          # Creation de l image temporaire
          set fichtmpunzip [unzipedfilename $fileimg]
          set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
@@ -1204,7 +1204,7 @@ namespace eval tools_astrometry {
          # efface l image dans la base et le disque
          bddimages_image_delete_fromsql $ident
          bddimages_image_delete_fromdisk $ident
-         
+
          # insere l image dans la base
          set err [catch {set idbddimg [insertion_solo $filefinal]} msg]
          if {$err} {
@@ -1287,7 +1287,7 @@ namespace eval tools_astrometry {
       if {$mint < 10.0} {set m "0$mint"}
       if {$sec  < 10.0} {set sec "0$sec"}
       return "$s$d $mint $sec"
-      
+
    }
 
 
@@ -1310,7 +1310,7 @@ namespace eval tools_astrometry {
       if {$mint < 10.0} {set m "0$mint"}
       if {$sec  < 10.0} {set sec "0$sec"}
       return "$s$d $mint $sec"
-      
+
    }
 
 
@@ -1361,7 +1361,7 @@ namespace eval tools_astrometry {
       switch [lindex $sname 0] {
          SKYBOT {
             if {[string length [lindex $sname 1]] > 1} {
-               # Sso official number 
+               # Sso official number
                set onum [lindex $sname 1]
                if {$onum < 100000} {
                   # Official number
@@ -1385,9 +1385,9 @@ namespace eval tools_astrometry {
             set mpc_name [format $form " " "U$uname" "*"]
          }
       }
-   
+
       return $mpc_name
-   
+
    }
 
 

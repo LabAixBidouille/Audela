@@ -5,16 +5,16 @@
 #  \version   1.0
 #  \date      2013
 #  \copyright GNU Public License.
-#  \par Ressource 
+#  \par Ressource
 #  \code  source [file join $audace(rep_install) gui audace plugin tool bddimages bdi_gui_astrometry.tcl]
 #  \endcode
-#  \todo      modifier le nom du fichier source 
+#  \todo      modifier le nom du fichier source
 
 # Mise à jour $Id: bdi_gui_astrometry.tcl 9228 2013-03-20 16:24:43Z fredvachier $
 
 #============================================================
 ## Declaration du namespace \c bdi_gui_astrometry .
-#  \brief     Permet d'effectuer l'astrometrie en mode manuel. 
+#  \brief     Permet d'effectuer l'astrometrie en mode manuel.
 #             Necessite une GUI.
 #  \pre       Chargement a partir de l'outil Recherche
 #  \bug       Probleme de memoire sur les exec
@@ -71,10 +71,10 @@ namespace eval bdi_gui_astrometry {
          foreach date $::bdi_tools_astrometry::listref($name) {
             $::bdi_gui_astrometry::sret insert end [lreplace $::bdi_tools_astrometry::tabval($name,$date) 1 2 $date]
          }
-         
+
          # Affiche un rond sur la source
          ::gui_cata::voir_sxpt $::bdi_gui_astrometry::srpt
-         
+
          set ::bdi_gui_astrometry::srpt_name $name
 
          break
@@ -170,7 +170,7 @@ namespace eval bdi_gui_astrometry {
 
       foreach select [$w curselection] {
          set date [lindex [$w get $select] 0]
-         
+
          gren_info "date = $date \n"
          gren_info "Id img = $::bdi_tools_astrometry::date_to_id($date) \n"
          set id $::bdi_tools_astrometry::date_to_id($date)
@@ -180,12 +180,12 @@ namespace eval bdi_gui_astrometry {
          #gren_info "tabkey = $::tools_cata::new_astrometry($id) \n"
 
          ::bdi_gui_astrometry::voir_dwet %w
-         
+
          $::bdi_gui_astrometry::dwet delete 0 end
          foreach val $::tools_cata::new_astrometry($id) {
             $::bdi_gui_astrometry::dwet insert end $val
          }
-         
+
          break
       }
 
@@ -199,7 +199,7 @@ namespace eval bdi_gui_astrometry {
 # TODO bdi_gui_astrometry.tcl A GARDER EN COMMENTAIRE POUR L'INSTANT
 # **************************************
    #proc ::bdi_gui_astrometry::rapport_get_ephem { send_listsources name middate } {
-   #   
+   #
    #   upvar $send_listsources listsources
    #
    #   global bddconf audace
@@ -211,7 +211,7 @@ namespace eval bdi_gui_astrometry {
    #   foreach s [lindex $listsources 1] {
    #      set x  [lsearch -index 0 $s "ASTROID"]
    #      if {$x>=0} {
-   #         set b  [lindex [lindex $s $x] 2]           
+   #         set b  [lindex [lindex $s $x] 2]
    #         set sourcename [lindex $b 24]
    #
    #         if {$sourcename == "-"} {
@@ -221,7 +221,7 @@ namespace eval bdi_gui_astrometry {
    #               set sourcename ""
    #            } else {
    #               set sourcename [::manage_source::naming $s $namable]
-   #            } 
+   #            }
    #
    #         }
    #
@@ -258,10 +258,10 @@ namespace eval bdi_gui_astrometry {
    #         } else {
    #            continue
    #         }
-   #         
+   #
    #      }
    #   }
-   #   
+   #
    #   if {$pass == "no"} {
    #      return [list "-" "-" "-" "-" "-" "-"]
    #   }
@@ -301,7 +301,7 @@ namespace eval bdi_gui_astrometry {
    #         set line [string trim $line]
    #         set c [string index $line 0]
    #         if {$c == "#"} {continue}
-   #         set rd [regexp -inline -all -- {\S+} $line]      
+   #         set rd [regexp -inline -all -- {\S+} $line]
    #         set tab [split $rd " "]
    #         set rah [lindex $tab  2]
    #         set ram [lindex $tab  3]
@@ -344,7 +344,7 @@ namespace eval bdi_gui_astrometry {
    #         set dec_mpc "-"
    #      }
    #      #gren_info "CMD = vo_getmpcephem $num $dateiso $::bdi_tools_astrometry::rapport_uai_code   ||EPHEM MPC ($num) ; date =  $middate ; ra dec = $ra_mpc  $dec_mpc \n"
-   #      
+   #
    #   }
    #
    #   gren_info "EPHEM IMCCE RA = $ra_imcce; DEC = $dec_imcce\n"
@@ -389,7 +389,7 @@ namespace eval bdi_gui_astrometry {
    proc ::bdi_gui_astrometry::create_report_mpc {  } {
 
       # Efface la zone de rapport
-      $::bdi_gui_astrometry::rapport_mpc delete 0.0 end 
+      $::bdi_gui_astrometry::rapport_mpc delete 0.0 end
 
       # Entete
       $::bdi_gui_astrometry::rapport_mpc insert end  "#COD $::bdi_tools_astrometry::rapport_uai_code \n"
@@ -421,12 +421,12 @@ namespace eval bdi_gui_astrometry {
          if {$cata != "SKYBOT"} {continue}
 
          foreach date $::bdi_tools_astrometry::listscience($name) {
-            
+
             # Rend effectif le crop du graphe
             if {[info exists ::bdi_gui_astrometry::graph_results($name,$date,good)]} {
                if {$::bdi_gui_astrometry::graph_results($name,$date,good)==0} {continue}
             }
-         
+
             set alpha   [lindex $::bdi_tools_astrometry::tabval($name,$date) 6]
             set delta   [lindex $::bdi_tools_astrometry::tabval($name,$date) 7]
             set mag     [lindex $::bdi_tools_astrometry::tabval($name,$date) 8]
@@ -437,13 +437,13 @@ namespace eval bdi_gui_astrometry {
             set dec_dms [::bdi_tools_mpc::convert_dms $delta]
             set magmpc  [::bdi_tools_mpc::convert_mag $mag]
             set obsuai  $::bdi_tools_astrometry::rapport_uai_code
-            
+
             set txt [format $form $object $note1 $note2 $datempc $ra_hms $dec_dms $magmpc $obsuai]
             $::bdi_gui_astrometry::rapport_mpc insert end $txt
             incr nb
          }
       }
-      $::bdi_gui_astrometry::rapport_mpc insert 11.0  "#NUM $nb\n"      
+      $::bdi_gui_astrometry::rapport_mpc insert 11.0  "#NUM $nb\n"
       $::bdi_gui_astrometry::rapport_mpc insert end  "\n\n\n"
 
    }
@@ -463,8 +463,8 @@ namespace eval bdi_gui_astrometry {
 
 
    # Structure de tabval :
-   #  0  id 
-   #  1  field 
+   #  0  id
+   #  1  field
    #  2  ar
    #  3  rho
    #  4  res_ra
@@ -477,8 +477,8 @@ namespace eval bdi_gui_astrometry {
    # 11  err_ysm
    # 12  fwhm_x
    # 13  fwhm_y
-   
-   # Future routine de calcul des resultats qui sera lanc�e par ephemeride et non plus a la creation du rapport
+
+   # Future routine de calcul des resultats qui sera lanc裠par ephemeride et non plus a la creation du rapport
    proc ::bdi_gui_astrometry::tabule { } {
 
 
@@ -496,19 +496,19 @@ namespace eval bdi_gui_astrometry {
             if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
                if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
             }
-            
+
 
             incr nbobs
             set idsource [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  0]
             gren_info "otabval($name,$dateimg) = $::bdi_tools_astrometry::tabval($name,$dateimg)\n"
-            
-            
+
+
             set rho     [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  4]]
             set res_d   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  5]]
             set alpha   [format "%.8f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  6]]
             set delta   [format "%+.8f" [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  7]]
-            
+
             set val [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  8]
             if {$val==""} {set mag ""} else {set mag $val}
             set err_mag [format "%.3f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  9]]
@@ -625,7 +625,7 @@ namespace eval bdi_gui_astrometry {
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec_jpl_omc)      $dec_jpl_omc
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,ra_imccejpl_cmc)  $ra_imccejpl_cmc
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,dec_imccejpl_cmc) $dec_imccejpl_cmc
-            
+
             set calc($name,$dateimg,good)             1
             set calc($name,$dateimg,idsource)         $idsource
             set calc($name,$dateimg,middatejj)        $midatejd
@@ -641,7 +641,7 @@ namespace eval bdi_gui_astrometry {
             set calc($name,$dateimg,dec_jpl_omc)      $dec_jpl_omc
             set calc($name,$dateimg,ra_imccejpl_cmc)  $ra_imccejpl_cmc
             set calc($name,$dateimg,dec_imccejpl_cmc) $dec_imccejpl_cmc
-            
+
             set calc($name,$dateimg,mag)              $mag
             set calc($name,$dateimg,err_mag)          $err_mag
             set calc($name,$dateimg,ra_imcce_deg)     $ra_imcce_deg
@@ -654,19 +654,19 @@ namespace eval bdi_gui_astrometry {
             set calc($name,$dateimg,fwhm_y)           $fwhm_y
             set calc($name,$dateimg,h_imcce_deg)      $h_imcce_deg
             set calc($name,$dateimg,am_imcce_deg)     $am_imcce_deg
-            
+
 
          }
 
 
          set calc($name,mean,res_a)      [format "%.4f" [::math::statistics::mean  $tabcalc(res_a)]]
          set calc($name,mean,res_d)      [format "%.4f" [::math::statistics::mean  $tabcalc(res_d)]]
-         set calc($name,mean,middatejj)  [::math::statistics::mean  $tabcalc(datejj)] 
+         set calc($name,mean,middatejj)  [::math::statistics::mean  $tabcalc(datejj)]
          set calc($name,mean,middateiso) [mc_date2iso8601 $calc($name,mean,middatejj)]
          set calc($name,mean,alpha)      [format "%16.12f"  [::math::statistics::mean  $tabcalc(alpha)] ]
          set calc($name,mean,delta)      [format "%+15.12f" [::math::statistics::mean  $tabcalc(delta)] ]
          set calc($name,mean,alphasexa)  [::bdi_tools_astrometry::convert_txt_hms $calc($name,mean,alpha)]
-         set calc($name,mean,deltasexa)  [::bdi_tools_astrometry::convert_txt_dms $calc($name,mean,delta)]  
+         set calc($name,mean,deltasexa)  [::bdi_tools_astrometry::convert_txt_dms $calc($name,mean,delta)]
          set calc($name,stdev,res_a)     [::bdi_gui_astrometry::stdev $tabcalc(res_a)  "%.4f"]
          set calc($name,stdev,res_d)     [::bdi_gui_astrometry::stdev $tabcalc(res_d)  "%.4f"]
          set calc($name,stdev,datejj)    [::bdi_gui_astrometry::stdev $tabcalc(datejj) "%.4f"]
@@ -727,7 +727,7 @@ namespace eval bdi_gui_astrometry {
             set calc($name,dec_imccejpl_cmc,mean)   "-"
             set calc($name,dec_imccejpl_cmc,stdev)  "-"
          }
-         
+
          if {$calc($name,res_a,mean)>=0} {set calc($name,res_a,mean) "+$calc($name,mean,res_a)" }
          if {$calc($name,res_d,mean)>=0} {set calc($name,res_d,mean) "+$calc($name,mean,res_d)" }
          if {$calc($name,res_a,stdev)>=0} {set calc($name,res_a,stdev) "+$calc($name,stdev,res_a)" }
@@ -806,7 +806,7 @@ namespace eval bdi_gui_astrometry {
       #}
 
       # Efface la zone de rapport
-      $::bdi_gui_astrometry::rapport_txt delete 0.0 end 
+      $::bdi_gui_astrometry::rapport_txt delete 0.0 end
 
       # Separateur
       set sep_txt "#[string repeat - 312]\n"
@@ -863,14 +863,14 @@ namespace eval bdi_gui_astrometry {
       set airmass       ""
       set headtab1 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $fwhm_x $fwhm_y $hauteur $airmass]
 
-      set name          "Object"      
-      set date          "Mid-Date"    
-      set ra_hms        "Right Asc."  
-      set dec_dms       "Declination" 
-      set res_a         "Err RA"      
-      set res_d         "Err De"      
-      set mag           "Mag"         
-      set err_mag       "ErrMag"      
+      set name          "Object"
+      set date          "Mid-Date"
+      set ra_hms        "Right Asc."
+      set dec_dms       "Declination"
+      set res_a         "Err RA"
+      set res_d         "Err De"
+      set mag           "Mag"
+      set err_mag       "ErrMag"
       set ra_imcce_omc  "OmC RA"
       set dec_imcce_omc "OmC De"
       set ra_mpc_omc    "OmC RA"
@@ -932,7 +932,7 @@ namespace eval bdi_gui_astrometry {
 
          foreach dateimg $::bdi_tools_astrometry::listscience($name) {
 
-            
+
             # Rend effectif le crop du graphe
             if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
                if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
@@ -943,8 +943,8 @@ namespace eval bdi_gui_astrometry {
             set idsource [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  0]
 
             # Structure de tabval :
-            #  0  id 
-            #  1  field 
+            #  0  id
+            #  1  field
             #  2  ar
             #  3  rho
             #  4  res_ra
@@ -1075,7 +1075,7 @@ namespace eval bdi_gui_astrometry {
 
             # Ajustement affichage
             set midatejd [string range "${midatejd}000000000000" 0 15]
-            
+
             # Ligne de resultats
             set txt [format $form "" $name $midateiso $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_jpl_omc $dec_jpl_omc $midatejd $alpha $delta $ra_imcce_deg $dec_imcce_deg $ra_jpl_deg $dec_jpl_deg $err_x $err_y $fwhm_x $fwhm_y $h_imcce_deg $am_imcce_deg]
             $::bdi_gui_astrometry::rapport_txt insert end  $txt
@@ -1099,10 +1099,10 @@ namespace eval bdi_gui_astrometry {
 
          set calc(res_a,mean)   [format "%.4f" [::math::statistics::mean  $tabcalc(res_a)]]
          set calc(res_d,mean)   [format "%.4f" [::math::statistics::mean  $tabcalc(res_d)]]
-         set calc(datejj,mean)  [::math::statistics::mean  $tabcalc(datejj)] 
-         set calc(alpha,mean)   [::math::statistics::mean  $tabcalc(alpha)]  
-         set calc(delta,mean)   [::math::statistics::mean  $tabcalc(delta)]  
-  
+         set calc(datejj,mean)  [::math::statistics::mean  $tabcalc(datejj)]
+         set calc(alpha,mean)   [::math::statistics::mean  $tabcalc(alpha)]
+         set calc(delta,mean)   [::math::statistics::mean  $tabcalc(delta)]
+
          set calc(res_a,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_a) "%.4f"]
          set calc(res_d,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_d) "%.4f"]
          set calc(datejj,stdev) [::bdi_gui_astrometry::stdev $tabcalc(datejj) "%.4f"]
@@ -1163,7 +1163,7 @@ namespace eval bdi_gui_astrometry {
             set calc(dec_imccejpl_cmc,mean)   "-"
             set calc(dec_imccejpl_cmc,stdev)  "-"
          }
-         
+
 
          if {$calc(res_a,mean)>=0} {set calc(res_a,mean) "+$calc(res_a,mean)" }
          if {$calc(res_d,mean)>=0} {set calc(res_d,mean) "+$calc(res_d,mean)" }
@@ -1191,10 +1191,10 @@ namespace eval bdi_gui_astrometry {
          $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# Residus     RA  (arcsec): mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# Residus     DEC (arcsec): mean = $calc(res_d,mean) stedv = $calc(res_d,stdev)\n"
-         $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"          
+         $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# O-C(IMCCE)  RA  (arcsec): mean = $calc(ra_imcce_omc,mean) stedv = $calc(ra_imcce_omc,stdev)\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# O-C(IMCCE)  DEC (arcsec): mean = $calc(dec_imcce_omc,mean) stedv = $calc(dec_imcce_omc,stdev)\n"
-         $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"          
+         $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# O-C(JPL)    RA  (arcsec): mean = $calc(ra_jpl_omc,mean) stedv = $calc(ra_jpl_omc,stdev)\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# O-C(JPL)    DEC (arcsec): mean = $calc(dec_jpl_omc,mean) stedv = $calc(dec_jpl_omc,stdev)\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"
@@ -1355,7 +1355,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::WIDTH \"24\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "ISO-Date at mid-exposure)"
       set f [ list "$::votable::Field::ID \"isodate\"" \
                    "$::votable::Field::NAME \"ISO-Date\"" \
@@ -1365,7 +1365,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::WIDTH \"24\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Julian date at mid-exposure"
       set f [ list "$::votable::Field::ID \"jddate\"" \
                    "$::votable::Field::NAME \"JD-Date\"" \
@@ -1376,7 +1376,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"d\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Measured astrometric J2000 right ascension"
       set f [ list "$::votable::Field::ID \"ra\"" \
                    "$::votable::Field::NAME \"RA\"" \
@@ -1387,7 +1387,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"deg\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Measured astrometric J2000 declination"
       set f [ list "$::votable::Field::ID \"dec\"" \
                    "$::votable::Field::NAME \"DEC\"" \
@@ -1398,7 +1398,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"deg\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Uncertainty on astrometric J2000 right ascension"
       set f [ list "$::votable::Field::ID \"ra_err\"" \
                    "$::votable::Field::NAME \"RA_err\"" \
@@ -1409,7 +1409,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"arcsec\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Uncertainty on astrometric J2000 declination"
       set f [ list "$::votable::Field::ID \"dec_err\"" \
                    "$::votable::Field::NAME \"DEC_err\"" \
@@ -1420,7 +1420,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"arcsec\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Measured magnitude"
       set f [ list "$::votable::Field::ID \"mag\"" \
                    "$::votable::Field::NAME \"Magnitude\"" \
@@ -1431,7 +1431,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"mag\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "Uncertainty on measured magnitude"
       set f [ list "$::votable::Field::ID \"mag_err\"" \
                    "$::votable::Field::NAME \"Magnitude_err\"" \
@@ -1442,7 +1442,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"mag\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "O-C of astrometric J2000 right ascension"
       set f [ list "$::votable::Field::ID \"ra_omc\"" \
                    "$::votable::Field::NAME \"RA_omc\"" \
@@ -1453,7 +1453,7 @@ namespace eval bdi_gui_astrometry {
                    "$::votable::Field::UNIT \"arcsec\"" ]
       set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
-   
+
       set description "O-C of astrometric J2000 declination"
       set f [ list "$::votable::Field::ID \"dec_omc\"" \
                    "$::votable::Field::NAME \"DEC_omc\"" \
@@ -1537,14 +1537,14 @@ namespace eval bdi_gui_astrometry {
          set nrows 0
          set votSources ""
          foreach dateimg $::bdi_tools_astrometry::listscience($name) {
-         
-            
+
+
             # Rend effectif le crop du graphe
             if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
                if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
             }
-         
-         
+
+
             incr nrows
             append votSources [::votable::openElement $::votable::Element::TR {}]
 
@@ -1714,13 +1714,13 @@ namespace eval bdi_gui_astrometry {
             append strdate "#Object = $name\n"
             append strdate "#midepoch         x pixel  y pixel  xerr     yerr   xfwhm  yfwhm\n"
             foreach dateimg $::bdi_tools_astrometry::listscience($name) {
-            
+
                # Rend effectif le crop du graphe
                if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
                   if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
                }
-            
-            
+
+
                set midepoch $::tools_cata::date2midate($dateimg)
                set err [ catch { set astroid [::bdi_tools::get_astroid $dateimg $name] } msg ]
                if {$err} {
@@ -1738,7 +1738,7 @@ namespace eval bdi_gui_astrometry {
 
                set fwhm_x [format "%.1f" [lindex $astroid 4]]
                set fwhm_y [format "%.1f" [lindex $astroid 5]]
-               
+
                append strdate [format "%.9f %-8s %-8s %-8s %-8s %-6s %-6s \n" $midepoch $x $y $err_x $err_y $fwhm_x $fwhm_y]
             }
          }
@@ -1769,7 +1769,7 @@ namespace eval bdi_gui_astrometry {
          focus $::bdi_gui_astrometry::fensav
          return
       }
-      
+
       toplevel $::bdi_gui_astrometry::fensav -class Toplevel
       set posx_config [ lindex [ split [ wm geometry $::bdi_gui_astrometry::fensav ] "+" ] 1 ]
       set posy_config [ lindex [ split [ wm geometry $::bdi_gui_astrometry::fensav ] "+" ] 2 ]
@@ -1779,10 +1779,10 @@ namespace eval bdi_gui_astrometry {
       wm protocol $::bdi_gui_astrometry::fensav WM_DELETE_WINDOW ""
 
       set frm $::bdi_gui_astrometry::fensav.appli
-      
+
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::bdi_gui_astrometry::fensav -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-      
+
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -1797,13 +1797,13 @@ namespace eval bdi_gui_astrometry {
              pack   $data.annul -side top -anchor c -padx 0 -padx 10 -pady 5
 
       update
-      ::bdi_tools_astrometry::save_images   
+      ::bdi_tools_astrometry::save_images
 
       destroy $::bdi_gui_astrometry::fensav
 
       $::bdi_gui_astrometry::fen.appli.info.fermer configure -state normal
       $::bdi_gui_astrometry::fen.appli.info.enregistrer configure -state normal
-   
+
    }
 
 
@@ -1821,10 +1821,10 @@ namespace eval bdi_gui_astrometry {
 
 
    proc ::bdi_gui_astrometry::psf { t w } {
- 
+
       set cpt 0
-      set date_id "" 
-      set worklist "" 
+      set date_id ""
+      set worklist ""
 
       switch $t {
 
@@ -1870,7 +1870,7 @@ namespace eval bdi_gui_astrometry {
          "sse" {
             set name $::bdi_gui_astrometry::sspt_name
             foreach select [$w curselection] {
-               set idsource [lindex [$w get $select] 0] 
+               set idsource [lindex [$w get $select] 0]
                set date [lindex [$w get $select] 1]
                lappend date_id [list $idsource $date]
                lappend worklist [list $::tools_cata::date2id($date) $idsource]
@@ -1886,7 +1886,7 @@ namespace eval bdi_gui_astrometry {
       ::bdi_gui_gestion_source::run $worklist
       #::psf_gui::from_astrometry $name $cpt $date_id
 
-   } 
+   }
 
 
 
@@ -1899,7 +1899,7 @@ namespace eval bdi_gui_astrometry {
       }
 
       gren_info "Graphe : $xkey VS $ykey\n"
-      
+
       set x ""
       set z ""
       set l [array get ::bdi_tools_astrometry::listscience]
@@ -1917,13 +1917,13 @@ namespace eval bdi_gui_astrometry {
       }
 
       ::plotxy::clf 1
-      ::plotxy::figure 1 
-      ::plotxy::hold on 
+      ::plotxy::figure 1
+      ::plotxy::hold on
       ::plotxy::position {0 0 600 400}
       ::plotxy::title "$::bdi_gui_astrometry::combo_list_object : $xkey VS $ykey"
       ::plotxy::xlabel $xkey
       ::plotxy::ylabel $ykey
-      
+
       set h [::plotxy::plot $x $z .]
       plotxy::sethandler $h [list -color black -linewidth 0]
 
@@ -1947,7 +1947,7 @@ namespace eval bdi_gui_astrometry {
       set x2 [lindex $rect 2]
       set y1 [lindex $rect 1]
       set y2 [lindex $rect 3]
-      
+
       if {$x1>$x2} {
          set t $x1
          set x1 $x2
@@ -1958,10 +1958,10 @@ namespace eval bdi_gui_astrometry {
          set y1 $y2
          set y2 $t
       }
-      
+
       set xkey [::plotxy::xlabel]
       set ykey [::plotxy::ylabel]
-      
+
       set l [array get ::bdi_tools_astrometry::listscience]
       foreach {name w} $l {
          if {$name !=  $::bdi_gui_astrometry::combo_list_object} {
@@ -1974,12 +1974,12 @@ namespace eval bdi_gui_astrometry {
                set yy $::bdi_gui_astrometry::graph_results($name,$dateimg,$ykey)
                if { $yy > $y1 && $yy < $y2} {
                   continue
-               } 
+               }
             }
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,good) 0
          }
       }
-      
+
       ::bdi_gui_astrometry::graph $xkey $ykey
    }
 
@@ -1990,7 +1990,7 @@ namespace eval bdi_gui_astrometry {
 
       set xkey [::plotxy::xlabel]
       set ykey [::plotxy::ylabel]
-      
+
       set l [array get ::bdi_tools_astrometry::listscience]
       foreach {name w} $l {
          if {$name !=  $::bdi_gui_astrometry::combo_list_object} {
@@ -2001,7 +2001,7 @@ namespace eval bdi_gui_astrometry {
             set ::bdi_gui_astrometry::graph_results($name,$dateimg,good) 1
          }
       }
-      
+
       ::bdi_gui_astrometry::graph $xkey $ykey
    }
 
@@ -2023,7 +2023,7 @@ namespace eval bdi_gui_astrometry {
       set x2 [lindex $rect 2]
       set y1 [lindex $rect 1]
       set y2 [lindex $rect 3]
-      
+
       if {$x1>$x2} {
          set t $x1
          set x1 $x2
@@ -2034,13 +2034,13 @@ namespace eval bdi_gui_astrometry {
          set y1 $y2
          set y2 $t
       }
-      
+
       set xkey [::plotxy::xlabel]
       set ykey [::plotxy::ylabel]
       set x ""
       set y ""
       set worklist ""
-      
+
       set l [array get ::bdi_tools_astrometry::listscience]
       foreach {name w} $l {
          if {$name !=  $::bdi_gui_astrometry::combo_list_object} {
@@ -2065,25 +2065,25 @@ namespace eval bdi_gui_astrometry {
       set name $::bdi_gui_astrometry::combo_list_object
       gren_info "Voir la source\n"
       gren_info "Objet = $name\n"
-      
+
       gren_info "worklist = $worklist\n"
-      
+
       ::bdi_gui_gestion_source::run $worklist
-      
+
       return
 
       if { [llength $x]>1 || [llength $y]>1 } {
          ::console::affiche_erreur "Selectionner 1 seul point\n"
          return
       }
-      
+
       set name $::bdi_gui_astrometry::combo_list_object
       gren_info "Voir la source\n"
       gren_info "date image = $date\n"
       gren_info "Objet = $name\n"
       #incr idsource -1
       gren_info "Idsource = $idsource\n"
-      
+
 # TODO afficher la psf
       ::psf_gui::from_astrometry $name 1 [list [list $idsource $date]]
 
@@ -2116,7 +2116,7 @@ namespace eval bdi_gui_astrometry {
       ::bdi_gui_astrometry::set_list2combo
 
       set tt0 [clock clicks -milliseconds]
-      ::bdi_tools_astrometry::calcul_statistique  
+      ::bdi_tools_astrometry::calcul_statistique
       gren_info "Calculs des statistiques en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
 
       set tt0 [clock clicks -milliseconds]
@@ -2128,7 +2128,7 @@ namespace eval bdi_gui_astrometry {
       $::bdi_gui_astrometry::dspt delete 0 end
       $::bdi_gui_astrometry::dset delete 0 end
       $::bdi_gui_astrometry::dwpt delete 0 end
- 
+
       foreach name [array names ::bdi_tools_astrometry::listref] {
          $::bdi_gui_astrometry::srpt insert end $::bdi_tools_astrometry::tabref($name)
       }
@@ -2243,7 +2243,7 @@ namespace eval bdi_gui_astrometry {
 
 
    proc ::bdi_gui_astrometry::affich_gestion {  } {
-       
+
       gren_info "\n\n\n-----------\n"
       set tt0 [clock clicks -milliseconds]
 
@@ -2298,7 +2298,7 @@ namespace eval bdi_gui_astrometry {
             incr cpt
          }
       }
-      set ::bdi_tools_astrometry::rapport_nb $cpt       
+      set ::bdi_tools_astrometry::rapport_nb $cpt
 
    }
 
@@ -2312,7 +2312,7 @@ namespace eval bdi_gui_astrometry {
    # concernant l'astrometrie
    #----------------------------------------------------------------------------
    # set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
-   # set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+   # set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            mum            mum             percent            no            no            no          deg                                            no                           no                           }
    # set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
    # set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
    #----------------------------------------------------------------------------
@@ -2324,11 +2324,11 @@ namespace eval bdi_gui_astrometry {
       array unset ::tools_cata::date2midate
 
       foreach current_image $::tools_cata::img_list {
-         
+
          incr id_current_image
 
          set ::tools_cata::new_astrometry($id_current_image) ""
-         
+
          # Tabkey
          set tabkey [::bddimages_liste::lget $current_image "tabkey"]
          # Date obs au format ISO
@@ -2367,8 +2367,8 @@ namespace eval bdi_gui_astrometry {
    #----------------------------------------------------------------------------
    ## Chargement de la liste d'image selectionnee dans l'outil Recherche.
    #  \param img_list structure de liste d'images
-   #  \note le resultat de cette procedure affecte la variable de 
-   # namespace  \c img_list puis charge toutes l'info 
+   #  \note le resultat de cette procedure affecte la variable de
+   # namespace  \c img_list puis charge toutes l'info
    # concernant l'astrometrie
    #----------------------------------------------------------------------------
    proc ::bdi_gui_astrometry::charge_list { img_list } {
@@ -2382,7 +2382,7 @@ namespace eval bdi_gui_astrometry {
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
-      
+
       ::bdi_gui_astrometry::charge_solution_astrometrique
       ::bdi_gui_astrometry::charge_element_rapport
 
@@ -2397,14 +2397,14 @@ namespace eval bdi_gui_astrometry {
       global audace
       global bddconf
 
-      set nb_obj 1 
+      set nb_obj 1
 
       ::bdi_gui_astrometry::inittoconf
       ::bdi_gui_astrometry::charge_list $img_list
 
       #--- Entetes Rapports
       set wdth 13
-      
+
       set loc_sources_par [list 0 "Name"              left  \
                                 0 "Nb img"            right \
                                 0 "\u03C1"            right \
@@ -2465,7 +2465,7 @@ namespace eval bdi_gui_astrometry {
                                 0 "type"              center \
                                 0 "unite"             center \
                                 0 "commentaire"       left ]
-      
+
       set ::bdi_gui_astrometry::fen .astrometry
       if { [winfo exists $::bdi_gui_astrometry::fen] } {
          wm withdraw $::bdi_gui_astrometry::fen
@@ -2518,59 +2518,59 @@ namespace eval bdi_gui_astrometry {
 
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand yes -fill both -padx 10 -pady 5
- 
-            pack [ttk::notebook $onglets.list] -expand yes -fill both 
- 
+
+            pack [ttk::notebook $onglets.list] -expand yes -fill both
+
             set sources [frame $onglets.list.sources]
-            pack $sources -in $onglets.list -expand yes -fill both 
+            pack $sources -in $onglets.list -expand yes -fill both
             $onglets.list add $sources -text "Sources"
-            
+
             set dates [frame $onglets.list.dates]
-            pack $dates -in $onglets.list -expand yes -fill both 
+            pack $dates -in $onglets.list -expand yes -fill both
             $onglets.list add $dates -text "Dates"
 
             set astrom [frame $onglets.list.astrom]
-            pack $astrom -in $onglets.list -expand yes -fill both 
+            pack $astrom -in $onglets.list -expand yes -fill both
             $onglets.list add $astrom -text "Astrometry"
 
             set ephem [frame $onglets.list.ephem]
-            pack $ephem -in $onglets.list -expand yes -fill both 
+            pack $ephem -in $onglets.list -expand yes -fill both
             $onglets.list add $ephem -text "Ephemerides"
 
             set graphes [frame $onglets.list.graphes]
-            pack $graphes -in $onglets.list -expand yes -fill both 
+            pack $graphes -in $onglets.list -expand yes -fill both
             $onglets.list add $graphes -text "Graphes"
 
             set rapports [frame $onglets.list.rapports]
-            pack $rapports -in $onglets.list -expand yes -fill both 
+            pack $rapports -in $onglets.list -expand yes -fill both
             $onglets.list add $rapports -text "Rapports"
 
          #--- Onglet SOURCES
          set onglets_sources [frame $sources.onglets -borderwidth 1 -cursor arrow -relief groove]
          pack $onglets_sources -in $sources -side top -expand yes -fill both -padx 10 -pady 5
 
-              pack [ttk::notebook $onglets_sources.list] -expand yes -fill both 
+              pack [ttk::notebook $onglets_sources.list] -expand yes -fill both
 
               set references [frame $onglets_sources.list.references -borderwidth 1]
-              pack $references -in $onglets_sources.list -expand yes -fill both 
+              pack $references -in $onglets_sources.list -expand yes -fill both
               $onglets_sources.list add $references -text "References"
 
               set sciences [frame $onglets_sources.list.sciences -borderwidth 1]
-              pack $sciences -in $onglets_sources.list -expand yes -fill both 
+              pack $sciences -in $onglets_sources.list -expand yes -fill both
               $onglets_sources.list add $sciences -text "Sciences"
 
          #--- Onglet DATES
          set onglets_dates [frame $dates.onglets -borderwidth 1 -cursor arrow -relief groove]
          pack $onglets_dates -in $dates -side top -expand yes -fill both -padx 10 -pady 5
 
-              pack [ttk::notebook $onglets_dates.list] -expand yes -fill both 
+              pack [ttk::notebook $onglets_dates.list] -expand yes -fill both
 
               set sour [frame $onglets_dates.list.sources -borderwidth 1]
-              pack $sour -in $onglets_dates.list -expand yes -fill both 
+              pack $sour -in $onglets_dates.list -expand yes -fill both
               $onglets_dates.list add $sour -text "Sources"
 
               set wcs [frame $onglets_dates.list.wcs -borderwidth 1]
-              pack $wcs -in $onglets_dates.list -expand yes -fill both 
+              pack $wcs -in $onglets_dates.list -expand yes -fill both
               $onglets_dates.list add $wcs -text "WCS"
 
          #--- Onglet ASTROMETRY
@@ -2580,13 +2580,13 @@ namespace eval bdi_gui_astrometry {
             set opts [frame $onglets_astrom.opts]
             pack $opts -in $onglets_astrom -anchor c -expand 0 -fill none -padx 10 -pady 10
 
-               label $opts.title -text "Parametres pour la reduction astrometrique" -borderwidth 1 -relief solid -font $bddconf(font,arial_10_b) 
+               label $opts.title -text "Parametres pour la reduction astrometrique" -borderwidth 1 -relief solid -font $bddconf(font,arial_10_b)
                frame $opts.blank -width 15 -height 15
                label $opts.labo -text "Axes orientation: "
                entry $opts.valo -relief sunken -textvariable ::bdi_tools_astrometry::orient -width 3
                label $opts.labd -text "Degree of polynom: "
                entry $opts.vald -relief sunken -textvariable ::bdi_tools_astrometry::polydeg -width 3
-   
+
                grid $opts.title -sticky nsew
                grid configure $opts.title -columnspan 2 -ipadx 10 -ipady 10 -padx 10 -pady 10
                grid $opts.blank
@@ -2599,22 +2599,22 @@ namespace eval bdi_gui_astrometry {
          set onglets_ephem [frame $ephem.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets_ephem -in $ephem -side top -expand yes -fill both -padx 10 -pady 5
 
-            pack [ttk::notebook $onglets_ephem.list] -expand yes -fill both 
+            pack [ttk::notebook $onglets_ephem.list] -expand yes -fill both
 
             set imcce [frame $onglets_ephem.list.imcce -borderwidth 1]
-            pack $imcce -in $onglets_ephem.list -expand yes -fill both 
+            pack $imcce -in $onglets_ephem.list -expand yes -fill both
             $onglets_ephem.list add $imcce -text "IMCCE"
 
             set jpl [frame $onglets_ephem.list.jpl -borderwidth 1]
-            pack $jpl -in $onglets_ephem.list -expand yes -fill both 
+            pack $jpl -in $onglets_ephem.list -expand yes -fill both
             $onglets_ephem.list add $jpl -text "JPL"
 
                #--- EPHEM IMCCE
                set onglets_ephem_imcce [frame $imcce.input -borderwidth 0 -cursor arrow -relief groove]
                pack $onglets_ephem_imcce -in $imcce -side top -expand 0 -fill x -padx 5 -pady 5 -anchor n
- 
+
                   checkbutton $onglets_ephem_imcce.use -highlightthickness 0 -text " Calculer les ephemerides IMCCE" \
-                     -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::use_ephem_imcce 
+                     -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::use_ephem_imcce
                   pack $onglets_ephem_imcce.use -in $onglets_ephem_imcce -side top -padx 5 -pady 2 -anchor w
 
                   set block [frame $onglets_ephem_imcce.prgme -borderwidth 0 -cursor arrow -relief groove]
@@ -2651,7 +2651,7 @@ namespace eval bdi_gui_astrometry {
                #--- EPHEM JPL
                set onglets_ephem_jpl [frame $jpl.input -borderwidth 0 -cursor arrow -relief groove]
                pack $onglets_ephem_jpl -in $jpl -side top -expand yes -fill both -padx 5 -pady 5 -anchor n
- 
+
                   checkbutton $onglets_ephem_jpl.use -highlightthickness 0 -text " Calculer les ephemerides JPL" \
                       -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::use_ephem_jpl
                   pack $onglets_ephem_jpl.use -in $onglets_ephem_jpl -side top -padx 5 -pady 2 -anchor w
@@ -2690,10 +2690,10 @@ namespace eval bdi_gui_astrometry {
                   #
                   #   scrollbar $::bdi_gui_astrometry::getjpl_send.xscroll -orient horizontal -cursor arrow -command "$::bdi_gui_astrometry::getjpl_send xview"
                   #   pack $::bdi_gui_astrometry::getjpl_send.xscroll -side bottom -fill x
-                  #   
+                  #
                   #   scrollbar $::bdi_gui_astrometry::getjpl_send.yscroll -orient vertical -cursor arrow -command "$::bdi_gui_astrometry::getjpl_send yview"
                   #   pack $::bdi_gui_astrometry::getjpl_send.yscroll -side right -fill y
-         
+
                   #set block [frame $onglets_ephem_jpl.butaction -borderwidth 0 -cursor arrow -relief groove]
                   #pack $block -in $onglets_ephem_jpl -side top -expand 0 -padx 2 -pady 5
                   #      button $block.butread -text "Read" -borderwidth 2 -takefocus 1 -command "" -state disable
@@ -2702,10 +2702,10 @@ namespace eval bdi_gui_astrometry {
                   #      pack $block.butsend -side right -anchor c -expand 0
                   #      button $block.butcreate -text "Create" -borderwidth 2 -takefocus 1 -command "" -state disable
                   #      pack $block.butcreate -side right -anchor c -expand 0
-         
+
                   set block [frame $onglets_ephem_jpl.reponse -borderwidth 1 -cursor arrow -relief groove]
                   pack $block -in $onglets_ephem_jpl -side top -expand 1 -fill both -padx 5 -pady 5
-                     label $block.lab -text "Copier/coller ci-dessous les ephemerides renvoyees par Horizons@JPL" -font $bddconf(font,arial_10_b) 
+                     label $block.lab -text "Copier/coller ci-dessous les ephemerides renvoyees par Horizons@JPL" -font $bddconf(font,arial_10_b)
                      pack $block.lab -side top -anchor c -fill x -padx 3 -pady 3
 
                      set recv [frame $block.reponse -borderwidth 0 -cursor arrow -relief groove]
@@ -2727,7 +2727,7 @@ namespace eval bdi_gui_astrometry {
 
                      scrollbar $::bdi_gui_astrometry::getjpl_recev.xscroll -orient horizontal -cursor arrow -command "$::bdi_gui_astrometry::getjpl_recev xview"
                      pack $::bdi_gui_astrometry::getjpl_recev.xscroll -side bottom -fill x
-                     
+
                      scrollbar $::bdi_gui_astrometry::getjpl_recev.yscroll -orient vertical -cursor arrow -command "$::bdi_gui_astrometry::getjpl_recev yview"
                      pack $::bdi_gui_astrometry::getjpl_recev.yscroll -side right -fill y
 
@@ -2735,22 +2735,22 @@ namespace eval bdi_gui_astrometry {
          set onglets_rapports [frame $rapports.onglets -borderwidth 1 -cursor arrow -relief groove]
          pack $onglets_rapports -in $rapports -side top -expand yes -fill both -padx 10 -pady 5
 
-            pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both 
+            pack [ttk::notebook $onglets_rapports.list] -expand yes -fill both
 
             set entetes [frame $onglets_rapports.list.entetes -borderwidth 1]
-            pack $entetes -in $onglets_rapports.list -expand yes -fill both 
+            pack $entetes -in $onglets_rapports.list -expand yes -fill both
             $onglets_rapports.list add $entetes -text "Entetes"
 
             set mpc [frame $onglets_rapports.list.mpc -borderwidth 1]
-            pack $mpc -in $onglets_rapports.list -expand yes -fill both 
+            pack $mpc -in $onglets_rapports.list -expand yes -fill both
             $onglets_rapports.list add $mpc -text "MPC"
 
             set txt [frame $onglets_rapports.list.txt -borderwidth 1]
-            pack $txt -in $onglets_rapports.list -expand yes -fill both 
+            pack $txt -in $onglets_rapports.list -expand yes -fill both
             $onglets_rapports.list add $txt -text "TXT"
 
             set misc [frame $onglets_rapports.list.misc -borderwidth 1]
-            pack $misc -in $onglets_rapports.list -expand yes -fill both 
+            pack $misc -in $onglets_rapports.list -expand yes -fill both
             $onglets_rapports.list add $misc -text "MISC"
 
          #--- TABLE Sources - References Parent (par liste de source et moyenne)
@@ -2758,7 +2758,7 @@ namespace eval bdi_gui_astrometry {
          pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
 
               set ::bdi_gui_astrometry::srpt $srp.table
-              
+
               tablelist::tablelist $::bdi_gui_astrometry::srpt \
                 -columns $loc_sources_par \
                 -labelcommand tablelist::sortByColumn \
@@ -2786,7 +2786,7 @@ namespace eval bdi_gui_astrometry {
               bind $::bdi_gui_astrometry::srpt <<ListboxSelect>> [ list ::bdi_gui_astrometry::cmdButton1Click_srpt %W ]
               bind [$::bdi_gui_astrometry::srpt bodypath] <ButtonPress-3> [ list tk_popup $srp.popupTbl %X %Y ]
 
-              pack $::bdi_gui_astrometry::srpt -in $srp -expand yes -fill both 
+              pack $::bdi_gui_astrometry::srpt -in $srp -expand yes -fill both
 
          #--- TABLE Sources - References Enfant (par liste de date chaque mesure)
          set sre [frame $onglets_sources.list.references.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
@@ -2853,7 +2853,7 @@ namespace eval bdi_gui_astrometry {
               bind $::bdi_gui_astrometry::sspt <<ListboxSelect>> [ list ::bdi_gui_astrometry::cmdButton1Click_sspt %W ]
               bind [$::bdi_gui_astrometry::sspt bodypath] <ButtonPress-3> [ list tk_popup $ssp.popupTbl %X %Y ]
 
-              pack $::bdi_gui_astrometry::sspt -in $ssp -expand yes -fill both 
+              pack $::bdi_gui_astrometry::sspt -in $ssp -expand yes -fill both
 
          #--- TABLE Sources - Science Enfant (par liste de date chaque mesure)
          set sse [frame $onglets_sources.list.sciences.enfant -borderwidth 1 -cursor arrow -relief groove -background white]
@@ -2916,7 +2916,7 @@ namespace eval bdi_gui_astrometry {
               bind $::bdi_gui_astrometry::dspt <<ListboxSelect>> [ list ::bdi_gui_astrometry::cmdButton1Click_dspt %W ]
               bind [$::bdi_gui_astrometry::dspt bodypath] <ButtonPress-3> [ list tk_popup $dsp.popupTbl %X %Y ]
 
-              pack $::bdi_gui_astrometry::dspt -in $dsp -expand yes -fill both 
+              pack $::bdi_gui_astrometry::dspt -in $dsp -expand yes -fill both
 
          #--- TABLE Dates - Sources Enfant (par liste de sources chaque mesure)
          set dse [frame $onglets_dates.list.sources.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
@@ -2971,7 +2971,7 @@ namespace eval bdi_gui_astrometry {
 
               bind $::bdi_gui_astrometry::dwpt <<ListboxSelect>> [ list ::bdi_gui_astrometry::cmdButton1Click_dwpt %W ]
 
-              pack $::bdi_gui_astrometry::dwpt -in $dwp -expand yes -fill both 
+              pack $::bdi_gui_astrometry::dwpt -in $dwp -expand yes -fill both
 
          #--- TABLE Dates - WCS Enfant (Solution astrometrique)
          set dwe [frame $onglets_dates.list.wcs.enfant -borderwidth 1 -cursor arrow -relief groove -background ivory]
@@ -2997,7 +2997,7 @@ namespace eval bdi_gui_astrometry {
               scrollbar $dwe.vsb -orient vertical -command [list $::bdi_gui_astrometry::dwet yview]
               pack $dwe.vsb -in $dwe -side left -fill y
 
-              pack $::bdi_gui_astrometry::dwet -in $dwe -expand yes -fill both 
+              pack $::bdi_gui_astrometry::dwet -in $dwe -expand yes -fill both
 
          #--- Onglet RAPPORT - Entetes
          set block [frame $entetes.uai_code  -borderwidth 0 -cursor arrow -relief groove]
@@ -3175,16 +3175,16 @@ namespace eval bdi_gui_astrometry {
                pack $selinobject.combo -anchor center -side left -fill x -expand 0
 
             set selingraph [frame $onglet_graphes.selingraph -borderwidth 1 -cursor arrow -relief groove]
-            pack $selingraph -in $onglet_graphes -anchor c -side top -expand 0  -padx 10 -pady 5 -ipady 5 
-   
+            pack $selingraph -in $onglet_graphes -anchor c -side top -expand 0  -padx 10 -pady 5 -ipady 5
+
                button $selingraph.c -text "Crop" -borderwidth 2 -takefocus 1 \
                        -command "::bdi_gui_astrometry::graph_crop"
                pack $selingraph.c -side left -anchor c -expand 1 -padx 20 -pady 5
-   
+
                button $selingraph.u -text "Un-Crop" -borderwidth 2 -takefocus 1 \
                        -command "::bdi_gui_astrometry::graph_uncrop"
                pack $selingraph.u -side left -anchor c -expand 1 -padx 20 -pady 5
-   
+
                button $selingraph.v -text "Voir Source" -borderwidth 2 -takefocus 1 \
                        -command "::bdi_gui_astrometry::graph_voir_source"
                pack $selingraph.v -side left -anchor c -expand 1 -padx 20 -pady 5

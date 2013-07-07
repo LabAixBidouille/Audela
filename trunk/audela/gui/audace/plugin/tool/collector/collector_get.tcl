@@ -422,7 +422,7 @@
    #---------------------------------------------------------------------------
    #  getCdeltFov
    #  Retourne les cdelt en arcsec/pixel et les fov en degres
-   #  Parametres : dimension des pixels (avec bining) en um,
+   #  Parametres : dimension des pixels (avec bining) en mum,
    #     nombre de pixels dans l'image, longueur focale en m
    #  Derive de surchaud.tcl/simulimage
    #---------------------------------------------------------------------------
