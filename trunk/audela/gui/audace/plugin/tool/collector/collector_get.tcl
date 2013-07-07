@@ -382,7 +382,7 @@
    #  Retourne azimuth, elevation et angle horaire
    #     Input :
    #       ra_hms,dec_dms : coordinates J2000.0
-   #       datetu   : date TU
+   #       datejd   : date JD
    #       home     : gps
    #       airpress : atmospheric pressure (Pa)
    #       temperature : °K
@@ -393,7 +393,7 @@
    #         elev : true altitude (degrees)
    #         ha  : true hour angle (degrees)
    #---------------------------------------------------------------------------
-   proc getTrueCoordinates { data } {
+  proc getTrueCoordinates { data } {
 
       lassign $data ra_hms dec_dms datetu home airpress temperature
 
@@ -578,6 +578,7 @@
 
       if {$elev_deg > 0} {
          set z [expr {90.-$elev_deg}]
+         set z [mc_angle2rad $z]
          set secz [expr {1./cos($z)}]
          set airmass [expr { $secz-0.0018167*$secz+0.02875*$secz*$secz+0.0008083*$secz*$secz*$secz }]
          set secz [format %0.3f $secz]
