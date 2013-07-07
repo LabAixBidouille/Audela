@@ -243,6 +243,7 @@ proc ::keyword::init { } {
    set private(GotoManuelAutoBis)   "$::caption(keyword,manuel)"
    set private(equinoxe)            ""
    set private(GotoManuelAutoTer)   "$::caption(keyword,manuel)"
+   set private(airmass)             ""
    set private(radecsys)            ""
    set private(typeImage)           "Object"
    set private(typeImageSelected)   "Object"
@@ -293,6 +294,7 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAutoBis)     0  "" "float"  "Object Right Ascension"                          "degres" ]
    lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAutoBis)     0  "" "float"  "Object Declination"                              "degres" ]
    lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAutoTer)     0  "" "float"  "Coordinates equinox"                             "" ]
+   lappend private(infosMotsClefs) [ list "AIRMASS"  $::caption(keyword,cible)       ::keyword::private(airmass)             readonly ""                             ""                                             ""                                  ""                                        "" "" "float"  "Relative air mass"                               "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                        "" "" "string" "Coordinates system"                              "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::keyword::private(typeImageSelected)     0  "" "string" "Image type"                                      "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                        "" "" "string" "Series identifiant"                              "" ]
@@ -365,6 +367,9 @@ proc ::keyword::run { visuNo configNameVariable } {
    #--- je recupere l'equinoxe des coordonnees de l'objet  (si mode automatique)
    onChangeEquinox $visuNo
 
+   #--- je calcule la masse d'air
+   calculateAirMass $visuNo
+
    #--- je mets a jour la procedure a appeler pour rafraichir CCD_TEMP
    for { set i 0 } { $i < [ llength $private(infosMotsClefs) ] } { incr i } {
       set ligne [ lindex $private(infosMotsClefs) $i ]
@@ -398,6 +403,118 @@ proc ::keyword::run { visuNo configNameVariable } {
 
    #--- Configuration relative aux combobox
    ::keyword::onChangeValueComboBox $visuNo
+}
+
+#------------------------------------------------------------------------------
+# calculateAirMass
+#    calcule et met a jour le mot cle de la masse d'air
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::calculateAirMass { visuNo } {
+   variable private
+   global audace
+
+   #--- Je calcule la masse d'air si les mots cles suivants existent :
+   #--- DATE-OBS, EXPOSURE, SITELONG, SITELAT, SITEELEV, RA et DEC
+
+   #--- Je regarde si le mot cle DATE-OBS n'est pas vide
+   set date [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd DATE-OBS ] 1 ]
+   if { $date == "" } {
+      set private(airmass) ""
+      return $private(airmass)
+   }
+
+   #--- Je regarde si le mot cle EXPOSURE n'est pas vide
+   set expo [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
+   if { $expo == "" } {
+      set private(airmass) ""
+      return $private(airmass)
+   }
+
+   set jd [ expr [ mc_date2jd $date ]+0.5*$expo/86400 ]
+
+   #--- Je regarde si les mots cles SITELONG, SITELAT et SITEELEV sont coches
+   set a 0
+   set b 0
+   set c 0
+   set listeMotsClesCoches $::conf(keyword,$private($visuNo,configName),check)
+   set longListe [ llength $listeMotsClesCoches ]
+   for { set i 0 } { $i < $longListe } { incr i 1 } {
+      if { [ lindex $listeMotsClesCoches $i ] == "1,check,SITELONG" } {
+         set a 1
+      }
+      if { [ lindex $listeMotsClesCoches $i ] == "1,check,SITELAT" } {
+         set b 1
+      }
+      if { [ lindex $listeMotsClesCoches $i ] == "1,check,SITEELEV" } {
+         set c 1
+      }
+   }
+   if { [ expr $a + $b + $c ] != "3" } {
+      set private(airmass) ""
+      return $private(airmass)
+   }
+
+   set home $audace(posobs,observateur,gps)
+
+   if { ! [ info exists audace(meteo,obs,pressure) ] }    { set audace(meteo,obs,pressure)    "101325" }
+   if { ! [ info exists audace(meteo,obs,temperature) ] } { set audace(meteo,obs,temperature) "290" }
+
+   #--- Je regarde si les mots cles RA et DEC sont coches
+   set d 0
+   set e 0
+   set listeMotsClesCoches $::conf(keyword,$private($visuNo,configName),check)
+   set longListe [ llength $listeMotsClesCoches ]
+   for { set i 0 } { $i < $longListe } { incr i 1 } {
+      if { [ lindex $listeMotsClesCoches $i ] == "1,check,RA" } {
+         set d 1
+      }
+      if { [ lindex $listeMotsClesCoches $i ] == "1,check,DEC" } {
+         set e 1
+      }
+   }
+   if { [ expr $d + $e ] != "2" } {
+      set private(airmass) ""
+      return $private(airmass)
+   }
+
+   #--- Je regarde si le mot cle RA n'est pas vide
+   set ra $private(ra)
+   if { $ra == "" } {
+      set private(airmass) ""
+      return $private(airmass)
+   } else {
+      set ra [ mc_angle2deg $ra ]
+   }
+
+   #--- Je regarde si le mot cle DEC n'est pas vide
+   set dec $private(dec)
+   if { $dec == "" } {
+      set private(airmass) ""
+      return $private(airmass)
+   } else {
+      set dec [ mc_angle2deg $dec ]
+   }
+
+   #--- Je calcule l'elevation de l'astre
+   set hip  [ list 1 1 $ra $dec J2000 J2000 0 0 0 ]
+   set res  [ mc_hip2tel $hip $jd $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) ]
+   set elev [ lindex $res 14 ]
+
+   #--- Je calcule la masse d'air
+   set z    [ expr 90.-$elev ]
+   set z    [ mc_angle2rad $z ]
+   if { $elev>0 } {
+      set secz [ expr 1./cos($z) ]
+      set airmass [ expr $secz-0.0018167*$secz+0.02875*$secz*$secz+0.0008083*$secz*$secz*$secz ]
+   } else {
+      set airmass -1
+   }
+   set private(airmass) $airmass
 }
 
 #------------------------------------------------------------------------------
@@ -879,10 +996,10 @@ proc ::keyword::setKeywordsEquinoxManuel { visuNo } {
 # getKeywords
 #    retourne la liste de valeurs des mots cles coches
 #
-# @param visuNo      Numero de la visu:
-# @param configName  Nom de la configuration des mots cles
-# @param keywordNameList Liste des de noms mots cles demandes (parametre optionnel)
-#     Si le parametre n'est pas precise ou s'il vaut une chaine vite
+# @param visuNo          Numero de la visu:
+# @param configName      Nom de la configuration des mots cles
+# @param keywordNameList Liste des de mots cles demandes (parametre optionnel)
+#     Si le parametre n'est pas precise ou s'il vaut une chaine vide
 #     la fonction retourne les valeurs de tous les mots cles qui sont coches.
 #
 # @return  liste de liste des valeurs de mots cles
@@ -929,6 +1046,9 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
 
    #--- je recupere l'equinoxe des coordonnees de l'objet (si mode automatique)
    onChangeEquinox $visuNo
+
+   #--- je calcule la masse d'air
+   calculateAirMass $visuNo
 
    if { [llength $keywordNameList] == 0 } {
       #--- je recupere les mots cles coches
