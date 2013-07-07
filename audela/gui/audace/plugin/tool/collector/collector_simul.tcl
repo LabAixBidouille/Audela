@@ -256,8 +256,8 @@
       dict set dicokwd OBSERVER  {OBSERVER %s string {Observers Names} {}}
       dict set dicokwd ORIGIN    {ORIGIN %s string {Organization Name} {}}
       dict set dicokwd PEDESTAL  {PEDESTAL %s int {add this value to each pixel value} {}}
-      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
-      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
+      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} mum}
+      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} mum}
       dict set dicokwd RA        {RA %s float {Expected RA asked to telescope} {deg}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd SEING     {SEING %s double {Average FWHM} pixels}
