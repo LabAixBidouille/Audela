@@ -131,7 +131,7 @@
       variable private
 
       set tempK [expr { 273.15 + $private(tempair) }]
-      set data [list $private(ra) $private(dec) $private(tu) $private(gps) $private(airpress) $tempK]
+      set data [list $private(ra) $private(dec) $private(jd) $private(gps) $private(airpress) $tempK]
       if {"-" in $data} {return}
 
       lassign [getTrueCoordinates $data] private(raTel) private(decTel) \
