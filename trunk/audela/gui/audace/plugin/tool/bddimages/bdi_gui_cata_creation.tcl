@@ -1,14 +1,14 @@
 ## @file bdi_gui_cata_creation.tcl
 # @brief     Methodes dediees a la GUI de creation des fichiers catalogues
-# @author    Frederic Vachier and Jerome Berthier 
+# @author    Frederic Vachier and Jerome Berthier
 # @version   1.0
 # @date      2013
 # @copyright GNU Public License.
-# @par Ressource 
+# @par Ressource
 # @code  source [file join $audace(rep_install) gui audace plugin tool bddimages bdi_gui_cata_creation.tcl]
 # @endcode
 
-# Mise à jour $Id: bdi_gui_cata_creation.tcl 9215 2013-03-15 15:36:44Z jberthier $
+# Mise Ã  jour $Id: bdi_gui_cata_creation.tcl 9215 2013-03-15 15:36:44Z jberthier $
 
 #============================================================
 ## Declaration du namespace \c gui_cata_creation .
@@ -86,12 +86,12 @@ namespace eval gui_cata_creation {
    #  @return void
    #
    proc ::gui_cata_creation::recup_position { } {
-   
+
       global conf bddconf
-   
+
       set bddconf(geometry_creation_cata) [wm geometry $::gui_cata_creation::fen]
       set conf(bddimages,geometry_creation_cata) $bddconf(geometry_creation_cata)
-   
+
    }
 
 
@@ -110,8 +110,8 @@ namespace eval gui_cata_creation {
          gren_info "Coordinates of image center: $::tools_cata::ra_save, $::tools_cata::dec_save\n"
          return
       }
-      set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]   
-      set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]   
+      set xcent [format "%0.0f" [expr ([lindex $rect 0] + [lindex $rect 2])/2.]  ]
+      set ycent [format "%0.0f" [expr ([lindex $rect 1] + [lindex $rect 1])/2.]  ]
       set err [ catch {set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]} msg ]
       if {$err} {
          gren_erreur "Error gui_cata_creation::setval: $err -> $msg\n"
@@ -134,7 +134,7 @@ namespace eval gui_cata_creation {
       set ::tools_cata::ra  $::tools_cata::ra_save
       set ::tools_cata::dec $::tools_cata::dec_save
       gren_info "Reset coordinates of image center to $::tools_cata::ra $::tools_cata::dec\n"
-   
+
    }
 
 
@@ -160,10 +160,10 @@ namespace eval gui_cata_creation {
 
          cleanmark
          if {[::gui_cata_creation::get_one_wcs] == true} {
-         
+
             set ::gui_cata::color_wcs $::gui_cata::color_button_good
             $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
-         
+
             if {[::tools_cata::get_cata] == false} {
                # TODO ::gui_cata_creation::create_cata : gerer l'erreur le  cata a echou?
                set ::gui_cata::color_cata $::gui_cata::color_button_bad
@@ -212,7 +212,7 @@ namespace eval gui_cata_creation {
             break
          }
          if {[::gui_cata_creation::get_one_wcs] == true} {
-             
+
             set ::gui_cata::color_wcs $::gui_cata::color_button_good
             $::gui_cata::gui_wcs configure -bg $::gui_cata::color_wcs
             if {[::tools_cata::get_cata] == false} {
@@ -267,12 +267,12 @@ namespace eval gui_cata_creation {
          set dirfilename   [::bddimages_liste::lget $::tools_cata::current_image dirfilename]
 
          set err [catch {::tools_cata::get_wcs} msg]
-         
+
          if {$err == 0 } {
             set newimg [::bddimages_liste_gui::file_to_img $filename $dirfilename]
-            
+
             set ::tools_cata::img_list [lreplace $::tools_cata::img_list [expr $::tools_cata::id_current_image -1] [expr $::tools_cata::id_current_image-1] $newimg]
-            
+
             set idbddimg      [::bddimages_liste::lget $newimg idbddimg]
             set tabkey        [::bddimages_liste::lget $newimg "tabkey"]
             set bddimages_wcs [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1] ]
@@ -292,7 +292,7 @@ namespace eval gui_cata_creation {
             set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
             set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
             set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
-            
+
             return true
 
          } else {
@@ -319,7 +319,7 @@ namespace eval gui_cata_creation {
       gren_info "--------\n"
 
       set ::tools_cata::current_image [lindex $::tools_cata::img_list [expr $::tools_cata::id_current_image - 1] ]
-      
+
       set err [catch {set ::tools_cata::current_image [::bddimages_liste_gui::add_info_cata $::tools_cata::current_image]} msg]
       if {$err} {
          gren_erreur "Erreur de lecture des infos du cata de l'image \n"
@@ -328,7 +328,7 @@ namespace eval gui_cata_creation {
          gren_erreur "    idbddimg = $idbddimg\n"
          return
       }
-      
+
       set cataexist   [::bddimages_liste::lget $::tools_cata::current_image "cataexist"]
       set tabkey      [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
       set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
@@ -358,7 +358,7 @@ namespace eval gui_cata_creation {
       } else {
          set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
       }
-      
+
       set xcent [expr $naxis1/2.0]
       set ycent [expr $naxis2/2.0]
 
@@ -388,11 +388,11 @@ namespace eval gui_cata_creation {
             set cataexist 0
          }
       }
-      
+
       #?Mise a jour GUI
-      
+
       $::gui_cata::gui_back configure -state disabled
-      
+
       $::gui_cata::gui_nomimage configure -text $::tools_cata::current_image_name
       $::gui_cata::gui_stimage  configure -text "$::tools_cata::id_current_image / $::tools_cata::nb_img_list"
 
@@ -444,7 +444,7 @@ namespace eval gui_cata_creation {
          if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
          if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
       }
-      
+
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
@@ -547,7 +547,7 @@ namespace eval gui_cata_creation {
 
 
    #------------------------------------------------------------
-   ## Charge la config Sextractor par defaut 
+   ## Charge la config Sextractor par defaut
    # @return void
    #
    proc ::gui_cata_creation::get_default_confsex { } {
@@ -592,7 +592,7 @@ namespace eval gui_cata_creation {
       set err [catch {file copy -force $::gui_cata_creation::user_conf_sex "./config.sex"} msg ]
       if {$err != 0} {
          gren_erreur "Error: gui_cata_creation::set_user_confsex: cannot copy $::gui_cata_creation::user_conf_sex to work dir (./config.sex)\n"
-         gren_erreur "$err ; $msg\n" 
+         gren_erreur "$err ; $msg\n"
          return $err
       }
 
@@ -608,7 +608,7 @@ namespace eval gui_cata_creation {
 
       gren_info "Test Sextractor ...\n"
       cleanmark
-      ::gui_cata_creation::set_user_confsex 
+      ::gui_cata_creation::set_user_confsex
 
       # Calib WCS
       set err [catch {calibwcs * * * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0} msg]
@@ -631,7 +631,7 @@ namespace eval gui_cata_creation {
          #   affich_un_rond_xy $xi $yi "green" 3 1
          #}
          #close $chan
-   
+
          array set color { 1 green 2 red 3 blue}
          gren_info "  Display ascii.txt:\n"
          gren_info "    * green = Sextractor extracted sources (code 1)\n"
@@ -700,7 +700,7 @@ namespace eval gui_cata_creation {
 
       for {set i 1} {$i<=7} {incr i} {
          set ::gui_cata::man_xy_star($i) ""
-         set ::gui_cata::man_ad_star($i) ""      
+         set ::gui_cata::man_ad_star($i) ""
       }
 
    }
@@ -708,7 +708,7 @@ namespace eval gui_cata_creation {
 
 
    #------------------------------------------------------------
-   ## Affiche dans la visu les sources selectionnees pour 
+   ## Affiche dans la visu les sources selectionnees pour
    # le mode manuel de creation du cata
    # @return void
    #
@@ -729,7 +729,7 @@ namespace eval gui_cata_creation {
 
    #------------------------------------------------------------
    ## ???
-   # 
+   #
    # @return void
    #
    proc ::gui_cata_creation::manual_fit {  } {
@@ -768,13 +768,13 @@ namespace eval gui_cata_creation {
       set xdiff [expr [lindex $cent 0] - $xsm]
       set ydiff [expr [lindex $cent 1] - $ysm]
       set rdiff [expr sqrt((pow($xdiff,2)+pow($ydiff,2))/2.0)]
-      
+
       set err [catch {set ::gui_cata::man_xy_star($id) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"} msg ]
       if {$err} {
          gren_info "err: $err \n"
          gren_info "msg: $msg \n"
          gren_info "cnt 0: [lindex $cent 0] \n"
-         gren_info "cnt 1: [lindex $cent 1] \n"      
+         gren_info "cnt 1: [lindex $cent 1] \n"
       }
 
       set rdiff ""
@@ -792,12 +792,12 @@ namespace eval gui_cata_creation {
             set xdiff [expr [lindex $cent 0] - $xsm]
             set ydiff [expr [lindex $cent 1] - $ysm]
             lappend rdiff [expr sqrt((pow($xdiff,2)+pow($ydiff,2))/2.0)]
-            set err [catch {set ::gui_cata::man_xy_star($i) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"    } msg ]       
+            set err [catch {set ::gui_cata::man_xy_star($i) "[format "%2.2f" [lindex $cent 0]] [format "%2.2f" [lindex $cent 1]]"    } msg ]
             if {$err} {
                gren_info "err: $err \n"
                gren_info "msg: $msg \n"
                gren_info "cnt 0: [lindex $cent 0] \n"
-               gren_info "cnt 1: [lindex $cent 1] \n"      
+               gren_info "cnt 1: [lindex $cent 1] \n"
             }
          }
       }
@@ -849,7 +849,7 @@ namespace eval gui_cata_creation {
 
       $::gui_cata::gui_enrimg    configure -state disabled
       $::gui_cata::gui_creercata configure -state disabled
-      
+
       gren_info "Creation Manuelle du WCS\n"
 
       set sources {}
@@ -873,9 +873,9 @@ namespace eval gui_cata_creation {
       }
       set fields  [list $fieldimg]
       set listsources [list $fields $sources ]
-      
+
       gren_info "     Mesure des PSF\n"
-      
+
       ::bdi_tools_psf::get_psf_listsources listsources "yes"
       gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
@@ -889,7 +889,7 @@ namespace eval gui_cata_creation {
             set othf [lindex $astroid 2]
             ::bdi_tools_psf::set_by_key othf "flagastrom" "R"
             ::bdi_tools_psf::set_by_key othf "cataastrom" "IMG"
-            set astroid [lreplace $astroid 2 2 $othf] 
+            set astroid [lreplace $astroid 2 2 $othf]
             set s [lreplace $s $x $x $astroid]
             set ls [lreplace $ls $id $id $s]
          }
@@ -992,7 +992,7 @@ namespace eval gui_cata_creation {
 return
 
       # exemple cas d erreur
-      set err 0      
+      set err 0
       if {$err} {
          gren_erreur "Error: blabla $err ->  $msg\n"
          set ::gui_cata::color_wcs $::gui_cata::color_button_bad
@@ -1007,8 +1007,8 @@ return
       return [list EQUINOX RADESYS CTYPE1  CTYPE2  LONPOLE CUNIT1  CUNIT2  CRPIX1  CRPIX2  FOCLEN \
               RA      DEC     CRVAL1  CRVAL2  CDELT1  CDELT2  CROTA2  CD1_1   CD1_2   CD2_1   CD2_2 ]
    }
-   
-   
+
+
    proc ::gui_cata_creation::paste_wcs {  } {
 
       if {[info exists ::gui_cata_creation::wcs_to_paste]} {
@@ -1023,15 +1023,15 @@ return
    }
 
    proc ::gui_cata_creation::copy_wcs {  } {
-      
+
       array unset ::gui_cata_creation::wcs_to_paste
       set lh [::gui_cata_creation::get_wcs_fields]
       foreach key $lh {
          set ::gui_cata_creation::wcs_to_paste($key) [buf$::audace(bufNo) getkwd $key]
       }
       $::gui_cata::gui_paste_wcs configure -state normal
-      
- 
+
+
    }
 
    proc ::gui_cata_creation::voir_wcs {  } {
@@ -1039,7 +1039,7 @@ return
       set lh [::gui_cata_creation::get_wcs_fields]
       foreach key $lh {
          gren_info "[buf$::audace(bufNo) getkwd $key]\n"
-         
+
       }
    }
 
@@ -1058,12 +1058,12 @@ return
       set dec  [expr $dec + $y/3600.]
       set kra  [lreplace $kra 1 1 $ra]
       set kdec [lreplace $kdec 1 1 $dec]
-      buf$::audace(bufNo) setkwd $kra 
+      buf$::audace(bufNo) setkwd $kra
       buf$::audace(bufNo) setkwd $kdec
-      
+
       saveima i
       loadima i
-      
+
       gren_debug "apres  RA DEC : $ra $dec\n"
       set radec [buf$::audace(bufNo) xy2radec {512 512}]
       gren_debug "Centre : $radec\n"
@@ -1075,7 +1075,7 @@ return
    proc ::gui_cata_creation::voir_usno {  } {
 
       global bddconf
-      
+
       set scale_x [lindex [buf$::audace(bufNo) getkwd "CD1_1" ] 1]
       set scale_y [lindex [buf$::audace(bufNo) getkwd "CD2_2" ] 1]
       set naxis1  [lindex [buf$::audace(bufNo) getkwd "NAXIS1" ] 1]
@@ -1115,21 +1115,21 @@ return
          }
       }
       set usnoa2 [list $fields $newsource]
-      
+
       set tabmag [lsort -index 1 $tabmag]
-      
+
       set nbs [::manage_source::get_nb_sources_by_cata $usnoa2 "USNOA2"]
       gren_debug "$nbs Sources USNOA2 extraites -> ROLLUP = [::manage_source::get_nb_sources_rollup $usnoa2]\n"
-      
+
       affich_rond $usnoa2 "USNOA2" $::gui_cata::color_usnoa2  $::gui_cata::size_usnoa2
-      
+
       set cpt 0
       foreach x $tabmag {
          set id [lindex $x 0]
-         
+
          set ra  [lindex $usnoa2 [list 1 $id 0 1 0]]
          set dec [lindex $usnoa2 [list 1 $id 0 1 1]]
-         
+
          affich_un_rond $ra $dec red 2
          incr cpt
          if {$cpt>100} {break}
@@ -1149,7 +1149,7 @@ return
       cleanmark
 
       ::tools_cata::push_img_list
-      
+
       set tabkey  [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
       set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1 ] 1]
       set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2 ] 1]
@@ -1201,18 +1201,18 @@ return
          set dec [lindex $s { 0 1 1 } ]
 
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
-         
+
          if {$err || $err_psf != ""} {
             continue
          }
-         
+
          set x  [lsearch -index 0 $s "ASTROID"]
          if {$x>=0} {
             set astroid [lindex $s $x]
             set othf [lindex $astroid 2]
             ::bdi_tools_psf::set_by_key othf "flagastrom" "R"
             ::bdi_tools_psf::set_by_key othf "cataastrom" "USNOA2"
-            set astroid [lreplace $astroid 2 2 $othf] 
+            set astroid [lreplace $astroid 2 2 $othf]
             set s [lreplace $s $x $x $astroid]
             lappend newsources $s
             affich_un_rond $ra $dec green 2
@@ -1285,8 +1285,8 @@ return
    proc ::gui_cata_creation::manual_create_cata {  } {
 
       global bddconf
-      
-      
+
+
       ::tools_cata::push_img_list
 
       set ::tools_cata::create_cata 0
@@ -1334,13 +1334,13 @@ return
          set radec  [buf$::audace(bufNo) xy2radec [list $xpos $ypos]]
          set ra  [lindex $radec 0]
          set dec [lindex $radec 1]
-         
+
          set l [list $id 1 $xpos $ypos $instr_mag $err_mag $flux_sex $err_flux_sex $ra $dec \
                      0.0 0.0 0.0 0.0 0.0 0 0 \
                      $background_sex 0.0 0.0 0.0 $major_axis_sex $minor_axis_sex $position_angle_sex \
                      $fwhm_sex $flag_sex]
          lappend sources [list [list "IMG" {} $l]]
-         
+
       }
       set ::tools_cata::current_listsources [list $fields $sources]
       set ::tools_cata::current_listsources [::tools_sources::set_common_fields $::tools_cata::current_listsources IMG { ra dec 5.0 calib_mag calib_mag_ss1}]
@@ -1394,12 +1394,12 @@ return
 
       set ::tools_cata::ra  $ra
       set ::tools_cata::dec $dec
-      
-      # Calcul des magnitudes 
+
+      # Calcul des magnitudes
 
       set fields [lindex $::tools_cata::current_listsources 0]
       set sources [lindex $::tools_cata::current_listsources 1]
-      set newsources "" 
+      set newsources ""
       foreach s $sources {
          set news ""
          foreach cata $s {
@@ -1454,7 +1454,7 @@ return
                      lappend tabdmag [expr abs($magcata - $mag)]
                   }
                }
-            } 
+            }
          }
       }
       set dmag [::math::statistics::median $tabdmag]
@@ -1464,7 +1464,7 @@ return
       # mise a jour de l erreur en mag
       set fields [lindex $::tools_cata::current_listsources 0]
       set sources [lindex $::tools_cata::current_listsources 1]
-      set newsources "" 
+      set newsources ""
       foreach s $sources {
          set news ""
          foreach cata $s {
@@ -1481,7 +1481,7 @@ return
       }
       set ::tools_cata::current_listsources [list $fields $newsources]
 
-      # Resultats des magnitudes 
+      # Resultats des magnitudes
       #::manage_source::get_fields_from_sources $::tools_cata::current_listsources
 
       set log 0
@@ -1505,7 +1505,7 @@ return
                     }
                  }
                  gren_debug "\n"
-               } 
+               }
             }
          }
       }
@@ -1550,9 +1550,9 @@ return
    # @return void
    #
    proc ::gui_cata_creation::manual_insert_img {  } {
-   
+
       global bddconf
-   
+
       set log 1
 
       set idbddimg [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
@@ -1579,7 +1579,7 @@ return
          gren_erreur "Fichier image inexistant ($idbddimg) \n"
          return
       }
-      
+
       if {$imgfilebase!=$fileimg} {
          gren_erreur "Insertion de l image impossible\n"
          gren_erreur "Le fichiers sont different.\n"
@@ -1595,7 +1595,7 @@ return
       }
 
       if {$catafilebase == -1 } {
-         if {$log} {gren_info "cata n existe pas dans la base\n"}      
+         if {$log} {gren_info "cata n existe pas dans la base\n"}
       } else {
          if {$log} {gren_info "cata existe dans la base\n"}
          if {$log} {gren_info "cata dans la base = $catafilebase\n"}
@@ -1617,15 +1617,15 @@ return
       set errnum [catch {set r [insertion_solo $imgfiletmp]} msg ]
       catch {gren_info "$errnum : $msg : $r"}
       if {$errnum==0} {
-      
+
          # Modification de l idbddimg
          gren_info "\nInsertion reussie\n"
          gren_info "  Old Idbddimg = $i\n"
          gren_info "  New Idbddimg = $r\n"
          set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "idbddimg" $r]
-         
-         set idbddimg $r 
-         
+
+         set idbddimg $r
+
          # Modification du tabkey
          gren_info "Chargement du TABKEY depuis le buffer\n"
          set err [catch {set tabkey [::bdi_tools_image::get_tabkey_from_buffer] } msg ]
@@ -1641,7 +1641,7 @@ return
          # Insertion du cata
          gren_info "Verification cata pour idbddimg=$idbddimg\n"
          gren_info "catafile : $cataxml\n"
-         
+
          if {![file exists $cataxml]} {
             gren_erreur "Le fichier cata n existe pas\n"
          } else {
@@ -1650,7 +1650,7 @@ return
             set catafilebase [lindex $ident 3]
             set idbddcata [lindex $ident 2]
             if {$catafilebase == -1 } {
-               if {$log} {gren_info "cata n existe pas dans la base\n"}     
+               if {$log} {gren_info "cata n existe pas dans la base\n"}
                # insertion du CATA
                set errnum [catch {set r [insertion_solo $cataxml]} msg ]
                catch {gren_info "$errnum : $msg : $r"}
@@ -1659,7 +1659,7 @@ return
                   gren_info "New Idbddcata = $r\n"
                   ::gui_cata::affiche_cata
                }
-                
+
             } else {
                if {$log} {gren_info "cata existe dans la base\n"}
                if {$log} {gren_info "cata dans la base = $catafilebase\n"}
@@ -1841,7 +1841,7 @@ return
    # @return void
    #
    proc ::gui_cata_creation::choose_color { color_cata button } {
-   
+
       upvar $color_cata color
       ::bdi_gui_config::choose_color color $button
       ::gui_cata::affiche_cata
@@ -1856,7 +1856,7 @@ return
    #
    proc ::gui_cata_creation::go { img_list } {
 
-      global audace caption 
+      global audace caption
       global conf bddconf
 
       ::gui_cata_creation::charge_list $img_list
@@ -1920,7 +1920,7 @@ return
          #--- Cree un frame pour les onglets
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand 0 -fill x -padx 10 -pady 5
- 
+
             pack [ttk::notebook $onglets.nb]
             set f1 [frame $onglets.nb.f1]
             set f2 [frame $onglets.nb.f2]
@@ -1930,14 +1930,14 @@ return
             set f7 [frame $onglets.nb.f7]
             set f8 [frame $onglets.nb.f8]
             set f9 [frame $onglets.nb.f9]
-            
-            $onglets.nb add $f1 -text $caption(gui_cata_creation,catalogue) 
-            $onglets.nb add $f2 -text $caption(gui_cata_creation,variables) 
+
+            $onglets.nb add $f1 -text $caption(gui_cata_creation,catalogue)
+            $onglets.nb add $f2 -text $caption(gui_cata_creation,variables)
             $onglets.nb add $f3 -text $caption(gui_cata_creation,image)
             $onglets.nb add $f5 -text $caption(gui_cata_creation,sextractor)
-            $onglets.nb add $f6 -text $caption(gui_cata_creation,psf) 
+            $onglets.nb add $f6 -text $caption(gui_cata_creation,psf)
             $onglets.nb add $f7 -text $caption(gui_cata_creation,interop)
-            $onglets.nb add $f8 -text $caption(gui_cata_creation,manuel) 
+            $onglets.nb add $f8 -text $caption(gui_cata_creation,manuel)
             $onglets.nb add $f9 -text $caption(gui_cata_creation,develop)
 
             $onglets.nb select $f3
@@ -1950,25 +1950,25 @@ return
          #--- Cree un frame pour afficher les onglets
          set subonglets [frame $f1.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $subonglets -in $f1 -side top -expand 1 -fill both -padx 5 -pady 5
-      
+
             pack [ttk::notebook $subonglets.list] -expand yes -fill both -padx 5 -pady 5
-      
+
             set conesearch [frame $subonglets.list.xml]
-            pack $conesearch -in $subonglets.list -expand yes -fill both 
+            pack $conesearch -in $subonglets.list -expand yes -fill both
             $subonglets.list add $conesearch -text "$caption(gui_cata_creation,conesearch)"
-            
+
             set affichage [frame $subonglets.list.cata]
-            pack $affichage -in $subonglets.list -expand yes -fill both 
+            pack $affichage -in $subonglets.list -expand yes -fill both
             $subonglets.list add $affichage -text "$caption(gui_cata_creation,dispcata)"
-      
+
             #--- Cree un frame pour la liste des cata
             label $conesearch.titre -text "$caption(gui_cata_creation,conesearchmsg)" -font $bddconf(font,arial_10_b)
             pack $conesearch.titre -in $conesearch -side top -fill x -anchor c -pady 10
-         
+
             #--- Cree un frame pour la liste des cata
             set cataconf [frame $conesearch.conf -borderwidth 0 -relief groove]
             pack $cataconf -in $conesearch -anchor c -side top -expand 0 -padx 10 -pady 5
-         
+
                checkbutton $cataconf.skybot_check -highlightthickness 0 -text "  SKYBOT" -variable ::tools_cata::use_skybot
                   entry $cataconf.skybot_dir -relief flat -borderwidth 1 -textvariable ::tools_cata::catalog_skybot -width 30 -state disabled
                checkbutton $cataconf.usnoa2_check -highlightthickness 0 -text "  USNO-A2" -variable ::tools_cata::use_usnoa2 -state disabled
@@ -2006,13 +2006,13 @@ return
             grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
             grid $cataconf.wfibc_check   $cataconf.wfibc_dir   -sticky nsw -pady 3
             grid columnconfigure $cataconf 0 -pad 30
-      
+
             #--- Cree un frame pour la liste des cata
             set catafftitre [frame $affichage.titre -borderwidth 0 -relief groove]
             pack $catafftitre -in $affichage -anchor w -side top -expand 0 -fill x -padx 10 -pady 10
                label $catafftitre.lab -text "$caption(gui_cata_creation,dispcatamsg)" -font $bddconf(font,arial_10_b)
                pack $catafftitre.lab -in $catafftitre -side top -fill x -anchor c -pady 10
-      
+
             #--- Cree un frame pour la liste des cata
             set cataff [frame $affichage.conf -borderwidth 0 -relief groove]
             pack $cataff -in $affichage -anchor c -side top -expand 0 -padx 10 -pady 5
@@ -2126,7 +2126,7 @@ return
 
             grid $cataff.img_check     $cataff.img_val     $cataff.img_color     $cataff.img_radius     -sticky nsw -pady 1
             grid $cataff.skybot_check  $cataff.skybot_val  $cataff.skybot_color  $cataff.skybot_radius  $cataff.astroid_check $cataff.astroid_val  $cataff.astroid_color $cataff.astroid_radius -sticky nsw -pady 1
-            grid $cataff.blank                             
+            grid $cataff.blank
             grid $cataff.usnoa2_check  $cataff.usnoa2_val  $cataff.usnoa2_color  $cataff.usnoa2_radius  $cataff.wfibc_check   $cataff.wfibc_val    $cataff.wfibc_color   $cataff.wfibc_radius   -sticky nsw -pady 1
             grid $cataff.tycho2_check  $cataff.tycho2_val  $cataff.tycho2_color  $cataff.tycho2_radius  $cataff.ucac3_check   $cataff.ucac3_val    $cataff.ucac3_color   $cataff.ucac3_radius   -sticky nsw -pady 1
             grid $cataff.ucac2_check   $cataff.ucac2_val   $cataff.ucac2_color   $cataff.ucac2_radius   $cataff.ucac4_check   $cataff.ucac4_val    $cataff.ucac4_color   $cataff.ucac4_radius   -sticky nsw -pady 1
@@ -2151,69 +2151,69 @@ return
             pack $title -in $param -anchor s -side top -expand 0 -padx 10 -pady 10
                label $title.lab -highlightthickness 0 -text "$caption(gui_cata_creation,paramcata)" -font $bddconf(font,arial_10_b)
                pack $title.lab -in $title -side left -anchor c -expand 0 -padx 2 -pady 2
-   
+
             set log [frame $param.log -borderwidth 0 -cursor arrow -relief groove]
             pack $log -in $param -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
                checkbutton $log.check -highlightthickness 0 -text "  $caption(gui_cata_creation,activelog)" -variable ::tools_cata::log
                pack $log.check -in $log -side left -expand 0 -fill x -padx 5 -pady 5
-   
+
             set deuxpasses [frame $param.deuxpasses -borderwidth 0 -cursor arrow -relief groove]
             pack $deuxpasses -in $param -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
                checkbutton $deuxpasses.check -highlightthickness 0 -text "  $caption(gui_cata_creation,2passes)" -variable ::tools_cata::deuxpasses
                pack $deuxpasses.check -in $deuxpasses -side left -padx 5 -pady 0
-     
+
             set keepradec [frame $param.keepradec -borderwidth 0 -cursor arrow -relief groove]
             pack $keepradec -in $param -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
                checkbutton $keepradec.check -highlightthickness 0 -text " $caption(gui_cata_creation,radecprec)" -variable ::tools_cata::keep_radec
                pack $keepradec.check -in $keepradec -side left -padx 5 -pady 0
-     
+
             set delpv [frame $param.delpv -borderwidth 0 -cursor arrow -relief groove]
             pack $delpv -in $param -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
                checkbutton $delpv.check -highlightthickness 0 -text "  $caption(gui_cata_creation,supprpv)" -variable ::tools_cata::delpv
                pack $delpv.check -in $delpv -side left -padx 5 -pady 0
-     
+
             set create_cata [frame $param.create_cata -borderwidth 0 -cursor arrow -relief groove]
             pack $create_cata -in $param -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
                checkbutton $create_cata.check -highlightthickness 0 -text "  $caption(gui_cata_creation,insertcata)" -variable ::tools_cata::create_cata
                pack $create_cata.check -in $create_cata -side left -padx 5 -pady 0
-   
+
             set myuncosm [frame $param.myuncosm -borderwidth 0 -cursor arrow -relief groove]
             pack $myuncosm -in $param -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
                checkbutton $myuncosm.check -highlightthickness 0 -text "  $caption(gui_cata_creation,uncosmic)" -variable ::gui_cata::use_uncosmic
                pack $myuncosm.check -in $myuncosm -side left -padx 5 -pady 0
-               label $myuncosm.lab1 -text "coef.:" 
+               label $myuncosm.lab1 -text "coef.:"
                pack $myuncosm.lab1 -in $myuncosm -side left -padx 5 -pady 0
                entry $myuncosm.val1 -relief sunken -textvariable ::tools_cdl::uncosm_param1 -width 5
                pack $myuncosm.val1 -in $myuncosm -side left -pady 1 -anchor w
-               label $myuncosm.lab2 -text "clipmax:" 
+               label $myuncosm.lab2 -text "clipmax:"
                pack $myuncosm.lab2 -in $myuncosm -side left -padx 5 -pady 0
                entry $myuncosm.val2 -relief sunken -textvariable ::tools_cdl::uncosm_param2 -width 5
                pack $myuncosm.val2 -in $myuncosm -side left -pady 1 -anchor w
-   
+
             set limit_nbstars [frame $param.limit_nbstars -borderwidth 0 -cursor arrow -relief groove]
             pack $limit_nbstars -in $param -anchor s -side top -expand 0 -fill x -padx 20 -pady 5
-   
-               label $limit_nbstars.lab -text "$caption(gui_cata_creation,limitestars)" 
+
+               label $limit_nbstars.lab -text "$caption(gui_cata_creation,limitestars)"
                entry $limit_nbstars.val -relief sunken -textvariable ::tools_cata::limit_nbstars_accepted -width 5
-   
+
                grid $limit_nbstars.lab $limit_nbstars.val -sticky nsw -pady 1
                grid columnconfigure $limit_nbstars 0 -pad 10
-   
+
             set threshold_ident [frame $param.threshold_ident -borderwidth 0 -cursor arrow -relief groove]
             pack $threshold_ident -in $param -anchor s -side top -expand 0 -fill x -padx 20 -pady 5
-   
+
                label $threshold_ident.star_lab0 -text "$caption(gui_cata_creation,seuilidentstar)"  -justify left -borderwidth 1
                label $threshold_ident.star_lab1 -text "$caption(gui_cata_creation,enpos)"
                entry $threshold_ident.star_val1 -relief sunken -textvariable ::tools_cata::threshold_ident_pos_star -width 6
                label $threshold_ident.star_lab2 -text "$caption(gui_cata_creation,enmag)"
                entry $threshold_ident.star_val2 -relief sunken -textvariable ::tools_cata::threshold_ident_mag_star -width 6
-   
+
                label $threshold_ident.plan_lab0 -text "$caption(gui_cata_creation,seuilidentplan)" -justify left
                label $threshold_ident.plan_lab1 -text "$caption(gui_cata_creation,enpos)"
                entry $threshold_ident.plan_val1 -relief sunken -textvariable ::tools_cata::threshold_ident_pos_ast -width 6
-               label $threshold_ident.plan_lab2 -text "$caption(gui_cata_creation,enmag)" 
+               label $threshold_ident.plan_lab2 -text "$caption(gui_cata_creation,enmag)"
                entry $threshold_ident.plan_val2 -relief sunken -textvariable ::tools_cata::threshold_ident_mag_ast -width 6
-   
+
                grid $threshold_ident.star_lab0 $threshold_ident.star_lab1 $threshold_ident.star_val1 $threshold_ident.star_lab2 $threshold_ident.star_val2 -sticky nsw -pady 1
                grid $threshold_ident.plan_lab0 $threshold_ident.plan_lab1 $threshold_ident.plan_val1 $threshold_ident.plan_lab2 $threshold_ident.plan_val2 -sticky nsw -pady 1
                grid columnconfigure $threshold_ident 0 -pad 10
@@ -2232,14 +2232,14 @@ return
 
                set ::gui_cata::gui_nomimage [label $img.nom -text $::tools_cata::current_image_name -font $bddconf(font,arial_10_b)]
                pack $img.nom -in $img -side top -padx 3 -pady 3 -ipadx 5 -ipady 2
-   
+
                set ::gui_cata::gui_dateimage [label $img.date -text $::tools_cata::current_image_date]
                pack $img.date -in $img -side top -padx 3 -pady 3
 
             #--- Champs du header de l'image
             set keys [frame $infoimage.keys -borderwidth 0 -cursor arrow -relief groove]
             pack $keys -in $infoimage -anchor s -side top -expand 0 -padx 10 -pady 5
-   
+
                #--- RA
                set ra [frame $keys.ra -borderwidth 0 -cursor arrow -relief groove]
                pack $ra -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2247,7 +2247,7 @@ return
                    pack $ra.name -in $ra -side left -padx 15 -pady 3
                    entry $ra.val -relief sunken -textvariable ::tools_cata::ra
                    pack $ra.val -in $ra -side right -pady 1 -anchor w
-   
+
                #--- DEC
                set dec [frame $keys.dec -borderwidth 0 -cursor arrow -relief groove]
                pack $dec -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2255,23 +2255,23 @@ return
                    pack $dec.name -in $dec -side left -padx 15 -pady 3
                    entry $dec.val -relief sunken -textvariable ::tools_cata::dec
                    pack $dec.val -in $dec -side right -pady 1 -anchor w
-   
+
                #--- pixsize1
                set pixsize1 [frame $keys.pixsize1 -borderwidth 0 -cursor arrow -relief groove]
                pack $pixsize1 -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                   label $pixsize1.name -text "PIXSIZE1 (micron):"
+                   label $pixsize1.name -text "PIXSIZE1 (mum):"
                    pack $pixsize1.name -in $pixsize1 -side left -padx 15 -pady 3
                    entry $pixsize1.val -relief sunken -textvariable ::tools_cata::pixsize1
                    pack $pixsize1.val -in $pixsize1 -side right -pady 1 -anchor w
-   
+
                #--- pixsize2
                set pixsize2 [frame $keys.pixsize2 -borderwidth 0 -cursor arrow -relief groove]
                pack $pixsize2 -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-                   label $pixsize2.name -text "PIXSIZE2 (micron):"
+                   label $pixsize2.name -text "PIXSIZE2 (mum):"
                    pack $pixsize2.name -in $pixsize2 -side left -padx 15 -pady 3
                    entry $pixsize2.val -relief sunken -textvariable ::tools_cata::pixsize2
                    pack $pixsize2.val -in $pixsize2 -side right -pady 1 -anchor w
-   
+
                #--- foclen
                set foclen [frame $keys.foclen -borderwidth 0 -cursor arrow -relief groove]
                pack $foclen -in $keys -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2279,7 +2279,7 @@ return
                    pack $foclen.name -in $foclen -side left -padx 15 -pady 3
                    entry $foclen.val -relief sunken -textvariable ::tools_cata::foclen
                    pack $foclen.val -in $foclen -side right -pady 1 -anchor w
-   
+
             #--- set and reset center
             set setbut [frame $infoimage.setbut -borderwidth 0 -cursor arrow -relief groove]
             pack $setbut -in $infoimage -anchor s -side top -expand 0 -padx 5 -pady 1
@@ -2299,17 +2299,17 @@ return
          pack $confsex -in $f5 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
             frame $confsex.buttons -borderwidth 0 -cursor arrow -relief groove
-            pack $confsex.buttons -in $confsex  -side top -anchor e -expand 0 
+            pack $confsex.buttons -in $confsex  -side top -anchor e -expand 0
 
                button $confsex.buttons.clean -borderwidth 1 -command "cleanmark" -text "Clean"
-               pack $confsex.buttons.clean -side left -anchor e -expand 0 
+               pack $confsex.buttons.clean -side left -anchor e -expand 0
                button $confsex.buttons.test -borderwidth 1 -command "::gui_cata_creation::test_user_confsex" -text "Test"
-               pack $confsex.buttons.test -side left -anchor e -expand 0 
+               pack $confsex.buttons.test -side left -anchor e -expand 0
                button $confsex.buttons.save -borderwidth 1 -command "::gui_cata_creation::set_user_confsex" -text "Save"
-               pack $confsex.buttons.save -side left -anchor e -expand 0 
+               pack $confsex.buttons.save -side left -anchor e -expand 0
 
-            text $confsex.file 
-            pack $confsex.file -in $confsex -side top -padx 3 -pady 3 -anchor w 
+            text $confsex.file
+            pack $confsex.file -in $confsex -side top -padx 3 -pady 3 -anchor w
 
 
          #-----------------------------------------------------------------------
@@ -2328,18 +2328,18 @@ return
                pack $creer -in $psf -side top -anchor w -expand 0 -fill x -pady 5
                   checkbutton $creer.check -highlightthickness 0 -text "  $caption(gui_cata_creation,psfcreer)" \
                         -variable ::bdi_tools_psf::use_psf -command ""
-                  pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w 
+                  pack $creer.check -in $creer -side left -padx 3 -pady 3 -anchor w
 
                #--- Option de creation du cata Astroid
                set methconf [frame $psf.methconf -borderwidth 0 -cursor arrow -relief sunken]
                pack $methconf -in $psf  -side top -anchor e -expand 0 -fill x  -padx 3 -pady 3
-        
+
 
                ::bdi_gui_psf::gui_configuration $methconf
 
 
                #::gui_cata_creation::handlePSFParams $psf
- 
+
 
          #-----------------------------------------------------------------------
          #--- Onglet INTEROP
@@ -2348,7 +2348,7 @@ return
          #--- Cree un frame pour afficher les actions Interop
          set interop [frame $f7.interop -borderwidth 0 -cursor arrow -relief groove]
          pack $interop -in $f7 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-  
+
             #--- Calcul des coordonnees du centre du fov
             set resolver [frame $interop.resolver -borderwidth 0 -cursor arrow -relief solid]
             pack $resolver -in $interop -anchor s -side top -expand 0 -fill x -padx 1 -pady 10
@@ -2363,7 +2363,7 @@ return
                   label $gril.lcoord   -text "$caption(gui_cata_creation,lcoord)"
                   label $gril.lradius  -text "$caption(gui_cata_creation,lradius)"
                   label $gril.luaicode -text "$caption(gui_cata_creation,luaicode)"
- 
+
                   entry $gril.edate -relief sunken -width 22 -textvariable ::tools_cata::current_image_date
                   entry $gril.ecoord -relief sunken -width 22 -textvariable ::tools_cata::coord
                   entry $gril.eradius -relief sunken -width 22 -textvariable ::tools_cata::radius
@@ -2395,13 +2395,13 @@ return
                pack $::gui_cata_creation::votoolsmenu -in $votools -anchor c -side top -padx 5 -pady 2
                   button $::gui_cata_creation::votoolsmenu.connect -borderwidth 1 -text "$caption(gui_cata_creation,voconnect)" \
                      -command "::gui_cata_creation::startInterop"
-                  pack $::gui_cata_creation::votoolsmenu.connect -in $::gui_cata_creation::votoolsmenu -side top 
+                  pack $::gui_cata_creation::votoolsmenu.connect -in $::gui_cata_creation::votoolsmenu -side top
 
                set ::gui_cata_creation::votoolsaction [frame $votools.action -borderwidth 0 -relief groove]
                pack $::gui_cata_creation::votoolsaction -in $votools -anchor c -side top -padx 5 -pady 10
                   button $::gui_cata_creation::votoolsaction.broadcast -text "$caption(gui_cata_creation,voimgtab)" -borderwidth 1 -relief groove \
                      -command "::tools_cata::broadcastImageAndTable"
-                  pack $::gui_cata_creation::votoolsaction.broadcast -in $::gui_cata_creation::votoolsaction -side top -fill x 
+                  pack $::gui_cata_creation::votoolsaction.broadcast -in $::gui_cata_creation::votoolsaction -side top -fill x
                   button $::gui_cata_creation::votoolsaction.script -text "$caption(gui_cata_creation,voscript)" -borderwidth 1 -relief groove \
                      -command "::tools_cata::broadcastAladinScript"
                   pack $::gui_cata_creation::votoolsaction.script -in $::gui_cata_creation::votoolsaction -side top -fill x
@@ -2419,34 +2419,34 @@ return
                pack $manuel.title -in $manuel -anchor c -side top -padx 5 -pady 5
 
                frame $manuel.entr -borderwidth 0 -cursor arrow -relief groove
-               pack $manuel.entr -in $manuel -side top 
+               pack $manuel.entr -in $manuel -side top
 
                   set fov [frame $manuel.fov -borderwidth 0 -cursor arrow  -borderwidth 0]
-                  pack $fov -in $manuel.entr -side top 
+                  pack $fov -in $manuel.entr -side top
 
                      frame $fov.alpha -borderwidth 0 -cursor arrow -relief groove
-                     pack $fov.alpha -in $fov -side left 
+                     pack $fov.alpha -in $fov -side left
                         label $fov.alpha.lab -text "RA (deg)"
                         pack $fov.alpha.lab -in $fov.alpha -side top -padx 1 -pady 1 -anchor c
                         entry $fov.alpha.val -relief sunken -textvariable ::tools_cata::ra -width 12
                         pack $fov.alpha.val -in $fov.alpha -side top -padx 1 -pady 1 -anchor w
 
                      frame $fov.delta -borderwidth 0 -cursor arrow -relief groove
-                     pack $fov.delta -in $fov -side left 
+                     pack $fov.delta -in $fov -side left
                         label $fov.delta.lab -text "DEC (deg)"
                         pack $fov.delta.lab -in $fov.delta -side top -padx 1 -pady 1 -anchor c
                         entry $fov.delta.val -relief sunken -textvariable ::tools_cata::dec -width 12
                         pack $fov.delta.val -in $fov.delta -side top -padx 1 -pady 1 -anchor w
 
                      frame $fov.fov -borderwidth 0 -cursor arrow -relief groove
-                     pack $fov.fov -in $fov -side left 
+                     pack $fov.fov -in $fov -side left
                         label $fov.fov.lab -text "Fov (arcmin)"
                         pack $fov.fov.lab -in $fov.fov -side top -padx 1 -pady 1 -anchor c
                         entry $fov.fov.val -relief sunken -textvariable ::tools_cata::radius -width 12
                         pack $fov.fov.val -in $fov.fov -side top -padx 1 -pady 1 -anchor w
 
                      frame $fov.crota -borderwidth 0 -cursor arrow -relief groove
-                     pack $fov.crota -in $fov -side left 
+                     pack $fov.crota -in $fov -side left
                         label $fov.crota.lab -text "Orient. (deg)"
                         pack $fov.crota.lab -in $fov.crota -side top -padx 1 -pady 1 -anchor c
                         entry $fov.crota.val -relief sunken -textvariable ::tools_cata::crota -width 12
@@ -2458,11 +2458,11 @@ return
                         pack $fov.dss.lab -in $fov.dss -anchor s -side bottom
 
                   set coord [frame $manuel.entr.coord -borderwidth 0 -cursor arrow]
-                  pack $coord -in $manuel.entr 
+                  pack $coord -in $manuel.entr
 
                      image create photo icon_clean
                      icon_clean configure -file [file join $audace(rep_plugin) tool bddimages icons no.gif]
-            
+
                      set img [frame $coord.l -borderwidth 0 -cursor arrow  -borderwidth 0]
                      pack $img -in $coord -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
 
@@ -2475,18 +2475,18 @@ return
 
                         for {set i 1} {$i<8} {incr i} {
                            frame $img.v$i -borderwidth 1 -cursor arrow -relief groove
-                           pack $img.v$i -in $img  -side top 
+                           pack $img.v$i -in $img  -side top
                               entry $img.v$i.xy -relief sunken -textvariable ::gui_cata::man_xy_star($i)
                               pack  $img.v$i.xy -in $img.v$i -side left -padx 1 -pady 1 -anchor w
                               button  $img.v$i.grab -borderwidth 1 -command "::gui_cata_creation::grab $i" -text "Grab"
-                              pack    $img.v$i.grab -in $img.v$i -side left -anchor e -expand 0 
+                              pack    $img.v$i.grab -in $img.v$i -side left -anchor e -expand 0
                               entry $img.v$i.ad -relief sunken  -textvariable ::gui_cata::man_ad_star($i)
                               pack  $img.v$i.ad -in $img.v$i -side left -padx 1 -pady 1 -anchor w
                               button $img.v$i.clean -borderwidth 1 -image icon_clean -command {
                                  set ::gui_cata::man_xy_star($i) ""
                                  set ::gui_cata::man_ad_star($i) ""
                               }
-                              pack $img.v$i.clean -in $img.v$i -side left -anchor e -expand 0 
+                              pack $img.v$i.clean -in $img.v$i -side left -anchor e -expand 0
                         }
 
                      set visu [frame $coord.r -borderwidth 0 -cursor arrow  -borderwidth 0]
@@ -2505,40 +2505,40 @@ return
 
                   frame $manuel.entr.buttons0 -borderwidth 0 -cursor arrow -relief groove
                   pack $manuel.entr.buttons0 -in $manuel.entr -side top -pady 10
-                
+
                      button $manuel.entr.buttons0.creerwcs -borderwidth 1  \
                         -command "::gui_cata_creation::copy_wcs" -text "Copy WCS"
-                     pack $manuel.entr.buttons0.creerwcs -in $manuel.entr.buttons0 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons0.creerwcs -in $manuel.entr.buttons0 -side left -anchor e -expand 0
                      set ::gui_cata::gui_paste_wcs [button $manuel.entr.buttons0.priam -borderwidth 1  \
                         -command "::gui_cata_creation::paste_wcs" -text "Paste WCS" -state disabled]
-                     pack $manuel.entr.buttons0.priam -in $manuel.entr.buttons0 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons0.priam -in $manuel.entr.buttons0 -side left -anchor e -expand 0
                      set ::gui_cata::gui_voir_wcs [button $manuel.entr.buttons0.voir_wcs -borderwidth 1  \
                         -command "::gui_cata_creation::voir_wcs" -text "Voir WCS" -state normal]
-                     pack $manuel.entr.buttons0.voir_wcs -in $manuel.entr.buttons0 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons0.voir_wcs -in $manuel.entr.buttons0 -side left -anchor e -expand 0
 
                   frame $manuel.entr.buttons1 -borderwidth 0 -cursor arrow -relief groove
                   pack $manuel.entr.buttons1 -in $manuel.entr -side top -pady 10
-                
+
                      button $manuel.entr.buttons1.creerwcs -borderwidth 1  \
                         -command "::gui_cata_creation::manual_create_wcs" -text "Basic WCS"
-                     pack $manuel.entr.buttons1.creerwcs -in $manuel.entr.buttons1 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons1.creerwcs -in $manuel.entr.buttons1 -side left -anchor e -expand 0
                      button $manuel.entr.buttons1.voirusno -borderwidth 1  \
                         -command "::gui_cata_creation::voir_usno" -text "Voir USNOA2"
-                     pack $manuel.entr.buttons1.voirusno -in $manuel.entr.buttons1 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons1.voirusno -in $manuel.entr.buttons1 -side left -anchor e -expand 0
                      button $manuel.entr.buttons1.priam -borderwidth 1  \
-                        -command "::gui_cata_creation::manual_priam" -text "Priam WCS" 
-                     pack $manuel.entr.buttons1.priam -in $manuel.entr.buttons1 -side left -anchor e -expand 0 
+                        -command "::gui_cata_creation::manual_priam" -text "Priam WCS"
+                     pack $manuel.entr.buttons1.priam -in $manuel.entr.buttons1 -side left -anchor e -expand 0
 
 
                   frame $manuel.entr.buttons2 -borderwidth 0 -cursor arrow -relief groove
                   pack $manuel.entr.buttons2 -in $manuel.entr -side top -pady 10
-                
+
                      set ::gui_cata::gui_creercata [button $manuel.entr.buttons2.creercata -borderwidth 1  \
                         -command "::gui_cata_creation::manual_create_cata" -text "Creer Cata" -state disabled]
-                     pack $manuel.entr.buttons2.creercata -in $manuel.entr.buttons2 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons2.creercata -in $manuel.entr.buttons2 -side left -anchor e -expand 0
                      set ::gui_cata::gui_enrimg [button $manuel.entr.buttons2.enrimg -borderwidth 1 \
                         -command "::gui_cata_creation::manual_insert_img" -text "Insertion Image" -state disabled]
-                     pack $manuel.entr.buttons2.enrimg -in $manuel.entr.buttons2 -side left -anchor e -expand 0 
+                     pack $manuel.entr.buttons2.enrimg -in $manuel.entr.buttons2 -side left -anchor e -expand 0
 
 
          #-----------------------------------------------------------------------
@@ -2549,20 +2549,20 @@ return
          pack $develop -in $f9 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
             frame $develop.entr -borderwidth 0 -cursor arrow -relief groove
-            pack $develop.entr  -in $develop  -side top 
+            pack $develop.entr  -in $develop  -side top
 
                set inf [frame $develop.entr.affsourcegrab -borderwidth 0 -cursor arrow  -borderwidth 0]
-               pack $inf -side top 
+               pack $inf -side top
                   button $inf.lab -borderwidth 1 -command "::gui_cata_creation::develop box" -text "Voir dans la console : les sources d'une fenetre"
                   pack   $inf.lab -side top -padx 3 -pady 3 -anchor c
 
                set inf [frame $develop.entr.affsourceall -borderwidth 0 -cursor arrow  -borderwidth 0]
-               pack $inf -side top 
+               pack $inf -side top
                   button $inf.lab -borderwidth 1 -command "::gui_cata_creation::develop all" -text "Voir dans la console : toutes les sources"
                   pack   $inf.lab -side top -padx 3 -pady 3 -anchor c
 
                set inf [frame $develop.entr.affsource3 -borderwidth 0 -cursor arrow  -borderwidth 0]
-               pack $inf -side top 
+               pack $inf -side top
                   button $inf.lab -borderwidth 1 -command "::gui_cata_creation::develop 3sources" -text "Voir dans la console : 3 sources"
                   pack   $inf.lab -side top -padx 3 -pady 3 -anchor c
 
@@ -2592,3 +2592,4 @@ return
    }
 
 }
+

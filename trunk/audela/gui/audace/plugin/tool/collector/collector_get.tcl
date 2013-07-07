@@ -741,7 +741,7 @@
       set ncfz "-"
       if {$fond ne "-" && $aptdia ne "-"} {
          set constante 0.00225 ; # micrometers/arc second/millimeter
-         set ncfz [format %0.1f [expr { $constante*$seeing*sqrt($error)*$fond*$fond*$aptdia*1000 } ]] ;#-- microns
+         set ncfz [format %0.1f [expr { $constante*$seeing*sqrt($error)*$fond*$fond*$aptdia*1000 } ]] ;#-- mum : micron
       }
 
       return $ncfz
