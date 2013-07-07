@@ -393,7 +393,7 @@
    #         elev : true altitude (degrees)
    #         ha  : true hour angle (degrees)
    #---------------------------------------------------------------------------
-  proc getTrueCoordinates { data } {
+   proc getTrueCoordinates { data } {
 
       lassign $data ra_hms dec_dms datetu home airpress temperature
 
