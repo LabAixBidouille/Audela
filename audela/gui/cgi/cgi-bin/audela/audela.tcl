@@ -18,12 +18,12 @@ set numerror [ catch {
 
 if {$numerror==1} {
    # --- Identificateur de l'entete de la page HTML pour le client
-	if {$cgiaudela_entete==0} {
-   	puts -nonewline "Content-type: text/html\n\n\n"
-   	puts "<HTML>"
-   	puts "<HEADER>"
-   	puts "</HEADER>"
-   	puts "<BODY>"
+   if {$cgiaudela_entete==0} {
+      puts -nonewline "Content-type: text/html\n\n\n"
+      puts "<HTML>"
+      puts "<HEADER>"
+      puts "</HEADER>"
+      puts "<BODY>"
    }
    puts "Tarot CGI error<br>"
    puts "Report : $msgerror <br>"
@@ -34,5 +34,4 @@ if {$numerror==1} {
 
 # --- Fin du CGI
 exit
-
 

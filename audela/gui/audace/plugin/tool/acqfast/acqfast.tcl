@@ -1782,11 +1782,11 @@ proc ::acqfast::acqfastBuildIF { visuNo } {
             ComboBox $panneau(acqfast,$visuNo,This).video.mode.but \
                -width 5 \
                -height [llength $panneau(acqfast,$visuNo,list_mode)] \
-               -relief raised		\
-               -borderwidth 1 	\
-               -editable 0 			\
-               -takefocus 1 		\
-               -justify center	\
+               -relief raised    \
+               -borderwidth 1    \
+               -editable 0       \
+               -takefocus 1      \
+               -justify center   \
                -textvariable panneau(acqfast,$visuNo,mode_en_cours) \
                -values $panneau(acqfast,$visuNo,list_mode) \
                -modifycmd "::acqfast::ChangeMode $visuNo"

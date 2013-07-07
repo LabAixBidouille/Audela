@@ -62,116 +62,117 @@ bind .pingpong <Key-F1> { global axis0 ; set key_axis0 0 }
 set point1his 0
 set megasortie 0
 while {$megasortie==0} {
-	
-	# =========================================
-	# === Setting the game
-	# === Met en place le jeu
-	# =========================================
-	update
-	
-	# --- Recupere la largeur de la fenetre
-	set res [wm geometry .pingpong]
-	set res [regsub -all \[+\] $res " "]
-	set res [regsub -all x $res " "]
-	set largeur_win [lindex $res 0]
-	set hauteur_win [lindex $res 1]
-	
-	# --- Recupere la largeur de l'image du player
-	set largeur_player [image width imageplayer]
-	set largeur_p [expr $largeur_win-$largeur_player]
-	set hauteur_player [image height imageplayer]
-	set hauteur_p [expr $hauteur_win-$hauteur_player]
-	place configure .pingpong.player -y $hauteur_p
-	
-	# --- Recupere la largeur de l'image du ball
-	set largeur_ball [image width imageball]
-	set largeur_b [expr $largeur_win-$largeur_ball]
-	set hauteur_ball [image height imageball]
-	set hauteur_b [expr $hauteur_win-$hauteur_player-$hauteur_ball]
-	place configure .pingpong.ball -x [expr $largeur_b/2]
-	place configure .pingpong.ball -y [expr $hauteur_b/4]
-	set dxb 3
-	set dyb 3
 
-	# --- Grande boucle du jeu	
-	set respons ""
-	set sortie 0
-	set point1s 0
-	set point2s 0
-	while {$sortie==0} {
-		
-		update
-		after 10
-		
-		# --- Lecture des evenements du joystick: Sortie de la boucle et du jeu
+   # =========================================
+   # === Setting the game
+   # === Met en place le jeu
+   # =========================================
+   update
+
+   # --- Recupere la largeur de la fenetre
+   set res [wm geometry .pingpong]
+   set res [regsub -all \[+\] $res " "]
+   set res [regsub -all x $res " "]
+   set largeur_win [lindex $res 0]
+   set hauteur_win [lindex $res 1]
+
+   # --- Recupere la largeur de l'image du player
+   set largeur_player [image width imageplayer]
+   set largeur_p [expr $largeur_win-$largeur_player]
+   set hauteur_player [image height imageplayer]
+   set hauteur_p [expr $hauteur_win-$hauteur_player]
+   place configure .pingpong.player -y $hauteur_p
+
+   # --- Recupere la largeur de l'image du ball
+   set largeur_ball [image width imageball]
+   set largeur_b [expr $largeur_win-$largeur_ball]
+   set hauteur_ball [image height imageball]
+   set hauteur_b [expr $hauteur_win-$hauteur_player-$hauteur_ball]
+   place configure .pingpong.ball -x [expr $largeur_b/2]
+   place configure .pingpong.ball -y [expr $hauteur_b/4]
+   set dxb 3
+   set dyb 3
+
+   # --- Grande boucle du jeu
+   set respons ""
+   set sortie 0
+   set point1s 0
+   set point2s 0
+   while {$sortie==0} {
+
+      update
+      after 10
+
+      # --- Lecture des evenements du joystick: Sortie de la boucle et du jeu
       catch {
          set res [joystick get 0 button 6]
          if {$res==1} { exit }
       }
-		
-		# --- Recupere la position X du joueur
-		set xplayer [lindex [place configure .pingpong.player -x] 4]
-		
-		# --- Lecture des evenements des fleches du clavier: Deplacement du joueur
+
+      # --- Recupere la position X du joueur
+      set xplayer [lindex [place configure .pingpong.player -x] 4]
+
+      # --- Lecture des evenements des fleches du clavier: Deplacement du joueur
       set axis0 $key_axis0
-      
-		# --- Lecture des evenements du joystick: Deplacement du joueur
+
+      # --- Lecture des evenements du joystick: Deplacement du joueur
       set axis0 $key_axis0
       catch {
          set axis0 [joystick get 0 axis 0]
       }
-	 	set dxp [expr round($axis0/2000.0)]
-	 		 	
-		# --- Recupere la position X,Y de la balle
-		set xball [lindex [place configure .pingpong.ball -x] 4]
-		set yball [lindex [place configure .pingpong.ball -y] 4]
-	 	
-	 	# --- Calcule et place la nouvelle position de la balle
-	 	set xball [expr $xball+$dxb]
-	 	if {$xball<1} {set dxb [expr -1*$dxb]}
-	 	if {$xball>$largeur_b} {set dxb [expr -1*$dxb]}
-	 	set yball [expr $yball+$dyb]
-	 	if {$yball<1} {set dyb [expr -1*$dyb]}
-	 	if {$yball>$hauteur_b} {
-		 	if {([expr $xball+$largeur_ball]>$xplayer)&&($xball<[expr $xplayer+$largeur_player])} {
-			 	# --- on rebondit sur le player
-			 	incr point1s 10
-			 	set dyb [expr -1*$dyb]
-			 	# --- accelere ou decelere
-			 	if {($dxp>2)} {				 	
-				 	set dxb [expr $dxb+1]
-				 	if {$dxb>9} { set dxb 9 }
-			 	} elseif {($dxp<-2)} {
-				 	set dxb [expr $dxb-1]
-				 	if {$dxb<-9} { set dxb -9 }
-			 	}
-		 	} else {
-			 	# --- on a perdu
-			 	set dxb 0
-			 	set dyb 0
-			 	if {$point1s>$point1his} {
-				 	set point1his $point1s
-			 	}
-			 	set respons [tk_messageBox -message "Game over. $point1s points (high score $point1his)." -icon info -type yesno -detail "Voulez-vous recommencer ?"]
-			 	set sortie 1
-			 	break
-		 	}
-		}
-	 	place configure .pingpong.ball -x $xball -y $yball
-		
-	 	# --- Calcule et place la nouvelle position du joueur
-	 	set xplayer [expr $xplayer+$dxp]
-	 	if {$xplayer<1} {set xplayer 1}
-	 	if {$xplayer>$largeur_p} {set xplayer $largeur_p}
-	 	place configure .pingpong.player -x $xplayer
-	 	
-	 	wm title .pingpong "Pingpong $point1s points"
-	}
+      set dxp [expr round($axis0/2000.0)]
 
-	if {$respons=="no"} { set megasortie 1 }
-	
+      # --- Recupere la position X,Y de la balle
+      set xball [lindex [place configure .pingpong.ball -x] 4]
+      set yball [lindex [place configure .pingpong.ball -y] 4]
+
+      # --- Calcule et place la nouvelle position de la balle
+      set xball [expr $xball+$dxb]
+      if {$xball<1} {set dxb [expr -1*$dxb]}
+      if {$xball>$largeur_b} {set dxb [expr -1*$dxb]}
+      set yball [expr $yball+$dyb]
+      if {$yball<1} {set dyb [expr -1*$dyb]}
+      if {$yball>$hauteur_b} {
+         if {([expr $xball+$largeur_ball]>$xplayer)&&($xball<[expr $xplayer+$largeur_player])} {
+            # --- on rebondit sur le player
+            incr point1s 10
+            set dyb [expr -1*$dyb]
+            # --- accelere ou decelere
+            if {($dxp>2)} {
+               set dxb [expr $dxb+1]
+               if {$dxb>9} { set dxb 9 }
+            } elseif {($dxp<-2)} {
+               set dxb [expr $dxb-1]
+               if {$dxb<-9} { set dxb -9 }
+            }
+         } else {
+            # --- on a perdu
+            set dxb 0
+            set dyb 0
+            if {$point1s>$point1his} {
+               set point1his $point1s
+            }
+            set respons [tk_messageBox -message "Game over. $point1s points (high score $point1his)." -icon info -type yesno -detail "Voulez-vous recommencer ?"]
+            set sortie 1
+            break
+         }
+      }
+      place configure .pingpong.ball -x $xball -y $yball
+
+      # --- Calcule et place la nouvelle position du joueur
+      set xplayer [expr $xplayer+$dxp]
+      if {$xplayer<1} {set xplayer 1}
+      if {$xplayer>$largeur_p} {set xplayer $largeur_p}
+      place configure .pingpong.player -x $xplayer
+
+      wm title .pingpong "Pingpong $point1s points"
+   }
+
+   if {$respons=="no"} { set megasortie 1 }
+
 }
 
 tk_messageBox -message "High score $point1his points." -icon info -type ok -detail "A bientot"
 destroy .pingpong
 exit
+

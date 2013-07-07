@@ -199,7 +199,7 @@ namespace eval ::atos_acq {
 
 
   #--- Cree un frame pour le peripherique d'entree
- 
+
         #--- Cree un frame pour le titre
         frame $frm.tformin -borderwidth 1
         pack $frm.tformin -in $frm -side top -anchor w
@@ -208,9 +208,9 @@ namespace eval ::atos_acq {
         label $frm.tformin.title -font $atosconf(font,arial_10_b) -text "Peripherique de capture video4linux2"
         pack  $frm.tformin.title -in $frm.tformin -side left -anchor n -expand 0
 
-	#-- Cree le bouton de configuration
+        #-- Cree le bouton de configuration
         button $frm.tformin.sel -text "Choisir..." -padx 1 -pady 1 \
-         	-command "::atos_acq::forminlist $visuNo $frm"
+            -command "::atos_acq::forminlist $visuNo $frm"
         pack  $frm.tformin.sel -in $frm.tformin -side left -anchor n -expand 0
 
 
@@ -218,12 +218,12 @@ namespace eval ::atos_acq {
         frame $frm.cformin -borderwidth 0 -relief raised -cursor arrow
         pack $frm.cformin -in $frm -side top -expand 0 -fill x -padx 0 -pady 0
 
-	    #--- Cree un frame pour
-	    frame $frm.cformin.top -borderwidth 0 -relief flat -cursor arrow
+       #--- Cree un frame pour
+       frame $frm.cformin.top -borderwidth 0 -relief flat -cursor arrow
             pack $frm.cformin.top -side top -expand 0 -fill x -padx 0 -pady 0
 
-	    #--- Cree un frame pour la liste des periph
-	    frame $frm.cformin.ldev -borderwidth 1 -relief raised -cursor arrow
+       #--- Cree un frame pour la liste des periph
+       frame $frm.cformin.ldev -borderwidth 1 -relief raised -cursor arrow
             #pack $frm.cformin.ldev -side top -expand 0 -fill x -padx 1 -pady 1
 
 
@@ -235,77 +235,78 @@ namespace eval ::atos_acq {
             set ::atos_acq::frmdevdimen ?
 
 
-	    proc ::atos_acq::forminlist { visuNo frm } {
-                global audace
+   proc ::atos_acq::forminlist { visuNo frm } {
+      global audace
 
-		set test [lsearch -exact [pack slaves $frm.cformin] $frm.cformin.ldev]
+      set test [lsearch -exact [pack slaves $frm.cformin] $frm.cformin.ldev]
 
-		if [list [lsearch -exact [pack slaves $frm.cformin] $frm.cformin.ldev] != -1 ] {
-                    # On referme le cadre
-                    pack forget $frm.cformin.ldev
-		} else {
-		    set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -l 2>&1" } msg ]
-		    if { $err != 0 } {
-			    ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
-			    ::console::affiche_erreur "Code d'erreur : $err\n"
-			    ::console::affiche_erreur "=== Messages retournes par av4l-grab :\n"
-			    foreach line [split $msg "\n"] {
-				    ::console::affiche_erreur "$line\n"
-                            }
-	            } else {
-		            foreach widget [grid slaves $frm.cformin.ldev] {
-				    destroy $widget
-			    }
+      if [list [lsearch -exact [pack slaves $frm.cformin] $frm.cformin.ldev] != -1 ] {
+          # On referme le cadre
+          pack forget $frm.cformin.ldev
+      } else {
+          set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab -l 2>&1" } msg ]
+          if { $err != 0 } {
+             ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
+             ::console::affiche_erreur "Code d'erreur : $err\n"
+             ::console::affiche_erreur "=== Messages retournes par av4l-grab :\n"
+             foreach line [split $msg "\n"] {
+                ::console::affiche_erreur "$line\n"
+             }
+          } else {
+             foreach widget [grid slaves $frm.cformin.ldev] {
+                destroy $widget
+             }
 
-			    set i 0
-			    foreach line [split $msg "\n"] {
-				    ::console::affiche_resultat "$line\n"
-				    set t [split $line ";"]
-                                    set devicepath [lindex $t 0]
-                                    set inputnum [lindex $t 1]
-                                    set dfltinput [lindex $t 2]
+             set i 0
+             foreach line [split $msg "\n"] {
+                ::console::affiche_resultat "$line\n"
+                set t [split $line ";"]
+                set devicepath [lindex $t 0]
+                set inputnum [lindex $t 1]
+                set dfltinput [lindex $t 2]
 
-				    label $frm.cformin.ldev.$i -text $line
-				    grid configure $frm.cformin.ldev.$i -row $i -column 2
+                label $frm.cformin.ldev.$i -text $line
+                grid configure $frm.cformin.ldev.$i -row $i -column 2
 
-                                    if { $inputnum == 0 } {
-				        button $frm.cformin.ldev.i$i -text "I" -command "::atos_acq::devinit $visuNo $frm $devicepath auto"
-				        grid configure $frm.cformin.ldev.i$i -row $i -column 0
-                                    } else {
-				        button $frm.cformin.ldev.i$i -text "I" -state disabled -command "::atos_acq::devinit $visuNo $frm $devicepath auto"
-				        grid configure $frm.cformin.ldev.i$i -row $i -column 0
-                                    }
+                if { $inputnum == 0 } {
+                    button $frm.cformin.ldev.i$i -text "I" -command "::atos_acq::devinit $visuNo $frm $devicepath auto"
+                    grid configure $frm.cformin.ldev.i$i -row $i -column 0
+                } else {
+                    button $frm.cformin.ldev.i$i -text "I" -state disabled -command "::atos_acq::devinit $visuNo $frm $devicepath auto"
+                    grid configure $frm.cformin.ldev.i$i -row $i -column 0
+                }
 
-                                    if { [string equal "y" $dfltinput] } {
-                                       #button $frm.cformin.ldev.u$i -text "U" -command "::atos_acq::devinit $visuNo $frm $devicepath noauto"
-				       #grid configure $frm.cformin.ldev.u$i -row $i -column 1
-                                    }
+                if { [string equal "y" $dfltinput] } {
+                   #button $frm.cformin.ldev.u$i -text "U" -command "::atos_acq::devinit $visuNo $frm $devicepath noauto"
+                   #grid configure $frm.cformin.ldev.u$i -row $i -column 1
+                }
 
-				    incr i
-                            }
-		    }
+                incr i
+             }
+          }
 
-		    pack $frm.cformin.ldev -side top -expand 0 -fill x -padx 1 -pady 1
+          pack $frm.cformin.ldev -side top -expand 0 -fill x -padx 1 -pady 1
 
-	       }
-	    }
-	    proc ::atos_acq::forminunlist { visuNo frm } {
-		    pack forget $frm.cformin.ldev
+      }
+   }
 
-	    }
-	    proc ::atos_acq::devinit { visuNo frm devicepath auto } {
-		    ::console::affiche_resultat "initialisation de $devicepath\n"
+    proc ::atos_acq::forminunlist { visuNo frm } {
+       pack forget $frm.cformin.ldev
+    }
 
-                    set ::atos_acq::frmdevmodel ?
-                    set ::atos_acq::frmdevinput ?
-                    set ::atos_acq::frmdevwidth ?
-                    set ::atos_acq::frmdevheight ?
-                    set ::atos_acq::frmdevdimen ?
+    proc ::atos_acq::devinit { visuNo frm devicepath auto } {
+       ::console::affiche_resultat "initialisation de $devicepath\n"
 
-                    set ::atos_acq::frmdevpath $devicepath
-		    pack forget $frm.cformin.ldev
-                    ::atos_tools_avi::acq_getdevinfo $visuNo $frm $auto
-	    }
+       set ::atos_acq::frmdevmodel ?
+       set ::atos_acq::frmdevinput ?
+       set ::atos_acq::frmdevwidth ?
+       set ::atos_acq::frmdevheight ?
+       set ::atos_acq::frmdevdimen ?
+
+       set ::atos_acq::frmdevpath $devicepath
+       pack forget $frm.cformin.ldev
+       ::atos_tools_avi::acq_getdevinfo $visuNo $frm $auto
+    }
 
 
   #--- Cree un frame pour les parametres du peripherique d'entree

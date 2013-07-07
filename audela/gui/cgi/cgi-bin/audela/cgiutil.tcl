@@ -13,11 +13,11 @@ proc cgiaudela_transcode { chaine } {
    for {set k 0} {$k<$n} {incr k} {
       set car [string index $chaine $k]
       if {$car=="%"} {
-	      set cars "\\x[string range $chaine [expr $k+1] [expr $k+2]]"
-	      if {($cars=="\\x0A")&&($cars0=="\\x0D")} {
-		      set car "\n"
-	      } else {
-	         set car [subst "$cars" ]
+         set cars "\\x[string range $chaine [expr $k+1] [expr $k+2]]"
+         if {($cars=="\\x0A")&&($cars0=="\\x0D")} {
+            set car "\n"
+         } else {
+            set car [subst "$cars" ]
          }
          incr k 2
          set cars0 $cars
@@ -116,5 +116,4 @@ foreach cgi(cgiaudela,champ) $cgi(cgiaudela,liste) {
    lappend cgi(cgiaudela,names)  "[cgiaudela_transcode [lindex $cgi(cgiaudela,champ) 0]]"
    lappend cgi(cgiaudela,values) "[cgiaudela_transcode [lindex $cgi(cgiaudela,champ) 1]]"
 }
-
 
