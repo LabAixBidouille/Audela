@@ -178,7 +178,7 @@
          if {$var ni [list photocell1 photocell2]} {
             set private($var) $::audace(etc,param,ccd,$key)
          } else {
-            #--   affiche la dimension des cellules en um
+            #--   affiche la dimension des cellules en mum
             set private($var) [expr { $::audace(etc,param,ccd,$key) * 1e6 }]
          }
       }

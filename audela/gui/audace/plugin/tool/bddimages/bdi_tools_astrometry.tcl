@@ -4,7 +4,7 @@
 #  @version   1.0
 #  @date      2013
 #  @copyright GNU Public License.
-#  @par Ressource 
+#  @par Ressource
 #  @code  source [file join $audace(rep_install) gui audace plugin tool bddimages bdi_tools_astrometry.tcl]
 #  @endcode
 
@@ -222,9 +222,9 @@ proc ::bdi_tools_astrometry::closetoconf {  } {
 proc ::bdi_tools_astrometry::set_fields_astrom { p_astrom } {
 
    upvar $p_astrom astrom
-   
+
    set astrom(kwds)     {RA       DEC       CRPIX1      CRPIX2      CRVAL1       CRVAL2       CDELT1      CDELT2      CROTA2      CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN       PIXSIZE1       PIXSIZE2        CATA_PVALUE        EQUINOX       CTYPE1        CTYPE2      LONPOLE                                        CUNIT1                       CUNIT2                       }
-   set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            um             um              percent            no            no            no          deg                                            no                           no                           }
+   set astrom(units)    {deg      deg       pixel       pixel       deg          deg          deg/pixel   deg/pixel   deg         deg/pixel     deg/pixel     deg/pixel     deg/pixel     m            mum            mum             percent            no            no            no          deg                                            no                           no                           }
    set astrom(types)    {double   double    double      double      double       double       double      double      double      double        double        double        double        double       double         double          double             string        string        string      double                                         string                       string                       }
    set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included" "Pvalue of astrometric reduction" "System of equatorial coordinates" "Gnomonic projection" "Gnomonic projection" "Long. of the celest.NP in native coor.syst."  "Angles are degrees always"  "Angles are degrees always"  }
    return
@@ -233,19 +233,19 @@ proc ::bdi_tools_astrometry::set_fields_astrom { p_astrom } {
 
 
 #----------------------------------------------------------------------------
-## 
+##
 # @param xx
 # @return yyy
 # Structure ASTROID:
-#   "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux" 
-#   "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff" 
+#   "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "fluxintegre" "errflux"
+#   "pixmax" "intensite" "sigmafond" "snint" "snpx" "delta" "rdiff"
 #   "ra" "dec" "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name"
-#   "flagastrom" "flagphotom" "cataastrom" "cataphotom" 
+#   "flagastrom" "flagphotom" "cataastrom" "cataphotom"
 #
 proc ::bdi_tools_astrometry::set_astrom_to_source { s ra dec res_ra res_dec omc_ra omc_dec name} {
 
    set pass "no"
-   
+
    set stmp {}
    foreach cata $s {
       if {[lindex $cata 0] == "ASTROID"} {
@@ -293,7 +293,7 @@ proc ::bdi_tools_astrometry::get_object_list { } {
 # @return void
 proc ::bdi_tools_astrometry::init_priam { } {
 
-   global bddconf 
+   global bddconf
 
    # Premiere image comme modele
    set firstimg [lindex $::tools_cata::img_list 0]
@@ -393,7 +393,7 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
             set comment [lindex $astrom(comments) $k]
             # gren_info "KWD: $key \n"
             # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
-            
+
             # TODO ::bdi_tools_astrometry::extract_priam_results :: Modif du tabkey de chaque image de img_list
             foreach kk [list FOCLEN RA DEC CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CD1_1 CD1_2 CD2_1 CD2_2 ] {
                if {$kk == $key } {
@@ -406,7 +406,7 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
                }
             }
             lappend ::tools_cata::new_astrometry($id_current_image) [list $kwd $val $type $unit $comment]
-            
+
          }
       }
 
@@ -423,7 +423,7 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
 
    }
    close $chan
-   
+
    if {$id_current_image == $nberr } {
       return -code 1 "ASTROMETRY FAILURE: no valid result provided by Priam"
    }
@@ -441,12 +441,12 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
    foreach current_image $::tools_cata::img_list {
 
       incr id_current_image
-      
+
       set ex [::bddimages_liste::lexist $current_image "listsources"]
       if {$ex != 0} {
          gren_erreur "Attention listsources existe dans img_list et ce n'est plus necessaire\n"
-      } 
-      
+      }
+
       set current_listsources $::gui_cata::cata_list($id_current_image)
       set n [llength $catascience($id_current_image)]
       set fields [lindex $current_listsources 0]
@@ -476,23 +476,23 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
                set omc_ra  [expr ($ra  - [lindex [lindex $cata 1] 0])*3600.0]
                set omc_dec [expr ($dec - [lindex [lindex $cata 1] 1])*3600.0]
             }
-            
+
             set astroid [lindex $s $idcata]
             #gren_info "astroid = $astroid\n"
             set othf [lindex $astroid 2]
-            
+
             ::bdi_tools_psf::set_by_key othf "ra"      $ra
             ::bdi_tools_psf::set_by_key othf "dec"     $dec
             ::bdi_tools_psf::set_by_key othf "res_ra"  $res_ra
             ::bdi_tools_psf::set_by_key othf "res_dec" $res_dec
             ::bdi_tools_psf::set_by_key othf "omc_ra"  $omc_ra
             ::bdi_tools_psf::set_by_key othf "omc_dec" $omc_dec
-            
+
             #if {$id_current_image == 2} {
             #   gren_info "Lect Ref = $id_current_image $id $idcata $ar $ac $name $ra $dec\n"
             #}
-            
-            
+
+
             set astroid [lreplace $astroid 2 2 $othf]
             set s [lreplace $s $idcata $idcata $astroid]
             set sources [lreplace $sources $id $id $s]
@@ -626,7 +626,7 @@ proc ::bdi_tools_astrometry::init_ephem_imcce { name list_dates } {
    }
    puts $chan0 $cmd
    close $chan0
-   
+
    # Retourne le nom du fichier de cmde
    if {$cmd == "" } {
       return -code 1 "No ephemeris for this target"
@@ -649,7 +649,7 @@ proc ::bdi_tools_astrometry::init_ephem_imcce { name list_dates } {
 
 
 #----------------------------------------------------------------------------
-## Ephemerides: Calcul des ephemerides IMCCE pour tous les objets SCIENCE pour toutes les dates 
+## Ephemerides: Calcul des ephemerides IMCCE pour tous les objets SCIENCE pour toutes les dates
 # @return code 0
 proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
 
@@ -744,7 +744,7 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
             continue
          }
          foreach {midepoch dateimg} [array get list_dates] {
-         
+
             set ::bdi_tools_astrometry::ephem_imcce($name,$dateimg) $ephem($midepoch)
 
 #ephem(2456298.4971990511)
@@ -784,7 +784,7 @@ proc ::bdi_tools_astrometry::compose_ephem_jpl {  } {
    array unset ::bdi_tools_astrometry::ephem_jpl
    array unset list_dates
 
-   # Collecte des infos 
+   # Collecte des infos
    foreach {name y} [array get ::bdi_tools_astrometry::listscience] {
       if {[string compare $name $fname] != 0} {
          continue
@@ -863,8 +863,8 @@ proc ::bdi_tools_astrometry::read_ephem_jpl {  } {
 # STRUCTURE DE DONNEES
 #----------------------------------------------------------------------------
 # Structure de tabval :
-#  0  id 
-#  1  field 
+#  0  id
+#  1  field
 #  2  ar
 #  3  rho
 #  4  res_ra
@@ -915,7 +915,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          if {$name == ""} {
             gren_info "Lect Ref = $id $idcata $ar $ac $name\n"
          }
-         
+
          set s       [lindex [lindex $current_listsources 1] $id]
          set astroid [lindex $s $idcata]
          set othf    [lindex $astroid 2]
@@ -933,7 +933,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set fwhmx  [::bdi_tools_psf::get_val othf "fwhmx"]
          set fwhmy  [::bdi_tools_psf::get_val othf "fwhmy"]
 
-         if { $res_ra == "" || $res_dec == "" } { 
+         if { $res_ra == "" || $res_dec == "" } {
             set rho     ""
             set res_ra  ""
             set res_dec ""
@@ -942,10 +942,10 @@ proc ::bdi_tools_astrometry::create_vartab { } {
             set res_ra  [format "%.4f" $res_ra ]
             set res_dec [format "%.4f" $res_dec]
          }
-         if { $err_xsm != ""} { 
+         if { $err_xsm != ""} {
             set err_xsm   [format  "%.4f" $err_xsm]
          }
-         if { $err_ysm != ""} { 
+         if { $err_ysm != ""} {
             set err_ysm   [format  "%.4f" $err_ysm]
          }
 
@@ -971,7 +971,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          if {$name == ""} {
             gren_info "Lect Science = $id $idcata $ar $ac $name\n"
          }
-         
+
          set s       [lindex [lindex $current_listsources 1] $id]
          set astroid [lindex $s $idcata]
          set othf    [lindex $astroid 2]
@@ -989,7 +989,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
          set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
 
-         if { $res_ra == "" || $res_dec == "" } { 
+         if { $res_ra == "" || $res_dec == "" } {
             set rho  ""
             set res_ra  ""
             set res_dec ""
@@ -998,10 +998,10 @@ proc ::bdi_tools_astrometry::create_vartab { } {
             set res_ra  [format "%.4f" $res_ra ]
             set res_dec [format "%.4f" $res_dec]
          }
-         if { $err_xsm != ""} { 
+         if { $err_xsm != ""} {
             set err_xsm   [format  "%.4f" $err_xsm]
          }
-         if { $err_ysm != ""} { 
+         if { $err_ysm != ""} {
             set err_ysm   [format  "%.4f" $err_ysm]
          }
 
@@ -1010,7 +1010,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          lappend ::bdi_tools_astrometry::listscience($name) $dateiso
          lappend ::bdi_tools_astrometry::listdate($dateiso) $name
       }
-      
+
       gren_info "date = $dateiso "
       gren_info "nb science = [llength $list_id_science] "
       gren_info "nb ref = [llength $list_id_ref] \n"
@@ -1092,7 +1092,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
 #----------------------------------------------------------------------------
 # CALCUL DES STATISTIQUES
 #----------------------------------------------------------------------------
-#   0  nb        : nb d element 
+#   0  nb        : nb d element
 #   1  mrho      : moyenne sur rho =  rayon des residu
 #   2  stdev_rho : stdev sur rho
 #   3  mra       : moyenne sur residu alpha
@@ -1122,7 +1122,7 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
    set cpt 0
    foreach name [array names ::bdi_tools_astrometry::listref] {
 
-      incr cpt 
+      incr cpt
 
       set rho ""
       set a   ""
@@ -1145,7 +1145,7 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       }
 
       set nb       [llength $::bdi_tools_astrometry::listref($name)]
-      
+
       set nbm      [llength $m]
       set nbrho    [llength $rho]
       if {$nbrho > 0} {
@@ -1191,7 +1191,7 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$err} {
          set merr_y ""
       }
-      
+
       set err [ catch {set mm [format "%.3f" [::math::statistics::mean $m]]} msg ]
       if {$err} {
          set mm ""
@@ -1200,8 +1200,8 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
       if {$err} {
          set sm ""
       }
-      
-      
+
+
       set ::bdi_tools_astrometry::tabref($name) [list $name $nb $mrho $srho $mra $mrd $sra $srd $ma $md $sa $sd $mm $sm $merr_x $merr_y]
    }
 
@@ -1228,7 +1228,7 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
          lappend err_y [lindex $::bdi_tools_astrometry::tabval($name,$date) 11]
          #gren_info "tabval($name,$date) = $::bdi_tools_astrometry::tabval($name,$date)\n"
       }
-      
+
       set nb     [llength $::bdi_tools_astrometry::listscience($name)]
       set nbrho    [llength $rho]
 
@@ -1373,7 +1373,7 @@ proc ::bdi_tools_astrometry::calcul_statistique { } {
 #----------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------
-## Avancement de la barre de progression lors de la sauvegarde des 
+## Avancement de la barre de progression lors de la sauvegarde des
 # @param cur real Valeur courante
 # @param max real Valeur maximum de la barre de progression
 # @return void
@@ -1403,7 +1403,7 @@ proc ::bdi_tools_astrometry::save_images { } {
       # Progression
       ::bdi_tools_astrometry::set_savprogress $id_current_image $::tools_cata::nb_img_list
       if { $::bdi_tools_astrometry::savannul } { break }
-      
+
       # Tabkey
       set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
       set tabkey   [::bddimages_liste::lget $current_image "tabkey"]
@@ -1414,7 +1414,7 @@ proc ::bdi_tools_astrometry::save_images { } {
       set cataxml "${f}_cata.xml"
 
       # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
-      
+
       set ident [bddimages_image_identification $idbddimg]
       set fileimg  [lindex $ident 1]
       set filecata [lindex $ident 3]
@@ -1427,7 +1427,7 @@ proc ::bdi_tools_astrometry::save_images { } {
       }
 
       set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
-      
+
       # Creation de l image temporaire
       set fichtmpunzip [unzipedfilename $fileimg]
       set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
@@ -1439,7 +1439,7 @@ proc ::bdi_tools_astrometry::save_images { } {
       # efface l image dans la base et le disque
       bddimages_image_delete_fromsql $ident
       bddimages_image_delete_fromdisk $ident
-      
+
       # insere l image dans la base
       set err [catch {set idbddimg [insertion_solo $filefinal]} msg]
       if {$err} {
@@ -1510,5 +1510,5 @@ proc ::bdi_tools_astrometry::convert_txt_dms { val } {
    if {$mint < 10.0} {set m "0$mint"}
    if {$sec  < 10.0} {set sec "0$sec"}
    return "$s$d $mint $sec"
-   
+
 }

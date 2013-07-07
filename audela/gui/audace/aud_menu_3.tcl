@@ -4448,14 +4448,14 @@ namespace eval ::ser2fits {
       dict set dicokwd OBJECT    {OBJECT %s string {Object observed} {}}
       dict set dicokwd OBJNAME   {OBJNAME %s string {Object Name} {}}
       dict set dicokwd OBSERVER  {OBSERVER %s string {Observers Names} {}}
-      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} um}
-      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} um}
+      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} mum}
+      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} mum}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
       dict set dicokwd SWMODIFY  {SWMODIFY %s string {Processing Software} {}}
       dict set dicokwd TELAPSE   {TELAPSE %s float {Elapsed time of observation} {s}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
-      dict set dicokwd XPIXSZ    {XPIXSZ %s double {Pixel Width (without binning)} um}
-      dict set dicokwd YPIXSZ    {YPIXSZ %s double {Pixel Height (without binning)} um}
+      dict set dicokwd XPIXSZ    {XPIXSZ %s double {Pixel Width (without binning)} mum}
+      dict set dicokwd YPIXSZ    {YPIXSZ %s double {Pixel Height (without binning)} mum}
 
       set kwd_list [dict keys $dicokwd]
       if {$kwd eq " "} {return $kwd_list}
@@ -4467,7 +4467,7 @@ namespace eval ::ser2fits {
    #---------------------------------------------------------------------------
    #  getCdelt
    #  Retourne les cdelt en arcsec/pixel
-   #  Parametres : dimension des pixels (avec bining) en um,
+   #  Parametres : dimension des pixels (avec bining) en mum,
    #     nombre de pixels dans l'image, longueur focale en m
    #---------------------------------------------------------------------------
    proc getCdelt { naxis1 naxis2 pixsize1 pixsize2 foclen } {
