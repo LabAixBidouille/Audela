@@ -491,7 +491,7 @@ namespace eval ::astrometry {
       set upixsize1 1.
       set upixsize2 1.
       if {($valid_optic>=8)} {
-         if {$::astrometry::astrom(wcsunits,FOCLEN)=="um"} {
+         if {$::astrometry::astrom(wcsunits,FOCLEN)=="mum"} {
             set ufoclen 1e-6
          }
          if {$::astrometry::astrom(wcsunits,FOCLEN)=="mm"} {
@@ -500,7 +500,7 @@ namespace eval ::astrometry {
          if {$::astrometry::astrom(wcsunits,FOCLEN)=="m"} {
             set ufoclen 1.
          }
-         if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="um"} {
+         if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="mum"} {
             set upixsize1 1e-6
          }
          if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="mm"} {
@@ -509,7 +509,7 @@ namespace eval ::astrometry {
          if {$::astrometry::astrom(wcsunits,PIXSIZE1)=="m"} {
             set upixsize1 1.
          }
-         if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="um"} {
+         if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="mum"} {
             set upixsize2 1e-6
          }
          if {$::astrometry::astrom(wcsunits,PIXSIZE2)=="mm"} {

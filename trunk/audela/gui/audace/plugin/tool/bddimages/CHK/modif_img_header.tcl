@@ -1,6 +1,6 @@
 ##################################################################################################
 # procedure de la derniere Chance !
-# Elle permet de modifier les clés des headers en se basant sur le nom de l image.
+# Elle permet de modifier les clÃ©s des headers en se basant sur le nom de l image.
 # tres dangeureuse car modifie les images brutes
 # cela est contraire a la philo de bddimages qui cherche a conserver les images brutes
 ##################################################################################################
@@ -32,17 +32,17 @@
 
          buf1 setkwd [list "FOCLEN" 7.973 "double" "Focal length" ""]
 
-         if {[lindex  [buf1 getkwd "NAXIS1"] 1]==1} {buf1 setkwd [list "PIXSIZE1" 13.5 "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS1"] 2]==1} {buf1 setkwd [list "PIXSIZE1" 27   "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS1"] 3]==1} {buf1 setkwd [list "PIXSIZE1" 40.5 "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS1"] 4]==1} {buf1 setkwd [list "PIXSIZE1" 54   "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS2"] 1]==1} {buf1 setkwd [list "PIXSIZE2" 13.5 "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS2"] 2]==1} {buf1 setkwd [list "PIXSIZE2" 27   "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS2"] 3]==1} {buf1 setkwd [list "PIXSIZE2" 40.5 "double" "pixel size" "um"]}
-         if {[lindex  [buf1 getkwd "NAXIS2"] 4]==1} {buf1 setkwd [list "PIXSIZE2" 54   "double" "pixel size" "um"]}
+         if {[lindex  [buf1 getkwd "NAXIS1"] 1]==1} {buf1 setkwd [list "PIXSIZE1" 13.5 "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS1"] 2]==1} {buf1 setkwd [list "PIXSIZE1" 27   "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS1"] 3]==1} {buf1 setkwd [list "PIXSIZE1" 40.5 "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS1"] 4]==1} {buf1 setkwd [list "PIXSIZE1" 54   "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS2"] 1]==1} {buf1 setkwd [list "PIXSIZE2" 13.5 "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS2"] 2]==1} {buf1 setkwd [list "PIXSIZE2" 27   "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS2"] 3]==1} {buf1 setkwd [list "PIXSIZE2" 40.5 "double" "pixel size" "mum"]}
+         if {[lindex  [buf1 getkwd "NAXIS2"] 4]==1} {buf1 setkwd [list "PIXSIZE2" 54   "double" "pixel size" "mum"]}
 
          ::bddimagesAdmin::bdi_setcompat 1
-         buf1 setkwd [list "BDDIMAGES STATE" "RAW" "string" "RAW | CORR | CATA | ?" ""]   
+         buf1 setkwd [list "BDDIMAGES STATE" "RAW" "string" "RAW | CORR | CATA | ?" ""]
          buf1 setkwd [list "BDDIMAGES TYPE"  $key "string" "IMG | FLAT | DARK | OFFSET | ?" ""]
 
          # sauve l image

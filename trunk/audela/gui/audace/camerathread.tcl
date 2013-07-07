@@ -766,8 +766,8 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
 
 ##::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
    #--- je cree les mots cles necessaires a la calibration
-   buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float {[um] Pixel size along naxis1} "um" ]
-   buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float {[um] Pixel size along naxis2} "um" ]
+   buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float {[um] Pixel size along naxis1} "mum" ]
+   buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float {[um] Pixel size along naxis2} "mum" ]
    buf$bufNo setkwd [list "CRPIX1"     $crpix1     float {[pixel] reference pixel for naxis1} "pixel" ]
    buf$bufNo setkwd [list "CRPIX2"     $crpix2     float {[pixel] reference pixel for naxis2} "pixel" ]
    buf$bufNo setkwd [list "CRVAL1"     $crval1     float {[pixel] reference pixel for naxis1} "pixel" ]

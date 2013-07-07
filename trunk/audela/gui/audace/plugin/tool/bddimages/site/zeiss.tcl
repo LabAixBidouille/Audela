@@ -29,7 +29,7 @@ proc chg_tabkey {tabkey} {
       set key_dateiso [lreplace [::bddimages_liste::lget $tabkey "date-obs"] 1 1 $dateiso]
       set tabkey [::bddimages_liste::lupdate $tabkey "date-obs" $key_dateiso]
 
-      set key_foclen  [list "FOCLEN" 7.973 "double" "Focal lenght" "m"]   
+      set key_foclen  [list "FOCLEN" 7.973 "double" "Focal lenght" "m"]
       set tabkey [ ::bddimages_liste::ladd $tabkey "foclen" $key_foclen ]
 
       set key_bin1 [::bddimages_liste::lget $tabkey "hbin"]
@@ -41,15 +41,15 @@ proc chg_tabkey {tabkey} {
       set key_bin2 [lreplace $key_bin2 0 0 "BIN2"]
       set bin2     [lindex $key_bin2 1]
       set tabkey   [ ::bddimages_liste::ladd $tabkey "bin2" $key_bin2 ]
-      
+
       set pixsize1     [expr $bin1 * 13.5]
-      set key_pixsize1 [list "PIXSIZE1" $pixsize1 "double" "Pixel Size" "um"]   
+      set key_pixsize1 [list "PIXSIZE1" $pixsize1 "double" "Pixel Size" "mum"]
       set tabkey       [ ::bddimages_liste::ladd $tabkey "pixsize1" $key_pixsize1 ]
-      
+
       set pixsize2     [expr $bin2 * 13.5]
-      set key_pixsize2 [list "PIXSIZE2" $pixsize2 "double" "Pixel Size" "um"]   
+      set key_pixsize2 [list "PIXSIZE2" $pixsize2 "double" "Pixel Size" "mum"]
       set tabkey       [ ::bddimages_liste::ladd $tabkey "pixsize2" $key_pixsize2 ]
-      
+
       set key_exposure [::bddimages_liste::lget $tabkey "exposure"]
       set exposure     [lindex $key_exposure 1]
       set exposure     [regsub {,} $exposure "."]
@@ -57,14 +57,14 @@ proc chg_tabkey {tabkey} {
       set tabkey       [ ::bddimages_liste::lupdate $tabkey "exposure" $key_exposure ]
 
 
-      set key_uaicode  [list "IAU_CODE" 874 "int" "Observatory uai code" ""]   
+      set key_uaicode  [list "IAU_CODE" 874 "int" "Observatory uai code" ""]
       set tabkey [ ::bddimages_liste::ladd $tabkey "iau_code" $key_uaicode ]
 
 
       #::console::affiche_resultat "RA=$ra ($rah)\n"
       #::console::affiche_resultat "EXPOSURE=$exposure\n"
 
- 
+
       return [list 0 $tabkey]
 
    } else {
