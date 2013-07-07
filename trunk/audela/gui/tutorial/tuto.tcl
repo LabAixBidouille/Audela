@@ -438,9 +438,9 @@ if { $catchError != "0" } {
 
 #--- declare pwd folder
 if {[lindex [split [pwd] /] end]=="bin"} {
-	set num(rep_pwd) [pwd]/../gui/tutorial
+   set num(rep_pwd) [pwd]/../gui/tutorial
 } else {
-	set num(rep_pwd) [pwd]
+   set num(rep_pwd) [pwd]
 }
 
 #--- declare an Audine Kaf-0400 camera
@@ -464,3 +464,4 @@ if { $erreur == "1" } {
    cam$num(cam1) interrupt 0
    tk_messageBox -message "$caption(cam_connect)" -icon info
 }
+

@@ -402,7 +402,7 @@ namespace eval carteducielv3 {
    #     ligne : dernier objet selectione sur la carte
    #
    #  exemple de reponse :
-   #     ligne : OK!  18h46m04.48s	+26°39'43.7"	  *	HD173780	mV: 4.83	HD:173780	BD:BD+26 3349 	HIP: 92088	HR:7064	b-v: 1.20	mB: 6.03	sp:K2III                     	pmRA:    18 [mas/y]	pmDE:    24 [mas/y]	px:  12.8 [mas]	Dist:254.8 [ly]	Comp:       	Const:Lyr	RV:-17.06 [km/s]	mI:3.8		Equinox:J2000.0
+   #     ligne : OK!  18h46m04.48s  +26°39'43.7"     *   HD173780 mV: 4.83 HD:173780   BD:BD+26 3349  HIP: 92088  HR:7064  b-v: 1.20   mB: 6.03 sp:K2III                      pmRA:    18 [mas/y]  pmDE:    24 [mas/y]  px:  12.8 [mas]   Dist:254.8 [ly]   Comp:          Const:Lyr   RV:-17.06 [km/s]  mI:3.8      Equinox:J2000.0
    #
    #     Les coordonnees et le nom de l'objet sont extraits de la ligne
    #     Les autres lignes ne sont pas utilisees.
@@ -413,7 +413,7 @@ namespace eval carteducielv3 {
    #       $ra      = right ascension  ex: "16h42m11.67s"
    #       $dec     = declinaison      ex: "+36°26'18.9""
    #       $objType = object type      ex: "Gb"
-   #       $detail  = object detail    ex :"M  13            	m: 5.80	Name:NGC 6205          	sbr:12.00	Dim: 23.2 x 23.2 '	pa: 90	class:VOliptical	desc:!!eB;vRi;vgeCM;*11...;Hercules cluster;Messier said round nebula contains no star                                       	Const:HER		Equinox:now"
+   #       $detail  = object detail    ex :"M  13              m: 5.80  Name:NGC 6205           sbr:12.00   Dim: 23.2 x 23.2 '   pa: 90   class:VOliptical  desc:!!eB;vRi;vgeCM;*11...;Hercules cluster;Messier said round nebula contains no star                                        Const:HER      Equinox:now"
    #
    #  Mise en forme de la reponse
    #  ---------------------------

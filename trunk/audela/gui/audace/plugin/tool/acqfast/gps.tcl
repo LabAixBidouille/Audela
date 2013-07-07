@@ -182,7 +182,7 @@ namespace eval ::gps {
          set gpsendjd   [ mc_date2jd $gpsend ]
          set gpsbegjd [expr $gpsendjd - double($exposure)/86400.0]
          set gpsbeg   [ mc_date2iso8601 $gpsbegjd ]
-				 set gpsbegusec [expr int($gpsbegjd*86400.*1000000)%1000]
+         set gpsbegusec [expr int($gpsbegjd*86400.*1000000)%1000]
          set gpspc         [format "%.6f" [ expr ($gpsendjd - $pcendjd)*86400. ]]
          set gpsbeg $gpsbeg$gpsbegusec
          set dateobs $gpsbeg

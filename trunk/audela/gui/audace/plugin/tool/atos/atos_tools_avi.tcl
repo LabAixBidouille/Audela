@@ -35,8 +35,8 @@ namespace eval ::atos_tools_avi {
    # ::atos_tools_avi::verif
    # Verification des donnees
    proc ::atos_tools_avi::verif { } {
-   
-   
+
+
    }
 
 
@@ -80,13 +80,13 @@ namespace eval ::atos_tools_avi {
 
       #--- Fenetre parent
       set fenetre [::confVisu::getBase $visuNo]
-      
+
       #--- Ouvre la fenetre de choix des images
       set bufNo [ visu$visuNo buf ]
       set ::atos_tools::avi_filename [ ::tkutil::box_load_avi $frm $audace(rep_images) $bufNo "1" ]
       $frm.open.avipath delete 0 end
       $frm.open.avipath insert 0 $::atos_tools::avi_filename
-      
+
    }
 
 
@@ -148,14 +148,14 @@ namespace eval ::atos_tools_avi {
       ::atos_tools_avi::exist
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
- 
+
       set text [$panneau(atos,$visuNo,atos_verif).frmverif.results.txt cget -text]
 
 
-      # Lancement des etapes de verification      
+      # Lancement des etapes de verification
       set nbimage [::atos_tools_avi::get_nbimage]
       append text "Nb d'images : $nbimage\n"
-       
+
       append text "Test:"
       append text [::atos_tools_avi::avi1 test]
       append text "\n"
@@ -163,7 +163,7 @@ namespace eval ::atos_tools_avi {
       append text "Test:"
       append text [::atos_tools_avi::avi1 test]
       append text "\n"
-             
+
       # Fin
       $panneau(atos,$visuNo,atos_verif).frmverif.results.txt configure -text $text
 
@@ -256,12 +256,12 @@ namespace eval ::atos_tools_avi {
       if {$idframe > $::atos_tools::frame_end} {
          set idframe $::atos_tools::frame_end
       }
-      
+
       if {$idframe < $::atos_tools::frame_begin} {
          set idframe $::atos_tools::frame_begin
       }
-      
-      
+
+
       set pc [expr ($idframe-1) / ($nbf+1.0) ]
 
       ::atos_tools_avi::avi1 seekpercent $pc
@@ -374,7 +374,7 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::imagecount { frm } {
       global audace
-      
+
       $frm.imagecount delete 0 end
       set fmin [ $frm.posmin get ]
       set fmax [ $frm.posmax get ]
@@ -478,23 +478,23 @@ namespace eval ::atos_tools_avi {
 
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "Get device info\n"
-        
+
         set dev $::atos_acq::frmdevpath
         # set infodev $frm.tformin.periph.infodev
-        
+
         if { [ string equal $dev ""] } {
          set options "-0"
         } else {
          set options "-0 -i $dev"
         }
-        
+
         if { [ string equal $autoflag auto ] } {
             set options "$options -a"
         }
 
         set devparams { }
-       
-        set commandline "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" 
+
+        set commandline "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1"
         ::console::affiche_resultat "Appel de : $commandline\n"
         set err [ catch { exec sh -c $commandline } msg ]
         if { $err != 0 } {
@@ -508,11 +508,11 @@ namespace eval ::atos_tools_avi {
             $frm.oneshot configure -state disabled
             $frm.oneshot2 configure -state disabled
             $frm.demarre configure -state disabled
-	    set ::atos_acq::frmdevmodel ?
-	    set ::atos_acq::frmdevinput ?
-	    set ::atos_acq::frmdevwidth ?
-	    set ::atos_acq::frmdevheight ?
-	    set ::atos_acq::frmdevdimen ?
+            set ::atos_acq::frmdevmodel ?
+            set ::atos_acq::frmdevinput ?
+            set ::atos_acq::frmdevwidth ?
+            set ::atos_acq::frmdevheight ?
+            set ::atos_acq::frmdevdimen ?
             return $err
         } else {
             ::console::affiche_resultat "=== Messages retournes par av4l-grab :\n"
@@ -537,7 +537,7 @@ namespace eval ::atos_tools_avi {
             if { [ string equal $dev ""] } {
                 set ::atos_acq::frmdevpath [lindex [lsearch -index 0 -inline $devparams video_device] 1]
             }
-	    }
+       }
 
    }
 
@@ -581,7 +581,7 @@ namespace eval ::atos_tools_avi {
                 ::console::affiche_resultat "$line\n"
             }
             ::console::affiche_resultat "=== Fin des messages\n"
-	}
+   }
 
         if { $err == 0 } {
             if {[file exists /dev/shm/pict.yuv422 ]} {
@@ -651,7 +651,7 @@ namespace eval ::atos_tools_avi {
                 ::console::affiche_resultat "$line\n"
             }
             ::console::affiche_resultat "=== Fin des messages\n"
-	}
+   }
 
         if { $err == 0 } {
             if {[file exists /dev/shm/pict.yuv422 ]} {
@@ -737,7 +737,7 @@ namespace eval ::atos_tools_avi {
             ::console::affiche_resultat "Acquisition en cours.\n"
             return
         }
-        
+
         if { $dev == "" } {
            tk_messageBox -message "Veuillez choisir un peripherique de capture" -type ok
            return
@@ -756,7 +756,7 @@ namespace eval ::atos_tools_avi {
 
         set tag [clock format [clock seconds] -gmt 1 -format %Y%m%dT%H%M%S]
         set prefix "$prefix-$tag"
-        
+
         set options "-i $dev -y $::atos::parametres(atos,$visuNo,screen_refresh) -s $::atos::parametres(atos,$visuNo,free_space) -d 120m -c 120m -o $destdir -p $prefix"
 
         ::console::affiche_resultat "Acquisition demarre ...\n"
@@ -767,7 +767,7 @@ namespace eval ::atos_tools_avi {
 #        set err [catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options" & } processes]
 
         set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1\"" r+] } msg ]
-        
+
         if { $err != 0 } {
             ::console::affiche_erreur "Echec lors de l'execution de av4l-grab\n"
             return
@@ -803,9 +803,9 @@ namespace eval ::atos_tools_avi {
         }
 
         set err [ catch {[exec pkill -x av4l-grab]} msg ]
-        
+
         after 2000
-        
+
         if { [acq_is_running] } {
             ::console::affiche_erreur "L'acquisition n'a pas pu etre arretee\n"
         }
@@ -820,3 +820,4 @@ namespace eval ::atos_tools_avi {
 
 
 }
+
