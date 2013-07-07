@@ -77,7 +77,7 @@ set caption(acqvideo,y2)                        "y2:"
 set caption(acqvideo,ok)                        "OK"
 set caption(acqvideo,appliquer)                 "Apply"
 set caption(acqvideo,fermer)                    "Close"
-set caption(acqvideo,largeur_hauteur)           "Width x Height (µm):"
+set caption(acqvideo,largeur_hauteur)           "Width x Height (mum):"
 set caption(acqvideo,coord_x1_y1)               "Coordinates (x1,y1):"
 set caption(acqvideo,coord_x2_y2)               "Coordinates (x2,y2):"
 
@@ -151,7 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Appliquer"
    set caption(acqvideo,fermer)                 "Fermer"
-   set caption(acqvideo,largeur_hauteur)        "Largeur x Hauteur (µm) :"
+   set caption(acqvideo,largeur_hauteur)        "Largeur x Hauteur (mum) :"
    set caption(acqvideo,coord_x1_y1)            "Coordonnées (x1,y1) :"
    set caption(acqvideo,coord_x2_y2)            "Coordonnées (x2,y2) :"
 
@@ -225,7 +225,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Applicare"
    set caption(acqvideo,fermer)                 "Chiudere"
-   set caption(acqvideo,largeur_hauteur)        "Larghezza x Altezza (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Larghezza x Altezza (mum):"
    set caption(acqvideo,coord_x1_y1)            "Coordinate (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordinate (x2,y2):"
 
@@ -299,7 +299,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Aplicar"
    set caption(acqvideo,fermer)                 "Cerrar"
-   set caption(acqvideo,largeur_hauteur)        "Anchura x Longitud (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Anchura x Longitud (mum):"
    set caption(acqvideo,coord_x1_y1)            "Coordenadfas (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordenadfas (x2,y2):"
 
@@ -373,7 +373,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Anwenden"
    set caption(acqvideo,fermer)                 "Schließen"
-   set caption(acqvideo,largeur_hauteur)        "Breite x Höhe (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Breite x Höhe (mum):"
    set caption(acqvideo,coord_x1_y1)            "Koordinaten (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Koordinaten (x2,y2):"
 
@@ -447,7 +447,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Aplicar"
    set caption(acqvideo,fermer)                 "Fechar"
-   set caption(acqvideo,largeur_hauteur)        "Largura x altura (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Largura x altura (mum):"
    set caption(acqvideo,coord_x1_y1)            "Coordenadas (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordenadas (x2,y2):"
 
@@ -520,7 +520,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Apply"
    set caption(acqvideo,fermer)                 "Close"
-   set caption(acqvideo,largeur_hauteur)        "Width x Height (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Width x Height (mum):"
    set caption(acqvideo,coord_x1_y1)            "Coordinates (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordinates (x2,y2):"
 
@@ -593,7 +593,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Apply"
    set caption(acqvideo,fermer)                 "Close"
-   set caption(acqvideo,largeur_hauteur)        "Width x Height (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Width x Height (mum):"
    set caption(acqvideo,coord_x1_y1)            "Coordinates (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordinates (x2,y2):"
 
@@ -666,7 +666,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,ok)                     "OK"
    set caption(acqvideo,appliquer)              "Apply"
    set caption(acqvideo,fermer)                 "Close"
-   set caption(acqvideo,largeur_hauteur)        "Width x Height (µm):"
+   set caption(acqvideo,largeur_hauteur)        "Width x Height (mum):"
    set caption(acqvideo,coord_x1_y1)            "Coordinates (x1,y1):"
    set caption(acqvideo,coord_x2_y2)            "Coordinates (x2,y2):"
 

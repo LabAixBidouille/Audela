@@ -20,8 +20,8 @@ set caption(ascomcam,install)                      "%s V%s update completed."
 set caption(ascomcam,miroir_x)                     "Top/Bottom Reversal"
 set caption(ascomcam,miroir_y)                     "Left/Right Reversal"
 
-set caption(ascomcam,dimPixelX)                    "X Pixel Size (µm)"
-set caption(ascomcam,dimPixelY)                    "Y Pixel Size (µm)"
+set caption(ascomcam,dimPixelX)                    "X Pixel Size (mum)"
+set caption(ascomcam,dimPixelY)                    "Y Pixel Size (mum)"
 
 set caption(ascomcam,manuel)                       "Manual"
 set caption(ascomcam,auto)                         "Automatic"
@@ -52,8 +52,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Inverser Haut/Bas"
    set caption(ascomcam,miroir_y)                  "Inverser Gauche/Droite"
 
-   set caption(ascomcam,dimPixelX)                 "Taille des pixels X (µm)"
-   set caption(ascomcam,dimPixelY)                 "Taille des pixels Y (µm)"
+   set caption(ascomcam,dimPixelX)                 "Taille des pixels X (mum)"
+   set caption(ascomcam,dimPixelY)                 "Taille des pixels Y (mum)"
 
    set caption(ascomcam,manuel)                    "Manuel"
    set caption(ascomcam,auto)                      "Automatique"
@@ -84,8 +84,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Inversione Alto/Basso"
    set caption(ascomcam,miroir_y)                  "Inversione Sinistra/Destra"
 
-   set caption(ascomcam,dimPixelX)                 "Dimensione dei pixel X (µm)"
-   set caption(ascomcam,dimPixelY)                 "Dimensione dei pixel Y (µm)"
+   set caption(ascomcam,dimPixelX)                 "Dimensione dei pixel X (mum)"
+   set caption(ascomcam,dimPixelY)                 "Dimensione dei pixel Y (mum)"
 
    set caption(ascomcam,manuel)                    "Manuale"
    set caption(ascomcam,auto)                      "Automatico"
@@ -116,8 +116,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Invertir Arriba/Abajo"
    set caption(ascomcam,miroir_y)                  "Invertir Izquierda/Derecha"
 
-   set caption(ascomcam,dimPixelX)                 "Tamaño de píxeles X (µm)"
-   set caption(ascomcam,dimPixelY)                 "Tamaño de píxeles Y (µm)"
+   set caption(ascomcam,dimPixelX)                 "Tamaño de píxeles X (mum)"
+   set caption(ascomcam,dimPixelY)                 "Tamaño de píxeles Y (mum)"
 
    set caption(ascomcam,manuel)                    "Manual"
    set caption(ascomcam,auto)                      "Automático"
@@ -148,8 +148,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Oben/Unten umkehren"
    set caption(ascomcam,miroir_y)                  "Links/Rechts umkehren"
 
-   set caption(ascomcam,dimPixelX)                 "X Rasterpunkten Größe (µm)"
-   set caption(ascomcam,dimPixelY)                 "Y Rasterpunkten Größe (µm)"
+   set caption(ascomcam,dimPixelX)                 "X Rasterpunkten Größe (mum)"
+   set caption(ascomcam,dimPixelY)                 "Y Rasterpunkten Größe (mum)"
 
    set caption(ascomcam,manuel)                    "Manuell"
    set caption(ascomcam,auto)                      "Automatisch"
@@ -180,8 +180,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Inverter Cima/Baixo"
    set caption(ascomcam,miroir_y)                  "Inverter Esquerda/Direita"
 
-   set caption(ascomcam,dimPixelX)                 "Tamanho do Pixel X (µm)"
-   set caption(ascomcam,dimPixelY)                 "Tamanho do Pixel Y (µm)"
+   set caption(ascomcam,dimPixelX)                 "Tamanho do Pixel X (mum)"
+   set caption(ascomcam,dimPixelY)                 "Tamanho do Pixel Y (mum)"
 
    set caption(ascomcam,manuel)                    "Manual"
    set caption(ascomcam,auto)                      "Automático"
@@ -212,8 +212,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Top/Bottom Reversal"
    set caption(ascomcam,miroir_y)                  "Left/Right Reversal"
 
-   set caption(ascomcam,dimPixelX)                 "X Pixel Size (µm)"
-   set caption(ascomcam,dimPixelY)                 "Y Pixel Size (µm)"
+   set caption(ascomcam,dimPixelX)                 "X Pixel Size (mum)"
+   set caption(ascomcam,dimPixelY)                 "Y Pixel Size (mum)"
 
    set caption(ascomcam,manuel)                    "Manual"
    set caption(ascomcam,auto)                      "Automatic"
@@ -244,8 +244,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Top/Bottom Reversal"
    set caption(ascomcam,miroir_y)                  "Left/Right Reversal"
 
-   set caption(ascomcam,dimPixelX)                 "X Pixel Size (µm)"
-   set caption(ascomcam,dimPixelY)                 "Y Pixel Size (µm)"
+   set caption(ascomcam,dimPixelX)                 "X Pixel Size (mum)"
+   set caption(ascomcam,dimPixelY)                 "Y Pixel Size (mum)"
 
    set caption(ascomcam,manuel)                    "Manual"
    set caption(ascomcam,auto)                      "Automatic"
@@ -276,8 +276,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascomcam,miroir_x)                  "Top/Bottom Reversal"
    set caption(ascomcam,miroir_y)                  "Left/Right Reversal"
 
-   set caption(ascomcam,dimPixelX)                 "X Pixel Size (µm)"
-   set caption(ascomcam,dimPixelY)                 "Y Pixel Size (µm)"
+   set caption(ascomcam,dimPixelX)                 "X Pixel Size (mum)"
+   set caption(ascomcam,dimPixelY)                 "Y Pixel Size (mum)"
 
    set caption(ascomcam,manuel)                    "Manual"
    set caption(ascomcam,auto)                      "Automatic"
