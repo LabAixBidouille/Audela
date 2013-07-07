@@ -5,7 +5,7 @@
 # Fichier        : atos_analysis_tools.tcl
 # Description    : Outils sans GUI pour l'analyse de la courbe de lumiere
 # Auteur         : Frederic Vachier
-# Mise Ã  jour $Id$
+# Mise ÃƒÂ  jour $Id$
 #
 
 
@@ -24,7 +24,7 @@ set tcl_precision 17
       variable diravi
       variable dirwork
       variable filecsv
-      
+
 
 
 
@@ -37,9 +37,9 @@ set tcl_precision 17
 
 
       if  {![file exists $file]} {return}
- 
+
       set cpt 0
-      
+
       set chan [open $file r]
 
       while {[gets $chan line] >= 0} {
@@ -58,7 +58,7 @@ set tcl_precision 17
             incr cpt
             continue
          }
-         
+
          set a [split $line ","]
          set idcol 0
          catch {unset csvraw}
@@ -66,7 +66,7 @@ set tcl_precision 17
             set ::atos_analysis_tools::csv($cpt,$col) [string trim [lindex $a $idcol]]
             incr idcol
          }
-        
+
          incr cpt
          #if {$cpt > 5} {break}
       }
@@ -93,14 +93,14 @@ set tcl_precision 17
       set cptref 0
 
       ::console::affiche_resultat "nb=$nb\n"
-      
+
       for {set i 1} {$i<=$nb} {incr i} {
-         
+
          if { $::atos_analysis_tools::csv($i,idframe)==""}  {continue}
          if { $::atos_analysis_tools::csv($i,jd)==""}       {continue}
          if { $::atos_analysis_tools::csv($i,dateiso)==""}  {continue}
          if { $::atos_analysis_tools::csv($i,obj_fint)==""} {continue}
-                
+
          set ::atos_analysis_tools::cdl($cpt,idframe)  $::atos_analysis_tools::csv($i,idframe)
          set ::atos_analysis_tools::cdl($cpt,jd)       $::atos_analysis_tools::csv($i,jd)
          set ::atos_analysis_tools::cdl($cpt,dateiso)  $::atos_analysis_tools::csv($i,dateiso)
@@ -108,17 +108,17 @@ set tcl_precision 17
 
          if { $::atos_analysis_tools::csv($i,ref_fint)!=""} {
             set ::atos_analysis_tools::cdl($cpt,ref_fint) $::atos_analysis_tools::csv($i,ref_fint)
-            incr ::atos_analysis_tools::nb_pt_ref 
+            incr ::atos_analysis_tools::nb_pt_ref
          }
-         
+
          incr cpt
       }
       if {$cpt==1} {
-         return -code 1 "Aucune donnée"
+         return -code 1 "Aucune donnÃ©e"
       }
 
       set ::atos_analysis_tools::raw_nbframe [expr $cpt - 1]
-      set ::atos_analysis_tools::raw_status_file "Chargé"
+      set ::atos_analysis_tools::raw_status_file "ChargÃ©"
       set ::atos_analysis_tools::raw_date_begin  $::atos_analysis_tools::cdl(1,dateiso)
       set ::atos_analysis_tools::raw_date_end  $::atos_analysis_tools::cdl($::atos_analysis_tools::raw_nbframe,dateiso)
       set ::atos_analysis_tools::raw_duree  [format "%.3f" [expr ($::atos_analysis_tools::cdl($::atos_analysis_tools::raw_nbframe,jd) \
@@ -126,7 +126,7 @@ set tcl_precision 17
       set ::atos_analysis_tools::raw_fps  [format "%.3f" [expr ($::atos_analysis_tools::raw_nbframe /$::atos_analysis_tools::raw_duree )]]
       set ::atos_analysis_tools::orig $::atos_analysis_tools::cdl(1,jd)
 
-      return -code 0 
+      return -code 0
    }
 
 
@@ -182,10 +182,10 @@ set tcl_precision 17
          }
          set reste [expr $::atos_analysis_tools::raw_nbframe - $i]
          if {$reste<$bloc} {break}
-         
+
       }
 
- 
+
    }
 
 
@@ -197,7 +197,7 @@ set tcl_precision 17
 
 
    proc ::atos_analysis_tools::save_corrected_curve { file } {
-      
+
       set chan [open $file w]
       puts $chan "idframe,jd,flux"
 
@@ -219,7 +219,7 @@ set tcl_precision 17
       if {[info exists ::atos_analysis_tools::cols]} {unset ::atos_analysis_tools::cols}
       if {[info exists ::atos_analysis_tools::cdl]} {unset ::atos_analysis_tools::cdl}
       if {[info exists ::atos_analysis_tools::corr_nbframe]} {unset ::atos_analysis_tools::corr_nbframe}
-      
+
       set cpt 1
       for {set i 1} {$i<=$nb} {incr i} {
          if { $::atos_analysis_tools::csv($i,idframe)==""}  {continue}
@@ -231,13 +231,13 @@ set tcl_precision 17
          incr cpt
       }
       if {$cpt==1} {
-         return -code 1 "Aucune donnée"
+         return -code 1 "Aucune donnÃ©e"
       }
 
       set ::atos_analysis_tools::corr_nbframe [expr $cpt - 1]
-      set ::atos_analysis_tools::corr_status_file "Chargé"
+      set ::atos_analysis_tools::corr_status_file "ChargÃ©"
       set ::atos_analysis_tools::corr_date_begin  [ mc_date2iso8601 $::atos_analysis_tools::cdl(1,jd) ]
- 
+
       set ::atos_analysis_tools::corr_date_end  [ mc_date2iso8601 $::atos_analysis_tools::cdl($::atos_analysis_tools::corr_nbframe,jd) ]
       set ::atos_analysis_tools::corr_duree  [format "%.3f" [expr ($::atos_analysis_tools::cdl($::atos_analysis_tools::corr_nbframe,jd) \
             - $::atos_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
@@ -246,7 +246,7 @@ set tcl_precision 17
 
       set ::atos_analysis_tools::orig  $::atos_analysis_tools::cdl(1,jd)
 
-      return -code 0 
+      return -code 0
    }
 
 
@@ -278,7 +278,7 @@ set tcl_precision 17
       set changeo [open $file w]
       puts $changeo "# OMBRE GEOMETRIQUE"
       close $changeo
-      
+
    }
 
 
@@ -286,7 +286,7 @@ set tcl_precision 17
 
 
 
- 
+
 
 
    proc ::atos_analysis_tools::affiche_cdl {  } {
@@ -305,7 +305,7 @@ set tcl_precision 17
 
 
    proc ::atos_analysis_tools::sauve_brut {  } {
-      
+
       set file [file join $::atos_analysis_tools::dirwork "brut.csv"]
       set chan [open $file w]
       puts $chan "idframe,jd,obj_fint"
@@ -317,11 +317,11 @@ set tcl_precision 17
       close $chan
 
    }
-   
-   
-   
+
+
+
    proc ::atos_analysis_tools::sauve_bmediane {  } {
-      
+
       set file [file join $::atos_analysis_tools::dirwork "bmediane.csv"]
       set chan [open $file w]
       puts $chan "idframe,jd,obj_fint,mediane"
@@ -336,12 +336,12 @@ set tcl_precision 17
       close $chan
 
    }
-   
-   
-   
-   
+
+
+
+
    proc ::atos_analysis_tools::sauve_mediane {  } {
-      
+
       set file [file join $::atos_analysis_tools::dirwork "mediane.csv"]
       set chan [open $file w]
       puts $chan "idframe,jd,flux"
@@ -360,7 +360,7 @@ set tcl_precision 17
 
       ::atos_analysis_tools::init
       ::atos_analysis_tools::charge_cdl [file join $::atos_analysis_tools::diravi $::atos_analysis_tools::filecsv]
-      #::atos_analysis_tools::affiche_cdl 
+      #::atos_analysis_tools::affiche_cdl
       ::atos_analysis_tools::sauve_brut
       ::atos_analysis_tools::compacte
       ::atos_analysis_tools::sauve_bmediane
@@ -385,12 +385,12 @@ set tcl_precision 17
       # 1 oui
       # 0 non
 
-      # Longueur d''onde (microns)
+      # Longueur d''onde (mum : micron)
       # FORMULAIRE
       set ::atos_analysis_tools::wvlngth 0.75
       set ::atos_analysis_tools::wvlngth [expr $::atos_analysis_tools::wvlngth * 1.e-09]
 
-      # Bande passante (microns)
+      # Bande passante (mum : micron)
       # FORMULAIRE
       set ::atos_analysis_tools::dlambda 0.4
       set ::atos_analysis_tools::dlambda [expr $::atos_analysis_tools::dlambda * 1.e-09]
@@ -409,7 +409,7 @@ set tcl_precision 17
       set ::atos_analysis_tools::vn 27.8
 
       # Largeur de la bande (km)
-      # Taille estimée de l'objet (km)
+      # Taille estimÃ©e de l'objet (km)
       # si occultation rasante c est la taille de la corde (km)
       # FORMULAIRE
       set ::atos_analysis_tools::width 150.0
@@ -419,11 +419,11 @@ set tcl_precision 17
       # FORMULAIRE
       set ::atos_analysis_tools::trans 0.0
 
-      # 
+      #
       # on a 5 secondes dans lesquelles on va mesurer l instant
       # on a37 points de 0.3 sec d ecart
-      # 
-      # 
+      #
+      #
       # Duree generee (points)
       # duree synthetique choisie autour de l'evenement.
       # ex: 30 sec alrs que l evenement est au milieu.
@@ -436,20 +436,20 @@ set tcl_precision 17
       # FORMULAIRE
       set ::atos_analysis_tools::pas 0.3
 
-      # Flux hors occultation (normalisé)
+      # Flux hors occultation (normalisÃ©)
       # FORMULAIRE
       set ::atos_analysis_tools::phi1 1
 
-      # flux stellaire zero (normalisé)
+      # flux stellaire zero (normalisÃ©)
       # FORMULAIRE
       set ::atos_analysis_tools::phi0 0.29
-      
+
       # Heure de reference (sec TU)
       # FORMULAIRE
       set ::atos_analysis_tools::t0_ref 42082.185
       set ::atos_analysis_tools::t_milieu [expr $::atos_analysis_tools::t0_ref  + $::atos_analysis_tools::width/(2.0*$::atos_analysis_tools::vn)]
 
-      # on essai 100 points autour du T0 
+      # on essai 100 points autour du T0
       # en considerant un ecart entre les points de 0.02 sec
       # on peut dire qu on choisi pas = tmps d expo / 10
       # le pas est une estimation de la precision
@@ -459,15 +459,15 @@ set tcl_precision 17
       # Nombre d'instant a explorer autour de la reference (points)
       # FORMULAIRE
       set ::atos_analysis_tools::nheure 200
-      
+
       # pas (sec)
       # FORMULAIRE
       set ::atos_analysis_tools::pas_heure 0.02
-      
+
       set ::atos_analysis_tools::t0_min [expr $::atos_analysis_tools::t0_ref - $::atos_analysis_tools::pas_heure * $::atos_analysis_tools::nheure / 2.0]
       set ::atos_analysis_tools::t0_max [expr $::atos_analysis_tools::t0_ref + $::atos_analysis_tools::pas_heure * $::atos_analysis_tools::nheure / 2.0]
       set ::atos_analysis_tools::t0     $::atos_analysis_tools::t0_min
-      
+
    }
 
 
@@ -478,7 +478,7 @@ set tcl_precision 17
    proc ::atos_analysis_tools::partie2 { passe } {
 
       set ::atos_analysis_tools::but_calcul "Calcul"
-      
+
       #-----------------------------------------------------------------------------
       if {$passe == 1} {
          set ::atos_analysis_tools::24_chi2_x ""
@@ -486,7 +486,7 @@ set tcl_precision 17
       }
       if {$passe == 2} {
       }
-      
+
       #-----------------------------------------------------------------------------
       # Fichiers de sortie
       # sorties:
@@ -494,10 +494,10 @@ set tcl_precision 17
       # fort.21: ombre avec diffraction (convolee par la bande passante et
       #          par le diametre stellaire)
       # fort.22: ombre lissee par la reponse instrumentale
-      # fort.23: ombre (fort.22) interpolee sur les points d'observation 
+      # fort.23: ombre (fort.22) interpolee sur les points d'observation
       # fort.24: t0, chi2, nombre de points ajustes
       # fort.25: rayon de l'etoile, chi2_min, npt fittes (NB. "append")
-      # fort.26: dans le cas ou la bande a une largeur finie (ex. duree finie de l'occn) 
+      # fort.26: dans le cas ou la bande a une largeur finie (ex. duree finie de l'occn)
       #          chi2 - nfit (NB. "append"), voir par ex. donnees Hakos/Varuna 19 fev 2010
       set file21 [file join $::atos_analysis_tools::dirwork "21_${passe}_modele_flux_avant_convolution.csv"]
       set file22 [file join $::atos_analysis_tools::dirwork "22_${passe}_modele_flux_apres_convolution.csv"]
@@ -535,11 +535,11 @@ set tcl_precision 17
       puts $chan28 "$::atos_analysis_tools::t0_ref"
       puts $chan28 "$::atos_analysis_tools::nheure $::atos_analysis_tools::pas_heure"
       close $chan28
-      
+
       #-----------------------------------------------------------------------------
-      
+
       while { $::atos_analysis_tools::t0<=$::atos_analysis_tools::t0_max} {
-      
+
          set npt [expr int ($::atos_analysis_tools::duree/(2.0 * $::atos_analysis_tools::pas) )]
          if {$::atos_analysis_tools::mode==-1} {
             # bord gauche de l'ombre cale
@@ -561,12 +561,12 @@ set tcl_precision 17
          }
 
          set opa_ampli [expr  1.0 - sqrt($::atos_analysis_tools::trans)]
-      
+
          #-----------------------------------------------------------------------------
          #
          # Trace de l'ombre geometrique
          #
-         ::atos_analysis_tools::ombre_geometrique  $::atos_analysis_tools::mode $::atos_analysis_tools::t0 $::atos_analysis_tools::duree $::atos_analysis_tools::width $::atos_analysis_tools::vn $::atos_analysis_tools::phi1 $::atos_analysis_tools::phi0 
+         ::atos_analysis_tools::ombre_geometrique  $::atos_analysis_tools::mode $::atos_analysis_tools::t0 $::atos_analysis_tools::duree $::atos_analysis_tools::width $::atos_analysis_tools::vn $::atos_analysis_tools::phi1 $::atos_analysis_tools::phi0
 
          #-----------------------------------------------------------------------------
          #      etoile: sous-programme de convolution par le diametre
@@ -595,31 +595,31 @@ set tcl_precision 17
                lappend ::atos_analysis_tools::21_ombre_avec_diffraction_x $t($i)
                lappend ::atos_analysis_tools::21_ombre_avec_diffraction_y [normal2flux $flux($i)]
             }
-            
+
             set som [expr $som + $::atos_analysis_tools::pas * $::atos_analysis_tools::vn * (1.0-$flux($i))]
          }
-         
+
          close $chan21
 
-         ::console::affiche_resultat "Integrale du flux avant convolution(km): $som\n"      
+         ::console::affiche_resultat "Integrale du flux avant convolution(km): $som\n"
          #-----------------------------------------------------------------------------
 
-      
+
          #-----------------------------------------------------------------------------
          #
          # Convolution par la reponse instrumentale
          # Considerer ici comme lineaire
          #
-         
+
          if {$::atos_analysis_tools::irep == 1 } {
 
             # si reponse instrumentale
             set serial_t    [array get t]
             set serial_flux [array get flux]
             set nptl        [::atos_analysis_tools::instrument $serial_t $serial_flux $npt]
-            
+
          } else {
- 
+
             # si pas de reponse instrumentale
             set nptl 0
             for {set i [expr -$npt]} {$i<=$npt} {incr i} {
@@ -627,12 +627,12 @@ set tcl_precision 17
                set ::atos_analysis_tools::tl($nptl)    $t($i)
                set ::atos_analysis_tools::fluxl($nptl) $flux($i)
             }
- 
+
          }
 
          #-----------------------------------------------------------------------------
-      
-      
+
+
          #-----------------------------------------------------------------------------
          #
          # Ecriture du modele final (apres convolution par etoile et instrument)
@@ -642,7 +642,7 @@ set tcl_precision 17
          set ::atos_analysis_tools::22_ombre_instru_y ""
          set som 0.0
          set tl_min  1.e50
-         set tl_max  -1.d50   
+         set tl_max  -1.d50
          for {set i 1} {$i<=$nptl} {incr i} {
             puts $chan22 "$::atos_analysis_tools::tl($i),$::atos_analysis_tools::fluxl($i)"
             if {$passe == 2} {
@@ -654,11 +654,11 @@ set tcl_precision 17
             set som [expr $som + $::atos_analysis_tools::pas * $::atos_analysis_tools::vn * (1.0 - $::atos_analysis_tools::fluxl($i))]
          }
          close $chan22
-         ::console::affiche_resultat "Integrale du flux apres convolution (km): $som\n"      
+         ::console::affiche_resultat "Integrale du flux apres convolution (km): $som\n"
          #-----------------------------------------------------------------------------
-      
-      
-      
+
+
+
          #-----------------------------------------------------------------------------
          #
          # Calcul du chi2 avec les donnees
@@ -673,7 +673,7 @@ set tcl_precision 17
          set ::atos_analysis_tools::23_ombre_interpol_y  ""
 
          for {set i 1} {$i<=$::atos_analysis_tools::duree} {incr i} {
-         
+
             set fac [expr ($::atos_analysis_tools::tobs($i)-$tl_min)*($::atos_analysis_tools::tobs($i)-$tl_max)]
             if {$fac<=0.0} {
                set fmod_inter [::atos_analysis_tools::interpol $nptl $::atos_analysis_tools::tobs($i)]
@@ -692,19 +692,19 @@ set tcl_precision 17
          }
          close $chan23
 
-         ::console::affiche_resultat "t0: $::atos_analysis_tools::t0\n"      
-         ::console::affiche_resultat "chi2: $chi2\n"      
-         ::console::affiche_resultat "nfit: $nfit\n"      
-         ::console::affiche_resultat "temps milieu de la bande: $::atos_analysis_tools::t_milieu\n"      
-         ::console::affiche_resultat "duree de la bande: [expr $::atos_analysis_tools::width/$::atos_analysis_tools::vn]\n"      
-         ::console::affiche_resultat "$nfit points fittes entre: $tobs_min et $tobs_max  \n"      
+         ::console::affiche_resultat "t0: $::atos_analysis_tools::t0\n"
+         ::console::affiche_resultat "chi2: $chi2\n"
+         ::console::affiche_resultat "nfit: $nfit\n"
+         ::console::affiche_resultat "temps milieu de la bande: $::atos_analysis_tools::t_milieu\n"
+         ::console::affiche_resultat "duree de la bande: [expr $::atos_analysis_tools::width/$::atos_analysis_tools::vn]\n"
+         ::console::affiche_resultat "$nfit points fittes entre: $tobs_min et $tobs_max  \n"
          if {$::atos_analysis_tools::irep == 1 } {
-            ::console::affiche_resultat "Reponse instrumentale utilisee. expo : $::atos_analysis_tools::corr_exposure\n"      
+            ::console::affiche_resultat "Reponse instrumentale utilisee. expo : $::atos_analysis_tools::corr_exposure\n"
          } else {
-            ::console::affiche_resultat "Reponse instrumentale uniforme \n"      
+            ::console::affiche_resultat "Reponse instrumentale uniforme \n"
          }
 
-          
+
          puts $chan24 "$::atos_analysis_tools::t0,$chi2,$nfit"
          puts $chan26 "[expr $chi2 - $nfit*1.0]"
 
@@ -712,16 +712,16 @@ set tcl_precision 17
             lappend ::atos_analysis_tools::24_chi2_x $::atos_analysis_tools::t0
             lappend ::atos_analysis_tools::24_chi2_y $chi2
          }
-         
+
          lappend ::atos_analysis_tools::chi2_search [list $::atos_analysis_tools::t0 $chi2 $nfit]
 
          #-----------------------------------------------------------------------------
 
          #  on incremente t0
-         set ::atos_analysis_tools::t0 [expr $::atos_analysis_tools::t0 + $::atos_analysis_tools::pas_heure] 
+         set ::atos_analysis_tools::t0 [expr $::atos_analysis_tools::t0 + $::atos_analysis_tools::pas_heure]
 
          set ::atos_analysis_tools::percent [format "%.2f" [expr ($::atos_analysis_tools::t0-$::atos_analysis_tools::t0_min)/($::atos_analysis_tools::t0_max-$::atos_analysis_tools::t0_min)*100.0]]
-         ::console::affiche_resultat "$::atos_analysis_tools::percent ---------------------------------------------------\n"      
+         ::console::affiche_resultat "$::atos_analysis_tools::percent ---------------------------------------------------\n"
 
          if {$::atos_analysis_tools::but_calcul=="Stop"} {return}
 
@@ -770,7 +770,7 @@ set tcl_precision 17
       set ::atos_analysis_tools::t_inf         [format "%.4f" $t_inf]
       set ::atos_analysis_tools::t_sup         [format "%.4f" $t_sup]
       set ::atos_analysis_tools::t_diff        [format "%.3f" [expr $t_sup-$t_inf] ]
-      
+
       set dchi2  9.0
       set t_inf  1.e50
       set t_sup -1.e50
@@ -786,7 +786,7 @@ set tcl_precision 17
       set ::atos_analysis_tools::t_inf_3s      [format "%.4f" $t_inf]
       set ::atos_analysis_tools::t_sup_3s      [format "%.4f" $t_sup]
       set ::atos_analysis_tools::t_diff_3s     [format "%.3f" [expr $t_sup-$t_inf] ]
-      
+
 #      set chan24 [open $file24 r]
 #      set chi2_min 1.e50
 #      while {[gets $chan24 line] >= 0} {
@@ -853,7 +853,7 @@ set tcl_precision 17
 
 
    #-----------------------------------------------------------------------------
-   # This subroutine gives the complex amplitude resulting from diffraction of a 
+   # This subroutine gives the complex amplitude resulting from diffraction of a
    # coherent planar wave, on a homogeneous semi-transparent stripe. The stripe is
    # assumed to be infinite in the 0y direction, it begins at x= "x1" and ends
    # at x= "x2" (x1 < x2). It removes a fraction "opa_ampli" (opacity in amplitude)
@@ -863,7 +863,7 @@ set tcl_precision 17
    #
    #            opa_ampli= 1 - sqrt(F)
    #
-   # The subroutine call the FRESNEL subroutine, which uses dimensionless 
+   # The subroutine call the FRESNEL subroutine, which uses dimensionless
    # quantities normalized to the Fresnel scale fr= sqrt( (wvlngth*dist)/2 ),
    # where "wvlngth" is the wavelength of the observation, and "dist" is the
    # distance of the observer to the diffracting object (here the stripe).
@@ -871,13 +871,13 @@ set tcl_precision 17
    # The wave is assumed to have an amplitude equal to unity at the stripe,
    # and the subroutine gives the complex amplitude recorded by the observer,
    # whose abscissa along the 0x axis is "x". The real part of the amplitude
-   # is Re= 1+r_ampli, and the imaginary part is Im= i_ampli (i_ampli to be 
+   # is Re= 1+r_ampli, and the imaginary part is Im= i_ampli (i_ampli to be
    # declared REAL*8 !). Caution: the resulting intensity is flux= Re**2 + Im**2,
    # NO sqrt !
    #
    # The formula which is used is:
    #
-   # amplitude(x)= opa_ampli*( (i-1)/2 )*{ C(x-x1) - C(x-x2) + 
+   # amplitude(x)= opa_ampli*( (i-1)/2 )*{ C(x-x1) - C(x-x2) +
    #                i*[ S(x-x1) - S(x-x2) ] },
    #
    # where x,x1,x2 have been normalized to the Fresnel scale, i*i= -1, and
@@ -905,7 +905,7 @@ set tcl_precision 17
       set xmx2 [expr  $xfr-$x2fr ]
 
       # FRESNEL
-      
+
       if {$xmx1<0.0} {
          set sxmx1 -1.0
          set xmx1 [expr -1.0 * $xmx1]
@@ -941,7 +941,7 @@ set tcl_precision 17
       set amplir  [expr  1.0 + $r_ampli  ]
       set amplii  [expr  $i_ampli ]
       set flux    [expr  $amplir*$amplir + $amplii*$amplii ]
-      
+
       return $flux
    }
 
@@ -959,20 +959,20 @@ set tcl_precision 17
       set zero 0.0
 
       # npt: echantillonnage sur le rayon stellaire pour le lissage
-      # doit etre pair pour "sommation" ! NB npt sert a la fois pour explorer 
+      # doit etre pair pour "sommation" ! NB npt sert a la fois pour explorer
       # horizontalement et verticalement le disque stellaire
       set npt 12
-      
+
       set tranche [expr $re/($npt*1.0)]
       set flux 0.0
       set som  0.0
 
-      
+
       # etoile ponctuelle
       if {$re==$zero} {
          set flux [::atos_analysis_tools::bar $x1 $x2 $opa_ampli $wvlngth $dist $x]
       }
-      
+
       for {set i [expr -$npt]} {$i<=$npt} {incr i} {
          set p [expr ($i * 1.0)*$tranche]
 
@@ -980,27 +980,27 @@ set tcl_precision 17
          # etoile uniforme
          set coeff [expr sqrt( abs ( pow($re,2) - pow($p,2) ) ) ]
          #---------------------------------------------------------------------------
-         
+
          #---------------------------------------------------------------------------
-         #  etoile assombrie centre-bord: 
-         #  pour chaque valeur de p on integre ("sommation") l'intensite lumineuse 
+         #  etoile assombrie centre-bord:
+         #  pour chaque valeur de p on integre ("sommation") l'intensite lumineuse
          #  de 0 a dsqrt(re**2 - p**2) --->
-         #  prend ~ 4 fois plus de temps que le disque uniforme. 
+         #  prend ~ 4 fois plus de temps que le disque uniforme.
          #  On peut aller plus vite en calculant une fois pour toutes
          #  "coeff" pour differente valeur de p.
-         # 
+         #
          #   p_norm= p/re                                ! cause de l'appel de "sommation" ---> a ne considerer que
          #   fac= 1.d0 - p_norm**2                       ! dans un 2eme temps
          #   ymax  = dsqrt( dabs(1.d0 - p_norm**2) )     ! dabs: si argument tres legerement negatif
          #   coeff = sommation(0.d0,ymax,p_norm,npt)     ! integre l'intensite verticalement a p_norm=cste
          #---------------------------------------------------------------------------
-         
+
          set xx    [expr $x + $p]
          set fluxi [::atos_analysis_tools::bar $x1 $x2 $opa_ampli $wvlngth $dist $xx]
          set flux  [expr $flux + $coeff*$fluxi]
          set som   [expr $som + $coeff]
       }
-      
+
       return [expr $flux / $som ]
    }
 
@@ -1033,7 +1033,7 @@ set tcl_precision 17
 
       set trep(1) [expr -$::atos_analysis_tools::corr_exposure / 2. ]
       set trep(2) [expr +$::atos_analysis_tools::corr_exposure / 2. ]
-      set rep(1)  1 
+      set rep(1)  1
       set rep(2)  1
       set nrep 2
 
@@ -1042,24 +1042,24 @@ set tcl_precision 17
 
       # On boucle d'abord sur le fux original
       for {set i [expr - $npt]} {$i <= $npt} {incr i} {
-      
+
          set tmin [expr $t($i) - $dtmax]
          if { $tmin < $t([expr -$npt]) } {continue}
          set som 0
          set aire 0
-         
+
          # On boucle ensuite sur la reponse instrumentale
-         
+
          for {set j [expr $i+1-$npt]} {$j<=[expr $i+1+$npt]} {incr j} {
-         
+
             set dt [expr $t($i) - $t([expr $i-$j+1])]
             set discri [expr ($dt - $trep(1))*($dt - $trep($nrep))]
             if {$discri <= 0.0 } {
-              
+
                set coeff 0.0
-               
+
                for {set k 1} {$k<=[expr $nrep-1]} {incr k} {
-               
+
                   set discri [expr ($dt - $trep($k))*($dt - $trep([expr $k+1]))]
                   if {$discri <= 0.0 } {
                      set coeff [expr $rep([expr $k+1]) - $rep($k)]
@@ -1069,12 +1069,12 @@ set tcl_precision 17
                   }
 
                }
-               
+
                set som [expr $som + $coeff * $flux([expr $i - $j +1])]
                set aire [expr $aire + $coeff]
 
             }
-         
+
          }
          incr nptl
          set ::atos_analysis_tools::tl($nptl) $t($i)
@@ -1105,7 +1105,7 @@ set tcl_precision 17
       set changeo [open $file w]
       set ::atos_analysis_tools::20_ombre_geometrique_x ""
       set ::atos_analysis_tools::20_ombre_geometrique_y ""
-      
+
       if {$imod==0} {
          # milieu de la bande centre sur t0
          set t1 [expr $t0 - $duree / 2.0 ]
@@ -1113,7 +1113,7 @@ set tcl_precision 17
          set t3 [expr $t0 + $width / ( 2.0 * $vn ) ]
          set t4 [expr $t0 + $duree / 2.0 ]
       }
-      
+
       if {$imod==-1} {
          # bord droit de la bande centre sur t0
          set t1 [expr $t0 - $duree / 2.0 ]
@@ -1121,8 +1121,8 @@ set tcl_precision 17
          set t3 [expr $t0 + $width / $vn ]
          set t4 [expr $t0 + $duree / 2.0 ]
       }
-      
-   
+
+
       if {$imod==1} {
          # bord gauche de la bande centre sur t0
          set t1 [expr $t0 - $duree / 2.0 ]
@@ -1130,35 +1130,35 @@ set tcl_precision 17
          set t3 $t0
          set t4 [expr $t0 + $duree / 2.0 ]
       }
-   
+
       if {$t1<$t2} {
          puts $changeo "$t1,$phi1"
          puts $changeo "$t2,$phi1"
          puts $changeo "$t2,$phi0"
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t1 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t1
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t2 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t2
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t2 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t2
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
       } else {
          puts $changeo "$t1,$phi0"
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t1 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t1
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
       }
       if {$t3<$t4} {
          puts $changeo "$t3,$phi0"
          puts $changeo "$t3,$phi1"
          puts $changeo "$t4,$phi1"
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t3 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t3
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t3 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t3
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t4 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t4
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi1]
       } else {
          puts $changeo "$t4,$phi0"
-         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t4 
+         lappend ::atos_analysis_tools::20_ombre_geometrique_x $t4
          lappend ::atos_analysis_tools::20_ombre_geometrique_y [normal2flux $phi0]
       }
 
@@ -1187,14 +1187,14 @@ set tcl_precision 17
          set fac [expr ( $t - $::atos_analysis_tools::tl($i) ) * ($t - $::atos_analysis_tools::tl([expr $i + 1]) ) ]
          if {$fac<=$zero} {
             set fmod_inter [expr ($::atos_analysis_tools::fluxl([expr $i + 1])- $::atos_analysis_tools::fluxl($i)) / ($::atos_analysis_tools::tl([expr $i + 1])- $::atos_analysis_tools::tl($i)) ]
-            #::console::affiche_resultat "tmod : $::atos_analysis_tools::tl($i) $::atos_analysis_tools::tl([expr $i + 1])\n" 
-            #::console::affiche_resultat "fmod : $::atos_analysis_tools::fluxl($i) $::atos_analysis_tools::fluxl([expr $i + 1])\n" 
-            #::console::affiche_resultat "fmod_inter : $i $fmod_inter\n" 
+            #::console::affiche_resultat "tmod : $::atos_analysis_tools::tl($i) $::atos_analysis_tools::tl([expr $i + 1])\n"
+            #::console::affiche_resultat "fmod : $::atos_analysis_tools::fluxl($i) $::atos_analysis_tools::fluxl([expr $i + 1])\n"
+            #::console::affiche_resultat "fmod_inter : $i $fmod_inter\n"
             set fmod_inter [expr $fmod_inter*( $t - $::atos_analysis_tools::tl($i) ) + $::atos_analysis_tools::fluxl($i)]
-            #::console::affiche_resultat "fmod_inter : $i $fmod_inter\n" 
+            #::console::affiche_resultat "fmod_inter : $i $fmod_inter\n"
             return $fmod_inter
          }
-      } 
+      }
       return -code 1 "Pas d''interpolation possible!!!\n"
    }
 
@@ -1213,22 +1213,22 @@ set tcl_precision 17
 
 
    #-----------------------------------------------------------------
-   # 
+   #
    # Integrale d'une fonction par la methode de Simpson
    # Integre la fonction f(x,y) sur y entre a et b, avec npt intervalles
    # Attention, npt doit etre pair !
-   # 
+   #
    #    integrale(a,b)= (h/3)*[ f(x,a0) + 4f(x,a1) + 2f(x,a2) + 4f(x,a3) + ...
    #                      ... + 2f(x,an-2) + 4f(x,an-1) + f(x,an) ]
-   # 
+   #
    #    ou h= (b-a)/npt, a0= a et an= b
-   # 
-   # 
-   # 
+   #
+   #
+   #
    proc ::atos_analysis_tools::sommation { a b x npt } {
 
       set h [expr ($b-$a)/($npt*1.0)]
-      
+
       # somme des termes impairs
       set somi 0.0
       for {set i 1} {$i<$npt} {incr i 2} {
@@ -1236,7 +1236,7 @@ set tcl_precision 17
          set somi  [expr $somi + ::atos_analysis_tools::func($x,$y)]
       }
       set somi [expr 4.0 * $somi]
-      
+
       # somme des termes pairs
       set somi 0.0
       for {set i 2} {$i<=[expr $npt - 2]} {incr i 2} {
@@ -1244,7 +1244,7 @@ set tcl_precision 17
          set somp  [expr $somp + ::atos_analysis_tools::func($x,$y)]
       }
       set somp [expr 4.0 * $somp]
-      
+
       # addition des bornes
       set somme [expr ::atos_analysis_tools::func($x,$a) + $somi + $somp + ::atos_analysis_tools::func($x,$b)]
       set somme [expr ( $h * $somme ) / 3.0]
@@ -1253,18 +1253,18 @@ set tcl_precision 17
 
 
    #-----------------------------------------------------------------
-   # Calcul de l'intensite lumineuse a (x,y) du centre 
+   # Calcul de l'intensite lumineuse a (x,y) du centre
    # de l'etoile (assombrissement centre-bord)
    #
-   # l'intensite lumineuse I emise par un element de surface 
-   # de l'etoile dont la normale fait un angle theta avec 
+   # l'intensite lumineuse I emise par un element de surface
+   # de l'etoile dont la normale fait un angle theta avec
    # la ligne de visee, avec mu=cos(theta), est de la form:
    #
    # I(mu)= 1 - sum_1^4 a_k*[1-mu^(k/2)]
    #
-   # NB. l'intensite vaut un au milieu du disque stellaire (ou mu=1) 
+   # NB. l'intensite vaut un au milieu du disque stellaire (ou mu=1)
    #
-   # Sources: Claret Astron. Astrophys. 363, 1081Ð1190 (2000) et
+   # Sources: Claret Astron. Astrophys. 363, 1081Ã1190 (2000) et
    #-----------------------------------------------------------------
    proc ::atos_analysis_tools::func { x y } {
 
@@ -1279,12 +1279,12 @@ set tcl_precision 17
       if { $fac < 0.0  } { (fac.lt.(0.d0)) then
          if {$fac < $tol } {
             ::console::affiche_erreur  "Erreur dans le calcul de l'intensite lumineuse : 1-x^2-y^2=$fac\n"
-         
+
          }(fac.lt.tol) write (*,*) 'erreur: 1-x^2-y^2=', fac
          set fac 0.0
       }
 
-      set mu [expr sqrt($fac)]     
+      set mu [expr sqrt($fac)]
 
       set f 1.0
       for {set k 1} {$k<=4} {incr k} {
@@ -1300,7 +1300,7 @@ set tcl_precision 17
 
 
    # Procedure d'ajustement d'un polynome sur le signal
-   # afin d'endeterminer la dispersion. 
+   # afin d'endeterminer la dispersion.
    # -> estimation du sigma
 
    proc ::atos_analysis_tools::calcul_sigma {  } {
@@ -1323,24 +1323,24 @@ set tcl_precision 17
 
    #
    proc ::atos_analysis_tools::run {  } {
-      
+
 
       ::atos_analysis_tools::init
       ::atos_analysis_tools::charge_cdl [file join $::atos_analysis_tools::dirwork "immersion.dat"]
       #::atos_analysis_tools::affiche_cdl
       ::atos_analysis_tools::partie1
       ::atos_analysis_tools::partie2
-      
+
    }
 
 
- 
+
    proc ::atos_analysis_tools::build.matrix {xvec degree} {
        set sums [llength $xvec]
        for {set i 1} {$i <= 2*$degree} {incr i} {
            set sum 0
            foreach x $xvec {
-               set sum [expr {$sum + pow($x,$i)}] 
+               set sum [expr {$sum + pow($x,$i)}]
            }
            lappend sums $sum
        }
@@ -1358,7 +1358,7 @@ set tcl_precision 17
        for {set i 0} {$i <= $degree} {incr i} {
            set sum 0
            foreach x $xvec y $yvec {
-               set sum [expr {$sum + $y * pow($x,$i)}] 
+               set sum [expr {$sum + $y * pow($x,$i)}]
            }
            lappend sums $sum
        }
@@ -1373,7 +1373,7 @@ set tcl_precision 17
 
 
    proc ::atos_analysis_tools::testpoly {} {
-      
+
       # Now, to solve the example from the top of this page
       set x {0   1   2   3   4   5   6   7   8   9  10}
       set y {1   6  17  34  57  86 121 162 209 262 321}
@@ -1386,10 +1386,10 @@ set tcl_precision 17
       set coeffs [math::linearalgebra::solveGauss $A $b]
       # show results
       ::console::affiche_resultat "coeffs=$coeffs\n"
-      
-      #3 x2 + 2 x + 1      
+
+      #3 x2 + 2 x + 1
       #1.0000000000000207 1.9999999999999958 3.0
-      
+
    }
 
 
@@ -1433,7 +1433,7 @@ set tcl_precision 17
    }
 
    proc ::atos_analysis_tools::test_diametre_stellaire {  } {
-      
+
       set B 11.120
       set V 10.687
       set K 9.478
@@ -1455,4 +1455,5 @@ set tcl_precision 17
 # set arcsec [expr [pi]/(3600.0*180.0)]
 # set D [expr 1.564791718 * [ua] ]
 # set drkm [expr ($dr*$arcsec*$D)/3600.]
-#  
+#
+
