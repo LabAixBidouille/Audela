@@ -17,7 +17,7 @@ test tool_astrometry_deg2hms {sextractor image webcam} -constraints {
 
 } -body {
    #--- je selectionne le catalogue MICROCAT
-   ::testaudela::clicCombobox .audace.tool.astrometry.cal.catalog.fra_0.cat "MicroCat"
+   ::testaudela::clicCombobox .audace.tool.astrometry.cal.catalog.fra_0.cat "MICROCAT"
    #--- je coche la suppression des fichiers et des images temporaires
    ::testaudela::clicCheckButton .audace.tool.astrometry.delete_images.chk 1
    ::testaudela::clicCheckButton .audace.tool.astrometry.delete_files.chk 1
