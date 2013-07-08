@@ -137,7 +137,7 @@ proc ::tlscp::createPluginInstance { { tkBase "" } { visuNo 1 } } {
    if { ! [ info exists conf(tlscp,epsilon)] }                { set conf(tlscp,epsilon)                "0.002" }
    if { ! [ info exists conf(tlscp,notebook)] }               { set conf(tlscp,notebook)               "mount" }
 
-   if { ! [ info exists conf(tlscp,catalogueName)] }          { set conf(tlscp,catalogueName)          "MicroCat" }
+   if { ! [ info exists conf(tlscp,catalogueName)] }          { set conf(tlscp,catalogueName)          "MICROCAT" }
    if { ! [ info exists conf(tlscp,cataloguePath,MicroCat)] } { set conf(tlscp,cataloguePath,MicroCat) "$audace(rep_userCatalogMicrocat)" }
    if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO)     "$audace(rep_userCatalogUsnoa2)" }
 
@@ -2033,7 +2033,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       pack $frm.astrom.bogumil   -in [$frm.astrom getframe] -anchor w -side top -fill x -expand 0
 
    TitleFrame $frm.catalogue -borderwidth 2 -text "$caption(tlscp,catalogue)"
-      set catalogueList [list "MicroCat" "USNO"]
+      set catalogueList [list "MICROCAT" "USNO"]
       ComboBox $frm.catalogue.name -relief sunken -borderwidth 1 -editable 0 \
          -height [llength $catalogueList] \
          -width [ ::tkutil::lgEntryComboBox $catalogueList ] \
