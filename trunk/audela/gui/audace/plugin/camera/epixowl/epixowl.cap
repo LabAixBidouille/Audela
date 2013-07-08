@@ -63,8 +63,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(epixowl,camera)                    "EPIX - OWL"
 
-   set caption(epixowl,config)                    "File di formato Video"
-   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,config)                    "File formato video"
+   set caption(epixowl,extconfig)                 "File esterno del formato video"
    set caption(epixowl,browse)                    "..."
    set caption(epixowl,folder)                    "Dalla cartella:"
    set caption(epixowl,mirror_x)                  "Inversione Alto/Basso"
@@ -78,10 +78,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperatura del sensore:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame Rate"
-   set caption(epixowl,exposure)                  "Exposure Time"
-   set caption(epixowl,hdr)                       "High Dynamic Range"
-   set caption(epixowl,videomode)                 "Video Mode"
+   set caption(epixowl,framerate)                 "Immagini al secondo"
+   set caption(epixowl,exposure)                  "Tempo di esposizione"
+   set caption(epixowl,hdr)                       "Ampia dinamica"
+   set caption(epixowl,videomode)                 "Modalità video"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
