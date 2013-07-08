@@ -379,13 +379,28 @@
 
    #---------------------------------------------------------------------------
    #  getTrueCoordinates
-   #  Retourne azimuth, elevation et angle horaire
+   #  Retourne AD, DEC, azimuth, elevation et angle horaire à viser par le telescope
    #     Input :
    #       ra_hms,dec_dms : coordinates J2000.0
    #       datejd   : date JD
    #       home     : gps
    #       airpress : atmospheric pressure (Pa)
    #       temperature : °K
+   #       coefNames : liste des noms des coefficients de modpoi :
+   #       * mode ALTAZ      : {IA IE NPAE CA AN AW}
+   #       * par defaut, mode EQUATORIAL : {IH ID NP CH ME MA FO HF DAF TF}
+   #                    #--- IH  : Décalage du codeur H
+   #                    #--- ID  : Décalage du codeur D
+   #                    #--- NP  : Non perpendicularité H/D
+   #                    #--- CH  : Erreur de collimation
+   #                    #--- ME  : Désalignement N/S de l'axe polaire
+   #                    #--- MA  : Désalignement E/O de l'axe polaire
+   #                    #--- FO  : Flexion de la fourche ; Fork Flexure
+   #                    #--- MT  (=HF?) : Flexion de la monture ; Mount Flexure
+   #                    #--- DAF : Flexion de l'axe delta ; Delta Axis Flexure
+   #                    #--- TF  : Flexion du tube optique ; Tube Flexure
+   #       coefValues : liste des valeurs des coefficients ci-dessus (en arcmin) ;
+   #                    par defaut les valeurs sont nulles {0 0 0 0 0 0 0 0 0 0}
    #  Derive de viseur_polaire_taka.tcl/viseurPolaireTaka::HA_Polaire
    #     Output :
    #         rav,decv : true coordinates ((hms,dms))
@@ -393,15 +408,13 @@
    #         elev : true altitude (degrees)
    #         ha  : true hour angle (degrees)
    #---------------------------------------------------------------------------
-   proc getTrueCoordinates { data } {
+   proc getTrueCoordinates { data {coefNames {IH ID NP CH ME MA FO HF DAF TF} } { coefValues {0 0 0 0 0 0 0 0 0 0} } } {
 
       lassign $data ra_hms dec_dms datetu home airpress temperature
 
-      set symbols  [list IH ID NP CH ME MA FO HF DAF TF]
-      set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
-      set hipRecord    [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
+      set hipRecord [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
       set drift 0
-      set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $symbols $nulCoeff -model_only 1 -refraction 1 -drift $drift]
+      set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $coefNames $coefValues -model_only 1 -refraction 1 -drift $drift]
 
       #--   pm prend les valeurs avec modele
       lassign [lrange $result 10 14] ra_angle dec_angle ha az elev
