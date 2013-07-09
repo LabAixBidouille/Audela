@@ -2574,6 +2574,7 @@ proc spc_traiteseries { args } {
          #--- Sauve le profil en 1D :
          buf$audace(bufNo) load "$audace(rep_images)/$spectre_calo"
          buf$audace(bufNo) bitpix float
+         buf$audace(bufNo) setkwd [ list "SPC_NBF" 1 int "Number of single shots" "" ]
          buf$audace(bufNo) save1d "$audace(rep_images)/$spectre_calo"
          buf$audace(bufNo) bitpix short
 
