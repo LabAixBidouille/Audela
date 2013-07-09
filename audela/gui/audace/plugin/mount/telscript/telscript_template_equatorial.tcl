@@ -129,10 +129,11 @@ proc setup { } {
    # --- Get useful variables
    set telname $telscript(def,telname)
 
-   # --- The initial telescope position is HA=0 et Dec=0
+   # --- The initial telescope position is HA=0 and Dec=0 to UT time
    set telscript($telname,coord_app_cod_deg_ha)  0
    set telscript($telname,coord_app_cod_deg_dec) 0
-   set telscript($telname,jdutc_app_cod) [mc_date2jd now]
+   set date [::audace::date_sys2ut now]
+   set telscript($telname,jdutc_app_cod) [mc_date2jd $date]
 
    # --- The initial telescope motion is "motor off"
    set telscript($telname,speed_app_cod_deg_ha) 0
@@ -155,7 +156,8 @@ proc loop { } {
 
    # === Compute current apparent coordinates for "tel1 radec coord"
    set jd1 $telscript($telname,jdutc_app_cod)
-   set jd2 [mc_date2jd now]
+   set date [::audace::date_sys2ut now]
+   set jd2 [mc_date2jd $date]
    set lst [mc_date2lst $jd2 $home -format deg]
    set dsec [expr 86400.*($jd2-$jd1)]
    if {($telscript($telname,motion_next)=="radec_slewing")||($telscript($telname,motion_next)=="hadec_slewing")} {
