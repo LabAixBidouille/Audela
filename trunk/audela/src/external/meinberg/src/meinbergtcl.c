@@ -668,7 +668,7 @@ meinberg_gps fastread
    
    
    if(argc<2) {
-      sprintf(s,"Usage: %s open ?-channel?|reset|read|close|fastread", argv[0]);
+      sprintf(s,"Usage: %s open ?-channel?|reset|read|close|fastread|time", argv[0]);
    } else {
       
       /* --- decodage des arguments ---*/
@@ -693,6 +693,9 @@ meinberg_gps fastread
       }
       else if (strcmp(argv[1],"fastread")==0) {
          mode=6;
+      }
+      else if (strcmp(argv[1],"time")==0) {
+         mode=7;
       }
       if (mode==0) {
          sprintf(s,"Usage: %s open|read|close", argv[0]);
@@ -966,6 +969,23 @@ meinberg_gps fastread
           Tcl_SetResult(interp,s,TCL_VOLATILE);
           return TCL_OK;
         }
+      }
+      /* --- meinberg time---*/
+      if (mode==7) {
+         if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+
+         PCPS_TIME t;
+
+         mbg_get_time( dh, &t );
+
+         pcps_date_time_str( s, &t, year_limit, pcps_tz_name( &t, PCPS_TZ_NAME_FORCE_UTC_OFFS, 0 ) );
+         
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_OK;
       }
 
    }
