@@ -718,6 +718,12 @@ meinberg_gps fastread
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             return TCL_ERROR;
          }
+         // setup ctry (necessary to correctly print date and time)
+         ctry_setup( 0 );
+         language = LNG_ENGLISH;
+         ctry.dt_fmt = DT_FMT_YYYYMMDD;
+         ctry.dt_sep = '-';
+         // open shell
          printf("OPEN-SHELL\n");
          mbg_get_device_info( dh, &dev);
          show_ext_stat_info( dh, &dev, NULL );
