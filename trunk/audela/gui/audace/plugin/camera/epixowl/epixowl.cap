@@ -138,8 +138,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(epixowl,camera)                    "EPIX - OWL"
 
-   set caption(epixowl,config)                    "Ficheiro de configuração"
-   set caption(epixowl,extconfig)                 "External Video Format File"
+   set caption(epixowl,config)                    "# Video Format File"
+   set caption(epixowl,extconfig)                 "# External Video Format File"
    set caption(epixowl,browse)                    "..."
    set caption(epixowl,folder)                    "Da Pasta:"
    set caption(epixowl,mirror_x)                  "Inverter Cima/Baixo"
@@ -153,10 +153,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(epixowl,temperature_CCD)           "Temperatura do sensor:"
    set caption(epixowl,deg_c)                     "°C"
 
-   set caption(epixowl,framerate)                 "Frame Rate"
-   set caption(epixowl,exposure)                  "Exposure Time"
-   set caption(epixowl,hdr)                       "High Dynamic Range"
-   set caption(epixowl,videomode)                 "Video Mode"
+   set caption(epixowl,framerate)                 "# Frame Rate"
+   set caption(epixowl,exposure)                  "Tempo de exposição"
+   set caption(epixowl,hdr)                       "# High Dynamic Range"
+   set caption(epixowl,videomode)                 "Modo video"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
