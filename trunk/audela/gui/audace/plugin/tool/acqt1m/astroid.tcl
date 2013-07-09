@@ -279,7 +279,7 @@ namespace eval ::t1mastroid {
       set no_answer 0
       while { ! $skybot_answered } {
 
-         # gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel au conesearch"
+         # gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Appel au conesearch"
          # gren_info "$voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) $voconf(observer)"
 
          set err [ catch { vo_skybotconesearch $voconf(date_image) $voconf(centre_ad_image)   \

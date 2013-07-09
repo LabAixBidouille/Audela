@@ -2086,7 +2086,7 @@ proc ::modpoi2::wizard::saveModel { } {
    variable private
 
    set fileName [ file join $::audace(rep_home) modpoi temp.xml ]
-   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
    set comment "sauvegarde temporaire automatique"
    set starList ""
    set refraction 0

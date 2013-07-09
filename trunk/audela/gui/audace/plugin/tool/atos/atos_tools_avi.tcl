@@ -754,7 +754,7 @@ namespace eval ::atos_tools_avi {
            return
         }
 
-        set tag [clock format [clock seconds] -gmt 1 -format %Y%m%dT%H%M%S]
+        set tag [clock format [clock seconds] -timezone :UTC -format %Y%m%dT%H%M%S]
         set prefix "$prefix-$tag"
 
         set options "-i $dev -y $::atos::parametres(atos,$visuNo,screen_refresh) -s $::atos::parametres(atos,$visuNo,free_space) -d 120m -c 120m -o $destdir -p $prefix"

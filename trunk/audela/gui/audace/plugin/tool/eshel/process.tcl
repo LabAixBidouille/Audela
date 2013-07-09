@@ -134,7 +134,7 @@ proc ::eshel::process::generateAll { } {
    }
 
    set catchResult [catch {
-      set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+      set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
       ###logInfo "\n"
       ###logInfo "==== eShel Generate roadmap begin UT: $date =====\n"
       ::eshel::processgui::resetTables
@@ -152,7 +152,7 @@ proc ::eshel::process::generateAll { } {
       ::eshel::processgui::copyReferenceToTable
       ::eshel::processgui::copyRoadmapToTable
       ::eshel::processgui::copyArchiveToTable
-      ###set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+      ###set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
       ###logInfo "==== eShel Generate roadmap End UT: $date =====\n"
    } ]
 
@@ -186,7 +186,7 @@ proc ::eshel::process::generateNightlog { } {
    set nightNode [::dom::document createElement  $private(nightlog) NIGHTLOG ]
 
    #--- j'ajoute la date de creation
-   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
    ::dom::element setAttribute $nightNode "DATE" $date
 
    #--- j'ajoute le TAG des fichiers
@@ -676,7 +676,7 @@ proc ::eshel::process::generateProcess { } {
    set filesNode [::eshel::process::getFilesNode]
 
    #--- j'affiche une trace dans la console pour marque le debut de la generation des traitements
-   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
    ###logInfo "[format $::caption(eshel,process,generationBegin) $date]"
 
    ::eshel::process::generateProcessBias
@@ -1735,7 +1735,7 @@ proc ::eshel::process::putCommand { hfile command } {
 
 proc ::eshel::process::putScriptBegin { hfile  } {
    variable private
-   set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
    set name $::conf(eshel,currentInstrument)
    set command "\n"
    append  command "####################################################\n"
@@ -1778,7 +1778,7 @@ proc ::eshel::process::putScriptEnd { hfile  } {
 
    set command     "\n#--- Logs end date\n"
    append  command "set endLabel \"$::caption(eshel,process,processEnd)\"\n"
-   append  command {set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]}
+   append  command {set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]}
    append  command "\n"
    append  command {logInfo "$endLabel $date TU"}
    append  command "\n"

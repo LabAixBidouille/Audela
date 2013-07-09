@@ -32,7 +32,7 @@ set sortie no
 while {$sortie=="no"} {
    after 1000
    update
-   set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
+   set now [clock format [clock seconds] -timezone :UTC -format "%Y %m %d %H %M %S"]
    # - Analyse les requêtes présentes sur le disque
    set list_file ""
    catch {set list_file [lsort -increasing [glob "$rep(req)/*.req"]]} result

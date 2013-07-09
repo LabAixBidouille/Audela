@@ -124,7 +124,7 @@ proc emit {s} {
 }
 
 proc dostime {sec} {
-    set f [clock format $sec -format {%Y %m %d %H %M %S} -gmt 1]
+    set f [clock format $sec -format {%Y %m %d %H %M %S} -timezone :UTC]
     regsub -all { 0(\d)} $f { \1} f
     foreach {Y M D h m s} $f break
     set date [expr {(($Y-1980)<<9) | ($M<<5) | $D}]

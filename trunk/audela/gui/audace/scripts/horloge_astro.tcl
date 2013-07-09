@@ -55,16 +55,16 @@ proc calcul { } {
    global paramhorloge
 
    if { $paramhorloge(sortie) != "1" } {
-      set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
-      set tu [mc_date2ymdhms $now ]
-      set h [format "%02d" [lindex $tu 3]]
-      set m [format "%02d" [lindex $tu 4]]
-      set s [format "%02d" [expr int(floor([lindex $tu 5]))]]
+      set now [clock format [clock seconds] -timezone :UTC -format "%Y %m %d %H %M %S"]
+      set tu  [mc_date2ymdhms $now ]
+      set h   [format "%02d" [lindex $tu 3]]
+      set m   [format "%02d" [lindex $tu 4]]
+      set s   [format "%02d" [expr int(floor([lindex $tu 5]))]]
       $base.f.lab_tu configure -text "$caption(horloge_astro,tu) ${h}h ${m}mn ${s}s"
       set tsl [mc_date2lst $now $paramhorloge(home)]
-      set h [format "%02d" [lindex $tsl 0]]
-      set m [format "%02d" [lindex $tsl 1]]
-      set s [format "%02d" [expr int(floor([lindex $tsl 2]))]]
+      set h   [format "%02d" [lindex $tsl 0]]
+      set m   [format "%02d" [lindex $tsl 1]]
+      set s   [format "%02d" [expr int(floor([lindex $tsl 2]))]]
       $base.f.lab_tsl configure -text "$caption(horloge_astro,tsl) ${h}h ${m}mn ${s}s"
       set paramhorloge(ra1) "[ lindex $paramhorloge(ra) 0 ]h[ lindex $paramhorloge(ra) 1 ]m[ lindex $paramhorloge(ra) 2 ]"
       set paramhorloge(dec1) "[ lindex $paramhorloge(dec) 0 ]d[ lindex $paramhorloge(dec) 1 ]m[ lindex $paramhorloge(dec) 2 ]"
@@ -73,9 +73,9 @@ proc calcul { } {
       set alt [format "%5.2f" [lindex $res 1]]
       set ha  [lindex $res 2]
       set res [mc_angle2hms $ha]
-      set h [format "%02d" [lindex $res 0]]
-      set m [format "%02d" [lindex $res 1]]
-      set s [format "%02d" [expr int(floor([lindex $res 2]))]]
+      set h   [format "%02d" [lindex $res 0]]
+      set m   [format "%02d" [lindex $res 1]]
+      set s   [format "%02d" [expr int(floor([lindex $res 2]))]]
       $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
       $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
       if { $alt >= "0" } {

@@ -692,7 +692,7 @@ proc ::sophie::testcontrol::startRadecGoto { ra dec } {
    set dec [mc_angle2deg $dec]
 
    #--- je verifie que les coordonnees sont au dessus de l'horizon
-   set now [clock format [clock seconds] -format "%Y %m %d %H %M %S" -gmt 1 ]
+   set now [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :UTC ]
    set altazCoord [ mc_radec2altaz $ra $dec $private(observaterPosition) $now ]
    set azimuth    [ lindex $altazCoord 0 ]
    set elevation  [ lindex $altazCoord 1 ]

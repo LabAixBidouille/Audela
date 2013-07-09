@@ -1316,7 +1316,7 @@ proc ::eshel::logFile { message color } {
       set hLogFile [open $fileName "a+" ]
 
       #--- j'ajoute la trace dans le fichier
-      set date [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+      set date [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
       puts $hLogFile  "<font color=$color>"
       #--- je remplce les retours cahriots par <BR>
       set message [string map { "\n" "<BR>\n" } $message]
