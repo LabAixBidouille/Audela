@@ -1154,7 +1154,7 @@ proc bm_renameext { args } {
 # Date creation : 17-12-2005
 # Date de mise a jour : 17-12-2005
 # Arguments : ?repertoire? extension actuelle des fichiers
-###############################################################################
+##############################################################################
 
 proc bm_renameext2 { args } {
    global audace
@@ -1175,6 +1175,9 @@ proc bm_renameext2 { args } {
             file copy -force $fichier ${prefixe_nom}.$new_extension
             file delete -force $fichier
          }
+      } else {
+         ::console::affiche_resultat "Aucun fichier à renomer.\n"
+         return ""
       }
    } else {
       ::console::affiche_erreur "Usage: bm_renameext2 extension_actuelle(fts) nouvelle_extension(fit).\n"
@@ -1629,6 +1632,9 @@ proc bm_pretraittot { args } {
       if { $rmmasters=="o" } {
          delete2 ${nom_stellaire}tr- $nbimg
       }
+
+      #--- Fin de trait :
+      ::console::affiche_prompt "Fin de traitement.\n"
    } else {
       ::console::affiche_erreur "Usage: bm_pretraittot nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?offset (none)? ?effacement des masters (o/n)?\n\n"
       return ""
@@ -1959,6 +1965,9 @@ proc bm_pretrait { args } {
       if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_darkflat}-smd$nb_darkflat match resul ] } {
          file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
       }
+
+      #--- Fin de trait :
+      ::console::affiche_prompt "Fin de traitement bm_pretrait.\n"
 
       #--- Retour dans le répertoire de départ avnt le script
       return ${pref_stellaire}-t-
