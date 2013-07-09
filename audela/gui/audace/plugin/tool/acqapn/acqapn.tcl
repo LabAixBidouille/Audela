@@ -638,7 +638,7 @@ namespace eval ::acqapn {
          update
          if { $panneau(acqapn,majlist) == "1" } {
             ::console::affiche_saut "# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
-            [clock format $time_now -format "%H:%M:%S" -gmt 1 ].\n\n"
+            [clock format $time_now -format "%H:%M:%S" -timezone :UTC ].\n\n"
          }
       }
 

@@ -387,7 +387,7 @@ proc ::modpoi2::main::onSave { visuNo } {
    variable private
 
    #--- je calcule la date de modification
-   set private($visuNo,model,date) [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set private($visuNo,model,date) [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
 
    saveModel $private($visuNo,model,fileName) \
       $private($visuNo,model,date) $private($visuNo,model,comment) \
@@ -423,7 +423,7 @@ proc ::modpoi2::main::onSaveAs { visuNo } {
        ]
    if { $fileName != "" } {
       #--- je calcule la date de modification
-      set private($visuNo,model,date) [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+      set private($visuNo,model,date) [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
       #--- j'enregistre le fichier
       saveModel $fileName \
          $private($visuNo,model,date) $private($visuNo,model,comment) \
@@ -759,7 +759,7 @@ proc ::modpoi2::main::modifyModel { visuNo starList symbols coefficients covars 
    ::modpoi2::main::setCoefficient $visuNo $symbols $coefficients $covars $chisquare
 
    #--- j'affiche la date de mise a jour du modele dans la fenetre principale
-   set private($visuNo,model,date) [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%S"]
+   set private($visuNo,model,date) [clock format [clock seconds] -timezone :UTC -format "%Y-%m-%dT%H:%M:%S"]
 
    #--- je positionne le flag de modification du modele
    set private($visuNo,modified) 1
