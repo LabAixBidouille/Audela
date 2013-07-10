@@ -184,7 +184,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sate_move_radec=' ';
 
    if (strcmp(tel->homePosition,"")!= 0) {
-      // je calcule la latitude
+      // je calcule la longitude
       sprintf(ligne,"lindex {%s} 1",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       longitude=(double)atof(tel->interp->result);
@@ -195,6 +195,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       } else {
          strcpy(ew,"e");
       }
+      // je calcule la latitude
       sprintf(ligne,"lindex {%s} 3",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       latitude=(double)atof(tel->interp->result);
@@ -813,10 +814,6 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
 {
    char s[1024];
    char slat[256];
-   /* --- */
-   if ( tel->consoleLog >= 1 ) {
-      mytel_logConsole(tel, "getlatitude=i\n", slat);
-   }
 
    sprintf(s,"puts -nonewline %s \"i\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1135,16 +1132,33 @@ int temma_goto(struct telprop *tel)
 
 int temma_initzenith(struct telprop *tel)
 {
-   char s[1024];
+   char ligne[256];
+
+   /* extrait la latitude de la position*/
+   sprintf(ligne,"lindex {%s} 3",tel->homePosition);
+   Tcl_Eval(tel->interp,ligne);
+   tel->dec0=(double)atof(tel->interp->result);;
    /* --- update local sideral time */
    temma_settsl(tel);
-   /* ---  */
+   /* --- ra0 == tsl */
+   tel->ra0=tel->tsl;
+   if ( tel->consoleLog >= 1 ) {
+      mytel_logConsole(tel, "init tsl=%f\n", tel->tsl);
+      mytel_logConsole(tel, "init dec0=%f\n", tel->dec0);
+      mytel_logConsole(tel, "init ra0=%f\n", tel->ra0);
+   }
+   /* --- execute match */
+   return temma_match(tel);
+   
+   /*char s[1024];*/
+   /* --- update local sideral time
+   temma_settsl(tel);
    sprintf(s,"puts -nonewline %s \"Z\r\n\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);*/
+   /* --- Lit la reponse sur le port serie*/
+   /*sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
-   return 0;
+   return 0;*/
 }
 
 int temma_stopgoto(struct telprop *tel)
@@ -1340,6 +1354,7 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
    char s[1024];
    char ss[1024];
    static double tsl;
+   
    /* --- temps sideral local */
    temma_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
    sprintf(s,"mc_date2lst %s {%s}",ss,tel->homePosition);
@@ -1364,12 +1379,16 @@ void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functio
 {
    /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
    /*     (function = ::audace::date_sys2ut) */
+   /* identique a eqmod_GetCurrentFITSDate_function */
    char ligne[1024];
    sprintf(ligne,"info commands  %s",function);
    Tcl_Eval(interp,ligne);
    if (strcmp(interp->result,function)==0) {
       sprintf(ligne,"mc_date2iso8601 [%s now]",function);
       Tcl_Eval(interp,ligne);
+      strcpy(s,interp->result);
+   } else {
+      Tcl_Eval(interp,"mc_date2iso8601 now");
       strcpy(s,interp->result);
    }
 }
