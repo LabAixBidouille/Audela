@@ -296,7 +296,7 @@ int cmdTelGerman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       pb=0;
    } else {
       pb=0;
-      temma_position_tube(tel,argv[2]);
+      temma_switchMountSide(tel,argv[2]);
    }
    if (pb==1) {
       sprintf(ligne,"Usage: %s %s ?W|E?",argv[0],argv[1]);

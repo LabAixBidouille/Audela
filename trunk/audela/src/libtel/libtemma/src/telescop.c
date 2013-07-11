@@ -104,7 +104,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char ss[256],ssusb[256];
    int k;
    int i;
-   double longitude,latitude,altitude;
+   double longitude,altitude;
    char ligne[256],ew[3];
    
    tel->consoleLog = 0;
@@ -195,25 +195,27 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       } else {
          strcpy(ew,"e");
       }
-      // je calcule la latitude
+      /* je calcule la latitude */
       sprintf(ligne,"lindex {%s} 3",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
-      latitude=(double)atof(tel->interp->result);
+      tel->latitude=(double)atof(tel->interp->result);
+      /* extrait l'altitude */
       sprintf(ligne,"lindex {%s} 4",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       altitude=(double)atof(tel->interp->result);
 
-      // send  latitude to mount
-      mytel_home_set(tel, longitude, ew, latitude, altitude);
+      /* send  latitude to mount*/
+      mytel_home_set(tel, longitude, ew, tel->latitude, altitude);
 
       /* update site for local sideral time */
       temma_settsl(tel);
-      tel->tsl00=tel->tsl;
+      /*tel->tsl00=tel->tsl;*/
    }
 
    temma_setderive(tel,0,0);
    /* update E/W for the german mount */
    temma_coord(tel,ssres);
+
    return 0;
 }
 
@@ -587,11 +589,9 @@ int mytel_radec_move(struct telprop *tel,char *direction)
       temma_LB(tel,p);
    }
    /*tel1 encoder 1|0 */
-   /*
    if (tel->encoder==1) {
       total+=32; 
    }
-   */
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
@@ -606,6 +606,7 @@ int mytel_radec_move(struct telprop *tel,char *direction)
          d=1;
       }
    } else {
+      /* inversion du sens N/S si tube a l'Est */
       if (strcmp(direc,"N")==0) {
          a=1;
       } else if (strcmp(direc,"S")==0) {
@@ -994,9 +995,8 @@ F = Automatic introduction complete after goto operation retour F F F
    for (k=kdeb;k<=kfin;k++) { ss[k-kdeb]=s[k]; }
    ss[k-kdeb]='\0';
    temma_angle_dec2dms(ss,sdec);
-   /*sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);*/
+
    /* -- decoder ici le sens E/W */
-   /* --- transforme DEC en SDDdMMmSSs */
    if (s[13]=='E') {
       strcpy(tel->ew,"E");
    } else if (s[13]=='W') {
@@ -1036,7 +1036,7 @@ int temma_match(struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- update local sideral time */
    temma_settsl(tel);
-   tel->tsl00=tel->tsl;
+   /*tel->tsl00=tel->tsl;*/
    /* --- update radec */
    sprintf(s,"puts -nonewline %s \"D%s%s\r\n\"",tel->channel,sra,sdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1132,16 +1132,10 @@ int temma_goto(struct telprop *tel)
 
 int temma_initzenith(struct telprop *tel)
 {
-   char ligne[256];
-
-   /* extrait la latitude de la position*/
-   sprintf(ligne,"lindex {%s} 3",tel->homePosition);
-   Tcl_Eval(tel->interp,ligne);
-   tel->dec0=(double)atof(tel->interp->result);;
    /* --- update local sideral time */
    temma_settsl(tel);
-   /* --- ra0 == tsl */
    tel->ra0=tel->tsl;
+   tel->dec0 = tel->latitude;
    if ( tel->consoleLog >= 1 ) {
       mytel_logConsole(tel, "init tsl=%f\n", tel->tsl);
       mytel_logConsole(tel, "init dec0=%f\n", tel->dec0);
@@ -1149,16 +1143,6 @@ int temma_initzenith(struct telprop *tel)
    }
    /* --- execute match */
    return temma_match(tel);
-   
-   /*char s[1024];*/
-   /* --- update local sideral time
-   temma_settsl(tel);
-   sprintf(s,"puts -nonewline %s \"Z\r\n\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);*/
-   /* --- Lit la reponse sur le port serie*/
-   /*sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   return 0;*/
 }
 
 int temma_stopgoto(struct telprop *tel)
@@ -1230,25 +1214,31 @@ int temma_suivi_marche (struct telprop *tel)
    return 0;
 }
 
-int temma_position_tube(struct telprop *tel,char *sens)
+int temma_switchMountSide(struct telprop *tel,char *sens)
+/* switch d'inversion de la position du telescope
+si on fait PT depuis une position W la RA est augmentée de 12H
+si on fait PT depuis une position E la RA est diminuée de 12H
+*/
 {
    char s[1024],ss[50];
+
    /* --- met a jour tel->ew */
    temma_coord(tel,s);
+
    /* --- */
    sprintf(s,"lindex [string toupper %s] 0",sens); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
-   if (ss[0]=='E') { strcpy(ss,"E"); }
-   else { strcpy(ss,"W"); }
+   if (ss[0]=='E') { 
+	  strcpy(ss,"E"); 
+   } else { 
+      strcpy(ss,"W"); 
+   }
    if (strcmp(tel->ew,ss)!=0) {
       /*--- switch position W|E du tube */
       sprintf(s,"puts -nonewline %s \"PT\r\n\"",tel->channel); mytel_tcleval(tel,s);
-      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      /* --- Lit la reponse sur le port serie */
-      /*
-      sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
-      strcpy(s,tel->interp->result);
-      */
+	  /* --- il n'y pas de reponse sur le port serie */
+      mytel_logConsole(tel, "switch mount side from %s to %s\n", tel->ew,ss);
+      strcpy(tel->ew,ss);
    }
    return 0;
 }
@@ -1338,6 +1328,7 @@ int temma_settsl(struct telprop *tel)
 {
    int h,m,sec;
    char s[1024];
+
    tel->tsl=temma_tsl(tel,&h,&m,&sec);
    sprintf(s,"puts -nonewline %s \"T%02d%02d%02d\r\n\"",tel->channel,h,m,sec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1346,6 +1337,8 @@ int temma_settsl(struct telprop *tel)
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    */
+   // update last tsl ajout RZ
+   tel->tsl00=tel->tsl;
    return 0;
 }
 
@@ -1357,20 +1350,16 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
    
    /* --- temps sideral local */
    temma_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-   sprintf(s,"mc_date2lst %s {%s}",ss,tel->homePosition);
-   mytel_tcleval(tel,s);
+
+   sprintf(s,"mc_date2lst %s {%s}",ss,tel->homePosition); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
-   sprintf(s,"lindex {%s} 0",ss);
-   mytel_tcleval(tel,s);
+   sprintf(s,"lindex {%s} 0",ss); mytel_tcleval(tel,s);
    *h=(int)atoi(tel->interp->result);
-   sprintf(s,"lindex {%s} 1",ss);
-   mytel_tcleval(tel,s);
+   sprintf(s,"lindex {%s} 1",ss); mytel_tcleval(tel,s);
    *m=(int)atoi(tel->interp->result);
-   sprintf(s,"lindex {%s} 2",ss);
-   mytel_tcleval(tel,s);
+   sprintf(s,"lindex {%s} 2",ss); mytel_tcleval(tel,s);
    *sec=(int)atoi(tel->interp->result);
-   sprintf(s,"expr ([lindex {%s} 0]+[lindex {%s} 1]/60.+[lindex {%s} 2]/3600.)*15",ss,ss,ss);
-   mytel_tcleval(tel,s);
+   sprintf(s,"expr ([lindex {%s} 0]+[lindex {%s} 1]/60.+[lindex {%s} 2]/3600.)*15",ss,ss,ss); mytel_tcleval(tel,s);
    tsl=atof(tel->interp->result); /* en degres */
    return tsl;
 }
