@@ -578,6 +578,12 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    char s[1024],direc[10];
    int p,total,y=0,a=0,b=0,c=0,d=0;
    total=64; /* 010abcdy */
+
+   /*tel1 encoder 1|0 */
+   if (tel->encoder==1) {
+      total+=32; 
+   }
+
    if (tel->radec_move_rate>0.9) {
       y=1;
    } else if (tel->radec_move_rate<0.1) {
@@ -588,13 +594,11 @@ int mytel_radec_move(struct telprop *tel,char *direction)
       temma_LA(tel,p);
       temma_LB(tel,p);
    }
-   /*tel1 encoder 1|0 */
-   if (tel->encoder==1) {
-      total+=32; 
-   }
+
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
+
    if (strcmp(tel->ew,"W")==0) {
       if (strcmp(direc,"N")==0) {
          b=1;
@@ -1229,7 +1233,7 @@ si on fait PT depuis une position E la RA est diminuée de 12H
    sprintf(s,"lindex [string toupper %s] 0",sens); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    if (ss[0]=='E') { 
-	  strcpy(ss,"E"); 
+      strcpy(ss,"E"); 
    } else { 
       strcpy(ss,"W"); 
    }
@@ -1333,10 +1337,8 @@ int temma_settsl(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"T%02d%02d%02d\r\n\"",tel->channel,h,m,sec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit la reponse sur le port serie */
-   /*
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
-   */
    // update last tsl ajout RZ
    tel->tsl00=tel->tsl;
    return 0;
@@ -1347,7 +1349,7 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
    char s[1024];
    char ss[1024];
    static double tsl;
-   
+
    /* --- temps sideral local */
    temma_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
 
