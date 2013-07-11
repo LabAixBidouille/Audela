@@ -42,6 +42,7 @@ struct telprop {
    double dec_play;
    int slewpathindex;
    char v_firmware[30];
+   double latitude; /* degrees */
    int encoder; /* 0 if no encoders, 1 if encoders are installed */
    double tsl;  /* TSL du dernier appel a la mise a jour du TSL de Temma */
    double ha00; /* angle horaire du dernier Match */
@@ -95,7 +96,7 @@ int mytel_set_format(struct telprop *tel,int longformatindex);
 int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 
-int temma_position_tube(struct telprop *tel,char *sens);
+int temma_switchMountSide(struct telprop *tel,char *sens);
 int temma_setlatitude(struct telprop *tel,double latitude);
 int temma_getlatitude(struct telprop *tel,double *latitude);
 int temma_gettsl(struct telprop *tel,double *tsl);
