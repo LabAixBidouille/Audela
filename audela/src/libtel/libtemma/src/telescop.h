@@ -106,7 +106,7 @@ int temma_LA (struct telprop *tel, int value);
 int temma_LB (struct telprop *tel, int value);
 int temma_lg (struct telprop *tel, int *vra, int *vdec);
 int temma_v_firmware (struct telprop *tel) ;
-int temma_arret_pointage(struct telprop *tel) ;
+/*int temma_arret_pointage(struct telprop *tel) ;*/
 int temma_suivi_arret (struct telprop *tel);
 int temma_suivi_marche (struct telprop *tel);
 int temma_coord(struct telprop *tel,char *result);

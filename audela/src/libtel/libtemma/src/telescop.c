@@ -54,7 +54,6 @@ void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
    result = Tcl_Eval(tel->interp,ligne);
 }
 
-
  /*
  *  Definition of different cameras supported by this driver
  *  (see declaration in libstruc.h)
@@ -184,7 +183,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sate_move_radec=' ';
 
    if (strcmp(tel->homePosition,"")!= 0) {
-      // je calcule la longitude
+      /* je calcule la longitude */
       sprintf(ligne,"lindex {%s} 1",tel->homePosition);
       Tcl_Eval(tel->interp,ligne);
       longitude=(double)atof(tel->interp->result);
@@ -209,7 +208,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
       /* update site for local sideral time */
       temma_settsl(tel);
-      /*tel->tsl00=tel->tsl;*/
+      tel->tsl00=tel->tsl;
    }
 
    temma_setderive(tel,0,0);
@@ -549,7 +548,7 @@ int mytel_radec_goto(struct telprop *tel)
    return result;
 }
 
-int mytel_radec_move(struct telprop *tel,char *direction)
+/* move e|w|s|n */
 /*
 * There are two type of speeds: Normal (N) and High (H)
 * Normal speed can be parametrized by a value between 10 and 90%
@@ -569,18 +568,19 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 *  4 c=3 RA Left
 *  8 b=4 DEC Up
 * 16 a=5 DEC Down
-* 32   6 Encoder On Encoder Off (here always On)
+* 32   6 Value = 0 : Encoder On (here always On) ; Encoder Off Value = 1
 * 64   7 Always 1
 *128   8 Always 0
 *
 */
+int mytel_radec_move(struct telprop *tel,char *direction)
 {
    char s[1024],direc[10];
    int p,total,y=0,a=0,b=0,c=0,d=0;
    total=64; /* 010abcdy */
 
-   /*tel1 encoder 1|0 */
-   if (tel->encoder==1) {
+   /*tel1 encoder 1|0 ; attention : 0=encoder on, 1=encoder off*/
+   if (tel->encoder==0) {
       total+=32; 
    }
 
@@ -623,54 +623,30 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    }
    total+=(16*a+8*b+4*c+2*d+y);
    sprintf(s,"puts -nonewline %s \"M%c\r\n\"",tel->channel,total); mytel_tcleval(tel,s);
+   /* pas de reponse sur le port serie */
    return 0;
 }
 
+/* stop a goto or a move*/
+/* la direction n'a aucune importance puisqu'on arrete */
 int mytel_radec_stop(struct telprop *tel,char *direction)
 {
-   int total,y=0,a=0,b=0,c=0,d=0;
-   char s[1024],direc[10];
-   total=64; /* 010abcdy */
+   int total;
+   char s[1024];
    if (sate_move_radec=='A') {
       /* on arrete un GOTO */
       temma_stopgoto(tel);
       sate_move_radec=' ';
    } else {
       /* on arrete un MOVE */
-      sprintf(s,"after 50"); mytel_tcleval(tel,s);
-      sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
-      strcpy(direc,tel->interp->result);
-      if (strcmp(tel->ew,"W")==0) {
-         if (strcmp(direc,"N")==0) {
-            b=0;
-         } else if (strcmp(direc,"S")==0) {
-            a=0;
-         } else if (strcmp(direc,"E")==0) {
-            c=0;
-         } else if (strcmp(direc,"W")==0) {
-            d=0;
-         } else {
-            a=b=c=d=0;
-         }
-      } else {
-         if (strcmp(direc,"N")==0) {
-            a=0;
-         } else if (strcmp(direc,"S")==0) {
-            b=0;
-         } else if (strcmp(direc,"E")==0) {
-            c=0;
-         } else if (strcmp(direc,"W")==0) {
-            d=0;
-         } else {
-            a=b=c=d=0;
-         }
+      total=64; /* 010abcdy with a=b=c=d=y=0*/
+      /*tel1 encoder 1|0 ; attention : 0=encoder on, 1=encoder off*/
+      if (tel->encoder==0) {
+         total+=32; 
       }
-      a=b=c=d=0;
-      total+=(16*a+8*b+4*c+2*d+y);
       sprintf(s,"puts -nonewline %s \"M%c\r\n\"",tel->channel,total); mytel_tcleval(tel,s);
       sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-      /* --- Lit la reponse sur le port serie */
-      sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+      /* --- pas de reponse sur le port serie */
    }
    return 0;
 }
@@ -806,12 +782,7 @@ int temma_setlatitude(struct telprop *tel,double latitude)
    }
    sprintf(s,"puts -nonewline %s \"I%s\r\n\"",tel->channel,slat); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
-   if ( tel->consoleLog >= 1 ) {
-      mytel_logConsole(tel, "reponse=%s\n", tel->interp->result);
-   }
-   
+   /* --- pas de reponse sur le port serie */
    return 0;
 }
 
@@ -856,12 +827,10 @@ int temma_solar_tracking(struct telprop *tel)
    char s[1024];
    int result;
    //--- Suivi solaire
-   sprintf(s,"puts -nonewline %s \"LK\r\n\"",tel->channel);
-   mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"LK\r\n\"",tel->channel); mytel_tcleval(tel,s);
    result = mytel_tcleval(tel,s);
    if ( result == 0 ) {
-      sprintf(s,"after %d",tel->tempo);
-      mytel_tcleval(tel,s);
+      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    }
    return result;
 }
@@ -875,13 +844,10 @@ int temma_motorstate(struct telprop *tel)
    char s[1024];
    int result;
    /* --- */
-   sprintf(s,"puts -nonewline %s \"STN-COD\r\n\"",tel->channel);
-   mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo);
-   mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"STN-COD\r\n\"",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel);
-   mytel_tcleval(tel,s);
+   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    if ( tel->consoleLog >= 1 ) {
       mytel_logConsole(tel, "StateMotor=|%s|\n",s);
@@ -895,37 +861,39 @@ int temma_motorstate(struct telprop *tel)
    }
    return result;
 }
+
+/* --- ajuste la vitesse RA-move en speed Normal */
 int temma_LA (struct telprop *tel, int value)
 {
    char s[1024];
-   /* --- ajuste la vitesse RA-move en speed Normal */
+
    if (value<10) {value=10;}
    if (value>90) {value=90;}
    sprintf(s,"puts -nonewline %s \"LA%02d\r\n\"",tel->channel,value); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   /* --- pas de reponse sur le port serie */
    return 0;
 }
 
+/* --- ajuste la vitesse DEC-move en speed Normal */
 int temma_LB (struct telprop *tel, int value)
 {
    char s[1024];
-   /* --- ajuste la vitesse DEC-move en speed Normal */
+
    if (value<10) {value=10;}
    if (value>90) {value=90;}
    sprintf(s,"puts -nonewline %s \"LB%02d\r\n\"",tel->channel,value); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   /* --- pas de reponse sur le port serie */
    return 0;
 }
 
+/* --- lit les vitesses RA-move DEC-move en speed Normal */
 int temma_lg (struct telprop *tel, int *vra, int *vdec)
 {
    char s[1024];
    char ss[256];
-   /* --- lit les vitesses RA-move DEC-move en speed Normal */
+
    sprintf(s,"puts -nonewline %s \"lg\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit la reponse sur le port serie */
@@ -943,10 +911,11 @@ int temma_lg (struct telprop *tel, int *vra, int *vdec)
    return 0;
 }
 
+/* --- Retourne la version du firmware du microcontroleur */
 int temma_v_firmware (struct telprop *tel)
 {
    char s[1024];
-   /* --- Retourne la version du firmware du microcontroleur */
+
    /* --- Demande le numero de la version */
    sprintf(s,"puts -nonewline %s \"v\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -957,14 +926,16 @@ int temma_v_firmware (struct telprop *tel)
    return 0;
 }
 
-int temma_arret_pointage(struct telprop *tel)
-{
+/*int temma_arret_pointage(struct telprop *tel)*/
+/* --- pas de reponse sur le port serie */
+/*{
    char s[1024];
+
    /*--- Arret pointage */
-   sprintf(s,"puts -nonewline %s \"PS\r\n\"",tel->channel); mytel_tcleval(tel,s);
+   /*sprintf(s,"puts -nonewline %s \"PS\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   return 0;
-}
+   return 0;*/
+/*}*/
 
 int temma_coord(struct telprop *tel,char *result)
 /*
@@ -999,6 +970,7 @@ F = Automatic introduction complete after goto operation retour F F F
    for (k=kdeb;k<=kfin;k++) { ss[k-kdeb]=s[k]; }
    ss[k-kdeb]='\0';
    temma_angle_dec2dms(ss,sdec);
+   /*sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);*/
 
    /* -- decoder ici le sens E/W */
    if (s[13]=='E') {
@@ -1021,12 +993,14 @@ F = Automatic introduction complete after goto operation retour F F F
    return 0;
 }
 
+/* --- execute match */
 int temma_match(struct telprop *tel)
 {
    char s[1024];
    char sra[256];
    char sdec[256];
    int result=0,len;
+
    /* --- transforme en tel->ra0 en HHMMZZ */
    sprintf(s,"%f",tel->ra0);
    temma_angle_hms2ra(tel,s,sra);
@@ -1040,7 +1014,7 @@ int temma_match(struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- update local sideral time */
    temma_settsl(tel);
-   /*tel->tsl00=tel->tsl;*/
+   tel->tsl00=tel->tsl;
    /* --- update radec */
    sprintf(s,"puts -nonewline %s \"D%s%s\r\n\"",tel->channel,sra,sdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1080,6 +1054,7 @@ int temma_match(struct telprop *tel)
    return result;
 }
 
+/* --- execute goto */
 int temma_goto(struct telprop *tel)
 {
    char s[1024];
@@ -1087,6 +1062,7 @@ int temma_goto(struct telprop *tel)
    char sdec[256];
    int result;
    int len;
+
    /* --- transforme en tel->ra0 en HHMMZZ */
    sprintf(s,"%f",tel->ra0);
    temma_angle_hms2ra(tel,s,sra);
@@ -1134,6 +1110,7 @@ int temma_goto(struct telprop *tel)
    return result;
 }
 
+/* --- initialise au zenith */
 int temma_initzenith(struct telprop *tel)
 {
    /* --- update local sideral time */
@@ -1141,23 +1118,22 @@ int temma_initzenith(struct telprop *tel)
    tel->ra0=tel->tsl;
    tel->dec0 = tel->latitude;
    if ( tel->consoleLog >= 1 ) {
-      mytel_logConsole(tel, "init tsl=%f\n", tel->tsl);
-      mytel_logConsole(tel, "init dec0=%f\n", tel->dec0);
-      mytel_logConsole(tel, "init ra0=%f\n", tel->ra0);
+      mytel_logConsole(tel, "zenith tsl=%f\n", tel->tsl);
+      mytel_logConsole(tel, "zenith dec0=%f\n", tel->dec0);
+      mytel_logConsole(tel, "zenith ra0=%f\n", tel->ra0);
    }
    /* --- execute match */
    return temma_match(tel);
 }
 
+/* stop un goto */
 int temma_stopgoto(struct telprop *tel)
 {
    char s[1024];
-   /* ---  */
+
    sprintf(s,"puts -nonewline %s \"PS\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
+   /* pas de reponse sur le port serie */
    return 0;
 }
 
@@ -1165,7 +1141,7 @@ int temma_stategoto(struct telprop *tel,int *state)
 {
    char s[1024];
    int result=0,len;
-   // ---
+
    sprintf(s,"puts -nonewline %s \"s\r\n\"",tel->channel); mytel_tcleval(tel,s);
    if ( tel->consoleLog >= 1 ) {
       mytel_logConsole(tel, "State=s\n");
@@ -1194,35 +1170,38 @@ int temma_stategoto(struct telprop *tel,int *state)
    return result;
 }
 
+/* suivi off */
 int temma_suivi_arret (struct telprop *tel)
 {
    char s[1024];
-   /* --- */
+
    sprintf(s,"puts -nonewline %s \"STN-ON\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   /* --- Lit la reponse sur le port serie : stn_on*/
+   /*sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
+   */
    return 0;
 }
 
+/* suivi on */
 int temma_suivi_marche (struct telprop *tel)
 {
    char s[1024];
-   /* ---  */
+
    sprintf(s,"puts -nonewline %s \"STN-OFF\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
+   /* --- Lit la reponse sur le port serie  : stn_off*/
+   /*sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
+   strcpy(s,tel->interp->result);*/
    return 0;
 }
 
-int temma_switchMountSide(struct telprop *tel,char *sens)
 /* switch d'inversion de la position du telescope
 si on fait PT depuis une position W la RA est augmentée de 12H
 si on fait PT depuis une position E la RA est diminuée de 12H
 */
+int temma_switchMountSide(struct telprop *tel,char *sens)
 {
    char s[1024],ss[50];
 
@@ -1240,32 +1219,30 @@ si on fait PT depuis une position E la RA est diminuée de 12H
    if (strcmp(tel->ew,ss)!=0) {
       /*--- switch position W|E du tube */
       sprintf(s,"puts -nonewline %s \"PT\r\n\"",tel->channel); mytel_tcleval(tel,s);
-	  /* --- il n'y pas de reponse sur le port serie */
+      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+      /* pas de reponse sur le port serie */
       mytel_logConsole(tel, "switch mount side from %s to %s\n", tel->ew,ss);
       strcpy(tel->ew,ss);
    }
    return 0;
 }
 
+/* regle la vitesse de derive du suivi en ar et en dec */
 int temma_setderive(struct telprop *tel,int var, int vdec)
 {
    char s[1024];
-   /*--- Derive du suivi en ar et en dec*/
+
    if (var<-99999) {var=-99999;}
    if (var>99999) {var=99999;}
    if (vdec<-9999) {vdec=-9999;}
    if (vdec>9999) {vdec=9999;}
    sprintf(s,"puts -nonewline %s \"LM%+d,%+d\r\n\"",tel->channel,var,vdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
+   /* --- pas de reponse sur le port serie */
    return 0;
 }
 
-int temma_getderive(struct telprop *tel,int *var,int *vdec)
-/*
-* Get Comet Speed
+/* Get Comet Speed
 lm Note: This is a lower case "L"
 Reply Structure:
 0          1
@@ -1275,12 +1252,13 @@ RA Speed Adjustment,Dec Speed Adjustment
 
 Note: RA Speed adjustment is how many RA seconds are added/subtracted per 24 hour period,
 DEC adjustment is how many Minutes per 24 hour period.
-
 */
+int temma_getderive(struct telprop *tel,int *var,int *vdec)
 {
    char s[1024],ss[1024];
    int k,kdeb,kfin;
    int len,kf1,kd1,kf2,kd2;
+
    /* --- Demande radec */
    sprintf(s,"puts -nonewline %s \"lm\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1336,23 +1314,20 @@ int temma_settsl(struct telprop *tel)
    tel->tsl=temma_tsl(tel,&h,&m,&sec);
    sprintf(s,"puts -nonewline %s \"T%02d%02d%02d\r\n\"",tel->channel,h,m,sec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la reponse sur le port serie */
-   sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
-   strcpy(s,tel->interp->result);
-   // update last tsl ajout RZ
+   /* --- pas de reponse sur le port serie */
+   /* update last tsl ajout RZ */
    tel->tsl00=tel->tsl;
    return 0;
 }
 
+/* --- temps sideral local */
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
 {
    char s[1024];
    char ss[1024];
    static double tsl;
 
-   /* --- temps sideral local */
    temma_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
-
    sprintf(s,"mc_date2lst %s {%s}",ss,tel->homePosition); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"lindex {%s} 0",ss); mytel_tcleval(tel,s);
@@ -1366,12 +1341,17 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
    return tsl;
 }
 
+/* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
+/*     (function = ::audace::date_sys2ut) */
+/* identique a eqmod_GetCurrentFITSDate_function */
 void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
 {
-   /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-   /*     (function = ::audace::date_sys2ut) */
-   /* identique a eqmod_GetCurrentFITSDate_function */
-   char ligne[1024];
+   /* substitution RZ */
+   Tcl_Eval(interp,"clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S\" -timezone :UTC");
+   strcpy(s,interp->result);
+	
+   /*char ligne[1024];
+
    sprintf(ligne,"info commands  %s",function);
    Tcl_Eval(interp,ligne);
    if (strcmp(interp->result,function)==0) {
@@ -1381,7 +1361,7 @@ void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functio
    } else {
       Tcl_Eval(interp,"mc_date2iso8601 now");
       strcpy(s,interp->result);
-   }
+   }*/
 }
 
 int temma_angle_ra2hms(char *in, char *out)
