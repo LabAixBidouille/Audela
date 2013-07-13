@@ -25,8 +25,8 @@ proc ::sophie::fiberview::run { sophieVisuNo  } {
    variable private
 
    if { $private(visuNo) == 0 } {
-      if { ! [ info exists ::conf(sophie,fiberVisu,position) ] } {
-         set ::conf(sophie,fiberVisu,position)     "+400+300"
+      if { ! [ info exists ::conf(sophie,fiberVisu,geometry) ] } {
+         set ::conf(sophie,fiberVisu,geometry) "+400+300"
       }
 
       #--- je memorise le numero de la visu de la fenetre principale de sophie
@@ -71,7 +71,7 @@ proc ::sophie::fiberview::createPluginInstance { in visuNo  } {
    #--- je change le titre
    wm title $tkBase $::caption(sophie,visuFibreA)
    #--- je change la position
-   wm geometry $tkBase $::conf(sophie,fiberVisu,position)
+   wm geometry $tkBase $::conf(sophie,fiberVisu,geometry)
    #--- je passe en zoom x4
    ::confVisu::setZoom $visuNo 4
    #--- je memorise le buffer initial
@@ -101,7 +101,7 @@ proc ::sophie::fiberview::deletePluginInstance { visuNo } {
    visu$visuNo buf $private(initialBufferNo)
 
    #--- j'enregistre la position de la fenetre
-   set ::conf(sophie,fiberVisu,position) [winfo geometry [::confVisu::getBase $visuNo]]
+   set ::conf(sophie,fiberVisu,geometry) [winfo geometry [::confVisu::getBase $visuNo]]
    set private(visuNo) 0
 }
 

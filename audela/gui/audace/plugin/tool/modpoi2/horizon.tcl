@@ -18,7 +18,7 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(horizon,position) ] }            { set ::conf(horizon,position)            "450x250+250+75" }
+   if { ! [ info exists ::conf(horizon,geometry) ] }            { set ::conf(horizon,geometry)            "450x250+250+75" }
    if { ! [ info exists ::conf(horizon,currentHorizon) ] }      { set ::conf(horizon,currentHorizon)      "default" }
 
    if { ! [ info exists ::conf(horizon,default,name) ] }        { set ::conf(horizon,default,name)        "default" }
@@ -50,7 +50,7 @@ proc ::horizon::run { visuNo {tkbase ""} } {
    if { [winfo exists $private($visuNo,this) ] == 0 } {
       #--- j'affiche la fenetre
       ::confGenerique::run $visuNo $private($visuNo,this) [namespace current] -modal 0 \
-         -geometry $::conf(horizon,position) \
+         -geometry $::conf(horizon,geometry) \
          -resizable 1
    } else {
       focus $private($visuNo,this)
@@ -85,7 +85,7 @@ proc ::horizon::closeWindow { visuNo } {
    variable private
 
    #--- je sauve la taille et la position de la fenetre
-   set ::conf(horizon,position) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
+   set ::conf(horizon,geometry) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
 }
 
 #------------------------------------------------------------
@@ -665,14 +665,14 @@ proc ::horizon::nameDialog::run { tkbase visuNo title } {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(horizon,instrumentConfigPosition) ] } { set ::conf(horizon,instrumentConfigPosition)     "200x140+100+15" }
+   if { ! [ info exists ::conf(horizon,instrumentConfig,geometry) ] } { set ::conf(horizon,instrumentConfig,geometry) "200x140+100+15" }
    set private($visuNo,This) "$tkbase.getname"
    set private(title) $title
    set private(type)  "ALTAZ"
 
    #--- j'affiche la fenetre modale et j'attend que l'utilisateur la referme
    set result [::confGenerique::run $visuNo $private($visuNo,This) "::horizon::nameDialog" \
-      -modal 1 -geometry $::conf(horizon,instrumentConfigPosition) -resizable 1 ]
+      -modal 1 -geometry $::conf(horizon,instrumentConfig,geometry) -resizable 1 ]
 
    #--- je retourne 1 si l'utilisateur a valide la saisie, ou 0 si l'utilisateur a abandonne la saisie
    return $result
@@ -708,7 +708,7 @@ proc ::horizon::nameDialog::closeWindow { visuNo } {
    variable private
 
    #--- je memorise la position courante de la fenetre
-   set ::conf(horizon,instrumentConfigPosition) [ wm geometry $private($visuNo,This) ]
+   set ::conf(horizon,instrumentConfig,geometry) [ wm geometry $private($visuNo,This) ]
 }
 
 #------------------------------------------------------------

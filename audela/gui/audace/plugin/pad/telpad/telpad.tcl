@@ -76,7 +76,7 @@ namespace eval telpad {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(telpad,wmgeometry) ] }   { set conf(telpad,wmgeometry)   "157x254+657+252" }
+      if { ! [ info exists conf(telpad,geometry) ] }     { set conf(telpad,geometry)     "157x254+657+252" }
       if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "" }
 
       return
@@ -166,7 +166,7 @@ namespace eval telpad {
       #--- Ferme la raquette
       if { [ info exists This ] == 1 } {
          if { [ winfo exists $This ] == 1 } {
-            set conf(telpad,wmgeometry) [ wm geometry $This ]
+            set conf(telpad,geometry) [ wm geometry $This ]
            destroy $This
          }
       }
@@ -377,8 +377,8 @@ namespace eval telpad {
       #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class toplevel -bg $color(blue_pad)
       wm title $This $caption(telpad,titre)
-      if { [ info exists conf(telpad,wmgeometry) ] == "1" } {
-         wm geometry $This $conf(telpad,wmgeometry)
+      if { [ info exists conf(telpad,geometry) ] == "1" } {
+         wm geometry $This $conf(telpad,geometry)
       } else {
          wm geometry $This 170x320+647+240
       }

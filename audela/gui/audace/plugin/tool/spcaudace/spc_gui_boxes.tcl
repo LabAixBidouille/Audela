@@ -315,7 +315,7 @@ namespace eval ::param_spc_audace_export2png {
 	  set geom [wm geometry .param_spc_audace_export2png]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
       }
   }
 
@@ -565,10 +565,11 @@ namespace eval ::param_spc_audace_selectzone {
 	  set geom [ wm geometry .param_spc_audace_selectzone ]
 	  set deb [ expr 1+[string first + $geom ] ]
 	  set fin [ string length $geom ]
-	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
       }
   }
 
 
 }
 #****************************************************************************#
+

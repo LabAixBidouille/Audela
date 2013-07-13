@@ -191,7 +191,7 @@ namespace eval skybot_Search {
       set fin [ string length $voconf(geometry_search) ]
       set voconf(position_search) "+[ string range $voconf(geometry_search) $deb $fin ]"
       #---
-      set conf(vo_tools,position_search) $voconf(position_search)
+      set conf(vo_tools,search,position) $voconf(position_search)
    }
 
    #
@@ -616,12 +616,12 @@ namespace eval skybot_Search {
       $audace(hCanvas) delete cadres
 
       #--- initConf
-      if { ! [ info exists conf(vo_tools,position_search) ] } { set conf(vo_tools,position_search) "+80+40" }
-      if { ! [ info exists voconf(trace_efface) ] } { set voconf(trace_efface) "1" }
-      if { ! [ info exists voconf(type_filtre) ] } { set voconf(type_filtre) "none" }
+      if { ! [ info exists conf(vo_tools,search,position) ] } { set conf(vo_tools,search,position) "+80+40" }
+      if { ! [ info exists voconf(trace_efface) ] }           { set voconf(trace_efface)           "1" }
+      if { ! [ info exists voconf(type_filtre) ] }            { set voconf(type_filtre)            "none" }
 
       #--- confToWidget
-      set voconf(position_search) $conf(vo_tools,position_search)
+      set voconf(position_search) $conf(vo_tools,search,position)
 
       #---
       if { [ winfo exists $This ] } {

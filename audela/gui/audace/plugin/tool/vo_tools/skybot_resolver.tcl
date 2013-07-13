@@ -76,7 +76,7 @@ namespace eval skybot_Resolver {
       set fin [ string length $voconf(geometry_resolver) ]
       set voconf(position_resolver) "+[ string range $voconf(geometry_resolver) $deb $fin ]"
       #---
-      set conf(vo_tools,position_resolver) $voconf(position_resolver)
+      set conf(vo_tools,resolver,position) $voconf(position_resolver)
    }
 
    #
@@ -223,10 +223,10 @@ namespace eval skybot_Resolver {
       set voconf(sesame_server)    "CDS"
 
       #--- initConf
-      if { ! [ info exists conf(vo_tools,position_resolver) ] } { set conf(vo_tools,position_resolver) "+80+40" }
+      if { ! [ info exists conf(vo_tools,resolver,position) ] } { set conf(vo_tools,resolver,position) "+80+40" }
 
       #--- confToWidget
-      set voconf(position_resolver) $conf(vo_tools,position_resolver)
+      set voconf(position_resolver) $conf(vo_tools,resolver,position)
 
       #---
       if { [ winfo exists $This ] } {

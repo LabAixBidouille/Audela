@@ -107,7 +107,7 @@ proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    starkit::startup
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists conf(updateaudela,position) ] }          { set conf(updateaudela,position)           "300x200+250+75" }
+   if { ! [ info exists conf(updateaudela,geometry) ] }          { set conf(updateaudela,geometry)           "300x200+250+75" }
    if { ! [ info exists conf(updateaudela,kitDirectory) ] }      { set conf(updateaudela,kitDirectory)       "$::audace(rep_install)" }
    if { ! [ info exists conf(updateaudela,downloadAndInstall ] } { set conf(updateaudela,downloadAndInstall) "1" }
    if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList)        [list "http://www.audela.org/test2.php" "http://pagesperso-orange.fr/michel.pujol/audela/" "http://bmauclaire.free.fr/spcaudace/"] }
@@ -128,7 +128,7 @@ proc ::updateaudela::startTool { visuNo } {
    set private(this) "$private(base).updateaudela"
    if { [winfo exists $private(this) ] == 0 } {
       #--- j'affiche la fenetre
-      ::confGenerique::run $visuNo $private(this) [namespace current] -modal 0 -geometry $::conf(updateaudela,position)
+      ::confGenerique::run $visuNo $private(this) [namespace current] -modal 0 -geometry $::conf(updateaudela,geometry)
    } else {
       focus $private(this)
    }
@@ -309,7 +309,7 @@ proc ::updateaudela::closeWindow { visuNo } {
    variable private
 
    #--- je sauve la taille et la position de la fenetre
-   set ::conf(updateaudela,position) [winfo geometry [winfo toplevel $private(frm) ]]
+   set ::conf(updateaudela,geometry) [winfo geometry [winfo toplevel $private(frm) ]]
 }
 
 #------------------------------------------------------------
@@ -323,7 +323,7 @@ proc ::updateaudela::recupPosition { } {
    set geom [ winfo geometry [winfo toplevel $private(frm) ] ]
    set deb [ expr 1 + [ string first + $geom ] ]
    set fin [ string length $geom ]
-   set ::conf(updateaudela,position) "+[ string range $geom $deb $fin ]"
+   set ::conf(updateaudela,geometry) "+[ string range $geom $deb $fin ]"
 }
 
 #------------------------------------------------------------
