@@ -24,7 +24,7 @@ proc ::sophie::config::run { visuNo tkbase  } {
    set private(frm) "$::audace(base).sophieconfig"
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(sophie,configWindowPosition) ] } { set ::conf(sophie,configWindowPosition) "450x540+565+160" }
+   if { ! [ info exists ::conf(sophie,configWindowPosition) ] } { set ::conf(sophie,configWindowPosition) "430x540+565+160" }
 
    #--- j'affiche la fenetre
    ::confGenerique::run $visuNo $private(frm) "::sophie::config" -modal 0 -geometry $::conf(sophie,configWindowPosition) -resizable 1

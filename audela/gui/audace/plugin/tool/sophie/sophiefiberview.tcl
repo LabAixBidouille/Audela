@@ -26,7 +26,7 @@ proc ::sophie::fiberview::run { sophieVisuNo  } {
 
    if { $private(visuNo) == 0 } {
       if { ! [ info exists ::conf(sophie,fiberVisu,geometry) ] } {
-         set ::conf(sophie,fiberVisu,geometry) "+400+300"
+         set ::conf(sophie,fiberVisu,geometry) "430x540+400+300"
       }
 
       #--- je memorise le numero de la visu de la fenetre principale de sophie
