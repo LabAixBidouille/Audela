@@ -2,7 +2,7 @@
 # Fichier : foc.tcl
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
-# Auteurs : Alain KLOTZ et Robert DELMAS
+# Auteurs : Alain KLOTZ, Robert DELMAS et Raymond ZACHANTKE
 # Mise à jour $Id$
 #
 
@@ -15,6 +15,7 @@ namespace eval ::foc {
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] foc.cap ]
+   source [ file join [file dirname [info script]] focHFD.tcl ]
 
    #------------------------------------------------------------
    # getPluginTitle
@@ -176,6 +177,17 @@ namespace eval ::foc {
             $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
             $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
          }
+
+         #--   configure le bouton 'Graphe"
+         $This.fra3.but1 configure -command "::foc::initFocHFD"
+
+         #--   switch les graphes
+         if {[winfo exists $::audace(base).visufoc]} {
+            #--   ferme le graphique normal
+            fermeGraphe
+            #--   ouvre l'autre graphique
+            ::foc::initFocHFD
+         }
       } else {
          #--- Sans controle etendu
          pack forget $This.fra5.lab1
@@ -186,6 +198,18 @@ namespace eval ::foc {
          pack forget $This.fra5.fra2.ent3
          pack forget $This.fra5.fra2.lab4
          pack forget $This.fra5.but3
+         pack forget $This.fra5.but4
+
+         #--   configuration du bouton 'Graphe"
+         $This.fra3.but1 configure -command "focGraphe"
+
+         #--   switch les graphes
+         if {[winfo exists $::audace(base).hfd]} {
+            #--   ferme le graphique hfd
+            ::foc::closeHFDGraphe
+            #--   ouvre la graphique normal
+            focGraphe
+         }
       }
       $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
    }
@@ -723,13 +747,13 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc closeAllWindows { base } {
       if {[winfo exists $base.parafoc]} {
-         ::foc::fermeQualiteFoc $base.parafoc
+         fermeQualiteFoc
       }
       if {[winfo exists $base.visufoc]} {
-         ::foc::fermeGraphe $base.visufoc
+         fermeGraphe
       }
       if {[winfo exists $base.hfd]} {
-         ::foc::closeHFDGraphe $::audace(visuNo) $base.hfd
+         ::foc::closeHFDGraphe
       }
    }
 
@@ -906,7 +930,7 @@ namespace eval ::foc {
 
       #--- Fenetre d'affichage des parametres de la foc
       if [ winfo exists $this ] {
-         ::foc::fermeQualiteFoc
+         fermeQualiteFoc
       }
 
       #--- Creation de la fenetre
@@ -915,7 +939,7 @@ namespace eval ::foc {
       wm resizable $this 0 0
       wm title $this "$caption(foc,focalisation)"
       wm geometry $this $conf(parafoc,position)
-      wm protocol $this WM_DELETE_WINDOW ::foc::fermeQualiteFoc
+      wm protocol $this WM_DELETE_WINDOW "fermeQualiteFoc"
 
       #--- Cree les etiquettes
       label $this.lab1 -text "$panneau(foc,compteur)"
@@ -1170,7 +1194,7 @@ proc focBuildIF { This } {
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Label pour la position focus
-         label $This.fra5.lab1 -text $$caption(foc,pos_focus) -relief flat
+         label $This.fra5.lab1 -text $caption(foc,pos_focus) -relief flat
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
 
          #--- Bouton "Se trouve à"
