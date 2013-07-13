@@ -105,7 +105,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    int i;
    double longitude,altitude;
    char ligne[256],ew[3];
-   
+  
    tel->consoleLog = 0;
 
    /*
@@ -177,8 +177,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->dec_play=(double)0.;
    tel->slewpathindex=0;
    tel->encoder=(int)1;
-   temma_LA(tel,50);
-   temma_LB(tel,50);
    sate_move_radec=' ';
 
    if (strcmp(tel->homePosition,"")!= 0) {
@@ -214,6 +212,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
    /* update E/W for the german mount */
    temma_coord(tel,ssres);
+   
+   /*temma_set_comet_rate(tel,rsp,dsp);
+   temma_get_comet_rate(tel,&ra_speed,&dec_speed);
+   mytel_logConsole(tel, "ra_speed=%d dec_speed=%d\n",ra_speed,dec_speed);*/
 
    return 0;
 }
@@ -832,6 +834,7 @@ int temma_stellar_rate(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"LL\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- pas de reponse sur le port serie */
+   mytel_logConsole(tel, "Sideral traking\n");
    return 0;
 }
 
@@ -881,6 +884,9 @@ int temma_lg (struct telprop *tel, int *vra, int *vdec)
       sprintf(ss,"%c%c",s[5],s[6]);
       *vdec=(int)atoi(ss);
    }
+   if ( tel->consoleLog >= 1 ) {
+      mytel_logConsole(tel, "vra=%d vdec=%d\n",*vra,*vdec);
+   }
    return 0;
 }
 
@@ -892,20 +898,26 @@ int temma_solar_tracking(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"LK\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- pas de reponse sur le port serie */
+   mytel_logConsole(tel, "Solar traking\n");
    return 0;
 }
 
-/* Set Comete rate */
-/* regle la vitesse de derive du suivi en ra et en dec */
-int temma_set_comet_rate(struct telprop *tel,int var, int vdec)
+/* Set Comete rate
+LM+/-99999,+/-999 ### exemple envoi : LM+12345,-123\r\n
+RA : Adjust Sidereal time by seconds per Day ### val RA min=-21541 max=+21541 (de 0.75X à 1.25X tracking sideral)
+DEC : Adjust DEC tracking by Minutes Per Day ### val DEC min=-600 max=+600 (+/-10 deg par jour)
+Example:
+LM-120,+30 would slow the RA speed by 86164/86284
+and the Dec would track at 30 Minutes a day.*/
+int temma_set_comet_rate(struct telprop *tel,int ra_speed, int dec_speed)
 {
    char s[1024];
 
-   if (var<-99999) {var=-99999;}
-   if (var>99999) {var=99999;}
-   if (vdec<-9999) {vdec=-9999;}
-   if (vdec>9999) {vdec=9999;}
-   sprintf(s,"puts -nonewline %s \"LM%+d,%+d\r\n\"",tel->channel,var,vdec); mytel_tcleval(tel,s);
+   if (ra_speed<-99999) {ra_speed=-99999;}
+   if (ra_speed>99999) {ra_speed=99999;}
+   if (dec_speed<-9999) {dec_speed=-9999;}
+   if (dec_speed>9999) {dec_speed=9999;}
+   sprintf(s,"puts -nonewline %s \"LM%+d,%+d\r\n\"",tel->channel,ra_speed,dec_speed); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- pas de reponse sur le port serie */
    return 0;
@@ -922,7 +934,7 @@ RA Speed Adjustment,Dec Speed Adjustment
 Note: RA Speed adjustment is how many RA seconds are added/subtracted per 24 hour period,
 DEC adjustment is how many Minutes per 24 hour period.
 */
-int temma_get_comet_rate(struct telprop *tel,int *var,int *vdec)
+int temma_get_comet_rate(struct telprop *tel,int *ra_speed,int *dec_speed)
 {
    char s[1024],ss[1024];
    int k,kdeb,kfin;
@@ -937,8 +949,8 @@ int temma_get_comet_rate(struct telprop *tel,int *var,int *vdec)
    /* --- */
    len=(int)strlen(s);
    if (len<5) {
-      *var=0;
-      *vdec=0;
+      *ra_speed=0;
+      *dec_speed=0;
    } else {
       kd1=4;
       kf1=kd1;
@@ -957,28 +969,17 @@ int temma_get_comet_rate(struct telprop *tel,int *var,int *vdec)
       kfin=kf1;
       for (k=kdeb;k<=kfin;k++) { ss[k-kdeb]=s[k]; }
       ss[k-kdeb]='\0';
-      *var=atoi(ss);
+      *ra_speed=atoi(ss);
       /* --- extrait dDEC en arcmin/day */
       kdeb=kd2;
       kfin=kf2;
       for (k=kdeb;k<=kfin;k++) { ss[k-kdeb]=s[k]; }
       ss[k-kdeb]='\0';
-      *vdec=atoi(ss);
+      *dec_speed=atoi(ss);
    }
+   mytel_logConsole(tel, "Comete speed ra=%d seconds/24h dec=%d arcmin/24h\n",*ra_speed,*dec_speed);
    return 0;
 }
-
-
-/*int temma_arret_pointage(struct telprop *tel)
-{
-   char s[1024];
-
-   /*--- Arret pointage */
-   /*sprintf(s,"puts -nonewline %s \"PS\r\n\"",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- pas de reponse sur le port serie */
-   /*return 0;
-}*/
 
 /* Read RA, DEC, Handbox state, Mount Side & Automatic introduction from microcontroller 
 Reply structure:
@@ -1324,7 +1325,7 @@ int temma_v_firmware (struct telprop *tel)
 
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
-/* ----------------- langage TEMMA TOOLS -----------------------------*/
+/* ----------------- langage TEMMA TOOLS -------------------------*/
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
