@@ -208,7 +208,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 
       /* update site for local sideral time */
       temma_settsl(tel);
-      tel->tsl00=tel->tsl;
    }
 
    temma_setderive(tel,0,0);
@@ -769,6 +768,7 @@ int temma_delete(struct telprop *tel)
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
+/* Put latitude to microcontroller */
 int temma_setlatitude(struct telprop *tel,double latitude)
 {
    char s[1024];
@@ -786,6 +786,7 @@ int temma_setlatitude(struct telprop *tel,double latitude)
    return 0;
 }
 
+/* Get latitude from microcontroller*/
 int temma_getlatitude(struct telprop *tel,double *latitude)
 {
    char s[1024];
@@ -806,6 +807,7 @@ int temma_getlatitude(struct telprop *tel,double *latitude)
    return 0;
 }
 
+/* Get TSL from microcontroller */
 int temma_gettsl(struct telprop *tel,double *tsl)
 {
    char s[1024];
@@ -822,11 +824,12 @@ int temma_gettsl(struct telprop *tel,double *tsl)
    return 0;
 }
 
+/* Put Solar tracking ??? */
 int temma_solar_tracking(struct telprop *tel)
 {
    char s[1024];
    int result;
-   //--- Suivi solaire
+ 
    sprintf(s,"puts -nonewline %s \"LK\r\n\"",tel->channel); mytel_tcleval(tel,s);
    result = mytel_tcleval(tel,s);
    if ( result == 0 ) {
@@ -862,7 +865,7 @@ int temma_motorstate(struct telprop *tel)
    return result;
 }
 
-/* --- ajuste la vitesse RA-move en speed Normal */
+/* Put RA-move speed (normal speed) to microcontroller */
 int temma_LA (struct telprop *tel, int value)
 {
    char s[1024];
@@ -875,7 +878,7 @@ int temma_LA (struct telprop *tel, int value)
    return 0;
 }
 
-/* --- ajuste la vitesse DEC-move en speed Normal */
+/* Put DEC-move speed (normal speed) to microcontroller */
 int temma_LB (struct telprop *tel, int value)
 {
    char s[1024];
@@ -888,7 +891,7 @@ int temma_LB (struct telprop *tel, int value)
    return 0;
 }
 
-/* --- lit les vitesses RA-move DEC-move en speed Normal */
+/* Read RA-move & DEC-move speed (normal speed) from microcontroller */
 int temma_lg (struct telprop *tel, int *vra, int *vdec)
 {
    char s[1024];
@@ -911,7 +914,7 @@ int temma_lg (struct telprop *tel, int *vra, int *vdec)
    return 0;
 }
 
-/* --- Retourne la version du firmware du microcontroleur */
+/* Read firmware version from microntroller */
 int temma_v_firmware (struct telprop *tel)
 {
    char s[1024];
@@ -937,8 +940,7 @@ int temma_v_firmware (struct telprop *tel)
    return 0;*/
 /*}*/
 
-int temma_coord(struct telprop *tel,char *result)
-/*
+/* Read RA, DEC, Handbox state, Mount Side & Automatic introduction from microcontroller 
 Reply structure:
 0          1
 12345678  901234    5
@@ -947,30 +949,32 @@ H = Handbox (operational?)
 E/W = Side of mount telescope is on
 F = Automatic introduction complete after goto operation retour F F F
 */
+int temma_coord(struct telprop *tel,char *result)
 {
    char s[1024],ss[1024];
    char sra[256],sdec[256];
    int k,kdeb,kfin;
-   /*double ra=0.,dec=0.;*/
+
    /* --- Demande radec */
    sprintf(s,"puts -nonewline %s \"E\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- Lit la reponse sur le port serie */
    sprintf(s,"read %s 30",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
+
    /* --- transforme RA en HHhMMmSSs */
    kdeb=1;
    kfin=6;
    for (k=kdeb;k<=kfin;k++) { ss[k-kdeb]=s[k]; }
    ss[k-kdeb]='\0';
    temma_angle_ra2hms(ss,sra);
+
    /* --- transforme DEC en SDDdMMmSSs */
    kdeb=7;
    kfin=12;
    for (k=kdeb;k<=kfin;k++) { ss[k-kdeb]=s[k]; }
    ss[k-kdeb]='\0';
    temma_angle_dec2dms(ss,sdec);
-   /*sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);*/
 
    /* -- decoder ici le sens E/W */
    if (s[13]=='E') {
@@ -993,7 +997,7 @@ F = Automatic introduction complete after goto operation retour F F F
    return 0;
 }
 
-/* --- execute match */
+/* Do MATCH */
 int temma_match(struct telprop *tel)
 {
    char s[1024];
@@ -1004,9 +1008,11 @@ int temma_match(struct telprop *tel)
    /* --- transforme en tel->ra0 en HHMMZZ */
    sprintf(s,"%f",tel->ra0);
    temma_angle_hms2ra(tel,s,sra);
+
    /* --- transforme en tel->dec0 en +/-SDDMMZ */
    sprintf(s,"%f",tel->dec0);
    temma_angle_dms2dec(tel,s,sdec);
+
    /* --- update local sideral time */
    temma_settsl(tel);
    /* --- set Zenith (bug of temma for resync) ---*/
@@ -1014,7 +1020,10 @@ int temma_match(struct telprop *tel)
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- update local sideral time */
    temma_settsl(tel);
+
+   /* update last TSL Match */
    tel->tsl00=tel->tsl;
+
    /* --- update radec */
    sprintf(s,"puts -nonewline %s \"D%s%s\r\n\"",tel->channel,sra,sdec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
@@ -1054,7 +1063,7 @@ int temma_match(struct telprop *tel)
    return result;
 }
 
-/* --- execute goto */
+/* Do GOTO */
 int temma_goto(struct telprop *tel)
 {
    char s[1024];
@@ -1069,6 +1078,7 @@ int temma_goto(struct telprop *tel)
    /* --- transforme en tel->dec0 en +/-SDDMMZ */
    sprintf(s,"%f",tel->dec0);
    temma_angle_dms2dec(tel,s,sdec);
+
    /* --- envoie la mise a jour de radec */
    temma_settsl(tel);
    sprintf(s,"puts -nonewline %s \"P%s%s\r\n\"",tel->channel,sra,sdec); mytel_tcleval(tel,s);
@@ -1126,7 +1136,7 @@ int temma_initzenith(struct telprop *tel)
    return temma_match(tel);
 }
 
-/* stop un goto */
+/* Do STOP (GOTO) */
 int temma_stopgoto(struct telprop *tel)
 {
    char s[1024];
@@ -1170,7 +1180,7 @@ int temma_stategoto(struct telprop *tel,int *state)
    return result;
 }
 
-/* suivi off */
+/* Do tracking OFF */
 int temma_suivi_arret (struct telprop *tel)
 {
    char s[1024];
@@ -1184,7 +1194,7 @@ int temma_suivi_arret (struct telprop *tel)
    return 0;
 }
 
-/* suivi on */
+/* Do tracking ON */
 int temma_suivi_marche (struct telprop *tel)
 {
    char s[1024];
@@ -1197,7 +1207,8 @@ int temma_suivi_marche (struct telprop *tel)
    return 0;
 }
 
-/* switch d'inversion de la position du telescope
+/* Do manual MOUNTSIDESWITCH
+ switch d'inversion de la position du telescope
 si on fait PT depuis une position W la RA est augmentée de 12H
 si on fait PT depuis une position E la RA est diminuée de 12H
 */
@@ -1208,7 +1219,6 @@ int temma_switchMountSide(struct telprop *tel,char *sens)
    /* --- met a jour tel->ew */
    temma_coord(tel,s);
 
-   /* --- */
    sprintf(s,"lindex [string toupper %s] 0",sens); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    if (ss[0]=='E') { 
@@ -1306,6 +1316,7 @@ int temma_getderive(struct telprop *tel,int *var,int *vdec)
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
+/* Set TSL */
 int temma_settsl(struct telprop *tel)
 {
    int h,m,sec;
@@ -1315,12 +1326,10 @@ int temma_settsl(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"T%02d%02d%02d\r\n\"",tel->channel,h,m,sec); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- pas de reponse sur le port serie */
-   /* update last tsl ajout RZ */
-   tel->tsl00=tel->tsl;
    return 0;
 }
 
-/* --- temps sideral local */
+/* Compute TSL */
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
 {
    char s[1024];
@@ -1364,6 +1373,7 @@ void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functio
    }*/
 }
 
+/* Decode microcontroller RA */
 int temma_angle_ra2hms(char *in, char *out)
 {
    char ss[1024];
@@ -1378,6 +1388,7 @@ int temma_angle_ra2hms(char *in, char *out)
    return 0;
 }
 
+/* Decode microcontroller DEC  */
 int temma_angle_dec2dms(char *in, char *out)
 {
    char ss[1024];
@@ -1393,6 +1404,7 @@ int temma_angle_dec2dms(char *in, char *out)
    return 0;
 }
 
+/* Encode RA for microcontroller */
 int temma_angle_hms2ra(struct telprop *tel, char *in, char *out)
 {
    char s[1024],ss[1024];
@@ -1408,10 +1420,12 @@ int temma_angle_hms2ra(struct telprop *tel, char *in, char *out)
    return 0;
 }
 
+/* Encode DEC for microcontroller */
 int temma_angle_dms2dec(struct telprop *tel, char *in, char *out)
 {
    char s[1024],ss[1024];
    int z;
+
    /* --- transforme Angle en +DDdMMmSSs0 */
    sprintf(s,"mc_angle2dms %s 90 zero 0 + string",in); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
