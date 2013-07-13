@@ -104,21 +104,24 @@ int temma_solar_tracking(struct telprop *tel);
 int temma_set_comet_rate(struct telprop *tel, int var, int vdec);
 int temma_get_comet_rate(struct telprop *tel, int *var, int *vdec);
 
-int temma_switchMountSide(struct telprop *tel,char *sens);
 int temma_setlatitude(struct telprop *tel,double latitude);
 int temma_getlatitude(struct telprop *tel,double *latitude);
 int temma_gettsl(struct telprop *tel,double *tsl);
-int temma_motorstate(struct telprop *tel);
-int temma_v_firmware (struct telprop *tel) ;
-/*int temma_arret_pointage(struct telprop *tel) ;*/
-int temma_suivi_arret (struct telprop *tel);
-int temma_suivi_marche (struct telprop *tel);
+
 int temma_coord(struct telprop *tel,char *result);
 int temma_match(struct telprop *tel);
 int temma_goto(struct telprop *tel);
 int temma_initzenith(struct telprop *tel);
 int temma_stopgoto(struct telprop *tel);
 int temma_stategoto(struct telprop *tel,int *state);
+
+int temma_motorstate(struct telprop *tel);
+int temma_suivi_arret (struct telprop *tel);
+int temma_suivi_marche (struct telprop *tel);
+int temma_switchMountSide(struct telprop *tel,char *sens);
+int temma_v_firmware (struct telprop *tel) ;
+
+
 
 int temma_angle_ra2hms(char *in, char *out);
 int temma_angle_dec2dms(char *in, char *out);

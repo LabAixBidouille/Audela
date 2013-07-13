@@ -185,10 +185,6 @@ DEC adjustment is how many Minutes per 24 hour period.
    if (argc==4) {
       ra_speed=(int)atoi(argv[2]);
       dec_speed=(int)atoi(argv[3]);
-      if (ra_speed<-99999) {ra_speed=-99999;}
-      if (ra_speed>99999) {ra_speed=99999;}
-      if (dec_speed<-9999) {dec_speed=-9999;}
-      if (dec_speed>9999) {dec_speed=9999;}
       temma_set_comet_rate(tel,ra_speed,dec_speed);
    }
    temma_get_comet_rate(tel,&ra_speed,&dec_speed);
