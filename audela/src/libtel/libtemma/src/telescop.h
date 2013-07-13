@@ -96,15 +96,19 @@ int mytel_set_format(struct telprop *tel,int longformatindex);
 int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 
+int temma_stellar_rate(struct telprop *tel);
+int temma_LA (struct telprop *tel, int value);
+int temma_LB (struct telprop *tel, int value);
+int temma_lg (struct telprop *tel, int *vra, int *vdec);
+int temma_solar_tracking(struct telprop *tel);
+int temma_set_comet_rate(struct telprop *tel, int var, int vdec);
+int temma_get_comet_rate(struct telprop *tel, int *var, int *vdec);
+
 int temma_switchMountSide(struct telprop *tel,char *sens);
 int temma_setlatitude(struct telprop *tel,double latitude);
 int temma_getlatitude(struct telprop *tel,double *latitude);
 int temma_gettsl(struct telprop *tel,double *tsl);
-int temma_solar_tracking(struct telprop *tel);
 int temma_motorstate(struct telprop *tel);
-int temma_LA (struct telprop *tel, int value);
-int temma_LB (struct telprop *tel, int value);
-int temma_lg (struct telprop *tel, int *vra, int *vdec);
 int temma_v_firmware (struct telprop *tel) ;
 /*int temma_arret_pointage(struct telprop *tel) ;*/
 int temma_suivi_arret (struct telprop *tel);
