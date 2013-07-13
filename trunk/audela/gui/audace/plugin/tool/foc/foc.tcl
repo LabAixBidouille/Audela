@@ -164,6 +164,8 @@ namespace eval ::foc {
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
+         pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
+
          if {$::panneau(foc,focuser) eq "usb_focus"} {
             pack forget $This.fra5.but1
             ::focus::displayCurrentPosition $::panneau(foc,focuser) ; #usb_focus
@@ -189,6 +191,7 @@ namespace eval ::foc {
             ::foc::initFocHFD
          }
       } else {
+
          #--- Sans controle etendu
          pack forget $This.fra5.lab1
          pack forget $This.fra5.but1
@@ -1239,6 +1242,10 @@ proc focBuildIF { This } {
          #--- Bouton "Initialisation"
          button $This.fra5.but3 -borderwidth 2 -text $panneau(foc,initialise) -command { ::foc::cmdInitFoc }
          pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
+
+         #--- Bouton "Courbe en V"
+         button $This.fra5.but4 -borderwidth 2 -text "$caption(foc,vcurve)" -command { ::foc::traceCurve }
+         pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
       pack $This.fra5 -side top -fill x
 

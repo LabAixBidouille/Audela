@@ -20,13 +20,13 @@
       ::foc::updateHFDGraphe $::audace(visuNo) $this
 
       #--   au moins deux mesures pour calculer la pente
-      if {[::VShfd length] >=2} {
-         ::foc::computeSlope
-      }
+      #if {[::VShfd length] >=2} {
+      #   ::foc::computeSlope
+      #}
 
       #--   modifie la position du focaliseur
-      incr audace(focus,targetFocus) 6000
-      cmdSeDeplaceA
+      #---incr audace(focus,targetFocus) 6000
+      #---cmdSeDeplaceA
    }
 
    #---------------------------------------------------------------------------
