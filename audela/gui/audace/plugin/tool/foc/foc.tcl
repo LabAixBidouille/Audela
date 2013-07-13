@@ -225,12 +225,7 @@ namespace eval ::foc {
 
       #--- Initialisation des variables et fermeture des fenetres auxiliaires
       set panneau(foc,compteur) "0"
-      if [ winfo exists $audace(base).parafoc ] {
-         destroy $audace(base).parafoc
-      }
-      if [ winfo exists $audace(base).visufoc ] {
-         destroy $audace(base).visufoc
-      }
+      closeAllWindows $audace(base)
 
       #--- Arret de la surveillance de la variable conf(telescope)
       trace remove variable :::confEqt::private(variablePluginName) write ::foc::adaptOutilFoc
@@ -607,8 +602,7 @@ namespace eval ::foc {
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
             set panneau(foc,compteur) "0"
-            destroy $audace(base).parafoc
-            destroy $audace(base).visufoc
+            closeAllWindows $audace(base)
          } else {
             #--- Je positionne l'indicateur d'arret de la pose
             set panneau(foc,demande_arret) "1"
@@ -719,6 +713,23 @@ namespace eval ::foc {
          update
       } else {
          ::confTel::run
+      }
+   }
+
+   #------------------------------------------------------------
+   # closeAllWindows
+   #    ferme toutes les fenetres annexes
+   # Parametre : chemin du parent
+   #------------------------------------------------------------
+   proc closeAllWindows { base } {
+      if {[winfo exists $base.parafoc]} {
+         ::foc::fermeQualiteFoc $base.parafoc
+      }
+      if {[winfo exists $base.visufoc]} {
+         ::foc::fermeGraphe $base.visufoc
+      }
+      if {[winfo exists $base.hfd]} {
+         ::foc::closeHFDGraphe $::audace(visuNo) $base.hfd
       }
    }
 
