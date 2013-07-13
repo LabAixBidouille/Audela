@@ -627,7 +627,6 @@ namespace eval ::foc {
             #--- Gestion graphique des boutons
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
-            update
          }
          update
       } else {
@@ -969,7 +968,7 @@ proc focGraphe { } {
       }
       wm resizable $this 1 1
       wm geometry $this $conf(visufoc,position)
-      wm protocol $this WM_DELETE_WINDOW { ::foc::fermeGraphe }
+      wm protocol $this WM_DELETE_WINDOW "fermeGraphe"
       #---
       visuf $this g_inten "$caption(foc,intensite_adu)"
       visuf $this g_fwhmx "$caption(foc,fwhm_x)"
@@ -1019,6 +1018,9 @@ proc fermeGraphe { } {
 
    #--- Determination de la position de la fenetre
    regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(visufoc,position)
+
+   #--- Detruit les vecteurs persistants
+   blt::vector destroy ::vx ::vyg_fwhmx ::vyg_fwhmy ::vyg_inten ::vyg_contr
 
    #--- Fermeture de la fenetre
    destroy $w
