@@ -80,7 +80,7 @@ namespace eval ::superpad {
 
       if { ! [ info exists conf(superpad,padsize) ] }      { set conf(superpad,padsize)      "0.5" }
       if { ! [ info exists conf(superpad,centerspeed) ] }  { set conf(superpad,centerspeed)  "140" }
-      if { ! [ info exists conf(superpad,position) ] }     { set conf(superpad,position)     "100+100" }
+      if { ! [ info exists conf(superpad,position) ] }     { set conf(superpad,position)     "+100+100" }
       if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "" }
 
       return
@@ -209,7 +209,7 @@ namespace eval ::superpad {
          set geom [wm geometry .superpad]
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
-         set conf(superpad,position) [string range $geom $deb $fin]
+         set conf(superpad,position) "+[string range $geom $deb $fin]"
          #--- supprime la raquette
          destroy .superpad
       }
@@ -294,7 +294,7 @@ namespace eval ::superpad {
          destroy .superpad
       }
       toplevel .superpad -class toplevel -bg $colorpad(backpad)
-      wm geometry .superpad $geompad(larg)x$geompad(long)+$positionxy
+      wm geometry .superpad $geompad(larg)x$geompad(long)$positionxy
       wm resizable .superpad 0 0
       wm title .superpad $caption(superpad,titre)
 

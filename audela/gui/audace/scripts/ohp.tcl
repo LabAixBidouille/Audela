@@ -354,7 +354,7 @@ namespace eval ::ohp {
 
    }
 
-   proc stop {  } {
+   proc stop { } {
       global conf
       global audace
 
@@ -363,7 +363,7 @@ namespace eval ::ohp {
          set geom [wm geometry .ohp]
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
-         set conf(ohp,position) "[string range  $geom $deb $fin]"
+         set conf(ohp,position) "+[string range $geom $deb $fin]"
       }
 
       #--- Supprime la fenetre
@@ -372,7 +372,7 @@ namespace eval ::ohp {
       return
    }
 
-   proc go {} {
+   proc go { } {
       global audace
       # --- initialisations générales
       set path $audace(rep_images)/
@@ -716,7 +716,7 @@ namespace eval ::ohp {
       ::console::affiche_resultat "==================== TERMINE ====================\n"
    }
 
-   proc save {} {
+   proc save { } {
       global conf
       global audace
       global caption
@@ -743,7 +743,7 @@ namespace eval ::ohp {
       close $f
    }
 
-   proc load {} {
+   proc load { } {
       global conf
       global audace
       global caption
@@ -751,7 +751,7 @@ namespace eval ::ohp {
       source $filename
    }
 
-   proc getbox {} {
+   proc getbox { } {
       global audace
       set audace(ohp,box) [::confVisu::getBox 1]
       .ohp.box.entry configure -textvariable audace(ohp,box)
@@ -889,7 +889,7 @@ namespace eval ::ohp {
       ::console::affiche_resultat "======================== FIN fichiers\n"
    }
 
-   proc parameters {} {
+   proc parameters { } {
       global audace
       #::console::affiche_resultat "=============================================================\n"
       #foreach allmethode $audace(ohp,allmethodes) {
@@ -1071,7 +1071,7 @@ proc ohp_respt80 { ls } {
    return $fs
 }
 
-proc ohp_atmext { ls {airmass 1.}} {
+proc ohp_atmext { ls {airmass 1.} } {
    # ATMOSPHERIC EXTINCTION (MAGNITUDES) AT AIRMASS 1.00 at alt=600m
    set lrefs [list 2.9000000e+003  3.0000000e+003  3.1500000e+003  3.1600000e+003  3.1700000e+003  3.1800000e+003  3.1900000e+003  3.2000000e+003  3.2100000e+003  3.2200000e+003  3.2300000e+003  3.2400000e+003  3.2500000e+003  3.2600000e+003  3.2700000e+003  3.2800000e+003  3.2900000e+003  3.3000000e+003  3.3200000e+003  3.3400000e+003  3.3600000e+003  3.3800000e+003  3.4000000e+003  3.4500000e+003  3.5000000e+003  3.6000000e+003  3.7000000e+003  3.8000000e+003  3.9000000e+003  4.0000000e+003  4.1000000e+003  4.2000000e+003  4.3000000e+003  4.4000000e+003  4.5000000e+003  4.6000000e+003  4.7000000e+003  4.8000000e+003  4.9000000e+003  5.0000000e+003  5.2000000e+003  5.4000000e+003  5.6000000e+003  5.8000000e+003  6.0000000e+003  6.1000000e+003  6.2000000e+003  6.5000000e+003  6.8200000e+003  7.3400000e+003  7.3600000e+003  7.5600000e+003  7.5700000e+003  7.6800000e+003  7.6900000e+003  7.7000000e+003  7.9000000e+003  8.1000000e+003  8.3500000e+003  8.3600000e+003  8.6250000e+003  8.8900000e+003  8.9000000e+003  9.8600000e+003  9.8700000e+003  1.1200000e+004  1.2500000e+004]
    set frefs [list 9.7513564e-007  2.4494300e-004  2.5648681e-001  2.8253030e-001  2.9940912e-001  3.1554771e-001  3.3102823e-001  3.4599118e-001  3.5897568e-001  3.7073623e-001  3.8112289e-001  3.9071945e-001  4.0018889e-001  4.0838053e-001  4.1558994e-001  4.2370641e-001  4.3158370e-001  4.3879839e-001  4.5275685e-001  4.6501293e-001  4.7540641e-001  4.8290870e-001  4.9052939e-001  5.0473687e-001  5.3587689e-001  5.6893812e-001  6.0071023e-001  6.2382824e-001  6.5022705e-001  6.8401406e-001  7.0837794e-001  7.2889510e-001  7.4587325e-001  7.6254421e-001  7.7887010e-001  7.9262001e-001  8.0438697e-001  8.1332670e-001  8.2160870e-001  8.2768490e-001  8.3611310e-001  8.4462713e-001  8.4930764e-001  8.5322786e-001  8.6749110e-001  8.7874938e-001  8.8769757e-001  9.0170615e-001  9.0753844e-001  9.1593579e-001  9.1677979e-001  9.1847011e-001  9.1847011e-001  9.2016356e-001  9.2101145e-001  9.2186012e-001  9.2355982e-001  9.2441084e-001  9.2696861e-001  9.2696861e-001  9.2867773e-001  9.2953346e-001  9.2953346e-001  9.3554575e-001  9.3554575e-001  9.3727068e-001  9.3899878e-001]
@@ -1100,12 +1100,12 @@ proc ohp_convmag { ls } {
    return $f
 }
 
-proc ohp_spectro_make_offset { namein nameout nin} {
+proc ohp_spectro_make_offset { namein nameout nin } {
    #smedian Offset- offset 5
    smedian $namein $nameout $nin
 }
 
-proc ohp_spectro_make_dark { namein nameout nin} {
+proc ohp_spectro_make_dark { namein nameout nin } {
    #smedian Dark_1200s- dark1200 6
    smedian $namein $nameout $nin
 }
@@ -1148,7 +1148,7 @@ proc ohp_spectro_make_flat { namein nameout nin namedark telescope saturation } 
    saveima $nameout
 }
 
-proc ohp_spectro_pretraitement { namein nameout nin namedark nameflat telescope} {
+proc ohp_spectro_pretraitement { namein nameout nin namedark nameflat telescope } {
    global audace
    # --- preprocessing
    if {$nin>0} {
@@ -1290,7 +1290,7 @@ proc ohp_spectro_profil { path name telescope } {
    return [list $xs $valeurs]
 }
 
-proc ohp_spectro_extract { path namein nameout telescope} {
+proc ohp_spectro_extract { path namein nameout telescope } {
    global audace
    # --- lecture des mots cles
    loadima $namein

@@ -77,7 +77,7 @@ namespace eval ::lx200pad {
       global conf
 
       if { ! [ info exists conf(lx200pad,padsize) ] }      { set conf(lx200pad,padsize)      "0.6" }
-      if { ! [ info exists conf(lx200pad,position) ] }     { set conf(lx200pad,position)     "657+252" }
+      if { ! [ info exists conf(lx200pad,position) ] }     { set conf(lx200pad,position)     "+657+252" }
       if { ! [ info exists conf(lx200pad,focuserLabel) ] } { set conf(lx200pad,focuserLabel) "focuserlx200" }
 
       return
@@ -191,7 +191,7 @@ namespace eval ::lx200pad {
          set geom [wm geometry .lx200pad]
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
-         set conf(lx200pad,position) [string range $geom $deb $fin]
+         set conf(lx200pad,position) "+[string range $geom $deb $fin]"
       }
 
       #--- J'arrete la surveillance de audace(telescope,speed)
@@ -279,7 +279,7 @@ namespace eval ::lx200pad {
 
       #--- Cree la fenetre .lx200pad de niveau le plus haut
       toplevel .lx200pad -class Toplevel -bg $colorlx200(backpad)
-      wm geometry .lx200pad $geomlx200(larg)x$geomlx200(long)+$positionxy
+      wm geometry .lx200pad $geomlx200(larg)x$geomlx200(long)$positionxy
       wm resizable .lx200pad 0 0
       wm title .lx200pad $caption(lx200pad,titre)
       wm protocol .lx200pad WM_DELETE_WINDOW "::lx200pad::deletePluginInstance"
