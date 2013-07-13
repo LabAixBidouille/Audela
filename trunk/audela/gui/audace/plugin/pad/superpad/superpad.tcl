@@ -297,12 +297,7 @@ namespace eval ::superpad {
       wm geometry .superpad $geompad(larg)x$geompad(long)$positionxy
       wm resizable .superpad 0 0
       wm title .superpad $caption(superpad,titre)
-
-      #--- Destroy the toplevel window with the upper right cross
-      #--- Detruit la fenetre principale avec la croix en haut a droite
-      bind .superpad <Destroy> {
-         ::superpad::deletePluginInstance
-      }
+      wm protocol .superpad WM_DELETE_WINDOW ::superpad::deletePluginInstance
 
       # =========================================
       # === Setting subwindows

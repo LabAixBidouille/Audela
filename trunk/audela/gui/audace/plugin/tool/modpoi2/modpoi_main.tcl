@@ -17,7 +17,7 @@ proc ::modpoi2::main::run { visuNo {tkbase ""} } {
    variable private
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(modpoi2,position) ] }  { set ::conf(modpoi2,position) "440x500+250+75" }
+   if { ! [ info exists ::conf(modpoi2,geometry) ] } { set ::conf(modpoi2,geometry) "440x500+250+75" }
 
    set private($visuNo,this)   ".audace.modpoi2_$visuNo"
    set private($visuNo,model,fileName)     ""
@@ -40,7 +40,7 @@ proc ::modpoi2::main::run { visuNo {tkbase ""} } {
    if { [winfo exists $private($visuNo,this) ] == 0 } {
       #--- j'affiche la fenetre
       ::confGenerique::run $visuNo $private($visuNo,this) [namespace current] -modal 0 \
-         -geometry $::conf(modpoi2,position) \
+         -geometry $::conf(modpoi2,geometry) \
          -resizable 1
       wm minsize $private($visuNo,this) 440 500
       ::confTel::addMountListener "::modpoi2::main::onChangeMount $visuNo"
@@ -117,7 +117,7 @@ proc ::modpoi2::main::closeWindow { visuNo } {
    ::confTel::removeMountListener "::modpoi2::main::onChangeMount $visuNo"
 
    #--- je sauve la taille et la position de la fenetre
-   set ::conf(modpoi2,position) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
+   set ::conf(modpoi2,geometry) [winfo geometry [winfo toplevel $private($visuNo,frm) ]]
 
    #--- je supprime le menubar et toutes ses entrees
    Menubar_Delete "modpoiMenu${visuNo}"

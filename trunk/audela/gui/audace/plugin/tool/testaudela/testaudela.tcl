@@ -117,7 +117,7 @@ proc ::testaudela::createPluginInstance { { in ".audace" } { visuNo 1 } } {
    package require tcltest 2.0
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists conf(testaudela,position) ] }             { set conf(testaudela,position)             "400x400+100+50" }
+   if { ! [ info exists conf(testaudela,geometry) ] }             { set conf(testaudela,geometry)             "400x400+100+50" }
    if { ! [ info exists conf(testaudela,resultFile)] }            { set conf(testaudela,resultFile)           "testresult.log" }
    if { ! [ info exists conf(testaudela,rep_images) ] }           { set conf(testaudela,rep_images)           "$::audace(rep_images)/testaudela" }
    if { ! [ info exists conf(testaudela,testList) ] }             { set conf(testaudela,testList)             "audace_affichage.test" }
@@ -220,7 +220,7 @@ proc ::testaudela::fillConfigPage { frm visuNo } {
 
    #--- Je position la fenetre
    wm resizable [ winfo toplevel $private(frm) ] 1 1
-   wm geometry [ winfo toplevel $private(frm) ] $::conf(testaudela,position)
+   wm geometry [ winfo toplevel $private(frm) ] $::conf(testaudela,geometry)
 
    #--- je cree le menu
    set private($visuNo,menu) "[winfo toplevel $private(frm)].menubar"
@@ -634,7 +634,7 @@ proc ::testaudela::closeWindow { visuNo } {
    image delete "im_test0"
    image delete "im_test1"
 
-   set ::conf(testaudela,position) [winfo geometry [winfo toplevel $private(frm)]]
+   set ::conf(testaudela,geometry) [winfo geometry [winfo toplevel $private(frm)]]
    #--- j'efface le resultat des tests s'il existe
    file delete -force [file join $::audace(rep_log) $::conf(testaudela,resultFile)]
    #--- je supprime le menubar et toutes ses entrees

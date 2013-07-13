@@ -99,8 +99,8 @@ proc ::ouranos::initPlugin { } {
    if { ! [ info exists conf(ouranos,tjrsvisible) ] }   { set conf(ouranos,tjrsvisible)  "0" }
 
    #--- Initialisation des fenetres d'affichage des coordonnees AD et Dec.
-   if { ! [ info exists conf(ouranos,wmgeometry) ] }    { set conf(ouranos,wmgeometry)    "200x70+646+240" }
-   if { ! [ info exists conf(ouranos,wmgeometryX10) ] } { set conf(ouranos,wmgeometryX10) "850x500+0+0" }
+   if { ! [ info exists conf(ouranos,geometry) ] }      { set conf(ouranos,geometry)     "200x70+646+240" }
+   if { ! [ info exists conf(ouranos,X10,geometry) ] }  { set conf(ouranos,X10,geometry) "850x500+0+0" }
 }
 
 #
@@ -116,8 +116,8 @@ proc ::ouranos::confToWidget { } {
       ::ouranos::init_ouranos
    }
    set private(port)          $conf(ouranos,port)
-   set private(wmgeometry)    $conf(ouranos,wmgeometry)
-   set private(wmgeometryX10) $conf(ouranos,wmgeometryX10)
+   set private(wmgeometry)    $conf(ouranos,geometry)
+   set private(wmgeometryX10) $conf(ouranos,X10,geometry)
 }
 
 #
@@ -149,10 +149,10 @@ proc ::ouranos::recupPosDim { } {
 
    if { [ winfo exists .tjrsvisible ] } {
       set private(wmgeometry) [ wm geometry .tjrsvisible ]
-      set conf(ouranos,wmgeometry) $private(wmgeometry)
+      set conf(ouranos,geometry) $private(wmgeometry)
    } elseif { [ winfo exists .tjrsvisibleX10 ] } {
       set private(wmgeometryX10) [ wm geometry .tjrsvisibleX10 ]
-      set conf(ouranos,wmgeometryX10) $private(wmgeometryX10)
+      set conf(ouranos,X10,geometry) $private(wmgeometryX10)
    }
 }
 

@@ -51,7 +51,7 @@ namespace eval skybot_Statut {
       global voconf
 
       set voconf(geometry_statut) [ wm geometry $This ]
-      set conf(vo_tools,position_statut) $voconf(geometry_statut)
+      set conf(vo_tools,statut,geometry) $voconf(geometry_statut)
    }
 
    #
@@ -66,12 +66,12 @@ namespace eval skybot_Statut {
       global voconf
 
       #--- initConf
-      if { ! [ info exists conf(vo_tools,position_statut) ] } {
-         set conf(vo_tools,position_statut) "670x280+80+40"
+      if { ! [ info exists conf(vo_tools,statut,geometry) ] } {
+         set conf(vo_tools,statut,geometry) "670x280+80+40"
       }
 
       #--- confToWidget
-      set voconf(position_statut) $conf(vo_tools,position_statut)
+      set voconf(geometry_statut) $conf(vo_tools,statut,geometry)
 
       #---
       if { [ winfo exists $This ] } {
@@ -97,7 +97,7 @@ namespace eval skybot_Statut {
          set votable [::dom::parse $xml]
          #--- Cree la fenetre d'affichage du resultat
          toplevel $This -class Toplevel
-         wm geometry $This $voconf(position_statut)
+         wm geometry $This $voconf(geometry_statut)
          wm resizable $This 1 1
          wm title $This $caption(statut,main_title)
          wm protocol $This WM_DELETE_WINDOW { ::skybot_Statut::fermer }

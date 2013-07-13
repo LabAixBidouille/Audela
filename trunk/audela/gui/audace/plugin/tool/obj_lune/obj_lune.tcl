@@ -108,7 +108,7 @@ namespace eval ::obj_lune {
       global conf obj_lune
 
       #--- Recuperation de la position et de la dimension de la fenetre
-      set conf(obj_lune,wmgeometry) [ wm geometry $This ]
+      set conf(obj_lune,geometry) [ wm geometry $This ]
       #--- Supprime les visu
       visu::delete $obj_lune(visuNoCartePage)
       visu::delete $obj_lune(visuNoCarteLibrationPage)
@@ -146,8 +146,8 @@ namespace eval ::obj_lune {
       }
 
       toplevel $This
-      if { [ info exists conf(obj_lune,wmgeometry) ] == "1" } {
-         wm geometry $This $conf(obj_lune,wmgeometry)
+      if { [ info exists conf(obj_lune,geometry) ] == "1" } {
+         wm geometry $This $conf(obj_lune,geometry)
       } else {
          wm geometry $This 620x480+10+10
       }

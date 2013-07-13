@@ -78,7 +78,7 @@ proc ::t193pad::getPluginOS { } {
 proc ::t193pad::initConf { } {
    global conf
 
-   if { ! [ info exists conf(t193pad,wmgeometry) ] }         { set conf(t193pad,wmgeometry)         "240x520+643+180" }
+   if { ! [ info exists conf(t193pad,geometry) ] }           { set conf(t193pad,geometry)           "240x520+643+180" }
    if { ! [ info exists conf(t193pad,focuserLabel) ] }       { set conf(t193pad,focuserLabel)       "" }
    if { ! [ info exists conf(t193pad,radecPulse,enabled) ] } { set conf(t193pad,radecPulse,enabled) 0 }
    if { ! [ info exists conf(t193pad,radecPulse,value) ] }   { set conf(t193pad,radecPulse,value)   1 }
@@ -174,7 +174,7 @@ proc ::t193pad::deletePluginInstance { } {
    #--- Ferme la raquette
    if { [ info exists This ] == 1 } {
       if { [ winfo exists $This ] == 1 } {
-         set conf(t193pad,wmgeometry) [ wm geometry $This ]
+         set conf(t193pad,geometry) [ wm geometry $This ]
          destroy $This
       }
    }
@@ -227,8 +227,8 @@ proc ::t193pad::createDialog { } {
    #--- Cree la fenetre This de niveau le plus haut
    toplevel $This -class toplevel -bg $color(blue_pad)
    wm title $This $caption(t193pad,titre)
-   if { [ info exists conf(t193pad,wmgeometry) ] == "1" } {
-      wm geometry $This $conf(t193pad,wmgeometry)
+   if { [ info exists conf(t193pad,geometry) ] == "1" } {
+      wm geometry $This $conf(t193pad,geometry)
    } else {
       wm geometry $This 240x582+647+150
    }
