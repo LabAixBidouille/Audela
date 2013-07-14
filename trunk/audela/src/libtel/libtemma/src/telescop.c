@@ -207,16 +207,9 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       temma_settsl(tel);
    }
 
-   /* set sideral rate */
-   temma_stellar_rate(tel);
-
    /* update E/W for the german mount */
    temma_coord(tel,ssres);
    
-   /*temma_set_comet_rate(tel,rsp,dsp);
-   temma_get_comet_rate(tel,&ra_speed,&dec_speed);
-   mytel_logConsole(tel, "ra_speed=%d dec_speed=%d\n",ra_speed,dec_speed);*/
-
    return 0;
 }
 
@@ -898,7 +891,9 @@ int temma_solar_tracking(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"LK\r\n\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* --- pas de reponse sur le port serie */
-   mytel_logConsole(tel, "Solar traking\n");
+   if ( tel->consoleLog >= 1 ) {
+      mytel_logConsole(tel, "Solar traking\n");
+   }
    return 0;
 }
 
@@ -977,7 +972,9 @@ int temma_get_comet_rate(struct telprop *tel,int *ra_speed,int *dec_speed)
       ss[k-kdeb]='\0';
       *dec_speed=atoi(ss);
    }
-   mytel_logConsole(tel, "Comete speed ra=%d seconds/24h dec=%d arcmin/24h\n",*ra_speed,*dec_speed);
+   if ( tel->consoleLog >= 1 ) {
+      mytel_logConsole(tel, "Comete speed ra=%d seconds/24h dec=%d arcmin/24h\n",*ra_speed,*dec_speed);
+   }
    return 0;
 }
 
