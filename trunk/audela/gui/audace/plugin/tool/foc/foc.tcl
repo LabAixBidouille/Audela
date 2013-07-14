@@ -280,64 +280,6 @@ namespace eval ::foc {
       }
    }
 
-   #------------   fenetre affichant les valeurs  --------------
-
-   #------------------------------------------------------------
-   # qualiteFoc
-   #    affiche la valeur des parametres dans une fenetre
-   # Parametres : les valeurs a afficher
-   #------------------------------------------------------------
-   proc qualiteFoc { inten fwhmx fwhmy contr } {
-      global audace caption conf panneau
-
-      set this $audace(base).parafoc
-
-      #--- Fenetre d'affichage des parametres de la foc
-      if [ winfo exists $this ] {
-         fermeQualiteFoc
-      }
-
-      #--- Creation de la fenetre
-      toplevel $this
-      wm transient $this $audace(base)
-      wm resizable $this 0 0
-      wm title $this "$caption(foc,focalisation)"
-      wm geometry $this $conf(parafoc,position)
-      wm protocol $this WM_DELETE_WINDOW "fermeQualiteFoc"
-
-      #--- Cree les etiquettes
-      label $this.lab1 -text "$panneau(foc,compteur)"
-      pack $this.lab1 -padx 10 -pady 2
-      label $this.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
-      pack $this.lab2 -padx 5 -pady 2
-      label $this.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
-      pack $this.lab3 -padx 5 -pady 2
-      label $this.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
-      pack $this.lab4 -padx 5 -pady 2
-      label $this.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
-      pack $this.lab5 -padx 5 -pady 2
-      update
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $this
-   }
-
-   #------------------------------------------------------------
-   # fermeQualiteFoc
-   #    ferme la fenetre de la qualite et sauve sa position
-   # Parametre : chemin de la fenetre
-   #------------------------------------------------------------
-   proc fermeQualiteFoc { } {
-      global audace conf
-
-      set w $audace(base).parafoc
-
-      #--- Determination de la position de la fenetre
-      regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(parafoc,position)
-
-      #--- Fermeture de la fenetre
-      destroy $w
-   }
 }
 
 #------------   gestion du graphique classique -----------------
@@ -395,11 +337,13 @@ proc visuf { base win_name title } {
    ::blt::vector create ::vy$win_name -watchunset 1
 
    ::blt::graph $frm
-   $frm element create line1 -xdata ::vx -ydata ::vy$win_name
+   $frm element create line1 -xdata ::vx -ydata ::vy$win_name \
+      -linewidth 1 -color black -symbol "" -hide no
    $frm axis configure x -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
    $frm axis configure x2 -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
-   $frm axis configure y -title "$title" -hide no -min 0 -max 1
-   $frm axis configure y2 -hide no -min 0 -max 1
+   #--   laisse flotter le minimum et le maximum
+   $frm axis configure y -title "$title" -hide no -min {} -max {}
+   $frm axis configure y2 -hide no -min {} -max {}
    $frm legend configure -hide yes
    $frm configure -height 140
    pack $frm
