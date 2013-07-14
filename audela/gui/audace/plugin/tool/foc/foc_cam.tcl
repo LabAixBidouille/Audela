@@ -18,8 +18,9 @@ namespace eval ::foc {
       #---
       if { [ ::cam::list ] != "" } {
          #--- Gestion graphique des boutons
-         $This.fra2.but1 configure -relief groove -state disabled
-         $This.fra2.but2 configure -text $panneau(foc,stop)
+         $This.fra2.but1 configure -relief groove -state disabled ;  #--- Bouton GO
+         $This.fra2.but2 configure -text $panneau(foc,stop) ;        #--- Bouton STOP/RAZ
+         $This.fra4.focuser.list configure -state disabled ;         #--- Combobox de choix du focuser
          update
          #--- Applique le binning demande si la camera possede bien ce binning
          set binningCamera "2x2"
@@ -73,11 +74,9 @@ namespace eval ::foc {
          ::foc::cmdAcq
          #--- Gestion graphique des boutons
          if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
-            $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
-            $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)
-         } else {
-            $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)
+            $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal ; #--- Bouton GO
          }
+         $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) ; #--- Bouton STOP/RAZ
          update
       } else {
          ::confCam::run
@@ -133,6 +132,12 @@ namespace eval ::foc {
 
       #--- Informations sur l'image fenetree
       if { $panneau(foc,actuel) == "$caption(foc,fenetre)" } {
+
+         #--   si aucun graphique d'ouvert, actionne le bouton GRAPHE
+         if {![winfo exists $audace(base).visufoc] && ![winfo exists $audace(base).hfd]} {
+            $This.fra3.but1 invoke
+         }
+
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
             $This.fra2.but1 configure -relief groove -text $panneau(foc,go)
             $This.fra2.but2 configure -text $panneau(foc,stop)
@@ -150,27 +155,36 @@ namespace eval ::foc {
             set box [ list 1 1 $naxis1 $naxis2 ]
             lassign [ $buffer fwhm $box ] fwhmx fwhmy
 
-            #--- Graphique
+            #--- memorise les donnees pour le fichier log
             append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
 
+            #--   met a jour les vecteurs
             ::vx append $panneau(foc,compteur)
+            ::vyg_inten append $inten
             ::vyg_fwhmx append $fwhmx
             ::vyg_fwhmy append $fwhmy
-            ::vyg_inten append $inten
             ::vyg_contr append $contr
 
-            set w $audace(base).visufoc.g_fwhmx
-            set lx [ $w axis limits x ]
+            #--   met a jour les graphiques
+            set w $audace(base).visufoc
 
-            #--- Affichage des 20 dernieres mesures glissantes
-            set index [ lindex $x [ expr [ llength $x ] - 1 ] ]
-            if { $index > 20 } {
-               $w axis configure x  -min [ expr $index - 19 ] -max $index
-               $w axis configure x2 -min [ expr $index - 19 ] -max $index
+            #--- Affichage des 19 dernieres mesures glissantes+1vide
+            if { [::vx length] > 19 } {
+               set w $audace(base).visufoc
+               lassign [ $w.g_fwhmx axis limits x ] xmin xmax
+               set xmin [expr { $xmin+1 }]
+               set xmax [expr { $xmax+1 }]
+               foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
+                  $w.$childGraph axis configure x -min $xmin -max $xmax
+                  $w.$childGraph axis configure x2 -min $xmin -max $xmax
+               }
             }
 
-            set ly [ $w axis limits y ]
-            $w axis configure y2 -min [ lindex $ly 0 ] -max [ lindex $ly 1 ]
+            #--- ajuste l'échelle de droite a celle de gauche
+            foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
+               lassign [ $w.$childGraph axis limits y ] ymin ymax
+               $w.$childGraph axis configure y2 -min $ymin -max $ymax
+            }
 
             #--- Valeurs a l'ecran
             ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
@@ -396,6 +410,7 @@ namespace eval ::foc {
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
          }
+         $This.fra4.focuser.list configure -state normal ; # combobox de choix du focuser
          update
       } else {
          ::confCam::run
@@ -416,6 +431,64 @@ namespace eval ::foc {
          puts -nonewline $fileId $panneau(foc,fichier)
          close $fileId
       }
+   }
+
+   #------------   fenetre affichant les valeurs  --------------
+
+   #------------------------------------------------------------
+   # qualiteFoc
+   #    affiche la valeur des parametres dans une fenetre
+   # Parametres : les valeurs a afficher
+   #------------------------------------------------------------
+   proc qualiteFoc { inten fwhmx fwhmy contr } {
+      global audace caption conf panneau
+
+      set this $audace(base).parafoc
+
+      #--- Fenetre d'affichage des parametres de la foc
+      if [ winfo exists $this ] {
+         fermeQualiteFoc
+      }
+
+      #--- Creation de la fenetre
+      toplevel $this
+      wm transient $this $audace(base)
+      wm resizable $this 0 0
+      wm title $this "$caption(foc,focalisation)"
+      wm geometry $this $conf(parafoc,position)
+      wm protocol $this WM_DELETE_WINDOW { ::foc::fermeQualiteFoc }
+      #--- Cree les etiquettes
+      label $this.lab1 -text "$panneau(foc,compteur)"
+      pack $this.lab1 -padx 10 -pady 2
+      label $this.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
+      pack $this.lab2 -padx 5 -pady 2
+      label $this.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
+      pack $this.lab3 -padx 5 -pady 2
+      label $this.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
+      pack $this.lab4 -padx 5 -pady 2
+      label $this.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
+      pack $this.lab5 -padx 5 -pady 2
+      update
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
+   }
+
+   #------------------------------------------------------------
+   # fermeQualiteFoc
+   #    ferme la fenetre de la qualite et sauve sa position
+   # Parametre : chemin de la fenetre
+   #------------------------------------------------------------
+   proc fermeQualiteFoc { } {
+      global audace conf
+
+      set w $audace(base).parafoc
+
+      #--- Determination de la position de la fenetre
+      regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(parafoc,position)
+
+      #--- Fermeture de la fenetre
+      destroy $w
    }
 
 }
