@@ -256,6 +256,9 @@ namespace eval ::foc {
          return
       }
 
+      #--   raccourci
+      set w $audace(base).progress_pose
+
       #--- Recuperation de la position de la fenetre
       ::foc::closePositionAvancementPose
 
@@ -263,52 +266,52 @@ namespace eval ::foc {
       set cpt "100"
 
       #---
-      if { [ winfo exists $audace(base).progress_pose ] != "1" } {
+      if { [ winfo exists $w ] != "1" } {
 
          #--- Cree la fenetre toplevel
-         toplevel $audace(base).progress_pose
-         wm transient $audace(base).progress_pose $audace(base)
-         wm resizable $audace(base).progress_pose 0 0
-         wm title $audace(base).progress_pose "$caption(foc,en_cours)"
-         wm geometry $audace(base).progress_pose $conf(foc,avancement,position)
+         toplevel $w
+         wm transient $w $audace(base)
+         wm resizable $w 0 0
+         wm title $w "$caption(foc,en_cours)"
+         wm geometry $w $conf(foc,avancement,position)
 
          #--- Cree le widget et le label du temps ecoule
-         label $audace(base).progress_pose.lab_status -text "" -justify center
-         pack $audace(base).progress_pose.lab_status -side top -fill x -expand true -pady 5
+         label $w.lab_status -text "" -justify center
+         pack $w.lab_status -side top -fill x -expand true -pady 5
 
          #---
          if { $panneau(foc,demande_arret) == "1" } {
-            $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
+            $w.lab_status configure -text "$caption(foc,numerisation)"
          } else {
             if { $t < "0" } {
-               destroy $audace(base).progress_pose
+               destroy $w
             } elseif { $t > "0" } {
-               $audace(base).progress_pose.lab_status configure -text "$t $caption(foc,sec) / \
+               $w.lab_status configure -text "$t $caption(foc,sec) / \
                   [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(foc,sec)"
                set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
                set cpt [ expr 100 - $cpt ]
             } else {
-               $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
+               $w.lab_status configure -text "$caption(foc,numerisation)"
             }
          }
 
          #---
          if { [ winfo exists $audace(base).progress_pose ] == "1" } {
             #--- Cree le widget pour la barre de progression
-            frame $audace(base).progress_pose.cadre -width 200 -height 30 -borderwidth 2 -relief groove
-            pack $audace(base).progress_pose.cadre -in $audace(base).progress_pose -side top \
+            frame $w.cadre -width 200 -height 30 -borderwidth 2 -relief groove
+            pack $w.cadre -in $w -side top \
                -anchor center -fill x -expand true -padx 8 -pady 8
 
             #--- Affiche de la barre de progression
-            frame $audace(base).progress_pose.cadre.barre_color_invariant -height 26 -bg $color(blue)
-            place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+            frame $w.cadre.barre_color_invariant -height 26 -bg $color(blue)
+            place $w.cadre.barre_color_invariant -in $w.cadre \
                -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
             update
          }
 
          #--- Mise a jour dynamique des couleurs
-         if { [ winfo exists $audace(base).progress_pose ] == "1" } {
-            ::confColor::applyColor $audace(base).progress_pose
+         if { [ winfo exists $w ] == "1" } {
+            ::confColor::applyColor $w
          }
 
       } else {
@@ -323,19 +326,19 @@ namespace eval ::foc {
 
             if { $panneau(foc,demande_arret) == "0" } {
                if { $t > "0" } {
-                  $audace(base).progress_pose.lab_status configure -text "$t $caption(foc,sec) / \
+                  $w.lab_status configure -text "$t $caption(foc,sec) / \
                      [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(foc,sec)"
                   set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
                   set cpt [ expr 100 - $cpt ]
                } else {
-                  $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
+                  $w.lab_status configure -text "$caption(foc,numerisation)"
                }
             } else {
                #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
-               $audace(base).progress_pose.lab_status configure -text "$caption(foc,numerisation)"
+               $w.lab_status configure -text "$caption(foc,numerisation)"
             }
             #--- Affiche de la barre de progression
-            place $audace(base).progress_pose.cadre.barre_color_invariant -in $audace(base).progress_pose.cadre \
+            place $w.cadre.barre_color_invariant -in $w.cadre \
                -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
             update
 
@@ -347,14 +350,13 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # closePositionAvancementPose
-   #    ferme la fenetre d'avancement de la pose st sauve sa position
+   #    ferme la fenetre d'avancement de la pose et sauve sa position
    #------------------------------------------------------------
    proc closePositionAvancementPose { } {
       global audace conf
 
-      set w $audace(base).progress
-
-      if [ winfo exists $audace(base).progress_pose ] {
+      set w $audace(base).progress_pose
+      if [ winfo exists $w ] {
          #--- Determination de la position de la fenetre
          regsub {([0-9]+x[0-9]+)} [ wm geometry $w ] "" conf(foc,avancement,position)
 
