@@ -2,12 +2,11 @@
 # Fichier : focHFD.tcl
 # Description : Script de mise en oeuvre du HFD
 # Compatibilité : USB_Focus et AudeCom
-# Auteurs : Raymond ZACHANTKE
+# Auteur : Raymond ZACHANTKE
 # Mise à jour $Id$
 #
 
 namespace eval ::foc {
-   package provide foc 1.0
 
    #---------------------------------------------------------------------------
    #  ::foc::traceCurve : processus de mesure pour differentes positions
