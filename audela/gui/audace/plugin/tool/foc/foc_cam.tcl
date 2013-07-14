@@ -2,7 +2,7 @@
 # Fichier : foc_cam.tcl
 # Description : Script de toutes les commandes concernant l'acquisition
 # Auteurs : Alain KLOTZ, Robert DELMAS et Raymond ZACHANTKE
-# Mise à jour $Id$
+# Mise Ã  jour $Id$
 #
 
 namespace eval ::foc {
