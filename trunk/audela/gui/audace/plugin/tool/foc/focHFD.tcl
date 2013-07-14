@@ -6,6 +6,9 @@
 # Mise à jour $Id$
 #
 
+namespace eval ::foc {
+   package provide foc 1.0
+
    #---------------------------------------------------------------------------
    #  ::foc::traceCurve : processus de mesure pour differentes positions
    #---------------------------------------------------------------------------
@@ -446,4 +449,6 @@
       #--   cree le graphique
       ::foc::createHFDGraphe $visuNo $this
    }
+
+}
 
