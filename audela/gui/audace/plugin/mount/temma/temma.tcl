@@ -392,7 +392,7 @@ proc ::temma::configureMonture { } {
       } elseif { $conf(temma,type) == "1" } {
          tel$telNo driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
          lassign [ tel$telNo driftspeed ] drift_ra drift_dec
-         ::console::affiche_resultat "$caption(temma,ctl_mobile:)\n\n"
+         ::console::affiche_resultat "$caption(temma,mobile_comete)\n\n"
          ::console::affiche_resultat "$caption(temma,mobile_ad) $caption(temma,2points) $drift_ra\n"
          ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points) $drift_dec\n"
       } elseif { $conf(temma,type) == "2" } {
