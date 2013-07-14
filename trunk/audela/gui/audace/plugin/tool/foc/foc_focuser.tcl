@@ -1,12 +1,11 @@
 #
 # Fichier : foc_focuser.tcl
 # Description : Script de toutes les commandes concernant les focaliseurs
-# Auteurs : Raymond ZACHANTKE
+# Auteurs : Alain KLOTZ, Robert DELMAS et Raymond ZACHANTKE
 # Mise à jour $Id$
 #
 
 namespace eval ::foc {
-   package provide foc 1.0
 
    #------------------------------------------------------------
    # cmdSpeed
