@@ -121,16 +121,11 @@ int temma_suivi_marche (struct telprop *tel);
 int temma_switchMountSide(struct telprop *tel,char *sens);
 int temma_v_firmware (struct telprop *tel) ;
 
-
-
 int temma_angle_ra2hms(char *in, char *out);
 int temma_angle_dec2dms(char *in, char *out);
 int temma_angle_hms2ra(struct telprop *tel, char *in, char *out);
 int temma_angle_dms2dec(struct telprop *tel, char *in, char *out);
 int temma_delete(struct telprop *tel);
-
-int temma_setderive(struct telprop *tel,int var,int vdec);
-int temma_getderive(struct telprop *tel,int *var,int *vdec);
 
 int temma_settsl(struct telprop *tel);
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec);
