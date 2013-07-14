@@ -64,9 +64,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,ctl_mobile)                 "Contrôle de la vitesse de suivi"
    set caption(temma,mobile_etoile)              "Suivi sidéral"
    set caption(temma,mobile_soleil)              "Suivi solaire"
-   set caption(temma,ctl_mobile:)                "Contrôle de la vitesse de suivi :"
-   set caption(temma,mobile_ad)                  "Vitesse en ascension droite"
-   set caption(temma,mobile_dec)                 "Vitesse en déclinaison"
+#--	modif RZ
+   set caption(temma,ctl_mobile:)                "Suivi cométaire"
+   set caption(temma,mobile_ad)                  "Dérive quotidienne en AD"
+   set caption(temma,mobile_dec)                 "Dérive quotidienne en Dec"
+#--	modif RZ
    set caption(temma,position_telescope)         "Position du télescope :"
    set caption(temma,change_position_telescope)  "Changer la position d'origine du télescope :"
    set caption(temma,tracesConsole)              "Traces dans la Console"
