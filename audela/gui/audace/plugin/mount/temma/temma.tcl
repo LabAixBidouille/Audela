@@ -115,7 +115,7 @@ proc ::temma::confToWidget { } {
    set private(modele)     [ lindex "$caption(temma,modele_1) $caption(temma,modele_2) $caption(temma,modele_3)" $conf(temma,modele) ]
    set private(suivi_ad)   $conf(temma,suivi_ad)
    set private(suivi_dec)  $conf(temma,suivi_dec)
-   set private(type)       $conf(temma,type)
+   set private(type)       $conf(temma,type) ; # 0=sideral, 1=comete, 2=solaire
    set private(debug)      $conf(temma,debug)
    set private(raquette)   $conf(raquette)
 }
@@ -370,14 +370,14 @@ proc ::temma::configureMonture { } {
       #--- Interroge et recoit la latitude
       set latitude_temma [ tel$telNo getlatitude ]
       #--- Mise en forme de la latitude pour affichage dans la Console
-      set latitude_temma [ mc_angle2dms $latitude_temma 90 nozero 1 auto list ]
-      if { [ lindex $latitude_temma 0 ] < 0 } {
-         set nordsud "S"
-         set latitude_temma "S [expr abs([ lindex $latitude_temma 0 ])]° [ lindex $latitude_temma 1 ]' [ lindex $latitude_temma 2 ]''"
+      if {$latitude_temma > 0} {
+         set hemisphere N
       } else {
-         set nordsud "N"
-         set latitude_temma "N [expr abs([ lindex $latitude_temma 0 ])]° [ lindex $latitude_temma 1 ]' [ lindex $latitude_temma 2 ]''"
+         set hemisphere S
       }
+      set latitude_temma [ mc_angle2dms [expr { abs($latitude_temma) }] 90 nozero 1 auto list ]
+      lassign  [ mc_angle2dms $latitude_temma 90 nozero 1 auto list ] deg min sec
+      set latitude_temma [format "%s %i° %02i' %02.2f\"" $hemisphere $deg $min $sec]
       #--- Affichage de la latitude
       ::console::affiche_entete "$caption(temma,init_module)\n"
       ::console::affiche_entete "$caption(temma,latitude) $latitude_temma\n\n"
@@ -385,28 +385,29 @@ proc ::temma::configureMonture { } {
       tel$telNo encoder "1"
       #--- Force la mise en marche des moteurs
       tel$telNo radec motor on
-      #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
-      if { $conf(temma,liaison) == "1" } {
-         tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
-      } else {
-         tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
-      }
-      #--- Correction de la vitesse de suivi en ad et en dec
+      #--- Correction de la vitesse de derive en ad et en dec (cometes) en 24h
       if { $conf(temma,type) == "0" } {
          tel$telNo driftspeed 0 0
          ::console::affiche_resultat "$caption(temma,mobile_etoile)\n\n"
       } elseif { $conf(temma,type) == "1" } {
          tel$telNo driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
-         set correction_suivi [ tel$telNo driftspeed ]
-         ::console::affiche_resultat "$caption(temma,ctl_mobile:)\n"
-         ::console::affiche_resultat "$caption(temma,mobile_ad) $caption(temma,2points)\
-            [ lindex $correction_suivi 0 ]\n"
-         ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points)\
-            [ lindex $correction_suivi 1 ]\n\n"
+         lassign [ tel$telNo driftspeed ] drift_ra drift_dec
+         ::console::affiche_resultat "$caption(temma,ctl_mobile:)\n\n"
+         ::console::affiche_resultat "$caption(temma,mobile_ad) $caption(temma,2points) $drift_ra\n"
+         ::console::affiche_resultat "$caption(temma,mobile_dec) $caption(temma,2points) $drift_dec\n"
       } elseif { $conf(temma,type) == "2" } {
          tel$telNo solartracking
          ::console::affiche_resultat "$caption(temma,mobile_soleil)\n\n"
       }
+      #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
+      if { $conf(temma,liaison) == "1" } {
+         set correc_Dec $conf(temma,correc_AD)
+      } else {
+         set correc_Dec $conf(temma,correc_Dec)
+      }
+      lassign [tel$telNo correctionspeed $conf(temma,correc_AD) $correc_Dec ] cor_AD cor_Dec
+      ::console::affiche_resultat "$caption(temma,correc_AD) $caption(temma,2points) $cor_AD\n"
+      ::console::affiche_resultat "$caption(temma,correc_Dec) $caption(temma,2points) $cor_Dec\n"
       #--- Affichage de la position du telescope
       if { [ ::temma::isReady ] == 1 } {
          ::telescope::monture_allemande
