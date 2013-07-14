@@ -17,6 +17,7 @@ namespace eval ::foc {
    source [ file join [file dirname [info script]] foc.cap ]
    source [ file join [file dirname [info script]] focHFD.tcl ]
    source [ file join [file dirname [info script]] foc_focuser.tcl ]
+   source [ file join [file dirname [info script]] foc_cam.tcl ]
 
    #------------------------------------------------------------
    # getPluginTitle
@@ -183,13 +184,12 @@ namespace eval ::foc {
 
          #--   configure le bouton 'Graphe"
          $This.fra3.but1 configure -command "::foc::initFocHFD"
-
          #--   switch les graphes
          if {[winfo exists $::audace(base).visufoc]} {
             #--   ferme le graphique normal
             fermeGraphe
             #--   ouvre l'autre graphique
-            ::foc::initFocHFD
+            initFocHFD
          }
       } else {
 
@@ -210,7 +210,7 @@ namespace eval ::foc {
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
             #--   ferme le graphique hfd
-            ::foc::closeHFDGraphe
+            closeHFDGraphe
             #--   ouvre la graphique normal
             focGraphe
          }
