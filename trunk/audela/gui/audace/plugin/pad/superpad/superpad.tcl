@@ -81,7 +81,7 @@ namespace eval ::superpad {
       if { ! [ info exists conf(superpad,padsize) ] }      { set conf(superpad,padsize)      "0.5" }
       if { ! [ info exists conf(superpad,centerspeed) ] }  { set conf(superpad,centerspeed)  "140" }
       if { ! [ info exists conf(superpad,position) ] }     { set conf(superpad,position)     "+100+100" }
-      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "" }
+      if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "focuserlx200" }
 
       return
    }

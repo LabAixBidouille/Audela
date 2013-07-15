@@ -77,7 +77,7 @@ namespace eval telpad {
       global conf
 
       if { ! [ info exists conf(telpad,geometry) ] }     { set conf(telpad,geometry)     "157x254+657+252" }
-      if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "" }
+      if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "focuserlx200" }
 
       return
    }

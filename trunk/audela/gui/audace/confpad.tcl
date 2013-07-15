@@ -21,7 +21,7 @@ proc ::confPad::init { } {
    source [ file join "$audace(rep_caption)" confpad.cap ]
 
    #--- cree les variables dans conf(..) si elles n'existent pas
-   if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
+   if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "superpad" }
    if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x240+15+15" }
 
    #--- Initialise les variables locales
