@@ -17,11 +17,13 @@ namespace eval ::foc {
 
       #---
       if { [ ::cam::list ] != "" } {
+
          #--- Gestion graphique des boutons
          $This.fra2.but1 configure -relief groove -state disabled ;  #--- Bouton GO
          $This.fra2.but2 configure -text $panneau(foc,stop) ;        #--- Bouton STOP/RAZ
          $This.fra4.focuser.list configure -state disabled ;         #--- Combobox de choix du focuser
          update
+
          #--- Applique le binning demande si la camera possede bien ce binning
          set binningCamera "2x2"
          if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
@@ -30,6 +32,7 @@ namespace eval ::foc {
             set panneau(foc,bin) "1"
          }
          set panneau(foc,bin_centrage) $panneau(foc,bin)
+
          #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
          if { [ info exists panneau(foc,actuel) ] == "0" } {
             set panneau(foc,actuel) "$caption(foc,centrage)"
@@ -66,12 +69,20 @@ namespace eval ::foc {
             }
             set panneau(foc,actuel) "$caption(foc,fenetre)"
             set panneau(foc,boucle) "$caption(foc,on)"
+            if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
+               focGraphe
+            } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
+               ::foc::initFocHFD
+            }
          }
          cam$audace(camNo) window $panneau(foc,window)
+
          #--- Suppression de la zone selectionnee avec la souris
          ::confVisu::deleteBox $audace(visuNo)
+
          #--- Appel a la fonction d'acquisition
          ::foc::cmdAcq
+
          #--- Gestion graphique des boutons
          if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal ; #--- Bouton GO
@@ -133,16 +144,15 @@ namespace eval ::foc {
       #--- Informations sur l'image fenetree
       if { $panneau(foc,actuel) == "$caption(foc,fenetre)" } {
 
-         #--   si aucun graphique d'ouvert, actionne le bouton GRAPHE
-         if {![winfo exists $audace(base).visufoc] && ![winfo exists $audace(base).hfd]} {
-            $This.fra3.but1 invoke
-         }
-
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
+
+            #--- Gestion graphique des boutons
             $This.fra2.but1 configure -relief groove -text $panneau(foc,go)
             $This.fra2.but2 configure -text $panneau(foc,stop)
             update
+
             incr panneau(foc,compteur)
+
             #--- Statistiques
             set s [ stat ]
             set maxi [ lindex $s 2 ]
@@ -155,42 +165,24 @@ namespace eval ::foc {
             set box [ list 1 1 $naxis1 $naxis2 ]
             lassign [ $buffer fwhm $box ] fwhmx fwhmy
 
-            #--- memorise les donnees pour le fichier log
-            append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
-
-            #--   met a jour les vecteurs
-            ::vx append $panneau(foc,compteur)
-            ::vyg_inten append $inten
-            ::vyg_fwhmx append $fwhmx
-            ::vyg_fwhmy append $fwhmy
-            ::vyg_contr append $contr
-
-            #--   met a jour les graphiques
-            set w $audace(base).visufoc
-
-            #--- Affichage des 19 dernieres mesures glissantes+1vide
-            if { [::vx length] > 19 } {
-               set w $audace(base).visufoc
-               lassign [ $w.g_fwhmx axis limits x ] xmin xmax
-               set xmin [expr { $xmin+1 }]
-               set xmax [expr { $xmax+1 }]
-               foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
-                  $w.$childGraph axis configure x -min $xmin -max $xmax
-                  $w.$childGraph axis configure x2 -min $xmin -max $xmax
-               }
-            }
-
-            #--- ajuste l'échelle de droite a celle de gauche
-            foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
-               lassign [ $w.$childGraph axis limits y ] ymin ymax
-               $w.$childGraph axis configure y2 -min $ymin -max $ymax
-            }
-
             #--- Valeurs a l'ecran
             ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
             update
+
+            #--- Actualise les donnees pour le fichier log
+            append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
+
+            #--  Traitement differentie selon focuser
+            if { $panneau(foc,typefocuser) == "0"} {
+               updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
+            } else {
+               #updateHFDGraphe
+            }
+
             after idle ::foc::cmdAcq
+
          }
+
       }
 
       #--- Pose en cours
@@ -202,6 +194,46 @@ namespace eval ::foc {
       #--- Effacement de la barre de progression quand la pose est terminee
       ::foc::avancementPose -1
 
+   }
+
+   #------------------------------------------------------------
+   # updateFocGraphe
+   #    sous processus de cmdAcq de mise a jour des 4 graphiques
+   # Parametre : liste du n° d'image, intensite, fwhmx, fwhmy et contraste
+   #------------------------------------------------------------
+   proc updateFocGraphe { data } {
+      global audace
+
+      #--   raccourci
+      set w $audace(base).visufoc
+
+      lassign $data count inten fwhmx fwhmy contr
+
+      #--   Met a jour les vecteurs
+      ::vx append $count
+      ::vyg_inten append $inten
+      ::vyg_fwhmx append $fwhmx
+      ::vyg_fwhmy append $fwhmy
+      ::vyg_contr append $contr
+
+      #--   Met a jour les graphiques
+
+      #--- Affiche les 19 dernieres mesures glissantes + 1 vide
+      if { [::vx length] > 19 } {
+         lassign [ $w.g_fwhmx axis limits x ] xmin xmax
+         set xmin [expr { $xmin+1 }]
+         set xmax [expr { $xmax+1 }]
+         foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
+            $w.$childGraph axis configure x -min $xmin -max $xmax
+            $w.$childGraph axis configure x2 -min $xmin -max $xmax
+         }
+      }
+
+      #--- Ajuste l'echelle de droite a celle de gauche
+      foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
+         lassign [ $w.$childGraph axis limits y ] ymin ymax
+         $w.$childGraph axis configure y2 -min $ymin -max $ymax
+      }
    }
 
    #------------------------------------------------------------
@@ -391,6 +423,12 @@ namespace eval ::foc {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
             set panneau(foc,compteur) "0"
             closeAllWindows $audace(base)
+            #--   Destruction et reconstruction des graphiques
+            if { $panneau(foc,typefocuser) == "0"} {
+               focGraphe
+            } else {
+               ::foc::initFocHFD
+            }
          } else {
             #--- Je positionne l'indicateur d'arret de la pose
             set panneau(foc,demande_arret) "1"
@@ -410,6 +448,8 @@ namespace eval ::foc {
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
             $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
          }
+
+         #--   Desinhibe le choix du focuser
          $This.fra4.focuser.list configure -state normal ; # combobox de choix du focuser
          update
       } else {

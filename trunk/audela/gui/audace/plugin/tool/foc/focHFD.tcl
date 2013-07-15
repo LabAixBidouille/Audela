@@ -14,7 +14,7 @@ namespace eval ::foc {
    proc ::foc::traceCurve { } {
       global audace
 
-      set this $::audace(base).hfd
+      set this $audace(base).hfd
       if {![winfo exists $this]} {
          ::foc::initFocHFD
       }
