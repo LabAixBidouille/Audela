@@ -79,7 +79,7 @@ proc ::t193pad::initConf { } {
    global conf
 
    if { ! [ info exists conf(t193pad,geometry) ] }           { set conf(t193pad,geometry)           "240x520+643+180" }
-   if { ! [ info exists conf(t193pad,focuserLabel) ] }       { set conf(t193pad,focuserLabel)       "" }
+   if { ! [ info exists conf(t193pad,focuserLabel) ] }       { set conf(t193pad,focuserLabel)       "focusert193" }
    if { ! [ info exists conf(t193pad,radecPulse,enabled) ] } { set conf(t193pad,radecPulse,enabled) 0 }
    if { ! [ info exists conf(t193pad,radecPulse,value) ] }   { set conf(t193pad,radecPulse,value)   1 }
 
