@@ -195,7 +195,7 @@ namespace eval ::foc {
       ::confColor::applyColor $audace(base).formatfoc
    }
 
-    #------------------------------------------------------------
+   #------------------------------------------------------------
    # limiteFoc
    #    Affiche la fenetre d'erreur en cas de depassement des limites
    #    commande specifique a audeCOM et a USB_Focus

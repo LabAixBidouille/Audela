@@ -133,7 +133,6 @@ namespace eval ::foc {
       set panneau(foc,go)               "$caption(foc,go)"
       set panneau(foc,stop)             "$caption(foc,stop)"
       set panneau(foc,raz)              "$caption(foc,raz)"
-      set panneau(foc,focuser)          "focuserlx200"
       set panneau(foc,trouve)           "$caption(foc,se_trouve)"
       set panneau(foc,pas)              "$caption(foc,pas)"
       set panneau(foc,deplace)          "$caption(foc,aller_a)"
@@ -143,6 +142,12 @@ namespace eval ::foc {
       set panneau(foc,demande_arret)    "0"
       set panneau(foc,avancement_acq)   "1"
       set panneau(foc,fichier)          ""
+      if { $conf($conf(confPad),focuserLabel) != "" } {
+         set panneau(foc,focuser)          "$conf($conf(confPad),focuserLabel)"
+      } else {
+         set panneau(foc,focuser)          "$caption(foc,pas_focuser)"
+      }
+      set panneau(foc,typefocuser)      "0"
 
       focBuildIF $This
    }
@@ -153,8 +158,20 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc adaptOutilFoc { { a "" } { b "" } { c "" } } {
       variable This
+      global caption panneau
 
-      if { [ ::focus::possedeControleEtendu $::panneau(foc,focuser) ] == "1"} {
+      if { $panneau(foc,focuser) != "$caption(foc,pas_focuser)" } {
+         if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
+            set panneau(foc,typefocuser) 1
+         } else {
+            set panneau(foc,typefocuser) 0
+         }
+      } else {
+         set panneau(foc,typefocuser) 0
+      }
+
+      if { $panneau(foc,typefocuser) == "1"} {
+
          #--- Avec controle etendu
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
@@ -191,6 +208,7 @@ namespace eval ::foc {
             #--   ouvre l'autre graphique
             initFocHFD
          }
+
       } else {
 
          #--- Sans controle etendu
@@ -214,6 +232,7 @@ namespace eval ::foc {
             #--   ouvre la graphique normal
             focGraphe
          }
+
       }
       $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
    }
