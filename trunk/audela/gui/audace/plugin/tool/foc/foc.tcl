@@ -142,6 +142,7 @@ namespace eval ::foc {
       set panneau(foc,demande_arret)    "0"
       set panneau(foc,avancement_acq)   "1"
       set panneau(foc,fichier)          ""
+      set panneau(foc,focuser)          "$caption(foc,pas_focuser)"
       if { $conf($conf(confPad),focuserLabel) != "" } {
          set panneau(foc,focuser)          "$conf($conf(confPad),focuserLabel)"
       } else {
