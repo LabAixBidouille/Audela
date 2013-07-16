@@ -7,7 +7,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Monture Temma (2 Jr)</title></head><body>
-<p class="date">Date de mise &#224; jour : 14 juillet 2013</p>
+<p class="date">Date de mise &#224; jour : 16 juillet 2013</p>
 <h1>Monture Temma</h1>
 <h2>1. Pr&#233;ciser la position de l'observateur</h2>
 <p>La position de l'observateur est une donn&#233;e importante
@@ -156,7 +156,7 @@ solaire ou pour un objet mobile (ast&#233;ro&#239;de,
 com&#232;tes). Dans ce dernier cas il faudra indiquer les
 d&#233;rives en AD en et D&#233;c conform&#233;ment aux unit&#233;s
 pr&#233;cis&#233;es dans la fen&#234;tre.</p>
-<h2>6. Commandes Tcl (pour les programmeurs)</h2>
+<h2>6. Commandes Tcl (non exhaustif, pour les programmeurs)</h2>
 <p>Voir aussi l'aide <b><a href="../../../../doc_html/french/02programmation/tel.htm">Fonctions
 de pilotage des t&#233;lescopes</a></b> et la <b><a href="protocole_temma.pdf">notice</a></b> au format pdf.</p>
 <ol>
@@ -197,9 +197,9 @@ cours)</li>
 <code>[ tel$telNo motorstate ]</code> ---&gt; -1 (inconnu), 0
 (arr&#234;t) ou 1 (en marche). Cette commande est inop&#233;rante
 durant un pointage.</li>
-<li>Temps Sid&#233;ral Local : <code>[ tel$telNo getlst
+<li>Temps Sid&#233;ral Local (en degr&#233;s) : <code>[ tel$telNo getlst
 ]</code></li>
-<li>Latitude : <code>[ tel$telNo getlatitude ]</code></li>
+<li>Latitude (en degr&#233;s) : <code>[ tel$telNo getlatitude ]</code></li>
 <li>Vitesse actuelle : <code>[ tel$telNo speed ]</code> ---&gt;
 slew</li>
 <li>Vitesses de correction AD-D&#233;c. : <code>[ tel$telNo
