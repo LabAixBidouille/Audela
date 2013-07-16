@@ -52,7 +52,9 @@ namespace eval ::foc {
             set panneau(foc,window)       [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
             set panneau(foc,actuel)       "$caption(foc,centrage)"
             set panneau(foc,boucle)       "$caption(foc,off)"
+
          } elseif { $panneau(foc,menu) == "$caption(foc,fenetre)" } {
+
             set panneau(foc,bin) "1"
             if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
                if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
@@ -75,6 +77,7 @@ namespace eval ::foc {
                ::foc::initFocHFD
             }
          }
+
          cam$audace(camNo) window $panneau(foc,window)
 
          #--- Suppression de la zone selectionnee avec la souris
@@ -87,8 +90,9 @@ namespace eval ::foc {
          if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
             $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal ; #--- Bouton GO
          }
-         $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) ; #--- Bouton STOP/RAZ
+         $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)                 ; #--- Bouton STOP/RAZ
          update
+
       } else {
          ::confCam::run
       }
@@ -128,7 +132,9 @@ namespace eval ::foc {
          set delay 0.100
          if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
             set delay [ expr $panneau(foc,exptime)-$delay ]
-            set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+            if { $panneau(foc,focuser) != "$caption(foc,pas_focuser)" } {
+               set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+            }
          }
       }
 

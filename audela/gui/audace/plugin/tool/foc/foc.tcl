@@ -125,30 +125,35 @@ namespace eval ::foc {
       }
 
       #--- Initialisation de variables
-      set panneau(foc,menu)             "$caption(foc,centrage)"
-      set panneau(foc,centrage_fenetre) "1"
-      set panneau(foc,compteur)         "0"
-      set panneau(foc,bin)              "1"
-      set panneau(foc,exptime)          "2"
-      set panneau(foc,go)               "$caption(foc,go)"
-      set panneau(foc,stop)             "$caption(foc,stop)"
-      set panneau(foc,raz)              "$caption(foc,raz)"
-      set panneau(foc,trouve)           "$caption(foc,se_trouve)"
-      set panneau(foc,pas)              "$caption(foc,pas)"
-      set panneau(foc,deplace)          "$caption(foc,aller_a)"
-      set panneau(foc,initialise)       "$caption(foc,init)"
-      set panneau(foc,dispTimeAfterId)  ""
-      set panneau(foc,pose_en_cours)    "0"
-      set panneau(foc,demande_arret)    "0"
-      set panneau(foc,avancement_acq)   "1"
-      set panneau(foc,fichier)          ""
-      set panneau(foc,focuser)          "$caption(foc,pas_focuser)"
+      set panneau(foc,menu)              "$caption(foc,centrage)"
+      set panneau(foc,centrage_fenetre)  "1"
+      set panneau(foc,compteur)          "0"
+      set panneau(foc,bin)               "1"
+      set panneau(foc,exptime)           "2"
+      set panneau(foc,go)                "$caption(foc,go)"
+      set panneau(foc,stop)              "$caption(foc,stop)"
+      set panneau(foc,raz)               "$caption(foc,raz)"
+      set panneau(foc,trouve)            "$caption(foc,se_trouve)"
+      set panneau(foc,pas)               "$caption(foc,pas)"
+      set panneau(foc,deplace)           "$caption(foc,aller_a)"
+      set panneau(foc,initialise)        "$caption(foc,init)"
+      set panneau(foc,dispTimeAfterId)   ""
+      set panneau(foc,pose_en_cours)     "0"
+      set panneau(foc,demande_arret)     "0"
+      set panneau(foc,avancement_acq)    "1"
+      set panneau(foc,fichier)           ""
+      #--   on copie le nom du focuser selectionne dans le pad
       if { $conf($conf(confPad),focuserLabel) != "" } {
-         set panneau(foc,focuser)          "$conf($conf(confPad),focuserLabel)"
+         set panneau(foc,focuser)        "$conf($conf(confPad),focuserLabel)"
+         if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
+            set panneau(foc,typefocuser) "1"
+         } else {
+            set panneau(foc,typefocuser) "0"
+         }
       } else {
-         set panneau(foc,focuser)          "$caption(foc,pas_focuser)"
+         set panneau(foc,focuser)        "$caption(foc,pas_focuser)"
+         set panneau(foc,typefocuser)    "0"
       }
-      set panneau(foc,typefocuser)      "0"
 
       focBuildIF $This
    }
@@ -161,14 +166,28 @@ namespace eval ::foc {
       variable This
       global caption panneau
 
+      if {$panneau(foc,focuser) eq ""} {
+         set panneau(foc,focuser) "$caption(foc,pas_focuser)"
+      }
+
       if { $panneau(foc,focuser) != "$caption(foc,pas_focuser)" } {
          if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
             set panneau(foc,typefocuser) 1
          } else {
             set panneau(foc,typefocuser) 0
          }
+         #--   demasque tout ce qui etait masque
+         pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1 ; #-- demasque label moteur focus
+         pack $This.fra4.we -in $This.fra4 -side top -fill x  ; #-- demasque frame des buttons '- +'
+         pack $This.fra5 -side top -fill x               ; #-- demasque frame position focus
+         pack forget $This.fra3                          ; #-- masque le bouton Graphe
       } else {
          set panneau(foc,typefocuser) 0
+         #--   masque tout sauf la liste des focuser
+         pack forget $This.fra4.lab1                     ; #-- masque label moteur focus
+         pack forget $This.fra4.we                       ; #-- masque frame des buttons '- +'
+         pack forget $This.fra5                          ; #-- masque frame position focus
+         pack $This.fra3 -side top -fill x               ; #-- demasque le bouton Graphe
       }
 
       if { $panneau(foc,typefocuser) == "1"} {
