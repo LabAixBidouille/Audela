@@ -176,18 +176,18 @@ namespace eval ::foc {
          } else {
             set panneau(foc,typefocuser) 0
          }
+
          #--   demasque tout ce qui etait masque
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1 ; #-- demasque label moteur focus
          pack $This.fra4.we -in $This.fra4 -side top -fill x  ; #-- demasque frame des buttons '- +'
          pack $This.fra5 -side top -fill x               ; #-- demasque frame position focus
-         pack forget $This.fra3                          ; #-- masque le bouton Graphe
       } else {
          set panneau(foc,typefocuser) 0
+
          #--   masque tout sauf la liste des focuser
          pack forget $This.fra4.lab1                     ; #-- masque label moteur focus
          pack forget $This.fra4.we                       ; #-- masque frame des buttons '- +'
          pack forget $This.fra5                          ; #-- masque frame position focus
-         pack $This.fra3 -side top -fill x               ; #-- demasque le bouton Graphe
       }
 
       if { $panneau(foc,typefocuser) == "1"} {
@@ -202,7 +202,6 @@ namespace eval ::foc {
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
          pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          if {$::panneau(foc,focuser) eq "usb_focus"} {
@@ -219,8 +218,6 @@ namespace eval ::foc {
             $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
          }
 
-         #--   configure le bouton 'Graphe"
-         $This.fra3.but1 configure -command "::foc::initFocHFD"
          #--   switch les graphes
          if {[winfo exists $::audace(base).visufoc]} {
             #--   ferme le graphique normal
@@ -241,10 +238,6 @@ namespace eval ::foc {
          pack forget $This.fra5.fra2.lab4
          pack forget $This.fra5.but3
          pack forget $This.fra5.but4
-
-         #--   configuration du bouton 'Graphe"
-         $This.fra3.but1 configure -command "focGraphe"
-
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
             #--   ferme le graphique hfd
@@ -592,15 +585,6 @@ proc focBuildIF { This } {
          pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
       pack $This.fra5 -side top -fill x
-
-      #--- Frame du graphe
-      frame $This.fra3 -borderwidth 1 -relief groove
-
-         #--- Bouton GRAPHE
-         button $This.fra3.but1 -borderwidth 2 -text $caption(foc,graphe) -command { focGraphe }
-         pack $This.fra3.but1 -in $This.fra3 -side bottom -fill x -padx 5 -pady 5 -ipadx 15 -ipady 2
-
-      pack $This.fra3 -side top -fill x
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition
       frame $This.fra6 -borderwidth 2 -relief ridge
