@@ -166,6 +166,7 @@ namespace eval ::foc {
       variable This
       global caption panneau
 
+      ::confEqt::activeFocuser $This.fra4.focuser.configure ::panneau(foc,focuser)
       if {$panneau(foc,focuser) eq ""} {
          set panneau(foc,focuser) "$caption(foc,pas_focuser)"
       }
@@ -301,6 +302,7 @@ namespace eval ::foc {
    # Parametre : chemin du parent
    #------------------------------------------------------------
    proc closeAllWindows { base } {
+
       if {[winfo exists $base.parafoc]} {
          fermeQualiteFoc
       }
@@ -308,7 +310,7 @@ namespace eval ::foc {
          fermeGraphe
       }
       if {[winfo exists $base.hfd]} {
-         ::foc::closeHFDGraphe
+         closeHFDGraphe
       }
    }
 

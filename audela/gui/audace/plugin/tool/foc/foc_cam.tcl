@@ -74,7 +74,7 @@ namespace eval ::foc {
             if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
                focGraphe
             } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
-               ::foc::initFocHFD
+               initFocHFD
             }
          }
 
@@ -182,7 +182,7 @@ namespace eval ::foc {
             if { $panneau(foc,typefocuser) == "0"} {
                updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
             } else {
-               #updateHFDGraphe
+               updateHFDGraphe
             }
 
             after idle ::foc::cmdAcq

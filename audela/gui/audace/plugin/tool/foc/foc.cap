@@ -50,6 +50,7 @@ set caption(foc,sec)                "sec."
 set caption(foc,numerisation)       "Read CCD"
 set caption(foc,hfd)                "HFD"
 set caption(foc,focalisationHFD)    "HFD Focusing"
+set caption(foc,diamHFD)            "HFD = %s"
 set caption(foc,pas_focuser)        "No Focuser"
 
 # *************** Version française ***************************
@@ -94,6 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Lecture CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "Focalisation HFD"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "Pas de focuser"
 
 # *************** Version italienne ***************************
@@ -138,6 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Lettura CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "Focheggiamento HFD"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "Nessun focheggiatore"
 
 # *************** Version espagnole ***************************
@@ -182,6 +185,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Leer CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "Enfoque HFD"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "No hay enfocador"
 
 # *************** Version allemande ***************************
@@ -226,6 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "CCD Lesen"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "HFD Fokussierung"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "Keine Scharfeinstellung"
 
 # *************** Version portugaise **************************
@@ -270,6 +275,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Ler CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "Focagem HFD"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "Sem focador"
 
 # *************** Version danoise *****************************
@@ -314,6 +320,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Read CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "HFD Focusing"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "No Focuser"
 
 # *************** Version ukrainienne *************************
@@ -358,6 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Read CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "HFD Focusing"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "No Focuser"
 
 # *************** Version russe *******************************
@@ -402,6 +410,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Read CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "HFD Focusing"
+   set caption(foc,diamHFD)         "HFD = %s"
    set caption(foc,pas_focuser)     "No Focuser"
 
 }
