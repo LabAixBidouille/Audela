@@ -180,8 +180,8 @@ namespace eval ::foc {
 
          #--   demasque tout ce qui etait masque
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1 ; #-- demasque label moteur focus
-         pack $This.fra4.we -in $This.fra4 -side top -fill x  ; #-- demasque frame des buttons '- +'
-         pack $This.fra5 -side top -fill x               ; #-- demasque frame position focus
+         pack $This.fra4.we -in $This.fra4 -side top -fill x   ; #-- demasque frame des buttons '- +'
+         pack $This.fra5 -before $This.fra6 -side top -fill x  ; #-- demasque frame position focus
       } else {
          set panneau(foc,typefocuser) 0
 
@@ -202,7 +202,7 @@ namespace eval ::foc {
          pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+        pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          if {$::panneau(foc,focuser) eq "usb_focus"} {
@@ -596,7 +596,7 @@ proc focBuildIF { This } {
            -text $caption(foc,avancement_acq) -variable panneau(foc,avancement_acq)
         pack $This.fra6.avancement_acq -side left -fill x
 
-     pack $This.fra6 -side top -fill x
+     pack $This.fra6 -fill x
 
      #--- Mise a jour dynamique des couleurs
      ::confColor::applyColor $This
