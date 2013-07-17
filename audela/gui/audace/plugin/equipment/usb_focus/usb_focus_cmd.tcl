@@ -356,8 +356,8 @@ proc ::usb_focus::getTemperature { } {
    set private(command) "FTMPRO"
    ::usb_focus::writePort
 
-   #--   reponse attendue == "T=+/-xy.z LFCR" ; longueur 9 car
-   set widget(temperature) "[::usb_focus::waitAnswer 9] °C"
+   #--   reponse attendue == "T=+/-xy.z LFCR" ; longueur 10 car
+   set widget(temperature) "[::usb_focus::waitAnswer 10] °C"
 }
 
 #------------------------------------------------------------
