@@ -204,7 +204,7 @@ namespace eval ::foc {
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
+         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          if {$::panneau(foc,focuser) eq "usb_focus"} {
             pack forget $This.fra5.but0
@@ -239,7 +239,7 @@ namespace eval ::foc {
          pack forget $This.fra5.but2
          pack forget $This.fra5.fra2.ent3
          pack forget $This.fra5.fra2.lab4
-         pack forget $This.fra5.but4
+         pack forget $This.fra5.but3
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
             #--   ferme le graphique hfd
@@ -584,8 +584,8 @@ proc focBuildIF { This } {
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
 
          #--- Bouton "Courbe en V"
-         button $This.fra5.but4 -borderwidth 2 -text "$caption(foc,vcurve)" -command { ::foc::traceCurve }
-         pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
+         button $This.fra5.but3 -borderwidth 2 -text "$caption(foc,vcurve)" -command { ::foc::traceCurve }
+         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
       pack $This.fra5 -side top -fill x
 
