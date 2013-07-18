@@ -191,7 +191,7 @@
       variable private
       global audace caption conf
 
-       #--   initialisation des variables
+      #--   initialisation des variables
       lassign [list 0 0.0 90.0 0 0 0 "00" "00"] private(unpark) \
          private(parkaz) private(parkelev) \
          private(park) private(parkAuto) private(parkHr) private(parkMin)
@@ -234,7 +234,7 @@
          $w2.lab_elev $w2.parkelev $w2.parkside -side left -padx 2
 
       #--   initialisation des variables
-      $w2.mode current 6      ; #--  zenith
+      $w2.mode current 4      ; #--  zenith
       $w2.parkside current 0  ; #--  tube cote ouest
 
       #------------- frame du garage -----------------------
@@ -278,24 +278,20 @@
    proc cmdParkMode { w } {
       variable private
 
-      set latitude [lindex $private(gps) 3]
       set modeNo [$w.mode current]
       set sideIndex [$w.parkside current]
       set german $private(german)
       set elev_pole $latitude
-      set elev_equat [expr {90-$latitude}]
+      set latitude [lindex $private(gps) 3]
 
       switch -exact $modeNo {
-         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud }
+         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud}
          1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est}
          2  {  set az 90.0 ; set elev 0.0                      ; #-- Horizon Ouest}
          3  {  set az 180.0 ; set elev 0.0                     ; #-- Horizon Nord}
-         4  {  set az 0.0 ; set elev $elev_equat               ; #-- Equateur Sud}
-         5  {  set az 180.0 ; set elev -$elev_equat            ; #-- Equateur Nord}
-         6  {  set az 0.0 ; set elev 90                        ; #-- Zenith}
-         7  {  set az 180.0 ; set elev $latitude               ; #-- Pôle Nord}
-         8  {  set az 180.0 ; set elev [expr {-180+$elev_pole}]; #-- Pôle Sud}
-         9  {  #--   choix Utilisateur
+         4  {  set az 0.0 ; set elev 90                        ; #-- Zenith}
+         5  {  set az 180.0 ; set elev $elev_pole              ; #-- Pôle}
+         6  {  #--   choix Utilisateur
                if {[info exists conf($private(product),park)] == 1} {
                   set data $conf($product,park)
                } else {
