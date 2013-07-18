@@ -71,10 +71,12 @@ namespace eval ::foc {
             }
             set panneau(foc,actuel) "$caption(foc,fenetre)"
             set panneau(foc,boucle) "$caption(foc,on)"
+
+            #--   Ouvre le graphique adhoc s'il n'existe pas deja
             if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
-               focGraphe
+               ::foc::focGraphe
             } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
-               initFocHFD
+               ::foc::initFocHFD
             }
          }
 
@@ -180,9 +182,9 @@ namespace eval ::foc {
 
             #--  Traitement differentie selon focuser
             if { $panneau(foc,typefocuser) == "0"} {
-               updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
+               ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
             } else {
-               updateHFDGraphe
+               ::foc::updateHFDGraphe
             }
 
             after idle ::foc::cmdAcq
@@ -297,127 +299,6 @@ namespace eval ::foc {
    }
 
    #------------------------------------------------------------
-   # avancementPose
-   #    sous processus de cmdAcq et de dispTime
-   #------------------------------------------------------------
-   proc avancementPose { t } {
-      global audace caption color conf panneau
-
-      #--- Fenetre d'avancement de la pose non demandee
-      if { $panneau(foc,avancement_acq) == "0" } {
-         return
-      }
-
-      #--   raccourci
-      set w $audace(base).progress_pose
-
-      #--- Recuperation de la position de la fenetre
-      ::foc::closePositionAvancementPose
-
-      #--- Initialisation de la barre de progression
-      set cpt "100"
-
-      #---
-      if { [ winfo exists $w ] != "1" } {
-
-         #--- Cree la fenetre toplevel
-         toplevel $w
-         wm transient $w $audace(base)
-         wm resizable $w 0 0
-         wm title $w "$caption(foc,en_cours)"
-         wm geometry $w $conf(foc,avancement,position)
-
-         #--- Cree le widget et le label du temps ecoule
-         label $w.lab_status -text "" -justify center
-         pack $w.lab_status -side top -fill x -expand true -pady 5
-
-         #---
-         if { $panneau(foc,demande_arret) == "1" } {
-            $w.lab_status configure -text "$caption(foc,numerisation)"
-         } else {
-            if { $t < "0" } {
-               destroy $w
-            } elseif { $t > "0" } {
-               $w.lab_status configure -text "$t $caption(foc,sec) / \
-                  [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(foc,sec)"
-               set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
-               set cpt [ expr 100 - $cpt ]
-            } else {
-               $w.lab_status configure -text "$caption(foc,numerisation)"
-            }
-         }
-
-         #---
-         if { [ winfo exists $audace(base).progress_pose ] == "1" } {
-            #--- Cree le widget pour la barre de progression
-            frame $w.cadre -width 200 -height 30 -borderwidth 2 -relief groove
-            pack $w.cadre -in $w -side top \
-               -anchor center -fill x -expand true -padx 8 -pady 8
-
-            #--- Affiche de la barre de progression
-            frame $w.cadre.barre_color_invariant -height 26 -bg $color(blue)
-            place $w.cadre.barre_color_invariant -in $w.cadre \
-               -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
-            update
-         }
-
-         #--- Mise a jour dynamique des couleurs
-         if { [ winfo exists $w ] == "1" } {
-            ::confColor::applyColor $w
-         }
-
-      } else {
-
-         #---
-         if { $panneau(foc,pose_en_cours) == "0" } {
-
-            #--- Je supprime la fenetre s'il n'y a plus de pose en cours
-            ::foc::closePositionAvancementPose
-
-         } else {
-
-            if { $panneau(foc,demande_arret) == "0" } {
-               if { $t > "0" } {
-                  $w.lab_status configure -text "$t $caption(foc,sec) / \
-                     [ format "%d" [ expr int( $panneau(foc,exptime) ) ] ] $caption(foc,sec)"
-                  set cpt [ expr $t * 100 / int( $panneau(foc,exptime) ) ]
-                  set cpt [ expr 100 - $cpt ]
-               } else {
-                  $w.lab_status configure -text "$caption(foc,numerisation)"
-               }
-            } else {
-               #--- J'affiche "Lecture" des qu'une demande d'arret est demandee
-               $w.lab_status configure -text "$caption(foc,numerisation)"
-            }
-            #--- Affiche de la barre de progression
-            place $w.cadre.barre_color_invariant -in $w.cadre \
-               -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
-            update
-
-         }
-
-      }
-
-   }
-
-   #------------------------------------------------------------
-   # closePositionAvancementPose
-   #    ferme la fenetre d'avancement de la pose et sauve sa position
-   #------------------------------------------------------------
-   proc closePositionAvancementPose { } {
-      global audace conf
-
-      set w $audace(base).progress_pose
-      if [ winfo exists $w ] {
-         #--- Determination de la position de la fenetre
-         regsub {([0-9]+x[0-9]+)} [ wm geometry $w ] "" conf(foc,avancement,position)
-
-         #--- Je supprime la fenetre s'il n'y a plus de pose en cours
-         destroy $w
-      }
-   }
-
-   #------------------------------------------------------------
    # cmdStop
    #    cmd du bouton STOP/RAZ
    #------------------------------------------------------------
@@ -477,64 +358,6 @@ namespace eval ::foc {
          puts -nonewline $fileId $panneau(foc,fichier)
          close $fileId
       }
-   }
-
-   #------------   fenetre affichant les valeurs  --------------
-
-   #------------------------------------------------------------
-   # qualiteFoc
-   #    affiche la valeur des parametres dans une fenetre
-   # Parametres : les valeurs a afficher
-   #------------------------------------------------------------
-   proc qualiteFoc { inten fwhmx fwhmy contr } {
-      global audace caption conf panneau
-
-      set this $audace(base).parafoc
-
-      #--- Fenetre d'affichage des parametres de la foc
-      if [ winfo exists $this ] {
-         fermeQualiteFoc
-      }
-
-      #--- Creation de la fenetre
-      toplevel $this
-      wm transient $this $audace(base)
-      wm resizable $this 0 0
-      wm title $this "$caption(foc,focalisation)"
-      wm geometry $this $conf(parafoc,position)
-      wm protocol $this WM_DELETE_WINDOW { ::foc::fermeQualiteFoc }
-      #--- Cree les etiquettes
-      label $this.lab1 -text "$panneau(foc,compteur)"
-      pack $this.lab1 -padx 10 -pady 2
-      label $this.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $inten"
-      pack $this.lab2 -padx 5 -pady 2
-      label $this.lab3 -text "$caption(foc,fwhm__x) $caption(foc,egale) $fwhmx"
-      pack $this.lab3 -padx 5 -pady 2
-      label $this.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
-      pack $this.lab4 -padx 5 -pady 2
-      label $this.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
-      pack $this.lab5 -padx 5 -pady 2
-      update
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $this
-   }
-
-   #------------------------------------------------------------
-   # fermeQualiteFoc
-   #    ferme la fenetre de la qualite et sauve sa position
-   # Parametre : chemin de la fenetre
-   #------------------------------------------------------------
-   proc fermeQualiteFoc { } {
-      global audace conf
-
-      set w $audace(base).parafoc
-
-      #--- Determination de la position de la fenetre
-      regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(parafoc,position)
-
-      #--- Fermeture de la fenetre
-      destroy $w
    }
 
 }

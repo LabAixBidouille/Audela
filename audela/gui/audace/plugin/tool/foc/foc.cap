@@ -51,6 +51,11 @@ set caption(foc,numerisation)       "Read CCD"
 set caption(foc,hfd)                "HFD"
 set caption(foc,focalisationHFD)    "HFD Focusing"
 set caption(foc,diamHFD)            "HFD = %s"
+#--   ajout RZ
+set caption(foc,slopeleft)          "Left slope %s/step"
+set caption(foc,sloperight)         "Right slope %s/step"
+set caption(foc,optimum)            "Optimum entre %s et %s pas"
+#--   finajout RZ
 set caption(foc,pas_focuser)        "No Focuser"
 
 # *************** Version française ***************************
@@ -96,6 +101,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "Focalisation HFD"
    set caption(foc,diamHFD)         "HFD = %s"
+#--   ajout RZ
+   set caption(foc,slopeleft)       "Pente à gauche %s/pas"
+   set caption(foc,sloperight)      "Pente à droite %s/pas"
+   set caption(foc,optimum)         "Optimum entre %s et %s pas"
+#--   finajout RZ
    set caption(foc,pas_focuser)     "Pas de focuser"
 
 # *************** Version italienne ***************************
@@ -162,7 +172,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas)             "pasos"
    set caption(foc,aller_a)         "Ir a"
    set caption(foc,init)            "Inicialización"
-   set caption(foc,vcurve)          "# Courbe en V"
+   set caption(foc,vcurve)          "Curva en V"
    set caption(foc,graphe)          "Grafico"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
