@@ -195,6 +195,7 @@ namespace eval ::foc {
 
          #--- Avec controle etendu
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
+         pack $This.fra5.but0 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
          pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
@@ -202,17 +203,17 @@ namespace eval ::foc {
          pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-        pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.but4 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          if {$::panneau(foc,focuser) eq "usb_focus"} {
+            pack forget $This.fra5.but0
             pack forget $This.fra5.but1
             ::focus::displayCurrentPosition $::panneau(foc,focuser) ; #usb_focus
             #--   modifie la commande du bouton en appelant la cmd focus en mode non bloquant
             $This.fra5.but2 configure -command { ::focus::goto usb_focus 0 }
             #--   modifie la commande validation de la saisie
             $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
-            pack forget $This.fra5.but3
          } else {
             #--   sans effet si la commande est deja configuree comme cela
             $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
@@ -231,13 +232,13 @@ namespace eval ::foc {
 
          #--- Sans controle etendu
          pack forget $This.fra5.lab1
+         pack forget $This.fra5.but0
          pack forget $This.fra5.but1
          pack forget $This.fra5.fra1.lab1
          pack forget $This.fra5.fra1.lab2
          pack forget $This.fra5.but2
          pack forget $This.fra5.fra2.ent3
          pack forget $This.fra5.fra2.lab4
-         pack forget $This.fra5.but3
          pack forget $This.fra5.but4
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
@@ -539,6 +540,10 @@ proc focBuildIF { This } {
          label $This.fra5.lab1 -text $caption(foc,pos_focus) -relief flat
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
 
+         #--- Bouton "Initialisation"
+         button $This.fra5.but0 -borderwidth 2 -text $panneau(foc,initialise) -command { ::foc::cmdInitFoc }
+         pack $This.fra5.but0 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
+
          #--- Bouton "Se trouve à"
          button $This.fra5.but1 -borderwidth 2 -text $panneau(foc,trouve) -command { ::foc::cmdSeTrouveA }
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
@@ -577,10 +582,6 @@ proc focBuildIF { This } {
             pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
-
-         #--- Bouton "Initialisation"
-         button $This.fra5.but3 -borderwidth 2 -text $panneau(foc,initialise) -command { ::foc::cmdInitFoc }
-         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          #--- Bouton "Courbe en V"
          button $This.fra5.but4 -borderwidth 2 -text "$caption(foc,vcurve)" -command { ::foc::traceCurve }

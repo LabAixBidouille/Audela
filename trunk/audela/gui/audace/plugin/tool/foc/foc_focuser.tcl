@@ -54,7 +54,8 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # cmdInitFoc
-   #    cmd du bouton 'Initialisation'
+   #    cmd du bouton 'Initialisation' pour focuseraudecom
+   #    seulement
    #------------------------------------------------------------
    proc cmdInitFoc { } {
       variable This
