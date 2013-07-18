@@ -101,7 +101,6 @@
       set naxis1 $private(naxis1)
       set naxis2 $private(naxis2)
       set img_name [file join $audace(rep_images) myImg$ext]
-      set private(imagetyp) [lindex $caption(collector,imagetypes) end]
 
       createKeywords
 
@@ -109,9 +108,6 @@
       ::confVisu::setZoom 1 0.5
 
       buf$bufNo setpixels CLASS_GRAY $naxis1 $naxis2 FORMAT_USHORT COMPRESS_NONE 0
-
-      #--   pm simulimage cree les mots cles EQUINOX RADESYS CTYPE1 CTYPE2 CUNIT1 CUNIT2 LONPOLE CATASTAR
-      #--   pb avec RADSYS dans surchaud
       setKeywords $bufNo
 
       saveima $img_name
@@ -126,6 +122,9 @@
       configButtons disabled
       update
 
+      #--   pm simulimage cree les mots cles EQUINOX RADESYS CTYPE1 CTYPE2 CUNIT1 CUNIT2 LONPOLE CATASTAR
+      #--   pb avec RADESYS dans surchaud
+      catch {buf$bufNo delkwd RADESYS}
       calibrationAstro $bufNo $ext $private(catAcc) $private(catname)
    }
 
