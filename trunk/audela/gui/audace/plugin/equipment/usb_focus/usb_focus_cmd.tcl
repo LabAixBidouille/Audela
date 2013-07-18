@@ -244,12 +244,12 @@ proc ::usb_focus::setAutoMode { } {
 #     Commande du bouton GOTO
 #     si necessaire, le deplacement est corrige pour rester dans les limites {0|maxstep)
 #------------------------------------------------------------
-proc ::usb_focus::goto { {blocking} } {
+proc ::usb_focus::goto { } {
    variable widget
    variable private
-   global audace
+   global audace panneau
 
-   if {$::panneau(foc,focuser) eq "usb_focus"} {
+   if {[info exists panneau(foc,focuser)] && $panneau(foc,focuser) eq "usb_focus"} {
       #--   recopie la valeur de la cible
       set widget(target) $audace(focus,targetFocus)
    }
