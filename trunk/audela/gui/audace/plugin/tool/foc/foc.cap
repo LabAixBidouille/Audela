@@ -117,7 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas)             "passi"
    set caption(foc,aller_a)         "Vai a"
    set caption(foc,init)            "Inizializzazione"
-   set caption(foc,vcurve)          "# Courbe en V"
+   set caption(foc,vcurve)          "Curva V"
    set caption(foc,graphe)          "Diagramma"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
