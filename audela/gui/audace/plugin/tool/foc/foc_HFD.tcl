@@ -12,7 +12,7 @@ namespace eval ::foc {
    # traceCurve
    #    processus de mesure pour differentes positions
    #---------------------------------------------------------------------------
-   proc ::foc::traceCurve { } {
+   proc traceCurve { } {
       global audace panneau
 
       set this $audace(base).hfd
