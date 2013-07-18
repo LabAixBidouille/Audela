@@ -6,11 +6,30 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>
 <p class="date">Date de mise à jour : 18 juillet 2013</p>
 <h1>Focalisation</h1>
-<p>Cet outil permet d'am&#233;liorer la focalisation.</p>
+<p>Cet outil permet d'am&#233;liorer la focalisation. Le
+processus est simple :<br />
+-faire varier la focalisation (en agissant manuellement ou par
+des moteurs),<br />
+-mesurer le r&#233;sultat (intensit&#233;, FWHM, contraste, HFD)
+dans une petite fen&#234;tre autour de l'&#233;toile cible,<br />
+-choisir la position optimale (manuellement ou avec un compteur
+de pas). C'est certainement cette &#233;tape qui est la plus
+difficile car, &#224; d&#233;faut de pouvoir reproduire la
+position, il faut se contenter d'observer la succession des
+r&#233;sultats.<br />
+Note : HFD (Half Flux Diameter) donne le diam&#232;tre contenant
+50% du flux sans faire l'hypoth&#232;se d'une r&#233;partition
+gaussienne (cas de FWHM). Elles peuvent &#234;tre tr&#232;s
+proches ou tr&#232;s diff&#233;rentes notamment en cas de forte
+d&#233;focalisation.</p>
 <h2>Configurations du panneau</h2>
-<p>La configuration du panneau s'adapte au focuser et permet le
-suivi de la variation de la qualit&#233; de la mise au point
-:</p>
+<p>Le panneau comporte a minima ce qui est n&#233;cessaire &#224;
+l'acquisition (centrage, fen&#234;trage, temps depose). Sa
+configuration s'adapte au focuser (ou &#224; son absence) et
+permet de suivre la variation de la qualit&#233; de la mise au
+point &#224; l'aide d'une fen&#234;tre d'informations et d'un
+graphique gradu&#233; en num&#233;ro d'image ou en pas
+compteur.</p>
 <table>
 <tbody>
 <tr>
@@ -26,7 +45,7 @@ au point</th>
 "" src="images/pas_focuser.gif" /></td>
 <td align="center"><img style="width: 115px; height: 147px;" alt=
 "" src="images/qualite_foc.gif" /></td>
-<td align="center"><img style="width: 326px; height: 398px;" src=
+<td align="center" width="330"><img style="width: 326px; height: 398px;" src=
 "images/graf_4.gif" /></td>
 </tr>
 <tr>
@@ -36,7 +55,7 @@ focuserjmi, focusert193)</td>
 "" src="images/focus_manuel.gif" /></td>
 <td align="center"><img style="width: 115px; height: 147px;" alt=
 "" src="images/qualite_foc.gif" /></td>
-<td align="center"><img style="width: 326px; height: 398px;" alt=
+<td align="center" width="330"><img style="width: 326px; height: 398px;" alt=
 "" src="images/graf_4.gif" /></td>
 </tr>
 <tr>
@@ -46,8 +65,14 @@ focuserjmi, focusert193)</td>
 "" src="images/focus_auto.gif" /></td>
 <td align="center"><img style="width: 115px; height: 147px;" alt=
 "" src="images/qualite_foc.gif" /></td>
-<td align="center"><img style="width: 216px; height: 420px;" alt=
-"" src="images/graph_HFD.gif" /></td>
+<td align="center" width="330"><img style="width: 216px; height: 420px;" alt=
+"" src="images/graph_HFD.gif" /><br />
+Cette fen&#234;tre comporte, outre le graphique HFD en fonction
+du nombre de pas, une coupe verticale du flux mesur&#233; (en
+haut &#224; gauche) et la repr&#233;sentation de l'int&#233;grale
+du flux en fonction de la distance au centre (en haut &#224;
+droite) ; la focalisation est d'autant meilleure que la pente est
+raide.</td>
 </tr>
 </tbody>
 </table>
