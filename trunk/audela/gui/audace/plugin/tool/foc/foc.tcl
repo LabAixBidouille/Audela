@@ -15,9 +15,10 @@ namespace eval ::foc {
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] foc.cap ]
-   source [ file join [file dirname [info script]] focHFD.tcl ]
+   source [ file join [file dirname [info script]] foc_HFD.tcl ]
    source [ file join [file dirname [info script]] foc_focuser.tcl ]
    source [ file join [file dirname [info script]] foc_cam.tcl ]
+   source [ file join [file dirname [info script]] foc_graph.tcl ]
 
    #------------------------------------------------------------
    # getPluginTitle
@@ -223,9 +224,9 @@ namespace eval ::foc {
          #--   switch les graphes
          if {[winfo exists $::audace(base).visufoc]} {
             #--   ferme le graphique normal
-            fermeGraphe
+            ::foc::fermeGraphe
             #--   ouvre l'autre graphique
-            initFocHFD
+            ::foc::initFocHFD
          }
 
       } else {
@@ -243,9 +244,9 @@ namespace eval ::foc {
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
             #--   ferme le graphique hfd
-            closeHFDGraphe
+            ::foc::closeHFDGraphe
             #--   ouvre la graphique normal
-            focGraphe
+            ::foc::focGraphe
          }
 
       }
@@ -287,7 +288,7 @@ namespace eval ::foc {
 
       #--- Initialisation des variables et fermeture des fenetres auxiliaires
       set panneau(foc,compteur) "0"
-      closeAllWindows $audace(base)
+      ::foc::closeAllWindows $audace(base)
 
       #--- Arret de la surveillance de la variable conf(telescope)
       trace remove variable :::confEqt::private(variablePluginName) write ::foc::adaptOutilFoc
@@ -305,103 +306,16 @@ namespace eval ::foc {
    proc closeAllWindows { base } {
 
       if {[winfo exists $base.parafoc]} {
-         fermeQualiteFoc
+         ::foc::fermeQualiteFoc
       }
       if {[winfo exists $base.visufoc]} {
-         fermeGraphe
+         ::foc::fermeGraphe
       }
       if {[winfo exists $base.hfd]} {
-         closeHFDGraphe
+         ::foc::closeHFDGraphe
       }
    }
 
-}
-
-#------------   gestion du graphique classique -----------------
-
-#---------------------------------------------------------------
-# focGraphe
-#    cree le fenetre graphique de suivi des parametres de focalisation
-#---------------------------------------------------------------
-proc focGraphe { } {
-   global audace caption conf panneau
-
-   set this $audace(base).visufoc
-
-   #--- Fenetre d'affichage des parametres de la foc
-   if [ winfo exists $this ] {
-      fermeGraphe
-   }
-
-   #--- Creation et affichage des graphes
-   if { [ winfo exists $this ] == "0" } {
-      package require BLT
-      #--- Creation de la fenetre
-      toplevel $this
-      wm title $this "$caption(foc,titre_graphe)"
-      if { $panneau(foc,exptime) > "2" } {
-         wm transient $this $audace(base)
-      }
-      wm resizable $this 1 1
-      wm geometry $this $conf(visufoc,position)
-      wm protocol $this WM_DELETE_WINDOW "fermeGraphe"
-      #---
-      visuf $this g_inten "$caption(foc,intensite_adu)"
-      visuf $this g_fwhmx "$caption(foc,fwhm_x)"
-      visuf $this g_fwhmy "$caption(foc,fwhm_y)"
-      visuf $this g_contr "$caption(foc,contrast_adu)"
-      update
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $this
-   }
-}
-
-#------------------------------------------------------------
-# visuf
-#    cree un graphique de suivi d'un parametre
-#------------------------------------------------------------
-proc visuf { base win_name title } {
-
-   set frm $base.$win_name
-
-   #--   ::vx (compteur) est commun a tous les graphes
-   if {"::vx" ni [blt::vector names]} {
-      ::blt::vector create ::vx -watchunset 1
-   }
-   ::blt::vector create ::vy$win_name -watchunset 1
-
-   ::blt::graph $frm
-   $frm element create line1 -xdata ::vx -ydata ::vy$win_name \
-      -linewidth 1 -color black -symbol "" -hide no
-   $frm axis configure x -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
-   $frm axis configure x2 -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
-   #--   laisse flotter le minimum et le maximum
-   $frm axis configure y -title "$title" -hide no -min {} -max {}
-   $frm axis configure y2 -hide no -min {} -max {}
-   $frm legend configure -hide yes
-   $frm configure -height 140
-   pack $frm
-}
-
-#------------------------------------------------------------
-# fermeGraphe
-#    ferme la fenetre des graphes et sauve la position
-# Parametre : chemin de la fenetre
-#------------------------------------------------------------
-proc fermeGraphe { } {
-   global audace conf
-
-   set w $audace(base).visufoc
-
-   #--- Determination de la position de la fenetre
-   regsub {([0-9]+x[0-9]+)} [wm geometry $w] "" conf(visufoc,position)
-
-   #--- Detruit les vecteurs persistants
-   blt::vector destroy ::vx ::vyg_fwhmx ::vyg_fwhmy ::vyg_inten ::vyg_contr
-
-   #--- Fermeture de la fenetre
-   destroy $w
 }
 
 #------------------------------------------------------------
