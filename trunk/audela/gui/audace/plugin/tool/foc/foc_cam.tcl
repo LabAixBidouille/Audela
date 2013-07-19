@@ -76,7 +76,7 @@ namespace eval ::foc {
             if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
                ::foc::focGraphe
             } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
-               ::foc::initFocHFD
+               ::foc::HFDGraphe
             }
          }
 
@@ -182,12 +182,14 @@ namespace eval ::foc {
 
             #--  Traitement differentie selon focuser
             if { $panneau(foc,typefocuser) == "0"} {
+               #--   Mise a jour des graphiques
                ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
             } else {
-               ::foc::updateHFDGraphe
+               #--   Calculs et Mise a jour des graphiques
+               ::foc::processHFD
             }
 
-            after idle ::foc::cmdAcq
+           after idle ::foc::cmdAcq
 
          }
 
@@ -272,9 +274,9 @@ namespace eval ::foc {
             closeAllWindows $audace(base)
             #--   Destruction et reconstruction des graphiques
             if { $panneau(foc,typefocuser) == "0"} {
-               focGraphe
+               ::foc::focGraphe
             } else {
-               ::foc::initFocHFD
+               ::foc::HFDGraphe
             }
          } else {
             #--- Je positionne l'indicateur d'arret de la pose
@@ -301,22 +303,6 @@ namespace eval ::foc {
          update
       } else {
          ::confCam::run
-      }
-   }
-
-   #------------------------------------------------------------
-   # cmdSauveLog
-   #    sous processus de cmdStop
-   # Parametre : chemin du fichier
-   #------------------------------------------------------------
-   proc cmdSauveLog { namefile } {
-      global panneau
-
-      if [ catch { open [ file join $::audace(rep_log) $namefile ] w } fileId ] {
-         return
-      } else {
-         puts -nonewline $fileId $panneau(foc,fichier)
-         close $fileId
       }
    }
 
