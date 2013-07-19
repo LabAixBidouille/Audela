@@ -16,7 +16,7 @@ namespace eval ::foc {
       global audace panneau
 
 #---  RZ : simulation
-		
+
       set this $audace(base).hfd
       if {[winfo exists $this]} { closeHFDGraphe }
       ::foc::HFDGraphe
@@ -62,7 +62,7 @@ namespace eval ::foc {
         #--- Actualise les donnees pour le fichier log
         append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
 
-        ::foc::processHFD $audace(visuNo) $this
+        ::foc::processHFD
         update idletasks
 
         #--- Suppression de la zone selectionnee avec la souris
@@ -190,9 +190,11 @@ namespace eval ::foc {
    # Parametres : N° de la visu contenant l'image source et le nom du frame global
    # Duree : entre 40 et 100 ms
    #---------------------------------------------------------------------------
-   proc processHFD { visuNo this args } {
-      global panneau
+   proc processHFD { args } {
+      global audace panneau
 
+      set visuNo $audace(visuNo)
+      set this $audace(base).hfd
       set box [::confVisu::getBox $visuNo]
 
       #--   arrete si la box est vide
@@ -200,7 +202,7 @@ namespace eval ::foc {
 
       #--   etape 1 : extraction de la boite et de la coupe horizontale
       #--   peuple les vecteurs abscisses (::Vx) et ordonnees(::Vint) du graphe1
-      ::foc::createCoupeHoriz $visuNo $box
+      ::foc::createCoupeHoriz $box
 
       #--   extraction des limites d'analyse
       #--   1/e² = 0.135 du pic (1/e-Squared Halfwidth)
@@ -225,15 +227,16 @@ namespace eval ::foc {
    # createCoupeHoriz
    #    Extrait une image de la boite de selection
    #    binne l'image en Y
-   # Parametres : N° de la visu et boite de selection
+   # Parametres : boite de selection
    #---------------------------------------------------------------------------
-   proc createCoupeHoriz { visuNo  box } {
+   proc createCoupeHoriz { box } {
       global audace conf
 
       #--   recopie l'image vers le buffer dest
       set dest [::buf::create]
       set rep $audace(rep_images)
       set ext $conf(extension,defaut)
+      set visuNo $audace(visuNo)
 
       buf[visu$visuNo buf] copyto $dest
 
