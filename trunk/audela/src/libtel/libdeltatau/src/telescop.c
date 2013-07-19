@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 #include "telescop.h"
+#include <libtel/libtel.h>
 #include <libtel/util.h>
 
 
@@ -760,7 +761,7 @@ int mytel_focus_coord(struct telprop *tel,char *result)
 
 int mytel_date_get(struct telprop *tel,char *ligne)
 {
-   deltatau_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ligne);
    return 0;
 }
 
@@ -1450,7 +1451,7 @@ int deltatau_suivi_marche (struct telprop *tel)
 	speed_track_ra=tel->speed_track_ra;
 	speed_track_dec=tel->speed_track_dec;
 	if (tel->refrac_delay>0) {
-	   deltatau_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+	   libtel_GetCurrentUTCDate(tel->interp,ss);
 		sprintf(s,"mc_refraction_difradec %f %f {%s} %s %f 288 80000",tel->ra0,tel->dec0,tel->home,ss,tel->refrac_delay); 
 		if (mytel_tcleval(tel,s)==TCL_OK) {
 			strcpy(ss,tel->interp->result);
@@ -1562,7 +1563,7 @@ double deltatau_tsl(struct telprop *tel,int *h, int *m,double *sec)
    /* --- temps sideral local */
 	dt=tel->dead_delay_slew/86400;
    deltatau_home(tel,"");
-   deltatau_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ss);
    sprintf(s,"mc_date2lst [mc_date2jd %s+%f] {%s}",ss,dt,tel->home);
    mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
@@ -1580,22 +1581,3 @@ double deltatau_tsl(struct telprop *tel,int *h, int *m,double *sec)
    tsl=atof(tel->interp->result); /* en degres */
    return tsl;
 }
-
-void deltatau_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
-{
-   /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-	/*     (function = ::audace::date_sys2ut) */
-   char ligne[1024];
-   sprintf(ligne,"info commands  %s",function);
-   Tcl_Eval(interp,ligne);
-   if (strcmp(interp->result,function)==0) {
-      sprintf(ligne,"mc_date2iso8601 [%s now]",function);
-      Tcl_Eval(interp,ligne);
-      strcpy(s,interp->result);
-   } else {
-      strcpy(ligne,"mc_date2iso8601 now");
-      Tcl_Eval(interp,ligne);
-      strcpy(s,interp->result);
-   }
-}
-

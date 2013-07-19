@@ -147,7 +147,6 @@ int kauf_lit_vit_pec(struct telprop *tel,int *vitpec);
 int kauf_ecrit_vit_pec(struct telprop *tel,int evpec);
 
 int audecom_home(struct telprop *tel, char *home_default);
-void audecom_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
 #ifdef __cplusplus
 }

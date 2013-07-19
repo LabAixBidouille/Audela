@@ -416,6 +416,14 @@ void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *functi
    }
 }
 
+/*
+* Retourne l'heure UTC
+*/
+void libtel_GetCurrentUTCDate(Tcl_Interp *interp, char *s)
+{
+   Tcl_Eval(interp,"clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S\" -timezone :UTC");
+   strcpy(s,interp->result);
+}
 int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec)
 /*
  * Decode a Tcl list of two elements -> ra,dec (in float degrees)

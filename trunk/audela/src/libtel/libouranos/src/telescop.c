@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include "telescop.h"
+#include <libtel/libtel.h>
 #include <libtel/util.h>
 
 
@@ -433,7 +434,7 @@ int mytel_focus_coord(struct telprop *tel,char *result)
 
 int mytel_date_get(struct telprop *tel,char *ligne)
 {
-   ouranos_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ligne);
    return 0;
 }
 
@@ -502,7 +503,7 @@ double ouranos_tsl(struct telprop *tel)
    static double tsl;
    /* --- temps sideral local */
    //ouranos_home(tel,"");
-   ouranos_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ss);
    sprintf(s,"mc_date2lst %s {%s}",ss,tel->home);
    mytel_tcleval(tel,s);
    sprintf(s,"expr ([lindex {%s} 0]+[lindex {%s} 1]/60.+[lindex {%s} 2]/3600.)*15",tel->interp->result,tel->interp->result,tel->interp->result);
@@ -664,22 +665,4 @@ int ouranos_match(struct telprop *tel)
    tel->ha00=tsl-tel->ra0;
    tel->dec00=tel->dec0;
    return 0;
-}
-
-/* ---------------------------------------------------------------*/
-/* ---------------------------------------------------------------*/
-/* ---------------------------------------------------------------*/
-/* ---------------------------------------------------------------*/
-void ouranos_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
-{
-   /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-	/*     (function = ::audace::date_sys2ut) */
-   char ligne[1024];
-   sprintf(ligne,"info commands  %s",function);
-   Tcl_Eval(interp,ligne);
-   if (strcmp(interp->result,function)==0) {
-      sprintf(ligne,"mc_date2iso8601 [%s now]",function);
-      Tcl_Eval(interp,ligne);
-      strcpy(s,interp->result);
-	}
 }

@@ -133,7 +133,6 @@ int dfm_getderive(struct telprop *tel,int *var,int *vdec);
 int dfm_settsl(struct telprop *tel);
 int dfm_home(struct telprop *tel, char *home_default);
 double dfm_tsl(struct telprop *tel,int *h, int *m,double *sec);
-void dfm_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
 int dfm_stat(struct telprop *tel,char *result,char *bits);
 int dfm_initfiducial(struct telprop *tel);

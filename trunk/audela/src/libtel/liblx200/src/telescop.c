@@ -190,11 +190,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       tel->refractionCorrection = 1; // la monture assure la correction de la refraction
    }
 
-      // je configure au protocole LX200 du FS2, different du protocole LX200 officiel
+   // je configure au protocole LX200 du FS2, different du protocole LX200 officiel
    if ( strcmp(tel->name,"FS2") == 0 ) {
-      tel->reponseSRSD = RETURN_NONE; // ne pas attendre de reponse a une commande Sr ou Sd
+      tel->reponseSRSD = RETURN_NONE; // ne pas attendre de reponse a une commande Sr, Sd ou MS
    } else {
-      tel->reponseSRSD = RETURN_CHAR; // attendre la reponse d'un caractere a une commande Sr ou Sd
+      tel->reponseSRSD = RETURN_CHAR; // attendre la reponse d'un caractere a une commande Sr, Sd ou MS
    }
 
    return 0;
@@ -469,8 +469,8 @@ int mytel_radec_goto(struct telprop *tel)
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    mytel_sendLX(tel, tel->reponseSRSD, s, "#:Sd%s%s#", tel->autostar_char, tel->interp->result);
 
-   // Send MS 
-   mytel_sendLX(tel, RETURN_CHAR, ss, "#:MS#");
+   // Send MS
+   mytel_sendLX(tel, tel->reponseSRSD, ss, "#:MS#");
    if (ss[0]=='1' ) {
       /* The telescope can not complete the slew and tells something*/
       strcpy(tel->msg, "Object below Horizon");
@@ -875,7 +875,7 @@ int mytel_home_get(struct telprop *tel,char *ligne)
       sprintf(ligne,"GPS %f %s %s%f 0",longitude,ew,signe,latitude);
    } else {
       // le modele FS2 ne possede pas de commande pour recupere la longitude et la latitude.
-      // A la place, je retourne la valeur qui est dasn la variable tel->homePosition
+      // A la place, je retourne la valeur qui est dans la variable tel->homePosition
       sprintf(ligne, tel->homePosition);
    }
    return 0;

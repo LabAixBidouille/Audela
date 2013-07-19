@@ -129,7 +129,6 @@ int temma_delete(struct telprop *tel);
 
 int temma_settsl(struct telprop *tel);
 double temma_tsl(struct telprop *tel,int *h, int *m,int *sec);
-void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
 #ifdef __cplusplus
 }

@@ -167,7 +167,6 @@ int eqmod_hadec_coord(struct telprop *tel,char *result);
 
 int eqmod_settsl(struct telprop *tel);
 double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec);
-void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
 int eqmod2_match(struct telprop *tel);
 
