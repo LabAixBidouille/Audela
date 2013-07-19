@@ -27,6 +27,7 @@ namespace eval ::foc {
 
 
       set visuNo $audace(visuNo)
+      set bufNo $audace(bufNo)
       set ext .fit
       set rac [file join $audace(rep_images) t]
       set panneau(foc,compteur) "0"
@@ -34,14 +35,25 @@ namespace eval ::foc {
       set step 3000
       set audace(focus,currentFocus) "-3000"
       set panneau(foc,fichier) ""
-      set buffer buf[visu$visuNo buf]
 
-      for {set i 1} {$i<=9} {incr i} {
+      #--   simule le chargement de la premiere image
+      loadima "${rac}1.fit"
+      incr panneau(foc,compteur)
 
-        loadima "$rac$i.fit"
-        incr panneau(foc,compteur)
+      #--attend le dessin de la box
+      vwait ::confVisu::private($visuNo,boxSize)
+      set panneau(foc,window) [ ::confVisu::getBox $audace(visuNo) ]
+
+      #--- Suppression de la zone selectionnee avec la souris
+      ::confVisu::deleteBox $visuNo
+
+      for {set i 1} {$i <=9} {incr i } {
+
+        loadima "${rac}$i.fit"
         incr audace(focus,currentFocus) $step
-        vwait ::confVisu::private($visuNo,boxSize)
+
+        buf$bufNo window $panneau(foc,window)
+        ::confVisu::autovisu $visuNo
 
         #--- Statistiques
         set s [ stat ]
@@ -50,10 +62,12 @@ namespace eval ::foc {
         set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
         set inten [ format "%.0f" [ expr $maxi-$fond ] ]
         #--- Fwhm
-        set naxis1 [ expr [ lindex [ $buffer getkwd NAXIS1 ] 1 ]-0 ]
-        set naxis2 [ expr [ lindex [ $buffer getkwd NAXIS2 ] 1 ]-0 ]
-        set box [ list 1 1 $naxis1 $naxis2 ]
-        lassign [ $buffer fwhm $box ] fwhmx fwhmy
+        set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
+        set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
+        #set box [ list 1 1 $naxis1 $naxis2 ]
+
+        set panneau(foc,box) [ list 1 1 $naxis1 $naxis2 ]
+        lassign [ buf$bufNo fwhm $panneau(foc,box) ] fwhmx fwhmy
 
         #--- Valeurs a l'ecran
         ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
@@ -65,8 +79,9 @@ namespace eval ::foc {
         ::foc::processHFD
         update idletasks
 
-        #--- Suppression de la zone selectionnee avec la souris
-        ::confVisu::deleteBox $audace(visuNo)
+        #-- simule la pose puis le chargement
+        after 2000
+        incr panneau(foc,compteur)
       }
 
       #--- Sauvegarde du fichier des traces
@@ -186,23 +201,13 @@ namespace eval ::foc {
 
    #---------------------------------------------------------------------------
    # processHFD
-   #    met a jour les graphiques
-   # Parametres : N° de la visu contenant l'image source et le nom du frame global
-   # Duree : entre 40 et 100 ms
+   #    ordonnace la mise a jour des graphiques
    #---------------------------------------------------------------------------
    proc processHFD { args } {
-      global audace panneau
-
-      set visuNo $audace(visuNo)
-      set this $audace(base).hfd
-      set box [::confVisu::getBox $visuNo]
-
-      #--   arrete si la box est vide
-      if { $box eq ""} { return }
 
       #--   etape 1 : extraction de la boite et de la coupe horizontale
       #--   peuple les vecteurs abscisses (::Vx) et ordonnees(::Vint) du graphe1
-      ::foc::createCoupeHoriz $box
+      ::foc::createCoupeHoriz
 
       #--   extraction des limites d'analyse
       #--   1/e² = 0.135 du pic (1/e-Squared Halfwidth)
@@ -221,33 +226,30 @@ namespace eval ::foc {
       } else {
          ::console::affiche_resultat "mesure invalide\n"
       }
-   }
+  }
 
    #---------------------------------------------------------------------------
    # createCoupeHoriz
    #    Extrait une image de la boite de selection
    #    binne l'image en Y
-   # Parametres : boite de selection
    #---------------------------------------------------------------------------
-   proc createCoupeHoriz { box } {
-      global audace conf
+   proc createCoupeHoriz { } {
+      global audace conf panneau
+
+      set visuNo $audace(visuNo)
+      set bufNo $audace(bufNo)
+      set rep $audace(rep_images)
+      set ext $conf(extension,defaut)
+
+      #--   normalise le fond du ciel a 0
+      buf$bufNo noffset 0
+
+      #--   sauve une copie de travail
+      buf$bufNo save [file join  $rep extract.fit]
 
       #--   recopie l'image vers le buffer dest
       set dest [::buf::create]
-      set rep $audace(rep_images)
-      set ext $conf(extension,defaut)
-      set visuNo $audace(visuNo)
-
-      buf[visu$visuNo buf] copyto $dest
-
-      #--   extrait la sous-image contenue dans la box
-      lassign $box x1 y1 x2 y2
-      buf$dest imaseries "WINDOW x1=$x1 y1=$y1 x2=$x2 y2=$y2"
-
-      #--   normalise le fond du ciel a 0
-      buf$dest noffset 0
-
-      buf$dest save [file join  $rep extract.fit]
+      buf$bufNo copyto $dest
 
       set naxis1 [buf$dest getpixelswidth]
       set naxis2 [buf$dest getpixelsheight]
@@ -257,12 +259,13 @@ namespace eval ::foc {
       #--   peuple le vecteur intensite du profil en X (variation entre {0|1})
       blt::vector create temporaire -watchunset 1
       temporaire offset 1                             ; #-- fait correspondre les indices et le N° de pixel
+
       buf$dest load [file join $rep biny$ext]         ; #-- recupere le fichier binne
       for {set col 1} {$col <=$naxis1} {incr col} {
          temporaire append [lindex [buf$dest getpix [list $col 1]] 1]
       }
       temporaire expr { temporaire/$temporaire(max) } ; #-- maintenant max == 1.0
-      ::Vintx set temporaire                          ; #-- trasnfert vers le vecteur graphique
+      ::Vintx set temporaire                          ; #-- transfert vers le vecteur graphique
 
       #--   peuple le vecteur ::Vx abscisse du graphe1
       ::Vx offset 1                                   ; #-- fait correspondre les indices et le N° de pixel
