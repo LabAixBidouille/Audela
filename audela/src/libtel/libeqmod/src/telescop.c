@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include "telescop.h"
+#include <libtel/libtel.h>
 #include <libtel/util.h>
 #if defined(OS_LIN)
 #include <ctype.h>
@@ -557,7 +558,7 @@ int tel_date_get(struct telprop *tel,char *ligne)
 /* --- called by : tel1 date --- */
 /* ----------------------------- */
 {
-   eqmod_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ligne);
 	/*
    time_t ltime;
    double jd;
@@ -1008,7 +1009,7 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
 	double dt;
 
 	dt=tel->dead_delay_slew/86400;
-   eqmod_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ss);
    sprintf(s,"mc_date2lst [mc_datescomp %s + %f] {%s} -format deg",ss,dt,tel->home);
 	//jd=mytel_sec2jd((int)time(&ltime));
    //sprintf(s,"mc_date2lst [expr %f + %f] {%s} -format deg",jd,dt,tel->home);
@@ -1016,23 +1017,6 @@ double eqmod_tsl(struct telprop *tel,int *h, int *m,double *sec)
    strcpy(ss,tel->interp->result);
    tsl=atof(tel->interp->result); /* en degres */
    return tsl;
-}
-
-void eqmod_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
-{
-   // Conversion TSystem -> TU pour l'interface Aud'ACE par exemple
-   // (function = ::audace::date_sys2ut)
-   char ligne[1024];
-   sprintf(ligne,"info commands %s",function);
-   Tcl_Eval(interp,ligne);
-   if (strcmp(interp->result,function)==0) {
-      sprintf(ligne,"mc_date2iso8601 [%s now]",function);
-      Tcl_Eval(interp,ligne);
-      strcpy(s,interp->result);
-   } else {
-      Tcl_Eval(interp,"mc_date2iso8601 now");
-      strcpy(s,interp->result);
-   }
 }
 
 int eqmod2_stopmotor(struct telprop *tel, int axe)

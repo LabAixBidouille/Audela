@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include "telescop.h"
+#include <libtel/libtel.h>
 #include <libtel/util.h>
 
 void mytel_logConsole(struct telprop *tel, char *messageFormat, ...) {
@@ -698,7 +699,7 @@ int mytel_focus_coord(struct telprop *tel,char *result)
 
 int mytel_date_get(struct telprop *tel,char *ligne)
 {
-   temma_GetCurrentFITSDate_function(tel->interp,ligne,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ligne);
    return 0;
 }
 
@@ -1346,7 +1347,7 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
    char ss[1024];
    static double tsl;
 
-   temma_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
+   libtel_GetCurrentUTCDate(tel->interp,ss);
    sprintf(s,"mc_date2lst %s {%s}",ss,tel->homePosition); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"lindex {%s} 0",ss); mytel_tcleval(tel,s);
@@ -1358,29 +1359,6 @@ double temma_tsl(struct telprop *tel,int *h, int *m,int *sec)
    sprintf(s,"expr ([lindex {%s} 0]+[lindex {%s} 1]/60.+[lindex {%s} 2]/3600.)*15",ss,ss,ss); mytel_tcleval(tel,s);
    tsl=atof(tel->interp->result); /* en degres */
    return tsl;
-}
-
-/* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-/*     (function = ::audace::date_sys2ut) */
-/* identique a eqmod_GetCurrentFITSDate_function */
-void temma_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
-{
-   /* substitution RZ */
-   Tcl_Eval(interp,"clock format [clock seconds] -format \"%Y-%m-%dT%H:%M:%S\" -timezone :UTC");
-   strcpy(s,interp->result);
-	
-   /*char ligne[1024];
-
-   sprintf(ligne,"info commands  %s",function);
-   Tcl_Eval(interp,ligne);
-   if (strcmp(interp->result,function)==0) {
-      sprintf(ligne,"mc_date2iso8601 [%s now]",function);
-      Tcl_Eval(interp,ligne);
-      strcpy(s,interp->result);
-   } else {
-      Tcl_Eval(interp,"mc_date2iso8601 now");
-      strcpy(s,interp->result);
-   }*/
 }
 
 /* Decode microcontroller RA */

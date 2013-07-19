@@ -106,6 +106,7 @@ int cmdTelModel(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 int cmdTelConsoleLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /* --- Utilitaire C-Tcl ---*/
+void libtel_GetCurrentUTCDate(Tcl_Interp *interp, char *s);
 void libtel_GetCurrentFITSDate(Tcl_Interp *interp, char *s);
 void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 int libtel_Getradec(Tcl_Interp *interp,char *tcllist,double *ra,double *dec);

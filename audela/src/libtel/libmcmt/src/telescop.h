@@ -444,7 +444,6 @@ void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
 void mytel_error(struct telprop *tel,int axisno, int err);
 int etel_home(struct telprop *tel, char *home_default);
 double etel_tsl(struct telprop *tel,int *h, int *m,int *sec);
-void etel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 void etel_radec_coord(struct telprop *tel, int flagha, int *voidangles,double *angledegs,int *angleucs);
 
 int mytel_get_register(struct telprop *tel,int axisno,int typ,int idx,int sidx,int *val);
