@@ -7,12 +7,52 @@
 
 namespace eval ::foc {
 
-   #------------   gestion du graphique classique -----------------
+   #------------   gestion du graphique classique --------------
 
-   #---------------------------------------------------------------
+   #------------------------------------------------------------
+   # updateFocGraphe
+   #    sous processus de cmdAcq de mise a jour des 4 graphiques
+   # Parametre : liste du n° d'image, intensite, fwhmx, fwhmy et contraste
+   #------------------------------------------------------------
+   proc updateFocGraphe { data } {
+      global audace
+
+      #--   raccourci
+      set w $audace(base).visufoc
+
+      lassign $data count inten fwhmx fwhmy contr
+
+      #--   Met a jour les vecteurs
+      ::vx append $count
+      ::vyg_inten append $inten
+      ::vyg_fwhmx append $fwhmx
+      ::vyg_fwhmy append $fwhmy
+      ::vyg_contr append $contr
+
+      #--   Met a jour les graphiques
+
+      #--- Affiche les 19 dernieres mesures glissantes + 1 vide
+      if { [::vx length] > 19 } {
+         lassign [ $w.g_fwhmx axis limits x ] xmin xmax
+         set xmin [expr { $xmin+1 }]
+         set xmax [expr { $xmax+1 }]
+         foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
+            $w.$childGraph axis configure x -min $xmin -max $xmax
+            $w.$childGraph axis configure x2 -min $xmin -max $xmax
+         }
+      }
+
+      #--- Ajuste l'echelle de droite a celle de gauche
+      foreach childGraph [list g_inten g_fwhmx g_fwhmy g_contr] {
+         lassign [ $w.$childGraph axis limits y ] ymin ymax
+         $w.$childGraph axis configure y2 -min $ymin -max $ymax
+      }
+   }
+
+   #------------------------------------------------------------
    # focGraphe
    #    cree le fenetre graphique de suivi des parametres de focalisation
-   #---------------------------------------------------------------
+   #------------------------------------------------------------
    proc focGraphe { } {
       global audace caption conf panneau
 
@@ -181,12 +221,12 @@ namespace eval ::foc {
       ::confColor::applyColor $this
    }
 
-   #---------------------------------------------------------------------------
+   #------------------------------------------------------------
    # createSimpleGraphe
    #    Cree une zone graphique
    # Parametre : nom du frame renfemant le graphique
    # Return : nom complet du graphe
-   #---------------------------------------------------------------------------
+   #------------------------------------------------------------
    proc createSimpleGraphe { frm width height } {
 
       set grph [ blt::graph $frm.graph -title "" \
@@ -204,10 +244,10 @@ namespace eval ::foc {
       return $grph
    }
 
-   #---------------------------------------------------------------------------
+   #------------------------------------------------------------
    # closeHFDGraphe
    #    ferme le graphique
-   #---------------------------------------------------------------------------
+   #------------------------------------------------------------
    proc closeHFDGraphe { } {
       global audace conf
 
