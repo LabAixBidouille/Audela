@@ -271,9 +271,9 @@ namespace eval ::foc {
       update
 
       #--   declare le rafraichissement automatique du graphique en fonction de l'image
-      if { [trace info variable ::confVisu::addFileNameListener] eq ""} {
-         ::confVisu::addFileNameListener $visuNo "::foc::processHFD $visuNo $this"
-      }
+      #if { [trace info variable ::confVisu::addFileNameListener] eq ""} {
+      #   ::confVisu::addFileNameListener $visuNo "::foc::processHFD $visuNo $this"
+      #}
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this
