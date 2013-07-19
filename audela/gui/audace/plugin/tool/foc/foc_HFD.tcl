@@ -15,12 +15,16 @@ namespace eval ::foc {
    proc traceCurve { } {
       global audace panneau
 
-      set this $audace(base).hfd
-
 #---  RZ : simulation
-
+		
+      set this $audace(base).hfd
       if {[winfo exists $this]} { closeHFDGraphe }
-      ::foc::initFocHFD
+      ::foc::HFDGraphe
+
+      #set this $audace(base).visufoc
+      #if {[winfo exists $this]} { closeHFDGraphe }
+      #::foc::focGraphe
+
 
       set visuNo $audace(visuNo)
       set ext .fit
@@ -58,7 +62,7 @@ namespace eval ::foc {
         #--- Actualise les donnees pour le fichier log
         append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
 
-        ::foc::updateHFDGraphe $audace(visuNo) $this
+        ::foc::processHFD $audace(visuNo) $this
         update idletasks
 
         #--- Suppression de la zone selectionnee avec la souris
@@ -181,12 +185,12 @@ namespace eval ::foc {
    }
 
    #---------------------------------------------------------------------------
-   # updateHFDGraphe
+   # processHFD
    #    met a jour les graphiques
    # Parametres : N° de la visu contenant l'image source et le nom du frame global
    # Duree : entre 40 et 100 ms
    #---------------------------------------------------------------------------
-   proc updateHFDGraphe { visuNo this args } {
+   proc processHFD { visuNo this args } {
       global panneau
 
       set box [::confVisu::getBox $visuNo]
@@ -210,7 +214,7 @@ namespace eval ::foc {
          set rayon [computeHFD ::Vintx $start $end]
 
          #--   etape 3 : met a jour les titres et les graphiques
-         ::foc::updateValues $this $start $end $rayon
+         ::foc::updateHFDGraphe $start $end $rayon
 
       } else {
          ::console::affiche_resultat "mesure invalide\n"
@@ -375,77 +379,6 @@ namespace eval ::foc {
       blt::vector destroy V1 temporaire
 
       return $rayon
-   }
-
-   #---------------------------------------------------------------------------
-   # updateValues
-   #    Met a jour les graphiques
-   # Parametres : chemin de la fenetre, limites et rayon
-   #---------------------------------------------------------------------------
-   proc updateValues { this limite1 limite2 rayon} {
-      global audace caption panneau
-
-      #--   met a jour la ligne au-dessus des graphiques
-      set diametre [format "%.2f" [expr { 2*$rayon }]]
-      set panneau(foc,hfd) [format $caption(foc,diamHFD) $diametre]
-
-      $this.h.fr1.graph marker configure limite1 -coords [list $limite1 -Inf $limite1 Inf]
-      $this.h.fr1.graph marker configure limite2 -coords [list $limite2 -Inf $limite2 Inf]
-
-      #--   deplace la ligne verticale du diametre
-      $this.h.fr2.graph marker configure rayon -coords [list $rayon -Inf $rayon Inf]
-
-      #$this.l.fr3.graph axis configure x -step 3000
-
-      #--   complete la serie HFD
-      ::VShfd append $diametre
-      ::VSpos append $audace(focus,currentFocus)
-
-      if {[::VShfd length] > 1} {
-          lassign [::foc::computeSlope] slopeLeft slopeRight step0Left step0Right
-
-          if {$slopeLeft != 0} {
-            set panneau(foc,slopeleft) "[format $caption(foc,slopeleft) $slopeLeft]"
-         }
-         if {$slopeRight != 0} {
-            set panneau(foc,sloperight) "[format $caption(foc,sloperight) $slopeRight]"
-            if {$step0Right > $step0Left} {
-               set panneau(foc,optimum) "[format $caption(foc,optimum) $step0Left $step0Right]"
-            } else {
-               set panneau(foc,optimum) "[format $caption(foc,optimum) $step0Right $step0Left]"
-            }
-         }
-      }
-   }
-
-   #---------------------------------------------------------------------------
-   # initFocHFD
-   #    initialise la fonction
-   # Parametre : aucun
-   #---------------------------------------------------------------------------
-   proc initFocHFD { } {
-      global audace panneau caption
-
-      set visuNo $::audace(visuNo)
-      set this $audace(base).hfd
-
-      set panneau(foc,slopeleft) ""    ; #-- affichage en bas du graphique
-      set panneau(foc,sloperight) ""   ; #-- affichage en bas du graphique
-      set panneau(foc,optimum) ""      ; #-- affichage en bas du graphique
-
-      #--   cree les vecteurs du graphique s'ils n'existent pas deja
-      if {"::Vradius" ni [blt::vector names]} {
-         #--   cree les vecteurs du graphique s'ils n'existent pas deja
-         blt::vector create ::Vx ::Vintx ::Vradius ::Vhfd ::VSpos ::VShfd -watchunset 1
-      }
-
-      #--   declare le rafraichissement automatique du graphique en fonction de l'image
-      if { [trace info variable ::confVisu::addFileNameListener] eq ""} {
-         ::confVisu::addFileNameListener $visuNo "::foc::updateHFDGraphe $visuNo $this"
-      }
-
-      #--   cree le graphique
-      ::foc::createHFDGraphe $visuNo $this
    }
 
 }

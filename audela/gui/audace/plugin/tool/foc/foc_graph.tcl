@@ -137,15 +137,68 @@ namespace eval ::foc {
    #------------   gestion du graphique HFD -----------------
 
    #---------------------------------------------------------------------------
-   # createHFDGraphe
-   #    cree la fenetre
-   # Parametres : N° visu et nom du frame
+   # updateHFDGraphe
+   #    Met a jour les graphiques
+   # Parametres : limites et rayon
    #---------------------------------------------------------------------------
-   proc createHFDGraphe { visuNo this } {
+   proc updateHFDGraphe { limite1 limite2 rayon} {
+      global audace caption panneau
+
+      set this $audace(base).hfd
+
+      #--   met a jour la ligne au-dessus des graphiques
+      set diametre [format "%.2f" [expr { 2*$rayon }]]
+      set panneau(foc,hfd) [format $caption(foc,diamHFD) $diametre]
+
+      $this.h.fr1.graph marker configure limite1 -coords [list $limite1 -Inf $limite1 Inf]
+      $this.h.fr1.graph marker configure limite2 -coords [list $limite2 -Inf $limite2 Inf]
+
+      #--   deplace la ligne verticale du diametre
+      $this.h.fr2.graph marker configure rayon -coords [list $rayon -Inf $rayon Inf]
+
+      #--   complete la serie HFD
+      ::VShfd append $diametre
+      ::VSpos append $audace(focus,currentFocus)
+
+      if {[::VShfd length] > 1} {
+          lassign [::foc::computeSlope] slopeLeft slopeRight step0Left step0Right
+
+          if {$slopeLeft != 0} {
+            set panneau(foc,slopeleft) "[format $caption(foc,slopeleft) $slopeLeft]"
+         }
+         if {$slopeRight != 0} {
+            set panneau(foc,sloperight) "[format $caption(foc,sloperight) $slopeRight]"
+            if {$step0Right > $step0Left} {
+               set panneau(foc,optimum) "[format $caption(foc,optimum) $step0Left $step0Right]"
+            } else {
+               set panneau(foc,optimum) "[format $caption(foc,optimum) $step0Right $step0Left]"
+            }
+         }
+      }
+   }
+
+   #------------------------------------------------------------
+   # HFDGraphe
+   #    cree la fenetre
+   #------------------------------------------------------------
+   proc HFDGraphe {  } {
       global audace conf caption
+
+      set visuNo $::audace(visuNo)
+      set this $audace(base).hfd
 
       if { [ winfo exists $this ] } {
          destroy $this
+      }
+
+      set panneau(foc,slopeleft) ""    ; #-- affichage en bas du graphique
+      set panneau(foc,sloperight) ""   ; #-- affichage en bas du graphique
+      set panneau(foc,optimum) ""      ; #-- affichage en bas du graphique
+
+      #--   cree les vecteurs du graphique s'ils n'existent pas deja
+      if {"::Vradius" ni [blt::vector names]} {
+         #--   cree les vecteurs du graphique s'ils n'existent pas deja
+         blt::vector create ::Vx ::Vintx ::Vradius ::Vhfd ::VSpos ::VShfd -watchunset 1
       }
 
       #--- Creation de la fenetre
@@ -216,6 +269,11 @@ namespace eval ::foc {
       pack $this.b -side top -fill x
 
       update
+
+      #--   declare le rafraichissement automatique du graphique en fonction de l'image
+      if { [trace info variable ::confVisu::addFileNameListener] eq ""} {
+         ::confVisu::addFileNameListener $visuNo "::foc::processHFD $visuNo $this"
+      }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this
@@ -304,7 +362,7 @@ namespace eval ::foc {
       label $this.lab4 -text "$caption(foc,fwhm__y) $caption(foc,egale) $fwhmy"
       pack $this.lab4 -padx 5 -pady 2
       label $this.lab5 -text "$caption(foc,contraste) $caption(foc,egale) $contr"
-      pack $this.lab5 -padx 5 -pady 2
+     pack $this.lab5 -padx 5 -pady 2
       update
 
       #--- Mise a jour dynamique des couleurs
@@ -448,6 +506,22 @@ namespace eval ::foc {
 
          #--- Je supprime la fenetre s'il n'y a plus de pose en cours
          destroy $w
+      }
+   }
+
+   #------------------------------------------------------------
+   # cmdSauveLog
+   #    sous processus de cmdStop
+   # Parametre : chemin du fichier
+   #------------------------------------------------------------
+   proc cmdSauveLog { namefile } {
+      global panneau
+
+      if [ catch { open [ file join $::audace(rep_log) $namefile ] w } fileId ] {
+         return
+      } else {
+         puts -nonewline $fileId $panneau(foc,fichier)
+         close $fileId
       }
    }
 
