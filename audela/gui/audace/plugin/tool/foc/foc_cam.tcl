@@ -75,8 +75,12 @@ namespace eval ::foc {
             #--   Ouvre le graphique adhoc s'il n'existe pas deja
             if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
                ::foc::focGraphe
+               #--   finalise la ligne de titre
+               append panneau(foc,fichier) "\n"
             } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
                ::foc::HFDGraphe
+               #--   finalise la ligne de titre
+               append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
             }
          }
 
@@ -177,19 +181,20 @@ namespace eval ::foc {
             ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
             update
 
-            #--- Actualise les donnees pour le fichier log
-            append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
-
             #--  Traitement differentie selon focuser
             if { $panneau(foc,typefocuser) == "0"} {
                #--   Mise a jour des graphiques
                ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
+               #--- Actualise les donnees pour le fichier log
+               append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
             } else {
                #--   Calculs et Mise a jour des graphiques
                ::foc::processHFD
+               #--- Actualise les donnees pour le fichier log
+               append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t[lindex $panneau(foc,hfd) 2]\t$audace(focus,currentFocus)\n"
             }
 
-           after idle ::foc::cmdAcq
+            after idle ::foc::cmdAcq
 
          }
 

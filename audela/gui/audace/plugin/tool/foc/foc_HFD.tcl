@@ -13,13 +13,18 @@ namespace eval ::foc {
    #    processus de mesure pour differentes positions
    #---------------------------------------------------------------------------
    proc traceCurve { } {
-      global audace panneau
+      global audace caption panneau
 
 #---  RZ : simulation
 
       set this $audace(base).hfd
       if {[winfo exists $this]} { closeHFDGraphe }
       ::foc::HFDGraphe
+
+      #--   finalise la ligne de titre
+      append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
+
+      ::console::affiche_resultat "$panneau(foc,fichier)\n"
 
       #set this $audace(base).visufoc
       #if {[winfo exists $this]} { closeHFDGraphe }
@@ -34,7 +39,6 @@ namespace eval ::foc {
       set panneau(foc,typefocuser) "1"
       set step 3000
       set audace(focus,currentFocus) "-3000"
-      set panneau(foc,fichier) ""
 
       #--   simule le chargement de la premiere image
       loadima "${rac}1.fit"
@@ -64,20 +68,20 @@ namespace eval ::foc {
         #--- Fwhm
         set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
         set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
-        #set box [ list 1 1 $naxis1 $naxis2 ]
 
-        set panneau(foc,box) [ list 1 1 $naxis1 $naxis2 ]
-        lassign [ buf$bufNo fwhm $panneau(foc,box) ] fwhmx fwhmy
+        set box [ list 1 1 $naxis1 $naxis2 ]
+
+        lassign [ buf$bufNo fwhm $box ] fwhmx fwhmy
 
         #--- Valeurs a l'ecran
         ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
         update
 
-        #--- Actualise les donnees pour le fichier log
-        append panneau(foc,fichier) "$inten $fwhmx $fwhmy $contr \n"
-
         ::foc::processHFD
         update idletasks
+
+        #--- Actualise les donnees pour le fichier log
+        append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t[lindex $panneau(foc,hfd) 2]\t$audace(focus,currentFocus)\n"
 
         #-- simule la pose puis le chargement
         after 2000
@@ -159,19 +163,11 @@ namespace eval ::foc {
    #    par ajustement lineaire
    #---------------------------------------------------------------------------
    proc getParam { side mHfd mPos } {
-      global caption
-
-      #set caption(foc,trend) "\nside %s : HFD = %s %s %s $caption(foc,pas) \nHF=0 pour %s $caption(foc,pas)"
-      #::console::affiche_resultat "\nvecteur $side $mHfd\n$mPos\n"
 
       blt::vector create xLine yLine w -watchunset 1
       yLine set $mHfd
       xLine set $mPos
       set n [yLine length]
-
-      #::console::affiche_resultat "$yLine(:)\n"
-      #::console::affiche_resultat "$xLine(:)\n"
-      #::console::affiche_resultat "n $n\n"
 
       #--   calcule les parametres de HFD= A + pente * pas de focuser
       w length $n             ; #--matrice de longueur n remplie de 0
@@ -191,8 +187,6 @@ namespace eval ::foc {
       } else {
          set step0 "ind"
       }
-
-      #::console::affiche_resultat "\ngetParam $side $constante $slope -> step0 = $step0\n"
 
       blt::vector destroy xLine yLine w
 
@@ -234,7 +228,7 @@ namespace eval ::foc {
    #    binne l'image en Y
    #---------------------------------------------------------------------------
    proc createCoupeHoriz { } {
-      global audace conf panneau
+      global audace conf
 
       set visuNo $audace(visuNo)
       set bufNo $audace(bufNo)
@@ -251,8 +245,8 @@ namespace eval ::foc {
       set dest [::buf::create]
       buf$bufNo copyto $dest
 
-      set naxis1 [buf$dest getpixelswidth]
-      set naxis2 [buf$dest getpixelsheight]
+      set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
+      set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
 
       ttscript2 "IMA/SERIES \"$rep\" extract . . $ext  \"$rep\" biny . $ext BINY y1=1 y2=$naxis2 height=1 bitpix=32"
 
