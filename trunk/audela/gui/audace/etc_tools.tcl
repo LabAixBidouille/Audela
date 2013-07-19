@@ -166,11 +166,11 @@ proc etc_set_array_cameras { } {
    array set cameras [list {OWL SWIR 640 0deg}        { 640  512 15e-6   15e-6    [expr 264000/4.]   6.55  [expr 131/4.]   0.75 1}] ; # T=0°C
    array set cameras [list {OWL SWIR 640 -40deg}      { 640  512 15e-6   15e-6    [expr 131/4.]      6.55  [expr 131/4.]   0.75 1}] ; # T=-40°C
 
-   #--   Point Grey
-   array set cameras [list {GS-U3-28S4M}    { 1928  1448 3.69e-6   3.69e-6   0.79   0.16  11.01   0.71 1}] ; # USB3-Sony ICX687 CCD
-   array set cameras [list {GS-U3-28S5M}    { 1920  1440 4.54e-6   4.54e-6   1.27   0.24   9.39   0.67 1}] ; # USB3-Sony ICX674 CCD
-   array set cameras [list {GS-U3-60S6M}    { 2736  2192 4.54e-6   4.54e-6   0.82   0.23  10.54   0.73 1}] ; # USB3-Sony ICX694 CCD
-   array set cameras [list {GS-U3-91S6M}    { 3376  2704 3.69e-6   3.69e-6   0.42   0.16   9.43   0.75 1}] ; # USB3-Sony ICX814 CCD
+   #--   Point Grey U3->USB3 Capteurs CCD Sony
+   array set cameras [list {GS-U3-28S4M ICX687}    { 1928  1448 3.69e-6   3.69e-6   0.79   0.16  11.01   0.71 1}] ; # WellDepth=9387 e-
+   array set cameras [list {GS-U3-28S5M ICX674}    { 1920  1440 4.54e-6   4.54e-6   1.27   0.24   9.39   0.67 1}] ; # WellDepth=14693 e-
+   array set cameras [list {GS-U3-60S6M ICX694}    { 2736  2192 4.54e-6   4.54e-6   0.82   0.23  10.54   0.73 1}] ; # WellDepth=14446 e-
+   array set cameras [list {GS-U3-91S6M ICX814}    { 3376  2704 3.69e-6   3.69e-6   0.42   0.16   9.43   0.75 1}] ; # WellDepth=9996 e-
 
 }
 
