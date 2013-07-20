@@ -131,6 +131,9 @@ namespace eval ::foc {
       set naxis2 [buf$bufNo getpixelsheight]
 
       lassign [ ::prtr::searchMax [list 1 1 $naxis1 $naxis2] $bufNo] x y
+
+      ::foc::updateLocator $naxis1 $naxis2 $x $y
+
       set x1 [expr { int(round($x)-25) }]
       set x2 [expr { int(round($x)+25) }]
       set y1 [expr { int(round($y)-25) }]
