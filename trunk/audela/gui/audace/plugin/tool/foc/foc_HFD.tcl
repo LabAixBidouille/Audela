@@ -74,6 +74,10 @@ namespace eval ::foc {
          }
 
          buf$bufNo window $panneau(foc,window)
+
+		 #--   normalise le fond du ciel a 0
+         buf$bufNo noffset 0
+
          ::confVisu::autovisu $visuNo
 
          #--- Statistiques
@@ -275,9 +279,6 @@ namespace eval ::foc {
       set bufNo $audace(bufNo)
       set rep $audace(rep_images)
       set ext $conf(extension,defaut)
-
-      #--   normalise le fond du ciel a 0
-      buf$bufNo noffset 0
 
       #--   sauve une copie de travail
       buf$bufNo save [file join  $rep extract.fit]
