@@ -177,6 +177,42 @@ namespace eval ::foc {
       }
    }
 
+   #---------------------------------------------------------------------------
+   #  updateLocator
+   #    Cree une representation de l'image et dela position de l'etoile
+   # Parametres : naxis1 et naxis2 de l'image initiale, position x,y de l'etoile
+   #---------------------------------------------------------------------------
+   proc updateLocator { naxis1 naxis2 xstar ystar } {
+      variable panneau
+      global audace
+
+      set grph0 $audace(base).hfd.h.fr0.graph
+
+      if {$naxis1 > $naxis2} {
+         set x2 99
+         set xstar [expr { int($x2*$xstar/$naxis1) }]
+         set y2 [expr { int(99*$naxis2/$naxis1) }]
+         set ystar [expr { int($y2*$ystar/$naxis2) }]
+      } else {
+         set x2 [expr { int(99*$naxis1/$naxis2) }]
+         set y2 99
+         set xstar [expr { int($x2*$xstar/$naxis1) }]
+         set ystar [expr { int($y2*$ystar/$naxis2) }]
+      }
+
+      $grph0 element create color_invariant_star -xdata $xstar -ydata $ystar \
+         -symbol circle -fill yellow -hide no
+      $grph0 marker create line -name vert1 -coords [list 1 1 1 $y2] \
+         -linewidth 1 -outline blue -hide no
+      $grph0 marker create line -name hrz2 -coords [list 1 $y2 $x2 $y2] \
+         -linewidth 1 -outline blue -hide no
+      $grph0 marker create line -name vert2 -coords [list $x2 1 $x2 $y2] \
+         -linewidth 1 -outline blue -hide no
+      $grph0 marker create line -name hrz1 -coords [list 1 2 $x2 2] \
+         -linewidth 1 -outline blue -hide no
+      update
+   }
+
    #------------------------------------------------------------
    # HFDGraphe
    #    cree la fenetre
@@ -216,6 +252,15 @@ namespace eval ::foc {
       frame $this.h
       pack $this.h -side top -fill x
 
+      frame $this.h.fr0 -width 100 -height 100
+
+         set grph0 [::foc::createSimpleGraphe $this.h.fr0 100 100]
+         $grph0 configure -plotborderwidth 0 -relief flat
+         $grph0 axis configure x -min 1 -max 100 -hide yes
+         $grph0 axis configure y -min 1 -max 100 -hide yes
+
+      pack $this.h.fr0 -side left
+
       frame $this.h.fr1 -width 100 -height 100
 
          set grph1 [::foc::createSimpleGraphe $this.h.fr1 100 100]
@@ -248,9 +293,9 @@ namespace eval ::foc {
       pack $this.h.fr2 -side right
 
       frame $this.l
-         frame $this.l.fr3 -width 200 -height 200
+         frame $this.l.fr3 -width 300 -height 300
 
-            set grph3 [::foc::createSimpleGraphe $this.l.fr3 200 200]
+         	set grph3 [::foc::createSimpleGraphe $this.l.fr3 300 300]
             #--   configure le graphique
             $grph3 element create color_invariant_lineR -xdata ::VSpos -ydata ::VShfd \
                -linewidth 1 -color blue -symbol "scross" -hide no
