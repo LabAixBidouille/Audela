@@ -17,81 +17,112 @@ namespace eval ::foc {
 
 #---  RZ : simulation
 
-      set this $audace(base).hfd
-      if {[winfo exists $this]} { closeHFDGraphe }
-      ::foc::HFDGraphe
-
-      #--   finalise la ligne de titre
-      append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
-
-      ::console::affiche_resultat "$panneau(foc,fichier)\n"
-
-      #set this $audace(base).visufoc
-      #if {[winfo exists $this]} { closeHFDGraphe }
-      #::foc::focGraphe
-
-
       set visuNo $audace(visuNo)
       set bufNo $audace(bufNo)
       set ext .fit
       set rac [file join $audace(rep_images) t]
       set panneau(foc,compteur) "0"
-      set panneau(foc,typefocuser) "1"
-      set step 3000
-      set audace(focus,currentFocus) "-3000"
+
+      set panneau(foc,typefocuser) "1" ; # a mettre a 0 pour le graphiqe normal
+
+      switch -exact $panneau(foc,typefocuser) {
+         0  {  #--   finalise la ligne de titre
+               append panneau(foc,fichier) "\n"
+               set this $audace(base).visufoc
+               if {[winfo exists $this]} { closeHFDGraphe }
+               ::foc::focGraphe
+            }
+         1  {  #--   finalise la ligne de titre
+               append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
+               set this $audace(base).hfd
+               if {[winfo exists $this]} { closeHFDGraphe }
+               ::foc::HFDGraphe
+               set step 3000
+               set audace(focus,currentFocus) "-3000"
+            }
+      }
 
       #--   simule le chargement de la premiere image
       loadima "${rac}1.fit"
       incr panneau(foc,compteur)
+      set panneau(foc,window) [searchBrightestStar]
 
       #--attend le dessin de la box
-      vwait ::confVisu::private($visuNo,boxSize)
-      set panneau(foc,window) [ ::confVisu::getBox $audace(visuNo) ]
-
+      #vwait ::confVisu::private($visuNo,boxSize)
+      #set panneau(foc,window) [ ::confVisu::getBox $audace(visuNo) ]
       #--- Suppression de la zone selectionnee avec la souris
-      ::confVisu::deleteBox $visuNo
+      #::confVisu::deleteBox $visuNo
 
       for {set i 1} {$i <=9} {incr i } {
 
-        loadima "${rac}$i.fit"
-        incr audace(focus,currentFocus) $step
+         loadima "${rac}$i.fit"
+         if {$panneau(foc,typefocuser) ==1} {
+            incr audace(focus,currentFocus) $step
+         }
 
-        buf$bufNo window $panneau(foc,window)
-        ::confVisu::autovisu $visuNo
+         buf$bufNo window $panneau(foc,window)
+         ::confVisu::autovisu $visuNo
 
-        #--- Statistiques
-        set s [ stat ]
-        set maxi [ lindex $s 2 ]
-        set fond [ lindex $s 7 ]
-        set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
-        set inten [ format "%.0f" [ expr $maxi-$fond ] ]
-        #--- Fwhm
-        set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
-        set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
+         #--- Statistiques
+         set s [ stat ]
+         set maxi [ lindex $s 2 ]
+         set fond [ lindex $s 7 ]
+         set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
+         set inten [ format "%.0f" [ expr $maxi-$fond ] ]
+         #--- Fwhm
+         set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
+         set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
 
-        set box [ list 1 1 $naxis1 $naxis2 ]
+         set box [ list 1 1 $naxis1 $naxis2 ]
+         lassign [ buf$bufNo fwhm $box ] fwhmx fwhmy
 
-        lassign [ buf$bufNo fwhm $box ] fwhmx fwhmy
+         #--- Valeurs a l'ecran
+         ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
+         update
 
-        #--- Valeurs a l'ecran
-        ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
-        update
+         if {$panneau(foc,typefocuser) ==0} {
+            #--   Mise a jour des graphiques
+            ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
+            #--- Actualise les donnees pour le fichier log
+            append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
+         } else {
+            ::foc::processHFD
+            update idletasks
+            #--- Actualise les donnees pour le fichier log
+            append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
 
-        ::foc::processHFD
-        update idletasks
+         }
 
-        #--- Actualise les donnees pour le fichier log
-        append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t[lindex $panneau(foc,hfd) 2]\t$audace(focus,currentFocus)\n"
-
-        #-- simule la pose puis le chargement
-        after 2000
-        incr panneau(foc,compteur)
+         #-- simule la pose puis le chargement
+         after 2000
+         incr panneau(foc,compteur)
       }
 
       #--- Sauvegarde du fichier des traces
       ::foc::cmdSauveLog foc.log
 
 #---  RZ : fin simulation
+   }
+
+   #---------------------------------------------------------------------------
+   # searchBrightestStar
+   #    cherche l'etoile la plus brillante
+   #  retourne la box entourant l'etoile
+   #---------------------------------------------------------------------------
+   proc searchBrightestStar { } {
+      global audace
+
+      set bufNo $audace(bufNo)
+      set naxis1 [buf$bufNo getpixelswidth]
+      set naxis2 [buf$bufNo getpixelsheight]
+
+      lassign [ ::prtr::searchMax [list 1 1 $naxis1 $naxis2] $bufNo] x y
+      set x1 [expr { int(round($x)-25) }]
+      set x2 [expr { int(round($x)+25) }]
+      set y1 [expr { int(round($y)+25) }]
+      set y2 [expr { int(round($y)-25) }]
+
+      return [list $x1 $y1 $x2 $y2]
    }
 
    #---------------------------------------------------------------------------

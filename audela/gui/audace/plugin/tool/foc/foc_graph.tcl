@@ -147,8 +147,8 @@ namespace eval ::foc {
       set this $audace(base).hfd
 
       #--   met a jour la ligne au-dessus des graphiques
-      set diametre [format "%.2f" [expr { 2*$rayon }]]
-      set panneau(foc,hfd) [format $caption(foc,diamHFD) $diametre]
+      set panneau(foc,hfd) [format "%.2f" [expr { 2*$rayon }]]
+      set panneau(foc,resulthfd) [format $caption(foc,diamHFD) $panneau(foc,hfd)]
 
       $this.h.fr1.graph marker configure limite1 -coords [list $limite1 -Inf $limite1 Inf]
       $this.h.fr1.graph marker configure limite2 -coords [list $limite2 -Inf $limite2 Inf]
@@ -157,7 +157,7 @@ namespace eval ::foc {
       $this.h.fr2.graph marker configure rayon -coords [list $rayon -Inf $rayon Inf]
 
       #--   complete la serie HFD
-      ::VShfd append $diametre
+      ::VShfd append $panneau(foc,hfd)
       ::VSpos append $audace(focus,currentFocus)
 
       if {[::VShfd length] > 1} {
@@ -191,6 +191,8 @@ namespace eval ::foc {
          destroy $this
       }
 
+      set panneau(foc,hfd) ""          ; #-- valeur de HFD
+      set panneau(foc,resulthfd) ""    ; #-- titre HFD= du graphique
       set panneau(foc,slopeleft) ""    ; #-- affichage en bas du graphique
       set panneau(foc,sloperight) ""   ; #-- affichage en bas du graphique
       set panneau(foc,optimum) ""      ; #-- affichage en bas du graphique
@@ -208,7 +210,7 @@ namespace eval ::foc {
       wm geometry $this $conf(visufoc,position)
       wm protocol $this WM_DELETE_WINDOW { ::foc::closeHFDGraphe }
 
-      label $this.hfd -textvariable panneau(foc,hfd)
+      label $this.hfd -textvariable panneau(foc,resulthfd)
       pack $this.hfd -side top -fill x
 
       frame $this.h
