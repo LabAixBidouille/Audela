@@ -168,7 +168,7 @@ namespace eval ::foc {
 
             incr panneau(foc,compteur)
 
-			            #--   Normalise le fond du ciel
+            #--   Normalise le fond du ciel
             $buffer noffset 0
 
             #--- Statistiques
