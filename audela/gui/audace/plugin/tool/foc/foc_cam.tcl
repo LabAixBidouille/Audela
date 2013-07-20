@@ -83,6 +83,9 @@ namespace eval ::foc {
                append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
             }
          }
+         #--   Calcule la taille de la box
+         lassign $panneau(foc,window) x1 y1 x2 y2
+         set panneau(foc,box) [list 1 1 [expr { $x2-$x1+1 }] [expr { $y2-$y1+1 }]]
 
          cam$audace(camNo) window $panneau(foc,window)
 
@@ -172,11 +175,7 @@ namespace eval ::foc {
             set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
             set inten [ format "%.0f" [ expr $maxi-$fond ] ]
             #--- Fwhm
-            set naxis1 [ expr [ lindex [ $buffer getkwd NAXIS1 ] 1 ]-0 ]
-            set naxis2 [ expr [ lindex [ $buffer getkwd NAXIS2 ] 1 ]-0 ]
-            set box [ list 1 1 $naxis1 $naxis2 ]
-            lassign [ $buffer fwhm $box ] fwhmx fwhmy
-
+            lassign [ $buffer fwhm $panneau(foc,box) ] fwhmx fwhmy
             #--- Valeurs a l'ecran
             ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
             update

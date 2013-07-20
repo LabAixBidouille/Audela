@@ -23,7 +23,7 @@ namespace eval ::foc {
       set rac [file join $audace(rep_images) t]
       set panneau(foc,compteur) "0"
 
-      set panneau(foc,typefocuser) "1" ; # a mettre a 0 pour le graphiqe normal
+      set panneau(foc,typefocuser) "1" ; # mettre a 0 pour le graphique normal et a 1 pour le graphique hfd
 
       switch -exact $panneau(foc,typefocuser) {
          0  {  #--   finalise la ligne de titre
@@ -43,19 +43,32 @@ namespace eval ::foc {
       }
 
       #--   simule le chargement de la premiere image
-      loadima "${rac}1.fit"
+      loadima "${rac}1$ext"
+      update
+
       incr panneau(foc,compteur)
       set panneau(foc,window) [searchBrightestStar]
+      lassign $panneau(foc,window) x1 y1 x2 y2
+      set panneau(foc,box) [list 1 1 [expr { $x2-$x1+1 }] [expr { $y2-$y1+1 }]]
 
-      #--attend le dessin de la box
-      #vwait ::confVisu::private($visuNo,boxSize)
-      #set panneau(foc,window) [ ::confVisu::getBox $audace(visuNo) ]
-      #--- Suppression de la zone selectionnee avec la souris
-      #::confVisu::deleteBox $visuNo
+      #--   attend 2 sec
+      after 2000
+
+      #--   dessine la boite
+      ::confVisu::setBox $visuNo $panneau(foc,window)
+      update
+      #::confVisu::autovisu $visuNo
+
+      #--   attend 2 sec
+      after 2000
+
+      #--   supprime la boite
+      ::confVisu::deleteBox $visuNo
+      update
 
       for {set i 1} {$i <=9} {incr i } {
+         loadima "${rac}${i}$ext"
 
-         loadima "${rac}$i.fit"
          if {$panneau(foc,typefocuser) ==1} {
             incr audace(focus,currentFocus) $step
          }
@@ -69,12 +82,9 @@ namespace eval ::foc {
          set fond [ lindex $s 7 ]
          set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
          set inten [ format "%.0f" [ expr $maxi-$fond ] ]
-         #--- Fwhm
-         set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
-         set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
 
-         set box [ list 1 1 $naxis1 $naxis2 ]
-         lassign [ buf$bufNo fwhm $box ] fwhmx fwhmy
+         #--- Fwhm
+         lassign [ buf$bufNo fwhm $panneau(foc,box) ] fwhmx fwhmy
 
          #--- Valeurs a l'ecran
          ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
@@ -119,8 +129,8 @@ namespace eval ::foc {
       lassign [ ::prtr::searchMax [list 1 1 $naxis1 $naxis2] $bufNo] x y
       set x1 [expr { int(round($x)-25) }]
       set x2 [expr { int(round($x)+25) }]
-      set y1 [expr { int(round($y)+25) }]
-      set y2 [expr { int(round($y)-25) }]
+      set y1 [expr { int(round($y)-25) }]
+      set y2 [expr { int(round($y)+25) }]
 
       return [list $x1 $y1 $x2 $y2]
    }
