@@ -75,7 +75,7 @@ namespace eval ::foc {
 
          buf$bufNo window $panneau(foc,window)
 
-		 #--   normalise le fond du ciel a 0
+         #--   normalise le fond du ciel a 0
          buf$bufNo noffset 0
 
          ::confVisu::autovisu $visuNo
