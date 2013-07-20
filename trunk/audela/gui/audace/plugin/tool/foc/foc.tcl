@@ -139,6 +139,8 @@ namespace eval ::foc {
       set panneau(foc,deplace)           "$caption(foc,aller_a)"
       set panneau(foc,initialise)        "$caption(foc,init)"
       set panneau(foc,dispTimeAfterId)   ""
+      set panneau(foc,window)            ""
+      set panneau(foc,box)               ""
       set panneau(foc,pose_en_cours)     "0"
       set panneau(foc,demande_arret)     "0"
       set panneau(foc,avancement_acq)    "1"
