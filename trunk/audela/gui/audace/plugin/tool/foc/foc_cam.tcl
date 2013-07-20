@@ -188,10 +188,10 @@ namespace eval ::foc {
                #--- Actualise les donnees pour le fichier log
                append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
             } else {
-               #--   Calculs et Mise a jour des graphiques
+               #--   Calculs et Mise a jour des graphiques : 65 a 80 ms
                ::foc::processHFD
                #--- Actualise les donnees pour le fichier log
-               append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t[lindex $panneau(foc,hfd) 2]\t$audace(focus,currentFocus)\n"
+               append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
             }
 
             after idle ::foc::cmdAcq
