@@ -3,114 +3,102 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>
 <p class="date">Date de mise à jour : 20 juillet 2013</p>
 <h1>Focalisation</h1>
-<p>Cet outil permet d'am&#233;liorer la focalisation. Le
+<p>Cet outil permet d'améliorer la focalisation. Le
 processus est simple :<br />
--faire varier la focalisation (en agissant manuellement ou par
-des moteurs),<br />
--mesurer le r&#233;sultat (intensit&#233;, FWHM, contraste, HFD)
-dans une petite fen&#234;tre autour de l'&#233;toile cible,<br />
--choisir la position optimale (manuellement ou avec un compteur
-de pas). C'est certainement cette &#233;tape qui est la plus
-difficile car, &#224; d&#233;faut de pouvoir reproduire la
+- Faire varier la focalisation (en agissant manuellement ou par
+des moteurs).<br />
+- Mesurer le résultat (intensité, FWHM, contraste, HFD)
+dans une petite fenêtre autour de l'étoile cible.<br />
+- Choisir la position optimale (manuellement ou avec un compteur
+de pas). C'est certainement cette étape qui est la plus
+difficile car, à défaut de pouvoir reproduire la
 position, il faut se contenter d'observer la succession des
-r&#233;sultats (CF illustrations ci-dessous r&#233;alis&#233;es
-sur la m&#234;me s&#233;rie d'images).<br />
-Note : HFD (Half Flux Diameter) donne le diam&#232;tre contenant
-50% du flux sans faire l'hypoth&#232;se d'une r&#233;partition
-gaussienne (cas de FWHM). Elles peuvent &#234;tre tr&#232;s
-proches ou tr&#232;s diff&#233;rentes notamment en cas de forte
-d&#233;focalisation.</p>
+résultats (cf. les illustrations ci-dessous réalisées
+sur la même série d'images).<br />
+Note : HFD (Half Flux Diameter) donne le diamètre contenant
+50% du flux sans faire l'hypothèse d'une répartition
+gaussienne (cas de FWHM). Elles peuvent être très
+proches ou très différentes notamment en cas de forte
+défocalisation.</p>
 <h2>Configurations du panneau</h2>
-<p>Le panneau comporte a minima ce qui est n&#233;cessaire &#224;
-l'acquisition (centrage, fen&#234;trage, temps depose). Sa
-configuration s'adapte au focuser (ou &#224; son absence) et
-permet de suivre la variation de la qualit&#233; de la mise au
-point &#224; l'aide d'une fen&#234;tre d'informations et d'un
-graphique gradu&#233; en num&#233;ro d'image ou en pas
+<p>Le panneau comporte a minima ce qui est nécessaire à
+l'acquisition (centrage, fenêtrage, temps de pose). Sa
+configuration s'adapte au focuser (ou à son absence) et
+permet de suivre la variation de la qualité de la mise au
+point à l'aide d'une fenêtre d'informations et d'un
+graphique gradué en numéro d'image ou en pas
 compteur.</p>
 <table>
 <tbody>
 <tr>
 <th align="center" width="15">Configuration</th>
 <th align="center">Panneau</th>
-<th align="center">Suivi de la qualit&#233; d'une image</th>
-<th align="center">Suivi des r&#233;glages successifs de la mise
+<th align="center">Suivi de la qualité d'une image</th>
+<th align="center">Suivi des réglages successifs de la mise
 au point</th>
 </tr>
 <tr>
 <td align="center" width="15">Pas de focuser</td>
-<td align="center"><img style="width: 134px; height: 340px;" src=
-"images/pas_focuser.gif" /></td>
-<td align="center"><img style="width: 115px; height: 147px;" src=
-"images/qualite_foc.gif" /></td>
-<td align="center" width="330"><img style=
-"width: 325px; height: 396px;" src="images/graf_4.gif" /></td>
+<td align="center"><img style="width: 134px; height: 340px;" src="images/pas_focuser.gif" /></td>
+<td align="center"><img style="width: 115px; height: 147px;" src="images/qualite_foc.gif" /></td>
+<td align="center" width="330"><img style="width: 325px; height: 396px;" src="images/graf_4.gif" /></td>
 </tr>
 <tr>
 <td align="center" width="15">Focuser manuel (focuserlx200,
 focuserjmi, focusert193)</td>
-<td align="center"><img style="width: 133px; height: 450px;" src=
-"images/focus_manuel.gif" /></td>
-<td align="center"><img style="width: 115px; height: 147px;" src=
-"images/qualite_foc.gif" /></td>
-<td align="center" width="330"><img style=
-"width: 325px; height: 396px;" src="images/graf_4.gif" /></td>
+<td align="center"><img style="width: 133px; height: 450px;" src="images/focus_manuel.gif" /></td>
+<td align="center"><img style="width: 115px; height: 147px;" src="images/qualite_foc.gif" /></td>
+<td align="center" width="330"><img style="width: 325px; height: 396px;" src="images/graf_4.gif" /></td>
 </tr>
 <tr>
 <td align="center" width="15">Focusers automatiques
 (focuseraudecom, usb_focus)</td>
-<td align="center"><img style="width: 133px; height: 516px;" src=
-"images/focus_auto.gif" /></td>
-<td align="center"><img style="width: 115px; height: 147px;" src=
-"images/qualite_foc.gif" /></td>
-<td align="center" width="330"><img style=
-"width: 216px; height: 420px;" src=
-"images/graph_HFD.gif" /><br />
-Cette fen&#234;tre comporte, outre le graphique HFD en fonction
-du nombre de pas, une coupe horizontale du flux mesur&#233; (en
-haut &#224; gauche) et la repr&#233;sentation de l'int&#233;grale
-du flux en fonction de la distance au centre (en haut &#224;
+<td align="center"><img style="width: 133px; height: 516px;" src="images/focus_auto.gif" /></td>
+<td align="center"><img style="width: 115px; height: 147px;" src="images/qualite_foc.gif" /></td>
+<td align="center" width="330"><img style="width: 216px; height: 420px;" src="images/graph_HFD.gif" /><br />
+Cette fenêtre comporte, outre le graphique HFD en fonction
+du nombre de pas, une coupe horizontale du flux mesuré (en
+haut à gauche) et la représentation de l'intégrale
+du flux en fonction de la distance au centre (en haut à
 droite) ; la focalisation est d'autant meilleure que la pente est
 raide.</td>
 </tr>
 </tbody>
 </table>
 <h2>Les acquisitions</h2>
-<p>Appuyer sur <b>GO CCD</b> : si la cam&#233;ra n'est pas encore
-connect&#233;e, le panneau de s&#233;lection d'une cam&#233;ra
-s'ouvre, sinon une acquisition est lanc&#233;e :<br />
--le bouton <b>R.A.Z.</b> devient <b>Stop</b>,<br />
--si l'option <b>Avancement de l'acquisition</b> est coch&#233;e,
+<p>Appuyer sur <b>GO CCD</b> : Si la caméra n'est pas encore
+connectée, le panneau de sélection d'une caméra
+s'ouvre, sinon une acquisition est lancée :<br />
+- Le bouton <b>R.A.Z.</b> devient <b>Stop</b>.<br />
+- Si l'option <b>Avancement de l'acquisition</b> est cochée,
 une barre de progression du temps s'ouvre :<br />
-<img style="width: 220px; height: 108px;" src=
-"images/suivi_pose.gif" /></p>
-<p>Les premi&#232;res images permettent de r&#233;gler le temps
-d'exposition, de pr&#233;-s&#233;lectionner une &#233;toile de
-r&#233;f&#233;rence et de la centrer le mieux possible en
-agissant sur la raquette du t&#233;lescope de mani&#232;re &#224;
-&#234;tre proche de l'axe optique.</p>
-<p>L'&#233;tape suivante consiste &#224; passer en mode
-fen&#234;trage et &#224; dessiner une bo&#238;te de
-s&#233;lection autour de l'&#233;toile avant de relancer les
-acquisitions. D&#232;s lors les acquisitions se font en continu
-avec le temps de pose s&#233;lectionn&#233;. Les graphiques
-s'ouvrent et sont actualis&#233;s.<br />
+<img style="width: 220px; height: 108px;" src="images/suivi_pose.gif" /></p>
+<p>Les premières images permettent de régler le temps
+d'exposition, de pré-sélectionner une étoile de
+référence et de la centrer le mieux possible en
+agissant sur la raquette du télescope de manière à
+être proche de l'axe optique.</p>
+<p>L'étape suivante consiste à passer en mode
+fenêtrage et à dessiner une boîte de
+sélection autour de l'étoile avant de relancer les
+acquisitions. Dès lors les acquisitions se font en continu
+avec le temps de pose sélectionné. Les graphiques
+s'ouvrent et sont actualisés.<br />
 Il est toujours possible de faire un <b>Stop</b> entre deux
 acquisitions, par exemple pour modifier la mise au point en mode
 manuel.</p>
-<p>Les images affich&#233;es correspondent &#224; l'image
-contenue dans la bo&#238;te de s&#233;lection : <img style=
-"width: 28px; height: 28px;" src="images/imagette.gif" /></p>
-<p>Les statistiques (intensit&#233;, FWHM_X, FWHM_Y et contraste)
-sont r&#233;alis&#233;s sur l'image brute. Le HFD est
-calcul&#233; sur une image dont le fond du ciel a &#233;t&#233;
-normalis&#233; &#224; 0.</p>
+<p>Les images affichées correspondent à l'image
+contenue dans la boîte de sélection : <img style="width: 28px; height: 28px;" src="images/imagette.gif" /></p>
+<p>Les statistiques (intensité, FWHM_X, FWHM_Y et contraste)
+sont réalisées sur l'image brute. Le HFD est
+calculé sur une image dont le fond du ciel a été
+normalisé à 0.</p>
 <h2>Fichier de log</h2>
-<p>Un fichier foc.txt est cr&#233;&#233; &#224; chaque session.
-Un <b>Copier/Coller</b> permet de le r&#233;cup&#233;rer dans un
+<p>Un fichier foc.log est créé à chaque session.
+Un <b>Copier/Coller</b> permet de le récupérer dans un
 tableur.</p>
-</body>
-</html>
+</body></html>
