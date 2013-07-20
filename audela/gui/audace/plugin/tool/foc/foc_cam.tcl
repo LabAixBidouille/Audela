@@ -168,6 +168,9 @@ namespace eval ::foc {
 
             incr panneau(foc,compteur)
 
+			            #--   Normalise le fond du ciel
+            $buffer noffset 0
+
             #--- Statistiques
             set s [ stat ]
             set maxi [ lindex $s 2 ]
@@ -187,7 +190,7 @@ namespace eval ::foc {
                #--- Actualise les donnees pour le fichier log
                append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
             } else {
-               #--   Calculs et Mise a jour des graphiques : 65 a 80 ms
+               #--   Calculs et Mise a jour des graphiques (le temps de traitement double)
                ::foc::processHFD
                #--- Actualise les donnees pour le fichier log
                append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
