@@ -402,20 +402,6 @@ void libtel_GetCurrentFITSDate(Tcl_Interp *interp, char s[23])
    }
 }
 
-void libtel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function)
-{
-   /* --- conversion TSystem -> TU pour l'interface Aud'ACE par exemple ---*/
-   /*     (function = ::audace::date_sys2ut) */
-   char ligne[1024];
-   sprintf(ligne,"info commands  %s",function);
-   Tcl_Eval(interp,ligne);
-   if (strcmp(interp->result,function)==0) {
-      sprintf(ligne,"mc_date2iso8601 [%s now]",function);
-      Tcl_Eval(interp,ligne);
-      strcpy(s,interp->result);
-   }
-}
-
 /*
 * Retourne l'heure UTC
 */
