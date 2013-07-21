@@ -80,7 +80,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
 # saveima n4565.fits  #--- Enregistre l'image sous le nom n4565.fits
 #
 proc saveima { { filename "?" } { visuNo 1 } } {
-   global audace caption conf
+   global audace conf
 
    #---
    set bufNo [ visu$visuNo buf ]
@@ -160,7 +160,7 @@ proc saveima { { filename "?" } { visuNo 1 } } {
 # savejpeg m57         #--- Enregistre l'image sous le nom m57.jpg
 #
 proc savejpeg { { filename "?" } } {
-   global audace caption conf
+   global audace conf
 
    #--- Fenetre parent
    set fenetre "$audace(base)"
@@ -695,8 +695,13 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
    return $error
 }
 
-# --- ping qui fonctionne aussi sous linux non root
+#
+# Ping qui fonctionne aussi avec Linux non root
+# ip : Adresse IP a tester
+#
 proc audace_ping { ip } {
+   global caption
+
    set res ""
    if { $::tcl_platform(os) == "Windows NT" } {
       set res [ping $ip]
@@ -708,10 +713,10 @@ proc audace_ping { ip } {
          set err [ catch {exec ping $ip -c 1 -W 1} msg ]
          if {$err==0} {
             lappend res 1
-            lappend res "ping OK with $ip ()"
+            lappend res "$caption(ping,appareil_connecte) $ip"
          } else {
             lappend res 0
-            lappend res "ping failed with $ip ()"
+            lappend res "$caption(ping,pas_appareil_connecte) $ip"
          }
       }
    }
