@@ -55,7 +55,7 @@ namespace eval ::foc {
             set panneau(foc,actuel)       "$caption(foc,centrage)"
             set panneau(foc,boucle)       "$caption(foc,off)"
 
-         } elseif { $panneau(foc,menu) == "$caption(foc,fenetre)" } {
+         } elseif { $panneau(foc,menu) == "$caption(foc,fenetre_man)" } {
 
             set panneau(foc,bin) "1"
             if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
@@ -71,7 +71,7 @@ namespace eval ::foc {
                   set panneau(foc,window) $b
                }
             }
-            set panneau(foc,actuel) "$caption(foc,fenetre)"
+            set panneau(foc,actuel) "$caption(foc,fenetre_man)"
             set panneau(foc,boucle) "$caption(foc,on)"
 
             #--   Ouvre le graphique adhoc s'il n'existe pas deja
@@ -160,7 +160,7 @@ namespace eval ::foc {
       vwait panneau(foc,finAquisition)
 
       #--- Informations sur l'image fenetree
-      if { $panneau(foc,actuel) == "$caption(foc,fenetre)" } {
+      if { $panneau(foc,actuel) == "$caption(foc,fenetre_man)" } {
 
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
 
