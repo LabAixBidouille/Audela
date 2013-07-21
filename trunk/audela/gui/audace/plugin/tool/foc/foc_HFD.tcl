@@ -25,6 +25,12 @@ namespace eval ::foc {
       set rac [file join $audace(rep_images) t]
       set panneau(foc,compteur) "0"
       set panneau(foc,typefocuser) $typefocuser
+      #--   mode de fenetrage
+      if {$mode ==1} {
+         set panneau(foc,menu) "$caption(foc,fenetre_auto)"
+      } else {
+         set panneau(foc,menu) "$caption(foc,fenetre_man)"
+      }
 
       switch -exact $panneau(foc,typefocuser) {
          0  {  #--   finalise la ligne de titre
@@ -51,7 +57,8 @@ namespace eval ::foc {
       set naxis1 [buf$bufNo getpixelswidth]
       set naxis2 [buf$bufNo getpixelsheight]
 
-      if {$mode == 1} {
+      if {$panneau(foc,menu) eq "$caption(foc,fenetre_auto)"} {
+
          lassign [searchBrightestStar] x y
 
          #--   calcule auto des cordonnees de la fenetre
@@ -71,7 +78,7 @@ namespace eval ::foc {
          #--   attend 1 sec
          after 1000
 
-      } else {
+      } elseif {$panneau(foc,menu) eq "$caption(foc,fenetre_man)"} {
 
          vwait ::confVisu::private($visuNo,boxSize)
          set panneau(foc,window) [ ::confVisu::getBox $visuNo ]
