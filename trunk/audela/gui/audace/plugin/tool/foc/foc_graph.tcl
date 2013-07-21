@@ -291,7 +291,7 @@ namespace eval ::foc {
       frame $this.l
          frame $this.l.fr3 -width 300 -height 300
 
-         	set grph3 [::foc::createSimpleGraphe $this.l.fr3 300 300]
+            set grph3 [::foc::createSimpleGraphe $this.l.fr3 300 300]
             #--   configure le graphique
             $grph3 element create color_invariant_lineR -xdata ::VSpos -ydata ::VShfd \
                -linewidth 1 -color blue -symbol "scross" -hide no

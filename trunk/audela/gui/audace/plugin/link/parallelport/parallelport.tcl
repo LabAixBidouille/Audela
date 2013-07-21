@@ -180,7 +180,7 @@ proc ::parallelport::confToWidget { } {
 proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
 
-   if { $::tcl_platform(os) == "Windows NT"  } {
+   if { $::tcl_platform(os) == "Windows NT" } {
       #--- j'installe porttalk si ce n'est pas deja fait
       if { $private(porttalkInstalled) == 0 } {
          #--- j'installe porttalk
