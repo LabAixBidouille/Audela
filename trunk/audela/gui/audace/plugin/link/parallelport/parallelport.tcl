@@ -187,7 +187,7 @@ proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment arg
          set res [ catch { set result [ porttalk open all ] } msg ]
          set no_administrator "PortTalk: You do not have rights to access"
          if { $res == "1" } {
-            #--- l'installation de porttalk n'a pas reussi par ce que l'utilisateur
+            #--- l'installation de porttalk n'a pas reussi parce que l'utilisateur
             #--- n'est pas administrateur de la machine.
             if { [ string range $msg 0 41 ] != "$no_administrator" } {
                ::console::affiche_erreur "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n"
@@ -196,7 +196,7 @@ proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment arg
             }
             if { $::conf(parallelport,porttalkQuestion) == "1" } {
                #--- je demande a l'utilisateur s'il ne veut plus que Audela essaie
-              #--- d'installer porttalk
+               #--- d'installer porttalk
                set base ".allowio"
                toplevel $base
                wm geometry $base +50+100
