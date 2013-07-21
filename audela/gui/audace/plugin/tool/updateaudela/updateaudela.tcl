@@ -1969,7 +1969,6 @@ proc ::updateaudela::makecore::analdir { base } {
                if { $shortname=="audace.txt"
                   || $shortname=="audela.pl"
                   || $shortname=="audela.sh"
-                  || $shortname=="allowio.txt"
                   || $shortname=="makefile"
                   || $shortname=="pkgIndex.tcl.in"
                   || $shortname=="version.tcl.in"

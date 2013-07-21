@@ -107,8 +107,7 @@ proc ::parallelport::initPlugin { } {
    #--- Verification de la presence de allowio.txt pour la compatibilite avec les versions precedentes
    if { [ file exist [ file join $::audace(rep_home) allowio.txt ] ] } {
       set ::conf(parallelport,porttalkQuestion) "0"
-      #--- Il faudra decommenter la ligne en novembre 2011
-     ### file delete [ file join $::audace(rep_home) allowio.txt ]
+      file delete [ file join $::audace(rep_home) allowio.txt ]
    }
 
    if { $::tcl_platform(os) == "Windows NT" } {
