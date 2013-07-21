@@ -227,7 +227,7 @@ namespace eval ::foc {
             #--   ferme le graphique normal
             ::foc::fermeGraphe
             #--   ouvre l'autre graphique
-            ::foc::initFocHFD
+            ::foc::HFDGraphe
          }
 
       } else {
