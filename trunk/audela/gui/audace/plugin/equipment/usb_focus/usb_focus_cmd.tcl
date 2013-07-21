@@ -244,7 +244,7 @@ proc ::usb_focus::setAutoMode { } {
 #     Commande du bouton GOTO
 #     si necessaire, le deplacement est corrige pour rester dans les limites {0|maxstep)
 #------------------------------------------------------------
-proc ::usb_focus::goto { } {
+proc ::usb_focus::goto { {blocking 0} } {
    variable widget
    variable private
    global audace panneau
