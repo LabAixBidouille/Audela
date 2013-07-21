@@ -80,7 +80,7 @@ proc ftpscript { hostname script {user anonymous} {passw software.audela@free.fr
    # ftpscript 127.0.0.1 "pwd" toto tutu
    set win "" ; set os $::tcl_platform(os) ; catch {set win [string range $os 0 6]}
    # --- test the hostname connection
-   set res [ping $hostname]
+   set res [::audace_ping $hostname]
    if {[lindex $res 0]==0} {
       set result "address $hostname does not respond"
       return $result
