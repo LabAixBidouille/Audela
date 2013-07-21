@@ -5,6 +5,7 @@
 
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>Date de mise à jour : 21 juillet 2013
 <h1>Focalisation</h1>
 <p>La focalisation consiste à régler la position de la
@@ -78,7 +79,7 @@ raide.</td>
 <p>Pour commencer cette phase de recherche de la meilleure
 focalisation, il faut débuter par une acquisition en mode
 <b>Centrage</b>. Un appui sur le bouton <b>GO CCD</b> permet de
-faire une première image avec le mode <b>Centrage</b>. Elle
+faire une première image avec ce mode. Elle
 se fait automatiquement en binning 2x2 (donc en définition
 moyenne). Elle a pour but de choisir une étoile dans le
 champ pour régler la focalisation.</p>
@@ -94,27 +95,27 @@ cochée, une barre de progression du temps s'ouvre :</p>
 <p align="center"><img style="width: 220px; height: 108px;" src="images/suivi_pose.gif" /></p>
 <h3>Fenêtrage manuel</h3>
 <p>Sur l'image acquise, choisir une étoile suffisamment
-brillante (si possible de magnitude entre 2 et 7) mais qui ne
+brillante (si possible de magnitude comprise entre 2 et 7) mais qui ne
 sature pas le capteur CCD.</p>
 Cette sélection s'effectue avec la souris en encadrant l'étoile choisie d'un rectangle
 (rectangle bleu sur l'étoile la plus à droite) avec le
 bouton gauche appuyé.
 <p align="center"><img style="width: 266px; height: 146px;" src="images/centrage.gif" /></p>
 <p>Activer <b>Fenêtrage manuel</b> en appuyant avec le
-bouton gauche de la souris sur le bouton dédié puis <b>GO CCD</b>.
+bouton gauche de la souris sur le bouton dédié, puis <b>GO CCD</b>.
 Dès lors les acquisitions se font en mode rafale avec le
 temps de pose sélectionné. Le graphique spécifique
 s'ouvre. Il est toujours possible de faire un <b>Stop</b> entre deux
 acquisitions, par exemple pour modifier la mise au point en mode
 manuel.
-<p>Les images affichées correspondent au contenu de la
+</p><p>Les images affichées correspondent au contenu de la
 boîte de sélection :</p>
 <p align="center"><img style="width: 183px; height: 145px;" src="images/imagette.gif" /></p>
-<p>Dans tous les cas les statistiques (intensité, FWHM_X,
-FWHM_Y, contraste, HFD) sont réalisées sur l'image dont
+<p>Dans tous les cas les statistiques (intensité, FWHM en x,
+FWHM en y, contraste, HFD) sont réalisées sur l'image dont
 le fond du ciel a été normalisé à 0.</p>
 <h3>Fenêtrage automatique</h3>
-<p>Dans le menu des modes d'acquisitions existe le mode <b>Fenêtrage automatique</b> 
+<p>Dans le menu des modes d'acquisition existe le mode <b>Fenêtrage automatique</b> 
 à n'utiliser que si l'image acquise lors du centrage est de bonne qualité 
 (pas de pixel chaud), si le nombre d'étoiles n'est pas trop important 
 et si l'étoile de référence a été soigneusement choisie (cas des télescopes automatisés). 
@@ -133,17 +134,17 @@ a pour effet d'effacer le contenu des graphiques.</p>
 <h4>Focuser ne disposant pas d'un compteur de position</h4>
 <p>Le processus est identique au précédent mis à
 part la modification de la mise au point qui s'effectue en
-agissant sur le moteur du focuser (bouton + ou -) :</p>
+agissant sur le moteur du focuser par l'intermédiaire des boutons + ou - :</p>
 <p align="center"><img style="width: 129px; height: 126px;" src="images/focuser_motorise.gif" /></p>
 <h4>Focuser disposant d'un compteur de position</h4>
-<p>il faut affiner la mise au point de façon à minimiser le HFD
+<p>Il faut affiner la mise au point de façon à minimiser le HFD
 (demi-diamètre) (cf. les illustrations du paragraphe
 Configuration du panneau). Le panneau comporte donc les commandes
 nécessaires pour initialiser le focuser, demander une
 position précise et lire sa position actuelle.</p>
 <p align="center"><img style="width: 128px; height: 276px;" src="images/robofocus.gif" /></p>
 <p>Le graphique indique notamment la valeur de la position correspondant 
-à l'intersection des deu branches du V et proche de l'optimum.</p>
+à l'intersection des deux branches du V et proche de l'optimum.</p>
 <h2>Fichier de log</h2>
 <p>Un fichier foc.log est créé à chaque session.
 Un <b>Copier/Coller</b> permet de récupérer les valeurs dans un
