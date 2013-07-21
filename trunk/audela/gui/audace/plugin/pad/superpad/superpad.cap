@@ -21,7 +21,7 @@ set caption(superpad,activeFleches)          "Enable Arrow Keys"
 set caption(superpad,buttonSkyMap)           "Chart"
 set caption(superpad,buttonGoto)             "GOTO"
 set caption(superpad,buttonStopGoto)         "STOP"
-set caption(superpad,buttonAlign)            "Alignment"
+set caption(superpad,buttonAlign)            "MATCH"
 set caption(superpad,StarWindowTitle)        "Select one star"
 set caption(superpad,labResolver)            "Object Name"
 
@@ -38,7 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Carte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Alignement"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Sélectionner une étoile"
    set caption(superpad,labResolver)         "Nom de l'objet"
 
@@ -55,7 +55,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Mappa"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Allineamento"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Selezionare una stella"
    set caption(superpad,labResolver)         "Nome oggetto"
 
@@ -72,7 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Mapa"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Alineamiento"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Seleccionar una estrella"
    set caption(superpad,labResolver)         "Nombre del objecto"
 
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Karte"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Ausrichtung"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Ein Stern wählen"
    set caption(superpad,labResolver)         "Objekt Namen"
 
@@ -106,7 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Carta"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Alinhamento"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Seleccionar uma estrela"
    set caption(superpad,labResolver)         "Nome do objecto"
 
@@ -123,7 +123,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Kort"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Justering"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Vælg en stjerne"
    set caption(superpad,labResolver)         "Object Name"
 
@@ -140,7 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Chart"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Alignment"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Select one star"
    set caption(superpad,labResolver)         "Object Name"
 
@@ -157,7 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(superpad,buttonSkyMap)        "Chart"
    set caption(superpad,buttonGoto)          "GOTO"
    set caption(superpad,buttonStopGoto)      "STOP"
-   set caption(superpad,buttonAlign)         "Alignment"
+   set caption(superpad,buttonAlign)         "MATCH"
    set caption(superpad,StarWindowTitle)     "Select one star"
    set caption(superpad,labResolver)         "Object Name"
 
