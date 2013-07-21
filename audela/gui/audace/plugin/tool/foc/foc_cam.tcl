@@ -39,6 +39,8 @@ namespace eval ::foc {
             set dimxy               [ cam$audace(camNo) nbcells ]
             set panneau(foc,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
          }
+
+
          if { $panneau(foc,menu) == "$caption(foc,centrage)" } {
             #--- Applique le binning demande si la camera possede bien ce binning
             set binningCamera "2x2"
@@ -83,6 +85,7 @@ namespace eval ::foc {
                append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
             }
          }
+
          #--   Calcule la taille de la box
          lassign $panneau(foc,window) x1 y1 x2 y2
          set panneau(foc,box) [list 1 1 [expr { $x2-$x1+1 }] [expr { $y2-$y1+1 }]]

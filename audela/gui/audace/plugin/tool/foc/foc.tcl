@@ -208,8 +208,6 @@ namespace eval ::foc {
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
          pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
-
          if {$::panneau(foc,focuser) eq "usb_focus"} {
             pack forget $This.fra5.but0
             pack forget $This.fra5.but1
@@ -243,7 +241,6 @@ namespace eval ::foc {
          pack forget $This.fra5.but2
          pack forget $This.fra5.fra2.ent3
          pack forget $This.fra5.fra2.lab4
-         pack forget $This.fra5.but3
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
             #--   ferme le graphique hfd
@@ -301,24 +298,6 @@ namespace eval ::foc {
       pack forget $This
    }
 
-   #------------------------------------------------------------
-   # closeAllWindows
-   #    ferme toutes les fenetres annexes
-   # Parametre : chemin du parent
-   #------------------------------------------------------------
-   proc closeAllWindows { base } {
-
-      if {[winfo exists $base.parafoc]} {
-         ::foc::fermeQualiteFoc
-      }
-      if {[winfo exists $base.visufoc]} {
-         ::foc::fermeGraphe
-      }
-      if {[winfo exists $base.hfd]} {
-         ::foc::closeHFDGraphe
-      }
-   }
-
 }
 
 #------------------------------------------------------------
@@ -360,11 +339,16 @@ proc focBuildIF { This } {
             -value "1" \
             -variable panneau(foc,centrage_fenetre) \
             -command { set panneau(foc,menu) "$caption(foc,centrage)" ; set panneau(foc,centrage_fenetre) "1" }
-         $m add radiobutton -label "$caption(foc,fenetre)" \
+         $m add radiobutton -label "$caption(foc,fenetre_man)" \
             -indicatoron "1" \
             -value "2" \
             -variable panneau(foc,centrage_fenetre) \
-            -command { set panneau(foc,menu) "$caption(foc,fenetre)" ; set panneau(foc,centrage_fenetre) "2" }
+            -command { set panneau(foc,menu) "$caption(foc,fenetre_man)" ; set panneau(foc,centrage_fenetre) "2" }
+         $m add radiobutton -label "$caption(foc,fenetre_auto)" \
+            -indicatoron "1" \
+            -value "3" \
+            -variable panneau(foc,centrage_fenetre) \
+            -command { set panneau(foc,menu) "$caption(foc,fenetre_auto)" ; set panneau(foc,centrage_fenetre) "3" }
 
          #--- Frame des entry & label
          frame $This.fra2.fra1 -borderwidth 1 -relief flat
@@ -499,11 +483,6 @@ proc focBuildIF { This } {
             pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
-
-         #--- Bouton "Courbe en V"
-         button $This.fra5.but3 -borderwidth 2 -text "$caption(foc,vcurve)" -command { ::foc::traceCurve }
-         pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
-
       pack $This.fra5 -side top -fill x
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition

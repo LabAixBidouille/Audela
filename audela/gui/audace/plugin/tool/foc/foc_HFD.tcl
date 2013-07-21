@@ -11,25 +11,26 @@ namespace eval ::foc {
    #---------------------------------------------------------------------------
    # traceCurve
    #    processus de mesure pour differentes positions
+   #    reserve à la simulation
+   # Parametre : typefocuser { 0 | 1 } et mode { 0 | 1 }
+   # typefocuser : 0 --> graphique normal, 1 --> graphique hfd
+   # mode        : 0 --> fenetre manuelle, 1 --> fenetre automatique
    #---------------------------------------------------------------------------
-   proc traceCurve { } {
+   proc traceCurve { {typefocuser 1} {mode 1} } {
       global audace caption panneau
-
-#---  RZ : simulation
 
       set visuNo $audace(visuNo)
       set bufNo $audace(bufNo)
       set ext .fit
       set rac [file join $audace(rep_images) t]
       set panneau(foc,compteur) "0"
-
-      set panneau(foc,typefocuser) "1" ; # mettre a 0 pour le graphique normal et a 1 pour le graphique hfd
+      set panneau(foc,typefocuser) $typefocuser
 
       switch -exact $panneau(foc,typefocuser) {
          0  {  #--   finalise la ligne de titre
                append panneau(foc,fichier) "\n"
                set this $audace(base).visufoc
-               if {[winfo exists $this]} { closeHFDGraphe }
+               if {[winfo exists $this]} { fermeGraphe }
                ::foc::focGraphe
             }
          1  {  #--   finalise la ligne de titre
@@ -46,27 +47,56 @@ namespace eval ::foc {
       loadima "${rac}1$ext"
       update
 
-      incr panneau(foc,compteur)
-      set panneau(foc,window) [searchBrightestStar]
-      lassign $panneau(foc,window) x1 y1 x2 y2
-      set panneau(foc,box) [list 1 1 [expr { $x2-$x1+1 }] [expr { $y2-$y1+1 }]]
+      #--   dimension de l'image initiale
+      set naxis1 [buf$bufNo getpixelswidth]
+      set naxis2 [buf$bufNo getpixelsheight]
 
-      #--   attend 2 sec
-      after 2000
+      if {$mode == 1} {
+         lassign [searchBrightestStar] x y
 
-      #--   dessine la boite
-      ::confVisu::setBox $visuNo $panneau(foc,window)
-      update
-      #::confVisu::autovisu $visuNo
+         #--   calcule auto des cordonnees de la fenetre
+         set x1 [expr { int(round($x)-25) }]
+         set x2 [expr { int(round($x)+25) }]
+         set y1 [expr { int(round($y)-25) }]
+         set y2 [expr { int(round($y)+25) }]
 
-      #--   attend 2 sec
-      after 2000
+         #--   coordonnees relatives a l'image initiale
+         set panneau(foc,window) [list $x1 $y1 $x2 $y2]
+
+         #--   attend 2 sec
+         after 2000
+         #--   dessine la boite
+         ::confVisu::setBox $visuNo $panneau(foc,window)
+         update
+         #--   attend 1 sec
+         after 1000
+
+      } else {
+
+         vwait ::confVisu::private($visuNo,boxSize)
+         set panneau(foc,window) [ ::confVisu::getBox $visuNo ]
+      }
+
+      #--   identifie le photocentre dans la box
+      lassign [buf$bufNo centro $panneau(foc,window)] xc yc
 
       #--   supprime la boite
       ::confVisu::deleteBox $visuNo
       update
 
+      #--   Calcule la boite contenant toute la fenetre
+      lassign $panneau(foc,window) x1 y1 x2 y2
+      set panneau(foc,box) [list 1 1 [expr { $x2-$x1+1 }] [expr { $y2-$y1+1 }]]
+
+      if {$panneau(foc,typefocuser) == 1} {
+         #--   Dessin du schema etoile/image
+         ::foc::updateLocator $naxis1 $naxis2 $xc $yc
+      }
+
       for {set i 1} {$i <=9} {incr i } {
+
+         set panneau(foc,compteur) $i
+
          loadima "${rac}${i}$ext"
 
          if {$panneau(foc,typefocuser) ==1} {
@@ -109,37 +139,10 @@ namespace eval ::foc {
 
          #-- simule la pose puis le chargement
          after 2000
-         incr panneau(foc,compteur)
       }
 
       #--- Sauvegarde du fichier des traces
       ::foc::cmdSauveLog foc.log
-
-#---  RZ : fin simulation
-   }
-
-   #---------------------------------------------------------------------------
-   # searchBrightestStar
-   #    cherche l'etoile la plus brillante
-   #  retourne la box entourant l'etoile
-   #---------------------------------------------------------------------------
-   proc searchBrightestStar { } {
-      global audace
-
-      set bufNo $audace(bufNo)
-      set naxis1 [buf$bufNo getpixelswidth]
-      set naxis2 [buf$bufNo getpixelsheight]
-
-      lassign [ ::prtr::searchMax [list 1 1 $naxis1 $naxis2] $bufNo] x y
-
-      ::foc::updateLocator $naxis1 $naxis2 $x $y
-
-      set x1 [expr { int(round($x)-25) }]
-      set x2 [expr { int(round($x)+25) }]
-      set y1 [expr { int(round($y)-25) }]
-      set y2 [expr { int(round($y)+25) }]
-
-      return [list $x1 $y1 $x2 $y2]
    }
 
    #---------------------------------------------------------------------------
@@ -153,6 +156,7 @@ namespace eval ::foc {
       set step0Left  "0.00"
       set slopeRight "0.000000"
       set step0Right "0.00"
+      set positionOpt "0.00"
 
       blt::vector create yleft yright xleft xright -watchunset 1
       yleft set ::VShfd          ; #-- copie le vecteur
@@ -174,35 +178,32 @@ namespace eval ::foc {
          #--   ignore le premier depassement (si moins de 2 valeurs)
          if {[yright length] == [xright length] && [yright length] >= 2} {
             set side right
-            lassign [getParam $side $yright(:) $xright(:)] slopeRight step0Right
-            set slopeRight [format "%0.6f" $slopeRight]
-            set step0Right [format "%0.2f" $step0Right]
-         }
+            lassign [getParam $side $yright(:) $xright(:)] constanteRight slopeRight step0Right
+          }
 
          #--   raccourci le vecteur gauche
          yleft length [expr { $rankMin-1 }]
          xleft length [expr { $rankMin-1 }]
-
       }
 
       #--   traite le vecteur gauche
       if {[yleft length] == [xleft length] && [yleft length] >= 2} {
          set side left
-         lassign [getParam $side $yleft(:) $xleft(:)] slopeLeft step0Left
-         set slopeLeft [format "%0.6f" $slopeLeft]
-         set step0Left [format "%0.2f" $step0Left]
+         lassign [getParam $side $yleft(:) $xleft(:)] constanteLeft slopeLeft step0Left
       }
 
       #--   calcule de l'intersection
-      #set diviseur [expr { -$slopeLeft+$slopeRight }]
-      #if {$diviseur != 0} {
-      #   set intersect [expr { ($constLeft-$constRight)/$diviseur }]
-      #  ::console::affiche_resultat "$diviseur $intersect\n"
-      #}
+      if {$slopeLeft != 0 && $slopeRight != 0} {
+         set xIntersect [expr { ($constanteLeft-$constanteRight)/($slopeRight-$slopeLeft) }]
+         set positionOpt [format "%0.2f" $xIntersect]
+      }
+
+      set slopeLeft [format "%0.6f" $slopeLeft]
+      set slopeRight [format "%0.6f" $slopeRight]
 
       blt::vector destroy yleft yright xleft xright
 
-      return [list $slopeLeft $slopeRight $step0Left $step0Right]
+      return [list $slopeLeft $slopeRight $positionOpt]
    }
 
    #---------------------------------------------------------------------------
@@ -238,7 +239,7 @@ namespace eval ::foc {
 
       blt::vector destroy xLine yLine w
 
-      return [list $slope $step0]
+     return [list $constante $slope $step0]
    }
 
    #---------------------------------------------------------------------------
@@ -424,6 +425,22 @@ namespace eval ::foc {
       blt::vector destroy V1 temporaire
 
       return $rayon
+   }
+
+   #---------------------------------------------------------------------------
+   # searchBrightestStar
+   #    cherche l'etoile la plus brillante
+   #  Retourne : coordonnes les coordonnees x y de l'etoile la plus brillante
+   #---------------------------------------------------------------------------
+   proc searchBrightestStar { } {
+      global audace
+
+      set bufNo $audace(bufNo)
+      set naxis1 [buf$bufNo getpixelswidth]
+      set naxis2 [buf$bufNo getpixelsheight]
+      lassign [ ::prtr::searchMax [list 1 1 $naxis1 $naxis2] $bufNo] x y
+
+      return [list $x $y]
    }
 
 }

@@ -149,7 +149,6 @@ namespace eval ::foc {
       #--   met a jour la ligne au-dessus des graphiques
       set panneau(foc,hfd) [format "%.2f" [expr { 2*$rayon }]]
       set panneau(foc,resulthfd) [format $caption(foc,diamHFD) $panneau(foc,hfd)]
-
       $this.h.fr1.graph marker configure limite1 -coords [list $limite1 -Inf $limite1 Inf]
       $this.h.fr1.graph marker configure limite2 -coords [list $limite2 -Inf $limite2 Inf]
 
@@ -161,18 +160,15 @@ namespace eval ::foc {
       ::VSpos append $audace(focus,currentFocus)
 
       if {[::VShfd length] > 1} {
-          lassign [::foc::computeSlope] slopeLeft slopeRight step0Left step0Right
-
+          lassign [::foc::computeSlope] slopeLeft slopeRight positionOPt
           if {$slopeLeft != 0} {
             set panneau(foc,slopeleft) "[format $caption(foc,slopeleft) $slopeLeft]"
          }
          if {$slopeRight != 0} {
             set panneau(foc,sloperight) "[format $caption(foc,sloperight) $slopeRight]"
-            if {$step0Right > $step0Left} {
-               set panneau(foc,optimum) "[format $caption(foc,optimum) $step0Left $step0Right]"
-            } else {
-               set panneau(foc,optimum) "[format $caption(foc,optimum) $step0Right $step0Left]"
-            }
+         }
+         if {$positionOPt !=0} {
+            set panneau(foc,optimum) "[format $caption(foc,optimum) $positionOPt]"
          }
       }
    }
@@ -316,11 +312,6 @@ namespace eval ::foc {
       pack $this.b -side top -fill x
 
       update
-
-      #--   declare le rafraichissement automatique du graphique en fonction de l'image
-      #if { [trace info variable ::confVisu::addFileNameListener] eq ""} {
-      #   ::confVisu::addFileNameListener $visuNo "::foc::processHFD $visuNo $this"
-      #}
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $this
@@ -553,6 +544,24 @@ namespace eval ::foc {
 
          #--- Je supprime la fenetre s'il n'y a plus de pose en cours
          destroy $w
+      }
+   }
+
+   #------------------------------------------------------------
+   # closeAllWindows
+   #    ferme toutes les fenetres annexes
+   # Parametre : chemin du parent
+   #------------------------------------------------------------
+   proc closeAllWindows { base } {
+
+      if {[winfo exists $base.parafoc]} {
+         ::foc::fermeQualiteFoc
+      }
+      if {[winfo exists $base.visufoc]} {
+         ::foc::fermeGraphe
+      }
+      if {[winfo exists $base.hfd]} {
+         ::foc::closeHFDGraphe
       }
    }
 
