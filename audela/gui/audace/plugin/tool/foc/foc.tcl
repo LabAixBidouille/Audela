@@ -212,8 +212,8 @@ namespace eval ::foc {
             pack forget $This.fra5.but0
             pack forget $This.fra5.but1
             ::focus::displayCurrentPosition $::panneau(foc,focuser) ; #usb_focus
-            #--   modifie la commande du bouton en appelant la cmd focus en mode non bloquant
-            $This.fra5.but2 configure -command { ::focus::goto usb_focus 0 }
+            #--   modifie la commande du bouton
+            $This.fra5.but2 configure -command { ::foc::cmdUSB_FocusGoto }
             #--   modifie la commande validation de la saisie
             $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
          } else {
