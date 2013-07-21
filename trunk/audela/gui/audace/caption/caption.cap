@@ -34,6 +34,9 @@ set caption(audace,reseau_deconnexion)                "Disconnection of the serv
 set caption(audace,reseau_connexion_client)           "Connection through the client:"
 set caption(audace,reseau_reponse_vers)               "Reply to:"
 
+set caption(ping,appareil_connecte)                   "There is a device at IP address:"
+set caption(ping,pas_appareil_connecte)               "There is no device at IP address:"
+
 set caption(audace,temps_universel)                   "UT"
 set caption(audace,temps_heurelegale)                 "CT"
 
@@ -109,6 +112,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_deconnexion)             "Déconnexion du serveur :"
    set caption(audace,reseau_connexion_client)        "Connexion par le client :"
    set caption(audace,reseau_reponse_vers)            "Réponse vers :"
+
+   set caption(ping,appareil_connecte)                "Il y a un appareil à l'adresse IP :"
+   set caption(ping,pas_appareil_connecte)            "Il n'y a pas d'appareil à l'adresse IP :"
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HL"
@@ -186,6 +192,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Connessione tramite client:"
    set caption(audace,reseau_reponse_vers)            "Risposta a:"
 
+   set caption(ping,appareil_connecte)                "Vi e' un apparecchio all'indirizzo IP:"
+   set caption(ping,pas_appareil_connecte)            "Non ci sono apparecchi all' indirizzo IP:"
+
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "O"
 
@@ -261,6 +270,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_deconnexion)             "Desconexión de un servidor:"
    set caption(audace,reseau_connexion_client)        "Conexion a través del cliente:"
    set caption(audace,reseau_reponse_vers)            "Responder a:"
+
+   set caption(ping,appareil_connecte)                "Ya existe un dispositivo en la dirección IP:"
+   set caption(ping,pas_appareil_connecte)            "No existe dispositivo en la dirección IP:"
 
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HC"
@@ -338,6 +350,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Anschluß durch den Kunden:"
    set caption(audace,reseau_reponse_vers)            "Antworten zu:"
 
+   set caption(ping,appareil_connecte)                "Ein Gerät mit diese IP Nummer existiert:"
+   set caption(ping,pas_appareil_connecte)            "Kein Gerät mit diese IP Nummer existiert:"
+
    set caption(audace,temps_universel)                "WZ"
    set caption(audace,temps_heurelegale)              "UZ"
 
@@ -413,6 +428,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_deconnexion)             "Desconectado do servidor:"
    set caption(audace,reseau_connexion_client)        "Conexão através do cliente:"
    set caption(audace,reseau_reponse_vers)            "Responder a:"
+
+   set caption(ping,appareil_connecte)                "Existe um dispositivo no endereço IP:"
+   set caption(ping,pas_appareil_connecte)            "Não existe um dispositivo no endereço IP:"
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
@@ -490,6 +508,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Forbindelse gennem klienten:"
    set caption(audace,reseau_reponse_vers)            "Svar til:"
 
+   set caption(ping,appareil_connecte)                "Der findes en enhed på denne IP-adresse:"
+   set caption(ping,pas_appareil_connecte)            "Der findes ikke nogen enhed på denne IP-adresse:"
+
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
 
@@ -566,6 +587,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Connection through the client:"
    set caption(audace,reseau_reponse_vers)            "Reply to:"
 
+   set caption(ping,appareil_connecte)                "There is a device at IP address:"
+   set caption(ping,pas_appareil_connecte)            "There is no device at IP address:"
+
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
 
@@ -641,6 +665,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_deconnexion)             "Disconnection of the server:"
    set caption(audace,reseau_connexion_client)        "Connection through the client:"
    set caption(audace,reseau_reponse_vers)            "Reply to:"
+
+   set caption(ping,appareil_connecte)                "There is a device at IP address:"
+   set caption(ping,pas_appareil_connecte)            "There is no device at IP address:"
 
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
