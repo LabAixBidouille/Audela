@@ -83,13 +83,14 @@ namespace eval ::foc {
    #------------------------------------------------------------
    # cmdSeDeplaceA
    #    Affiche la fenetre indiquant les limites du focaliseur
-   #    commande du bouton "Aller à" (focuseraudecom et usb_focus)
+   #    commande du bouton "Aller à" pour focuseraudecom
    # Parametres : Aucun
    # Return : Rien
    #------------------------------------------------------------
    proc cmdSeDeplaceA { } {
       variable This
       global audace panneau
+
 
       if { [ ::tel::list ] != "" } {
          if { $audace(focus,targetFocus) != "" } {
@@ -111,10 +112,13 @@ namespace eval ::foc {
                $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
                update
             } else {
+
                #--- Lit la position du compteur de foc
                ::focus::displayCurrentPosition $::panneau(foc,focuser)
+
                #--- Lance le goto du focaliseur
                ::focus::goto $::panneau(foc,focuser)
+
                #--- Affiche la position d'arrivee
                $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
             }
@@ -125,6 +129,53 @@ namespace eval ::foc {
          }
       } else {
          ::confTel::run
+      }
+   }
+
+   #------------------------------------------------------------
+   # cmdUSB_FocusGoto
+   #    Affiche la fenetre indiquant les limites du focaliseur
+   #    commande du bouton "Aller à" pour usb_focus
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
+   proc cmdUSB_FocusGoto { } {
+      variable This
+      global audace panneau
+
+      if {[::usb_focus::isReady] == 1} {
+         #--- Gestion graphique des boutons
+         $This.fra5.but2 configure -relief groove -text $panneau(foc,deplace)
+         update
+         #--- Gestion des limites
+         if { $audace(focus,targetFocus) > "65535" } {
+               #--- Message au-dela de la limite superieure
+               ::foc::limiteFoc
+               set audace(focus,targetFocus) ""
+               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+               update
+          } elseif { $audace(focus,targetFocus) < "0" } {
+               #--- Message au-dela de la limite inferieure
+               ::foc::limiteFoc
+               set audace(focus,targetFocus) ""
+               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+               update
+          } else {
+
+               #--- Lit la position du compteur de foc
+               ::focus::displayCurrentPosition $::panneau(foc,focuser)
+
+               #--- Lance le goto du focaliseur
+               ::focus::goto $::panneau(foc,focuser)
+
+               #--- Affiche la position d'arrivee
+               $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+         }
+         #--- Gestion graphique des boutons
+         $This.fra5.but2 configure -relief raised -text $panneau(foc,deplace)
+         update
+      } else {
+         ::confEqt::run ::confEqt::private(selectedFocuser) focuser "Focaliseur USB_Focus"
       }
    }
 
@@ -186,7 +237,7 @@ namespace eval ::foc {
       wm resizable $audace(base).formatfoc 0 0
 
       #--- Cree l'affichage du message
-      label $audace(base).formatfoc.lab -text "[format $caption(foc,formatfoc) $limite1 $limite2]"
+     label $audace(base).formatfoc.lab -text "[format $caption(foc,formatfoc) $limite1 $limite2]"
       pack $audace(base).formatfoc.lab -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
