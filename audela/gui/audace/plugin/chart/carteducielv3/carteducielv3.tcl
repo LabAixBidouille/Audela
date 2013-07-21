@@ -209,7 +209,7 @@ namespace eval carteducielv3 {
             -command {
                global caption
 
-               set res [::ping $::carteducielv3::widget(cdchost) ]
+               set res  [::audace_ping $::carteducielv3::widget(cdchost) ]
                set res1 [lindex $res 0]
                set res2 [lindex $res 1]
                if {$res1==1} {

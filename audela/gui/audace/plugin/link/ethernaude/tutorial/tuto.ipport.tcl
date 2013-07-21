@@ -26,7 +26,7 @@ proc caption_def_plugcam { langage } {
       set ipeth(ipnumet) [expr $ipeth(ipnumpc)-10]
    }
    set ipeth(ipnumethernaude) "$ipeth(ipnumeth).$ipeth(ipnumet)"
-   set ipeth(ipnumethernaudeping) [lindex [ping $ipeth(ipnumethernaude)] 0]
+   set ipeth(ipnumethernaudeping) [lindex [::audace_ping $ipeth(ipnumethernaude)] 0]
 
 if {[string compare $langage french] ==0 } {
    set caption(ethernaude)   "EthernAude"

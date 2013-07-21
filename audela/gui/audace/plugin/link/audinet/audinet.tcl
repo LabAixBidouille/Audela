@@ -399,7 +399,7 @@ proc ::audinet::selectConfigLink { linkLabel } {
 proc ::audinet::testping { ip } {
    global caption
 
-   set res  [ ::ping $ip ]
+   set res  [ ::audace_ping $ip ]
    set res1 [ lindex $res 0 ]
    set res2 [ lindex $res 1 ]
    if { $res1 == "1" } {
