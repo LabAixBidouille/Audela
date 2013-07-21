@@ -120,8 +120,10 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } { mountSide ? } } {
    variable private
    global audace caption conf
 
-   #--- Il n'y a pas de coordonnees, on sort immediatement
-   if { $radec == "{} {}" } {
+   #--- S'il manque une ou les 2 coordonnees, on sort immediatement
+   if { "" in $radec } {
+      tk_messageBox -title "$caption(telescope,attention)" -type ok \
+         -message "$caption(telescope,match) - $caption(telescope,errorCoord)\n"
       return
    }
 
@@ -196,9 +198,11 @@ proc ::telescope::match { radec { radecEquinox "J2000.0" } { mountSide ? } } {
 proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName "" } { radecEquinox "J2000.0" } } {
    global audace caption cataGoto conf
 
-   #--- Il n'y a pas de coordonnees, on sort immediatement
-   if { $list_radec == "{} {}" } {
-      return
+   #--- S'il manque une ou les 2 coordonnees, on sort immediatement
+   if { "" in $list_radec } {
+      tk_messageBox -title "$caption(telescope,attention)" -type ok \
+         -message "$caption(telescope,goto) - $caption(telescope,errorCoord)\n"
+      return -1
    }
 
    if { [ ::tel::list ] != "" } {
@@ -424,7 +428,7 @@ proc ::telescope::getSpeedLabelList { } {
 #    La liste des valeurs des vitesses supportees par la monture
 #------------------------------------------------------------
 proc ::telescope::getSpeedValueList { } {
-   global caption conf
+   global conf
 
    if { $conf(telescope) == "audecom" } {
       set speedList "1 2 3"
