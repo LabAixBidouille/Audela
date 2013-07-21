@@ -401,7 +401,7 @@ proc ::audinet::testping { ip } {
 
    set res  [ ::ping $ip ]
    set res1 [ lindex $res 0 ]
-  set res2 [ lindex $res 1 ]
+   set res2 [ lindex $res 1 ]
    if { $res1 == "1" } {
         set tres1 "$caption(audinet,appareil_connecte) $ip"
    } else {
