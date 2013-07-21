@@ -16,7 +16,11 @@ set caption(foc,help_titre)         "Help for this Tool"
 set caption(foc,help_titre1)        "Help for the Tool:"
 set caption(foc,acquisition)        "Acquisition"
 set caption(foc,centrage)           "Centering"
-set caption(foc,fenetre)            "Window"
+#--   modif RZ
+#set caption(foc,fenetre)           "Window"
+set caption(foc,fenetre_man)        "Windowing manual"
+set caption(foc,fenetre_auto)       "Windowing auto"
+#--   fin odif RZ
 set caption(foc,seconde)            "sec."
 set caption(foc,go)                 "GO CCD"
 set caption(foc,raz)                "Reset"
@@ -27,8 +31,10 @@ set caption(foc,se_trouve)          "Is at"
 set caption(foc,pas)                "steps"
 set caption(foc,aller_a)            "Go to"
 set caption(foc,init)               "Initialization"
-set caption(foc,vcurve)             "V Curve"
-set caption(foc,graphe)             "Diagram"
+#--   modif RZ
+#set caption(foc,vcurve)             "V Curve"
+#set caption(foc,graphe)             "Diagram"
+#--   fin odif RZ
 set caption(foc,on)                 "on"
 set caption(foc,off)                "off"
 set caption(foc,titre_graphe)       "Aud'ACE: Focusing"
@@ -50,12 +56,12 @@ set caption(foc,sec)                "sec."
 set caption(foc,numerisation)       "Read CCD"
 set caption(foc,hfd)                "HFD"
 set caption(foc,focalisationHFD)    "HFD Focusing"
-set caption(foc,diamHFD)            "HFD = %s"
-#--   ajout RZ
+#--   modif RZ
+#set caption(foc,diamHFD)            "HFD = %s"
 set caption(foc,slopeleft)          "Left slope %s/step"
 set caption(foc,sloperight)         "Right slope %s/step"
-set caption(foc,optimum)            "Optimum entre %s et %s pas"
-#--   finajout RZ
+set caption(foc,optimum)            "#Position optimale %s pas"
+#--   fin modif RZ
 set caption(foc,pas_focuser)        "No Focuser"
 
 # *************** Version française ***************************
@@ -66,7 +72,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,help_titre1)     "Aide de l'outil :"
    set caption(foc,acquisition)     "Acquisition"
    set caption(foc,centrage)        "Centrage"
-   set caption(foc,fenetre)         "Fenêtre"
+#--   modif RZ
+   #set caption(foc,fenetre)        "Fenêtre"
+   set caption(foc,fenetre_man)     "Fenêtrage manuel"
+   set caption(foc,fenetre_auto)    "Fenêtrage auto"
+#--   fin modif RZ
    set caption(foc,seconde)         "sec."
    set caption(foc,go)              "GO CCD"
    set caption(foc,raz)             "R.A.Z."
@@ -77,8 +87,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas)             "pas"
    set caption(foc,aller_a)         "Aller à"
    set caption(foc,init)            "Initialisation"
-   set caption(foc,vcurve)          "Courbe en V"
-   set caption(foc,graphe)          "Graphe"
+#--   modif RZ
+   #set caption(foc,vcurve)          "Courbe en V"
+   #set caption(foc,graphe)          "Graphe"
+#--   fin modif RZ
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
    set caption(foc,titre_graphe)    "Aud'ACE : Focalisation"
@@ -100,12 +112,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,numerisation)    "Lecture CCD"
    set caption(foc,hfd)             "HFD"
    set caption(foc,focalisationHFD) "Focalisation HFD"
-   set caption(foc,diamHFD)         "HFD = %s"
-#--   ajout RZ
+#--   modif RZ
+   set caption(foc,diamHFD)         "HFD = %s pixels"
    set caption(foc,slopeleft)       "Pente à gauche %s/pas"
    set caption(foc,sloperight)      "Pente à droite %s/pas"
-   set caption(foc,optimum)         "Optimum entre %s et %s pas"
-#--   finajout RZ
+   set caption(foc,optimum)         "Convergence : %s pas"
+#--   fin modif RZ
    set caption(foc,pas_focuser)     "Pas de focuser"
 
 # *************** Version italienne ***************************
