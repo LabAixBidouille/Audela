@@ -15,6 +15,9 @@ namespace eval ::foc {
       variable This
       global audace caption panneau
 
+      set visuNo $audace(visuNo)
+      set bufNo $audace(bufNo)
+
       #---
       if { [ ::cam::list ] != "" } {
 
@@ -40,8 +43,10 @@ namespace eval ::foc {
             set panneau(foc,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
          }
 
-
          if { $panneau(foc,menu) == "$caption(foc,centrage)" } {
+
+            #--- Mode Centrage
+
             #--- Applique le binning demande si la camera possede bien ce binning
             set binningCamera "2x2"
             if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
@@ -55,45 +60,112 @@ namespace eval ::foc {
             set panneau(foc,actuel)       "$caption(foc,centrage)"
             set panneau(foc,boucle)       "$caption(foc,off)"
 
-         } elseif { $panneau(foc,menu) == "$caption(foc,fenetre_man)" } {
+         } else {
 
-            set panneau(foc,bin) "1"
-            if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
-               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
-                  set a [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ]
-                  set kk 0
-                  set b $a
-                  #--- Tient compte du binning
-                  foreach e $a {
-                     set b [ lreplace $b $kk $kk [ expr $panneau(foc,bin_centrage)*$e ] ]
-                     incr kk
-                  }
-                  set panneau(foc,window) $b
-               }
+            #--- Mode Fenetrage
+
+            if { $panneau(foc,menu) == "$caption(foc,fenetre_auto)"} {
+
+               #--   Fenetrage automatique
+
+               #--   Coordonnees de l'étoile dans l'image binnee
+               #--   attention si l'image est plate x=naxis1 et y=naxis2
+               lassign [searchBrightestStar] x y
+
+               #--Debug : etoile artificielle
+               #set x 100 ; set y 80
+
+               #--   Calcule auto des cordonnees de la fenetre dans l'image binnee
+               set a [expr { int(round($x)-20) }]
+               set b [expr { int(round($y)-20) }]
+               set c [expr { int(round($x)+20) }]
+               set d [expr { int(round($y)+20) }]
+               set binBox [list $a $b $c $d]
+
+            } else {
+
+               #--   Fenetrage manuel
+
+               #--   Identifie la fenetre dans l'image binnee
+               set binBox [ ::confVisu::getBox $visuNo ]
+
             }
-            set panneau(foc,actuel) "$caption(foc,fenetre_man)"
+
+            #--   Recalcule les coordonnees dans l'image non binnee
+            set panneau(foc,bin) "1"
+			   lassign $binBox a b c d
+			   #--   Verifie que la selection existe
+            if {$a ne ""} {
+               set x1 [expr { $panneau(foc,bin_centrage)*$a }]
+               set y1 [expr { $panneau(foc,bin_centrage)*$b }]
+               set x2 [expr { $panneau(foc,bin_centrage)*$c }]
+               set y2 [expr { $panneau(foc,bin_centrage)*$d }]
+
+			      #--   Definit le fenetrage dans l'image non binnee
+               set panneau(foc,window) [list $x1 $y1 $x2 $y2]
+
+               #--   Calcule la taille de la fenetre a partir de ses coordonnees en tenant compte du binning
+               set naxis1Fen [expr { ($x2-$x1+1)*$panneau(foc,bin_centrage) }]
+               set naxis2Fen [expr { ($y2-$y1+1)*$panneau(foc,bin_centrage) }]
+               set panneau(foc,box) [list 1 1 $naxis1Fen $naxis2Fen]
+
+            } else {
+
+               #--   Si oubli de fenetrer avant de faire "GO CCD"
+               set panneau(foc,menu) "$caption(foc,centrage)"
+              ::foc::cmdGo
+            }
+
+            set panneau(foc,actuel) $panneau(foc,menu)
             set panneau(foc,boucle) "$caption(foc,on)"
+
+            #--   Debug : pour forcer l'affichage de HFDGraphe
+            #set panneau(foc,typefocuser) "1"
 
             #--   Ouvre le graphique adhoc s'il n'existe pas deja
             if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
+
+               #--   Lance le graphique normal
                ::foc::focGraphe
-               #--   finalise la ligne de titre
+
+               #--   Finalise la ligne de titre du fichier log
                append panneau(foc,fichier) "\n"
+
             } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
+
+               #--   Lance le graphique HFD
                ::foc::HFDGraphe
-               #--   finalise la ligne de titre
+
+               #--   Dimension de l'image non binnee
+               set naxis1 [expr { [buf$bufNo getpixelswidth]*$panneau(foc,bin_centrage) }]
+               set naxis2 [expr { [buf$bufNo getpixelsheight]*$panneau(foc,bin_centrage) }]
+
+               #--   Photocentre dans la fenetre binnee
+               lassign [buf$bufNo centro $binBox] xstar ystar
+
+               #--   Debug : etoile artificielle
+               #set xstar $x ; set ystar $y
+
+               #--   Photocentre dans la fenetre non binnee
+               set xstar [expr { $xstar*$panneau(foc,bin_centrage) }]
+               set ystar [expr { $ystar*$panneau(foc,bin_centrage) }]
+
+               #--   Dessine le schema etoile/image
+               ::foc::updateLocator $naxis1 $naxis2 $xstar $ystar
+
+               #--   Finalise la ligne de titre  du fichier log
                append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
             }
-         }
 
-         #--   Calcule la taille de la box
-         lassign $panneau(foc,window) x1 y1 x2 y2
-         set panneau(foc,box) [list 1 1 [expr { $x2-$x1+1 }] [expr { $y2-$y1+1 }]]
+            #--- Suppression de la zone selectionnee avec la souris
+            ::confVisu::deleteBox $visuNo
+
+         }
 
          cam$audace(camNo) window $panneau(foc,window)
 
          #--- Suppression de la zone selectionnee avec la souris
-         ::confVisu::deleteBox $audace(visuNo)
+         #::confVisu::deleteBox $visuNo
 
          #--- Appel a la fonction d'acquisition
          ::foc::cmdAcq
@@ -160,7 +232,7 @@ namespace eval ::foc {
       vwait panneau(foc,finAquisition)
 
       #--- Informations sur l'image fenetree
-      if { $panneau(foc,actuel) == "$caption(foc,fenetre_man)" } {
+      if { $panneau(foc,actuel) != "$caption(foc,centrage)" } {
 
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
 
