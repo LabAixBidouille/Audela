@@ -119,8 +119,6 @@ namespace eval ::foc {
 
          ::confVisu::autovisu $visuNo
 
-         set t0 [clock milliseconds]
-
          if {$panneau(foc,typefocuser) == "1"} {
             ::foc::extractBiny $bufNo
          }
@@ -151,8 +149,7 @@ namespace eval ::foc {
             append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
 
          }
-         set t1 [clock milliseconds]
-         ::console::affiche_resultat "durée du traitement de l'image [expr { $t1-$t0 }] ms\n"
+
          #-- simule la pose puis le chargement
          after 2000
       }
@@ -263,6 +260,13 @@ namespace eval ::foc {
    #    ordonnace la mise a jour des graphiques
    #---------------------------------------------------------------------------
    proc processHFD { args } {
+      global panneau
+
+      #--   filtrage des images plates
+      if {$panneau(foc,biny) eq ""} {
+         set panneau(foc,hfd) 1000
+         return
+      }
 
       #--   etape 1 : extraction de la boite et de la coupe horizontale
       #--   peuple les vecteurs abscisses (::Vx) et ordonnees(::Vint) du graphe1
@@ -306,10 +310,15 @@ namespace eval ::foc {
       buf$dest biny 1 $naxis2 1
 
       set panneau(foc,biny) [list ]
-      for {set col 1} {$col <= $naxis1} {incr col} {
-         lappend panneau(foc,biny) [lindex [buf$dest getpix [list $col 1]] 1]
-      }
 
+      set s [ stat ]
+      set inten [expr { [lindex $s 2 ]-[lindex $s 6] } ]
+
+      if {$inten > 10} {
+         for {set col 1} {$col <= $naxis1} {incr col} {
+            lappend panneau(foc,biny) [lindex [buf$dest getpix [list $col 1]] 1]
+         }
+      }
       ::buf::delete $dest
    }
 
