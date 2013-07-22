@@ -320,7 +320,7 @@ namespace eval ::foc {
             #--- ce message signale qu'une erreur est survenue dans la thread de la camera
             #--- j'affiche l'erreur dans la console
             ::console::affiche_erreur "foc::cmdAcq error: $args\n"
-            set panneau(foc,finAquisition) "acquisitionResult"
+            set panneau(foc,finAquisition) "error"
          }
       }
    }
