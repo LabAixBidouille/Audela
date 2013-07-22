@@ -163,10 +163,10 @@ namespace eval ::foc {
 
          }
 
-         cam$audace(camNo) window $panneau(foc,window)
-
-         #--- Suppression de la zone selectionnee avec la souris
-         #::confVisu::deleteBox $visuNo
+         #--- Fenetrage sur la cam si elle camera possede le mode fenetrage (pas APN et ni WebCam)
+         if {$panneau(foc,hasWindow) == "1"} {
+            cam$audace(camNo) window $panneau(foc,window)
+         }
 
          #--- Appel a la fonction d'acquisition
          ::foc::cmdAcq
