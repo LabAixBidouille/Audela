@@ -844,7 +844,7 @@ namespace eval ::acqt1m_flatciel {
             #--- ce message signale qu'une erreur est survenue dans la thread de la camera
             #--- j'affiche l'erreur dans la console
             ::console::affiche_erreur "acqt1m_flatciel::acqFlat error: $args\n"
-            set private(finAquisition) "acquisitionResult"
+            set private(finAquisition) "error"
          }
       }
    }

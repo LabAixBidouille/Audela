@@ -771,7 +771,7 @@ namespace eval ::acqfcAutoFlat {
             #--- ce message signale qu'une erreur est survenue dans la thread de la camera
             #--- j'affiche l'erreur dans la console
             ::console::affiche_erreur "acqfcAutoFlat::acqFlat error: $args\n"
-            set private(finAquisition) "acquisitionResult"
+            set private(finAquisition) "error"
          }
       }
    }
