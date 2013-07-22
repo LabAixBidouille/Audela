@@ -295,8 +295,8 @@ namespace eval ::foc {
    proc extractBiny { bufNo } {
       global panneau
 
-      #--   recopie l'image vers le buffer dest
-      lassign $panneau(foc,box) -> -> naxis1 naxis2
+      set naxis1 [buf$bufNo getpixelswidth]
+      set naxis2 [buf$bufNo getpixelsheight]
 
       #--   recopie l'image vers un nouveau buffer
       set dest [::buf::create]
@@ -306,7 +306,7 @@ namespace eval ::foc {
       buf$dest biny 1 $naxis2 1
 
       set panneau(foc,biny) [list ]
-      for {set col 1} {$col <=$naxis1} {incr col} {
+      for {set col 1} {$col <= $naxis1} {incr col} {
          lappend panneau(foc,biny) [lindex [buf$dest getpix [list $col 1]] 1]
       }
 
