@@ -36,6 +36,9 @@ namespace eval ::foc {
          }
          set panneau(foc,bin_centrage) $panneau(foc,bin)
 
+         #--   S'informe si la cam a le windowing
+         set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
+
          #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
          if { [ info exists panneau(foc,actuel) ] == "0" } {
             set panneau(foc,actuel) "$caption(foc,centrage)"
@@ -43,7 +46,7 @@ namespace eval ::foc {
             set panneau(foc,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
          }
 
-         if { $panneau(foc,menu) == "$caption(foc,centrage)" } {
+         if { $panneau(foc,menu) eq "$caption(foc,centrage)" } {
 
             #--- Mode Centrage
 
@@ -64,7 +67,7 @@ namespace eval ::foc {
 
             #--- Mode Fenetrage
 
-            if { $panneau(foc,menu) == "$caption(foc,fenetre_auto)"} {
+            if { $panneau(foc,menu) eq "$caption(foc,fenetre_auto)"} {
 
                #--   Fenetrage automatique
 
@@ -72,7 +75,7 @@ namespace eval ::foc {
                #--   attention si l'image est plate x=naxis1 et y=naxis2
                lassign [searchBrightestStar] x y
 
-               #--Debug : etoile artificielle
+               #--   Debug : etoile artificielle
                #set x 100 ; set y 80
 
                #--   Calcule auto des cordonnees de la fenetre dans l'image binnee
@@ -136,21 +139,19 @@ namespace eval ::foc {
                #--   Lance le graphique HFD
                ::foc::HFDGraphe
 
-               #--   Dimension de l'image non binnee
-               set naxis1 [expr { [buf$bufNo getpixelswidth]*$panneau(foc,bin_centrage) }]
-               set naxis2 [expr { [buf$bufNo getpixelsheight]*$panneau(foc,bin_centrage) }]
-
                #--   Photocentre dans la fenetre binnee
                lassign [buf$bufNo centro $binBox] xstar ystar
 
-               #--   Debug : etoile artificielle
-               #set xstar $x ; set ystar $y
+               #--   Dimensions de l'image binnee
+               set naxis1 [buf$bufNo getpixelswidth]
+               set naxis2 [buf$bufNo getpixelsheight]
 
-               #--   Photocentre dans la fenetre non binnee
-               set xstar [expr { $xstar*$panneau(foc,bin_centrage) }]
-               set ystar [expr { $ystar*$panneau(foc,bin_centrage) }]
-
-               #--   Dessine le schema etoile/image
+               #--   Centre l'etoile si l'image est plate
+               if {$xstar == $naxis1 && $ystar == $naxis2} {
+                  set xstar [expr { $naxis1/2 }]
+                  set ystar [expr { $naxis2/2 }]
+               }
+               #--   Dessine le schema etoile/image a partir de l'image binnee
                ::foc::updateLocator $naxis1 $naxis2 $xstar $ystar
 
                #--   Finalise la ligne de titre  du fichier log
@@ -188,7 +189,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc cmdAcq { } {
       variable This
-      global audace caption panneau
+      global audace conf caption panneau
 
       #--- Petits raccourcis
       set camera cam$audace(camNo)
@@ -216,7 +217,7 @@ namespace eval ::foc {
          set delay 0.100
          if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
             set delay [ expr $panneau(foc,exptime)-$delay ]
-            if { $panneau(foc,focuser) != "$caption(foc,pas_focuser)" } {
+            if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
                set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
             }
          }
@@ -231,8 +232,13 @@ namespace eval ::foc {
       #--- J'attends la fin de l'acquisition
       vwait panneau(foc,finAquisition)
 
+      #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
+      if {$panneau(foc,hasWindow) == "0"} {
+         $buffer window $panneau(foc,window)
+      }
+
       #--- Informations sur l'image fenetree
-      if { $panneau(foc,actuel) != "$caption(foc,centrage)" } {
+      if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
 
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
 
@@ -245,6 +251,10 @@ namespace eval ::foc {
 
             #--   Normalise le fond du ciel
             $buffer noffset 0
+
+            if {$panneau(foc,typefocuser) == "1"} {
+               ::foc::extractBiny $audace(bufNo)
+            }
 
             #--- Statistiques
             set s [ stat ]
