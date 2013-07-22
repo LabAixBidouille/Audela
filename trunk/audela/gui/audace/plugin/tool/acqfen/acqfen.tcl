@@ -1547,7 +1547,7 @@ namespace eval ::acqfen {
             #--- ce message signale qu'une erreur est survenue dans la thread de la camera
             #--- j'affiche l'erreur dans la console
             ::console::affiche_erreur "::acqfen::acqAcqfen error: $args\n"
-            set panneau(acqfen,finAquisition) "acquisitionResult"
+            set panneau(acqfen,finAquisition) "error"
          }
       }
    }

@@ -1042,7 +1042,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
    #------------------------------------------------------------
    proc ::acqt1m_flatcielplus::acqFlat { visuNo idfiltre } {
 
-      variable private 
+      variable private
       global panneau
 
       # Comptage des flats
@@ -1151,7 +1151,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
                if {[expr $ciel+$stdev]<$private(maxdyn)} {
 
                   puts "[expr $ciel+$stdev] < $private(maxdyn)"
-                  
+
                   #--- image non saturee
                   set exptime [format "%0.1f" [expr $fondflat/($ciel - $dark)]]
                   if {$exptime<0} {
@@ -1214,8 +1214,8 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
                } else {
 
                   puts "[expr $ciel+$stdev] >= $private(maxdyn)"
-                  
-                  
+
+
                   #--- Saturation on divise le temps d'exposition par 3
                   set exptime [format "%0.1f" [expr $exptime / 3.]]
 
@@ -1313,11 +1313,11 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
                $buffer setkwd [list "IMAGETYP" "Flat" string "Image type" "" ]
                $buffer setkwd [list "OBJECT"   "FLAT" string "" "" ]
                $buffer setkwd [list "FILTER"   [lindex $::t1m_roue_a_filtre::private(filtre,$idfiltre) 2] string "" "" ]
-               
+
                set nom   [lindex [::acqt1m::get_filename $visuNo] 1]
                saveima $nom $visuNo
                #saveima $filelong $visuNo
-               
+
                ::console::affiche_resultat "$::caption(acqt1m_flatcielplus,enregistre) $filelong\n"
                set enr 1
                incr num
@@ -1405,7 +1405,7 @@ proc ::acqt1m_flatcielplus::changerBinningCent { { visuNo 1 } } {
             #--- ce message signale qu'une erreur est survenue dans la thread de la camera
             #--- j'affiche l'erreur dans la console
             ::console::affiche_erreur "acqt1m_flatcielplus::acqFlat error: $args\n"
-            set private(finAquisition) "acquisitionResult"
+            set private(finAquisition) "error"
          }
       }
    }
