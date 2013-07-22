@@ -63,7 +63,7 @@ namespace eval ::foc {
 
       if { [ ::tel::list ] != "" } {
          #--- Gestion graphique du bouton
-         $This.fra5.but3 configure -relief groove -text $panneau(foc,initialise)
+         $This.fra5.but0 configure -relief groove -text $panneau(foc,initialise)
          update
          #--- Met le compteur de foc a zero et rafraichit les affichages
          ::focus::initPosition $::panneau(foc,focuser)
@@ -73,7 +73,7 @@ namespace eval ::foc {
          $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
          update
          #--- Gestion graphique du bouton
-         $This.fra5.but3 configure -relief raised -text $panneau(foc,initialise)
+         $This.fra5.but0 configure -relief raised -text $panneau(foc,initialise)
          update
       } else {
          ::confTel::run
@@ -95,7 +95,7 @@ namespace eval ::foc {
       if { [ ::tel::list ] != "" } {
          if { $audace(focus,targetFocus) != "" } {
             #--- Gestion graphique des boutons
-            $This.fra5.but3 configure -relief groove -state disabled
+            $This.fra5.but0 configure -relief groove -state disabled
             $This.fra5.but2 configure -relief groove -text $panneau(foc,deplace)
             update
             #--- Gestion des limites
@@ -124,7 +124,7 @@ namespace eval ::foc {
             }
             #--- Gestion graphique des boutons
             $This.fra5.but2 configure -relief raised -text $panneau(foc,deplace)
-            $This.fra5.but3 configure -relief raised -state normal
+            $This.fra5.but0 configure -relief raised -state normal
             update
          }
       } else {
