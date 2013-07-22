@@ -145,6 +145,7 @@ namespace eval ::foc {
       set panneau(foc,demande_arret)     "0"
       set panneau(foc,avancement_acq)    "1"
       set panneau(foc,fichier)           "${caption(foc,intensite)}\t${caption(foc,fwhm__x)}\t${caption(foc,fwhm__y)}\t${caption(foc,contraste)}\t"
+      set panneau(foc,hasWindow)         "0"
 
       #--   on copie le nom du focuser selectionne dans le pad
       if { $conf($conf(confPad),focuserLabel) != "" } {
