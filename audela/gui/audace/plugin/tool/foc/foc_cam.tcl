@@ -218,7 +218,7 @@ namespace eval ::foc {
          if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
             set delay [ expr $panneau(foc,exptime)-$delay ]
             if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
-               set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+               #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
             }
          }
       }
@@ -240,6 +240,7 @@ namespace eval ::foc {
             #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
             if {$panneau(foc,hasWindow) == "0"} {
                $buffer window $panneau(foc,window)
+               ::confVisu::autovisu $audace(visuNo)
             }
 
             #--- Gestion graphique des boutons
@@ -305,7 +306,7 @@ namespace eval ::foc {
    proc attendImage { message args } {
       global audace panneau
 
-      ::console::affiche_resultat "message = $message args = $args\n"
+      #::console::affiche_resultat "message = $message args = $args\n"
 
       switch $message {
          "autovisu" {
