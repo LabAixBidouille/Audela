@@ -279,11 +279,18 @@ proc ::usb_focus::goto { {blocking 0} } {
 #     Commande des boutons + -
 #     si command = "-" , demarre le mouvement du focus en intra focale
 #     si command = "+" , demarre le mouvement du focus en extra focale
+#     si command = "stop" , stop le mouvement
 #     si necessaire, le deplacement est corrige pour rester dans les limites {0|maxstep)
 #------------------------------------------------------------
 proc ::usb_focus::move { command } {
    variable widget
    variable private
+
+   #--   commande speciale pour Focalisation
+   if {$command eq "stop"} {
+      ::usb_focus::stopMove
+      return
+   }
 
    set d $widget(nbstep)
    set position [::usb_focus::trimZero $widget(position)]
