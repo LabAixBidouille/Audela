@@ -17,14 +17,16 @@ namespace eval ::foc {
    # mode        : 0 --> fenetre manuelle, 1 --> fenetre automatique
    #---------------------------------------------------------------------------
    proc traceCurve { {typefocuser 1} {mode 1} } {
-      global audace caption panneau
+      global audace conf caption panneau
 
       set visuNo $audace(visuNo)
       set bufNo $audace(bufNo)
-      set ext .fit
+      set rep $audace(rep_images)
+      set ext $conf(extension,defaut)
       set rac [file join $audace(rep_images) t]
       set panneau(foc,compteur) "0"
       set panneau(foc,typefocuser) $typefocuser
+
       #--   mode de fenetrage
       if {$mode ==1} {
          set panneau(foc,menu) "$caption(foc,fenetre_auto)"
@@ -117,6 +119,12 @@ namespace eval ::foc {
 
          ::confVisu::autovisu $visuNo
 
+         set t0 [clock milliseconds]
+
+         if {$panneau(foc,typefocuser) == "1"} {
+            ::foc::extractBiny $bufNo
+         }
+
          #--- Statistiques
          set s [ stat ]
          set maxi [ lindex $s 2 ]
@@ -143,7 +151,8 @@ namespace eval ::foc {
             append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
 
          }
-
+         set t1 [clock milliseconds]
+         ::console::affiche_resultat "durée du traitement de l'image [expr { $t1-$t0 }] ms\n"
          #-- simule la pose puis le chargement
          after 2000
       }
@@ -276,7 +285,33 @@ namespace eval ::foc {
       } else {
          ::console::affiche_resultat "mesure invalide\n"
       }
-  }
+   }
+
+   #---------------------------------------------------------------------------
+   # extractBiny
+   #    binne l'image en Y et met les valeurs dans panneau(foc,biny)
+   #  Parametre : N° du buffer contenant l'image normale
+   #---------------------------------------------------------------------------
+   proc extractBiny { bufNo } {
+      global panneau
+
+      #--   recopie l'image vers le buffer dest
+      lassign $panneau(foc,box) -> -> naxis1 naxis2
+
+      #--   recopie l'image vers un nouveau buffer
+      set dest [::buf::create]
+      buf$bufNo copyto $dest
+
+      #--   somme toutes les lignes
+      buf$dest biny 1 $naxis2 1
+
+      set panneau(foc,biny) [list ]
+      for {set col 1} {$col <=$naxis1} {incr col} {
+         lappend panneau(foc,biny) [lindex [buf$dest getpix [list $col 1]] 1]
+      }
+
+      ::buf::delete $dest
+   }
 
    #---------------------------------------------------------------------------
    # createCoupeHoriz
@@ -284,43 +319,20 @@ namespace eval ::foc {
    #    binne l'image en Y
    #---------------------------------------------------------------------------
    proc createCoupeHoriz { } {
-      global audace conf
-
-      set visuNo $audace(visuNo)
-      set bufNo $audace(bufNo)
-      set rep $audace(rep_images)
-      set ext $conf(extension,defaut)
-
-      #--   sauve une copie de travail
-      buf$bufNo save [file join  $rep extract.fit]
-
-      #--   recopie l'image vers le buffer dest
-      set dest [::buf::create]
-      buf$bufNo copyto $dest
-
-      set naxis1 [ expr [ lindex [buf$bufNo getkwd NAXIS1 ] 1 ]-0 ]
-      set naxis2 [ expr [ lindex [buf$bufNo getkwd NAXIS2 ] 1 ]-0 ]
-
-      ttscript2 "IMA/SERIES \"$rep\" extract . . $ext  \"$rep\" biny . $ext BINY y1=1 y2=$naxis2 height=1 bitpix=32"
+      global panneau
 
       #--   peuple le vecteur intensite du profil en X (variation entre {0|1})
       blt::vector create temporaire -watchunset 1
       temporaire offset 1                             ; #-- fait correspondre les indices et le N° de pixel
-
-      buf$dest load [file join $rep biny$ext]         ; #-- recupere le fichier binne
-      for {set col 1} {$col <=$naxis1} {incr col} {
-         temporaire append [lindex [buf$dest getpix [list $col 1]] 1]
-      }
+      temporaire append $panneau(foc,biny)
       temporaire expr { temporaire/$temporaire(max) } ; #-- maintenant max == 1.0
       ::Vintx set temporaire                          ; #-- transfert vers le vecteur graphique
 
       #--   peuple le vecteur ::Vx abscisse du graphe1
       ::Vx offset 1                                   ; #-- fait correspondre les indices et le N° de pixel
-      ::Vx seq 1 $naxis1
+      ::Vx seq 1 [::Vintx length]                     ; #-- graduation entre 1 et naxis1
 
       blt::vector destroy temporaire
-      ::buf::delete $dest
-      file delete [file join $rep extract$ext] [file join $rep biny$ext]
    }
 
    #---------------------------------------------------------------------------
