@@ -237,7 +237,7 @@ namespace eval ::foc {
       wm resizable $audace(base).formatfoc 0 0
 
       #--- Cree l'affichage du message
-     label $audace(base).formatfoc.lab -text "[format $caption(foc,formatfoc) $limite1 $limite2]"
+      label $audace(base).formatfoc.lab -text "[format $caption(foc,formatfoc) $limite1 $limite2]"
       pack $audace(base).formatfoc.lab -padx 10 -pady 2
 
       #--- La nouvelle fenetre est active
