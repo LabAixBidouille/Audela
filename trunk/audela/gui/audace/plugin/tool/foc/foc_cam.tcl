@@ -232,15 +232,15 @@ namespace eval ::foc {
       #--- J'attends la fin de l'acquisition
       vwait panneau(foc,finAquisition)
 
-      #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-      if {$panneau(foc,hasWindow) == "0"} {
-         $buffer window $panneau(foc,window)
-      }
-
       #--- Informations sur l'image fenetree
       if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
 
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
+
+            #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
+            if {$panneau(foc,hasWindow) == "0"} {
+               $buffer window $panneau(foc,window)
+            }
 
             #--- Gestion graphique des boutons
             $This.fra2.but1 configure -relief groove -text $panneau(foc,go)
@@ -304,6 +304,8 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc attendImage { message args } {
       global audace panneau
+
+      ::console::affiche_resultat "message = $message args = $args\n"
 
       switch $message {
          "autovisu" {
