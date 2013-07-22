@@ -96,15 +96,15 @@ namespace eval ::foc {
 
             #--   Recalcule les coordonnees dans l'image non binnee
             set panneau(foc,bin) "1"
-			   lassign $binBox a b c d
-			   #--   Verifie que la selection existe
+            lassign $binBox a b c d
+            #--   Verifie que la selection existe
             if {$a ne ""} {
                set x1 [expr { $panneau(foc,bin_centrage)*$a }]
                set y1 [expr { $panneau(foc,bin_centrage)*$b }]
                set x2 [expr { $panneau(foc,bin_centrage)*$c }]
                set y2 [expr { $panneau(foc,bin_centrage)*$d }]
 
-			      #--   Definit le fenetrage dans l'image non binnee
+               #--   Definit le fenetrage dans l'image non binnee
                set panneau(foc,window) [list $x1 $y1 $x2 $y2]
 
                #--   Calcule la taille de la fenetre a partir de ses coordonnees en tenant compte du binning
