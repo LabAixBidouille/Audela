@@ -5,32 +5,33 @@
 # Mise à jour $Id$
 #
 
-   # nom proc                    onglet      utilisee par
-   # ::collector::getImgData        Cible       initTarget
-   # ::collector::getTelPosition    Local       initLocal
-   # ::collector::getDateExposure   Local       initLocal
-   # ::collector::getTPW            Atmosphere  initAtm
-   # ::collector::getKwdOptic       Optique     onChangeOptique
-   # ::collector::getCamName        Camera      onChangeCam
-   # ::collector::getObserv         Mots cles   onChangeObserver
-   # ::collector::getObject         Mots cles   onChangeObjName
+   # nom proc                                onglet      utilisee par
 
-   # ::collector::getCoordJ2000     Cible       initTarget
-   # ::collector::getTrueCoordinates Cible      computeTelCoord
-   # ::collector::getCdeltFov       Vue         computeCdeltFov
-   # ::collector::getImgCenterRaDec Vue         getImgData
-   # ::collector::getMatchWCS       Vue         initPose
-   # ::collector::getDateTUJD       Local       initLocal
-   # ::collector::getTsl            Local       computeTslMoon
-   # ::collector::getMoonAge        Local       computeTslMoon
-   # ::collector::getSecz           Atmosphere  computeCoordApp
-   # ::collector::getFonDResolution Optique     computeOptic
-   # ::collector::getCamSpec        Camera      onChangeCam
-   # ::collector::getTelConnexion   Monture     onChangeTelescop
-   # ::collector::getSpeed          Monture     refreshSpeed
-   # ::collector::getCD                         getSpeed, getImgCenterRaDec et createKeywords
-   # ::collector::obsCoord2SiteCoord            magic
-   # ::collector::getHrzDec         Allemande   refreshMyTel
+   # ::collector::getImgData                 Cible       initTarget
+   # ::collector::getTelPosition             Local       initLocal
+   # ::collector::getDateExposure            Local       initLocal
+   # ::collector::getTPW                     Atmosphere  initAtm
+   # ::collector::getKwdOptic                Optique     onChangeOptique
+   # ::collector::getCamName                 Camera      onChangeCam
+   # ::collector::getObserv                  Mots cles   onChangeObserver
+   # ::collector::getObject                  Mots cles   onChangeObjName
+
+   # ::collector::getCoordJ2000              Cible       initTarget
+   # ::collector::getTrueCoordinates         Cible       computeTelCoord
+   # ::collector::getCdeltFov                Vue         computeCdeltFov
+   # ::collector::getImgCenterRaDec          Vue         getImgData
+   # ::collector::getMatchWCS                Vue         initPose
+   # ::collector::getDateTUJD                Local       initLocal
+   # ::collector::getTsl                     Local       computeTslMoon
+   # ::collector::getMoonAge                 Local       computeTslMoon
+   # ::collector::getSecz                    Atmosphere  computeCoordApp
+   # ::collector::getFonDResolution          Optique     computeOptic
+   # ::collector::getCamSpec                 Camera      onChangeCam
+   # ::collector::getTelConnexion            Monture     onChangeTelescop
+   # ::collector::getSpeed                   Monture     refreshSpeed
+   # ::collector::getCD                                  getSpeed, getImgCenterRaDec et createKeywords
+   # ::collector::obsCoord2SiteCoord                     magic
+   # ::collector::getHrzDec                  Allemande   refreshMyTel
    # ::collector::getNewCriticalFocusZone
 
    #--------------------- proc exploitant les mots cles -----------------------
@@ -382,31 +383,31 @@
    #  Retourne AD, DEC, azimuth, elevation et angle horaire à viser par le telescope
    #     Input :
    #       ra_hms,dec_dms : coordinates J2000.0
-   #       datejd   : date JD
-   #       home     : gps
-   #       airpress : atmospheric pressure (Pa)
-   #       temperature : °K
-   #       coefNames : liste des noms des coefficients de modpoi :
-   #       * mode ALTAZ      : {IA IE NPAE CA AN AW}
+   #       datejd         : date JD
+   #       home           : gps
+   #       airpress       : atmospheric pressure (Pa)
+   #       temperature    : °K
+   #       coefNames      : liste des noms des coefficients de modpoi :
+   #       * mode ALTAZ                  : {IA IE NPAE CA AN AW}
    #       * par defaut, mode EQUATORIAL : {IH ID NP CH ME MA FO HF DAF TF}
-   #                    #--- IH  : Décalage du codeur H
-   #                    #--- ID  : Décalage du codeur D
-   #                    #--- NP  : Non perpendicularité H/D
-   #                    #--- CH  : Erreur de collimation
-   #                    #--- ME  : Désalignement N/S de l'axe polaire
-   #                    #--- MA  : Désalignement E/O de l'axe polaire
-   #                    #--- FO  : Flexion de la fourche ; Fork Flexure
+   #                    #--- IH         : Décalage du codeur H
+   #                    #--- ID         : Décalage du codeur D
+   #                    #--- NP         : Non perpendicularité H/D
+   #                    #--- CH         : Erreur de collimation
+   #                    #--- ME         : Désalignement N/S de l'axe polaire
+   #                    #--- MA         : Désalignement E/O de l'axe polaire
+   #                    #--- FO         : Flexion de la fourche ; Fork Flexure
    #                    #--- MT  (=HF?) : Flexion de la monture ; Mount Flexure
-   #                    #--- DAF : Flexion de l'axe delta ; Delta Axis Flexure
-   #                    #--- TF  : Flexion du tube optique ; Tube Flexure
-   #       coefValues : liste des valeurs des coefficients ci-dessus (en arcmin) ;
-   #                    par defaut les valeurs sont nulles {0 0 0 0 0 0 0 0 0 0}
+   #                    #--- DAF        : Flexion de l'axe delta ; Delta Axis Flexure
+   #                    #--- TF         : Flexion du tube optique ; Tube Flexure
+   #       coefValues     : liste des valeurs des coefficients ci-dessus (en arcmin) ;
+   #                        par defaut les valeurs sont nulles {0 0 0 0 0 0 0 0 0 0}
    #  Derive de viseur_polaire_taka.tcl/viseurPolaireTaka::HA_Polaire
    #     Output :
    #         rav,decv : true coordinates ((hms,dms))
-   #         az : true azimut (degrees)
-   #         elev : true altitude (degrees)
-   #         ha  : true hour angle (degrees)
+   #         az       : true azimut (degrees)
+   #         elev     : true altitude (degrees)
+   #         ha       : true hour angle (degrees)
    #---------------------------------------------------------------------------
    proc getTrueCoordinates { data {coefNames {IH ID NP CH ME MA FO HF DAF TF} } { coefValues {0 0 0 0 0 0 0 0 0 0} } } {
 
