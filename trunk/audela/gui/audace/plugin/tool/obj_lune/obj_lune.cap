@@ -204,7 +204,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune,heure)               "Tempo Universale (TU):"
    set caption(obj_lune,pos_centre)          "Coordinates topocentrica lunare:"
    set caption(obj_lune,hauteur)             "Elevazione:"
-   set caption(obj_lune,azimut)              "Azimuth:"
+   set caption(obj_lune,azimut)              "Azimut:"
    set caption(obj_lune,anglehoraire)        "Angolo orario:"
    set caption(obj_lune,diametre_apparent)   "Diametro apparente:"
    set caption(obj_lune,magnitude)           "Magnitudine:"
