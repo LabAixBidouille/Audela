@@ -3,13 +3,14 @@
 
 
 
+
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="Author" content="Alain Klotz">
   <meta name="GENERATOR" content="Mozilla/4.5 [fr] (Win98; I) [Netscape]"><title>Librairie MC : Manuel de l'utilisateur</title></head><body>
 <center><b><font size="+3">LIB MC</font></b> <br>
 Création et utilisation d'un modèle de pointage avec
 la&nbsp; librairie de calculs de mécanique céleste <br>
-version 20130601<br>
+version 20130723<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -135,7 +136,7 @@ des éléments est:</p>
 DEC : Déclinaison (deg)<br>
 HA : Angle horaire (deg)<br>
 az : Azimut (deg)<br>
-elev : Elevation (deg)<br>
+elev : Elévation (deg)<br>
 </p>
 <p>Exemples :</p>
 <p>mc_listamers EQUATORIAL 10 4 now {GPS 5 E 43 1230}]</p>
@@ -194,9 +195,9 @@ List_ModelSymbols : Symbols des coefficients du modèle de
 pointage<br>
 List_ModelValues : Valeurs des coefficients du modèle de pointage.<br>
 -model_only 1 : pour signaler de ne pas appliquer la transformation
-catalogue-&gt;vraie sur les les coordonnées de type Hipparcos.<br>
--refraction 0 : pour signaler de ne pas calculer les corrections de
-réfraction (cas de télescopes LX200)<br>
+catalogue-&gt;vraie sur les coordonnées de type Hipparcos.<br>
+-refraction 0|1 : 0 pour signaler de ne pas calculer les corrections de
+réfraction (cas des télescopes LX200), 1 pour corriger les corrections de réfraction (valeur par defaut).<br>
 -drift :&nbsp;=1 ou =radec ou =altaz&nbsp; pour signaler de sortir les
 valeurs de vitesses sur les axes
 (en arcsec/sec). Si =radec alors les paramètres de la liste du
@@ -210,13 +211,14 @@ arcsec/sec
 diurne). Par défaut -flag vaut 0 (pas de sortie des vitesses).<br>
 -driftvalues : Définition des valeurs de dérives
 supplémentaires par rapport au mouvement diurne.</p>
+
 <p>Sorties :&nbsp;</p>
 <p>Liste de 16 éléments :</p>
 <p>RA : Ascension droite apparente sans modèle (deg)<br>
 DEC : Déclinaison apparente sans modèle (deg)<br>
 HA : Angle horaire apparente sans modèle (deg)<br>
 az : Azimut apparente sans modèle (deg)<br>
-elev : Elevation apparente sans modèle (deg)</p>
+elev : Elévation apparente sans modèle (deg)</p>
 <p>dRA : Valeur à ajouter à RA pour pointer avec le
 modèle (deg)<br>
 dDEC : Valeur à ajouter à DEC pour pointer avec le
@@ -231,7 +233,7 @@ modèle (deg)</p>
 DEC : Déclinaison apparente avec modèle (deg)<br>
 HA : Angle horaire apparente avec modèle (deg)<br>
 az : Azimut apparente avec&nbsp; modèle (deg)<br>
-elev : Elevation apparente avec modèle (deg)<br>
+elev : Elévation apparente avec modèle (deg)<br>
 rot : Angle parallactique apparent avec modèle (deg)&nbsp;</p>
 <p>Si le flag -drift est placé sur 1, la liste continue avec :</p>
 <p>drift_RA : Vitesse en ascension droite apparente avec modèle
@@ -277,11 +279,11 @@ défaut.<br>
 List_ModelSymbols : Symbols des coefficients du modèle de
 pointage<br>
 List_ModelValues : Valeurs des coefficients du modèle de pointage.<br>
--model_only&nbsp; 0|1,&nbsp; 1=calculer impact modèle seulement
-0=calculer impact modelé et changement équinoxe (valeur par
-défaut)&nbsp; <br>
--refraction 0|1, 1=corriger la réfraction (valeur par défaut) , 0= ne
-pas corriger la réfraction (cas des LX200)</p>
+-model_only&nbsp; 0|1,&nbsp; 1 pour calculer l'impact du modèle seulement,
+0 pour calculer l'impact du modèle et le changement d'équinoxe (valeur par
+défaut).<br>
+-refraction 0|1 : 0 pour signaler de ne pas calculer les corrections de
+réfraction (cas des télescopes LX200), 1 pour corriger les corrections de réfraction (valeur par defaut).</p>
 <p>Sorties :&nbsp;</p>
 <p>Liste de 2 éléments :</p>
 RA : Ascension droite catalogue (deg) J2000<br>
@@ -300,7 +302,7 @@ type altaz. HADEC=Les coordonnées de type hadec.</p>
 <p>List_coords : Définition de points critiques limitant
 l'observation à l'horizon. Si Type_coords=ALTAZ, List_coords est
 une liste composée d'éléments de type {azimut
-elevation} exprimés en degrés.&nbsp;Si Type_coords=HADEC,
+élévation} exprimés en degrés.&nbsp;Si Type_coords=HADEC,
 List_coords est une liste composée d'éléments de
 type {déclinaison angle_horaire_est angle_horaire_ouest}
 exprimés en degrés. </p>
@@ -394,7 +396,7 @@ close $f<br>
 set decalages [lrange $decalages 0 end-1]<br>
 set home {GPS 5.7157 E 43.9319 633.9}<br>
 set matrices [mc_compute_matrix_modpoi $decalages ALTAZ $home {IA IE
-NPAE CA AN AW } {3 2 5 4}]<br>
+NP AE CA AN AW } {3 2 5 4}]<br>
 set matX [lindex $matrices 0]<br>
 set vecY [lindex $matrices 1]<br>
 set vecW [lindex $matrices 2]<br>
@@ -467,7 +469,7 @@ foreach coord $coords {<br>
 set x [lindex $horizons 0]<br>
 set y [lindex $horizons 1]<br>
 ::plotxy::plot $x $y r<br>
-::plotxy::xlabel "azimuth (degrees)"<br>
+::plotxy::xlabel "azimut (degrees)"<br>
 ::plotxy::ylabel "elevation (degrees)"<br>
 ::plotxy::position {20 20 800 400}<br>
 <br>
