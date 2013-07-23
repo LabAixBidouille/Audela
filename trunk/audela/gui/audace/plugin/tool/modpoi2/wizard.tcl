@@ -1343,19 +1343,19 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #-- mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues
    # @param
    #    List_coords =
-   #       id   : identifiant hypparcos de l'toile, sinon utilisé  =0 (nombre entier)
-   #       mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
-   #       ra   : ascension droite (en degrés décimaux)
-   #       dec  : declinaison (en degrés décimaux)
-   #       equinox : date de l'equinoxe , date du jour=now, ou format ISO8601
-   #       epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
-   #       mura : mouvement propre ra (en degré par an)
-   #       mudec : mouvement propre dec (en degré par an)
-   #       plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
-   #    Date : date TU
-   #    Home : position GPS
-   #    Pressure 101325
-   #    Temperature 290
+   #       id       : identifiant hypparcos de l'etoile, sinon utilise =0 (nombre entier)
+   #       mag      : magnitude , si non utilise = 0.0 (nombre décimal)
+   #       ra       : ascension droite (en degres decimaux)
+   #       dec      : declinaison (en degres decimaux)
+   #       equinox  : date de l'equinoxe , date du jour=now, ou format ISO8601
+   #       epoch    : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
+   #       mura     : mouvement propre ra (en degres par an)
+   #       mudec    : mouvement propre dec (en degres par an)
+   #       plx      : parallaxe , =0 si inconnu (en mas=millisecondes d'arc)
+   #    Date        : date TU
+   #    Home        : position GPS
+   #    Pressure    : 101325
+   #    Temperature : 290
    #    List_ModelSymbols
    #    List_ModelValues
    # @return
@@ -1369,7 +1369,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #  7  dha   delta apres correction modele de pointage
    #  8  daz   delta apres correction modele de pointage
    #  9  dh    delta apres correction modele de pointage
-   #  10 ra    RA  apres correction modele de pointage
+  #  10 ra    RA  apres correction modele de pointage
    #  11 dec   DEC apres correction modele de pointage
    #  12 ha    HA  apres correction modele de pointage
    #  13 az    AZ  apres correction modele de pointage
