@@ -1369,7 +1369,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #  7  dha   delta apres correction modele de pointage
    #  8  daz   delta apres correction modele de pointage
    #  9  dh    delta apres correction modele de pointage
-  #  10 ra    RA  apres correction modele de pointage
+   #  10 ra    RA  apres correction modele de pointage
    #  11 dec   DEC apres correction modele de pointage
    #  12 ha    HA  apres correction modele de pointage
    #  13 az    AZ  apres correction modele de pointage
