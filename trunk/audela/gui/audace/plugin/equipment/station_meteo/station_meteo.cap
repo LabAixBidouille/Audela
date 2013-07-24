@@ -1,0 +1,115 @@
+#
+# Fichier : station_meteo.cap
+# Mise a jour $Id$
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(station_meteo,label)                          "Weather Station"
+
+set caption(station_meteo,site_web)                       "Reference Web Site:"
+set caption(station_meteo,site_web_ref)                   ""
+
+set caption(station_meteo,arreter)                        "Stop"
+set caption(station_meteo,creer_au_demarrage)             "Next time software is run connect this equipment automatically"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Station météo"
+
+   set caption(station_meteo,site_web)                    "Site Web de référence :"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Arrêter"
+   set caption(station_meteo,creer_au_demarrage)          "Connexion automatique de cet équipement au prochain démarrage"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Stazione Meteo"
+
+   set caption(station_meteo,site_web)                    "Sito Web di riferimento:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Fermare"
+   set caption(station_meteo,creer_au_demarrage)          "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Estación meteorológica"
+
+   set caption(station_meteo,site_web)                    "Sitio Web de referencia:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Parar"
+   set caption(station_meteo,creer_au_demarrage)          "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Wetterwarte"
+
+   set caption(station_meteo,site_web)                    "Referenz Webseite:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Halten"
+   set caption(station_meteo,creer_au_demarrage)          "Nächste Mal diese Einrichtung automatisch anschließen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Estação meteorológica"
+
+   set caption(station_meteo,site_web)                    "Site Web de referência:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Parar"
+   set caption(station_meteo,creer_au_demarrage)          "O equipamento conecta-se automaticamente na próxima execução do programa"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Weather Station"
+
+   set caption(station_meteo,site_web)                    "Reference Web Site:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Stop"
+   set caption(station_meteo,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
+
+# *************** Version ukrainienne *************************
+} elseif { [ string compare $langage "ukrainian" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Weather Station"
+
+   set caption(station_meteo,site_web)                    "Reference Web Site:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Stop"
+   set caption(station_meteo,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
+
+# *************** Version russe *******************************
+} elseif { [ string compare $langage "russian" ] == "0" } {
+
+   set caption(station_meteo,label)                       "Weather Station"
+
+   set caption(station_meteo,site_web)                    "Reference Web Site:"
+   set caption(station_meteo,site_web_ref)                ""
+
+   set caption(station_meteo,arreter)                     "Stop"
+   set caption(station_meteo,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
