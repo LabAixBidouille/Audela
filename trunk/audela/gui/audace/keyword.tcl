@@ -461,9 +461,6 @@ proc ::keyword::calculateAirMass { visuNo } {
 
    set home $audace(posobs,observateur,gps)
 
-   if { ! [ info exists audace(meteo,obs,pressure) ] }    { set audace(meteo,obs,pressure)    "101325" }
-   if { ! [ info exists audace(meteo,obs,temperature) ] } { set audace(meteo,obs,temperature) "290" }
-
    #--- Je regarde si les mots cles RA et DEC sont coches
    set d 0
    set e 0
