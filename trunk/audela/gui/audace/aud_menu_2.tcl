@@ -1173,7 +1173,7 @@ namespace eval ::div {
 
    #---------------------------------------------------------------------------
    #  ::div::configGui
-   #  Inghibe/Désinhibe toutes les commandes del'interface
+   #  Inhibe/Désinhibe toutes les commandes de l'interface
    #  Invoquee par cmdImg2Clipboard et createHisto
    #---------------------------------------------------------------------------
    proc configGui { visuNo state } {
