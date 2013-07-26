@@ -411,7 +411,7 @@ proc sauve_jpeg {args} {
             # - si la palette est monochrome, on enregistre en jpeg N&B.
             # - si la palette est polychrome, on enregistre en jpeg couleurs
 
-            if {$conf(visu_palette,visu$audace(visuNo),mode)<=2} {
+            if {[lindex $conf(div,visu$audace(visuNo),mode) 0] != "7" || [lindex $conf(div,visu$audace(visuNo),mode) 0] != "8"} {
                # Sauvegarde en jpeg monochrome
 
                # On récupère la fonction de transfert
