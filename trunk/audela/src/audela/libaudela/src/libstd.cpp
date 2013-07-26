@@ -86,7 +86,7 @@ void LogFile(char*s);
 void vlogfile(char *fmt, ...);
 
 char* message(int error);
-int CmdGetBitOs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int CmdGetBitApp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdTestGetClicks(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdHistory(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdLibstdId(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -188,7 +188,7 @@ int CmdTestGetClicks(ClientData clientData, Tcl_Interp *interp, int argc, char *
 //------------------------------------------------------------------------------
 //
 //
-int CmdGetBitOs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+int CmdGetBitApp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    char s[256];
    sprintf(s,"%d",8*sizeof(void*));
@@ -555,7 +555,7 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"fitsheader",(Tcl_CmdProc *)CmdFitsHeader,NULL,NULL);
    Tcl_CreateCommand(interp,"fitsconvert3d",(Tcl_CmdProc *)CmdFitsConvert3d,NULL,NULL);
 
-   Tcl_CreateCommand(interp,"getbitos",(Tcl_CmdProc *)CmdGetBitOs,NULL,NULL);
+   Tcl_CreateCommand(interp,"getbitapp",(Tcl_CmdProc *)CmdGetBitApp,NULL,NULL);
    Tcl_CreateCommand(interp,"getclicks",(Tcl_CmdProc *)CmdTestGetClicks,NULL,NULL);
    Tcl_CreateCommand(interp,"hostaddress",(Tcl_CmdProc *)CmdHostaddress,NULL,NULL);
    Tcl_CreateCommand(interp,"ping",(Tcl_CmdProc *)CmdPing,NULL,NULL);
