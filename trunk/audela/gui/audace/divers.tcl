@@ -408,7 +408,7 @@ proc sauve_jpeg {args} {
          if { [ buf$buf imageready ] == "1" } {
 
             # Deux cas sont possibles :
-            # - si la palette est monochrome, on enregistre en jpeg N&B.
+            # - si la palette est monochrome, on enregistre en jpeg N&B
             # - si la palette est polychrome, on enregistre en jpeg couleurs
 
             if {[lindex $conf(div,visu$audace(visuNo),mode) 0] != "7" || [lindex $conf(div,visu$audace(visuNo),mode) 0] != "8"} {
