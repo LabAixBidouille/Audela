@@ -1,13 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Buffer</title></head><body>
+<p class="date">Date de mise &#224; jour : 27 juillet 2013</p>
 
-
-
-
-
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Buffer</title></head><body>
-<p class="date">Date de mise &#224; jour : 12 f&#233;vrier 2012</p>
 <h1>Buffer</h1>
 <p>Les commandes qui suivent peuvent &#234;tre appel&#233;es
 gr&#226;ce aux commandes <code>buf1</code>, <code>buf2</code>,
@@ -76,11 +72,11 @@ getpixelsheight" apr&#232;s d&#233;compression par la commande
 <p>Exemple : Image Audine KAF-0400</p>
 
 <blockquote>
-  
+
   <p>buf1 setpixels CLASS_GRAY 768 512 FORMAT_USHORT COMPRESS_NONE
 180412736</p>
 
-  
+
   <p>Les donn&#233;es point&#233;es par "pixeldata" &#224;
 l'adresse 180412736 sont sous la forme d'un tableau d'entiers 16
 bits non sign&#233;s de 768 colonnes et 512 lignes.</p>
@@ -89,11 +85,11 @@ bits non sign&#233;s de 768 colonnes et 512 lignes.</p>
 <p>Exemple : Image Webcam Vesta Pro, TouCam couleur</p>
 
 <blockquote>
-  
+
   <p>buf1 setpixels CLASS_RGB 640 480 FORMAT_BYTE COMPRESS_NONE
 180412736</p>
 
-  
+
   <p>Les donn&#233;es point&#233;es par "pixeldata" &#224;
 l'adresse 180412736 sont sous la forme d'un tableau d'entiers 8
 bits non sign&#233;s de 640x3 colonnes et 480 lignes.</p>
@@ -102,11 +98,11 @@ bits non sign&#233;s de 640x3 colonnes et 480 lignes.</p>
 <p>Exemple : Image Canon 300D, JPEG, large:normal</p>
 
 <blockquote>
-  
+
   <p>buf1 setpixels CLASS_RGB 0 0 FORMAT_SHORT COMPRESS_JPEG
 180412736 -pixelSize 1178832</p>
 
-  
+
   <p>Les donn&#233;es point&#233;es par "pixeldata" &#224;
 l'adresse 180412736 sont sous la forme d'un bloc de 1178832
 octets contenant une image JPEG au format d&#233;fini par le
@@ -235,16 +231,17 @@ d'appliquer cette option au buffer de chaque visu ouverte ou
 sp&#233;cifier la compression si elle est souhait&#233;e.</p>
 
 <h3><a name="load" id="load">buf1 load <em>nom</em></a></h3>
-<p>Charge une image FITS stock&#233;e sur disque, ou sur un autre
-ordinateur reli&#233; en r&#233;seau. L'extension peut &#234;tre
+<p>Charge une image stock&#233;e sur disque, ou sur un autre
+ordinateur reli&#233; en r&#233;seau, elle peut &#234;tre au format
+FITS, RAW, JPEG, BMP, GIF, PNG ou TIFF. L'extension peut &#234;tre
 donn&#233;e ou non, auquel cas elle est prise par d&#233;faut
-(cf. buf1 extension). Le nom de chemin peut &#234;tre
+(cf. buf1 extension). Le nom du chemin peut &#234;tre
 indiqu&#233; avec de / au lieu de \, sachant qu'avec des \, il
-faut les doubler</p>
+faut les doubler.</p>
 
 <p>Exemple :</p>
 
-<p>buf1 load images/toto</p>
+<code>buf1 load images/toto</code><br />
 
 <code>buf1 load images\\toto</code><br />
 
@@ -266,9 +263,10 @@ FITS (cf. buf1 extension).</li>
   <li><b>pas d'extension</b> : Enregistrement au format FITS.
 L'extension par d&#233;faut est ajout&#233;e au nom du fichier
 (cf. buf1 extension).</li>
+  <li><b>.crw .CRW .cr2 .CR2 .nef .NEF .dng .DNG</b> : Enregistrement au format RAW.</li>
   <li><b>.jpg .jpeg</b> : Enregistrement au format JPEG.</li>
-  <li><b>.png</b> : Enregistrement au format PNG.</li>
   <li><b>.bmp</b> : Enregistrement au format BMP.</li>
+  <li><b>.png</b> : Enregistrement au format PNG.</li>
   <li><b>.tif</b> : Enregistrement au format TIFF.</li>
 </ul>
 <p>Option sp&#233;cifique pour l'enregistrement au format JPEG
