@@ -1250,7 +1250,7 @@ proc ::visio2::localTable::renameFile { visuNo } {
             set newFileName "$private($visuNo,genericName)$fileIndex[file extension $filename]"
          } else {
             #--- s'il n'y a qu'un fichier, je n'insere pas l'index dans le nom
-            set newFileName "$private($visuNo,newFileName)"
+            set newFileName "$private($visuNo,newFileName)[file extension $filename]"
          }
 
          if { $private($visuNo,overwrite) == "0" && [file exists $newFileName]== "1" } {
