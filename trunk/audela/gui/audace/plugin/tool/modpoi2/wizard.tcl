@@ -1335,9 +1335,9 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    $private(g,base).goto configure -state disabled
    ::modpoi2::wizard::modpoi_setState disabled
 
-   set pressure 101325
-   set temperature 290
-   set date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
+   set pressure    $::audace(meteo,obs,pressure)
+   set temperature $::audace(meteo,obs,temperature)
+   set date        [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
 
    #--- je calcule les coordonnées apparentes
    #-- mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues
@@ -1352,10 +1352,10 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #       mura     : mouvement propre ra (en degres par an)
    #       mudec    : mouvement propre dec (en degres par an)
    #       plx      : parallaxe , =0 si inconnu (en mas=millisecondes d'arc)
-   #    Date        : date TU
-   #    Home        : position GPS
-   #    Pressure    : 101325
-   #    Temperature : 290
+   #    Date        : date TU : [::audace::date_sys2ut now]
+   #    Home        : position GPS : audace(posobs,observateur,gps)
+   #    Pressure    : pression atmospherique : audace(meteo,obs,pressure)
+   #    Temperature : temperature de l'air : audace(meteo,obs,temperature)
    #    List_ModelSymbols
    #    List_ModelValues
    # @return
