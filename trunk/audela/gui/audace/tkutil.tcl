@@ -164,7 +164,7 @@ proc ::tkutil::box_load_avi { { parent } { initialdir } { numero_buffer } { type
       set title "$::caption(tkutil,editer_avi)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_avi)" ".avi" ] ]
    }
-   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ] 
+   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
    #---
    catch {
       #--- Je detruis la boite de dialogue cree par tk_getOpenFile
@@ -186,7 +186,7 @@ proc ::tkutil::box_load_csv { { parent } { initialdir } { numero_buffer } { type
       set title "$::caption(tkutil,editer_csv)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_csv)" ".csv" ] ]
    }
-   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ] 
+   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
    #---
    catch {
       #--- Je detruis la boite de dialogue cree par tk_getOpenFile
@@ -208,7 +208,7 @@ proc ::tkutil::box_load_atos { { parent } { initialdir } { numero_buffer } { typ
       set title "$::caption(tkutil,editer_atos)"
       set filetypes [ list [ list "$::caption(tkutil,fichier_atos)" ".atos" ] ]
    }
-   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ] 
+   set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
    #---
    catch {
       #--- Je detruis la boite de dialogue cree par tk_getOpenFile
@@ -292,7 +292,7 @@ proc ::tkutil::getSaveFileType { } {
 # box_save parent initialdir numero_buffer type
 #    Ouvre la fenetre de selection des fichiers a proposer a la sauvegarde
 #
-proc ::tkutil::box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo "" } } {
+proc ::tkutil::box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo 1 } } {
    variable saveFileType
 
    #--- Ouvre la fenetre de choix des fichiers
@@ -302,7 +302,7 @@ proc ::tkutil::box_save { { parent } { initialdir } { numero_buffer } { type } {
       set filetypes "$saveFileType"
       set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent -defaultextension $::conf(extension,defaut) ]
    } elseif { $type == "2" } {
-      set title "$::caption(tkutil,sauver_image_jpeg) (visu1)"
+      set title "$::caption(tkutil,sauver_image_jpeg) (visu$visuNo)"
       set filetypes [ list [ list "$::caption(tkutil,image_jpeg)" ".jpg" ] ]
       set filename [ tk_getSaveFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent -defaultextension ".jpg" ]
    }
