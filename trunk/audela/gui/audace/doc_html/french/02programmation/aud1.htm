@@ -1,9 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Fonctions utilitaires</title></head><body>
-<p class="date">Date de mise à jour : 02 avril 2011</p>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>Fonctions utilitaires</title></head><body>
+<p class="date">Date de mise à jour : 27 juillet 2013</p>
 
 <h1>Fonctions utilitaires </h1>
 
@@ -14,7 +13,8 @@
 <h2><a name="loadima" id="loadima"> loadima ?nom? ?visuNo?
 ?affichage?</a></h2>
 
-<p>Charge une image en mémoire. Les trois arguments sont
+<p>Charge une image en mémoire. Elle peut être au format
+FITS, RAW, JPEG, BMP, GIF, PNG ou TIFF. Les trois arguments sont
 optionnels : Le premier est le nom du fichier à charger. S'il
 n'est pas précisé alors il prend la valeur "?" par
 défaut, ce qui a pour effet d'ouvrir un explorateur pour aller
@@ -23,7 +23,9 @@ numéro de visu (visuNo). S'il n'est pas précisé
 alors il prend la valeur "1" par défaut, c'est le numéro
 de visu de la fenêtre principale. Le troisième argument
 doit prendre la valeur "-novisu" pour ne pas afficher l'image, ce qui
-peut être pratique pour aller plus vite lors de traitements.</p>
+peut être pratique pour aller plus vite lors de traitements.
+S'il n'est pas précisé alors il prend la valeur "-dovisu" par défaut,
+l'image s'affiche dans la fenêtre principale.</p>
 
 <p>Remarque : Faire attention aux caractères \ sous Windows car
 ce sont des caractères de substitution pour le TCL. Il faut en
@@ -55,13 +57,17 @@ mettre des guillemets, soit des accolades :
   </li>
 </ul>
 
-<h2><a name="saveima" id="saveima"> saveima ?nom?</a></h2>
+<h2><a name="saveima" id="saveima"> saveima ?nom? ?visuNo?</a></h2>
 
-<p>Enregistre l'image actuellement en mémoire. L'argument
-optionnel est le nom de l'image, s'il n'est pas précisé
+<p>Enregistre l'image actuellement en mémoire. Elle peut être au format
+FITS, RAW, JPEG, BMP, PNG ou TIFF. Les deux arguments sont
+optionnels : Le premier est le nom de l'image, s'il n'est pas précisé
 alors un explorateur permet de naviguer sur le disque pour indiquer le
 nom du fichier. Sinon, l'image est enregistrée avec le nom
-donné, dans le répertoire images d'Aud'ACE.</p>
+donné, dans le répertoire images d'Aud'ACE. Le second argument est le
+numéro de visu (visuNo). S'il n'est pas précisé
+alors il prend la valeur "1" par défaut, c'est le numéro
+de visu de la fenêtre principale.</p>
 
 <p>Les règles liées aux \ et aux espaces sont identiques
 à loadima.</p>
@@ -100,7 +106,7 @@ n'est pas forcément le seuil actuel, mais un type de seuil qui
 correspond bien à la visualisation du fond d'une image.</p>
   </li>
   <li>
-    
+
     <p>seuil bas : C'est le seuil bas correspondant.<br />
     <br />
 Ils sont
