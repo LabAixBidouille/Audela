@@ -32,7 +32,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    #---
    set bufNo [ visu$visuNo buf ]
 
-   #--- Recuperation de l'extension par defaut
+   #--- Fixe le nom de l'extension par defaut des fichiers FITS
    buf$bufNo extension $conf(extension,defaut)
 
    #--- Recuperation de l'information de compression ou non
@@ -82,7 +82,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
 proc saveima { { filename "?" } { visuNo 1 } } {
    global audace conf
 
-   #---
+   #--- On capture le numero du buffer de la visu
    set bufNo [ visu$visuNo buf ]
 
    #--- On sort immediatement s'il n'y a pas d'image dans le buffer
@@ -90,14 +90,7 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       return
    }
 
-   #--- On sort immediatement s'il n'y a pas de nom pour l'image
-   #--- Le menu 'Enregistrer' ne fonctionne que si on a charge
-   #--- prealablement une premiere image avec le menu 'Charger'
-   if { $filename == "" } {
-      return
-   }
-
-   #--- Recuperation de l'extension par defaut
+   #--- Fixe le nom de l'extension par defaut des fichiers FITS
    buf$bufNo extension $conf(extension,defaut)
 
    #--- Recuperation de l'information de compression ou non
@@ -123,23 +116,29 @@ proc saveima { { filename "?" } { visuNo 1 } } {
    #--- Fenetre parent
    set fenetre [::confVisu::getBase $visuNo]
 
+   #--- Ouvre ou non l'interface graphique
    if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $bufNo "1" $visuNo ]
    } else {
-      if {[file pathtype $filename] == "relative"} {
-         set filename [file join $audace(rep_images) $filename]
+      if { [ file pathtype $filename ] == "relative" } {
+         set filename [ file join $audace(rep_images) $filename ]
       }
    }
+
+   #--- Sauvegarde de l'image
    if { [ string compare $filename "" ] != "0" } {
-      if { [ buf$bufNo imageready ] == "1" } {
-         if { [file extension $filename] == ".jpg" || [file extension $filename] == ".jpeg" } {
-            #--- j'ajoute l'option -quality pour les images jpg
-            buf$bufNo save $filename -quality $conf(jpegquality,defaut)
-         } else {
-            #--- pas d'option pour les autres types d'images
-            buf$bufNo save $filename
+      if { [ file extension $filename ] == ".jpg" || [ file extension $filename ] == ".jpeg" } {
+         set quality $conf(jpegquality,defaut)
+         set err [ catch { set quality [ expr $quality ] } ]
+         if { $err == "1" } {
+            set quality 80
          }
+         #--- j'ajoute l'option -quality pour les images jpg
+         buf$bufNo save $filename -quality $quality
+      } else {
+         #--- pas d'option pour les autres types d'images
+         buf$bufNo save $filename
       }
    }
 
@@ -159,34 +158,54 @@ proc saveima { { filename "?" } { visuNo 1 } } {
 # savejpeg ?           #--- Ouvre une fenetre de selection
 # savejpeg m57         #--- Enregistre l'image sous le nom m57.jpg
 #
-proc savejpeg { { filename "?" } } {
+proc savejpeg { { filename "?" } { visuNo 1 } } {
    global audace conf
+
+   #--- On capture le numero du buffer de la visu
+   set bufNo [ visu$visuNo buf ]
+
+   #--- On sort immediatement s'il n'y a pas d'image dans le buffer
+   if { [ buf$bufNo imageready ] == "0" } {
+      return
+   }
+
+   #--- Sauvegarde des seuils dans les mots cles
+   if { $conf(save_seuils_visu) == "1" } {
+      #--- Pour une image couleur
+      if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+         ::colorRGB::saveKWD $visuNo
+      #--- Pour une image N&B
+      } elseif { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "2" } {
+         set mycuts [ visu$visuNo cut ]
+         buf$bufNo setkwd [ list "MIPS-HI" [ lindex $mycuts 0 ] float "" "" ]
+         buf$bufNo setkwd [ list "MIPS-LO" [ lindex $mycuts 1 ] float "" "" ]
+      }
+   }
 
    #--- Fenetre parent
    set fenetre "$audace(base)"
 
+   #--- Ouvre ou non l'interface graphique
    if { $filename == "?" } {
       #--- Ouvre la fenetre de choix des images
-      set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $audace(bufNo) "2" ]
+      set filename [ ::tkutil::box_save $fenetre $audace(rep_images) $bufNo "2" $visuNo ]
    } else {
       if { [ file pathtype $filename ] == "relative" } {
           set filename [ file join $audace(rep_images) $filename ]
       }
    }
+
+   #--- Sauvegarde de l'image
    if { [ string compare $filename "" ] != 0 } {
-      if { [ buf$audace(bufNo) imageready ] == "1" } {
-         if { [ info exists conf(jpegquality,defaut) ] == "0" } {
-            buf$audace(bufNo) savejpeg $filename
-         } else {
-            set quality "$conf(jpegquality,defaut)"
-            set err [ catch { set quality [ expr $quality ] } ]
-            if { $err == "1" } {
-               set quality 80
-            }
-            buf$audace(bufNo) savejpeg $filename $quality
-         }
+      set quality $conf(jpegquality,defaut)
+      set err [ catch { set quality [ expr $quality ] } ]
+      if { $err == "1" } {
+         set quality 80
       }
+     ### buf$bufNo savejpeg $filename $quality
+      buf$bufNo save $filename -quality $quality
    }
+
    return
 }
 
@@ -543,7 +562,7 @@ proc mirrory { args } {
 proc delete2 { args } {
    global audace conf
 
-   #--- Recuperation de l'extension par defaut
+   #--- Fixe le nom de l'extension par defaut des fichiers FITS
    buf$audace(bufNo) extension $conf(extension,defaut)
    set ext $conf(extension,defaut)
 
