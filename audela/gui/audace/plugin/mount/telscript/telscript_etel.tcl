@@ -1279,7 +1279,7 @@ proc save_x { } {
 # telscript($telname,speed_app_deg_*)
 # ################################################################################
 proc radec2degs { type raj2000 decj2000 drift_ra drift_dec {lag_sec 0}} {
-   global telscript
+   global audace telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
    set home $telscript($telname,home)
@@ -1290,7 +1290,7 @@ proc radec2degs { type raj2000 decj2000 drift_ra drift_dec {lag_sec 0}} {
    set modpoi_symbols $telscript($telname,modpoi_symbols)
    set modpoi_values $telscript($telname,modpoi_values)
    set hip [list 1 1 [string trim [mc_angle2deg "$raj2000"]] [string trim [mc_angle2deg "$decj2000" 90]] J2000 J2000 0 0 0]
-   set res [mc_hip2tel $hip $date $home 101325 290 $modpoi_symbols $modpoi_values -drift radec -driftvalues [list $drift_ra $drift_dec]]
+   set res [mc_hip2tel $hip $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -drift radec -driftvalues [list $drift_ra $drift_dec]]
    set app_RA         [lindex $res 10] ; #: Acsension droite apparente avec modèle (deg)
    set app_DEC        [lindex $res 11] ; #: Déclinaison apparente avec modèle (deg)
    set app_HA         [lindex $res 12] ; #: Angle horaire apparente avec modèle (deg)
@@ -1517,7 +1517,7 @@ proc adus2degs { } {
 # List (ra,dec) J2000
 # ################################################################################
 proc degs2radec { } {
-   global telscript
+   global audace telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
    set home $telscript($telname,home)
@@ -1527,12 +1527,12 @@ proc degs2radec { } {
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
       set app_az $telscript($telname,coord_app_deg_az)
       set app_elev $telscript($telname,coord_app_deg_elev)
-      set res [mc_tel2cat [list $app_az $app_elev] ALTAZ $date $home 101325 290 $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
+      set res [mc_tel2cat [list $app_az $app_elev] ALTAZ $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
    }
    if {$telscript($telname,mount_type)=="hadec"} {
       set app_ha $telscript($telname,coord_app_deg_ha)
       set app_dec $telscript($telname,coord_app_deg_dec)
-      set res [mc_tel2cat [list $app_ha $app_dec] HADEC $date $home 101325 290 $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
+      set res [mc_tel2cat [list $app_ha $app_dec] HADEC $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
    }
    lassign $res raj2000 decj2000
    set raj2000 [mc_angle2hms $raj2000 360 zero 2 auto string ]
@@ -1691,8 +1691,7 @@ proc connect_tel { {mode_boot 0} } {
 # ------
 # ################################################################################
 proc decode_radec_entry { objname0 {date ""} } {
-   global telscript
-   global audace
+   global audace telscript
    set telname $telscript(def,telname)
    set home $telscript($telname,home)
    if {$date==""} {
@@ -1756,7 +1755,7 @@ proc decode_radec_entry { objname0 {date ""} } {
          set type_obj name2coord
       } elseif {($name=="PARK")} {
          set objname PARK
-         set res [mc_tel2cat [list 0 -40] HADEC $date $home 101325 290 $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
+         set res [mc_tel2cat [list 0 -40] HADEC $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
          lassign $res raj2000 decj2000
          set xra $raj2000
          set xdec $decj2000

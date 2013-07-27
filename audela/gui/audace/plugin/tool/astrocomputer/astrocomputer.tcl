@@ -1078,7 +1078,7 @@ proc ::astrocomputer::astrocomputer_coord_compute { } {
    }
    set hip [list 1 0 [mc_angle2deg $ra] [mc_angle2deg $dec 90] $equinox $epoch $mura $mudec $plx]
    #::console::affiche_resultat "hip=$hip\n\n"
-   set res [mc_hip2tel $hip $date $astrocomputer(siteinp) 101325 290]
+   set res [mc_hip2tel $hip $date $astrocomputer(siteinp) $::audace(meteo,obs,pressure) $::audace(meteo,obs,temperature)]
    append resultat "UTC Date = [mc_date2iso8601 $date]\n"
    append resultat "UTC Julian Day = [mc_date2jd $date]\n"
    append resultat "RA = $ra $equinox\nDEC = $dec $equinox\n\n"

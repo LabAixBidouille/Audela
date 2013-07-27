@@ -342,8 +342,8 @@ namespace eval ::viseurPolaireEQ6 {
       set dec_LP "89d15m50.90"
 
       #--- Calcul des coordonnees vraies de la Polaire
-      set pressure        101325
-      set temperature     290
+      set pressure        $audace(meteo,obs,pressure)
+      set temperature     $audace(meteo,obs,temperature)
       set now             [ ::audace::date_sys2ut now ]
       set hipRecord       [ list "1" "0.0" [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 0 0 0 0 ]
       set ad_dec_v        [ mc_hip2tel $hipRecord $now $::audace(posobs,observateur,gps) $pressure $temperature ]
@@ -427,8 +427,8 @@ namespace eval ::viseurPolaireEQ6 {
 
       for {set i 1} {$i <= 5} {incr i} {
          #--- Calcul des coordonnees vraies des etoiles de Cassiopee
-         set pressure             101325
-         set temperature          290
+         set pressure             $audace(meteo,obs,pressure)
+         set temperature          $audace(meteo,obs,temperature)
          set now                  [ ::audace::date_sys2ut now ]
          set hipRecord($i)        [ list "1" "0.0" [ mc_angle2deg $ad_cas($i) ] [ mc_angle2deg $dec_cas($i) ] J2000.0 0 0 0 0 ]
          set ad_dec_v($i)         [ mc_hip2tel $hipRecord($i) $now $::audace(posobs,observateur,gps) $pressure $temperature ]
@@ -486,8 +486,8 @@ namespace eval ::viseurPolaireEQ6 {
 
       for {set i 1} {$i <= 7} {incr i} {
          #--- Calcul des coordonnees vraies des etoiles de la Grande Ourse
-         set pressure             101325
-         set temperature          290
+         set pressure             $audace(meteo,obs,pressure)
+         set temperature          $audace(meteo,obs,temperature)
          set now                  [ ::audace::date_sys2ut now ]
          set hipRecord($i)        [ list "1" "0.0" [ mc_angle2deg $ad_uma($i) ] [ mc_angle2deg $dec_uma($i) ] J2000.0 0 0 0 0 ]
          set ad_dec_v($i)         [ mc_hip2tel $hipRecord($i) $now $::audace(posobs,observateur,gps) $pressure $temperature ]

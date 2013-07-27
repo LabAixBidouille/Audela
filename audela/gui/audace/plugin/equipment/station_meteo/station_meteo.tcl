@@ -165,11 +165,15 @@ proc ::station_meteo::fillConfigPage { frm } {
 #------------------------------------------------------------
 proc ::station_meteo::configurePlugin { } {
    variable widget
-   global conf
+   global audace conf
 
    #--- Memorise la configuration dans le tableau conf(station_meteo,...)
    set conf(station_meteo,pressure)    $widget(pressure)
    set conf(station_meteo,temperature) $widget(temperature)
+
+   #--- Mise a jour des variables audace
+   set audace(meteo,obs,pressure)    $conf(station_meteo,pressure)
+   set audace(meteo,obs,temperature) $conf(station_meteo,temperature)
 }
 
 #------------------------------------------------------------
