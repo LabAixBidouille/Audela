@@ -195,6 +195,7 @@ proc savejpeg { { filename "?" } { visuNo 1 } } {
           set filename [ file join $audace(rep_images) $filename ]
       }
    }
+   set filename "[ file rootname $filename ].jpg"
 
    #--- Sauvegarde de l'image
    if { [ string compare $filename "" ] != 0 } {
