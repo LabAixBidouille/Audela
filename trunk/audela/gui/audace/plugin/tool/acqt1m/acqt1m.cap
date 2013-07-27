@@ -11,8 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(acqt1m,menu)                      "Acquisition (T1M - OHP)"
-set caption(acqt1m,titre)                     "Acquisition (T1M - OHP)"
+set caption(acqt1m,menu)                      "Acquisition (T1M - OMP)"
+set caption(acqt1m,titre)                     "Acquisition (T1M - OMP)"
 set caption(acqt1m,help_titre)                "Help for this Tool"
 set caption(acqt1m,help_titre1)               "Help for the Tool:"
 set caption(acqt1m,configuration)             "Setup"
@@ -122,8 +122,8 @@ set caption(acqt1m,message5)                  "in image header: Press IGNORE."
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Acquisition (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Acquisition (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Acquisition (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Acquisition (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Aide de cet outil"
    set caption(acqt1m,help_titre1)            "Aide de l'outil :"
    set caption(acqt1m,configuration)          "Configuration"
@@ -233,8 +233,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Acquisizione (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Acquisizione (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Acquisizione (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Acquisizione (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Aiuto per questo tool"
    set caption(acqt1m,help_titre1)            "Aiuto per lo tool:"
    set caption(acqt1m,configuration)          "Configurazione"
@@ -344,8 +344,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Adquisición (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Adquisición (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Adquisición (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Adquisición (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Ayuda para esta herramienta"
    set caption(acqt1m,help_titre1)            "Ajuda para del herramienta:"
    set caption(acqt1m,configuration)          "Configuración"
@@ -455,8 +455,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Belichtung (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Belichtung (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Belichtung (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Belichtung (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Hilfe für dieses Gerät"
    set caption(acqt1m,help_titre1)            "Hilfe für die Gerät:"
    set caption(acqt1m,configuration)          "Konfiguration"
@@ -567,8 +567,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Aquisição (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Aquisição (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Aquisição (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Aquisição (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Ajuda para esta ferramenta"
    set caption(acqt1m,help_titre1)            "Ajuda para del ferramenta:"
    set caption(acqt1m,configuration)          "Configuração"
@@ -678,8 +678,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Acquisition (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Acquisition (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Acquisition (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Acquisition (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Help for this Tool"
    set caption(acqt1m,help_titre1)            "Help for the Tool:"
    set caption(acqt1m,configuration)          "Setup"
@@ -788,8 +788,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Acquisition (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Acquisition (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Acquisition (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Acquisition (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Help for this Tool"
    set caption(acqt1m,help_titre1)            "Help for the Tool:"
    set caption(acqt1m,configuration)          "Setup"
@@ -898,8 +898,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(acqt1m,menu)                   "Acquisition (T1M - OHP)"
-   set caption(acqt1m,titre)                  "Acquisition (T1M - OHP)"
+   set caption(acqt1m,menu)                   "Acquisition (T1M - OMP)"
+   set caption(acqt1m,titre)                  "Acquisition (T1M - OMP)"
    set caption(acqt1m,help_titre)             "Help for this Tool"
    set caption(acqt1m,help_titre1)            "Help for the Tool:"
    set caption(acqt1m,configuration)          "Setup"
