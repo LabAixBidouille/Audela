@@ -29,7 +29,7 @@
 proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    global audace conf
 
-   #---
+   #--- On capture le numero du buffer de la visu
    set bufNo [ visu$visuNo buf ]
 
    #--- Fixe le nom de l'extension par defaut des fichiers FITS
@@ -43,6 +43,7 @@ proc loadima { { filename "?" } { visuNo 1 } { affichage "-dovisu" } } {
    }
 
    if { $filename != "" } {
+      #--- Ouvre ou non l'interface graphique
       if { $filename == "?" } {
          #--- Fenetre parent
          set fenetre [::confVisu::getBase $visuNo]
