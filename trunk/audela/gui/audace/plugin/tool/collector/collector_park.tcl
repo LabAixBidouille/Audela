@@ -281,9 +281,8 @@
       set modeNo [$w.mode current]
       set sideIndex [$w.parkside current]
       set german $private(german)
-      set elev_pole $latitude
-      set latitude [lindex $private(gps) 3]
-
+      set elev_pole [lindex $private(gps) 3]
+ 
       switch -exact $modeNo {
          0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud}
          1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est}
