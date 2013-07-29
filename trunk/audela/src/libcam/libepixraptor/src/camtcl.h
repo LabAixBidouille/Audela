@@ -44,7 +44,7 @@
 	{"maxexposure", (Tcl_CmdProc *)cmdCamMaxExposure}, \
 	{"livestart", (Tcl_CmdProc *)cmdCamLiveStart}, \
 	{"livestop", (Tcl_CmdProc *)cmdCamLiveStop}, \
-	{"pcbtemp", (Tcl_CmdProc *)cmdCamLiveStop}, \
+	{"pcbtemp", (Tcl_CmdProc *)cmdCamPcbTemp}, \
 
 
  /* === Specific commands for that camera === */
