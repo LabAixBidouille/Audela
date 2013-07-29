@@ -42,10 +42,10 @@ proc ::station_meteo::initPlugin { } {
    #if { ! [ info exists conf(station_meteo,temperature) ] } { set conf(station_meteo,temperature) "290" }
 
    #--   Initialise le chemin d'acces complet au fichier des donnees meteo
-   if { ! [ info exists conf(station_meteo,meteoFileAccess) ] }  { set conf(station_meteo,meteoFileAccess)  "" }
+   if { ! [ info exists conf(station_meteo,meteoFileAccess) ] } { set conf(station_meteo,meteoFileAccess) "" }
 
    #--   Initialise l'intervalle de rafraichissement de la lecture des donnees meteo
-   if { ! [ info exists conf(station_meteo,cycle) ] }       { set conf(station_meteo,cycle)       "1" }
+   if { ! [ info exists conf(station_meteo,cycle) ] } { set conf(station_meteo,cycle) "1" }
 
    if { ! [ info exists conf(station_meteo,start) ] } { set conf(station_meteo,start) "0" }
 
@@ -400,3 +400,4 @@ proc ::station_meteo::isReady { } {
          set widget(meteoFileAccess) "$file"
       }
    }
+
