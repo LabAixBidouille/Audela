@@ -273,10 +273,10 @@ proc ::station_meteo::deletePlugin { } {
 proc ::station_meteo::isReady { } {
    variable widget
 
-   if {$widget(meteo) == 0} {
-      return "1"
-   } else {
+   if {[info exists widget(meteo)] && $widget(meteo) == 1} {
       return "0"
+   } else {
+      return "1"
    }
 }
 
