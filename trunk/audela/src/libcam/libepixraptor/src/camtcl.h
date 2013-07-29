@@ -44,6 +44,7 @@
 	{"maxexposure", (Tcl_CmdProc *)cmdCamMaxExposure}, \
 	{"livestart", (Tcl_CmdProc *)cmdCamLiveStart}, \
 	{"livestop", (Tcl_CmdProc *)cmdCamLiveStop}, \
+	{"pcbtemp", (Tcl_CmdProc *)cmdCamLiveStop}, \
 
 
  /* === Specific commands for that camera === */
@@ -67,5 +68,6 @@ int cmdCamMaxFrameRate(ClientData clientData, Tcl_Interp *interp, int argc, char
 int cmdCamMaxExposure(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCamLiveStart(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdCamLiveStop(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdCamPcbTemp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

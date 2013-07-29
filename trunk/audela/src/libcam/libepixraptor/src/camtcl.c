@@ -767,3 +767,30 @@ int cmdCamLiveStop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	return result;
 }
 
+/**
+	* cmdCamPcbTemp
+	* return the temperature of the PCB
+	*
+*/
+int cmdCamPcbTemp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+
+	int result = TCL_OK;
+	char line[256];
+	struct camprop *cam;
+	double temp;
+
+	cam = (struct camprop *) clientData;
+
+	if ( getPCBtemp(&temp) == 0 ) {
+		sprintf(line,"%f",temp);
+		Tcl_SetResult(interp,line,TCL_VOLATILE);
+		result = TCL_OK;
+	} else {
+		sprintf(cam->msg,"Unable to get PCB temperature");
+		Tcl_SetResult(interp,cam->msg,TCL_VOLATILE);
+		result = TCL_ERROR;
+	}
+
+	return result;
+}
+
