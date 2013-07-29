@@ -81,6 +81,10 @@ set caption(acqfast,stoplive)                  "STOP"
 
 set caption(acqfast,unsaved_seq)               "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
 
+set caption(acqfast,cycle)                     "START CYCLE"
+set caption(acqfast,browse)                    "..."
+set caption(acqfast,folder)                    "From Folder:"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -153,6 +157,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfast,stoplive)               "STOP"
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
+
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -227,6 +235,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
 
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -299,6 +311,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfast,stoplive)               "STOP"
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
+
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -373,6 +389,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
 
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -445,6 +465,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfast,stoplive)               "STOP"
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
+
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -519,6 +543,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
 
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
+
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
@@ -592,6 +620,10 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
 
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -664,6 +696,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfast,stoplive)               "STOP"
 
    set caption(acqfast,unsaved_seq)            "A sequence of images is already in memory:\nstarting a new sequence will delete it.\nStart new sequence?"
+
+   set caption(acqfast,cycle)                  "START CYCLE"
+   set caption(acqfast,browse)                 "..."
+   set caption(acqfast,folder)                 "From Folder:"
 
 }
 
