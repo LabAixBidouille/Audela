@@ -13,6 +13,12 @@ global caption langage
 
 set caption(station_meteo,label)                          "Weather Station"
 
+set caption(station_meteo,sensname)                       "File Name"
+set caption(station_meteo,sensor)                         "[list realtime.txt infodata.txt]"
+set caption(station_meteo,meteoAcc)                       "Path"
+set caption(station_meteo,search)                         "..."
+set caption(station_meteo,meteo)                          "Read weather data every seconds"
+
 set caption(station_meteo,site_web)                       "Reference Web Site:"
 set caption(station_meteo,site_web_ref)                   ""
 
@@ -23,6 +29,12 @@ set caption(station_meteo,creer_au_demarrage)             "Next time software is
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Station météo"
+
+   set caption(station_meteo,sensname)                    "Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Site Web de référence :"
    set caption(station_meteo,site_web_ref)                ""
@@ -35,6 +47,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Stazione Meteo"
 
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+
    set caption(station_meteo,site_web)                    "Sito Web di riferimento:"
    set caption(station_meteo,site_web_ref)                ""
 
@@ -45,6 +63,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(station_meteo,label)                       "Estación meteorológica"
+
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Sitio Web de referencia:"
    set caption(station_meteo,site_web_ref)                ""
@@ -57,6 +81,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Wetterwarte"
 
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+
    set caption(station_meteo,site_web)                    "Referenz Webseite:"
    set caption(station_meteo,site_web_ref)                ""
 
@@ -67,6 +97,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(station_meteo,label)                       "Estação meteorológica"
+
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Site Web de referência:"
    set caption(station_meteo,site_web_ref)                ""
@@ -79,6 +115,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Weather Station"
 
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+
    set caption(station_meteo,site_web)                    "Reference Web Site:"
    set caption(station_meteo,site_web_ref)                ""
 
@@ -90,6 +132,12 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Weather Station"
 
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+
    set caption(station_meteo,site_web)                    "Reference Web Site:"
    set caption(station_meteo,site_web_ref)                ""
 
@@ -100,6 +148,12 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
    set caption(station_meteo,label)                       "Weather Station"
+
+   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensor)                      "[list realtime.txt infodata.txt]"
+   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,search)                      "..."
+   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Reference Web Site:"
    set caption(station_meteo,site_web_ref)                ""
