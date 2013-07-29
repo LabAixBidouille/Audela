@@ -52,7 +52,6 @@ proc ::station_meteo::initPlugin { } {
    #--- Initialisation des variables audace
    set audace(meteo,obs,pressure)    "101325"
    set audace(meteo,obs,temperature) "290"
-
 }
 
 #------------------------------------------------------------
@@ -123,15 +122,18 @@ proc ::station_meteo::fillConfigPage { frm } {
    #set widget(temperature) $conf(station_meteo,temperature)
    set widget(pressure)    $audace(meteo,obs,pressure)
    set widget(temperature) [expr { $audace(meteo,obs,pressure)-273.15 }]
-
+   if { $::tcl_platform(platform) == "windows" } {
+      set sensorList [list "$caption(station_meteo,cumulus)"  "$caption(station_meteo,sentinel)"]
+   } else {
+      set sensorList [list "$caption(station_meteo,sentinel)"]
+   }
    set widget(meteoFileAccess) $conf(station_meteo,meteoFileAccess)
-
    set fileName [file tail $widget(meteoFileAccess)]
    if {$fileName ne ""} {
       set widget(sensorName) $fileName
    } else {
       #--   Premier de la liste
-      set widget(sensorName) [lindex "$caption(station_meteo,sensor)" 0]
+      set widget(sensorName) [lindex "$sensorList" 0]
    }
    set widget(cycle) $conf(station_meteo,cycle)
    set widget(meteo) 0
@@ -149,7 +151,11 @@ proc ::station_meteo::fillConfigPage { frm } {
       grid $frm.frame2.labelSensorname -row 0 -column 0 -padx 5 -pady 5 -sticky w
 
       #--- Choix de la liaison
-      set sensorList "$caption(station_meteo,sensor)"
+      if { $::tcl_platform(platform) == "windows" } {
+         set sensorList [list "$caption(station_meteo,cumulus)"  "$caption(station_meteo,sentinel)"]
+      } else {
+         set sensorList [list "$caption(station_meteo,sentinel)"]
+      }
       ComboBox $frm.frame2.sensorname \
          -width [::tkutil::lgEntryComboBox "$sensorList"] \
          -height [llength $sensorList] \
@@ -175,13 +181,11 @@ proc ::station_meteo::fillConfigPage { frm } {
          -command "::station_meteo::configDirname $frm.frame2.search"
       grid $frm.frame2.search -row 1 -column 2 -padx 5 -pady 5 -sticky ew
 
-      #--- Checkbutton d'activation de la lecture du fichier
-      checkbutton $frm.frame2.readfile -text "$caption(station_meteo,meteo)" \
-         -variable ::station_meteo::widget(meteo) -onvalue 1 -offvalue 0 \
-         -command "::station_meteo::onChangeMeteo"
+      #--- Definition du delai de lecture du fichier
+      label $frm.frame2.readfile -text "$caption(station_meteo,meteo)"
       grid $frm.frame2.readfile -row 2 -column 0 -padx 5 -pady 5 -sticky w
 
-      #--- Saisie de la frequence de lecture
+      #--- Saisie du delai de lecture du fichier
       entry $frm.frame2.cycle -width 5 -justify center \
          -textvariable ::station_meteo::widget(cycle) \
          -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 300 }
@@ -292,7 +296,7 @@ proc ::station_meteo::isReady { } {
    proc ::station_meteo::refreshMeteo { } {
       variable widget
 
-      #--   arrete si incoherence entre le nom du fichier et son chemin
+      #--   Arrete si chemin incorrect
       if {$widget(meteo) == 0 || [file exists $widget(meteoFileAccess)] == 0} {
          onChangeMeteo stop
          return
@@ -303,7 +307,7 @@ proc ::station_meteo::isReady { } {
          infodata.txt {set result [readSentinelFile $widget(meteoFileAccess)]}
       }
 
-      #--   compare les dates jd et arrete si l'ecart est superieur a 50 cycles
+      #--   Compare les dates jd et arrete si l'ecart est superieur a 50 cycles
       #     ou si le nb de donnes est incorrect
       set t1 [lindex $result 0]
       set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
@@ -314,8 +318,7 @@ proc ::station_meteo::isReady { } {
          return
       }
 
-      #--   analyse les valeurs
-      #--   elimine les unites
+      #--   Elimine les unites
       set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
       set data [string map $entities [lrange $result 1 end]]
 
@@ -342,9 +345,8 @@ proc ::station_meteo::isReady { } {
          set cycle [expr { $widget(cycle)*1000 }] ; #convertit en ms
          set widget(afterID) [after $cycle ::station_meteo::refreshMeteo]
 
-         #--   Indicateur de la checkbox
+         #--   Indicateur de lecture
          set widget(meteo) 1
-         update
 
          #--   Demarre la mise a jour
          refreshMeteo
@@ -360,9 +362,8 @@ proc ::station_meteo::isReady { } {
          #--   Initialise par defaut
          ::station_meteo::getValues [list 16.85 - - - - 101325]
 
-         #--   Decoche la checkbox
+         #--   Indicateur de lecture
          set widget(meteo) 0
-         update
 
       }
    }
