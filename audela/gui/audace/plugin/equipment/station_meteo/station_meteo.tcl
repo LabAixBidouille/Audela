@@ -255,6 +255,15 @@ proc ::station_meteo::configurePlugin { } {
 #  return nothing
 #------------------------------------------------------------
 proc ::station_meteo::createPlugin { } {
+   variable widget
+   global conf
+
+   #--   Initialise les variables widgets necessaires au lancement automatique
+   if {$conf(station_meteo,start) ==1} {
+      set widget(cycle) $conf(station_meteo,cycle)
+      set widget(meteoFileAccess) $conf(station_meteo,meteoFileAccess)
+      set widget(sensorName) [file tail $widget(meteoFileAccess)]
+   }
    ::station_meteo::onChangeMeteo refresh
 }
 
@@ -312,7 +321,7 @@ proc ::station_meteo::isReady { } {
       set t1 [lindex $result 0]
       set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
       set deltaTime [expr { $t2-$t1 }]
-      set seuil [expr { 50.*$widget(cycle)/86400 }]
+      set seuil [expr { 60.*$widget(cycle)/86400 }]
       if {[llength $result] != 7 || $deltaTime > $seuil} {
          onChangeMeteo stop
          return
