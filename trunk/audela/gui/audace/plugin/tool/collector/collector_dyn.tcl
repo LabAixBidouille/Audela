@@ -289,39 +289,15 @@
    proc refreshMeteo { } {
       variable private
 
-      #--   arrete si incoherence entre le nom du fichier et son chemin
-      if {[file tail $private(meteoAcc)] ne "$private(sensname)"} {
-         onChangeMeteo stop
-         return
-      }
+      set private(tempair)  $::station_meteo::widget(temperature)
+      set private(hygro)    $::station_meteo::widget(hygro)
+      set private(temprose) $::station_meteo::widget(temprose)
+      set private(windsp)   $::station_meteo::widget(windsp)
+      set private(winddir)  $::station_meteo::widget(winddir)
+      set private(airpress) $::station_meteo::widget(pressure)
+      update
 
-      switch -exact $private(sensname) {
-         realtime.txt {set result [readCumulus $private(meteoAcc)]}
-         infodata.txt {set result [readSentinelFile $private(meteoAcc)]}
-      }
-
-      #--   compare les dates jd et arrete si l'ecart est superieur 10 cycles
-      #     ou si le nb de donnes est incorrect
-      set t1 [lindex $result 0]
-      set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
-      set delatTime [expr { $t2-$t1 }]
-      set seuil [expr { 10.*$private(cycle)/86400 }]
-      if {[llength $result] != 7 || $delatTime > $seuil} {
-         onChangeMeteo stop
-         return
-      }
-
-      #--   analyse les valeurs
-      #--   elimine les unites
-      set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
-      set data [string map $entities [lrange $result 1 end]]
-
-      lassign $data private(tempair) private(hygro) private(temprose) private(windsp) private(winddir) private(airpress)
-
-      #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
-      #     pour que le Sud corresponde a 0°
-
-      set cycle [expr { $private(cycle)*1000 }] ; #convertit en ms
+      set cycle [expr { $::station_meteo::widget(cycle)*1000 }] ; #convertit en ms
       after $cycle ::collector::refreshMeteo
     }
 

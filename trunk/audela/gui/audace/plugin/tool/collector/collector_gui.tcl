@@ -18,7 +18,6 @@
    # ::collector::configTraceSuivi        onChangeMount
    # ::collector::configTraceRaDec        onChangeMount
    # ::collector::configParkInit          onChangeMount et hideTel
-   # ::collector::configDirname           Commande du bouton '...'
    # ::collector::hideTel                 onChangeMount
 
    proc initCollector { {visuNo 1} } {
@@ -68,7 +67,8 @@
       set private(labels) [list equinox true raTel decTel azTel elevTel haTel error \
          telescop fov1 fov2 cdelt1 cdelt2 gps jd tsl moonphas moonalt ncfz focus_pos \
          temprose hygro winddir windsp fwhm secz airmass aptdia foclen fond resolution \
-         telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code catAcc meteoAcc]
+         telname connexion suivi vra vdec vxPix vyPix observer sitename origin iau_code catAcc]
+
 
       #--   liste les variables 'entry' avec binding, modifiables par l'utilisateur
       set private(entry) [list ra dec bin1 bin2 naxis1 naxis2 crota2 m snr t \
@@ -89,8 +89,9 @@
 
       #--   liste les boutons
       set private(buttonList) [list cmd.syn cmd.special cmd.dss cmd.close cmd.hlp \
-         n.local.modifGps n.optic.modifOptic n.optic.modifFocus n.kwds.modifObs n.kwds.editKwds n.kwds.writeKwds \
-         n.config.modifRep n.config.search n.config.dispEtc n.config.simulimage ]
+         n.local.modifGps n.optic.modifOptic n.optic.modifFocus \
+         n.kwds.modifObs n.kwds.editKwds n.kwds.writeKwds \
+         n.config.modifRep n.config.dispEtc n.config.simulimage]
 
       set this $::audace(base).info
       set private(This) $this
@@ -134,7 +135,7 @@
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli isospeed]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
-      set configChildren [list catname catAcc modifRep separator1 meteo sensname meteoAcc search separator2 dispEtc simulimage]
+      set configChildren [list catname catAcc modifRep separator1 dispEtc simulimage]
 
       #--   construit le notebook dans cet ordre
       foreach topic [list target dynamic pose local atm optic cam tlscp german kwds config] {
@@ -192,8 +193,6 @@
       set private(objname) "mySky"
       set private(telInitialise) 0
 
-      set private(meteo) 0
-
       onChangeImage $visuNo
       modifyRep
 
@@ -226,21 +225,7 @@
          $w state !disabled
          return
 
-      } elseif {$child eq "meteo"} {
-
-         ttk::checkbutton $onglet.$child -text "$caption(collector,$child)" \
-            -variable ::collector::private($child) -onvalue 1 -offvalue 0 \
-            -command "::collector::onChangeMeteo"
-         grid $onglet.$child -row $row -column 0 -columnspan 3 -sticky w -padx 10 -pady 3
-
-         ttk::entry $onglet.cycle -textvariable ::collector::private(cycle) \
-            -width 7 -justify right
-         grid $onglet.cycle -row $row -column 1 -sticky e -padx 10
-         bind $onglet.cycle <Leave> [list ::collector::testNumeric $child]
-
-         return
-
-      } elseif {$child in [list modifGps modifOptic modifFocus modifRep search modifObs modifSite editKwds writeKwds dispEtc simulimage]} {
+      } elseif {$child in [list modifGps modifOptic modifFocus modifObs editKwds writeKwds modifRep dispEtc simulimage]} {
 
          ttk::button $w -text "$caption(collector,$child)"
          switch -exact $child {
@@ -250,11 +235,8 @@
             modifOptic {$w configure -command "::confOptic::run $visuNo" -width 7 -padding {2 30}
                         grid $w -row 0 -column 2 -rowspan 3
                        }
-            modifRep   {$w configure -command "::cwdWindow::run \"$audace(base).cwdWindow\"" -width 7 -padding {2 2}
-                        grid $w -row 1 -column 2
-                       }
-            search     {$w configure -command "::collector::configDirname $w" -width 4 -padding {2 2}
-                        grid $w -row 6 -column 2
+            modifFocus {$w configure -command "::collector::callFocuser"
+                        grid $w -row $row -column 2
                        }
             modifObs   {$w configure -command "::confPosObs::run $audace(base).confPosObs" -width 7 -padding {2 2}
                         grid $w -row 0 -column 2 -rowspan 5
@@ -265,14 +247,14 @@
             writeKwds  {$w configure -command "::collector::setKeywords"
                         grid $w -row $row -column 1
                        }
+            modifRep   {$w configure -command "::cwdWindow::run \"$audace(base).cwdWindow\"" -width 7 -padding {2 2}
+                        grid $w -row 1 -column 2
+                       }
             dispEtc    {$w configure -command "etc_disp"
                         grid $w -row $row -column 1
                        }
             simulimage {$w configure -command "::audace::showHelpItem \"$::audace(rep_doc_html)/french/12tutoriel\" \"1030tutoriel_simulimage1.htm\""
                         grid $w -row $row -column 1
-                       }
-            modifFocus {$w configure -command "::collector::callFocuser"
-                        grid $w -row $row -column 2
                        }
          }
          grid configure $w -padx 5 -pady 5 -sticky news
@@ -308,7 +290,7 @@
             bind $w <Leave> [list ::collector::testPattern $child] ; # pattern de la variable
          }
 
-      } elseif {$child in [list prior filter detnam imagetyp catname sensname]} {
+      } elseif {$child in [list prior filter detnam imagetyp catname]} {
 
          #--   combobox
          #--   liste et commande du binding
@@ -328,9 +310,6 @@
             catname  {  set values $caption(collector,catalog)
                         set cmd "::collector::modifyRep"
                      }
-            sensname {  set values $caption(collector,sensor)
-                        set cmd "::collector::onChangeMeteo"
-                     }
          }
 
          #--   largeur
@@ -345,7 +324,7 @@
          bind $w <<ComboboxSelected>> [list $cmd]
 
          #--   positionnement initial
-         #if {$child in [list catname sensname]} {
+         #if {$child eq "catname"} {
          #   $w set [lindex $values 0]
          #}
       }
@@ -406,7 +385,7 @@
 
       #--   arrete la mise a jour
       #--   pas d'importance si pas active
-      after cancel ::collector::refreshCumulus
+      after cancel ::collector::refreshMeteo
 
       foreach icon {baguette chaudron greenLed redLed} {
          if {[info exists $private($icon)]} {
@@ -420,9 +399,6 @@
 
       #--   equivalent de widgetToConf
       set conf(collector,catname) $private(catname)
-      set conf(collector,sensname) $private(sensname)
-      set conf(collector,meteoAcc) $private(meteoAcc)
-      set conf(collector,cycle) $private(cycle)
       regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(collector,position)
 
       set conf(collector,colors) [list $private(colFond) $private(colReticule) \
@@ -458,8 +434,8 @@
       lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
 
       #--   conf par defaut et confToWidget
-      set listConf [list catname cycle sensname meteoAcc cam position]
-      set listDefault [list "MICROCAT" 20 "realtime.txt" "" " " "+800+500"]
+      set listConf [list catname cam position]
+      set listDefault [list "MICROCAT" " " "+800+500"]
       foreach topic $listConf value $listDefault {
          if {![info exists conf(collector,$topic)]} {
              set conf(collector,$topic) $value
@@ -606,23 +582,6 @@
       } else {
          #--   ouvre le panneau des Focuser sur AudeCom
          ::confEqt::run "" focuser
-      }
-   }
-
-   #---------------------------------------------------------------------------
-   #  configDirname
-   #  Commande du bouton '...'
-   #---------------------------------------------------------------------------
-   proc configDirname { this } {
-      variable private
-      global caption
-
-      set dirname [tk_chooseDirectory -title "$caption(collector,meteoAcc)" \
-         -initialdir "C:/" -parent $this]
-
-      #--   verifie la presence du fichier
-      if {$dirname ne ""} {
-         set private(meteoAcc) "[file join $dirname $private(sensname)]"
       }
    }
 
