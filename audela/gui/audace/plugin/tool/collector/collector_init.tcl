@@ -17,7 +17,6 @@
    # ::collector::onChangeCam          configAddRemoveListener
    # ::collector::onChangeObserver     ::confPosObs::addPosObsListener et conf(posobs,observateur,gps)
    # ::collector::onChangeObjName      onChangeMount
-   # ::collector::onChangeMeteo        refreshMeteo
 
    #------------------------------------------------------------
    #  onChangeImage :
@@ -113,8 +112,12 @@
    proc initAtm { bufNo } {
       variable private
 
-      lassign [getTPW $bufNo] private(tempair) private(temprose) private(hygro) \
-         private(winddir) private(windsp) private(airpress)
+      if {[buf$bufNo imageready]} {
+         lassign [getTPW $bufNo] private(tempair) private(temprose) private(hygro) \
+            private(winddir) private(windsp) private(airpress)
+      } else {
+         refreshMeteo
+      }
    }
 
    #------------------------------------------------------------
@@ -480,38 +483,4 @@
       lassign $result private(imagetyp) private(objname)
    }
 
-   #------------------------------------------------------------
-   #  onChangeMeteo  :
-   #  si toutes les conditions sont reunies
-   #  sinon desactive
-   #------------------------------------------------------------
-   proc onChangeMeteo { {do ""} } {
-      variable private
-
-      if {$private(meteo) == 0 || $do eq "stop" || [file exists $private(meteoAcc)] == 0 \
-         || $private(meteoAcc) eq ""} {
-
-         #--   decoche la checkbox et arrete la lecture
-         if {[info exists private(afterID)]} {
-            after cancel ::collector::refreshMeteo
-            unset private(afterID)
-         }
-         set private(meteo) 0
-
-         #--   tous les autres cas, initialisation par defaut
-         lassign [list 16.85 - - - - 101325] private(tempair) private(hygro) \
-            private(temprose) private(winddir) private(windsp)  private(airpress)
-
-      } else {
-
-         #--   arrete si incoherence entre le nom du fichier et son chemin
-         if {[file tail $private(meteoAcc)] ne "$private(sensname)"} {
-            set private(meteo) 0
-            return
-         }
-
-         #--   demarre la mise a jour
-         refreshMeteo
-      }
-   }
 
