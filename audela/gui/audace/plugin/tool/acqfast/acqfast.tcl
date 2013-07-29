@@ -25,7 +25,8 @@ proc ::acqfast::ressource { } {
    #uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfast acqfast.cap ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfast acqfastSetup.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfast gps.tcl ]\""
-   #uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfast cycle.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfast cyclefast.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfast cyclefast.cap ]\""
 
    if {$::tcl_platform(os)=="Linux"} {
       load libmeinberg[info sharedlibextension]
@@ -104,6 +105,11 @@ proc ::acqfast::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- Video mode
    if { ! [ info exists panneau(acqfast,$visuNo,mode) ] } {
       set panneau(acqfast,$visuNo,mode) "$parametres(acqfast,$visuNo,mode)"
+   }
+
+   #--- Cycle file
+   if { ! [ info exists panneau(acqfast,$visuNo,cycfile) ] } {
+      set panneau(acqfast,$visuNo,cycfile) "$parametres(acqfast,$visuNo,cycfile)"
    }
 
    #--- Video en cours
@@ -452,6 +458,7 @@ proc ::acqfast::chargerVariable { visuNo } {
    if { ! [ info exists parametres(acqfast,$visuNo,frame) ] }   { set parametres(acqfast,$visuNo,frame) "1" } ; #--- Frame actuel : 1
    if { ! [ info exists parametres(acqfast,$visuNo,continu) ] }   { set parametres(acqfast,$visuNo,continu) "1" } ; #--- Montre en continu : 1
    if { ! [ info exists parametres(acqfast,$visuNo,maxpose) ] }   { set parametres(acqfast,$visuNo,maxpose) "9999" } ; #--- Pose maximale : 9999 s
+   if { ! [ info exists parametres(acqfast,$visuNo,cycfile) ] }   { set parametres(acqfast,$visuNo,cycfile) "" } ; #--- File with the cycle
 
 
 
@@ -501,6 +508,7 @@ proc ::acqfast::enregistrerVariable { visuNo } {
    set parametres(acqfast,$visuNo,mode)           $panneau(acqfast,$visuNo,mode)
    set parametres(acqfast,$visuNo,avancement_acq) $panneau(acqfast,$visuNo,avancement_acq)
    set parametres(acqfast,$visuNo,enregistrer)    $panneau(acqfast,$visuNo,enregistrer)
+   set parametres(acqfast,$visuNo,cycfile)        $panneau(acqfast,$visuNo,cycfile)
 
 }
 #***** Fin de la procedure enregistrerVariable *****************
@@ -1424,9 +1432,9 @@ proc ::acqfast::SauveImages { visuNo } {
       buf$bufNo setkwd [list ROI_Y1 [lindex $roi 1] int "" ""]
       buf$bufNo setkwd [list ROI_X2 [lindex $roi 2] int "" ""]
       buf$bufNo setkwd [list ROI_Y2 [lindex $roi 3] int "" ""]
-      buf$bufNo setkwd [list EXPOSURE $exposure float "" ""]
-      buf$bufNo setkwd [list VIDEOMODE "$videomode" string "" ""]
-      buf$bufNo setkwd [list FRAMERATE "$framerate" float "" ""]
+      #buf$bufNo setkwd [list EXPOSURE $exposure float "" ""]
+      #buf$bufNo setkwd [list VIDEOMODE "$videomode" string "" ""]
+      #buf$bufNo setkwd [list FRAMERATE "$framerate" float "" ""]
       #--- je recupere la date GPS et celle imprime par le driver
       set datepc [cam$camNo getbufferts $curbuf]
       set dategps [ lindex $panneau(acqfast,$visuNo,date_gps,end) [expr $curbuf-1] ]
@@ -1680,6 +1688,19 @@ proc ::acqfast::succ { visuNo } {
 #***** Fin montre l'image suivante ********
 
 
+#***** Procedure pour designer le fichier du cycle
+proc ::acqfast::browse { visuNo } {
+   global audace panneau caption
+
+   set parent $audace(base)
+
+   set panneau(acqfast,$visuNo,cycfile) [ tk_getOpenFile -title "$caption(acqfast,folder)" \
+      -initialdir $audace(rep_images) -parent $parent ]
+
+}
+#***** Fin procedure pout designer le fichier du cycle
+
+
 proc ::acqfast::acqfastBuildIF { visuNo } {
    global audace caption conf panneau
    variable local
@@ -1891,6 +1912,24 @@ proc ::acqfast::acqfastBuildIF { visuNo } {
          pack $panneau(acqfast,$visuNo,This).display.but -fill x -padx 0 -pady 0 -expand true -side top
 
       pack $panneau(acqfast,$visuNo,This).display -fill x -side top
+
+      #--- Frame pour le cycle
+      frame $panneau(acqfast,$visuNo,This).cycle -borderwidth 2 -relief ridge
+
+         #--- Frame for the filename
+         frame $panneau(acqfast,$visuNo,This).cycle.fname -borderwidth 0 -relief flat
+            #--- Entry for the name of cycle file
+            entry $panneau(acqfast,$visuNo,This).cycle.fname.entry -textvariable panneau(acqfast,$visuNo,cycfile) -relief groove
+            pack $panneau(acqfast,$visuNo,This).cycle.fname.entry -anchor center -expand 1 -fill both -padx 4 -pady 2 -side left
+            #--- Button browse
+            button $panneau(acqfast,$visuNo,This).cycle.fname.but -borderwidth 2 -text $caption(acqfast,browse) -command " ::acqfast::browse $visuNo "
+            pack $panneau(acqfast,$visuNo,This).cycle.fname.but -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side right
+         pack $panneau(acqfast,$visuNo,This).cycle.fname -fill x -side top
+         #--- Button for cycle start
+         button $panneau(acqfast,$visuNo,This).cycle.but -text $caption(acqfast,cycle) -borderwidth 1 -command " ::cyclefast::init $visuNo "
+         pack $panneau(acqfast,$visuNo,This).cycle.but -anchor center -expand 1 -fill both -padx 4 -pady 2 -side bottom
+
+      pack $panneau(acqfast,$visuNo,This).cycle -side top -fill x
 
    pack $panneau(acqfast,$visuNo,This) -fill both -side top
 

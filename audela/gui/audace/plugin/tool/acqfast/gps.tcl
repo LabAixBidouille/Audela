@@ -241,6 +241,31 @@ namespace eval ::gps {
       return $::gps::flag
    }
 
+
+   proc ::gps::timejd { } {
+
+      set result [ catch { set r [meinberg_gps time] } msg ]
+      if { $result == "1" } {
+         ::console::disp "meinberg_gps read error=$msg \n"
+         return
+      }
+
+
+      set rs [split $r " "]
+      set r "[lindex $rs 1] [lindex $rs 3]"
+      if { [regexp {(\d+)-(\d+)-(\d+)( |T)(\d+):(\d+):(\d+)(\.*\d*)} $r dateiso aa mm jj sep h m s sd] } {
+         set time "${aa}-${mm}-${jj}T${h}:${m}:${s}${sd}"
+         set timejd [ mc_date2jd $time ]
+         #::console::disp "$timejd \n"
+         return $timejd
+      } else {
+         ::console::disp "Wrong time format, r=$r\n"
+         return
+      }
+
+   }
+
+
 # Fin NameSpace
 }
 
