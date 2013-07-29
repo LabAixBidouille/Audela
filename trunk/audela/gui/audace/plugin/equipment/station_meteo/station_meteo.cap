@@ -49,7 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Stazione Meteo"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "Nome file"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
@@ -67,7 +67,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Estación meteorológica"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "Nombre de fichero"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Wetterwarte"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "Dateien Namen"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
@@ -103,7 +103,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Estação meteorológica"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "Nome do Ficheiro"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Weather Station"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "File Name"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
@@ -139,7 +139,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Weather Station"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "File Name"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
@@ -157,7 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(station_meteo,label)                       "Weather Station"
 
-   set caption(station_meteo,sensname)                    "# Nom du fichier"
+   set caption(station_meteo,sensname)                    "File Name"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
