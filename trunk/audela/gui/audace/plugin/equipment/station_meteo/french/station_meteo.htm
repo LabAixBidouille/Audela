@@ -4,8 +4,47 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Station météo</title></head><body>
-<p class="date">Date de mise à jour : 24 juillet 2013</p>
-<h1>Station météo<br />
- </h1>
+<p class="date">Date de mise à jour : 29 juillet 2013</p>
+<h1>Station météo</h1>
+<h2>Lecture de stations m&#233;t&#233;o</h2>
+<p>L'utilisateur peut choisir d'exploiter les donn&#233;es de
+<b>Sentinel</b> (fichier infodata.txt) ou de <a href=
+"#cumulus"><b>Cumulus</b></a> (fichier realtime.txt, sous Windows uniquement).
+Le chemin d'acc&#232;s au
+fichier ainsi que la cadence de lecture doivent être définies.</p>
+<ul>
+<li>La station Sentinel ne donne pas la pression
+atmosph&#233;rique qui est maintenue &#224; sa valeur par
+d&#233;faut.</li>
+<li>Le logiciel <a href=
+"http://sandaysoft.com/products/cumulus"><b>Cumulus</b></a>
+gratuit permet de lire les informations fournies par <a href=
+"http://wiki.sandaysoft.com/a/Supported_Devices">les stations
+suivantes</a> :
+<ul>
+<li><b>Davis Range</b> : Vantage Pro, Vantage Pro 2, Vantage
+Vue</li>
+<li><b>Oregon Scientific</b> : WMR-928, WMR-918, WM-918, WMR-968,
+Equivalent rebadged Radio Shack stations (serial only), MR-88,
+WMR-100, WMRS200, WMR-200</li>
+<li><b>Fine Offset</b> (MyDEL, Nevada, Watson, Fine Offset etc) :
+W8681, WH1080, WH1080PC, WH1081, WH1090, WH1091, National
+Geographic 265NC, PCE-FWS 20, ELECSA 6975, ClimeMET CM2000,
+Maplin N96FY/N96GY, Ambient Weather WS-1080/WS-2080, WeatherEye
+WEA22, WH3080 and WH3081, aycar Digitech XC0348 (AU/NZ)</li>
+<li><b>La Crosse</b> : WS-2300 range (all model numbers of the
+form 23xx). Use of a USB/Serial adapter is not supported with
+these stations.</li>
+</ul>
+Il cr&#233;&#233; un fichier realtime.txt contenant les
+informations.Sont décodées et accessibles la
+temp&#233;rature ext&#233;rieure, la pression atmosph&#233;rique
+relative, la temp&#233;rature de ros&#233;e et l'hygrom&#233;trie
+ext&#233;rieure, la direction du vent et sa vitesse.</li>
+</ul>
+<p>Si les donn&#233;es sont invalides (fichier inaccessible ou
+horodatage d&#233;pass&#233;) la lecture est interrompue et les
+variables correspondantes sont remises &#224; leur valeur par
+d&#233;faut.</p>
 
 </body></html>
