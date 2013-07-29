@@ -47,6 +47,8 @@ proc ::station_meteo::initPlugin { } {
    #--   Initialise l'intervalle de rafraichissement de la lecture des donnees meteo
    if { ! [ info exists conf(station_meteo,cycle) ] }       { set conf(station_meteo,cycle)       "1" }
 
+   if { ! [ info exists conf(station_meteo,start) ] } { set conf(station_meteo,start) "0" }
+
    #--- Initialisation des variables audace
    set audace(meteo,obs,pressure)    "101325"
    set audace(meteo,obs,temperature) "290"
