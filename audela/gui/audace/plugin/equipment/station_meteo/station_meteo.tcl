@@ -228,6 +228,13 @@ proc ::station_meteo::fillConfigPage { frm } {
 
    pack $frm.frame3 -side bottom -fill x
 
+   #--   Configure l'etat des entrees
+   if {$conf(station_meteo,start) == 0} {
+      ::station_meteo::configState normal
+   } else {
+      ::station_meteo::configState disabled
+   }
+
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
 }
@@ -270,7 +277,9 @@ proc ::station_meteo::createPlugin { } {
       set widget(cycle) $conf(station_meteo,cycle)
       set widget(meteoFileAccess) $conf(station_meteo,meteoFileAccess)
       set widget(sensorName) [file tail $widget(meteoFileAccess)]
+      set widget(frm) ".audace.confeqt.usr.onglet.fstation_meteo"
    }
+   ::station_meteo::configState disabled
    ::station_meteo::onChangeMeteo refresh
 }
 
@@ -281,7 +290,10 @@ proc ::station_meteo::createPlugin { } {
 #  return nothing
 #------------------------------------------------------------
 proc ::station_meteo::deletePlugin { } {
+   variable widget
+
    ::station_meteo::onChangeMeteo stop
+   ::station_meteo::configState normal
 }
 
 #------------------------------------------------------------
@@ -365,6 +377,7 @@ proc ::station_meteo::isReady { } {
 
          #--   Indicateur de lecture
          set widget(meteo) 1
+         ::console::disp "Start reading $widget(sensorName)\n"
 
          #--   Demarre la mise a jour
          refreshMeteo
@@ -382,6 +395,7 @@ proc ::station_meteo::isReady { } {
 
          #--   Indicateur de lecture
          set widget(meteo) 0
+         ::console::disp "Stop reading $widget(sensorName)\n"
 
       }
    }
@@ -451,5 +465,23 @@ proc ::station_meteo::isReady { } {
          -height [llength $cycleList] \
          -textvariable ::station_meteo::widget(cycle) \
          -values $cycleList
+   }
+
+
+   #---------------------------------------------------------------------------
+   #  configState
+   #     configure l'etatdu nom du fichier et de son chemin
+   #  parameter : state
+   #  return nothing
+   #---------------------------------------------------------------------------
+   proc ::station_meteo::configState { state } {
+      variable widget
+
+      set w $widget(frm).frame2
+      foreach child [list sensorname search] {
+         if {[winfo exists $w.$child]} {
+            $w.$child configure -state $state
+         }
+      }
    }
 
