@@ -45,7 +45,7 @@ proc ::station_meteo::initPlugin { } {
    if { ! [ info exists conf(station_meteo,meteoFileAccess) ] } { set conf(station_meteo,meteoFileAccess) "" }
 
    #--   Initialise l'intervalle de rafraichissement de la lecture des donnees meteo
-   if { ! [ info exists conf(station_meteo,cycle) ] } { set conf(station_meteo,cycle) "1" }
+   if { ! [ info exists conf(station_meteo,cycle) ] } { set conf(station_meteo,cycle) "60" }
 
    if { ! [ info exists conf(station_meteo,start) ] } { set conf(station_meteo,start) "0" }
 
@@ -203,8 +203,14 @@ proc ::station_meteo::fillConfigPage { frm } {
       label $frm.frame3.lab103 -text "$caption(station_meteo,site_web)"
       pack $frm.frame3.lab103 -side top -fill x -pady 2
 
-      set labelName [ ::confEqt::createUrlLabel $frm.frame3 "$caption(station_meteo,site_web_ref)" \
-         "$caption(station_meteo,site_web_ref)" ]
+      if { $widget(sensorName) == $caption(station_meteo,sentinel) } {
+         set widget(site_web_ref) $caption(station_meteo,site_web_sentinel)
+      } else {
+         set widget(site_web_ref) $caption(station_meteo,site_web_cumulus)
+      }
+
+      set labelName [ ::confEqt::createUrlLabel $frm.frame3 "$widget(site_web_ref)" \
+         "$widget(site_web_ref)" ]
       pack $labelName -side top -fill x -pady 2
 
       #--- Frame du bouton Arreter et du checkbutton creer au demarrage
@@ -439,5 +445,5 @@ proc ::station_meteo::isReady { } {
          -width [::tkutil::lgEntryComboBox "$cycleList"] \
          -height [llength $$cycleList] \
          -values $cycleList
-     }
+   }
 
