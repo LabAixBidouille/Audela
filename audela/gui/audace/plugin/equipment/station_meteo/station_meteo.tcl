@@ -410,10 +410,10 @@ proc ::station_meteo::isReady { } {
          ::station_meteo::getValues [list 16.85 - - - - 101325]
 
          #--   Indicateur de lecture
-         if {exists widget(meteo)]} {
+         if {[info exists widget(meteo)]} {
             set widget(meteo) 0
          }
-         if {exists widget(sensorName)]} {
+         if {[info exists widget(sensorName)]} {
             ::console::disp "Stop reading $widget(sensorName)\n"
          }
          #--   Desinhibe
