@@ -21,7 +21,8 @@ set caption(station_meteo,search)                         "..."
 set caption(station_meteo,meteo)                          "Read weather data every seconds"
 
 set caption(station_meteo,site_web)                       "Reference Web Site:"
-set caption(station_meteo,site_web_ref)                   ""
+set caption(station_meteo,site_web_sentinel)              "http://www.shelyak.com/dossier.php?id_dossier=49"
+set caption(station_meteo,site_web_cumulus)               "http://sandaysoft.com/products/cumulus"
 
 set caption(station_meteo,arreter)                        "Stop"
 set caption(station_meteo,creer_au_demarrage)             "Next time software is run connect this equipment automatically"
@@ -39,7 +40,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Site Web de référence :"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Arrêter"
    set caption(station_meteo,creer_au_demarrage)          "Connexion automatique de cet équipement au prochain démarrage"
@@ -57,7 +59,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Sito Web di riferimento:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Fermare"
    set caption(station_meteo,creer_au_demarrage)          "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
@@ -75,7 +78,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Sitio Web de referencia:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Parar"
    set caption(station_meteo,creer_au_demarrage)          "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
@@ -93,7 +97,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Referenz Webseite:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Halten"
    set caption(station_meteo,creer_au_demarrage)          "Nächste Mal diese Einrichtung automatisch anschließen"
@@ -111,7 +116,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Site Web de referência:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Parar"
    set caption(station_meteo,creer_au_demarrage)          "O equipamento conecta-se automaticamente na próxima execução do programa"
@@ -129,7 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Reference Web Site:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Stop"
    set caption(station_meteo,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
@@ -147,7 +154,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Reference Web Site:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Stop"
    set caption(station_meteo,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
@@ -165,7 +173,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
    set caption(station_meteo,site_web)                    "Reference Web Site:"
-   set caption(station_meteo,site_web_ref)                ""
+   set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"
+   set caption(station_meteo,site_web_cumulus)            "http://sandaysoft.com/products/cumulus"
 
    set caption(station_meteo,arreter)                     "Stop"
    set caption(station_meteo,creer_au_demarrage)          "Next time software is run connect this equipment automatically"
