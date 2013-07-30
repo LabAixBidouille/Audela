@@ -311,6 +311,12 @@ int cmdCamGetFrameBuffer(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				Tcl_SetResult(interp,line,TCL_VOLATILE);
 				result = TCL_ERROR;
 			}
+			// reverse the pixels if the mirror is set
+			if ( cam->mirrorh == 1 )
+				cam->pixels_reverse_y = 1;
+			if ( cam->mirrorv == 1 )
+				cam->pixels_reverse_x = 1;
+
 			sprintf(line, "buf%d setpixels %s %d %d %s %s %ld -pixels_size %lu -reverse_x %d -reverse_y %d",cam->bufno,cam->pixels_classe,cam->w,cam->h,cam->pixels_format,cam->pixels_compression, (long)(void *)p, cam->pixel_size, cam->pixels_reverse_x, cam->pixels_reverse_y);
 			if (Tcl_Eval(interp, line) == TCL_ERROR) {
 				sprintf(line,"Errors setpixels: %s",interp->result);
