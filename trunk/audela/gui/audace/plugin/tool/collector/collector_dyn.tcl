@@ -129,9 +129,10 @@
    #------------------------------------------------------------
    proc computeTelCoord { } {
       variable private
+      global audace
 
-      set tempK [expr { 273.15 + $private(tempair) }]
-      set data [list $private(ra) $private(dec) $private(jd) $private(gps) $private(airpress) $tempK]
+      set data [list $private(ra) $private(dec) $private(jd) $private(gps) \
+         $audace(meteo,obs,pressure) $audace(meteo,obs,temperature)]
       if {"-" in $data} {return}
 
       lassign [getTrueCoordinates $data] private(raTel) private(decTel) \
@@ -270,8 +271,8 @@
       lassign [getDateTUJD [::audace::date_sys2ut now]] private(tu) private(jd)
 
       #--   prepare la liste des donnees
-      set tempK [expr { 273.15 + $private(tempair) }]
-      set record [list $coord1 $coord2 $TypeObs $private(tu) $private(gps) $private(airpress) $tempK]
+      set record [list $coord1 $coord2 $TypeObs $private(tu) $private(gps) \
+         $audace(meteo,obs,pressure) $audace(meteo,obs,temperature)]
 
       #--   coordonnees J2000 du telescope
       lassign [getCoordJ2000 $record] private(ra) private(dec)
