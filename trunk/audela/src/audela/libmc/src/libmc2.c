@@ -6978,7 +6978,8 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
    double llp[10],mmp[10],uup[10],jd,jjd,ls,bs,rs,eps,xs,ys,zs;
    double dxeq,dyeq,dzeq;
 	double dpsi,deps,az,h,h1,h2,az1,az2;
-	int topo=0,ksig,kasc;
+	int topo=0,ksig,kasc,decan,pdecan;
+	double decandeg;
    Tcl_DString dsptr;
 
    if(argc<=1) {
@@ -7041,6 +7042,46 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
       sprintf(s,"%.5f ",ls);
       Tcl_DStringAppend(&dsptr,s,-1);
       Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- major planet ---*/
+      Tcl_DStringAppend(&dsptr,"{major_planet ",-1);
+		if (ksig==0) { strcpy(s,"Mars red"); }
+		if (ksig==1) { strcpy(s,"Venus green"); }
+		if (ksig==2) { strcpy(s,"Mercury gray"); }
+		if (ksig==3) { strcpy(s,"Moon white"); }
+		if (ksig==4) { strcpy(s,"sun yellow"); }
+		if (ksig==5) { strcpy(s,"Mercury gray"); }
+		if (ksig==6) { strcpy(s,"Venus green"); }
+		if (ksig==7) { strcpy(s,"Mars red"); }
+		if (ksig==8) { strcpy(s,"Jupiter blue"); }
+		if (ksig==9) { strcpy(s,"Saturn black"); }
+		if (ksig==10) { strcpy(s,"Saturn black"); }
+		if (ksig==11) { strcpy(s,"Jupiter blue"); }
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- decan ---*/
+		decan=(int)(1+(floor)(3.*(ls-30.*ksig)/30));
+      Tcl_DStringAppend(&dsptr,"{decan ",-1);
+      sprintf(s,"%d",decan);
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- decan degree ---*/
+      Tcl_DStringAppend(&dsptr,"{decan_degree ",-1);
+		decandeg=ls-30.*ksig;
+      sprintf(s,"%.3f",decandeg);
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr,"} ",-1);
+		/* --- planete decan ---*/
+      Tcl_DStringAppend(&dsptr,"{decan_planet ",-1);
+		pdecan=(ksig*3+decan-1)%7;
+		if (pdecan==0) { strcpy(s,"Mars red"); }
+		if (pdecan==1) { strcpy(s,"Sun yellow"); }
+		if (pdecan==2) { strcpy(s,"Venus green"); }
+		if (pdecan==3) { strcpy(s,"Mercury gray"); }
+		if (pdecan==4) { strcpy(s,"Moon white"); }
+		if (pdecan==5) { strcpy(s,"Saturn black"); }
+		if (pdecan==6) { strcpy(s,"Jupiter blue"); }
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringAppend(&dsptr,"} ",-1);
 		/* --- ascendant ---*/
 		if (topo==1) {
 			kasc=-1;
@@ -7062,7 +7103,7 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
 				h2=h;
 				az2=az;
 				// lever
-				if ((h1>=0)&&(h2<=0)) {
+				if ((h2>=0)&&(h1<=0)) {
 					kasc=ksig;
 					break;
 				}
@@ -7084,6 +7125,22 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
 			Tcl_DStringAppend(&dsptr,s,-1);
 			Tcl_DStringAppend(&dsptr," ",-1);
 			sprintf(s,"%.5f %.5f %.5f %.5f",h1/(DR),h2/(DR),az1/(DR),az2/(DR));
+			Tcl_DStringAppend(&dsptr,s,-1);
+			Tcl_DStringAppend(&dsptr,"} ",-1);
+			/* --- ascendant planet ---*/
+			Tcl_DStringAppend(&dsptr,"{ascendant_planet ",-1);
+			if (kasc==0) { strcpy(s,"Mars red"); }
+			if (kasc==1) { strcpy(s,"Venus green"); }
+			if (kasc==2) { strcpy(s,"Mercury gray"); }
+			if (kasc==3) { strcpy(s,"Moon white"); }
+			if (kasc==4) { strcpy(s,"sun yellow"); }
+			if (kasc==5) { strcpy(s,"Mercury gray"); }
+			if (kasc==6) { strcpy(s,"Venus green"); }
+			if (kasc==7) { strcpy(s,"Mars red"); }
+			if (kasc==8) { strcpy(s,"Jupiter blue"); }
+			if (kasc==9) { strcpy(s,"Saturn black"); }
+			if (kasc==10) { strcpy(s,"Saturn black"); }
+			if (kasc==11) { strcpy(s,"Jupiter blue"); }
 			Tcl_DStringAppend(&dsptr,s,-1);
 			Tcl_DStringAppend(&dsptr,"} ",-1);
 		}
