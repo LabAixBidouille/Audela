@@ -2,6 +2,7 @@
 # Fichier : cyclefast.tcl
 # Description : Observation en automatique
 # Auteur : Matteo SCHIAVON
+# Mise à jour $Id$
 #
 # source audace/plugin/tool/acqfast/cyclefast.tcl
 #
