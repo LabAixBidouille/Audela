@@ -315,196 +315,196 @@ proc ::station_meteo::isReady { } {
 # Procedures specifiques du plugin
 #==============================================================
 
-   #------------------------------------------------------------
-   #  refreshMeteo : mise a jour de 'Météo'
-   #     lit les donnees de realtime.txt ou de infodata.txt
-   #  return nothing
-   #  Note : la temperature et la pression sont des variables de hip2tel
-   #------------------------------------------------------------
-   proc ::station_meteo::refreshMeteo { } {
-      variable widget
-      global caption
+#------------------------------------------------------------
+#  refreshMeteo : mise a jour de 'Météo'
+#     lit les donnees de realtime.txt ou de infodata.txt
+#  return nothing
+#  Note : la temperature et la pression sont des variables de hip2tel
+#------------------------------------------------------------
+proc ::station_meteo::refreshMeteo { } {
+   variable widget
+   global caption
 
-      #--   Arrete si demande
-      if {$widget(meteo) == 0} {
-         onChangeMeteo stop
-         return
-      }
+   #--   Arrete si demande
+   if {$widget(meteo) == 0} {
+      onChangeMeteo stop
+      return
+   }
 
-      #--   Arrete si chemin incorrect
-      if {![file exists $widget(meteoFileAccess)]} {
-         onChangeMeteo stop
-         tk_messageBox -title $caption(station_meteo,attention)\
-            -icon error -type ok -message "$caption(station_meteo,erreur)"
-         return
-      }
+   #--   Arrete si chemin incorrect
+   if {![file exists $widget(meteoFileAccess)]} {
+      onChangeMeteo stop
+      tk_messageBox -title $caption(station_meteo,attention)\
+         -icon error -type ok -message "$caption(station_meteo,erreur)"
+      return
+   }
 
-      switch -exact $widget(sensorName) {
-         realtime.txt {set catchResult [catch {readCumulus $widget(meteoFileAccess)} result]}
-         infodata.txt {set catchResult [catch {readSentinelFile $widget(meteoFileAccess)} result]}
-      }
+   switch -exact $widget(sensorName) {
+      realtime.txt {set catchResult [catch {readCumulus $widget(meteoFileAccess)} result]}
+      infodata.txt {set catchResult [catch {readSentinelFile $widget(meteoFileAccess)} result]}
+   }
 
-      #--   Arrete si erreur a la lecture du fichier
-      if { $catchResult != 0 } {
-         onChangeMeteo stop
-         tk_messageBox -title $caption(station_meteo,attention)\
-            -icon error -type ok -message "$caption(station_meteo,erreur)"
-         return
-      }
+   #--   Arrete si erreur a la lecture du fichier
+   if { $catchResult != 0 } {
+      onChangeMeteo stop
+      tk_messageBox -title $caption(station_meteo,attention)\
+         -icon error -type ok -message "$caption(station_meteo,erreur)"
+      return
+   }
 
-      #--   Compare les dates jd et arrete si l'ecart est superieur a 50 cycles
-      #     ou si le nb de donnes est incorrect
-      set t1 [lindex $result 0]
-      set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
-      set deltaTime [expr { $t2-$t1 }]
-      set seuil [expr { 60.*$widget(cycle)/86400 }]
-      if {[llength $result] != 7 || $deltaTime > $seuil} {
-         onChangeMeteo stop
-         return
-      }
+   #--   Compare les dates jd et arrete si l'ecart est superieur a 50 cycles
+   #     ou si le nb de donnes est incorrect
+   set t1 [lindex $result 0]
+   set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
+   set deltaTime [expr { $t2-$t1 }]
+   set seuil [expr { 60.*$widget(cycle)/86400 }]
+   if {[llength $result] != 7 || $deltaTime > $seuil} {
+      onChangeMeteo stop
+      return
+   }
 
-      #--   Elimine les unites
-      set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
-      set data [string map $entities [lrange $result 1 end]]
+   #--   Elimine les unites
+   set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
+   set data [string map $entities [lrange $result 1 end]]
 
-      ::station_meteo::getValues $data
+   ::station_meteo::getValues $data
 
-      #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
-      #     pour que le Sud corresponde a 0°
+   #--   note : ne pas oublier de regler le zero de la direction du vent dans Cumulus
+   #     pour que le Sud corresponde a 0°
+
+   set cycle [expr { $widget(cycle)*1000 }] ; #convertit en ms
+   set widget(afterID) [after $cycle ::station_meteo::refreshMeteo]
+}
+
+#------------------------------------------------------------
+#  onChangeMeteo  :
+#     si toutes les conditions sont reunies sinon desactive
+#  parameter : action { refresh | stop }
+#  return nothing
+#------------------------------------------------------------
+proc ::station_meteo::onChangeMeteo { {do ""} } {
+   variable widget
+   global audace
+
+   if {$do eq "refresh"} {
 
       set cycle [expr { $widget(cycle)*1000 }] ; #convertit en ms
       set widget(afterID) [after $cycle ::station_meteo::refreshMeteo]
-   }
 
-   #------------------------------------------------------------
-   #  onChangeMeteo  :
-   #     si toutes les conditions sont reunies sinon desactive
-   #  parameter : action { refresh | stop }
-   #  return nothing
-   #------------------------------------------------------------
-   proc ::station_meteo::onChangeMeteo { {do ""} } {
-      variable widget
-      global audace
+      #--   Indicateur de lecture
+      set widget(meteo) 1
+      ::console::disp "Start reading $widget(sensorName)\n"
 
-      if {$do eq "refresh"} {
+      #--   Demarre la mise a jour
+      refreshMeteo
 
-         set cycle [expr { $widget(cycle)*1000 }] ; #convertit en ms
-         set widget(afterID) [after $cycle ::station_meteo::refreshMeteo]
+   } elseif {$do eq "stop"} {
 
-         #--   Indicateur de lecture
-         set widget(meteo) 1
-         ::console::disp "Start reading $widget(sensorName)\n"
-
-         #--   Demarre la mise a jour
-         refreshMeteo
-
-      } elseif {$do eq "stop"} {
-
-         #--   Arrete la lecture
-         if {[info exists widget(afterID)]} {
-            after cancel ::station_meteo::refreshMeteo
-            unset widget(afterID)
-         }
-
-         #--   Initialise par defaut
-         ::station_meteo::getValues [list 16.85 - - - - 101325]
-
-         #--   Indicateur de lecture
-         if {[info exists widget(meteo)]} {
-            set widget(meteo) 0
-         }
-         if {[info exists widget(sensorName)]} {
-            ::console::disp "Stop reading $widget(sensorName)\n"
-         }
-         #--   Desinhibe
-         ::station_meteo::configState normal
-
-      }
-   }
-
-   #---------------------------------------------------------------------------
-   #  getValues
-   #     affecte les valeurs aux variables
-   #  parameter : list of six numerical data
-   #  return nothing
-   #---------------------------------------------------------------------------
-   proc ::station_meteo::getValues { data } {
-      variable widget
-      global audace
-
-      lassign $data widget(temperature) widget(hygro) widget(temprose) widget(windsp) widget(winddir) widget(pressure)
-      set audace(meteo,obs,temperature) [expr { $widget(temperature)+273.15 }]
-      set audace(meteo,obs,pressure) $widget(pressure)
-
-      #--   Debug
-      #::console::disp "$widget(temperature) $widget(pressure)\n$audace(meteo,obs,temperature) $audace(meteo,obs,pressure)\n"
-   }
-
-   #---------------------------------------------------------------------------
-   #  configDirname
-   #     commande du bouton '...'
-   #  parameter : name of frame to modify
-   #  return nothing
-   #---------------------------------------------------------------------------
-   proc ::station_meteo::configDirname { this } {
-      variable widget
-      global caption
-
-      set dirname [tk_chooseDirectory -title "$caption(station_meteo,meteoAcc)" \
-         -initialdir "C:/" -parent $this]
-
-      #--   verifie la presence du fichier
-      set file [file join $dirname $widget(sensorName)]
-      if {[file exists $file]} {
-         set widget(meteoFileAccess) "$file"
-      }
-   }
-
-   #---------------------------------------------------------------------------
-   #  configCycle
-   #     configure le delai entre deux lectures
-   #  parameter : name of frame to modify
-   #  return nothing
-   #---------------------------------------------------------------------------
-   proc ::station_meteo::configCycle { w } {
-      variable widget
-      global caption conf
-
-      if {$widget(sensorName) eq "$caption(station_meteo,sentinel)"} {
-         set cycleList [list 20 40 60 120 300 600]
-      } else {
-         set cycleList [list 60 300 600 900 1200 1800]
+      #--   Arrete la lecture
+      if {[info exists widget(afterID)]} {
+         after cancel ::station_meteo::refreshMeteo
+         unset widget(afterID)
       }
 
-      if {[info exists conf(station_meteo,cycle)]} {
-         set widget(cycle) $conf(station_meteo,cycle)
-      } else {
-         set widget(cycle) [lindex $cycleList 0]
-      }
+      #--   Initialise par defaut
+      ::station_meteo::getValues [list 16.85 - - - - 101325]
 
-      $w configure \
-         -width [::tkutil::lgEntryComboBox "$cycleList"] \
-         -height [llength $cycleList] \
-         -textvariable ::station_meteo::widget(cycle) \
-         -values $cycleList
+      #--   Indicateur de lecture
+      if {[info exists widget(meteo)]} {
+         set widget(meteo) 0
+      }
+      if {[info exists widget(sensorName)]} {
+         ::console::disp "Stop reading $widget(sensorName)\n"
+      }
+      #--   Desinhibe
+      ::station_meteo::configState normal
+
+   }
+}
+
+#---------------------------------------------------------------------------
+#  getValues
+#     affecte les valeurs aux variables
+#  parameter : list of six numerical data
+#  return nothing
+#---------------------------------------------------------------------------
+proc ::station_meteo::getValues { data } {
+   variable widget
+   global audace
+
+   lassign $data widget(temperature) widget(hygro) widget(temprose) widget(windsp) widget(winddir) widget(pressure)
+   set audace(meteo,obs,temperature) [expr { $widget(temperature)+273.15 }]
+   set audace(meteo,obs,pressure) $widget(pressure)
+
+   #--   Debug
+   #::console::disp "$widget(temperature) $widget(pressure)\n$audace(meteo,obs,temperature) $audace(meteo,obs,pressure)\n"
+}
+
+#---------------------------------------------------------------------------
+#  configDirname
+#     commande du bouton '...'
+#  parameter : name of frame to modify
+#  return nothing
+#---------------------------------------------------------------------------
+proc ::station_meteo::configDirname { this } {
+   variable widget
+   global caption
+
+   set dirname [tk_chooseDirectory -title "$caption(station_meteo,meteoAcc)" \
+      -initialdir "C:/" -parent $this]
+
+   #--   verifie la presence du fichier
+   set file [file join $dirname $widget(sensorName)]
+   if {[file exists $file]} {
+      set widget(meteoFileAccess) "$file"
+   }
+}
+
+#---------------------------------------------------------------------------
+#  configCycle
+#     configure le delai entre deux lectures
+#  parameter : name of frame to modify
+#  return nothing
+#---------------------------------------------------------------------------
+proc ::station_meteo::configCycle { w } {
+   variable widget
+   global caption conf
+
+   if {$widget(sensorName) eq "$caption(station_meteo,sentinel)"} {
+      set cycleList [list 20 40 60 120 300 600]
+   } else {
+      set cycleList [list 60 300 600 900 1200 1800]
    }
 
-   #---------------------------------------------------------------------------
-   #  configState
-   #     configure l'etatdu nom du fichier et de son chemin
-   #  parameter : state
-   #  return nothing
-   #---------------------------------------------------------------------------
-   proc ::station_meteo::configState { state } {
-      variable widget
+   if {[info exists conf(station_meteo,cycle)]} {
+      set widget(cycle) $conf(station_meteo,cycle)
+   } else {
+      set widget(cycle) [lindex $cycleList 0]
+   }
 
-      if {[info exists widget(frm)]} {
-         set w $widget(frm).frame2
-         foreach child [list sensorname search] {
-            if {[winfo exists $w.$child]} {
-               $w.$child configure -state $state
-            }
+   $w configure \
+      -width [::tkutil::lgEntryComboBox "$cycleList"] \
+      -height [llength $cycleList] \
+      -textvariable ::station_meteo::widget(cycle) \
+      -values $cycleList
+}
+
+#---------------------------------------------------------------------------
+#  configState
+#     configure l'etatdu nom du fichier et de son chemin
+#  parameter : state
+#  return nothing
+#---------------------------------------------------------------------------
+proc ::station_meteo::configState { state } {
+   variable widget
+
+   if {[info exists widget(frm)]} {
+      set w $widget(frm).frame2
+      foreach child [list sensorname search] {
+         if {[winfo exists $w.$child]} {
+            $w.$child configure -state $state
          }
       }
    }
+}
 
