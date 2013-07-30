@@ -324,10 +324,19 @@ proc ::station_meteo::isReady { } {
    #------------------------------------------------------------
    proc ::station_meteo::refreshMeteo { } {
       variable widget
+      global caption
+
+      #--   Arrete si demande
+      if {$widget(meteo) == 0} {
+         onChangeMeteo stop
+         return
+      }
 
       #--   Arrete si chemin incorrect
-      if {$widget(meteo) == 0 || [file exists $widget(meteoFileAccess)] == 0} {
+      if {![file exists $widget(meteoFileAccess)]} {
          onChangeMeteo stop
+         tk_messageBox -title $caption(station_meteo,attention)\
+            -icon error -type ok -message "$caption(station_meteo,erreur)"
          return
       }
 
@@ -396,6 +405,9 @@ proc ::station_meteo::isReady { } {
          #--   Indicateur de lecture
          set widget(meteo) 0
          ::console::disp "Stop reading $widget(sensorName)\n"
+
+         #--   Desinhibe
+         ::station_meteo::configState normal
 
       }
    }
