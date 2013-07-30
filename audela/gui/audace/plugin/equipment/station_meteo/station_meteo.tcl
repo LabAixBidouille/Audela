@@ -293,7 +293,6 @@ proc ::station_meteo::deletePlugin { } {
    variable widget
 
    ::station_meteo::onChangeMeteo stop
-   ::station_meteo::configState normal
 }
 
 #------------------------------------------------------------
@@ -411,9 +410,12 @@ proc ::station_meteo::isReady { } {
          ::station_meteo::getValues [list 16.85 - - - - 101325]
 
          #--   Indicateur de lecture
-         set widget(meteo) 0
-         ::console::disp "Stop reading $widget(sensorName)\n"
-
+         if {exists widget(meteo)]} {
+            set widget(meteo) 0
+         }
+         if {exists widget(sensorName)]} {
+            ::console::disp "Stop reading $widget(sensorName)\n"
+         }
          #--   Desinhibe
          ::station_meteo::configState normal
 
