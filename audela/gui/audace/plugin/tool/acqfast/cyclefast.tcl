@@ -35,7 +35,7 @@ namespace eval ::cyclefast {
 
       return $integre
    }
-      
+
 
 
    proc init { visuNo } {
@@ -107,7 +107,7 @@ namespace eval ::cyclefast {
       $panneau(acqfast,$visuNo,This).display.prev_next.next configure -state disabled
       $panneau(acqfast,$visuNo,This).display.but            configure -state disabled
       $panneau(acqfast,$visuNo,This).cycle.but              configure -state disabled
-      
+
       bind all <Key-Escape> "::cyclefast::stop $visuNo"
 
    }
@@ -226,8 +226,8 @@ namespace eval ::cyclefast {
    proc stop { visuNo } {
       variable cycle
       global panneau
-	
-		  set panneau(acqfast,$visuNo,cycle,action) "2"
+
+      set panneau(acqfast,$visuNo,cycle,action) "2"
       #while { $panneau(acqfast,$visuNo,cycle,state) != "WAIT" } {
       #   set panneau(acqfast,$visuNo,cycle,action) "2"
       #}
@@ -246,7 +246,7 @@ namespace eval ::cyclefast {
       #puts "Now: $data ---> Next event: $cycle(timenext)"
 
       if { [::gps::timejd] >= $cycle(timenext) } {
-         
+
          set action [lindex $cycle(action) $cycle(index)]
          if { $action == "start" } {
             ::cyclefast::start $visuNo
