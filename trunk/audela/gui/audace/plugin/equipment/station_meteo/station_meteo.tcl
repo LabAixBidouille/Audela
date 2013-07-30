@@ -163,9 +163,9 @@ proc ::station_meteo::fillConfigPage { frm } {
          -borderwidth 1         \
          -editable 0            \
          -textvariable ::station_meteo::widget(sensorName) \
-         -modifycmd "" \
+         -modifycmd "::station_meteo::configCycle $frm.frame2.cycle" \
          -values $sensorList
-      grid $frm.frame2.sensorname -row 0 -column 1 -sticky ew
+      grid $frm.frame2.sensorname -row 0 -column 1 -sticky w
 
       #--- Label du nom du fichier de donnees meteo
       label $frm.frame2.labelAccess -text "$caption(station_meteo,meteoAcc)"
@@ -185,11 +185,14 @@ proc ::station_meteo::fillConfigPage { frm } {
       label $frm.frame2.readfile -text "$caption(station_meteo,meteo)"
       grid $frm.frame2.readfile -row 2 -column 0 -padx 5 -pady 5 -sticky w
 
-      #--- Saisie du delai de lecture du fichier
-      entry $frm.frame2.cycle -width 5 -justify center \
-         -textvariable ::station_meteo::widget(cycle) \
-         -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 1 300 }
-      grid $frm.frame2.cycle -row 2 -column 1 -padx 5 -pady 5 -sticky w
+      #--- Choix du delai de lecture
+      ComboBox $frm.frame2.cycle \
+         -relief sunken         \
+         -borderwidth 1         \
+         -editable 0            \
+         -textvariable ::station_meteo::widget(cycle)
+      grid $frm.frame2.cycle -row 2 -column 1 -sticky w
+      ::station_meteo::configCycle $frm.frame2.cycle
 
    pack $frm.frame2 -side top -fill both -expand 1
 
@@ -250,7 +253,7 @@ proc ::station_meteo::configurePlugin { } {
 
 #------------------------------------------------------------
 #  createPlugin
-#
+#     demarre le plugin
 #
 #  return nothing
 #------------------------------------------------------------
@@ -299,7 +302,8 @@ proc ::station_meteo::isReady { } {
 
    #------------------------------------------------------------
    #  refreshMeteo : mise a jour de 'Météo'
-   #  Lit les donnees de realtime.txt ou de infodata.txt
+   #     lit les donnees de realtime.txt ou de infodata.txt
+   #  return nothing
    #  Note : la temperature et la pression sont des variables de hip2tel
    #------------------------------------------------------------
    proc ::station_meteo::refreshMeteo { } {
@@ -342,8 +346,9 @@ proc ::station_meteo::isReady { } {
 
    #------------------------------------------------------------
    #  onChangeMeteo  :
-   #  si toutes les conditions sont reunies
-   #  sinon desactive
+   #     si toutes les conditions sont reunies sinon desactive
+   #  parameter : action { refresh | stop }
+   #  return nothing
    #------------------------------------------------------------
    proc ::station_meteo::onChangeMeteo { {do ""} } {
       variable widget
@@ -380,6 +385,8 @@ proc ::station_meteo::isReady { } {
    #---------------------------------------------------------------------------
    #  getValues
    #     affecte les valeurs aux variables
+   #  parameter : list of six numerical data
+   #  return nothing
    #---------------------------------------------------------------------------
    proc ::station_meteo::getValues { data } {
       variable widget
@@ -390,12 +397,14 @@ proc ::station_meteo::isReady { } {
       set audace(meteo,obs,pressure) $widget(pressure)
 
       #--   Debug
-      ::console::disp "$widget(temperature) $widget(pressure)\n$audace(meteo,obs,temperature) $audace(meteo,obs,pressure)\n"
+      #::console::disp "$widget(temperature) $widget(pressure)\n$audace(meteo,obs,temperature) $audace(meteo,obs,pressure)\n"
    }
 
    #---------------------------------------------------------------------------
    #  configDirname
-   #  Commande du bouton '...'
+   #     commande du bouton '...'
+   #  parameter : name of frame to modify
+   #  return nothing
    #---------------------------------------------------------------------------
    proc ::station_meteo::configDirname { this } {
       variable widget
@@ -410,4 +419,25 @@ proc ::station_meteo::isReady { } {
          set widget(meteoFileAccess) "$file"
       }
    }
+
+   #---------------------------------------------------------------------------
+   #  configCycle
+   #     configure le delai entre deux lectures
+   #  parameter : name of frame to modify
+   #  return nothing
+   #---------------------------------------------------------------------------
+   proc ::station_meteo::configCycle { w } {
+      variable widget
+      global caption
+
+      if {$widget(sensorName) eq "$caption(station_meteo,sentinel)"} {
+         set cycleList [list 20 40 60 120 300 600]
+      } else {
+         set cycleList [list 60 300 600 900 1200 1800]
+      }
+      $w configure \
+         -width [::tkutil::lgEntryComboBox "$cycleList"] \
+         -height [llength $$cycleList] \
+         -values $cycleList
+     }
 
