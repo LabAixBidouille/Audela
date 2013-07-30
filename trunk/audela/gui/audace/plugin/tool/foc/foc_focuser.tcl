@@ -35,20 +35,29 @@ namespace eval ::foc {
       variable This
 
       #--- Gestion graphique des boutons
-      $This.fra4.we.canv1PoliceInvariant configure -relief ridge
-      $This.fra4.we.canv2PoliceInvariant configure -relief ridge
+      #--   Boutons d'acquisition
+      if {$command eq "stop"} {
+         $This.fra2.but1 configure -state normal
+         $This.fra2.but2 configure -state normal
+      }  else {
+         $This.fra2.but1 configure -state disabled
+         $This.fra2.but2 configure -state disabled
+      }
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
          if { $::panneau(foc,focuser) != "" } {
             ::focus::move $::panneau(foc,focuser) $command
          }
       } ]
+
       #--- Traitement de l'erreur
       if { $catchResult == "1" } {
+
          #--- J'ouvre la fenetre de configuration du focuser
          ::confEqt::run ::panneau(foc,focuser) focuser
+
          #--- J'arrete les acquisitions continues
-         cmdStop
+         ::foc::cmdStop
       }
    }
 
@@ -91,13 +100,11 @@ namespace eval ::foc {
       variable This
       global audace panneau
 
-
       if { [ ::tel::list ] != "" } {
          if { $audace(focus,targetFocus) != "" } {
+
             #--- Gestion graphique des boutons
-            $This.fra5.but0 configure -relief groove -state disabled
-            $This.fra5.but2 configure -relief groove -text $panneau(foc,deplace)
-            update
+            ::foc::setFocusState disabled
             #--- Gestion des limites
             if { $audace(focus,targetFocus) > "32767" } {
                #--- Message au-dela de la limite superieure
@@ -122,10 +129,9 @@ namespace eval ::foc {
                #--- Affiche la position d'arrivee
                $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
             }
+
             #--- Gestion graphique des boutons
-            $This.fra5.but2 configure -relief raised -text $panneau(foc,deplace)
-            $This.fra5.but0 configure -relief raised -state normal
-            update
+            ::foc::setFocusState normal
          }
       } else {
          ::confTel::run
@@ -145,8 +151,7 @@ namespace eval ::foc {
 
       if {[::usb_focus::isReady] == 1} {
          #--- Gestion graphique des boutons
-         $This.fra5.but2 configure -relief groove -text $panneau(foc,deplace)
-         update
+         ::foc::setFocusState disabled
          #--- Gestion des limites
          if { $audace(focus,targetFocus) > "65535" } {
                #--- Message au-dela de la limite superieure
@@ -171,12 +176,37 @@ namespace eval ::foc {
                #--- Affiche la position d'arrivee
                $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
          }
+
          #--- Gestion graphique des boutons
-         $This.fra5.but2 configure -relief raised -text $panneau(foc,deplace)
-         update
+         #$This.fra5.but2 configure -relief raised -text $panneau(foc,deplace)
+         ::foc::setFocusState normal
       } else {
          ::confEqt::run ::confEqt::private(selectedFocuser) focuser "Focaliseur USB_Focus"
       }
+   }
+
+   #------------------------------------------------------------
+   # setFocusState
+   #     gere l'etat des boutons
+   # Parametres : { normal | disabled }
+   # Return : Rien
+   #------------------------------------------------------------
+   proc setFocusState {  state } {
+      variable This
+
+      if {$state eq "normal"} {
+         $This.fra5.but2 configure -relief raised
+      } else {
+         $This.fra5.but2 configure -relief sunken
+      }
+
+      #--   Boutons d'acquisition
+      $This.fra2.but1 configure -state $state
+      $This.fra2.but2 configure -state $state
+      #--   Boutons +/-
+      $This.fra4.we.canv1PoliceInvariant configure -state $state
+      $This.fra4.we.canv2PoliceInvariant configure -state $state
+      update
    }
 
    #------------------------------------------------------------
