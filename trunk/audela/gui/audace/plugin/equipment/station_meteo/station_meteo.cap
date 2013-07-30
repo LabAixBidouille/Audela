@@ -130,7 +130,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,sensname)                    "File Name"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
-   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,meteoAcc)                    "Path"
    set caption(station_meteo,search)                      "..."
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,sensname)                    "File Name"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
-   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,meteoAcc)                    "Path"
    set caption(station_meteo,search)                      "..."
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
@@ -168,7 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,sensname)                    "File Name"
    set caption(station_meteo,cumulus)                     "realtime.txt"
    set caption(station_meteo,sentinel)                    "infodata.txt"
-   set caption(station_meteo,meteoAcc)                    "# Chemin d'accès"
+   set caption(station_meteo,meteoAcc)                    "Path"
    set caption(station_meteo,search)                      "..."
    set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
 
