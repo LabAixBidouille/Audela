@@ -341,8 +341,16 @@ proc ::station_meteo::isReady { } {
       }
 
       switch -exact $widget(sensorName) {
-         realtime.txt {set result [readCumulus $widget(meteoFileAccess)]}
-         infodata.txt {set result [readSentinelFile $widget(meteoFileAccess)]}
+         realtime.txt {set catchResult [catch {readCumulus $widget(meteoFileAccess)} result]}
+         infodata.txt {set catchResult [catch {readSentinelFile $widget(meteoFileAccess)} result]}
+      }
+
+      #--   Arrete si erreur a la lecture du fichier
+      if { $catchResult != 0 } {
+         onChangeMeteo stop
+         tk_messageBox -title $caption(station_meteo,attention)\
+            -icon error -type ok -message "$caption(station_meteo,erreur)"
+         return
       }
 
       #--   Compare les dates jd et arrete si l'ecart est superieur a 50 cycles
