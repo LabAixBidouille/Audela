@@ -135,7 +135,6 @@ proc ::station_meteo::fillConfigPage { frm } {
       #--   Premier de la liste
       set widget(sensorName) [lindex "$sensorList" 0]
    }
-   set widget(cycle) $conf(station_meteo,cycle)
    set widget(meteo) 0
 
    #--- Frame pour le choix de la liaison et de la combinaison
@@ -189,8 +188,7 @@ proc ::station_meteo::fillConfigPage { frm } {
       ComboBox $frm.frame2.cycle \
          -relief sunken         \
          -borderwidth 1         \
-         -editable 0            \
-         -textvariable ::station_meteo::widget(cycle)
+         -editable 0
       grid $frm.frame2.cycle -row 2 -column 1 -sticky w
       ::station_meteo::configCycle $frm.frame2.cycle
 
@@ -246,9 +244,9 @@ proc ::station_meteo::configurePlugin { } {
 
    #--- Memorise la configuration dans le tableau conf(station_meteo,...)
    #set conf(station_meteo,pressure)        $widget(pressure)
-   set conf(station_meteo,pressure)        $audace(meteo,obs,pressure)
+   #set conf(station_meteo,pressure)        $audace(meteo,obs,pressure)
    #set conf(station_meteo,temperature)     $widget(temperature)
-   set conf(station_meteo,temperature)     $audace(meteo,obs,temperature)
+   #set conf(station_meteo,temperature)     $audace(meteo,obs,temperature)
    set conf(station_meteo,meteoFileAccess) $widget(meteoFileAccess)
    set conf(station_meteo,cycle)           $widget(cycle)
 
@@ -434,16 +432,24 @@ proc ::station_meteo::isReady { } {
    #---------------------------------------------------------------------------
    proc ::station_meteo::configCycle { w } {
       variable widget
-      global caption
+      global caption conf
 
       if {$widget(sensorName) eq "$caption(station_meteo,sentinel)"} {
          set cycleList [list 20 40 60 120 300 600]
       } else {
          set cycleList [list 60 300 600 900 1200 1800]
       }
+
+      if {[info exists conf(station_meteo,cycle)]} {
+         set widget(cycle) $conf(station_meteo,cycle)
+      } else {
+         set widget(cycle) [lindex $cycleList 0]
+      }
+
       $w configure \
          -width [::tkutil::lgEntryComboBox "$cycleList"] \
-         -height [llength $$cycleList] \
+         -height [llength $cycleList] \
+         -textvariable ::station_meteo::widget(cycle) \
          -values $cycleList
    }
 
