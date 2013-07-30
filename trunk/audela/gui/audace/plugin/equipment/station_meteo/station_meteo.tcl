@@ -487,7 +487,6 @@ proc ::station_meteo::isReady { } {
          -values $cycleList
    }
 
-
    #---------------------------------------------------------------------------
    #  configState
    #     configure l'etatdu nom du fichier et de son chemin
@@ -497,10 +496,12 @@ proc ::station_meteo::isReady { } {
    proc ::station_meteo::configState { state } {
       variable widget
 
-      set w $widget(frm).frame2
-      foreach child [list sensorname search] {
-         if {[winfo exists $w.$child]} {
-            $w.$child configure -state $state
+      if {[info exists widget(frm)]} {
+         set w $widget(frm).frame2
+         foreach child [list sensorname search] {
+            if {[winfo exists $w.$child]} {
+               $w.$child configure -state $state
+            }
          }
       }
    }
