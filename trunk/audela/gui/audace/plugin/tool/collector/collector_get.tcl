@@ -416,17 +416,12 @@
       set hipRecord [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
       set drift 0
       set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $coefNames $coefValues -model_only 1 -refraction 1 -drift $drift]
-
-      #--   pm prend les valeurs avec modele
       lassign [lrange $result 10 14] ra_angle dec_angle ha az elev
 
       #--- formate les resultats
       set raTel [mc_angle2hms $ra_angle 360 zero 2 auto string]
       set decTel [mc_angle2dms $dec_angle 90 zero 2 + string]
       set haTel [format "%0.4f" $ha]
-
-      #--   si l'elevation est tres proche de 90 --> zenith
-      if {$elev > 89.99} {set az 0.0}
       set azTel [format %.2f $az]
       set elevTel [format %.2f $elev]
 
