@@ -267,6 +267,8 @@
       variable private
       global audace
 
+      ::console::disp "$coord1 $coord2 $TypeObs\n"
+
       #--   rafraichit TU et JD
       lassign [getDateTUJD [::audace::date_sys2ut now]] private(tu) private(jd)
 
