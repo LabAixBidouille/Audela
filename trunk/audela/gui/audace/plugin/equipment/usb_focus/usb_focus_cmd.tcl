@@ -271,7 +271,31 @@ proc ::usb_focus::goto { {blocking 0} } {
    } else {
       set private(command) O$n
    }
-   ::usb_focus::writeControl_2
+
+   #--   inhibe les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState disabled stop
+
+   ::usb_focus::writePort
+
+   #--   reponse attendue "*LFCR" ou "!LFCR" ; longueur 3 car
+   if {[::usb_focus::waitAnswer 3] in [list "*" "!"]} {
+      ::usb_focus::getPosition
+   }
+
+   if {$blocking == 1} {
+      while {1==1} {
+         after 100
+         ::usb_focus::getPosition
+         if {[::usb_focus::trimZero $widget(position)] == $widget(target)} {
+            break
+         }
+      }
+   }
+
+   #--   libere toutes les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState normal manual
+
+   #::usb_focus::writeControl_2 $blocking
 }
 
 #------------------------------------------------------------
