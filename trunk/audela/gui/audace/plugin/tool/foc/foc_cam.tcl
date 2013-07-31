@@ -22,10 +22,8 @@ namespace eval ::foc {
       if { [ ::cam::list ] != "" } {
 
          #--- Gestion graphique des boutons
-         $This.fra2.but1 configure -relief groove -state disabled ;  #--- Bouton GO
-         $This.fra2.but2 configure -text $panneau(foc,stop) ;        #--- Bouton STOP/RAZ
-         $This.fra4.focuser.list configure -state disabled ;         #--- Combobox de choix du focuser
-         update
+         ::foc::setFocusState acq disabled
+         ::foc::setAcqState centrage
 
          #--- Applique le binning demande si la camera possede bien ce binning
          set binningCamera "2x2"
@@ -172,12 +170,7 @@ namespace eval ::foc {
          ::foc::cmdAcq
 
          #--- Gestion graphique des boutons
-         if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
-            $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal ; #--- Bouton GO
-         }
-         $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)                 ; #--- Bouton STOP/RAZ
-         update
-
+         ::foc::setAcqState post
       } else {
          ::confCam::run
       }
@@ -213,15 +206,16 @@ namespace eval ::foc {
       ::camera::alarmeSonore $panneau(foc,exptime)
 
       #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
-      if { $::panneau(foc,focuser) != "" } {
-         set delay 0.100
-         if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
-            set delay [ expr $panneau(foc,exptime)-$delay ]
-            if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
-               #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
-            }
-         }
-      }
+      #if { $panneau(foc,focuser) ni [list "$caption(foc,pas_focuser)" ""]} {
+      #   set delay 0.100
+      #   if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
+      #      set delay [ expr $panneau(foc,exptime)-$delay ]
+      #      if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
+      #        #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+      #      }
+      #   }
+      #   after 100
+      #}
 
       #--- Declenchement de l'acquisition
       ::camera::acquisition [ ::confVisu::getCamItem $audace(visuNo) ] "::foc::attendImage" $panneau(foc,exptime)
@@ -244,9 +238,7 @@ namespace eval ::foc {
             }
 
             #--- Gestion graphique des boutons
-            $This.fra2.but1 configure -relief groove -text $panneau(foc,go)
-            $This.fra2.but2 configure -text $panneau(foc,stop)
-            update
+            ::foc::setAcqState window
 
             incr panneau(foc,compteur)
 
@@ -283,7 +275,6 @@ namespace eval ::foc {
             }
 
             after idle ::foc::cmdAcq
-
          }
 
       }
@@ -361,7 +352,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc cmdStop { } {
       variable This
-      global audace caption panneau
+      global audace panneau
 
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
@@ -388,17 +379,52 @@ namespace eval ::foc {
             ::foc::cmdSauveLog foc.log
             #--- J'attends la fin de l'acquisition
             vwait panneau(foc,finAquisition)
-            #--- Gestion graphique des boutons
-            $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
-            $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
-         }
 
-         #--   Desinhibe le choix du focuser
-         $This.fra4.focuser.list configure -state normal ; # combobox de choix du focuser
-         update
+            #--- Gestion graphique des boutons
+            ::foc::setAcqState stop
+         }
+         ::foc::setFocusState acq normal
       } else {
          ::confCam::run
       }
+   }
+
+  #------------------------------------------------------------
+   # setAcqState
+   #     gere l'etat des boutons GO et STOP/RAZ
+   # Parametres : op et state {normal|disabled}
+   # Return : Rien
+   #------------------------------------------------------------
+   proc setAcqState { op {state ""} } {
+      variable This
+      global caption panneau
+
+      #--   Rem : state n'est pas toujours utile
+      switch -exact $op {
+         goto     {  #--  Etat lors d'un GOTO
+                     $This.fra2.but1 configure -state $state
+                     $This.fra2.but2 configure -state $state
+                  }
+         centrage {  #--  Etat avant une acquisition de centrage
+                     $This.fra2.but1 configure -relief groove -state disabled
+                     $This.fra2.but2 configure -relief raised -text $panneau(foc,stop) -state normal
+                  }
+         post     {  #--  Etat apres une acquisition de centrage
+                     if { $panneau(foc,actuel) == "$caption(foc,centrage)" } {
+                        $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
+                     }
+                     $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)
+                  }
+        window    {  #--  Etat post-window
+                     $This.fra2.but1 configure -relief groove -text $panneau(foc,go)
+                     $This.fra2.but2 configure -text $panneau(foc,stop)
+                  }
+        stop      {  #--  Etat a la fin d'un stop
+                     $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
+                     $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
+                  }
+      }
+      update
    }
 
 }
