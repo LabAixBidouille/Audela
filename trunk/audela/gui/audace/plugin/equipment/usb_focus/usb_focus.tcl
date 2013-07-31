@@ -459,17 +459,25 @@ proc ::usb_focus::configurePlugin { } {
 proc ::usb_focus::createPlugin { } {
    variable widget
    variable private
+   global conf caption
 
    #--   empeche la tentative d'ouvrir le port deja ouvert
-   if {$private(linkNo) != 0} { return }
+   if {[info exists private(linkNo)] == 1 &&  $private(linkNo) != 0} { return }
 
    #--   cree le port et initialise les variables en cas de reussite
-   if {$widget(port) ne "" && [::usb_focus::createPort $widget(port)]} {
+   if {![info exists widget(port)]} {
+      #--- Prise en compte des liaisons
+      set linkList [::confLink::getLinkLabels { "serialport" } ]
+      #--- je copie les donnees de conf(...)
+      lassign $conf(usb_focus) widget(port) widget(nbstep)
+   }
 
+   if {$widget(port) ne "" && [::usb_focus::createPort $widget(port)]} {
       #--- cree la liaison du focuser
       #   (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
       #     indispensable pour les tests isReady
       set private(linkNo) [::confLink::create $widget(port) "focuser" "USB_Focus" "" -noopen]
+      ::console::disp "Start $caption(usb_focus,label)\n"
    }
 }
 
@@ -481,6 +489,7 @@ proc ::usb_focus::createPlugin { } {
 #------------------------------------------------------------
 proc ::usb_focus::deletePlugin { } {
    variable widget
+   global caption
 
    ::usb_focus::configurePlugin
    ::confLink::delete $widget(port) "focuser" "USB_Focus"
@@ -493,6 +502,8 @@ proc ::usb_focus::deletePlugin { } {
 
    #--   inhibe les commandes
    ::usb_focus::setState disabled all
+
+   ::console::disp "Stop $caption(usb_focus,label)\n"
 }
 
 #------------------------------------------------------------
