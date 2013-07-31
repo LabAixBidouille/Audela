@@ -471,7 +471,7 @@ proc ::usb_focus::refreshAll { } {
 #  return answer { 0 == echec | 1 == ok}
 #------------------------------------------------------------
 proc ::usb_focus::createPort { port } {
-   variable widget
+   #variable widget
    variable private
 
    if { $::tcl_platform(platform) == "unix" } {
