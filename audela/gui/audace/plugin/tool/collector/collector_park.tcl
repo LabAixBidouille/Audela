@@ -117,7 +117,7 @@
       #--   execute
       if {$private(parkAuto) == 0} {
 
-         set modeNo 9 ; #--  utilisateur
+         set modeNo 6 ; #--  utilisateur
          $w.coords.mode current $modeNo
          set private(parkaz) $private(azTel)
          set private(parkelev) $private(elevTel)
@@ -282,20 +282,20 @@
       set sideIndex [$w.parkside current]
       set german $private(german)
       set elev_pole [lindex $private(gps) 3]
- 
+
       switch -exact $modeNo {
-         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud}
-         1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est}
-         2  {  set az 90.0 ; set elev 0.0                      ; #-- Horizon Ouest}
-         3  {  set az 180.0 ; set elev 0.0                     ; #-- Horizon Nord}
-         4  {  set az 0.0 ; set elev 90                        ; #-- Zenith}
-         5  {  set az 180.0 ; set elev $elev_pole              ; #-- Pôle}
+         0  {  set az 0.0; set elev 0.0                        ; #-- Horizon Sud }
+         1  {  set az 270.0 ; set elev 0.0                     ; #-- Horizon Est }
+         2  {  set az 90.0 ; set elev 0.0                      ; #-- Horizon Ouest }
+         3  {  set az 180.0 ; set elev 0.0                     ; #-- Horizon Nord }
+         4  {  set az 0.0 ; set elev 90                        ; #-- Zenith OK }
+         5  {  set az 180.0 ; set elev $elev_pole              ; #-- Pôle }
          6  {  #--   choix Utilisateur
                if {[info exists conf($private(product),park)] == 1} {
                   set data $conf($product,park)
                } else {
                   #--   valeurs par defaut
-                  set data [list 9 0.0 0.0 0]
+                  set data [list 6 0.0 0.0 0]
                   if {$german == 1} {
                      lappend data 1
                   }
@@ -312,7 +312,7 @@
          $w.parkside current $sideIndex
       }
 
-      if {$modeNo != 9} {
+      if {$modeNo != 6} {
          set state disabled
       } else {
          set state !disabled
@@ -386,7 +386,7 @@
       if {$mountside ne "?"} {
          append msg " $mountside"
       }
-      ::console::affiche_resultat "\n$msg\n"
+      ::console::disp "\n$msg\n"
    }
 
    #------------------------------------------------------------
@@ -394,7 +394,7 @@
    #  Gere l'etat des widgets
    #  Parametres :
    #      onglet tlscp                 : w
-   #      position                     : modeNo (0...9)
+   #      position                     : modeNo (0...6)
    #      monture allemande german     : {0|1}
    #      etat inhibe ou non           : state {disabled|!disabled}
    #------------------------------------------------------------
@@ -403,7 +403,7 @@
       set children [list action1.unpark coords.mode action3.park action3.timer \
          action3.parkhr action3.parkmin]
 
-      if {$modeNo == 9} {
+      if {$modeNo == 6} {
          #-- desinhibe seulement dans le mode Utilisateur
          lappend children coords.parkaz coords.parkelev
       }
