@@ -273,7 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(collector,parkaz)             "Az.°"
    set caption(collector,parkelev)           "Elev.°"
    set caption(collector,parkOptSide)        "[list "Tube Côté Ouest" "Tube Côté Est"]"
-   set caption(collector,msgPark)            "à %s mode %s\naux coordonnées AZ %s ALT %s -> AD %s DEC %s équinoxe %s"
+   set caption(collector,msgPark)            "à %s mode %s\naux coordonnées AZ %s ELEV %s -> AD %s DEC %s équinoxe %s"
 
    set caption(collector,german)             "Equatoriale"
    set caption(collector,postel)             "Position actuelle de la monture équatoriale"
