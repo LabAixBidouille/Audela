@@ -284,9 +284,6 @@
       $notebook add $notebook.tlscp
       $notebook select $notebook.tlscp
 
-      #--   active le rafraichissement de la meteo
-      onChangeMeteo
-
       lassign [getTelConnexion] private(product) private(telname) \
          hasCoordinates hasControlSuivi
 
