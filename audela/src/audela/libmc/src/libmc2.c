@@ -7091,7 +7091,7 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
 				mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
 				mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
 				mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
-				mc_ad2ah(jd,longi,latitude,ls,bs,&az,&h);
+				mc_ad2ah(jd,longi,latitude*(DR),ls,bs,&az,&h);
 				h1=h;
 				az1=az;
 				ls=(ksig+1)*30*(DR);
@@ -7099,11 +7099,11 @@ mc_astrology 1967-08-23T18:00:00 {GPS 2 E 48 120}
 				mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
 				mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
 				mc_xyz2lbr(xs,ys,zs,&ls,&bs,&rs);
-				mc_ad2ah(jd,longi,latitude,ls,bs,&az,&h);
+				mc_ad2ah(jd,longi,latitude*(DR),ls,bs,&az,&h);
 				h2=h;
 				az2=az;
 				// lever
-				if ((h2>=0)&&(h1<=0)) {
+				if ((h1>=0)&&(h2<=0)) {
 					kasc=ksig;
 					break;
 				}
