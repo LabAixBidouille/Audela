@@ -19,6 +19,7 @@ namespace eval ::foc {
    source [ file join [file dirname [info script]] foc_focuser.tcl ]
    source [ file join [file dirname [info script]] foc_cam.tcl ]
    source [ file join [file dirname [info script]] foc_graph.tcl ]
+   source [ file join [file dirname [info script]] foc_sim.tcl ]
 
    #------------------------------------------------------------
    # getPluginTitle
@@ -222,6 +223,7 @@ namespace eval ::foc {
             $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
             $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
          }
+         pack $This.fra5.simul -in $This.fra5 -anchor center -fill none
 
          #--   switch les graphes
          if {[winfo exists $::audace(base).visufoc]} {
@@ -249,7 +251,7 @@ namespace eval ::foc {
             #--   ouvre la graphique normal
             ::foc::focGraphe
          }
-
+         pack forget $This.fra5.simul
       }
       $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
    }
@@ -484,6 +486,13 @@ proc focBuildIF { This } {
             pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
+
+         #--- Checkbutton pour la simulation
+         checkbutton $This.fra5.simul -highlightthickness 0 \
+            -text $caption(foc,simulation) -variable panneau(foc,simulation) \
+            -onvalue 1 -offvalue 0
+         pack $This.fra5.simul -in $This.fra5 -anchor center -fill none
+
       pack $This.fra5 -side top -fill x
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition
