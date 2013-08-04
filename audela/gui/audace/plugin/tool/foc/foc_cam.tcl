@@ -16,7 +16,6 @@ namespace eval ::foc {
       global audace caption panneau
 
       set visuNo $audace(visuNo)
-      set bufNo $audace(bufNo)
 
       #---
       if { [ ::cam::list ] != "" } {
@@ -25,142 +24,38 @@ namespace eval ::foc {
          ::foc::setFocusState acq disabled
          ::foc::setAcqState centrage
 
-         #--- Applique le binning demande si la camera possede bien ce binning
-         set binningCamera "2x2"
-         if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
-            set panneau(foc,bin) "2"
-         } else {
-            set panneau(foc,bin) "1"
-         }
-         set panneau(foc,bin_centrage) $panneau(foc,bin)
-
-         #--   S'informe si la cam a le windowing
-         set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
-
-         #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
+         #--  la variable panneau(foc,actuel) n'existe que si on a fait le Centrage
+         #--   force Centrage si l'utilisateur a selectionne fenetrage avant Centrage
          if { [ info exists panneau(foc,actuel) ] == "0" } {
-            set panneau(foc,actuel) "$caption(foc,centrage)"
-            set dimxy               [ cam$audace(camNo) nbcells ]
-            set panneau(foc,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
+            $This.fra2.optionmenu1.menu invoke 0
          }
 
          if { $panneau(foc,menu) eq "$caption(foc,centrage)" } {
 
             #--- Mode Centrage
-
-            #--- Applique le binning demande si la camera possede bien ce binning
-            set binningCamera "2x2"
-            if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
-               set panneau(foc,bin) "2"
-            } else {
-               set panneau(foc,bin) "1"
-            }
-            set panneau(foc,bin_centrage) "$panneau(foc,bin)"
-            set dimxy                     [ cam$audace(camNo) nbcells ]
-            set panneau(foc,window)       [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
-            set panneau(foc,actuel)       "$caption(foc,centrage)"
+            ::foc::centrage
+            set panneau(foc,actuel)       "$panneau(foc,menu)"
             set panneau(foc,boucle)       "$caption(foc,off)"
 
          } else {
 
             #--- Mode Fenetrage
-
-            if { $panneau(foc,menu) eq "$caption(foc,fenetre_auto)"} {
-
-               #--   Fenetrage automatique
-
-               #--   Coordonnees de l'étoile dans l'image binnee
-               #--   attention si l'image est plate x=naxis1 et y=naxis2
-               lassign [searchBrightestStar] x y
-
-               #--   Debug : etoile artificielle
-               #set x 100 ; set y 80
-
-               #--   Calcule auto des cordonnees de la fenetre dans l'image binnee
-               set a [expr { int(round($x)-20) }]
-               set b [expr { int(round($y)-20) }]
-               set c [expr { int(round($x)+20) }]
-               set d [expr { int(round($y)+20) }]
-               set binBox [list $a $b $c $d]
-
-            } else {
-
-               #--   Fenetrage manuel
-
-               #--   Identifie la fenetre dans l'image binnee
-               set binBox [ ::confVisu::getBox $visuNo ]
-
-            }
-
-            #--   Recalcule les coordonnees dans l'image non binnee
-            set panneau(foc,bin) "1"
-            lassign $binBox a b c d
-            #--   Verifie que la selection existe
-            if {$a ne ""} {
-               set x1 [expr { $panneau(foc,bin_centrage)*$a }]
-               set y1 [expr { $panneau(foc,bin_centrage)*$b }]
-               set x2 [expr { $panneau(foc,bin_centrage)*$c }]
-               set y2 [expr { $panneau(foc,bin_centrage)*$d }]
-
-               #--   Definit le fenetrage dans l'image non binnee
-               set panneau(foc,window) [list $x1 $y1 $x2 $y2]
-
-               #--   Calcule la taille de la fenetre a partir de ses coordonnees en tenant compte du binning
-               set naxis1Fen [expr { ($x2-$x1+1)*$panneau(foc,bin_centrage) }]
-               set naxis2Fen [expr { ($y2-$y1+1)*$panneau(foc,bin_centrage) }]
-               set panneau(foc,box) [list 1 1 $naxis1Fen $naxis2Fen]
-
-            } else {
-
-               #--   Si oubli de fenetrer avant de faire "GO CCD"
-               set panneau(foc,menu) "$caption(foc,centrage)"
-              ::foc::cmdGo
-            }
-
-            set panneau(foc,actuel) $panneau(foc,menu)
+            if {[foc::fenetrage] ==0} { return }
+            set panneau(foc,actuel) "$panneau(foc,menu)"
             set panneau(foc,boucle) "$caption(foc,on)"
 
             #--   Debug : pour forcer l'affichage de HFDGraphe
             #set panneau(foc,typefocuser) "1"
 
-            #--   Ouvre le graphique adhoc s'il n'existe pas deja
-            if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
-
-               #--   Lance le graphique normal
-               ::foc::focGraphe
-
-               #--   Finalise la ligne de titre du fichier log
-               append panneau(foc,fichier) "\n"
-
-            } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
-
-               #--   Lance le graphique HFD
-               ::foc::HFDGraphe
-
-               #--   Photocentre dans la fenetre binnee
-               lassign [buf$bufNo centro $binBox] xstar ystar
-
-               #--   Dimensions de l'image binnee
-               set naxis1 [buf$bufNo getpixelswidth]
-               set naxis2 [buf$bufNo getpixelsheight]
-
-               #--   Centre l'etoile si l'image est plate
-               if {$xstar == $naxis1 && $ystar == $naxis2} {
-                  set xstar [expr { $naxis1/2 }]
-                  set ystar [expr { $naxis2/2 }]
-               }
-               #--   Dessine le schema etoile/image a partir de l'image binnee
-               ::foc::updateLocator $naxis1 $naxis2 $xstar $ystar
-
-               #--   Finalise la ligne de titre  du fichier log
-               append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
-            }
+            ::foc::selectGraph
 
             #--- Suppression de la zone selectionnee avec la souris
             ::confVisu::deleteBox $visuNo
 
          }
 
+         #--   S'informe si la cam a le windowing
+         set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
          #--- Fenetrage sur la cam si elle camera possede le mode fenetrage (pas APN et ni WebCam)
          if {$panneau(foc,hasWindow) == "1"} {
             cam$audace(camNo) window $panneau(foc,window)
@@ -171,6 +66,7 @@ namespace eval ::foc {
 
          #--- Gestion graphique des boutons
          ::foc::setAcqState post
+
       } else {
          ::confCam::run
       }
@@ -352,7 +248,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc cmdStop { } {
       variable This
-      global audace panneau
+      global audace caption panneau
 
       if { [ ::cam::list ] != "" } {
          if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
@@ -389,7 +285,7 @@ namespace eval ::foc {
       }
    }
 
-  #------------------------------------------------------------
+   #------------------------------------------------------------
    # setAcqState
    #     gere l'etat des boutons GO et STOP/RAZ
    # Parametres : op et state {normal|disabled}
@@ -425,6 +321,133 @@ namespace eval ::foc {
                   }
       }
       update
+   }
+
+   #------------------------------------------------------------
+   # centrage
+   #     Configure les variables pour le Centrage
+   # Return : Rien
+   #------------------------------------------------------------
+   proc centrage { } {
+      global audace panneau
+
+      #--- Applique le binning demande si la camera possede bien ce binning
+      set binningCamera "2x2"
+      if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
+               set panneau(foc,bin) "2"
+      } else {
+               set panneau(foc,bin) "1"
+      }
+      set panneau(foc,bin_centrage) "$panneau(foc,bin)"
+      lassign [ cam$audace(camNo) nbcells ] naxis1 naxis2
+      set panneau(foc,window)       [ list 1 1 $naxis1 $naxis1 ]
+   }
+
+   #------------------------------------------------------------
+   # fenetrage
+   #     Configure les variables pour le Fenetrage
+   # Return : 0 si erreur
+   #------------------------------------------------------------
+   proc fenetrage { } {
+      global audace caption panneau
+
+      if { $panneau(foc,menu) eq "$caption(foc,fenetre_auto)"} {
+
+         #--   Fenetrage automatique
+
+         #--   Coordonnees de l'étoile dans l'image binnee
+         #--   attention si l'image est plate x=naxis1 et y=naxis2
+         lassign [searchBrightestStar] x y
+
+         #--   Debug : etoile artificielle
+         #set x 100 ; set y 80
+
+         #--   Calcule auto des cordonnees de la fenetre dans l'image binnee
+         set a [expr { int(round($x)-20) }]
+        set b [expr { int(round($y)-20) }]
+         set c [expr { int(round($x)+20) }]
+         set d [expr { int(round($y)+20) }]
+         set binBox [list $a $b $c $d]
+
+      } else {
+
+         #--   Fenetrage manuel
+
+         #--   Identifie la fenetre dans l'image binnee
+         set binBox [ ::confVisu::getBox $audace(visuNo) ]
+         if {$binBox eq ""} {
+            tk_messageBox -title $caption(foc,attention)\
+               -icon error -type ok -message "$caption(foc,erreur)"
+            ::foc::setAcqState stop
+            return 0
+         }
+
+      }
+
+      #--   Recalcule les coordonnees dans l'image non binnee
+      set panneau(foc,bin) "1"
+      lassign $binBox a b c d
+      #--   Verifie que la selection existe
+      if {$a ne ""} {
+         set x1 [expr { $panneau(foc,bin_centrage)*$a }]
+         set y1 [expr { $panneau(foc,bin_centrage)*$b }]
+         set x2 [expr { $panneau(foc,bin_centrage)*$c }]
+         set y2 [expr { $panneau(foc,bin_centrage)*$d }]
+
+         #--   Definit le fenetrage dans l'image non binnee
+         set panneau(foc,window) [list $x1 $y1 $x2 $y2]
+
+         #--   Calcule la taille de la fenetre a partir de ses coordonnees en tenant compte du binning
+         set naxis1Fen [expr { ($x2-$x1+1)*$panneau(foc,bin_centrage) }]
+         set naxis2Fen [expr { ($y2-$y1+1)*$panneau(foc,bin_centrage) }]
+         set panneau(foc,box) [list 1 1 $naxis1Fen $naxis2Fen]
+      }
+
+      return 1
+
+   }
+
+   #------------------------------------------------------------
+   # selectGraph
+   #     Ouvre le graphique adhoc s'il n'existe pas deja
+   # Return : Rien
+   #------------------------------------------------------------
+   proc selectGraph { } {
+      global audace caption panneau
+
+      if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
+
+         #--   Lance le graphique normal
+         ::foc::focGraphe
+
+         #--   Finalise la ligne de titre du fichier log
+         append panneau(foc,fichier) "\n"
+
+     } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
+
+         #--   Lance le graphique HFD
+         ::foc::HFDGraphe
+
+         #--   Photocentre dans la fenetre binnee
+         lassign [buf$bufNo centro $binBox] xstar ystar
+
+         #--   Dimensions de l'image binnee
+         set naxis1 [buf$bufNo getpixelswidth]
+         set naxis2 [buf$bufNo getpixelsheight]
+
+         #--   Centre l'etoile si l'image est plate
+         if {$xstar == $naxis1 && $ystar == $naxis2} {
+            set xstar [expr { $naxis1/2 }]
+            set ystar [expr { $naxis2/2 }]
+         }
+
+         #--   Dessine le schema etoile/image a partir de l'image binnee
+         ::foc::updateLocator $naxis1 $naxis2 $xstar $ystar
+
+         #--   Finalise la ligne de titre  du fichier log
+         append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
+      }
+
    }
 
 }

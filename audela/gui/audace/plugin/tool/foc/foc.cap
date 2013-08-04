@@ -53,7 +53,10 @@ set caption(foc,diamHFD)            "HFD: %s pixels"
 set caption(foc,slopeleft)          "Left Slope: %s/step"
 set caption(foc,sloperight)         "Right Slope: %s/step"
 set caption(foc,optimum)            "# Convergence : %s pas"
+set caption(foc,simulation)         "# Simulation"
 set caption(foc,pas_focuser)        "No Focuser"
+set caption(foc,attention)          "Warning"
+set caption(foc,erreur)             "Please fix Windowing."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -100,7 +103,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "Pente à gauche : %s/pas"
    set caption(foc,sloperight)      "Pente à droite : %s/pas"
    set caption(foc,optimum)         "Convergence : %s pas"
+   set caption(foc,simulation)      "Simulation"
    set caption(foc,pas_focuser)     "Pas de focuser"
+   set caption(foc,attention)       "Attention"
+   set caption(foc,erreur)          "Veuillez définir la fenêtre."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -147,7 +153,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "# Pente à gauche : %s/pas"
    set caption(foc,sloperight)      "# Pente à droite : %s/pas"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "Nessun focheggiatore"
+   set caption(foc,attention)       "Attenzione"
+   set caption(foc,erreur)          "# Veuillez définir la fenêtre."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -194,7 +203,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "# Pente à gauche : %s/pas"
    set caption(foc,sloperight)      "# Pente à droite : %s/pas"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "No hay enfocador"
+   set caption(foc,attention)       "Cuidado¡"
+   set caption(foc,erreur)          "# Veuillez définir la fenêtre."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -241,7 +253,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "# Pente à gauche : %s/pas"
    set caption(foc,sloperight)      "# Pente à droite : %s/pas"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "Keine Scharfeinstellung"
+   set caption(foc,attention)       "Achtung"
+   set caption(foc,erreur)          "# Veuillez définir la fenêtre."
+
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -288,7 +304,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "# Pente à gauche : %s/pas"
    set caption(foc,sloperight)      "# Pente à droite : %s/pas"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "Sem focador"
+   set caption(foc,attention)       "Aviso"
+   set caption(foc,erreur)          "# Veuillez définir la fenêtre."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -335,7 +354,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "Left Slope: %s/step"
    set caption(foc,sloperight)      "Right Slope: %s/step"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "No Focuser"
+   set caption(foc,attention)       "Warning"
+   set caption(foc,erreur)          "Please fix Windowing."
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -382,7 +404,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "Left Slope: %s/step"
    set caption(foc,sloperight)      "Right Slope: %s/step"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "No Focuser"
+   set caption(foc,attention)       "Warning"
+   set caption(foc,erreur)          "Please fix Windowing."
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -429,7 +454,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,slopeleft)       "Left Slope: %s/step"
    set caption(foc,sloperight)      "Right Slope: %s/step"
    set caption(foc,optimum)         "# Convergence : %s pas"
+   set caption(foc,simulation)      "# Simulation"
    set caption(foc,pas_focuser)     "No Focuser"
+   set caption(foc,attention)       "Warning"
+   set caption(foc,erreur)          "Please fix Windowing."
 
 }
 
