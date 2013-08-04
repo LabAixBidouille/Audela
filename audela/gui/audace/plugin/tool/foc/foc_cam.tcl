@@ -25,7 +25,7 @@ namespace eval ::foc {
          ::foc::setAcqState centrage
 
          #--  la variable panneau(foc,actuel) n'existe que si on a fait le Centrage
-         #--   force Centrage si l'utilisateur a selectionne fenetrage avant Centrage
+         #--  Force Centrage si l'utilisateur a selectionne fenetrage avant Centrage
          if { [ info exists panneau(foc,actuel) ] == "0" } {
             $This.fra2.optionmenu1.menu invoke 0
          }
@@ -34,20 +34,20 @@ namespace eval ::foc {
 
             #--- Mode Centrage
             ::foc::centrage
-            set panneau(foc,actuel)       "$panneau(foc,menu)"
-            set panneau(foc,boucle)       "$caption(foc,off)"
+            set panneau(foc,actuel) "$panneau(foc,menu)"
+            set panneau(foc,boucle) "$caption(foc,off)"
 
          } else {
 
             #--- Mode Fenetrage
-            if {[foc::fenetrage] ==0} { return }
+            set binWindow $panneau(foc,window)
+
+            set binBox [foc::fenetrage]
+            if {$binBox ==0} { return }
             set panneau(foc,actuel) "$panneau(foc,menu)"
             set panneau(foc,boucle) "$caption(foc,on)"
 
-            #--   Debug : pour forcer l'affichage de HFDGraphe
-            #set panneau(foc,typefocuser) "1"
-
-            ::foc::selectGraph
+            ::foc::selectGraph $binBox $binWindow
 
             #--- Suppression de la zone selectionnee avec la souris
             ::confVisu::deleteBox $visuNo
@@ -68,7 +68,138 @@ namespace eval ::foc {
          ::foc::setAcqState post
 
       } else {
-         ::confCam::run
+
+         if {$panneau(foc,simulation) == 0} {
+            ::confCam::run
+         } else {
+            ::foc::simulation
+		 }
+      }
+   }
+
+   #------------------------------------------------------------
+   # centrage
+   #     Configure les variables pour le Centrage
+   # Return : Rien
+   #------------------------------------------------------------
+   proc centrage { } {
+      global audace panneau
+
+      #--- Applique le binning demande si la camera possede bien ce binning
+      set binningCamera "2x2"
+      if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
+         set panneau(foc,bin) "2"
+      } else {
+         set panneau(foc,bin) "1"
+      }
+      set panneau(foc,bin_centrage) "$panneau(foc,bin)"
+      lassign [ cam$audace(camNo) nbcells ] naxis1 naxis2
+      set panneau(foc,window)       [ list 1 1 $naxis1 $naxis1 ]
+   }
+
+   #------------------------------------------------------------
+   # fenetrage
+   #     Configure les variables pour le Fenetrage
+   # Return : 0 si erreur
+   #------------------------------------------------------------
+   proc fenetrage { } {
+      global audace caption panneau
+
+      if { $panneau(foc,menu) eq "$caption(foc,fenetre_auto)"} {
+
+         #--   Fenetrage automatique
+
+         #--   Coordonnees de l'étoile dans l'image binnee
+         #--   attention si l'image est plate x=naxis1 et y=naxis2
+         lassign [ ::prtr::searchMax $panneau(foc,window) $audace(bufNo) ] x y
+
+         #--   Calcule auto des cordonnees de la fenetre dans l'image binnee
+         set a [expr { int(round($x)-40) }]
+         set b [expr { int(round($y)-40) }]
+         set c [expr { int(round($x)+40) }]
+         set d [expr { int(round($y)+40) }]
+         set binBox [list $a $b $c $d]
+
+         #--   Visualise la boite durant 2 secondes
+         ::confVisu::setBox $audace(visuNo) $binBox
+         after 2000
+
+      } else {
+
+         #--   Fenetrage manuel
+
+         #--   Identifie la fenetre dans l'image binnee
+         set binBox [ ::confVisu::getBox $audace(visuNo) ]
+         if {$binBox eq ""} {
+            tk_messageBox -title $caption(foc,attention)\
+               -icon error -type ok -message "$caption(foc,erreur)"
+            ::foc::setAcqState stop
+            return 0
+         }
+
+      }
+
+      #--   Recalcule les coordonnees dans l'image non binnee
+      set panneau(foc,bin) "1"
+      lassign $binBox a b c d
+      #--   Verifie que la selection existe
+      if {$a ne ""} {
+         set x1 [expr { $panneau(foc,bin_centrage)*$a }]
+         set y1 [expr { $panneau(foc,bin_centrage)*$b }]
+         set x2 [expr { $panneau(foc,bin_centrage)*$c }]
+         set y2 [expr { $panneau(foc,bin_centrage)*$d }]
+
+         #--   Definit le fenetrage dans l'image non binnee
+         set panneau(foc,window) [list $x1 $y1 $x2 $y2]
+
+         #--   Calcule la taille de la fenetre a partir de ses coordonnees en tenant compte du binning
+         set naxis1Fen [expr { ($x2-$x1+1)*$panneau(foc,bin_centrage) }]
+         set naxis2Fen [expr { ($y2-$y1+1)*$panneau(foc,bin_centrage) }]
+         set panneau(foc,box) [list 1 1 $naxis1Fen $naxis2Fen]
+      }
+
+      return $binBox
+   }
+
+   #------------------------------------------------------------
+   # selectGraph
+   #     Ouvre le graphique adhoc s'il n'existe pas deja
+   # parametres : coordonnees de la boite et dimensions de l'image
+   # Return : Rien
+   #------------------------------------------------------------
+   proc selectGraph { binBox binWindow } {
+      global audace caption panneau
+
+      if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
+
+         #--   Lance le graphique normal
+         ::foc::focGraphe
+
+         #--   Finalise la ligne de titre du fichier log
+         append panneau(foc,fichier) "\n"
+
+     } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
+
+         #--   Lance le graphique HFD
+         ::foc::HFDGraphe
+
+         #--   Photocentre dans la fenetre binnee
+         lassign [buf$audace(bufNo) centro $binBox] xstar ystar
+
+         #--   Dimensions de l'image binnee
+         lassign $binWindow -> -> naxis1 naxis2
+
+         #--   Centre l'etoile si l'image est plate
+         if {$xstar == $naxis1 && $ystar == $naxis2} {
+            set xstar [expr { $naxis1/2 }]
+            set ystar [expr { $naxis2/2 }]
+         }
+
+         #--   Dessine le schema etoile/image a partir de l'image binnee
+         ::foc::updateLocator $naxis1 $naxis2 $xstar $ystar
+
+         #--   Finalise la ligne de titre  du fichier log
+         append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
       }
    }
 
@@ -80,10 +211,6 @@ namespace eval ::foc {
       variable This
       global audace conf caption panneau
 
-      #--- Petits raccourcis
-      set camera cam$audace(camNo)
-      set buffer buf$audace(bufNo)
-
       #--- Initialisation d'une variable
       set panneau(foc,finAquisition) ""
 
@@ -91,7 +218,7 @@ namespace eval ::foc {
       set panneau(foc,pose_en_cours) "1"
 
       #--- La commande bin permet de fixer le binning
-      $camera bin [ list $panneau(foc,bin) $panneau(foc,bin) ]
+      cam$audace(camNo) bin [ list $panneau(foc,bin) $panneau(foc,bin) ]
 
       #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
       if { $panneau(foc,exptime) >= "0" && $panneau(foc,exptime) < "1" } {
@@ -124,55 +251,10 @@ namespace eval ::foc {
 
       #--- Informations sur l'image fenetree
       if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
-
          if { $panneau(foc,boucle) == "$caption(foc,on)" } {
-
-            #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-            if {$panneau(foc,hasWindow) == "0"} {
-               $buffer window $panneau(foc,window)
-               ::confVisu::autovisu $audace(visuNo)
-            }
-
-            #--- Gestion graphique des boutons
-            ::foc::setAcqState window
-
-            incr panneau(foc,compteur)
-
-            #--   Normalise le fond du ciel
-            $buffer noffset 0
-
-            if {$panneau(foc,typefocuser) == "1"} {
-               ::foc::extractBiny $audace(bufNo)
-            }
-
-            #--- Statistiques
-            set s [ stat ]
-            set maxi [ lindex $s 2 ]
-            set fond [ lindex $s 7 ]
-            set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
-            set inten [ format "%.0f" [ expr $maxi-$fond ] ]
-            #--- Fwhm
-            lassign [ $buffer fwhm $panneau(foc,box) ] fwhmx fwhmy
-            #--- Valeurs a l'ecran
-            ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
-            update
-
-            #--  Traitement differentie selon focuser
-            if { $panneau(foc,typefocuser) == "0"} {
-               #--   Mise a jour des graphiques
-               ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
-               #--- Actualise les donnees pour le fichier log
-               append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
-            } else {
-               #--   Calculs et Mise a jour des graphiques (le temps de traitement double)
-               ::foc::processHFD
-               #--- Actualise les donnees pour le fichier log
-               append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
-            }
-
+            ::foc::updateValues
             after idle ::foc::cmdAcq
          }
-
       }
 
       #--- Pose en cours
@@ -183,7 +265,60 @@ namespace eval ::foc {
 
       #--- Effacement de la barre de progression quand la pose est terminee
       ::foc::avancementPose -1
+   }
 
+   #------------------------------------------------------------
+   # updateValues
+   #     Met a jour les graphiques
+   # Return : Rien
+   #------------------------------------------------------------
+   proc updateValues { } {
+      global audace panneau
+
+      set bufNo $audace(bufNo)
+
+      #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
+      if {$panneau(foc,hasWindow) == "0"} {
+         buf$bufNo window $panneau(foc,window)
+         ::confVisu::autovisu $audace(visuNo)
+      }
+
+      #--- Gestion graphique des boutons
+      ::foc::setAcqState window
+
+      incr panneau(foc,compteur)
+
+      #--   Normalise le fond du ciel
+      buf$bufNo noffset 0
+
+      if {$panneau(foc,typefocuser) == "1"} {
+         ::foc::extractBiny $audace(bufNo)
+      }
+
+      #--- Statistiques
+      set s [ stat ]
+      set maxi [ lindex $s 2 ]
+      set fond [ lindex $s 7 ]
+      set contr [ format "%.0f" [ expr -1.*[ lindex $s 8 ] ] ]
+      set inten [ format "%.0f" [ expr $maxi-$fond ] ]
+      #--- Fwhm
+      lassign [ buf$bufNo fwhm $panneau(foc,box) ] fwhmx fwhmy
+      #--- Valeurs a l'ecran
+      ::foc::qualiteFoc $inten $fwhmx $fwhmy $contr
+      update
+
+      #--  Traitement differentie selon focuser
+      if { $panneau(foc,typefocuser) == "0"} {
+         #--   Mise a jour des graphiques
+         ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
+         #--- Actualise les donnees pour le fichier log
+         append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
+       } else {
+         #--   Calculs et Mise a jour des graphiques (le temps de traitement double)
+         ::foc::processHFD
+         #--- Actualise les donnees pour le fichier log
+         append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
+       }
    }
 
    #------------------------------------------------------------
@@ -311,11 +446,11 @@ namespace eval ::foc {
                      }
                      $This.fra2.but2 configure -relief raised -text $panneau(foc,raz)
                   }
-        window    {  #--  Etat post-window
+         window   {  #--  Etat post-window
                      $This.fra2.but1 configure -relief groove -text $panneau(foc,go)
                      $This.fra2.but2 configure -text $panneau(foc,stop)
                   }
-        stop      {  #--  Etat a la fin d'un stop
+         stop     {  #--  Etat a la fin d'un stop
                      $This.fra2.but1 configure -relief raised -text $panneau(foc,go) -state normal
                      $This.fra2.but2 configure -relief raised -text $panneau(foc,raz) -state normal
                   }
@@ -324,130 +459,105 @@ namespace eval ::foc {
    }
 
    #------------------------------------------------------------
-   # centrage
-   #     Configure les variables pour le Centrage
+   # simulation
+   #
    # Return : Rien
    #------------------------------------------------------------
-   proc centrage { } {
-      global audace panneau
+   proc simulation { } {
+      variable This
+      global audace caption panneau
 
-      #--- Applique le binning demande si la camera possede bien ce binning
-      set binningCamera "2x2"
-      if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
-               set panneau(foc,bin) "2"
-      } else {
-               set panneau(foc,bin) "1"
-      }
+      #--   Selectionne le menu Centrage
+      $This.fra2.optionmenu1.menu invoke 0
+
+      #--   Fixe exptime
+      set panneau(foc,exptime) "10"
+      $This.fra2.fra1.ent1 configure -state disabled
+
+      #--   Decoche l'affichage de l'avancement
+      set panneau(foc,avancement_acq) 0
+
+      #--- Gestion graphique des boutons
+      ::foc::setFocusState acq disabled
+      ::foc::setAcqState centrage
+
+      set panneau(foc,bin) "2"
       set panneau(foc,bin_centrage) "$panneau(foc,bin)"
-      lassign [ cam$audace(camNo) nbcells ] naxis1 naxis2
-      set panneau(foc,window)       [ list 1 1 $naxis1 $naxis1 ]
-   }
+      #--   attention moitie de naxis1 et naxis2 du fait du binning
+      set panneau(foc,window) [ list 1 1 384  256 ]
+      set panneau(foc,actuel) "$panneau(foc,menu)"
+      set panneau(foc,boucle) "$caption(foc,off)"
+      set panneau(foc,hasWindow) 0
 
-   #------------------------------------------------------------
-   # fenetrage
-   #     Configure les variables pour le Fenetrage
-   # Return : 0 si erreur
-   #------------------------------------------------------------
-   proc fenetrage { } {
-      global audace caption panneau
+      #--   Definit les limites
+      switch -exact $panneau(foc,focuser) {
+         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+         usb_focus          {set limite1 0      ; set limite2 65535 }
+      }
+      set audace(focus,currentFocus $limite1
+      set seeing 21
 
-      if { $panneau(foc,menu) eq "$caption(foc,fenetre_auto)"} {
+      #--   cree et affiche une image de synthese
+      ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
 
-         #--   Fenetrage automatique
+      ::foc::setAcqState stop
 
-         #--   Coordonnees de l'étoile dans l'image binnee
-         #--   attention si l'image est plate x=naxis1 et y=naxis2
-         lassign [searchBrightestStar] x y
+      vwait panneau(foc,menu)
 
-         #--   Debug : etoile artificielle
-         #set x 100 ; set y 80
+      if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
 
-         #--   Calcule auto des cordonnees de la fenetre dans l'image binnee
-         set a [expr { int(round($x)-20) }]
-        set b [expr { int(round($y)-20) }]
-         set c [expr { int(round($x)+20) }]
-         set d [expr { int(round($y)+20) }]
-         set binBox [list $a $b $c $d]
+         set binWindow $panneau(foc,window)
+         set binBox [foc::fenetrage]
+         if {$binBox ==0} { return }
+
+         set panneau(foc,actuel) "$panneau(foc,menu)"
+         set panneau(foc,boucle) "$caption(foc,on)"
+
+         ::foc::selectGraph $binBox $binWindow
+
+         #--- Suppression de la zone selectionnee avec la souris
+         ::confVisu::deleteBox $audace(visuNo)
+
+         set increment -2
+         for {set currentFocus $limite1} {$currentFocus <= $limite2} {incr currentFocus 3000} {
+
+            set audace(focus,currentFocus) $currentFocus
+            ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
+
+            ::foc::setAcqState post
+
+            #--- Informations sur l'image fenetree
+            if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
+               if { $panneau(foc,boucle) == "$caption(foc,on)" } {
+                  ::foc::updateValues
+               }
+            }
+
+            ::foc::setAcqState window
+
+            incr seeing $increment
+            if {$seeing <= 0} {
+               set increment 2
+               incr seeing $increment
+            }
+
+            after 2000
+         }
+
+         #--- Sauvegarde du fichier des traces
+         ::foc::cmdSauveLog foc.log
+
+         #--   Retour sur Centrage
+         $This.fra2.optionmenu1.menu invoke 0
+         set panneau(foc,exptime) "2"
+         $This.fra2.fra1.ent1 configure -state normal
+
+         ::foc::setAcqState stop
+         ::foc::setFocusState acq normal
 
       } else {
-
-         #--   Fenetrage manuel
-
-         #--   Identifie la fenetre dans l'image binnee
-         set binBox [ ::confVisu::getBox $audace(visuNo) ]
-         if {$binBox eq ""} {
-            tk_messageBox -title $caption(foc,attention)\
-               -icon error -type ok -message "$caption(foc,erreur)"
-            ::foc::setAcqState stop
-            return 0
-         }
-
+         ::foc::simulation
       }
-
-      #--   Recalcule les coordonnees dans l'image non binnee
-      set panneau(foc,bin) "1"
-      lassign $binBox a b c d
-      #--   Verifie que la selection existe
-      if {$a ne ""} {
-         set x1 [expr { $panneau(foc,bin_centrage)*$a }]
-         set y1 [expr { $panneau(foc,bin_centrage)*$b }]
-         set x2 [expr { $panneau(foc,bin_centrage)*$c }]
-         set y2 [expr { $panneau(foc,bin_centrage)*$d }]
-
-         #--   Definit le fenetrage dans l'image non binnee
-         set panneau(foc,window) [list $x1 $y1 $x2 $y2]
-
-         #--   Calcule la taille de la fenetre a partir de ses coordonnees en tenant compte du binning
-         set naxis1Fen [expr { ($x2-$x1+1)*$panneau(foc,bin_centrage) }]
-         set naxis2Fen [expr { ($y2-$y1+1)*$panneau(foc,bin_centrage) }]
-         set panneau(foc,box) [list 1 1 $naxis1Fen $naxis2Fen]
-      }
-
-      return 1
-
-   }
-
-   #------------------------------------------------------------
-   # selectGraph
-   #     Ouvre le graphique adhoc s'il n'existe pas deja
-   # Return : Rien
-   #------------------------------------------------------------
-   proc selectGraph { } {
-      global audace caption panneau
-
-      if { $panneau(foc,typefocuser) == "0" && [winfo exists $audace(base).visufoc] ==0} {
-
-         #--   Lance le graphique normal
-         ::foc::focGraphe
-
-         #--   Finalise la ligne de titre du fichier log
-         append panneau(foc,fichier) "\n"
-
-     } elseif { $panneau(foc,typefocuser) == "1" && [winfo exists $audace(base).visuhfd] ==0} {
-
-         #--   Lance le graphique HFD
-         ::foc::HFDGraphe
-
-         #--   Photocentre dans la fenetre binnee
-         lassign [buf$bufNo centro $binBox] xstar ystar
-
-         #--   Dimensions de l'image binnee
-         set naxis1 [buf$bufNo getpixelswidth]
-         set naxis2 [buf$bufNo getpixelsheight]
-
-         #--   Centre l'etoile si l'image est plate
-         if {$xstar == $naxis1 && $ystar == $naxis2} {
-            set xstar [expr { $naxis1/2 }]
-            set ystar [expr { $naxis2/2 }]
-         }
-
-         #--   Dessine le schema etoile/image a partir de l'image binnee
-         ::foc::updateLocator $naxis1 $naxis2 $xstar $ystar
-
-         #--   Finalise la ligne de titre  du fichier log
-         append panneau(foc,fichier) "$caption(foc,hfd)\t${caption(foc,pos_focus)}\n"
-      }
-
    }
 
 }
