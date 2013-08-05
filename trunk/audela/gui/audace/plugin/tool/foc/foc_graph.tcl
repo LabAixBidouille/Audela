@@ -146,18 +146,25 @@ namespace eval ::foc {
 
       set this $audace(base).hfd
 
-      #--   met a jour la ligne au-dessus des graphiques
+      #--   Met a jour la ligne au-dessus des graphiques
       set panneau(foc,hfd) [format "%.2f" [expr { 2*$rayon }]]
       set panneau(foc,resulthfd) [format $caption(foc,diamHFD) $panneau(foc,hfd)]
       $this.h.fr1.graph marker configure limite1 -coords [list $limite1 -Inf $limite1 Inf]
       $this.h.fr1.graph marker configure limite2 -coords [list $limite2 -Inf $limite2 Inf]
 
-      #--   deplace la ligne verticale du diametre
+      #--   Deplace la ligne verticale du diametre
       $this.h.fr2.graph marker configure rayon -coords [list $rayon -Inf $rayon Inf]
 
-      #--   complete la serie HFD
+      #--   Complete la serie HFD
       ::VShfd append $panneau(foc,hfd)
       ::VSpos append $audace(focus,currentFocus)
+
+      #--   Identifie le dernier index
+      set index [expr { [::VSpos length]-1 }]
+      #--   Identifie la derniere valeur
+      set posMax [::VSpos index $index]
+      #--   Ajoute 5000 pas
+      $this.l.fr3.graph axis configure x -max [expr { $posMax+5000 }]
 
       if {[::VShfd length] > 1} {
           lassign [::foc::computeSlope] slopeLeft slopeRight positionOPt
@@ -300,6 +307,7 @@ namespace eval ::foc {
             $grph3 axis configure y -title "$::caption(foc,hfd)" -stepsize 1 \
                -min 0 -max {} -hide no
          pack $this.l.fr3 -anchor e
+
       pack $this.l -side top -fill x
 
       frame $this.b
