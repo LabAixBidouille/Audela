@@ -19,7 +19,12 @@ namespace eval ::foc {
       set cat_format MICROCAT
       set cat_folder $audace(rep_userCatalogMicrocat)
       set observer $panneau(foc,focuser)
+      set object "Star"
       set home $audace(posobs,observateur,gps)
+      lassign $home -> obs_long sens obs_lat obs_elev
+      if {$sens eq "W"} {
+         set obs-long -${obs-long}
+      }
       set optic [::confOptic::getConfOptic A]
       set datetu [::audace::date_sys2ut now]
 
@@ -38,9 +43,11 @@ namespace eval ::foc {
       set bias_level 0
       set flat_type 0
 
-      #--   HD 989932  11 23 12.7  -36 9 53  5.00
-      set ra 15h09m27s
-      set dec 48d42m36s
+      #--   HIP 13367 ra 02h51m59s dec 68d53m19s mag 5.94
+      set objname "HIP 13367"
+      #--   Decentre l'etoile
+      set ra 02h51m40s
+      set dec 68d52m30s
       lassign [mc_radec2altaz $ra $dec $home $datetu] azimuth elev
       set ra_angle [mc_angle2deg $ra]
       set dec_angle [mc_angle2deg $dec]
@@ -106,6 +113,11 @@ namespace eval ::foc {
       buf$bufNo setkwd [list FILTER "$filtre" string {C U B V R I J H K z} {}]
       buf$bufNo setkwd [list FOCLEN $foclen double {Resulting Focal length} m]
       buf$bufNo setkwd [list FWHM $fwhm float {Full Width at Half Maximum} pixels]
+      buf$bufNo setkwd [list OBJECT "$object" string {Object observed} {}]
+      buf$bufNo setkwd [list OBJNAME "$objname" string {Object Name} {}]
+      buf$bufNo setkwd [list OBS-ELEV $obs_elev float {Elevation above sea of observatory} m]
+      buf$bufNo setkwd [list OBS-LAT $obs_lat float {Geodetic observatory latitude} deg]
+      buf$bufNo setkwd [list OBS-LONG $obs_long float {East-positive observatory longitude} deg]
       buf$bufNo setkwd [list OBSERVER "$observer" string {Observers Names} {}]
       buf$bufNo setkwd [list PIXSIZE1 $pixsize1 double {Pixel Width (with binning)} mum]
       buf$bufNo setkwd [list PIXSIZE2 $pixsize2 double {Pixel Height (with binning)} mum]
