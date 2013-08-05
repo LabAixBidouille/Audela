@@ -172,7 +172,7 @@ namespace eval ::foc {
       variable This
       global caption panneau
 
-      ::confEqt::activeFocuser $This.fra4.focuser.configure ::panneau(foc,focuser)
+      ::confEqt::activeFocuser $This.fra3.focuser.configure ::panneau(foc,focuser)
       if {$panneau(foc,focuser) eq ""} {
          set panneau(foc,focuser) "$caption(foc,pas_focuser)"
       }
@@ -187,7 +187,7 @@ namespace eval ::foc {
          #--   demasque tout ce qui etait masque
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1 ; #-- demasque label moteur focus
          pack $This.fra4.we -in $This.fra4 -side top -fill x   ; #-- demasque frame des buttons '- +'
-         pack $This.fra5 -before $This.fra6 -side top -fill x  ; #-- demasque frame position focus
+         pack $This.fra5 -before $This.fra7 -side top -fill x  ; #-- demasque frame position focus
       } else {
          set panneau(foc,typefocuser) 0
 
@@ -200,16 +200,18 @@ namespace eval ::foc {
       if { $panneau(foc,typefocuser) == "1"} {
 
          #--- Avec controle etendu
-         pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
+         #pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
          pack $This.fra5.but0 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
-         pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
-         pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
-         pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.current
+         #pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
+         #pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
+         #pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -pady 2 -padx 4
          pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
-         pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
-         pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
-         pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+         pack $This.fra5.target
+         #pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
+         #pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
+         #pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -pady 2 -padx 4
          if {$::panneau(foc,focuser) eq "usb_focus"} {
             pack forget $This.fra5.but0
             pack forget $This.fra5.but1
@@ -217,13 +219,16 @@ namespace eval ::foc {
             #--   modifie la commande du bouton
             $This.fra5.but2 configure -command { ::foc::cmdUSB_FocusGoto }
             #--   modifie la commande validation de la saisie
-            $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
+            #$This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
+            $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
          } else {
             #--   sans effet si la commande est deja configuree comme cela
             $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
-            $This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
+            #$This.fra5.fra2.ent3 configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
+            $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
          }
-         pack $This.fra5.simul -in $This.fra5 -anchor center -fill none
+
+         pack $This.fra6 -in $This -after $This.fra5 -fill x
 
          #--   switch les graphes
          if {[winfo exists $::audace(base).visufoc]} {
@@ -236,14 +241,16 @@ namespace eval ::foc {
       } else {
 
          #--- Sans controle etendu
-         pack forget $This.fra5.lab1
+         #pack forget $This.fra5.lab1
          pack forget $This.fra5.but0
          pack forget $This.fra5.but1
-         pack forget $This.fra5.fra1.lab1
-         pack forget $This.fra5.fra1.lab2
+         pack forget $This.fra5.current
+         #pack forget $This.fra5.fra1.lab1
+         #pack forget $This.fra5.fra1.lab2
          pack forget $This.fra5.but2
-         pack forget $This.fra5.fra2.ent3
-         pack forget $This.fra5.fra2.lab4
+         pack forget $This.fra5.target
+         #pack forget $This.fra5.fra2.ent3
+         #pack forget $This.fra5.fra2.lab4
          #--   switch les graphes
          if {[winfo exists $::audace(base).hfd]} {
             #--   ferme le graphique hfd
@@ -251,7 +258,8 @@ namespace eval ::foc {
             #--   ouvre la graphique normal
             ::foc::focGraphe
          }
-         pack forget $This.fra5.simul
+
+         pack forget $This.fra6
       }
       $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
    }
@@ -378,21 +386,26 @@ proc focBuildIF { This } {
 
       pack $This.fra2 -side top -fill x
 
-      #--- Frame des boutons manuels
-      frame $This.fra4 -borderwidth 1 -relief groove
+      #--- Frame de la configuration
+      frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Frame focuser
-         ::confEqt::createFrameFocuserTool $This.fra4.focuser ::panneau(foc,focuser)
-         pack $This.fra4.focuser -in $This.fra4 -anchor nw -side top -padx 4 -pady 1
+         ::confEqt::createFrameFocuserTool $This.fra3.focuser ::panneau(foc,focuser)
+         pack $This.fra3.focuser -in $This.fra3 -anchor nw -side top -padx 4 -pady 1
 
          #--   je lis la configuration de la commande de la combobox
-         set oldCmd [$This.fra4.focuser.list configure -modifycmd]
+         set oldCmd [$This.fra3.focuser.list configure -modifycmd]
          #--   je lis la commande ecrite par la proc ::confEqt::createFrameFocuserTool
          set cmd [lindex $oldCmd 4]
          #--   j'ajoute l'instruction ::foc::adaptOutilFoc
          append cmd "; ::foc::adaptOutilFoc"
          #--   je modifie la commande de la combobox
-         $This.fra4.focuser.list configure -modifycmd $cmd
+         $This.fra3.focuser.list configure -modifycmd $cmd
+
+      pack $This.fra3 -side top -fill x
+
+      #--- Frame des boutons manuels
+      frame $This.fra4 -borderwidth 1 -relief groove
 
          #--- Label pour moteur focus
          label $This.fra4.lab1 -text $caption(foc,moteur_focus) -relief flat
@@ -431,7 +444,7 @@ proc focBuildIF { This } {
       #--- Speed
       bind $This.fra4.we.labPoliceInvariant <ButtonPress-1> { ::foc::cmdSpeed }
 
-      #--- Cardinal moves
+     #--- Cardinal moves
       bind $zone(moins) <ButtonPress-1>   { ::foc::cmdFocus - }
       bind $zone(moins) <ButtonRelease-1> { ::foc::cmdFocus stop }
       bind $zone(plus)  <ButtonPress-1>   { ::foc::cmdFocus + }
@@ -440,9 +453,11 @@ proc focBuildIF { This } {
       #--- Frame de la position focus
       frame $This.fra5 -borderwidth 1 -relief groove
 
+#--   modif RZ
          #--- Label pour la position focus
-         label $This.fra5.lab1 -text $caption(foc,pos_focus) -relief flat
-         pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
+         #label $This.fra5.lab1 -text $caption(foc,pos_focus) -relief flat
+         #pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
+#--   fin modif RZ
 
          #--- Bouton "Initialisation"
          button $This.fra5.but0 -borderwidth 2 -text $panneau(foc,initialise) -command { ::foc::cmdInitFoc }
@@ -452,58 +467,106 @@ proc focBuildIF { This } {
          button $This.fra5.but1 -borderwidth 2 -text $panneau(foc,trouve) -command { ::foc::cmdSeTrouveA }
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
+#--   modif RZ
          #--- Frame des labels
-         frame $This.fra5.fra1 -borderwidth 1 -relief flat
+         #frame $This.fra5.fra1 -borderwidth 1 -relief flat
 
             #--- Label pour la position courante du focuser
-            entry $This.fra5.fra1.lab1 -textvariable audace(focus,currentFocus) \
-               -relief groove -width 6 -state disabled
-            pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
+            #entry $This.fra5.fra1.lab1 -textvariable audace(focus,currentFocus) \
+            #   -relief groove -width 6 -state disabled
+            #pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label pas
-            label $This.fra5.fra1.lab2 -text $panneau(foc,pas) -relief flat
-            pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
+            #label $This.fra5.fra1.lab2 -text $panneau(foc,pas) -relief flat
+            #pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
-         pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
+         #pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
+
+         LabelEntry $This.fra5.current \
+            -label $caption(foc,pos_focus) -labeljustify left -labelwidth 12 \
+            -textvariable audace(focus,currentFocus) -width 6 -justify center \
+            -state disabled
+         pack $This.fra5.current -side top -fill x -padx 4 -pady 2
+#--   fin modif RZ
 
          #--- Bouton "Aller à"
          button $This.fra5.but2 -borderwidth 2 -text $panneau(foc,deplace) -command { ::foc::cmdSeDeplaceA }
          pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
+#--   modif RZ
          #--- Frame des entry & label
-         frame $This.fra5.fra2 -borderwidth 1 -relief flat
+         #frame $This.fra5.fra2 -borderwidth 1 -relief flat
 
             #--- Entry pour la position cible du focuser
-            entry $This.fra5.fra2.ent3 -textvariable audace(focus,targetFocus) \
-               -relief groove -width 6 -justify center \
-               -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
-            pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
-            bind $This.fra5.fra2.ent3 <Enter> { ::foc::formatFoc }
-            bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
+            #entry $This.fra5.fra2.ent3 -textvariable audace(focus,targetFocus) \
+            #   -relief groove -width 6 -justify center \
+            #   -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
+            #pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
+            #bind $This.fra5.fra2.ent3 <Enter> { ::foc::formatFoc }
+            #bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
 
             #--- Label pas
-            label $This.fra5.fra2.lab4 -text $panneau(foc,pas) -relief flat
-            pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
+            #label $This.fra5.fra2.lab4 -text $panneau(foc,pas) -relief flat
+            #pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
 
-         pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
+         #pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
 
-         #--- Checkbutton pour la simulation
-         checkbutton $This.fra5.simul -highlightthickness 0 \
-            -text $caption(foc,simulation) -variable panneau(foc,simulation) \
-            -onvalue 1 -offvalue 0
-         pack $This.fra5.simul -in $This.fra5 -anchor center -fill none
+         LabelEntry $This.fra5.target \
+            -label $caption(foc,target) -labeljustify left -labelwidth 12 \
+            -textvariable audace(focus,targetFocus) -width 6 -justify center
+         pack $This.fra5.target -side top -fill x -padx 4 -pady 2
+         bind $This.fra5.target <Enter> { ::foc::formatFoc }
+         bind $This.fra5.target <Leave> { destroy $audace(base).formatfoc }
+#--   fin modif RZ
 
       pack $This.fra5 -side top -fill x
 
-      #--- Frame pour l'affichage de l'avancement de l'acqusition
+#--   ajout RZ
       frame $This.fra6 -borderwidth 2 -relief ridge
 
-        #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
-        checkbutton $This.fra6.avancement_acq -highlightthickness 0 \
-           -text $caption(foc,avancement_acq) -variable panneau(foc,avancement_acq)
-        pack $This.fra6.avancement_acq -side left -fill x
+         LabelEntry $This.fra6.start \
+            -label $caption(foc,start) -labeljustify left -labelwidth 12 \
+            -textvariable panneau(foc,start) -width 6 -justify center \
+            -helptext $caption(foc,hlpstart)
+         pack $This.fra6.start -side top -fill x -padx 4 -pady 2
 
-     pack $This.fra6 -fill x
+         LabelEntry $This.fra6.end \
+            -label $caption(foc,end) -labeljustify left -labelwidth 12 \
+            -textvariable panneau(foc,end) -width 6 -justify center \
+            -helptext $caption(foc,hlpend)
+         pack $This.fra6.end -side top -fill x -padx 4 -pady 2
+
+         LabelEntry $This.fra6.step \
+            -label $caption(foc,step) -labeljustify left -labelwidth 12 \
+            -textvariable panneau(foc,step) -width 6 -justify center \
+            -helptext $caption(foc,hlpstep)
+         pack $This.fra6.step -side top -fill x -padx 4 -pady 2
+
+         LabelEntry $This.fra6.repeat \
+            -label $caption(foc,repeat) -labeljustify left -labelwidth 12 \
+            -textvariable panneau(foc,repeat) -width 6 -justify center \
+            -helptext $caption(foc,hlprepeat)
+         pack $This.fra6.repeat -side top -fill x -padx 4 -pady 2
+         $This.fra6.repeat configure -dragendcmd { ::tkutil::validateNumber %W %V %P %s integer 1 10 }
+
+         #--- Checkbutton pour la simulation
+         checkbutton $This.fra6.simul -highlightthickness 0 \
+            -text $caption(foc,simulation) -variable panneau(foc,simulation) \
+            -onvalue 1 -offvalue 0
+         pack $This.fra6.simul -side top -fill none
+
+      pack $This.fra6 -in $This -after $This.fra5 -fill x
+#--   fin ajout RZ
+
+      #--- Frame pour l'affichage de l'avancement de l'acqusition
+      frame $This.fra7 -borderwidth 2 -relief ridge
+
+        #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
+        checkbutton $This.fra7.avancement_acq -highlightthickness 0 \
+           -text $caption(foc,avancement_acq) -variable panneau(foc,avancement_acq)
+        pack $This.fra7.avancement_acq -side left -fill x
+
+     pack $This.fra7 -fill x
 
      #--- Mise a jour dynamique des couleurs
      ::confColor::applyColor $This
