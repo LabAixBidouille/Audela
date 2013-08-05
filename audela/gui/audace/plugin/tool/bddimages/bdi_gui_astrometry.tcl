@@ -82,7 +82,87 @@ namespace eval bdi_gui_astrometry {
 
    }
 
+   #----------------------------------------------------------------------------
+   ## Fonction qui unset les references de toutes les images
+   #  @param w    selection tklist
+   #  @param args argument non utilise
+   proc ::bdi_gui_astrometry::unset_srpt { w args } {
 
+
+      #::gui_cata::unset_srpt; ::bdi_gui_astrometry::affich_gestion
+      foreach select [$w curselection] {
+
+         set name [lindex [$w get $select] 0]
+         gren_info "delete $name \n"
+         set date $::tools_cata::current_image_date
+            
+         if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
+
+            set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
+
+         } else {
+
+            foreach dateok $::bdi_tools_astrometry::listref($name) {
+               break
+            }
+
+            # recherche de  l'id de l'image
+            set id 0
+            set idok -1
+            foreach current_image $::tools_cata::img_list {
+               incr id
+               set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+               set locdate [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1]]
+               if { [::bdi_tools::is_isodates_equal $locdate $dateok] } {
+                  set idok $id
+                  break
+               }
+            }
+            
+            if {$idok != -1} {
+               set ::cata_gestion_gui::directaccess $idok
+               ::cata_gestion_gui::charge_image_directaccess
+               set date $::tools_cata::current_image_date
+               if {[info exists ::bdi_tools_astrometry::tabval($name,$date)]} {
+                  set id [lindex $::bdi_tools_astrometry::tabval($name,$date) 0]
+               } else {
+                  if {[info exists ::bdi_tools_astrometry::tabval($name,$dateok)]} {
+                     set id [lindex $::bdi_tools_astrometry::tabval($name,$dateok) 0]
+                  } else {
+                     tk_messageBox -message "Chargement de l'image impossible" -type ok
+                     return
+                  }
+               }
+            }
+         }
+            
+         # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+         set onglets .gestion_cata.appli.onglets.nb
+         array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+         foreach {x y} [array get cataname] {
+            set tabid($y) $x
+         }
+         $onglets select $onglets.f$tabid(ASTROID)
+         set f [$onglets select]
+         
+         # selection de l objet dans la table ASTROID du module de gestion
+         set u 0
+         foreach x [$f.frmtable.tbl get 0 end] {
+            set idx [lindex $x 0]
+            if {$idx == $id} {
+               $f.frmtable.tbl selection set $u
+            }
+            incr u
+         }
+         
+         # Unset les sources
+         ::cata_gestion_gui::unset_flag $f.frmtable.tbl
+         # Propage les sources
+         ::cata_gestion_gui::propagation $f.frmtable.tbl
+
+      }
+      ::bdi_gui_astrometry::affich_gestion
+   }
 
 
    #----------------------------------------------------------------------------
@@ -1826,6 +1906,8 @@ namespace eval bdi_gui_astrometry {
       set date_id ""
       set worklist ""
 
+      # gren_info "t=$t\n"
+      
       switch $t {
 
          "srp" {
@@ -2143,9 +2225,10 @@ namespace eval bdi_gui_astrometry {
       }
 
       # Tri les resultats en fonction de la colonne Rho
-      $::bdi_gui_astrometry::srpt sortbycolumn 2 -decreasing
-      $::bdi_gui_astrometry::sspt sortbycolumn 2 -decreasing
-
+      catch {
+         $::bdi_gui_astrometry::srpt sortbycolumn 2 -decreasing
+         $::bdi_gui_astrometry::sspt sortbycolumn 2 -decreasing
+      }
       gren_info "Affichage des resultats en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
 
    }
@@ -2780,13 +2863,20 @@ namespace eval bdi_gui_astrometry {
                   $srp.popupTbl add command -label "Voir l'objet dans une image" \
                       -command {::gui_cata::voirobj_srpt}
                   $srp.popupTbl add command -label "Supprimer de toutes les images" \
-                      -command {::gui_cata::unset_srpt; ::bdi_gui_astrometry::affich_gestion}
+                      -command {::bdi_gui_astrometry::unset_srpt $::bdi_gui_astrometry::srpt }
 
               #--- bindings
               bind $::bdi_gui_astrometry::srpt <<ListboxSelect>> [ list ::bdi_gui_astrometry::cmdButton1Click_srpt %W ]
               bind [$::bdi_gui_astrometry::srpt bodypath] <ButtonPress-3> [ list tk_popup $srp.popupTbl %X %Y ]
 
               pack $::bdi_gui_astrometry::srpt -in $srp -expand yes -fill both
+
+              # tri des colonnes en mode reel pour les colonnes de 1 a 15
+              for {set col 1} {$col <=1} {incr col} {
+                 $::bdi_gui_astrometry::srpt columnconfigure $col -sortmode real
+              }
+              
+
 
          #--- TABLE Sources - References Enfant (par liste de date chaque mesure)
          set sre [frame $onglets_sources.list.references.enfant -borderwidth 0 -cursor arrow -relief groove -background white]
@@ -2836,7 +2926,7 @@ namespace eval bdi_gui_astrometry {
                 -activestyle none \
                 -stripebackground "#e0e8f0" \
                 -showseparators 1
-
+              
               scrollbar $ssp.hsb -orient horizontal -command [list $::bdi_gui_astrometry::sspt xview]
               pack $ssp.hsb -in $ssp -side bottom -fill x
               scrollbar $ssp.vsb -orient vertical -command [list $::bdi_gui_astrometry::sspt yview]
