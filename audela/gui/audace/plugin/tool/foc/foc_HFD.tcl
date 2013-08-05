@@ -24,7 +24,10 @@ namespace eval ::foc {
       blt::vector create yleft yright xleft xright -watchunset 1
       yleft set ::VShfd          ; #-- copie le vecteur
       xleft set ::VSpos          ; #-- copie le vecteur
-      set n [yleft length]       ; #-- nb total de mesures
+
+      if {[xleft length] < 2 || $xleft(0) == $xleft(end)} {
+         return [list $slopeLeft $slopeRight $positionOpt]
+      }
 
       #--   liste les index (s'il y en a plusieurs) de la valeur minimale
       set listIndexMin [yleft search $yleft(min)]
