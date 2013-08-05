@@ -510,10 +510,13 @@ namespace eval cata_gestion_gui {
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "PSF manuel -> ASTROID" -command "::cata_gestion_gui::psf_popup_manuel $tbl" -state normal
+        $popupTbl add command -label "PSF manuel : sources selectionnees pour 1 image" -command "::cata_gestion_gui::psf_popup_manuel $tbl" -state normal
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "PSF Auto -> ASTROID" -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
+        $popupTbl add command -label "PSF manuel : premiere selection sur toutes les images" -command "::cata_gestion_gui::psf_popup_manuel_1obj_allimg $tbl" -state normal
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "PSF Auto" -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Console ASTROID" -command "::cata_gestion_gui::console_astroid $tbl" -state normal
@@ -1772,6 +1775,33 @@ namespace eval cata_gestion_gui {
       foreach select [$tbl curselection] {
          lappend worklist [list $::tools_cata::id_current_image [lindex [$tbl get $select] 0] ]
       }
+      gren_info "worklist = $worklist \n"
+      
+      
+      ::bdi_gui_gestion_source::run $worklist
+
+   }
+
+   proc ::cata_gestion_gui::psf_popup_manuel_1obj_allimg { tbl } {
+
+      #gren_info "psf_popup_auto tbl = $tbl \n"
+
+      set worklist ""
+      foreach select [$tbl curselection] {
+         set ids [lindex [$tbl get $select] 0]
+         gren_info "ids = $ids \n"
+         break
+      }
+      gren_info "id_current_image = $::tools_cata::id_current_image \n"
+      return
+
+      set id 0
+      foreach current_image $::tools_cata::img_list {
+         incr id
+         lappend worklist [list $id [lindex [$tbl get $select] 0] ]
+      }
+
+      
       gren_info "worklist = $worklist \n"
       
       

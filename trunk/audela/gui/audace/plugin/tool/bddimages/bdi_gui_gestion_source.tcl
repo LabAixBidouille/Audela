@@ -1601,6 +1601,7 @@ namespace eval bdi_gui_gestion_source {
 
       ::bdi_gui_gestion_source::init $worklist
       
+      gren_info "worklist = $worklist\n"
 
       set spinlist ""
       for {set i 1} {$i<$::bdi_tools_psf::psf_limitradius_max} {incr i} {lappend spinlist $i}
@@ -1812,63 +1813,67 @@ namespace eval bdi_gui_gestion_source {
          set methodes [frame $f2.methodes -borderwidth 0 -cursor arrow -relief groove]
          pack $methodes -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
               
-              # configuration par onglets
-              set block [frame $methodes.conf -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $methodes -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
 
-                   set meth_onglets [frame $block.meth_onglets -borderwidth 0 -cursor arrow -relief groove]
-                   pack $meth_onglets -in $block -side top -expand yes -fill both -padx 10 -pady 5
-
-                   pack [ttk::notebook $meth_onglets.nb] -expand yes -fill both 
-                   set i 0
-                   foreach m [::bdi_tools_psf::get_methodes] {
-                      incr i
-                      set a [frame $meth_onglets.nb.g$i]
-                      set g$i $a
-                      $meth_onglets.nb add $a -text $m
-                   }
-
-              $meth_onglets.nb select $g1
-              ttk::notebook::enableTraversal $meth_onglets.nb
+              ::bdi_gui_psf::gui_configuration $methodes
 
 
-              # configuration photombasic
-              set block [frame $g2.conf -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $g2 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-              
-                     label $block.satl -text "Saturation (ADU): " 
-                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
-
-                     label $block.thrl -text "Threshold (arcsec): " 
-                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
-
-                     label $block.radl -text "Rayon : " 
-                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius \
-                         -textvariable ::bdi_tools_psf::psf_radius -width 3 \
-                         -command "::bdi_gui_gestion_source::psf"
-                     pack  $block.radiusc -side left 
-                     $block.radiusc set 15
-                   
-                     grid $block.satl  $block.satv  -sticky nsw -pady 3
-                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
-                     grid $block.radl  $block.radiusc  -sticky nsw -pady 3
-
-              # configuration globale
-              set block [frame $g3.conf -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $g3 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
-              
-                     label $block.satl -text "Saturation (ADU): " 
-                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
-
-                     label $block.thrl -text "Threshold (arcsec): " 
-                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
-
-                     label $block.radl -text "Limite du Rayon : " 
-                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius_max -relief sunken -width 5
-                   
-                     grid $block.satl  $block.satv  -sticky nsw -pady 3
-                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
-                     grid $block.radl  $block.radv  -sticky nsw -pady 3
+#              # configuration par onglets
+#              set block [frame $methodes.conf -borderwidth 0 -cursor arrow -relief groove]
+#              pack $block -in $methodes -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+#
+#                   set meth_onglets [frame $block.meth_onglets -borderwidth 0 -cursor arrow -relief groove]
+#                   pack $meth_onglets -in $block -side top -expand yes -fill both -padx 10 -pady 5
+#
+#                   pack [ttk::notebook $meth_onglets.nb] -expand yes -fill both 
+#                   set i 0
+#                   foreach m [::bdi_tools_psf::get_methodes] {
+#                      incr i
+#                      set a [frame $meth_onglets.nb.g$i]
+#                      set g$i $a
+#                      $meth_onglets.nb add $a -text $m
+#                   }
+#
+#              $meth_onglets.nb select $g1
+#              ttk::notebook::enableTraversal $meth_onglets.nb
+#
+#
+#              # configuration photombasic
+#              set block [frame $g2.conf -borderwidth 0 -cursor arrow -relief groove]
+#              pack $block -in $g2 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+#              
+#                     label $block.satl -text "Saturation (ADU): " 
+#                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
+#
+#                     label $block.thrl -text "Threshold (arcsec): " 
+#                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
+#
+#                     label $block.radl -text "Rayon : " 
+#                     spinbox $block.radiusc -values $spinlist -from 1 -to $::bdi_tools_psf::psf_limitradius_max \
+#                         -textvariable ::bdi_tools_psf::psf_radius -width 3 \
+#                         -command "::bdi_gui_gestion_source::psf"
+#                     pack  $block.radiusc -side left 
+#                     $block.radiusc set 15
+#                   
+#                     grid $block.satl  $block.satv  -sticky nsw -pady 3
+#                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
+#                     grid $block.radl  $block.radiusc  -sticky nsw -pady 3
+#
+#              # configuration globale
+#              set block [frame $g3.conf -borderwidth 0 -cursor arrow -relief groove]
+#              pack $block -in $g3 -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+#              
+#                     label $block.satl -text "Saturation (ADU): " 
+#                     entry $block.satv -textvariable ::bdi_tools_psf::psf_saturation -relief sunken -width 5
+#
+#                     label $block.thrl -text "Threshold (arcsec): " 
+#                     entry $block.thrv -textvariable ::bdi_tools_psf::psf_threshold -relief sunken -width 5
+#
+#                     label $block.radl -text "Limite du Rayon : " 
+#                     entry $block.radv -textvariable ::bdi_tools_psf::psf_limitradius_max -relief sunken -width 5
+#                   
+#                     grid $block.satl  $block.satv  -sticky nsw -pady 3
+#                     grid $block.thrl  $block.thrv  -sticky nsw -pady 3
+#                     grid $block.radl  $block.radv  -sticky nsw -pady 3
 
          # onglets : conesearch
 
