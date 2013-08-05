@@ -159,12 +159,10 @@ namespace eval ::foc {
       ::VShfd append $panneau(foc,hfd)
       ::VSpos append $audace(focus,currentFocus)
 
-      #--   Identifie le dernier index
-      set index [expr { [::VSpos length]-1 }]
       #--   Identifie la derniere valeur
-      set posMax [::VSpos index $index]
+      set posMax [::VSpos index [expr { [::VSpos length]-1 }]]
       #--   Ajoute 5000 pas
-      $this.l.fr3.graph axis configure x -max [expr { $posMax+5000 }]
+      $this.l.fr3.graph axis configure x -min [::VSpos index 0] -max [expr { $posMax+5000 }]
 
       if {[::VShfd length] > 1} {
           lassign [::foc::computeSlope] slopeLeft slopeRight positionOPt

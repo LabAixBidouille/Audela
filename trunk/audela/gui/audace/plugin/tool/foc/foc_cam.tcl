@@ -73,7 +73,7 @@ namespace eval ::foc {
             ::confCam::run
          } else {
             ::foc::simulation
-		 }
+		   }
       }
    }
 
@@ -271,6 +271,7 @@ namespace eval ::foc {
    # updateValues
    #     Met a jour les graphiques
    # Return : Rien
+   # Durée : < 250 ms
    #------------------------------------------------------------
    proc updateValues { } {
       global audace panneau
@@ -313,12 +314,12 @@ namespace eval ::foc {
          ::foc::updateFocGraphe [list $panneau(foc,compteur) $inten $fwhmx $fwhmy $contr]
          #--- Actualise les donnees pour le fichier log
          append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\n"
-       } else {
+      } else {
          #--   Calculs et Mise a jour des graphiques (le temps de traitement double)
          ::foc::processHFD
          #--- Actualise les donnees pour le fichier log
          append panneau(foc,fichier) "$inten\t$fwhmx\t$fwhmy\t$contr\t$panneau(foc,hfd)\t$audace(focus,currentFocus)\n"
-       }
+      }
    }
 
    #------------------------------------------------------------
@@ -467,6 +468,21 @@ namespace eval ::foc {
       variable This
       global audace caption panneau
 
+      #--   Controle des valeurs
+      if {$panneau(foc,start) eq ""} {
+         #--   Definit les limites
+         switch -exact $panneau(foc,focuser) {
+            focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+            usb_focus          {set limite1 0      ; set limite2 65535 }
+         }
+         set audace(focus,currentFocus $limite1
+         set panneau(foc,start) $audace(focus,currentFocus)
+      }
+      set panneau(foc,step) 3000
+      set n [expr { int(($limite2-$limite1)/$panneau(foc,step)) }]
+      set panneau(foc,end) [expr { $limite1+$n*$panneau(foc,step) }]
+      if {[expr { int($panneau(foc,repeat)) }] != $panneau(foc,repeat)} { return }
+
       #--   Selectionne le menu Centrage
       $This.fra2.optionmenu1.menu invoke 0
 
@@ -489,12 +505,6 @@ namespace eval ::foc {
       set panneau(foc,boucle) "$caption(foc,off)"
       set panneau(foc,hasWindow) 0
 
-      #--   Definit les limites
-      switch -exact $panneau(foc,focuser) {
-         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-         usb_focus          {set limite1 0      ; set limite2 65535 }
-      }
-      set audace(focus,currentFocus $limite1
       set seeing 21
 
       #--   cree et affiche une image de synthese
@@ -506,7 +516,7 @@ namespace eval ::foc {
 
       ::foc::setAcqState centrage
 
-      if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
+     if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
 
          set binWindow $panneau(foc,window)
          set binBox [foc::fenetrage]
@@ -523,11 +533,6 @@ namespace eval ::foc {
          #--- Suppression de la zone selectionnee avec la souris
          ::confVisu::deleteBox $audace(visuNo)
 
-         set panneau(foc,start) $limite1
-         set panneau(foc,step) 3000
-         set n [expr { int($limite2/$panneau(foc,step)) }]
-         set panneau(foc,end) [expr { $limite1+$n*$panneau(foc,step) }]
-         set panneau(foc,repeat) 1
          set increment -2
 
          update
