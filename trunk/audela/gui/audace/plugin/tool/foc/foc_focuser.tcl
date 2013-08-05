@@ -205,14 +205,15 @@ namespace eval ::foc {
                   $This.fra5.but2 configure -relief sunken
                 }
                 #--  Inhibition d +/- et du choix du focuser
-                $This.fra4.focuser.list configure -state $state
+                $This.fra3.focuser.list configure -state $state
                 $This.fra4.we.canv1PoliceInvariant configure -state $state
                 $This.fra4.we.canv2PoliceInvariant configure -state $state
               }
          acq  { #--  Etat lors d'une acquisition
                 #--  toutes les commandes existantes, a l'exception du bouton Configurer, sont inhibees
-                $This.fra4.focuser.list configure -state $state
-                foreach cmd [list fra4.we.canv1PoliceInvariant fra4.we.canv2PoliceInvariant fra5.but2] {
+                $This.fra3.focuser.list configure -state $state
+                foreach cmd [list fra4.we.canv1PoliceInvariant fra4.we.canv2PoliceInvariant fra5.but2 \
+                  fra6.start fra6.end fra6.step fra6.repeat] {
                    if {[winfo exists $This.$cmd]} {
                       $This.$cmd configure -state $state
                    }
