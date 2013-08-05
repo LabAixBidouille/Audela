@@ -63,12 +63,12 @@ set caption(foc,pas_focuser)        "No Focuser"
 #--   modif RZ
 set caption(foc,erreur)             "Please fix Windowing."
 set caption(foc,start)              "Start @"
-set caption(foc,hlpstart)           "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+set caption(foc,hlpstart)           "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
 set caption(foc,end)                "End @"
-set caption(foc,hlpend)             "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+set caption(foc,hlpend)             "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
 set caption(foc,step)               "Increment"
 set caption(foc,hlpstep)            "# Incrément en nombre de pas."
-set caption(foc,repeat)             "Repeat"
+set caption(foc,repeat)             "Iterations"
 set caption(foc,hlprepeat)          "# Nombre d'images à acquérir."
 set caption(foc,simulation)         "# Simulation"
 #--   fin modif RZ
@@ -128,12 +128,12 @@ if { [ string compare $langage "french" ] == "0" } {
 #--   modif RZ
    set caption(foc,erreur)          "Veuillez définir la fenêtre."
    set caption(foc,start)           "Début @"
-   set caption(foc,hlpstart)        "Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "Fin @"
-   set caption(foc,hlpend)          "Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "Incrément"
    set caption(foc,hlpstep)         "Incrément en nombre de pas."
-   set caption(foc,repeat)          "Répétition(s)"
+   set caption(foc,repeat)          "Itérations"
    set caption(foc,hlprepeat)       "Nombre d'images à acquérir."
    set caption(foc,simulation)      "Simulation"
 #--   fin modif RZ
@@ -187,14 +187,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "Nessun focheggiatore"
    set caption(foc,erreur)          "# Veuillez définir la fenêtre."
    set caption(foc,start)           "# Début @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "# Fin @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "# Incrément"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "# Répétition(s)"
+   set caption(foc,repeat)          "Iterazioni"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir"
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulazione"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -224,7 +224,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,fwhm_x)          "Fwhm X (píxel)"
    set caption(foc,fwhm_y)          "Fwhm Y (píxel)"
    set caption(foc,contrast_adu)    "Contraste (ADU)"
-   set caption(foc,intensite)       "Intensidad"
+  set caption(foc,intensite)       "Intensidad"
    set caption(foc,fwhm__x)         "Fwhm X"
    set caption(foc,fwhm__y)         "Fwhm Y"
    set caption(foc,contraste)       "Contraste"
@@ -245,14 +245,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "No hay enfocador"
    set caption(foc,erreur)          "# Veuillez définir la fenêtre."
    set caption(foc,start)           "# Début @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "# Fin @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "# Incrément"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "# Répétition(s)"
+   set caption(foc,repeat)          "Iteraciones"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir"
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulación"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -303,14 +303,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "Keine Scharfeinstellung"
    set caption(foc,erreur)          "# Veuillez définir la fenêtre."
    set caption(foc,start)           "# Début @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "# Fin @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "# Incrément"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "# Répétition(s)"
+   set caption(foc,repeat)          "Iterationen"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir"
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulierung"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -361,14 +361,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "Sem focador"
    set caption(foc,erreur)          "# Veuillez définir la fenêtre."
    set caption(foc,start)           "# Début @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "# Fin @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "# Incrément"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "# Répétition(s)"
+   set caption(foc,repeat)          "Iterações"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir"
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulação"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -419,14 +419,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "No Focuser"
    set caption(foc,erreur)          "Please fix Windowing."
    set caption(foc,start)           "Start @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "End @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "Increment"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "Repeat"
+   set caption(foc,repeat)          "Gentagelser"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir."
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulation"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -477,14 +477,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "No Focuser"
    set caption(foc,erreur)          "Please fix Windowing."
    set caption(foc,start)           "Start @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "End @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "Increment"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "Repeat"
+   set caption(foc,repeat)          "Iterations"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir."
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulation"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -535,14 +535,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,pas_focuser)     "No Focuser"
    set caption(foc,erreur)          "Please fix Windowing."
    set caption(foc,start)           "Start @"
-   set caption(foc,hlpstart)        "# Position initiale du focuser en nombre de pas\n supérieur au minimum."
+   set caption(foc,hlpstart)        "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum."
    set caption(foc,end)             "End @"
-   set caption(foc,hlpend)          "# Position finale du focuser en nombre de pas\n inférieur au maximum."
+   set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\ninférieur au maximum."
    set caption(foc,step)            "Increment"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "Repeat"
+   set caption(foc,repeat)          "Iterations"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir."
-   set caption(foc,simulation)      "# Simulation"
+   set caption(foc,simulation)      "Simulation"
 
 }
 
