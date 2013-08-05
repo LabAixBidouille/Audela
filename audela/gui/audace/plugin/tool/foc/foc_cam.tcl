@@ -504,36 +504,52 @@ namespace eval ::foc {
 
       vwait panneau(foc,menu)
 
+      ::foc::setAcqState centrage
+
       if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
 
          set binWindow $panneau(foc,window)
          set binBox [foc::fenetrage]
-         if {$binBox ==0} { return }
+         if {$binBox ==0} {
+            ::foc::setAcqState stop
+            ::foc::simulation
+         }
 
          set panneau(foc,actuel) "$panneau(foc,menu)"
          set panneau(foc,boucle) "$caption(foc,on)"
 
-         ::foc::selectGraph $binBox $binWindow
+        ::foc::selectGraph $binBox $binWindow
 
          #--- Suppression de la zone selectionnee avec la souris
          ::confVisu::deleteBox $audace(visuNo)
 
+         set panneau(foc,start) $limite1
+         set panneau(foc,step) 3000
+         set n [expr { int($limite2/$panneau(foc,step)) }]
+         set panneau(foc,end) [expr { $limite1+$n*$panneau(foc,step) }]
+         set panneau(foc,repeat) 1
          set increment -2
-         for {set currentFocus $limite1} {$currentFocus <= $limite2} {incr currentFocus 3000} {
+
+         update
+
+         for {set currentFocus $panneau(foc,start)} {$currentFocus <= $panneau(foc,end)} {incr currentFocus $panneau(foc,step)} {
 
             set audace(focus,currentFocus) $currentFocus
-            ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
 
-            ::foc::setAcqState post
+            for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
+               ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
 
-            #--- Informations sur l'image fenetree
-            if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
-               if { $panneau(foc,boucle) == "$caption(foc,on)" } {
-                  ::foc::updateValues
+               ::foc::setAcqState post
+
+               #--- Informations sur l'image fenetree
+               if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
+                  if { $panneau(foc,boucle) == "$caption(foc,on)" } {
+                     ::foc::updateValues
+                  }
                }
-            }
 
-            ::foc::setAcqState window
+               ::foc::setAcqState window
+            }
 
             incr seeing $increment
             if {$seeing <= 0} {
