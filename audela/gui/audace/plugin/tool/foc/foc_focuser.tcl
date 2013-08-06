@@ -73,9 +73,9 @@ namespace eval ::foc {
          #--- Met le compteur de foc a zero et rafraichit les affichages
          ::focus::initPosition $::panneau(foc,focuser)
          set audace(focus,currentFocus) "0"
-         $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+         $This.fra5.current configure -textvariable audace(focus,currentFocus)
          set audace(focus,targetFocus) ""
-         $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+         $This.fra5.target configure -textvariable audace(focus,targetFocus)
          update
          #--- Gestion graphique du bouton
          $This.fra5.but0 configure -relief raised -text $panneau(foc,initialise)
@@ -108,13 +108,13 @@ namespace eval ::foc {
                #--- Message au-dela de la limite superieure
                ::foc::limiteFoc
                set audace(focus,targetFocus) ""
-               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+               $This.fra5.target configure -textvariable audace(focus,targetFocus)
                update
             } elseif { $audace(focus,targetFocus) < "-32767" } {
                #--- Message au-dela de la limite inferieure
                ::foc::limiteFoc
                set audace(focus,targetFocus) ""
-               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+               $This.fra5.target configure -textvariable audace(focus,targetFocus)
                update
             } else {
 
@@ -125,12 +125,12 @@ namespace eval ::foc {
                ::focus::goto $::panneau(foc,focuser)
 
                #--- Affiche la position d'arrivee
-               $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+               $This.fra5.current configure -textvariable audace(focus,currentFocus)
             }
 
             #--- Gestion graphique des boutons
             ::foc::setFocusState goto normal
-            ::foc::setAcqState normal
+            ::foc::setAcqState stop
 
          }
       } else {
@@ -152,20 +152,20 @@ namespace eval ::foc {
       if {[::usb_focus::isReady] == 1} {
 
          #--- Gestion graphique des boutons
-         ::foc::setFocusState disabled
-         ::foc::setAcqState disabled
+         ::foc::setFocusState goto disabled
+         ::foc::setAcqState goto disabled
          #--- Gestion des limites
          if { $audace(focus,targetFocus) > "65535" } {
             #--- Message au-dela de la limite superieure
             ::foc::limiteFoc
             set audace(focus,targetFocus) ""
-            $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+            $This.fra5.target configure -textvariable audace(focus,targetFocus)
             update
           } elseif { $audace(focus,targetFocus) < "0" } {
             #--- Message au-dela de la limite inferieure
             ::foc::limiteFoc
             set audace(focus,targetFocus) ""
-            $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+            $This.fra5.target configure -textvariable audace(focus,targetFocus)
             update
           } else {
 
@@ -176,11 +176,11 @@ namespace eval ::foc {
             ::focus::goto $::panneau(foc,focuser)
 
             #--- Affiche la position d'arrivee
-            $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+            $This.fra5.current configure -textvariable audace(focus,currentFocus)
          }
          #--- Gestion graphique des boutons
-         ::foc::setFocusState normal
-         ::foc::setAcqState normal
+         ::foc::setFocusState goto normal
+         ::foc::setAcqState stop
       } else {
          ::confEqt::run ::confEqt::private(selectedFocuser) focuser "Focaliseur USB_Focus"
       }
@@ -241,7 +241,7 @@ namespace eval ::foc {
          if { $audace(focus,currentFocus) == "" } {
             set audace(focus,currentFocus) "0"
          }
-         $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+         $This.fra5.current configure -textvariable audace(focus,currentFocus)
          update
          #--- Gestion graphique du bouton
          $This.fra5.but1 configure -relief raised -text $panneau(foc,trouve)
@@ -293,7 +293,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # limiteFoc
-   #    Affiche la fenetre d'erreur en cas de depassement des limites
+  #    Affiche la fenetre d'erreur en cas de depassement des limites
    #    commande specifique a audeCOM et a USB_Focus
    # Parametres : Aucun
    # Return : Rien
