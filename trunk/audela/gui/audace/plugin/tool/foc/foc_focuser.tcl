@@ -156,27 +156,27 @@ namespace eval ::foc {
          ::foc::setAcqState disabled
          #--- Gestion des limites
          if { $audace(focus,targetFocus) > "65535" } {
-               #--- Message au-dela de la limite superieure
-               ::foc::limiteFoc
-               set audace(focus,targetFocus) ""
-               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
-               update
+            #--- Message au-dela de la limite superieure
+            ::foc::limiteFoc
+            set audace(focus,targetFocus) ""
+            $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+            update
           } elseif { $audace(focus,targetFocus) < "0" } {
-               #--- Message au-dela de la limite inferieure
-               ::foc::limiteFoc
-               set audace(focus,targetFocus) ""
-               $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
-               update
+            #--- Message au-dela de la limite inferieure
+            ::foc::limiteFoc
+            set audace(focus,targetFocus) ""
+            $This.fra5.fra2.ent3 configure -textvariable audace(focus,targetFocus)
+            update
           } else {
 
-               #--- Lit la position du compteur de foc
-               ::focus::displayCurrentPosition $::panneau(foc,focuser)
+            #--- Lit la position du compteur de foc
+            ::focus::displayCurrentPosition $::panneau(foc,focuser)
 
-               #--- Lance le goto du focaliseur
-               ::focus::goto $::panneau(foc,focuser)
+            #--- Lance le goto du focaliseur
+            ::focus::goto $::panneau(foc,focuser)
 
-               #--- Affiche la position d'arrivee
-               $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
+            #--- Affiche la position d'arrivee
+            $This.fra5.fra1.lab1 configure -textvariable audace(focus,currentFocus)
          }
          #--- Gestion graphique des boutons
          ::foc::setFocusState normal
