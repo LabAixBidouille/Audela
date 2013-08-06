@@ -86,25 +86,18 @@ namespace eval bddimages_sql {
 
       set err [catch {sql query "use $bddconf(dbname);"} msg]
       if {$err} {
-         # -- Connexion a MySql --
          set err [catch {sql connect $bddconf(server) $bddconf(login) $bddconf(pass)} msg]
          if {$err} {
-            gren_info "Erreur de connexion a MySql <$err> <$msg>\n"
             return -code error "Erreur de connexion a MySql <$err> <$msg>" 
          } else {
-            gren_info "Connecte a  MySql <$msg>\n"
-            # -- Connexion a bddimages --
             set err [catch {sql query "use $bddconf(dbname);"} msg]
             if {$err} {
-               gren_info "Erreur de connexion a  $bddconf(dbname) <$err> <$msg>\n"
                return -code error "Erreur de connexion a  $bddconf(dbname) <$err> <$msg>"
             } else {
-               #gren_info "Connecte a  $bddconf(dbname)\n"
                return -code 0 $connected
             }
          }
       }
-      #gren_info "$connected\n"
       return -code 0 $connected
    
    }
@@ -114,27 +107,16 @@ namespace eval bddimages_sql {
    #--- namespace
    global sql
    global audace
+
    #--- extension MySQL
    set lib [file join $audace(rep_install) bin "libmysqltcl[info sharedlibextension]"]
    set err [catch {load $lib} msg]
-   if {$err==1} {
-      set err [catch {package require mysqltcl} msg]
-   } else {
+   if {$err == 1} {
       gren_erreur "Cannot load libmysqtcl[info sharedlibextension]\n"
+   } else {
+      set err [catch {package require mysqltcl} msg]
+      gren_info "Mysql: mysqltcl $msg loaded\n"
    }
-#   load libyd[info sharedlibextension]
 
-   set err [catch {connect} msg]
-   if {$err} {
-#       gren_info "Erreur connexion Mysql\n"
-#       gren_info "ERR:$err\n"
-#       gren_info "MSG:$msg\n"
-#  ::console::affiche_resultat "Erreur connexion Mysql\n"
-#  ::console::affiche_resultat "ERR:$err\n"
-#  ::console::affiche_resultat "MSG:$msg\n"
-   }
-       #gren_info "connexion Mysql\n"
-       #gren_info "ERR:$err\n"
-       gren_info "Connexion Mysql : $msg\n"
 }
 
