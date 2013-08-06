@@ -6,7 +6,7 @@
 
 
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>Date de mise à jour : 5 août 2013
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>Date de mise à jour : 6 août 2013
 <h1>Focalisation</h1>
 <p>La focalisation consiste à régler la position de la
 caméra sur l'axe optique du télescope de façon
@@ -48,21 +48,21 @@ au point</th>
 </tr>
 <tr>
 <td align="center" width="15">Pas de focuser</td>
-<td align="center"><img style="width: 134px; height: 340px;" src="images/pas_focuser.gif" /></td>
+<td align="center"><img style="width: 132px; height: 358px;" src="images/pas_focuser.gif" /></td>
 <td align="center"><img style="width: 109px; height: 147px;" src="images/qualite_foc.gif" /></td>
 <td align="center" width="330"><img style="width: 325px; height: 396px;" src="images/graf_4.gif" /></td>
 </tr>
 <tr>
 <td align="center" width="15">Focuser manuel (focuserlx200,
 focuserjmi, focusert193)</td>
-<td align="center"><img style="width: 129px; height: 447px;" src="images/focuser_motorise.gif" /></td>
+<td align="center"><img style="width: 132px; height: 419px;" src="images/focuser_motorise.gif" /></td>
 <td align="center"><img style="width: 109px; height: 147px;" src="images/qualite_foc.gif" /></td>
 <td align="center" width="330"><img style="width: 325px; height: 396px;" src="images/graf_4.gif" /></td>
 </tr>
 <tr>
 <td align="center" width="15">Focusers automatiques
 (focuseraudecom, usb_focus)</td>
-<td align="center"><img style="width: 132px; height: 615px;" src="images/focus_auto.gif" /></td>
+<td align="center"><img style="width: 132px; height: 618px;" src="images/focus_auto.gif" /></td>
 <td align="center"><img style="width: 109px; height: 147px;" src="images/qualite_foc.gif" /></td>
 <td align="center" width="330"><img style="width: 306px; height: 520px;" src="images/graph_HFD.gif" /><br />
 Cette fenêtre comporte, outre le graphique principal du HFD en fonction du nombre de pas, 
@@ -98,9 +98,9 @@ cochée, une barre de progression du temps s'ouvre :</p>
 brillante (si possible de magnitude comprise entre 2 et 7) mais qui ne
 sature pas le capteur CCD.</p>
 Cette sélection s'effectue avec la souris en encadrant l'étoile choisie d'un rectangle
-(rectangle bleu sur l'étoile la plus à droite) avec le
+(rectangle bleu sur l'étoile la plus à gauche) avec le
 bouton gauche appuyé.
-<p align="center"><img style="width: 266px; height: 146px;" src="images/centrage.gif" /></p>
+<p align="center"><img style="width: 324px; height: 217px;" src="images/centrage.gif" /></p>
 <p>Activer <b>Fenêtrage manuel</b> en appuyant avec le
 bouton gauche de la souris sur le bouton dédié, puis <b>GO CCD</b>.
 Dès lors les acquisitions se font en mode rafale avec le
@@ -137,21 +137,29 @@ part la modification de la mise au point qui s'effectue en
 agissant sur le moteur du focuser par l'intermédiaire des boutons + ou - :</p>
 <p align="center"><img style="width: 128px; height: 130px;" src="images/focus_manuel.gif" /></p>
 <h4>Focuser disposant d'un compteur de position</h4>
-<p>Il faut affiner la mise au point de façon à minimiser le HFD
-(demi-diamètre) (cf. les illustrations du paragraphe
-Configuration du panneau). 
 <table>
 <tr>
-<td><img style="width: 131px; height: 172px;" src="images/robofocus.gif" /></td>
-<td>Le panneau comporte donc les commandes nécessaires pour initialiser le focuser, demander une
-position précise, lire sa position actuelle ou explorer un intervalle de pas, y compris en répétant les mesures.<br />
-Une case à cocher <b>Simulation</b> permet d'explorer l'ensemble du domaine d'un focuser virtuel (audecom ou usb_focus) en pointant l'étoile HIP 13367 avec une caméra Audine Kaf 401ME virtuelle.<br />
-Pour lancer le processus, il suffit de cocher la case, d'indiquer le nombre de répétitions et d'appuyer sur <b>GO CCD</b> puis de faire un fenêtrage manuel ou automatique (sans réappuyer sur GO CCD).</b>
+<td><img style="width: 135px; height: 208px;" src="images/robofocus.gif" /></td>
+<td>Il faut affiner la mise au point de façon à minimiser le HFD
+(demi-diamètre) (cf. les illustrations du paragraphe
+Configuration du panneau). Le graphique indique notamment la valeur de la position correspondant 
+à l'intersection des deux branches du V et proche de l'optimum.<br/>
+Le panneau comporte donc les commandes nécessaires pour initialiser le focuser, demander une
+position précise, lire sa position actuelle ou explorer un intervalle de pas, y compris en répétant les mesures.
 </td>
 </tr>
 </table>
-<p>Le graphique indique notamment la valeur de la position correspondant 
-à l'intersection des deux branches du V et proche de l'optimum.</p>
+<h4>Simulation</h4>
+<p>Une dernière case à cocher <b>Simulation</b> permet d'explorer l'ensemble du domaine d'un focuser virtuel en pointant l'étoile HIP 13367 avec une caméra Audine Kaf 401ME virtuelle.<br />
+Pour lancer le processus, il suffit de :
+<ul>
+<li>cocher la case,</li>
+<li>fixer le temps d'exposition,</li>
+<li>appuyer sur <b>GO CCD</b>,</li>
+<li>lorsque l'image est affichée faire un fenêtrage manuel ou automatique,</li>
+<li>re-appuyer sur <b>GO CCD</b>.</li>
+</ul>
+<p>Le graphique correspondant au focuser sélectionné, mais non connecté, s'affichera et se remplira automatiquement.</p>
 <h2>Fichier de log</h2>
 <p>Un fichier foc.log est créé à chaque session.
 Un <b>Copier/Coller</b> permet de récupérer les valeurs dans un
