@@ -77,6 +77,7 @@ namespace eval ::foc {
       etc_params_set naxis1 $naxis1
       etc_params_set naxis2 $naxis2
       etc_preliminary_computations
+
       set fwhm [expr { $audace(etc,comp1,Fwhm_psf) / $audace(etc,comp1,Foclen) * 180 / 4 / atan(1) * 3600 } ]
 
       #--   Debug
@@ -86,11 +87,8 @@ namespace eval ::foc {
       set pixsize2 [expr  { $photocell2*1e6*$bin2 }]
       set crpix1 [expr { $naxis1/2 }]
       set crpix2 [expr { $naxis2/2 }]
-      set factor [expr { 360. / (4*atan(1.)) }]
-      set tgx [expr { $pixsize1 * 1e-6 / $foclen / 2. }]
-      set tgy [expr { $pixsize2 * 1e-6 / $foclen / 2. }]
-      set cdeltx [expr { -atan ($tgx) * $factor * 3600. }]
-      set cdelty [expr { atan ($tgy) * $factor * 3600. }]
+      set cdeltx -$audace(etc,comp1,cdelt1)
+      set cdelty $audace(etc,comp1,cdelt2)
 
       #--   cree l'image grise
       buf$bufNo setpixels CLASS_GRAY $naxis1 $naxis2 FORMAT_USHORT COMPRESS_NONE 0
