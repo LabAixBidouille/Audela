@@ -303,7 +303,7 @@ namespace eval tools_cata {
          if {[info exists conf(bddimages,cata,use_skybot)]} {
             set ::tools_cata::use_skybot $conf(bddimages,cata,use_skybot)
          } else {
-            set ::tools_cata::use_skybot 0
+            set ::tools_cata::use_skybot 1
          }
       }
 
@@ -312,63 +312,63 @@ namespace eval tools_cata {
          if {[info exists conf(bddimages,catfolder,usnoa2)]} {
             set ::tools_cata::catalog_usnoa2 $conf(bddimages,catfolder,usnoa2)
          } else {
-            set ::tools_cata::catalog_usnoa2 ""
+            set ::tools_cata::catalog_usnoa2 $conf(rep_userCatalogUsnoa2)
          }
       }
       if {! [info exists ::tools_cata::catalog_ucac2] } {
          if {[info exists conf(bddimages,catfolder,ucac2)]} {
             set ::tools_cata::catalog_ucac2 $conf(bddimages,catfolder,ucac2)
          } else {
-            set ::tools_cata::catalog_ucac2 ""
+            set ::tools_cata::catalog_ucac2 $conf(rep_userCatalogUcac2)
          }
       }
       if {! [info exists ::tools_cata::catalog_ucac3] } {
          if {[info exists conf(bddimages,catfolder,ucac3)]} {
             set ::tools_cata::catalog_ucac3 $conf(bddimages,catfolder,ucac3)
          } else {
-            set ::tools_cata::catalog_ucac3 ""
+            set ::tools_cata::catalog_ucac3 $conf(rep_userCatalogUcac3)
          }
       }
       if {! [info exists ::tools_cata::catalog_ucac4] } {
          if {[info exists conf(bddimages,catfolder,ucac4)]} {
             set ::tools_cata::catalog_ucac4 $conf(bddimages,catfolder,ucac4)
          } else {
-            set ::tools_cata::catalog_ucac4 ""
+            set ::tools_cata::catalog_ucac4 $conf(rep_userCatalogUcac4)
          }
       }
       if {! [info exists ::tools_cata::catalog_ppmx] } {
          if {[info exists conf(bddimages,catfolder,ppmx)]} {
             set ::tools_cata::catalog_ppmx $conf(bddimages,catfolder,ppmx)
          } else {
-            set ::tools_cata::catalog_ppmx ""
+            set ::tools_cata::catalog_ppmx $conf(rep_userCatalogPpmx)
          }
       }
       if {! [info exists ::tools_cata::catalog_ppmxl] } {
          if {[info exists conf(bddimages,catfolder,ppmxl)]} {
             set ::tools_cata::catalog_ppmxl $conf(bddimages,catfolder,ppmxl)
          } else {
-            set ::tools_cata::catalog_ppmxl ""
+            set ::tools_cata::catalog_ppmxl $conf(rep_userCatalogPpmxl)
          }
       }
       if {! [info exists ::tools_cata::catalog_tycho2] } {
          if {[info exists conf(bddimages,catfolder,tycho2)]} {
             set ::tools_cata::catalog_tycho2 $conf(bddimages,catfolder,tycho2)
          } else {
-            set ::tools_cata::catalog_tycho2 ""
+            set ::tools_cata::catalog_tycho2 $conf(rep_userCatalogTycho2)
          }
       }
       if {! [info exists ::tools_cata::catalog_nomad1] } {
          if {[info exists conf(bddimages,catfolder,nomad1)]} {
             set ::tools_cata::catalog_nomad1 $conf(bddimages,catfolder,nomad1)
          } else {
-            set ::tools_cata::catalog_nomad1 ""
+            set ::tools_cata::catalog_nomad1 $conf(rep_userCatalogNomad1)
          }
       }
       if {! [info exists ::tools_cata::catalog_2mass] } {
          if {[info exists conf(bddimages,catfolder,2mass)]} {
             set ::tools_cata::catalog_2mass $conf(bddimages,catfolder,2mass)
          } else {
-            set ::tools_cata::catalog_2mass ""
+            set ::tools_cata::catalog_2mass $conf(rep_userCatalog2mass)
          }
       }
       if {! [info exists ::tools_cata::catalog_wfibc] } {
