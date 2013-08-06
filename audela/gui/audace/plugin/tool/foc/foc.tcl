@@ -148,8 +148,12 @@ namespace eval ::foc {
       set panneau(foc,fichier)           "${caption(foc,intensite)}\t${caption(foc,fwhm__x)}\t${caption(foc,fwhm__y)}\t${caption(foc,contraste)}\t"
       set panneau(foc,hasWindow)         "0"
 #--   ajout RZ
-      set panneau(foc,simulation)        "0"
+      set panneau(foc,start)             "0"
+      set panneau(foc,end)               "65536"
+      set panneau(foc,step)              "3000"
       set panneau(foc,repeat)            "1"
+      set panneau(foc,seeing)            "24"
+      set panneau(foc,simulation)        "0"
 #--   fin ajout RZ
 
       #--   on copie le nom du focuser selectionne dans le pad
