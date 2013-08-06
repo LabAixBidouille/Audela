@@ -15,10 +15,11 @@ namespace eval ::foc {
       variable This
       global audace caption panneau
 
+      #--   Raccourcis
       set visuNo $audace(visuNo)
 
       #---
-      if { [ ::cam::list ] != "" } {
+      if { [ ::cam::list ] != "" || [ ::cam::list ] == "" && $panneau(foc,simulation) ==1} {
 
          #--- Gestion graphique des boutons
          ::foc::setFocusState acq disabled
@@ -41,39 +42,55 @@ namespace eval ::foc {
 
             #--- Mode Fenetrage
             set binWindow $panneau(foc,window)
-
             set binBox [foc::fenetrage]
             if {$binBox ==0} { return }
             set panneau(foc,actuel) "$panneau(foc,menu)"
             set panneau(foc,boucle) "$caption(foc,on)"
-
             ::foc::selectGraph $binBox $binWindow
 
             #--- Suppression de la zone selectionnee avec la souris
             ::confVisu::deleteBox $visuNo
-
+            #--- Suppression l'image
+            ::confVisu::clear $visuNo
          }
-
-         #--   S'informe si la cam a le windowing
-         set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
-         #--- Fenetrage sur la cam si elle camera possede le mode fenetrage (pas APN et ni WebCam)
-         if {$panneau(foc,hasWindow) == "1"} {
-            cam$audace(camNo) window $panneau(foc,window)
-         }
-
-         #--- Appel a la fonction d'acquisition
-         ::foc::cmdAcq
-
-         #--- Gestion graphique des boutons
-         ::foc::setAcqState post
-
-      } else {
 
          if {$panneau(foc,simulation) == 0} {
-            ::confCam::run
+
+            #--   S'informe si la cam a le windowing
+            set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
+            #--- Fenetrage sur la cam si elle camera possede le mode fenetrage (pas APN et ni WebCam)
+            if {$panneau(foc,hasWindow) == "1"} {
+               cam$audace(camNo) window $panneau(foc,window)
+            }
+            #--- Appel a la fonction d'acquisition
+            ::foc::cmdAcq
+
+            #--- Gestion graphique des boutons
+            ::foc::setAcqState post
+
          } else {
-            ::foc::simulation
-		   }
+
+            #--   Simulation
+
+            #--   Decoche l'affichage de l'avancement
+            set panneau(foc,avancement_acq) 0
+            update
+
+            if { $panneau(foc,menu) eq "$caption(foc,centrage)" } {
+               ::foc::createImage $panneau(foc,bin) 21 $panneau(foc,exptime)
+               #--- Gestion graphique des boutons
+               ::foc::setAcqState post
+            } else {
+               ::foc::simule
+                #--- Gestion graphique des boutons
+                ::foc::setFocusState acq normal
+                ::foc::setAcqState stop
+            }
+         }
+
+      } else {
+         #--   Pas de camera connectee : ouvre le panneau de selection de la camera
+         ::confCam::run
       }
    }
 
@@ -85,16 +102,27 @@ namespace eval ::foc {
    proc centrage { } {
       global audace panneau
 
-      #--- Applique le binning demande si la camera possede bien ce binning
-      set binningCamera "2x2"
-      if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
-         set panneau(foc,bin) "2"
+      if {$panneau(foc,simulation) == 0} {
+
+         #--- Applique le binning demande si la camera possede bien ce binning
+         set binningCamera "2x2"
+         if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
+            set panneau(foc,bin) "2"
+         } else {
+            set panneau(foc,bin) "1"
+         }
+         set panneau(foc,bin_centrage) "$panneau(foc,bin)"
+         lassign [ cam$audace(camNo) nbcells ] naxis1 naxis2
+         set panneau(foc,window)       [ list 1 1 $naxis1 $naxis1 ]
+
       } else {
-         set panneau(foc,bin) "1"
+
+         #--   Mode simulation de camera
+         set panneau(foc,bin) "2"
+         set panneau(foc,bin_centrage) "$panneau(foc,bin)"
+         #--   attention moitie de naxis1 et naxis2 du fait du binning
+         set panneau(foc,window) [ list 1 1 384  256 ]
       }
-      set panneau(foc,bin_centrage) "$panneau(foc,bin)"
-      lassign [ cam$audace(camNo) nbcells ] naxis1 naxis2
-      set panneau(foc,window)       [ list 1 1 $naxis1 $naxis1 ]
    }
 
    #------------------------------------------------------------
@@ -120,9 +148,9 @@ namespace eval ::foc {
          set d [expr { int(round($y)+40) }]
          set binBox [list $a $b $c $d]
 
-         #--   Visualise la boite durant 2 secondes
+         #--   Visualise la boite durant 3 secondes
          ::confVisu::setBox $audace(visuNo) $binBox
-         after 2000
+         after 3000
 
       } else {
 
@@ -230,7 +258,7 @@ namespace eval ::foc {
 
       #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
       #if { $panneau(foc,focuser) ni [list "$caption(foc,pas_focuser)" ""]} {
-      #   set delay 0.100
+      #     set delay 0.100
       #   if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
       #      set delay [ expr $panneau(foc,exptime)-$delay ]
       #      if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
@@ -417,7 +445,11 @@ namespace eval ::foc {
          }
          ::foc::setFocusState acq normal
       } else {
-         ::confCam::run
+         if {$panneau(foc,simulation) ==1} {
+            set panneau(foc,boucle) "$caption(foc,off)"
+         } else {
+           ::confCam::run
+         }
       }
    }
 
@@ -460,125 +492,81 @@ namespace eval ::foc {
    }
 
    #------------------------------------------------------------
-   # simulation
+   # simule
    #
    # Return : Rien
    #------------------------------------------------------------
-   proc simulation { } {
+   proc simule { } {
       variable This
       global audace caption panneau
 
-      #--   Controle des valeurs
-      if {$panneau(foc,start) eq ""} {
-         #--   Definit les limites
+      set seeing 21
+      set incrSeeing -2
+
+      #--   Definit les limites de la simulation
+      if {$panneau(foc,typefocuser) == 1} {
+         #--   Focuser audecom ou USB_Focus
          switch -exact $panneau(foc,focuser) {
             focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
             usb_focus          {set limite1 0      ; set limite2 65535 }
          }
-         set audace(focus,currentFocus $limite1
-         set panneau(foc,start) $audace(focus,currentFocus)
+      } else {
+         #--   Tous les autres focuser
+         set limite1 0 ; set limite2 65535
       }
+      set audace(focus,currentFocus $limite1
+      set panneau(foc,start) $audace(focus,currentFocus)
       set panneau(foc,step) 3000
       set n [expr { int(($limite2-$limite1)/$panneau(foc,step)) }]
       set panneau(foc,end) [expr { $limite1+$n*$panneau(foc,step) }]
-      if {[expr { int($panneau(foc,repeat)) }] != $panneau(foc,repeat)} { return }
+      update
 
-      #--   Selectionne le menu Centrage
-      $This.fra2.optionmenu1.menu invoke 0
+      #--   Boucle
+      for {set currentFocus $panneau(foc,start)} {$currentFocus <= $panneau(foc,end)} {incr currentFocus $panneau(foc,step)} {
 
-      #--   Fixe exptime
-      set panneau(foc,exptime) "10"
-      $This.fra2.fra1.ent1 configure -state disabled
-
-      #--   Decoche l'affichage de l'avancement
-      set panneau(foc,avancement_acq) 0
-
-      #--- Gestion graphique des boutons
-      ::foc::setFocusState acq disabled
-      ::foc::setAcqState centrage
-
-      set panneau(foc,bin) "2"
-      set panneau(foc,bin_centrage) "$panneau(foc,bin)"
-      #--   attention moitie de naxis1 et naxis2 du fait du binning
-      set panneau(foc,window) [ list 1 1 384  256 ]
-      set panneau(foc,actuel) "$panneau(foc,menu)"
-      set panneau(foc,boucle) "$caption(foc,off)"
-      set panneau(foc,hasWindow) 0
-
-      set seeing 21
-
-      #--   cree et affiche une image de synthese
-      ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
-
-      ::foc::setAcqState stop
-
-      vwait panneau(foc,menu)
-
-      ::foc::setAcqState centrage
-
-     if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
-
-         set binWindow $panneau(foc,window)
-         set binBox [foc::fenetrage]
-         if {$binBox ==0} {
-            ::foc::setAcqState stop
-            ::foc::simulation
+         if {$panneau(foc,boucle) eq "$caption(foc,off)"} {
+            #--   Sort de la boucle
+            break
          }
 
-         set panneau(foc,actuel) "$panneau(foc,menu)"
-         set panneau(foc,boucle) "$caption(foc,on)"
+         #--   Actualise la cible
+         set audace(focus,targetFocus) $currentFocus
 
-        ::foc::selectGraph $binBox $binWindow
+         after 2000
 
-         #--- Suppression de la zone selectionnee avec la souris
-         ::confVisu::deleteBox $audace(visuNo)
+         #--   Actualise la position courante
+         set audace(focus,currentFocus) $currentFocus
 
-         set increment -2
+         #--   Repetition des prise de vue
+         for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
 
-         update
+            ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
+            ::foc::setAcqState post
 
-         for {set currentFocus $panneau(foc,start)} {$currentFocus <= $panneau(foc,end)} {incr currentFocus $panneau(foc,step)} {
-
-            set audace(focus,currentFocus) $currentFocus
-
-            for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
-               ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
-
-               ::foc::setAcqState post
-
-               #--- Informations sur l'image fenetree
-               if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
-                  if { $panneau(foc,boucle) == "$caption(foc,on)" } {
-                     ::foc::updateValues
-                  }
-               }
-
-               ::foc::setAcqState window
+            #--- Actualise le graphique
+            if { $panneau(foc,boucle) == "$caption(foc,on)" } {
+               ::foc::updateValues
             }
+            ::foc::setAcqState window
 
-            incr seeing $increment
-            if {$seeing <= 0} {
-               set increment 2
-               incr seeing $increment
+            if {[$This.fra2.but2 configure -relief] eq "sunken"} {
+               ::foc::cmdStop
+               break
             }
+         } ; # fin des iterations
 
-            after 2000
+         #--   Modifie l'increment du seeing
+         incr seeing $incrSeeing
+         if {$seeing <= 0} {
+            set incrSeeing 2
+            incr seeing $incrSeeing
          }
 
-         #--- Sauvegarde du fichier des traces
-         ::foc::cmdSauveLog foc.log
+         after 2000
+      } ; # fin de boucle
 
-         #--   Retour sur Centrage
-         $This.fra2.optionmenu1.menu invoke 0
-         set panneau(foc,exptime) "2"
-         $This.fra2.fra1.ent1 configure -state normal
-
-         ::foc::setAcqState stop
-         ::foc::setFocusState acq normal
-
-      } else {
-         ::foc::simulation
-      }
+      #--- Sauvegarde du fichier des traces
+      ::foc::cmdSauveLog foc.log
    }
 
 }

@@ -147,6 +147,10 @@ namespace eval ::foc {
       set panneau(foc,avancement_acq)    "1"
       set panneau(foc,fichier)           "${caption(foc,intensite)}\t${caption(foc,fwhm__x)}\t${caption(foc,fwhm__y)}\t${caption(foc,contraste)}\t"
       set panneau(foc,hasWindow)         "0"
+#--   ajout RZ
+      set panneau(foc,simulation)        "0"
+      set panneau(foc,repeat)            "1"
+#--   fin ajout RZ
 
       #--   on copie le nom du focuser selectionne dans le pad
       if { $conf($conf(confPad),focuserLabel) != "" } {
@@ -547,13 +551,6 @@ proc focBuildIF { This } {
             -textvariable panneau(foc,repeat) -width 6 -justify center \
             -helptext $caption(foc,hlprepeat)
          pack $This.fra6.repeat -side top -fill x -padx 4 -pady 2
-         $This.fra6.repeat configure -dragendcmd { ::tkutil::validateNumber %W %V %P %s integer 1 10 }
-
-         #--- Checkbutton pour la simulation
-         checkbutton $This.fra6.simul -highlightthickness 0 \
-            -text $caption(foc,simulation) -variable panneau(foc,simulation) \
-            -onvalue 1 -offvalue 0
-         pack $This.fra6.simul -side top -fill none
 
       pack $This.fra6 -in $This -after $This.fra5 -fill x
 #--   fin ajout RZ
@@ -568,6 +565,18 @@ proc focBuildIF { This } {
 
      pack $This.fra7 -fill x
 
+#--   ajout RZ
+     #--- Frame pour la simulation
+     frame $This.fra8 -borderwidth 2 -relief ridge
+
+        #--- Checkbutton pour la simulation
+        checkbutton $This.fra8.simul -highlightthickness 0 \
+           -text $caption(foc,simulation) -variable panneau(foc,simulation) \
+           -onvalue 1 -offvalue 0
+        pack $This.fra8.simul -side left -fill x
+
+     pack $This.fra8 -fill x
+#--   fin ajout RZ
      #--- Mise a jour dynamique des couleurs
      ::confColor::applyColor $This
 }
