@@ -162,8 +162,8 @@ namespace eval ::cyclefast {
          if { [lindex $line 1] != "" } { lappend cycle(exp) [lindex $line 1] }
          if { [lindex $line 2] != ""} { lappend cycle(framerate) [lindex $line 2] }
          set t [lindex $line 3]
-         if { [regexp {(\d+):(\d+):(\d+)(\.*\d*)} $t all h m s sd] } {
-            lappend cycle(timejd) [expr $h/24.+$m/1440.+$s$sd/86400.]
+         if { [regexp {(\d+):(\d+):(\d+)\.*(\d*)} $t all h m s sd] } {
+            lappend cycle(timejd) [expr $h./24.+$m./1440.+$s.$sd/86400.]
          }
       }
 
