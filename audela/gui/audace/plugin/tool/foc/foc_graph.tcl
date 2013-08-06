@@ -103,7 +103,7 @@ namespace eval ::foc {
 
       blt::graph $frm
       $frm element create line1 -xdata ::vx -ydata ::vy$win_name \
-         -linewidth 1 -color black -symbol "" -hide no
+         -linewidth 1 -color black -symbol "scross" -hide no
       $frm axis configure x -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
       $frm axis configure x2 -hide no -min 1 -max 20 -subdivision 0 -stepsize 1
       #--   laisse flotter le minimum et le maximum
