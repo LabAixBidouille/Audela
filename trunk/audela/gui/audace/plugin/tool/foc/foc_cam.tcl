@@ -77,7 +77,8 @@ namespace eval ::foc {
             update
 
             if { $panneau(foc,menu) eq "$caption(foc,centrage)" } {
-               ::foc::createImage $panneau(foc,bin) 21 $panneau(foc,exptime)
+               #--   Calcule le seeing et son increment
+               ::foc::createImage $panneau(foc,bin) $panneau(foc,seeing) $panneau(foc,exptime)
                #--- Gestion graphique des boutons
                ::foc::setAcqState post
             } else {
@@ -410,7 +411,7 @@ namespace eval ::foc {
    # cmdStop
    #    cmd du bouton STOP/RAZ
    #------------------------------------------------------------
-   proc cmdStop { } {
+    proc cmdStop { } {
       variable This
       global audace caption panneau
 
@@ -500,9 +501,6 @@ namespace eval ::foc {
       variable This
       global audace caption panneau
 
-      set seeing 21
-      set incrSeeing -2
-
       #--   Definit les limites de la simulation
       if {$panneau(foc,typefocuser) == 1} {
          #--   Focuser audecom ou USB_Focus
@@ -514,12 +512,29 @@ namespace eval ::foc {
          #--   Tous les autres focuser
          set limite1 0 ; set limite2 65535
       }
-      set audace(focus,currentFocus $limite1
-      set panneau(foc,start) $audace(focus,currentFocus)
-      set panneau(foc,step) 3000
-      set n [expr { int(($limite2-$limite1)/$panneau(foc,step)) }]
-      set panneau(foc,end) [expr { $limite1+$n*$panneau(foc,step) }]
+      if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
+         #--   focuser connecte
+
+         #--   GOTO si la position de depart n'est pas la position courante
+         if {$audace(focus,currentFocus) != $panneau(foc,start)} {
+            set audace(focus,targetFocus) $panneau(foc,start)
+            switch -exact $panneau(foc,focuser) {
+               focuseraudecom     { ::foc::cmdSeDeplaceA }
+               usb_focus          { ::foc::cmdUSB_FocusGoto }
+            }
+         }
+
+         #--   delai de mise au repos ???
+         after 500
+      }
       update
+
+      #--   Calcule le seeing et son increment
+      set ratio [expr { 1.85*$panneau(foc,seeing)/($limite2-$limite1) }]
+      set seeing [expr { $panneau(foc,seeing)-$ratio*($panneau(foc,start)-$limite1) } ]
+      set incrSeeing [expr { -$ratio*$panneau(foc,step) }]
+
+      set panneau(foc,boucle) "$caption(foc,on)"
 
       #--   Boucle
       for {set currentFocus $panneau(foc,start)} {$currentFocus <= $panneau(foc,end)} {incr currentFocus $panneau(foc,step)} {
@@ -532,10 +547,16 @@ namespace eval ::foc {
          #--   Actualise la cible
          set audace(focus,targetFocus) $currentFocus
 
-         after 2000
-
-         #--   Actualise la position courante
-         set audace(focus,currentFocus) $currentFocus
+         if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
+            switch -exact $panneau(foc,focuser) {
+               focuseraudecom     { ::foc::cmdSeDeplaceA }
+               usb_focus          { ::foc::cmdUSB_FocusGoto }
+            }
+         } else {
+             after 2000
+             #--   Actualise la position courante
+             set audace(focus,currentFocus) $currentFocus
+         }
 
          #--   Repetition des prise de vue
          for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
@@ -556,10 +577,10 @@ namespace eval ::foc {
          } ; # fin des iterations
 
          #--   Modifie l'increment du seeing
-         incr seeing $incrSeeing
+         set seeing [expr { $seeing+$incrSeeing }]
          if {$seeing <= 0} {
-            set incrSeeing 2
-            incr seeing $incrSeeing
+            set incrSeeing [expr { abs($incrSeeing) }]
+            set seeing [expr { $seeing+$incrSeeing }]
          }
 
          after 2000
