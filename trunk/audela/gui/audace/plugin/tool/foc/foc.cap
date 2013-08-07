@@ -23,16 +23,11 @@ set caption(foc,go)                 "GO CCD"
 set caption(foc,raz)                "Reset"
 set caption(foc,stop)               "Stop"
 set caption(foc,moteur_focus)       "Focusing Motor"
-#--   modif RZ
-#set caption(foc,pos_focus)          "Focus Position"
 set caption(foc,pos_focus)          "Position (steps)"
-#--   fin modif RZ
 set caption(foc,se_trouve)          "Is at"
 set caption(foc,pas)                "steps"
 set caption(foc,aller_a)            "Go to"
-#--   modif RZ
 set caption(foc,target)             "Target (steps)"
-#--   fin modif RZ
 set caption(foc,init)               "Initialization"
 set caption(foc,on)                 "on"
 set caption(foc,off)                "off"
@@ -60,7 +55,6 @@ set caption(foc,slopeleft)          "Left Slope: %s/step"
 set caption(foc,sloperight)         "Right Slope: %s/step"
 set caption(foc,optimum)            "# Convergence : %s pas"
 set caption(foc,pas_focuser)        "No Focuser"
-#--   modif RZ
 set caption(foc,erreur)             "Please fix Windowing."
 set caption(foc,start)              "Start @"
 set caption(foc,hlpstart)           "# Position initiale du focuser\nen nombre de pas\nsupérieur au minimum %s."
@@ -70,10 +64,9 @@ set caption(foc,step)               "Increment"
 set caption(foc,hlpstep)            "# Incrément en nombre de pas."
 set caption(foc,repeat)             "Iterations"
 set caption(foc,hlprepeat)          "# Nombre d'images à acquérir."
-set caption(foc,errInt)             "Toutes les valeurs doivent être des entiers."
-set caption(foc,errLim)             "Valeur hors limites."
+set caption(foc,errInt)             "# Toutes les valeurs doivent être des entiers."
+set caption(foc,errLim)             "# Valeur hors limites."
 set caption(foc,simulation)         "Simulation"
-#--   fin modif RZ
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -90,16 +83,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,raz)             "R.A.Z."
    set caption(foc,stop)            "Stop"
    set caption(foc,moteur_focus)    "Moteur de foc."
-#--   modif RZ
-   #set caption(foc,pos_focus)       "Position de la foc."
    set caption(foc,pos_focus)       "Position (pas)"
-#--   fin modif RZ
    set caption(foc,se_trouve)       "Se trouve à"
    set caption(foc,pas)             "pas"
    set caption(foc,aller_a)         "Aller à"
-#--   modif RZ
    set caption(foc,target)          "Cible (pas)"
-#--   fin modif RZ
    set caption(foc,init)            "Initialisation"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
@@ -127,7 +115,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,sloperight)      "Pente à droite : %s/pas"
    set caption(foc,optimum)         "Convergence : %s pas"
    set caption(foc,pas_focuser)     "Pas de focuser"
-#--   modif RZ
    set caption(foc,erreur)          "Veuillez définir la fenêtre."
    set caption(foc,start)           "Début @"
    set caption(foc,hlpstart)        "Position initiale du focuser\nen nombre de pas\nsupérieur au minimum %s."
@@ -140,7 +127,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,errInt)          "Toutes les valeurs doivent être des entiers."
    set caption(foc,errLim)          "Valeur hors limites."
    set caption(foc,simulation)      "Simulation"
-#--   fin modif RZ
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -161,7 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,se_trouve)       "Si trova"
    set caption(foc,pas)             "passi"
    set caption(foc,aller_a)         "Vai a"
-   set caption(foc,target)          "# Cible (pas)"
+   set caption(foc,target)          "Target (passi)"
    set caption(foc,init)            "Inizializzazione"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
@@ -221,7 +207,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,se_trouve)       "Está en"
    set caption(foc,pas)             "pasos"
    set caption(foc,aller_a)         "Ir a"
-   set caption(foc,target)          "# Cible (pas)"
+   set caption(foc,target)          "Objetivo (pasos)"
    set caption(foc,init)            "Inicialización"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
@@ -281,7 +267,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,se_trouve)       "Isst an"
    set caption(foc,pas)             "Schritte"
    set caption(foc,aller_a)         "Gehen zu"
-   set caption(foc,target)          "# Cible (pas)"
+   set caption(foc,target)          "Ziel (Schritte)"
    set caption(foc,init)            "Initialisierung"
    set caption(foc,on)              "ein"
    set caption(foc,off)             "aus"
@@ -341,7 +327,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,se_trouve)       "Encontra-se em"
    set caption(foc,pas)             "passos"
    set caption(foc,aller_a)         "Ir até"
-   set caption(foc,target)          "# Cible (pas)"
+   set caption(foc,target)          "Alvo (passos)"
    set caption(foc,init)            "Inicialização"
    set caption(foc,on)              "on"
    set caption(foc,off)             "off"
@@ -436,7 +422,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(foc,hlpend)          "# Position finale du focuser\nen nombre de pas\nsupérieur à la position initiale\net inférieur au maximum %s."
    set caption(foc,step)            "Increment"
    set caption(foc,hlpstep)         "# Incrément en nombre de pas."
-   set caption(foc,repeat)          "Gentagelser"
+   set caption(foc,repeat)          "Iterations"
    set caption(foc,hlprepeat)       "# Nombre d'images à acquérir."
    set caption(foc,errInt)          "# Toutes les valeurs doivent être des entiers."
    set caption(foc,errLim)          "# Valeur hors limites."
