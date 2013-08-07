@@ -293,7 +293,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # limiteFoc
-  #    Affiche la fenetre d'erreur en cas de depassement des limites
+   #    Affiche la fenetre d'erreur en cas de depassement des limites
    #    commande specifique a audeCOM et a USB_Focus
    # Parametres : Aucun
    # Return : Rien
@@ -332,6 +332,45 @@ namespace eval ::foc {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).limitefoc
+   }
+
+   #------------------------------------------------------------
+   # analyseAuto
+   #    Analyse les valeurs start,end, step et nb du programme Auto
+   #    Emet un message en cas d'erreur
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
+   proc analyseAuto { v } {
+      global caption panneau
+
+      set err 0
+      #--   Verifie qu'il s'agit d'un entier
+      if {[string is integer -strict $panneau(foc,$v)] ==0} {
+         tk_messageBox -title $caption(foc,attention)\
+            -icon error -type ok -message "$caption(foc,errInt) "
+         return
+      }
+
+      #--   Focuser audecom ou USB_Focus
+      switch -exact $panneau(foc,focuser) {
+         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+         usb_focus          {set limite1 0      ; set limite2 65535 }
+      }
+
+      switch -exact $v {
+         start { if {$panneau(foc,$v) < $limite1 || $panneau(foc,$v) > $limite2} {
+                    tk_messageBox -title $caption(foc,attention)\
+                       -icon error -type ok -message "$caption(foc,errLim)"
+                    return
+                 }
+               }
+         end   { if {$panneau(foc,$v) < $panneau(foc,start) || $panneau(foc,$v) > $limite2} {
+                    tk_messageBox -title $caption(foc,attention)\
+                       -icon error -type ok -message "$caption(foc,errLim)"
+                 }
+               }
+      }
    }
 
 }
