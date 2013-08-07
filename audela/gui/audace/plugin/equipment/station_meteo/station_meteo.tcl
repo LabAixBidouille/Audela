@@ -409,7 +409,7 @@ proc ::station_meteo::onChangeMeteo { {do ""} } {
       #--   Initialise par defaut
       ::station_meteo::getValues [list 16.85 - - - - 101325]
 
-      if {$widget(meteo) ==1} {
+      if {[info exists widget(meteo)] && $widget(meteo) == 1} {
          ::console::disp "Stop reading $widget(sensorName)\n"
       }
 
