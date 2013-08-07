@@ -164,6 +164,9 @@
 
       if {$gps ne "-"} {
          lassign $gps -> obs-long sens obs-lat obs-elev
+         if {$sens eq "W"} {
+            set obs-long -${obs-long}
+         }
          lassign [obsCoord2SiteCoord "$gps"] sitelong sitelat siteelev
          set geodsys WGS84
          lappend list_of_kwd OBS-ELEV OBS-LAT OBS-LONG SITELONG SITELAT SITEELEV GEODSYS
