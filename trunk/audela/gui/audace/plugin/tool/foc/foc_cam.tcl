@@ -412,7 +412,7 @@ namespace eval ::foc {
    # cmdStop
    #    cmd du bouton STOP/RAZ
    #------------------------------------------------------------
-    proc cmdStop { } {
+   proc cmdStop { } {
       variable This
       global audace caption panneau
 

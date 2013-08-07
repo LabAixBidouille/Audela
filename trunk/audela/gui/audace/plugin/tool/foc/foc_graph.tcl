@@ -218,7 +218,7 @@ namespace eval ::foc {
    # HFDGraphe
    #    cree la fenetre
    #------------------------------------------------------------
-   proc HFDGraphe {  } {
+   proc HFDGraphe { } {
       global audace conf caption
 
       set visuNo $::audace(visuNo)
