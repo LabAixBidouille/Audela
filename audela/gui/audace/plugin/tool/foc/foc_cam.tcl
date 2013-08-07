@@ -50,11 +50,13 @@ namespace eval ::foc {
 
             #--- Suppression de la zone selectionnee avec la souris
             ::confVisu::deleteBox $visuNo
-            #--- Suppression l'image
+            #--- Suppression de l'image
             ::confVisu::clear $visuNo
          }
 
          if {$panneau(foc,simulation) == 0} {
+
+            #--   Acquisition
 
             #--   S'informe si la cam a le windowing
             set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
@@ -538,18 +540,19 @@ namespace eval ::foc {
       #--   Boucle
       for {set currentFocus $panneau(foc,start)} {$currentFocus <= $panneau(foc,end)} {incr currentFocus $panneau(foc,step)} {
 
-         #--   Sort de la boucle
+         #--   Sort de la boucle si arret demande
          if {$panneau(foc,demande_arret) == 1} {
-
+            set panneau(foc,demande_arret) "0"
             break
          }
 
          #--   Actualise la cible
          set audace(focus,targetFocus) $currentFocus
 
+         #--   Rejoint la position suivante
          if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
             switch -exact $panneau(foc,focuser) {
-               focuseraudecom     { ::foc::cmdSeDeplaceA }
+              focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
          } else {
@@ -558,33 +561,24 @@ namespace eval ::foc {
              set audace(focus,currentFocus) $currentFocus
          }
 
-         #--   Repetition des prise de vue
+         #--   Repete la prise de vue
          for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
-
             ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
-
             ::foc::setAcqState post
-
             #--- Actualise le graphique
             if { $panneau(foc,boucle) == "$caption(foc,on)" } {
                ::foc::updateValues
             }
             ::foc::setAcqState window
+         }
 
-            if {[$This.fra2.but2 configure -relief] eq "sunken"} {
-               ::foc::cmdStop
-               break
-            }
-         } ; # fin des iterations
-
-         #--   Modifie l'increment du seeing
+         #--   Modifie l'increment du seeing pour la simulation
          set seeing [expr { $seeing+$incrSeeing }]
          if {$seeing <= 0} {
             set incrSeeing [expr { abs($incrSeeing) }]
             set seeing [expr { $seeing+$incrSeeing }]
          }
 
-         after 2000
       } ; # fin de boucle
 
       #--- Sauvegarde du fichier des traces
