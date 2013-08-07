@@ -69,7 +69,6 @@ namespace eval ::foc {
             ::foc::setAcqState post
 
          } else {
-
             #--   Simulation
 
             #--   Decoche l'affichage de l'avancement
@@ -151,7 +150,7 @@ namespace eval ::foc {
 
          #--   Visualise la boite durant 3 secondes
          ::confVisu::setBox $audace(visuNo) $binBox
-         after 3000
+         after 5000
 
       } else {
 
@@ -416,15 +415,8 @@ namespace eval ::foc {
       global audace caption panneau
 
       if { [ ::cam::list ] != "" } {
-         if { [ $This.fra2.but2 cget -text ] == "$panneau(foc,raz)" } {
-            set panneau(foc,compteur) "0"
-            closeAllWindows $audace(base)
-            #--   Destruction et reconstruction des graphiques
-            if { $panneau(foc,typefocuser) == "0"} {
-               ::foc::focGraphe
-            } else {
-               ::foc::HFDGraphe
-            }
+         if { [ $This.fra2.but2 cget -text ] eq "$panneau(foc,raz)" } {
+            ::foc::razGraph
          } else {
             #--- Je positionne l'indicateur d'arret de la pose
             set panneau(foc,demande_arret) "1"
@@ -447,9 +439,16 @@ namespace eval ::foc {
          ::foc::setFocusState acq normal
       } else {
          if {$panneau(foc,simulation) ==1} {
-            set panneau(foc,boucle) "$caption(foc,off)"
+            if {[ $This.fra2.but1 cget -relief ] eq "groove"} {
+               #--- Demande d'arret de la pose
+               set panneau(foc,demande_arret) "1"
+               set panneau(foc,boucle) "$caption(foc,off)"
+            } else {
+               ::foc::razGraph
+            }
+            $This.fra2.optionmenu1.menu invoke 0
          } else {
-           ::confCam::run
+            ::confCam::run
          }
       }
    }
@@ -539,8 +538,9 @@ namespace eval ::foc {
       #--   Boucle
       for {set currentFocus $panneau(foc,start)} {$currentFocus <= $panneau(foc,end)} {incr currentFocus $panneau(foc,step)} {
 
-         if {$panneau(foc,boucle) eq "$caption(foc,off)"} {
-            #--   Sort de la boucle
+         #--   Sort de la boucle
+         if {$panneau(foc,demande_arret) == 1} {
+
             break
          }
 
@@ -562,6 +562,7 @@ namespace eval ::foc {
          for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
 
             ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
+
             ::foc::setAcqState post
 
             #--- Actualise le graphique

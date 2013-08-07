@@ -372,6 +372,23 @@ namespace eval ::foc {
       destroy $this
    }
 
+   #------------------------------------------------------------
+   # razGraph
+   #    RAZ des graphiques
+   #-----------------------------------------------------------
+   proc razGraph { } {
+      global audace panneau
+
+      set panneau(foc,compteur) "0"
+      closeAllWindows $audace(base)
+      #--   Destruction et reconstruction des graphiques
+      if { $panneau(foc,typefocuser) == "0"} {
+         ::foc::focGraphe
+      } else {
+         ::foc::HFDGraphe
+      }
+   }
+
    #------------   fenetre affichant les valeurs  --------------
 
    #------------------------------------------------------------
