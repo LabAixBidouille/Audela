@@ -3,12 +3,12 @@
 # Description : Script de mise en oeuvre du HFD
 # Compatibilité : USB_Focus et AudeCom
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id: foc_HFD.tcl 9822 2013-07-22 20:23:15Z rzachantke $
+# Mise à jour $Id$
 #
 
 namespace eval ::foc {
 
-   proc createImage  { bin {seeing 3.0} {exposure 10} } {
+   proc createImage { bin {seeing 3.0} {exposure 10} } {
       global audace conf panneau
 
       #--   raccourcis
