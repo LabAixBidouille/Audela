@@ -54,41 +54,25 @@ namespace eval ::foc {
             ::confVisu::clear $visuNo
          }
 
+         #--   Acquisition
          if {$panneau(foc,simulation) == 0} {
-
-            #--   Acquisition
-
             #--   S'informe si la cam a le windowing
             set panneau(foc,hasWindow) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasWindow ]
             #--- Fenetrage sur la cam si elle camera possede le mode fenetrage (pas APN et ni WebCam)
             if {$panneau(foc,hasWindow) == "1"} {
                cam$audace(camNo) window $panneau(foc,window)
             }
-            #--- Appel a la fonction d'acquisition
-            ::foc::cmdAcq
-
-            #--- Gestion graphique des boutons
-            ::foc::setAcqState post
-
          } else {
-            #--   Simulation
-
-            #--   Decoche l'affichage de l'avancement
+            set panneau(foc,hasWindow) 0
+            #--   Decoche le suivi
             set panneau(foc,avancement_acq) 0
-            update
-
-            if { $panneau(foc,menu) eq "$caption(foc,centrage)" } {
-               #--   Calcule le seeing et son increment
-               ::foc::createImage $panneau(foc,bin) $panneau(foc,seeing) $panneau(foc,exptime)
-               #--- Gestion graphique des boutons
-               ::foc::setAcqState post
-            } else {
-               ::foc::simule
-                #--- Gestion graphique des boutons
-                ::foc::setFocusState acq normal
-                ::foc::setAcqState stop
-            }
          }
+
+         #--- Appel a la fonction d'acquisition
+         ::foc::cmdAcq
+
+         #--- Gestion graphique des boutons
+         ::foc::setAcqState pos
 
       } else {
          #--   Pas de camera connectee : ouvre le panneau de selection de la camera
@@ -248,7 +232,9 @@ namespace eval ::foc {
       set panneau(foc,pose_en_cours) "1"
 
       #--- La commande bin permet de fixer le binning
-      cam$audace(camNo) bin [ list $panneau(foc,bin) $panneau(foc,bin) ]
+      if {$panneau(foc,simulation) == 0} {
+         cam$audace(camNo) bin [ list $panneau(foc,bin) $panneau(foc,bin) ]
+      }
 
       #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
       if { $panneau(foc,exptime) >= "0" && $panneau(foc,exptime) < "1" } {
@@ -258,33 +244,52 @@ namespace eval ::foc {
       #--- Alarme sonore de fin de pose
       ::camera::alarmeSonore $panneau(foc,exptime)
 
-      #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
-      #if { $panneau(foc,focuser) ni [list "$caption(foc,pas_focuser)" ""]} {
-      #     set delay 0.100
-      #   if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
-      #      set delay [ expr $panneau(foc,exptime)-$delay ]
-      #      if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
-      #        #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
-      #      }
-      #   }
-      #   after 100
-      #}
+      if {$panneau(foc,focuser) in [list focuseraudecom usb_focus]} {
 
-      #--- Declenchement de l'acquisition
-      ::camera::acquisition [ ::confVisu::getCamItem $audace(visuNo) ] "::foc::attendImage" $panneau(foc,exptime)
+         #--   Effectue le deplacement du focuser sur la position initiale
+         #--   ou sur la position cible
+         ::foc::dynamicFoc
 
-      #--- Je lance la boucle d'affichage du decompte
-      after 10 ::foc::dispTime
-
-      #--- J'attends la fin de l'acquisition
-      vwait panneau(foc,finAquisition)
-
-      #--- Informations sur l'image fenetree
-      if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
-         if { $panneau(foc,boucle) == "$caption(foc,on)" } {
-            ::foc::updateValues
-            after idle ::foc::cmdAcq
+         #--   Repete la prise de vue
+         for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
+            #--   Sort de la boucle si arret demande
+            if {$panneau(foc,demande_arret) == 1} {
+               set panneau(foc,demande_arret) "0"
+               break
+            }
+            #--   Fait une acquisition
+            ::foc::basicAcq
          }
+
+      } else {
+
+         if {$panneau(foc,simulation) == 1} {
+            set limite1 0 ; set limite2 65535
+            set panneau(foc,step) 3000
+            set panneau(foc,end) $limite2
+            set newPosition [expr {$limite1+$panneau(foc,compteur)*$panneau(foc,step) }]
+            if {$newPosition <= $panneau(foc,end)} {
+               set panneau(foc,start) $newPosition
+            } else {
+               set panneau(foc,demande_arret) "1"
+            }
+            set panneau(foc,repeat) 1
+         }
+
+            #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
+            #if { $panneau(foc,focuser) ni [list "$caption(foc,pas_focuser)" ""]} {
+            #     set delay 0.100
+            #   if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
+            #      set delay [ expr $panneau(foc,exptime)-$delay ]
+            #      if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
+            #        #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+            #      }
+            #   }
+            #   after 100
+            #}
+
+         #--   Fait une acquisition (mode continu)
+         ::foc::basicAcq
       }
 
       #--- Pose en cours
@@ -295,6 +300,56 @@ namespace eval ::foc {
 
       #--- Effacement de la barre de progression quand la pose est terminee
       ::foc::avancementPose -1
+   }
+
+   #------------------------------------------------------------
+   # basicAcq
+   #     Processus commun d'acquisition
+   # Return : Rien
+   #------------------------------------------------------------
+   proc basicAcq { } {
+      global panneau caption
+
+      #--- Declenchement de l'acquisition
+      if {$panneau(foc,simulation) ==0} {
+         ::camera::acquisition [ ::confVisu::getCamItem $audace(visuNo) ] "::foc::attendImage" $panneau(foc,exptime)
+
+         #--- Je lance la boucle d'affichage du decompte
+         after 10 ::foc::dispTime
+
+         #--- J'attends la fin de l'acquisition
+         vwait panneau(foc,finAquisition)
+
+      } else {
+         #--   Simulation
+         if {$panneau(foc,typefocuser) == 1} {
+            #--   Focuser audecom ou USB_Focus
+            switch -exact $panneau(foc,focuser) {
+               focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+               usb_focus          {set limite1 0      ; set limite2 65535 }
+            }
+         } else {
+            #--   Tous les autres focuser
+            set limite1 0 ; set limite2 65535
+         }
+
+         #--   Calcule le seeing et son increment
+         set ratio [expr { 1.85*$panneau(foc,seeing)/($limite2-$limite1) }]
+         set seeing [expr { $panneau(foc,seeing)-$ratio*($panneau(foc,start)-$limite1) } ]
+         ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
+
+      }
+
+      #--- Informations sur l'image fenetree
+      if { $panneau(foc,actuel) ne "$caption(foc,centrage)" } {
+         if { $panneau(foc,boucle) == "$caption(foc,on)" } {
+            ::foc::updateValues
+            after idle ::foc::cmdAcq
+         }
+      } else {
+         set panneau(foc,pose_en_cours) "0"
+         ::foc::setAcqState stop
+      }
    }
 
    #------------------------------------------------------------
@@ -358,8 +413,6 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc attendImage { message args } {
       global audace panneau
-
-      #::console::affiche_resultat "message = $message args = $args\n"
 
       switch $message {
          "autovisu" {
@@ -445,6 +498,8 @@ namespace eval ::foc {
                #--- Demande d'arret de la pose
                set panneau(foc,demande_arret) "1"
                set panneau(foc,boucle) "$caption(foc,off)"
+               #--- Gestion graphique des boutons
+               ::foc::setAcqState stop
             } else {
                ::foc::razGraph
             }
@@ -513,22 +568,21 @@ namespace eval ::foc {
          #--   Tous les autres focuser
          set limite1 0 ; set limite2 65535
       }
-      if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
+     if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
          #--   focuser connecte
 
          #--   GOTO si la position de depart n'est pas la position courante
          if {$audace(focus,currentFocus) != $panneau(foc,start)} {
             set audace(focus,targetFocus) $panneau(foc,start)
-            switch -exact $panneau(foc,focuser) {
+            switch -exact $focuser {
                focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
-         }
 
-         #--   delai de mise au repos ???
-         after 500
+            #--   delai de stabilisation
+           after 500
+         }
       }
-      update
 
       #--   Calcule le seeing et son increment
       set ratio [expr { 1.85*$panneau(foc,seeing)/($limite2-$limite1) }]
@@ -551,10 +605,14 @@ namespace eval ::foc {
 
          #--   Rejoint la position suivante
          if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
-            switch -exact $panneau(foc,focuser) {
-              focuseraudecom     { ::foc::cmdSeDeplaceA }
+            switch -exact $focuser {
+               focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
+
+            #--   delai de stabilisation
+            after 500
+
          } else {
              after 2000
              #--   Actualise la position courante

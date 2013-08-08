@@ -251,6 +251,61 @@ namespace eval ::foc {
       }
    }
 
+   #------------------------------------------------------------
+   # dynamicFoc
+   #  Calcule et effectue le deplacemnt de focuseraudecom et usb_focus
+   # Return : Rien
+   #------------------------------------------------------------
+   proc dynamicFoc { } {
+      global audace caption panneau
+
+      #--   GOTO si la position de depart n'est pas la position courante
+      if {$audace(focus,currentFocus) != $panneau(foc,start)} {
+
+         #--   Fixe la position cible
+         set audace(focus,targetFocus) $panneau(foc,start)
+
+         if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
+
+            #--   Focuser connecte
+            switch -exact $focuser {
+               focuseraudecom     { ::foc::cmdSeDeplaceA }
+               usb_focus          { ::foc::cmdUSB_FocusGoto }
+            }
+
+            #--   delai de stabilisation
+            after 500
+
+         } else {
+
+            #--   Focuser simule
+            #--   Actualise la position courante
+            set audace(focus,targetFocus) $panneau(foc,start)
+            after 5000
+            set audace(focus,currentFocus) $audace(focus,targetFocus)
+         }
+      } else {
+         set audace(focus,targetFocus) $audace(focus,currentFocus)
+      }
+
+      update
+
+      #--   En mode Fenetrage
+      if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
+         #--   Calcule la position suivante
+         set newPosition [expr { $audace(focus,currentFocus)+$panneau(foc,step) }]
+         if {$newPosition <= $panneau(foc,end)} {
+            #--   Fixe la prochaine etape avec start
+            set panneau(foc,start) $newPosition
+         } else {
+            #--   Demande l'arret
+            set panneau(foc,demande_arret) 1
+         }
+      }
+
+      update
+   }
+
    #------------   fenetre affichant les limites  --------------
 
    #------------------------------------------------------------
