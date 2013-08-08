@@ -25,7 +25,9 @@ namespace eval ::foc {
       yleft set ::VShfd          ; #-- copie le vecteur
       xleft set ::VSpos          ; #-- copie le vecteur
 
-      if {[xleft length] < 2 || $xleft(0) == $xleft(end)} {
+      #--   Ne fait rien si toutes les (au moins 2) positions sont identiques
+      set len [xleft length]
+      if { $len < 2 || ($len >= 2 && $xleft(0) == $xleft(end)) } {
          return [list $slopeLeft $slopeRight $positionOpt]
       }
 
@@ -44,7 +46,7 @@ namespace eval ::foc {
          #--   ignore le premier depassement (si moins de 2 valeurs)
          if {[yright length] == [xright length] && [yright length] >= 2} {
             set side right
-            lassign [getParam $side $yright(:) $xright(:)] constanteRight slopeRight step0Right
+            lassign [::foc::getParam $side $yright(:) $xright(:)] constanteRight slopeRight step0Right
           }
 
          #--   raccourci le vecteur gauche
@@ -55,7 +57,7 @@ namespace eval ::foc {
       #--   traite le vecteur gauche
       if {[yleft length] == [xleft length] && [yleft length] >= 2} {
          set side left
-         lassign [getParam $side $yleft(:) $xleft(:)] constanteLeft slopeLeft step0Left
+         lassign [::foc::getParam $side $yleft(:) $xleft(:)] constanteLeft slopeLeft step0Left
       }
 
       #--   calcule de l'intersection
