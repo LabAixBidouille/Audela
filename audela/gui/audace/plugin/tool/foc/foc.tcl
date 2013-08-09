@@ -183,87 +183,82 @@ namespace eval ::foc {
          set panneau(foc,focuser) "$caption(foc,pas_focuser)"
       }
 
-      if { $panneau(foc,focuser) != "$caption(foc,pas_focuser)" } {
-         if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
-            set panneau(foc,typefocuser) 1
-         } else {
-            set panneau(foc,typefocuser) 0
-         }
+      if { $panneau(foc,focuser) == "$caption(foc,pas_focuser)" } {
 
-         #--   demasque tout ce qui etait masque
-         pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1 ; #-- demasque label moteur focus
-         pack $This.fra4.we -in $This.fra4 -side top -fill x                           ; #-- demasque frame des buttons '- +'
-         pack $This.fra5 -before $This.fra7 -side top -fill x                          ; #-- demasque frame position focus
-      } else {
+         #--   absence de focuser
          set panneau(foc,typefocuser) 0
-
          #--   masque tout sauf la liste des focuser
-         pack forget $This.fra4.lab1                     ; #-- masque label moteur focus
-         pack forget $This.fra4.we                       ; #-- masque frame des buttons '- +'
-         pack forget $This.fra5                          ; #-- masque frame position focus
-      }
-
-      if { $panneau(foc,typefocuser) == "1"} {
-
-         #--- Avec controle etendu
-         pack $This.fra5.but0 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
-         pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
-         pack $This.fra5.current
-         pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
-         pack $This.fra5.target
-         if {$::panneau(foc,focuser) eq "usb_focus"} {
-            pack forget $This.fra5.but0
-            pack forget $This.fra5.but1
-            ::focus::displayCurrentPosition $::panneau(foc,focuser) ; #usb_focus
-            #--   modifie la commande du bouton
-            $This.fra5.but2 configure -command { ::foc::cmdUSB_FocusGoto }
-            #--   modifie la commande validation de la saisie
-            $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
-            $This.fra6.start configure -helptext [format $caption(foc,hlpstart) 0]
-            $This.fra6.end configure -helptext [format $caption(foc,hlpend) 65535]
-            #--   modifie les valeurs debut et fin
-            set panneau(foc,start) "0"
-            set panneau(foc,end)   "65535"
-         } else {
-            #--   sans effet si la commande est deja configuree comme cela
-            $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
-            $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
-            $This.fra6.start configure -helptext [format $caption(foc,hlpstart) -32767]
-            $This.fra6.end configure -helptext [format $caption(foc,hlpend) 32767]
-            #--   modifie les valeurs debut et fin
-            set panneau(foc,start) "-32767"
-            set panneau(foc,end)   "32767"
-         }
-
-         pack $This.fra6 -in $This -after $This.fra5 -fill x
-
-         #--   switch les graphes
-         if {[winfo exists $::audace(base).visufoc]} {
-            #--   ferme le graphique normal
-            ::foc::fermeGraphe
-            #--   ouvre l'autre graphique
-            ::foc::HFDGraphe
-         }
+         pack forget $This.fra4                              ; #-- masque le frame de la raquette du focuser
+         pack forget $This.fra5                              ; #-- masque frame position focus
+         pack forget $This.fra6                              ; #-- masque frame programation
 
       } else {
 
-         #--- Sans controle etendu
-         pack forget $This.fra5.but0
-         pack forget $This.fra5.but1
-         pack forget $This.fra5.current
-         pack forget $This.fra5.but2
-         pack forget $This.fra5.target
-         #--   switch les graphes
-         if {[winfo exists $::audace(base).hfd]} {
-            #--   ferme le graphique hfd
-            ::foc::closeHFDGraphe
-            #--   ouvre la graphique normal
-            ::foc::focGraphe
-         }
+         #--   tous les focuser reels
 
-         pack forget $This.fra6
+         #-- demasque le frame de la raquette du focuser commun a tous les focuser
+         pack $This.fra4 -after $This.fra3 -side top -fill x
+
+         if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
+
+            #--   focuseraudecom et usb_focus
+            set panneau(foc,typefocuser) 1
+
+            pack $This.fra5 -after $This.fra4 -side top -fill x ; #-- demasque frame position focus
+            pack $This.fra6 -after $This.fra5 -side top -fill x ; #-- demasque frame programmation
+
+            if {$::panneau(foc,focuser) eq "usb_focus"} {
+               #--   usb_focus
+               pack forget $This.fra5.but0
+               pack forget $This.fra5.but1
+               ::focus::displayCurrentPosition $::panneau(foc,focuser)
+               #--   adapte les commandes
+               $This.fra5.but2 configure -command { ::foc::cmdUSB_FocusGoto }
+               $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
+               $This.fra6.start configure -helptext [format $caption(foc,hlpstart) 0]
+               $This.fra6.end configure -helptext [format $caption(foc,hlpend) 65535]
+               #--   modifie les valeurs debut et fin
+               set panneau(foc,start) "0"
+               set panneau(foc,end)   "65535"
+            } else {
+               #--   focuseraudecom
+               $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
+               #--   adapte les commandes
+               $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
+               $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
+               $This.fra6.start configure -helptext [format $caption(foc,hlpstart) -32767]
+               $This.fra6.end configure -helptext [format $caption(foc,hlpend) 32767]
+               #--   modifie les valeurs debut et fin
+               set panneau(foc,start) "-32767"
+               set panneau(foc,end)   "32767"
+            }
+
+            #--   switch les graphes
+            if {[winfo exists $::audace(base).visufoc]} {
+              #--   ferme le graphique normal
+              ::foc::fermeGraphe
+              #--   ouvre l'autre graphique
+              ::foc::HFDGraphe
+            }
+
+         } else {
+
+            #--   tous les focuser sans controle etendu
+            set panneau(foc,typefocuser) 0
+
+            pack forget $This.fra5 ; #-- masque frame position focus
+            pack forget $This.fra6 ; #-- masque frame proogrammation
+
+            #--   switch les graphes
+            if {[winfo exists $::audace(base).hfd]} {
+               #--   ferme le graphique hfd
+               ::foc::closeHFDGraphe
+               #--   ouvre la graphique normal
+               ::foc::focGraphe
+            }
+         }
       }
-      $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
+      update
    }
 
    #------------------------------------------------------------
