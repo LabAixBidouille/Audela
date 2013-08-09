@@ -19,6 +19,9 @@ set caption(dfm,configurer)                 "Set up"
 set caption(dfm,controle)                   "Control"
 set caption(dfm,raquette_tel)               "Hand controller on screen"
 
+set caption(dfm,install_1)                  "End of DFM plug-in installation"
+set caption(dfm,install_2)                  "libdfm.dll library updated."
+
 set caption(dfm,port_dfm)                   "DFM Port"
 set caption(dfm,2points)                    ":"
 
@@ -35,6 +38,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,configurer)              "Configurer"
    set caption(dfm,controle)                "Contrôle"
    set caption(dfm,raquette_tel)            "Raquette à l'écran"
+
+   set caption(dfm,install_1)               "Fin de l'installation du plug-in DFM"
+   set caption(dfm,install_2)               "La librairie libdfm.dll a été mise à jour."
 
    set caption(dfm,port_dfm)                "Port DFM"
    set caption(dfm,2points)                 ":"
@@ -53,6 +59,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,controle)                "Controllo"
    set caption(dfm,raquette_tel)            "Pulsantiera a schermo"
 
+   set caption(dfm,install_1)               "Fine installazione del plug-in DFM"
+   set caption(dfm,install_2)               "La libreria libdfm.dll è stata aggiornata."
+
    set caption(dfm,port_dfm)                "Porta DFM"
    set caption(dfm,2points)                 ":"
 
@@ -69,6 +78,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,configurer)              "Configurar"
    set caption(dfm,controle)                "Control"
    set caption(dfm,raquette_tel)            "Controlador virtual"
+
+   set caption(dfm,install_1)               "Fin de la instalación del plug-in DFM"
+   set caption(dfm,install_2)               "Libreria libdfm.dll actualizada."
 
    set caption(dfm,port_dfm)                "Puerto DFM"
    set caption(dfm,2points)                 ":"
@@ -87,6 +99,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,controle)                "Kontroll"
    set caption(dfm,raquette_tel)            "Hand Kontroller am Bildschirm"
 
+   set caption(dfm,install_1)               "Ende der DFM-Plug-in-Installation"
+   set caption(dfm,install_2)               "Die libdfm.dll Bibliothek ist aktualisiert."
+
    set caption(dfm,port_dfm)                "DFM Port"
    set caption(dfm,2points)                 ":"
 
@@ -103,6 +118,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,configurer)              "Configuração"
    set caption(dfm,controle)                "Controlo"
    set caption(dfm,raquette_tel)            "Controlador de mão no ecrã"
+
+   set caption(dfm,install_1)               "Fin da instalação do plug-in DFM"
+   set caption(dfm,install_2)               "A livraria libdfm.dll foi actualizada."
 
    set caption(dfm,port_dfm)                "Porta DFM"
    set caption(dfm,2points)                 ":"
@@ -121,6 +139,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,controle)                "Control"
    set caption(dfm,raquette_tel)            "Hand controller on screen"
 
+   set caption(dfm,install_1)               "End of DFM plug-in installation"
+   set caption(dfm,install_2)               "libdfm.dll library updated."
+
    set caption(dfm,port_dfm)                "DFM Port"
    set caption(dfm,2points)                 ":"
 
@@ -138,6 +159,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,controle)                "Control"
    set caption(dfm,raquette_tel)            "Hand controller on screen"
 
+   set caption(dfm,install_1)               "End of DFM plug-in installation"
+   set caption(dfm,install_2)               "libdfm.dll library updated."
+
    set caption(dfm,port_dfm)                "DFM Port"
    set caption(dfm,2points)                 ":"
 
@@ -154,6 +178,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(dfm,configurer)              "Set up"
    set caption(dfm,controle)                "Control"
    set caption(dfm,raquette_tel)            "Hand controller on screen"
+
+   set caption(dfm,install_1)               "End of DFM plug-in installation"
+   set caption(dfm,install_2)               "libdfm.dll library updated."
 
    set caption(dfm,port_dfm)                "DFM Port"
    set caption(dfm,2points)                 ":"

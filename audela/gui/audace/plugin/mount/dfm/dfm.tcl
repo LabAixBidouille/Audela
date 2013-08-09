@@ -13,6 +13,19 @@ namespace eval ::dfm {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::dfm::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libdfm.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dfm::getPluginType]] "dfm" "libdfm.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(dfm,install_1) v[package version dfm]. $::caption(dfm,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
