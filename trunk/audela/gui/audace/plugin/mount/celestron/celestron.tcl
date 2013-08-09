@@ -19,7 +19,7 @@ namespace eval ::celestron {
 proc ::celestron::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libcelestron.dll dans le repertoire audela/bin
-      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::celestron::getPluginType]] "celestron" "liblcelestron.dll"]
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::celestron::getPluginType]] "celestron" "libcelestron.dll"]
       ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
       ::audace::appendUpdateMessage "$::caption(celestron,install_1) v[package version celestron]. $::caption(celestron,install_2)"
    }

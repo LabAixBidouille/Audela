@@ -16,6 +16,9 @@ set caption(ascom,driver)                        "ASCOM Driver"
 set caption(ascom,configurer)                    "Set up"
 set caption(ascom,raquette_tel)                  "Hand controller on screen"
 
+set caption(ascom,install_1)                     "End of ASCOM plug-in installation"
+set caption(ascom,install_2)                     "libascom.dll library updated."
+
 set caption(ascom,2points)                       ":"
 
 set caption(ascom,titre_site_web)                "Reference Web Site:"
@@ -28,6 +31,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,driver)                     "Driver ASCOM"
    set caption(ascom,configurer)                 "Configurer"
    set caption(ascom,raquette_tel)               "Raquette à l'écran"
+
+   set caption(ascom,install_1)                  "Fin de l'installation du plug-in ASCOM"
+   set caption(ascom,install_2)                  "La librairie libascom.dll a été mise à jour."
 
    set caption(ascom,2points)                    ":"
 
@@ -42,6 +48,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,configurer)                 "Configurare"
    set caption(ascom,raquette_tel)               "Pulsantiera a schermo"
 
+   set caption(ascom,install_1)                  "Fine installazione del plug-in ASCOM"
+   set caption(ascom,install_2)                  "La libreria libascom.dll è stata aggiornata."
+
    set caption(ascom,2points)                    ":"
 
    set caption(ascom,titre_site_web)             "Sito Web di riferimento:"
@@ -54,6 +63,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,driver)                     "Driver ASCOM"
    set caption(ascom,configurer)                 "Configurar"
    set caption(ascom,raquette_tel)               "Controlador virtual"
+
+   set caption(ascom,install_1)                  "Fin de la instalación del plug-in ASCOM"
+   set caption(ascom,install_2)                  "Libreria libascom.dll actualizada."
 
    set caption(ascom,2points)                    ":"
 
@@ -68,6 +80,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,configurer)                 "Konfigurieren"
    set caption(ascom,raquette_tel)               "Hand Kontroller am Bildschirm"
 
+   set caption(ascom,install_1)                  "Ende der ASCOM-Plug-in-Installation"
+   set caption(ascom,install_2)                  "Die libascom.dll Bibliothek ist aktualisiert."
+
    set caption(ascom,2points)                    ":"
 
    set caption(ascom,titre_site_web)             "Referenz Webseite:"
@@ -80,6 +95,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,driver)                     "Driver ASCOM"
    set caption(ascom,configurer)                 "Configuração"
    set caption(ascom,raquette_tel)               "Controlador de mão no ecrã"
+
+   set caption(ascom,install_1)                  "Fin da instalação do plug-in ASCOM"
+   set caption(ascom,install_2)                  "A livraria libascom.dll foi actualizada."
 
    set caption(ascom,2points)                    ":"
 
@@ -94,6 +112,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,configurer)                 "Set up"
    set caption(ascom,raquette_tel)               "Hand controller on screen"
 
+   set caption(ascom,install_1)                  "End of ASCOM plug-in installation"
+   set caption(ascom,install_2)                  "libascom.dll library updated."
+
    set caption(ascom,2points)                    ":"
 
    set caption(ascom,titre_site_web)             "Reference Web Site:"
@@ -107,6 +128,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,configurer)                 "Set up"
    set caption(ascom,raquette_tel)               "Hand controller on screen"
 
+   set caption(ascom,install_1)                  "End of ASCOM plug-in installation"
+   set caption(ascom,install_2)                  "libascom.dll library updated."
+
    set caption(ascom,2points)                    ":"
 
    set caption(ascom,titre_site_web)             "Reference Web Site:"
@@ -119,6 +143,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ascom,driver)                     "ASCOM Driver"
    set caption(ascom,configurer)                 "Set up"
    set caption(ascom,raquette_tel)               "Hand controller on screen"
+
+   set caption(ascom,install_1)                  "End of ASCOM plug-in installation"
+   set caption(ascom,install_2)                  "libascom.dll library updated."
 
    set caption(ascom,2points)                    ":"
 
