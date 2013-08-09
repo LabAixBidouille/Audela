@@ -14,12 +14,12 @@ namespace eval ::lx200 {
 
 #
 # install
-#    installe le plugin
+#    installe le plugin et la dll
 #
 proc ::lx200::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace liblx200.dll dans le repertoire audela/bin
-      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "lx200" "liblx200.dll"]
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::lx200::getPluginType]] "lx200" "liblx200.dll"]
       ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
       ::audace::appendUpdateMessage "$::caption(lx200,install_1) v[package version lx200]. $::caption(lx200,install_2)"
    }
@@ -112,6 +112,7 @@ proc ::lx200::initPlugin { } {
    if { ! [ info exists conf(lx200,ouranos) ] }           { set conf(lx200,ouranos)           "0" }
    if { ! [ info exists conf(lx200,modele) ] }            { set conf(lx200,modele)            "LX200" }
    if { ! [ info exists conf(lx200,format) ] }            { set conf(lx200,format)            "1" }
+   if { ! [ info exists conf(lx200,majDatePosGPS) ] }     { set conf(lx200,majDatePosGPS)     "1" }
    if { ! [ info exists conf(lx200,ite-lente_tempo) ] }   { set conf(lx200,ite-lente_tempo)   "10" }
    if { ! [ info exists conf(lx200,alphaGuidingSpeed) ] } { set conf(lx200,alphaGuidingSpeed) "3.0" }
    if { ! [ info exists conf(lx200,deltaGuidingSpeed) ] } { set conf(lx200,deltaGuidingSpeed) "3.0" }
@@ -130,6 +131,7 @@ proc ::lx200::confToWidget { } {
    set private(ouranos)           $conf(lx200,ouranos)
    set private(modele)            $conf(lx200,modele)
    set private(format)            [ lindex "$caption(lx200,format_court_long)" $conf(lx200,format) ]
+   set private(majDatePosGPS)     $conf(lx200,majDatePosGPS)
    set private(ite-lente_tempo)   $conf(lx200,ite-lente_tempo)
    set private(raquette)          $conf(raquette)
    set private(alphaGuidingSpeed) $conf(lx200,alphaGuidingSpeed)
@@ -147,8 +149,9 @@ proc ::lx200::widgetToConf { } {
    #--- Memorise la configuration de la monture LX200 dans le tableau conf(lx200,...)
    set conf(lx200,port)              $private(port)
    set conf(lx200,ouranos)           $private(ouranos)
-   set conf(lx200,format)            [ lsearch "$caption(lx200,format_court_long)" "$private(format)" ]
    set conf(lx200,modele)            $private(modele)
+   set conf(lx200,format)            [ lsearch "$caption(lx200,format_court_long)" "$private(format)" ]
+   set conf(lx200,majDatePosGPS)     $private(majDatePosGPS)
    set conf(lx200,ite-lente_tempo)   $private(ite-lente_tempo)
    set conf(raquette)                $private(raquette)
    set conf(lx200,alphaGuidingSpeed) $private(alphaGuidingSpeed)
@@ -304,13 +307,11 @@ proc ::lx200::fillConfigPage { frm } {
       -values $list_combobox
    pack $frm.formatradec -in $frm.frame11 -anchor center -side right -padx 10 -pady 10
 
-   #--- Le bouton de commande maj heure et position du LX200
-   button $frm.majpara -text "$caption(lx200,maj_lx200)" -relief raised -command {
-      tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
-   }
-   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
-      -expand true
+   #--- Le checkbutton pour la mise a jour de l'heure et de la position GPS du LX200
+   checkbutton $frm.majDatePosGPS -text "$caption(lx200,maj_lx200)" \
+      -highlightthickness 0 -variable ::lx200::private(majDatePosGPS) \
+      -command "::lx200::majDatePosGPS"
+   pack $frm.majDatePosGPS -in $frm.frame2 -anchor w -side top -padx 10 -pady 10
 
    #--- Frame des vitesses de guidage
    frame $frm.frame2.frameSpeed -borderwidth 0
@@ -397,7 +398,7 @@ proc ::lx200::fillConfigPage { frm } {
       "$caption(lx200,site_web_ref)" ]
    pack $labelName -side top -fill x -pady 2
 
-   #--- Gestion du bouton actif/inactif
+   #--- Gestion des boutons actifs/inactifs
    ::lx200::confLX200
 
    #--- Gestion de la tempo pour Ite-lente
@@ -429,15 +430,6 @@ proc ::lx200::configureMonture { } {
             ::console::affiche_entete "$caption(lx200,host_audinet) $caption(lx200,2points)\
                $conf(audinet,host)\n"
             ::console::affiche_saut "\n"
-            if { $conf(lx200,format) == "0" } {
-               tel$telNo longformat off
-            } else {
-               tel$telNo longformat on
-            }
-            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
-            #--- Je change de variable
-            set private(telNo) $telNo
          }
          serialport {
             #--- Je cree la monture
@@ -446,30 +438,35 @@ proc ::lx200::configureMonture { } {
             ::console::affiche_entete "$caption(lx200,port_lx200) ($conf(lx200,modele))\
                $caption(lx200,2points) $conf(lx200,port)\n"
             ::console::affiche_saut "\n"
-            if { $conf(lx200,format) == "0" } {
-               tel$telNo longformat off
-            } else {
-               tel$telNo longformat on
-            }
+            #--- Cas particulier du modele Ite-lente
             if { $conf(lx200,modele) == "Ite-lente" } {
                tel$telNo tempo $conf(lx200,ite-lente_tempo)
             }
-            #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
-            set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
-            #--- Je change de variable
-            set private(telNo) $telNo
          }
       }
-      #--- Je configure la position geographique et le nom de la monture
+      #--- Je configure la position geographique de la monture et le nom de l'observatoire
       #--- (la position geographique est utilisee pour calculer le temps sideral)
-      tel$telNo home $::audace(posobs,observateur,gps)
-      tel$telNo home name $::conf(posobs,nom_observatoire)
+      if { $conf(lx200,majDatePosGPS) == "1" } {
+         tel$telNo date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+         tel$telNo home $::audace(posobs,observateur,gps)
+         tel$telNo home name $::conf(posobs,nom_observatoire)
+      }
+      #--- Je choisis le format des coordonnees AD et Dec.
+      if { $conf(lx200,format) == "0" } {
+         tel$telNo longformat off
+      } else {
+         tel$telNo longformat on
+      }
       #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
       tel$telNo radec survey 1
-      #--- Gestion du bouton actif/inactif
-      ::lx200::confLX200
+      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+      set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
+      #--- Je change de variable
+      set private(telNo) $telNo
       #--- Traces dans la Console
       ::lx200::tracesConsole
+      #--- Gestion des boutons actifs/inactifs
+      ::lx200::confLX200
 
       #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
       if { $conf(lx200,ouranos) == "1" } {
@@ -504,9 +501,6 @@ proc ::lx200::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::lx200::confLX200Inactif
-
    #--- Je desactive le rafraichissement automatique des coordonnees AD et Dec.
    tel$private(telNo) radec survey 0
    #--- Je memorise le port
@@ -517,6 +511,9 @@ proc ::lx200::stop { } {
     ::confLink::delete $telPort "tel$private(telNo)" "control"
    set private(telNo) "0"
 
+   #--- Gestion des boutons actifs/inactifs
+   ::lx200::confLX200
+
    #--- Deconnexion des codeurs Ouranos si la monture secondaire existe
    if { $conf(lx200,ouranos) == "1" } {
       ::ouranos::stop
@@ -525,7 +522,7 @@ proc ::lx200::stop { } {
 
 #
 # confLX200
-# Permet d'activer ou de desactiver le bouton
+# Permet d'activer ou de desactiver les boutons
 #
 proc ::lx200::confLX200 { } {
    variable private
@@ -535,10 +532,6 @@ proc ::lx200::confLX200 { } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::lx200::isReady ] == 1 } {
-            if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
-               #--- Bouton Mise a jour de la date et du lieu actif
-               $frm.majpara configure -state normal
-            }
             #--- Cas des modeles qui ont la fonction "park"
             if { [ ::confTel::getPluginProperty hasPark ] == "1" } {
                #--- Bouton park actif
@@ -556,42 +549,16 @@ proc ::lx200::confLX200 { } {
                $frm.ite-lente_ack configure -state normal
             }
          } else {
-            #--- Bouton Mise a jour de la date et du lieu inactif
-            $frm.majpara configure -state disabled
             #--- Bouton park inactif
             $frm.park configure -state disabled
             #--- Bouton unpark inactif
             $frm.unpark configure -state disabled
             #--- Boutons du modele Ite-Lente
-            $frm.ite-lente_A0 configure -state disabled
-            $frm.ite-lente_A1 configure -state disabled
-            $frm.ite-lente_ack configure -state disabled
-         }
-      }
-   }
-}
-
-#
-# confLX200Inactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::lx200::confLX200Inactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         #--- Bouton Mise a jour de la date et du lieu inactif
-         $frm.majpara configure -state disabled
-         #--- Bouton park inactif
-         $frm.park configure -state disabled
-         #--- Bouton unpark inactif
-         $frm.unpark configure -state disabled
-         #--- Boutons du modele Ite-Lente
-         if { [ winfo exists $frm.ite-lente_A0 ] } {
-            $frm.ite-lente_A0 configure -state disabled
-            $frm.ite-lente_A1 configure -state disabled
-            $frm.ite-lente_ack configure -state disabled
+            if { [ winfo exists $frm.ite-lente_A0 ] } {
+               $frm.ite-lente_A0 configure -state disabled
+               $frm.ite-lente_A1 configure -state disabled
+               $frm.ite-lente_ack configure -state disabled
+            }
          }
       }
    }
@@ -651,6 +618,16 @@ proc ::lx200::confModele { } {
             set private(ouranos) "0"
             $frm.ouranos configure -state disabled
          }
+         #--- Cas des modeles acceptant la mise a jour de la date et de la position GPS de la monture
+         if {  $private(modele) == $::caption(lx200,modele_lx200)
+            || $private(modele) == $::caption(lx200,modele_lx200_gps)
+            || $private(modele) == $::caption(lx200,modele_skysensor)
+            || $private(modele) == $::caption(lx200,modele_gemini)
+            || $private(modele) == $::caption(lx200,modele_astro_physics)} {
+            $frm.majDatePosGPS configure -state normal
+         } else {
+            $frm.majDatePosGPS configure -state disabled
+         }
       }
    }
 }
@@ -700,6 +677,24 @@ proc ::lx200::tracesConsole { } {
    }
 
    tel$private(telNo) consolelog $private(tracesConsole)
+}
+
+#
+# majDatePosGPS
+#    Met a jour la date et la position GPS dans le LX200
+#
+proc ::lx200::majDatePosGPS { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      return
+   }
+
+   if { $private(majDatePosGPS)== "1" } {
+      tel$private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+      tel$private(telNo) home $::audace(posobs,observateur,gps)
+      tel$private(telNo) home name $::conf(posobs,nom_observatoire)
+   }
 }
 
 #
@@ -765,6 +760,7 @@ proc ::lx200::getPluginProperty { propertyName } {
       }
       hasPark                 {
          if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
+            || $::conf(lx200,modele) == $::caption(lx200,modele_lx200_gps)
             || $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
             return 1
          } else {
@@ -780,6 +776,7 @@ proc ::lx200::getPluginProperty { propertyName } {
       }
       hasUpdateDate           {
          if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
+            || $::conf(lx200,modele) == $::caption(lx200,modele_lx200_gps)
             || $::conf(lx200,modele) == $::caption(lx200,modele_skysensor)
             || $::conf(lx200,modele) == $::caption(lx200,modele_gemini)
             || $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
@@ -805,7 +802,8 @@ proc ::lx200::getPluginProperty { propertyName } {
 proc ::lx200::park { state } {
    variable private
 
-   if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200) } {
+   if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
+      || $::conf(lx200,modele) == $::caption(lx200,modele_lx200_gps)} {
       if { $state == 1 } {
          #--- je parque la monture
          tel$private(telNo) command ":hP#" none

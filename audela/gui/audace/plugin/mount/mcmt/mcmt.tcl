@@ -13,6 +13,19 @@ namespace eval ::mcmt {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::mcmt::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libmcmt.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::mcmt::getPluginType]] "mcmt" "libmcmt.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(mcmt,install_1) v[package version mcmt]. $::caption(mcmt,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
@@ -273,7 +286,10 @@ proc ::mcmt::configureMonture { } {
    set catchResult [ catch {
       #--- Je cree la monture
       set telNo [ tel::create mcmt $conf(mcmt,port) -name mcmt ]
-      #--- Je configure la position geographique et le nom de la monture
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(mcmt,port_mcmt) $caption(mcmt,2points) $conf(mcmt,port)\n"
+      ::console::affiche_saut "\n"
+      #--- Je configure la position geographique de la monture et le nom de l'observatoire
       #--- (la position geographique est utilisee pour calculer le temps sideral)
       if { $conf(mcmt,majPosGPS) == "1" } {
          tel$telNo home $::audace(posobs,observateur,gps)
@@ -289,9 +305,6 @@ proc ::mcmt::configureMonture { } {
       ::mcmt::tracesConsole
       #--- Gestion des boutons actifs/inactifs
       ::mcmt::confMcmt
-      #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(mcmt,port_mcmt) $caption(mcmt,2points) $conf(mcmt,port)\n"
-      ::console::affiche_saut "\n"
    } ]
 
    if { $catchResult == "1" } {
