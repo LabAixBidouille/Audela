@@ -13,6 +13,19 @@ namespace eval ::temma {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::temma::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libtemma.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::temma::getPluginType]] "temma" "libtemma.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(temma,install_1) v[package version temma]. $::caption(temma,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #

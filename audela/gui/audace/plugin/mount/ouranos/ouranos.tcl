@@ -13,6 +13,19 @@ namespace eval ::ouranos {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::ouranos::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libouranos.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::ouranos::getPluginType]] "ouranos" "libouranos.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(ouranos,install_1) v[package version ouranos]. $::caption(ouranos,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #

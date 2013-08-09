@@ -44,6 +44,9 @@ set caption(ouranos,ra)                          "RA"
 set caption(ouranos,dec)                         "Dec."
 set caption(ouranos,et)                          "and"
 
+set caption(ouranos,install_1)                   "End of Ouranos plug-in installation"
+set caption(ouranos,install_2)                   "libouranos.dll library updated."
+
 set caption(ouranos,port_ouranos)                "Ouranos Port"
 set caption(ouranos,2points)                     ":"
 
@@ -85,6 +88,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,ra)                       "AD"
    set caption(ouranos,dec)                      "Déc."
    set caption(ouranos,et)                       "et"
+
+   set caption(ouranos,install_1)                "Fin de l'installation du plug-in Ouranos"
+   set caption(ouranos,install_2)                "La librairie libouranos.dll a été mise à jour."
 
    set caption(ouranos,port_ouranos)             "Port Ouranos"
    set caption(ouranos,2points)                  ":"
@@ -128,6 +134,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,dec)                      "Dec."
    set caption(ouranos,et)                       "e"
 
+   set caption(ouranos,install_1)                "Fine installazione del plug-in Ouranos"
+   set caption(ouranos,install_2)                "La libreria libouranos.dll è stata aggiornata."
+
    set caption(ouranos,port_ouranos)             "Porta Ouranos"
    set caption(ouranos,2points)                  ":"
 
@@ -169,6 +178,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,ra)                       "AR"
    set caption(ouranos,dec)                      "Dec."
    set caption(ouranos,et)                       "y"
+
+   set caption(ouranos,install_1)                "Fin de la instalación del plug-in Ouranos"
+   set caption(ouranos,install_2)                "Libreria libouranos.dll actualizada."
 
    set caption(ouranos,port_ouranos)             "Puerto Ouranos"
    set caption(ouranos,2points)                  ":"
@@ -212,6 +224,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,dec)                      "Dek."
    set caption(ouranos,et)                       "und"
 
+   set caption(ouranos,install_1)                "Ende der Ouranos-Plug-in-Installation"
+   set caption(ouranos,install_2)                "Die libouranos.dll Bibliothek ist aktualisiert."
+
    set caption(ouranos,port_ouranos)             "Ouranos Port"
    set caption(ouranos,2points)                  ":"
 
@@ -253,6 +268,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,ra)                       "AR"
    set caption(ouranos,dec)                      "Dec."
    set caption(ouranos,et)                       "e"
+
+   set caption(ouranos,install_1)                "Fin da instalação do plug-in Ouranos"
+   set caption(ouranos,install_2)                "A livraria libouranos.dll foi actualizada."
 
    set caption(ouranos,port_ouranos)             "Porta Ouranos"
    set caption(ouranos,2points)                  ":"
@@ -296,6 +314,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,dec)                      "Dec."
    set caption(ouranos,et)                       "and"
 
+   set caption(ouranos,install_1)                "End of Ouranos plug-in installation"
+   set caption(ouranos,install_2)                "libouranos.dll library updated."
+
    set caption(ouranos,port_ouranos)             "Ouranos Port"
    set caption(ouranos,2points)                  ":"
 
@@ -338,6 +359,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,dec)                      "Dec."
    set caption(ouranos,et)                       "and"
 
+   set caption(ouranos,install_1)                "End of Ouranos plug-in installation"
+   set caption(ouranos,install_2)                "libouranos.dll library updated."
+
    set caption(ouranos,port_ouranos)             "Ouranos Port"
    set caption(ouranos,2points)                  ":"
 
@@ -379,6 +403,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(ouranos,ra)                       "RA"
    set caption(ouranos,dec)                      "Dec."
    set caption(ouranos,et)                       "and"
+
+   set caption(ouranos,install_1)                "End of Ouranos plug-in installation"
+   set caption(ouranos,install_2)                "libouranos.dll library updated."
 
    set caption(ouranos,port_ouranos)             "Ouranos Port"
    set caption(ouranos,2points)                  ":"
