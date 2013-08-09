@@ -34,7 +34,6 @@ set caption(eqmod,reference)                 "Distance to Meridian:"
 set caption(eqmod,limite_est)                "To the East (in h)"
 set caption(eqmod,limite_ouest)              "To the West (in h)"
 
-
 set caption(eqmod,moteur_on)                 "Motor On"
 set caption(eqmod,N/A)                       "------"
 set caption(eqmod,angle_horaire)             "Hour Angle:"
@@ -43,6 +42,9 @@ set caption(eqmod,DEC)                       "Declination:"
 set caption(eqmod,position_AD)               "RA Position:"
 set caption(eqmod,position_DEC)              "Dec. Position:"
 set caption(eqmod,valeurDefaut)              "Default Value:"
+
+set caption(eqmod,install_1)                 "End of EQMOD plug-in installation"
+set caption(eqmod,install_2)                 "libeqmod.dll library updated."
 
 set caption(eqmod,positionMonture)           "Mount Location:"
 set caption(eqmod,port_eqmod)                "EQMOD Port"
@@ -86,6 +88,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Position Déc. :"
    set caption(eqmod,valeurDefaut)           "Valeur par défaut :"
 
+   set caption(eqmod,install_1)              "Fin de l'installation du plug-in EQMOD"
+   set caption(eqmod,install_2)              "La librairie libeqmod.dll a été mise à jour."
+
    set caption(eqmod,positionMonture)        "Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "Port EQMOD"
    set caption(eqmod,2points)                ":"
@@ -127,6 +132,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_AD)            "Posizione A.R.:"
    set caption(eqmod,position_DEC)           "Posizione Dec.:"
    set caption(eqmod,valeurDefaut)           "Valore di default:"
+
+   set caption(eqmod,install_1)              "Fine installazione del plug-in EQMOD"
+   set caption(eqmod,install_2)              "La libreria libeqmod.dll è stata aggiornata."
 
    set caption(eqmod,positionMonture)        "Posizione della montatura:"
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
@@ -170,6 +178,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Posición Dec.:"
    set caption(eqmod,valeurDefaut)           "Valor por defecto:"
 
+   set caption(eqmod,install_1)              "Fin de la instalación del plug-in EQMOD"
+   set caption(eqmod,install_2)              "Libreria libeqmod.dll actualizada."
+
    set caption(eqmod,positionMonture)        "Localización de la montura:"
    set caption(eqmod,port_eqmod)             "Puerto EQMOD"
    set caption(eqmod,2points)                ":"
@@ -211,6 +222,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_AD)            "Rek. Position:"
    set caption(eqmod,position_DEC)           "Dek. Position:"
    set caption(eqmod,valeurDefaut)           "Standardwert:"
+
+   set caption(eqmod,install_1)              "Ende der EQMOD-Plug-in-Installation"
+   set caption(eqmod,install_2)              "Die libeqmod.dll Bibliothek ist aktualisiert."
 
    set caption(eqmod,positionMonture)        "Montierung Ort:"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
@@ -254,6 +268,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Posição Dec.:"
    set caption(eqmod,valeurDefaut)           "Valor por defeito:"
 
+   set caption(eqmod,install_1)              "Fin da instalação do plug-in EQMOD"
+   set caption(eqmod,install_2)              "A livraria libeqmod.dll foi actualizada."
+
    set caption(eqmod,positionMonture)        "# Localisation de la monture :"
    set caption(eqmod,port_eqmod)             "Porta EQMOD"
    set caption(eqmod,2points)                ":"
@@ -295,6 +312,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_AD)            "RA Position:"
    set caption(eqmod,position_DEC)           "Dec. Position:"
    set caption(eqmod,valeurDefaut)           "Default Value:"
+
+   set caption(eqmod,install_1)              "End of EQMOD plug-in installation"
+   set caption(eqmod,install_2)              "libeqmod.dll library updated."
 
    set caption(eqmod,positionMonture)        "Mount Location:"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
@@ -338,6 +358,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_DEC)           "Dec. Position:"
    set caption(eqmod,valeurDefaut)           "Default Value:"
 
+   set caption(eqmod,install_1)              "End of EQMOD plug-in installation"
+   set caption(eqmod,install_2)              "libeqmod.dll library updated."
+
    set caption(eqmod,positionMonture)        "Mount Location:"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
    set caption(eqmod,2points)                ":"
@@ -379,6 +402,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(eqmod,position_AD)            "RA Position:"
    set caption(eqmod,position_DEC)           "Dec. Position:"
    set caption(eqmod,valeurDefaut)           "Default Value:"
+
+   set caption(eqmod,install_1)              "End of EQMOD plug-in installation"
+   set caption(eqmod,install_2)              "libeqmod.dll library updated."
 
    set caption(eqmod,positionMonture)        "Mount Location:"
    set caption(eqmod,port_eqmod)             "EQMOD Port"
