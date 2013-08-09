@@ -13,6 +13,19 @@ namespace eval ::telscript {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::telscript::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libtelscript.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::telscript::getPluginType]] "telscript" "libtelscript.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(telscript,install_1) v[package version telscript]. $::caption(telscript,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #

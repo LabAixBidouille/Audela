@@ -13,6 +13,19 @@ namespace eval ::t193 {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::t193::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libt193.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::t193::getPluginType]] "t193" "libt193.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(t193,install_1) v[package version t193]. $::caption(t193,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
