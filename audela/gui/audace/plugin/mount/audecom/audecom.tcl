@@ -13,6 +13,19 @@ namespace eval ::audecom {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::audecom::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libaudecom.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audecom::getPluginType]] "audecom" "libaudecom.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(audecom,install_1) v[package version audecom]. $::caption(audecom,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #

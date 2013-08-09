@@ -13,6 +13,19 @@ namespace eval ::ascom {
 }
 
 #
+# install
+#    installe le plugin et la dll
+#
+proc ::ascom::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libascom.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::ascom::getPluginType]] "ascom" "libascom.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(ascom,install_1) v[package version ascom]. $::caption(ascom,install_2)"
+   }
+}
+
+#
 # getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
