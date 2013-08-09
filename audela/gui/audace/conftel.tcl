@@ -257,7 +257,7 @@ proc ::confTel::createDialog { } {
       set notebook [ NoteBook $private(frm).usr.onglet ]
       foreach namespace $private(pluginNamespaceList) {
          set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title "  ]
+         set frm   [ $notebook insert end $namespace -text "$title " ]
          ### -raisecmd "::confTel::onRaiseNotebook $namespace"
          ::$namespace\::fillConfigPage $frm
       }
@@ -887,7 +887,7 @@ proc ::confTel::selectModel { } {
    }
 }
 
-#------------------------------------------------------------
+##------------------------------------------------------------
 # loadModel
 #    charge un modele a partir d'un fichier
 # Exemple :
@@ -912,12 +912,12 @@ proc ::confTel::loadModel { fileName } {
    set modelName    ""
    set modelDate    ""
    set modelComment ""
-   set starList ""
-   set symbols ""
+   set starList     ""
+   set symbols      ""
    set coefficients ""
-   set covars ""
-   set chisquare ""
-   set refraction 0
+   set covars       ""
+   set chisquare    ""
+   set refraction   0
 
    #--- je charge le fichier existant
    set hfile [open $fileName r]
@@ -963,7 +963,6 @@ proc ::confTel::loadModel { fileName } {
          }
          set chisquare [::dom::element getAttribute $coeffsNode "CHISQUARE"]
          set refraction [::dom::element getAttribute $coeffsNode "REFRACTION"]
-
       } else {
          ### TODO : calculer le modèle
       }
@@ -1027,7 +1026,7 @@ proc ::confTel::loadModel { fileName } {
             }
          }]
          if { $catchResult == 1 } {
-            #--- je ne transmet pas l'erreur car la liste des etoiles n'est pas indispensable
+            #--- je ne transmets pas l'erreur car la liste des etoiles n'est pas indispensable
             set starList ""
          }
       } else {
