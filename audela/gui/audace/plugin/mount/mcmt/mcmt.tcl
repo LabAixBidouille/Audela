@@ -86,7 +86,8 @@ proc ::mcmt::initPlugin { } {
    set private(tracesConsole) "0"
 
    #--- Initialise les variables de la monture mcmt
-   if { ! [ info exists conf(mcmt,port) ] } { set conf(mcmt,port) "" }
+   if { ! [ info exists conf(mcmt,port) ] }      { set conf(mcmt,port)      "" }
+   if { ! [ info exists conf(mcmt,majPosGPS) ] } { set conf(mcmt,majPosGPS) "1" }
 }
 
 #
@@ -98,8 +99,9 @@ proc ::mcmt::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la monture mcmt dans le tableau private(...)
-   set private(port)     $conf(mcmt,port)
-   set private(raquette) $conf(raquette)
+   set private(port)      $conf(mcmt,port)
+   set private(majPosGPS) $conf(mcmt,majPosGPS)
+   set private(raquette)  $conf(raquette)
 }
 
 #
@@ -111,8 +113,9 @@ proc ::mcmt::widgetToConf { } {
    global caption conf
 
    #--- Memorise la configuration de la monture mcmt dans le tableau conf(mcmt,...)
-   set conf(mcmt,port) $private(port)
-   set conf(raquette)  $private(raquette)
+   set conf(mcmt,port)      $private(port)
+   set conf(mcmt,majPosGPS) $private(majPosGPS)
+   set conf(raquette)       $private(raquette)
 }
 
 #
@@ -216,12 +219,11 @@ proc ::mcmt::fillConfigPage { frm } {
       -values $list_connexion
    pack $frm.port -in $frm.frame8 -anchor n -side left -padx 10 -pady 10
 
-   #--- Le bouton pour la mise a jour de la position du mcmt
-   button $frm.majpara -text "$caption(mcmt,maj_mcmt)" -relief raised -command {
-      tel$::mcmt::private(telNo) home $audace(posobs,observateur,gps)
-   }
-   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
-      -expand true
+   #--- Le checkbutton pour la mise a jour de la position GPS du MCMT
+   checkbutton $frm.majPosGPS -text "$caption(mcmt,maj_mcmt)" \
+      -highlightthickness 0 -variable ::mcmt::private(majPosGPS) \
+      -command "::mcmt::majPosGPS"
+   pack $frm.majPosGPS -in $frm.frame2 -anchor w -side left -padx 10 -pady 10
 
    #--- Le checkbutton pour obtenir des traces dans la Console
    checkbutton $frm.tracesConsole -text "$caption(mcmt,tracesConsole)" \
@@ -257,7 +259,7 @@ proc ::mcmt::fillConfigPage { frm } {
    pack $labelName -side top -fill x -pady 2
 
    #--- Gestion du bouton actif/inactif
-   ::mcmt::confmcmt
+   ::mcmt::confMcmt
 }
 
 #
@@ -271,23 +273,25 @@ proc ::mcmt::configureMonture { } {
    set catchResult [ catch {
       #--- Je cree la monture
       set telNo [ tel::create mcmt $conf(mcmt,port) -name mcmt ]
-      #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(mcmt,port_mcmt) $caption(mcmt,2points) $conf(mcmt,port)\n"
-      ::console::affiche_saut "\n"
+      #--- Je configure la position geographique et le nom de la monture
+      #--- (la position geographique est utilisee pour calculer le temps sideral)
+      if { $conf(mcmt,majPosGPS) == "1" } {
+         tel$telNo home $::audace(posobs,observateur,gps)
+         tel$telNo home name $::conf(posobs,nom_observatoire)
+      }
+      #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
+      tel$telNo radec survey 1
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
       set linkNo [ ::confLink::create $conf(mcmt,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- Je configure la position geographique et le nom de la monture
-      #--- (la position geographique est utilisee pour calculer le temps sideral)
-      tel$telNo home $::audace(posobs,observateur,gps)
-      tel$telNo home name $::conf(posobs,nom_observatoire)
-      #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
-      tel$telNo radec survey 1
-      #--- Gestion du bouton actif/inactif
-      ::mcmt::confmcmt
       #--- Traces dans la Console
       ::mcmt::tracesConsole
+      #--- Gestion des boutons actifs/inactifs
+      ::mcmt::confMcmt
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(mcmt,port_mcmt) $caption(mcmt,2points) $conf(mcmt,port)\n"
+      ::console::affiche_saut "\n"
    } ]
 
    if { $catchResult == "1" } {
@@ -311,9 +315,6 @@ proc ::mcmt::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::mcmt::confmcmtInactif
-
    #--- Je desactive le rafraichissement automatique des coordonnees AD et Dec.
    tel$private(telNo) radec survey 0
    #--- Je memorise le port
@@ -321,15 +322,18 @@ proc ::mcmt::stop { } {
    #--- J'arrete la monture
    tel::delete $private(telNo)
    #--- J'arrete le link
-    ::confLink::delete $telPort "tel$private(telNo)" "control"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
    set private(telNo) "0"
+
+   #--- Gestion des boutons actifs/inactifs
+   ::mcmt::confMcmt
 }
 
 #
-# confmcmt
+# confMcmt
 # Permet d'activer ou de desactiver les boutons
 #
-proc ::mcmt::confmcmt { } {
+proc ::mcmt::confMcmt { } {
    variable private
    global caption
 
@@ -337,40 +341,16 @@ proc ::mcmt::confmcmt { } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::mcmt::isReady ] == 1 } {
-            #--- Bouton mise a jour du lieu actif
-            $frm.majpara configure -state normal
             #--- Bouton park actif
             $frm.park configure -state normal
             #--- Bouton unpark actif
             $frm.unpark configure -state normal
          } else {
-            #--- Bouton mise a jour du lieu inactif
-            $frm.majpara configure -state disabled
             #--- Bouton park inactif
             $frm.park configure -state disabled
             #--- Bouton unpark inactif
             $frm.unpark configure -state disabled
          }
-      }
-   }
-}
-
-#
-# confmcmtInactif
-#    Permet de desactiver les boutons a l'arret de la monture
-#
-proc ::mcmt::confmcmtInactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         #--- Bouton mise a jour du lieu inactif
-         $frm.majpara configure -state disabled
-         #--- Bouton park inactif
-         $frm.park configure -state disabled
-         #--- Bouton unpark inactif
-         $frm.unpark configure -state disabled
       }
    }
 }
@@ -387,6 +367,23 @@ proc ::mcmt::tracesConsole { } {
    }
 
    tel$private(telNo) consolelog $private(tracesConsole)
+}
+
+#
+# majPosGPS
+#    Met a jour la position GPS dans le MCMT
+#
+proc ::mcmt::majPosGPS { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      return
+   }
+
+   if { $private(majPosGPS)== "1" } {
+      tel$private(telNo) home $::audace(posobs,observateur,gps)
+      tel$private(telNo) home name $::conf(posobs,nom_observatoire)
+   }
 }
 
 #
