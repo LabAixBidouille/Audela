@@ -6,10 +6,23 @@
 #
 
 namespace eval ::celestron {
-   package provide celestron 1.0
+   package provide celestron 1.1
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] celestron.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::celestron::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libcelestron.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::celestron::getPluginType]] "celestron" "liblcelestron.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      ::audace::appendUpdateMessage "$::caption(celestron,install_1) v[package version celestron]. $::caption(celestron,install_2)"
+   }
 }
 
 #
@@ -222,11 +235,11 @@ proc ::celestron::fillConfigPage { frm } {
       -values $list_combobox
    pack $frm.formatradec -in $frm.frame8 -anchor center -side left -padx 30 -pady 10
 
-   #--- Le checkbutton de commande maj heure et position GPS du Celestron
-   checkbutton $frm.majPosGPS -text "$caption(celestron,maj_celestron)" \
+   #--- Le checkbutton pour la mise a jour de l'heure et de la position GPS du Celestron
+   checkbutton $frm.majDatePosGPS -text "$caption(celestron,maj_celestron)" \
       -highlightthickness 0 -variable ::celestron::private(majDatePosGPS) \
       -command "::celestron::majDatePosGPS"
-   pack $frm.majPosGPS -in $frm.frame2 -anchor w -side left -padx 10 -pady 10
+   pack $frm.majDatePosGPS -in $frm.frame2 -anchor w -side left -padx 10 -pady 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(celestron,raquette_tel)" \
@@ -257,9 +270,14 @@ proc ::celestron::configureMonture { } {
    set catchResult [ catch {
       #--- Je cree la monture
       set telNo [ tel::create celestron $conf(celestron,port) ]
-      #--- Je configure la position geographique et le nom de la monture
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(celestron,port_celestron)\
+         $caption(celestron,2points) $conf(celestron,port)\n"
+      ::console::affiche_saut "\n"
+      #--- Je configure la position geographique de la monture et le nom de l'observatoire
       #--- (la position geographique est utilisee pour calculer le temps sideral)
       if { $conf(celestron,majDatePosGPS) == "1" } {
+         tel$telNo date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
          tel$telNo home $::audace(posobs,observateur,gps)
          tel$telNo home name $::conf(posobs,nom_observatoire)
       }
@@ -275,10 +293,6 @@ proc ::celestron::configureMonture { } {
       set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(celestron,port_celestron)\
-         $caption(celestron,2points) $conf(celestron,port)\n"
-      ::console::affiche_saut "\n"
    } ]
 
    if { $catchResult == "1" } {
@@ -325,6 +339,7 @@ proc ::celestron::majDatePosGPS { } {
    }
 
    if { $private(majDatePosGPS)== "1" } {
+      tel$private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
       tel$private(telNo) home $::audace(posobs,observateur,gps)
       tel$private(telNo) home name $::conf(posobs,nom_observatoire)
    }
