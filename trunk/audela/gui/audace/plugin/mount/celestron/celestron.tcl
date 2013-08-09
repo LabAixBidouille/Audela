@@ -85,8 +85,9 @@ proc ::celestron::initPlugin { } {
    set private(telNo) "0"
 
    #--- Initialise les variables de la monture Celestron
-   if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   "" }
-   if { ! [ info exists conf(celestron,format) ] } { set conf(celestron,format) "1" }
+   if { ! [ info exists conf(celestron,port) ] }          { set conf(celestron,port)          "" }
+   if { ! [ info exists conf(celestron,format) ] }        { set conf(celestron,format)        "1" }
+   if { ! [ info exists conf(celestron,majDatePosGPS) ] } { set conf(celestron,majDatePosGPS) "1" }
 }
 
 #
@@ -98,9 +99,10 @@ proc ::celestron::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la monture Celestron dans le tableau private(...)
-   set private(port)     $conf(celestron,port)
-   set private(format)   [ lindex "$caption(celestron,format_court_long)" $conf(celestron,format) ]
-   set private(raquette) $conf(raquette)
+   set private(port)          $conf(celestron,port)
+   set private(format)        [ lindex "$caption(celestron,format_court_long)" $conf(celestron,format) ]
+   set private(majDatePosGPS) $conf(celestron,majDatePosGPS)
+   set private(raquette)      $conf(raquette)
 
 }
 
@@ -113,9 +115,10 @@ proc ::celestron::widgetToConf { } {
    global caption conf
 
    #--- Memorise la configuration de la monture Celestron dans le tableau conf(celestron,...)
-   set conf(celestron,port)   $private(port)
-   set conf(celestron,format) [ lsearch "$caption(celestron,format_court_long)" "$private(format)" ]
-   set conf(raquette)         $private(raquette)
+   set conf(celestron,port)          $private(port)
+   set conf(celestron,format)        [ lsearch "$caption(celestron,format_court_long)" "$private(format)" ]
+   set conf(celestron,majDatePosGPS) $private(majDatePosGPS)
+   set conf(raquette)                $private(raquette)
 }
 
 #
@@ -219,12 +222,11 @@ proc ::celestron::fillConfigPage { frm } {
       -values $list_combobox
    pack $frm.formatradec -in $frm.frame8 -anchor center -side left -padx 30 -pady 10
 
-   #--- Le bouton de commande maj heure et position du Celestron
-   button $frm.majpara -text "$caption(celestron,maj_celestron)" -relief raised -command {
-      tel$::celestron::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$::celestron::private(telNo) home $audace(posobs,observateur,gps)
-   }
-   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   #--- Le checkbutton de commande maj heure et position GPS du Celestron
+   checkbutton $frm.majPosGPS -text "$caption(celestron,maj_celestron)" \
+      -highlightthickness 0 -variable ::celestron::private(majDatePosGPS) \
+      -command "::celestron::majDatePosGPS"
+   pack $frm.majPosGPS -in $frm.frame2 -anchor w -side left -padx 10 -pady 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
    checkbutton $frm.raquette -text "$caption(celestron,raquette_tel)" \
@@ -242,9 +244,6 @@ proc ::celestron::fillConfigPage { frm } {
    set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(celestron,site_celestron)" \
       "$caption(celestron,site_celestron)" ]
    pack $labelName -side top -fill x -pady 2
-
-   #--- Gestion du bouton actif/inactif
-   ::celestron::confCelestron
 }
 
 #
@@ -260,25 +259,26 @@ proc ::celestron::configureMonture { } {
       set telNo [ tel::create celestron $conf(celestron,port) ]
       #--- Je configure la position geographique et le nom de la monture
       #--- (la position geographique est utilisee pour calculer le temps sideral)
-      tel$telNo home $::audace(posobs,observateur,gps)
-      tel$telNo home name $::conf(posobs,nom_observatoire)
-      #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
-      tel$telNo radec survey 1
-      #--- J'affiche un message d'information dans la Console
-      ::console::affiche_entete "$caption(celestron,port_celestron)\
-         $caption(celestron,2points) $conf(celestron,port)\n"
-      ::console::affiche_saut "\n"
+      if { $conf(celestron,majDatePosGPS) == "1" } {
+         tel$telNo home $::audace(posobs,observateur,gps)
+         tel$telNo home name $::conf(posobs,nom_observatoire)
+      }
+      #--- Je choisis le format des coordonnees AD et Dec.
       if { $conf(celestron,format) == "0" } {
          tel$telNo longformat off
       } else {
          tel$telNo longformat on
       }
+      #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
+      tel$telNo radec survey 1
       #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
       set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] -noopen ]
       #--- Je change de variable
       set private(telNo) $telNo
-      #--- Gestion du bouton actif/inactif
-      ::celestron::confCelestron
+      #--- J'affiche un message d'information dans la Console
+      ::console::affiche_entete "$caption(celestron,port_celestron)\
+         $caption(celestron,2points) $conf(celestron,port)\n"
+      ::console::affiche_saut "\n"
    } ]
 
    if { $catchResult == "1" } {
@@ -301,9 +301,6 @@ proc ::celestron::stop { } {
       return
    }
 
-   #--- Gestion du bouton actif/inactif
-   ::celestron::confCelestronInactif
-
    #--- Je desactive le rafraichissement automatique des coordonnees AD et Dec.
    tel$private(telNo) radec survey 0
    #--- Je memorise le port
@@ -317,43 +314,19 @@ proc ::celestron::stop { } {
 }
 
 #
-# confCelestron
-# Permet d'activer ou de desactiver le bouton
+# majDatePosGPS
+#    Met a jour la date et la position GPS dans le Celestron
 #
-proc ::celestron::confCelestron { } {
+proc ::celestron::majDatePosGPS { } {
    variable private
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::celestron::isReady ] == 1 } {
-            if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
-               #--- Bouton Mise a jour de la date et du lieu actif
-               $frm.majpara configure -state normal
-            }
-         } else {
-            #--- Bouton Mise a jour de la date et du lieu inactif
-            $frm.majpara configure -state disabled
-         }
-      }
+   if { $private(telNo) == "0" } {
+      return
    }
-}
 
-#
-# confCelestronInactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::celestron::confCelestronInactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::celestron::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la date et du lieu inactif
-            $frm.majpara configure -state disabled
-         }
-      }
+   if { $private(majDatePosGPS)== "1" } {
+      tel$private(telNo) home $::audace(posobs,observateur,gps)
+      tel$private(telNo) home name $::conf(posobs,nom_observatoire)
    }
 }
 
