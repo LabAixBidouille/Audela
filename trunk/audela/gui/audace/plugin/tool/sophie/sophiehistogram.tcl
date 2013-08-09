@@ -8,7 +8,7 @@ namespace eval ::sophie::histogram {
    variable private
 
    set private(realTimeFileName) ""
-   set private(realTimeVisuNo) ""
+   set private(realTimeVisuNo)   ""
 
 }
 
@@ -21,32 +21,32 @@ namespace eval ::sophie::histogram {
 proc ::sophie::histogram::run { visuNo } {
    variable private
 
-   set ::caption(sophie,histogram,title) "Histogramme"
-   set ::caption(sophie,alphaDiff) "Ecart alpha"
-   set ::caption(sophie,deltaDiff) "Ecart delta"
-   set ::caption(sophie,histogram,startDate) "Heure début"
-   set ::caption(sophie,histogram,endDate)   "Heure fin"
+   set ::caption(sophie,histogram,title)      "Histogramme"
+   set ::caption(sophie,alphaDiff)            "Ecart alpha"
+   set ::caption(sophie,deltaDiff)            "Ecart delta"
+   set ::caption(sophie,histogram,startDate)  "Heure début"
+   set ::caption(sophie,histogram,endDate)    "Heure fin"
    set ::caption(sophie,histogram,duration)   "Durée"
-   set ::caption(sophie,histogram,pointNb)   "Nb points"
-   set ::caption(sophie,histogram,RA)        "RA"
-   set ::caption(sophie,histogram,DEC)       "DEC"
-   set ::caption(sophie,histogram,AZ)        "Azimut"
-   set ::caption(sophie,histogram,EL)        "Hauteur"
-   set ::caption(sophie,histogram,clipboard) "Copie vers presse papier"
-   set ::caption(sophie,histogram,clear) "Raz affichage"
+   set ::caption(sophie,histogram,pointNb)    "Nb points"
+   set ::caption(sophie,histogram,RA)         "RA"
+   set ::caption(sophie,histogram,DEC)        "DEC"
+   set ::caption(sophie,histogram,AZ)         "Azimut"
+   set ::caption(sophie,histogram,EL)         "Hauteur"
+   set ::caption(sophie,histogram,clipboard)  "Copie vers presse papier"
+   set ::caption(sophie,histogram,clear)      "RAZ affichage"
    set ::caption(sophie,histogram,preference) "Préférences"
 
-   set private($visuNo,alphaDiff,show)  1
-   set private($visuNo,deltaDiff,show)  1
+   set private($visuNo,alphaDiff,show) 1
+   set private($visuNo,deltaDiff,show) 1
 
    #--- nom du fichier qui est affiche
    set private($visuNo,fileName) ""
 
    #--- Creation des variables si elles n'existaient pas
-   if { ! [ info exists ::conf(sophie,histogram,position) ] }  { set ::conf(sophie,histogram,position) "300x200+250+75" }
-   if { ! [ info exists ::conf(sophie,histogram,step) ] }      { set ::conf(sophie,histogram,step) 0.2 }
+   if { ! [ info exists ::conf(sophie,histogram,position) ] } { set ::conf(sophie,histogram,position) "300x200+250+75" }
+   if { ! [ info exists ::conf(sophie,histogram,step) ] }     { set ::conf(sophie,histogram,step)     0.2 }
 
-   set private($visuNo,this)   ".audace.sophieHisto$visuNo"
+   set private($visuNo,this) ".audace.sophieHisto$visuNo"
 
    if { [winfo exists $private($visuNo,this) ] == 0 } {
       uplevel #0 ::blt::vector create ::sophieHistogramAbcisse
@@ -168,16 +168,16 @@ proc ::sophie::histogram::fillConfigPage { frm visuNo } {
       scrollbar $frm.pane.table.xsb -command "$private($visuNo,referenceTable) xview" -orient horizontal
 
       #--- Table des reference
-      ::tablelist::tablelist $private($visuNo,referenceTable) \
+      ::tablelist::tablelist $private($visuNo,referenceTable)           \
          -columns [list 0 $::caption(sophie,histogram,startDate) left   \
-                        0 $::caption(sophie,histogram,endDate) left     \
-                        0 $::caption(sophie,histogram,duration) right   \
-                        0 $::caption(sophie,histogram,pointNb) center   \
-                        0 $::caption(sophie,histogram,RA)      center   \
-                        0 $::caption(sophie,histogram,DEC)     center   \
-                        0 $::caption(sophie,histogram,AZ)      center   \
-                        0 $::caption(sophie,histogram,EL)      center   \
-                        0 "limits" center \
+                        0 $::caption(sophie,histogram,endDate)   left   \
+                        0 $::caption(sophie,histogram,duration)  right  \
+                        0 $::caption(sophie,histogram,pointNb)   center \
+                        0 $::caption(sophie,histogram,RA)        center \
+                        0 $::caption(sophie,histogram,DEC)       center \
+                        0 $::caption(sophie,histogram,AZ)        center \
+                        0 $::caption(sophie,histogram,EL)        center \
+                        0 "limits" center                               \
                   ] \
          -xscrollcommand [list $frm.pane.table.xsb set] \
          -yscrollcommand [list $frm.pane.table.ysb set] \
@@ -227,7 +227,7 @@ proc ::sophie::histogram::configureGraph { visuNo } {
    variable private
 
    set frm $private($visuNo,frm)
-   $frm.pane.graph configure  -plotbackground "white"
+   $frm.pane.graph configure -plotbackground "white"
    $frm.pane.graph crosshairs off
    $frm.pane.graph crosshairs configure -color red -dashes 2
    $frm.pane.graph axis configure x -hide no -title $::caption(sophie,arcsec)
@@ -471,8 +471,8 @@ proc ::sophie::histogram::displayData { visuNo fileName { inputStartList "" } } 
 proc ::sophie::histogram::loadData { fileName step { inputStartList "" } } {
    variable private
 
-   set hFile ""
-   set abcisses   ""
+   set hFile     ""
+   set abcisses  ""
    set xHisto    ""
    set yHisto    ""
    set startList ""
@@ -528,8 +528,8 @@ proc ::sophie::histogram::loadData { fileName step { inputStartList "" } } {
 
       } else {
          set currentStarDate ""
-         set currentRa ""
-         set currentDec ""
+         set currentRa       ""
+         set currentDec      ""
          set pointNb         0
 
          #--- je lis le fichier
@@ -766,7 +766,7 @@ proc ::sophie::histogram::writeGuidingInformation { alphaDiff deltaDiff alphaCor
    foreach visuNo $private(realTimeVisuNo)  {
 
       #--- je mets a jour la table
-      set pointNb  [$private($visuNo,referenceTable) cellcget end,pointNb -text]
+      set pointNb [$private($visuNo,referenceTable) cellcget end,pointNb -text]
       incr pointNb
       $private($visuNo,referenceTable) cellconfigure end,pointNb -text $pointNb
 
@@ -910,8 +910,8 @@ proc ::sophie::histogram::preference::run { visuNo } {
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists ::conf(sophie,histogram,preference,position) ] }  { set ::conf(sophie,histogram,preference,position) "250x100+250+75" }
 
-   set private($visuNo,this)   ".audace.sophieHisto$visuNo.preference"
-   set private($visuNo,apply)  1
+   set private($visuNo,this)  ".audace.sophieHisto$visuNo.preference"
+   set private($visuNo,apply) 1
 
    if { [winfo exists $private($visuNo,this) ] == 0 } {
       #--- j'affiche la fenetre
@@ -948,7 +948,7 @@ proc ::sophie::histogram::preference::apply { visuNo } {
       return
    }
 
-   set ::conf(sophie,histogram,step)   $widget($visuNo,step)
+   set ::conf(sophie,histogram,step) $widget($visuNo,step)
    set private($visuNo,apply) 1
    return
 }
@@ -982,17 +982,17 @@ proc ::sophie::histogram::preference::fillConfigPage { frm visuNo } {
    variable widget
 
    #--- Je memorise la reference de la frame
-   set private($visuNo,frm)      $frm
+   set private($visuNo,frm) $frm
 
    #--- j'initialise les variables des widgets
-   set widget($visuNo,step)     $::conf(sophie,histogram,step)
+   set widget($visuNo,step) $::conf(sophie,histogram,step)
 
    frame $frm.form  -borderwidth 0
       #--- date debut
       label $frm.form.stepLabel -text $::caption(sophie,histogram,preference,step)
       pack $frm.form.stepLabel -anchor w -side left -padx 2
 
-      entry $frm.form.stepValue  \
+      entry $frm.form.stepValue \
          -textvariable ::sophie::histogram::preference::widget($visuNo,step) \
          -validate all -validatecommand { ::tkutil::validateNumber %W %V %P %s double 0.01 10.0 ::sophie::histogram::preference::widget(error,step) }
       pack $frm.form.stepValue -side left -padx 2
