@@ -21,6 +21,10 @@ proc ::lx200::install { } {
       #--- je deplace liblx200.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::lx200::getPluginType]] "lx200" "liblx200.dll"]
       ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      #--- je deplace liblxnet.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::lx200::getPluginType]] "lx200" "liblxnet.dll"]
+      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(lx200,install_1) v[package version lx200]. $::caption(lx200,install_2)"
    }
 }
