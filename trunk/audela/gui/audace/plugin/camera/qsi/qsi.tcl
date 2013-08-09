@@ -14,12 +14,12 @@ namespace eval ::qsi {
 
 #
 # install
-#    installe la DLL fournie dans le plugin
+#    installe le plugin et la dll
 #
 proc ::qsi::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libqsi.dll dans le repertoire audela/bin
-      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [getPluginType]] "qsi" "libqsi.dll"]
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::qsi::getPluginType]] "qsi" "libqsi.dll"]
       ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
       ::audace::appendUpdateMessage [ format $::caption(qsi,installNewVersion) $sourceFileName [package version qsi] ]
    }
