@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded ascomcam 1.2 [ list source [ file join $dir ascomcam.tcl ] ]
+package ifneeded ascomcam 2.0 [ list source [ file join $dir ascomcam.tcl ] ]
 

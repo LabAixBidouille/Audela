@@ -6,7 +6,7 @@
 #
 
 namespace eval ::qsi {
-   package provide qsi 1.2
+   package provide qsi 2.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] qsi.cap ]
@@ -20,7 +20,10 @@ proc ::qsi::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libqsi.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::qsi::getPluginType]] "qsi" "libqsi.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage [ format $::caption(qsi,installNewVersion) $sourceFileName [package version qsi] ]
    }
 }
