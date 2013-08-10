@@ -144,7 +144,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "Path"
    set caption(station_meteo,search)                      "..."
-   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+   set caption(station_meteo,meteo)                       "Read weather data every seconds"
    set caption(station_meteo,attention)                   "Warning"
    set caption(station_meteo,erreur)                      "Please fix the path."
 
@@ -165,7 +165,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "Path"
    set caption(station_meteo,search)                      "..."
-   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+   set caption(station_meteo,meteo)                       "Read weather data every seconds"
    set caption(station_meteo,attention)                   "Warning"
    set caption(station_meteo,erreur)                      "Please fix the path."
 
@@ -186,7 +186,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,sentinel)                    "infodata.txt"
    set caption(station_meteo,meteoAcc)                    "Path"
    set caption(station_meteo,search)                      "..."
-   set caption(station_meteo,meteo)                       "# Lire les données météo toutes les secondes"
+   set caption(station_meteo,meteo)                       "Read weather data every seconds"
    set caption(station_meteo,attention)                   "Warning"
    set caption(station_meteo,erreur)                      "Please fix the path."
 
