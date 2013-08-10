@@ -2,7 +2,7 @@
 # Fichier : telscript_etel.tcl
 # Description : Driver de la monture T940 en TCL
 # Auteur : Alain KLOTZ & Pierre THIERRY
-# Mise Ã  jour $Id$
+# Mise à jour $Id$
 #
 
 # === Script to test and to develop a scripted telescope driver for AudeLA ===
@@ -118,8 +118,6 @@
 # foreach res [lsort [tel1 variables]] { console::affiche_resultat "$res\n" }
 #
 # ============================================================================================
-# etel_dsa_quick_stop_s 1
-# ============================================================================================
 
 # --- common defined variables
 # telscript(def,telname) is ever defined before the source of this script
@@ -132,12 +130,11 @@ proc setup { } {
    global telscript audace
    # --- Get useful variables
    set telname $telscript(def,telname)
-   catch {exec espeak.exe -v fr "DÃ©marre setup"}
+  	catch {exec espeak.exe -v fr "Démarre setup"}
 
    # --- Select the type of mount
    if {$telname=="t940"} {
-      set telscript($telname,mount_type) azelev
-      #set telscript($telname,mount_type) hadec
+      set telscript($telname,mount_type) azelevrot
    }
    if {$telname=="rapido"} {
       set telscript($telname,mount_type) hadec
@@ -168,9 +165,9 @@ proc setup { } {
    set err [catch {
       porttalk open all
       load libcombit[info sharedlibextension]
-      set telscript($telname,combit0) [open COM1 "RDWR"]
+      set telscript($telname,combit0) [open COM2 "RDWR"]
       fconfigure $telscript($telname,combit0) -mode "9600,n,8,1" -buffering none -blocking 0
-      set telscript($telname,combit1) [open COM2 "RDWR"]
+      set telscript($telname,combit1) [open COM3 "RDWR"]
       fconfigure $telscript($telname,combit1) -mode "9600,n,8,1" -buffering none -blocking 0
       combit 1 3 0
       combit 1 4 0
@@ -214,37 +211,42 @@ proc setup { } {
       set telscript($telname,combit_simu_mode) "rapide"
       set telscript($telname,combit_simu_direction) ""
    } else {
-      catch {
-         exec espeak.exe -v fr "Raquette active."
+	  	catch {
+		  	exec espeak.exe -v fr "Raquette active."
          after 500
-      }
+		}
    }
    cd $pwd0
 
+	after 1000
    # --- Open the ETEL connection
+   load libeteltcl
    if {$telscript($telname,mount_type)=="azelevrot"} {
       # --- axe az=0 (etel=0)
       # --- axe elev=1 (etel=2)
       # --- axe rot=2 (etel=4)
-      set err [catch {etel_open -driver DSTEB3 -axis 0 -axis 2 -axis 4} msg]
+      set err [catch {etel_open -driver com1 -axis 0 -axis 5 -axis 4} msg]
+      exec espeak.exe -v fr "altaz avec rotation"
    } elseif {$telscript($telname,mount_type)=="azelev"} {
-      set err [catch {etel_open -driver DSTEB3 -axis 0 -axis 2} msg]
+	   exec espeak.exe -v fr "altaz sans rotation"
+      set err [catch {etel_open -driver com1 -axis 0 -axis 5} msg]
    } elseif {$telscript($telname,mount_type)=="hadec"} {
-      set err [catch {etel_open -driver DSTEB3 -axis 0 -axis 1} msg]
+      set err [catch {etel_open -driver com1 -axis 0 -axis 1} msg]
+      exec espeak.exe -v fr "équatorial"
    } else {
       set err 1
    }
    if {$err==0} {
       set telscript($telname,simulation) 0
-      catch {
-         exec espeak.exe -v fr "Controlleur okÃ©"
+	  	catch {
+		  	exec espeak.exe -v fr "Controlleur oké"
          after 500
-      }
+		}
    } else {
-      catch {
-         exec espeak.exe -v fr "Simulation"
+	  	catch {
+		  	exec espeak.exe -v fr "Simulation"
          after 500
-      }
+		}
       set telscript($telname,simulation) 1
       set telscript($telname,etel_msg) $msg
       # --- inhibe les appels ETEL en mode simulation
@@ -299,8 +301,8 @@ proc setup { } {
          set telscript($telname,adu4deg_az)        [etel_get_register_s 0 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_az0) [etel_get_register_s 0 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_az0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_az)        [etel_get_register_s 0 K 34] ; # limite inf adu
-         set telscript($telname,lim_max_az)        [etel_get_register_s 0 K 35] ; # limite sup adu
+         set telscript($telname,lim_min_az)        [etel_get_register_s 0 X 60] ; # limite inf adu
+         set telscript($telname,lim_max_az)        [etel_get_register_s 0 X 61] ; # limite sup adu
          # --- special T940 on change les signes des coefs
          set telscript($telname,adu4deg_az)        [expr -1*$telscript($telname,adu4deg_az)]
          # --- elev
@@ -308,8 +310,8 @@ proc setup { } {
          set telscript($telname,adu4deg_elev)        [etel_get_register_s 1 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_elev0) [etel_get_register_s 1 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_elev)        [etel_get_register_s 1 K 34] ; # limite inf adu
-         set telscript($telname,lim_max_elev)        [etel_get_register_s 1 K 35] ; # limite sup adu
+         set telscript($telname,lim_min_elev)        [etel_get_register_s 1 X 60] ; # limite inf adu
+         set telscript($telname,lim_max_elev)        [etel_get_register_s 1 X 61] ; # limite sup adu
       }
       if {$telscript($telname,mount_type)=="azelevrot"} {
          # --- rot
@@ -326,15 +328,15 @@ proc setup { } {
          set telscript($telname,adu4deg_ha)        [etel_get_register_s 0 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_ha0) [etel_get_register_s 0 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_ha0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_ha)        [etel_get_register_s 0 K 34] ; # limite inf adu
-         set telscript($telname,lim_max_ha)        [etel_get_register_s 0 K 35] ; # limite sup adu
+         set telscript($telname,lim_min_ha)        [etel_get_register_s 0 X 60] ; # limite inf adu
+         set telscript($telname,lim_max_ha)        [etel_get_register_s 0 X 61] ; # limite sup adu
          # --- dec
          set telscript($telname,adu4deg4sec_dec)    [etel_get_register_s 1 X 26] ; # vitesse coef (adu/(deg/s))
          set telscript($telname,adu4deg_dec)        [etel_get_register_s 1 X 28] ; # position coef (adu/deg)
          set telscript($telname,coord_app_adu_dec0) [etel_get_register_s 1 X 62] ; # position init (adu)
          set telscript($telname,coord_app_deg_dec0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_dec)        [etel_get_register_s 1 K 34] ; # limite inf adu
-         set telscript($telname,lim_max_dec)        [etel_get_register_s 1 K 35] ; # limite sup adu
+         set telscript($telname,lim_min_dec)        [etel_get_register_s 1 X 60] ; # limite inf adu
+         set telscript($telname,lim_max_dec)        [etel_get_register_s 1 X 61] ; # limite sup adu
       }
 
       #---arret de tous les moteurs
@@ -345,29 +347,27 @@ proc setup { } {
       # --- Recuperation des parametres monture
       if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
          # --- az
-         set telscript($telname,adu4deg4sec_az)    651568 ; # vitesse coef (adu/(deg/s))
+         set telscript($telname,adu4deg4sec_az)     651568 ; # vitesse coef (adu/(deg/s))
          set telscript($telname,adu4deg_az)        3640000 ; # position coef (adu/deg)
-         #set telscript($telname,coord_app_adu_az0) 672077188 ; # position init (adu)
-         set telscript($telname,coord_app_adu_az0) 678849285 ; # position init (adu)
+         set telscript($telname,coord_app_adu_az0) 618736063 ; # position init (adu)
          set telscript($telname,coord_app_deg_az0) 0 ; # position init (deg)
          set telscript($telname,lim_min_az)        75497400 ; # limite inf adu
          set telscript($telname,lim_max_az)        1719664600 ; # limite sup adu
          # --- special T940 on change les signes des coefs
          set telscript($telname,adu4deg_az)        [expr -1*$telscript($telname,adu4deg_az)]
          # --- elev
-         set telscript($telname,adu4deg4sec_elev)    7817302 ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_elev)         14540000 ; # position coef (adu/deg)
-         #set telscript($telname,coord_app_adu_elev0)180294334 ; # position init (adu)
-         set telscript($telname,coord_app_adu_elev0) [expr 132000000-1*100000] ; # position init (adu)
+         set telscript($telname,adu4deg4sec_elev)     7635922 ; # vitesse coef (adu/(deg/s))
+         set telscript($telname,adu4deg_elev)        14307595 ; # position coef (adu/deg)
+         set telscript($telname,coord_app_adu_elev0) [expr 304428518] ; # position init (adu)
          set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_elev)        [expr 305544000+180294334-246229900 ] ; # limite inf adu
+         set telscript($telname,lim_min_elev)        [expr 304428518+180294334-246229900 ] ; # limite inf adu
          set telscript($telname,lim_max_elev)        [expr 1577058300+180294334-246229900 ] ; # limite sup adu
       }
       if {$telscript($telname,mount_type)=="azelevrot"} {
          # --- rot
-         set telscript($telname,adu4deg4sec_rot)    1849316 ; # vitesse coef (adu/(deg/s))
+         set telscript($telname,adu4deg4sec_rot)    1849319 ; # vitesse coef (adu/(deg/s))
          set telscript($telname,adu4deg_rot)        3458015 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_rot0) 1157420421 ; # position init (adu)
+         set telscript($telname,coord_app_adu_rot0) 0 ; # position init (adu)
          set telscript($telname,coord_app_deg_rot0) 0 ; # position init (deg)
          set telscript($telname,lim_min_rot)        0 ; # limite inf adu
          set telscript($telname,lim_max_rot)        0 ; # limite sup adu
@@ -410,7 +410,7 @@ proc setup { } {
    # --- Set a comment that the setup is OK
    set telscript($telname,status) "setup OK"
    catch {set f [open "log.txt" w] ; close $f}
-   catch {exec espeak.exe -v fr "Entre dans la boucle."}
+  	catch {exec espeak.exe -v fr "Entre dans la boucle."}
 }
 
 # ################################################################################
@@ -436,14 +436,14 @@ proc loop { } {
    set telscript($telname,coord_app_cod_deg_ra)  $telscript($telname,coord_app_deg_ra)
 
    # === Read if an external trigger for goto was actived
-   if {($telscript($telname,external_trigger)==1)} {
-      set goto_status ""
-      if {([info exists telscript($telname,goto,status)]==1)&&([info exists telscript($telname,goto,object)]==1)} {
-         set goto_status $telscript($telname,goto,status)
-         if {$goto_status=="todo"} {
-            set telscript($telname,action_next) "radec_goto"
-         }
-      }
+	if {($telscript($telname,external_trigger)==1)} {
+	   set goto_status ""
+	   if {([info exists telscript($telname,goto,status)]==1)&&([info exists telscript($telname,goto,object)]==1)} {
+	      set goto_status $telscript($telname,goto,status)
+	      if {$goto_status=="todo"} {
+	         set telscript($telname,action_next) "radec_goto"
+	      }
+	   }
    }
 
    # === Read the end of a slewing
@@ -468,18 +468,18 @@ proc loop { } {
       #catch {exec espeak.exe -v fr "$telscript($telname,motion_next). valid egal $valid"}
       if {((($telscript($telname,mount_type)=="azelev")||($telscript($telname,mount_type)=="hadec"))&&($valid==2))||(($telscript($telname,mount_type)=="azelevrot")&&($valid==3))} {
          if {$telscript($telname,motion_next)=="slewing"} {
-            catch {exec espeak.exe -v fr "Premier pointage terminÃ©."}
+            catch {exec espeak.exe -v fr "Premier pointage terminé."}
             # - faire le second pointage
             set telscript($telname,action_next) "radec_goto2"
             lassign [object2radec] raj2000 decj2000 drift_ra drift_dec
          } else {
-            catch {exec espeak.exe -v fr "Second pointage terminÃ©."}
-            lassign $telscript($telname,goto,object) objname0 objtype objname raj2000 decj2000 drift_ra drift_dec
-            if {($objname0=="*STOP")||($objname0=="*PARK")} {
-               set telscript($telname,action_next) motor_off
-            } else {
-               set telscript($telname,action_next) motor_on
-            }
+            catch {exec espeak.exe -v fr "Second pointage terminé."}
+		      lassign $telscript($telname,goto,object) objname0 objtype objname raj2000 decj2000 drift_ra drift_dec
+		      if {($objname0=="*STOP")||($objname0=="*PARK")} {
+		         set telscript($telname,action_next) motor_off
+		      } else {
+		         set telscript($telname,action_next) motor_on
+		      }
          }
          set telscript($telname,motion_next) "stopped"
       }
@@ -555,9 +555,9 @@ proc loop { } {
    } elseif {$telscript($telname,action_next)=="radec_goto"} {
 
       # --- Action = radec_goto
-      catch {exec espeak.exe -v fr "Pointage."}
-      lassign [object2radec] raj2000 decj2000 drift_ra drift_dec
-      radec2degs goto $raj2000 $decj2000 $drift_ra $drift_dec 3.
+	  	catch {exec espeak.exe -v fr "Pointage."}
+      lassign [object2radec] raj2000 decj2000 drift_ra drift_dec 3.
+      radec2degs goto $raj2000 $decj2000 $drift_ra $drift_dec
       degs2adus goto
       set_pos_adus
       set telscript($telname,goto,status) ""
@@ -581,7 +581,7 @@ proc loop { } {
       set telscript($telname,ra00) $raj2000
       set telscript($telname,dec00) $decj2000
       set telscript($telname,goto,object) ""
-      stop_all_motors
+      stop_motors
       catch {exec espeak.exe -v fr "Stoppe les moteurs."}
       set telscript($telname,motion_next) "stopped"
       set telscript($telname,action_next) "motor_off"
@@ -642,7 +642,7 @@ proc loop { } {
          set telscript($telname,motion_next) ""
       }
       set telscript($telname,action_next) $telscript($telname,motor_prev)
-      set telscript($telname,move_virtual_pad) ""
+		set telscript($telname,move_virtual_pad) ""
    }
 
    # === Store adus to detect the end of a slewing
@@ -674,24 +674,24 @@ proc object2radec { } {
    # --- Get useful variables
    set t0 [mc_date2jd now]
    set telname $telscript(def,telname)
-   if {($telscript($telname,external_trigger)==1)} {
-      if {[llength $telscript($telname,goto,object)]>0} {
-         lassign $telscript($telname,goto,object) objname0 objtype objname raj2000 decj2000 drift_ra drift_dec
-         if {$objtype!="coords"} {
-            set key [string index $objname0 0]
-            if {($objname0=="*GEO")||($objname0=="*GPS")} {
-               lassign [decode_radec_entry "${key}${objname}"] objtype objname raj2000 decj2000 drift_ra drift_dec
-            } else {
-               lassign [decode_radec_entry $objname0] objtype objname raj2000 decj2000 drift_ra drift_dec
-            }
-         }
-      } else {
-         set raj2000 $telscript($telname,ra00)
-         set decj2000 $telscript($telname,dec00)
-         set drift_ra 0
-         set drift_dec 0
-      }
-   } else {
+	if {($telscript($telname,external_trigger)==1)} {
+	   if {[llength $telscript($telname,goto,object)]>0} {
+	      lassign $telscript($telname,goto,object) objname0 objtype objname raj2000 decj2000 drift_ra drift_dec
+	      if {$objtype!="coords"} {
+	         set key [string index $objname0 0]
+	         if {($objname0=="*GEO")||($objname0=="*GPS")} {
+	            lassign [decode_radec_entry "${key}${objname}"] objtype objname raj2000 decj2000 drift_ra drift_dec
+	         } else {
+	            lassign [decode_radec_entry $objname0] objtype objname raj2000 decj2000 drift_ra drift_dec
+	         }
+	      }
+	   } else {
+	      set raj2000 $telscript($telname,ra00)
+	      set decj2000 $telscript($telname,dec00)
+	      set drift_ra 0
+	      set drift_dec 0
+	   }
+	} else {
       set raj2000 $telscript($telname,ra0)
       set decj2000 $telscript($telname,dec0)
       set drift_ra 0
@@ -721,7 +721,7 @@ proc get_pad_buttons {} {
 
    if {($telscript($telname,motion_next)!="slewing")&&($telscript($telname,motion_next)!="slewing2")} {
 
-      #ajout des bits de changement de mode des vitesses de raquette en les dÃ©doublant pour eviter les courants fugififs
+      #ajout des bits de changement de mode des vitesses de raquette en les dédoublant pour eviter les courants fugififs
       set v1 "[combit 2 1]"
       set v2 "[combit 2 6]"
       set v3 "[combit 2 8]"
@@ -747,68 +747,68 @@ proc get_pad_buttons {} {
          set telscript($telname,drift_move_rate) 0.1
       }
 
-      # mesure de la variable d'Ã©tat des bits de rappel
+      # mesure de la variable d'état des bits de rappel
       if {$telscript($telname,move_virtual_pad)!=""} {
-         # utilisation raquette soft (boutons de l'interface graphique)
+	      # utilisation raquette soft (boutons de l'interface graphique)
          lassign $telscript($telname,move_virtual_pad) actif sens
-         set telscript($telname,speed_virtual_pad) ""
-         if {$telscript($telname,motion_next)!="correction"} {
-            if {($actif=="1")}  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) [string toupper $sens]
-               set telscript($telname,move_generator) 1
+		   set telscript($telname,speed_virtual_pad) ""
+	      if {$telscript($telname,motion_next)!="correction"} {
+	         if {($actif=="1")}  {
+	            set telscript($telname,action_next) "move_start"
+	            set telscript($telname,external_move_direction) [string toupper $sens]
+	            set telscript($telname,move_generator) 1
             }
-         } else {
-            if {($actif=="0")}  {
-               set telscript($telname,action_next) "move_stop"
-            }
-         }
+	      } else {
+	         if {($actif=="0")}  {
+	            set telscript($telname,action_next) "move_stop"
+	         }
+	      }
       } else {
-         # utilisation raquette physique (boutons combit)
-         if {$telscript($telname,motion_next)!="correction"} {
-            set rappel 0
-            set n "[combit 1 1]"
-            if {($n == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) N
-               set telscript($telname,move_generator) 1
-            }
-            set s "[combit 1 9]"
-            if {($s == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) S
-               set telscript($telname,move_generator) 1
-            }
-            set e "[combit 1 8]"
-            if {($e == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) E
-               set telscript($telname,move_generator) 1
-            }
-            set o "[combit 1 6]"
-            if {($o == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) W
-               set telscript($telname,move_generator) 1
-            }
-         } else {
-            # detecte la relache des bits de rappel (utilisation raquette soft)
-            set rappel 1
-            if {$telscript($telname,external_move_direction)=="N"} {
-               set rappel "[combit 1 1]"
-            }
-            if {$telscript($telname,external_move_direction)=="S"} {
-               set rappel "[combit 1 9]"
-            }
-            if {$telscript($telname,external_move_direction)=="E"} {
-               set rappel "[combit 1 8]"
-            }
-            if {$telscript($telname,external_move_direction)=="W"} {
-               set rappel "[combit 1 6]"
-            }
-            if {($rappel == 0)}  {
-               set telscript($telname,action_next) "move_stop"
-            }
+	      # utilisation raquette physique (boutons combit)
+	      if {$telscript($telname,motion_next)!="correction"} {
+	         set rappel 0
+	         set n "[combit 1 1]"
+	         if {($n == 1) }  {
+	            set telscript($telname,action_next) "move_start"
+	            set telscript($telname,external_move_direction) N
+	            set telscript($telname,move_generator) 1
+	         }
+	         set s "[combit 1 9]"
+	         if {($s == 1) }  {
+	            set telscript($telname,action_next) "move_start"
+	            set telscript($telname,external_move_direction) S
+	            set telscript($telname,move_generator) 1
+	         }
+	         set e "[combit 1 8]"
+	         if {($e == 1) }  {
+	            set telscript($telname,action_next) "move_start"
+	            set telscript($telname,external_move_direction) E
+	            set telscript($telname,move_generator) 1
+	         }
+	         set o "[combit 1 6]"
+	         if {($o == 1) }  {
+	            set telscript($telname,action_next) "move_start"
+	            set telscript($telname,external_move_direction) W
+	            set telscript($telname,move_generator) 1
+	         }
+	   	} else {
+	         # detecte la relache des bits de rappel (utilisation raquette soft)
+	         set rappel 1
+	         if {$telscript($telname,external_move_direction)=="N"} {
+	            set rappel "[combit 1 1]"
+	         }
+	         if {$telscript($telname,external_move_direction)=="S"} {
+	            set rappel "[combit 1 9]"
+	         }
+	         if {$telscript($telname,external_move_direction)=="E"} {
+	            set rappel "[combit 1 8]"
+	         }
+	         if {$telscript($telname,external_move_direction)=="W"} {
+	            set rappel "[combit 1 6]"
+	         }
+	         if {($rappel == 0)}  {
+	            set telscript($telname,action_next) "move_stop"
+	         }
          }
       }
    }
@@ -816,7 +816,6 @@ proc get_pad_buttons {} {
 
 # ################################################################################
 # ### proc direction2axesens
-# Enlever le retour de $sens qui est obsolete
 # ################################################################################
 proc direction2axesens { direction } {
    set axe 1 ; set sens 1
@@ -920,7 +919,7 @@ proc start_shift_lent { direction } {
    lassign [direction2axesens $direction] axe sens
    #
    set vrh  [etel_get_register_s $axe X 41]
-   #rÃ©cupÃ©ration de la vitesse actuelle de suivi
+   #récupération de la vitesse actuelle de suivi
    if {$axe==0} {
       if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
          set v0 $telscript($telname,speed_app_adu_az)
@@ -943,9 +942,9 @@ proc start_shift_lent { direction } {
    etel_set_register_s $axe X 42 0 [expr abs($vhr) ]
    etel_set_register_s $axe X 43 0 [expr abs($vhl) ]
    #::console::affiche_resultat "  $vrh $vh $ $vhr $vhl \n"
-   #rÃ©cupÃ©ration du sens actuel de rotation
+   #récupération du sens actuel de rotation
    set sens [etel_get_register_s $axe X 40]
-   #mouvement tÃ©lescope
+   #mouvement télescope
    if {$direction=="N"} {
       if { $sens == 1  } {
          etel_execute_command_x_s $axe 26 1 0 0 83
@@ -959,7 +958,7 @@ proc start_shift_lent { direction } {
          }
       }
    }
-
+   
    if {$direction=="S"} {
       if { $sens == 0  } {
          etel_execute_command_x_s $axe 26 1 0 0 84
@@ -1031,7 +1030,7 @@ proc start_shift_spectro { direction } {
    # --- Get useful variables
    set telname $telscript(def,telname)
    lassign [direction2axesens $direction] axe sens
-   #rÃ©cupÃ©ration du sens actuel de rotation
+   #récupération du sens actuel de rotation
    set sens [etel_get_register_s $axe X 40]
    set percent 1.
    if {$direction=="N"} {
@@ -1045,22 +1044,6 @@ proc start_shift_spectro { direction } {
    }
    if {$direction=="W"} {
       set telscript($telname,speed_app_adu_mult) [expr 1.+$percent/100.]
-   }
-}
-
-
-# ################################################################################
-# ### proc stop all motors
-# ################################################################################
-# ################################################################################
-proc stop_all_motors { } {
-   global telscript
-   # --- Get useful variables
-   set telname $telscript(def,telname)
-   etel_dsa_quick_stop_s 0
-   etel_dsa_quick_stop_s 1
-   if {$telscript($telname,mount_type)=="azelevrot"} {
-      etel_dsa_quick_stop_s 2
    }
 }
 
@@ -1211,58 +1194,50 @@ proc save_x { } {
    # --- Get useful variables
    set telname $telscript(def,telname)
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-      etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_az)
-      etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_az)
-      etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_az))]
-      etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_az))]
-      etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_az0)
-      etel_set_register_s 0 K 34 0 $telscript($telname,lim_min_az) ; # a supprimer
-      etel_set_register_s 0 K 35 0 $telscript($telname,lim_max_az) ; # a supprimer
-      etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_elev)
-      etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_elev)
-      etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_elev))]
-      etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_elev))]
-      etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_elev0)
-      etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_elev) ; # a supprimer
-      etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_elev) ; # a supprimer
-   }
+		etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_az)
+		etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_az)
+		etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_az))]
+		etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_az))]
+		etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_az0)
+		etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_elev)
+		etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_elev)
+		etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_elev))]
+		etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_elev))]
+		etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_elev0)
+	}
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      etel_set_register_s 2 X 26 0 $telscript($telname,adu4deg4sec_rot)
-      etel_set_register_s 2 X 27 0 $telscript($telname,adu4deg4sec_rot)
-      etel_set_register_s 2 X 28 0 [expr abs($telscript($telname,adu4deg_rot))]
-      etel_set_register_s 2 X 29 0 [expr abs($telscript($telname,adu4deg_rot))]
-      etel_set_register_s 2 X 62 0 $telscript($telname,coord_app_adu_rot0)
-   }
+		etel_set_register_s 2 X 26 0 $telscript($telname,adu4deg4sec_rot)
+		etel_set_register_s 2 X 27 0 $telscript($telname,adu4deg4sec_rot)
+		etel_set_register_s 2 X 28 0 [expr abs($telscript($telname,adu4deg_rot))]
+		etel_set_register_s 2 X 29 0 [expr abs($telscript($telname,adu4deg_rot))]
+		etel_set_register_s 2 X 62 0 $telscript($telname,coord_app_adu_rot0)
+	}
    if {$telscript($telname,mount_type)=="hadec"} {
-      etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_ha)
-      etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_ha)
-      etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_ha))]
-      etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_ha))]
-      etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_ha0)
-      #etel_set_register_s 0 K 34 0 $telscript($telname,lim_min_ha)
-      #etel_set_register_s 0 K 35 0 $telscript($telname,lim_max_ha)
-      etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_dec)
-      etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_dec)
-      etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_dec))]
-      etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
-      etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
-      #etel_set_register_s 1 K 34 0 $telscript($telname,lim_min_dec)
-      #etel_set_register_s 1 K 35 0 $telscript($telname,lim_max_dec)
-   }
-   etel_execute_command_x_s 0 119 0 ; # a supprimer
-   etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
-   after 1000
-   etel_execute_command_x_s 0 79 0 ; # a supprimer
-   etel_execute_command_x_s 1 119 0 ; # a supprimer
-   etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
-   after 1000
-   etel_execute_command_x_s 1 79 0 ; # a supprimer
+		etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_ha)
+		etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_ha)
+		etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_ha))]
+		etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_ha))]
+		etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_ha0)
+		etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_dec)
+		etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_dec)
+		etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_dec))]
+		etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
+		etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
+	}
+	etel_execute_command_x_s 0 119 0
+	etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
+	after 1000
+	etel_execute_command_x_s 0 79 0
+	etel_execute_command_x_s 1 119 0
+	etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
+	after 1000
+   etel_execute_command_x_s 1 79 0
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      etel_execute_command_x_s 2 119 0 ; # a supprimer
-      etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
+		etel_execute_command_x_s 2 119 0
+		etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
       after 1000
-      etel_execute_command_x_s 2 79 0 ; # a supprimer
-   }
+	  	etel_execute_command_x_s 2 79 0
+	}
 }
 
 # ################################################################################
@@ -1279,7 +1254,7 @@ proc save_x { } {
 # telscript($telname,speed_app_deg_*)
 # ################################################################################
 proc radec2degs { type raj2000 decj2000 drift_ra drift_dec {lag_sec 0}} {
-   global audace telscript
+   global telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
    set home $telscript($telname,home)
@@ -1290,19 +1265,19 @@ proc radec2degs { type raj2000 decj2000 drift_ra drift_dec {lag_sec 0}} {
    set modpoi_symbols $telscript($telname,modpoi_symbols)
    set modpoi_values $telscript($telname,modpoi_values)
    set hip [list 1 1 [string trim [mc_angle2deg "$raj2000"]] [string trim [mc_angle2deg "$decj2000" 90]] J2000 J2000 0 0 0]
-   set res [mc_hip2tel $hip $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -drift radec -driftvalues [list $drift_ra $drift_dec]]
-   set app_RA         [lindex $res 10] ; #: Acsension droite apparente avec modÃ¨le (deg)
-   set app_DEC        [lindex $res 11] ; #: DÃ©clinaison apparente avec modÃ¨le (deg)
-   set app_HA         [lindex $res 12] ; #: Angle horaire apparente avec modÃ¨le (deg)
-   set app_az         [lindex $res 13] ; #: Azimut apparente avec  modÃ¨le (deg)
-   set app_elev       [lindex $res 14] ; #: Elevation apparente avec modÃ¨le (deg)
-   set app_rot        [lindex $res 15] ; #: Angle parallactique apparent avec modÃ¨le (deg)
-   set app_drift_RA   [lindex $res 16] ; #: Vitesse en acsension droite apparente avec modÃ¨le (arcsec/sec)
-   set app_drift_DEC  [lindex $res 17] ; # : Vitesse en dÃ©clinaison apparente avec modÃ¨le (arcsec/sec)
-   set app_drift_HA   [lindex $res 18] ; # : Vitesse en angle horaire apparente avec modÃ¨le (arcsec/sec)
-   set app_drift_az   [lindex $res 19] ; # : Vitesse en azimut apparente avec  modÃ¨le (arcsec/sec)
-   set app_drift_elev [lindex $res 20] ; # : Vitesse en elevation apparente avec modÃ¨le (arcsec/sec)
-   set app_drift_rot  [lindex $res 21] ; # : Vitesse en angle parallactique apparent avec modÃ¨le (arcsec/sec)
+   set res [mc_hip2tel $hip $date $home 101325 290 $modpoi_symbols $modpoi_values -drift radec -driftvalues [list $drift_ra $drift_dec]]
+	set app_RA         [lindex $res 10] ; #: Acsension droite apparente avec modèle (deg)
+	set app_DEC        [lindex $res 11] ; #: Déclinaison apparente avec modèle (deg)
+	set app_HA         [lindex $res 12] ; #: Angle horaire apparente avec modèle (deg)
+	set app_az         [lindex $res 13] ; #: Azimut apparente avec  modèle (deg)
+	set app_elev       [lindex $res 14] ; #: Elevation apparente avec modèle (deg)
+	set app_rot        [lindex $res 15] ; #: Angle parallactique apparent avec modèle (deg)
+	set app_drift_RA   [lindex $res 16] ; #: Vitesse en acsension droite apparente avec modèle (arcsec/sec)
+	set app_drift_DEC  [lindex $res 17] ; # : Vitesse en déclinaison apparente avec modèle (arcsec/sec)
+	set app_drift_HA   [lindex $res 18] ; # : Vitesse en angle horaire apparente avec modèle (arcsec/sec)
+	set app_drift_az   [lindex $res 19] ; # : Vitesse en azimut apparente avec  modèle (arcsec/sec)
+	set app_drift_elev [lindex $res 20] ; # : Vitesse en elevation apparente avec modèle (arcsec/sec)
+	set app_drift_rot  [lindex $res 21] ; # : Vitesse en angle parallactique apparent avec modèle (arcsec/sec)
    if {$app_az>180} {
       set app_az [expr $app_az-360]
    }
@@ -1344,8 +1319,8 @@ proc radec2degs { type raj2000 decj2000 drift_ra drift_dec {lag_sec 0}} {
       set telscript($telname,simuspeed_app_deg_dec) $app_drift_DEC
       set telscript($telname,simuspeed_app_deg_rot) $app_drift_rot
    }
-   set out [list $app_az $app_elev $app_rot $app_HA $app_DEC $app_drift_az $app_drift_elev $app_drift_rot $app_drift_HA $app_drift_DEC]
-   return $out
+	set out [list $app_az $app_elev $app_rot $app_HA $app_DEC $app_drift_az $app_drift_elev $app_drift_rot $app_drift_HA $app_drift_DEC]
+	return $out
 }
 
 # ################################################################################
@@ -1517,7 +1492,7 @@ proc adus2degs { } {
 # List (ra,dec) J2000
 # ################################################################################
 proc degs2radec { } {
-   global audace telscript
+   global telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
    set home $telscript($telname,home)
@@ -1527,12 +1502,12 @@ proc degs2radec { } {
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
       set app_az $telscript($telname,coord_app_deg_az)
       set app_elev $telscript($telname,coord_app_deg_elev)
-      set res [mc_tel2cat [list $app_az $app_elev] ALTAZ $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
+      set res [mc_tel2cat [list $app_az $app_elev] ALTAZ $date $home 101325 290 $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
    }
    if {$telscript($telname,mount_type)=="hadec"} {
       set app_ha $telscript($telname,coord_app_deg_ha)
       set app_dec $telscript($telname,coord_app_deg_dec)
-      set res [mc_tel2cat [list $app_ha $app_dec] HADEC $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
+      set res [mc_tel2cat [list $app_ha $app_dec] HADEC $date $home 101325 290 $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
    }
    lassign $res raj2000 decj2000
    set raj2000 [mc_angle2hms $raj2000 360 zero 2 auto string ]
@@ -1580,7 +1555,7 @@ proc telscript_variables { } {
    #wm overrideredirect $base 0
    wm resizable $base 1 1
    wm deiconify $base
-   wm title $base "Pilotage tÃ©lescope $telname : Variables d'Ã©change"
+   wm title $base "Pilotage télescope $telname : Variables d'échange"
    wm protocol $base WM_DELETE_WINDOW { destroy .etelvar }
    bind $base <Destroy> { destroy .etelvar }
    $base configure -bg $paramscript(color,back)
@@ -1630,7 +1605,7 @@ proc telscript_variables { } {
    pack $base.fra1 -side top -fill both -expand 1
    #--- Create the button 'OK'
    #--- Cree le bouton 'OK'
-   button $base.but_ok -text "Mettre Ã Â jour" \
+   button $base.but_ok -text "Mettre à jour" \
       -borderwidth 2 -command {
          global telscript
          global paramscript
@@ -1661,27 +1636,27 @@ proc telscript_variables { } {
 # ### proc de creation du telescope
 # ################################################################################
 proc connect_tel { {mode_boot 0} } {
-   global paramscript
-   global audace
-   catch {
+	global paramscript
+	global audace
+ 	catch {
       close $telscript($telname,combit0)
       close $telscript($telname,combit1)
-   }
-   set telno [tel::list]
-   if {$mode_boot==0} {
-      if {$telno==""} {
-         ::tel::create telscript -telname t940 -script $paramscript(script) -home $audace(posobs,observateur,gps)
-      }
-   }
-   if {$mode_boot==1} {
-      if {$telno!=""} {
-         ::console::affiche_resultat "::tel::delete $telno\n"
-         ::tel::delete $telno
-         after 500
-         ::console::affiche_resultat "::tel::create telscript\n"
-         ::tel::create telscript -telname t940 -script $paramscript(script) -home $audace(posobs,observateur,gps)
-      }
-   }
+ 	}
+	set telno [tel::list]
+	if {$mode_boot==0} {
+		if {$telno==""} {
+			::tel::create telscript -telname t940 -script $paramscript(script) -home $audace(posobs,observateur,gps)
+		}
+	}
+	if {$mode_boot==1} {
+		if {$telno!=""} {
+			::console::affiche_resultat "::tel::delete $telno\n"
+			::tel::delete $telno
+			after 500
+			::console::affiche_resultat "::tel::create telscript\n"
+			::tel::create telscript -telname t940 -script $paramscript(script) -home $audace(posobs,observateur,gps)
+		}
+	}
 }
 
 # ################################################################################
@@ -1691,7 +1666,8 @@ proc connect_tel { {mode_boot 0} } {
 # ------
 # ################################################################################
 proc decode_radec_entry { objname0 {date ""} } {
-   global audace telscript
+   global telscript
+   global audace
    set telname $telscript(def,telname)
    set home $telscript($telname,home)
    if {$date==""} {
@@ -1700,14 +1676,14 @@ proc decode_radec_entry { objname0 {date ""} } {
    set modpoi_symbols $telscript($telname,modpoi_symbols)
    set modpoi_values $telscript($telname,modpoi_values)
    set objname0 [string toupper $objname0]
-   set no [llength $objname0]
-   set car [string index $objname0 0]
+	set no [llength $objname0]
+	set car [string index $objname0 0]
    set type_obj coords
    set objname coords
    set xdra 0
    set xddec 0
-   if {$car=="&"} {
-      set name [string range $objname0 1 end]
+	if {$car=="&"} {
+		set name [string range $objname0 1 end]
       if {$name=="NEO1"} {
          set name 2012DA14
       }
@@ -1734,8 +1710,8 @@ proc decode_radec_entry { objname0 {date ""} } {
          set xddec [expr $obj_drift_dec/60./3600.]
          set type_obj mpcephem
       }
-   } elseif {$car=="*"} {
-      set name [string range $objname0 1 end]
+	} elseif {$car=="*"} {
+		set name [string range $objname0 1 end]
       set objname $name
       if {($name=="ISS")||($name=="GEO")||($name=="GPS")} {
          set res [best_satel $name 0 45 $home $date]
@@ -1755,7 +1731,7 @@ proc decode_radec_entry { objname0 {date ""} } {
          set type_obj name2coord
       } elseif {($name=="PARK")} {
          set objname PARK
-         set res [mc_tel2cat [list 0 -40] HADEC $date $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
+         set res [mc_tel2cat [list 0 -40] HADEC $date $home 101325 290 $modpoi_symbols $modpoi_values -model_only 0 -refraction 1]
          lassign $res raj2000 decj2000
          set xra $raj2000
          set xdec $decj2000
@@ -1774,26 +1750,26 @@ proc decode_radec_entry { objname0 {date ""} } {
             set type_obj name2coord
          }
       }
-   } else {
-      if {$no==8} {
-         lassign $objname0 rah ram ras decd decm decs xdra xddec
-         set ra [list $rah $ram $ras h]
-         set dec [list $decd $decm $decs]
-      } elseif {$no==6} {
-         lassign $objname0 rah ram ras decd decm decs
-         set ra [list $rah $ram $ras h]
-         set dec [list $decd $decm $decs]
-      } else {
-         lassign $objname0 ra dec
-      }
-      set xra  [string trim [mc_angle2deg $ra]]
-      set xdec [string trim [mc_angle2deg $dec 90]]
-   }
-   set xra [mc_angle2hms $xra 360 zero 2 auto string]
-   set xdec [mc_angle2dms $xdec 90 zero 1 + string]
-   set xdra [format %.5f $xdra]
-   set xddec [format %.5f $xddec]
-   return [list $type_obj $objname $xra $xdec $xdra $xddec]
+	} else {
+		if {$no==8} {
+			lassign $objname0 rah ram ras decd decm decs xdra xddec
+			set ra [list $rah $ram $ras h]
+			set dec [list $decd $decm $decs]
+		} elseif {$no==6} {
+			lassign $objname0 rah ram ras decd decm decs
+			set ra [list $rah $ram $ras h]
+			set dec [list $decd $decm $decs]
+		} else {
+			lassign $objname0 ra dec
+		}
+		set xra  [string trim [mc_angle2deg $ra]]
+		set xdec [string trim [mc_angle2deg $dec 90]]
+	}
+	set xra [mc_angle2hms $xra 360 zero 2 auto string]
+	set xdec [mc_angle2dms $xdec 90 zero 1 + string]
+	set xdra [format %.5f $xdra]
+	set xddec [format %.5f $xddec]
+	return [list $type_obj $objname $xra $xdec $xdra $xddec]
 }
 
 # ################################################################################
@@ -1894,7 +1870,7 @@ proc best_satel { type az0 elev0 home date} {
 }
 
 # ################################################################################
-# ### proc appelÃ©e par l'interface graphique principale
+# ### proc appelée par l'interface graphique principale
 # ################################################################################
 proc gui_calcul_coordonnees { objname0 } {
    global telscript
@@ -1973,7 +1949,7 @@ proc gui_calcul_coordonnees { objname0 } {
 }
 
 # ################################################################################
-# ### proc appelÃ©e par l'appui sur les boutons de direction de la raquette virtuelle
+# ### proc appelée par l'appui sur les boutons de direction de la raquette virtuelle
 # ################################################################################
 proc gui_start_shift { widget direction } {
    global telscript
@@ -1989,7 +1965,7 @@ proc gui_start_shift { widget direction } {
 }
 
 # ################################################################################
-# ### proc appelÃ©e par la relache des boutons de direction de la raquette virtuelle
+# ### proc appelée par la relache des boutons de direction de la raquette virtuelle
 # ################################################################################
 proc gui_stop_shift { widget direction } {
    global telscript
@@ -2008,7 +1984,7 @@ proc gui_stop_shift { widget direction } {
 }
 
 # ################################################################################
-# ### proc appelÃ©e par l'appui sur les boutons de vitesse de la raquette virtuelle
+# ### proc appelée par l'appui sur les boutons de vitesse de la raquette virtuelle
 # ################################################################################
 proc gui_speed_shift { widget speed } {
    global telscript
@@ -2042,7 +2018,8 @@ proc telscript_gui { } {
    global audace
 
    set paramscript(loop) 0
-   set paramscript(script) "[pwd]/telscript_etel.tcl"
+   ### set paramscript(script) "[pwd]/telscript_etel.tcl"
+   set paramscript(script) "$audace(rep_install)/gui/audace/plugin/mount/telscript/telscript_etel.tcl"   
    after 200
    connect_tel 0
    foreach res [lsort [tel1 variables]] {
@@ -2068,7 +2045,7 @@ proc telscript_gui { } {
    set paramscript(color,blue)       #0000FF
    set paramscript(color,rectangle)  #0000EF
    set paramscript(color,scroll)     #BBBBBB
-   set paramscript(font)             {times 11 bold}
+   set paramscript(font)       	    {times 11 bold}
    set paramscript(font1)            {times 15 bold}
 
    # --- Create the toplevel window
@@ -2083,7 +2060,7 @@ proc telscript_gui { } {
    #wm overrideredirect $base 0
    wm resizable $base 1 1
    wm deiconify $base
-   wm title $base "Pilotage tÃ©lescope $telname"
+   wm title $base "Pilotage télescope $telname"
    #wm protocol $base WM_DELETE_WINDOW fermer
    wm protocol $base WM_DELETE_WINDOW { destroy .etel }
    bind $base <Destroy> { destroy .etel }
@@ -2094,7 +2071,7 @@ proc telscript_gui { } {
    frame $base.f -bg $paramscript(color,back)
       label $base.f.lab_titre \
          -bg $paramscript(color,back) -fg $paramscript(color,text) \
-         -font $paramscript(font) -text "Pilotage tÃ©lescope $telname"
+         -font $paramscript(font) -text "Pilotage télescope $telname"
       pack $base.f.lab_titre
       #--- DATES
       frame $base.f.f3 -bg $paramscript(color,back)
@@ -2149,7 +2126,7 @@ proc telscript_gui { } {
             -command { ::console::affiche_resultat "\nsource \"[pwd]/$scriptname\" ; telscript_gui\n" ; source [pwd]/$scriptname ; telscript_gui}
          pack $base.f.f1.but_sourceaud -side left -anchor center -padx 3 -pady 3
          button $base.f.f1.but_coefs \
-            -text "ParamÃ¨tres ETEL" -borderwidth 2 \
+            -text "Paramètres ETEL" -borderwidth 2 \
             -command { }
          pack $base.f.f1.but_coefs -side left -anchor center -padx 3 -pady 3
          button $base.f.f1.but_vars \
@@ -2341,15 +2318,15 @@ proc telscript_gui { } {
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
             -font $paramscript(font) -text "NOM ou COORD"
          pack $base.f.fpoi1.lab_def -side left -fill none -pady 0 -padx 4
-         entry $base.f.fpoi1.ent \
-            -textvariable telscript($telname,poi_objname) -width 30
-         pack $base.f.fpoi1.ent \
-            -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3
+   	   entry $base.f.fpoi1.ent \
+   	      -textvariable telscript($telname,poi_objname) -width 30
+   	   pack $base.f.fpoi1.ent \
+   	      -side left -anchor center -expand 1 -fill x \
+   	      -padx 10 -pady 3
          button $base.f.fpoi1.but_vars \
-            -text "Calcul coordonnÃ©es" -borderwidth 2 \
+            -text "Calcul coordonnées" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
                set base $telscript(def,base)
                $base.f.fpoi1.but_vars configure -state disabled
@@ -2373,7 +2350,7 @@ proc telscript_gui { } {
       frame $base.f.fpoi2b -bg $paramscript(color,back)
          label $base.f.fpoi2b.lab_def \
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
-            -font $paramscript(font) -text "PARCOURS prÃ©vu"
+            -font $paramscript(font) -text "PARCOURS prévu"
          pack $base.f.fpoi2b.lab_def -side left -fill none -pady 0 -padx 4
          label $base.f.fpoi2b.lab_coord \
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
@@ -2384,7 +2361,7 @@ proc telscript_gui { } {
          button $base.f.fpoi3.but_match \
             -text "MATCH (Delta0)" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
                set base $telscript(def,base)
                $base.f.fpoi3.but_match configure -state disabled
@@ -2400,7 +2377,7 @@ proc telscript_gui { } {
          button $base.f.fpoi3.but_goto \
             -text "GOTO" -borderwidth 2 -padx 20\
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
                set base $telscript(def,base)
                $base.f.fpoi3.but_goto configure -state disabled
@@ -2411,7 +2388,7 @@ proc telscript_gui { } {
                # --
                if {$app_elev<0} {
                   catch {exec espeak.exe -v fr "Pointage impossible."}
-                  tk_messageBox -icon warning -type ok -message "Astre couchÃ©\nElevation=[format %.1f $app_elev] deg."
+                  tk_messageBox -icon warning -type ok -message "Astre couché\nElevation=[format %.1f $app_elev] deg."
                   return
                }
                # --
@@ -2429,7 +2406,7 @@ proc telscript_gui { } {
          button $base.f.fpoi3.but_stop \
             -text "STOP GOTO" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
                set command ""
                append command "set telscript($telscript(def,telname),action_next) radec_goto_stop"
@@ -2442,9 +2419,9 @@ proc telscript_gui { } {
          button $base.f.fpoi3.but_park \
             -text "PARK" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
-               set base $telscript(def,base)
+	            set base $telscript(def,base)
                set home $telscript($telname,home)
                set telscript($telname,poi_objname) "*PARK"
                set result [gui_calcul_coordonnees $telscript($telname,poi_objname)]
@@ -2531,9 +2508,9 @@ proc telscript_gui { } {
          button $base.f.fs4.but_drifton \
             -text "Drift ON" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
-               set base $telscript(def,base)
+	            set base $telscript(def,base)
                set command ""
                append command "set telscript($telscript(def,telname),action_next) motor_on;"
                tel1 loopeval "$command"
@@ -2542,9 +2519,9 @@ proc telscript_gui { } {
          button $base.f.fs4.but_driftoff \
             -text "Drift OFF" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
-               set base $telscript(def,base)
+	            set base $telscript(def,base)
                set command ""
                append command "set telscript($telscript(def,telname),action_next) motor_off;"
                tel1 loopeval "$command"
@@ -2620,22 +2597,22 @@ proc telscript_gui { } {
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
             -font $paramscript(font) -text "LOOP eval"
          pack $base.f.feval1.lab_def -side left -fill none -pady 0 -padx 4
-         entry $base.f.feval1.ent \
-            -textvariable telscript($telname,loopeval_input) -width 50
-         pack $base.f.feval1.ent \
-            -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3
+   	   entry $base.f.feval1.ent \
+   	      -textvariable telscript($telname,loopeval_input) -width 50
+   	   pack $base.f.feval1.ent \
+   	      -side left -anchor center -expand 1 -fill x \
+   	      -padx 10 -pady 3
          button $base.f.feval1.but_eval \
             -text "loop eval" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
-               set base $telscript(def,base)
+	            set base $telscript(def,base)
                $base.f.feval1.but_eval configure -state disabled
                set texte "set telname \$telscript(def,telname) ; $telscript($telname,loopeval_input)"
-               tel1 loopeval $texte
-               after 400
-               set res [tel1 loopresult]
+	            tel1 loopeval $texte
+	            after 400
+	            set res [tel1 loopresult]
                $base.f.feval1.lab_res configure -text $res
                $base.f.feval1.but_eval configure -state active
             }
@@ -2648,19 +2625,19 @@ proc telscript_gui { } {
       frame $base.f.fgetreg1 -bg $paramscript(color,back)
          label $base.f.fgetreg1.lab_def \
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
-            -font $paramscript(font) -text "REGISTER axe X|M|K num ?0 val?"
+            -font $paramscript(font) -text "REGISTER axe X|M|K num ?val?"
          pack $base.f.fgetreg1.lab_def -side left -fill none -pady 0 -padx 4
-         entry $base.f.fgetreg1.ent \
-            -textvariable telscript($telname,loopeval_register) -width 15
-         pack $base.f.fgetreg1.ent \
-            -side left -anchor center -expand 1 -fill x \
-            -padx 10 -pady 3
+   	   entry $base.f.fgetreg1.ent \
+   	      -textvariable telscript($telname,loopeval_register) -width 15
+   	   pack $base.f.fgetreg1.ent \
+   	      -side left -anchor center -expand 1 -fill x \
+   	      -padx 10 -pady 3
          button $base.f.fgetreg1.but_eval \
             -text "loop get/set register" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
-               set base $telscript(def,base)
+	            set base $telscript(def,base)
                $base.f.fgetreg1.but_eval configure -state disabled
                set n [llength $telscript($telname,loopeval_register)]
                if {$n==4} {
@@ -2668,9 +2645,9 @@ proc telscript_gui { } {
                } else {
                   set texte "etel_get_register_s $telscript($telname,loopeval_register)"
                }
-               tel1 loopeval "$texte"
-               after 400
-               set res [tel1 loopresult]
+	            tel1 loopeval "$texte"
+	            after 400
+	            set res [tel1 loopresult]
                $base.f.fgetreg1.lab_res configure -text $res
                $base.f.fgetreg1.but_eval configure -state active
             }
@@ -2684,14 +2661,14 @@ proc telscript_gui { } {
          button $base.f.fgetreg2.but_save \
             -text "save registers X" -borderwidth 2 \
             -command {
-               global telscript
+	            global telscript
                set telname $telscript(def,telname)
-               set base $telscript(def,base)
+	            set base $telscript(def,base)
                $base.f.fgetreg2.but_save configure -state disabled
                set texte "save_x"
-               tel1 loopeval "$texte"
-               after 400
-               set res [tel1 loopresult]
+	            tel1 loopeval "$texte"
+	            after 400
+	            set res [tel1 loopresult]
                $base.f.fgetreg2.but_save configure -state active
             }
          pack $base.f.fgetreg2.but_save -side left -anchor center -padx 3 -pady 3
@@ -2713,57 +2690,57 @@ proc telscript_gui { } {
    while {$paramscript(loop)==1} {
       after 100
       set errw [catch {
-         set textevar ""
-         foreach res [lsort [tel1 variables]] {
-            eval "set $res"
-            append textevar "$res\n"
-         }
-         set date [date_sys2ut now]
-         $base.f.f3.lab_tu configure -text "Date = [string range [mc_date2iso8601 $date] 0 end-4] TU"
-         $base.f.f3.lab_tsl configure -text "TSL = [string range [mc_date2lst $date $home] 0 end-7]"
-         set res [tel1 action]
-         $base.f.f2.lab_action configure -text "action = [lindex $res 0]"
-         $base.f.f2.lab_loopno configure -text "boucle = [lindex $res 1]"
-         $base.f.f2.lab_loopsimu configure -text "(simulation = $telscript($telname,simulation))"
-         $base.f.f2.lab_loopmotion configure -text "motion = $telscript($telname,motion_next)"
-         set res [tel1 looperror]
-         if {$res!=""} {
-            $base.f.f2.lab_looperror configure -text " $res"
-         } else {
-            $base.f.f2.lab_looperror configure -text ""
-         }
+	      set textevar ""
+	      foreach res [lsort [tel1 variables]] {
+	         eval "set $res"
+	         append textevar "$res\n"
+	      }
+			set date [date_sys2ut now]
+	      $base.f.f3.lab_tu configure -text "Date = [string range [mc_date2iso8601 $date] 0 end-4] TU"
+	      $base.f.f3.lab_tsl configure -text "TSL = [string range [mc_date2lst $date $home] 0 end-7]"
+	      set res [tel1 action]
+	      $base.f.f2.lab_action configure -text "action = [lindex $res 0]"
+	      $base.f.f2.lab_loopno configure -text "boucle = [lindex $res 1]"
+	      $base.f.f2.lab_loopsimu configure -text "(simulation = $telscript($telname,simulation))"
+	      $base.f.f2.lab_loopmotion configure -text "motion = $telscript($telname,motion_next)"
+	      set res [tel1 looperror]
+	      if {$res!=""} {
+	         $base.f.f2.lab_looperror configure -text " $res"
+	      } else {
+	         $base.f.f2.lab_looperror configure -text ""
+	      }
          set radecj2000 [lrange $telscript($telname,simugoto,object) 3 4]
-         if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-            $base.f.fp1.lab_ax0 configure -text "az = $telscript($telname,coord_app_adu_az)"
-            $base.f.fp1.lab_ax1 configure -text "elev = $telscript($telname,coord_app_adu_elev)"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp1.lab_ax2 configure -text "rot = $telscript($telname,coord_app_adu_rot)"
-            }
-            $base.f.fp2.lab_ax0 configure -text "az = $telscript($telname,adu4deg_az)"
-            $base.f.fp2.lab_ax1 configure -text "elev = $telscript($telname,adu4deg_elev)"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp2.lab_ax2 configure -text "rot = $telscript($telname,adu4deg_rot)"
-            }
-            $base.f.fp3.lab_ax0 configure -text "az0 = $telscript($telname,coord_app_adu_az0)"
-            $base.f.fp3.lab_ax1 configure -text "elev0 = $telscript($telname,coord_app_adu_elev0)"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp3.lab_ax2 configure -text "rot = $telscript($telname,coord_app_adu_rot0)"
-            }
-            $base.f.fp4.lab_ax0 configure -text "az0 = [format %.5f $telscript($telname,coord_app_deg_az0)]"
-            $base.f.fp4.lab_ax1 configure -text "elev0 = [format %.5f $telscript($telname,coord_app_deg_elev0)]"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp4.lab_ax2 configure -text "rot = $telscript($telname,coord_app_deg_rot0)"
-            }
-            $base.f.fp4a.lab_ax0 configure -text "az = [format %.5f $telscript($telname,simugoto_app_deg_az)]"
-            $base.f.fp4a.lab_ax1 configure -text "elev = [format %.5f $telscript($telname,simugoto_app_deg_elev)] ($radecj2000)"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp4a.lab_ax2 configure -text "rot = [format %.4f $telscript($telname,simugoto_app_deg_rot)]"
-            }
-            $base.f.fp4b.lab_ax0 configure -text "az = [format %.0f $telscript($telname,simugoto_app_adu_az)]"
-            $base.f.fp4b.lab_ax1 configure -text "elev = [format %.0f $telscript($telname,simugoto_app_adu_elev)]"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp4b.lab_ax2 configure -text "rot = [format %.0f $telscript($telname,simugoto_app_adu_rot)]"
-            }
+	      if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
+	         $base.f.fp1.lab_ax0 configure -text "az = $telscript($telname,coord_app_adu_az)"
+	         $base.f.fp1.lab_ax1 configure -text "elev = $telscript($telname,coord_app_adu_elev)"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp1.lab_ax2 configure -text "rot = $telscript($telname,coord_app_adu_rot)"
+	         }
+	         $base.f.fp2.lab_ax0 configure -text "az = $telscript($telname,adu4deg_az)"
+	         $base.f.fp2.lab_ax1 configure -text "elev = $telscript($telname,adu4deg_elev)"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp2.lab_ax2 configure -text "rot = $telscript($telname,adu4deg_rot)"
+	         }
+	         $base.f.fp3.lab_ax0 configure -text "az0 = $telscript($telname,coord_app_adu_az0)"
+	         $base.f.fp3.lab_ax1 configure -text "elev0 = $telscript($telname,coord_app_adu_elev0)"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp3.lab_ax2 configure -text "rot = $telscript($telname,coord_app_adu_rot0)"
+	         }
+	         $base.f.fp4.lab_ax0 configure -text "az0 = [format %.5f $telscript($telname,coord_app_deg_az0)]"
+	         $base.f.fp4.lab_ax1 configure -text "elev0 = [format %.5f $telscript($telname,coord_app_deg_elev0)]"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp4.lab_ax2 configure -text "rot = [format %.5f $telscript($telname,coord_app_deg_rot0)]"
+	         }
+	         $base.f.fp4a.lab_ax0 configure -text "az = [format %.5f $telscript($telname,simugoto_app_deg_az)]"
+	         $base.f.fp4a.lab_ax1 configure -text "elev = [format %.5f $telscript($telname,simugoto_app_deg_elev)] ($radecj2000)"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp4a.lab_ax2 configure -text "rot = [format %.4f $telscript($telname,simugoto_app_deg_rot)]"
+	         }
+	         $base.f.fp4b.lab_ax0 configure -text "az = [format %.0f $telscript($telname,simugoto_app_adu_az)]"
+	         $base.f.fp4b.lab_ax1 configure -text "elev = [format %.0f $telscript($telname,simugoto_app_adu_elev)]"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp4b.lab_ax2 configure -text "rot = [format %.0f $telscript($telname,simugoto_app_adu_rot)]"
+	         }
             # adu = adu0 + (az-az0)*adu4deg
             # Avant MATCH:
             # coord_app_deg_az0 <---> coord_app_adu_az0
@@ -2775,69 +2752,69 @@ proc telscript_gui { } {
             # simugoto_app_deg_az <---> coord_app_adu_az
             # on calcule coord_app_adu_az0 = coord_app_adu_az - (simugoto_app_deg_az - coord_app_deg_az0)*adu4deg
             set adu0 [expr $telscript($telname,coord_app_adu_az)-($telscript($telname,simugoto_app_deg_az)-$telscript($telname,coord_app_deg_az0))*$telscript($telname,adu4deg_az)]
-            $base.f.fp4c.lab_ax0 configure -text "az0 = [format %.0f $adu0]"
+	         $base.f.fp4c.lab_ax0 configure -text "az0 = [format %.0f $adu0]"
             set adu0 [expr $telscript($telname,coord_app_adu_elev)-($telscript($telname,simugoto_app_deg_elev)-$telscript($telname,coord_app_deg_elev0))*$telscript($telname,adu4deg_elev)]
-            $base.f.fp4c.lab_ax1 configure -text "elev0 = [format %.0f $adu0]"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
+	         $base.f.fp4c.lab_ax1 configure -text "elev0 = [format %.0f $adu0]"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
                set adu0 [expr $telscript($telname,coord_app_adu_rot)-($telscript($telname,simugoto_app_deg_rot)-$telscript($telname,coord_app_deg_rot0))*$telscript($telname,adu4deg_rot)]
-               $base.f.fp4c.lab_ax2 configure -text "rot0 = [format %.0f $adu0]"
-            }
-            $base.f.fp5.lab_ax0 configure -text "az = [format %.5f $telscript($telname,coord_app_deg_az)]"
-            $base.f.fp5.lab_ax1 configure -text "elev = [format %.5f $telscript($telname,coord_app_deg_elev)]"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fp5.lab_ax2 configure -text "rot = $telscript($telname,coord_app_deg_rot)"
-            }
-            $base.f.fp5.lab_bonus configure -text "ha = [format %.5f $telscript($telname,coord_app_deg_ha)]   dec = [format %.5f $telscript($telname,coord_app_deg_dec)]"
-            $base.f.fs1.lab_ax0 configure -text "daz = $telscript($telname,speed_app_adu_az)"
-            $base.f.fs1.lab_ax1 configure -text "delev = $telscript($telname,speed_app_adu_elev)"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fs1.lab_ax2 configure -text "drot = $telscript($telname,speed_app_adu_rot)"
-            }
-            $base.f.fs2.lab_ax0 configure -text "daz = $telscript($telname,adu4deg4sec_az)"
-            $base.f.fs2.lab_ax1 configure -text "delev = $telscript($telname,adu4deg4sec_elev)"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fs2.lab_ax2 configure -text "drot = $telscript($telname,adu4deg4sec_rot)"
-            }
-            $base.f.fs3.lab_ax0 configure -text "daz = [format %.3f $telscript($telname,speed_app_deg_az)]"
-            $base.f.fs3.lab_ax1 configure -text "delev = [format %.3f $telscript($telname,speed_app_deg_elev)]"
-            if {($telscript($telname,mount_type)=="azelevrot")} {
-               $base.f.fs3.lab_ax2 configure -text "drot = [format %.3f $telscript($telname,speed_app_deg_rot)]"
-            }
-            $base.f.fs3.lab_bonus configure -text "dha = [format %.3f $telscript($telname,speed_app_deg_ha)]  ddec = [format %.3f $telscript($telname,speed_app_deg_dec)]"
-         }
-         if {$telscript($telname,mount_type)=="hadec"} {
-            $base.f.fp1.lab_ax0 configure -text "ha = $telscript($telname,coord_app_adu_ha)"
-            $base.f.fp1.lab_ax1 configure -text "dec = $telscript($telname,coord_app_adu_dec)"
-            $base.f.fp2.lab_ax0 configure -text "ha = $telscript($telname,adu4deg_ha)"
-            $base.f.fp2.lab_ax1 configure -text "dec = $telscript($telname,adu4deg_dec)"
-            $base.f.fp3.lab_ax0 configure -text "ha0 = $telscript($telname,coord_app_adu_ha)"
-            $base.f.fp3.lab_ax1 configure -text "dec0 = $telscript($telname,coord_app_adu_dec)"
-            $base.f.fp4.lab_ax0 configure -text "ha0 = [format %.5f $telscript($telname,coord_app_deg_ha0)]"
-            $base.f.fp4.lab_ax1 configure -text "dec0 = [format %.5f $telscript($telname,coord_app_deg_dec0)]"
-            $base.f.fp4a.lab_ax0 configure -text "ha = [format %.5f $telscript($telname,simugoto_app_deg_ha)]"
-            $base.f.fp4a.lab_ax1 configure -text "dec = [format %.5f $telscript($telname,simugoto_app_deg_dec)] ($radecj2000)"
-            $base.f.fp4b.lab_ax0 configure -text "ha = [format %.0f $telscript($telname,simugoto_app_adu_ha)]"
-            $base.f.fp4b.lab_ax1 configure -text "dec = [format %.0f $telscript($telname,simugoto_app_adu_dec)]"
+	            $base.f.fp4c.lab_ax2 configure -text "rot0 = [format %.0f $adu0]"
+	         }
+	         $base.f.fp5.lab_ax0 configure -text "az = [format %.5f $telscript($telname,coord_app_deg_az)]"
+	         $base.f.fp5.lab_ax1 configure -text "elev = [format %.5f $telscript($telname,coord_app_deg_elev)]"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fp5.lab_ax2 configure -text "rot = [format %.5f $telscript($telname,coord_app_deg_rot)]"
+	         }
+	         $base.f.fp5.lab_bonus configure -text "ha = [format %.5f $telscript($telname,coord_app_deg_ha)]   dec = [format %.5f $telscript($telname,coord_app_deg_dec)]"
+	         $base.f.fs1.lab_ax0 configure -text "daz = $telscript($telname,speed_app_adu_az)"
+	         $base.f.fs1.lab_ax1 configure -text "delev = $telscript($telname,speed_app_adu_elev)"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fs1.lab_ax2 configure -text "drot = $telscript($telname,speed_app_adu_rot)"
+	         }
+	         $base.f.fs2.lab_ax0 configure -text "daz = $telscript($telname,adu4deg4sec_az)"
+	         $base.f.fs2.lab_ax1 configure -text "delev = $telscript($telname,adu4deg4sec_elev)"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fs2.lab_ax2 configure -text "drot = $telscript($telname,adu4deg4sec_rot)"
+	         }
+	         $base.f.fs3.lab_ax0 configure -text "daz = [format %.3f $telscript($telname,speed_app_deg_az)]"
+	         $base.f.fs3.lab_ax1 configure -text "delev = [format %.3f $telscript($telname,speed_app_deg_elev)]"
+	         if {($telscript($telname,mount_type)=="azelevrot")} {
+	            $base.f.fs3.lab_ax2 configure -text "drot = [format %.3f $telscript($telname,speed_app_deg_rot)]"
+	         }
+	         $base.f.fs3.lab_bonus configure -text "dha = [format %.3f $telscript($telname,speed_app_deg_ha)]  ddec = [format %.3f $telscript($telname,speed_app_deg_dec)]"
+	      }
+	      if {$telscript($telname,mount_type)=="hadec"} {
+	         $base.f.fp1.lab_ax0 configure -text "ha = $telscript($telname,coord_app_adu_ha)"
+	         $base.f.fp1.lab_ax1 configure -text "dec = $telscript($telname,coord_app_adu_dec)"
+	         $base.f.fp2.lab_ax0 configure -text "ha = $telscript($telname,adu4deg_ha)"
+	         $base.f.fp2.lab_ax1 configure -text "dec = $telscript($telname,adu4deg_dec)"
+	         $base.f.fp3.lab_ax0 configure -text "ha0 = $telscript($telname,coord_app_adu_ha)"
+	         $base.f.fp3.lab_ax1 configure -text "dec0 = $telscript($telname,coord_app_adu_dec)"
+	         $base.f.fp4.lab_ax0 configure -text "ha0 = [format %.5f $telscript($telname,coord_app_deg_ha0)]"
+	         $base.f.fp4.lab_ax1 configure -text "dec0 = [format %.5f $telscript($telname,coord_app_deg_dec0)]"
+	         $base.f.fp4a.lab_ax0 configure -text "ha = [format %.5f $telscript($telname,simugoto_app_deg_ha)]"
+	         $base.f.fp4a.lab_ax1 configure -text "dec = [format %.5f $telscript($telname,simugoto_app_deg_dec)] ($radecj2000)"
+	         $base.f.fp4b.lab_ax0 configure -text "ha = [format %.0f $telscript($telname,simugoto_app_adu_ha)]"
+	         $base.f.fp4b.lab_ax1 configure -text "dec = [format %.0f $telscript($telname,simugoto_app_adu_dec)]"
             # adu =adu0 + (ang-ang0)*adu4deg
             set adu0 [expr $telscript($telname,coord_app_adu_ha)-($telscript($telname,simugoto_app_deg_ha)-$telscript($telname,coord_app_deg_ha0))*$telscript($telname,adu4deg_ha)]
-            $base.f.fp4c.lab_ax0 configure -text "ha0 = [format %.0f $adu0]"
+	         $base.f.fp4c.lab_ax0 configure -text "ha0 = [format %.0f $adu0]"
             set adu0 [expr $telscript($telname,coord_app_adu_dec)-($telscript($telname,simugoto_app_deg_dec)-$telscript($telname,coord_app_deg_dec0))*$telscript($telname,adu4deg_dec)]
-            $base.f.fp4c.lab_ax1 configure -text "dec0 = [format %.0f $adu0]"
-            $base.f.fp5.lab_ax0 configure -text "ha = [format %.5f $telscript($telname,coord_app_deg_ha)]"
-            $base.f.fp5.lab_ax1 configure -text "dec = [format %.5f $telscript($telname,coord_app_deg_dec)]"
-            $base.f.fp5.lab_bonus configure -text "az = [format %.5f $telscript($telname,coord_app_deg_az)]   elev = [format %.5f $telscript($telname,coord_app_deg_elev)]"
-            $base.f.fs1.lab_ax0 configure -text "dha = $telscript($telname,speed_app_adu_ha)"
-            $base.f.fs1.lab_ax1 configure -text "ddec = $telscript($telname,speed_app_adu_dec)"
-            $base.f.fs2.lab_ax0 configure -text "dha = $telscript($telname,adu4deg4sec_ha)"
-            $base.f.fs2.lab_ax1 configure -text "ddec = $telscript($telname,adu4deg4sec_dec)"
-            $base.f.fs3.lab_ax0 configure -text "dha = [format %.3f $telscript($telname,speed_app_deg_ha)]"
-            $base.f.fs3.lab_ax1 configure -text "ddec = [format %.3f $telscript($telname,speed_app_deg_dec)]"
-            $base.f.fs3.lab_bonus configure -text "daz = [format %.3f $telscript($telname,speed_app_deg_az)]  delev = [format %.3f $telscript($telname,speed_app_deg_elev)]"
-         }
-         #lassign [tel1 radec coord] ra dec
+	         $base.f.fp4c.lab_ax1 configure -text "dec0 = [format %.0f $adu0]"
+	         $base.f.fp5.lab_ax0 configure -text "ha = [format %.5f $telscript($telname,coord_app_deg_ha)]"
+	         $base.f.fp5.lab_ax1 configure -text "dec = [format %.5f $telscript($telname,coord_app_deg_dec)]"
+	         $base.f.fp5.lab_bonus configure -text "az = [format %.5f $telscript($telname,coord_app_deg_az)]   elev = [format %.5f $telscript($telname,coord_app_deg_elev)]"
+	         $base.f.fs1.lab_ax0 configure -text "dha = $telscript($telname,speed_app_adu_ha)"
+	         $base.f.fs1.lab_ax1 configure -text "ddec = $telscript($telname,speed_app_adu_dec)"
+	         $base.f.fs2.lab_ax0 configure -text "dha = $telscript($telname,adu4deg4sec_ha)"
+	         $base.f.fs2.lab_ax1 configure -text "ddec = $telscript($telname,adu4deg4sec_dec)"
+	         $base.f.fs3.lab_ax0 configure -text "dha = [format %.3f $telscript($telname,speed_app_deg_ha)]"
+	         $base.f.fs3.lab_ax1 configure -text "ddec = [format %.3f $telscript($telname,speed_app_deg_dec)]"
+	         $base.f.fs3.lab_bonus configure -text "daz = [format %.3f $telscript($telname,speed_app_deg_az)]  delev = [format %.3f $telscript($telname,speed_app_deg_elev)]"
+	      }
+	      #lassign [tel1 radec coord] ra dec
          lassign [degs2radec] ra dec
-         $base.f.fp6.lab_ra configure -text "ra = $ra"
-         $base.f.fp6.lab_dec configure -text "dec = $dec"
+	      $base.f.fp6.lab_ra configure -text "ra = $ra"
+	      $base.f.fp6.lab_dec configure -text "dec = $dec"
          if {[$base.f.fpoi2.lab_coord cget -text]==""} {
             $base.f.fpoi2.lab_coord configure -text "coord coord [$base.f.fp6.lab_ra cget -text] [$base.f.fp6.lab_dec cget -text]"
          }
@@ -2877,4 +2854,3 @@ proc telscript_gui { } {
    }
 
 }
-
