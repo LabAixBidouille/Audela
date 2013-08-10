@@ -6,7 +6,7 @@
 #
 
 namespace eval ::etel {
-   package provide etel 1.0
+   package provide etel 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] etel.cap ]
@@ -20,7 +20,10 @@ proc ::etel::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libetel.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::etel::getPluginType]] "etel" "libetel.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(etel,install_1) v[package version etel]. $::caption(etel,install_2)"
    }
 }

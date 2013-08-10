@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded celestron 1.1 [ list source [ file join $dir celestron.tcl ] ]
+package ifneeded celestron 3.0 [ list source [ file join $dir celestron.tcl ] ]
 

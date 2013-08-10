@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded etel 1.0 [ list source [ file join $dir etel.tcl ] ]
+package ifneeded etel 3.0 [ list source [ file join $dir etel.tcl ] ]
 

@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded deltatau 1.0 [ list source [ file join $dir deltatau.tcl ] ]
+package ifneeded deltatau 3.0 [ list source [ file join $dir deltatau.tcl ] ]
 

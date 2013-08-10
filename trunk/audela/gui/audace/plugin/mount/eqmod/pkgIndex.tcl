@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded eqmod 1.0 [ list source [ file join $dir eqmod.tcl ] ]
+package ifneeded eqmod 3.0 [ list source [ file join $dir eqmod.tcl ] ]
 

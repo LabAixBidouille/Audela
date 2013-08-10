@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded ouranos 2.0 [ list source [ file join $dir ouranos.tcl ] ]
+package ifneeded ouranos 3.0 [ list source [ file join $dir ouranos.tcl ] ]
 

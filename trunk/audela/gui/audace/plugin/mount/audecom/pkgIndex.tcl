@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded audecom 1.0 [ list source [ file join $dir audecom.tcl ] ]
+package ifneeded audecom 3.0 [ list source [ file join $dir audecom.tcl ] ]
 

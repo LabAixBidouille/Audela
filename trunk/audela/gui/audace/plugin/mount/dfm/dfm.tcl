@@ -6,7 +6,7 @@
 #
 
 namespace eval ::dfm {
-   package provide dfm 1.0
+   package provide dfm 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] dfm.cap ]
@@ -20,7 +20,10 @@ proc ::dfm::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libdfm.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dfm::getPluginType]] "dfm" "libdfm.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(dfm,install_1) v[package version dfm]. $::caption(dfm,install_2)"
    }
 }

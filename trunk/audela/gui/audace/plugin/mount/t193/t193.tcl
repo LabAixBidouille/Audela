@@ -6,7 +6,7 @@
 #
 
 namespace eval ::t193 {
-   package provide t193 1.0
+   package provide t193 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] t193.cap ]
@@ -20,7 +20,10 @@ proc ::t193::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libt193.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::t193::getPluginType]] "t193" "libt193.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(t193,install_1) v[package version t193]. $::caption(t193,install_2)"
    }
 }

@@ -6,7 +6,7 @@
 #
 
 namespace eval ::eqmod {
-   package provide eqmod 1.0
+   package provide eqmod 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] eqmod.cap ]
@@ -20,7 +20,10 @@ proc ::eqmod::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libeqmod.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::eqmod::getPluginType]] "eqmod" "libeqmod.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(eqmod,install_1) v[package version eqmod]. $::caption(eqmod,install_2)"
    }
 }
