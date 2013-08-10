@@ -574,7 +574,7 @@ namespace eval ::foc {
          #--   GOTO si la position de depart n'est pas la position courante
          if {$audace(focus,currentFocus) != $panneau(foc,start)} {
             set audace(focus,targetFocus) $panneau(foc,start)
-            switch -exact $focuser {
+            switch -exact $panneau(foc,focuser) {
                focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
@@ -605,7 +605,7 @@ namespace eval ::foc {
 
          #--   Rejoint la position suivante
          if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
-            switch -exact $focuser {
+            switch -exact $panneau(foc,focuser) {
                focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }

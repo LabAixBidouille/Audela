@@ -268,7 +268,7 @@ namespace eval ::foc {
          if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
 
             #--   Focuser connecte
-            switch -exact $focuser {
+            switch -exact $panneau(foc,focuser) {
                focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
