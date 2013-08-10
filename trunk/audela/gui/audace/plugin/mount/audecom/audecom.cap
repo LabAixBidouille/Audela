@@ -32,7 +32,7 @@ set caption(audecom,raquette_tel)                 "Hand controller on screen"
 set caption(audecom,soleil)                       "Sun"
 set caption(audecom,lune)                         "Moon"
 
-set caption(audecom,install_1)                    "End of AudeCom plug-in installation"
+set caption(audecom,install_1)                    "End of AudeCom plugin installation"
 set caption(audecom,install_2)                    "libaudecom.dll library updated."
 
 set caption(audecom,port_audecom)                 "AudeCom Port"
@@ -65,7 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Soleil"
    set caption(audecom,lune)                      "Lune"
 
-   set caption(audecom,install_1)                 "Fin de l'installation du plug-in AudeCom"
+   set caption(audecom,install_1)                 "Fin de l'installation du plugin AudeCom"
    set caption(audecom,install_2)                 "La librairie libaudecom.dll a été mise à jour."
 
    set caption(audecom,port_audecom)              "Port AudeCom"
@@ -98,7 +98,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sole"
    set caption(audecom,lune)                      "Luna"
 
-   set caption(audecom,install_1)                 "Fine installazione del plug-in AudeCom"
+   set caption(audecom,install_1)                 "Fine installazione del plugin AudeCom"
    set caption(audecom,install_2)                 "La libreria libaudecom.dll è stata aggiornata."
 
    set caption(audecom,port_audecom)              "Porta AudeCom"
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sol"
    set caption(audecom,lune)                      "Luna"
 
-   set caption(audecom,install_1)                 "Fin de la instalación del plug-in AudeCom"
+   set caption(audecom,install_1)                 "Fin de la instalación del plugin AudeCom"
    set caption(audecom,install_2)                 "Libreria libaudecom.dll actualizada."
 
    set caption(audecom,port_audecom)              "Puerto AudeCom"
@@ -164,7 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sonne"
    set caption(audecom,lune)                      "Mond"
 
-   set caption(audecom,install_1)                 "Ende der AudeCom-Plug-in-Installation"
+   set caption(audecom,install_1)                 "Ende der AudeCom-Plugin-Installation"
    set caption(audecom,install_2)                 "Die libaudecom.dll Bibliothek ist aktualisiert."
 
    set caption(audecom,port_audecom)              "AudeCom Port"
@@ -197,7 +197,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sol"
    set caption(audecom,lune)                      "Lua"
 
-   set caption(audecom,install_1)                 "Fin da instalação do plug-in AudeCom"
+   set caption(audecom,install_1)                 "Fin da instalação do plugin AudeCom"
    set caption(audecom,install_2)                 "A livraria libaudecom.dll foi actualizada."
 
    set caption(audecom,port_audecom)              "Porta AudeCom"
@@ -230,7 +230,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sun"
    set caption(audecom,lune)                      "Moon"
 
-   set caption(audecom,install_1)                 "End of AudeCom plug-in installation"
+   set caption(audecom,install_1)                 "End of AudeCom plugin installation"
    set caption(audecom,install_2)                 "libaudecom.dll library updated."
 
    set caption(audecom,port_audecom)              "AudeCom Port"
@@ -263,7 +263,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sun"
    set caption(audecom,lune)                      "Moon"
 
-   set caption(audecom,install_1)                 "End of AudeCom plug-in installation"
+   set caption(audecom,install_1)                 "End of AudeCom plugin installation"
    set caption(audecom,install_2)                 "libaudecom.dll library updated."
 
    set caption(audecom,port_audecom)              "AudeCom Port"
@@ -296,7 +296,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,soleil)                    "Sun"
    set caption(audecom,lune)                      "Moon"
 
-   set caption(audecom,install_1)                 "End of AudeCom plug-in installation"
+   set caption(audecom,install_1)                 "End of AudeCom plugin installation"
    set caption(audecom,install_2)                 "libaudecom.dll library updated."
 
    set caption(audecom,port_audecom)              "AudeCom Port"
