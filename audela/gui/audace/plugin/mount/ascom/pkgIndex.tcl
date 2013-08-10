@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded ascom 1.0 [ list source [ file join $dir ascom.tcl ] ]
+package ifneeded ascom 3.0 [ list source [ file join $dir ascom.tcl ] ]
 

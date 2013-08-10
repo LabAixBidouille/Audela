@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded dfm 1.0 [ list source [ file join $dir dfm.tcl ] ]
+package ifneeded dfm 3.0 [ list source [ file join $dir dfm.tcl ] ]
 

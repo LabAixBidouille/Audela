@@ -6,7 +6,7 @@
 #
 
 namespace eval ::temma {
-   package provide temma 1.0
+   package provide temma 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] temma.cap ]
@@ -20,7 +20,10 @@ proc ::temma::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libtemma.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::temma::getPluginType]] "temma" "libtemma.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(temma,install_1) v[package version temma]. $::caption(temma,install_2)"
    }
 }

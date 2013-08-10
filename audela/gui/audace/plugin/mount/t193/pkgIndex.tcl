@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded t193 1.0 [ list source [ file join $dir t193.tcl ] ]
+package ifneeded t193 3.0 [ list source [ file join $dir t193.tcl ] ]
 

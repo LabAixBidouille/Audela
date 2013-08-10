@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded temma 1.0 [ list source [ file join $dir temma.tcl ] ]
+package ifneeded temma 3.0 [ list source [ file join $dir temma.tcl ] ]
 

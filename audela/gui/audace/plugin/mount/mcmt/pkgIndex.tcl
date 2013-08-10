@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded mcmt 1.1 [ list source [ file join $dir mcmt.tcl ] ]
+package ifneeded mcmt 3.0 [ list source [ file join $dir mcmt.tcl ] ]
 

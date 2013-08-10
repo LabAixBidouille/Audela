@@ -6,7 +6,7 @@
 #
 
 namespace eval ::lx200 {
-   package provide lx200 1.1
+   package provide lx200 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] lx200.cap ]
@@ -20,10 +20,14 @@ proc ::lx200::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace liblx200.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::lx200::getPluginType]] "lx200" "liblx200.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
       #--- je deplace liblxnet.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::lx200::getPluginType]] "lx200" "liblxnet.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ]} {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
       #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(lx200,install_1) v[package version lx200]. $::caption(lx200,install_2)"
    }
@@ -281,10 +285,11 @@ proc ::lx200::fillConfigPage { frm } {
    label $frm.lab3 -text "$caption(lx200,modele)"
    pack $frm.lab3 -in $frm.frame10 -anchor center -side left -padx 10 -pady 10
 
-   set list_combobox [ list $caption(lx200,modele_lx200) $caption(lx200,modele_astro_physics) \
-      $caption(lx200,modele_audecom) $caption(lx200,modele_skysensor) \
-      $caption(lx200,modele_gemini) $caption(lx200,modele_ite-lente) \
-      $caption(lx200,modele_mel_bartels) $caption(lx200,modele_fs2) ]
+   set list_combobox [ list $caption(lx200,modele_lx200) \
+      $caption(lx200,modele_astro_physics) $caption(lx200,modele_audecom) \
+      $caption(lx200,modele_skysensor) $caption(lx200,modele_gemini) \
+      $caption(lx200,modele_ite-lente) $caption(lx200,modele_mel_bartels) \
+      $caption(lx200,modele_fs2) ]
    ComboBox $frm.modele \
       -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \

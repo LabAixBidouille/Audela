@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded telscript 1.0 [ list source [ file join $dir telscript.tcl ] ]
+package ifneeded telscript 3.0 [ list source [ file join $dir telscript.tcl ] ]
 

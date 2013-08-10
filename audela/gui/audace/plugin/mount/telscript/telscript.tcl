@@ -6,7 +6,7 @@
 #
 
 namespace eval ::telscript {
-   package provide telscript 1.0
+   package provide telscript 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] telscript.cap ]
@@ -20,7 +20,10 @@ proc ::telscript::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libtelscript.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::telscript::getPluginType]] "telscript" "libtelscript.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(telscript,install_1) v[package version telscript]. $::caption(telscript,install_2)"
    }
 }

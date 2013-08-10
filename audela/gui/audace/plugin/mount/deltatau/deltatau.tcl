@@ -6,7 +6,7 @@
 #
 
 namespace eval ::deltatau {
-   package provide deltatau 1.0
+   package provide deltatau 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] deltatau.cap ]
@@ -20,7 +20,10 @@ proc ::deltatau::install { } {
    if { $::tcl_platform(platform) == "windows" } {
       #--- je deplace libdeltatau.dll dans le repertoire audela/bin
       set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::deltatau::getPluginType]] "deltatau" "libdeltatau.dll"]
-      ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(deltatau,install_1) v[package version deltatau]. $::caption(deltatau,install_2)"
    }
 }

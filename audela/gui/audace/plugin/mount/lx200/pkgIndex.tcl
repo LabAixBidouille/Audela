@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded lx200 1.1 [ list source [ file join $dir lx200.tcl ] ]
+package ifneeded lx200 3.0 [ list source [ file join $dir lx200.tcl ] ]
 
