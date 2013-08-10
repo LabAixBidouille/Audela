@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded qsi 1.2 [ list source [ file join $dir qsi.tcl ] ]
+package ifneeded qsi 2.0 [ list source [ file join $dir qsi.tcl ] ]
 
