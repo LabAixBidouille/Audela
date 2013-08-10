@@ -21,7 +21,7 @@ set caption(mcmt,raquette_tel)                  "Hand controller on screen"
 set caption(mcmt,park)                          "Park"
 set caption(mcmt,unpark)                        "Unpark"
 
-set caption(mcmt,install_1)                     "End of MCMT plug-in installation"
+set caption(mcmt,install_1)                     "End of MCMT plugin installation"
 set caption(mcmt,install_2)                     "libmcmt.dll library updated."
 
 set caption(mcmt,port_mcmt)                     "MCMT Port"
@@ -43,7 +43,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "Fin de l'installation du plug-in MCMT"
+   set caption(mcmt,install_1)                  "Fin de l'installation du plugin MCMT"
    set caption(mcmt,install_2)                  "La librairie libmcmt.dll a été mise à jour."
 
    set caption(mcmt,port_mcmt)                  "Port MCMT"
@@ -65,7 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "Fine installazione del plug-in MCMT"
+   set caption(mcmt,install_1)                  "Fine installazione del plugin MCMT"
    set caption(mcmt,install_2)                  "La libreria libmcmt.dll è stata aggiornata."
 
    set caption(mcmt,port_mcmt)                  "Porta MCMT"
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "Fin de la instalación del plug-in MCMT"
+   set caption(mcmt,install_1)                  "Fin de la instalación del plugin MCMT"
    set caption(mcmt,install_2)                  "Libreria libmcmt.dll actualizada."
 
    set caption(mcmt,port_mcmt)                  "Puerto MCMT"
@@ -109,7 +109,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "Ende der MCMT-Plug-in-Installation"
+   set caption(mcmt,install_1)                  "Ende der MCMT-Plugin-Installation"
    set caption(mcmt,install_2)                  "Die libmcmt.dll Bibliothek ist aktualisiert."
 
    set caption(mcmt,port_mcmt)                  "MCMT Port"
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "Fin da instalação do plug-in MCMT"
+   set caption(mcmt,install_1)                  "Fin da instalação do plugin MCMT"
    set caption(mcmt,install_2)                  "A livraria libmcmt.dll foi actualizada."
 
    set caption(mcmt,port_mcmt)                  "Porta MCMT"
@@ -153,7 +153,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "End of MCMT plug-in installation"
+   set caption(mcmt,install_1)                  "End of MCMT plugin installation"
    set caption(mcmt,install_2)                  "libmcmt.dll library updated."
 
    set caption(mcmt,port_mcmt)                  "MCMT Port"
@@ -175,7 +175,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "End of MCMT plug-in installation"
+   set caption(mcmt,install_1)                  "End of MCMT plugin installation"
    set caption(mcmt,install_2)                  "libmcmt.dll library updated."
 
    set caption(mcmt,port_mcmt)                  "MCMT Port"
@@ -197,7 +197,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(mcmt,park)                       "Park"
    set caption(mcmt,unpark)                     "Unpark"
 
-   set caption(mcmt,install_1)                  "End of MCMT plug-in installation"
+   set caption(mcmt,install_1)                  "End of MCMT plugin installation"
    set caption(mcmt,install_2)                  "libmcmt.dll library updated."
 
    set caption(mcmt,port_mcmt)                  "MCMT Port"

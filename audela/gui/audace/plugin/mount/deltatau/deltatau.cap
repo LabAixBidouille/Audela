@@ -17,7 +17,7 @@ set caption(deltatau,host)                       "Host"
 set caption(deltatau,port)                       "Port"
 set caption(deltatau,raquette_tel)               "Hand controller on screen"
 
-set caption(deltatau,install_1)                  "End of Delta Tau plug-in installation"
+set caption(deltatau,install_1)                  "End of Delta Tau plugin installation"
 set caption(deltatau,install_2)                  "libdeltatau.dll library updated."
 
 set caption(deltatau,port_deltatau)              "Delta Tau Port"
@@ -35,7 +35,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Port"
    set caption(deltatau,raquette_tel)            "Raquette à l'écran"
 
-   set caption(deltatau,install_1)               "Fin de l'installation du plug-in Delta Tau"
+   set caption(deltatau,install_1)               "Fin de l'installation du plugin Delta Tau"
    set caption(deltatau,install_2)               "La librairie libdeltatau.dll a été mise à jour."
 
    set caption(deltatau,port_deltatau)           "Port Delta Tau"
@@ -53,7 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Porta"
    set caption(deltatau,raquette_tel)            "Pulsantiera a schermo"
 
-   set caption(deltatau,install_1)               "Fine installazione del plug-in Delta Tau"
+   set caption(deltatau,install_1)               "Fine installazione del plugin Delta Tau"
    set caption(deltatau,install_2)               "La libreria libdeltatau.dll è stata aggiornata."
 
    set caption(deltatau,port_deltatau)           "Porta Delta Tau"
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Puerto"
    set caption(deltatau,raquette_tel)            "Controlador virtual"
 
-   set caption(deltatau,install_1)               "Fin de la instalación del plug-in Delta Tau"
+   set caption(deltatau,install_1)               "Fin de la instalación del plugin Delta Tau"
    set caption(deltatau,install_2)               "Libreria libdeltatau.dll actualizada."
 
    set caption(deltatau,port_deltatau)           "Puerto Delta Tau"
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Port"
    set caption(deltatau,raquette_tel)            "Hand Kontroller am Bildschirm"
 
-   set caption(deltatau,install_1)               "Ende der Delta Tau-Plug-in-Installation"
+   set caption(deltatau,install_1)               "Ende der Delta Tau-Plugin-Installation"
    set caption(deltatau,install_2)               "Die libdeltatau.dll Bibliothek ist aktualisiert."
 
    set caption(deltatau,port_deltatau)           "Delta Tau Port"
@@ -107,7 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Porta"
    set caption(deltatau,raquette_tel)            "Controlador de mão no ecrã"
 
-   set caption(deltatau,install_1)               "Fin da instalação do plug-in Delta Tau"
+   set caption(deltatau,install_1)               "Fin da instalação do plugin Delta Tau"
    set caption(deltatau,install_2)               "A livraria libdeltatau.dll foi actualizada."
 
    set caption(deltatau,port_deltatau)           "Porta Delta Tau"
@@ -125,7 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Port"
    set caption(deltatau,raquette_tel)            "Hand controller on screen"
 
-   set caption(deltatau,install_1)               "End of Delta Tau plug-in installation"
+   set caption(deltatau,install_1)               "End of Delta Tau plugin installation"
    set caption(deltatau,install_2)               "libdeltatau.dll library updated."
 
    set caption(deltatau,port_deltatau)           "Delta Tau Port"
@@ -143,7 +143,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Port"
    set caption(deltatau,raquette_tel)            "Hand controller on screen"
 
-   set caption(deltatau,install_1)               "End of Delta Tau plug-in installation"
+   set caption(deltatau,install_1)               "End of Delta Tau plugin installation"
    set caption(deltatau,install_2)               "libdeltatau.dll library updated."
 
    set caption(deltatau,port_deltatau)           "Delta Tau Port"
@@ -161,7 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(deltatau,port)                    "Port"
    set caption(deltatau,raquette_tel)            "Hand controller on screen"
 
-   set caption(deltatau,install_1)               "End of Delta Tau plug-in installation"
+   set caption(deltatau,install_1)               "End of Delta Tau plugin installation"
    set caption(deltatau,install_2)               "libdeltatau.dll library updated."
 
    set caption(deltatau,port_deltatau)           "Delta Tau Port"

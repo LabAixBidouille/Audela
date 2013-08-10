@@ -20,7 +20,7 @@ set caption(celestron,format)                    "Format"
 set caption(celestron,maj_celestron)             "Update time, longitude, latitude and altitude of Celestron"
 set caption(celestron,raquette_tel)              "Hand controller on screen"
 
-set caption(celestron,install_1)                 "End of Celestron plug-in installation"
+set caption(celestron,install_1)                 "End of Celestron plugin installation"
 set caption(celestron,install_2)                 "libcelestron.dll library updated."
 
 set caption(celestron,port_celestron)            "Celestron Port"
@@ -41,7 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Mise à jour heure, longitude, latitude et altitude du Celestron"
    set caption(celestron,raquette_tel)           "Raquette à l'écran"
 
-   set caption(celestron,install_1)              "Fin de l'installation du plug-in Celestron"
+   set caption(celestron,install_1)              "Fin de l'installation du plugin Celestron"
    set caption(celestron,install_2)              "La librairie libcelestron.dll a été mise à jour."
 
    set caption(celestron,port_celestron)         "Port Celestron"
@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' Celestron"
    set caption(celestron,raquette_tel)           "Pulsantiera a schermo"
 
-   set caption(celestron,install_1)              "Fine installazione del plug-in Celestron"
+   set caption(celestron,install_1)              "Fine installazione del plugin Celestron"
    set caption(celestron,install_2)              "La libreria libcelestron.dll è stata aggiornata."
 
    set caption(celestron,port_celestron)         "Porta Celestron"
@@ -83,7 +83,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Actualizar hora, longitud, latitud y altitud del Celestron"
    set caption(celestron,raquette_tel)           "Controlador virtual"
 
-   set caption(celestron,install_1)              "Fin de la instalación del plug-in Celestron"
+   set caption(celestron,install_1)              "Fin de la instalación del plugin Celestron"
    set caption(celestron,install_2)              "Libreria libcelestron.dll actualizada."
 
    set caption(celestron,port_celestron)         "Puerto Celestron"
@@ -104,7 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Zeit, Länge, Breite, Höhe des Celestron Aktualisierung"
    set caption(celestron,raquette_tel)           "Hand Kontroller am Bildschirm"
 
-   set caption(celestron,install_1)              "Ende der Celestron-Plug-in-Installation"
+   set caption(celestron,install_1)              "Ende der Celestron-Plugin-Installation"
    set caption(celestron,install_2)              "Die libcelestron.dll Bibliothek ist aktualisiert."
 
    set caption(celestron,port_celestron)         "Celestron Port"
@@ -125,7 +125,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Actualizar tempo, longitude, latitude e altitude do Celestron"
    set caption(celestron,raquette_tel)           "Controlador de mão no ecrã"
 
-   set caption(celestron,install_1)              "Fin da instalação do plug-in Celestron"
+   set caption(celestron,install_1)              "Fin da instalação do plugin Celestron"
    set caption(celestron,install_2)              "A livraria libcelestron.dll foi actualizada."
 
    set caption(celestron,port_celestron)         "Porta Celestron"
@@ -146,7 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Update time, longitude, latitude and altitude of Celestron"
    set caption(celestron,raquette_tel)           "Hand controller on screen"
 
-   set caption(celestron,install_1)              "End of Celestron plug-in installation"
+   set caption(celestron,install_1)              "End of Celestron plugin installation"
    set caption(celestron,install_2)              "libcelestron.dll library updated."
 
    set caption(celestron,port_celestron)         "Celestron Port"
@@ -167,7 +167,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Update time, longitude, latitude and altitude of Celestron"
    set caption(celestron,raquette_tel)           "Hand controller on screen"
 
-   set caption(celestron,install_1)              "End of Celestron plug-in installation"
+   set caption(celestron,install_1)              "End of Celestron plugin installation"
    set caption(celestron,install_2)              "libcelestron.dll library updated."
 
    set caption(celestron,port_celestron)         "Celestron Port"
@@ -188,7 +188,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(celestron,maj_celestron)          "Update time, longitude, latitude and altitude of Celestron"
    set caption(celestron,raquette_tel)           "Hand controller on screen"
 
-   set caption(celestron,install_1)              "End of Celestron plug-in installation"
+   set caption(celestron,install_1)              "End of Celestron plugin installation"
    set caption(celestron,install_2)              "libcelestron.dll library updated."
 
    set caption(celestron,port_celestron)         "Celestron Port"

@@ -14,7 +14,7 @@ global caption langage
 set caption(etel,monture)                        "Etel"
 set caption(etel,raquette_tel)                   "Hand controller on screen"
 
-set caption(etel,install_1)                      "End of Etel plug-in installation"
+set caption(etel,install_1)                      "End of Etel plugin installation"
 set caption(etel,install_2)                      "libetel.dll library updated."
 
 set caption(etel,port_etel)                      "Etel Port"
@@ -29,7 +29,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Raquette à l'écran"
 
-   set caption(etel,install_1)                   "Fin de l'installation du plug-in Etel"
+   set caption(etel,install_1)                   "Fin de l'installation du plugin Etel"
    set caption(etel,install_2)                   "La librairie libetel.dll a été mise à jour."
 
    set caption(etel,port_etel)                   "Port Etel"
@@ -44,7 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Pulsantiera a schermo"
 
-   set caption(etel,install_1)                   "Fine installazione del plug-in Etel"
+   set caption(etel,install_1)                   "Fine installazione del plugin Etel"
    set caption(etel,install_2)                   "La libreria libetel.dll è stata aggiornata."
 
    set caption(etel,port_etel)                   "Porta Etel"
@@ -59,7 +59,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Controlador virtual"
 
-   set caption(etel,install_1)                   "Fin de la instalación del plug-in Etel"
+   set caption(etel,install_1)                   "Fin de la instalación del plugin Etel"
    set caption(etel,install_2)                   "Libreria libetel.dll actualizada."
 
    set caption(etel,port_etel)                   "Puerto Etel"
@@ -74,7 +74,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Hand Kontroller am Bildschirm"
 
-   set caption(etel,install_1)                   "Ende der Etel-Plug-in-Installation"
+   set caption(etel,install_1)                   "Ende der Etel-Plugin-Installation"
    set caption(etel,install_2)                   "Die libetel.dll Bibliothek ist aktualisiert."
 
    set caption(etel,port_etel)                   "Etel Port"
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Controlador de mão no ecrã"
 
-   set caption(etel,install_1)                   "Fin da instalação do plug-in Etel"
+   set caption(etel,install_1)                   "Fin da instalação do plugin Etel"
    set caption(etel,install_2)                   "A livraria libetel.dll foi actualizada."
 
    set caption(etel,port_etel)                   "Porta Etel"
@@ -104,7 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Hand controller on screen"
 
-   set caption(etel,install_1)                   "End of Etel plug-in installation"
+   set caption(etel,install_1)                   "End of Etel plugin installation"
    set caption(etel,install_2)                   "libetel.dll library updated."
 
    set caption(etel,port_etel)                   "Etel Port"
@@ -119,7 +119,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Hand controller on screen"
 
-   set caption(etel,install_1)                   "End of Etel plug-in installation"
+   set caption(etel,install_1)                   "End of Etel plugin installation"
    set caption(etel,install_2)                   "libetel.dll library updated."
 
    set caption(etel,port_etel)                   "Etel Port"
@@ -134,7 +134,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(etel,monture)                     "Etel"
    set caption(etel,raquette_tel)                "Hand controller on screen"
 
-   set caption(etel,install_1)                   "End of Etel plug-in installation"
+   set caption(etel,install_1)                   "End of Etel plugin installation"
    set caption(etel,install_2)                   "libetel.dll library updated."
 
    set caption(etel,port_etel)                   "Etel Port"

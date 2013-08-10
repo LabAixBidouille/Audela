@@ -19,7 +19,7 @@ set caption(telscript,telname)                    "Name"
 set caption(telscript,debug)                      "Debug Graphical Interface for T940"
 set caption(telscript,raquette_tel)               "Hand controller on screen"
 
-set caption(telscript,install_1)                  "End of TelScript plug-in installation"
+set caption(telscript,install_1)                  "End of TelScript plugin installation"
 set caption(telscript,install_2)                  "libtelscript.dll library updated."
 
 set caption(telscript,2points)                    ":"
@@ -38,7 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Raquette à l'écran"
 
-   set caption(telscript,install_1)               "Fin de l'installation du plug-in TelScript"
+   set caption(telscript,install_1)               "Fin de l'installation du plugin TelScript"
    set caption(telscript,install_2)               "La librairie libtelscript.dll a été mise à jour."
 
    set caption(telscript,2points)                 ":"
@@ -57,7 +57,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Interfaccia grafica di debug per T940"
    set caption(telscript,raquette_tel)            "Pulsantiera a schermo"
 
-   set caption(telscript,install_1)               "Fine installazione del plug-in TelScript"
+   set caption(telscript,install_1)               "Fine installazione del plugin TelScript"
    set caption(telscript,install_2)               "La libreria libtelscript.dll è stata aggiornata."
 
    set caption(telscript,2points)                 ":"
@@ -76,7 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Interface gráfica de debug del T940"
    set caption(telscript,raquette_tel)            "Controlador virtual"
 
-   set caption(telscript,install_1)               "Fin de la instalación del plug-in TelScript"
+   set caption(telscript,install_1)               "Fin de la instalación del plugin TelScript"
    set caption(telscript,install_2)               "Libreria libtelscript.dll actualizada."
 
    set caption(telscript,2points)                 ":"
@@ -95,7 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Debug Grafische Interface für T940"
    set caption(telscript,raquette_tel)            "Hand Kontroller am Bildschirm"
 
-   set caption(telscript,install_1)               "Ende der TelScript-Plug-in-Installation"
+   set caption(telscript,install_1)               "Ende der TelScript-Plugin-Installation"
    set caption(telscript,install_2)               "Die libtelscript.dll Bibliothek ist aktualisiert."
 
    set caption(telscript,2points)                 ":"
@@ -114,7 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "# Interface graphique de débug du T940"
    set caption(telscript,raquette_tel)            "Controlador de mão no ecrã"
 
-   set caption(telscript,install_1)               "Fin da instalação do plug-in TelScript"
+   set caption(telscript,install_1)               "Fin da instalação do plugin TelScript"
    set caption(telscript,install_2)               "A livraria libtelscript.dll foi actualizada."
 
    set caption(telscript,2points)                 ":"
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Debug Graphical Interface for T940"
    set caption(telscript,raquette_tel)            "Hand controller on screen"
 
-   set caption(telscript,install_1)               "End of TelScript plug-in installation"
+   set caption(telscript,install_1)               "End of TelScript plugin installation"
    set caption(telscript,install_2)               "libtelscript.dll library updated."
 
    set caption(telscript,2points)                 ":"
@@ -152,7 +152,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Debug Graphical Interface for T940"
    set caption(telscript,raquette_tel)            "Hand controller on screen"
 
-   set caption(telscript,install_1)               "End of TelScript plug-in installation"
+   set caption(telscript,install_1)               "End of TelScript plugin installation"
    set caption(telscript,install_2)               "libtelscript.dll library updated."
 
    set caption(telscript,2points)                 ":"
@@ -171,7 +171,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telscript,debug)                   "Debug Graphical Interface for T940"
    set caption(telscript,raquette_tel)            "Hand controller on screen"
 
-   set caption(telscript,install_1)               "End of TelScript plug-in installation"
+   set caption(telscript,install_1)               "End of TelScript plugin installation"
    set caption(telscript,install_2)               "libtelscript.dll library updated."
 
    set caption(telscript,2points)                 ":"

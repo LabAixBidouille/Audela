@@ -37,7 +37,7 @@ set caption(temma,change_position_telescope)     "Change the Telescope Initial P
 set caption(temma,tracesConsole)                 "Console Log"
 set caption(temma,raquette_tel)                  "Hand controller on screen"
 
-set caption(temma,install_1)                     "End of Temma plug-in installation"
+set caption(temma,install_1)                     "End of Temma plugin installation"
 set caption(temma,install_2)                     "libtemma.dll library updated."
 
 set caption(temma,port_temma)                    "Temma Port"
@@ -75,7 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Traces dans la Console"
    set caption(temma,raquette_tel)               "Raquette à l'écran"
 
-   set caption(temma,install_1)                  "Fin de l'installation du plug-in Temma"
+   set caption(temma,install_1)                  "Fin de l'installation du plugin Temma"
    set caption(temma,install_2)                  "La librairie libtemma.dll a été mise à jour."
 
    set caption(temma,port_temma)                 "Port Temma"
@@ -113,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Traccia sulla Console"
    set caption(temma,raquette_tel)               "Pulsantiera a schermo"
 
-   set caption(temma,install_1)                  "Fine installazione del plug-in Temma"
+   set caption(temma,install_1)                  "Fine installazione del plugin Temma"
    set caption(temma,install_2)                  "La libreria libtemma.dll è stata aggiornata."
 
    set caption(temma,port_temma)                 "Porta Temma"
@@ -151,7 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Log en la Consola"
    set caption(temma,raquette_tel)               "Controlador virtual"
 
-   set caption(temma,install_1)                  "Fin de la instalación del plug-in Temma"
+   set caption(temma,install_1)                  "Fin de la instalación del plugin Temma"
    set caption(temma,install_2)                  "Libreria libtemma.dll actualizada."
 
    set caption(temma,port_temma)                 "Puerto Temma"
@@ -189,7 +189,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Konsole Log"
    set caption(temma,raquette_tel)               "Hand Kontroller am Bildschirm"
 
-   set caption(temma,install_1)                  "Ende der Temma-Plug-in-Installation"
+   set caption(temma,install_1)                  "Ende der Temma-Plugin-Installation"
    set caption(temma,install_2)                  "Die libtemma.dll Bibliothek ist aktualisiert."
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -227,7 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Log na Consola"
    set caption(temma,raquette_tel)               "Controlador de mão no ecrã"
 
-   set caption(temma,install_1)                  "Fin da instalação do plug-in Temma"
+   set caption(temma,install_1)                  "Fin da instalação do plugin Temma"
    set caption(temma,install_2)                  "A livraria libtemma.dll foi actualizada."
 
    set caption(temma,port_temma)                 "Porta Temma"
@@ -265,7 +265,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Console Log"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
-   set caption(temma,install_1)                  "End of Temma plug-in installation"
+   set caption(temma,install_1)                  "End of Temma plugin installation"
    set caption(temma,install_2)                  "libtemma.dll library updated."
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -303,7 +303,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Console Log"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
-   set caption(temma,install_1)                  "End of Temma plug-in installation"
+   set caption(temma,install_1)                  "End of Temma plugin installation"
    set caption(temma,install_2)                  "libtemma.dll library updated."
 
    set caption(temma,port_temma)                 "Temma Port"
@@ -341,7 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(temma,tracesConsole)              "Console Log"
    set caption(temma,raquette_tel)               "Hand controller on screen"
 
-   set caption(temma,install_1)                  "End of Temma plug-in installation"
+   set caption(temma,install_1)                  "End of Temma plugin installation"
    set caption(temma,install_2)                  "libtemma.dll library updated."
 
    set caption(temma,port_temma)                 "Temma Port"

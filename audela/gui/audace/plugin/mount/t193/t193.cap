@@ -43,7 +43,7 @@ set caption(t193,model,title)                "Aiming Model"
 set caption(t193,model,enabled)              "Enable"
 set caption(t193,model,date)                 "Date"
 
-set caption(t193,install_1)                  "End of T193 plug-in installation"
+set caption(t193,install_1)                  "End of T193 plugin installation"
 set caption(t193,install_2)                  "libt193.dll library updated."
 
 set caption(t193,port_t193)                  "HP1000 Com Port"
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Activer"
    set caption(t193,model,date)              "Date"
 
-   set caption(t193,install_1)               "Fin de l'installation du plug-in T193"
+   set caption(t193,install_1)               "Fin de l'installation du plugin T193"
    set caption(t193,install_2)               "La librairie libt193.dll a été mise à jour."
 
    set caption(t193,port_t193)               "Port Com HP1000"
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Abilita"
    set caption(t193,model,date)              "Data"
 
-   set caption(t193,install_1)               "Fine installazione del plug-in T193"
+   set caption(t193,install_1)               "Fine installazione del plugin T193"
    set caption(t193,install_2)               "La libreria libt193.dll è stata aggiornata."
 
    set caption(t193,port_t193)               "Porta Com HP1000"
@@ -175,7 +175,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Permitir"
    set caption(t193,model,date)              "Fecha"
 
-   set caption(t193,install_1)               "Fin de la instalación del plug-in T193"
+   set caption(t193,install_1)               "Fin de la instalación del plugin T193"
    set caption(t193,install_2)               "Libreria libt193.dll actualizada."
 
    set caption(t193,port_t193)               "Puerto Com HP1000"
@@ -219,7 +219,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Befähigen"
    set caption(t193,model,date)              "Datum"
 
-   set caption(t193,install_1)               "Ende der T193-Plug-in-Installation"
+   set caption(t193,install_1)               "Ende der T193-Plugin-Installation"
    set caption(t193,install_2)               "Die libt193.dll Bibliothek ist aktualisiert."
 
    set caption(t193,port_t193)               "HP1000 Com Port"
@@ -263,7 +263,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Activar"
    set caption(t193,model,date)              "Data"
 
-   set caption(t193,install_1)               "Fin da instalação do plug-in T193"
+   set caption(t193,install_1)               "Fin da instalação do plugin T193"
    set caption(t193,install_2)               "A livraria libt193.dll foi actualizada."
 
    set caption(t193,port_t193)               "Porta Com HP1000"
@@ -307,7 +307,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Enable"
    set caption(t193,model,date)              "Date"
 
-   set caption(t193,install_1)               "End of T193 plug-in installation"
+   set caption(t193,install_1)               "End of T193 plugin installation"
    set caption(t193,install_2)               "libt193.dll library updated."
 
    set caption(t193,port_t193)               "HP1000 Com Port"
@@ -351,7 +351,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Enable"
    set caption(t193,model,date)              "Date"
 
-   set caption(t193,install_1)               "End of T193 plug-in installation"
+   set caption(t193,install_1)               "End of T193 plugin installation"
    set caption(t193,install_2)               "libt193.dll library updated."
 
    set caption(t193,port_t193)               "HP1000 Com Port"
@@ -395,7 +395,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(t193,model,enabled)           "Enable"
    set caption(t193,model,date)              "Date"
 
-   set caption(t193,install_1)               "End of T193 plug-in installation"
+   set caption(t193,install_1)               "End of T193 plugin installation"
    set caption(t193,install_2)               "libt193.dll library updated."
 
    set caption(t193,port_t193)               "HP1000 Com Port"

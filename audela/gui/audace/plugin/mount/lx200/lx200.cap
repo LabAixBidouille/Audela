@@ -43,7 +43,7 @@ set caption(lx200,raquette_tel)                  "Hand controller on screen"
 set caption(lx200,park)                          "Park"
 set caption(lx200,unpark)                        "Unpark"
 
-set caption(lx200,install_1)                     "End of LX200 plug-in installation"
+set caption(lx200,install_1)                     "End of LX200 plugin installation"
 set caption(lx200,install_2)                     "liblx200.dll library updated."
 
 set caption(lx200,host_audinet)                  "Host AudiNet/LXnet"
@@ -88,7 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "Fin de l'installation du plug-in LX200"
+   set caption(lx200,install_1)                  "Fin de l'installation du plugin LX200"
    set caption(lx200,install_2)                  "La librairie liblx200.dll a été mise à jour."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "Fine installazione del plug-in LX200"
+   set caption(lx200,install_1)                  "Fine installazione del plugin LX200"
    set caption(lx200,install_2)                  "La libreria liblx200.dll è stata aggiornata."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
@@ -178,7 +178,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "Fin de la instalación del plug-in LX200"
+   set caption(lx200,install_1)                  "Fin de la instalación del plugin LX200"
    set caption(lx200,install_2)                  "Libreria liblx200.dll actualizada."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
@@ -223,7 +223,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "Ende der LX200-Plug-in-Installation"
+   set caption(lx200,install_1)                  "Ende der LX200-Plugin-Installation"
    set caption(lx200,install_2)                  "Die liblx200.dll Bibliothek ist aktualisiert."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
@@ -268,7 +268,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "Fin da instalação do plug-in LX200"
+   set caption(lx200,install_1)                  "Fin da instalação do plugin LX200"
    set caption(lx200,install_2)                  "A livraria liblx200.dll foi actualizada."
 
    set caption(lx200,host_audinet)               "Servidor AudiNet/LXnet"
@@ -313,7 +313,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "End of LX200 plug-in installation"
+   set caption(lx200,install_1)                  "End of LX200 plugin installation"
    set caption(lx200,install_2)                  "liblx200.dll library updated."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
@@ -358,7 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "End of LX200 plug-in installation"
+   set caption(lx200,install_1)                  "End of LX200 plugin installation"
    set caption(lx200,install_2)                  "liblx200.dll library updated."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
@@ -403,7 +403,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,park)                       "Park"
    set caption(lx200,unpark)                     "Unpark"
 
-   set caption(lx200,install_1)                  "End of LX200 plug-in installation"
+   set caption(lx200,install_1)                  "End of LX200 plugin installation"
    set caption(lx200,install_2)                  "liblx200.dll library updated."
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
