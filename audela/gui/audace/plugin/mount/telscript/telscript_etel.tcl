@@ -1191,7 +1191,7 @@ proc set_pos_adus { } {
 # ################################################################################
 # ### proc save_x
 # ################################################################################
-proc save_x { } {
+proc save_x { {stop 0 } } {
    global telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
@@ -1226,19 +1226,29 @@ proc save_x { } {
       etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
       etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
    }
-   etel_execute_command_x_s 0 119 0
+   if {$stop==1} {
+	   etel_execute_command_x_s 0 119 0
+   }
    etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
    after 1000
-   etel_execute_command_x_s 0 79 0
-   etel_execute_command_x_s 1 119 0
+   if {$stop==1} {
+	   etel_execute_command_x_s 0 79 0
+	   etel_execute_command_x_s 1 119 0
+   }
    etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
    after 1000
-   etel_execute_command_x_s 1 79 0
+   if {$stop==1} {
+	   etel_execute_command_x_s 1 79 0
+   }
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      etel_execute_command_x_s 2 119 0
+	   if {$stop==1} {
+   	   etel_execute_command_x_s 2 119 0
+	   }
       etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
       after 1000
-      etel_execute_command_x_s 2 79 0
+	   if {$stop==1} {
+	      etel_execute_command_x_s 2 79 0
+      }
    }
 }
 
@@ -1696,8 +1706,8 @@ proc decode_radec_entry { objname0 {date ""} } {
          set objname [lindex $res 0]
          set xra [lindex $res 1]
          set xdec [lindex $res 2]
-         set xdra [lindex $res 3]
-         set xddec [lindex $res 4]
+         set xdra [expr [lindex $res 3]/3600.]
+         set xddec [expr [lindex $res 4]/3600.]
          set type_obj name2coord
       } else {
          set res [lindex $res 0]
@@ -1720,8 +1730,8 @@ proc decode_radec_entry { objname0 {date ""} } {
          set objname [lindex $res 0]
          set xra [lindex $res 1]
          set xdec [lindex $res 2]
-         set xdra [lindex $res 3]
-         set xddec [lindex $res 4]
+         set xdra [expr [lindex $res 3]/3600.]
+         set xddec [expr [lindex $res 4]/3600.]
          set type_obj name2coord
       } elseif {($name=="STOP")} {
          set objname STOP
@@ -1898,7 +1908,7 @@ proc gui_calcul_coordonnees { objname0 } {
    $base.f.fpoi2.lab_coord configure -text "$t"
    set t ""
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-      append t "az = [format %.1f [lindex $cs 0]] elev = [format %.1f [lindex $cs 1]]  "
+      append t "az = [format %.2f [lindex $cs 0]] elev = [format %.2f [lindex $cs 1]]  "
       degs2adus simugoto
       set as ""
       set adu $telscript($telname,lim_min_az)
@@ -1919,7 +1929,7 @@ proc gui_calcul_coordonnees { objname0 } {
       set as [lsort -index 1 -real $as]
    }
    if {($telscript($telname,mount_type)=="hadec")} {
-      append t "ha = [format %.1f [lindex $cs 3]] dec = [format %.1f [lindex $cs 4]]  "
+      append t "ha = [format %.2f [lindex $cs 3]] dec = [format %.2f [lindex $cs 4]]  "
       degs2adus simugoto
       set as ""
       set adu $telscript($telname,lim_min_ha)
@@ -2064,8 +2074,8 @@ proc telscript_gui { } {
    wm deiconify $base
    wm title $base "Pilotage télescope $telname"
    #wm protocol $base WM_DELETE_WINDOW fermer
-   wm protocol $base WM_DELETE_WINDOW { destroy .etel }
-   bind $base <Destroy> { destroy .etel }
+   wm protocol $base WM_DELETE_WINDOW { save_x 1 ; destroy .etel }
+   bind $base <Destroy> { save_x 1 ; destroy .etel }
    $base configure -bg $paramscript(color,back)
    wm withdraw .
    focus -force $base
@@ -2125,7 +2135,7 @@ proc telscript_gui { } {
          pack $base.f.f1.but_sourcetel -side left -anchor center -padx 3 -pady 3
          button $base.f.f1.but_sourceaud \
             -text "Source Tk" -borderwidth 2 \
-            -command { ::console::affiche_resultat "\nsource \"[pwd]/$scriptname\" ; telscript_gui\n" ; source [pwd]/$scriptname ; telscript_gui}
+            -command { global audace ; ::console::affiche_resultat "\nsource \"$audace(rep_install)/gui/audace/plugin/mount/telscript/$scriptname\" ; telscript_gui\n" ; source $audace(rep_install)/gui/audace/plugin/mount/telscript/$scriptname ; telscript_gui}
          pack $base.f.f1.but_sourceaud -side left -anchor center -padx 3 -pady 3
          button $base.f.f1.but_coefs \
             -text "Paramètres ETEL" -borderwidth 2 \
