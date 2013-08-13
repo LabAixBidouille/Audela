@@ -1226,29 +1226,25 @@ proc save_x { {stop 0 } } {
       etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
       etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
    }
-   if {$stop==1} {
-	   etel_execute_command_x_s 0 119 0
-   }
+   # --- 119 arrete les moteurs. On ne peut pas s'en affranchir sinon on tue les setting de l'axe 0
+   # ---  48 effectue la sauvegarde
+   # ---  79 envoie un reset errors au controleur
+   etel_execute_command_x_s 0 119 0
    etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
    after 1000
-   if {$stop==1} {
-	   etel_execute_command_x_s 0 79 0
-	   etel_execute_command_x_s 1 119 0
-   }
+   etel_execute_command_x_s 0 79 0
+   after 100
+   etel_execute_command_x_s 1 119 0
    etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
    after 1000
-   if {$stop==1} {
-	   etel_execute_command_x_s 1 79 0
-   }
+   etel_execute_command_x_s 1 79 0
+   after 100
    if {$telscript($telname,mount_type)=="azelevrot"} {
-	   if {$stop==1} {
-   	   etel_execute_command_x_s 2 119 0
-	   }
+  	   etel_execute_command_x_s 2 119 0
       etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
       after 1000
-	   if {$stop==1} {
-	      etel_execute_command_x_s 2 79 0
-      }
+      etel_execute_command_x_s 2 79 0
+      after 100
    }
 }
 
