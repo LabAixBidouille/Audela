@@ -43,16 +43,23 @@ int CmdComBit(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]
     } else {
 	broche = 0;
 	broche = atoi(argv[1]);
+	/*
 	if ((broche <= 0) || (broche > 2)) {
 	    strcpy(s, "ComNumber should be 1|2");
 	    Tcl_SetResult(interp, s, TCL_VOLATILE);
 	    return TCL_ERROR;
 	}
+	*/
 	if (broche == 1) {
 	    comadress = 0x03F8;
-	}
-	if (broche == 2) {
+	} else if (broche == 2) {
 	    comadress = 0x02F8;
+	} else if (broche == 3) {
+	    comadress = 0x5000;
+	} else if (broche == 4) {
+	    comadress = 0x5400;
+	} else {
+	    comadress = broche;
 	}
 	broche = 0;
 	strcpy(signal, argv[2]);

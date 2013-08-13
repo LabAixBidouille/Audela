@@ -162,19 +162,21 @@ proc setup { } {
    load libaudela[info sharedlibextension]
    catch {load libeteltcl[info sharedlibextension]}
    # --- Open the ports for combits
+   set telscript($telname,combitnum0) 2
+   set telscript($telname,combitnum1) 3
    set err [catch {
       porttalk open all
       load libcombit[info sharedlibextension]
-      set telscript($telname,combit0) [open COM2 "RDWR"]
+      set telscript($telname,combit0) [open COM$telscript($telname,combitnum0) "RDWR"]
       fconfigure $telscript($telname,combit0) -mode "9600,n,8,1" -buffering none -blocking 0
-      set telscript($telname,combit1) [open COM3 "RDWR"]
+      set telscript($telname,combit1) [open COM$telscript($telname,combitnum1) "RDWR"]
       fconfigure $telscript($telname,combit1) -mode "9600,n,8,1" -buffering none -blocking 0
-      combit 1 3 0
-      combit 1 4 0
-      combit 1 7 0
-      combit 2 3 0
-      combit 2 4 0
-      combit 2 7 0
+      combit $telscript($telname,combitnum0) 3 0
+      combit $telscript($telname,combitnum0) 4 0
+      combit $telscript($telname,combitnum0) 7 0
+      combit $telscript($telname,combitnum1) 3 0
+      combit $telscript($telname,combitnum1) 4 0
+      combit $telscript($telname,combitnum1) 7 0
    }  msg ]
    set telscript($telname,z1) "$err $msg"
    if {$err==1} {
@@ -722,13 +724,13 @@ proc get_pad_buttons {} {
    if {($telscript($telname,motion_next)!="slewing")&&($telscript($telname,motion_next)!="slewing2")} {
 
       #ajout des bits de changement de mode des vitesses de raquette en les dédoublant pour eviter les courants fugififs
-      set v1 "[combit 2 1]"
-      set v2 "[combit 2 6]"
-      set v3 "[combit 2 8]"
+      set v1 "[combit $telscript($telname,combitnum1) 1]"
+      set v2 "[combit $telscript($telname,combitnum1) 6]"
+      set v3 "[combit $telscript($telname,combitnum1) 8]"
       after 100
-      set v11 "[combit 2 1]"
-      set v21 "[combit 2 6]"
-      set v31 "[combit 2 8]"
+      set v11 "[combit $telscript($telname,combitnum1) 1]"
+      set v21 "[combit $telscript($telname,combitnum1) 6]"
+      set v31 "[combit $telscript($telname,combitnum1) 8]"
       set v1 [expr $v1+$v11]
       set v2 [expr $v2+$v21]
       set v3 [expr $v3+$v31]
@@ -767,25 +769,25 @@ proc get_pad_buttons {} {
          # utilisation raquette physique (boutons combit)
          if {$telscript($telname,motion_next)!="correction"} {
             set rappel 0
-            set n "[combit 1 1]"
+            set n "[combit $telscript($telname,combitnum0) 1]"
             if {($n == 1) }  {
                set telscript($telname,action_next) "move_start"
                set telscript($telname,external_move_direction) N
                set telscript($telname,move_generator) 1
             }
-            set s "[combit 1 9]"
+            set s "[combit $telscript($telname,combitnum0) 9]"
             if {($s == 1) }  {
                set telscript($telname,action_next) "move_start"
                set telscript($telname,external_move_direction) S
                set telscript($telname,move_generator) 1
             }
-            set e "[combit 1 8]"
+            set e "[combit $telscript($telname,combitnum0) 8]"
             if {($e == 1) }  {
                set telscript($telname,action_next) "move_start"
                set telscript($telname,external_move_direction) E
                set telscript($telname,move_generator) 1
             }
-            set o "[combit 1 6]"
+            set o "[combit $telscript($telname,combitnum0) 6]"
             if {($o == 1) }  {
                set telscript($telname,action_next) "move_start"
                set telscript($telname,external_move_direction) W
@@ -795,16 +797,16 @@ proc get_pad_buttons {} {
             # detecte la relache des bits de rappel (utilisation raquette soft)
             set rappel 1
             if {$telscript($telname,external_move_direction)=="N"} {
-               set rappel "[combit 1 1]"
+               set rappel "[combit $telscript($telname,combitnum0) 1]"
             }
             if {$telscript($telname,external_move_direction)=="S"} {
-               set rappel "[combit 1 9]"
+               set rappel "[combit $telscript($telname,combitnum0) 9]"
             }
             if {$telscript($telname,external_move_direction)=="E"} {
-               set rappel "[combit 1 8]"
+               set rappel "[combit $telscript($telname,combitnum0) 8]"
             }
             if {$telscript($telname,external_move_direction)=="W"} {
-               set rappel "[combit 1 6]"
+               set rappel "[combit $telscript($telname,combitnum0) 6]"
             }
             if {($rappel == 0)}  {
                set telscript($telname,action_next) "move_stop"
