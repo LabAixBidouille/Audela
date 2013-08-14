@@ -1,8 +1,19 @@
 #
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
+#
 # Documentation : Voir la page iris.htm dans le dossier \doc_html\french\02programmation
+# pour les fonctions iris_initlinux, iris, iris2_select, iris2_compute_trichro1 
 # Auteur : Benoit MAUGIS
+#
+# Les fonctions iris_launch, iris_terminal, iris_put, iris_read fonctionnent pour Windows
+# uniquement. iris_put permet de démarrer, d'ouvrir la fenetre des commandes et d'envoyer 
+# une commande à Iris. iris_read permet d'importer la derniere erreur retournée dans Iris.
+# Important: Initialiser la variable audace(rep_iris) avec le dossier qui cotient iris.exe.
+# Exemple : iris_put "load" ; after 100 ; iris_read
+# Auteur : Alain KLOTZ
+#
+# source $audace(rep_install)/gui/audace/iris.tcl
 # Mise à jour $Id$
 #
 
@@ -215,5 +226,143 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    puts $fileId $caption(iris,nb_tot)$nb_total
    puts $fileId $caption(iris,nb_select)$nb_select
    close $fileId
+}
+
+proc iris_launch { } {
+   global audace
+   if {[info exists audace(rep_iris)]==0} {
+      set audace(rep_iris) c:/iris
+   }
+   set iris_exe "audace(rep_iris)/iris.exe"
+   package require twapi
+   set pids [twapi::get_process_ids]
+   set ever_launched 0
+   foreach pid $pids {
+      set res [twapi::get_process_info $pid -name]
+      set name [lindex $res 1]
+      if {$name=="iris.exe"} {
+         set ever_launched 1
+         break
+      }
+   }   
+   if {$ever_launched==0} {
+      twapi::create_process ${iris_exe} -startdir [file dirname $iris_exe] -detached 1 -showwindow normal
+   }
+   iris_terminal
+}
+
+proc iris_terminal { } {
+   set pids [twapi::get_process_ids]
+   foreach pid $pids {
+      set res [twapi::get_process_info $pid -name]
+      set name [lindex $res 1]
+      if {$name=="iris.exe"} {
+         break
+      }
+   }   
+	set hwins [twapi::get_toplevel_windows -pid $pid]
+   #console::affiche_resultat "PID=$pid\n"
+	foreach hwin $hwins {
+		set res1 [twapi::get_window_application $hwin]
+		set res2 [twapi::get_window_class $hwin]
+		set res3 [twapi::get_window_client_area_size $hwin]
+		#console::affiche_resultat "===== $hwin $res1 $res2 $res3\n"
+      if {[string range $res2 0 2]=="Afx"} {
+         break
+      }
+	}
+   #console::affiche_resultat "HWIN 1=$hwin\n"
+	set hwinw $hwin
+   set hwins [twapi::get_descendent_windows $hwinw]
+   foreach hwin $hwins {
+      set res1 $hwin
+      set res2 [twapi::get_window_class $hwin]
+      set res4 [twapi::get_window_coordinates $hwin]
+      set res5 [twapi::get_window_style $hwin]
+      set res6 [twapi::get_window_text $hwin]
+      set res7 [twapi::get_window_userdata $hwin]
+      lassign $res4 x1 y1 x2 y2
+      #console::affiche_resultat "==> $res2 : $res4 : $res6 ($res7)\n"
+      if {($res2=="ToolbarWindow32")} {
+         #console::affiche_resultat "$res1 : $res2 : $res4\n"
+         #console::affiche_resultat "get_window_style $res5\n"
+         #console::affiche_resultat "get_window_text $res6\n"         
+         twapi::set_focus $hwin
+         twapi::set_foreground_window $hwin
+         set xpos [expr ($x1+$x2)/2]
+         set ypos [expr ($y1+$y2)/2]
+         set xpos [expr $x1+278] ; # position de l'icone
+         twapi::move_mouse $xpos $ypos
+         twapi::set_focus $hwin
+         twapi::set_foreground_window $hwin
+         twapi::click_mouse_button left
+         break
+      }
+   }
+   #console::affiche_resultat "HWIN 2=$hwin\n"
+   set res ""
+	set hwins [twapi::get_toplevel_windows -pid $pid]
+   #console::affiche_resultat "hwins=$hwins\n"
+	foreach hwin $hwins {
+		set res1 [twapi::get_window_application $hwin]
+		set res2 [twapi::get_window_class $hwin]
+		set res3 [twapi::get_window_client_area_size $hwin]
+      set hwin2s [twapi::get_descendent_windows $hwin]
+		#console::affiche_resultat "=3= $res1 $res2 $res3 :: $hwin2s\n"
+      if {($res2=="#32770")&&([llength $hwin2s]==1)} {
+         set res22 [twapi::get_window_class $hwin2s]
+         if {($res22=="ListBox")||($res22=="Edit")} {
+            set res $hwin2s
+            break
+         }
+      }
+   }
+   #console::affiche_resultat "Handler of Iris terminal = $res\n"
+   return $res   
+}
+
+proc iris_put { msg {clear 1} } {
+   set hwin2s [iris_launch]
+   set hwin2 [lindex $hwin2s 0]
+   twapi::set_focus $hwin2
+   twapi::set_foreground_window $hwin2
+   if {$clear==1} {
+      twapi::send_input_text "\n"
+      after 50
+   }
+   twapi::send_input_text "$msg"
+   twapi::send_keys ~
+   return ""
+}
+
+proc iris_read { } {
+   set hwin2s [iris_launch]
+   set hwinw [lindex $hwin2s 0]   
+	twapi::set_focus $hwinw
+	twapi::set_foreground_window $hwinw
+   set res4 [twapi::get_window_coordinates $hwinw]
+   lassign $res4 x1 y1 x2 y2
+   #console::affiche_resultat "$res4\n"
+   set xpos [expr ($x1+$x2)/2]
+   set ypos [expr ($y1+$y2)/2]
+   set xpos [expr $x1+5]
+   set ypos [expr $y2-10]
+   twapi::move_mouse $xpos $ypos
+   twapi::set_focus $hwinw
+   twapi::set_foreground_window $hwinw
+   twapi::click_mouse_button left   
+	twapi::send_keys +({UP}{UP})
+   after 100
+	twapi::send_keys ^c
+	after 100
+	set lignes [clipboard get]
+   set lignes [split $lignes \n]
+   #console::affiche_resultat "<< $lignes >>\n"
+   set ligne [lindex $lignes end-1]
+   set car [string index $ligne 0]
+   if {$car==">"} {
+      set ligne ""
+   }
+	return $ligne
 }
 
