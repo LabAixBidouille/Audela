@@ -1090,8 +1090,8 @@ proc set_pos_adus { } {
       etel_execute_command_x_s 1 26 1 0 0 73
    }
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      etel_set_register_s 2 X 21 0 [expr round($telscript($telname,goto_app_adu_rot))]
-      etel_execute_command_x_s 2 26 1 0 0 73
+      #etel_set_register_s 2 X 21 0 [expr round($telscript($telname,goto_app_adu_rot))]
+      #etel_execute_command_x_s 2 26 1 0 0 73
    }
    if {$telscript($telname,mount_type)=="hadec"} {
       etel_set_register_s 0 X 21 0 [expr round($telscript($telname,goto_app_adu_ha))]
