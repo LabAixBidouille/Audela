@@ -1245,24 +1245,30 @@ proc load_params { } {
       if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
          # --- az
          set register_0_X_26 651568 ; # vitesse coef (adu/(deg/s))
+         set register_0_X_27 651568 ; # vitesse coef (adu/(deg/s))
          set register_0_X_28 3640000 ; # position coef (adu/deg)
-         set register_0_X_62 618736063 ; # position init (adu)
-         set register_0_X_60 75497400 ; # limite inf adu
-         set register_0_X_61 1719664600 ; # limite sup adu
+         set register_0_X_29 3640000 ; # position coef (adu/deg)
+         set register_0_X_62 660097614  ; # position init (adu)
+         set register_0_X_60 75815853  ; # limite inf adu
+         set register_0_X_61 1719983053  ; # limite sup adu
          # --- elev
          set register_1_X_26 7635922 ; # vitesse coef (adu/(deg/s))
+         set register_1_X_27 7635922 ; # vitesse coef (adu/(deg/s))
          set register_1_X_28 14307595 ; # position coef (adu/deg)
-         set register_1_X_62 [expr 304428518] ; # position init (adu)
-         set register_1_X_60 [expr 304428518+180294334-246229900 ] ; # limite inf adu
-         set register_1_X_61 [expr 1577058300+180294334-246229900 ] ; # limite sup adu
+         set register_1_X_29 14307595 ; # position coef (adu/deg)
+         set register_1_X_62 304766223 ; # position init (adu)
+         set register_1_X_60 363742618  ; # limite inf adu
+         set register_1_X_61 1635256918 ; # limite sup adu
       }
       if {$telscript($telname,mount_type)=="azelevrot"} {
          # --- rot
-         set register_2_X_26 1849319 ; # vitesse coef (adu/(deg/s))
-         set register_2_X_28 3458015 ; # position coef (adu/deg)
+         set register_2_X_26 924300.0  ; # vitesse coef (adu/(deg/s))
+         set register_2_X_27 924300.0  ; # vitesse coef (adu/(deg/s))
+         set register_2_X_28 1244885380  ; # position coef (adu/deg)
+         set register_2_X_29 1244885380  ; # position coef (adu/deg)
          set register_2_X_62 0 ; # position init (adu)
-         set register_2_X_60 0 ; # limite inf adu
-         set register_2_X_61 0 ; # limite sup adu
+         set register_2_X_60 20971520 ; # limite inf adu
+         set register_2_X_61 1265856900 ; # limite sup adu
       }
       if {$telscript($telname,mount_type)=="hadec"} {
          # --- ha
