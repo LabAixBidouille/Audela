@@ -147,7 +147,7 @@ proc setup { } {
    set path [file dirname [info nameofexecutable]]
    set audace(rep_install) [file normalize ${path}/..]
    set audace(rep_gui) "$audace(rep_install)/gui"
-   set audace(rep_catalogues) "$audace(rep_gui)/audace/catalogues"
+   set audace(rep_catalogues) "$audace(rep_gui)/audace/catalogues"   
    source ${path}/../gui/audace/celestial_mechanics.tcl
    source ${path}/../gui/audace/satel.tcl
    source ${path}/../gui/audace/vo_tools.tcl
@@ -287,6 +287,8 @@ proc setup { } {
       set telscript($telname,modpoi_values) {0 0}
    }
 
+   source $audace(rep_install)/gui/audace/plugin/mount/telscript/telscript_etel.tcl
+   
    if {$telscript($telname,simulation)==0} {
 
       # --- Lancement des routines controleurs
@@ -295,101 +297,13 @@ proc setup { } {
       if {$telscript($telname,mount_type)=="azelevrot"} {
          etel_execute_command_x_s 2 26 1 0 0 79
       }
-
-      # --- Recuperation des parametres monture
-      if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-         # --- az
-         set telscript($telname,adu4deg4sec_az)    [etel_get_register_s 0 X 26] ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_az)        [etel_get_register_s 0 X 28] ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_az0) [etel_get_register_s 0 X 62] ; # position init (adu)
-         set telscript($telname,coord_app_deg_az0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_az)        [etel_get_register_s 0 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_az)        [etel_get_register_s 0 X 61] ; # limite sup adu
-         # --- special T940 on change les signes des coefs
-         set telscript($telname,adu4deg_az)        [expr -1*$telscript($telname,adu4deg_az)]
-         # --- elev
-         set telscript($telname,adu4deg4sec_elev)    [etel_get_register_s 1 X 26] ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_elev)        [etel_get_register_s 1 X 28] ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_elev0) [etel_get_register_s 1 X 62] ; # position init (adu)
-         set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_elev)        [etel_get_register_s 1 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_elev)        [etel_get_register_s 1 X 61] ; # limite sup adu
-      }
-      if {$telscript($telname,mount_type)=="azelevrot"} {
-         # --- rot
-         set telscript($telname,adu4deg4sec_rot)    [etel_get_register_s 2 X 26] ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_rot)        [etel_get_register_s 2 X 28] ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_rot0) [etel_get_register_s 2 X 62] ; # position init (adu)
-         set telscript($telname,coord_app_deg_rot0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_rot)        [etel_get_register_s 2 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_rot)        [etel_get_register_s 2 X 61] ; # limite sup adu
-      }
-      if {$telscript($telname,mount_type)=="hadec"} {
-         # --- ha
-         set telscript($telname,adu4deg4sec_ha)    [etel_get_register_s 0 X 26] ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_ha)        [etel_get_register_s 0 X 28] ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_ha0) [etel_get_register_s 0 X 62] ; # position init (adu)
-         set telscript($telname,coord_app_deg_ha0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_ha)        [etel_get_register_s 0 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_ha)        [etel_get_register_s 0 X 61] ; # limite sup adu
-         # --- dec
-         set telscript($telname,adu4deg4sec_dec)    [etel_get_register_s 1 X 26] ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_dec)        [etel_get_register_s 1 X 28] ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_dec0) [etel_get_register_s 1 X 62] ; # position init (adu)
-         set telscript($telname,coord_app_deg_dec0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_dec)        [etel_get_register_s 1 X 60] ; # limite inf adu
-         set telscript($telname,lim_max_dec)        [etel_get_register_s 1 X 61] ; # limite sup adu
-      }
-
+      load_params
       #---arret de tous les moteurs
       etel_execute_command_x_s  ! 69  1 0 0 0
 
    } else {
 
-      # --- Recuperation des parametres monture
-      if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-         # --- az
-         set telscript($telname,adu4deg4sec_az)     651568 ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_az)        3640000 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_az0) 618736063 ; # position init (adu)
-         set telscript($telname,coord_app_deg_az0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_az)        75497400 ; # limite inf adu
-         set telscript($telname,lim_max_az)        1719664600 ; # limite sup adu
-         # --- special T940 on change les signes des coefs
-         set telscript($telname,adu4deg_az)        [expr -1*$telscript($telname,adu4deg_az)]
-         # --- elev
-         set telscript($telname,adu4deg4sec_elev)     7635922 ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_elev)        14307595 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_elev0) [expr 304428518] ; # position init (adu)
-         set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_elev)        [expr 304428518+180294334-246229900 ] ; # limite inf adu
-         set telscript($telname,lim_max_elev)        [expr 1577058300+180294334-246229900 ] ; # limite sup adu
-      }
-      if {$telscript($telname,mount_type)=="azelevrot"} {
-         # --- rot
-         set telscript($telname,adu4deg4sec_rot)    1849319 ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_rot)        3458015 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_rot0) 0 ; # position init (adu)
-         set telscript($telname,coord_app_deg_rot0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_rot)        0 ; # limite inf adu
-         set telscript($telname,lim_max_rot)        0 ; # limite sup adu
-      }
-      if {$telscript($telname,mount_type)=="hadec"} {
-         # --- ha
-         set telscript($telname,adu4deg4sec_ha)    651568 ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_ha)        3640000 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_ha0) 672077190 ; # position init (adu)
-         set telscript($telname,coord_app_deg_ha0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_ha)        [expr 672077188-180*3640000] ; # limite inf adu
-         set telscript($telname,lim_max_ha)        [expr 672077188+180*3640000] ; # limite sup adu
-         # --- dec
-         set telscript($telname,adu4deg4sec_dec)    7817302 ; # vitesse coef (adu/(deg/s))
-         set telscript($telname,adu4deg_dec)        14570000 ; # position coef (adu/deg)
-         set telscript($telname,coord_app_adu_dec0) 0 ; # position init (adu)
-         set telscript($telname,coord_app_deg_dec0) 0 ; # position init (deg)
-         set telscript($telname,lim_min_dec)        0 ; # limite inf adu
-         set telscript($telname,lim_max_dec)        0 ; # limite sup adu
-      }
+      load_params
 
    }
 
@@ -1188,12 +1102,13 @@ proc set_pos_adus { } {
    #after 1500
 }
 
+
 # ################################################################################
-# ### proc save_x
+# ### proc save_x (obsolete car plante les controleurs) => voir proc save_params
 # ################################################################################
 proc save_x { {stop 0 } } {
    global telscript
-   # --- Get useful variables
+   # --- Set useful variables
    set telname $telscript(def,telname)
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
       etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_az)
@@ -1245,6 +1160,170 @@ proc save_x { {stop 0 } } {
       after 1000
       etel_execute_command_x_s 2 79 0
       after 100
+   }
+}
+
+# ################################################################################
+# ### proc save_params (remplace save_x)
+# ################################################################################
+proc save_params { } {
+   global telscript
+   # --- Set useful variables
+   set telname $telscript(def,telname)
+   set lignes ""
+   append lignes "# sauvegarde faite le [mc_date2iso8601 now] avec telscript_etel.tcl\n"
+   append lignes "# monture type $telscript($telname,mount_type)\n"
+   if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
+      append lignes "# === axe az\n"
+      append lignes "set register_0_X_26 $telscript($telname,adu4deg4sec_az) ; # vitesse coef (adu/(deg/s))\n"
+      append lignes "set register_0_X_27 $telscript($telname,adu4deg4sec_az) ; \n"
+      append lignes "set register_0_X_28 [expr abs($telscript($telname,adu4deg_az))] ; # position coef (adu/deg)\n"
+      append lignes "set register_0_X_29 [expr abs($telscript($telname,adu4deg_az))]\n"
+      append lignes "set register_0_X_62 $telscript($telname,coord_app_adu_az0) ; # position init (adu)\n"      
+      append lignes "set register_0_X_60 $telscript($telname,lim_min_az) ; # limite inf adu\n"
+      append lignes "set register_0_X_61 $telscript($telname,lim_max_az) ; # limite inf adu\n"
+      append lignes "# === axe elev\n"      
+      append lignes "set register_1_X_26 $telscript($telname,adu4deg4sec_elev) ; # vitesse coef (adu/(deg/s))\n"
+      append lignes "set register_1_X_27 $telscript($telname,adu4deg4sec_elev)\n"
+      append lignes "set register_1_X_28 [expr abs($telscript($telname,adu4deg_elev))] ; # position coef (adu/deg)\n"
+      append lignes "set register_1_X_29 [expr abs($telscript($telname,adu4deg_elev))]\n"
+      append lignes "set register_1_X_62 $telscript($telname,coord_app_adu_elev0) ; # position init (adu)\n"
+      append lignes "set register_1_X_60 $telscript($telname,lim_min_elev) ; # limite inf adu\n"
+      append lignes "set register_1_X_61 $telscript($telname,lim_max_elev) ; # limite inf adu\n"
+   }
+   if {$telscript($telname,mount_type)=="azelevrot"} {
+      append lignes "# === axe rot\n"
+      append lignes "set register_2_X_26 $telscript($telname,adu4deg4sec_rot) ; # vitesse coef (adu/(deg/s))\n"
+      append lignes "set register_2_X_27 $telscript($telname,adu4deg4sec_rot)\n"
+      append lignes "set register_2_X_28 [expr abs($telscript($telname,adu4deg_rot))] ; # position coef (adu/deg)\n"
+      append lignes "set register_2_X_29 [expr abs($telscript($telname,adu4deg_rot))]\n"
+      append lignes "set register_2_X_62 $telscript($telname,coord_app_adu_rot0) ; # position init (adu)\n"
+      append lignes "set register_2_X_60 $telscript($telname,lim_min_rot) ; # limite inf adu\n"
+      append lignes "set register_2_X_61 $telscript($telname,lim_max_rot) ; # limite inf adu\n"
+   }
+   if {$telscript($telname,mount_type)=="hadec"} {
+      append lignes "# === axe ha\n"
+      append lignes "set register_0_X_26 $telscript($telname,adu4deg4sec_ha) ; # vitesse coef (adu/(deg/s))\n"
+      append lignes "set register_0_X_27 $telscript($telname,adu4deg4sec_ha)\n"
+      append lignes "set register_0_X_28 [expr abs($telscript($telname,adu4deg_ha))] ; # position coef (adu/deg)\n"
+      append lignes "set register_0_X_29 [expr abs($telscript($telname,adu4deg_ha))]\n"
+      append lignes "set register_0_X_62 $telscript($telname,coord_app_adu_ha0) ; # position init (adu)\n"
+      append lignes "set register_0_X_60 $telscript($telname,lim_min_ha) ; # limite inf adu\n"
+      append lignes "set register_0_X_61 $telscript($telname,lim_max_ha) ; # limite inf adu\n"
+      append lignes "# === axe dec\n"      
+      append lignes "set register_1_X_26 $telscript($telname,adu4deg4sec_dec) ; # vitesse coef (adu/(deg/s))\n"
+      append lignes "set register_1_X_27 $telscript($telname,adu4deg4sec_dec)\n"
+      append lignes "set register_1_X_28 [expr abs($telscript($telname,adu4deg_dec))] ; # position coef (adu/deg)\n"
+      append lignes "set register_1_X_29 [expr abs($telscript($telname,adu4deg_dec))]\n"
+      append lignes "set register_1_X_62 $telscript($telname,coord_app_adu_dec0) ; # position init (adu)\n"
+      append lignes "set register_1_X_60 $telscript($telname,lim_min_dec) ; # limite inf adu\n"
+      append lignes "set register_1_X_61 $telscript($telname,lim_max_dec) ; # limite inf adu\n"
+   }
+   package require registry
+   set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+   set rep_log [ file normalize [ file join $mesDocuments audela ] ]
+   file mkdir $rep_log
+   set ficlog ${rep_log}/etel_register.log
+   set f [open $ficlog w]
+   puts -nonewline $f $lignes
+   close $f
+}
+
+# ################################################################################
+# ### proc load_params
+# ################################################################################
+proc load_params { } {
+   global telscript
+   # --- Set useful variables
+   set telname $telscript(def,telname)
+   package require registry
+   set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+   set rep_log [ file normalize [ file join $mesDocuments audela ] ]
+   set ficlog ${rep_log}/etel_register.log
+   if {[file exist $ficlog]==0} {
+      # --- Recuperation des parametres monture pour simulation
+      if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
+         # --- az
+         set register_0_X_26 651568 ; # vitesse coef (adu/(deg/s))
+         set register_0_X_28 3640000 ; # position coef (adu/deg)
+         set register_0_X_62 618736063 ; # position init (adu)
+         set register_0_X_60 75497400 ; # limite inf adu
+         set register_0_X_61 1719664600 ; # limite sup adu
+         # --- elev
+         set register_1_X_26 7635922 ; # vitesse coef (adu/(deg/s))
+         set register_1_X_28 14307595 ; # position coef (adu/deg)
+         set register_1_X_62 [expr 304428518] ; # position init (adu)
+         set register_1_X_60 [expr 304428518+180294334-246229900 ] ; # limite inf adu
+         set register_1_X_61 [expr 1577058300+180294334-246229900 ] ; # limite sup adu
+      }
+      if {$telscript($telname,mount_type)=="azelevrot"} {
+         # --- rot
+         set register_2_X_26 1849319 ; # vitesse coef (adu/(deg/s))
+         set register_2_X_28 3458015 ; # position coef (adu/deg)
+         set register_2_X_62 0 ; # position init (adu)
+         set register_2_X_60 0 ; # limite inf adu
+         set register_2_X_61 0 ; # limite sup adu
+      }
+      if {$telscript($telname,mount_type)=="hadec"} {
+         # --- ha
+         set register_0_X_26 651568 ; # vitesse coef (adu/(deg/s))
+         set register_0_X_28 3640000 ; # position coef (adu/deg)
+         set register_0_X_62 672077190 ; # position init (adu)
+         set register_0_X_60 [expr 672077188-180*3640000] ; # limite inf adu
+         set register_0_X_61 [expr 672077188+180*3640000] ; # limite sup adu
+         # --- dec
+         set register_1_X_26 7817302 ; # vitesse coef (adu/(deg/s))
+         set register_1_X_28 14570000 ; # position coef (adu/deg)
+         set register_1_X_62 0 ; # position init (adu)
+         set register_1_X_60 0 ; # limite inf adu
+         set register_1_X_61 0 ; # limite sup adu
+      }
+   } else {
+      source $ficlog
+   }   
+   # --- Recuperation des parametres monture
+   if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
+      # --- az
+      set telscript($telname,adu4deg4sec_az)    $register_0_X_26 ; # vitesse coef (adu/(deg/s))
+      set telscript($telname,adu4deg_az)        $register_0_X_28 ; # position coef (adu/deg)
+      set telscript($telname,coord_app_adu_az0) $register_0_X_62 ; # position init (adu)
+      set telscript($telname,coord_app_deg_az0) 0 ; # position init (deg)
+      set telscript($telname,lim_min_az)        $register_0_X_60 ; # limite inf adu
+      set telscript($telname,lim_max_az)        $register_0_X_61 ; # limite sup adu
+      # --- special T940 on change les signes des coefs
+      set telscript($telname,adu4deg_az)        [expr -1*$telscript($telname,adu4deg_az)]
+      # --- elev
+      set telscript($telname,adu4deg4sec_elev)    $register_1_X_26 ; # vitesse coef (adu/(deg/s))
+      set telscript($telname,adu4deg_elev)        $register_1_X_28 ; # position coef (adu/deg)
+      set telscript($telname,coord_app_adu_elev0) $register_1_X_62 ; # position init (adu)
+      set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
+      set telscript($telname,lim_min_elev)        $register_1_X_60 ; # limite inf adu
+      set telscript($telname,lim_max_elev)        $register_1_X_61 ; # limite sup adu
+   }
+   if {$telscript($telname,mount_type)=="azelevrot"} {
+      # --- rot
+      set telscript($telname,adu4deg4sec_rot)    $register_2_X_26 ; # vitesse coef (adu/(deg/s))
+      set telscript($telname,adu4deg_rot)        $register_2_X_28 ; # position coef (adu/deg)
+      set telscript($telname,coord_app_adu_rot0) $register_2_X_62 ; # position init (adu)
+      set telscript($telname,coord_app_deg_rot0) 0 ; # position init (deg)
+      set telscript($telname,lim_min_rot)        $register_2_X_60 ; # limite inf adu
+      set telscript($telname,lim_max_rot)        $register_2_X_61 ; # limite sup adu
+   }
+   if {$telscript($telname,mount_type)=="hadec"} {
+      # --- ha
+      set telscript($telname,adu4deg4sec_ha)    $register_0_X_26 ; # vitesse coef (adu/(deg/s))
+      set telscript($telname,adu4deg_ha)        $register_0_X_28 ; # position coef (adu/deg)
+      set telscript($telname,coord_app_adu_ha0) $register_0_X_62 ; # position init (adu)
+      set telscript($telname,coord_app_deg_ha0) 0 ; # position init (deg)
+      set telscript($telname,lim_min_ha)        $register_0_X_60 ; # limite inf adu
+      set telscript($telname,lim_max_ha)        $register_0_X_61 ; # limite sup adu
+      # --- dec
+      set telscript($telname,adu4deg4sec_dec)    $register_1_X_26 ; # vitesse coef (adu/(deg/s))
+      set telscript($telname,adu4deg_dec)        $register_1_X_28 ; # position coef (adu/deg)
+      set telscript($telname,coord_app_adu_dec0) $register_1_X_62 ; # position init (adu)
+      set telscript($telname,coord_app_deg_dec0) 0 ; # position init (deg)
+      set telscript($telname,lim_min_dec)        $register_1_X_60 ; # limite inf adu
+      set telscript($telname,lim_max_dec)        $register_1_X_61 ; # limite sup adu
    }
 }
 
@@ -2070,8 +2149,8 @@ proc telscript_gui { } {
    wm deiconify $base
    wm title $base "Pilotage télescope $telname"
    #wm protocol $base WM_DELETE_WINDOW fermer
-   wm protocol $base WM_DELETE_WINDOW { save_x 1 ; destroy .etel }
-   bind $base <Destroy> { save_x 1 ; destroy .etel }
+   wm protocol $base WM_DELETE_WINDOW { global audace ; save_params ; destroy .etel }
+   bind $base <Destroy> { global audace ; save_params ; destroy .etel }
    $base configure -bg $paramscript(color,back)
    wm withdraw .
    focus -force $base
@@ -2667,13 +2746,13 @@ proc telscript_gui { } {
       pack $base.f.fgetreg1 -fill none -pady 0
       frame $base.f.fgetreg2 -bg $paramscript(color,back)
          button $base.f.fgetreg2.but_save \
-            -text "save registers X" -borderwidth 2 \
+            -text "save params" -borderwidth 2 \
             -command {
                global telscript
                set telname $telscript(def,telname)
                set base $telscript(def,base)
                $base.f.fgetreg2.but_save configure -state disabled
-               set texte "save_x"
+               set texte "save_params"
                tel1 loopeval "$texte"
                after 400
                set res [tel1 loopresult]
