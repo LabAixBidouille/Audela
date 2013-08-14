@@ -1004,14 +1004,14 @@ proc set_speed_adus { } {
    global telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
-   set app_drift_az $telscript($telname,speed_app_deg_az)
+   set app_drift_az $telscript($telname,speed_app_deg_az) ; # vitesse demandee (arcsec/sec)
    set app_drift_elev $telscript($telname,speed_app_deg_elev)
    set app_drift_HA $telscript($telname,speed_app_deg_ha)
    set app_drift_dec $telscript($telname,speed_app_deg_dec)
    set app_drift_rot $telscript($telname,speed_app_deg_rot)
-   set coef 15.041; #$app_drift_HA
+   set coef 15.041; #$app_drift_HA (arcsec/sec) pour conversion en arcsec/15sec 
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-      set vs $telscript($telname,adu4deg4sec_az)
+      set vs $telscript($telname,adu4deg4sec_az) ; # vitesse coef (adu/(deg/s))
       set vadu [expr round(-$app_drift_az/$coef*$vs/1000.)]
       set telscript($telname,speed_app_adu_az) $vadu
       set vadu [expr $vadu*$telscript($telname,speed_app_adu_mult)]
