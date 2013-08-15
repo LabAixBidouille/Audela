@@ -3,11 +3,11 @@
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 #
 # Documentation : Voir la page iris.htm dans le dossier \doc_html\french\02programmation
-# pour les fonctions iris_initlinux, iris, iris2_select, iris2_compute_trichro1 
+# pour les fonctions iris_initlinux, iris, iris2_select, iris2_compute_trichro1
 # Auteur : Benoit MAUGIS
 #
 # Les fonctions iris_launch, iris_terminal, iris_put, iris_read fonctionnent pour Windows
-# uniquement. iris_put permet de démarrer, d'ouvrir la fenetre des commandes et d'envoyer 
+# uniquement. iris_put permet de démarrer, d'ouvrir la fenetre des commandes et d'envoyer
 # une commande à Iris. iris_read permet d'importer la derniere erreur retournée dans Iris.
 # Important: Initialiser la variable audace(rep_iris) avec le dossier qui cotient iris.exe.
 # Exemple : iris_put "load" ; after 100 ; iris_read
@@ -244,7 +244,7 @@ proc iris_launch { } {
          set ever_launched 1
          break
       }
-   }   
+   }
    if {$ever_launched==0} {
       twapi::create_process ${iris_exe} -startdir [file dirname $iris_exe] -detached 1 -showwindow normal
    }
@@ -259,20 +259,20 @@ proc iris_terminal { } {
       if {$name=="iris.exe"} {
          break
       }
-   }   
-	set hwins [twapi::get_toplevel_windows -pid $pid]
+   }
+   set hwins [twapi::get_toplevel_windows -pid $pid]
    #console::affiche_resultat "PID=$pid\n"
-	foreach hwin $hwins {
-		set res1 [twapi::get_window_application $hwin]
-		set res2 [twapi::get_window_class $hwin]
-		set res3 [twapi::get_window_client_area_size $hwin]
-		#console::affiche_resultat "===== $hwin $res1 $res2 $res3\n"
+   foreach hwin $hwins {
+      set res1 [twapi::get_window_application $hwin]
+      set res2 [twapi::get_window_class $hwin]
+      set res3 [twapi::get_window_client_area_size $hwin]
+      #console::affiche_resultat "===== $hwin $res1 $res2 $res3\n"
       if {[string range $res2 0 2]=="Afx"} {
          break
       }
-	}
+   }
    #console::affiche_resultat "HWIN 1=$hwin\n"
-	set hwinw $hwin
+   set hwinw $hwin
    set hwins [twapi::get_descendent_windows $hwinw]
    foreach hwin $hwins {
       set res1 $hwin
@@ -286,7 +286,7 @@ proc iris_terminal { } {
       if {($res2=="ToolbarWindow32")} {
          #console::affiche_resultat "$res1 : $res2 : $res4\n"
          #console::affiche_resultat "get_window_style $res5\n"
-         #console::affiche_resultat "get_window_text $res6\n"         
+         #console::affiche_resultat "get_window_text $res6\n"
          twapi::set_focus $hwin
          twapi::set_foreground_window $hwin
          set xpos [expr ($x1+$x2)/2]
@@ -301,14 +301,14 @@ proc iris_terminal { } {
    }
    #console::affiche_resultat "HWIN 2=$hwin\n"
    set res ""
-	set hwins [twapi::get_toplevel_windows -pid $pid]
+   set hwins [twapi::get_toplevel_windows -pid $pid]
    #console::affiche_resultat "hwins=$hwins\n"
-	foreach hwin $hwins {
-		set res1 [twapi::get_window_application $hwin]
-		set res2 [twapi::get_window_class $hwin]
-		set res3 [twapi::get_window_client_area_size $hwin]
+   foreach hwin $hwins {
+      set res1 [twapi::get_window_application $hwin]
+      set res2 [twapi::get_window_class $hwin]
+      set res3 [twapi::get_window_client_area_size $hwin]
       set hwin2s [twapi::get_descendent_windows $hwin]
-		#console::affiche_resultat "=3= $res1 $res2 $res3 :: $hwin2s\n"
+      #console::affiche_resultat "=3= $res1 $res2 $res3 :: $hwin2s\n"
       if {($res2=="#32770")&&([llength $hwin2s]==1)} {
          set res22 [twapi::get_window_class $hwin2s]
          if {($res22=="ListBox")||($res22=="Edit")} {
@@ -318,7 +318,7 @@ proc iris_terminal { } {
       }
    }
    #console::affiche_resultat "Handler of Iris terminal = $res\n"
-   return $res   
+   return $res
 }
 
 proc iris_put { msg {clear 1} } {
@@ -337,9 +337,9 @@ proc iris_put { msg {clear 1} } {
 
 proc iris_read { } {
    set hwin2s [iris_launch]
-   set hwinw [lindex $hwin2s 0]   
-	twapi::set_focus $hwinw
-	twapi::set_foreground_window $hwinw
+   set hwinw [lindex $hwin2s 0]
+   twapi::set_focus $hwinw
+   twapi::set_foreground_window $hwinw
    set res4 [twapi::get_window_coordinates $hwinw]
    lassign $res4 x1 y1 x2 y2
    #console::affiche_resultat "$res4\n"
@@ -350,12 +350,12 @@ proc iris_read { } {
    twapi::move_mouse $xpos $ypos
    twapi::set_focus $hwinw
    twapi::set_foreground_window $hwinw
-   twapi::click_mouse_button left   
-	twapi::send_keys +({UP}{UP})
+   twapi::click_mouse_button left
+   twapi::send_keys +({UP}{UP})
    after 100
-	twapi::send_keys ^c
-	after 100
-	set lignes [clipboard get]
+   twapi::send_keys ^c
+   after 100
+   set lignes [clipboard get]
    set lignes [split $lignes \n]
    #console::affiche_resultat "<< $lignes >>\n"
    set ligne [lindex $lignes end-1]
@@ -363,6 +363,6 @@ proc iris_read { } {
    if {$car==">"} {
       set ligne ""
    }
-	return $ligne
+   return $ligne
 }
 
