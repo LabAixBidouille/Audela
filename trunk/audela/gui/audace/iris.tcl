@@ -245,6 +245,7 @@ proc iris_launch { } {
    }
    if {$ever_launched==0} {
       twapi::create_process ${iris_exe} -startdir [file dirname $iris_exe] -detached 1 -showwindow normal
+      after 500
    }
    iris_terminal
 }
@@ -294,6 +295,7 @@ proc iris_terminal { } {
          twapi::set_focus $hwin
          twapi::set_foreground_window $hwin
          twapi::click_mouse_button left
+         after 50
          break
       }
    }
@@ -364,3 +366,15 @@ proc iris_read { } {
    return $ligne
 }
 
+proc iris_exit { } {
+   package require twapi
+   set pids [twapi::get_process_ids]
+   set ever_launched 0
+   foreach pid $pids {
+      set res [twapi::get_process_info $pid -name]
+      set name [lindex $res 1]
+      if {$name=="iris.exe"} {
+         twapi::end_process $pid -force
+      }
+   }
+}
