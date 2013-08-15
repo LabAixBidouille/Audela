@@ -1692,7 +1692,7 @@ proc sentinel_skymonitor_open { } {
    }
    if {$pidfore==0} {
       if {[catch {set env_program_files $env(ProgramFiles)}]==1} {
-         set env_program_files [ file join C Program Files ]
+         set env_program_files [ file join C: "Program Files" ]
       }
       set fic [file normalize [ file join ${env_program_files} ${folder_tolaunch} ${pgm_tolaunch} ]]
       if {[file exists $fic]==1} {
