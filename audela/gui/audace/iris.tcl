@@ -233,7 +233,7 @@ proc iris_launch { } {
    if {[info exists audace(rep_iris)]==0} {
       set audace(rep_iris) c:/iris
    }
-   set iris_exe "audace(rep_iris)/iris.exe"
+   set iris_exe "$audace(rep_iris)/iris.exe"
    package require twapi
    set pids [twapi::get_process_ids]
    set ever_launched 0
