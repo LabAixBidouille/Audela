@@ -244,10 +244,24 @@ proc iris_launch { } {
       }
    }
    if {$ever_launched==0} {
-      twapi::create_process ${iris_exe} -startdir [file dirname $iris_exe] -detached 1 -showwindow normal
-      after 500
+      set err [catch {
+         twapi::create_process ${iris_exe} -startdir [file dirname $iris_exe] -detached 1 -showwindow normal
+      } msg]
+      if {$err==1} {
+         error "Cannot find IRIS executable as the file ${iris_exe}. $msg"
+      }
    }
-   iris_terminal
+   for {set k 0} {$k<=20} {incr k} {
+      after 500
+      set err [catch {iris_terminal} hwin]
+      if {$err==0} {
+         break
+      }
+   }
+   if {$err==1} {
+      error $hwin
+   }   
+   return $hwin
 }
 
 proc iris_terminal { } {
