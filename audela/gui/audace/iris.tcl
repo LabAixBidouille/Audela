@@ -7,9 +7,9 @@
 # Auteur : Benoit MAUGIS
 #
 # Les fonctions iris_launch, iris_terminal, iris_put, iris_read fonctionnent pour Windows
-# uniquement. iris_put permet de démarrer, d'ouvrir la fenetre des commandes et d'envoyer
-# une commande à Iris. iris_read permet d'importer la derniere erreur retournée dans Iris.
-# Important: Initialiser la variable audace(rep_iris) avec le dossier qui cotient iris.exe.
+# uniquement. iris_put permet de demarrer, d'ouvrir la fenetre des commandes et d'envoyer
+# une commande a Iris. iris_read permet d'importer la derniere erreur retournee dans Iris.
+# Important: Initialiser la variable conf(exec_iris) avec le chemin complet de iris.exe.
 # Exemple : iris_put "load" ; after 100 ; iris_read
 # Auteur : Alain KLOTZ
 #
@@ -229,11 +229,9 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
 }
 
 proc iris_launch { } {
-   global audace
-   if {[info exists audace(rep_iris)]==0} {
-      set audace(rep_iris) c:/iris
-   }
-   set iris_exe "$audace(rep_iris)/iris.exe"
+   global conf
+
+   set iris_exe "$conf(exec_iris)"
    package require twapi
    set pids [twapi::get_process_ids]
    set ever_launched 0
