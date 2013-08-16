@@ -27,6 +27,8 @@ set caption(atik,miroir_x)                     "Top/Bottom Reversal"
 set caption(atik,miroir_y)                     "Left/Right Reversal"
 set caption(atik,fonc_obtu)                    "Shutter Operation"
 
+set caption(atik,installNewVersion)            "Installation of library %s of plugin atik v%s completed."
+
 set caption(atik,port_camera)                  "Atik Port"
 set caption(atik,2points)                      ":"
 
@@ -51,6 +53,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_x)                  "Inverser Haut/Bas"
    set caption(atik,miroir_y)                  "Inverser Gauche/Droite"
    set caption(atik,fonc_obtu)                 "Fonctionnement de l'obturateur"
+
+   set caption(atik,installNewVersion)         "Fin de l'installation de la librairie %s du plugin atik v%s."
 
    set caption(atik,port_camera)               "Port Atik"
    set caption(atik,2points)                   ":"
@@ -77,6 +81,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(atik,fonc_obtu)                 "Funzionamento otturatore"
 
+   set caption(atik,installNewVersion)         "Installazione della libreria %s del plugin atik v%s terminata."
+
    set caption(atik,port_camera)               "Porta Atik"
    set caption(atik,2points)                   ":"
 
@@ -101,6 +107,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_x)                  "Invertir Arriba/Abajo"
    set caption(atik,miroir_y)                  "Invertir Izquierda/Derecha"
    set caption(atik,fonc_obtu)                 "Funcionamiento del obturador"
+
+   set caption(atik,installNewVersion)         "Fin de la instalación de la libreria %s del plugin atik v%s."
 
    set caption(atik,port_camera)               "Puerto Atik"
    set caption(atik,2points)                   ":"
@@ -127,6 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_y)                  "Links/Rechts umkehren"
    set caption(atik,fonc_obtu)                 "Verschluss Arbeiten"
 
+   set caption(atik,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin atik v%s."
+
    set caption(atik,port_camera)               "Atik Port"
    set caption(atik,2points)                   ":"
 
@@ -151,6 +161,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_x)                  "Inverter Cima/Baixo"
    set caption(atik,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(atik,fonc_obtu)                 "Operação do obturador"
+
+   set caption(atik,installNewVersion)         "Instalação da livraria %s do plugin atik v%s concluída."
 
    set caption(atik,port_camera)               "Porta Atik"
    set caption(atik,2points)                   ":"
@@ -177,6 +189,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_y)                  "Left/Right Reversal"
    set caption(atik,fonc_obtu)                 "Shutter Operation"
 
+   set caption(atik,installNewVersion)         "Installation of library %s of plugin atik v%s completed."
+
    set caption(atik,port_camera)               "Atik Port"
    set caption(atik,2points)                   ":"
 
@@ -202,6 +216,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_y)                  "Left/Right Reversal"
    set caption(atik,fonc_obtu)                 "Shutter Operation"
 
+   set caption(atik,installNewVersion)         "Installation of library %s of plugin atik v%s completed."
+
    set caption(atik,port_camera)               "Atik Port"
    set caption(atik,2points)                   ":"
 
@@ -226,6 +242,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atik,miroir_x)                  "Top/Bottom Reversal"
    set caption(atik,miroir_y)                  "Left/Right Reversal"
    set caption(atik,fonc_obtu)                 "Shutter Operation"
+
+   set caption(atik,installNewVersion)         "Installation of library %s of plugin atik v%s completed."
 
    set caption(atik,port_camera)               "Atik Port"
    set caption(atik,2points)                   ":"

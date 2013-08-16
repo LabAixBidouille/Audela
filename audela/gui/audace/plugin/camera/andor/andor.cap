@@ -31,6 +31,8 @@ set caption(andor,ouvert_obtu)                  "Shutter Opening Delay"
 set caption(andor,ferm_obtu)                    "Shutter Closing Delay"
 set caption(andor,ms)                           "ms"
 
+set caption(andor,installNewVersion)            "Installation of library %s of plugin andor v%s completed."
+
 set caption(andor,port_camera)                  "Andor Port"
 set caption(andor,2points)                      ":"
 
@@ -59,6 +61,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Délai d'ouverture de l'obturateur"
    set caption(andor,ferm_obtu)                 "Délai de fermeture de l'obturateur"
    set caption(andor,ms)                        "ms"
+
+   set caption(andor,installNewVersion)         "Fin de l'installation de la librairie %s du plugin andor v%s."
 
    set caption(andor,port_camera)               "Port Andor"
    set caption(andor,2points)                   ":"
@@ -89,6 +93,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Ritardo di chiusura otturatore"
    set caption(andor,ms)                        "ms"
 
+   set caption(andor,installNewVersion)         "Installazione della libreria %s del plugin andor v%s terminata."
+
    set caption(andor,port_camera)               "Porta Andor"
    set caption(andor,2points)                   ":"
 
@@ -117,6 +123,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Retardo de apertura de obturador"
    set caption(andor,ferm_obtu)                 "Retardo de cerrado de obturador"
    set caption(andor,ms)                        "ms"
+
+   set caption(andor,installNewVersion)         "Fin de la instalación de la libreria %s del plugin andor v%s."
 
    set caption(andor,port_camera)               "Puerto Andor"
    set caption(andor,2points)                   ":"
@@ -147,6 +155,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Verschluss Schließen Verspätung"
    set caption(andor,ms)                        "ms"
 
+   set caption(andor,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin andor v%s."
+
    set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
@@ -175,6 +185,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Atraso de Abertura do obturador"
    set caption(andor,ferm_obtu)                 "Atraso de encerramento do obturador"
    set caption(andor,ms)                        "ms"
+
+   set caption(andor,installNewVersion)         "Instalação da livraria %s do plugin andor v%s concluída."
 
    set caption(andor,port_camera)               "Porta Andor"
    set caption(andor,2points)                   ":"
@@ -205,6 +217,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
 
+   set caption(andor,installNewVersion)         "Installation of library %s of plugin andor v%s completed."
+
    set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
@@ -234,6 +248,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
 
+   set caption(andor,installNewVersion)         "Installation of library %s of plugin andor v%s completed."
+
    set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"
 
@@ -262,6 +278,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(andor,ouvert_obtu)               "Shutter Opening Delay"
    set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
    set caption(andor,ms)                        "ms"
+
+   set caption(andor,installNewVersion)         "Installation of library %s of plugin andor v%s completed."
 
    set caption(andor,port_camera)               "Andor Port"
    set caption(andor,2points)                   ":"

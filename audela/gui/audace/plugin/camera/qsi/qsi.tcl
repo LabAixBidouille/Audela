@@ -6,7 +6,7 @@
 #
 
 namespace eval ::qsi {
-   package provide qsi 2.0
+   package provide qsi 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] qsi.cap ]

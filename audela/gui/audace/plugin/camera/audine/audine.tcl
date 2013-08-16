@@ -6,10 +6,51 @@
 #
 
 namespace eval ::audine {
-   package provide audine 1.0
+   package provide audine 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audine.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::audine::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libaudine.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audine::getPluginType]] "audine" "libaudine.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libquicka.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audine::getPluginType]] "audine" "libquicka.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace liboscadine.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audine::getPluginType]] "audine" "liboscadine.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libethernaude.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audine::getPluginType]] "audine" "libethernaude.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace CCD_Driver.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audine::getPluginType]] "audine" "CCD_Driver.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libaudinet.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audine::getPluginType]] "audine" "libaudinet.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(audine,installNewVersion) $sourceFileName [package version audine] ]
+   }
 }
 
 #
