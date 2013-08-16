@@ -45,6 +45,8 @@ set caption(audine,type_obtu)                    "Shutter Type"
 set caption(audine,fonc_obtu)                    "Shutter Operation"
 set caption(audine,test_fab_audine)              "Tests to Check Camera Operation"
 
+set caption(audine,installNewVersion)            "Installation of library %s of plugin audine v%s completed."
+
 set caption(audine,port_camera)                  "Audine Port"
 set caption(audine,2points)                      ":"
 
@@ -87,6 +89,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Type de l'obturateur"
    set caption(audine,fonc_obtu)                 "Fonctionnement de l'obturateur"
    set caption(audine,test_fab_audine)           "Tests pour la fabrication de la caméra"
+
+   set caption(audine,installNewVersion)         "Fin de l'installation de la librairie %s du plugin audine v%s."
 
    set caption(audine,port_camera)               "Port Audine"
    set caption(audine,2points)                   ":"
@@ -131,6 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,fonc_obtu)                 "Funzionamento otturatore"
    set caption(audine,test_fab_audine)           "Rilevamento camera in corso"
 
+   set caption(audine,installNewVersion)         "Installazione della libreria %s del plugin audine v%s terminata."
+
    set caption(audine,port_camera)               "Porta Audine"
    set caption(audine,2points)                   ":"
 
@@ -173,6 +179,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo de obturador"
    set caption(audine,fonc_obtu)                 "Funcionamiento del obturador"
    set caption(audine,test_fab_audine)           "Tests para la fabricación de la cámara"
+
+   set caption(audine,installNewVersion)         "Fin de la instalación de la libreria %s del plugin audine v%s."
 
    set caption(audine,port_camera)               "Puerto Audine"
    set caption(audine,2points)                   ":"
@@ -217,6 +225,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,fonc_obtu)                 "Verschluss Arbeiten"
    set caption(audine,test_fab_audine)           "Testen für das Kamera Bau"
 
+   set caption(audine,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin audine v%s."
+
    set caption(audine,port_camera)               "Audine Port"
    set caption(audine,2points)                   ":"
 
@@ -259,6 +269,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Tipo de obturador"
    set caption(audine,fonc_obtu)                 "Operação do obturador"
    set caption(audine,test_fab_audine)           "Testa a operação da câmara"
+
+   set caption(audine,installNewVersion)         "Instalação da livraria %s do plugin audine v%s concluída."
 
    set caption(audine,port_camera)               "Porta Audine"
    set caption(audine,2points)                   ":"
@@ -303,6 +315,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,fonc_obtu)                 "Shutter Operation"
    set caption(audine,test_fab_audine)           "Tests to Check Camera Operation"
 
+   set caption(audine,installNewVersion)         "Installation of library %s of plugin audine v%s completed."
+
    set caption(audine,port_camera)               "Audine Port"
    set caption(audine,2points)                   ":"
 
@@ -346,6 +360,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,fonc_obtu)                 "Shutter Operation"
    set caption(audine,test_fab_audine)           "Tests to Check Camera Operation"
 
+   set caption(audine,installNewVersion)         "Installation of library %s of plugin audine v%s completed."
+
    set caption(audine,port_camera)               "Audine Port"
    set caption(audine,2points)                   ":"
 
@@ -388,6 +404,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,type_obtu)                 "Shutter Type"
    set caption(audine,fonc_obtu)                 "Shutter Operation"
    set caption(audine,test_fab_audine)           "Tests to Check Camera Operation"
+
+   set caption(audine,installNewVersion)         "Installation of library %s of plugin audine v%s completed."
 
    set caption(audine,port_camera)               "Audine Port"
    set caption(audine,2points)                   ":"

@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded andor 1.0 [ list source [ file join $dir andor.tcl ] ]
+package ifneeded andor 3.0 [ list source [ file join $dir andor.tcl ] ]
 

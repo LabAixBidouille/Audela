@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded atik 1.0 [ list source [ file join $dir atik.tcl ] ]
+package ifneeded atik 3.0 [ list source [ file join $dir atik.tcl ] ]
 

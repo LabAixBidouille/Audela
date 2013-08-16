@@ -6,10 +6,26 @@
 #
 
 namespace eval ::atik {
-   package provide atik 1.0
+   package provide atik 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] atik.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::atik::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libatik.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::atik::getPluginType]] "atik" "libatik.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(atik,installNewVersion) $sourceFileName [package version atik] ]
+   }
 }
 
 #

@@ -6,7 +6,7 @@
 #
 
 namespace eval ::ascomcam {
-   package provide ascomcam 2.0
+   package provide ascomcam 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ascomcam.cap ]

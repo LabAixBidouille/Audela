@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded audine 1.0 [ list source [ file join $dir audine.tcl ] ]
+package ifneeded audine 3.0 [ list source [ file join $dir audine.tcl ] ]
 
