@@ -125,6 +125,7 @@
    Tcl_CreateCommand(interp,"mc_nutation",(Tcl_CmdProc *)Cmd_mctcl_nutation,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_cosmology_calculator",(Tcl_CmdProc *)Cmd_mctcl_cosmology_calculator,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_date2equinox",(Tcl_CmdProc *)Cmd_mctcl_date2equinox,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_altitude2tp",(Tcl_CmdProc *)Cmd_mctcl_altitude2tp,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    Tcl_PkgProvide(interp,"libmc","1.0");
 
