@@ -1942,15 +1942,18 @@ int Cmd_mctcl_refraction(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /****************************************************************************/
 /*                                                                          */
 /* Entrees :                 												             */
+/* expr 60.*[mc_refraction 0 in2out [expr 15+273.15] 101325 590 90.0 {GPS 0 E 45 0} ] */
 /*                                                                          */
 /****************************************************************************/
 {
-   char s[524];
-   int result,inout;
-   double h,pressure,temperature,refraction;
-
+   char s[524],ss[100];
+   int result,inout,methode=0;
+   double h,refraction;
+   double pressure=101000,temperature=283; // normal condition for methode=0
+	double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
+	double longi,rhocosphip,rhosinphip,latitude,altitude;
    if(argc<=2) {
-      sprintf(s,"Usage: %s altitude out2in|in2out ?temperature? ?pressure?", argv[0]);
+      sprintf(s,"Usage: %s elevation out2in|in2out ?temperature_K? ?pressure_Pa? ?wavelength_nm humidity_percent Home?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
  	   return(result);
@@ -1968,19 +1971,35 @@ int Cmd_mctcl_refraction(ClientData clientData, Tcl_Interp *interp, int argc, ch
 			inout=1;
 		}
       /* --- decode la temperature (K) ---*/
-		temperature=283.;
 		if (argc>=4) {
          temperature=atof(argv[3]);
+			tk=temperature;
 		}
       /* --- decode la temperature (Pa) ---*/
-		pressure=101000.;
 		if (argc>=5) {
          pressure=atof(argv[4]);
+			ppa=pressure;
+		}
+		/* --- decode les parametres supplementaires ---*/
+		if (argc>=8) {
+			methode=1;
+         lnm=atof(argv[5]);
+         hump=atof(argv[6]);
+			/* --- decode le Home ---*/
+			mctcl_decode_topo(interp,argv[7],&longi,&rhocosphip,&rhosinphip);
+			mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+			latd=latitude;
+			altm=altitude;
 		}
       /* --- calcul de conversion ---*/
-      mc_refraction(h,inout,temperature,pressure,&refraction);
+		if (methode==0) {
+			mc_refraction(h,inout,temperature,pressure,&refraction);
+		} else {
+			mc_refraction2(h,inout,tk,ppa,lnm,hump,latd,altm,&refraction);
+		}
 	   /* --- sortie des resultats ---*/
-      sprintf(s,"%.12g",refraction/(DR));
+		strcpy(s,"");
+		sprintf(ss,"%s",mc_d2s(refraction/(DR))); strcat(s,ss);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_OK;
    }
@@ -2001,12 +2020,15 @@ mc_refraction_difradec 130 0 {GPS 70 W -29 2300} 2012-01-12T00:00:00 0
 {
    char s[524];
    int result,inout=1;
-   double pressure,temperature,refraction;
+   double refraction;
    double ra,dec,longi,rhocosphip,rhosinphip,jj;
    double ha,latitude,altitude,az,h;
 	double ra1,dec1,ra2,dec2,delay_sec,h1,h2,dra,ddec;
+   double pressure=101000,temperature=283; // normal condition for methode=0
+	double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
+	int methode=0;
    if(argc<6) {
-      sprintf(s,"Usage: %s ra dec home date delay_sec ?temperature? ?pressure?", argv[0]);
+      sprintf(s,"Usage: %s ra dec home date delay_sec ?temperature_K? ?pressure_Pa? ?wavelength_nm humidity_percent?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
  	   return(result);
@@ -2021,25 +2043,37 @@ mc_refraction_difradec 130 0 {GPS 70 W -29 2300} 2012-01-12T00:00:00 0
       /* --- decode le Home ---*/
       mctcl_decode_topo(interp,argv[3],&longi,&rhocosphip,&rhosinphip);
       mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latd=latitude;
+		altm=altitude;
       latitude*=(DR);
       /* --- decode la date ---*/
       mctcl_decode_date(interp,argv[4],&jj);
       /* --- decode le delais ---*/
       delay_sec=atof(argv[5]);
       /* --- decode la temperature (K) ---*/
-		temperature=283.;
 		if (argc>=7) {
          temperature=atof(argv[6]);
+			tk=temperature;
 		}
       /* --- decode la temperature (Pa) ---*/
-		pressure=101000.;
 		if (argc>=8) {
          pressure=atof(argv[7]);
+			ppa=pressure;
+		}
+		/* --- decode les parametres supplementaires ---*/
+		if (argc>=10) {
+			methode=1;
+         lnm=atof(argv[8]);
+         hump=atof(argv[9]);
 		}
       /* --- calcul de refraction a jj ---*/
       mc_ad2hd(jj,longi,ra,&ha);
       mc_hd2ah(ha,dec,latitude,&az,&h);
-      mc_refraction(h,inout,temperature,pressure,&refraction);
+		if (methode==0) {
+			mc_refraction(h,inout,temperature,pressure,&refraction);
+		} else {
+			mc_refraction2(h,inout,tk,ppa,lnm,hump,latd,altm,&refraction);
+		}
 		h=h+refraction;
       mc_ah2hd(az,h,latitude,&ha,&dec1);
 		mc_hd2ad(jj,longi,ha,&ra1);
@@ -2047,7 +2081,11 @@ mc_refraction_difradec 130 0 {GPS 70 W -29 2300} 2012-01-12T00:00:00 0
       /* --- calcul de refraction a jj+delay ---*/
       mc_ad2hd(jj+delay_sec/86400.,longi,ra,&ha);
       mc_hd2ah(ha,dec,latitude,&az,&h);
-      mc_refraction(h,inout,temperature,pressure,&refraction);
+		if (methode==0) {
+			mc_refraction(h,inout,temperature,pressure,&refraction);
+		} else {
+			mc_refraction2(h,inout,tk,ppa,lnm,hump,latd,altm,&refraction);
+		}
 		h=h+refraction;
       mc_ah2hd(az,h,latitude,&ha,&dec2);
 		mc_hd2ad(jj+delay_sec/86400.,longi,ha,&ra2);

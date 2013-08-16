@@ -11,7 +11,7 @@
 <body>
 <center><b><font size="+3">LIB MC</font></b> <br>
 a library designed for celestial mechanics <br>
-version 20110318<br>
+version 20130816<br>
 Alain KLOTZ
 <p><b><font size="+3">User manual</font></b></p>
 </center>
@@ -578,15 +578,17 @@ Azimut, Altitude, Hour angle and Parallactic angle. <br>
  href="#angle">Angle_Altitud e</a><a href="#home">Home</a><a
  href="#date">Date</a> : returns a list Hour Angle,Dec from azimut and
 altitude <br>
-<b>mc_refraction</b>&nbsp; altitude out2in|in2out ?temperature?
-?pressure? : compute the correction (degrees) due to the atmospheric
+<b>mc_refraction</b>&nbsp; altitude out2in|in2out ?temperature_K?
+?pressure_Pa? ?wavelength_nm humidity_percent Home? : compute the
+correction (degrees) due to the atmospheric
 refraction, to correct the altitude (above horizon). out2in to compute
 the corrction from the out of atmosph&egrave;re (add the result) and
 in2out for the inverse case (substract the result). Temperature is
 expressed in
 Kelvin (283K by default) and pressure is expressed in Pascal (101000Pa
 by
-default).<br>
+default). If the three parameters wavelength_nm humidity_percent Home
+are given then the refraction is computed with a better accuracy.<br>
 <br>
 <b>mc_radec2altaz </b><a
  href="file:///C:/d/audela-1.4.0/audela/src/audela/libmc/html/mcusr_us.htm#angle">Angle_ra</a>

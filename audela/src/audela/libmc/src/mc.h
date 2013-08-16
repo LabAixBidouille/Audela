@@ -886,6 +886,18 @@ void mc_preclb(double jd1, double lon1, double lat1, double jd2, double *lon2, d
 void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,double *altitude);
 void mc_refraction(double h,int inout,double temperature,double pressure,double *refraction);
 void mc_corearthsatelem(double jj,struct elemorb *elem);
+void mc_refraction2(double h,int inout,double tk,double ppa, double lnm, double hump, double latd, double altm, double *refraction);
+void mc_refraction_coef_fz(double zdeg,double *fz);
+void mc_refraction_coef_gz(double zdeg,double *gz);
+void mc_refraction_coef_r0(double zdeg, double *r0);
+void mc_refraction_coef_a(double zdeg, double t, double *a);
+void mc_refraction_coef_b(double zdeg, double p, double *b);
+void mc_refraction_coef_c(double zdeg, double lnm, double *c);
+void mc_refraction_coef_d(double zdeg, double f, double *dd);
+void mc_refraction_coef_e(double zdeg, double phi, double *e);
+void mc_refraction_coef_h(double zdeg, double altm, double *h);
+void mc_refraction_coef_fsat(double t, double *fsat);
+void mc_refraction_coef_r(double z0, double tk, double ppa, double lnm,double hump,double latd, double altm,double *r);
 
 /***************************************************************************/
 /* Utilitaires mathematiques                                               */
@@ -1340,6 +1352,30 @@ void mc_corearthsatelem(double jj,struct elemorb *elem);
    Correction de perturbations de la figure de la Terre pour satellites
 void mc_cor_sgp4_satelem(double jj,struct elemorb *elem);
    Correction de perturbations modele SGP4 pour satellites
+void mc_refraction2(double h,int inout,double tk,double ppa, double lnm, double hump, double latd, double altm, double *refraction);
+   Retourne la valeur de la refraction .                                   
+void mc_refraction_coef_fz(double zdeg,double *fz);
+   Retourne la valeur du coef f(z) de la refraction.                       
+void mc_refraction_coef_gz(double zdeg,double *gz);
+   Retourne la valeur du coef g(z) de la refraction.                       
+void mc_refraction_coef_r0(double zdeg, double *r0);
+   Retourne la valeur du coef Ro(z) de la refraction.                      
+void mc_refraction_coef_a(double zdeg, double t, double *a);
+   Retourne la valeur du coef A(z) de la refraction.                       
+void mc_refraction_coef_b(double zdeg, double p, double *b);
+   Retourne la valeur du coef B(z) de la refraction.                       
+void mc_refraction_coef_c(double zdeg, double lnm, double *c);
+   Retourne la valeur du coef C(z) de la refraction.                       
+void mc_refraction_coef_d(double zdeg, double f, double *dd);
+   Retourne la valeur du coef D(z) de la refraction.                       
+void mc_refraction_coef_e(double zdeg, double phi, double *e);
+   Retourne la valeur du coef E(z) de la refraction.                       
+void mc_refraction_coef_h(double zdeg, double altm, double *h);
+   Retourne la valeur du coef H(z) de la refraction.                       
+void mc_refraction_coef_fsat(double t, double *fsat);
+   Retourne la valeur de la pression de vapeur saturante de l'eau          
+void mc_refraction_coef_r(double z0, double tk, double ppa, double lnm,double hump,double latd, double altm,double *r);
+   Retourne la valeur du coef R de la refraction (arcmin)                  
 */
 
 /***************************************************************************/
