@@ -819,7 +819,7 @@ void mc_refraction_coef_fz(double zdeg,double *fz)
 	int n=8;
 	double zs[]={35, 40, 45, 50, 55, 60, 65, 70};
 	double vals[]={0, 2, 6, 12, 21, 34, 56, 97};
-	double res;
+	double res=0;
 	int k;
 	if (zdeg<=zs[0]) { 
 		res=vals[0]; 
@@ -847,7 +847,7 @@ void mc_refraction_coef_gz(double zdeg,double *gz)
 	int n=9;
 	double   zs[]={0, 10, 20, 30, 40, 50, 60, 65, 70};
 	double vals[]={4,  4,  4,  5,  5,  6,  8, 10, 13};
-	double res;
+	double res=0;
 	int k;
 	if (zdeg<=zs[0]) { 
 		res=vals[0]; 
@@ -1387,7 +1387,7 @@ void mc_refraction_coef_fsat(double t, double *fsat)
 	double   ts[]={  -60,  -40,  -20, -10,    0,    5,   10, 15,     20,   25,   30,   40,  50,  60, 100};
 	// mbar
 	double vals[]={0.001, 0.13, 1.03, 2.6, 6.10, 8.72, 12.3, 17.0, 23.4, 31.7, 42.4, 73.8, 123, 199, 1013.25 };
-	double res,logvark1,logvark;
+	double res=0,logvark1,logvark;
 	int k;
 	if (t<=ts[0]) { 
 		res=vals[0]; 
