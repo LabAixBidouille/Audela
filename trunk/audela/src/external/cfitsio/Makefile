@@ -20,6 +20,7 @@ install:
 	#--- copy libcfitsio.so to $(ROOT)/../bin
 	cp $(DIR)/libcfitsio.so $(ROOT)/external/lib/
 	cp $(ROOT)/external/lib/libcfitsio.so $(ROOT)/../bin
+	cp $(DIR)/fitsio*.h $(ROOT)/external/include
 
 clean:
 	make -C $(DIR) clean
