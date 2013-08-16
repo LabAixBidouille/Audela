@@ -496,7 +496,7 @@ List_ModelValues
    int nb_coef,nb_star,k,kjds;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,latrad;
-   double ra,cosdec,mura,mudec,parallax,temperature,pressure;
+   double ra,cosdec,mura,mudec,parallax;
    double dec,asd2,dec2;
    double ha,az,h,ddec=0.,dha=0.,refraction=0.;
    double dh=0.,daz=0.;
@@ -508,9 +508,12 @@ List_ModelValues
 	int driftflag=0;
 	double jds[3],ras[3],decs[3],has[3],hs[3],azs[3],parallactics[3],delta,dt,dparallactic;
 	double drift_axis0=0,drift_axis1=0,deltadrift=1.,jdref;
+	int methode=0;
+   double pressure=101000,temperature=283; // normal condition for methode=0
+	double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
 
    if(argc<4) {
-      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure Temperature ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 1|0? ?-drift 0|1|altaz|radec? ?-driftvalues {arcsec/sec arcsec/sec}?", argv[0]);
+      sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure_Pa Temperature_K ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 1|0? ?-drift 0|1|altaz|radec? ?-driftvalues {arcsec/sec arcsec/sec}? ?-wavelength wavelength_nm? ?-humidity humidity_percent?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -613,6 +616,14 @@ List_ModelValues
 					if (argvv!=NULL) { Tcl_Free((char *) argvv); }
 				}
          }
+         if ( strcmp( argv[k],"-wavelength") == 0 ) {
+            lnm = atof(argv[k + 1]);
+				methode=1;
+         }
+         if ( strcmp( argv[k],"-humidity") == 0 ) {
+            hump = atof(argv[k + 1]);
+				methode=1;
+         }
       }
 		jdref=jd;
 		if (driftflag==0) {
@@ -672,7 +683,11 @@ List_ModelValues
 				mc_hd2ah(ha,dec,latrad,&az,&h);
 				/* --- refraction ---*/
 				if ( refractionFlag == 1 ) {
-					mc_refraction(h,1,temperature,pressure,&refraction);
+					if (methode==0) {
+						mc_refraction(h,1,temperature,pressure,&refraction);
+					} else {
+						mc_refraction2(h,1,tk,ppa,lnm,hump,latd,altm,&refraction);
+					}
 					h+=refraction;
 				}
 				mc_ah2hd(az,h,latrad,&ha,&dec);
@@ -870,17 +885,20 @@ List_ModelValues
 	int nb_coef,nb_star,k;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,latrad;
-	double ra,temperature,pressure;
+	double ra;
 	double dec,asd2,dec2;
 	double ha,az,hauteur,ddec=0.,dha=0.,refraction=0.;
 	double dh=0.,daz=0.;
 	int type=0;
 	double az0,ra0,dec0,h0,ha0;
    int model_only = 0; 
-   int refractionFlag = 1;  
+   int refractionFlag = 1;
+	int methode=0;
+   double pressure=101000,temperature=283; // normal condition for methode=0
+	double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
 
    if(argc<5) {
-      sprintf(s,"Usage: %s Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues? ?-model_only 0|1?  ?-refraction 0|1?", argv[0]);
+      sprintf(s,"Usage: %s Coords TypeObs Date_UTC Home pressure_Pa temperature_K ?Type List_ModelSymbols List_ModelValues? ?-wavelength wavelength_nm? ?-humidity humidity_percent? ?-model_only 0|1? ?-refraction 0|1?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -917,11 +935,15 @@ List_ModelValues
       rhosinphip=0.;
       mctcl_decode_topo(interp,argv[4],&longmpc,&rhocosphip,&rhosinphip);
 		mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+		latd=latitude;
+		altm=altitude;
 		latrad=latitude*(DR);
 		/* --- Pressure ---*/
 		pressure=atof(argv[5]);
+		ppa=pressure;
 		/* --- Temperature ---*/
 		temperature=atof(argv[6]);
+		tk=temperature;
 		/* --- decode le Modele de pointage ---*/
 		nb_coef=0;
 		if (argc>=9) {
@@ -951,12 +973,18 @@ List_ModelValues
          if (strcmp(argv[k], "-refraction") == 0) {
             refractionFlag = atoi(argv[k + 1]);
          }
-
          if ( strcmp( argv[k],"-model_only") == 0 ) {
             model_only = atoi(argv[k + 1]);
          }
+         if ( strcmp( argv[k],"-wavelength") == 0 ) {
+            lnm = atof(argv[k + 1]);
+				methode=1;
+         }
+         if ( strcmp( argv[k],"-humidity") == 0 ) {
+            hump = atof(argv[k + 1]);
+				methode=1;
+         }
       }
-
 		if (type==0) {
            mc_ad2hd(jd,longmpc,ra0,&ha0);
            mc_ad2ah(jd,longmpc,latrad,ra0,dec0,&az0,&h0);
@@ -1010,7 +1038,11 @@ List_ModelValues
 		/* === CALCULS === */
       /* --- refraction ---*/
       if ( refractionFlag == 1 ) {
-         mc_refraction(hauteur,-1,temperature,pressure,&refraction);
+			if (methode==0) {
+				mc_refraction(hauteur,-1,temperature,pressure,&refraction);
+			} else {
+				mc_refraction2(hauteur,-1,tk,ppa,lnm,hump,latd,altm,&refraction);
+			}
          hauteur-=refraction;
          mc_ah2hd(az,hauteur,latrad,&ha,&dec2);
          mc_hd2ad(jd,longmpc,ha,&asd2);

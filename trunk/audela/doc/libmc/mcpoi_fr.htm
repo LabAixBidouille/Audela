@@ -1,99 +1,106 @@
 <!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html><head>
-
-
-
-
-
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
   <meta name="Author" content="Alain Klotz">
-  <meta name="GENERATOR" content="Mozilla/4.5 [fr] (Win98; I) [Netscape]"><title>Librairie MC : Manuel de l'utilisateur</title></head><body>
+  <meta name="GENERATOR"
+ content="Mozilla/4.5 [fr] (Win98; I) [Netscape]">
+  <title>Librairie MC : Manuel de l'utilisateur</title>
+</head>
+<body>
 <center><b><font size="+3">LIB MC</font></b> <br>
-Création et utilisation d'un modèle de pointage avec
-la&nbsp; librairie de calculs de mécanique céleste <br>
-version 20130723<br>
+Cr&eacute;ation et utilisation d'un mod&egrave;le de pointage avec
+la&nbsp; librairie de calculs de m&eacute;canique c&eacute;leste <br>
+version 20130816<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
-<p>Le pointage d'un télescope est réalisé à
-partir de coordonnées lues dans des catalogues. Ces
-coordonnées ne sont pas exactement celles à envoyer au
-télescope. Il faut d'abord corriger les coordonnées
-catalogues en coordonnées apparentes qui prennent en compte les
-mouvements de la Terre. Il faut ensuite corriger les coordonnées
-apparentes en coordonnées télescopes pour prendre en
-compte les imperfections électro/mécaniques du
-télescope. Le modèle de pointage, stricto sensus ne
-concerne que le passage des coordonnées apparentes vers les
-coordonnées télescope. AudeLA propose la fonction
-mc_hip2tel qui calcule les coordonnées apparentes et
-télescope à partir des coordonnées catalogue.</p>
-<p>Les coordonnées télescope exigent un apprentissage des
-imperfections électro/mécaniques. Pour cela, on effectue
-des pointages d'étoiles du catalogue Hipparcos,
-réputé pour sa grande précision. Le pointage pour
-l'apprentissage doit être fait régulièrement sur le
+<p>Le pointage d'un t&eacute;lescope est r&eacute;alis&eacute; &agrave;
+partir de coordonn&eacute;es lues dans des catalogues. Ces
+coordonn&eacute;es ne sont pas exactement celles &agrave; envoyer au
+t&eacute;lescope. Il faut d'abord corriger les coordonn&eacute;es
+catalogues en coordonn&eacute;es apparentes qui prennent en compte les
+mouvements de la Terre. Il faut ensuite corriger les coordonn&eacute;es
+apparentes en coordonn&eacute;es t&eacute;lescopes pour prendre en
+compte les imperfections &eacute;lectro/m&eacute;caniques du
+t&eacute;lescope. Le mod&egrave;le de pointage, stricto sensus ne
+concerne que le passage des coordonn&eacute;es apparentes vers les
+coordonn&eacute;es t&eacute;lescope. AudeLA propose la fonction
+mc_hip2tel qui calcule les coordonn&eacute;es apparentes et
+t&eacute;lescope &agrave; partir des coordonn&eacute;es catalogue.</p>
+<p>Les coordonn&eacute;es t&eacute;lescope exigent un apprentissage des
+imperfections &eacute;lectro/m&eacute;caniques. Pour cela, on effectue
+des pointages d'&eacute;toiles du catalogue Hipparcos,
+r&eacute;put&eacute; pour sa grande pr&eacute;cision. Le pointage pour
+l'apprentissage doit &ecirc;tre fait r&eacute;guli&egrave;rement sur le
 ciel. Pour cela, AudeLA propose la fonction mc_listamers qui retourne
-les coordonnées à pointer sur le ciel.</p>
+les coordonn&eacute;es &agrave; pointer sur le ciel.</p>
 <br>
 <hr style="width: 100%; height: 2px;">
 <h2 style="text-align: center;">MANUEL DE REFERENCE</h2>
 <br>
 <span style="font-weight: bold;">mc_readhip</span> : Charge le
-catalogue Hipparcos en mémoire Tcl.<br>
+catalogue Hipparcos en m&eacute;moire Tcl.<br>
 <span style="font-weight: bold;">mc_listamers</span> :
-Génère une liste de coordonnées à pointer
-pour créer un modèle de pointage.<br>
+G&eacute;n&egrave;re une liste de coordonn&eacute;es &agrave; pointer
+pour cr&eacute;er un mod&egrave;le de pointage.<br>
 <span style="font-weight: bold;">mc_nearesthip</span> :
-Génère la liste d'étoiles Hipparcos les plus
-proches d'une coordonnée.<br>
+G&eacute;n&egrave;re la liste d'&eacute;toiles Hipparcos les plus
+proches d'une coordonn&eacute;e.<br>
 <span style="font-weight: bold;">mc_hip2tel</span> : Conversion de
-coordonnées catalogue vers les coordonnées à
-envoyer au télescope.<br>
+coordonn&eacute;es catalogue vers les coordonn&eacute;es &agrave;
+envoyer au t&eacute;lescope.<br>
 <span style="font-weight: bold;">mc_horizon</span> :
-Génère des listes pour tenir compte d'obstacles qui bouchent
+G&eacute;n&egrave;re des listes pour tenir compte d'obstacles qui
+bouchent
 l'horizon d'observation.<br>
 <span style="font-weight: bold;">mc_compute_matrix_modpoi</span> :
-Calcule les matrices utiles pour déduire les coefficients du
-modèle de pointage.<br>
+Calcule les matrices utiles pour d&eacute;duire les coefficients du
+mod&egrave;le de pointage.<br>
 <span style="font-weight: bold;">mc_tel2cat</span> : Conversion des
-coordonnées télescope vers les coordonnées catalogue.<br>
+coordonn&eacute;es t&eacute;lescope vers les coordonn&eacute;es
+catalogue.<br>
 <span style="font-weight: bold;"></span><br>
 DETAIL DES FONCTIONS<br>
 <ul>
   <li><span style="font-weight: bold;">mc_readhip</span> : Charge le
-catalogue Hipparcos en mémoire Tcl :</li>
+catalogue Hipparcos en m&eacute;moire Tcl :</li>
 </ul>
-<p>Définition :&nbsp;</p>
+<p>D&eacute;finition :&nbsp;</p>
 mc_readhip Filename ?-double_stars 0|1? ?-plx_max mas? ?-mu_max mas/yr?
 ?-mag_max mag? ?-mag_min mag? ?-dec_max deg? ?-dec_min deg?
 ?-max_nbstars int?<br>
 <br>
-Filename : Nom du fichier du catalogue Hipparcos à charger.<br>
-<p>-double_stars :&nbsp;0 pour ne pas prendre en compte les étoiles doubles.<br>
+Filename : Nom du fichier du catalogue Hipparcos &agrave; charger.<br>
+<p>-double_stars :&nbsp;0 pour ne pas prendre en compte les
+&eacute;toiles doubles.<br>
 -plx_max : Pour prendre une limite sur plx (en mas).<br>
 -mu_max : Pour prendre une limite sur mura et mudec (en mas/yr).<br>
--mag_max : Pour sélectionner des étoiles de magnitude
+-mag_max : Pour s&eacute;lectionner des &eacute;toiles de magnitude
 &lt;&nbsp;mag_max (mag).<br>
--mag_min : Pour sélectionner des étoiles de magnitude &gt;
+-mag_min : Pour s&eacute;lectionner des &eacute;toiles de magnitude
+&gt;
 mag_min (mag).<br>
--dec_max : Pour sélectionner des étoiles de déclinaison
+-dec_max : Pour s&eacute;lectionner des &eacute;toiles de
+d&eacute;clinaison
 &lt; dec_max (deg).<br>
--dec_min : Pour sélectionner des étoiles de déclinaison
+-dec_min : Pour s&eacute;lectionner des &eacute;toiles de
+d&eacute;clinaison
 &gt; dec_min (deg).<br>
--max_nbstars : Pour sélectionner uniquement un nombre restreint
-d'étoiles.</p>
+-max_nbstars : Pour s&eacute;lectionner uniquement un nombre restreint
+d'&eacute;toiles.</p>
 Sorties :<br>
 <br>
-Une liste dont chaque élément représente une
-étoile. Chaque étoile est définie par une liste
-dont l'ordre des éléments est :<br>
+Une liste dont chaque &eacute;l&eacute;ment repr&eacute;sente une
+&eacute;toile. Chaque &eacute;toile est d&eacute;finie par une liste
+dont l'ordre des &eacute;l&eacute;ments est :<br>
 <br>
-ID : Identifiant (numéro Hip, entier).<br>
+ID : Identifiant (num&eacute;ro Hip, entier).<br>
 mag : Magnitude V de Hipparcos.<br>
 RA : Ascension droite (deg).<br>
-DEC : Déclinaison (deg).<br>
-equinox : Equinoxe de référence.<br>
+DEC : D&eacute;clinaison (deg).<br>
+equinox : Equinoxe de r&eacute;f&eacute;rence.<br>
 epoch : Epoque des observations.<br>
 mura : Mouvement propre sur RA (mas/yr).<br>
 mudec : Mouvement propre sur DEC (mas/yr).<br>
@@ -105,155 +112,162 @@ Exemple :
 </p>
 <ul>
   <li><span style="font-weight: bold;">mc_listamers</span> :
-Génère une liste de coordonnées à pointer
-pour créer un modèle de pointage.</li>
+G&eacute;n&egrave;re une liste de coordonn&eacute;es &agrave; pointer
+pour cr&eacute;er un mod&egrave;le de pointage.</li>
 </ul>
-<p>Définition : </p>
+<p>D&eacute;finition : </p>
 <p>mc_listamers type_axis naxis1 naxis2 Date Home ?mini1 maxi1 mini2
 maxi2? ?horizons?</p>
 Type_axis : EQUATORIAL ou ALTAZ. A choisir en fonction du type de
 monture.
 <p>Naxis1 : Nombre d'angles horaires (en Type_axis=EQUATORIAL) ou
 nombre d'azimuts (en Type_axis=ALTAZ).</p>
-<p>Naxis2 : Nombre de déclinaisons (en Type_axis=EQUATORIAL) ou
-nombre d'élévations (en Type_axis=ALTAZ).</p>
-<p>Date : Date à laquelle on veut effectuer un pointage.</p>
+<p>Naxis2 : Nombre de d&eacute;clinaisons (en Type_axis=EQUATORIAL) ou
+nombre d'&eacute;l&eacute;vations (en Type_axis=ALTAZ).</p>
+<p>Date : Date &agrave; laquelle on veut effectuer un pointage.</p>
 <p>Home : Lieu d'observation.</p>
 <p>Mini1 : Valeur minimale des pointages sur l'axe 1 (deg). Utiliser *
-pour avoir une valeur par défaut.</p>
+pour avoir une valeur par d&eacute;faut.</p>
 <p>Maxi1 : Valeur maximale des pointages sur l'axe 1 (deg). Utiliser *
-pour avoir une valeur par défaut.</p>
+pour avoir une valeur par d&eacute;faut.</p>
 <p>Mini2 : Valeur minimale des pointages sur l'axe 2 (deg). Utiliser *
-pour avoir une valeur par défaut.</p>
+pour avoir une valeur par d&eacute;faut.</p>
 <p>Maxi2 : Valeur maximale des pointages sur l'axe 2 (deg). Utiliser *
-pour avoir une valeur par défaut.</p>
+pour avoir une valeur par d&eacute;faut.</p>
 <p>Horizons : Liste de sortie de la fonction mc_horizon pour tenir
-compte des impossibilités de pointage avec un horizon complexe.</p>
+compte des impossibilit&eacute;s de pointage avec un horizon complexe.</p>
 <p>Sorties :</p>
-<p>Une liste dont chaque élément représente un
-pointage. Chaque pointage est défini par une liste dont l'ordre
-des éléments est :</p>
+<p>Une liste dont chaque &eacute;l&eacute;ment repr&eacute;sente un
+pointage. Chaque pointage est d&eacute;fini par une liste dont l'ordre
+des &eacute;l&eacute;ments est :</p>
 <p>RA : Ascension droite (deg).<br>
-DEC : Déclinaison (deg).<br>
+DEC : D&eacute;clinaison (deg).<br>
 HA : Angle horaire (deg).<br>
 az : Azimut (deg).<br>
-elev : Elévation (deg).<br>
+elev : El&eacute;vation (deg).<br>
 </p>
 <p>Exemples :</p>
 <p>mc_listamers EQUATORIAL 10 4 now {GPS 5 E 43 1230}]</p>
 <p>mc_listamers ALTAZ 12 3 now {GPS 5 E 43 1230} 7.5 367.5 10 90</p>
 <ul>
-  <li><span style="font-weight: bold;">mc_nearesthip</span>&nbsp;:&nbsp;Génère
-la liste d'étoiles Hipparcos les plus proches d'une
-coordonnée.</li>
+  <li><span style="font-weight: bold;">mc_nearesthip</span>&nbsp;:&nbsp;G&eacute;n&egrave;re
+la liste d'&eacute;toiles Hipparcos les plus proches d'une
+coordonn&eacute;e.</li>
 </ul>
-<p>Définition :&nbsp;<br>
+<p>D&eacute;finition :&nbsp;<br>
 </p>
 <p>mc_nearesthip Angle_Ra Angle_Dec List_Hip ?-max_nbstars nbstars?</p>
 Angle_RA : Ascension droite.<br>
-Angle_Dec : Déclinaison.<br>
+Angle_Dec : D&eacute;clinaison.<br>
 List_Hip : Catalogue Hipparcos en sortie de la fonction mc_readhip.<br>
-<p>-max_nbstars : Limite le nombre d'étoiles en sortie.</p>
+<p>-max_nbstars : Limite le nombre d'&eacute;toiles en sortie.</p>
 <p>Sorties :<br>
 <br>
-Une liste dont chaque élément représente une
-étoile. Chaque étoile est définie par une liste
-dont l'ordre des éléments est :<br>
+Une liste dont chaque &eacute;l&eacute;ment repr&eacute;sente une
+&eacute;toile. Chaque &eacute;toile est d&eacute;finie par une liste
+dont l'ordre des &eacute;l&eacute;ments est :<br>
 <br>
-ID : Identifiant (numéro Hip, entier).<br>
+ID : Identifiant (num&eacute;ro Hip, entier).<br>
 mag : Magnitude V de Hipparcos.<br>
 RA : Ascension droite (deg).<br>
-DEC : Déclinaison (deg).<br>
-equinox : Equinoxe de référence.<br>
+DEC : D&eacute;clinaison (deg).<br>
+equinox : Equinoxe de r&eacute;f&eacute;rence.<br>
 epoch : Epoque des observations.<br>
 mura : Mouvement propre sur RA (mas/yr).<br>
 mudec : Mouvement propre sur DEC (mas/yr).<br>
 plx : Parallaxe (mas).<br>
-dist : Distance de l'étoile à la coordonnée
+dist : Distance de l'&eacute;toile &agrave; la coordonn&eacute;e
 nominale (deg).</p>
 <p>Exemples :</p>
 set hip [mc_nearesthip $ra $dec $List_hip -max_nbstars 5]
 <ul>
   <li><span style="font-weight: bold;">mc_hip2tel</span> : Conversion
-de coordonnées catalogue vers les coordonnées à
-envoyer au télescope.</li>
+de coordonn&eacute;es catalogue vers les coordonn&eacute;es &agrave;
+envoyer au t&eacute;lescope.</li>
 </ul>
-<p>Définition :</p>
-<p>mc_hip2tel List_coords Date_UTC Home Pressure Temperature
+<p>D&eacute;finition :</p>
+<p>mc_hip2tel List_coords Date_UTC Home Pressure_Pa Temperature_K
 ?List_ModelSymbols List_ModelValues?&nbsp;?-model_only 0|1?
 ?-refraction&nbsp;1|0? ?-drift 0|1|radec|altaz? ?-driftvalues
-{arcsec/sec arcsec/sec}?<br>
+{arcsec/sec arcsec/sec}? ?-wavelength wavelength_nm? ?-humidity
+humidity_percent?<br>
 <br>
 List_coords : Liste de type Hipparcos {id mag ra dec equinox epoch mura
 mudec plx} avec id&gt;0 ou {id ha dec 0 0 0 0 0 0} avec id&lt;=0.<br>
 Date : Date UTC du pointage.<br>
-Home : Localisation du télescope.<br>
-Pressure : Pression atmosphérique au niveau du site d'observation (Pa). Utiliser 101325 Pa par
-défaut.<br>
-Temperature : Température au niveau du site d'observation (K). Utiliser 290 K par
-défaut.<br>
-List_ModelSymbols : Symboles des coefficients du modèle de
+Home : Localisation du t&eacute;lescope.<br>
+Pressure_Pa : Pression atmosph&eacute;rique au niveau du site
+d'observation (Pa). Utiliser 101325 Pa par
+d&eacute;faut.<br>
+Temperature_K : Temp&eacute;rature au niveau du site d'observation (K).
+Utiliser 290 K par
+d&eacute;faut.<br>
+List_ModelSymbols : Symboles des coefficients du mod&egrave;le de
 pointage.<br>
-List_ModelValues : Valeurs des coefficients du modèle de pointage.<br>
+List_ModelValues : Valeurs des coefficients du mod&egrave;le de
+pointage.<br>
 -model_only 1 : Pour signaler de ne pas appliquer la transformation
-catalogue-&gt;vraie sur les coordonnées de type Hipparcos.<br>
+catalogue-&gt;vraie sur les coordonn&eacute;es de type Hipparcos.<br>
 -refraction 0|1 : 0 pour signaler de ne pas calculer les corrections de
-réfraction (cas des télescopes LX200), 1 pour corriger les corrections de réfraction (valeur par défaut).<br>
+r&eacute;fraction (cas des t&eacute;lescopes LX200), 1 pour corriger
+les corrections de r&eacute;fraction (valeur par d&eacute;faut).<br>
 -drift :&nbsp;=1 ou =radec ou =altaz&nbsp; pour signaler de sortir les
 valeurs de vitesses sur les axes
-(en arcsec/sec). Si =radec alors les paramètres de la liste du
-paramètre optionnel -driftvalues sont des dérives
-respectives sur Ra,Dec en arcsec/sec (dérives
-supplémentaires à la dérive diurne). Si =altaz
-alors les paramètres de la liste du paramètre optionnel
--driftvalues sont des dérives respectives sur Az,Elev en
+(en arcsec/sec). Si =radec alors les param&egrave;tres de la liste du
+param&egrave;tre optionnel -driftvalues sont des d&eacute;rives
+respectives sur Ra,Dec en arcsec/sec (d&eacute;rives
+suppl&eacute;mentaires &agrave; la d&eacute;rive diurne). Si =altaz
+alors les param&egrave;tres de la liste du param&egrave;tre optionnel
+-driftvalues sont des d&eacute;rives respectives sur Az,Elev en
 arcsec/sec
-(dérives supplémentaires à la dérive
-diurne). Par défaut -flag vaut 0 (pas de sortie des vitesses).<br>
--driftvalues : Définition des valeurs de dérives
-supplémentaires par rapport au mouvement diurne.</p>
-
+(d&eacute;rives suppl&eacute;mentaires &agrave; la d&eacute;rive
+diurne). Par d&eacute;faut -flag vaut 0 (pas de sortie des vitesses).<br>
+-driftvalues : D&eacute;finition des valeurs de d&eacute;rives
+suppl&eacute;mentaires par rapport au mouvement diurne.<br>
+-wavelength : Longueur d'onde (590nm par d&eacute;faut)<br>
+-humidity : Humidit&eacute; en pourcents (0 par d&eacute;faut)</p>
 <p>Sorties :&nbsp;</p>
-<p>Liste de 16 éléments :</p>
-<p>RA : Ascension droite apparente sans modèle (deg).<br>
-DEC : Déclinaison apparente sans modèle (deg).<br>
-HA : Angle horaire apparent sans modèle (deg).<br>
-az : Azimut apparent sans modèle (deg).<br>
-elev : Elévation apparente sans modèle (deg).</p>
-<p>dRA : Valeur à ajouter à RA pour pointer avec le
-modèle (deg).<br>
-dDEC : Valeur à ajouter à DEC pour pointer avec le
-modèle (deg).<br>
-dHA : Valeur à ajouter à HA pour pointer avec le
-modèle (deg).<br>
-daz : Valeur à ajouter à az pour pointer avec le
-modèle (deg).<br>
-delev : Valeur à ajouter à elev pour pointer avec le
-modèle (deg).</p>
-<p>RA : Ascension droite apparente avec modèle (deg).<br>
-DEC : Déclinaison apparente avec modèle (deg).<br>
-HA : Angle horaire apparent avec modèle (deg).<br>
-az : Azimut apparent avec&nbsp; modèle (deg).<br>
-elev : Elévation apparente avec modèle (deg).<br>
-rot : Angle parallactique apparent avec modèle (deg).<br>
+<p>Liste de 16 &eacute;l&eacute;ments :</p>
+<p>RA : Ascension droite apparente sans mod&egrave;le (deg).<br>
+DEC : D&eacute;clinaison apparente sans mod&egrave;le (deg).<br>
+HA : Angle horaire apparent sans mod&egrave;le (deg).<br>
+az : Azimut apparent sans mod&egrave;le (deg).<br>
+elev : El&eacute;vation apparente sans mod&egrave;le (deg).</p>
+<p>dRA : Valeur &agrave; ajouter &agrave; RA pour pointer avec le
+mod&egrave;le (deg).<br>
+dDEC : Valeur &agrave; ajouter &agrave; DEC pour pointer avec le
+mod&egrave;le (deg).<br>
+dHA : Valeur &agrave; ajouter &agrave; HA pour pointer avec le
+mod&egrave;le (deg).<br>
+daz : Valeur &agrave; ajouter &agrave; az pour pointer avec le
+mod&egrave;le (deg).<br>
+delev : Valeur &agrave; ajouter &agrave; elev pour pointer avec le
+mod&egrave;le (deg).</p>
+<p>RA : Ascension droite apparente avec mod&egrave;le (deg).<br>
+DEC : D&eacute;clinaison apparente avec mod&egrave;le (deg).<br>
+HA : Angle horaire apparent avec mod&egrave;le (deg).<br>
+az : Azimut apparent avec&nbsp; mod&egrave;le (deg).<br>
+elev : El&eacute;vation apparente avec mod&egrave;le (deg).<br>
+rot : Angle parallactique apparent avec mod&egrave;le (deg).<br>
 </p>
-<p>Si le flag -drift est placé sur 1, la liste continue avec :</p>
-<p>drift_RA : Vitesse en ascension droite apparente avec modèle
+<p>Si le flag -drift est plac&eacute; sur 1, la liste continue avec :</p>
+<p>drift_RA : Vitesse en ascension droite apparente avec mod&egrave;le
 (arcsec/sec).<br>
 drift_
-DEC :&nbsp;Vitesse en déclinaison apparente avec modèle
+DEC :&nbsp;Vitesse en d&eacute;clinaison apparente avec mod&egrave;le
 (arcsec/sec).<br>
 drift_
-HA :&nbsp;Vitesse en angle horaire apparent avec modèle
+HA :&nbsp;Vitesse en angle horaire apparent avec mod&egrave;le
 (arcsec/sec).<br>
 drift_
-az :&nbsp;Vitesse en azimut apparent avec&nbsp; modèle
+az :&nbsp;Vitesse en azimut apparent avec&nbsp; mod&egrave;le
 (arcsec/sec).<br>
 drift_
-elev :&nbsp;Vitesse en élévation apparente avec modèle
+elev :&nbsp;Vitesse en &eacute;l&eacute;vation apparente avec
+mod&egrave;le
 (arcsec/sec).<br>
 drift_
-rot :&nbsp;Vitesse en angle parallactique apparent avec modèle
+rot :&nbsp;Vitesse en angle parallactique apparent avec mod&egrave;le
 (arcsec/sec).<br>
 </p>
 <p>Exemples :</p>
@@ -261,64 +275,76 @@ rot :&nbsp;Vitesse en angle parallactique apparent avec modèle
 101325 290</p>
 <ul>
   <li><span style="font-weight: bold;">mc_tel2cat</span> : Conversion
-de coordonnées télescope vers coordonnées
+de coordonn&eacute;es t&eacute;lescope vers coordonn&eacute;es
 catalogue.</li>
 </ul>
-<p>Définition :</p>
-<p>mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type
+<p>D&eacute;finition :</p>
+<p>mc_tel2cat Coords TypeObs Date_UTC Home Pressure_Pa Temperature_K
+?Type
 List_ModelSymbols List_ModelValues? ?-model_only 0|1?&nbsp;
-?-refraction 0|1?<br>
+?-refraction 0|1? ?-wavelength wavelength_nm? ?-humidity
+humidity_percent?<br>
 <br>
 Coords : Liste {ra dec} ou {az elev} ou {hour_angle dec}
-télescope, selon TypeObs.<br>
+t&eacute;lescope, selon TypeObs.<br>
 TypeObs : EQUATORIAL ou ALTAZ ou HADEC.<br>
 Date_UTC : Date UTC du pointage.<br>
-Home : Localisation du télescope.<br>
-Pressure : Pression atmosphérique au niveau du site d'observation (Pa). Utiliser 101325 Pa par
-défaut.<br>
-
-Temperature : Température au niveau du site d'observation (K). Utiliser 290 K par
-défaut.<br>
-List_ModelSymbols : Symboles des coefficients du modèle de
+Home : Localisation du t&eacute;lescope.<br>
+Pressure : Pression atmosph&eacute;rique au niveau du site
+d'observation (Pa). Utiliser 101325 Pa par
+d&eacute;faut.<br>
+Temperature : Temp&eacute;rature au niveau du site d'observation (K).
+Utiliser 290 K par
+d&eacute;faut.<br>
+List_ModelSymbols : Symboles des coefficients du mod&egrave;le de
 pointage.<br>
-List_ModelValues : Valeurs des coefficients du modèle de pointage.<br>
--model_only&nbsp; 0|1 :&nbsp; 1 pour calculer l'impact du modèle seulement,
-0 pour calculer l'impact du modèle et le changement d'équinoxe (valeur par
-défaut).<br>
+List_ModelValues : Valeurs des coefficients du mod&egrave;le de
+pointage.<br>
+-model_only&nbsp; 0|1 :&nbsp; 1 pour calculer l'impact du mod&egrave;le
+seulement,
+0 pour calculer l'impact du mod&egrave;le et le changement
+d'&eacute;quinoxe (valeur par
+d&eacute;faut).<br>
 -refraction 0|1 : 0 pour signaler de ne pas calculer les corrections de
-réfraction (cas des télescopes LX200), 1 pour corriger les corrections de réfraction (valeur par défaut).</p>
+r&eacute;fraction (cas des t&eacute;lescopes LX200), 1 pour corriger
+les corrections de r&eacute;fraction (valeur par d&eacute;faut).<br>
+-wavelength : Longueur d'onde (590nm par d&eacute;faut)<br>
+-humidity : Humidit&eacute; en pourcents (0 par d&eacute;faut)
+</p>
 <p>Sorties :&nbsp;</p>
-<p>Liste de 2 éléments :</p>
+<p>Liste de 2 &eacute;l&eacute;ments :</p>
 RA : Ascension droite catalogue (deg) J2000.<br>
-DEC : Déclinaison catalogue (deg) J2000.
+DEC : D&eacute;clinaison catalogue (deg) J2000.
 <ul>
   <li><span style="font-weight: bold;">mc_horizon</span> :
-Génère des listes pour tenir compte d'obstacles qui bouchent
+G&eacute;n&egrave;re des listes pour tenir compte d'obstacles qui
+bouchent
 l'horizon d'observation</li>
 </ul>
-<p>Définition :</p>
+<p>D&eacute;finition :</p>
 <p>mc_horizon Home Type_coords List_coords<br>
 <br>
-Home : Localisation du télescope.</p>
-<p>Type_coords : ALTAZ=Les coordonnées de List_coords sont de
-type altaz. HADEC=Les coordonnées sont de type hadec.</p>
-<p>List_coords : Définition de points critiques limitant
-l'observation à l'horizon. Si Type_coords=ALTAZ, List_coords est
-une liste composée d'éléments de type {azimut
-élévation} exprimés en degrés.&nbsp;Si Type_coords=HADEC,
-List_coords est une liste composée d'éléments de
-type {déclinaison angle_horaire_est angle_horaire_ouest}
-exprimés en degrés. </p>
+Home : Localisation du t&eacute;lescope.</p>
+<p>Type_coords : ALTAZ=Les coordonn&eacute;es de List_coords sont de
+type altaz. HADEC=Les coordonn&eacute;es sont de type hadec.</p>
+<p>List_coords : D&eacute;finition de points critiques limitant
+l'observation &agrave; l'horizon. Si Type_coords=ALTAZ, List_coords est
+une liste compos&eacute;e d'&eacute;l&eacute;ments de type {azimut
+&eacute;l&eacute;vation} exprim&eacute;s en degr&eacute;s.&nbsp;Si
+Type_coords=HADEC,
+List_coords est une liste compos&eacute;e d'&eacute;l&eacute;ments de
+type {d&eacute;clinaison angle_horaire_est angle_horaire_ouest}
+exprim&eacute;s en degr&eacute;s. </p>
 <p>Sorties :&nbsp;</p>
 <p>On trouvera 5 listes :</p>
 <p>Liste 0 : Liste des azimuts de l'horizon {0 1 2 3 4 .... 360}.</p>
-<p>Liste 1 : Liste des élévations (en degrés)
-correspondant à la liste d'azimuts.</p>
-<p>Liste 2 : Liste des déclinaisons {-90 -89 .... 89 90}.</p>
+<p>Liste 1 : Liste des &eacute;l&eacute;vations (en degr&eacute;s)
+correspondant &agrave; la liste d'azimuts.</p>
+<p>Liste 2 : Liste des d&eacute;clinaisons {-90 -89 .... 89 90}.</p>
 <p>Liste 3 : Liste des angles horaires du couchant (ouest, en
-degrés) correspondant à la liste des déclinaisons.</p>
+degr&eacute;s) correspondant &agrave; la liste des d&eacute;clinaisons.</p>
 <p>Liste 4 : Liste des angles horaires du levant (est, en
-degrés) correspondant à la liste des déclinaisons.</p>
+degr&eacute;s) correspondant &agrave; la liste des d&eacute;clinaisons.</p>
 <p>Exemples :</p>
 set horizon ""<br>
 lappend horizon [list -38 350 10]<br>
@@ -351,43 +377,43 @@ set ys [lindex $res 4]<br>
 <br>
 <ul>
   <li><span style="font-weight: bold;">mc_compute_matrix_modpoi</span>
-: Calcule les matrices utiles pour déduire les coefficients du
-modèle de pointage.</li>
+: Calcule les matrices utiles pour d&eacute;duire les coefficients du
+mod&egrave;le de pointage.</li>
 </ul>
-Définition :
+D&eacute;finition :
 <p>mc_compute_matrix_modpoi ListObs TypeObs Home List_ModelSymbols
 ?DescObs?<br>
 </p>
-<p>ListObs : Liste dont chaque élément décrit un
-pointage d'étoile et la correction manuelle effectuée
-sans modèle de pointage.</p>
+<p>ListObs : Liste dont chaque &eacute;l&eacute;ment d&eacute;crit un
+pointage d'&eacute;toile et la correction manuelle effectu&eacute;e
+sans mod&egrave;le de pointage.</p>
 <p>TypeObs : Type de monture concernant la liste d'observations.
 EQUATORIAL ou ALTAZ.</p>
-<p>Home : Localisation du télescope.</p>
-List_ModelSymbols : Symboles des coefficients du modèle de
+<p>Home : Localisation du t&eacute;lescope.</p>
+List_ModelSymbols : Symboles des coefficients du mod&egrave;le de
 pointage.<br>
 <br>
-DescObs : Descripteur des indices où l'on trouve les
-coordonnées dans les éléments de ListObs. Dans
-l'ordre on précisera des indices de {az elev daz delev} ou {ha
-dec dha ddec}. Ces indices sont comptés à partir de
-zéro.<br>
+DescObs : Descripteur des indices o&ugrave; l'on trouve les
+coordonn&eacute;es dans les &eacute;l&eacute;ments de ListObs. Dans
+l'ordre on pr&eacute;cisera des indices de {az elev daz delev} ou {ha
+dec dha ddec}. Ces indices sont compt&eacute;s &agrave; partir de
+z&eacute;ro.<br>
 <br>
 Sorties :<br>
 <p>On trouvera 3 listes :</p>
 <p>Liste 0 : Liste de la matrice X.</p>
 <p>Liste 1 : Liste du vecteur Y.</p>
 <p>Liste 2 :&nbsp; Liste du vecteur W.</p>
-<p>Les coefficients du modèle se déduisent en appliquant
-l'opération :</p>
+<p>Les coefficients du mod&egrave;le se d&eacute;duisent en appliquant
+l'op&eacute;ration :</p>
 <p>gsl_mfitmultilin $Y $X $W<br>
 </p>
 La fonction gsl_mfitmultilin fourni 3 listes :<br>
 <br>
-Liste 0 : Coefficients du modèle respectivement à
+Liste 0 : Coefficients du mod&egrave;le respectivement &agrave;
 List_ModelSymbols.<br>
 <br>
-Liste 1 : Chi2 du modèle.<br>
+Liste 1 : Chi2 du mod&egrave;le.<br>
 <br>
 Liste 2 : Matrice des covariances.<br>
 <br>
@@ -412,7 +438,8 @@ set covar [lindex $resmodels 2]<br>
 <h2>MANUEL UTILISATEUR</h2>
 </div>
 <br>
-Exemple pour effectuer des pointages dans le but de créer un modèle
+Exemple pour effectuer des pointages dans le but de cr&eacute;er un
+mod&egrave;le
 :<br>
 <br>
 # === Definition de la ligne d'horizon locale<br>
@@ -572,4 +599,5 @@ set dec_cat [lindex $coords 1]<br>
 <br>
 <br>
 <br>
-</body></html>
+</body>
+</html>
