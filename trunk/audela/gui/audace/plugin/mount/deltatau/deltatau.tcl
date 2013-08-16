@@ -23,6 +23,11 @@ proc ::deltatau::install { } {
       if { [ file exists $sourceFileName ] } {
          ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
       }
+      #--- je deplace Pmac.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::deltatau::getPluginType]] "deltatau" "Pmac.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
       #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(deltatau,install_1) v[package version deltatau]. $::caption(deltatau,install_2)"
    }
