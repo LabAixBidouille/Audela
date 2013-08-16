@@ -1523,3 +1523,92 @@ lindex $comments [lindex $status 0]
 	return res;
 }
 
+int Cmd_mctcl_altitude2tp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Copute the ICAO temperature & pressure from a given altitude             */
+/****************************************************************************/
+/****************************************************************************/
+{
+	char s[1024];
+	double alti,p0m,tk0m,p,tk,t1,t2,p1,p2,h1,h2,frac;
+   if(argc<2) {
+      sprintf(s,"Usage: %s altitude_m ?pressure_0m_Pa?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+ 	   return TCL_ERROR;
+   } else {
+		alti=atof(argv[1]);
+		p0m=101325;
+		if (argc>=3) {
+			p0m=atof(argv[2]);
+		}
+		tk0m=273.15+15;
+		if (alti<11000) {
+			tk=tk0m-0.0065*alti;
+			p=p0m*pow(tk/tk0m,5.255);
+		} else if (alti<15000) {
+			tk0m=273.15+15;
+			tk=tk0m-0.0065*11000;
+			p=p0m*pow((tk0m-0.0065*alti)/tk0m,5.255);
+		} else if ((alti>=15000)&&(alti<20000)) {
+			h1=15000; p1=p0m*pow((tk0m-0.0065*h1)/tk0m,5.255); t1=tk0m-0.0065*11000;
+			h2=20000; p2=5500; t2=273.15-46;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=20000)&&(alti<30000)) {
+			h1=20000; p1=5500; t1=273.15-46;
+			h2=30000; p2=1100; t2=273.15-38;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=30000)&&(alti<40000)) {
+			h1=30000; p1=1100; t1=273.15-38;
+			h2=40000; p2=300; t2=273.15-5;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=40000)&&(alti<50000)) {
+			h1=40000; p1=300; t1=273.15-5;
+			h2=50000; p2=90; t2=273.15+1;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=50000)&&(alti<60000)) {
+			h1=50000; p1=90; t1=273.15+1;
+			h2=60000; p2=25; t2=273.15-20;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=60000)&&(alti<100000)) {
+			h1=60000; p1=25; t1=273.15-20;
+			h2=100000; p2=0.04; t2=273.15-64;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=100000)&&(alti<200000)) {
+			h1=100000; p1=0.04; t1=273.15-64;
+			h2=200000; p2=1.3e-4; t2=273.15-82.2;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=200000)&&(alti<400000)) {
+			h1=200000; p1=1.3e-4; t1=273.15-82.2;
+			h2=400000; p2=4.4e-6; t2=273.15-97.3;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else if ((alti>=200000)&&(alti<400000)) {
+			h1=400000; p1=4.4e-6; t1=273.15-97.3;
+			h2=500000; p2=0; t2=273.15-97.7;
+			frac=(alti-h1)/(h2-h1);
+			p=p1+frac*(p2-p1);
+			tk=t1+frac*(t2-t1);
+		} else {
+			p=0;
+			tk=273.15-97.7;
+		}
+		sprintf(s,"%g %g",tk,p);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+	}
+	return TCL_OK;
+}

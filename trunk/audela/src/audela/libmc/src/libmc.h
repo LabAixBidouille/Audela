@@ -172,6 +172,7 @@
  int Cmd_mctcl_nextnight(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_cosmology_calculator(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_altitude2tp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /*--- Point d'entree de la DLL */
 #ifdef LIBRARY_DLL
