@@ -1282,11 +1282,13 @@ namespace eval ::confEditScript {
          set confgene(EditScript,long_java) [ string length $confgene(EditScript,exec_java) ]
       }
       if { ! [ info exists confgene(EditScript,exec_java) ] } { set confgene(EditScript,long_java) "30" }
-      catch {
-         set confgene(EditScript,exec_iris) $conf(exec_iris)
-         set confgene(EditScript,long_iris) [ string length $confgene(EditScript,exec_iris) ]
+      if { $::tcl_platform(os) == "Windows NT" } {
+         catch {
+            set confgene(EditScript,exec_iris) $conf(exec_iris)
+            set confgene(EditScript,long_iris) [ string length $confgene(EditScript,exec_iris) ]
+         }
+         if { ! [ info exists confgene(EditScript,exec_iris) ] } { set confgene(EditScript,long_iris) "30" }
       }
-      if { ! [ info exists confgene(EditScript,exec_iris) ] } { set confgene(EditScript,long_iris) "30" }
       catch {
          set confgene(EditScript,exec_aladin) $conf(exec_aladin)
          set confgene(EditScript,long_aladin) [ string length $confgene(EditScript,exec_aladin) ]
@@ -1341,7 +1343,9 @@ namespace eval ::confEditScript {
       set conf(editsite_htm,selectHelp)     "$confgene(EditScript,selectHelp)"
       set conf(edit_viewer)                 "$confgene(EditScript,edit_viewer)"
       set conf(exec_java)                   "$confgene(EditScript,exec_java)"
-      set conf(exec_iris)                   "$confgene(EditScript,exec_iris)"
+      if { $::tcl_platform(os) == "Windows NT" } {
+         set conf(exec_iris)                "$confgene(EditScript,exec_iris)"
+      }
       set conf(exec_aladin)                 "$confgene(EditScript,exec_aladin)"
       #---
       set confgene(EditScript,error_script) "1"
