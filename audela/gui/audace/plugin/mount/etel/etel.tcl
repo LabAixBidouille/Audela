@@ -23,6 +23,11 @@ proc ::etel::install { } {
       if { [ file exists $sourceFileName ] } {
          ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
       }
+      #--- je deplace dsa20c.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::etel::getPluginType]] "etel" "dsa20c.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
       #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(etel,install_1) v[package version etel]. $::caption(etel,install_2)"
    }

@@ -28,6 +28,11 @@ proc ::telscript::install { } {
       if { [ file exists $sourceFileName ] } {
          ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
       }
+      #--- je deplace dsa20c.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::telscript::getPluginType]] "telscript" "dsa20c.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
       #--- j'affiche le message de fin de mise a jour du plugin
       ::audace::appendUpdateMessage "$::caption(telscript,install_1) v[package version telscript]. $::caption(telscript,install_2)"
    }
