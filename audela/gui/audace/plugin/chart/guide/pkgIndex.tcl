@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded guide 1.1 [ list source [ file join $dir guide.tcl ] ]
+package ifneeded guide 2.0 [ list source [ file join $dir guide.tcl ] ]
 

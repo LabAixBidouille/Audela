@@ -8,7 +8,7 @@
 #
 
 namespace eval carteducielv3 {
-   package provide carteducielv3 1.0
+   package provide carteducielv3 2.0
    source [ file join [file dirname [info script]] carteducielv3.cap ]
 
    #------------------------------------------------------------
@@ -298,8 +298,8 @@ namespace eval carteducielv3 {
    #==============================================================
 
    #------------------------------------------------------------
-   # gotoObject
-   # Affiche la carte de champ de l'objet choisi
+   #  gotoObject
+   #  Affiche la carte de champ de l'objet choisi
    #  parametres :
    #     nom_objet :    nom de l'objet   (ex : "NGC7000")
    #     ad :           ascension droite (ex : "16h41m42s")
@@ -545,7 +545,7 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   # launch
+   #  launch
    #    Lance le logiciel CarteDuciel V3
    #
    # return 0 (OK), 1 (error)
