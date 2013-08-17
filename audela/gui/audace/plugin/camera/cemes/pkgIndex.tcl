@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded cemes 1.0 [ list source [ file join $dir cemes.tcl ] ]
+package ifneeded cemes 3.0 [ list source [ file join $dir cemes.tcl ] ]
 

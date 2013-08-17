@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded cookbook 1.0 [ list source [ file join $dir cookbook.tcl ] ]
+package ifneeded cookbook 3.0 [ list source [ file join $dir cookbook.tcl ] ]
 

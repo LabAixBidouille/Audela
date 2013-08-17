@@ -30,6 +30,8 @@ set caption(cagire,fonc_obtu)                    "Shutter Operation"
 set caption(cagire,ipserver)                     "IP server"
 set caption(cagire,portserver)                   "Port server"
 
+set caption(cagire,installNewVersion)            "Installation of library %s of plugin cagire v%s completed."
+
 set caption(cagire,port_camera)                  "Cagire Port"
 set caption(cagire,2points)                      ":"
 
@@ -57,6 +59,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,fonc_obtu)                 "Fonctionnement de l'obturateur"
    set caption(cagire,ipserver)                  "IP serveur"
    set caption(cagire,portserver)                "Port serveur"
+
+   set caption(cagire,installNewVersion)         "Fin de l'installation de la librairie %s du plugin cagire v%s."
 
    set caption(cagire,port_camera)               "Port Cagire"
    set caption(cagire,2points)                   ":"
@@ -86,6 +90,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Port server"
 
+   set caption(cagire,installNewVersion)         "Installazione della libreria %s del plugin cagire v%s terminata."
+
    set caption(cagire,port_camera)               "Porta Cagire"
    set caption(cagire,2points)                   ":"
 
@@ -113,6 +119,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,fonc_obtu)                 "Funcionamiento del obturador"
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Porta server"
+
+   set caption(cagire,installNewVersion)         "Fin de la instalación de la libreria %s del plugin cagire v%s."
 
    set caption(cagire,port_camera)               "Puerto Cagire"
    set caption(cagire,2points)                   ":"
@@ -142,6 +150,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Port server"
 
+   set caption(cagire,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin cagire v%s."
+
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
 
@@ -169,6 +179,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,fonc_obtu)                 "Operação do obturador"
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Port server"
+
+   set caption(cagire,installNewVersion)         "Instalação da livraria %s do plugin cagire v%s concluída."
 
    set caption(cagire,port_camera)               "Porta Cagire"
    set caption(cagire,2points)                   ":"
@@ -198,6 +210,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Port server"
 
+   set caption(cagire,installNewVersion)         "Installation of library %s of plugin cagire v%s completed."
+
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
 
@@ -226,6 +240,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Port server"
 
+   set caption(cagire,installNewVersion)         "Installation of library %s of plugin cagire v%s completed."
+
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"
 
@@ -253,6 +269,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cagire,fonc_obtu)                 "Shutter Operation"
    set caption(cagire,ipserver)                  "IP server"
    set caption(cagire,portserver)                "Port server"
+
+   set caption(cagire,installNewVersion)         "Installation of library %s of plugin cagire v%s completed."
 
    set caption(cagire,port_camera)               "Cagire Port"
    set caption(cagire,2points)                   ":"

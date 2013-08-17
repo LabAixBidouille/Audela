@@ -6,10 +6,26 @@
 #
 
 namespace eval ::cagire {
-   package provide cagire 1.0
+   package provide cagire 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] cagire.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::cagire::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libcagire.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::cagire::getPluginType]] "cagire" "libcagire.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(cagire,installNewVersion) $sourceFileName [package version cagire] ]
+   }
 }
 
 #
