@@ -26,6 +26,8 @@ set caption(kitty,temperature_CCD)              "CCD Temperature:"
 set caption(kitty,deg_c)                        "°C"
 set caption(kitty,test)                         "SX28 Test"
 
+set caption(kitty,installNewVersion)            "Installation of library %s of plugin kitty v%s completed."
+
 set caption(kitty,port_camera)                  "Kitty Port - Model"
 set caption(kitty,2points)                      ":"
 
@@ -49,6 +51,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Température du CCD :"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test du SX28"
+
+   set caption(kitty,installNewVersion)         "Fin de l'installation de la librairie %s du plugin kitty v%s."
 
    set caption(kitty,port_camera)               "Port Kitty"
    set caption(kitty,2points)                   ":"
@@ -74,6 +78,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
 
+   set caption(kitty,installNewVersion)         "Installazione della libreria %s del plugin kitty v%s terminata."
+
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"
 
@@ -97,6 +103,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatura CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test SX28"
+
+   set caption(kitty,installNewVersion)         "Fin de la instalación de la libreria %s del plugin kitty v%s."
 
    set caption(kitty,port_camera)               "Puerto Kitty"
    set caption(kitty,2points)                   ":"
@@ -122,6 +130,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Test SX28"
 
+   set caption(kitty,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin kitty v%s."
+
    set caption(kitty,port_camera)               "Kitty Port - Modell"
    set caption(kitty,2points)                   ":"
 
@@ -145,6 +155,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "Temperatura do CCD:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "Teste SX28"
+
+   set caption(kitty,installNewVersion)         "Instalação da livraria %s do plugin kitty v%s concluída."
 
    set caption(kitty,port_camera)               "Porta Kitty"
    set caption(kitty,2points)                   ":"
@@ -170,6 +182,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
 
+   set caption(kitty,installNewVersion)         "Installation of library %s of plugin kitty v%s completed."
+
    set caption(kitty,port_camera)               "Kitty Port - Model"
    set caption(kitty,2points)                   ":"
 
@@ -194,6 +208,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
 
+   set caption(kitty,installNewVersion)         "Installation of library %s of plugin kitty v%s completed."
+
    set caption(kitty,port_camera)               "Kitty Port - Model"
    set caption(kitty,2points)                   ":"
 
@@ -217,6 +233,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(kitty,temperature_CCD)           "CCD Temperature:"
    set caption(kitty,deg_c)                     "°C"
    set caption(kitty,test)                      "SX28 Test"
+
+   set caption(kitty,installNewVersion)         "Installation of library %s of plugin kitty v%s completed."
 
    set caption(kitty,port_camera)               "Kitty Port - Model"
    set caption(kitty,2points)                   ":"

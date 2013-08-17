@@ -41,6 +41,8 @@ set caption(hisis,delai_c)                      "Delay c"
 set caption(hisis,fonc_obtu)                    "Shutter Operation"
 set caption(hisis,debug)                        "Debug Mode"
 
+set caption(hisis,installNewVersion)            "Installation of library %s of plugin hisis v%s completed."
+
 set caption(hisis,port_camera)                  "Hi-SIS Port - Model"
 set caption(hisis,2points)                      ":"
 
@@ -79,6 +81,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_c)                   "Délai c"
    set caption(hisis,fonc_obtu)                 "Fonctionnement de l'obturateur"
    set caption(hisis,debug)                     "Mode débug"
+
+   set caption(hisis,installNewVersion)         "Fin de l'installation de la librairie %s du plugin hisis v%s."
 
    set caption(hisis,port_camera)               "Port Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -119,6 +123,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,fonc_obtu)                 "Funzionamento otturatore"
    set caption(hisis,debug)                     "Modalita` debug"
 
+   set caption(hisis,installNewVersion)         "Installazione della libreria %s del plugin hisis v%s terminata."
+
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
 
@@ -157,6 +163,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_c)                   "Retraso c"
    set caption(hisis,fonc_obtu)                 "Funcionamiento del obturador"
    set caption(hisis,debug)                     "Modo depuracion"
+
+   set caption(hisis,installNewVersion)         "Fin de la instalación de la libreria %s del plugin hisis v%s."
 
    set caption(hisis,port_camera)               "Puerto Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -197,6 +205,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,fonc_obtu)                 "Verschluss Arbeiten"
    set caption(hisis,debug)                     "Debug Modus"
 
+   set caption(hisis,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin hisis v%s."
+
    set caption(hisis,port_camera)               "Hi-SIS Port - Modell"
    set caption(hisis,2points)                   ":"
 
@@ -235,6 +245,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_c)                   "Atraso c"
    set caption(hisis,fonc_obtu)                 "Operação do obturador"
    set caption(hisis,debug)                     "Modo debug"
+
+   set caption(hisis,installNewVersion)         "Instalação da livraria %s do plugin hisis v%s concluída."
 
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
@@ -275,6 +287,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,fonc_obtu)                 "Shutter Operation"
    set caption(hisis,debug)                     "Debug Mode"
 
+   set caption(hisis,installNewVersion)         "Installation of library %s of plugin hisis v%s completed."
+
    set caption(hisis,port_camera)               "Hi-SIS Port - Model"
    set caption(hisis,2points)                   ":"
 
@@ -314,6 +328,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,fonc_obtu)                 "Shutter Operation"
    set caption(hisis,debug)                     "Debug Mode"
 
+   set caption(hisis,installNewVersion)         "Installation of library %s of plugin hisis v%s completed."
+
    set caption(hisis,port_camera)               "Hi-SIS Port - Model"
    set caption(hisis,2points)                   ":"
 
@@ -352,6 +368,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,delai_c)                   "Delay c"
    set caption(hisis,fonc_obtu)                 "Shutter Operation"
    set caption(hisis,debug)                     "Debug Mode"
+
+   set caption(hisis,installNewVersion)         "Installation of library %s of plugin hisis v%s completed."
 
    set caption(hisis,port_camera)               "Hi-SIS Port - Model"
    set caption(hisis,2points)                   ":"
