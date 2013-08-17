@@ -1282,6 +1282,11 @@ namespace eval ::confEditScript {
          set confgene(EditScript,long_java) [ string length $confgene(EditScript,exec_java) ]
       }
       if { ! [ info exists confgene(EditScript,exec_java) ] } { set confgene(EditScript,long_java) "30" }
+      catch {
+         set confgene(EditScript,exec_aladin) $conf(exec_aladin)
+         set confgene(EditScript,long_aladin) [ string length $confgene(EditScript,exec_aladin) ]
+      }
+      if { ! [ info exists confgene(EditScript,exec_aladin) ] } { set confgene(EditScript,long_aladin) "30" }
       if { $::tcl_platform(os) == "Windows NT" } {
          catch {
             set confgene(EditScript,exec_iris) $conf(exec_iris)
@@ -1289,11 +1294,6 @@ namespace eval ::confEditScript {
          }
          if { ! [ info exists confgene(EditScript,exec_iris) ] } { set confgene(EditScript,long_iris) "30" }
       }
-      catch {
-         set confgene(EditScript,exec_aladin) $conf(exec_aladin)
-         set confgene(EditScript,long_aladin) [ string length $confgene(EditScript,exec_aladin) ]
-      }
-      if { ! [ info exists confgene(EditScript,exec_aladin) ] } { set confgene(EditScript,long_aladin) "30" }
 
       if { $confgene(EditScript,long_pdf) > $confgene(EditScript,long) } {
          set confgene(EditScript,long) $confgene(EditScript,long_pdf)
@@ -1307,11 +1307,13 @@ namespace eval ::confEditScript {
       if { $confgene(EditScript,long_java) > $confgene(EditScript,long) } {
          set confgene(EditScript,long) $confgene(EditScript,long_java)
       }
-      if { $confgene(EditScript,long_iris) > $confgene(EditScript,long) } {
-         set confgene(EditScript,long) $confgene(EditScript,long_iris)
-      }
       if { $confgene(EditScript,long_aladin) > $confgene(EditScript,long) } {
          set confgene(EditScript,long) $confgene(EditScript,long_aladin)
+      }
+      if { $::tcl_platform(os) == "Windows NT" } {
+         if { $confgene(EditScript,long_iris) > $confgene(EditScript,long) } {
+            set confgene(EditScript,long) $confgene(EditScript,long_iris)
+         }
       }
       set confgene(EditScript,long) [expr $confgene(EditScript,long) + 3]
    }
@@ -1343,18 +1345,18 @@ namespace eval ::confEditScript {
       set conf(editsite_htm,selectHelp)     "$confgene(EditScript,selectHelp)"
       set conf(edit_viewer)                 "$confgene(EditScript,edit_viewer)"
       set conf(exec_java)                   "$confgene(EditScript,exec_java)"
+      set conf(exec_aladin)                 "$confgene(EditScript,exec_aladin)"
       if { $::tcl_platform(os) == "Windows NT" } {
          set conf(exec_iris)                "$confgene(EditScript,exec_iris)"
       }
-      set conf(exec_aladin)                 "$confgene(EditScript,exec_aladin)"
       #---
       set confgene(EditScript,error_script) "1"
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
-      set confgene(EditScript,error_iris)   "1"
       set confgene(EditScript,error_aladin) "1"
+      set confgene(EditScript,error_iris)   "1"
       #---
       set confgene(EditScript,ok)           "1"
       ::confEditScript::destroyDialog
@@ -1384,8 +1386,8 @@ namespace eval ::confEditScript {
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
-      set confgene(EditScript,error_iris)   "1"
       set confgene(EditScript,error_aladin) "1"
+      set confgene(EditScript,error_iris)   "1"
       #---
       set confgene(EditScript,ok)           "0"
       ::confEditScript::destroyDialog
