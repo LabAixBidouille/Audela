@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded epixowl 1.0 [ list source [ file join $dir epixowl.tcl ] ]
+package ifneeded epixowl 3.0 [ list source [ file join $dir epixowl.tcl ] ]
 
