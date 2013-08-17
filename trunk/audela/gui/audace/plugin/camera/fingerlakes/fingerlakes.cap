@@ -27,6 +27,8 @@ set caption(fingerlakes,miroir_y)                     "Left/Right Reversal"
 set caption(fingerlakes,fonc_obtu)                    "Shutter Operation"
 set caption(fingerlakes,readSpeed)                    "Read Speed"
 
+set caption(fingerlakes,installNewVersion)            "Installation of library %s of plugin fingerlakes v%s completed."
+
 set caption(fingerlakes,port_camera)                  "FLI Port"
 set caption(fingerlakes,2points)                      ":"
 
@@ -51,6 +53,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Inverser Gauche/Droite"
    set caption(fingerlakes,fonc_obtu)                 "Fonctionnement de l'obturateur"
    set caption(fingerlakes,readSpeed)                 "Vitesse de lecture"
+
+   set caption(fingerlakes,installNewVersion)         "Fin de l'installation de la librairie %s du plugin fingerlakes v%s."
 
    set caption(fingerlakes,port_camera)               "Port FLI"
    set caption(fingerlakes,2points)                   ":"
@@ -77,6 +81,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,fonc_obtu)                 "Funzionamento otturatore"
    set caption(fingerlakes,readSpeed)                 "Velocità di lettura"
 
+   set caption(fingerlakes,installNewVersion)         "Installazione della libreria %s del plugin fingerlakes v%s terminata."
+
    set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
 
@@ -101,6 +107,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Invertir Izquierda/Derecha"
    set caption(fingerlakes,fonc_obtu)                 "Funcionamiento del obturador"
    set caption(fingerlakes,readSpeed)                 "Velocidad de lectura"
+
+   set caption(fingerlakes,installNewVersion)         "Fin de la instalación de la libreria %s del plugin fingerlakes v%s."
 
    set caption(fingerlakes,port_camera)               "Puerto FLI"
    set caption(fingerlakes,2points)                   ":"
@@ -127,6 +135,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,fonc_obtu)                 "Verschluss Arbeiten"
    set caption(fingerlakes,readSpeed)                 "Lesung Geschwindigkeit"
 
+   set caption(fingerlakes,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin fingerlakes v%s."
+
    set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"
 
@@ -151,6 +161,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(fingerlakes,fonc_obtu)                 "Operação do obturador"
    set caption(fingerlakes,readSpeed)                 "Velocidade de leitura"
+
+   set caption(fingerlakes,installNewVersion)         "Instalação da livraria %s do plugin fingerlakes v%s concluída."
 
    set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
@@ -177,6 +189,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
    set caption(fingerlakes,readSpeed)                 "Read Speed"
 
+   set caption(fingerlakes,installNewVersion)         "Installation of library %s of plugin fingerlakes v%s completed."
+
    set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"
 
@@ -202,6 +216,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
    set caption(fingerlakes,readSpeed)                 "Read Speed"
 
+   set caption(fingerlakes,installNewVersion)         "Installation of library %s of plugin fingerlakes v%s completed."
+
    set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"
 
@@ -226,6 +242,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Left/Right Reversal"
    set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
    set caption(fingerlakes,readSpeed)                 "Read Speed"
+
+   set caption(fingerlakes,installNewVersion)         "Installation of library %s of plugin fingerlakes v%s completed."
 
    set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"

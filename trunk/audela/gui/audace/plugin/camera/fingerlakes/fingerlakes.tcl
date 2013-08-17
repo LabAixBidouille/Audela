@@ -6,10 +6,31 @@
 #
 
 namespace eval ::fingerlakes {
-   package provide fingerlakes 1.0
+   package provide fingerlakes 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] fingerlakes.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::fingerlakes::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libfingerlakes.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::fingerlakes::getPluginType]] "fingerlakes" "libfingerlakes.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libfli.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::fingerlakes::getPluginType]] "fingerlakes" "libfli.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(fingerlakes,installNewVersion) $sourceFileName [package version fingerlakes] ]
+   }
 }
 
 #

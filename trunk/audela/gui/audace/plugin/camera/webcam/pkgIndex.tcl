@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded webcam 1.0 [ list source [ file join $dir webcam.tcl ] ]
+package ifneeded webcam 3.0 [ list source [ file join $dir webcam.tcl ] ]
 

@@ -43,6 +43,8 @@ set caption(webcam,auto)                        "Auto"
 set caption(webcam,framerate)                   "Images/s"
 set caption(webcam,validFrame)                  "Image Number"
 
+set caption(webcam,installNewVersion)           "Installation of library %s of plugin webcam v%s completed."
+
 set caption(webcam,2points)                     ":"
 
 set caption(webcam,titre_site_web)              "Reference Web Site:"
@@ -83,6 +85,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Images/s"
    set caption(webcam,validFrame)               "Numéro de l'image"
+
+   set caption(webcam,installNewVersion)        "Fin de l'installation de la librairie %s du plugin webcam v%s."
 
    set caption(webcam,2points)                  ":"
 
@@ -125,6 +129,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,framerate)                "Immagini/s"
    set caption(webcam,validFrame)               "Numero di immagine"
 
+   set caption(webcam,installNewVersion)        "Installazione della libreria %s del plugin webcam v%s terminata."
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Sito Web di riferimento:"
@@ -165,6 +171,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Imágenes/s"
    set caption(webcam,validFrame)               "Número de la imagen"
+
+   set caption(webcam,installNewVersion)        "Fin de la instalación de la libreria %s del plugin webcam v%s."
 
    set caption(webcam,2points)                  ":"
 
@@ -207,6 +215,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,framerate)                "Bilder/s"
    set caption(webcam,validFrame)               "Nummer des Bildes"
 
+   set caption(webcam,installNewVersion)        "Die Installation der Bibliothek %s ist vervollständigt der Plugin webcam v%s."
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Referenz Webseite:"
@@ -247,6 +257,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Imagens/s"
    set caption(webcam,validFrame)               "Número de imagem"
+
+   set caption(webcam,installNewVersion)        "Instalação da livraria %s do plugin webcam v%s concluída."
 
    set caption(webcam,2points)                  ":"
 
@@ -289,6 +301,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,framerate)                "Images/s"
    set caption(webcam,validFrame)               "Image Number"
 
+   set caption(webcam,installNewVersion)        "Installation of library %s of plugin webcam v%s completed."
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Reference Web Site:"
@@ -330,6 +344,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,framerate)                "Images/s"
    set caption(webcam,validFrame)               "Image Number"
 
+   set caption(webcam,installNewVersion)        "Installation of library %s of plugin webcam v%s completed."
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Reference Web Site:"
@@ -370,6 +386,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,auto)                     "Auto"
    set caption(webcam,framerate)                "Images/s"
    set caption(webcam,validFrame)               "Image Number"
+
+   set caption(webcam,installNewVersion)        "Installation of library %s of plugin webcam v%s completed."
 
    set caption(webcam,2points)                  ":"
 
