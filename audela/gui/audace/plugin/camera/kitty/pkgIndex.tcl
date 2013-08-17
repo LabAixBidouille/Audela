@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded kitty 1.0 [ list source [ file join $dir kitty.tcl ] ]
+package ifneeded kitty 3.0 [ list source [ file join $dir kitty.tcl ] ]
 

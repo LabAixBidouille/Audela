@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded sbig 1.0 [ list source [ file join $dir sbig.tcl ] ]
+package ifneeded sbig 3.0 [ list source [ file join $dir sbig.tcl ] ]
 

@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded hisis 1.0 [ list source [ file join $dir hisis.tcl ] ]
+package ifneeded hisis 3.0 [ list source [ file join $dir hisis.tcl ] ]
 

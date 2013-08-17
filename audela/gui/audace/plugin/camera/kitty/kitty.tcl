@@ -6,10 +6,26 @@
 #
 
 namespace eval ::kitty {
-   package provide kitty 1.0
+   package provide kitty 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] kitty.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::kitty::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libk2.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::kitty::getPluginType]] "kitty" "libk2.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(kitty,installNewVersion) $sourceFileName [package version kitty] ]
+   }
 }
 
 #

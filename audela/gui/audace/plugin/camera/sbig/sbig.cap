@@ -33,6 +33,8 @@ set caption(sbig,miroir_x)                     "Top/Bottom Reversal"
 set caption(sbig,miroir_y)                     "Left/Right Reversal"
 set caption(sbig,fonc_obtu)                    "Shutter Operation"
 
+set caption(sbig,installNewVersion)            "Installation of library %s of plugin sbig v%s completed."
+
 set caption(sbig,port_camera)                  "SBIG Port"
 set caption(sbig,2points)                      ":"
 
@@ -63,6 +65,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Inverser Haut/Bas"
    set caption(sbig,miroir_y)                  "Inverser Gauche/Droite"
    set caption(sbig,fonc_obtu)                 "Fonctionnement de l'obturateur"
+
+   set caption(sbig,installNewVersion)         "Fin de l'installation de la librairie %s du plugin sbig v%s."
 
    set caption(sbig,port_camera)               "Port SBIG"
    set caption(sbig,2points)                   ":"
@@ -95,6 +99,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(sbig,fonc_obtu)                 "Funzionamento otturatore"
 
+   set caption(sbig,installNewVersion)         "Installazione della libreria %s del plugin sbig v%s terminata."
+
    set caption(sbig,port_camera)               "Porta SBIG"
    set caption(sbig,2points)                   ":"
 
@@ -125,6 +131,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Invertir Arriba/Abajo"
    set caption(sbig,miroir_y)                  "Invertir Izquierda/Derecha"
    set caption(sbig,fonc_obtu)                 "Funcionamiento del obturador"
+
+   set caption(sbig,installNewVersion)         "Fin de la instalación de la libreria %s del plugin sbig v%s."
 
    set caption(sbig,port_camera)               "Puerto SBIG"
    set caption(sbig,2points)                   ":"
@@ -157,6 +165,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_y)                  "Links/Rechts umkehren"
    set caption(sbig,fonc_obtu)                 "Verschluss Arbeiten"
 
+   set caption(sbig,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin sbig v%s."
+
    set caption(sbig,port_camera)               "SBIG Port"
    set caption(sbig,2points)                   ":"
 
@@ -187,6 +197,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Inverter Cima/Baixo"
    set caption(sbig,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(sbig,fonc_obtu)                 "Operação do obturador"
+
+   set caption(sbig,installNewVersion)         "Instalação da livraria %s do plugin sbig v%s concluída."
 
    set caption(sbig,port_camera)               "Porta SBIG"
    set caption(sbig,2points)                   ":"
@@ -219,6 +231,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_y)                  "Left/Right Reversal"
    set caption(sbig,fonc_obtu)                 "Shutter Operation"
 
+   set caption(sbig,installNewVersion)         "Installation of library %s of plugin sbig v%s completed."
+
    set caption(sbig,port_camera)               "SBIG Port"
    set caption(sbig,2points)                   ":"
 
@@ -250,6 +264,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_y)                  "Left/Right Reversal"
    set caption(sbig,fonc_obtu)                 "Shutter Operation"
 
+   set caption(sbig,installNewVersion)         "Installation of library %s of plugin sbig v%s completed."
+
    set caption(sbig,port_camera)               "SBIG Port"
    set caption(sbig,2points)                   ":"
 
@@ -280,6 +296,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,miroir_x)                  "Top/Bottom Reversal"
    set caption(sbig,miroir_y)                  "Left/Right Reversal"
    set caption(sbig,fonc_obtu)                 "Shutter Operation"
+
+   set caption(sbig,installNewVersion)         "Installation of library %s of plugin sbig v%s completed."
 
    set caption(sbig,port_camera)               "SBIG Port"
    set caption(sbig,2points)                   ":"
