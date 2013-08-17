@@ -6,8 +6,24 @@
 #
 
 namespace eval guide {
-   package provide guide 1.1
+   package provide guide 2.0
    source [ file join [file dirname [info script]] guide.cap ]
+
+   #------------------------------------------------------------
+   # install
+   #    installe le plugin et la dll
+   #------------------------------------------------------------
+   proc install { } {
+      if { $::tcl_platform(platform) == "windows" } {
+         #--- je deplace libgs.dll dans le repertoire audela/bin
+         set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::guide::getPluginType]] "guide" "libgs.dll"]
+         if { [ file exists $sourceFileName ] } {
+            ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+         }
+         #--- j'affiche le message de fin de mise a jour du plugin
+         ::audace::appendUpdateMessage [ format $::caption(guide,installNewVersion) $sourceFileName [package version guide] ]
+      }
+   }
 
    #------------------------------------------------------------
    #  initPlugin
@@ -220,8 +236,8 @@ namespace eval guide {
    #==============================================================
 
    #------------------------------------------------------------
-   # gotoObject
-   # Affiche la carte de champ de l'objet choisi avec GUIDE sous Window seulement
+   #  gotoObject
+   #  Affiche la carte de champ de l'objet choisi avec GUIDE sous Window seulement
    #  parametres :
    #     nom_objet :    nom de l'objet     (ex: "NGC7000")
    #     ad :           ascension droite   (ex: "16h41m42s")
@@ -288,7 +304,7 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   # launch
+   #  launch
    #    Lance le logiciel GUIDE pour la creation de cartes de champ
    #
    # return 0 (OK), 1 (error)

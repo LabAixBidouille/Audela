@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded carteducielv3 1.0 [ list source [ file join $dir carteducielv3.tcl ] ]
+package ifneeded carteducielv3 2.0 [ list source [ file join $dir carteducielv3.tcl ] ]
 
