@@ -29,7 +29,7 @@ proc ::cagire::install { } {
 }
 
 #
-# ::cagire::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::cagire::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::cagire::getPluginTitle { } {
 }
 
 #
-# ::cagire::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::cagire::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::cagire::getPluginHelp { } {
 }
 
 #
-# ::cagire::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::cagire::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::cagire::getPluginType { } {
 }
 
 #
-# ::cagire::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::cagire::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::cagire::getPluginOS { } {
 }
 
 #
-# ::cagire::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::cagire::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::cagire::getCamNo { camItem } {
 }
 
 #
-# ::cagire::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::cagire::isReady { camItem } {
 }
 
 #
-# ::cagire::initPlugin
+# initPlugin
 #    Initialise les variables conf(cagire,...)
 #
 proc ::cagire::initPlugin { } {
@@ -115,7 +115,7 @@ proc ::cagire::initPlugin { } {
 }
 
 #
-# ::cagire::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::cagire::confToWidget { } {
@@ -134,7 +134,7 @@ proc ::cagire::confToWidget { } {
 }
 
 #
-# ::cagire::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::cagire::widgetToConf { camItem } {
@@ -153,7 +153,7 @@ proc ::cagire::widgetToConf { camItem } {
 }
 
 #
-# ::cagire::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Cagire
 #
 proc ::cagire::fillConfigPage { frm camItem } {
@@ -310,7 +310,7 @@ proc ::cagire::fillConfigPage { frm camItem } {
 }
 
 #
-# ::cagire::configureCamera
+# configureCamera
 #    Configure la camera Cagire en fonction des donnees contenues dans les variables conf(cagire,...)
 #
 proc ::cagire::configureCamera { camItem bufNo } {
@@ -370,7 +370,7 @@ proc ::cagire::configureCamera { camItem bufNo } {
 }
 
 #
-# ::cagire::stop
+# stop
 #    Arrete la camera Cagire
 #
 proc ::cagire::stop { camItem } {
@@ -384,7 +384,7 @@ proc ::cagire::stop { camItem } {
 }
 
 #
-# ::cagire::dispTempCagire
+# dispTempCagire
 #    Affiche la temperature du CCD
 #
 proc ::cagire::dispTempCagire { camItem } {
@@ -405,7 +405,7 @@ proc ::cagire::dispTempCagire { camItem } {
 }
 
 #
-# ::cagire::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::cagire::checkConfigRefroidissement { } {
@@ -428,7 +428,7 @@ proc ::cagire::checkConfigRefroidissement { } {
 }
 
 #
-# ::cagire::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::cagire::setTempCCD { camItem } {
@@ -438,7 +438,7 @@ proc ::cagire::setTempCCD { camItem } {
 }
 
 #
-# ::cagire::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::cagire::setShutter { camItem shutterState ShutterOptionList } {
@@ -472,7 +472,7 @@ proc ::cagire::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::cagire::explore
+# explore
 #    Procedure pour designer le repertoire des images temporaires
 #
 proc ::cagire::explore { } {
@@ -484,7 +484,7 @@ proc ::cagire::explore { } {
 }
 
 #
-# ::cagire::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

@@ -29,7 +29,7 @@ proc ::th7852a::install { } {
 }
 
 #
-# ::th7852a::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::th7852a::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::th7852a::getPluginTitle { } {
 }
 
 #
-# ::th7852a::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::th7852a::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::th7852a::getPluginHelp { } {
 }
 
 #
-# ::th7852a::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::th7852a::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::th7852a::getPluginType { } {
 }
 
 #
-# ::th7852a::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::th7852a::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::th7852a::getPluginOS { } {
 }
 
 #
-# ::th7852a::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::th7852a::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::th7852a::getCamNo { camItem } {
 }
 
 #
-# ::th7852a::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::th7852a::isReady { camItem } {
 }
 
 #
-# ::th7852a::initPlugin
+# initPlugin
 #    Initialise les variables conf(th7852a,...)
 #
 proc ::th7852a::initPlugin { } {
@@ -109,7 +109,7 @@ proc ::th7852a::initPlugin { } {
 }
 
 #
-# ::th7852a::confToWidget
+# confToWidget
 #    Copie la variable de configuration dans une variable locale
 #
 proc ::th7852a::confToWidget { } {
@@ -123,7 +123,7 @@ proc ::th7852a::confToWidget { } {
 }
 
 #
-# ::th7852a::widgetToConf
+# widgetToConf
 #    Copie la variable locale dans une variable de configuration
 #
 proc ::th7852a::widgetToConf { camItem } {
@@ -137,7 +137,7 @@ proc ::th7852a::widgetToConf { camItem } {
 }
 
 #
-# ::th7852a::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera TH7852A
 #
 proc ::th7852a::fillConfigPage { frm camItem } {
@@ -197,7 +197,7 @@ proc ::th7852a::fillConfigPage { frm camItem } {
 }
 
 #
-# ::th7852a::configureCamera
+# configureCamera
 #    Configure la camera TH7852A en fonction des donnees contenues dans les variables conf(th7852a,...)
 #
 proc ::th7852a::configureCamera { camItem bufNo } {
@@ -239,7 +239,7 @@ proc ::th7852a::configureCamera { camItem bufNo } {
 }
 
 #
-# ::th7852a::stop
+# stop
 #    Arrete la camera TH7852A
 #
 proc ::th7852a::stop { camItem } {
@@ -253,7 +253,7 @@ proc ::th7852a::stop { camItem } {
 }
 
 #
-# ::th7852a::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

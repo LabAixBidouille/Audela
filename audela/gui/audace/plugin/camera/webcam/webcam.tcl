@@ -29,7 +29,7 @@ proc ::webcam::install { } {
 }
 
 #
-# ::webcam::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::webcam::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::webcam::getPluginTitle { } {
 }
 
 #
-# ::webcam::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::webcam::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::webcam::getPluginHelp { } {
 }
 
 #
-# ::webcam::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::webcam::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::webcam::getPluginType { } {
 }
 
 #
-# ::webcam::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::webcam::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::webcam::getPluginOS { } {
 }
 
 #
-# ::webcam::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::webcam::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::webcam::getCamNo { camItem } {
 }
 
 #
-# ::webcam::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::webcam::isReady { camItem } {
 }
 
 #
-# ::webcam::initPlugin
+# initPlugin
 #    Initialise les variables conf(webcam,$camItem,...)
 #
 proc ::webcam::initPlugin { } {
@@ -190,7 +190,7 @@ proc ::webcam::setConnection { camItem state }  {
 }
 
 #
-# ::webcam::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::webcam::confToWidget { } {
@@ -228,7 +228,7 @@ proc ::webcam::confToWidget { } {
 }
 
 #
-# ::webcam::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::webcam::widgetToConf { camItem } {
@@ -264,7 +264,7 @@ proc ::webcam::widgetToConf { camItem } {
 }
 
 #
-# ::webcam::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la WebCam
 #
 proc ::webcam::fillConfigPage { frm camItem } {
@@ -589,7 +589,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 }
 
 #
-# ::webcam::configureCamera
+# configureCamera
 #    Configure la WebCam en fonction des donnees contenues dans les variables conf(webcam,$camItem,...)
 #
 proc ::webcam::configureCamera { camItem bufNo } {
@@ -714,7 +714,7 @@ proc ::webcam::configureCamera { camItem bufNo } {
 }
 
 #
-# ::webcam::selectPort
+# selectPort
 #    selectionne un port
 #
 proc ::webcam::selectPort { camItem tklist } {
@@ -725,7 +725,7 @@ proc ::webcam::selectPort { camItem tklist } {
 }
 
 #
-# ::webcam::stop
+# stop
 #    Arrete la WebCam
 #
 proc ::webcam::stop { camItem } {
@@ -758,7 +758,7 @@ proc ::webcam::stop { camItem } {
 }
 
 #
-# ::webcam::configWebCam
+# configWebCam
 #    Configure les widgets de configuration de la WebCam
 #
 proc ::webcam::configWebCam { camItem } {
@@ -813,7 +813,7 @@ proc ::webcam::configWebCam { camItem } {
 }
 
 #
-# ::webcam::configWebCamInactif
+# configWebCamInactif
 #    Permet de desactiver les widgets a l'arret de la WebCam
 #
 proc ::webcam::configWebCamInactif { } {
@@ -834,7 +834,7 @@ proc ::webcam::configWebCamInactif { } {
 }
 
 #
-# ::webcam::checkConfigLonguePose
+# checkConfigLonguePose
 #    Configure les widgets de configuration de la longue pose
 #
 proc ::webcam::checkConfigLonguePose { camItem } {
@@ -861,7 +861,7 @@ proc ::webcam::checkConfigLonguePose { camItem } {
 }
 
 #
-# ::webcam::checkConfigCCDNB
+# checkConfigCCDNB
 #    Configure les widgets de configuration du choix du CCD
 #
 proc ::webcam::checkConfigCCDNB { camItem } {
@@ -884,7 +884,7 @@ proc ::webcam::checkConfigCCDNB { camItem } {
 }
 
 #
-# ::webcam::selectCameraType
+# selectCameraType
 #    Configure les widgets de configuration du choix du CCD
 #
 proc ::webcam::selectCameraType { camItem } {
@@ -928,7 +928,7 @@ proc ::webcam::selectCameraType { camItem } {
 }
 
 #
-# ::webcam::configureLinkLonguePose
+# configureLinkLonguePose
 #    Positionne la liaison sur celle qui vient d'etre selectionnee pour la longue pose
 #
 proc ::webcam::configureLinkLonguePose { camItem } {
@@ -959,7 +959,7 @@ proc ::webcam::configureLinkLonguePose { camItem } {
 }
 
 #
-# ::webcam::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -1027,7 +1027,7 @@ namespace eval ::webcam::config {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::run
+# run
 #    affiche la fenetre de configuration
 #------------------------------------------------------------
 proc ::webcam::config::run { visuNo camItem } {
@@ -1056,7 +1056,7 @@ proc ::webcam::config::run { visuNo camItem } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::closeWindow
+# closeWindow
 #    ferme la fenetre de configuration
 #------------------------------------------------------------
 proc ::webcam::config::closeWindow { visuNo } {
@@ -1070,7 +1070,7 @@ proc ::webcam::config::closeWindow { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::getLabel
+# getLabel
 #    retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
 proc ::webcam::config::getLabel { } {
@@ -1080,7 +1080,7 @@ proc ::webcam::config::getLabel { } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::fillConfigPage { }
+# fillConfigPage
 #    fenetre de configuration de la camera
 # return rien
 #------------------------------------------------------------
@@ -1144,7 +1144,7 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::onSelectFrameRate
+# onSelectFrameRate
 #    selectionne le nombre d'images par seconde
 #
 # return null
@@ -1173,7 +1173,7 @@ proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::onSelectShutter
+# onSelectShutter
 #    selectionne la vitesse d'obturation
 #
 #    A negative value sets the shutter speed to automatic
@@ -1208,7 +1208,7 @@ proc ::webcam::config::onSelectShutter { visuNo tklist value } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::onSelectGain
+# onSelectGain
 #    selectionne le gain
 #
 # return null
@@ -1236,7 +1236,7 @@ proc ::webcam::config::onSelectGain { visuNo tkscale value } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::onSetAutoShutter
+# onSetAutoShutter
 #    change le mode automatique du shutter
 #
 # return null
@@ -1270,7 +1270,7 @@ proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
 }
 
 #------------------------------------------------------------
-# ::webcam::config::onSetGainAuto
+# onSetGainAuto
 #    change le mode automatique du gain
 #
 # return null

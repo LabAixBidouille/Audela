@@ -29,7 +29,7 @@ proc ::cookbook::install { } {
 }
 
 #
-# ::cookbook::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::cookbook::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::cookbook::getPluginTitle { } {
 }
 
 #
-# ::cookbook::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::cookbook::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::cookbook::getPluginHelp { } {
 }
 
 #
-# ::cookbook::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::cookbook::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::cookbook::getPluginType { } {
 }
 
 #
-# ::cookbook::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::cookbook::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::cookbook::getPluginOS { } {
 }
 
 #
-# ::cookbook::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::cookbook::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::cookbook::getCamNo { camItem } {
 }
 
 #
-# ::cookbook::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::cookbook::isReady { camItem } {
 }
 
 #
-# ::cookbook::initPlugin
+# initPlugin
 #    Initialise les variables conf(cookbook,...)
 #
 proc ::cookbook::initPlugin { } {
@@ -110,7 +110,7 @@ proc ::cookbook::initPlugin { } {
 }
 
 #
-# ::cookbook::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::cookbook::confToWidget { } {
@@ -125,7 +125,7 @@ proc ::cookbook::confToWidget { } {
 }
 
 #
-# ::cookbook::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::cookbook::widgetToConf { camItem } {
@@ -140,7 +140,7 @@ proc ::cookbook::widgetToConf { camItem } {
 }
 
 #
-# ::cookbook::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera CB245
 #
 proc ::cookbook::fillConfigPage { frm camItem } {
@@ -247,7 +247,7 @@ proc ::cookbook::fillConfigPage { frm camItem } {
 }
 
 #
-# ::cookbook::configureCamera
+# configureCamera
 #    Configure la camera CB245 en fonction des donnees contenues dans les variables conf(cookbook,...)
 #
 proc ::cookbook::configureCamera { camItem bufNo } {
@@ -291,7 +291,7 @@ proc ::cookbook::configureCamera { camItem bufNo } {
 }
 
 #
-# ::cookbook::stop
+# stop
 #    Arrete la camera CB245
 #
 proc ::cookbook::stop { camItem } {
@@ -309,7 +309,7 @@ proc ::cookbook::stop { camItem } {
 }
 
 #
-# ::cookbook::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

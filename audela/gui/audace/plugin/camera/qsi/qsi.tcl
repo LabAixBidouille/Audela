@@ -364,11 +364,33 @@ proc ::qsi::stop { camItem } {
 
 # getPluginProperty
 #    Retourne la valeur de la propriete
-#    (voir la liste des proprietes dans confCam::getPluginProperty)
+#
 # Parametre :
 #    propertyName : Nom de la propriete
-#
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
+#
+# binningList :      Retourne la liste des binnings disponibles
+# binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
+# binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
+# formatList :       Retourne la liste des formats ou des qualites d'image (fine, normal, raw, ...)
+# hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
+# hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
+# hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasQuality :       Retourne l'existence d'une qualite (1 : Oui, 0 : Non)
+# hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
+# hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# loadMode :         Retourne le mode de chargement d'une image (1: pas de chargment, 2:chargement immediat, 3: chargement differe)
+# longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
+# rawExtension :     Retourne les extensions des images RAW de la camera
+# shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::qsi::getPluginProperty { camItem propertyName } {
    variable private
@@ -498,7 +520,7 @@ proc ::qsi::setConfigTemperature { camItem } {
 }
 
 #
-# ::fingerlakes::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::qsi::setTempCCD { camItem } {

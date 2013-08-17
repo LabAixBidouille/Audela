@@ -34,7 +34,7 @@ proc ::andor::install { } {
 }
 
 #
-# ::andor::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::andor::getPluginTitle { } {
@@ -44,7 +44,7 @@ proc ::andor::getPluginTitle { } {
 }
 
 #
-# ::andor::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::andor::getPluginHelp { } {
@@ -52,7 +52,7 @@ proc ::andor::getPluginHelp { } {
 }
 
 #
-# ::andor::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::andor::getPluginType { } {
@@ -60,7 +60,7 @@ proc ::andor::getPluginType { } {
 }
 
 #
-# ::andor::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::andor::getPluginOS { } {
@@ -68,7 +68,7 @@ proc ::andor::getPluginOS { } {
 }
 
 #
-# ::andor::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::andor::getCamNo { camItem } {
@@ -78,7 +78,7 @@ proc ::andor::getCamNo { camItem } {
 }
 
 #
-# ::andor::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -95,7 +95,7 @@ proc ::andor::isReady { camItem } {
 }
 
 #
-# ::andor::initPlugin
+# initPlugin
 #    Initialise les variables conf(andor,...)
 #
 proc ::andor::initPlugin { } {
@@ -120,7 +120,7 @@ proc ::andor::initPlugin { } {
 }
 
 #
-# ::andor::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::andor::confToWidget { } {
@@ -139,7 +139,7 @@ proc ::andor::confToWidget { } {
 }
 
 #
-# ::andor::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::andor::widgetToConf { camItem } {
@@ -158,7 +158,7 @@ proc ::andor::widgetToConf { camItem } {
 }
 
 #
-# ::andor::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Andor
 #
 proc ::andor::fillConfigPage { frm camItem } {
@@ -323,7 +323,7 @@ proc ::andor::fillConfigPage { frm camItem } {
 }
 
 #
-# ::andor::configureCamera
+# configureCamera
 #    Configure la camera Andor en fonction des donnees contenues dans les variables conf(andor,...)
 #
 proc ::andor::configureCamera { camItem bufNo } {
@@ -385,7 +385,7 @@ proc ::andor::configureCamera { camItem bufNo } {
 }
 
 #
-# ::andor::stop
+# stop
 #    Arrete la camera Andor
 #
 proc ::andor::stop { camItem } {
@@ -399,7 +399,7 @@ proc ::andor::stop { camItem } {
 }
 
 #
-# ::andor::dispTempAndor
+# dispTempAndor
 #    Affiche la temperature du CCD
 #
 proc ::andor::dispTempAndor { camItem } {
@@ -420,7 +420,7 @@ proc ::andor::dispTempAndor { camItem } {
 }
 
 #
-# ::andor::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::andor::checkConfigRefroidissement { } {
@@ -443,7 +443,7 @@ proc ::andor::checkConfigRefroidissement { } {
 }
 
 #
-# ::andor::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::andor::setTempCCD { camItem } {
@@ -453,7 +453,7 @@ proc ::andor::setTempCCD { camItem } {
 }
 
 #
-# ::andor::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::andor::setShutter { camItem shutterState ShutterOptionList } {
@@ -487,7 +487,7 @@ proc ::andor::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::andor::explore
+# explore
 #    Procedure pour designer les fichiers de configuration
 #
 proc ::andor::explore { } {
@@ -499,7 +499,7 @@ proc ::andor::explore { } {
 }
 
 #
-# ::andor::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

@@ -13,7 +13,7 @@ namespace eval ::andorusb {
 }
 
 #
-# ::andorusb::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::andorusb::getPluginTitle { } {
@@ -23,7 +23,7 @@ proc ::andorusb::getPluginTitle { } {
 }
 
 #
-# ::andorusb::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::andorusb::getPluginHelp { } {
@@ -31,7 +31,7 @@ proc ::andorusb::getPluginHelp { } {
 }
 
 #
-# ::andorusb::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::andorusb::getPluginType { } {
@@ -39,7 +39,7 @@ proc ::andorusb::getPluginType { } {
 }
 
 #
-# ::andorusb::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::andorusb::getPluginOS { } {
@@ -47,7 +47,7 @@ proc ::andorusb::getPluginOS { } {
 }
 
 #
-# ::andorusb::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::andorusb::getCamNo { camItem } {
@@ -57,7 +57,7 @@ proc ::andorusb::getCamNo { camItem } {
 }
 
 #
-# ::andorusb::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -74,7 +74,7 @@ proc ::andorusb::isReady { camItem } {
 }
 
 #
-# ::andorusb::initPlugin
+# initPlugin
 #    Initialise les variables conf(andorusb,...)
 #
 proc ::andorusb::initPlugin { } {
@@ -99,7 +99,7 @@ proc ::andorusb::initPlugin { } {
 }
 
 #
-# ::andorusb::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::andorusb::confToWidget { } {
@@ -118,7 +118,7 @@ proc ::andorusb::confToWidget { } {
 }
 
 #
-# ::andorusb::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::andorusb::widgetToConf { camItem } {
@@ -137,7 +137,7 @@ proc ::andorusb::widgetToConf { camItem } {
 }
 
 #
-# ::andorusb::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Andor
 #
 proc ::andorusb::fillConfigPage { frm camItem } {
@@ -302,7 +302,7 @@ proc ::andorusb::fillConfigPage { frm camItem } {
 }
 
 #
-# ::andorusb::configureCamera
+# configureCamera
 #    Configure la camera Andor en fonction des donnees contenues dans les variables conf(andorusb,...)
 #
 proc ::andorusb::configureCamera { camItem bufNo } {
@@ -364,7 +364,7 @@ proc ::andorusb::configureCamera { camItem bufNo } {
 }
 
 #
-# ::andorusb::stop
+# stop
 #    Arrete la camera Andor
 #
 proc ::andorusb::stop { camItem } {
@@ -378,7 +378,7 @@ proc ::andorusb::stop { camItem } {
 }
 
 #
-# ::andorusb::dispTempAndor
+# dispTempAndor
 #    Affiche la temperature du CCD
 #
 proc ::andorusb::dispTempAndor { camItem } {
@@ -399,7 +399,7 @@ proc ::andorusb::dispTempAndor { camItem } {
 }
 
 #
-# ::andorusb::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::andorusb::checkConfigRefroidissement { } {
@@ -422,7 +422,7 @@ proc ::andorusb::checkConfigRefroidissement { } {
 }
 
 #
-# ::andorusb::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::andorusb::setTempCCD { camItem } {
@@ -432,7 +432,7 @@ proc ::andorusb::setTempCCD { camItem } {
 }
 
 #
-# ::andorusb::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::andorusb::setShutter { camItem shutterState ShutterOptionList } {
@@ -466,7 +466,7 @@ proc ::andorusb::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::andorusb::explore
+# explore
 #    Procedure pour designer les fichiers de configuration
 #
 proc ::andorusb::explore { } {
@@ -478,7 +478,7 @@ proc ::andorusb::explore { } {
 }
 
 #
-# ::andorusb::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

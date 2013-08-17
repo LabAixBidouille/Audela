@@ -29,7 +29,7 @@ proc ::hisis::install { } {
 }
 
 #
-# ::hisis::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::hisis::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::hisis::getPluginTitle { } {
 }
 
 #
-# ::hisis::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::hisis::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::hisis::getPluginHelp { } {
 }
 
 #
-# ::hisis::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::hisis::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::hisis::getPluginType { } {
 }
 
 #
-# ::hisis::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::hisis::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::hisis::getPluginOS { } {
 }
 
 #
-# ::hisis::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::hisis::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::hisis::getCamNo { camItem } {
 }
 
 #
-# ::hisis::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::hisis::isReady { camItem } {
 }
 
 #
-# ::hisis::initPlugin
+# initPlugin
 #    Initialise les variables conf(hisis,...)
 #
 proc ::hisis::initPlugin { } {
@@ -115,7 +115,7 @@ proc ::hisis::initPlugin { } {
 }
 
 #
-# ::hisis::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::hisis::confToWidget { } {
@@ -136,7 +136,7 @@ proc ::hisis::confToWidget { } {
 }
 
 #
-# ::hisis::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::hisis::widgetToConf { camItem } {
@@ -157,7 +157,7 @@ proc ::hisis::widgetToConf { camItem } {
 }
 
 #
-# ::hisis::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Hi-SIS
 #
 proc ::hisis::fillConfigPage { frm camItem } {
@@ -429,7 +429,7 @@ proc ::hisis::fillConfigPage { frm camItem } {
 }
 
 #
-# ::hisis::configureCamera
+# configureCamera
 #    Configure la camera Hi-SIS en fonction des donnees contenues dans les variables conf(hisis,...)
 #
 proc ::hisis::configureCamera { camItem bufNo } {
@@ -784,7 +784,7 @@ proc ::hisis::configureCamera { camItem bufNo } {
 }
 
 #
-# ::hisis::stop
+# stop
 #    Arrete la camera Hi-SIS
 #
 proc ::hisis::stop { camItem } {
@@ -802,7 +802,7 @@ proc ::hisis::stop { camItem } {
 }
 
 #
-# ::hisis::confHiSIS
+# confHiSIS
 #    Permet d'activer ou de desactiver les widgets de configuration des Hi-SIS
 #
 proc ::hisis::confHiSIS { } {
@@ -838,7 +838,7 @@ proc ::hisis::confHiSIS { } {
 }
 
 #
-# ::hisis::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::hisis::setShutter { camItem shutterState ShutterOptionList } {
@@ -872,7 +872,7 @@ proc ::hisis::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::hisis::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
