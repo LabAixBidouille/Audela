@@ -6,10 +6,26 @@
 #
 
 namespace eval ::th7852a {
-   package provide th7852a 1.0
+   package provide th7852a 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] th7852a.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::th7852a::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libcamth.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::th7852a::getPluginType]] "th7852a" "libcamth.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(th7852a,installNewVersion) $sourceFileName [package version th7852a] ]
+   }
 }
 
 #

@@ -25,6 +25,8 @@ set caption(starlight,accelerateur)                 "Parallel Port Accelerator B
 set caption(starlight,sans_accelerateur)            "without"
 set caption(starlight,avec_accelerateur)            "with"
 
+set caption(starlight,installNewVersion)            "Installation of library %s of plugin starlight v%s completed."
+
 set caption(starlight,port_camera)                  "Starlight Port - Model"
 set caption(starlight,2points)                      ":"
 
@@ -47,6 +49,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Boîtier accélérateur de port parallèle"
    set caption(starlight,sans_accelerateur)         "sans"
    set caption(starlight,avec_accelerateur)         "avec"
+
+   set caption(starlight,installNewVersion)         "Fin de l'installation de la librairie %s du plugin starlight v%s."
 
    set caption(starlight,port_camera)               "Port Starlight"
    set caption(starlight,2points)                   ":"
@@ -71,6 +75,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,sans_accelerateur)         "senza"
    set caption(starlight,avec_accelerateur)         "con"
 
+   set caption(starlight,installNewVersion)         "Installazione della libreria %s del plugin starlight v%s terminata."
+
    set caption(starlight,port_camera)               "Porta Starlight"
    set caption(starlight,2points)                   ":"
 
@@ -93,6 +99,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Caja aceleradora de puerto paralelo"
    set caption(starlight,sans_accelerateur)         "sin"
    set caption(starlight,avec_accelerateur)         "con"
+
+   set caption(starlight,installNewVersion)         "Fin de la instalación de la libreria %s del plugin starlight v%s."
 
    set caption(starlight,port_camera)               "Puerto Starlight"
    set caption(starlight,2points)                   ":"
@@ -117,6 +125,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,sans_accelerateur)         "ohne"
    set caption(starlight,avec_accelerateur)         "mit"
 
+   set caption(starlight,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin starlight v%s."
+
    set caption(starlight,port_camera)               "Starlight Port - Modell"
    set caption(starlight,2points)                   ":"
 
@@ -139,6 +149,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Caixa de Aceleração da porta Paralela"
    set caption(starlight,sans_accelerateur)         "sem"
    set caption(starlight,avec_accelerateur)         "com"
+
+   set caption(starlight,installNewVersion)         "Instalação da livraria %s do plugin starlight v%s concluída."
 
    set caption(starlight,port_camera)               "Porta Starlight"
    set caption(starlight,2points)                   ":"
@@ -163,6 +175,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,sans_accelerateur)         "without"
    set caption(starlight,avec_accelerateur)         "with"
 
+   set caption(starlight,installNewVersion)         "Installation of library %s of plugin starlight v%s completed."
+
    set caption(starlight,port_camera)               "Starlight Port - Model"
    set caption(starlight,2points)                   ":"
 
@@ -186,6 +200,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,sans_accelerateur)         "without"
    set caption(starlight,avec_accelerateur)         "with"
 
+   set caption(starlight,installNewVersion)         "Installation of library %s of plugin starlight v%s completed."
+
    set caption(starlight,port_camera)               "Starlight Port - Model"
    set caption(starlight,2points)                   ":"
 
@@ -208,6 +224,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(starlight,accelerateur)              "Parallel Port Accelerator Box"
    set caption(starlight,sans_accelerateur)         "without"
    set caption(starlight,avec_accelerateur)         "with"
+
+   set caption(starlight,installNewVersion)         "Installation of library %s of plugin starlight v%s completed."
 
    set caption(starlight,port_camera)               "Starlight Port - Model"
    set caption(starlight,2points)                   ":"

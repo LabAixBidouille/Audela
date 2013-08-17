@@ -19,6 +19,8 @@ set caption(scr1300xtc,acquisition)                  "Acquisition"
 set caption(scr1300xtc,miroir_x)                     "Top/Bottom Reversal"
 set caption(scr1300xtc,miroir_y)                     "Left/Right Reversal"
 
+set caption(scr1300xtc,installNewVersion)            "Installation of library %s of plugin scr1300xtc v%s completed."
+
 set caption(scr1300xtc,port_camera)                  "SCR1300XTC Port"
 set caption(scr1300xtc,2points)                      ":"
 
@@ -35,6 +37,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Acquisition"
    set caption(scr1300xtc,miroir_x)                  "Inverser Haut/Bas"
    set caption(scr1300xtc,miroir_y)                  "Inverser Gauche/Droite"
+
+   set caption(scr1300xtc,installNewVersion)         "Fin de l'installation de la librairie %s du plugin scr1300xtc v%s."
 
    set caption(scr1300xtc,port_camera)               "Port SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -53,6 +57,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,miroir_x)                  "Inversione Alto/Basso"
    set caption(scr1300xtc,miroir_y)                  "Inversione Sinistra/Destra"
 
+   set caption(scr1300xtc,installNewVersion)         "Installazione della libreria %s del plugin scr1300xtc v%s terminata."
+
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
 
@@ -69,6 +75,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Adquisición"
    set caption(scr1300xtc,miroir_x)                  "Invertir Arriba/Abajo"
    set caption(scr1300xtc,miroir_y)                  "Invertir Izquierda/Derecha"
+
+   set caption(scr1300xtc,installNewVersion)         "Fin de la instalación de la libreria %s del plugin scr1300xtc v%s."
 
    set caption(scr1300xtc,port_camera)               "Puerto SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -87,6 +95,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,miroir_x)                  "Oben/Unten umkehren"
    set caption(scr1300xtc,miroir_y)                  "Links/Rechts umkehren"
 
+   set caption(scr1300xtc,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin scr1300xtc v%s."
+
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
 
@@ -103,6 +113,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Aquisição"
    set caption(scr1300xtc,miroir_x)                  "Inverter Cima/Baixo"
    set caption(scr1300xtc,miroir_y)                  "Inverter Esquerda/Direita"
+
+   set caption(scr1300xtc,installNewVersion)         "Instalação da livraria %s do plugin scr1300xtc v%s concluída."
 
    set caption(scr1300xtc,port_camera)               "Porta SCR1300XTC"
    set caption(scr1300xtc,2points)                   ":"
@@ -121,6 +133,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,miroir_x)                  "Top/Bottom Reversal"
    set caption(scr1300xtc,miroir_y)                  "Left/Right Reversal"
 
+   set caption(scr1300xtc,installNewVersion)         "Installation of library %s of plugin scr1300xtc v%s completed."
+
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
 
@@ -138,6 +152,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,miroir_x)                  "Top/Bottom Reversal"
    set caption(scr1300xtc,miroir_y)                  "Left/Right Reversal"
 
+   set caption(scr1300xtc,installNewVersion)         "Installation of library %s of plugin scr1300xtc v%s completed."
+
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"
 
@@ -154,6 +170,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scr1300xtc,acquisition)               "Acquisition"
    set caption(scr1300xtc,miroir_x)                  "Top/Bottom Reversal"
    set caption(scr1300xtc,miroir_y)                  "Left/Right Reversal"
+
+   set caption(scr1300xtc,installNewVersion)         "Installation of library %s of plugin scr1300xtc v%s completed."
 
    set caption(scr1300xtc,port_camera)               "SCR1300XTC Port"
    set caption(scr1300xtc,2points)                   ":"

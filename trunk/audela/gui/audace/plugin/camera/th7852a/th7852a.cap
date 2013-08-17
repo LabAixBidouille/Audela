@@ -17,6 +17,8 @@ set caption(th7852a,miroir_x)                     "Top/Bottom Reversal"
 set caption(th7852a,miroir_y)                     "Left/Right Reversal"
 set caption(th7852a,coef)                         "Coefficient"
 
+set caption(th7852a,installNewVersion)            "Installation of library %s of plugin th7852a v%s completed."
+
 set caption(th7852a,port_camera)                  "TH7852A Port"
 set caption(th7852a,2points)                      ":"
 set caption(th7852a,bus_ISA)                      "Bus ISA"
@@ -32,6 +34,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Inverser Haut/Bas"
    set caption(th7852a,miroir_y)                  "Inverser Gauche/Droite"
    set caption(th7852a,coef)                      "Coefficient"
+
+   set caption(th7852a,installNewVersion)         "Fin de l'installation de la librairie %s du plugin th7852a v%s."
 
    set caption(th7852a,port_camera)               "Port TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -49,6 +53,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(th7852a,coef)                      "Coefficiente"
 
+   set caption(th7852a,installNewVersion)         "Installazione della libreria %s del plugin th7852a v%s terminata."
+
    set caption(th7852a,port_camera)               "Porta TH7852A"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
@@ -64,6 +70,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Invertir Arriba/Abajo"
    set caption(th7852a,miroir_y)                  "Invertir Izquierda/Derecha"
    set caption(th7852a,coef)                      "Coeficiente"
+
+   set caption(th7852a,installNewVersion)         "Fin de la instalación de la libreria %s del plugin th7852a v%s."
 
    set caption(th7852a,port_camera)               "Puerto TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -81,6 +89,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Links/Rechts umkehren"
    set caption(th7852a,coef)                      "Faktor"
 
+   set caption(th7852a,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin th7852a v%s."
+
    set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
@@ -96,6 +106,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Inverter Cima/Baixo"
    set caption(th7852a,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(th7852a,coef)                      "Coeficiente"
+
+   set caption(th7852a,installNewVersion)         "Instalação da livraria %s do plugin th7852a v%s concluída."
 
    set caption(th7852a,port_camera)               "Porta TH7852A"
    set caption(th7852a,2points)                   ":"
@@ -113,6 +125,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Left/Right Reversal"
    set caption(th7852a,coef)                      "Coefficient"
 
+   set caption(th7852a,installNewVersion)         "Installation of library %s of plugin th7852a v%s completed."
+
    set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
@@ -129,6 +143,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Left/Right Reversal"
    set caption(th7852a,coef)                      "Coefficient"
 
+   set caption(th7852a,installNewVersion)         "Installation of library %s of plugin th7852a v%s completed."
+
    set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
@@ -144,6 +160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_x)                  "Top/Bottom Reversal"
    set caption(th7852a,miroir_y)                  "Left/Right Reversal"
    set caption(th7852a,coef)                      "Coefficient"
+
+   set caption(th7852a,installNewVersion)         "Installation of library %s of plugin th7852a v%s completed."
 
    set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
