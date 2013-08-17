@@ -6,14 +6,50 @@
 #
 
 namespace eval ::dslr {
-   package provide dslr 1.0
+   package provide dslr 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] dslr.cap ]
 }
 
 #
-# ::dslr::getPluginTitle
+# install
+#    installe le plugin et la dll
+#
+proc ::dslr::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libdigicam.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dslr::getPluginType]] "dslr" "libdigicam.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dslr::getPluginType]] "dslr" "libgphoto2.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2_canon.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dslr::getPluginType]] "dslr" "libgphoto2_canon.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2_port.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dslr::getPluginType]] "dslr" "libgphoto2_port.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2_port_usb.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::dslr::getPluginType]] "dslr" "libgphoto2_port_usb.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(dslr,installNewVersion) $sourceFileName [package version dslr] ]
+   }
+}
+
+#
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::dslr::getPluginTitle { } {
@@ -23,7 +59,7 @@ proc ::dslr::getPluginTitle { } {
 }
 
 #
-# ::dslr::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::dslr::getPluginHelp { } {
@@ -31,7 +67,7 @@ proc ::dslr::getPluginHelp { } {
 }
 
 #
-# ::dslr::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::dslr::getPluginType { } {
@@ -39,7 +75,7 @@ proc ::dslr::getPluginType { } {
 }
 
 #
-# ::dslr::getPluginOS
+# :getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::dslr::getPluginOS { } {
@@ -47,7 +83,7 @@ proc ::dslr::getPluginOS { } {
 }
 
 #
-# ::dslr::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::dslr::getCamNo { camItem } {
@@ -57,7 +93,7 @@ proc ::dslr::getCamNo { camItem } {
 }
 
 #
-# ::dslr::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -74,7 +110,7 @@ proc ::dslr::isReady { camItem } {
 }
 
 #
-# ::dslr::initPlugin
+# initPlugin
 #    Initialise les variables conf(dslr,...)
 #
 proc ::dslr::initPlugin { } {
@@ -102,7 +138,7 @@ proc ::dslr::initPlugin { } {
 }
 
 #
-# ::dslr::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::dslr::confToWidget { } {
@@ -122,7 +158,7 @@ proc ::dslr::confToWidget { } {
 }
 
 #
-# ::dslr::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::dslr::widgetToConf { camItem } {
@@ -142,7 +178,7 @@ proc ::dslr::widgetToConf { camItem } {
 }
 
 #
-# ::dslr::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera APN (DSLR)
 #
 proc ::dslr::fillConfigPage { frm camItem } {
@@ -365,7 +401,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
 }
 
 #
-# ::dslr::configureCamera
+# configureCamera
 #    Configure la camera APN (DSLR) en fonction des donnees contenues dans les variables conf(dslr,...)
 #
 proc ::dslr::configureCamera { camItem bufNo } {
@@ -461,7 +497,7 @@ proc ::dslr::configureCamera { camItem bufNo } {
 }
 
 #
-# ::dslr::stop
+# stop
 #    Arrete la camera APN (DSLR)
 #
 proc ::dslr::stop { camItem } {
@@ -498,7 +534,7 @@ proc ::dslr::stop { camItem } {
 }
 
 #
-# ::dslr::confDSLR
+# confDSLR
 # Permet d'activer ou de desactiver le bouton de telechargement des images des APN (DSLR)
 #
 proc ::dslr::confDSLR { camItem } {
@@ -540,7 +576,7 @@ proc ::dslr::confDSLR { camItem } {
 }
 
 #
-# ::dslr::confDSLRInactif
+# confDSLRInactif
 #    Permet de desactiver le bouton de telechargement des images a l'arret de la camera APN (DSLR)
 #
 proc ::dslr::confDSLRInactif { camItem } {
@@ -558,7 +594,7 @@ proc ::dslr::confDSLRInactif { camItem } {
 }
 
 #
-# ::dslr::configureAPNLinkLonguePose
+# configureAPNLinkLonguePose
 #    Positionne la liaison sur celle qui vient d'etre selectionnee pour
 #    la longue pose de la camera APN (DSLR)
 #
@@ -590,7 +626,7 @@ proc ::dslr::configureAPNLinkLonguePose { } {
 }
 
 #
-# ::dslr::setLoadParameters
+# setLoadParameters
 #    Cree la boite de telechargement des images
 #
 proc ::dslr::setLoadParameters { camItem } {
@@ -666,7 +702,7 @@ proc ::dslr::setLoadParameters { camItem } {
 }
 
 #
-# ::dslr::utiliserCF
+# utiliserCF
 #    Utilise la carte memoire CF
 #
 proc ::dslr::utiliserCF { camItem } {
@@ -701,7 +737,7 @@ proc ::dslr::utiliserCF { camItem } {
 }
 
 #
-# ::dslr::supprimerImage
+# supprimerImage
 #    transmet la valeur de l'indicateur $conf(dslr,supprimer_image) a la
 #    librairie libdigicam.dll afin d'indiquer si l'image doit etre supprimee
 #    lors des acquisitions suivantes
@@ -714,7 +750,7 @@ proc ::dslr::supprimerImage { camItem } {
 }
 
 #
-# ::dslr::changerSelectionTelechargementAPN
+# changerSelectionTelechargementAPN
 #    Change le mode de telechargement
 #
 proc ::dslr::changerSelectionTelechargementAPN { camItem } {
@@ -740,7 +776,7 @@ proc ::dslr::changerSelectionTelechargementAPN { camItem } {
 }
 
 #
-# ::dslr::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
