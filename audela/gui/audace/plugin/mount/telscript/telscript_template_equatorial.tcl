@@ -131,6 +131,7 @@ proc setup { } {
 
    # --- Add extensions that are not loaded in the thread
    set pwd0 [pwd]
+   set path [file dirname [info nameofexecutable]]
    cd $path
    load libaudela[info sharedlibextension]
    cd $pwd0
