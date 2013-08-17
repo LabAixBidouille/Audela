@@ -89,8 +89,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
-      set confgene(EditScript,error_iris)   "1"
       set confgene(EditScript,error_aladin) "1"
+      set confgene(EditScript,error_iris)   "1"
       if [string compare $filename ""] {
          set a_effectuer "exec \"$conf(editscript)\" \"$filename\" &"
          if [catch $a_effectuer input] {

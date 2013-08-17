@@ -93,8 +93,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
-      set confgene(EditScript,error_iris)   "1"
       set confgene(EditScript,error_aladin) "1"
+      set confgene(EditScript,error_iris)   "1"
 
       #--- Je recupere l'annee en cours pour la borne haute du Copyright
       set audace(endCopyright) [ clock format [ clock seconds ] -format "%Y" ]
@@ -717,17 +717,6 @@ namespace eval ::audace {
             set conf(exec_java) ""
          }
       }
-      #--- Chargement du repertoire de l'interpreteur iris (pour Windows uniquement)
-      if { ! [ info exists conf(exec_iris) ] } {
-         if { $::tcl_platform(os) == "Windows NT" } {
-            set exec_iris [ file join ${path} iris.exe ]
-            if { ![ file executable "$exec_iris" ] } {
-               set conf(exec_iris) ""
-            } else {
-               set conf(exec_iris) $exec_iris
-            }
-         }
-      }
       #--- Chargement du repertoire de Aladin
       if { ! [ info exists conf(exec_aladin) ] } {
          if { $::tcl_platform(os) == "Linux" } {
@@ -739,6 +728,17 @@ namespace eval ::audace {
                set conf(exec_aladin) ""
             } else {
                set conf(exec_aladin) $exec_aladin
+            }
+         }
+      }
+      #--- Chargement du repertoire de l'interpreteur iris (pour Windows uniquement)
+      if { ! [ info exists conf(exec_iris) ] } {
+         if { $::tcl_platform(os) == "Windows NT" } {
+            set exec_iris [ file join ${path} iris.exe ]
+            if { ![ file executable "$exec_iris" ] } {
+               set conf(exec_iris) ""
+            } else {
+               set conf(exec_iris) $exec_iris
             }
          }
       }
@@ -1089,8 +1089,8 @@ namespace eval ::audace {
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
       set confgene(EditScript,error_java)   "1"
-      set confgene(EditScript,error_iris)   "1"
       set confgene(EditScript,error_aladin) "1"
+      set confgene(EditScript,error_iris)   "1"
 
       if [ string compare $filename "" ] {
          set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
