@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded starlight 1.0 [ list source [ file join $dir starlight.tcl ] ]
+package ifneeded starlight 3.0 [ list source [ file join $dir starlight.tcl ] ]
 

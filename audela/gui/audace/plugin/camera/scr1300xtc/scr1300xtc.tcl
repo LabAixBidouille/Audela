@@ -6,10 +6,26 @@
 #
 
 namespace eval ::scr1300xtc {
-   package provide scr1300xtc 1.0
+   package provide scr1300xtc 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] scr1300xtc.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::scr1300xtc::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libsynonyme.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::scr1300xtc::getPluginType]] "scr1300xtc" "libsynonyme.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(scr1300xtc,installNewVersion) $sourceFileName [package version scr1300xtc] ]
+   }
 }
 
 #
