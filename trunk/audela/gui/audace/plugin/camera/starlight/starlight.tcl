@@ -29,7 +29,7 @@ proc ::starlight::install { } {
 }
 
 #
-# ::starlight::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::starlight::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::starlight::getPluginTitle { } {
 }
 
 #
-# ::starlight::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::starlight::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::starlight::getPluginHelp { } {
 }
 
 #
-# ::starlight::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::starlight::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::starlight::getPluginType { } {
 }
 
 #
-# ::starlight::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::starlight::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::starlight::getPluginOS { } {
 }
 
 #
-# ::starlight::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::starlight::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::starlight::getCamNo { camItem } {
 }
 
 #
-# ::starlight::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::starlight::isReady { camItem } {
 }
 
 #
-# ::starlight::initPlugin
+# initPlugin
 #    Initialise les variables conf(starlight,...)
 #
 proc ::starlight::initPlugin { } {
@@ -111,7 +111,7 @@ proc ::starlight::initPlugin { } {
 }
 
 #
-# ::starlight::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::starlight::confToWidget { } {
@@ -127,7 +127,7 @@ proc ::starlight::confToWidget { } {
 }
 
 #
-# ::starlight::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::starlight::widgetToConf { camItem } {
@@ -143,7 +143,7 @@ proc ::starlight::widgetToConf { camItem } {
 }
 
 #
-# ::starlight::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Starlight
 #
 proc ::starlight::fillConfigPage { frm camItem } {
@@ -275,7 +275,7 @@ proc ::starlight::fillConfigPage { frm camItem } {
 }
 
 #
-# ::starlight::configureCamera
+# configureCamera
 #    Configure la camera Starlight en fonction des donnees contenues dans les variables conf(starlight,...)
 #
 proc ::starlight::configureCamera { camItem bufNo } {
@@ -368,7 +368,7 @@ proc ::starlight::configureCamera { camItem bufNo } {
 }
 
 #
-# ::starlight::stop
+# stop
 #    Arrete la camera Starlight
 #
 proc ::starlight::stop { camItem } {
@@ -386,7 +386,7 @@ proc ::starlight::stop { camItem } {
 }
 
 #
-# ::starlight::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

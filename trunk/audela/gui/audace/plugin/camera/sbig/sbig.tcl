@@ -29,7 +29,7 @@ proc ::sbig::install { } {
 }
 
 #
-# ::sbig::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::sbig::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::sbig::getPluginTitle { } {
 }
 
 #
-# ::sbig::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::sbig::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::sbig::getPluginHelp { } {
 }
 
 #
-# ::sbig::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::sbig::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::sbig::getPluginType { } {
 }
 
 #
-# ::sbig::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::sbig::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::sbig::getPluginOS { } {
 }
 
 #
-# ::sbig::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::sbig::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::sbig::getCamNo { camItem } {
 }
 
 #
-# ::sbig::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::sbig::isReady { camItem } {
 }
 
 #
-# ::sbig::initPlugin
+# initPlugin
 #    Initialise les variables conf(sbig,...)
 #
 proc ::sbig::initPlugin { } {
@@ -117,7 +117,7 @@ proc ::sbig::initPlugin { } {
 }
 
 #
-# ::sbig::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::sbig::confToWidget { } {
@@ -148,7 +148,7 @@ proc ::sbig::confToWidget { } {
 }
 
 #
-# ::sbig::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::sbig::widgetToConf { camItem } {
@@ -173,7 +173,7 @@ proc ::sbig::widgetToConf { camItem } {
 }
 
 #
-# ::sbig::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera SBIG
 #
 proc ::sbig::fillConfigPage { frm camItem } {
@@ -368,7 +368,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
 }
 
 #
-# ::sbig::configureCamera
+# configureCamera
 #    Configure la camera SBIG en fonction des donnees contenues dans les variables conf(sbig,...)
 #
 proc ::sbig::configureCamera { camItem bufNo } {
@@ -441,7 +441,7 @@ proc ::sbig::configureCamera { camItem bufNo } {
 }
 
 #
-# ::sbig::stop
+# stop
 #    Arrete la camera SBIG
 #
 proc ::sbig::stop { camItem } {
@@ -459,7 +459,7 @@ proc ::sbig::stop { camItem } {
 }
 
 #
-# ::sbig::dispTempSbig
+# dispTempSbig
 #    Affiche la temperature du CCD
 #
 proc ::sbig::dispTempSbig { camItem } {
@@ -489,7 +489,7 @@ proc ::sbig::dispTempSbig { camItem } {
 }
 
 #
-# ::sbig::configurePort
+# configurePort
 #    Configure le bouton "Configurer" et le host
 #
 proc ::sbig::configurePort { } {
@@ -529,7 +529,7 @@ proc ::sbig::configurePort { } {
 }
 
 #
-# ::sbig::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::sbig::checkConfigRefroidissement { } {
@@ -555,7 +555,7 @@ proc ::sbig::checkConfigRefroidissement { } {
 }
 
 #
-# ::sbig::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::sbig::setTempCCD { camItem } {
@@ -565,7 +565,7 @@ proc ::sbig::setTempCCD { camItem } {
 }
 
 #
-# ::sbig::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
@@ -594,7 +594,7 @@ proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::sbig::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

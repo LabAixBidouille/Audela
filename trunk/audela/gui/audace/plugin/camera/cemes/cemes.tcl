@@ -29,7 +29,7 @@ proc ::cemes::install { } {
 }
 
 #
-# ::cemes::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::cemes::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::cemes::getPluginTitle { } {
 }
 
 #
-# ::cemes::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::cemes::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::cemes::getPluginHelp { } {
 }
 
 #
-# ::cemes::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::cemes::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::cemes::getPluginType { } {
 }
 
 #
-# ::cemes::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::cemes::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::cemes::getPluginOS { } {
 }
 
 #
-# ::cemes::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::cemes::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::cemes::getCamNo { camItem } {
 }
 
 #
-# ::cemes::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::cemes::isReady { camItem } {
 }
 
 #
-# ::cemes::initPlugin
+# initPlugin
 #    Initialise les variables conf(cemes,...)
 #
 proc ::cemes::initPlugin { } {
@@ -112,7 +112,7 @@ proc ::cemes::initPlugin { } {
 }
 
 #
-# ::cemes::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::cemes::confToWidget { } {
@@ -128,7 +128,7 @@ proc ::cemes::confToWidget { } {
 }
 
 #
-# ::cemes::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::cemes::widgetToConf { camItem } {
@@ -144,7 +144,7 @@ proc ::cemes::widgetToConf { camItem } {
 }
 
 #
-# ::cemes::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Cemes
 #
 proc ::cemes::fillConfigPage { frm camItem } {
@@ -259,7 +259,7 @@ proc ::cemes::fillConfigPage { frm camItem } {
 }
 
 #
-# ::cemes::configureCamera
+# configureCamera
 #    Configure la camera Cemes en fonction des donnees contenues dans les variables conf(cemes,...)
 #
 proc ::cemes::configureCamera { camItem bufNo } {
@@ -316,7 +316,7 @@ proc ::cemes::configureCamera { camItem bufNo } {
 }
 
 #
-# ::cemes::stop
+# stop
 #    Arrete la camera Cemes
 #
 proc ::cemes::stop { camItem } {
@@ -330,7 +330,7 @@ proc ::cemes::stop { camItem } {
 }
 
 #
-# ::cemes::dispTempCemes
+# dispTempCemes
 #    Affiche la temperature du CCD
 #
 proc ::cemes::dispTempCemes { camItem } {
@@ -351,7 +351,7 @@ proc ::cemes::dispTempCemes { camItem } {
 }
 
 #
-# ::cemes::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::cemes::checkConfigRefroidissement { } {
@@ -374,7 +374,7 @@ proc ::cemes::checkConfigRefroidissement { } {
 }
 
 #
-# ::cemes::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::cemes::setTempCCD { camItem } {
@@ -384,7 +384,7 @@ proc ::cemes::setTempCCD { camItem } {
 }
 
 #
-# ::cemes::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::cemes::setShutter { camItem shutterState ShutterOptionList } {
@@ -418,7 +418,7 @@ proc ::cemes::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::cemes::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

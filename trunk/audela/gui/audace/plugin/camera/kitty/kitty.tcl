@@ -29,7 +29,7 @@ proc ::kitty::install { } {
 }
 
 #
-# ::kitty::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::kitty::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::kitty::getPluginTitle { } {
 }
 
 #
-# ::kitty::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::kitty::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::kitty::getPluginHelp { } {
 }
 
 #
-# ::kitty::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::kitty::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::kitty::getPluginType { } {
 }
 
 #
-# ::kitty::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::kitty::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::kitty::getPluginOS { } {
 }
 
 #
-# ::kitty::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::kitty::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::kitty::getCamNo { camItem } {
 }
 
 #
-# ::kitty::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::kitty::isReady { camItem } {
 }
 
 #
-# ::kitty::initPlugin
+# initPlugin
 #    Initialise les variables conf(kitty,...)
 #
 proc ::kitty::initPlugin { } {
@@ -111,7 +111,7 @@ proc ::kitty::initPlugin { } {
 }
 
 #
-# ::kitty::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::kitty::confToWidget { } {
@@ -126,7 +126,7 @@ proc ::kitty::confToWidget { } {
 }
 
 #
-# ::kitty::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::kitty::widgetToConf { camItem } {
@@ -141,7 +141,7 @@ proc ::kitty::widgetToConf { camItem } {
 }
 
 #
-# ::kitty::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Kitty
 #
 proc ::kitty::fillConfigPage { frm camItem } {
@@ -301,7 +301,7 @@ proc ::kitty::fillConfigPage { frm camItem } {
 }
 
 #
-# ::kitty::configureCamera
+# configureCamera
 #    Configure la camera Kitty en fonction des donnees contenues dans les variables conf(kitty,...)
 #
 proc ::kitty::configureCamera { camItem bufNo } {
@@ -355,7 +355,7 @@ proc ::kitty::configureCamera { camItem bufNo } {
 }
 
 #
-# ::kitty::stop
+# stop
 #    Arrete la camera Kitty
 #
 proc ::kitty::stop { camItem } {
@@ -376,7 +376,7 @@ proc ::kitty::stop { camItem } {
 }
 
 #
-# ::kitty::dispTempKitty
+# dispTempKitty
 #    Affiche la temperature du CCD
 #
 proc ::kitty::dispTempKitty { camItem } {
@@ -397,7 +397,7 @@ proc ::kitty::dispTempKitty { camItem } {
 }
 
 #
-# ::kitty::confKitty
+# confKitty
 #    Permet d'activer ou de desactiver les widgets de configuration de la Kitty K2
 #
 proc ::kitty::confKitty { camItem } {
@@ -437,7 +437,7 @@ proc ::kitty::confKitty { camItem } {
 }
 
 #
-# ::kitty::confKittyK2Inactif
+# confKittyK2Inactif
 #    Permet de desactiver les widgets a l'arret de la Kitty K2
 #
 proc ::kitty::confKittyK2Inactif { camItem } {
@@ -456,7 +456,7 @@ proc ::kitty::confKittyK2Inactif { camItem } {
 }
 
 #
-# ::kitty::testK2
+# testK2
 #    Permet de tester le microcontroleur de la Kitty K2
 #
 proc ::kitty::testK2 { camItem } {
@@ -466,7 +466,7 @@ proc ::kitty::testK2 { camItem } {
 }
 
 #
-# ::kitty::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

@@ -13,7 +13,7 @@ namespace eval ::epixraptor {
 }
 
 #
-# ::epixraptor::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::epixraptor::getPluginTitle { } {
@@ -23,7 +23,7 @@ proc ::epixraptor::getPluginTitle { } {
 }
 
 #
-# ::epixraptor::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::epixraptor::getPluginHelp { } {
@@ -31,7 +31,7 @@ proc ::epixraptor::getPluginHelp { } {
 }
 
 #
-# ::epixraptor::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::epixraptor::getPluginType { } {
@@ -39,7 +39,7 @@ proc ::epixraptor::getPluginType { } {
 }
 
 #
-# ::epixraptor::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::epixraptor::getPluginOS { } {
@@ -47,7 +47,7 @@ proc ::epixraptor::getPluginOS { } {
 }
 
 #
-# ::epixraptor::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::epixraptor::getCamNo { camItem } {
@@ -57,7 +57,7 @@ proc ::epixraptor::getCamNo { camItem } {
 }
 
 #
-# ::epixraptor::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -74,7 +74,7 @@ proc ::epixraptor::isReady { camItem } {
 }
 
 #
-# ::epixraptor::initPlugin
+# initPlugin
 #    Initialise les variables conf(epixraptor,...)
 #
 proc ::epixraptor::initPlugin { } {
@@ -106,7 +106,7 @@ proc ::epixraptor::initPlugin { } {
 }
 
 #
-# ::epixraptor::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::epixraptor::confToWidget { } {
@@ -132,7 +132,7 @@ proc ::epixraptor::confToWidget { } {
 }
 
 #
-# ::epixraptor::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::epixraptor::widgetToConf { camItem } {
@@ -158,7 +158,7 @@ proc ::epixraptor::widgetToConf { camItem } {
 }
 
 #
-# ::epixraptor::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Raptor
 #
 proc ::epixraptor::fillConfigPage { frm camItem } {
@@ -365,7 +365,7 @@ proc ::epixraptor::fillConfigPage { frm camItem } {
 }
 
 #
-# ::epixraptor::configureCamera
+# configureCamera
 #    Configure la camera Raptor en fonction des donnees contenues dans les variables conf(epixraptor,...)
 #
 proc ::epixraptor::configureCamera { camItem bufNo } {
@@ -414,7 +414,7 @@ proc ::epixraptor::configureCamera { camItem bufNo } {
 }
 
 #
-# ::epixraptor::stop
+# stop
 #    Arrete la camera Raptor
 #
 proc ::epixraptor::stop { camItem } {
@@ -428,7 +428,7 @@ proc ::epixraptor::stop { camItem } {
 }
 
 #
-# ::epixraptor::dispTempCMOS
+# dispTempCMOS
 #    Affiche la temperature du capteur CMOS
 #
 proc ::epixraptor::dispTempCMOS { camItem } {
@@ -447,14 +447,14 @@ proc ::epixraptor::dispTempCMOS { camItem } {
 }
 
 #
-# ::epixraptor::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::epixraptor::checkConfigRefroidissement { } {
 }
 
 #
-# ::epixraptor::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::epixraptor::setTempCCD { camItem } {
@@ -464,7 +464,7 @@ proc ::epixraptor::setTempCCD { camItem } {
 }
 
 #
-# ::epixraptor::explore
+# explore
 #    Procedure pour designer les fichiers de configuration
 #
 proc ::epixraptor::explore { } {
@@ -483,7 +483,7 @@ proc ::epixraptor::explore { } {
 }
 
 #
-# ::epixraptor::enable_config
+# enable_config
 #    Enables or disables ROI and binning
 #
 proc ::epixraptor::extconfig { camNo } {
@@ -521,11 +521,11 @@ proc ::epixraptor::extconfig { camNo } {
 }
 
 #
-# ::epixraptor::extract_config
+# extract_config
 #    Procedure that extract the ROI and the binning from the current file
 #
 #
-# ::epixraptor::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -563,10 +563,10 @@ proc ::epixraptor::getPluginProperty { camItem propertyName } {
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
-      hasShutter       { return 1 }
+      hasShutter       { return 0 }
       hasTempSensor    { return 1 }
       hasSetTemp       { return 0 }
-      hasVideo         { return 0 }
+      hasVideo         { return 1 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
@@ -584,6 +584,7 @@ proc ::epixraptor::getPluginProperty { camItem propertyName } {
             return ""
          }
       }
+      shutterList      { return [ list "" ] }
    }
 }
 

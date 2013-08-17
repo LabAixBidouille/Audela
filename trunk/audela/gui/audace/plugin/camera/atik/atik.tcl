@@ -29,7 +29,7 @@ proc ::atik::install { } {
 }
 
 #
-# ::atik::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::atik::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::atik::getPluginTitle { } {
 }
 
 #
-# ::atik::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::atik::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::atik::getPluginHelp { } {
 }
 
 #
-# ::atik::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::atik::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::atik::getPluginType { } {
 }
 
 #
-# ::atik::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::atik::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::atik::getPluginOS { } {
 }
 
 #
-# ::atik::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::atik::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::atik::getCamNo { camItem } {
 }
 
 #
-# ::atik::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::atik::isReady { camItem } {
 }
 
 #
-# ::atik::initPlugin
+# initPlugin
 #    Initialise les variables conf(atik,...)
 #
 proc ::atik::initPlugin { } {
@@ -118,7 +118,7 @@ proc ::atik::initPlugin { } {
 }
 
 #
-# ::atik::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::atik::confToWidget { } {
@@ -137,7 +137,7 @@ proc ::atik::confToWidget { } {
 }
 
 #
-# ::atik::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::atik::widgetToConf { camItem } {
@@ -154,7 +154,7 @@ proc ::atik::widgetToConf { camItem } {
 }
 
 #
-# ::atik::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Atik
 #
 proc ::atik::fillConfigPage { frm camItem } {
@@ -300,7 +300,7 @@ proc ::atik::fillConfigPage { frm camItem } {
 }
 
 #
-# ::atik::configureCamera
+# configureCamera
 #    Configure la camera Atik en fonction des donnees contenues dans les variables conf(atik,...)
 #
 proc ::atik::configureCamera { camItem bufNo } {
@@ -358,7 +358,7 @@ proc ::atik::configureCamera { camItem bufNo } {
 }
 
 #
-# ::atik::stop
+# stop
 #    Arrete la camera Atik
 #
 proc ::atik::stop { camItem } {
@@ -372,7 +372,7 @@ proc ::atik::stop { camItem } {
 }
 
 #
-# ::atik::dispTempAtik
+# dispTempAtik
 #    Affiche la temperature du CCD et la puissance du Peltier
 #
 proc ::atik::dispTempAtik { camItem } {
@@ -402,7 +402,7 @@ proc ::atik::dispTempAtik { camItem } {
 }
 
 #
-# ::atik::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::atik::checkConfigRefroidissement { camItem } {
@@ -432,7 +432,7 @@ proc ::atik::checkConfigRefroidissement { camItem } {
 }
 
 #
-# ::atik::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::atik::setTempCCD { camItem } {
@@ -442,7 +442,7 @@ proc ::atik::setTempCCD { camItem } {
 }
 
 #
-# ::atik::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::atik::setShutter { camItem shutterState ShutterOptionList } {
@@ -470,7 +470,7 @@ proc ::atik::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::atik::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

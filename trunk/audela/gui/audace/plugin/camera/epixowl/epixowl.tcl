@@ -34,7 +34,7 @@ proc ::epixowl::install { } {
 }
 
 #
-# ::epixowl::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::epixowl::getPluginTitle { } {
@@ -44,7 +44,7 @@ proc ::epixowl::getPluginTitle { } {
 }
 
 #
-# ::epixowl::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::epixowl::getPluginHelp { } {
@@ -52,7 +52,7 @@ proc ::epixowl::getPluginHelp { } {
 }
 
 #
-# ::epixowl::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::epixowl::getPluginType { } {
@@ -60,7 +60,7 @@ proc ::epixowl::getPluginType { } {
 }
 
 #
-# ::epixowl::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::epixowl::getPluginOS { } {
@@ -68,7 +68,7 @@ proc ::epixowl::getPluginOS { } {
 }
 
 #
-# ::epixowl::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::epixowl::getCamNo { camItem } {
@@ -78,7 +78,7 @@ proc ::epixowl::getCamNo { camItem } {
 }
 
 #
-# ::epixowl::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -95,7 +95,7 @@ proc ::epixowl::isReady { camItem } {
 }
 
 #
-# ::epixowl::initPlugin
+# initPlugin
 #    Initialise les variables conf(epixowl,...)
 #
 proc ::epixowl::initPlugin { } {
@@ -127,7 +127,7 @@ proc ::epixowl::initPlugin { } {
 }
 
 #
-# ::epixowl::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::epixowl::confToWidget { } {
@@ -153,7 +153,7 @@ proc ::epixowl::confToWidget { } {
 }
 
 #
-# ::epixowl::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::epixowl::widgetToConf { camItem } {
@@ -179,7 +179,7 @@ proc ::epixowl::widgetToConf { camItem } {
 }
 
 #
-# ::epixowl::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Raptor
 #
 proc ::epixowl::fillConfigPage { frm camItem } {
@@ -386,7 +386,7 @@ proc ::epixowl::fillConfigPage { frm camItem } {
 }
 
 #
-# ::epixowl::configureCamera
+# configureCamera
 #    Configure la camera Raptor en fonction des donnees contenues dans les variables conf(epixowl,...)
 #
 proc ::epixowl::configureCamera { camItem bufNo } {
@@ -435,7 +435,7 @@ proc ::epixowl::configureCamera { camItem bufNo } {
 }
 
 #
-# ::epixowl::stop
+# stop
 #    Arrete la camera Raptor
 #
 proc ::epixowl::stop { camItem } {
@@ -449,7 +449,7 @@ proc ::epixowl::stop { camItem } {
 }
 
 #
-# ::epixowl::dispTempCMOS
+# dispTempCMOS
 #    Affiche la temperature du capteur CMOS
 #
 proc ::epixowl::dispTempCMOS { camItem } {
@@ -468,14 +468,14 @@ proc ::epixowl::dispTempCMOS { camItem } {
 }
 
 #
-# ::epixowl::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::epixowl::checkConfigRefroidissement { } {
 }
 
 #
-# ::epixowl::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::epixowl::setTempCCD { camItem } {
@@ -485,7 +485,7 @@ proc ::epixowl::setTempCCD { camItem } {
 }
 
 #
-# ::epixowl::explore
+# explore
 #    Procedure pour designer les fichiers de configuration
 #
 proc ::epixowl::explore { } {
@@ -504,7 +504,7 @@ proc ::epixowl::explore { } {
 }
 
 #
-# ::epixowl::enable_config
+# enable_config
 #    Enables or disables ROI and binning
 #
 proc ::epixowl::extconfig { camNo } {
@@ -542,11 +542,11 @@ proc ::epixowl::extconfig { camNo } {
 }
 
 #
-# ::epixowl::extract_config
+# extract_config
 #    Procedure that extract the ROI and the binning from the current file
 #
 #
-# ::epixowl::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -587,7 +587,7 @@ proc ::epixowl::getPluginProperty { camItem propertyName } {
       hasShutter       { return 0 }
       hasTempSensor    { return 1 }
       hasSetTemp       { return 1 }
-      hasVideo         { return 0 }
+      hasVideo         { return 1 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
@@ -605,6 +605,7 @@ proc ::epixowl::getPluginProperty { camItem propertyName } {
             return ""
          }
       }
+      shutterList      { return [ list "" ] }
    }
 }
 

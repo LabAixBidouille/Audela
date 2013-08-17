@@ -54,7 +54,7 @@ proc ::audine::install { } {
 }
 
 #
-# ::audine::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::audine::getPluginTitle { } {
@@ -64,7 +64,7 @@ proc ::audine::getPluginTitle { } {
 }
 
 #
-# ::audine::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::audine::getPluginHelp { } {
@@ -72,7 +72,7 @@ proc ::audine::getPluginHelp { } {
 }
 
 #
-# ::audine::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::audine::getPluginType { } {
@@ -80,7 +80,7 @@ proc ::audine::getPluginType { } {
 }
 
 #
-# ::audine::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::audine::getPluginOS { } {
@@ -88,7 +88,7 @@ proc ::audine::getPluginOS { } {
 }
 
 #
-# ::audine::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::audine::getCamNo { camItem } {
@@ -98,7 +98,7 @@ proc ::audine::getCamNo { camItem } {
 }
 
 #
-# ::audine::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -115,7 +115,7 @@ proc ::audine::isReady { camItem } {
 }
 
 #
-# ::audine::initPlugin
+# initPlugin
 #    Initialise les variables conf(audine,...)
 #
 proc ::audine::initPlugin { } {
@@ -143,7 +143,7 @@ proc ::audine::initPlugin { } {
 }
 
 #
-# ::audine::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::audine::confToWidget { } {
@@ -162,7 +162,7 @@ proc ::audine::confToWidget { } {
 }
 
 #
-# ::audine::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::audine::widgetToConf { camItem } {
@@ -181,7 +181,7 @@ proc ::audine::widgetToConf { camItem } {
 }
 
 #
-# ::audine::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera Audine
 #
 proc ::audine::fillConfigPage { frm camItem } {
@@ -427,7 +427,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 }
 
 #
-# ::audine::configureCamera
+# configureCamera
 #    Configure la camera Audine en fonction des donnees contenues dans les variables conf(audine,...)
 #
 proc ::audine::configureCamera { camItem bufNo } {
@@ -597,7 +597,7 @@ proc ::audine::configureCamera { camItem bufNo } {
 }
 
 #
-# ::audine::stop
+# stop
 #    Arrete la camera Audine
 #
 proc ::audine::stop { camItem } {
@@ -633,7 +633,7 @@ proc ::audine::stop { camItem } {
 }
 
 #
-# ::audine::confAudine
+# confAudine
 # Permet d'activer ou de desactiver le bouton Tests pour la fabrication de la camera Audine
 #
 proc ::audine::confAudine { camItem } {
@@ -662,7 +662,7 @@ proc ::audine::confAudine { camItem } {
 }
 
 #
-# ::audine::confAudineInactif
+# confAudineInactif
 #    Permet de desactiver le bouton a l'arret de la Audine
 #
 proc ::audine::confAudineInactif { camItem } {
@@ -681,7 +681,7 @@ proc ::audine::confAudineInactif { camItem } {
 }
 
 #
-# ::audine::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::audine::setTempCCD { camItem } {
@@ -694,7 +694,7 @@ proc ::audine::setTempCCD { camItem } {
 }
 
 #
-# ::audine::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
@@ -728,7 +728,7 @@ proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::audine::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

@@ -34,7 +34,7 @@ proc ::fingerlakes::install { } {
 }
 
 #
-# ::fingerlakes::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::fingerlakes::getPluginTitle { } {
@@ -44,7 +44,7 @@ proc ::fingerlakes::getPluginTitle { } {
 }
 
 #
-# ::fingerlakes::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::fingerlakes::getPluginHelp { } {
@@ -52,7 +52,7 @@ proc ::fingerlakes::getPluginHelp { } {
 }
 
 #
-# ::fingerlakes::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::fingerlakes::getPluginType { } {
@@ -60,7 +60,7 @@ proc ::fingerlakes::getPluginType { } {
 }
 
 #
-# ::fingerlakes::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::fingerlakes::getPluginOS { } {
@@ -68,7 +68,7 @@ proc ::fingerlakes::getPluginOS { } {
 }
 
 #
-# ::fingerlakes::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::fingerlakes::getCamNo { camItem } {
@@ -78,7 +78,7 @@ proc ::fingerlakes::getCamNo { camItem } {
 }
 
 #
-# ::fingerlakes::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -95,7 +95,7 @@ proc ::fingerlakes::isReady { camItem } {
 }
 
 #
-# ::fingerlakes::initPlugin
+# initPlugin
 #    Initialise les variables conf(fingerlakes,...)
 #
 proc ::fingerlakes::initPlugin { } {
@@ -119,7 +119,7 @@ proc ::fingerlakes::initPlugin { } {
 }
 
 #
-# ::fingerlakes::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::fingerlakes::confToWidget { } {
@@ -136,7 +136,7 @@ proc ::fingerlakes::confToWidget { } {
 }
 
 #
-# ::fingerlakes::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::fingerlakes::widgetToConf { camItem } {
@@ -153,7 +153,7 @@ proc ::fingerlakes::widgetToConf { camItem } {
 }
 
 #
-# ::fingerlakes::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera FLI
 #
 proc ::fingerlakes::fillConfigPage { frm camItem } {
@@ -304,7 +304,7 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
 }
 
 #
-# ::fingerlakes::configureCamera
+# configureCamera
 #    Configure la camera FLI en fonction des donnees contenues dans les variables conf(fingerlakes,...)
 #
 proc ::fingerlakes::configureCamera { camItem bufNo } {
@@ -381,7 +381,7 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
 }
 
 #
-# ::fingerlakes::stop
+# stop
 #    Arrete la camera FLI
 #
 proc ::fingerlakes::stop { camItem } {
@@ -403,7 +403,7 @@ proc ::fingerlakes::stop { camItem } {
 }
 
 #
-# ::fingerlakes::dispTempFLI
+# dispTempFLI
 #    Affiche la temperature du CCD
 #
 proc ::fingerlakes::dispTempFLI { camItem } {
@@ -426,7 +426,7 @@ proc ::fingerlakes::dispTempFLI { camItem } {
 }
 
 #
-# ::fingerlakes::checkConfigRefroidissement
+# checkConfigRefroidissement
 #    Configure le widget de la consigne en temperature
 #
 proc ::fingerlakes::checkConfigRefroidissement { } {
@@ -449,7 +449,7 @@ proc ::fingerlakes::checkConfigRefroidissement { } {
 }
 
 #
-# ::fingerlakes::setTempCCD
+# setTempCCD
 #    Procedure pour retourner la consigne de temperature du CCD
 #
 proc ::fingerlakes::setTempCCD { camItem } {
@@ -459,7 +459,7 @@ proc ::fingerlakes::setTempCCD { camItem } {
 }
 
 #
-# ::fingerlakes::getReadSpeed
+# getReadSpeed
 #    retourne la vitesse de lecture
 #
 proc ::fingerlakes::getReadSpeed { } {
@@ -467,7 +467,7 @@ proc ::fingerlakes::getReadSpeed { } {
 }
 
 #
-# ::fingerlakes::setShutter
+# setShutter
 #    Procedure pour la commande de l'obturateur
 #
 proc ::fingerlakes::setShutter { camItem shutterState ShutterOptionList } {
@@ -501,7 +501,7 @@ proc ::fingerlakes::setShutter { camItem shutterState ShutterOptionList } {
 }
 
 #
-# ::fingerlakes::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :

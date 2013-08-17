@@ -75,7 +75,7 @@ proc ::dslr::getPluginType { } {
 }
 
 #
-# :getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::dslr::getPluginOS { } {

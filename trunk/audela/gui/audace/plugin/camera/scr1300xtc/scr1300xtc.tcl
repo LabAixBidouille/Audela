@@ -29,7 +29,7 @@ proc ::scr1300xtc::install { } {
 }
 
 #
-# ::scr1300xtc::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::scr1300xtc::getPluginTitle { } {
@@ -39,7 +39,7 @@ proc ::scr1300xtc::getPluginTitle { } {
 }
 
 #
-# ::scr1300xtc::getPluginHelp
+# getPluginHelp
 #    Retourne la documentation du plugin
 #
 proc ::scr1300xtc::getPluginHelp { } {
@@ -47,7 +47,7 @@ proc ::scr1300xtc::getPluginHelp { } {
 }
 
 #
-# ::scr1300xtc::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::scr1300xtc::getPluginType { } {
@@ -55,7 +55,7 @@ proc ::scr1300xtc::getPluginType { } {
 }
 
 #
-# ::scr1300xtc::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::scr1300xtc::getPluginOS { } {
@@ -63,7 +63,7 @@ proc ::scr1300xtc::getPluginOS { } {
 }
 
 #
-# ::scr1300xtc::getCamNo
+# getCamNo
 #    Retourne le numero de la camera
 #
 proc ::scr1300xtc::getCamNo { camItem } {
@@ -73,7 +73,7 @@ proc ::scr1300xtc::getCamNo { camItem } {
 }
 
 #
-# ::scr1300xtc::isReady
+# isReady
 #    Indique que la camera est prete
 #    Retourne "1" si la camera est prete, sinon retourne "0"
 #
@@ -90,7 +90,7 @@ proc ::scr1300xtc::isReady { camItem } {
 }
 
 #
-# ::scr1300xtc::initPlugin
+# initPlugin
 #    Initialise les variables conf(scr1300xtc,...)
 #
 proc ::scr1300xtc::initPlugin { } {
@@ -109,7 +109,7 @@ proc ::scr1300xtc::initPlugin { } {
 }
 
 #
-# ::scr1300xtc::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::scr1300xtc::confToWidget { } {
@@ -123,7 +123,7 @@ proc ::scr1300xtc::confToWidget { } {
 }
 
 #
-# ::scr1300xtc::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::scr1300xtc::widgetToConf { camItem } {
@@ -137,7 +137,7 @@ proc ::scr1300xtc::widgetToConf { camItem } {
 }
 
 #
-# ::scr1300xtc::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la camera SCR1300XTC
 #
 proc ::scr1300xtc::fillConfigPage { frm camItem } {
@@ -232,7 +232,7 @@ proc ::scr1300xtc::fillConfigPage { frm camItem } {
 }
 
 #
-# ::scr1300xtc::configureCamera
+# configureCamera
 #    Configure la camera SCR1300XTC en fonction des donnees contenues dans les variables conf(scr1300xtc,...)
 #
 proc ::scr1300xtc::configureCamera { camItem bufNo } {
@@ -274,7 +274,7 @@ proc ::scr1300xtc::configureCamera { camItem bufNo } {
 }
 
 #
-# ::scr1300xtc::stop
+# stop
 #    Arrete la camera SCR1300XTC
 #
 proc ::scr1300xtc::stop { camItem } {
@@ -292,7 +292,7 @@ proc ::scr1300xtc::stop { camItem } {
 }
 
 #
-# ::scr1300xtc::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
