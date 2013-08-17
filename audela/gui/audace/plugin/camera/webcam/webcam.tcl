@@ -6,10 +6,26 @@
 #
 
 namespace eval ::webcam {
-   package provide webcam 1.0
+   package provide webcam 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] webcam.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::webcam::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libwebcam.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::webcam::getPluginType]] "webcam" "libwebcam.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(webcam,installNewVersion) $sourceFileName [package version webcam] ]
+   }
 }
 
 #
