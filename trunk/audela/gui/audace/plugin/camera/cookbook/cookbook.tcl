@@ -6,10 +6,26 @@
 #
 
 namespace eval ::cookbook {
-   package provide cookbook 1.0
+   package provide cookbook 3.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] cookbook.cap ]
+}
+
+#
+# install
+#    installe le plugin et la dll
+#
+proc ::cookbook::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libcookbook.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::cookbook::getPluginType]] "cookbook" "libcookbook.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(cookbook,installNewVersion) $sourceFileName [package version cookbook] ]
+   }
 }
 
 #

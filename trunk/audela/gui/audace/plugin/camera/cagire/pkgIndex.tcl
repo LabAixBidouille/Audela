@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded cagire 1.0 [ list source [ file join $dir cagire.tcl ] ]
+package ifneeded cagire 3.0 [ list source [ file join $dir cagire.tcl ] ]
 

@@ -20,6 +20,8 @@ set caption(cookbook,miroir_x)                     "Top/Bottom Reversal"
 set caption(cookbook,miroir_y)                     "Left/Right Reversal"
 set caption(cookbook,delai)                        "Delay"
 
+set caption(cookbook,installNewVersion)            "Installation of library %s of plugin cookbook v%s completed."
+
 set caption(cookbook,port_camera)                  "CB245 Port"
 set caption(cookbook,2points)                      ":"
 
@@ -38,6 +40,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_y)                  "Inverser Gauche/Droite"
    set caption(cookbook,delai)                     "Délai"
 
+   set caption(cookbook,installNewVersion)         "Fin de l'installation de la librairie %s du plugin cookbook v%s."
+
    set caption(cookbook,port_camera)               "Port CB245"
    set caption(cookbook,2points)                   ":"
 
@@ -55,6 +59,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_x)                  "Inversione Alto/Basso"
    set caption(cookbook,miroir_y)                  "Inversione Sinistra/Destra"
    set caption(cookbook,delai)                     "Intervallo"
+
+   set caption(cookbook,installNewVersion)         "Installazione della libreria %s del plugin cookbook v%s terminata."
 
    set caption(cookbook,port_camera)               "Porta CB245"
    set caption(cookbook,2points)                   ":"
@@ -77,6 +83,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,port_camera)               "Puerto CB245"
    set caption(cookbook,2points)                   ":"
 
+   set caption(cookbook,installNewVersion)         "Fin de la instalación de la libreria %s del plugin cookbook v%s."
+
    set caption(cookbook,titre_site_web)            "Sitio Web de referencia:"
    set caption(cookbook,site_web_ref)              "http://www.wvi.com/~rberry/cookbook/cookbook.htm"
 
@@ -91,6 +99,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_x)                  "Oben/Unten umkehren"
    set caption(cookbook,miroir_y)                  "Links/Rechts umkehren"
    set caption(cookbook,delai)                     "Zeitraum"
+
+   set caption(cookbook,installNewVersion)         "Die Installation der Bibliothek %s ist vervollständigt der Plugin cookbook v%s."
 
    set caption(cookbook,port_camera)               "CB245 Port"
    set caption(cookbook,2points)                   ":"
@@ -110,6 +120,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_y)                  "Inverter Esquerda/Direita"
    set caption(cookbook,delai)                     "Atraso"
 
+   set caption(cookbook,installNewVersion)         "Instalação da livraria %s do plugin cookbook v%s concluída."
+
    set caption(cookbook,port_camera)               "Porta CB245"
    set caption(cookbook,2points)                   ":"
 
@@ -127,6 +139,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_x)                  "Top/Bottom Reversal"
    set caption(cookbook,miroir_y)                  "Left/Right Reversal"
    set caption(cookbook,delai)                     "Delay"
+
+   set caption(cookbook,installNewVersion)         "Installation of library %s of plugin cookbook v%s completed."
 
    set caption(cookbook,port_camera)               "CB245 Port"
    set caption(cookbook,2points)                   ":"
@@ -146,6 +160,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_y)                  "Left/Right Reversal"
    set caption(cookbook,delai)                     "Delay"
 
+   set caption(cookbook,installNewVersion)         "Installation of library %s of plugin cookbook v%s completed."
+
    set caption(cookbook,port_camera)               "CB245 Port"
    set caption(cookbook,2points)                   ":"
 
@@ -163,6 +179,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cookbook,miroir_x)                  "Top/Bottom Reversal"
    set caption(cookbook,miroir_y)                  "Left/Right Reversal"
    set caption(cookbook,delai)                     "Delay"
+
+   set caption(cookbook,installNewVersion)         "Installation of library %s of plugin cookbook v%s completed."
 
    set caption(cookbook,port_camera)               "CB245 Port"
    set caption(cookbook,2points)                   ":"
