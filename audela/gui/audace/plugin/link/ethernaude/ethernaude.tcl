@@ -6,10 +6,31 @@
 #
 
 namespace eval ::ethernaude {
-   package provide ethernaude 1.0
+   package provide ethernaude 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] ethernaude.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::ethernaude::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libethernaude.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::ethernaude::getPluginType]] "ethernaude" "libethernaude.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace CCD_Driver.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::ethernaude::getPluginType]] "ethernaude" "CCD_Driver.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(ethernaude,installNewVersion) $sourceFileName [package version ethernaude] ]
+   }
 }
 
 #==============================================================

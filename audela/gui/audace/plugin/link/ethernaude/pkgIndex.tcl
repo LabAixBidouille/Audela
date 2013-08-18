@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded ethernaude 1.0 [ list source [ file join $dir ethernaude.tcl ] ]
+package ifneeded ethernaude 2.0 [ list source [ file join $dir ethernaude.tcl ] ]
 

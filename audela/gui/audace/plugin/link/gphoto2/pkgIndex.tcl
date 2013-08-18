@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded gphoto2 1.0 [ list source [ file join $dir gphoto2.tcl ] ]
+package ifneeded gphoto2 2.0 [ list source [ file join $dir gphoto2.tcl ] ]
 

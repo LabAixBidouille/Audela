@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded external 1.0 [ list source [ file join $dir external.tcl ] ]
+package ifneeded external 2.0 [ list source [ file join $dir external.tcl ] ]
 

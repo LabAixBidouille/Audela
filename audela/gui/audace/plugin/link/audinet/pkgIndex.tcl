@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded audinet 1.0 [ list source [ file join $dir audinet.tcl ] ]
+package ifneeded audinet 2.0 [ list source [ file join $dir audinet.tcl ] ]
 

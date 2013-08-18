@@ -6,10 +6,26 @@
 #
 
 namespace eval audinet {
-   package provide audinet 1.0
+   package provide audinet 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] audinet.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::audinet::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libaudinet.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::audinet::getPluginType]] "audinet" "libaudinet.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(audinet,installNewVersion) $sourceFileName [package version audinet] ]
+   }
 }
 
 #==============================================================
