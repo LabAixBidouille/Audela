@@ -6,10 +6,26 @@
 #
 
 namespace eval parallelport {
-   package provide parallelport 1.0
+   package provide parallelport 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] parallelport.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::parallelport::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libparallelport.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::parallelport::getPluginType]] "parallelport" "libparallelport.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(parallelport,installNewVersion) $sourceFileName [package version parallelport] ]
+   }
 }
 
 #==============================================================
@@ -17,13 +33,13 @@ namespace eval parallelport {
 #==============================================================
 
 #------------------------------------------------------------
-# getPluginProperty
-#    Retourne la valeur de la propriete
+#  getPluginProperty
+#     Retourne la valeur de la propriete
 #
-# Parametres :
-#    propertyName : Nom de la propriete
-# Return :
-#    Rien
+#  Parametres :
+#     propertyName : Nom de la propriete
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::getPluginProperty { propertyName } {
    switch $propertyName {
@@ -34,13 +50,13 @@ proc ::parallelport::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# getPluginTitle
-#    Retourne le titre du plugin dans la langue de l'utilisateur
+#  getPluginTitle
+#     Retourne le titre du plugin dans la langue de l'utilisateur
 #
-# Parametres :
-#    Aucun
-# Return :
-#    caption(nom_plugin,titre)
+#  Parametres :
+#     Aucun
+#  Return :
+#     caption(nom_plugin,titre)
 #------------------------------------------------------------
 proc ::parallelport::getPluginTitle { } {
    global caption
@@ -49,53 +65,53 @@ proc ::parallelport::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-# getPluginHelp
-#    Retourne la documentation du plugin
+#  getPluginHelp
+#     Retourne la documentation du plugin
 #
-# Parametres :
-#    Aucun
-# Return :
-#    nom_plugin.htm
+#  Parametres :
+#     Aucun
+#  Return :
+#     nom_plugin.htm
 #------------------------------------------------------------
 proc ::parallelport::getPluginHelp { } {
    return "parallelport.htm"
 }
 
 #------------------------------------------------------------
-# getPluginType
-#    Retourne le type du plugin
+#  getPluginType
+#     Retourne le type du plugin
 #
-# Parametres :
-#    Aucun
-# Return :
-#    link
+#  Parametres :
+#     Aucun
+#  Return :
+#     link
 #------------------------------------------------------------
 proc ::parallelport::getPluginType { } {
    return "link"
 }
 
 #------------------------------------------------------------
-# getPluginOS
-#    Retourne le ou les OS de fonctionnement du plugin
+#  getPluginOS
+#     Retourne le ou les OS de fonctionnement du plugin
 #
-# Parametres :
-#    Aucun
-# Return :
-#    La liste des OS supportes par le plugin
+#  Parametres :
+#     Aucun
+#  Return :
+#     La liste des OS supportes par le plugin
 #------------------------------------------------------------
 proc ::parallelport::getPluginOS { } {
    return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
-# initPlugin
-#    Initialise le plugin
-#    initPlugin est lance automatiquement au chargement de ce fichier tcl
+#  initPlugin
+#     Initialise le plugin
+#     initPlugin est lance automatiquement au chargement de ce fichier tcl
 #
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
+#  Parametres :
+#     Aucun
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::initPlugin { } {
    variable private
@@ -122,13 +138,13 @@ proc ::parallelport::initPlugin { } {
 }
 
 #------------------------------------------------------------
-# configurePlugin
-#    Configure le plugin
+#  configurePlugin
+#     Configure le plugin
 #
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
+#  Parametres :
+#     Aucun
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::configurePlugin { } {
    global audace
@@ -140,13 +156,13 @@ proc ::parallelport::configurePlugin { } {
 }
 
 #------------------------------------------------------------
-# confToWidget
-#    Copie les parametres du tableau conf() dans les variables des widgets
+#  confToWidget
+#     Copie les parametres du tableau conf() dans les variables des widgets
 #
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
+#  Parametres :
+#     Aucun
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::confToWidget { } {
    variable widget
@@ -155,27 +171,27 @@ proc ::parallelport::confToWidget { } {
 }
 
 #------------------------------------------------------------
-# createPluginInstance
-#    installe porttalk si necessaire
-#    Cree une liaison et retourne le numero du link
-#      Le numero du link est attribue automatiquement
-#      Si ce link est deja cree, on retourne le numero du link existant
+#  createPluginInstance
+#     installe porttalk si necessaire
+#     Cree une liaison et retourne le numero du link
+#       Le numero du link est attribue automatiquement
+#       Si ce link est deja cree, on retourne le numero du link existant
 #
-# Parametres :
-#    linkLabel : Par exemple "LPT1:"
-#    deviceId  : Par exemple "cam1"
-#    usage     : Type d'utilisation
-#    comment   : Commentaire
-# Return :
-#    Numero du link
+#  Parametres :
+#     linkLabel : Par exemple "LPT1:"
+#     deviceId  : Par exemple "cam1"
+#     usage     : Type d'utilisation
+#     comment   : Commentaire
+#  Return :
+#     Numero du link
 #
-# Exemple :
-#    ::parallelport::createPluginInstance "LPT1:" "cam1" "acquisition" "bit 1"
-#      1
-#    ::parallelport::createPluginInstance "LPT2:" "cam1" "longuepose" "bit 1"
-#      2
-#    ::parallelport::createPluginInstance "LPT2:" "cam2" "longuepose" "bit 2"
-#      2
+#  Exemple :
+#     ::parallelport::createPluginInstance "LPT1:" "cam1" "acquisition" "bit 1"
+#       1
+#     ::parallelport::createPluginInstance "LPT2:" "cam1" "longuepose" "bit 1"
+#       2
+#     ::parallelport::createPluginInstance "LPT2:" "cam2" "longuepose" "bit 2"
+#       2
 #------------------------------------------------------------
 proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
@@ -249,17 +265,17 @@ proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment arg
 }
 
 #------------------------------------------------------------
-# deletePluginInstance
-#    Supprime une utilisation d'une liaison
-#    et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
-#    Ne fait rien si la liaison n'est pas ouverte
+#  deletePluginInstance
+#     Supprime une utilisation d'une liaison
+#     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
+#     Ne fait rien si la liaison n'est pas ouverte
 #
-# Parametres :
-#    linkLabel : Par exemple "LPT1:"
-#    deviceId  : Par exemple "cam1"
-#    usage     : Type d'utilisation
-# Return :
-#    Rien
+#  Parametres :
+#     linkLabel : Par exemple "LPT1:"
+#     deviceId  : Par exemple "cam1"
+#     usage     : Type d'utilisation
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
    set linkno [::confLink::getLinkNo $linkLabel]
@@ -275,13 +291,13 @@ proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-# fillConfigPage
-#    Fenetre de configuration du plugin
+#  fillConfigPage
+#     Fenetre de configuration du plugin
 #
-# Parametres :
-#    frm : Widget de l'onglet
-# Return :
-#    Rien
+#  Parametres :
+#     frm : Widget de l'onglet
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::fillConfigPage { frm } {
    variable private
@@ -336,13 +352,13 @@ proc ::parallelport::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-# afficheMsgPorttalk
-#    Affiche le message de Porttalk
+#  afficheMsgPorttalk
+#     Affiche le message de Porttalk
 #
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
+#  Parametres :
+#     Aucun
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::afficheMsgPorttalk { } {
    variable private
@@ -360,17 +376,17 @@ proc ::parallelport::afficheMsgPorttalk { } {
 }
 
 #------------------------------------------------------------
-# getLinkIndex
-#    Retourne l'index du link
-#    Retourne une chaine vide si le type du link n'existe pas
+#  getLinkIndex
+#     Retourne l'index du link
+#     Retourne une chaine vide si le type du link n'existe pas
 #
-# Parametres :
-#    linkLabel : Par exemple "LPT1:"
-# Return :
-#....linkIndex : Index de linkLabel
-# Par exemple :
-#    getLinkIndex "LPT1:"
-#      1
+#  Parametres :
+#     linkLabel : Par exemple "LPT1:"
+#  Return :
+#. ...linkIndex : Index de linkLabel
+#  Par exemple :
+#     getLinkIndex "LPT1:"
+#       1
 #------------------------------------------------------------
 proc ::parallelport::getLinkIndex { linkLabel } {
    variable private
@@ -382,13 +398,13 @@ proc ::parallelport::getLinkIndex { linkLabel } {
 }
 
 #------------------------------------------------------------
-# getLinkLabels
-#    Retourne les libelles des ports paralleles disponibles
+#  getLinkLabels
+#     Retourne les libelles des ports paralleles disponibles
 #
-# Parametres :
-#    Aucun
-# Return :
-#    linkLabels : Par exemple { "LPT1:" "LPT2:" "LPT3:" }
+#  Parametres :
+#     Aucun
+#  Return :
+#     linkLabels : Par exemple { "LPT1:" "LPT2:" "LPT3:" }
 #------------------------------------------------------------
 proc ::parallelport::getLinkLabels { } {
    set linkLabels [list]
@@ -400,13 +416,13 @@ proc ::parallelport::getLinkLabels { } {
 }
 
 #------------------------------------------------------------
-# getSelectedLinkLabel
-#    Retourne le link choisi
+#  getSelectedLinkLabel
+#     Retourne le link choisi
 #
-# Parametres :
-#    Aucun
-# Return :
-#    linkLabel : Par exemple "LPT1:"
+#  Parametres :
+#     Aucun
+#  Return :
+#     linkLabel : Par exemple "LPT1:"
 #------------------------------------------------------------
 proc ::parallelport::getSelectedLinkLabel { } {
    variable private
@@ -421,26 +437,26 @@ proc ::parallelport::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-# isReady
-#    Informe de l'etat de fonctionnement du plugin
+#  isReady
+#     Informe de l'etat de fonctionnement du plugin
 #
-# Parametres :
-#    Aucun
-# Return :
-#    0 (ready) ou 1 (not ready)
+#  Parametres :
+#     Aucun
+#  Return :
+#     0 (ready) ou 1 (not ready)
 #------------------------------------------------------------
 proc ::parallelport::isReady { } {
    return 0
 }
 
 #------------------------------------------------------------
-# refreshAvailableList
-#    Rafraichit la liste des link disponibles
+#  refreshAvailableList
+#     Rafraichit la liste des link disponibles
 #
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
+#  Parametres :
+#     Aucun
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::refreshAvailableList { } {
    variable private
@@ -487,13 +503,13 @@ proc ::parallelport::refreshAvailableList { } {
 }
 
 #------------------------------------------------------------
-# selectConfigLink
-#    Selectionne un link dans la fenetre de configuration
+#  selectConfigLink
+#     Selectionne un link dans la fenetre de configuration
 #
-# Parametres :
-#    linkLabel : Par exemple "LPT1:"
-# Return :
-#    Rien
+#  Parametres :
+#     linkLabel : Par exemple "LPT1:"
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::selectConfigLink { linkLabel } {
    variable private
@@ -519,13 +535,13 @@ proc ::parallelport::selectConfigLink { linkLabel } {
 }
 
 #------------------------------------------------------------
-# widgetToConf
-#    Copie les variables des widgets dans le tableau conf()
+#  widgetToConf
+#     Copie les variables des widgets dans le tableau conf()
 #
-# Parametres :
-#    Aucun
-# Return :
-#    Rien
+#  Parametres :
+#     Aucun
+#  Return :
+#     Rien
 #------------------------------------------------------------
 proc ::parallelport::widgetToConf { } {
    variable widget

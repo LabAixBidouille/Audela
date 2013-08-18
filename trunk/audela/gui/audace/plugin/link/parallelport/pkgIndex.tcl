@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded parallelport 1.0 [ list source [ file join $dir parallelport.tcl ] ]
+package ifneeded parallelport 2.0 [ list source [ file join $dir parallelport.tcl ] ]
 
