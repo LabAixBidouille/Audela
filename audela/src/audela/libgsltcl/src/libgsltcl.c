@@ -70,6 +70,10 @@
    Tcl_CreateCommand(interp,"gsl_mfitmultilin",(Tcl_CmdProc *)Cmd_gsltcltcl_mfitmultilin,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"gsl_fft",(Tcl_CmdProc *)Cmd_gsltcltcl_fft,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"gsl_ifft",(Tcl_CmdProc *)Cmd_gsltcltcl_ifft,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_chisq_Q",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_Q,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_chisq_P",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_P,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_chisq_Qinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_Qinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_chisq_Pinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_Pinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    /* Dev by Harald Rischbieter ( har.risch@gmx.de ) */
    Tcl_CreateCommand(interp,"gsl_sphharm",(Tcl_CmdProc *)Cmd_gsltcltcl_msphharm,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 

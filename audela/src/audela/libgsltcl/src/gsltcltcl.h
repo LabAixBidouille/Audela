@@ -45,6 +45,8 @@
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <gsl/gsl_fft_complex.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_sf_gamma.h>
 
 #define REAL(z,i) ((z)[2*(i)])
 #define IMAG(z,i) ((z)[2*(i)+1])
@@ -67,6 +69,10 @@ int Cmd_gsltcltcl_msolvelin(ClientData clientData, Tcl_Interp *interp, int argc,
 int Cmd_gsltcltcl_mfitmultilin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_gsltcltcl_fft(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_gsltcltcl_ifft(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_gsltcltcl_cdf_chisq_Q(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_gsltcltcl_cdf_chisq_P(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_gsltcltcl_cdf_chisq_Qinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_gsltcltcl_cdf_chisq_Pinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 /* Dev by Harald Rischbieter ( har.risch@gmx.de ) */
 int Cmd_gsltcltcl_msphharm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
