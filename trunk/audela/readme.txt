@@ -31,6 +31,8 @@ AudeLA est capable de piloter les caméras CCD suivantes :
 - Cagire,
 - CB245,
 - Cemes,
+- EPIX - OWL,
+- EPIX - Raptor,
 - Finger Lakes Instruments,
 - Hi-SIS 11,
 - Hi-SIS 22 (12 et 14 bits),
@@ -64,8 +66,8 @@ AudeLA est capable de piloter les montures suivantes :
 - LX200 ou n'importe quelle monture répondant au protocole LX200,
 - MCMT II,
 - Ouranos (codeurs absolus),
-- T94 de Saint Caprais,
 - T193 de l'OHP,
+- TelScript (T94 de Saint Caprais par exemple),
 - Temma (monture Takahashi avec module Temma).
 
 AudeLA est capable de piloter les interfaces de communication suivantes :
