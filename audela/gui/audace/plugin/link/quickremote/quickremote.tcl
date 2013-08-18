@@ -6,10 +6,26 @@
 #
 
 namespace eval quickremote {
-   package provide quickremote 1.1
+   package provide quickremote 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] quickremote.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::quickremote::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libquickremote.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::quickremote::getPluginType]] "quickremote" "libquickremote.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(quickremote,installNewVersion) $sourceFileName [package version quickremote] ]
+   }
 }
 
 #==============================================================

@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded quickremote 1.1 [ list source [ file join $dir quickremote.tcl ] ]
+package ifneeded quickremote 2.0 [ list source [ file join $dir quickremote.tcl ] ]
 

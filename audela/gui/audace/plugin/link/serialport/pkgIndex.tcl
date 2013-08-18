@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded serialport 1.0 [ list source [ file join $dir serialport.tcl ] ]
+package ifneeded serialport 2.0 [ list source [ file join $dir serialport.tcl ] ]
 
