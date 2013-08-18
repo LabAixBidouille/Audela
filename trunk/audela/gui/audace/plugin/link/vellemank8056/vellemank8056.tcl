@@ -6,7 +6,7 @@
 #
 
 namespace eval vellemank8056 {
-   package provide vellemank8056 1.0
+   package provide vellemank8056 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] vellemank8056.cap ]

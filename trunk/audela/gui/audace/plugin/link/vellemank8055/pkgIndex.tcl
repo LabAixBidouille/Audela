@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded vellemank8055 1.0 [ list source [ file join $dir vellemank8055.tcl ] ]
+package ifneeded vellemank8055 2.0 [ list source [ file join $dir vellemank8055.tcl ] ]
 

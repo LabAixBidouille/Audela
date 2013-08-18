@@ -6,10 +6,26 @@
 #
 
 namespace eval vellemank8055 {
-   package provide vellemank8055 1.0
+   package provide vellemank8055 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] vellemank8055.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::vellemank8055::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace K8055D.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::vellemank8055::getPluginType]] "vellemank8055" "K8055D.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(vellemank8055,installNewVersion) $sourceFileName [package version vellemank8055] ]
+   }
 }
 
 #==============================================================

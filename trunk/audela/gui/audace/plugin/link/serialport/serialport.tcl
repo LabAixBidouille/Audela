@@ -6,10 +6,26 @@
 #
 
 namespace eval serialport {
-   package provide serialport 1.0
+   package provide serialport 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] serialport.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::serialport::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libserialport.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::serialport::getPluginType]] "serialport" "libserialport.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(serialport,installNewVersion) $sourceFileName [package version serialport] ]
+   }
 }
 
 #==============================================================
