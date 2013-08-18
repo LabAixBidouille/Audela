@@ -554,7 +554,7 @@ proc ::confCam::setMount { camItem telNo } {
    variable private
    if { $private($camItem,camNo) != 0 && [confTel::isReady]  } {
       if { [ catch { tel$telNo threadid } ] == 0 } {
-         #--- le telescope possede un thread  dedie
+         #--- le telescope possede un thread dedie
          cam$private($camItem,camNo) tel $telNo [tel$telNo threadid]
       } else {
          #--- le telescope ne possede pas de thread dedie
