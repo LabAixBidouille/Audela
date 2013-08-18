@@ -176,7 +176,10 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc adaptOutilFoc { { a "" } { b "" } { c "" } } {
       variable This
-      global caption panneau
+      global audace caption panneau
+
+      #--   fermeture des fenetres annexes en cas de changement de focuser
+      ::foc::closeAllWindows $audace(base)
 
       ::confEqt::activeFocuser $This.fra3.focuser.configure ::panneau(foc,focuser)
       if {$panneau(foc,focuser) eq ""} {
@@ -202,7 +205,8 @@ namespace eval ::foc {
          if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
 
             #--   focuseraudecom et usb_focus
-            set panneau(foc,typefocuser) 1
+            set panneau(foc,typefocuser) "1"
+            set panneau(foc,compteur)    "0"
 
             pack $This.fra5 -after $This.fra4 -side top -fill x ; #-- demasque frame position focus
             pack $This.fra6 -after $This.fra5 -side top -fill x ; #-- demasque frame programmation
@@ -232,30 +236,12 @@ namespace eval ::foc {
                set panneau(foc,start) "-32767"
                set panneau(foc,end)   "32767"
             }
-
-            #--   switch les graphes
-            if {[winfo exists $::audace(base).visufoc]} {
-              #--   ferme le graphique normal
-              ::foc::fermeGraphe
-              #--   ouvre l'autre graphique
-              ::foc::HFDGraphe
-            }
-
          } else {
-
             #--   tous les focuser sans controle etendu
             set panneau(foc,typefocuser) 0
 
             pack forget $This.fra5 ; #-- masque frame position focus
             pack forget $This.fra6 ; #-- masque frame proogrammation
-
-            #--   switch les graphes
-            if {[winfo exists $::audace(base).hfd]} {
-               #--   ferme le graphique hfd
-               ::foc::closeHFDGraphe
-               #--   ouvre la graphique normal
-               ::foc::focGraphe
-            }
          }
       }
       update
