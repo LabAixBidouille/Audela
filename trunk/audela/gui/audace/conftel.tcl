@@ -65,11 +65,11 @@ proc ::confTel::run { } {
    variable widget
    global conf
 
-   set private(nomRaquette) [::confPad::getCurrentPad]
+   set private(nomRaquette)   [::confPad::getCurrentPad]
    set widget(model,enabled)  $conf(telescope,model,enabled)
    set widget(model,fileName) $conf(telescope,model,fileName)
-   set widget(model,name) ""
-   set widget(model,date) ""
+   set widget(model,name)     ""
+   set widget(model,date)     ""
 
    set loadModelError [catch {
       if { $widget(model,fileName) != "" } {
@@ -236,11 +236,11 @@ proc ::confTel::createDialog { } {
          -highlightthickness 0 -variable ::confTel::widget(model,enabled)
       pack $private(frm).model.enabled -side left -padx 3 -pady 3 -expand 0
 
-      entry $private(frm).model.name -textvariable ::confTel::widget(model,name)  \
+      entry $private(frm).model.name -textvariable ::confTel::widget(model,name) \
          -state readonly
       pack $private(frm).model.name -side left -padx 3 -pady 3 -fill x -expand true
 
-      entry $private(frm).model.date -textvariable ::confTel::widget(model,date)  \
+      entry $private(frm).model.date -textvariable ::confTel::widget(model,date) \
          -state readonly -width 19
       pack $private(frm).model.date -side left -padx 3 -pady 3 -expand false
 
@@ -412,7 +412,7 @@ proc ::confTel::stopPlugin { } {
       ::$private(mountName)::stop
       #--- Raz du numero de monture
       set private(telNo) "0"
-      set audace(telNo) $private(telNo)
+      set audace(telNo)  $private(telNo)
       #--- Je supprime le label des visus
       foreach visuNo [ ::visu::list ] {
          ::confVisu::setMount $visuNo
@@ -521,7 +521,7 @@ proc ::confTel::configureMonture { } {
 
 #------------------------------------------------------------
 # setModelEnabled
-#    active/descative le modele de pointage du telescope
+#    active/desactive le modele de pointage du telescope
 #
 # @param modelEnabled   0=desctive le modele s1=active le modele
 # @public  cette procedure peut etre appelee depuis l'exterieur du namespace
@@ -536,12 +536,12 @@ proc ::confTel::setModelEnabled { modelEnabled } {
       tel$private(telNo) radec model -enabled $modelEnabled \
    }
 
-   set ::conf(telescope,model,enabled)  $modelEnabled
+   set ::conf(telescope,model,enabled) $modelEnabled
 
    #--- j'affiche l'activation du modele si la fenetre de
    #--- configuration de la monture est ouverte
    if { [ winfo exists $private(frm) ] } {
-      set widget(model,enabled)  $modelEnabled
+      set widget(model,enabled) $modelEnabled
    }
 }
 
@@ -641,9 +641,9 @@ proc ::confTel::configureModel { modelEnabled modelName modelDate modelSymbols m
    } else {
       #--- je desactive le modele
       tel$private(telNo) radec model -enabled $modelEnabled
-      set conf(telescope,model,enabled)  $modelEnabled
+      set conf(telescope,model,enabled) $modelEnabled
       if { [ winfo exists $private(frm) ] } {
-         set widget(model,enabled)  $modelEnabled
+         set widget(model,enabled)      $modelEnabled
       }
    }
 }
@@ -658,13 +658,13 @@ proc ::confTel::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture
-   set mountName          [ $private(frm).usr.onglet raise ]
-   set private(mountName) $mountName
-   set conf(telescope)    $mountName
+   set mountName                      [ $private(frm).usr.onglet raise ]
+   set private(mountName)             $mountName
+   set conf(telescope)                $mountName
    set conf(telescope,model,fileName) $widget(model,fileName)
    if { $conf(telescope,model,fileName) == "" } {
       #--- je desactive le modele de pointage si aucun fichier n'est selectionne
-      set widget(model,enabled) 0
+      set widget(model,enabled)       0
    }
    set conf(telescope,model,enabled)  $widget(model,enabled)
 
@@ -877,7 +877,7 @@ proc ::confTel::selectModel { } {
 
       if { $loadModelError != 0 } {
          #--- je desactive le modele de pointage
-         set widget(model,enabled) 0
+         set widget(model,enabled)  0
          set widget(model,fileName) ""
          set widget(model,name)     ""
          set widget(model,date)     ""
@@ -925,7 +925,7 @@ proc ::confTel::loadModel { fileName } {
    close $hfile
    #--- je parse les données lues
    set catchError [ catch {
-      set modelDom [::dom::tcl::parse $data]
+      set modelDom     [::dom::tcl::parse $data]
       set modelElement [::dom::tcl::document cget $modelDom -documentElement]
       #--- je recupere les attributs du modele
       set modelName    [file tail [file rootname $fileName]]
@@ -987,10 +987,10 @@ proc ::confTel::loadModel { fileName } {
             } else {
                error "::confTel::loadModel error data length=$dataLen . Must be 3 or 4"
             }
-            set modelName [file tail $fileName]
-            set modelDate [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
+            set modelName    [file tail $fileName]
+            set modelDate    [clock format [file mtime $fileName] -format "%d-%m-%Y %H:%M:%S" -timezone :localtime ]
             set modelComment ""
-            set symbols {IH ID NP CH ME MA FO HF DAF TF}
+            set symbols      {IH ID NP CH ME MA FO HF DAF TF}
             set coefficients [lindex $data 0]
             set chisquare    [lindex $data 1]
             set covars       [lindex $data 2]
