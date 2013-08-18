@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded oscadine 1.0 [ list source [ file join $dir oscadine.tcl ] ]
+package ifneeded oscadine 2.0 [ list source [ file join $dir oscadine.tcl ] ]
 

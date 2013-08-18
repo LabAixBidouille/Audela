@@ -4,5 +4,5 @@
 # Mise à jour $Id$
 #
 
-package ifneeded quickaudine 1.0 [ list source [ file join $dir quickaudine.tcl ] ]
+package ifneeded quickaudine 2.0 [ list source [ file join $dir quickaudine.tcl ] ]
 

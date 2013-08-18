@@ -6,10 +6,26 @@
 #
 
 namespace eval quickaudine {
-   package provide quickaudine 1.0
+   package provide quickaudine 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] quickaudine.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::quickaudine::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libquicka.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::quickaudine::getPluginType]] "quickaudine" "libquicka.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(quickaudine,installNewVersion) $sourceFileName [package version quickaudine] ]
+   }
 }
 
 #==============================================================
