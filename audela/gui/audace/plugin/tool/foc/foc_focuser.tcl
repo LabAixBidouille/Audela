@@ -259,13 +259,19 @@ namespace eval ::foc {
    proc dynamicFoc { } {
       global audace caption panneau
 
+      if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
+         set activFocuser "1"
+      } else {
+         set activFocuser "0"
+      }
+
       #--   GOTO si la position de depart n'est pas la position courante
       if {$audace(focus,currentFocus) != $panneau(foc,start)} {
 
          #--   Fixe la position cible
          set audace(focus,targetFocus) $panneau(foc,start)
 
-         if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
+         if {$activFocuser ==1} {
 
             #--   Focuser connecte
             switch -exact $panneau(foc,focuser) {
@@ -277,6 +283,18 @@ namespace eval ::foc {
             after 500
 
          } else {
+
+            #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
+            #if { $panneau(foc,focuser) ni [list "$caption(foc,pas_focuser)" ""]} {
+            #     set delay 0.100
+            #   if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
+            #      set delay [ expr $panneau(foc,exptime)-$delay ]
+            #      if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
+            #        #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
+            #      }
+            #   }
+            #   after 100
+            #}
 
             #--   Focuser simule
             #--   Actualise la position courante
@@ -290,19 +308,36 @@ namespace eval ::foc {
 
       update
 
-      #--   En mode Fenetrage
+      #--   Apres deplacement reel ou simule
       if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
+         #--   En mode Fenetrage
          #--   Calcule la position suivante
          set newPosition [expr { $audace(focus,currentFocus)+$panneau(foc,step) }]
          if {$newPosition <= $panneau(foc,end)} {
             #--   Fixe la prochaine etape avec start
             set panneau(foc,start) $newPosition
-         } else {
-            #--   Demande l'arret
-            set panneau(foc,demande_arret) 1
+         }
+
+         if {$audace(focus,currentFocus) == $panneau(foc,start)} {
+            #--   Demande l'arret apres l'acquisition
+            set panneau(foc,demande_arret) "1"
+         }
+
+      } else {
+
+         #--   Simulation : initialise durant le Centrage
+         if {$panneau(foc,simulation) ==1 && $activFocuser ==0} {
+            set limite1 0 ; set limite2 65535
+            if {$panneau(foc,focuser) eq "focuseraudecom"} {
+               set limite1 -32767 ; set limite2 32767
+            }
+            #--   Fixe les valeurs initiales
+            set panneau(foc,start) $limite1
+            set panneau(foc,end) $limite2
+            set panneau(foc,step) 10000
+            set panneau(foc,repeat) 1
          }
       }
-
       update
    }
 
