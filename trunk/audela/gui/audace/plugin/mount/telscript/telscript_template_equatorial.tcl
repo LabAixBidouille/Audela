@@ -135,7 +135,7 @@ proc setup { } {
    cd $path
    load libaudela[info sharedlibextension]
    cd $pwd0
-      
+
    # --- The initial telescope position is HA=0 and Dec=0 to UT time
    set telscript($telname,coord_app_cod_deg_ha)  0
    set telscript($telname,coord_app_cod_deg_dec) 0
@@ -381,3 +381,4 @@ proc date_sys2ut { { date now } } {
    }
    return $time
 }
+
