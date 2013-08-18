@@ -767,6 +767,7 @@ int tel_close(struct telprop *tel)
 {
 	// close the channel
 	telthread->exit=1; // envoie un signal de sortie
+	libtel_sleep(500); // attente superieur a la duree d'une boucle
 	my_pthread_mutex_unlock(&mutex);
    pthread_mutexattr_destroy(&mutexAttr);
    pthread_mutex_destroy(&mutex);
