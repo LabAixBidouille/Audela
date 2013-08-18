@@ -6,10 +6,41 @@
 #
 
 namespace eval gphoto2 {
-   package provide gphoto2 1.0
+   package provide gphoto2 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] gphoto2.cap ]
+}
+
+#------------------------------------------------------------
+#  install
+#     installe le plugin et la dll
+#------------------------------------------------------------
+proc ::gphoto2::install { } {
+   if { $::tcl_platform(platform) == "windows" } {
+      #--- je deplace libgphoto2.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::gphoto2::getPluginType]] "gphoto2" "libgphoto2.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2_canon.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::gphoto2::getPluginType]] "gphoto2" "libgphoto2_canon.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2_port.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::gphoto2::getPluginType]] "gphoto2" "libgphoto2_port.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- je deplace libgphoto2_port_usb.dll dans le repertoire audela/bin
+      set sourceFileName [file join $::audace(rep_plugin) [::audace::getPluginTypeDirectory [::gphoto2::getPluginType]] "gphoto2" "libgphoto2_port_usb.dll"]
+      if { [ file exists $sourceFileName ] } {
+         ::audace::appendUpdateCommand "file rename -force {$sourceFileName} {$::audela_start_dir} \n"
+      }
+      #--- j'affiche le message de fin de mise a jour du plugin
+      ::audace::appendUpdateMessage [ format $::caption(gphoto2,installNewVersion) $sourceFileName [package version gphoto2] ]
+   }
 }
 
 #==============================================================
@@ -41,7 +72,7 @@ proc ::gphoto2::confToWidget { } {
    variable widget
    global conf
 
-   set widget(gphoto2,debug) $conf(dslr,debug)
+   set widget(gphoto2,debug) $conf(gphoto2,debug)
 }
 
 #------------------------------------------------------------
@@ -127,7 +158,7 @@ proc ::gphoto2::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mode debug
-   checkbutton $frm.debug -text "$caption(dslr,debug) (gphoto2.log)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(gphoto2,debug) (gphoto2.log)" -highlightthickness 0 \
       -variable ::gphoto2::widget(gphoto2,debug)
    pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
 
@@ -202,7 +233,7 @@ proc ::gphoto2::initPlugin { } {
 proc ::gphoto2::initConf { } {
    global conf
 
-   if { ! [ info exists conf(dslr,debug) ] } { set conf(dslr,debug) "0" }
+   if { ! [ info exists conf(gphoto2,debug) ] } { set conf(gphoto2,debug) "0" }
    return
 }
 
@@ -238,6 +269,6 @@ proc ::gphoto2::widgetToConf { } {
    variable widget
    global conf
 
-   set conf(dslr,debug) $widget(gphoto2,debug)
+   set conf(gphoto2,debug) $widget(gphoto2,debug)
 }
 

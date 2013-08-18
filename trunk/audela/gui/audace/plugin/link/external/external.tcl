@@ -6,7 +6,7 @@
 #
 
 namespace eval external {
-   package provide external 1.0
+   package provide external 2.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] external.cap ]
