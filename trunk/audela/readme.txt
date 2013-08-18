@@ -374,7 +374,7 @@ Un bon nombre de personnes ont contribué à AudeLA ou Aud'ACE. Citons dans le d
  - Jean-François COLIAC : Traitement d'images de comètes (AfRho).
  - Dark VADOR <vador@darkstar.com> : Inspiration permanente.
  - Christian JASINSKI, Dez FUTAK, Dan HOLLER : Traduction anglaise.
- - Fausto MANENTI : Traduction italienne.
+ - Fausto MANENTI, Emanuele PAVONI, Livia MORETTI : Traduction italienne.
  - Rafael GONZALEZ FUENTETAJA, Cristobal GARCIA, Jesus IGLESIAS : Traduction espagnole.
  - Philippe KAUFFMANN, Joerg HOEBELMANN : Traduction allemande.
  - Luis GOUVEIA, Leandro FONSECA : Traduction portugaise.
