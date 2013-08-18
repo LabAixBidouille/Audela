@@ -1136,3 +1136,113 @@ int gsltcltcl_setgslvector(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_vector *v
    }
    return TCL_OK;
 }
+
+int Cmd_gsltcltcl_cdf_chisq_Qinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur double gsl_cdf_chisq_Qinv (double Q, double nu).      */
+/* Q = densite de probabilite cumulee (0-1)                                 */
+/* nu = degres de liberte                                                   */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double Q,nu,x;
+   if(argc!=3) {
+      sprintf(s,"Usage: %s probability_density_Q degrees_of_freedom_nu", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&Q); if(retour!=TCL_OK) { return TCL_ERROR ; }
+      retour = Tcl_GetDouble(interp,argv[2],&nu); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		if (Q<0) { Q=0; }
+		if (Q>1) { Q=1; }
+		if (nu<0) { nu=0; }
+		x = gsl_cdf_chisq_Qinv(Q,nu);
+      sprintf(s,"%g",x);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
+
+int Cmd_gsltcltcl_cdf_chisq_Pinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur double gsl_cdf_chisq_Pinv (double P, double nu).      */
+/* P = densite de probabilite cumulee (0-1)                                 */
+/* nu = degres de liberte                                                   */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double P,nu,x;
+   if(argc!=3) {
+      sprintf(s,"Usage: %s probability_density_P degrees_of_freedom_nu", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&P); if(retour!=TCL_OK) { return TCL_ERROR ; }
+      retour = Tcl_GetDouble(interp,argv[2],&nu); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		if (P<0) { P=0; }
+		if (P>1) { P=1; }
+		if (nu<0) { nu=0; }
+		x = gsl_cdf_chisq_Pinv(P,nu);
+      sprintf(s,"%g",x);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
+
+int Cmd_gsltcltcl_cdf_chisq_P(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur double gsl_cdf_chisq_P (double x, double nu).      */
+/* x = valeur du chi2 critique                                             */
+/* nu = degres de liberte                                                   */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double P,nu,x;
+   if(argc!=3) {
+      sprintf(s,"Usage: %s chi2_critic_x degrees_of_freedom_nu", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&x); if(retour!=TCL_OK) { return TCL_ERROR ; }
+      retour = Tcl_GetDouble(interp,argv[2],&nu); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		if (x<0) { x=0; }
+		if (nu<0) { nu=0; }
+		P = gsl_cdf_chisq_P(x,nu);
+      sprintf(s,"%g",P);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
+
+int Cmd_gsltcltcl_cdf_chisq_Q(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur double gsl_cdf_chisq_Q (double x, double nu).      */
+/* x = valeur du chi2 critique                                             */
+/* nu = degres de liberte                                                   */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double Q,nu,x;
+   if(argc!=3) {
+      sprintf(s,"Usage: %s chi2_critic_x degrees_of_freedom_nu", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&x); if(retour!=TCL_OK) { return TCL_ERROR ; }
+      retour = Tcl_GetDouble(interp,argv[2],&nu); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		if (x<0) { x=0; }
+		if (nu<0) { nu=0; }
+		Q = gsl_cdf_chisq_Q(x,nu);
+      sprintf(s,"%g",Q);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
