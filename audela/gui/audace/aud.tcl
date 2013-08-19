@@ -626,14 +626,12 @@ namespace eval ::audace {
       }
       if { ! [ info exists conf(editscript) ] } {
          if { $::tcl_platform(os) == "Linux" } {
-            set defaultname [ file join ${path} vi ]
+            set defaultname [ file join ${path} gvim ]
             set testnames [ list [ file join ${path} kedit ] \
                                     [ file join ${path} kwrite ] \
                                     [ file join ${path} kate ]  \
                                     [ file join ${path} gedit ]  \
-                                    [ file join ${path} emacs ]  \
-                                    [ file join ${path} zile ]  \
-                                    [ file join ${path} nano ] ]
+                                    [ file join ${path} jedit ] ]
             foreach testname $testnames {
                if { [ file executable "$testname" ] == "1" } {
                   set defaultname "$testname"
