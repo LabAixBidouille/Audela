@@ -4,19 +4,11 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focaliseur USB_FOCUS</title></head><body>
-<p class="date">Date de mise à jour : 8 août 2013</p>
+<p class="date">Date de mise à jour : 19 août 2013</p>
 <h1>Focaliseur USB_FOCUS</h1>
 <p>Merci à Vincent Auvray pour les informations sur ce
 focaliseur, voir le <a href="http://www.usb-foc.us/"><b>site
 USB_Focus</b></a>.</p>
-<p>La seule difficulté réside dans son raccordement au bouton de mise au point. 
-Dans le cas du Takahashi CN212, il a fallu construire une platine se fixant 
-sur le porte-oculaire et prévoir un système d'entraînement adhoc. 
-<a href="http://www.skymeca.com/"><b>Skyméca</b></a> s'est chargé de faire la platine :</p>
-<p><img style="width: 400px; height: 267px;" alt="" src="images/platine_focuser.gif" /></p>
-Le moteur fait environ 8 tours pour 65535 pas alors que le bouton de
-mise au point du CN212 peut faire 14 tours, il faut donc prérégler le
-0.
 <h2>1. Connexion</h2>
 <p>Si le port série n'est pas connecté (avant le
 lancement ou après un arrêt), toutes les commandes sont
@@ -51,8 +43,8 @@ réglage.</li>
 <li>La vitesse de déplacement : Un sélecteur permet de
 choisir une valeur entre 2 (la plus lente) et 9 (la plus
 rapide).</li>
-<li>L'incrément : A choisir entre demi-pas ou pas
-entier.</li>
+<li>L'incrément : A choisir entre demi-pas (8000 pas/tour) ou pas
+entier (4000 pas/tour) .</li>
 <li>Le sens de rotation : A choisir entre le sens des
 aiguilles d'une montre ou l'inverse.</li>
 </ul>
@@ -116,7 +108,15 @@ microcontrôleur.</li>
 <li>Commande non reconnue ou erreur interne au
 microcontrôleur.</li>
 </ul>
-<h2>6. Intégration dans l'outil Focalisation</h2>
+<h2>6. Exemple de montage pratique</h2>
+<p>Le moteur doit entraîner le bouton de mise au point. 
+Dans le cas du Takahashi CN212, il a fallu construire une platine se fixant 
+sur le porte-oculaire et prévoir un système d'entraînement adhoc. 
+<a href="http://www.skymeca.com/"><b>Skyméca</b></a> s'est chargé de faire la platine :</p>
+<p><img style="width: 400px; height: 267px;" alt="" src="images/platine_focuser.gif" /></p>
+Le bouton de mise au point du CN212 peut faire 14 tours. 
+Pour parcourir toute la plage de mise au point il faut sélectionner le mode <b>pas entier</b> qui permet d'obtenir un maximum de 65535/4000 = un peu plus de 16 tours et limiter la <b>course maximale</b> à 14*4000 = 56000 pas.
+<h2>7. Intégration dans l'outil Focalisation</h2>
 <p>Le panneau de configuration de USB_Focus donne accès
 à tous les réglages, y compris la position du
 focuser.<br />
