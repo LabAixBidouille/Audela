@@ -214,7 +214,7 @@ proc setup { } {
       set telscript($telname,combit_simu_direction) ""
    } else {
       catch {
-         exec espeak.exe -v fr "Raquette active."
+         catch {exec espeak.exe -v fr "Raquette active."}
          after 500
       }
    }
@@ -228,25 +228,25 @@ proc setup { } {
       # --- axe elev=1 (etel=2)
       # --- axe rot=2 (etel=4)
       set err [catch {etel_open -driver com1 -axis 0 -axis 5 -axis 4} msg]
-      exec espeak.exe -v fr "altaz avec rotation"
+      catch {exec espeak.exe -v fr "altaz avec rotation"}
    } elseif {$telscript($telname,mount_type)=="azelev"} {
-      exec espeak.exe -v fr "altaz sans rotation"
+      catch {exec espeak.exe -v fr "altaz sans rotation"}
       set err [catch {etel_open -driver com1 -axis 0 -axis 5} msg]
    } elseif {$telscript($telname,mount_type)=="hadec"} {
       set err [catch {etel_open -driver com1 -axis 0 -axis 1} msg]
-      exec espeak.exe -v fr "équatorial"
+      catch {exec espeak.exe -v fr "équatorial"}
    } else {
       set err 1
    }
    if {$err==0} {
       set telscript($telname,simulation) 0
       catch {
-         exec espeak.exe -v fr "Controlleur oké"
+         catch {exec espeak.exe -v fr "Controlleur oké"}
          after 500
       }
    } else {
       catch {
-         exec espeak.exe -v fr "Simulation"
+         catch {exec espeak.exe -v fr "Simulation"}
          after 500
       }
       set telscript($telname,simulation) 1
@@ -1009,7 +1009,7 @@ proc set_speed_adus { } {
    set app_drift_HA $telscript($telname,speed_app_deg_ha)
    set app_drift_dec $telscript($telname,speed_app_deg_dec)
    set app_drift_rot $telscript($telname,speed_app_deg_rot)
-   set coef 15.041; #$app_drift_HA (arcsec/sec) pour conversion en arcsec/15sec 
+   set coef 15.041; #$app_drift_HA (arcsec/sec) pour conversion en arcsec/15sec
    if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
       set vs $telscript($telname,adu4deg4sec_az) ; # vitesse coef (adu/(deg/s))
       set vadu [expr round(-$app_drift_az/$coef*$vs/1000.)]
