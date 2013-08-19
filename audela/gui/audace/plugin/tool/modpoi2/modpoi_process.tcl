@@ -254,3 +254,14 @@ proc ::modpoi2::process::modpoi_catalogmean2apparent { ra_cat de_cat equinox dat
 ###   return [list $raadt $decadt $Hadt $hadt $azadt]
 ###}
 
+#------------------------------------------------------------
+# computeCriticalChi2
+#    Calcule le chi² critique avec un intervalle de confiance de 95%
+# Parameters : nb of stars, length of Symbols list (10)
+#------------------------------------------------------------
+proc ::modpoi2::process::computeCriticalChi2 { nbValues nbParameters } {
+
+   set pConfiance 0.95
+   set ddl [expr { 2*$nbValues-$nbParameters-1 }]
+   return [gsl_cdf_chisq_Pinv $pConfiance $ddl]
+}
