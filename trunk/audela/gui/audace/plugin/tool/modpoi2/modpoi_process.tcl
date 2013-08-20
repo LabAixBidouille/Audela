@@ -29,6 +29,8 @@ proc ::modpoi2::process::computeCoefficient { starList home symbols } {
    #--- calcul des coefficients du modele
    set result [gsl_mfitmultilin $vecY $matX $vecW]
 
+   ::console::disp  "$result\n"
+
    return $result
 }
 
@@ -178,10 +180,7 @@ proc ::modpoi2::process::addObs { vecY matX vecW deltah deltad dec h phi } {
 }
 
 #------------------------------------------------------------
-# addObs
-#
-#------------------------------------------------------------
-proc ::modpoi2::process::modpoi_catalogmean2apparent { ra_cat de_cat equinox date { dra_dan "" } { ddec_dan "" } { epoch "" } } {
+# modpoi_catalogmean2apparent
 #--- Input
 #--- ra_cat,de_cat : coordinates J2000.0 (degrees)
 #--- equinox  : equinox (example : J2000.0)
@@ -191,6 +190,8 @@ proc ::modpoi2::process::modpoi_catalogmean2apparent { ra_cat de_cat equinox dat
 #--- Hv  : true hour angle (degrees)
 #--- hv  : true altitude altaz coordinate (degrees)
 #--- azv : true azimut altaz coodinate (degrees)
+#------------------------------------------------------------
+proc ::modpoi2::process::modpoi_catalogmean2apparent { ra_cat de_cat equinox date { dra_dan "" } { ddec_dan "" } { epoch "" } } {
    variable private
 
    set pi $private(pi)
@@ -272,15 +273,15 @@ proc ::modpoi2::process::computeCriticalChi2 { nbValues nbParameters {pConf 0.95
 #------------------------------------------------------------
 proc ::modpoi2::process::computePconf { chisquare nbValues nbParameters } {
 
-   #--   valeurs par defaut
+   #--   valeurs par defaut = confiance nulle
    set p "0 %"
-   set kappa 100
+   set kappa 0
 
    if {$chisquare ni [list 0 ""]} {
       set ddl [expr { 2*$nbValues-$nbParameters-1 }]
       set p [gsl_cdf_chisq_Q $chisquare $ddl]
       set Q [expr (1.-$p)/2.]
-      set err [catch {set kappa [format "%0.2f" [gsl_cdf_ugaussian_Qinv $Q]]} msg]
+      set kappa [format "%0.2f" [gsl_cdf_ugaussian_Qinv $Q]]
       set p [format "%.2f" [expr { 100*$p }]]
       append p " %"
    }
