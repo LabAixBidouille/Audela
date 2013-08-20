@@ -178,8 +178,12 @@ namespace eval ::foc {
       variable This
       global audace caption panneau
 
-      #--   fermeture des fenetres annexes en cas de changement de focuser
+      #--   A chaque changement de focuser
+      #--   fermeture des fenetres annexes
       ::foc::closeAllWindows $audace(base)
+      #--   Reinitialise les variables
+      set panneau(foc,repeat)   "1"
+      set panneau(foc,compteur) "0"
 
       ::confEqt::activeFocuser $This.fra3.focuser.configure ::panneau(foc,focuser)
       if {$panneau(foc,focuser) eq ""} {
@@ -191,25 +195,31 @@ namespace eval ::foc {
          #--   absence de focuser
          set panneau(foc,typefocuser) 0
          #--   masque tout sauf la liste des focuser
-         pack forget $This.fra4                              ; #-- masque le frame de la raquette du focuser
-         pack forget $This.fra5                              ; #-- masque frame position focus
-         pack forget $This.fra6                              ; #-- masque frame programation
+         pack forget $This.fra4 ; #-- masque le frame de la raquette du focuser
+         pack forget $This.fra5 ; #-- masque frame position focus
+         pack forget $This.fra6 ; #-- masque frame programation
 
       } else {
 
          #--   tous les focuser reels
-
          #-- demasque le frame de la raquette du focuser commun a tous les focuser
          pack $This.fra4 -after $This.fra3 -side top -fill x
 
-         if { [ ::focus::possedeControleEtendu $panneau(foc,focuser) ] == "1"} {
+         set panneau(foc,typefocuser) [ ::focus::possedeControleEtendu $panneau(foc,focuser) ]
+
+         if {$panneau(foc,typefocuser) == "1"} {
 
             #--   focuseraudecom et usb_focus
-            set panneau(foc,typefocuser) "1"
-            set panneau(foc,compteur)    "0"
+            #--   modifie les valeurs debut et fin
+            lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
+            set panneau(foc,start) "$limite1"
+            set panneau(foc,end)   "$limite2"
 
             pack $This.fra5 -after $This.fra4 -side top -fill x ; #-- demasque frame position focus
+            $This.fra5.target configure -validatecommand [list ::tkutil::validateNumber %W %V %P %s integer $limite1 $limite2]
             pack $This.fra6 -after $This.fra5 -side top -fill x ; #-- demasque frame programmation
+            $This.fra6.start configure -helptext [format $caption(foc,hlpstart) $limite1]
+            $This.fra6.end configure -helptext [format $caption(foc,hlpend) $limite2]
 
             if {$::panneau(foc,focuser) eq "usb_focus"} {
                #--   usb_focus
@@ -218,28 +228,14 @@ namespace eval ::foc {
                ::focus::displayCurrentPosition $::panneau(foc,focuser)
                #--   adapte les commandes
                $This.fra5.but2 configure -command { ::foc::cmdUSB_FocusGoto }
-               $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer 0 65535 }
-               $This.fra6.start configure -helptext [format $caption(foc,hlpstart) 0]
-               $This.fra6.end configure -helptext [format $caption(foc,hlpend) 65535]
-               #--   modifie les valeurs debut et fin
-               set panneau(foc,start) "0"
-               set panneau(foc,end)   "65535"
             } else {
                #--   focuseraudecom
                $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
                #--   adapte les commandes
                $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
-               $This.fra5.target configure -validatecommand { ::tkutil::validateNumber %W %V %P %s integer -32767 32767 }
-               $This.fra6.start configure -helptext [format $caption(foc,hlpstart) -32767]
-               $This.fra6.end configure -helptext [format $caption(foc,hlpend) 32767]
-               #--   modifie les valeurs debut et fin
-               set panneau(foc,start) "-32767"
-               set panneau(foc,end)   "32767"
             }
          } else {
             #--   tous les focuser sans controle etendu
-            set panneau(foc,typefocuser) 0
-
             pack forget $This.fra5 ; #-- masque frame position focus
             pack forget $This.fra6 ; #-- masque frame proogrammation
          }
