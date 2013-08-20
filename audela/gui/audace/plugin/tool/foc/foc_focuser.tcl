@@ -155,13 +155,16 @@ namespace eval ::foc {
          ::foc::setFocusState goto disabled
          ::foc::setAcqState goto disabled
          #--- Gestion des limites
-         if { $audace(focus,targetFocus) > "65535" } {
+#--   modif RZ
+         lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
+#--   fin modif RZ
+         if { $audace(focus,targetFocus) > $limite2 } {
             #--- Message au-dela de la limite superieure
             ::foc::limiteFoc
             set audace(focus,targetFocus) ""
             $This.fra5.target configure -textvariable audace(focus,targetFocus)
             update
-          } elseif { $audace(focus,targetFocus) < "0" } {
+          } elseif { $audace(focus,targetFocus) < $limite1 } {
             #--- Message au-dela de la limite inferieure
             ::foc::limiteFoc
             set audace(focus,targetFocus) ""
@@ -353,11 +356,14 @@ namespace eval ::foc {
    proc formatFoc { } {
       global audace caption
 
+#--   modif RZ
       #--   definit les limites
-      switch -exact $::panneau(foc,focuser) {
-         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-         usb_focus          {set limite1 0      ; set limite2 65535 }
-      }
+      lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
+      #switch -exact $panneau(foc,focuser) {
+      #   focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+      #   usb_focus          {set limite1 0      ; set limite2 65535 }
+      #}
+#--   fin modif RZ
 
       if [ winfo exists $audace(base).formatfoc ] {
          destroy $audace(base).formatfoc
@@ -391,11 +397,14 @@ namespace eval ::foc {
    proc limiteFoc { } {
       global audace caption
 
+#--   modif RZ
       #--   definit les limites
-      switch -exact $::panneau(foc,focuser) {
-         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-        usb_focus          {set limite1 0      ; set limite2 65535 }
-      }
+      lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
+      #switch -exact $panneau(foc,focuser) {
+      #   focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+      #   usb_focus          {set limite1 0      ; set limite2 65535 }
+      #}
+#--   fin modif RZ
 
       if [ winfo exists $audace(base).limitefoc ] {
          destroy $audace(base).limitefoc
@@ -443,10 +452,13 @@ namespace eval ::foc {
       }
 
       #--   Focuser audecom ou USB_Focus
-      switch -exact $panneau(foc,focuser) {
-         focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-         usb_focus          {set limite1 0      ; set limite2 65535 }
-      }
+#--   modif RZ
+      lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
+      #switch -exact $panneau(foc,focuser) {
+      #   focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
+      #   usb_focus          {set limite1 0      ; set limite2 65535 }
+      #}
+#--   fin modif RZ
 
       switch -exact $v {
          start { if {$panneau(foc,$v) < $limite1 || $panneau(foc,$v) > $limite2} {
@@ -461,6 +473,27 @@ namespace eval ::foc {
                  }
                }
       }
+   }
+
+   #------------------------------------------------------------
+   # getLimits
+   #    Retourne les positions limites du focuser
+   # Parametres : nom du focuser {focuseraudecom | usb_focus}
+   # Return : liste des limites
+   #------------------------------------------------------------
+   proc getLimits { focuser } {
+
+      if {$focuser eq "focuseraudecom"} {
+         set limite1 -32767 ; set limite2 32767
+      } elseif {$focuser eq "usb_focus"} {
+         if {[::usb_focus::isReady] == 1} {
+             set limite1 0 ; set limite2 $::usb_focus::widget(maxstep)
+         } else {
+             set limite1 0 ; set limite2 65535
+         }
+      }
+
+      return [list $limite1 $limite2]
    }
 
 }
