@@ -74,6 +74,11 @@
    Tcl_CreateCommand(interp,"gsl_cdf_chisq_P",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_P,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"gsl_cdf_chisq_Qinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_Qinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"gsl_cdf_chisq_Pinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_chisq_Pinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_Q",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_Q,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_Qinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_Qinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_P",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_P,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_Pinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_Pinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+
    /* Dev by Harald Rischbieter ( har.risch@gmx.de ) */
    Tcl_CreateCommand(interp,"gsl_sphharm",(Tcl_CmdProc *)Cmd_gsltcltcl_msphharm,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
