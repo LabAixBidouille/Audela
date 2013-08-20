@@ -650,7 +650,7 @@ mc_ephem moon 1992-04-12T00:00:00 {RA DEC DELTA PHASE MAG}
 
    /* ici on ne garde que (xs,ys,zs,delta) pour la position geocentrique */
 
-   /*--- LUNE : planete ---*/
+   /*--- LUNE : planete (coordonnees ecliptiques astrometriques a la date) ---*/
    mc_jd2lbr1a(jjd,llp,mmp,uup);
    mc_jd2lbr1b(jjd,planete,llp,mmp,uup,&l,&b,&r);
    mc_lbr2xyz(l,b,r,&x,&y,&z);
@@ -707,7 +707,6 @@ mc_ephem moon 1992-04-12T00:00:00 {RA DEC DELTA PHASE MAG}
 
    /*--- correction de la precession ---*/
 	mc_precad(jjd,*asd,*dec,equinoxe,asd,dec);
-
 }
 
 void mc_adsolap(double jj,double equinoxe, int astrometric, double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
