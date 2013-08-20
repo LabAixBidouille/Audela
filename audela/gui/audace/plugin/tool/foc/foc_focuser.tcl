@@ -154,10 +154,9 @@ namespace eval ::foc {
          #--- Gestion graphique des boutons
          ::foc::setFocusState goto disabled
          ::foc::setAcqState goto disabled
+
          #--- Gestion des limites
-#--   modif RZ
          lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
-#--   fin modif RZ
          if { $audace(focus,targetFocus) > $limite2 } {
             #--- Message au-dela de la limite superieure
             ::foc::limiteFoc
@@ -356,14 +355,8 @@ namespace eval ::foc {
    proc formatFoc { } {
       global audace caption
 
-#--   modif RZ
-      #--   definit les limites
+      #--   Definit les limites
       lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
-      #switch -exact $panneau(foc,focuser) {
-      #   focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-      #   usb_focus          {set limite1 0      ; set limite2 65535 }
-      #}
-#--   fin modif RZ
 
       if [ winfo exists $audace(base).formatfoc ] {
          destroy $audace(base).formatfoc
@@ -397,14 +390,8 @@ namespace eval ::foc {
    proc limiteFoc { } {
       global audace caption
 
-#--   modif RZ
-      #--   definit les limites
+      #--   Definit les limites
       lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
-      #switch -exact $panneau(foc,focuser) {
-      #   focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-      #   usb_focus          {set limite1 0      ; set limite2 65535 }
-      #}
-#--   fin modif RZ
 
       if [ winfo exists $audace(base).limitefoc ] {
          destroy $audace(base).limitefoc
@@ -452,14 +439,7 @@ namespace eval ::foc {
       }
 
       #--   Focuser audecom ou USB_Focus
-#--   modif RZ
       lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
-      #switch -exact $panneau(foc,focuser) {
-      #   focuseraudecom     {set limite1 -32767 ; set limite2 32767 }
-      #   usb_focus          {set limite1 0      ; set limite2 65535 }
-      #}
-#--   fin modif RZ
-
       switch -exact $v {
          start { if {$panneau(foc,$v) < $limite1 || $panneau(foc,$v) > $limite2} {
                     tk_messageBox -title $caption(foc,attention)\
