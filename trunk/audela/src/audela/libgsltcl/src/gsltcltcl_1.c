@@ -1246,3 +1246,95 @@ int Cmd_gsltcltcl_cdf_chisq_Q(ClientData clientData, Tcl_Interp *interp, int arg
    }
    return TCL_OK;
 }
+
+int Cmd_gsltcltcl_cdf_ugaussian_Q(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur gsl_cdf_ugaussian_Q(double x).                        */
+/* x = valeur de l'abscisse                                                 */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double Q,x;
+   if(argc!=2) {
+      sprintf(s,"Usage: %s x", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&x); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		Q = gsl_cdf_ugaussian_Q(x);
+      sprintf(s,"%g",Q);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
+
+int Cmd_gsltcltcl_cdf_ugaussian_Qinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur gsl_cdf_ugaussian_Qinv(double Q).                     */
+/* Q = valeur de integrale                                                  */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double Q,x;
+   if(argc!=2) {
+      sprintf(s,"Usage: %s Q", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&Q); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		x = gsl_cdf_ugaussian_Qinv(Q);
+      sprintf(s,"%g",x);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
+
+int Cmd_gsltcltcl_cdf_ugaussian_P(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur gsl_cdf_ugaussian_P(double x).                        */
+/* x = valeur de l'abscisse                                                 */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double P,x;
+   if(argc!=2) {
+      sprintf(s,"Usage: %s x", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&x); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		P = gsl_cdf_ugaussian_P(x);
+      sprintf(s,"%g",P);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
+
+int Cmd_gsltcltcl_cdf_ugaussian_Pinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Retourne la valeur gsl_cdf_ugaussian_Pinv(double P).                     */
+/* P = valeur de integrale                                                  */
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200];
+   int retour;
+	double P,x;
+   if(argc!=2) {
+      sprintf(s,"Usage: %s P", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      retour = Tcl_GetDouble(interp,argv[1],&P); if(retour!=TCL_OK) { return TCL_ERROR ; }
+		x = gsl_cdf_ugaussian_Pinv(P);
+      sprintf(s,"%g",x);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+   }
+   return TCL_OK;
+}
