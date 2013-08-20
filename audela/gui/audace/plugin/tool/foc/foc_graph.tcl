@@ -2,7 +2,7 @@
 # Fichier : foc_graph.tcl
 # Description : Script de construction des graphiques
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id$
+# Mise Ã  jour $Id$
 #
 
 namespace eval ::foc {
@@ -12,7 +12,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    # updateFocGraphe
    #    sous processus de cmdAcq de mise a jour des 4 graphiques
-   # Parametre : liste du n° d'image, intensite, fwhmx, fwhmy et contraste
+   # Parametre : liste du nÂ° d'image, intensite, fwhmx, fwhmy et contraste
    #------------------------------------------------------------
    proc updateFocGraphe { data } {
       global audace
