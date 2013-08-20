@@ -149,7 +149,7 @@ namespace eval ::foc {
       set panneau(foc,hasWindow)         "0"
       set panneau(foc,start)             "0"
       set panneau(foc,end)               "65535"
-      set panneau(foc,step)              "3000"
+      set panneau(foc,step)              "2000"
       set panneau(foc,repeat)            "1"
       set panneau(foc,seeing)            "24"
       set panneau(foc,simulation)        "0"
