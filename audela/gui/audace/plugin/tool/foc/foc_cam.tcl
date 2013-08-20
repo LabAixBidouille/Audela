@@ -274,7 +274,7 @@ namespace eval ::foc {
             set panneau(foc,boucle) "$caption(foc,off)"
          }
 
-        #--- Informations sur l'image fenetree
+         #--- Informations sur l'image fenetree
          if { $panneau(foc,actuel) ne "$caption(foc,centrage)" && $panneau(foc,boucle) == "$caption(foc,on)"} {
             ::foc::updateValues
             after idle ::foc::cmdAcq
