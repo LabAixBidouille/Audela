@@ -372,6 +372,7 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
          set nbValues [llength $private($visuNo,starList)]
          set nbParameters [llength $private($visuNo,model,symbols)]
          lassign [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters] p kappa
+         set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $private($visuNo,model,chisquare) $p $kappa]
       }]
       if { $loadModelError != 0 } {
          ::tkutil::displayErrorInfo $::caption(modpoi2,title)
