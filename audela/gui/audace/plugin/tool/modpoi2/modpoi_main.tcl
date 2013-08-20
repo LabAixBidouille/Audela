@@ -295,13 +295,8 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
       $private($visuNo,coefficientTable) columnconfigure 3 -name covar
 
       #--- chisquare
-#--   modif RZ
-      #LabelEntry $paned2.table.chisquare -label [format $::caption(modpoi2,chisquare) "" ""] \
-      #   -labelwidth 35 -labeljustify left -justify right -editable 0 \
-      #   -textvariable ::modpoi2::main::private($visuNo,model,chisquare)
       label $paned2.table.chisquare -justify center \
           -textvariable ::modpoi2::main::private($visuNo,model,interp)
-#--   fin modif RZ
 
       #--- je place les widgets dans la frame
       grid $private($visuNo,coefficientTable) -in [$paned2.table getframe] -row 0 -column 0 -sticky ewns
@@ -373,16 +368,15 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
 
          set private($visuNo,modified) 0
 
-#--   modif RZ
          #--   interprete le X²
-         set nbValues [llength $private($visuNo,starList)]
-         set nbParameters [llength $private($visuNo,model,symbols)]
-         set pConf [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters]
-         set pConf [format "%.2f" [expr { 100*$pConf }]]
-         append pConf " %"
-         set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $private($visuNo,model,chisquare) $pConf]
-#--   fin modif RZ
-
+         if {$private($visuNo,model,chisquare) ne "" || $private($visuNo,model,chisquare) != 0} {
+            set nbValues [llength $private($visuNo,starList)]
+            set nbParameters [llength $private($visuNo,model,symbols)]
+            lassign [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters] p kappa
+            set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $private($visuNo,model,chisquare) $p $kappa]
+         } else {
+            set private($visuNo,model,interp) ""
+         }
       }]
       if { $loadModelError != 0 } {
          ::tkutil::displayErrorInfo $::caption(modpoi2,title)

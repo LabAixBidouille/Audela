@@ -267,11 +267,19 @@ proc ::modpoi2::process::computeCriticalChi2 { nbValues nbParameters {pConf 0.95
 
 #------------------------------------------------------------
 # computePconf
-#    Calcule le niveau de confiance d'un X²
+#    Calcule le niveau de confiance (en %) d'un X² et l'intervalle en sigma
 # Parameters : chisquare, nb of stars, length of Symbols list
 #------------------------------------------------------------
 proc ::modpoi2::process::computePconf { chisquare nbValues nbParameters } {
 
+   ::console::disp "chisquare $chisquare nbValues $nbValues nbParameters $nbParameters\n"
+
    set ddl [expr { 2*$nbValues-$nbParameters-1 }]
-   return [gsl_cdf_chisq_Q $chisquare $ddl]
+   set p [gsl_cdf_chisq_Q $chisquare $ddl]
+   set Q [expr (1.-$p)/2.]
+   set kappa [format "%0.2f" [gsl_cdf_ugaussian_Qinv $Q]]
+   set p [format "%.2f" [expr { 100*$p }]]
+   append p " %"
+
+   return [list $p $kappa]
 }
