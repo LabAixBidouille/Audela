@@ -329,14 +329,9 @@ namespace eval ::foc {
 
          #--   Simulation : initialise durant le Centrage
          if {$panneau(foc,simulation) ==1 && $activFocuser ==0} {
-            set limite1 0 ; set limite2 65535
-            if {$panneau(foc,focuser) eq "focuseraudecom"} {
-               set limite1 -32767 ; set limite2 32767
-            }
             #--   Fixe les valeurs initiales
-            set panneau(foc,start) $limite1
-            set panneau(foc,end) $limite2
-            set panneau(foc,step) 10000
+            lassign [::foc::getLimits $panneau(foc,focuser)] panneau(foc,start) panneau(foc,end)
+            set panneau(foc,step) 2000
             set panneau(foc,repeat) 1
          }
       }
