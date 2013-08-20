@@ -259,12 +259,12 @@ namespace eval ::foc {
    # Return : Rien
    #------------------------------------------------------------
    proc dynamicFoc { } {
-      global audace caption panneau
+      global audace panneau
 
-      if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] ==1} {
-         set activFocuser "1"
+      if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] == 1} {
+         set activFocuser 1
       } else {
-         set activFocuser "0"
+         set activFocuser 0
       }
 
       #--   GOTO si la position de depart n'est pas la position courante
@@ -273,47 +273,37 @@ namespace eval ::foc {
          #--   Fixe la position cible
          set audace(focus,targetFocus) $panneau(foc,start)
 
-         if {$activFocuser ==1} {
+         if {$activFocuser == 1} {
 
-            #--   Focuser connecte
+            #--   Cas d'un focuser avec controle etendu reellement connecte
             switch -exact $panneau(foc,focuser) {
                focuseraudecom     { ::foc::cmdSeDeplaceA }
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
 
-            #--   delai de stabilisation a valider
-            after 500
-
          } else {
 
-            #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
-            #if { $panneau(foc,focuser) ni [list "$caption(foc,pas_focuser)" ""]} {
-            #     set delay 0.100
-            #   if { [ expr $panneau(foc,exptime)-$delay ] > "0" } {
-            #      set delay [ expr $panneau(foc,exptime)-$delay ]
-            #      if { $panneau(foc,focuser) ne "$caption(foc,pas_focuser)" } {
-            #        #set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::foc::cmdFocus stop } ]
-            #      }
-            #   }
-            #   after 100
-            #}
-
-            #--   Focuser simule
+            #--   Cas des focusers non connectes = simulation
             #--   Actualise la position courante
             set audace(focus,targetFocus) $panneau(foc,start)
             after 5000
             set audace(focus,currentFocus) $audace(focus,targetFocus)
          }
 
+         #--   delai de stabilisation a valider
+         after 500
+
 
       } else {
+         #--   Pas de deplacement
          set audace(focus,targetFocus) $audace(focus,currentFocus)
       }
 
       update
 
-      #--   Apres deplacement reel ou simule
-      if {$panneau(foc,menu) ne "$caption(foc,centrage)"} {
+      #--   Apres un deplacement reel ou simule
+      if {$panneau(foc,menu) ne "$::caption(foc,centrage)"} {
+
          #--   En mode Fenetrage
          #--   Calcule la position suivante
          set newPosition [expr { $audace(focus,currentFocus)+$panneau(foc,step) }]
@@ -332,7 +322,7 @@ namespace eval ::foc {
          if {$panneau(foc,simulation) ==1 && $activFocuser ==0} {
             #--   Fixe les valeurs initiales
             lassign [::foc::getLimits $panneau(foc,focuser)] panneau(foc,start) panneau(foc,end)
-            set panneau(foc,step) 2000
+            set panneau(foc,step) 4000
             set panneau(foc,repeat) 1
          }
       }
