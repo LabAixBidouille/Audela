@@ -369,14 +369,9 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
          set private($visuNo,modified) 0
 
          #--   interprete le X²
-         if {$private($visuNo,model,chisquare) ne "" || $private($visuNo,model,chisquare) != 0} {
-            set nbValues [llength $private($visuNo,starList)]
-            set nbParameters [llength $private($visuNo,model,symbols)]
-            lassign [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters] p kappa
-            set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $private($visuNo,model,chisquare) $p $kappa]
-         } else {
-            set private($visuNo,model,interp) ""
-         }
+         set nbValues [llength $private($visuNo,starList)]
+         set nbParameters [llength $private($visuNo,model,symbols)]
+         lassign [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters] p kappa
       }]
       if { $loadModelError != 0 } {
          ::tkutil::displayErrorInfo $::caption(modpoi2,title)
