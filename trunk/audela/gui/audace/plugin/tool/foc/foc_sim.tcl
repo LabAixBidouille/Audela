@@ -141,7 +141,7 @@ namespace eval ::foc {
    # computeSeeing
    #  Calcule un seeing en fonction de la position du focuser
    # Parametres : Aucun
-   # Return : Rien
+   # Return : seeing
    #------------------------------------------------------------
    proc computeSeeing { } {
       global panneau
