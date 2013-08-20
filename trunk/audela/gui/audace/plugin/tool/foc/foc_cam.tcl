@@ -268,10 +268,7 @@ namespace eval ::foc {
 
             #--   Calcule le seeing et son increment
             #--   Initialise durant le Centrage
-            set limite1 0 ; set limite2 65535
-            if {$panneau(foc,focuser) eq "focuseraudecom"} {
-               set limite1 -32767 ; set limite2 32767
-            }
+            lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
             set ratio [expr { 1.85*$panneau(foc,seeing)/($limite2-$limite1) }]
             set seeing [expr { $panneau(foc,seeing)-$ratio*($panneau(foc,start)-$limite1) } ]
             if {$seeing < 0} {
