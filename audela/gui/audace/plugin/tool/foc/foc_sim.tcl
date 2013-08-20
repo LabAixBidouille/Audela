@@ -8,6 +8,12 @@
 
 namespace eval ::foc {
 
+   #------------------------------------------------------------
+   # createImage
+   #  Cree une image de synthese
+   # Parametres : binning, seeing et exposure
+   # Return : Rien
+   #------------------------------------------------------------
    proc createImage { bin {seeing 3.0} {exposure 10} } {
       global audace conf panneau
 
@@ -129,6 +135,25 @@ namespace eval ::foc {
          $C_th $audace(etc,comp1,Tatm) $audace(etc,param,optic,Topt) $Em $flat_type
 
       buf$bufNo delkwd RADESYS
+   }
+
+   #------------------------------------------------------------
+   # computeSeeing
+   #  Calcule un seeing en fonction de la position du focuser
+   # Parametres : Aucun
+   # Return : Rien
+   #------------------------------------------------------------
+   proc computeSeeing { } {
+      global panneau
+
+      lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
+      set ratio [expr { 1.85*$panneau(foc,seeing)/($limite2-$limite1) }]
+      set seeing [expr { $panneau(foc,seeing)-$ratio*($panneau(foc,start)-$limite1) } ]
+      if {$seeing < 0} {
+         set seeing [expr { abs($seeing) }]
+      }
+
+      return $seeing
    }
 
 }
