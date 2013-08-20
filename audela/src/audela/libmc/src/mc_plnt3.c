@@ -457,10 +457,11 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 /***************************************************************************/
 {
 #if defined  ELP82
-	/*
+	/**/
 	double mat[3][3];
 	double x,y,z,xe,ye,ze,xq,yq,zq,q;
-	*/
+	double eps;
+	/**/
 	double p;
 	double l,b,r,u,v;
 	double t,t2,t3,t4,t5;
@@ -500,13 +501,13 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	dz*=(DR)/3600;
 
 	/* --- planet angles ---*/
-	pla_me=252*3600+15*60+ 3.25986+538101628.68898;
-	pla_ve=181*3600+58*60+47.28305+210664136.43355;
-	pla_ma=355*3600+25*60+59.78866+ 68905077.59284;
-	pla_ju= 34*3600+21*60+ 5.34212+ 10925660.42861;
-	pla_sa= 50+3600+ 4*60+38.89694+  4399609.65932;
-	pla_ur=314*3600+ 3*60+18.01841+  1542481.19393;
-	pla_ne=304*3600+20*60+55.19575+   786550.32074;
+	pla_me=252*3600+15*60+ 3.25986+538101628.68898*t;
+	pla_ve=181*3600+58*60+47.28305+210664136.43355*t;
+	pla_ma=355*3600+25*60+59.78866+ 68905077.59284*t;
+	pla_ju= 34*3600+21*60+ 5.34212+ 10925660.42861*t;
+	pla_sa= 50+3600+ 4*60+38.89694+  4399609.65932*t;
+	pla_ur=314*3600+ 3*60+18.01841+  1542481.19393*t;
+	pla_ne=304*3600+20*60+55.19575+   786550.32074*t;
 	pla_me*=(DR)/3600;
 	pla_ve*=(DR)/3600;
 	pla_ma*=(DR)/3600;
@@ -3248,6 +3249,7 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
    elp[3]=val;
 
 	/* --- useful angles --- */
+	/*
 	d =297*3600+51*60+ 0.73512+1602961601.4603 *t;
 	lp=357*3600+31*60+44.79306+ 129596581.0474 *t;
 	l =134*3600+57*60+48.28096+1717915923.4728 *t;
@@ -3258,6 +3260,7 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	 l*=(DR)/3600;
 	 f*=(DR)/3600;
 	dz*=(DR)/3600;
+	*/
 
    // ---------------------- ELP4 ---------------------
    val=0.;
@@ -4218,8 +4221,10 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 
 
 	/* --- useful angles --- */
+	/*
 	tt=100*3600+27*60+59.22059+ 129597742.2758 *t;
 	tt*=(DR)/3600;
+	*/
    mc_elp10(&elp[10],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
    mc_elp11(&elp[11],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
    mc_elp12(&elp[12],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
@@ -8059,27 +8064,22 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	r=elp[3]+elp[6]+elp[12]+elp[18]+elp[24]+elp[30]+elp[33];
 	r=r+(elp[9]+elp[15]+elp[21]+elp[27])*t+elp[36]*t2;
 
-	/* --- precession ---*/
+	/* --- precession approchee (ne pas utiliser) ---*/
+	/*
 	p=5029.0966*t+1.1120*t2+0.000077*t3-0.00002353*t4;
 	p*=(DR)/3600.;
-	v=v+p;
+	v=v-p; // remplace par le calcul xe,ye,ze
+	*/
 
 	l=v;
 	b=u;
 
-	/*
 	// --- conversion to rectangular mean intertial ecliptic ---
 	x=r*cos(v)*cos(u);
 	y=r*sin(v)*cos(u);
 	z=r*sin(u);
-	x*=(UA);
-	y*=(UA);
-	z*=(UA);
-	x/=(UA);
-	y/=(UA);
-	z/=(UA);
 
-	// --- conversion to the J2000 equinox ---
+	// --- conversion inertial mean ecliptique at date to the J2000 equinox ---
 	p=0.10180391e-4*t+0.47020439e-6*t2-0.5417367e-9*t3-0.2507948e-11*t4+0.463486e-14*t5;
 	q=-0.113469002e-3*t+0.12372674e-6*t2+0.12654170e-8*t3-0.1371808e-11*t4-0.320334e-14*t5;
 	mat[0][0]=1-2*p*p;
@@ -8094,14 +8094,16 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	xe=mat[0][0]*x+mat[0][1]*y+mat[0][2]*z;
 	ye=mat[1][0]*x+mat[1][1]*y+mat[1][2]*z;
 	ze=mat[2][0]*x+mat[2][1]*y+mat[2][2]*z;
+	/*
 	xe*=(UA);
 	ye*=(UA);
 	ze*=(UA);
 	xe/=(UA);
 	ye/=(UA);
 	ze/=(UA);
+	*/
 
-	// --- conversion to the FK5 --- 
+	// --- conversion to the FK5 equatorial = xyz equatoriale moyenne J2000
 	mat[0][0]=1.;
 	mat[0][1]=0.000000437913;
 	mat[0][2]=-0.000000189859;
@@ -8115,10 +8117,19 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	yq=mat[1][0]*xe+mat[1][1]*ye+mat[1][2]*ze;
 	zq=mat[2][0]*xe+mat[2][1]*ye+mat[2][2]*ze;
 
-	// --- xyz -> lonlat ---
+	// --- xyz equatoriale moyenne J2000 -> spherique equatoriale moyenne J2000
 	mc_xyz2lbr(xq,yq,zq,&l,&b,&r);
-	mc_xyz2lbr(xe,ye,ze,&l,&b,&r);
-	*/
+	// --- spherique equatoriale moyenne J2000 -> spherique equatoriale astrometrique J2000
+	mc_aberration_annuelle(jj,l,b,&l,&b,-1);
+   /*--- correction de la precession J2000 -> date ---*/
+	mc_precad(J2000,l,b,jj,&l,&b);
+	// --- spherique equatoriale astrometrique a la date -> xyz equatoriale astrometrique a la date 
+	mc_lbr2xyz(l,b,r,&x,&y,&z);
+	// --- xyz equatoriale astrometrique a la date -> xyz ecliptique astrometrique a la date  (de libmc)
+   mc_obliqmoy(jj,&eps);
+   mc_xyzeq2ec(x,y,z,eps,&x,&y,&z);
+	// --- xyz ecliptique astrometrique a la date (de libmc) -> spherique ecliptique astrometrique a la date  (de libmc)
+	mc_xyz2lbr(x,y,z,&l,&b,&r);
 
 	*ll0=l;
 	*bb0=b;
