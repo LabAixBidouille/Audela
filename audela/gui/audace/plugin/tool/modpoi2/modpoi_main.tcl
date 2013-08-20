@@ -295,16 +295,20 @@ proc ::modpoi2::main::fillConfigPage { frm visuNo } {
       $private($visuNo,coefficientTable) columnconfigure 3 -name covar
 
       #--- chisquare
-      LabelEntry $paned2.table.chisquare -label $::caption(modpoi2,chisquare) \
-         -labeljustify left -justify right -editable 0 \
-          -textvariable ::modpoi2::main::private($visuNo,model,chisquare)
+#--   modif RZ
+      #LabelEntry $paned2.table.chisquare -label [format $::caption(modpoi2,chisquare) "" ""] \
+      #   -labelwidth 35 -labeljustify left -justify right -editable 0 \
+      #   -textvariable ::modpoi2::main::private($visuNo,model,chisquare)
+      label $paned2.table.chisquare -justify center \
+          -textvariable ::modpoi2::main::private($visuNo,model,interp)
+#--   fin modif RZ
 
       #--- je place les widgets dans la frame
       grid $private($visuNo,coefficientTable) -in [$paned2.table getframe] -row 0 -column 0 -sticky ewns
       grid $paned2.table.ysb  -in [$paned2.table getframe] -row 0 -column 1 -sticky nsew
       grid $paned2.table.xsb  -in [$paned2.table getframe] -row 1 -column 0 -sticky ew
       grid $paned2.table.chisquare  -in [$paned2.table getframe] -row 2 -column 0 -columnspan 2
-      grid rowconfig    [$paned2.table getframe] 0 -weight 1
+      grid rowconfig    [$paned2.table getframe] {0 1} -weight 1
       grid columnconfig [$paned2.table getframe] 0 -weight 1
    pack $paned2.table -side top -fill x -expand 0
 
@@ -368,6 +372,16 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
            $private($visuNo,model,chisquare)
 
          set private($visuNo,modified) 0
+
+#--   modif RZ
+         #--   interprete le X²
+         set nbValues [llength $private($visuNo,starList)]
+         set nbParameters [llength $private($visuNo,model,symbols)]
+         set pConf [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters]
+         set pConf [format "%.2f" [expr { 100*$pConf }]]
+         append pConf " %"
+         set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $private($visuNo,model,chisquare) $pConf]
+#--   fin modif RZ
 
       }]
       if { $loadModelError != 0 } {
@@ -499,7 +513,7 @@ proc ::modpoi2::main::saveModel { fileName date comment starList symbols coeffic
 
 #------------------------------------------------------------
 # onChangeMount
-#    demarre le wizad pour creer un nouveau modele
+#    demarre le wizard pour creer un nouveau modele
 #
 # @param visuNo numero de la visu
 # @param args  parametres ajoutes par le listener

@@ -48,7 +48,10 @@ set caption(modpoi2,star,haApp)                      "Hour\nAngle"
 set caption(modpoi2,star,deApp)                      "DEC"
 set caption(modpoi2,star,select)                     "Select"
 
-set caption(modpoi2,chisquare)                       "Chisquare"
+#---  modif RZ
+#set caption(modpoi2,chisquare)                       "Chisquare"
+set caption(modpoi2,interp)                          "# La valeur du X² = %s indique que le modèle est valide avec un niveau de confiance de %s"
+#---  fin modif RZ
 
 set caption(modpoi2,modele_existe)                   "Pointing Model Ready."
 set caption(modpoi2,modele_appliquer2)               "Save changes before applying the pointing model to the mount."
@@ -228,9 +231,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,haApp)                   "Angle \nhoraire"
    set caption(modpoi2,star,deApp)                   "Déc."
    set caption(modpoi2,star,select)                  "Sélection"
-
-   set caption(modpoi2,chisquare)                    "Chisquare"
-
+#---  modif RZ
+   #set caption(modpoi2,chisquare)                    "Chisquare"
+   set caption(modpoi2,interp)                       "La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s"
+#---  fin modif RZ
    set caption(modpoi2,modele_existe)                "Modèle de pointage opérationnel."
    set caption(modpoi2,modele_appliquer2)            "Vous devez enregistrer les modifications avant d'appliquer le modèle de pointage à la monture."
    set caption(modpoi2,choix,cancel)                 "Abandonner"
