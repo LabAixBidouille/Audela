@@ -253,7 +253,7 @@ namespace eval ::foc {
       #--   Fait au moins une une acquisition
       for {set rep 1} {$rep <= $panneau(foc,repeat)} {incr rep} {
 
-         if {$panneau(foc,simulation) ==0} {
+         if {$panneau(foc,simulation) == 0} {
 
             #--- Declenchement de l'acquisition
             ::camera::acquisition [ ::confVisu::getCamItem $audace(visuNo) ] "::foc::attendImage" $panneau(foc,exptime)
@@ -266,22 +266,15 @@ namespace eval ::foc {
 
          } else {
 
-            #--   Calcule le seeing et son increment
-            #--   Initialise durant le Centrage
-            lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
-            set ratio [expr { 1.85*$panneau(foc,seeing)/($limite2-$limite1) }]
-            set seeing [expr { $panneau(foc,seeing)-$ratio*($panneau(foc,start)-$limite1) } ]
-            if {$seeing < 0} {
-               set seeing [expr { abs($seeing) }]
-            }
-            ::foc::createImage $panneau(foc,bin) $seeing $panneau(foc,exptime)
+            #--   Cree une image virtuelle
+            ::foc::createImage $panneau(foc,bin) [::foc::computeSeeing] $panneau(foc,exptime)
          }
 
          if {$panneau(foc,demande_arret) == 1} {
             set panneau(foc,boucle) "$caption(foc,off)"
          }
 
-         #--- Informations sur l'image fenetree
+        #--- Informations sur l'image fenetree
          if { $panneau(foc,actuel) ne "$caption(foc,centrage)" && $panneau(foc,boucle) == "$caption(foc,on)"} {
             ::foc::updateValues
             after idle ::foc::cmdAcq
