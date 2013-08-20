@@ -272,14 +272,18 @@ proc ::modpoi2::process::computeCriticalChi2 { nbValues nbParameters {pConf 0.95
 #------------------------------------------------------------
 proc ::modpoi2::process::computePconf { chisquare nbValues nbParameters } {
 
-   ::console::disp "chisquare $chisquare nbValues $nbValues nbParameters $nbParameters\n"
+   #--   valeurs par defaut
+   set p "0 %"
+   set kappa 100
 
-   set ddl [expr { 2*$nbValues-$nbParameters-1 }]
-   set p [gsl_cdf_chisq_Q $chisquare $ddl]
-   set Q [expr (1.-$p)/2.]
-   set kappa [format "%0.2f" [gsl_cdf_ugaussian_Qinv $Q]]
-   set p [format "%.2f" [expr { 100*$p }]]
-   append p " %"
+   if {$chisquare ni [list 0 ""]} {
+      set ddl [expr { 2*$nbValues-$nbParameters-1 }]
+      set p [gsl_cdf_chisq_Q $chisquare $ddl]
+      set Q [expr (1.-$p)/2.]
+      set err [catch {set kappa [format "%0.2f" [gsl_cdf_ugaussian_Qinv $Q]]} msg]
+      set p [format "%.2f" [expr { 100*$p }]]
+      append p " %"
+   }
 
    return [list $p $kappa]
 }
