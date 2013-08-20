@@ -281,7 +281,7 @@ namespace eval ::foc {
                usb_focus          { ::foc::cmdUSB_FocusGoto }
             }
 
-            #--   delai de stabilisation
+            #--   delai de stabilisation a valider
             after 500
 
          } else {
@@ -304,6 +304,8 @@ namespace eval ::foc {
             after 5000
             set audace(focus,currentFocus) $audace(focus,targetFocus)
          }
+
+
       } else {
          set audace(focus,targetFocus) $audace(focus,currentFocus)
       }
@@ -315,13 +317,12 @@ namespace eval ::foc {
          #--   En mode Fenetrage
          #--   Calcule la position suivante
          set newPosition [expr { $audace(focus,currentFocus)+$panneau(foc,step) }]
+         #--   Si position finale pas atteinte, fixe la prochaine etape avec start
          if {$newPosition <= $panneau(foc,end)} {
-            #--   Fixe la prochaine etape avec start
             set panneau(foc,start) $newPosition
          }
-
+         #--   Demande l'arret apres l'acquisition si cycle termine
          if {$audace(focus,currentFocus) == $panneau(foc,start)} {
-            #--   Demande l'arret apres l'acquisition
             set panneau(foc,demande_arret) "1"
          }
 
@@ -453,18 +454,19 @@ namespace eval ::foc {
    #------------------------------------------------------------
    # getLimits
    #    Retourne les positions limites du focuser
-   # Parametres : nom du focuser {focuseraudecom | usb_focus}
-   # Return : liste des limites
+   # Parametres : nom du focuser
+   # Return : liste des limites de pas position du focuser
    #------------------------------------------------------------
    proc getLimits { focuser } {
+
+      #--   valeurs par defaut pour la simulation
+      set limite1 0 ; set limite2 65535
 
       if {$focuser eq "focuseraudecom"} {
          set limite1 -32767 ; set limite2 32767
       } elseif {$focuser eq "usb_focus"} {
          if {[::usb_focus::isReady] == 1} {
-             set limite1 0 ; set limite2 $::usb_focus::widget(maxstep)
-         } else {
-             set limite1 0 ; set limite2 65535
+             set limite2 $::usb_focus::widget(maxstep)
          }
       }
 
