@@ -908,8 +908,6 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
    variable hip_catalog
    global caption
 
-   ::console::affiche_resultat "modpoi_wiz3 $amerIndex\n"
-
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
           destroy $children
@@ -1458,14 +1456,11 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
    set private(coefficients) [lindex $res 0]
    set private(chisquare) [lindex $res 1]
    set private(covar) [lindex $res 2]
-#--   modif RZ
+
    #--   interprete le X²
-   set nbValues [llength $starList]
+   set nbValues $private(stars,nb)
    set nbParameters [llength $private(symbols)]
-   set pConf [::modpoi2::process::computePconf $private(chisquare) $nbValues $nbParameters]
-   set pConf [format "%.2f" [expr { 100*$pConf }]]
-   append pConf " %"
-#--   fin modif RZ
+   lassign [::modpoi2::process::computePconf $private(chisquare) $nbValues $nbParameters] p kappa
 
    set res1 "\
    [lindex $private(symbols) 0] = [format "%.2f" [lindex $private(coefficients) 0]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 1 1],2)]])\n\
@@ -1488,8 +1483,7 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
    ($caption(modpoi2,wiz5,DAF))\n\n\
    [lindex $private(symbols) 9] = [format "%.2f" [lindex $private(coefficients) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
    ($caption(modpoi2,wiz5,TF))\n\n\
-   [format $caption(modpoi2,interp) $private(chisquare) $pConf]\n\n"
-   #Chisquare = $private(chisquare)\n\n"
+   [format $caption(modpoi2,interp) $private(chisquare) $p $kappa]\n\n"
 
    #--- je calcule des ecarts en appliquant le modele
    for {set k 0} {$k < $private(stars,nb)} {incr k} {
@@ -1568,6 +1562,12 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
    #set private(coefficients) [lindex $res 0]
    #set private(chisquare) [lindex $res 1]
    #set private(covar) [lindex $res 2]
+
+   #--   interprete le X²
+   set nbValues $private(stars,nb)
+   set nbParameters [llength $private(symbols)]
+   lassign [::modpoi2::process::computePconf $private(chisquare) $nbValues $nbParameters] p kappa
+
    set num [catch {
        set res1 "\
        IH = [format "%.2f" [lindex $private(coefficients) 0]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 1 1],2)]])\n\
@@ -1590,7 +1590,7 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
        ($caption(modpoi2,wiz5,DAF))\n\n\
        TF = [format "%.2f" [lindex $private(coefficients) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
        ($caption(modpoi2,wiz5,TF))\n\n\
-       Chisquare = $private(chisquare)\n\n"
+       [format $caption(modpoi2,interp) $private(chisquare) $p $kappa]\n\n"
     } msg]
    if { $num!="1"} {
       #--- Display name
