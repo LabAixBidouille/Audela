@@ -97,6 +97,10 @@ namespace eval ::foc {
 
       #--   resoud le systeme y=a+b*x
       lassign [lindex [ gsl_mfitmultilin $yLine(:) $X $w(:) ] 0] constante slope
+      #set chi2 [lindex [ gsl_mfitmultilin $yLine(:) $X $w(:) ] 1]
+      #set pConf [::foc::computePconf $chi2 $n 2]
+      #set msg [format $::caption(foc,interp) $chi2 $pConf]
+      #::console::affiche_resultat "$side $msg\n"
 
       #--   calcule l'intersection avec l'axe des abscisses (les pas)
       if {$slope != 0} {
@@ -129,7 +133,7 @@ namespace eval ::foc {
 
       #--   extraction des limites d'analyse
       #--   1/e² = 0.135 du pic (1/e-Squared Halfwidth)
-      lassign [getLimits ::Vintx 0.135] start end
+      lassign [getAnalyseLimits ::Vintx 0.135] start end
 
       if {$start != 1 && $end != [::Vx length]} {
 
@@ -200,12 +204,12 @@ namespace eval ::foc {
    }
 
    #---------------------------------------------------------------------------
-   # getLimits
+   # getAnalyseLimits
    #    cherche les limites dans un vecteur de flux
    # Parametres : nom du vecteur a traiter et limite d'ecretage (en fraction du max)
    # Return : les limites robustes
    #---------------------------------------------------------------------------
-   proc getLimits { vectorName limit } {
+   proc getAnalyseLimits { vectorName limit } {
 
       blt::vector create Vindex -watchunset 1
 
@@ -308,6 +312,17 @@ namespace eval ::foc {
       blt::vector destroy V1 temporaire
 
       return $rayon
+   }
+
+   #------------------------------------------------------------
+   # computePconf
+   #    Calcule le niveau de confiance d'un X²
+   # Parameters : chisquare, nb of values, nb of parameters
+   #------------------------------------------------------------
+   proc computePconf { chisquare nbValues nbParameters } {
+
+      set ddl [expr { 2*$nbValues-$nbParameters-1 }]
+      return [gsl_cdf_chisq_Q $chisquare $ddl]
    }
 
 }
