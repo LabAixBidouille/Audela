@@ -408,32 +408,21 @@ namespace eval ::manage_source {
    # manage_source::name2ids
    # Fournit l'id de la source nommé par dans astroid
    #
-   proc ::manage_source::name2ids { mycata p_listsources} {
+   proc ::manage_source::name2ids { myname p_listsources} {
       
       upvar $p_listsources listsources 
 
+      set mycata [::manage_source::name_cata $myname]
       set fields [lindex $listsources 0]
       set sources [lindex $listsources 1]
+
       set ids 0
       foreach s $sources {
-         set pos [lsearch -index 0 $s "ASTROID"]
-         if {$pos != -1 } {
-            set keypos [::bdi_tools_psf::get_id_astroid "name"]
-            gren_info "$pos 2 $keypos\n"
-            set name [lindex $s [list $pos 2 $keypos]]
-            gren_info "name = $name\n"
-            
-            set p [::bdi_tools_psf::get_otherfields_astroid]
-            gren_info "lp = [llength $p]\n"
-            gren_info "ls = [llength [lindex $s [list $pos 2]]]\n"
-            gren_info "$p\n"
-            gren_info "$s\n"
-            
-            break
-         }
-         
+         set name [::manage_source::naming $s $mycata ]
+         if {$myname == $name} { return $ids }
+         incr ids
       }
-      return 0
+      return -1
    }
 
 

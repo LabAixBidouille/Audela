@@ -404,14 +404,27 @@ namespace eval bdi_gui_gestion_source {
          set s [lindex $sources $id]
          set pos 0
          foreach cata $s {
-            set ra0  [lindex [lindex $cata 1] 0]
-            set dec0 [lindex [lindex $cata 1] 1]
-            #gren_info "[lindex $cata 0] : $ra0 $dec0\n"
-            set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
-            set x [lindex $xy 0]
-            set y [lindex $xy 1]
-            lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] [expr $id + 1] $x $y ]
-            incr pos
+
+            if {[lindex $cata 0] == "ASTROID"} {
+               # TODO
+               set othf [lindex $cata 2]
+               set x [::bdi_tools_psf::get_val othf "xsm"]
+               set y [::bdi_tools_psf::get_val othf "ysm"]
+               lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] [expr $id + 1] $x $y ]
+               incr pos
+
+            } else {
+
+               set ra0  [lindex [lindex $cata 1] 0]
+               set dec0 [lindex [lindex $cata 1] 1]
+               if {$ra0!=""&&$dec0!=""} {
+                  set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
+                  set x [lindex $xy 0]
+                  set y [lindex $xy 1]
+                  lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] [expr $id + 1] $x $y ]
+                  incr pos
+               } 
+            } 
          }
       }
 
@@ -491,14 +504,28 @@ namespace eval bdi_gui_gestion_source {
       gren_info "SOURCE FOUND : ID = $ids NAME = $name CATAS = "
       set pos 0
       foreach cata $s {
-         set ra0  [lindex [lindex $cata 1] 0]
-         set dec0 [lindex [lindex $cata 1] 1]
-         gren_info "[lindex $cata 0] " 
-         set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
-         set x [lindex $xy 0]
-         set y [lindex $xy 1]
-         lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] $ids $x $y ]
-         incr pos
+         if {[lindex $cata 0] == "ASTROID"} {
+            # TODO
+            set xpos [::bdi_tools_psf::get_id_astroid "xsm"]
+            set x [lindex $cata [list 2 $xpos]]
+            set ypos [::bdi_tools_psf::get_id_astroid "ysm"]
+            set y [lindex $cata [list 2 $ypos]]
+            lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] $ids $x $y ]
+            incr pos
+
+         } else {
+      
+            set ra0  [lindex [lindex $cata 1] 0]
+            set dec0 [lindex [lindex $cata 1] 1]
+            gren_info "[lindex $cata 0] $ra0 $dec0 " 
+            if {$ra0!=""&&$dec0!=""} {
+               set xy [ buf$::audace(bufNo) radec2xy [ list $ra0 $dec0 ] ]
+               set x [lindex $xy 0]
+               set y [lindex $xy 1]
+               lappend ::bdi_gui_gestion_source::gui_catalogues_data [list $pos [lindex $cata 0] $ids $x $y ]
+               incr pos
+            }
+         } 
       }
       gren_info "\n"
 
@@ -624,7 +651,7 @@ namespace eval bdi_gui_gestion_source {
    proc ::bdi_gui_gestion_source::focus_source {  } {
       if {$::gui_cata::psf_id_source != ""} {
          catch {
-            set id [::manage_source::name2ids ::gui_cata::psf_name_source ::tools_cata::current_listsources]
+            set id [::manage_source::name2ids $::gui_cata::psf_name_source ::tools_cata::current_listsources]
             ::bdi_gui_gestion_source::select_source $::gui_cata::psf_id_source
             ::bdi_gui_gestion_source::work_charge $::gui_cata::psf_id_source
          }

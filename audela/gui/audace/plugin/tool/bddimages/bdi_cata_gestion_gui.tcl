@@ -1782,6 +1782,11 @@ namespace eval cata_gestion_gui {
 
    }
 
+
+
+
+
+
    proc ::cata_gestion_gui::psf_popup_manuel_1obj_allimg { tbl } {
 
       #gren_info "psf_popup_auto tbl = $tbl \n"
@@ -1793,20 +1798,38 @@ namespace eval cata_gestion_gui {
          break
       }
       gren_info "id_current_image = $::tools_cata::id_current_image \n"
-      return
+      
+      
+      set ar [lindex [$tbl get $select] 1]
+      set ac [lindex [$tbl get $select] 2]
+      
+      if {$ar!=""&&$ac!=""} {
 
-      set id 0
-      foreach current_image $::tools_cata::img_list {
-         incr id
-         lappend worklist [list $id [lindex [$tbl get $select] 0] ]
+         gren_info "source taggee ($ar $ac)\n"
+         # si la source est taggee c est qu elle est dans ASTROID.
+         # on recupere le nom de cette source dans le catalogue tagge AC.
+         set s [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) [list 1 [expr $ids - 1]]]
+         
+         set name [::manage_source::naming $s $ac ]
+         gren_info "name=$name\n"
+         
+         for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
+            set ids [::manage_source::name2ids $name ::gui_cata::cata_list($i)]
+            incr ids
+            gren_info "num cata = $i ; num source = $ids \n"
+            if {$ids!=-1} { lappend worklist [list $i $ids ] }
+         }
+
+      } else {
+         gren_info "source non taggee\n"
+         # verifier si la source est dans ASTROID
+         
+         
       }
+      
+      if {$worklist!=""} { ::bdi_gui_gestion_source::run $worklist }
 
-      
-      gren_info "worklist = $worklist \n"
-      
-      
-      ::bdi_gui_gestion_source::run $worklist
-
+      return
    }
 
 
@@ -1885,14 +1908,17 @@ namespace eval cata_gestion_gui {
 
       set pass "no"
       set id 0
+      set cpt 0
 
       if {$worktype == "oneimage" || $worktype == "flag" } {
          set current 0
       }
 
+      set tt0 [clock clicks -milliseconds]
       #gren_info "Sources selectionnees ($nd_sources): \n"
-      set current 
+      #set current 
       foreach s $sources {
+
          incr id
          
          if {$worktype == "flag" || $worktype == "list_flag" } {
@@ -1904,7 +1930,7 @@ namespace eval cata_gestion_gui {
          }
          
          ::cata_gestion_gui::set_popupprogress $current $nd_sources
-         gren_info "ID = $id\n"
+
          #gren_info "S=$s\n"
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
          
@@ -1927,6 +1953,11 @@ namespace eval cata_gestion_gui {
          }
          set sources [lreplace $sources [expr $id - 1 ] [expr $id - 1 ] $s]
          incr current
+         
+         incr cpt
+         set tt [format "%.0f" [expr ([clock clicks -milliseconds] - $tt0)/$cpt/1000.*($nd_sources-$current)]]
+         gren_info "ID = $id $current (plus que $tt secondes)\n"
+
       }
 
       if {$pass=="no"} { return }
