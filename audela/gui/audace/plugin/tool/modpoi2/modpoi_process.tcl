@@ -286,3 +286,4 @@ proc ::modpoi2::process::computePconf { chisquare nbValues nbParameters } {
 
    return [list $p $kappa]
 }
+
