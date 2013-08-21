@@ -817,3 +817,113 @@ int tt_ima_stack_pythagore_1(TT_IMA_STACK *pstack)
    tt_free(index0,"index0");
    return(OK_DLL);
 }
+
+int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
+/***************************************************************************/
+/* Empilement en faisant un drizzle WCS                                    */
+/***************************************************************************/
+/***************************************************************************/
+{
+   TT_IMA *p_tmp=pstack->p_tmp;
+   TT_IMA *p_out=pstack->p_out;
+   TT_IMA *p_tmpout=pstack->p_tmpout;
+   long firstelem=pstack->firstelem;
+   long nelements=pstack->nelements;
+   long nelem=pstack->nelem;
+   long nelem0=pstack->nelem0;
+   int nbima=pstack->nbima;
+   double *poids=pstack->poids;
+   int adr,adr2;
+   double drop_pixsize=pstack->drop_pixsize;
+   double oversampling=pstack->oversampling;
+   int imax,jmax,imax2,jmax2,ii,jj,i,j,i2,j2,jk,ik;
+   int msg,k;
+   float x2,y2;
+   double resolution,surech,c,wij,sij,v,w,intensite;
+   double trans_x,trans_y;
+   double xa,xb,ya,yb;
+   TT_ASTROM p_ast;
+   double x[4],y[4],xp[4],yp[4],ra[4],dec[4],delta;
+   double a[6],aa[6];
+
+   imax=p_tmp->naxis1;
+   jmax=p_tmp->naxis2;
+   imax2=p_out->naxis1;
+   jmax2=p_out->naxis2;
+   resolution=pstack->oversampling;
+   surech=1./pstack->drop_pixsize;
+   if (surech<1) { surech = 1; }
+   if (surech>2) { surech = 2; }
+   c=surech/2;
+   wij=1./(surech*surech);
+
+   /* --- WCS ---*/
+   msg=tt_util_getkey_astrometry(p_tmp,&p_ast);
+   xp[1]=pstack->p_ast.crpix1;
+   yp[1]=pstack->p_ast.crpix2;
+   xp[2]=pstack->p_ast.crpix1+0.4*p_tmp->naxis1;
+   yp[2]=pstack->p_ast.crpix2;
+   xp[3]=pstack->p_ast.crpix1;
+   yp[3]=pstack->p_ast.crpix2+0.4*p_tmp->naxis2;
+   for (k=1;k<=3;k++) {
+      tt_util_astrom_xy2radec(&pstack->p_ast,xp[k],yp[k],&ra[k],&dec[k]);
+   }
+   for (k=1;k<=3;k++) {
+      tt_util_astrom_radec2xy(&p_ast,ra[k],dec[k],&x[k],&y[k]);
+   }
+   delta = (y[1]-y[2])*(x[3]-x[2]) - (y[3]-y[2])*(x[1]-x[2]);
+   a[1] = ( (x[3]-x[2])*(xp[1]-xp[2]) - (x[1]-x[2])*(xp[3]-xp[2]) ) / delta;
+   a[0] = ( - (y[3]-y[2])*(xp[1]-xp[2]) + (y[1]-y[2])*(xp[3]-xp[2]) ) / delta;
+   a[2] = xp[1] - a[0]*x[1] - a[1]*y[1];
+   a[4] = ( (x[3]-x[2])*(yp[1]-yp[2]) - (x[1]-x[2])*(yp[3]-yp[2]) ) / delta;
+   a[3] = ( - (y[3]-y[2])*(yp[1]-yp[2]) + (y[1]-y[2])*(yp[3]-yp[2]) ) / delta;
+   a[5] = yp[1] - a[3]*x[1] - a[4]*y[1];
+   delta=a[1]*a[3]-a[0]*a[4];
+   aa[0]=-a[4]/delta;
+   aa[1]= a[1]/delta;
+   aa[2]=-(a[1]*a[5]-a[2]*a[4])/delta;
+   aa[3]= a[3]/delta;
+   aa[4]=-a[0]/delta;
+   aa[5]=-(a[2]*a[3]-a[0]*a[5])/delta;
+   trans_x=aa[2];
+   trans_y=aa[5];
+
+   for (j=0;j<jmax;j++) {
+      adr=(int)j*imax;
+      y2=(float)(resolution*(j+trans_y)+.5);
+      j2=(int)y2;
+      for (i=0;i<imax;i++) {
+	 intensite=(double)p_tmp->p[adr+i];
+	 if (pstack->nullpix_exist==TT_YES) {
+	    if (intensite==pstack->nullpix_value) {
+	       continue;
+	    }
+	 }
+	 x2=(float)(resolution*(i+trans_x)+.5);
+	 i2=(int)x2;
+	 for (jk=-1;jk<=1;jk++) {
+	    jj=j2+jk;
+	    if (jj<0) { break ; }
+	    if (jj>jmax2-1) { break ; }
+            adr2=(int)jj*imax2;
+	    for (ik=-1;ik<=1;ik++) {
+	       ii=i2+ik;
+	       if (ii<0) { break ; }
+	       if (ii>imax2-1) { break ; }
+	       xa=x2-c ; if ((double)ii>xa) { xa=(double)ii; }
+	       xb=x2+c ; if ((double)(ii+1)<xb) { xb=(double)(ii+1); }
+	       ya=y2-c ; if ((double)ii>ya) { ya=(double)jj; }
+	       yb=y2+c ; if ((double)(ii+1)<yb) { yb=(double)(jj+1); }
+	       if (xb>xa && yb>ya) {
+		  sij=(xb-xa)*(yb-ya)*wij;
+		  v=(double)p_out->p[adr2+ii];
+		  w=(double)p_tmpout->p[adr2+ii];
+		  p_tmpout->p[adr2+ii]=(TT_PTYPE)(w+sij);
+		  p_out->p[adr2+ii]=(TT_PTYPE)((v*w+sij*intensite)/(w+sij));
+	       }
+	    }
+	 }
+      }
+   }
+   return(OK_DLL);
+}

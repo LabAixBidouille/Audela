@@ -2771,35 +2771,33 @@ int tt_util_transima1(TT_IMA_SERIES *pseries,double trans_x,double trans_y)
 	    coef_c=alpha*(1-beta);
 	    coef_d=alpha*beta;
 	 }
-    if (jmax==1) {
-   	 if ((x1>=0)&&(x1<(imax-1))) {
-	      ka=x1+y1*imax;
-	      kc=x1+1+y1*imax;
-	      value=coef_a*p_in->p[ka]+coef_c*p_in->p[kc];
-	   } else {
-	      value=nulval;
-	   }
-    } else if (imax==1) {
-   	 if ((y1>=0)&&(y1<(jmax-1))) {
-	      kb=x1+(y1+1)*imax;
-	      kd=x1+1+(y1+1)*imax;
-	      value=coef_b*p_in->p[kb]+coef_d*p_in->p[kd];
-	   } else {
-	      value=nulval;
-	   }
-    } else {
-   	 if ((x1>=0)&&(x1<(imax-1))&&(y1>=0)&&(y1<(jmax-1))) {
-	      ka=x1+y1*imax;
-	      kb=x1+(y1+1)*imax;
-	      kc=x1+1+y1*imax;
-	      kd=x1+1+(y1+1)*imax;
-	      value=coef_a*p_in->p[ka]+coef_b*p_in->p[kb]+coef_c*p_in->p[kc]+coef_d*p_in->p[kd];
-	   } else {
-	      value=nulval;
-	   }
-    }
-
-
+	 if (jmax==1) {
+	    if ((x1>=0)&&(x1<(imax-1))) {
+	       ka=x1+y1*imax;
+	       kc=x1+1+y1*imax;
+	       value=coef_a*p_in->p[ka]+coef_c*p_in->p[kc];
+	    } else {
+	       value=nulval;
+	    }
+	 } else if (imax==1) {
+	    if ((y1>=0)&&(y1<(jmax-1))) {
+	       kb=x1+(y1+1)*imax;
+	       kd=x1+1+(y1+1)*imax;
+	       value=coef_b*p_in->p[kb]+coef_d*p_in->p[kd];
+	    } else {
+	       value=nulval;
+	    }
+	 } else {
+	    if ((x1>=0)&&(x1<(imax-1))&&(y1>=0)&&(y1<(jmax-1))) {
+	       ka=x1+y1*imax;
+	       kb=x1+(y1+1)*imax;
+	       kc=x1+1+y1*imax;
+	       kd=x1+1+(y1+1)*imax;
+	       value=coef_a*p_in->p[ka]+coef_b*p_in->p[kb]+coef_c*p_in->p[kc]+coef_d*p_in->p[kd];
+	    } else {
+	       value=nulval;
+	    }
+	 }
 	 k2=x2+y2*imax;
 	 p_out->p[k2]=(TT_PTYPE)(value);
       }
@@ -2895,26 +2893,6 @@ int tt_util_regima1(TT_IMA_SERIES *pseries)
    for (y2=0;y2<jjmax;y2++) {
       /* -  boucle du grand balayage en x -*/
       for (x2=0;x2<iimax;x2++) {
-/*
-         if (a0*a1!=0) {
-           xc1=a0*(x2-0.5/a0)+a1*(y2-0.5/a1)+a2;
-         } else {
-           if (a0!=0) {
-             xc1=a0*(x2-0.5/a0)+a2;
-           } else {
-             xc1=a1*(y2-0.5/a1)+a2;
-             }
-           }
-         if (a3*a4!=0) {
-           yc1=a3*(x2-0.5/a3)+a4*(y2-0.5/a4)+a5;
-         } else {
-           if (a4!=0) {
-             yc1=a4*(y2-0.5/a4)+a5;
-           } else {
-             yc1=a3*(x2-0.5/a3)+a5;
-             }
-           }
-*/
          xc1=p_dum->a[0]*x2+p_dum->a[1]*y2+p_dum->a[2];
          yc1=p_dum->a[3]*x2+p_dum->a[4]*y2+p_dum->a[5];
 			if (pseries->pixint==TT_YES) {
