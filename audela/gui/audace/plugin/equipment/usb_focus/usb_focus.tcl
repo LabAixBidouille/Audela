@@ -106,8 +106,11 @@ proc ::usb_focus::initPlugin { } {
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
    if {![info exists conf(usb_focus)] || [llength $conf(usb_focus)] != 5} {
-      #--   liste du port COM, de l'increment en pas, du sens de rotation,
-      #     de la valeur du backlash et du nombre de pas
+      #--   liste du port COM
+      #--   increment en pas (mode pas entier) = 1
+      #--   sens de rotation (sens direct)     = 0
+      #--   valeur du backlash                 = 500
+      #--   increment du nombre de pas         = 10
       set conf(usb_focus) [list "" 1 0 500 10]
    }
 
@@ -571,6 +574,7 @@ proc ::usb_focus::setState { state {limited 0} } {
       if {[winfo exists $w.$entr]}  {
          if {$state eq "normal"} {
             lassign [split $entr "."] -> param
+ ::console::disp "$param\n"
             #--   cree les binding
             bind $w.$entr <Leave> [list ::usb_focus::verifValue $param]
           } else {
@@ -661,14 +665,14 @@ proc ::usb_focus::verifValue { v } {
    set err 0
 
    #--   toutes les valeurs (a l'exception de coef) doivent etre positives
-   if { $v in [list maxstep target nbstep seuil backlash] && $widget($v) < 0} {
+   if { $v in [list maxstep backlash target nbstep seuil] && $widget($v) < 0} {
       set err 1
    }
 
    #--   definit la limite superieure
    switch -exact $v {
-      backlash { set limite 4000 ; # steps }
       maxstep  { set limite 65535 ; # steps }
+      backlash { set limite 4000 ; # steps }
       target   { set limite $widget(maxstep) ; # steps }
       nbstep   { set limite $widget(maxstep) ; # steps }
       coef     { set limite 999 ; # steps/°C }
