@@ -268,21 +268,40 @@ proc ::usb_focus::goto { {blocking 0} } {
    #--   arrete si la valeur est vide
    if {$d eq ""} {return}
 
-   set position [::usb_focus::trimZero $widget(position)]
-
-   #--   calcule la valeur absolue de l'ecart et formate le resultat
-   set dif [expr { $d-$position }]
-   set n [format "%05d" [expr { abs($dif) }]]
-
-   #--   definit le sens
-   if {$dif < 0} {
-      set private(command) I$n
-   } else {
-      set private(command) O$n
-   }
-
    #--   inhibe les commandes, a l'exception du bouton STOP
    ::usb_focus::setState disabled stop
+
+   set position [::usb_focus::trimZero $widget(position)]
+   if {$d > $position} {
+      #---  pas de backlash
+      set dif [expr { $d-$position }]
+      set private(command) O[format "%05d" $dif]
+      ::usb_focus::applyGoto $blocking
+   } else {
+      #---  avec backlash
+      set dif [expr { $position-$d+$widget(backlash) }]
+      if {$dif < 0} {set dif 0}
+      set private(command) I[format "%05d" $dif]
+      ::usb_focus::applyGoto $blocking
+      after 100
+      set position [::usb_focus::trimZero $widget(position)]
+      set dif [expr { $d-$position }]
+      set private(command) O[format "%05d" $dif]
+      ::usb_focus::applyGoto $blocking
+   }
+
+   #--   libere toutes les commandes, a l'exception du bouton STOP
+   ::usb_focus::setState normal manual
+
+   #::usb_focus::writeControl_2 $blocking
+}
+
+#------------------------------------------------------------
+#  ::usb_focus::applyGoto
+#     Execute le GOTO
+#------------------------------------------------------------
+proc ::usb_focus::applyGoto { blocking } {
+   variable widget
 
    ::usb_focus::writePort
 
@@ -300,11 +319,6 @@ proc ::usb_focus::goto { {blocking 0} } {
          }
       }
    }
-
-   #--   libere toutes les commandes, a l'exception du bouton STOP
-   ::usb_focus::setState normal manual
-
-   #::usb_focus::writeControl_2 $blocking
 }
 
 #------------------------------------------------------------

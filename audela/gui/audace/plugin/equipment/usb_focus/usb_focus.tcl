@@ -574,7 +574,6 @@ proc ::usb_focus::setState { state {limited 0} } {
       if {[winfo exists $w.$entr]}  {
          if {$state eq "normal"} {
             lassign [split $entr "."] -> param
- ::console::disp "$param\n"
             #--   cree les binding
             bind $w.$entr <Leave> [list ::usb_focus::verifValue $param]
           } else {
