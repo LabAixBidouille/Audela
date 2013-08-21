@@ -66,7 +66,7 @@ test libmc_tel2cat_nul {tel2cat model only nul refraction=0} {AUDACE} {
 test libmc_hip2tel_nul_now {hip2tel et cat2tel model nul now} {AUDACE} {
 
    set dateTu "now"
-   set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
+   set hip    [list 1 0 285.0 40.0 J2000.0 0 0 0 0]
    set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
 
    # Usage: mc_tel2cat Coords TypeObs Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues?
@@ -114,24 +114,24 @@ test libmc_hip2tel_OHP {hip2tel model only OHP refraction=0} {AUDACE} {
 
    #-- mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues
    #    List_coords =
-   #       id   : identifiant hypparcos de l'toile, sinon utilisé  =0 (nombre entier)
-   #       mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
-   #       ra   : ascension droite (en degrés décimaux)
-   #       dec  : declinaison (en degrés décimaux)
-   #       equinox : date de l'equinoxe , date du jour=now, ou format ISO8601
-   #       epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
-   #       mura : mouvement propre ra (en degré par an)
-   #       mudec : mouvement propre dec (en degré par an)
-   #       plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
-   #    Date : date TU
-   #    Home : position GPS
-   #    Pressure 101325
-   #    Temperature 290
+   #       id       : identifiant hypparcos de l'etoile (nombre entier >0)
+   #       mag      : magnitude, si non utilisee = 0.0 (nombre decimal)
+   #       ra       : ascension droite (en degres decimaux)
+   #       dec      : declinaison (en degres decimaux)
+   #       equinox  : date de l'equinoxe, date du jour=now ou date au format ISO8601 des coordonnees de l'objet
+   #       epoch    : date de l'epoque d'origine des mouvements propres, inutilisee si mura et mudec sont nuls
+   #       mura     : mouvement propre ra, =0 si inconnu (en degres par an)
+   #       mudec    : mouvement propre dec, =0 si inconnu (en degres par an)
+   #       plx      : parallaxe, =0 si inconnu (en mas=millisecondes d'arc)
+   #    Date_UTC    : date TU de l'observation : [::audace::date_sys2ut now]
+   #    Home        : position GPS de l'observatoire
+   #    Pressure    : pression atmospherique, 101325 Pa, audace(meteo,obs,pressure)
+   #    Temperature : temperature de l'air, 290 K, audace(meteo,obs,temperature)
    #    List_ModelSymbols
    #    List_ModelValues
 
    ###set radec  [list 19h00m00s0  +40d0m0s]
-   set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
+   set hip    [list 1 0 285.0 40.0 J2000.0 0 0 0 0]
    set dateTu [list 2009 11 14 20 00 00]
 
    set coords [mc_hip2tel $hip $dateTu $home $pressure $temperature $symbols $coefficients -model_only 1 -refraction 0 ]
@@ -167,7 +167,7 @@ test libmc_hip2tel_OHP {mc_hip2tel OHP} {AUDACE} {
 
    set radec  [list 19h00m00s0  +40d0m0s]
    set dateTu [list 2009 11 14 20 00 00]
-   set hip    [list 1 0 285.0 40.0 J2000 0 0 0 0]
+   set hip    [list 1 0 285.0 40.0 J2000.0 0 0 0 0]
 
    set coords [mc_hip2tel $hip $dateTu $home $pressure $temperature $symbols $coefficients]
 
