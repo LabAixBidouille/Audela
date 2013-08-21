@@ -129,10 +129,19 @@ proc ::usb_focus::setRot { } {
 
    #--   commute le sens horaire/antihoraire
    switch -exact $widget(motorsens) {
-      0  { set private(command) "SMROTH" ; # clockwise }
-      1  { set private(command) "SMROTT" ; # anticlockwise }
+      0  { set private(command) "SMROTH" ; # clockwise
+           set col 2 ; # backlash dans la colonne 2
+         }
+
+      1  { set private(command) "SMROTT" ; # anticlockwise
+           set col 1 ; # backlash dans la colonne 1
+         }
    }
    ::usb_focus::writeControl_1
+
+   #--   modifie la position de la saisie du backlash
+   grid $private(frm).frame1.motor.backlash -column $col
+   update
 }
 
 #------------------------------------------------------------
