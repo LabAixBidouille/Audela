@@ -824,6 +824,7 @@ int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
 /***************************************************************************/
 /***************************************************************************/
 {
+   TT_IMA *p_in=pstack->p_in;
    TT_IMA *p_tmp=pstack->p_tmp;
    TT_IMA *p_out=pstack->p_out;
    TT_IMA *p_tmpout=pstack->p_tmpout;
@@ -837,7 +838,7 @@ int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
    double drop_pixsize=pstack->drop_pixsize;
    double oversampling=pstack->oversampling;
    int imax,jmax,imax2,jmax2,ii,jj,i,j,i2,j2,jk,ik;
-   int msg,k;
+   int msg,k,kima;
    float x2,y2;
    double resolution,surech,c,wij,sij,v,w,intensite;
    double trans_x,trans_y;
@@ -850,6 +851,7 @@ int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
    jmax=p_tmp->naxis2;
    imax2=p_out->naxis1;
    jmax2=p_out->naxis2;
+   kima=pstack->kima;
    resolution=pstack->oversampling;
    surech=1./pstack->drop_pixsize;
    if (surech<1) { surech = 1; }
@@ -858,7 +860,7 @@ int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
    wij=1./(surech*surech);
 
    /* --- WCS ---*/
-   msg=tt_util_getkey_astrometry(p_tmp,&p_ast);
+   msg=tt_util_getkey_astrometry(p_in,&p_ast);
    xp[1]=pstack->p_ast.crpix1;
    yp[1]=pstack->p_ast.crpix2;
    xp[2]=pstack->p_ast.crpix1+0.4*p_tmp->naxis1;
@@ -885,8 +887,8 @@ int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
    aa[3]= a[3]/delta;
    aa[4]=-a[0]/delta;
    aa[5]=-(a[2]*a[3]-a[0]*a[5])/delta;
-   trans_x=aa[2];
-   trans_y=aa[5];
+   trans_x=-aa[2];
+   trans_y=-aa[5];
 
    for (j=0;j<jmax;j++) {
       adr=(int)j*imax;
@@ -925,5 +927,17 @@ int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack)
 	 }
       }
    }
+
+   if (kima==1) {
+      a[0]=1./resolution;
+      a[1]=0.;
+      a[2]=0.;
+      a[3]=0.;
+      a[4]=1./resolution;
+      a[5]=0.;
+      /* --- calcule les nouveaux parametres de projection ---*/
+      tt_util_update_wcs(p_in,p_out,a,2,NULL);
+   }
+
    return(OK_DLL);
 }

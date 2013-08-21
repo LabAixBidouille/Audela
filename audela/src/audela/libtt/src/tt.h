@@ -750,6 +750,7 @@ typedef struct {
    int bitpix;
    int nbkeys;
    int splitmode;
+   int kima;
    TT_ASTROM p_ast;
    int numfct; /* numero de la fonction */
    double *poids;

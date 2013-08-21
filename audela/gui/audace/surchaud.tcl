@@ -55,6 +55,7 @@
 # uncosmic2  in out number coef ?first_index? ?tt_options?
 # window1  in out {x1 y1 x2 y2} ?tt_options?
 # window2  in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
+# sdrizzlewcs in out number drop_sizepix oversampling ?first_index? ?tt_options?"
 #
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
@@ -1524,14 +1525,15 @@ proc calibwcs2 {args} {
       set cat_format [lindex $args 8]
       set cat_folder [lindex $args 9]
       set first_index 1
-      if {[llength $args] >= 9} {
+      ::console::affiche_resultat "args = [llength $args] = $args\n"
+      if {[llength $args] >= 11} {
          set first_index [lindex $args 10]
       }
       #---
       set kdeb $first_index
       set kfin [expr $kdeb+$number-1]
       for {set k $kdeb } { $k<=$kfin } {incr k} {
-         #::console::affiche_resultat "Calibration WCS for ${out}${k}...\n"
+         ::console::affiche_resultat "Calibration WCS for ${out}${k}...\n"
          loadima ${in}${k}
          set catastar [calibwcs $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen $cat_format $cat_folder]
          saveima ${out}${k}
@@ -2104,3 +2106,23 @@ proc electronic_chip { args } {
    }
 }
 
+proc sdrizzlewcs {args} {
+   #--- in out number drop_sizepix oversampling ?first_index? ?tt_options?
+   set n [llength $args]
+   if {$n>=5} {
+      set first 1
+      if {$n==6} {
+         set first "[lindex $args 5]"
+      }
+      set options ""
+      if {$n>=7} {
+         set first "[lindex $args 5]"
+         set options "[lrange $args 6 end]"
+      }
+      set ni [expr [lindex $args 2]+$first-1]
+      set ext $::conf(extension,defaut)
+      ttscript2 "IMA/STACK \"$::audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$::audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" DRIZZLEWCS drop_sizepix=[lindex $args 3] oversampling=[lindex $args 4] $options"
+   } else {
+      error "Usage: sdrizzlewcs in out number drop_sizepix oversampling ?first_index? ?tt_options?"
+   }
+}

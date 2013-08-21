@@ -130,7 +130,7 @@ int tt_fct_ima_stack(void *arg1)
    int nombre,taille;
    double dateObs = 0.0;
    double dateEnd = 0.0;
-   int qualite;
+   int qualite,kima;
    TT_ASTROM p_ast;
 
    
@@ -229,7 +229,7 @@ int tt_fct_ima_stack(void *arg1)
    getch();
    */
    tt_imabuilder(&p_tmp);
-   tt_imacreater(&p_tmp,(int)(nbima),(int)(nelem));
+   tt_imacreater(&p_tmp,(int)(naxis1_1),(int)(naxis2_1));
    /* --- nombre de zones sur chaque image ---*/
    nbzones=1;
    n=nelem;
@@ -435,9 +435,10 @@ int tt_fct_ima_stack(void *arg1)
       tt_imadestroyer(&p_tmp);
    } else {
       k=0;
+      kima=1;
       nelem0=0;
       /* --- boucle sur les images pour remplir le tampon ---*/
-      for (kk=load_indice_deb;kk<=load_indice_fin;kk++) {
+      for (kk=load_indice_deb;kk<=load_indice_fin;kk++,kima++) {
 	 /* --- cree le fullname in ---*/
 	 if (load_level_index==1) {
 	    strcpy(fullname,tt_indeximafilecater(keys[1],keys[2],kk,keys[5]));
@@ -457,7 +458,7 @@ int tt_fct_ima_stack(void *arg1)
 	 }
 	 /* --- charge toute l'image ---*/
 	 tt_imabuilder(&p_in);
-	 if ((msg=tt_imaloader(&p_in,fullname,firstelem+1,nelem))!=0) {
+	 if ((msg=tt_imaloader(&p_in,fullname,0,nelements))!=0) {
 	    sprintf(message,"Problem concerning file %s",fullname);
 	    tt_errlog(msg,message);
 	    tt_imadestroyer(&p_out);
@@ -526,7 +527,20 @@ int tt_fct_ima_stack(void *arg1)
 	    p_tmp.p[kkk]=p_in.p[kkk];
 	 }
 	 poids[kk-load_indice_deb]=1;
-	 tt_imadestroyer(&p_in);
+
+	 /* --- heritage des donnees pour la structure de pstack ---*/
+	 pstack.p_in=&p_in;
+	 pstack.p_tmp=&p_tmp;
+	 pstack.p_out=&p_out;
+	 pstack.p_tmpout=&p_tmpout;
+	 pstack.firstelem=firstelem;
+	 pstack.nelements=nelements;
+	 pstack.nelem=nelem;
+	 pstack.nelem0=nelem0;
+	 pstack.nbima=nbima;
+	 pstack.poids=poids ; 
+	 pstack.exptimes=exptime;
+	 pstack.kima=kima;
 
 	 /* --- calcul de l'image finale avec l'image dans le tampon ---*/
 	 if (pstack.numfct==TT_IMASTACK_DRIZZLEWCS) {
@@ -546,18 +560,8 @@ int tt_fct_ima_stack(void *arg1)
 	    return(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK);
 	 }
       }
-      /* --- heritage des donnees pour la structure de pstack ---*/
-      pstack.p_tmp=&p_tmp;
-      pstack.p_out=&p_out;
-      pstack.p_tmpout=&p_tmpout;
-      pstack.firstelem=firstelem;
-      pstack.nelements=nelements;
-      pstack.nelem=nelem;
-      pstack.nelem0=nelem0;
-      pstack.nbima=nbima;
-      pstack.poids=poids ; 
-      pstack.exptimes=exptime;
       tt_imadestroyer(&p_tmp);
+      tt_imadestroyer(&p_in);
    }
    
 
@@ -810,14 +814,18 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
             pstack->kappa=(double)(fabs(atof(argu)));
          }
       }
-      else if (strcmp(mot,"DROP_PIXSIZE")==0) {
+      else if (strcmp(mot,"DROP_SIZEPIX")==0) {
          if (strcmp(argu,"")!=0) {
             pstack->drop_pixsize=(double)(fabs(atof(argu)));
+	    if (pstack->drop_pixsize<0.5) { pstack->drop_pixsize=0.5; }
+	    if (pstack->drop_pixsize>1) { pstack->drop_pixsize=1; }
          }
       }
       else if (strcmp(mot,"OVERSAMPLING")==0) {
          if (strcmp(argu,"")!=0) {
             pstack->oversampling=(double)(fabs(atof(argu)));
+	    if (pstack->oversampling<1) { pstack->oversampling=1; }
+	    if (pstack->oversampling>5) { pstack->oversampling=5; }
          }
       }
       else if (strcmp(mot,"POWERNORM")==0) {
