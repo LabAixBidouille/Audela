@@ -1072,18 +1072,18 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
    #--- j'affiche les etoiles proches du point d'amer dans le tableau
    set private(selectedHip) 0
    for { set k 0} { $k < [llength $private(hipList)] } { incr k} {
-      set  hipRecord [lindex $private(hipList) $k]
-      #  contenu de hipRecord :
-      #       id   : identifiant hypparcos de l'etoile, sinon utilisé  =0 (nombre entier)
-      #       mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
-      #       ra   : ascension droite (en degrés décimaux)
-      #       dec  : declinaison (en degrés décimaux)
-      #       equinox : date de l'equinoxe , date du jour=now, ou format ISO8601
-      #       epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
-      #       mura : mouvement propre ra (en degré par an)
-      #       mudec : mouvement propre dec (en degré par an)
-      #       plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arcs)
-      #       dist : distance de l'étoile à la coordonnée nominale (degres)
+      set hipRecord [lindex $private(hipList) $k]
+      # contenu de hipRecord :
+      #    id       : identifiant hypparcos de l'etoile (nombre entier >0)
+      #    mag      : magnitude, si non utilisee = 0.0 (nombre decimal)
+      #    ra       : ascension droite (en degres decimaux)
+      #    dec      : declinaison (en degres decimaux)
+      #    equinox  : date de l'equinoxe, date du jour=now ou date au format ISO8601 des coordonnees de l'objet
+      #    epoch    : date de l'epoque d'origine des mouvements propres, inutilisee si mura et mudec sont nuls
+      #    mura     : mouvement propre ra, =0 si inconnu (en degres par an)
+      #    mudec    : mouvement propre dec, =0 si inconnu (en degres par an)
+      #    plx      : parallaxe, =0 si inconnu (en mas=millisecondes d'arc)
+      #    dist     : distance de l'etoile a la coordonnee nominale (degres)
 
       #--- je prepare le resultat
       set name [lindex $hipRecord 0]
@@ -1099,7 +1099,7 @@ proc ::modpoi2::wizard::modpoi_wiz3 { amerIndex } {
          set deShift ""
       }
 
-      #--- j'ajoute l'etoile dans la table des étoiles
+      #--- j'ajoute l'etoile dans la table des etoiles
       $tkStarTable insert $k [list $name $magnitude $ra_cat $de_cat $raShift $deShift]
    }
 
@@ -1146,16 +1146,16 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    }
 
    #--- recupere les information de l'etoile selectionnee
-   #  contenu de hipRecord :
-   #       id   : identifiant hypparcos de l'toile, sinon utilisé  =0 (nombre entier)
-   #       mag  : magnitude , si non utilisé = 0.0  (nombre décimal)
-   #       ra   : ascension droite (en degrés décimaux)
-   #       dec  : declinaison (en degrés décimaux)
-   #       equinox : date de l'equinoxe , date du jour=now, ou format ISO8601
-   #       epoch   : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
-   #       mura : mouvement propre ra (en degré par an)
-   #       mudec : mouvement propre dec (en degré par an)
-   #       plx   : parallaxe , =0 si inconnu (en mas=milliseconde d'arc)s
+   # contenu de hipRecord :
+   #    id       : identifiant hypparcos de l'etoile (nombre entier >0)
+   #    mag      : magnitude, si non utilisee = 0.0 (nombre decimal)
+   #    ra       : ascension droite (en degres decimaux)
+   #    dec      : declinaison (en degres decimaux)
+   #    equinox  : date de l'equinoxe, date du jour=now ou date au format ISO8601 des coordonnees de l'objet
+   #    epoch    : date de l'epoque d'origine des mouvements propres, inutilisee si mura et mudec sont nuls
+   #    mura     : mouvement propre ra, =0 si inconnu (en degres par an)
+   #    mudec    : mouvement propre dec, =0 si inconnu (en degres par an)
+   #    plx      : parallaxe, =0 si inconnu (en mas=millisecondes d'arc)
    set hipRecord [lindex $private(hipList) $private(selectedHip)]
    set starname [lindex $hipRecord 0]
    set private(starname,actual)  $starname
@@ -1341,19 +1341,19 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #-- mc_hip2tel List_coords Date_UTC Home Pressure Temperature ?Type List_ModelSymbols List_ModelValues
    # @param
    #    List_coords =
-   #       id       : identifiant hypparcos de l'etoile, sinon utilise =0 (nombre entier)
-   #       mag      : magnitude , si non utilise = 0.0 (nombre décimal)
+   #       id       : identifiant hypparcos de l'etoile (nombre entier >0)
+   #       mag      : magnitude, si non utilisee = 0.0 (nombre decimal)
    #       ra       : ascension droite (en degres decimaux)
    #       dec      : declinaison (en degres decimaux)
-   #       equinox  : date de l'equinoxe , date du jour=now, ou format ISO8601
-   #       epoch    : date de l'epoque d'origine des mouvements propres , inutilise si mura et mudec sont nuls
-   #       mura     : mouvement propre ra (en degres par an)
-   #       mudec    : mouvement propre dec (en degres par an)
-   #       plx      : parallaxe , =0 si inconnu (en mas=millisecondes d'arc)
-   #    Date        : date TU : [::audace::date_sys2ut now]
-   #    Home        : position GPS : audace(posobs,observateur,gps)
-   #    Pressure    : pression atmospherique : audace(meteo,obs,pressure)
-   #    Temperature : temperature de l'air : audace(meteo,obs,temperature)
+   #       equinox  : date de l'equinoxe, date du jour=now ou date au format ISO8601 des coordonnees de l'objet
+   #       epoch    : date de l'epoque d'origine des mouvements propres, inutilisee si mura et mudec sont nuls
+   #       mura     : mouvement propre ra, =0 si inconnu (en degres par an)
+   #       mudec    : mouvement propre dec, =0 si inconnu (en degres par an)
+   #       plx      : parallaxe, =0 si inconnu (en mas=millisecondes d'arc)
+   #    Date_UTC    : date TU de l'observation : [::audace::date_sys2ut now]
+   #    Home        : position GPS de l'observatoire
+   #    Pressure    : pression atmospherique, 101325 Pa, audace(meteo,obs,pressure)
+   #    Temperature : temperature de l'air, 290 K, audace(meteo,obs,temperature)
    #    List_ModelSymbols
    #    List_ModelValues
    # @return
