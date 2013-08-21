@@ -476,13 +476,17 @@ int Cmd_mctcl_hip2tel(ClientData clientData, Tcl_Interp *interp, int argc, char 
 mc_hip2tel {2 2.5 10 40 J2000 J2000 0 0 0} now {GPS 5 E 43 1230} 101325 290 -drift
 List_coords = {id mag ra dec equinox epoch mura mudec plx}
 Date              // date de l'equinoxe des coordonnees du telescope
-Home
+Home              // position GPS du telescope
 Pressure 101325
 Temperature 290
 List_ModelSymbols
 List_ModelValues
--model_only 0|1 // 1=calculer impact modele seulement 0=calculer impact modele et changement equinoxe (valeur par defaut)  
--refraction 0|1  // 1=corriger la refraction (valeur par defaut) , 0= ne pas corriger la refraction.
+-model_only 0|1   // 1=calculer impact modele seulement 0=calculer impact modele et changement equinoxe (valeur par defaut)
+-refraction 0|1   // 1=corriger la refraction (valeur par defaut), 0= ne pas corriger la refraction
+-drift 0|1|altaz|radec
+-driftvalues arcsec/sec arcsec/sec
+-wavelength
+-humidity
 */
 {
    char s[1024];
@@ -501,16 +505,16 @@ List_ModelValues
    double ha,az,h,ddec=0.,dha=0.,refraction=0.;
    double dh=0.,daz=0.;
    double rat,dect,hat,ht,azt,dra=0;
-	double parallactic;
+   double parallactic;
    int model_only = 0;     // 1=calculer impact modele seulement, 0=calculer impact modele et changement equinoxe
-	int type_list = 0;
-   int refractionFlag = 1;  
-	int driftflag=0;
-	double jds[3],ras[3],decs[3],has[3],hs[3],azs[3],parallactics[3],delta,dt,dparallactic;
-	double drift_axis0=0,drift_axis1=0,deltadrift=1.,jdref;
-	int methode=0;
+   int type_list = 0;
+   int refractionFlag = 1;
+   int driftflag=0;
+   double jds[3],ras[3],decs[3],has[3],hs[3],azs[3],parallactics[3],delta,dt,dparallactic;
+   double drift_axis0=0,drift_axis1=0,deltadrift=1.,jdref;
+   int methode=0;
    double pressure=101000,temperature=283; // normal condition for methode=0
-	double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
+   double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
 
    if(argc<4) {
       sprintf(s,"Usage: %s List_coords Date_UTC Home Pressure_Pa Temperature_K ?List_ModelSymbols List_ModelValues? ?-model_only 0|1? ?-refraction 1|0? ?-drift 0|1|altaz|radec? ?-driftvalues {arcsec/sec arcsec/sec}? ?-wavelength wavelength_nm? ?-humidity humidity_percent?", argv[0]);
@@ -677,7 +681,7 @@ List_ModelValues
 					mc_aberration_diurne(jd,ra,dec,longmpc,rhocosphip,rhosinphip,&asd2,&dec2,1);
 					ra=asd2;
 					dec=dec2;
-				} 			
+				}
 				/* --- coordonnees horizontales---*/
 				mc_ad2hd(jd,longmpc,ra,&ha);
 				mc_hd2ah(ha,dec,latrad,&az,&h);
@@ -865,42 +869,44 @@ mc_tel2cat {12h 36d} EQUATORIAL now {GPS 5 E 43 1230} 101325 290
 
 List_coords = {ra dec}
 Type
-Date
-Home
+Date              // date de l'equinoxe des coordonnees du telescope
+Home              // position GPS du telescope
 Pressure 101325
 Temperature 290
 List_ModelSymbols
 List_ModelValues
--model_only  0|1 // 1=calculer impact modele seulement 0=calculer impact modele et changement equinoxe (valeur par defaut)  
--refraction 0|1  // 1=corriger la refraction (valeur par defaut) , 0= ne pas corriger la refraction.
+-model_only 0|1  // 1=calculer impact modele seulement 0=calculer impact modele et changement equinoxe (valeur par defaut)  
+-refraction 0|1  // 1=corriger la refraction (valeur par defaut), 0= ne pas corriger la refraction.
+-wavelength
+-humidity
 */
 {
-	char s[1024];
-	double equinox=2451545.00000;
-	int argcc;
-	char **argvv=NULL;
-	double jd,longmpc;
-	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
-	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
-	int nb_coef,nb_star,k;
+   char s[1024];
+   double equinox=2451545.00000;
+   int argcc;
+   char **argvv=NULL;
+   double jd,longmpc;
+   mc_modpoi_matx *matx=NULL; /* 2*nb_star */
+   mc_modpoi_vecy *vecy=NULL; /* nb_coef */
+   int nb_coef,nb_star,k;
    double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,latrad;
-	double ra;
-	double dec,asd2,dec2;
-	double ha,az,hauteur,ddec=0.,dha=0.,refraction=0.;
-	double dh=0.,daz=0.;
-	int type=0;
-	double az0,ra0,dec0,h0,ha0;
+   double ra;
+   double dec,asd2,dec2;
+   double ha,az,hauteur,ddec=0.,dha=0.,refraction=0.;
+   double dh=0.,daz=0.;
+   int type=0;
+   double az0,ra0,dec0,h0,ha0;
    int model_only = 0; 
    int refractionFlag = 1;
-	int methode=0;
+   int methode=0;
    double pressure=101000,temperature=283; // normal condition for methode=0
-	double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
+   double tk=15+273.15,ppa=101325,lnm=590,hump=0,latd=45,altm=0; // normal condition for methode=1
 
    if(argc<5) {
       sprintf(s,"Usage: %s Coords TypeObs Date_UTC Home pressure_Pa temperature_K ?Type List_ModelSymbols List_ModelValues? ?-wavelength wavelength_nm? ?-humidity humidity_percent? ?-model_only 0|1? ?-refraction 0|1?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
- 	   return TCL_ERROR;
+      return TCL_ERROR;
    } else {
       /* --- decode les coordonnees catalogue ---*/
       Tcl_SplitList(interp,argv[1],&argcc,&argvv);
@@ -978,19 +984,19 @@ List_ModelValues
          }
          if ( strcmp( argv[k],"-wavelength") == 0 ) {
             lnm = atof(argv[k + 1]);
-				methode=1;
+            methode=1;
          }
          if ( strcmp( argv[k],"-humidity") == 0 ) {
             hump = atof(argv[k + 1]);
-				methode=1;
+            methode=1;
          }
       }
-		if (type==0) {
+      if (type==0) {
            mc_ad2hd(jd,longmpc,ra0,&ha0);
            mc_ad2ah(jd,longmpc,latrad,ra0,dec0,&az0,&h0);
-		}
-		ha=ha0; az=az0; hauteur=h0; dec=dec0; ra=ra0;
-		/* --- Modele de pointage ---*/
+      }
+      ha=ha0; az=az0; hauteur=h0; dec=dec0; ra=ra0;
+      /* --- Modele de pointage ---*/
 		if (nb_coef>0) {
 			nb_star=1;
 			matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
@@ -1035,7 +1041,7 @@ List_ModelValues
 				mc_hd2ad(jd,longmpc,ha,&ra);
 			}
 		}
-		/* === CALCULS === */
+      /* === CALCULS === */
       /* --- refraction ---*/
       if ( refractionFlag == 1 ) {
 			if (methode==0) {
@@ -1068,13 +1074,13 @@ List_ModelValues
          dec=dec2;
       }
       //
-		strcpy(s,"");
-		strcat(s,mc_d2s(ra/(DR)));
-		strcat(s," ");
-		strcat(s,mc_d2s(dec/(DR)));
+      strcpy(s,"");
+      strcat(s,mc_d2s(ra/(DR)));
+      strcat(s," ");
+      strcat(s,mc_d2s(dec/(DR)));
       Tcl_SetResult(interp,s,TCL_VOLATILE);
-	}
-	return TCL_OK;
+   }
+   return TCL_OK;
 }
 
 int Cmd_mctcl_compute_matrix_modpoi(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
