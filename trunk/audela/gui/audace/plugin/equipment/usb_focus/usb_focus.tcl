@@ -105,13 +105,10 @@ proc ::usb_focus::initPlugin { } {
    global conf
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
-   if {![info exists conf(usb_focus)]} {
-      #--   liste du port COM et du nombre de pas
-      set conf(usb_focus) [list "" 10]
-   }
-
-   if {[lindex $conf(usb_focus) 1] eq ""} {
-      set conf(usb_focus) [lreplace $conf(usb_focus) 1 1 10]
+   if {![info exists conf(usb_focus)] || [llength $conf(usb_focus)] != 5} {
+      #--   liste du port COM, de l'increment en pas, du sens de rotation,
+      #     de la valeur du backlash et du nombre de pas
+      set conf(usb_focus) [list "" 1 0 500 10]
    }
 
    if {![info exists conf(usb_focus,start)]} {
@@ -145,7 +142,8 @@ proc ::usb_focus::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- je copie les donnees de conf(...)
-   lassign $conf(usb_focus) widget(port) widget(nbstep)
+   lassign $conf(usb_focus) widget(port) widget(stepincr) \
+      widget(motorsens) widget(backlash) widget(nbstep)
 
    #--- Prise en compte des liaisons
    set linkList [::confLink::getLinkLabels { "serialport" } ]
@@ -247,12 +245,12 @@ proc ::usb_focus::fillConfigPage { frm } {
       grid $f.motor.labelIncrStep -row 2 -column 0 -padx 5 -pady 5 -sticky w
 
       radiobutton $f.motor.halfstep -text "$caption(usb_focus,halfstep)" \
-         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 1 \
+         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 0 \
          -command "::usb_focus::setStepIncr"
       grid $f.motor.halfstep -row 2 -column 1 -padx 5 -sticky w
 
       radiobutton $f.motor.fullstep -text "$caption(usb_focus,fullstep)" \
-         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 0 \
+         -indicatoron 1 -variable ::usb_focus::widget(stepincr) -value 1 \
          -command "::usb_focus::setStepIncr"
       grid $f.motor.fullstep -row 2 -column 2 -padx 5 -sticky w
 
@@ -283,6 +281,18 @@ proc ::usb_focus::fillConfigPage { frm } {
          -indicatoron 1 -variable ::usb_focus::widget(motorsens) -value 1 \
          -command "::usb_focus::setRot"
       grid $f.motor.anticlockwise -row 3 -column 2 -padx 5 -sticky w
+
+      label $f.motor.backlash_lab -text "$caption(usb_focus,backlash)"
+      grid $f.motor.backlash_lab -row 4 -column 0 -padx 5 -sticky w
+
+      entry $f.motor.backlash -width 5 -justify right \
+         -textvariable ::usb_focus::widget(backlash)
+      if {$widget(motorsens) == 0} {
+         set col 2
+      } else {
+         set col 1
+      }
+      grid $f.motor.backlash -row 4 -column $col -padx 5 -pady 5 -sticky w
 
    grid $f.motor -row 2 -column 0 -padx 10 -pady 5 -sticky w
 
@@ -326,7 +336,7 @@ proc ::usb_focus::fillConfigPage { frm } {
          -textvariable ::usb_focus::widget(seuil)
       grid $f.temp.seuil -row 3 -column 1 -padx 5 -sticky e
 
-      #--- Bouton de set steptemp
+      #--- Bouton de steptemp
       button $f.temp.setseuil -text "$caption(usb_focus,set)" -relief raised \
          -width 4 -command "::usb_focus::setSeuilTemp"
       grid $f.temp.setseuil -row 3 -column 2 -padx 5
@@ -447,7 +457,8 @@ proc ::usb_focus::configurePlugin { } {
    global conf
 
    #--- copie les variables des widgets dans le tableau conf()
-   set conf(usb_focus) [list $widget(port) $widget(nbstep)]
+   set conf(usb_focus) [list $widget(port) $widget(stepincr) \
+      $widget(motorsens) $widget(backlash) $widget(nbstep)]
 }
 
 #------------------------------------------------------------
@@ -469,7 +480,7 @@ proc ::usb_focus::createPlugin { } {
       #--- Prise en compte des liaisons
       set linkList [::confLink::getLinkLabels { "serialport" } ]
       #--- je copie les donnees de conf(...)
-      lassign $conf(usb_focus) widget(port) widget(nbstep)
+      lassign $conf(usb_focus) widget(port) widget(nbstep) widget(backlash)
    }
 
    if {$widget(port) ne "" && [::usb_focus::createPort $widget(port)]} {
@@ -554,8 +565,8 @@ proc ::usb_focus::setState { state {limited 0} } {
    set w $private(frm).frame1
 
    #--   traite les saisies
-   set entryList [list "motor.maxstep" "pos.target" "pos.nbstep" \
-      "temp.coef" "temp.seuil"]
+   set entryList [list "motor.maxstep" "motor.backlash" \
+      "pos.target" "pos.nbstep" "temp.coef" "temp.seuil"]
    foreach entr $entryList {
       if {[winfo exists $w.$entr]}  {
          if {$state eq "normal"} {
@@ -617,21 +628,19 @@ proc ::usb_focus::initLocalVar {} {
    variable private
    global conf
 
+   lassign [lrange $conf(usb_focus) 3 4] private(prev,backlash) private(prev,nbstep)
+
    set private(tty)           ""
    set private(linkNo)        0
    set private(prev,maxstep)  ""
    set private(prev,target)   ""
-   set private(prev,nbstep)   [lindex $conf(usb_focus) 1]
    set private(prev,coef)     ""
    set private(prev,seuil)    ""
    set widget(version)        ""
    set widget(motorspeed)     ""
-   set widget(stepincr)       1
-   set widget(motorsens)      0
    set widget(maxstep)        ""
    set widget(position)       ""
    set widget(target)         "0"
-   set widget(nbstep)         $private(prev,nbstep)
    set widget(temperature)    ""
    set widget(mode)           0
    set widget(coef)           ""
@@ -652,12 +661,13 @@ proc ::usb_focus::verifValue { v } {
    set err 0
 
    #--   toutes les valeurs (a l'exception de coef) doivent etre positives
-   if { $v in [list maxstep target nbstep seuil] && $widget($v) < 0} {
+   if { $v in [list maxstep target nbstep seuil backlash] && $widget($v) < 0} {
       set err 1
    }
 
    #--   definit la limite superieure
    switch -exact $v {
+      backlash { set limite 4000 ; # steps }
       maxstep  { set limite 65535 ; # steps }
       target   { set limite $widget(maxstep) ; # steps }
       nbstep   { set limite $widget(maxstep) ; # steps }
