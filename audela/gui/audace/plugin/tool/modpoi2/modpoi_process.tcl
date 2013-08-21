@@ -29,8 +29,6 @@ proc ::modpoi2::process::computeCoefficient { starList home symbols } {
    #--- calcul des coefficients du modele
    set result [gsl_mfitmultilin $vecY $matX $vecW]
 
-   ::console::disp  "$result\n"
-
    return $result
 }
 

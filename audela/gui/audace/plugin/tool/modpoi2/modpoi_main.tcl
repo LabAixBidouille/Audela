@@ -367,12 +367,6 @@ proc ::modpoi2::main::onLoadModel { visuNo } {
            $private($visuNo,model,chisquare)
 
          set private($visuNo,modified) 0
-
-         #--   interprete le X²
-         set nbValues [llength $private($visuNo,starList)]
-         set nbParameters [llength $private($visuNo,model,symbols)]
-         lassign [::modpoi2::process::computePconf $private($visuNo,model,chisquare) $nbValues $nbParameters] p kappa
-         set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $private($visuNo,model,chisquare) $p $kappa]
       }]
       if { $loadModelError != 0 } {
          ::tkutil::displayErrorInfo $::caption(modpoi2,title)
@@ -707,8 +701,14 @@ proc ::modpoi2::main::setCoefficient { visuNo symbols coefficients covars chisqu
    set private($visuNo,model,covars)       $covars
    set private($visuNo,model,chisquare)    $chisquare
 
-   #--- j'affiche les coeffcients
+   #--- j'affiche les coefficients
    displayCoefficient $visuNo $symbols $coefficients $covars
+
+   #--   interprete le X²
+   set nbValues [llength $private($visuNo,starList)]
+   set nbParameters [llength $private($visuNo,model,symbols)]
+   lassign [::modpoi2::process::computePconf $chisquare $nbValues $nbParameters] p kappa
+   set private($visuNo,model,interp) [format $::caption(modpoi2,interp) $chisquare $p $kappa]
 
    if { [::confTel::isReady] == 1 } {
        ###tk_messageBox -title "$caption(modpoi,wiz1b,warning)" -message "$caption(modpoi,modele,editer)" -icon error
