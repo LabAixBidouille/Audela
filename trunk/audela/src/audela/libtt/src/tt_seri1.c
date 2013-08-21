@@ -646,26 +646,26 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->oversampling=4;
    pseries->background=0.;
    pseries->fitorder6543=0;
-	pseries->simulimage=0;
-	pseries->fwhmx=2.5;
-	pseries->fwhmy=2.5;
-	pseries->quantum_efficiency=1.; /* efficacite quantique d'un pixel en electron/photon */
-	pseries->sky_brightness=20.9; /* brillance du ciel en mag/arcsec2 */
-	pseries->gain=2.5; /* gain de la chaine en electron/ADU */
-	pseries->teldiam=1; /* diametre du telescope en metres */
-	pseries->readout_noise=0; /* electrons */
-	pseries->tatm=0.6; /* atmospheric transmission at observed elevation */
-	pseries->topt=0.85; /* optic transmission */
-	pseries->elecmult; /* EMCCD multiplicator factor */
-	pseries->shutter_mode=TT_SHUTTER_MODE_SYNCHRO; /* 1=synchro 0=closed 2=opened */
-	pseries->bias_level=0; /* ADU */
-	pseries->flat_type=TT_FLAT_TYPE_NONE; /* 0=no flat */
-	pseries->thermic_response=0; /* reponse terminque moyenne en electron/sec/pixel */
-	strcpy(pseries->colfilter,"R");
-	pseries->newstar=TT_NEWSTAR_NONE;
-	pseries->ra=0;
-	pseries->dec=0;
-	pseries->mag=12;
+   pseries->simulimage=0;
+   pseries->fwhmx=2.5;
+   pseries->fwhmy=2.5;
+   pseries->quantum_efficiency=1.; /* efficacite quantique d'un pixel en electron/photon */
+   pseries->sky_brightness=20.9; /* brillance du ciel en mag/arcsec2 */
+   pseries->gain=2.5; /* gain de la chaine en electron/ADU */
+   pseries->teldiam=1; /* diametre du telescope en metres */
+   pseries->readout_noise=0; /* electrons */
+   pseries->tatm=0.6; /* atmospheric transmission at observed elevation */
+   pseries->topt=0.85; /* optic transmission */
+   pseries->elecmult; /* EMCCD multiplicator factor */
+   pseries->shutter_mode=TT_SHUTTER_MODE_SYNCHRO; /* 1=synchro 0=closed 2=opened */
+   pseries->bias_level=0; /* ADU */
+   pseries->flat_type=TT_FLAT_TYPE_NONE; /* 0=no flat */
+   pseries->thermic_response=0; /* reponse terminque moyenne en electron/sec/pixel */
+   strcpy(pseries->colfilter,"R");
+   pseries->newstar=TT_NEWSTAR_NONE;
+   pseries->ra=0;
+   pseries->dec=0;
+   pseries->mag=12;
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
          pseries->p_ast.pv[k1][k2]=0.;

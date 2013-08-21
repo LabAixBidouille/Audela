@@ -189,6 +189,7 @@
 #define TT_IMASTACK_SHUTTER 7
 #define TT_IMASTACK_PROD 8
 #define TT_IMASTACK_PYTHAGORE 9
+#define TT_IMASTACK_DRIZZLEWCS 10
 
 #define TT_TBLPIX_X 0
 #define TT_TBLPIX_Y 1
@@ -293,6 +294,9 @@
 #define TT_NEWSTAR_NONE 0
 #define TT_NEWSTAR_ADD 1
 #define TT_NEWSTAR_REPLACE 2
+
+#define TT_SPLITMODE_ZONES 0
+#define TT_SPLITMODE_NOZONE 1
 
 /* --- definitions specifiques a l'OS pour l'appel de la fonction d'entree  ---*/
 #ifdef OS_WIN_VCPP_DLL
@@ -736,6 +740,7 @@ typedef struct {
 typedef struct {
    TT_IMA *p_in;
    TT_IMA *p_tmp;
+   TT_IMA *p_tmpout;
    TT_IMA *p_out;
    long firstelem;
    long nelements;
@@ -744,6 +749,8 @@ typedef struct {
    int nbima;
    int bitpix;
    int nbkeys;
+   int splitmode;
+   TT_ASTROM p_ast;
    int numfct; /* numero de la fonction */
    double *poids;
    double *exptimes;
@@ -756,6 +763,8 @@ typedef struct {
    int jpeg_qualite;
    int powernorm;
    int *hotPixelList;
+   double drop_pixsize;
+   double oversampling;
    TT_PTYPE cosmicThreshold;
    TT_USER1_IMA_STACK user1;
    TT_USER2_IMA_STACK user2;
@@ -1102,6 +1111,7 @@ int tt_ima_stack_sk_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_prod_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_pythagore_1(TT_IMA_STACK *pstack);
+int tt_ima_stack_drizzlewcs_1(TT_IMA_STACK *pstack);
 
 int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys);
 int tt_strupr(char *chaine);
