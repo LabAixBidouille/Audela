@@ -2,13 +2,14 @@
 <html><head>
 
 
+
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="Author" content="Alain Klotz">
   <meta name="GENERATOR" content="Mozilla/4.5 [fr] (Win98; I) [Netscape]"><title>Librairie MC : Manuel de l'utilisateur</title></head><body>
 <center><b><font size="+3">LIB MC</font></b> <br>
 Création et utilisation d'un modèle de pointage avec
 la&nbsp; librairie de calculs de mécanique céleste <br>
-version 20130821<br>
+version 20130822<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -201,13 +202,19 @@ Utiliser 290 K par
 défaut.<br>
 List_ModelSymbols : Symboles des coefficients du modèle de
 pointage.<br>
+
 List_ModelValues : Valeurs des coefficients du modèle de
 pointage.<br>
--model_only 1 : Pour signaler de ne pas appliquer la transformation
-catalogue-&gt;vraie sur les coordonnées de type Hipparcos.<br>
+
+-model_only&nbsp; 0|1 : 1 pour calculer l'impact du modèle
+seulement,
+0 pour calculer l'impact du modèle et le changement
+d'équinoxe (0 valeur par
+défaut).<br>
+
 -refraction 0|1 : 0 pour signaler de ne pas calculer les corrections de
 réfraction (cas des télescopes LX200), 1 pour corriger
-les corrections de réfraction (valeur par défaut).<br>
+les corrections de réfraction (1 valeur par défaut).<br>
 -drift :&nbsp;=1 ou =radec ou =altaz&nbsp; pour signaler de sortir les
 valeurs des vitesses sur les axes
 (en arcsec/sec). Si =radec alors les paramètres de la liste du
@@ -221,11 +228,12 @@ arcsec/sec
 diurne). Par défaut -drift =0, il n'y a pas de sortie des vitesses.<br>
 -driftvalues : Définition des valeurs de dérives
 supplémentaires par rapport au mouvement diurne.<br>
--wavelength : Longueur d'onde (590nm par défaut)<br>
+-wavelength : Longueur d'onde (590nm par défaut).<br>
 
 -humidity : Humidité au niveau du site
-d'observation en pourcents (0% par défaut)
-Sorties :&nbsp;</p>
+d'observation en pourcents (0% par défaut).</p>
+<p>Sorties :&nbsp;</p>
+
 <p>Liste de 16 éléments :</p>
 <p>RA : Ascension droite apparente sans modèle (deg).<br>
 DEC : Déclinaison apparente sans modèle (deg).<br>
@@ -300,17 +308,17 @@ List_ModelSymbols : Symboles des coefficients du modèle de
 pointage.<br>
 List_ModelValues : Valeurs des coefficients du modèle de
 pointage.<br>
--model_only&nbsp; 0|1 :&nbsp; 1 pour calculer l'impact du modèle
+-model_only&nbsp; 0|1 : 1 pour calculer l'impact du modèle
 seulement,
 0 pour calculer l'impact du modèle et le changement
-d'équinoxe (valeur par
+d'équinoxe (0 valeur par
 défaut).<br>
 -refraction 0|1 : 0 pour signaler de ne pas calculer les corrections de
 réfraction (cas des télescopes LX200), 1 pour corriger
-les corrections de réfraction (valeur par défaut).<br>
--wavelength : Longueur d'onde (590nm par défaut)<br>
+les corrections de réfraction (1 valeur par défaut).<br>
+-wavelength : Longueur d'onde (590nm par défaut).<br>
 -humidity : Humidité au niveau du site
-d'observation en pourcents (0% par défaut)
+d'observation en pourcents (0% par défaut).
 </p>
 <p>Sorties :&nbsp;</p>
 <p>Liste de 2 éléments :</p>
