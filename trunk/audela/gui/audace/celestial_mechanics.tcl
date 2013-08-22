@@ -24,7 +24,7 @@ proc name2coord { args } {
    set dra 0
    set ddec 0
    if { $argc < 1} {
-      error "Usage: name2coord name ?-offset flag? ?-date Date? ?-home Home?"
+      error "Usage: name2coord name ?-offset flag? ?-date Date? ?-home Home? ?-drift?"
       return $error;
    }
    set offset 0
