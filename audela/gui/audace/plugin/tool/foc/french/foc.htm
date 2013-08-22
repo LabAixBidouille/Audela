@@ -7,7 +7,7 @@
 
 
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>Date de mise à jour : 8 août 2013
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focalisation</title></head><body>Date de mise à jour : 22 août 2013
 <h1>Focalisation</h1>
 <p>La focalisation consiste à régler la position de la
 caméra sur l'axe optique du télescope de façon
@@ -38,7 +38,8 @@ configuration s'adapte au focuser (ou à son absence) et
 permet de suivre la variation de la qualité de la mise au
 point à l'aide d'une fenêtre d'informations et d'un
 graphique gradué en numéro d'image ou en pas
-compteur.</p>
+compteur. Ces graphiques ne peuvent être fermés durant 
+les opérations de fenêtrage.</p>
 <table>
 <tbody>
 <tr>
@@ -64,7 +65,7 @@ focuserjmi, focusert193)</td>
 <tr>
 <td align="center" width="15">Focusers automatiques
 (focuseraudecom, usb_focus)</td>
-<td align="center"><img style="width: 132px; height: 618px;" src="images/focus_auto.gif" /></td>
+<td align="center"><img style="width: 133px; height: 637px;" src="images/focus_auto.gif" /></td>
 <td align="center"><img style="width: 109px; height: 147px;" src="images/qualite_foc.gif" /></td>
 <td align="center" width="330"><img style="width: 306px; height: 520px;" src="images/graph_HFD.gif" /><br />
 Cette fenêtre comporte, outre le graphique principal du HFD
@@ -148,7 +149,7 @@ boutons + ou - :</p>
 <h4>Focuser disposant d'un compteur de position</h4>
 <table>
 <tbody><tr>
-<td><img style="width: 135px; height: 208px;" src="images/robofocus.gif" /></td>
+<td><img style="width: 135px; height: 224px;" src="images/robofocus.gif" /></td>
 <td>Il faut affiner la mise au point de façon à
 minimiser le HFD (demi-diamètre) (cf. les illustrations du
 paragraphe Configuration de l'outil). Le graphique indique
@@ -168,12 +169,13 @@ ou USB_Focus) ou virtuel en pointant l'étoile HIP 13367 avec
 une caméra Audine Kaf-401ME virtuelle.<br />
 Pour lancer le processus, il suffit de :</p>
 <ul>
-<li>Cocher la case.</li>
-<li>Fixer le temps d'exposition.</li>
-<li>Définir les valeurs pour les focusers <b>focuseraudecom</b> ou <b>usb_focus</b>.</li>
-<li>Appuyer sur <b>GO CCD</b>.</li>
+<li>Cocher la case <b>Simulation</b>,</li>
+<li>Eventuellement modifier le temps d'exposition,</li>
+<li>Définir les valeurs pour les focusers <b>focuseraudecom</b> ou <b>usb_focus</b> 
+et rien pour tous les autres focusers,</li>
+<li>Appuyer sur <b>GO CCD</b>,</li>
 <li>Lorsque l'image est affichée faire un fenêtrage
-manuel ou automatique.</li>
+manuel ou automatique,</li>
 <li>Re-appuyer sur <b>GO CCD</b>.</li>
 </ul>
 <p>Si un focuser <b>focuseraudecom</b> ou <b>usb_focus</b> est
@@ -182,7 +184,8 @@ progressera entre chaque image.<br />
 Dans le cas contraire, le déplacement sera virtuel.</p>
 <p>Le graphique correspondant au focuser sélectionné
 s'affichera et se remplira automatiquement.</p>
-<p>L'appui sur le bouton <b>Stop</b> interrompt la simulation.</p>
+<p>L'appui sur le bouton <b>Stop</b> interrompt la simulation et 
+repositionne le menu sur Centrage.</p>
 <h2>Fichier de log</h2>
 <p>Un fichier foc.log est créé à chaque session.
 Un <b>Copier/Coller</b> permet de récupérer les valeurs

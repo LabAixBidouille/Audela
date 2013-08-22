@@ -120,7 +120,11 @@ namespace eval ::foc {
    # Parametre : chemin de la fenetre
    #------------------------------------------------------------
    proc fermeGraphe { } {
+      variable This
       global audace conf
+
+      #--   Interdit la fermeture pendant le fenetrage
+      if {[$This.fra3.focuser.list cget -state] eq "disabled"} {return}
 
       set w $audace(base).visufoc
 
@@ -351,7 +355,11 @@ namespace eval ::foc {
    #    ferme le graphique
    #------------------------------------------------------------
    proc closeHFDGraphe { } {
+      variable This
       global audace conf
+
+      #--   Interdit la fermeture pendant le fenetrage
+      if {[$This.fra3.focuser.list cget -state] eq "disabled"} {return}
 
       set visuNo $::audace(visuNo)
       set this $audace(base).hfd
