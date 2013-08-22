@@ -415,6 +415,8 @@ proc ::temma::configureMonture { } {
          tel$telNo solartracking
          ::console::affiche_resultat "$caption(temma,mobile_soleil)\n\n"
       }
+      #--   fixe la temporisarion a 100 ms
+      tel$telNo tempo 100
       #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
       if { $conf(temma,liaison) == "1" } {
          set correc_Dec $conf(temma,correc_AD)
@@ -536,7 +538,7 @@ proc ::temma::confTemmaInactif { } {
 #
 proc ::temma::configCorrectionTemma { } {
    variable private
-   global caption
+   global conf caption
 
    if {[info exists private(frm)] ==0} {return}
 
@@ -551,6 +553,9 @@ proc ::temma::configCorrectionTemma { } {
 
       #--  Bindings
       bind $frm.correc_variantDec <ButtonRelease-1> {::temma::setCorrectionSpeed}
+
+      #--- Pas de liaison des corrections en AD et en Dec.
+      set private(correc_Dec) $conf(temma,correc_Dec)
 
    } else {
 
@@ -578,16 +583,68 @@ proc ::temma::setCorrectionSpeed { args } {
    global audace conf
 
    set conf(temma,correc_AD) $private(correc_AD)
-   if { $private(liaison) != "1" } {
-      set conf(temma,correc_Dec) $private(correc_Dec)
-   } else {
-      set conf(temma,correc_Dec) $conf(temma,correc_AD)
+   #--   correc_DEC = correc_AD si liaison
+   if { $private(liaison) == "1" } {
+      set private(correc_Dec) $private(correc_AD)
    }
+   set conf(temma,correc_DEC) $private(correc_Dec)
 
    set telNo $audace(telNo)
    if {$telNo != 0} {
       tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
    }
+}
+
+#
+# getGuidingSpeed
+#    Retourne les vitesses de correction (en arseconde par seconde de temps)
+#
+proc ::temma::getGuidingSpeed { } {
+   variable private
+
+   set vitesse_siderale 15 ; #-- vitesse siderale en deg/heure ou en arsec/seconde de temps
+   set gsAD [expr { $vitesse_siderale*$private(correc_AD)/100. }]
+   set gsDec [expr { $vitesse_siderale*$private(correc_Dec)/100. }]
+
+   return [list $gsAD $gsDec]
+}
+
+#------------------------------------------------------------
+# moveTelescope
+#    Deplace le telescope pendant une duree determinee en agissant sur la raquette virtuelle
+#    Le deplacement est interrompu si private(telescopeMoving)!=1
+#
+# @param alphaDirection : Direction (e ou w) du mouvement en AD
+# @param alphaDiff      : Deplacement alpha en arcseconde
+# @param deltaDirection : Direction (n ou s) du mouvement en Dec
+# @param deltaDiff      : Deplacement delta en arcseconde
+#
+# @return rien
+#------------------------------------------------------------
+proc ::temma::moveTelescope { alphaDirection alphaDiff deltaDirection deltaDiff } {
+   variable private
+   global audace conf
+
+   #--- je recupere les vitesses de guidage (en arseconde par seconde de temps)
+   set guidingSpeed  [::confTel::getPluginProperty "guidingSpeed"]
+
+   #--- je calcule le delai de rattrapage en ms
+   set alphaDelay    [expr int(1000.0 * ($alphaDiff / [lindex $guidingSpeed 0 ])) ]
+   set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
+
+   #set ::telescope::private(telescopeMoving) 1
+
+   #--- je demarre le deplacement alpha
+   #tel$audace(telNo) radec move $alphaDirection $audace(telescope,rate)
+   tel$audace(telNo) radec move $alphaDirection 1
+   after $alphaDelay tel$audace(telNo) radec stop $alphaDirection
+
+   #--- je demarre le deplacement delta
+   tel$audace(telNo) radec move $deltaDirection $audace(telescope,rate)
+   tel$audace(telNo) radec move $deltaDirection 1
+   after $deltaDelay tel$audace(telNo) radec stop $deltaDirection
+
+   #set ::telescope::private(telescopeMoving) 0
 }
 
 #
@@ -649,6 +706,7 @@ proc ::temma::getPluginProperty { propertyName } {
       hasUnpark               { return 0 }
       hasUpdateDate           { return 0 }
       backlash                { return 0 }
+      guidingSpeed            { return [::temma::getGuidingSpeed] }
    }
 }
 
