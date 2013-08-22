@@ -12,10 +12,9 @@ namespace eval ::manage_source {
 
 
 
-   #
-   # manage_source::get_nb_sources
-   # Fournit le nombre de source
-   #
+   #----------------------------------------------------------------------------
+   ## Renvoi le nombre de source dans une listsource
+   #  @param listsources    variable de type listsource
    proc ::manage_source::get_nb_sources { listsources } {
 
       set sources [lindex $listsources 1]
@@ -27,10 +26,11 @@ namespace eval ::manage_source {
    }
 
 
-   #
-   # manage_source::get_nb_sources
-   # Fournit le nombre de source
-   #
+   #----------------------------------------------------------------------------
+   ## Renvoi le nombre de source dans une listsource et pour
+   #  un catalogue donne.
+   #  @param listsources    variable de type listsource
+   #  @param catalog        Chaine du nom du catalogue
    proc ::manage_source::get_nb_sources_by_cata { listsources catalog } {
 
       set sources [lindex $listsources 1]
@@ -45,10 +45,10 @@ namespace eval ::manage_source {
       return $cpt
    }
 
-   #
-   # manage_source::get_nb_sources
-   # Fournit le nombre de source
-   #
+   #----------------------------------------------------------------------------
+   ## Renvoi le nombre de source dans une listsource et donne 
+   #  le nombre de source pour tous les catalogues present.
+   #  @param listsources    variable de type listsource
    proc ::manage_source::get_nb_sources_rollup { listsources } {
 
        set sources [lindex $listsources 1]
@@ -71,10 +71,9 @@ namespace eval ::manage_source {
 
 
 
-   #
-   # manage_source::get_cata_from_sources
-   # Fournit le nombre de source
-   #
+   #----------------------------------------------------------------------------
+   ## Renvoi la liste des catalogues d une listsource.
+   #  @param listsources    variable de type listsource
    proc ::manage_source::get_cata_from_sources { listsources } {
 
        set catalist {}
@@ -85,20 +84,18 @@ namespace eval ::manage_source {
    return $catalist
    }
 
-   #
-   # manage_source::get_fields_from_sources
-   # Fournit le nombre de source
-   #
+   #----------------------------------------------------------------------------
+   ## Renvoi la liste des champs des entetes des catalogues d une listsource.
+   #  @param listsources    variable de type listsource
    proc ::manage_source::get_fields_from_sources { listsources } {
 
    return [lindex $listsources 0]
    }
 
 
-   #
-   # manage_source::extract_sources_by_catalog
-   # Fournit le nombre de source
-   #
+   #----------------------------------------------------------------------------
+   ## Renvoi une listsource qui est .
+   #  @param listsources    variable de type listsource
    proc ::manage_source::extract_sources_by_catalog { listsources catadem } {
 
        set fields  [lindex $listsources 0]

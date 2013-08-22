@@ -1378,7 +1378,7 @@ namespace eval tools_cata {
 # renvoit le nom d'un catalogue consideré comme astrometrique
    proc ::tools_cata::is_astrometric_catalog { c } {
 
-      return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2] $c] + 1]
+      return [expr [lsearch -exact [list USNOA2 UCAC2 UCAC3 UCAC4 TYCHO2 WFIBC] $c] + 1]
    }
 
 

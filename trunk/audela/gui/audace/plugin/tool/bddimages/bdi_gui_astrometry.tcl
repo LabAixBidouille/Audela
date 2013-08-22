@@ -1186,8 +1186,9 @@ namespace eval bdi_gui_astrometry {
          set calc(res_a,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_a) "%.4f"]
          set calc(res_d,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_d) "%.4f"]
          set calc(datejj,stdev) [::bdi_gui_astrometry::stdev $tabcalc(datejj) "%.4f"]
-         set calc(alpha,stdev) [::bdi_gui_astrometry::stdev $tabcalc(alpha) "%.4f"]
-         set calc(delta,stdev) [::bdi_gui_astrometry::stdev $tabcalc(delta) "%.4f"]
+         
+         set calc(alpha,stdev) [expr [::bdi_gui_astrometry::stdev $tabcalc(alpha) "%.10f"] *3600000]
+         set calc(delta,stdev) [expr [::bdi_gui_astrometry::stdev $tabcalc(delta) "%.10f"] *3600000]
 
          set pi [expr 2*asin(1.0)]
 
@@ -1284,6 +1285,9 @@ namespace eval bdi_gui_astrometry {
          $::bdi_gui_astrometry::rapport_txt insert end  "# Mean epoch (jd) : $calc(datejj,mean) ( [mc_date2iso8601 $calc(datejj,mean)] )\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# Mean RA    (deg): [format "%16.12f" $calc(alpha,mean)]   (  [::bdi_tools_astrometry::convert_txt_hms $calc(alpha,mean)] )\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# Mean DEC   (deg): [format "%+15.12f" $calc(delta,mean)]   ( [::bdi_tools_astrometry::convert_txt_dms $calc(delta,mean)]  )\n"
+         $::bdi_gui_astrometry::rapport_txt insert end  "# Stdev RA   (mas): [format "%.1f" $calc(alpha,stdev)] \n"
+         $::bdi_gui_astrometry::rapport_txt insert end  "# Stdev DEC  (mas): [format "%.1f" $calc(delta,stdev)] \n"
+
          $::bdi_gui_astrometry::rapport_txt insert end $sep_txt
 
       }
