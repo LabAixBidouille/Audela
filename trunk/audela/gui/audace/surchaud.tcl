@@ -55,13 +55,13 @@
 # uncosmic2  in out number coef ?first_index? ?tt_options?
 # window1  in out {x1 y1 x2 y2} ?tt_options?
 # window2  in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
-# sdrizzlewcs in out number drop_sizepix oversampling ?first_index? ?tt_options?"
+# sdrizzlewcs  in out number drop_sizepix oversampling ?first_index? ?tt_options?"
 #
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
-# simulimage Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?
-# simulimage2 out ListDatesObsUTC variable_type Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type?
-# electronic_chip args
+# simulimage  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type? ?newstar_type? ?newstar_ra? ?newstar_dec? ?newstar_mag?
+# simulimage2  out ListDatesObsUTC variable_type Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?exposure_s? ?fwhm_pix? ?teldiam_m? ?colfilter? ?sky_brightness_mag/arcsec2? ?quantum_efficiency? ?gain_e/ADU? ?readout_noise_e? ?shutter_mode? ?bias_level_ADU? ?thermic_response_e/pix/sec? ?Tatm? ?Topt? ?EMCCD_mult? ?flat_type?
+# electronic_chip  args
 #
 
 proc add {args} {
@@ -2126,3 +2126,4 @@ proc sdrizzlewcs {args} {
       error "Usage: sdrizzlewcs in out number drop_sizepix oversampling ?first_index? ?tt_options?"
    }
 }
+
