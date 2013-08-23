@@ -471,7 +471,7 @@ proc ::acqfc::chargerVariable { visuNo } {
    #--- Creation des variables si elles n'existent pas
    if { ! [ info exists parametres(acqfc,$visuNo,pose) ] }           { set parametres(acqfc,$visuNo,pose)        "5" }   ; #--- Temps de pose : 5s
    if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }            { set parametres(acqfc,$visuNo,bin)         "1x1" } ; #--- Binning : 2x2
-   if { ! [ info exists parametres(acqfc,$visuNo,zoom) ] }           { set parametres(acqfc,$visuNo,zoom)        "1" }  ; #--- Zoom : 1
+   if { ! [ info exists parametres(acqfc,$visuNo,zoom) ] }           { set parametres(acqfc,$visuNo,zoom)        "1" }   ; #--- Zoom : 1
    if { ! [ info exists parametres(acqfc,$visuNo,format) ] }         { set parametres(acqfc,$visuNo,format)      "" }    ; #--- Format des APN
    if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }            { set parametres(acqfc,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
    if { ! [ info exists parametres(acqfc,$visuNo,mode) ] }           { set parametres(acqfc,$visuNo,mode)        "1" }   ; #--- Mode : Une image

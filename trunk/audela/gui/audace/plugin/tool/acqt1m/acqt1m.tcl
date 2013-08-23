@@ -715,7 +715,7 @@ proc ::acqt1m::chargerVariable { visuNo } {
    #--- Creation des variables si elles n'existent pas
    if { ! [ info exists parametres(acqt1m,$visuNo,pose) ] }           { set parametres(acqt1m,$visuNo,pose)   "5" }   ; #--- Temps de pose : 5s
    if { ! [ info exists parametres(acqt1m,$visuNo,bin) ] }            { set parametres(acqt1m,$visuNo,bin)    "1x1" } ; #--- Binning : 2x2
-   if { ! [ info exists parametres(acqt1m,$visuNo,format) ] }         { set parametres(acqt1m,$visuNo,format) "" }
+   if { ! [ info exists parametres(acqt1m,$visuNo,format) ] }         { set parametres(acqt1m,$visuNo,format) "" }    ; #--- Format des APN
    if { ! [ info exists parametres(acqt1m,$visuNo,obt) ] }            { set parametres(acqt1m,$visuNo,obt)    "2" }   ; #--- Obturateur : Synchro
    if { ! [ info exists parametres(acqt1m,$visuNo,mode) ] }           { set parametres(acqt1m,$visuNo,mode)   "1" }   ; #--- Mode : Une image
    if { ! [ info exists parametres(acqt1m,$visuNo,avancement_acq) ] } {
