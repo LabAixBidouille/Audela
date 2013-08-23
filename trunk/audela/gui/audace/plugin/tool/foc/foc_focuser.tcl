@@ -215,12 +215,13 @@ namespace eval ::foc {
                 $This.fra3.focuser.list configure -state $state
                 $This.fra4.we.canv1PoliceInvariant configure -state $state
                 $This.fra4.we.canv2PoliceInvariant configure -state $state
+                $This.fra4.delai configure -state $state
               }
          acq  { #--  Etat lors d'une acquisition
                 #--  toutes les commandes existantes, a l'exception du bouton Configurer, sont inhibees
                 $This.fra3.focuser.list configure -state $state
                 foreach cmd [list fra4.we.canv1PoliceInvariant fra4.we.canv2PoliceInvariant \
-                  fra5.but2 fra5.target fra6.start fra6.end fra6.step fra6.repeat] {
+                  fra4.delai fra5.but2 fra5.target fra6.start fra6.end fra6.step fra6.repeat] {
                    if {[winfo exists $This.$cmd]} {
                       $This.$cmd configure -state $state
                    }
