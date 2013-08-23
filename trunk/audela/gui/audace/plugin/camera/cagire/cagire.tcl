@@ -527,7 +527,7 @@ proc ::cagire::getPluginProperty { camItem propertyName } {
       hasSetTemp       { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
-      longExposure     { return 0 }
+      longExposure     { return 1 }
       multiCamera      { return 0 }
       name             {
          if { $private($camItem,camNo) != "0" } {
