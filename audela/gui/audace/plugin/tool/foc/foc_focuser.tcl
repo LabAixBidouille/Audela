@@ -32,6 +32,7 @@ namespace eval ::foc {
    #
    #------------------------------------------------------------
    proc cmdFocus { command } {
+      global conf
 
       #--- Gestion graphique des boutons
       #--   Boutons d'acquisition
@@ -44,6 +45,10 @@ namespace eval ::foc {
       set catchResult [ catch {
          if { $::panneau(foc,focuser) != "" } {
             ::focus::move $::panneau(foc,focuser) $command
+            #--   delai de stabilisation
+            if {$command eq "stop"} {
+               after $conf(foc,attente)
+            }
          }
       } ]
       #--- Traitement de l'erreur
@@ -259,7 +264,7 @@ namespace eval ::foc {
    # Return : Rien
    #------------------------------------------------------------
    proc dynamicFoc { } {
-      global audace panneau
+      global audace panneau conf
 
       if {[::usb_focus::isReady] ==1 || [::focuseraudecom::isReady] == 1} {
          set activFocuser 1
@@ -290,9 +295,8 @@ namespace eval ::foc {
             set audace(focus,currentFocus) $audace(focus,targetFocus)
          }
 
-         #--   delai de stabilisation a valider
-         after 500
-
+         #--   delai de stabilisation
+         after $conf(foc,attente)
 
       } else {
          #--   Pas de deplacement
@@ -414,11 +418,16 @@ namespace eval ::foc {
    # Return : Rien
    #------------------------------------------------------------
    proc analyseAuto { v } {
-      global caption panneau
+      global caption panneau conf
 
       set err 0
       #--   Verifie qu'il s'agit d'un entier
-      if {[string is integer -strict $panneau(foc,$v)] ==0} {
+      if {$v eq "attente"} {
+         set value $conf(foc,attente)
+      } else {
+         set value $panneau(foc,$v)]
+      }
+      if {[string is integer -strict $value] ==0 } {
          tk_messageBox -title $caption(foc,attention)\
             -icon error -type ok -message "$caption(foc,errInt) "
          return
