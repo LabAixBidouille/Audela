@@ -126,6 +126,11 @@ namespace eval ::foc {
          set conf(foc,avancement,position) "+120+315"
       }
 
+      #--- Initialisation de la position de la fenetre
+      if { ! [ info exists conf(foc,attente) ] } {
+         set conf(foc,attente) "500"
+      }
+
       #--- Initialisation de variables
       set panneau(foc,menu)              "$caption(foc,centrage)"
       set panneau(foc,centrage_fenetre)  "1"
@@ -423,11 +428,18 @@ proc focBuildIF { This } {
       #--- Speed
       bind $This.fra4.we.labPoliceInvariant <ButtonPress-1> { ::foc::cmdSpeed }
 
-     #--- Cardinal moves
+      #--- Cardinal moves
       bind $zone(moins) <ButtonPress-1>   { ::foc::cmdFocus - }
       bind $zone(moins) <ButtonRelease-1> { ::foc::cmdFocus stop }
       bind $zone(plus)  <ButtonPress-1>   { ::foc::cmdFocus + }
       bind $zone(plus)  <ButtonRelease-1> { ::foc::cmdFocus stop }
+
+      LabelEntry $This.fra4.delai \
+         -label $caption(foc,delai) -labeljustify left -labelwidth 12 \
+         -textvariable conf(foc,attente) -width 6 -justify center \
+         -helptext $caption(foc,hlpdelai)
+      pack $This.fra4.delai -side top -fill x -padx 2 -pady 2
+      bind $This.fra4.delai <Leave> { ::foc::analyseAuto attente }
 
       #--- Frame de la position focus
       frame $This.fra5 -borderwidth 1 -relief groove
@@ -493,7 +505,7 @@ proc focBuildIF { This } {
 
       pack $This.fra6 -in $This -after $This.fra5 -fill x
 
-      #--- Frame pour l'affichage de l'avancement de l'acqusition
+      #--- Frame pour l'affichage de l'avancement de l'acquisition
       frame $This.fra7 -borderwidth 2 -relief ridge
 
         #--- Checkbutton pour l'affichage de l'avancement de l'acqusition
