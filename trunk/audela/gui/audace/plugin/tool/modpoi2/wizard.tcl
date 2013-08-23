@@ -1448,40 +1448,38 @@ proc ::modpoi2::wizard::modpoi_wiz5 { } {
        set choice [ tk_messageBox -message "$::caption(modpoi2,wiz1b,nstars1) : $private(stars,nb)" \
           -title $::caption(modpoi2,wiz1b,warning) -icon question -type ok ]
        return
-    }
+   }
 
    #--- Compute the coefficients
    set res [::modpoi2::process::computeCoefficient $starList $private(home) $private(symbols) ]
-
-   set private(coefficients) [lindex $res 0]
-   set private(chisquare) [lindex $res 1]
-   set private(covar) [lindex $res 2]
+   lassign $res private(coefficients) private(chisquare) private(covar)
 
    #--   interprete le X²
    set nbValues $private(stars,nb)
    set nbParameters [llength $private(symbols)]
    lassign [::modpoi2::process::computePconf $private(chisquare) $nbValues $nbParameters] p kappa
 
+   lassign $private(coefficients) ih id np ch me ma fo mt daf tf
    set res1 "\
-   [lindex $private(symbols) 0] = [format "%.2f" [lindex $private(coefficients) 0]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 1 1],2)]])\n\
+   [lindex $private(symbols) 0] = [format "%.2f" $ih] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 1 1],2)]])\n\
    ($caption(modpoi2,wiz5,IH))\n\n\
-   [lindex $private(symbols) 1] = [format "%.2f" [lindex $private(coefficients) 1]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 2 2],2)]])\n\
+   [lindex $private(symbols) 1] = [format "%.2f" $id] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 2 2],2)]])\n\
    ($caption(modpoi2,wiz5,ID))\n\n\
-   [lindex $private(symbols) 2] = [format "%.2f" [lindex $private(coefficients) 2]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 3 3],2)]])\n\
+   [lindex $private(symbols) 2] = [format "%.2f" $np] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 3 3],2)]])\n\
    ($caption(modpoi2,wiz5,NP))\n\n\
-   [lindex $private(symbols) 3] = [format "%.2f" [lindex $private(coefficients) 3]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 4 4],2)]])\n\
+   [lindex $private(symbols) 3] = [format "%.2f" $ch] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 4 4],2)]])\n\
    ($caption(modpoi2,wiz5,CH))\n\n\
-   [lindex $private(symbols) 4] = [format "%.2f" [lindex $private(coefficients) 4]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 5 5],2)]])\n\
+   [lindex $private(symbols) 4] = [format "%.2f" $me] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 5 5],2)]])\n\
    ($caption(modpoi2,wiz5,ME))\n\n\
-   [lindex $private(symbols) 5] = [format "%.2f" [lindex $private(coefficients) 5]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 6 6],2)]])\n\
+   [lindex $private(symbols) 5] = [format "%.2f" $ma] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 6 6],2)]])\n\
    ($caption(modpoi2,wiz5,MA))\n\n\
-   [lindex $private(symbols) 6] = [format "%.2f" [lindex $private(coefficients) 6]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 7 7],2)]])\n\
+   [lindex $private(symbols) 6] = [format "%.2f" $fo] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 7 7],2)]])\n\
    ($caption(modpoi2,wiz5,FO))\n\n\
-   [lindex $private(symbols) 7] = [format "%.2f" [lindex $private(coefficients) 7]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 8 8],2)]])\n\
+   [lindex $private(symbols) 7] = [format "%.2f" $mt] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 8 8],2)]])\n\
    ($caption(modpoi2,wiz5,MT))\n\n\
-   [lindex $private(symbols) 8] = [format "%.2f" [lindex $private(coefficients) 8]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 9 9],2)]])\n\
+   [lindex $private(symbols) 8] = [format "%.2f" $daf] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 9 9],2)]])\n\
    ($caption(modpoi2,wiz5,DAF))\n\n\
-   [lindex $private(symbols) 9] = [format "%.2f" [lindex $private(coefficients) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
+   [lindex $private(symbols) 9] = [format "%.2f" $tf] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
    ($caption(modpoi2,wiz5,TF))\n\n\
    [format $caption(modpoi2,interp) $private(chisquare) $p $kappa]\n\n"
 
@@ -1550,6 +1548,8 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
    variable private
    global caption
 
+::console::disp "modpoi_wiz5b\n"
+
    if { [winfo exists $private(g,base)] } {
       foreach children [winfo children $private(g,base)] {
           destroy $children
@@ -1558,7 +1558,9 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
    #--- New toplevel
    wm title $private(g,base) $caption(modpoi2,wiz5,title1)
    #--- Compute the coefficients
+::console::disp "$private(coefficients)\n"
    #set res [::modpoi2::process::computeCoefficient ]
+#::console::disp "res $res\n"
    #set private(coefficients) [lindex $res 0]
    #set private(chisquare) [lindex $res 1]
    #set private(covar) [lindex $res 2]
@@ -1568,27 +1570,28 @@ proc ::modpoi2::wizard::modpoi_wiz5b { } {
    set nbParameters [llength $private(symbols)]
    lassign [::modpoi2::process::computePconf $private(chisquare) $nbValues $nbParameters] p kappa
 
+   lassign $private(coefficients) ih id np ch me ma fo mt daf tf
    set num [catch {
        set res1 "\
-       IH = [format "%.2f" [lindex $private(coefficients) 0]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 1 1],2)]])\n\
+       IH = [format "%.2f" $ih] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 1 1],2)]])\n\
        ($caption(modpoi2,wiz5,IH))\n\n\
-       ID = [format "%.2f" [lindex $private(coefficients) 1]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 2 2],2)]])\n\
+       ID = [format "%.2f" $id] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 2 2],2)]])\n\
        ($caption(modpoi2,wiz5,ID))\n\n\
-       NP = [format "%.2f" [lindex $private(coefficients) 2]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 3 3],2)]])\n\
+       NP = [format "%.2f" $np] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 3 3],2)]])\n\
        ($caption(modpoi2,wiz5,NP))\n\n\
-       CH = [format "%.2f" [lindex $private(coefficients) 3]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 4 4],2)]])\n\
+       CH = [format "%.2f"$ch] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 4 4],2)]])\n\
        ($caption(modpoi2,wiz5,CH))\n\n\
-       ME = [format "%.2f" [lindex $private(coefficients) 4]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 5 5],2)]])\n\
+       ME = [format "%.2f" $me] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 5 5],2)]])\n\
        ($caption(modpoi2,wiz5,ME))\n\n\
-       MA = [format "%.2f" [lindex $private(coefficients) 5]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 6 6],2)]])\n\
+       MA = [format "%.2f" $ma] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 6 6],2)]])\n\
        ($caption(modpoi2,wiz5,MA))\n\n\
-       FO = [format "%.2f" [lindex $private(coefficients) 6]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 7 7],2)]])\n\
+       FO = [format "%.2f" $fo] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 7 7],2)]])\n\
        ($caption(modpoi2,wiz5,FO))\n\n\
-       HF = [format "%.2f" [lindex $private(coefficients) 7]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 8 8],2)]])\n\
+       HF = [format "%.2f" $mt] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 8 8],2)]])\n\
        ($caption(modpoi2,wiz5,MT))\n\n\
-       DAF = [format "%.2f" [lindex $private(coefficients) 8]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 9 9],2)]])\n\
+       DAF = [format "%.2f" $daf] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 9 9],2)]])\n\
        ($caption(modpoi2,wiz5,DAF))\n\n\
-       TF = [format "%.2f" [lindex $private(coefficients) 9]] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
+       TF = [format "%.2f" $tf] arcmin ([format "%.2f" [expr pow([gsl_mindex $private(covar) 10 10],2)]])\n\
        ($caption(modpoi2,wiz5,TF))\n\n\
        [format $caption(modpoi2,interp) $private(chisquare) $p $kappa]\n\n"
     } msg]
