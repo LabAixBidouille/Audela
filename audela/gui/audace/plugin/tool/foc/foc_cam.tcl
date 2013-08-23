@@ -226,6 +226,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc cmdAcq { } {
       variable This
+      variable Count
       global audace conf caption panneau
 
       #--- Initialisation d'une variable
@@ -274,6 +275,9 @@ namespace eval ::foc {
             set panneau(foc,boucle) "$caption(foc,off)"
          }
 
+         #--  S'assure que l'image est en NB ou un plan couleur G
+         ::foc::traiteImage
+
          #--- Informations sur l'image fenetree
          if { $panneau(foc,actuel) ne "$caption(foc,centrage)" && $panneau(foc,boucle) == "$caption(foc,on)"} {
             ::foc::updateValues
@@ -291,6 +295,49 @@ namespace eval ::foc {
 
       #--- Effacement de la barre de progression quand la pose est terminee
       ::foc::avancementPose -1
+   }
+
+   #------------------------------------------------------------
+   # traiteImage
+   #     Extrait le plan G des images RAW ou RGB
+   # Return : Rien
+   #------------------------------------------------------------
+   proc traiteImage { } {
+      global audace conf
+
+      set bufNo $audace(bufNo)
+      set naxis [lindex [buf$bufNo getkwd NAXIS] 1]
+      set naxis3 [lindex [buf$bufNo getkwd NAXIS3] 1]
+      set rawcolor [lindex [buf$bufNo getkwd RAWCOLOR] 1]   ; #--nouveau mot cle
+      set rawcolors [lindex [buf$bufNo getkwd RAWCOLORS] 1] ; #--ancien mot cle
+
+      if {$naxis ==2 && $naxis3 eq ""} {
+         if {$rawcolor ne "" || $rawcolors ne ""} {
+            #-- image RAW
+             #--- Convertit en RGB
+            buf$bufNo cfa2rgb 1
+            buf$bufNo delkwd RAWCOLOR
+            #--   Rappelle la fonction pour isoler le plan G
+            ::foc::traiteImage
+          } else {
+            #-- rien a faire : image monocolore NB ou plan couleur
+            return
+         }
+      } elseif {$naxis ==3 && $naxis3 ne ""} {
+         #-- image RGB : selection du plan G
+         set fileName [file join $audace(rep_images) planR$conf(extension,defaut)]
+         buf$bufNo setkwd [ list NAXIS 2 int "" "" ]
+         buf$bufNo setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
+         buf$bufNo delkwd RAWCOLOR
+         #--- Sauve et recharge le plan couleur
+         buf$bufNo save3d $fileName 3 2 2
+         buf$bufNo load $fileName
+         #--- Calcule les seuils
+         buf$bufNo stat
+         ::confVisu::autovisu $audace(visuNo)
+         #--  Detruit le fichier image
+         file delete $fileName
+      }
    }
 
    #------------------------------------------------------------
