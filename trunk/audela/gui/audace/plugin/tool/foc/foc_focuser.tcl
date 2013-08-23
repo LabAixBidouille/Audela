@@ -426,7 +426,7 @@ namespace eval ::foc {
       if {$v eq "attente"} {
          set value $conf(foc,attente)
       } else {
-         set value $panneau(foc,$v)]
+         set value $panneau(foc,$v)
       }
       if {[string is integer -strict $value] ==0 } {
          tk_messageBox -title $caption(foc,attention)\
