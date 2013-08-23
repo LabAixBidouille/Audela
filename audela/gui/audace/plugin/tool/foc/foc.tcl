@@ -126,7 +126,7 @@ namespace eval ::foc {
          set conf(foc,avancement,position) "+120+315"
       }
 
-      #--- Initialisation de la position de la fenetre
+      #--- Initialisation du delai de stabilisation
       if { ! [ info exists conf(foc,attente) ] } {
          set conf(foc,attente) "500"
       }
