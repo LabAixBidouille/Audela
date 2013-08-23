@@ -180,6 +180,7 @@ namespace eval ::foc {
             set panneau(foc,optimum) "[format $caption(foc,optimum) $positionOPt]"
          }
       }
+      update
    }
 
    #---------------------------------------------------------------------------
