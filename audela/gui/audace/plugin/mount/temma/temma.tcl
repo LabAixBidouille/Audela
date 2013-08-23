@@ -665,6 +665,7 @@ proc ::temma::moveTelescope { alphaDirection alphaDiff deltaDirection deltaDiff 
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasModel                Retourne la possibilite d'avoir plusieurs modeles pour le meme product
+# hasMotionWhile          Retourne la possibilite d'avoir des deplacements cardinaux pendant une duree
 # hasPark                 Retourne la possibilite de parquer la monture
 # hasUnpark               Retourne la possibilite de de-parquer la monture
 # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
@@ -702,6 +703,7 @@ proc ::temma::getPluginProperty { propertyName } {
          }
       }
       hasModel                { return 1 }
+      hasMotionWhile          { return 0 }
       hasPark                 { return 0 }
       hasUnpark               { return 0 }
       hasUpdateDate           { return 0 }
