@@ -447,23 +447,6 @@ proc ::epixraptor::dispTempCMOS { camItem } {
 }
 
 #
-# checkConfigRefroidissement
-#    Configure le widget de la consigne en temperature
-#
-proc ::epixraptor::checkConfigRefroidissement { } {
-}
-
-#
-# setTempCCD
-#    Procedure pour retourner la consigne de temperature du CCD
-#
-proc ::epixraptor::setTempCCD { camItem } {
-   global conf
-
-   return "$conf(epixraptor,temp)"
-}
-
-#
 # explore
 #    Procedure pour designer les fichiers de configuration
 #
@@ -521,10 +504,6 @@ proc ::epixraptor::extconfig { camNo } {
 }
 
 #
-# extract_config
-#    Procedure that extract the ROI and the binning from the current file
-#
-#
 # getPluginProperty
 #    Retourne la valeur de la propriete
 #
@@ -559,12 +538,12 @@ proc ::epixraptor::getPluginProperty { camItem propertyName } {
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
       dynamic          { return [ list 4095 0 ] }
-      hasBinning       { return 0 }
+      hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
       hasShutter       { return 0 }
-      hasTempSensor    { return 1 }
+      hasTempSensor    { return 0 }
       hasSetTemp       { return 0 }
       hasVideo         { return 1 }
       hasWindow        { return 1 }
