@@ -471,7 +471,7 @@ proc ::acqzadko::chargerVariable { visuNo } {
    #--- Creation des variables si elles n'existent pas
    if { ! [ info exists parametres(acqzadko,$visuNo,pose) ] }           { set parametres(acqzadko,$visuNo,pose)   "5" }   ; #--- Temps de pose : 5s
    if { ! [ info exists parametres(acqzadko,$visuNo,bin) ] }            { set parametres(acqzadko,$visuNo,bin)    "1x1" } ; #--- Binning : 2x2
-   if { ! [ info exists parametres(acqzadko,$visuNo,format) ] }         { set parametres(acqzadko,$visuNo,format) "" }
+   if { ! [ info exists parametres(acqzadko,$visuNo,format) ] }         { set parametres(acqzadko,$visuNo,format) "" }    ; #--- Format des APN
    if { ! [ info exists parametres(acqzadko,$visuNo,obt) ] }            { set parametres(acqzadko,$visuNo,obt)    "2" }   ; #--- Obturateur : Synchro
    if { ! [ info exists parametres(acqzadko,$visuNo,mode) ] }           { set parametres(acqzadko,$visuNo,mode)   "1" }   ; #--- Mode : Une image
    if { ! [ info exists parametres(acqzadko,$visuNo,avancement_acq) ] } {
