@@ -137,109 +137,6 @@ namespace eval ::foc {
    }
 
    #------------------------------------------------------------
-   # cmdSeDeplaceA
-   #    Affiche la fenetre indiquant les limites du focaliseur
-   #    commande du bouton "Aller à" pour focuseraudecom
-   # Parametres : Aucun
-   # Return : Rien
-   #------------------------------------------------------------
-   #proc cmdSeDeplaceA { } {
-   #   variable This
-   #   global audace panneau
-
-   #   if { [ ::tel::list ] != "" } {
-   #      if { $audace(focus,targetFocus) != "" } {
-
-   #         #--- Gestion graphique des boutons
-   #         ::foc::setFocusState goto disabled
-   #         ::foc::setAcqState disabled
-
-   #         #--- Gestion des limites
-   #         if { $audace(focus,targetFocus) > "32767" } {
-   #            #--- Message au-dela de la limite superieure
-   #            ::foc::limiteFoc
-   #            set audace(focus,targetFocus) ""
-   #            $This.fra5.target configure -textvariable audace(focus,targetFocus)
-   #            update
-   #         } elseif { $audace(focus,targetFocus) < "-32767" } {
-   #            #--- Message au-dela de la limite inferieure
-   #            ::foc::limiteFoc
-   #            set audace(focus,targetFocus) ""
-   #            $This.fra5.target configure -textvariable audace(focus,targetFocus)
-   #            update
-   #         } else {
-
-   #            #--- Lit la position du compteur de foc
-   #            ::focus::displayCurrentPosition $::panneau(foc,focuser)
-
-   #            #--- Lance le goto du focaliseur
-   #            ::focus::goto $::panneau(foc,focuser)
-
-   #            #--- Affiche la position d'arrivee
-   #            $This.fra5.current configure -textvariable audace(focus,currentFocus)
-   #         }
-
-   #         #--- Gestion graphique des boutons
-   #         ::foc::setFocusState goto normal
-   #         ::foc::setAcqState stop
-
-   #      }
-   #   } else {
-   #      ::confTel::run
-   #   }
-   #}
-
-   #------------------------------------------------------------
-   # cmdUSB_FocusGoto
-   #    Affiche la fenetre indiquant les limites du focaliseur
-   #    commande du bouton "Aller à" pour usb_focus
-   # Parametres : Aucun
-   # Return : Rien
-   #------------------------------------------------------------
-   #proc cmdUSB_FocusGoto { } {
-   #   variable This
-   #   global audace panneau
-
-   #   if {[::usb_focus::isReady] == 1} {
-
-   #      #--- Gestion graphique des boutons
-   #      ::foc::setFocusState goto disabled
-   #      ::foc::setAcqState goto disabled
-
-   #      #--- Gestion des limites
-   #      lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
-   #      if { $audace(focus,targetFocus) > $limite2 } {
-   #         #--- Message au-dela de la limite superieure
-   #         ::foc::limiteFoc
-   #         set audace(focus,targetFocus) ""
-   #         $This.fra5.target configure -textvariable audace(focus,targetFocus)
-   #         update
-   #       } elseif { $audace(focus,targetFocus) < $limite1 } {
-   #        #--- Message au-dela de la limite inferieure
-   #         ::foc::limiteFoc
-   #         set audace(focus,targetFocus) ""
-   #         $This.fra5.target configure -textvariable audace(focus,targetFocus)
-   #         update
-   #       } else {
-
-   #         #--- Lit la position du compteur de foc
-   #         ::focus::displayCurrentPosition $::panneau(foc,focuser)
-
-   #         #--- Lance le goto du focaliseur
-   #         ::focus::goto $::panneau(foc,focuser)
-
-   #         #--- Affiche la position d'arrivee
-   #         $This.fra5.current configure -textvariable audace(focus,currentFocus)
-   #      }
-   #      #--- Gestion graphique des boutons
-   #      ::foc::setFocusState goto normal
-   #      ::foc::setAcqState stop
-   #   } else {
-   #      ::confEqt::run ::confEqt::private(selectedFocuser) focuser "Focaliseur USB_Focus"
-   #   }
-   #}
-
-   #------------------------------------------------------------
    # setFocusState
    #     gere l'etat des boutons +/-, 'Aller à' et choix du focuser
    #     pour tout type de focuser
@@ -330,8 +227,8 @@ namespace eval ::foc {
 
             #--   Cas d'un focuser avec controle etendu reellement connecte
             switch -exact $panneau(foc,focuser) {
-               focuseraudecom     { ::foc::cmdSeDeplaceA }
-               usb_focus          { ::foc::cmdUSB_FocusGoto }
+               focuseraudecom     { ::foc::cmdFocusGoto }
+               usb_focus          { ::foc::cmdFocusGoto }
             }
 
          } else {
@@ -382,46 +279,6 @@ namespace eval ::foc {
    }
 
    #-  gestion des limites specifiques a AudeCOM et a USB_Focus -
-
-   #------------------------------------------------------------
-   # limiteFoc
-   #    Affiche la fenetre d'erreur en cas de depassement des limites
-   #    commande specifique a AudeCOM et a USB_Focus
-   # Parametres : Aucun
-   # Return : Rien
-   #------------------------------------------------------------
-   #proc limiteFoc { } {
-   #   global audace caption
-
-   #   #--   Definit les limites
-   #   lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
-
-   #   if [ winfo exists $audace(base).limitefoc ] {
-   #     destroy $audace(base).limitefoc
-   #   }
-   #   toplevel $audace(base).limitefoc
-   #   wm transient $audace(base).limitefoc $audace(base)
-   #   wm title $audace(base).limitefoc "$caption(foc,attention)"
-   #   set posx_limitefoc [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
-   #   set posy_limitefoc [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-   #   wm geometry $audace(base).limitefoc +[ expr $posx_limitefoc + 120 ]+[ expr $posy_limitefoc + 340 ]
-   #   wm resizable $audace(base).limitefoc 0 0
-
-   #   #--- Cree l'affichage du message
-   #   if { $audace(focus,targetFocus) > "limite2" } {
-   #      set texte [format $caption(foc,limitefoc) $limite2]"
-   #   } elseif { $audace(focus,targetFocus) < "limite1" } {
-   #      set texte [format $caption(foc,limitefoc) $limite2]"
-   #  }
-   #   label $audace(base).limitefoc.lab -text $texte
-   #   pack $audace(base).limitefoc.lab -padx 10 -pady 2
-
-   #   #--- La nouvelle fenetre est active
-   #   focus $audace(base).limitefoc
-
-   #   #--- Mise a jour dynamique des couleurs
-   #  ::confColor::applyColor $audace(base).limitefoc
-   #}
 
    #------------------------------------------------------------
    # analyseAuto
