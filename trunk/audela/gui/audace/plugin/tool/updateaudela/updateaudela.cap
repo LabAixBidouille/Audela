@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,removeFile)         "Eliminare dalla selezione"
    set caption(updateaudela,createCoreUpdate)   "Creare il file di aggiornamento"
    set caption(updateaudela,previousVersion)    "Versione precedente"
-   set caption(updateaudela,currentVersion)     "Versione corrente"
+   set caption(updateaudela,currentVersion)     "Versione attuale"
    set caption(updateaudela,fileOutside)        "File fuori scopo"
 
 # *************** Version espagnole ***************************
