@@ -220,6 +220,7 @@ namespace eval ::foc {
             set panneau(foc,start) "$limite1"
             set panneau(foc,end)   "$limite2"
             pack $This.fra5 -after $This.fra4 -side top -fill x ; #-- demasque frame position focus
+            $This.fra5.but2 configure -command { ::foc::cmdFocusGoto }
             $This.fra5.target configure -helptext [format $caption(foc,formatfoc) $limite1 $limite2] \
                -validatecommand [list ::tkutil::validateNumber %W %V %P %s integer $limite1 $limite2]
             pack $This.fra6 -after $This.fra5 -side top -fill x ; #-- demasque frame programmation
@@ -231,13 +232,9 @@ namespace eval ::foc {
                pack forget $This.fra5.but0
                pack forget $This.fra5.but1
                ::focus::displayCurrentPosition $::panneau(foc,focuser)
-               #--   adapte les commandes
-               $This.fra5.but2 configure -command { ::foc::cmdUSB_FocusGoto }
             } else {
                #--   focuseraudecom
                $This.fra4.we.labPoliceInvariant configure -text $::audace(focus,labelspeed)
-               #--   adapte les commandes
-               $This.fra5.but2 configure -command { ::foc::cmdSeDeplaceA }
             }
          } else {
             #--   tous les focuser sans controle etendu
@@ -460,7 +457,7 @@ proc focBuildIF { This } {
          pack $This.fra5.current -side top -fill x -padx 4 -pady 2
 
          #--- Bouton "Aller à"
-         button $This.fra5.but2 -borderwidth 2 -text $panneau(foc,deplace) -command { ::foc::cmdSeDeplaceA }
+         button $This.fra5.but2 -borderwidth 2 -text $panneau(foc,deplace) -command { cmdFocusGoto }
          pack $This.fra5.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15
 
          #--- Frame des entry & label
