@@ -225,11 +225,8 @@ namespace eval ::foc {
 
          if {$activFocuser == 1} {
 
-            #--   Cas d'un focuser avec controle etendu reellement connecte
-            switch -exact $panneau(foc,focuser) {
-               focuseraudecom     { ::foc::cmdFocusGoto }
-               usb_focus          { ::foc::cmdFocusGoto }
-            }
+            #--   Execute le goto
+            ::foc::cmdFocusGoto
 
          } else {
 
