@@ -8,7 +8,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Palette</title></head><body>
-<p class="date">Date de mise &#224; jour : 17 mai 2012</p>
+<p class="date">Date de mise &#224; jour : 24 août 2013</p>
 <h1>Palette</h1>
 <p><span style="font-weight: bold;">Note 1 :</span> Les
 r&#233;glages de la palette modifient uniquement l'affichage et
@@ -369,7 +369,22 @@ quelle palette.</p>
 </tr>
 </tbody>
 </table>
-<h2>8. <a name="export" id="export">Exporter l'image</a></h2>
+
+<h2>8. Histogramme</h2>
+<p>Dans tous les cas, sont calcul&#233;es les seuils haut et bas, 
+la valeur maximale, minimale et moyenne de l'image (fonction stat 
+pour les prorammeurs).<br />L'histogramme (en %) est ensuite calcul&#233;
+ en fonction des seuils s&#233;lectionn&#233;s dans Aud'ACE :</p>
+<ul>
+<li><b>pas de calcul automatique</b> : minimum = seuil bas de l'image, maximum = seuil haut de l'image ;</li>
+<li><b>seuils Aud'ACE</b> : minimum = valeur minimale de l'image, maximum = valeur maximale de l'image ;</li>
+<li><b>seuils Iris</b> : valeurs de seuil indiqu&#233;es dans la configuration ;</li>
+<li><b>seuils en % de l'histogramme</b> : les seuils minimum et maximum sont recalcul&#233;s en tenant compte des r&#233;glages utilisateurs dans Aud'ACE ;</li>
+<li><b>seuils initiaux</b> : minimum = valeur du mot cl&#233; MIPS-LO, maximum = valeur du mot cl&#233; MIPS-HI.</li>
+</ul>
+<p>Une &#233;chelle logarithmique a &#233;t&#233; retenue car elle permet une tr&#232;s grande 
+amplitude de la repr&#233;sentation des mesures.</p>
+<h2>9. <a name="export" id="export">Exporter l'image</a></h2>
 <p>A la diff&#233;rence d'une copie d'&#233;cran, cette commande
 (disponible sur les plate-formes Windows) transf&#232;re la
 totalit&#233; de l'image visualis&#233;e, et seulement elle, au
@@ -384,7 +399,7 @@ image</b>.<br />
 Presse-papiers</b>.<br />
 <b>Photoshop</b> : Menu <b>Fichier/Nouveau</b> puis
 <b>Edition/Coller</b>.</p>
-<h2>9. <a name="cmdes" id="cmdes">Bandeau de commandes</a></h2>
+<h2>10. <a name="cmdes" id="cmdes">Bandeau de commandes</a></h2>
 <p><img src="images/commandes.gif" /></p>
 <p>Ce bandeau regroupe les commandes suivantes :</p>
 <ul>
@@ -400,7 +415,7 @@ r&#233;glages enregistr&#233;s.</li>
 <li>La commande <b>Fermer</b> ferme la fen&#234;tre sans annuler
 les r&#233;glages courants.</li>
 </ul>
-<h2>10. Quelques r&#233;f&#233;rences</h2>
+<h2>11. Quelques r&#233;f&#233;rences</h2>
 <ul>
 <li>Alain Boucher IFI <a href="http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
 http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf</a></li>
