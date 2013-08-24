@@ -335,13 +335,12 @@ namespace eval ::foc {
       update
    }
 
-  #-  gestion des limites specifique a audeCOM et a USB_Focus -
-
+   #-  gestion des limites specifiques a AudeCom et a USB_Focus -
 
    #------------------------------------------------------------
    # limiteFoc
    #    Affiche la fenetre d'erreur en cas de depassement des limites
-   #    commande specifique a audeCOM et a USB_Focus
+   #    commande specifique a AudeCom et a USB_Focus
    # Parametres : Aucun
    # Return : Rien
    #------------------------------------------------------------
@@ -401,7 +400,7 @@ namespace eval ::foc {
          return
       }
 
-      #--   Focuser audecom ou USB_Focus
+      #--   Focuser AudeCom ou USB_Focus
       lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
       switch -exact $v {
          start { if {$panneau(foc,$v) < $limite1 || $panneau(foc,$v) > $limite2} {
