@@ -44,12 +44,15 @@ r&#233;glage est ferm&#233;e.</p>
 <td>
 <p>Elle comporte (de haut en bas) :</p>
 <ul>
-<li>Une zone graphique affichant l'<a href="#histogram">histogramme</a> des intensit&#233;s et la fonction
-de transfert. L'&#233;chelle de droite donne le poids (% en
-&#233;chelle logarithmique) de chaque pas de l'histogramme.</li>
+<li>Une zone graphique affichant l'<a href=
+"#histogram">histogramme</a> des intensit&#233;s et la fonction
+de transfert. L'&#233;chelle de droite donne le poids % de chaque
+pas de l'histogramme.</li>
 <li>Une case &#224; cocher pour afficher l'histogramme de l'image
-du buffer.</li>
-<li>Une ligne de r&#233;glage de la <a href="#niveaux">Dynamique</a>.</li>
+du buffer ainsi que deux butons permettant de choisir une
+&#233;chelle lin&#233;aire ou logarithmique..</li>
+<li>Une ligne de r&#233;glage de la <a href=
+"#niveaux">Dynamique</a>.</li>
 <li>Si l'image est RVB, les r&#233;glages peuvent s'appliquer, au
 choix, aux trois plans (RVB) ou ind&#233;pendamment &#224; chaque
 plan couleur R ou V ou B (CF paragraphe <a href="#plan">4. Choix
@@ -58,8 +61,10 @@ du plan couleur)</a>.</li>
 fonction de la palette choisie. L'effet des r&#233;glages est
 imm&#233;diat et &#233;vite de t&#226;tonner dans la recherche de
 coefficients adapt&#233;s.</li>
-<li>Une combobox permettant de choisir la <a href="#palette">palette</a> (fonction de transfert).</li>
-<li>Une zone comportant une case &#224; cocher pour <a href="#inverse">inverser</a> la palette et les boutons des commandes
+<li>Une combobox permettant de choisir la <a href=
+"#palette">palette</a> (fonction de transfert).</li>
+<li>Une zone comportant une case &#224; cocher pour <a href=
+"#inverse">inverser</a> la palette et les boutons des commandes
 <a href="#mypal"><b>D&#233;finir ma palette</b></a> et
 <b><a href="#export">Exporter l'image</a></b>.</li>
 <li>Un bandeau de <a href="#cmdes">commandes</a>.</li>
@@ -68,13 +73,32 @@ coefficients adapt&#233;s.</li>
 </tr>
 </tbody>
 </table>
-<h2><b>2. <a name="histogram" id="histogram">Histogramme</a></b></h2>
+<h2><b>2. <a name="histogram" id=
+"histogram">Histogramme</a></b></h2>
 <p>L'histogramme normalis&#233; est calcul&#233; sur la plage des
 seuils s&#233;lectionn&#233;s &#224; chaque chargement d'image ou
 de changement de seuils. Compte tenu du temps de calcul
 mobilis&#233; par cette fonction, notamment pour les grandes
 images, il est pr&#233;f&#233;rable de limiter le nombre de
-changements.</p>
+changements.<br />
+Dans tous les cas, sont calcul&#233;s les seuils haut et bas, les
+valeurs maximale, minimale et moyenne de l'image (fonction stat
+pour les programmeurs).<br />
+L'histogramme (en %) est ensuite calcul&#233; en fonction des
+seuils s&#233;lectionn&#233;s dans Aud'ACE :</p>
+<ul>
+<li><b>Pas de calcul automatique</b> : Minimum = seuil bas de
+l'image, maximum = seuil haut de l'image.<br /></li>
+<li><b>Seuils Aud'ACE</b> : Minimum = valeur minimale de l'image,
+maximum = valeur maximale de l'image.<br /></li>
+<li><b>Seuils Iris</b> : Valeurs de seuil indiqu&#233;es dans la
+configuration.<br /></li>
+<li><b>Seuils en % de l'histogramme</b> : Les seuils minimum et
+maximum sont recalcul&#233;s en tenant compte des r&#233;glages
+utilisateurs dans Aud'ACE.<br /></li>
+<li><b>Seuils initiaux</b> : Minimum = valeur du mot cl&#233;
+MIPS-LO, maximum = valeur du mot cl&#233; MIPS-HI.</li>
+</ul>
 <p>Les exemples ci-dessous mettent en &#233;vidence l'impact des
 seuils sur l'image avec une palette donn&#233;e (lin&#233;aire
 dans l'exemple).</p>
@@ -94,6 +118,13 @@ dans l'exemple).</p>
 </tr>
 </tbody>
 </table>
+<p>Une image d'astronomie contient beaucoup de fond du ciel et
+l'essentiel de le distribution de l'histogramme est centr&#233;
+sur les valeurs faibles. Une &#233;chelle lin&#233;aire n'a donc,
+la plupart du temps, pas beaucoup d'int&#233;r&#234;t. Une
+&#233;chelle logarithmique offre une tr&#232;s grande amplitude
+de la repr&#233;sentation des valeurs. L'utilisateur peut choisir
+l'une ou l'autre des r&#233;presentations.</p>
 <p>La s&#233;lection de cette fonction donne aussi acc&#232;s aux
 r&#233;glages de la dynamique pour les palettes
 <b>Lin&#233;aire</b>, <b>Rampe</b>, <b>Gamma</b>, <b>Courbe
@@ -113,8 +144,8 @@ point noir de l'image puis appuyer sur <b>OK</b>.</p>
 <p>Pour d&#233;finir le seuil au dessus duquel la sortie sera
 &#233;gale &#224; 255, cliquer sur la pipette blanche, cliquer
 sur un point blanc de l'image puis appuyer sur <b>OK</b>.</p>
-<p>Pour faciliter le choix du pixel, l'outil <b>Loupe</b>
-peut &#234;tre activ&#233;.</p>
+<p>Pour faciliter le choix du pixel, l'outil <b>Loupe</b> peut
+&#234;tre activ&#233;.</p>
 <p>Les r&#233;glettes de <a href="#lumen">luminosit&#233; et de
 contraste</a> se positionnent automatiquement &#224; la bonne
 valeur. Les niveaux peuvent &#234;tre ajust&#233;s manuellement
@@ -207,7 +238,7 @@ fonction de transfert :</p>
 <tr align="left">
 <td><img src="images/gamma_log.gif" /></td>
 <td>
-<p>coefficient gamma &lt; 1</p>
+<h4>coefficient gamma &lt; 1</h4>
 <p>Augmentation du contraste dans les zones sombres. Cette
 fonction est &#233;quivalente &#224; une fonction
 logarithmique.</p>
@@ -216,13 +247,13 @@ logarithmique.</p>
 </tr>
 <tr>
 <td>
-<p>coefficient gamma = 1</p>
-Fonction lin&#233;aire.</td>
+<h4>coefficient gamma = 1 = Fonction lin&#233;aire.</h4>
+</td>
 </tr>
 <tr>
 <td><img src="images/gamma_exp.gif" /></td>
 <td>
-<p>coefficient gamma &gt; 1</p>
+<h4>coefficient gamma &gt; 1</h4>
 <p>Augmentation du contraste dans les zones claires. Cette
 fonction est &#233;quivalente &#224; une fonction
 exponentielle.</p>
@@ -342,15 +373,29 @@ contraste ne sont pas accessibles.</p>
 <tbody>
 <tr align="left">
 <td><img src="images/ma_palette.gif" /></td>
-<td>Cette palette est disponible uniquement si elle a
-&#233;t&#233; cr&#233;&#233;e par l'appui sur le bouton
-<b>D&#233;finir ma palette</b>, elle est stock&#233;e dans le
-r&#233;pertoire <b>$audace(rep_userPalette)</b> sous le nom
-<b>mypal_${visuNo}.pal</b> (par exemple <span style="font-weight: bold;">mypal_1.pal</span> pour la palette de la fen&#234;tre principale d'Aud'ACE (visu1) et <span style="font-weight: bold;">mypal_2.pal</span> pour la premi&#232;re fen&#234;tre secondaire (visu2) et ainsi de suite).<br />
-Si elle existe elle sera charg&#233;e lors de l'appel de la
-fonction et transf&#233;r&#233;e vers la palette de service
-stock&#233;e dans le fichier
-<b>$audace(rep_temp)/fonction_transfert_${visuNo}.pal</b> (par exemple <span style="font-weight: bold;">fonction_transfert_1.pal</span> pour la fen&#234;tre principale (visu1)).</td>
+<td>Il est tr&#232;s facile de construire une palette
+sp&#233;cifique qui sera rappel&#233;e syst&#233;matiquement
+&#224; l'ouverture d'une image sans avoir a retrouver les bons
+r&#233;glages. Les r&#233;glages &#233;tant effectu&#233;s, il
+suffit d'appuyer sur le bouton <b>D&#233;finir ma palette</b>
+:<br />
+<ul>
+<li>la fonction de transfert initiale, les valeurs de la
+luminosit&#233; et du contraste disparaissent,</li>
+<li>la fonction de transfert s&#233;lectionn&#233;e est <b>Ma
+palette</b>,</li>
+<li>les valeurs num&#233;riques de cette palette sont
+stock&#233;es dans le r&#233;pertoire
+<b>$audace(rep_userPalette)</b> sous le nom
+<b>mypal_${visuNo}.pal</b>, donc mypal_1.pal pour la visu
+N&#176;1, mypal_2.pal pour la visu N&#176;2,</li>
+<li>si elle existe, la s&#233;lection de la fonction <b>Ma
+palette</b> entra&#238;ne sa recopie vers le fichier
+<b>$audace(rep_temp)/fonction_transfert_${visuNo}.pal</b> ,</li>
+<li>elle sera pr&#233;sente &#224; l'ouverture d'Aud'ACE si elle
+est pr&#233;sente &#224; sa fermeture.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -370,26 +415,7 @@ quelle palette.</p>
 </tr>
 </tbody>
 </table>
-
-<h2>8. Histogramme</h2>
-<p>Dans tous les cas, sont calcules les seuils haut et bas, 
-les valeurs maximale, minimale et moyenne de l'image (fonction stat 
-pour les programmeurs).<br />L'histogramme (en %) est ensuite calcul&#233;
- en fonction des seuils s&#233;lectionn&#233;s dans Aud'ACE :</p>
-<ul>
-<li><b>Pas de calcul automatique</b> : Minimum = seuil bas de l'image, maximum = seuil haut de l'image.<br />
-</li>
-<li><b>Seuils Aud'ACE</b> : Minimum = valeur minimale de l'image, maximum = valeur maximale de l'image.<br />
-</li>
-<li><b>Seuils Iris</b> : Valeurs de seuil indiqu&#233;es dans la configuration.<br />
-</li>
-<li><b>Seuils en % de l'histogramme</b> : Les seuils minimum et maximum sont recalcul&#233;s en tenant compte des r&#233;glages utilisateurs dans Aud'ACE.<br />
-</li>
-<li><b>Seuils initiaux</b> : Minimum = valeur du mot cl&#233; MIPS-LO, maximum = valeur du mot cl&#233; MIPS-HI.</li>
-</ul>
-<p>Une &#233;chelle logarithmique a &#233;t&#233; retenue car elle permet une tr&#232;s grande 
-amplitude de la repr&#233;sentation des mesures.</p>
-<h2>9. <a name="export" id="export">Exporter l'image</a></h2>
+<h2>8. <a name="export" id="export">Exporter l'image</a></h2>
 <p>A la diff&#233;rence d'une copie d'&#233;cran, cette commande
 (disponible sur les plate-formes Windows) transf&#232;re la
 totalit&#233; de l'image visualis&#233;e, et seulement elle, au
@@ -404,7 +430,7 @@ image</b>.<br />
 Presse-papiers</b>.<br />
 <b>Photoshop</b> : Menu <b>Fichier/Nouveau</b> puis
 <b>Edition/Coller</b>.</p>
-<h2>10. <a name="cmdes" id="cmdes">Bandeau de commandes</a></h2>
+<h2>9. <a name="cmdes" id="cmdes">Bandeau de commandes</a></h2>
 <p><img src="images/commandes.gif" /></p>
 <p>Ce bandeau regroupe les commandes suivantes :</p>
 <ul>
@@ -420,12 +446,15 @@ r&#233;glages enregistr&#233;s.</li>
 <li>La commande <b>Fermer</b> ferme la fen&#234;tre sans annuler
 les r&#233;glages courants.</li>
 </ul>
-<h2>11. Quelques r&#233;f&#233;rences</h2>
+<h2>10. Quelques r&#233;f&#233;rences</h2>
 <ul>
-<li>Alain Boucher IFI <a href="http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
+<li>Alain Boucher IFI <a href=
+"http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
 http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf</a></li>
-<li>K. Okano <a href="http://www.asahi-net.or.jp/%7Ert6k-okn/">http://www.asahi-net.or.jp/~rt6k-okn/</a></li>
-<li>J&#233;r&#244;me Vicente IUSTI <a href="http://iusti.polytech.univ-mrs.fr/%7Evicente/supportcours/vision3-2006.pdf">
+<li>K. Okano <a href=
+"http://www.asahi-net.or.jp/%7Ert6k-okn/">http://www.asahi-net.or.jp/~rt6k-okn/</a></li>
+<li>J&#233;r&#244;me Vicente IUSTI <a href=
+"http://iusti.polytech.univ-mrs.fr/%7Evicente/supportcours/vision3-2006.pdf">
 http://iusti.polytech.univ-mrs.fr/~vicente/supportcours/vision3-2006.pdf</a></li>
 </ul>
 </div>
