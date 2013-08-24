@@ -262,6 +262,7 @@ namespace eval ::foc {
    #------------------------------------------------------------
    # dynamicFoc
    #  Calcule et effectue le deplacemnt de focuseraudecom et usb_focus
+   # Parametres : Aucun
    # Return : Rien
    #------------------------------------------------------------
    proc dynamicFoc { } {
@@ -334,42 +335,8 @@ namespace eval ::foc {
       update
    }
 
-   #------------   fenetre affichant les limites  --------------
+  #-  gestion des limites specifique a audeCOM et a USB_Focus -
 
-   #------------------------------------------------------------
-   # formatFoc
-   #    Affiche la fenetre indiquant les limites du focaliseur
-   #    commande specifique a audeCOM et a USB_Focus
-   # Parametres : Aucun
-   # Return : Rien
-   #------------------------------------------------------------
-   proc formatFoc { } {
-      global audace caption
-
-      #--   Definit les limites
-      lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
-
-      if [ winfo exists $audace(base).formatfoc ] {
-         destroy $audace(base).formatfoc
-      }
-      toplevel $audace(base).formatfoc
-      wm transient $audace(base).formatfoc $audace(base)
-      wm title $audace(base).formatfoc "$caption(foc,attention)"
-      set posx_formatfoc [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
-      set posy_formatfoc [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $audace(base).formatfoc +[ expr $posx_formatfoc + 150 ]+[ expr $posy_formatfoc + 370 ]
-      wm resizable $audace(base).formatfoc 0 0
-
-      #--- Cree l'affichage du message
-      label $audace(base).formatfoc.lab -text "[format $caption(foc,formatfoc) $limite1 $limite2]"
-      pack $audace(base).formatfoc.lab -padx 10 -pady 2
-
-      #--- La nouvelle fenetre est active
-      focus $audace(base).formatfoc
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).formatfoc
-   }
 
    #------------------------------------------------------------
    # limiteFoc
@@ -413,7 +380,7 @@ namespace eval ::foc {
 
    #------------------------------------------------------------
    # analyseAuto
-   #    Analyse les valeurs start,end, step et nb du programme Auto
+   #    Analyse les valeurs attente, start, end, step et nb du programme Auto
    #    Emet un message en cas d'erreur
    # Parametres : Aucun
    # Return : Rien

@@ -216,12 +216,12 @@ namespace eval ::foc {
 
             #--   focuseraudecom et usb_focus
             #--   modifie les valeurs debut et fin
-            lassign [::foc::getLimits $::panneau(foc,focuser)] limite1 limite2
+            lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
             set panneau(foc,start) "$limite1"
             set panneau(foc,end)   "$limite2"
-
             pack $This.fra5 -after $This.fra4 -side top -fill x ; #-- demasque frame position focus
-            $This.fra5.target configure -validatecommand [list ::tkutil::validateNumber %W %V %P %s integer $limite1 $limite2]
+            $This.fra5.target configure -helptext [format $caption(foc,formatfoc) $limite1 $limite2] \
+               -validatecommand [list ::tkutil::validateNumber %W %V %P %s integer $limite1 $limite2]
             pack $This.fra6 -after $This.fra5 -side top -fill x ; #-- demasque frame programmation
             $This.fra6.start configure -helptext [format $caption(foc,hlpstart) $limite1]
             $This.fra6.end configure -helptext [format $caption(foc,hlpend) $limite2]
@@ -468,8 +468,6 @@ proc focBuildIF { This } {
             -label $caption(foc,target) -labeljustify left -labelwidth 12 \
             -textvariable audace(focus,targetFocus) -width 6 -justify center
          pack $This.fra5.target -side top -fill x -padx 4 -pady 2
-         bind $This.fra5.target <Enter> { ::foc::formatFoc }
-         bind $This.fra5.target <Leave> { destroy $audace(base).formatfoc }
 
       pack $This.fra5 -side top -fill x
 
