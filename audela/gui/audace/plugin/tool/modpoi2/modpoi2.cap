@@ -48,7 +48,7 @@ set caption(modpoi2,star,haApp)                      "Hour\nAngle"
 set caption(modpoi2,star,deApp)                      "DEC"
 set caption(modpoi2,star,select)                     "Select"
 
-set caption(modpoi2,interp)                          "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+set caption(modpoi2,interp)                          "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
 set caption(modpoi2,modele_existe)                   "Pointing Model Ready."
 set caption(modpoi2,modele_appliquer2)               "Save changes before applying the pointing model to the mount."
@@ -412,7 +412,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -593,7 +593,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -774,7 +774,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -955,7 +955,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -1136,7 +1136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -1317,7 +1317,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -1498,7 +1498,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(modpoi2,star,deApp)                   "DEC"
    set caption(modpoi2,star,select)                  "Select"
 
-   set caption(modpoi2,interp)                       "# La valeur du X² = %s indique que\nle modèle est valide\navec un niveau de confiance de %s, soit %s sigma."
+   set caption(modpoi2,interp)                       "The value of X² = %s shows the\nmodel is valid with a trust\nlevel of %s, ie. %s sigma."
 
    set caption(modpoi2,modele_existe)                "Pointing Model Ready."
    set caption(modpoi2,modele_appliquer2)            "Save changes before applying the pointing model to the mount."
@@ -1617,7 +1617,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(modpoi2,north)                        "N"
    set caption(modpoi2,east)                         "E"
-  set caption(modpoi2,west)                         "W"
+   set caption(modpoi2,west)                         "W"
    set caption(modpoi2,south)                        "S"
 
    set caption(modpoi2,horizon,title)                "Horizon"
