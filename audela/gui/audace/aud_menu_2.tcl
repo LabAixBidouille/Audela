@@ -983,8 +983,8 @@ namespace eval ::div {
          switch $::conf(seuils,visu$visuNo,mode) {
             disable     {  set max $max_disable ; set min $min_disable }
             loadima     {  set max $max_loadima ; set min $min_loadima }
-            iris        {  set min [expr {$moyenne - $::conf(seuils,irisautohaut)}]
-                           set max [expr {$moyenne + $::conf(seuils,irisautobas)}]
+            iris        {  set min $::conf(seuils,irisautobas)
+                           set max $::conf(seuils,irisautohaut)
                         }
             histoauto   {  #--   prend en compte l'histogramme sur une partie de la plage
                            set keytype FLOAT
@@ -992,7 +992,7 @@ namespace eval ::div {
                            set min [expr {[lindex [buf$bufNo getkwd MIPS-LO] 1]}]
                            set max [expr {[lindex [buf$bufNo getkwd MIPS-HI] 1]}]
                         }
-           initiaux     {  #--   prend en compte les seuils de l'image
+            initiaux    {  #--   prend en compte les seuils de l'image
                            set min [expr {[lindex [buf$bufNo getkwd MIPS-LO] 1]}]
                            set max [expr {[lindex [buf$bufNo getkwd MIPS-HI] 1]}]
                         }
