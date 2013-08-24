@@ -20,8 +20,12 @@ namespace eval ::div {
       if {![info exists conf(div,visu$visuNo,position)]} {
          set conf(div,visu$visuNo,position) "+40+100"
       }
-      set private(div,visu$visuNo,position) $conf(div,visu$visuNo,position)
+      #--   initialisation de la variable de configuration
+      if {![info exists conf(div,visu$visuNo,scale)]} {
+         set conf(div,visu$visuNo,scale) "0"
+      }
 
+      set private(div,visu$visuNo,position) $conf(div,visu$visuNo,position)
       set private(div,$visuNo,start) 1
 
       ::div::cmdReset $visuNo
@@ -111,6 +115,24 @@ namespace eval ::div {
          }
       }
       update
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::cmdConfigHistoScale
+   #  Configure l'echelle de l'histogramme
+   #  Commande liee au radiobutton de selection de l'echelle
+   #---------------------------------------------------------------------------
+   proc ::div::cmdConfigHistoScale { visuNo } {
+      variable private
+      global conf
+
+      if {$conf(div,visu$visuNo,scale) == 0} {
+         $private(div,$visuNo,this).g axis configure y2 -min 0 -max {} \
+            -logscale 0
+      } else {
+         $private(div,$visuNo,this).g axis configure y2 -min {} -max {} \
+            -logscale 1
+      }
    }
 
    #---------------------------------------------------------------------------
@@ -1005,7 +1027,12 @@ namespace eval ::div {
          $vectorIntervalle set [lindex $stat 2]
          set sum [set ${vector}(sum)]
          #--   densite entre 0 et 100
-         $vector expr {$vector*100/$sum}
+         if {$sum !=0} {
+            $vector expr {$vector*100/$sum}
+         } else {
+            #--   passe en mode lineaire a cause de sum = 0
+            $private(div,$visuNo,this).val.histlin invoke
+         }
       }
 
       if {$imagetype ne "gray"} {
@@ -1071,6 +1098,14 @@ namespace eval ::div {
 
       set tbl "$this.val"
       frame $tbl -borderwidth 1 -relief raised
+
+      radiobutton $tbl.histlin -text "$caption(div,lin)" \
+         -indicatoron 1 -variable ::conf(div,visu$visuNo,scale) \
+         -value 0 -command  [list ::div::cmdConfigHistoScale $visuNo ]
+
+      radiobutton $tbl.histlog -text "$caption(div,log)"  \
+         -indicatoron 1 -variable ::conf(div,visu$visuNo,scale) \
+         -value 1 -command [list ::div::cmdConfigHistoScale $visuNo ]
 
       #--   checkbutton pour affichage de l'histogramme
       checkbutton $tbl.histo -text $caption(div,histo) \
@@ -1154,6 +1189,8 @@ namespace eval ::div {
       #--   positionne les elements permanents dans le frame
       blt::table $tbl \
          $tbl.histo 0,0 -anchor w -cspan 2 -padx 5 \
+         $tbl.histlin 0,2 -anchor w -padx 5 \
+         $tbl.histlog 0,3 -anchor w -padx 5 \
          $tbl.lab_fonction 7,0 -anchor w -ipadx 10  \
          $tbl.palette 7,1 -anchor w -fill x -cspan 2 -pady 10 \
          $tbl.spec 8,0 -anchor w -cspan 4 -height {40} \
