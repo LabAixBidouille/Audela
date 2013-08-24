@@ -3,13 +3,14 @@
 
 
 
+
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="Author" content="Alain Klotz">
   <meta name="GENERATOR" content="Mozilla/4.5 [fr] (Win98; I) [Netscape]"><title>Librairie MC : Manuel de l'utilisateur</title></head><body>
 <center><b><font size="+3">LIB MC</font></b> <br>
 Création et utilisation d'un modèle de pointage avec
 la&nbsp; librairie de calculs de mécanique céleste <br>
-version 20130822<br>
+version 20130824<br>
 Alain KLOTZ
 <p><b><font size="+3">Manuel de l'utilisateur</font></b></p>
 </center>
@@ -217,7 +218,10 @@ réfraction (cas des télescopes LX200), 1 pour corriger
 les corrections de réfraction (1 valeur par défaut).<br>
 -drift :&nbsp;=1 ou =radec ou =altaz&nbsp; pour signaler de sortir les
 valeurs des vitesses sur les axes
-(en arcsec/sec). Si =radec alors les paramètres de la liste du
+(en arcsec/sec). Si =1 retourne la dérive diurne
+uniquement qui vaut environ 0 arcsec/sec sur Ra,Dec et environ
+15 arcsec/sec sur l'angle horaire, pour Az,Elev
+l'interprétation est plus complexe. Si =radec alors les paramètres de la liste du
 paramètre optionnel -driftvalues sont des dérives
 respectives sur Ra,Dec en arcsec/sec (dérives
 supplémentaires à la dérive diurne). Si =altaz
