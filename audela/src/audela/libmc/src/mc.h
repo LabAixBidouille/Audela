@@ -75,9 +75,9 @@
 #endif
 
 #define VSOP87
-#if defined LIBRARY_DLL
+//#if defined LIBRARY_DLL
 #define ELP82
-#endif
+//#endif
 
 #define mc_USNO 0
 #define mc_USNOCOMP 1

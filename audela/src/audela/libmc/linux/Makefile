@@ -11,6 +11,8 @@ SRC = $(SRCDIR)/libmc.c    $(SRCDIR)/libmc2.c   $(SRCDIR)/libmc3.c   \
       $(SRCDIR)/mc_time1.c $(SRCDIR)/mc_util1.c $(SRCDIR)/mc_util2.c \
       $(SRCDIR)/mc_cart1.c $(SRCDIR)/mc_cata1.c $(SRCDIR)/mc_scdl1.c \
       $(SRCDIR)/mc_modl1.c $(SRCDIR)/mc_nora1.c $(SRCDIR)/mc_nora2.c \
+      $(SRCDIR)/mc_elp10.c $(SRCDIR)/mc_elp11.c $(SRCDIR)/mc_elp12.c \
+      $(SRCDIR)/mc_elp13.c \
       $(SRCDIR)/libmc_angles.c $(SRCDIR)/libmc_dates.c
 
 OBJ = $(patsubst $(SRCDIR)/%.c, %.o, $(filter $(SRCDIR)/%.c, $(SRC)))
