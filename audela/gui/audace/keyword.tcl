@@ -498,7 +498,7 @@ proc ::keyword::calculateAirMass { visuNo } {
    }
 
    #--- Je calcule l'elevation de l'astre
-   set hip  [ list 1 1 $ra $dec J2000 J2000 0 0 0 ]
+   set hip  [ list 1 0.0 $ra $dec J2000.0 now 0 0 0 ]
    set res  [ mc_hip2tel $hip $jd $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) ]
    set elev [ lindex $res 14 ]
 
