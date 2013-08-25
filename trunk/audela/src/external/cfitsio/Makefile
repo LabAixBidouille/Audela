@@ -21,6 +21,7 @@ install:
 	cp $(DIR)/libcfitsio.so $(ROOT)/external/lib/
 	cp $(ROOT)/external/lib/libcfitsio.so $(ROOT)/../bin
 	cp $(DIR)/fitsio*.h $(ROOT)/external/include
+	cp $(DIR)/longnam.h $(ROOT)/external/include
 
 clean:
 	make -C $(DIR) clean
