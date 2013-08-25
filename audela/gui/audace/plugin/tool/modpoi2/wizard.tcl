@@ -2063,7 +2063,7 @@ proc ::modpoi2::wizard::modpoi_coord { } {
       set private(star$k,deShiftTest) [expr  60.0 * [lindex $coords 6]] ; #--- ddec
    } else {
       set private(star$k,raShiftTest) ""
-     set private(star$k,deShiftTest) ""
+      set private(star$k,deShiftTest) ""
    }
 
    #--- j'enregistre la liste des étoiles et le modèle dans un fichier temporaire
