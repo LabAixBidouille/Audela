@@ -595,56 +595,62 @@ proc ::temma::setCorrectionSpeed { args } {
    }
 }
 
-#
+#------------------------------------------------------------
 # getGuidingSpeed
-#    Retourne les vitesses de correction (en arseconde par seconde de temps)
-#
+#    Retourne les vitesses de correction theoriques
+#   (en arseconde par seconde de temps)
+#------------------------------------------------------------
 proc ::temma::getGuidingSpeed { } {
    variable private
 
    set vitesse_siderale 15 ; #-- vitesse siderale en deg/heure ou en arsec/seconde de temps
-   set gsAD [expr { $vitesse_siderale*$private(correc_AD)/100. }]
-   set gsDec [expr { $vitesse_siderale*$private(correc_Dec)/100. }]
+   if {$private(correc_AD) < 10} {
+      set coefAD "1"
+   } elseif {$private(correc_AD) > 90} {
+      set coefAD "100"
+   } else {
+      set coefAD "$private(correc_AD)"
+   }
+   set gsAD [expr { $vitesse_siderale*$coefAD/100. }]
+
+   if {$private(correc_Dec) < 10} {
+      set coefDec 1
+   } elseif {$private(correc_Dec) > 90} {
+      set coefDec 100
+   } else {
+      set coefDec $private(correc_Dec)
+   }
+
+   set gsDec [expr { $vitesse_siderale*$coefDec/100. }]
 
    return [list $gsAD $gsDec]
 }
 
 #------------------------------------------------------------
-# moveTelescope
-#    Deplace le telescope pendant une duree determinee en agissant sur la raquette virtuelle
-#    Le deplacement est interrompu si private(telescopeMoving)!=1
-#
-# @param alphaDirection : Direction (e ou w) du mouvement en AD
-# @param alphaDiff      : Deplacement alpha en arcseconde
-# @param deltaDirection : Direction (n ou s) du mouvement en Dec
-# @param deltaDiff      : Deplacement delta en arcseconde
-#
-# @return rien
+# computeSpeed
+#    Affiche les corections et les vitesses de correction reelles
+#    (en arseconde par seconde de temps)
+# Paametres : radec initial, radecfinal, durees de corrections en ms
 #------------------------------------------------------------
-proc ::temma::moveTelescope { alphaDirection alphaDiff deltaDirection deltaDiff } {
-   variable private
-   global audace conf
+proc ::temma::computeSpeed { radec0 radec1 alphaDelay deltaDelay } {
 
-   #--- je recupere les vitesses de guidage (en arseconde par seconde de temps)
-   set guidingSpeed  [::confTel::getPluginProperty "guidingSpeed"]
+   lassign $radec0 ra0 dec0
+   set ra0 [ mc_angle2deg $ra0 360 ]
+   set dec0 [ mc_angle2deg $dec0 90 ]
+   lassign $radec1 ra1 dec1
+   set ra1 [ mc_angle2deg $ra1 360 ]
+   set dec1 [ mc_angle2deg $dec1 90 ]
+   set dra [expr { ($ra1-$ra0)*3600. }]
+   set ddec [expr { ($dec1-$dec0)*3600. }]
+   set raSpeed [expr { $dra*1000/$alphaDelay }]
+   set decSpeed [expr { $ddec*1000/$deltaDelay }]
+   set dra [format "%0.2f" $dra] ; #--   arcsec
+   set ddec [format "%0.2f" $ddec] ; #--   arcsec
+   set raSpeed [format "%0.2f" $raSpeed] ; #--   arcsec/sec
+   set decSpeed [format "%0.2f" $decSpeed] ; #--   arcsec/sec
 
-   #--- je calcule le delai de rattrapage en ms
-   set alphaDelay    [expr int(1000.0 * ($alphaDiff / [lindex $guidingSpeed 0 ])) ]
-   set deltaDelay    [expr int(1000.0 * ($deltaDiff / [lindex $guidingSpeed 1 ])) ]
-
-   #set ::telescope::private(telescopeMoving) 1
-
-   #--- je demarre le deplacement alpha
-   #tel$audace(telNo) radec move $alphaDirection $audace(telescope,rate)
-   tel$audace(telNo) radec move $alphaDirection 1
-   after $alphaDelay tel$audace(telNo) radec stop $alphaDirection
-
-   #--- je demarre le deplacement delta
-   tel$audace(telNo) radec move $deltaDirection $audace(telescope,rate)
-   tel$audace(telNo) radec move $deltaDirection 1
-   after $deltaDelay tel$audace(telNo) radec stop $deltaDirection
-
-   #set ::telescope::private(telescopeMoving) 0
+   ::console::disp "$dra arcsec $raSpeed arcsec/sec ; $ddec arcsec $decSpeed arcsec/sec\n"
+   update
 }
 
 #
@@ -670,6 +676,7 @@ proc ::temma::moveTelescope { alphaDirection alphaDiff deltaDirection deltaDiff 
 # hasUnpark               Retourne la possibilite de de-parquer la monture
 # hasUpdateDate           Retourne la possibilite de mettre a jour la date et le lieu
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
+# guidingSpeed            Retourne la vitesse de correction AD et DEC en arcseconde par seconde de temps
 #
 proc ::temma::getPluginProperty { propertyName } {
    variable private
