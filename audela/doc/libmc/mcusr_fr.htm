@@ -8,7 +8,7 @@
 <body>
 <center>
 <p style="text-align: left;" class="date">Date de mise &agrave; jour :
-16 ao&ucirc;t 2013</p>
+25 ao&ucirc;t 2013</p>
 <div style="text-align: left;">
 </div>
 <h1 style="text-align: left;">LIB MC - Une librairie de calculs de
@@ -426,13 +426,16 @@ Value</a>
 -<a href="#home">topo Home</a>&nbsp; ?-equinox Date|apparent? ?-tt-utc
 seconds? </p>
 Par d&eacute;faut, ListDate=NOW et ListFormat={ OBJENAME RA DEC}.
-Les coordonn&eacute;es de sortie sont en J2000 par d&eacute;faut mais
+Les coordonn&eacute;es de sortie sont en J2000.0 par d&eacute;faut mais
 peuvent &ecirc;tre chang&eacute;es en utilisant l'option -equinox. Les
 coordonn&eacute;es de sortie seront dans le r&eacute;f&eacute;rentiel
-apparent si l'on emploie l'option -equinox apparent.<br />
+apparent si l'on emploie l'option -equinox apparent, c'est &agrave; dire
+ qu'elles seront corrig&eacute;es de la pr&eacute;cession, de la nutation,
+des aberrations (annuelle et diurne) et de la r&eacute;fraction &agrave;
+la date.<br />
 <br />
 Attention, les dates doivent &ecirc;tre entr&eacute;es UTC et seront
-converties en en temps terrestre (TT) automatiquement si l'option
+converties en temps terrestre (TT) automatiquement si l'option
 -tt-tu n'est pas utilis&eacute;e.
 <p>En retour, on obtient une liste dont chaque &eacute;l&eacute;ment
 contient des donn&eacute;es sous la forme d&eacute;finie par
@@ -508,7 +511,7 @@ param&egrave;tres d'observation physique de libration.</p>
 <p>Pour Soleil, Mercure, Venus, Mars, Jupiter, Saturne, Uranus et
 Neptune, les &eacute;ph&eacute;m&eacute;rides sont calcul&eacute;es
 d'apr&egrave;s la th&eacute;orie VSOP87 tronqu&eacute;e aux termes
-donnant une pr&eacute;cision meilleur que 2 arcsec. </p>
+donnant une pr&eacute;cision meilleure que 2 arcsec. </p>
 <p><a name="mc_libration" id="mc_libration"><span
  style="font-weight: bold;">mc_libration</span> </a><a href="#date">Dates</a>
 ?<a href="#home">Home</a>? </p>
