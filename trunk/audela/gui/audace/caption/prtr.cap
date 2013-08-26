@@ -52,6 +52,7 @@ set caption(prtr,err_par_name)                  "One illegal character at least 
 set caption(prtr,err_par_file)                  "Variable %s not compatible with a color image."
 set caption(prtr,err_list_val)                  "Variable %s has incorrect values."
 set caption(prtr,err_opt_noir)                  "Option %s needs a bias frame and a dark frame."
+set caption(prtr,err_extension)                 "%s images comportent une extension différente de %s."
 set caption(prtr,sans)                          "%s processed without %s"
 
 set caption(prtr,ok)                            "OK"
@@ -104,6 +105,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Le paramètre %s n'admet pas une image couleurs."
    set caption(prtr,err_list_val)               "Les valeurs du paramètre %s sont incorrectes."
    set caption(prtr,err_opt_noir)               "L'option %s nécessite un offset et un dark."
+   set caption(prtr,err_extension)              "%s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s réalisé sans %s"
 
    set caption(prtr,ok)                         "OK"
@@ -156,6 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Il parametro %s non è compatibile con un immagine a colori."
    set caption(prtr,err_list_val)               "I valori del parametro %s non sono corretti."
    set caption(prtr,err_opt_noir)               "L'opzione %s necessita di un bias e di una dark."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s processato senza %s"
 
    set caption(prtr,ok)                         "OK"
@@ -208,6 +211,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "La variable %s no es compatible con una imagen a color."
    set caption(prtr,err_list_val)               "Las variables %s tienen valores incorrectos."
    set caption(prtr,err_opt_noir)               "La opción %s necesita un offset y un dark."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s procesada sin %s"
 
    set caption(prtr,ok)                         "OK"
@@ -260,6 +264,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Parameter %s mit einem Farbbild nicht kompatibel."
    set caption(prtr,err_list_val)               "Parameter %s hat falsche Werte."
    set caption(prtr,err_opt_noir)               "Option %s nötigt ein Bias und ein Dark Bild."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s ohne %s verarbeitet"
 
    set caption(prtr,ok)                         "OK"
@@ -312,6 +317,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "O parâmetro %s não compatível com uma imagem a cores."
    set caption(prtr,err_list_val)               "Os valores do parâmetro %s são incorrectos."
    set caption(prtr,err_opt_noir)               "A opção %s necessita de um offset e um dark frame."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s processado sem %s"
 
    set caption(prtr,ok)                         "OK"
@@ -364,6 +370,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Variable %s not compatible with a color image."
    set caption(prtr,err_list_val)               "Variable %s has incorrect values."
    set caption(prtr,err_opt_noir)               "Option %s needs a bias frame and a dark frame."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s processed without %s"
 
    set caption(prtr,ok)                         "OK"
@@ -416,6 +423,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Variable %s not compatible with a color image."
    set caption(prtr,err_list_val)               "Variable %s has incorrect values."
    set caption(prtr,err_opt_noir)               "Option %s needs a bias frame and a dark frame."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s processed without %s"
 
    set caption(prtr,ok)                         "OK"
@@ -468,6 +476,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Variable %s not compatible with a color image."
    set caption(prtr,err_list_val)               "Variable %s has incorrect values."
    set caption(prtr,err_opt_noir)               "Option %s needs a bias frame and a dark frame."
+   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s processed without %s"
 
    set caption(prtr,ok)                         "OK"
