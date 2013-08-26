@@ -218,6 +218,23 @@ proc setup { } {
          after 500
       }
    }
+   # --- open the Arduino
+   # --- Open the ports for combits
+   set telscript($telname,comarduinonum0) 5
+   set err [catch {
+      set telscript($telname,comarduino0) [open COM$telscript($telname,comarduinonum0) "RDWR"]
+      fconfigure $telscript($telname,combit0) -mode "38400,n,8,1" -buffering none -blocking 0
+   }  msg ]
+   set telscript($telname,z2) "$err $msg"
+   if {$err==1} {
+      set telscript($telname,comarduino0) simu0
+      set telscript($telname,combit_simu_direction) ""
+   } else {
+      catch {
+         catch {exec espeak.exe -v fr "Focuss actif."}
+         after 500
+      }
+   }   
    cd $pwd0
 
    after 1000
@@ -319,6 +336,7 @@ proc setup { } {
    set telscript($telname,move_generator) 0
    set telscript($telname,speed_virtual_pad) 0
    set telscript($telname,move_virtual_pad) ""
+   set telscript($telname,move_virtual_foc) ""
    set telscript($telname,speed_app_adu_mult) 1.
    set telscript($telname,external_trigger) 0 ; # 0= AudeLA+Aud'ACE   1= interface graphique specifique
    set telscript($telname,external_move_direction) ""
@@ -631,6 +649,116 @@ proc object2radec { } {
 # telscript($telname,move_generator) 1
 # ################################################################################
 proc get_pad_buttons {} {
+   global telscript
+   # --- Get useful variables
+   set telname $telscript(def,telname)
+
+   if {($telscript($telname,motion_next)!="slewing")&&($telscript($telname,motion_next)!="slewing2")} {
+
+      #ajout des bits de changement de mode des vitesses de raquette en les dédoublant pour eviter les courants fugififs
+      set v1 "[combit $telscript($telname,combitnum1) 1]"
+      set v2 "[combit $telscript($telname,combitnum1) 6]"
+      set v3 "[combit $telscript($telname,combitnum1) 8]"
+      after 100
+      set v11 "[combit $telscript($telname,combitnum1) 1]"
+      set v21 "[combit $telscript($telname,combitnum1) 6]"
+      set v31 "[combit $telscript($telname,combitnum1) 8]"
+      set v1 [expr $v1+$v11]
+      set v2 [expr $v2+$v21]
+      set v3 [expr $v3+$v31]
+      set v $telscript($telname,speed_virtual_pad)
+      set telscript($telname,speed_virtual_pad) 0
+      if {($v1 == 2) || ($v==1) }  {
+         catch {exec espeak.exe -v fr "raquette rapide."}
+         set telscript($telname,drift_move_rate) 1
+      }
+      if {$v2 == 2 || ($v==2) }  {
+         catch {exec espeak.exe -v fr "raquette lente."}
+         set telscript($telname,drift_move_rate) 0.5
+      }
+      if {$v3 == 2 || ($v==3) }  {
+         catch {exec espeak.exe -v fr "raquette spectro."}
+         set telscript($telname,drift_move_rate) 0.1
+      }
+
+      # mesure de la variable d'état des bits de rappel
+      if {$telscript($telname,move_virtual_pad)!=""} {
+         # utilisation raquette soft (boutons de l'interface graphique)
+         lassign $telscript($telname,move_virtual_pad) actif sens
+         set telscript($telname,speed_virtual_pad) ""
+         if {$telscript($telname,motion_next)!="correction"} {
+            if {($actif=="1")}  {
+               set telscript($telname,action_next) "move_start"
+               set telscript($telname,external_move_direction) [string toupper $sens]
+               set telscript($telname,move_generator) 1
+            }
+         } else {
+            if {($actif=="0")}  {
+               set telscript($telname,action_next) "move_stop"
+            }
+         }
+      } else {
+         # utilisation raquette physique (boutons combit)
+         if {$telscript($telname,motion_next)!="correction"} {
+            set rappel 0
+            set n "[combit $telscript($telname,combitnum0) 1]"
+            if {($n == 1) }  {
+               set telscript($telname,action_next) "move_start"
+               set telscript($telname,external_move_direction) N
+               set telscript($telname,move_generator) 1
+            }
+            set s "[combit $telscript($telname,combitnum0) 9]"
+            if {($s == 1) }  {
+               set telscript($telname,action_next) "move_start"
+               set telscript($telname,external_move_direction) S
+               set telscript($telname,move_generator) 1
+            }
+            set e "[combit $telscript($telname,combitnum0) 8]"
+            if {($e == 1) }  {
+               set telscript($telname,action_next) "move_start"
+               set telscript($telname,external_move_direction) E
+               set telscript($telname,move_generator) 1
+            }
+            set o "[combit $telscript($telname,combitnum0) 6]"
+            if {($o == 1) }  {
+               set telscript($telname,action_next) "move_start"
+               set telscript($telname,external_move_direction) W
+               set telscript($telname,move_generator) 1
+            }
+         } else {
+            # detecte la relache des bits de rappel (utilisation raquette soft)
+            set rappel 1
+            if {$telscript($telname,external_move_direction)=="N"} {
+               set rappel "[combit $telscript($telname,combitnum0) 1]"
+            }
+            if {$telscript($telname,external_move_direction)=="S"} {
+               set rappel "[combit $telscript($telname,combitnum0) 9]"
+            }
+            if {$telscript($telname,external_move_direction)=="E"} {
+               set rappel "[combit $telscript($telname,combitnum0) 8]"
+            }
+            if {$telscript($telname,external_move_direction)=="W"} {
+               set rappel "[combit $telscript($telname,combitnum0) 6]"
+            }
+            if {($rappel == 0)}  {
+               set telscript($telname,action_next) "move_stop"
+            }
+         }
+      }
+   }
+}
+
+# ################################################################################
+# ### proc lecture des boutons de focus autres que Aud'ACE
+# ################################################################################
+# global inputs:
+# telscript($telname,motion_next)
+# telscript($telname,move_virtual_foc)
+# global outputs:
+# telscript($telname,action_next) "focus_start +" ou "focus_start -"
+# telscript($telname,move_generator_foc) 1
+# ################################################################################
+proc get_pad_focus {} {
    global telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
@@ -2044,7 +2172,7 @@ proc gui_calcul_coordonnees { objname0 } {
 # ################################################################################
 # ### proc appelée par l'appui sur les boutons de direction de la raquette virtuelle
 # ################################################################################
-proc gui_start_shift { widget direction } {
+proc �_shift { widget direction } {
    global telscript
    global paramscript
    set telname $telscript(def,telname)
@@ -2072,6 +2200,39 @@ proc gui_stop_shift { widget direction } {
    after 300
    $base.f.fr1.fr2.fr1.but_n configure -bg $paramscript(color,back) -relief raised
    eval "\$${widget} configure -bg $paramscript(color,back) -relief raised"
+   update
+   console::affiche_resultat "result=[tel1 loopresult]\n"
+}
+
+# ################################################################################
+# ### proc appelée par l'appui sur les boutons de focalisation de la raquette virtuelle
+# ################################################################################
+proc gui_start_focus { widget direction } {
+   global telscript
+   global paramscript
+   set telname $telscript(def,telname)
+   set base $telscript(def,base)
+   eval "\$${widget} configure -bg $paramscript(color,greendark) -relief sunken"
+   update
+   set command ""
+   append command "set telscript($telscript(def,telname),move_virtual_foc) \"1 ${direction}\" "
+   tel1 loopeval "$command"
+   after 300
+}
+
+# ################################################################################
+# ### proc appelée par la relache des boutons de focalisation de la raquette virtuelle
+# ################################################################################
+proc gui_stop_focus { widget direction } {
+   global telscript
+   global paramscript
+   set telname $telscript(def,telname)
+   set base $telscript(def,base)
+   set command ""
+   append command "set telscript($telscript(def,telname),move_virtual_foc) \"0 ${direction}\" "
+   console::affiche_resultat "command=$command\n"
+   tel1 loopeval "$command"
+   after 300
    update
    console::affiche_resultat "result=[tel1 loopresult]\n"
 }
@@ -2146,10 +2307,10 @@ proc telscript_gui { } {
    set telscript(def,base) .etel
    catch { destroy $base}
    toplevel $base -class Toplevel
-   wm geometry $base 800x800+0+0
+   wm geometry $base 800x850+0+0
    wm focusmodel $base passive
    wm maxsize $base [winfo screenwidth $base] [winfo screenheight $base]
-   wm minsize $base 800 800
+   wm minsize $base 800 850
    #wm overrideredirect $base 0
    wm resizable $base 1 1
    wm deiconify $base
@@ -2685,6 +2846,26 @@ proc telscript_gui { } {
             pack $base.f.fr1.fr2.fr3 -fill x -pady 0 -side top -padx 0
          pack $base.f.fr1.fr2 -fill none -pady 0 -side left -padx 0
       pack $base.f.fr1 -fill none -pady 0
+      # --- focus
+      frame $base.f.ffoc -bg $paramscript(color,back)
+         frame $base.f.ffoc.fr2 -bg $paramscript(color,back)
+            label $base.f.ffoc.fr2.but_e -padx 100 -pady 15\
+               -borderwidth 3 -relief raised \
+               -text "Foc -" -borderwidth 1 -bg $paramscript(color,back) \
+               -fg $paramscript(color,text) -font $paramscript(font)
+            pack $base.f.ffoc.fr2.but_e -side left -anchor center -padx 3 -pady 3
+            bind $base.f.ffoc.fr2.but_e <ButtonPress-1> { gui_start_focus base.f.ffoc.fr2.but_e -}
+            bind $base.f.ffoc.fr2.but_e <ButtonRelease-1> { gui_stop_focus base.f.ffoc.fr2.but_e -}
+            label $base.f.ffoc.fr2.but_w -padx 100 -pady 15\
+               -borderwidth 3 -relief raised \
+               -text "Foc +" -borderwidth 1 -bg $paramscript(color,back) \
+               -fg $paramscript(color,text) -font $paramscript(font)
+            pack $base.f.ffoc.fr2.but_w -side left -anchor center -padx 3 -pady 3
+            bind $base.f.ffoc.fr2.but_w <ButtonPress-1> { gui_start_focus base.f.ffoc.fr2.but_w +}
+            bind $base.f.ffoc.fr2.but_w <ButtonRelease-1> { gui_stop_focus base.f.ffoc.fr2.but_w +}
+         pack $base.f.ffoc.fr2 -fill none -pady 0 -side top -padx 100
+      pack $base.f.ffoc -fill none -pady 0 -padx 0
+      # --- eval
       frame $base.f.feval1 -bg $paramscript(color,back)
          label $base.f.feval1.lab_def \
             -bg $paramscript(color,back) -fg $paramscript(color,text) \
