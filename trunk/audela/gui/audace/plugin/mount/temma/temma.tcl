@@ -356,16 +356,16 @@ proc ::temma::fillConfigPage { frm } {
 #
 proc ::temma::configureMonture { } {
    variable private
-   global caption conf
+   global audace caption conf
 
    set catchResult [ catch {
       #--- Je cree la monture et j'envoie les coordonnees de l'observatoire
       #--- La commande "create" de Temma doit toujours avoir l'argument "_home"
-      set telNo [ tel::create temma $conf(temma,port) -home $::audace(posobs,observateur,gps) -consolelog $conf(temma,debug) ]
+      set telNo [ tel::create temma $conf(temma,port) -home $audace(posobs,observateur,gps) -consolelog $conf(temma,debug) ]
       #--- Je configure la position geographique et le nom de la monture
       #--- (la position geographique est utilisee pour calculer le temps sideral)
-      tel$telNo home $::audace(posobs,observateur,gps)
-      tel$telNo home name $::conf(posobs,nom_observatoire)
+      tel$telNo home $audace(posobs,observateur,gps)
+      tel$telNo home name $conf(posobs,nom_observatoire)
       #--- J'active le rafraichissement automatique des coordonnees AD et Dec. (environ toutes les secondes)
       tel$telNo radec survey 1
       #--- Lit le modele
@@ -499,7 +499,6 @@ proc ::temma::confTemmaInactif { } {
    }
 }
 
-#
 #------------------------------------------------------------
 # confTemma
 #  Active ou Desactive les boutons
@@ -603,7 +602,7 @@ proc ::temma::setCorrectionSpeed { args } {
 
 #------------------------------------------------------------
 # getGuidingSpeed
-#    Retourne les vitesses de correction theoriques
+#   Retourne les vitesses de correction theoriques
 #   (en arseconde par seconde de temps)
 #------------------------------------------------------------
 proc ::temma::getGuidingSpeed { } {
@@ -634,8 +633,8 @@ proc ::temma::getGuidingSpeed { } {
 
 #------------------------------------------------------------
 # computeSpeed
-#    Affiche les corections et les vitesses de correction reelles
-#    (en arseconde par seconde de temps)
+#    Edite les corections et les vitesses de correction reelles
+#    (en arseconde par seconde de temps) dans la console
 # Parametres : radec initial, radecfinal, durees de corrections en ms
 #------------------------------------------------------------
 proc ::temma::computeSpeed { radec0 radec1 alphaDelay deltaDelay } {
