@@ -1,11 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <title>Convertir</title>
-</head>
-<body>
-<p class="date">Date de mise &#224; jour : 24 août 2013</p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Convertir</title></head><body>
+<p class="date">Date de mise &#224; jour : 26 ao&#251;t 2013</p>
 <h1>Convertir</h1>
 <h2>1. Fonctions</h2>
 <p>Ce script a pour fonction de convertir des lots d'images en
@@ -55,7 +53,7 @@ visualisation du dernier fichier produit.</p>
 <p>D&#233;finir le r&#233;pertoire de travail par
 "Configuration" --&gt; "R&#233;pertoires" --&gt;
 "R&#233;pertoires des images" avant de lancer le script.</p>
-<p><img src="images/lconv2.png" alt="image de la fen&#234;tre de conversion"></p>
+<p><img src="images/lconv2.png" alt="image de la fen&#234;tre de conversion" /></p>
 <p>Elle rappelle le nom du r&#233;pertoire 'images'
 s&#233;lectionn&#233; et comporte :</p>
 <ul>
@@ -134,7 +132,7 @@ fen&#234;tre.</p>
 le script.</p>
 <p>La zone d'affichage des fichiers convertibles comporte des
 barres de d&#233;filement pour explorer des listes relativement
-longues.<br>
+longues.<br />
 La taille des colonnes s'adapte lors du passage d'une conversion
 &#224; une autre.</p>
 <p>La ligne de message donne le nombre de fichiers
@@ -143,19 +141,14 @@ pr&#233;traitement en cours ou pr&#233;traitement
 termin&#233;.</p>
 <p><b>Avancement de la conversion</b></p>
 <ul>
-  <li>Une conversion en cours est signal&#233;e par <img
- src="images/hourglass.gif" alt="conversion en cours" width="20"
- height="20"> dans la colonne 'Remarque'.</li>
+  <li>Une conversion en cours est signal&#233;e par <img src="images/hourglass.gif" alt="conversion en cours" height="20" width="20" /> dans la colonne 'Remarque'.</li>
   <li>La r&#233;ussite de la conversion est signal&#233;e par
-un <img src="images/ok.gif" alt="conversion termin&#233;e" width="20"
- height="20">.</li>
+un <img src="images/ok.gif" alt="conversion termin&#233;e" height="20" width="20" />.</li>
   <li>Si une conversion n'a pu &#234;tre men&#233;e &#224; son
-terme, la colonne 'Remarque' comporte un <img src="images/info.gif"
- alt="conversion non r&#233;alis&#233;e" width="20" height="20"> et la Console
+terme, la colonne 'Remarque' comporte un <img src="images/info.gif" alt="conversion non r&#233;alis&#233;e" height="20" width="20" /> et la Console
 &#233;met un message 'Echec de conversion de (nom
 du fichier) : (erreur )'.</li>
-  <li>Le symbole <img src="images/nop.gif" alt="conversion interdite"
- width="20" height="20"> signifie que la
+  <li>Le symbole <img src="images/nop.gif" alt="conversion interdite" height="20" width="20" /> signifie que la
 conversion ne sera pas effectu&#233;e car elle conduirait
 &#224; &#233;craser un fichier existant (voir Note sur les
 pi&#232;ges du traitement par lots).</li>
@@ -214,8 +207,7 @@ r&#233;pertoire et qu'il n'existe pas non plus dans la liste
 des fichiers &#224; cr&#233;er.</p>
 <p>Si c'est le cas, le fichier est
 d&#233;s&#233;lectionn&#233; et la colonne Remarque
-comporte un <img src="images/nop.gif" alt="conversion interdite"
- width="20" height="20">.</p>
+comporte un <img src="images/nop.gif" alt="conversion interdite" height="20" width="20" />.</p>
 <p>Si l'option 'Convertir tous les fichiers' &#233;tait
 s&#233;lectionn&#233;e elle ne l'est plus.</p>
 <p>Les solutions consistent &#224; :</p>
@@ -244,7 +236,7 @@ g&#233;n&#233;rique de sortie. Les seules r&#232;gles
 <ul>
   <li>Les caract&#232;res autoris&#233;s sont exclusivement les
 caract&#232;res alphanum&#233;riques et le underscore _
-.<br>
+.<br />
   </li>
   <li>Pour que le changement soit pris en compte, il faut activer
 la touche 'Entrer'.</li>
@@ -280,7 +272,8 @@ processus suivant est conseill&#233; :</p>
   <li>Assigner l'image qui sera assimil&#233;e au plan R
 en veillant &#224; lui donner un <b>nouveau nom
 g&#233;n&#233;rique qui sera commun aux trois plans R, V et
-B</b>.</li>
+B, le mot cl&#233; RGBFILTR sera rajout&#233; et prendra la valeur R, G ou B pour caract&#233;riser chaque plan couleur</b>. La suite du processus de conversion repose sur la pr&#233;sence de ce nouveau mot cl&#233;.<br />
+</li>
   <li>La convertir : Le nom de sortie de cette nouvelle image sera
 {nom_g&#233;n&#233;rique_sortie}r.</li>
   <li>Proc&#233;der de m&#234;me pour les deux autres plans
@@ -289,7 +282,8 @@ indiff&#233;rent.</li>
   <li>Ces trois conversions produiront trois plans couleurs portant
 les noms suivants : {nom_g&#233;n&#233;rique_sortie}r
 {nom_g&#233;n&#233;rique_sortie}g
-{nom_g&#233;n&#233;rique_sortie}b</li>
+{nom_g&#233;n&#233;rique_sortie}b et le mot cl&#233; RGBFILTR aura respectivement pour valeur R, G et B.<br />
+</li>
   <li>S&#233;lectionner la commande Convertir R+V+B --&gt; RVB :
 Les trois sont propos&#233;es &#224; la conversion.</li>
   <li>Il est imp&#233;ratif de changer le nom
@@ -314,5 +308,4 @@ l'ordre R V B}</li>
 <p>Lors d'une conversion RVB --&gt; R+V+B les mots cl&#233;s
 originels seront r&#233;tablis dans chacun des plans
 couleurs.</p>
-</body>
-</html>
+</body></html>
