@@ -244,7 +244,7 @@ namespace eval ::prtr {
       pack $This.usr.choix -side top -fill both -expand 1
 
       #--   remplit la tablelist
-      ::prtr::updateTbl $visuNo
+      #::prtr::updateTbl $visuNo
 
       #--- selectionne le traitement
       set i [lsearch -exact $private(fonctions) $::prtr::operation]
@@ -720,14 +720,30 @@ namespace eval ::prtr {
       array unset bd
 
       #--   liste les images dans le repertoire
-      if { $::tcl_platform(platform) eq "windows" } {
-         set pattern "\{$::prtr::ext\}"
-      } else {
-         set pattern "\{[string tolower $::prtr::ext] [string toupper $::prtr::ext]\}"
-         regsub -all " " $pattern "," pattern
+      #if { $::tcl_platform(platform) eq "windows" } {
+      #   set pattern "\{$::prtr::ext\}"
+      #} else {
+      #   set pattern "\{[string tolower $::prtr::ext] [string toupper $::prtr::ext]\}"
+      #   regsub -all " " $pattern "," pattern
+      #}
+
+      set files [glob -nocomplain -type f -tails -dir $dir *$::prtr::ext]
+
+      #--   filtre les repertoires et les images d'extensions differentes (sensible a la casse)
+      set count 0
+      foreach file $files {
+         set extension [file extension $file]
+         if {$extension ne "$::prtr::ext"} {
+            set index [lsearch -exact $files $file]
+            set files [lreplace $files $index $index]
+            incr count
+         }
       }
-      regsub -all " " $pattern "," pattern
-      set files [glob -nocomplain -type f -tails -dir $dir *$pattern]
+
+      #--   message d'avertissement si une image detectee
+      if {$count != 0} {
+         ::console::affiche_erreur "[format $::caption(prtr,err_extension) $count $::conf(extension,defaut)]\n"
+      }
 
       #--   efface tout
       $w delete 0 end
