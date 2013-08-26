@@ -183,31 +183,31 @@ proc ::temma::fillConfigPage { frm } {
    ::temma::confToWidget
 
    #--- Creation des differents frames
-   frame $frm.frame1 -borderwidth 0 -relief raised
+   frame $frm.frame1 -borderwidth 0 -relief raised ; #-- frame du port et du modele
    pack $frm.frame1 -side top -fill x
 
-   frame $frm.frame2 -borderwidth 0 -relief raised
+   frame $frm.frame2 -borderwidth 0 -relief raised ; #-- frame conteneur des frames 4 et 5
    pack $frm.frame2 -side top -fill x
 
-   frame $frm.frame3 -borderwidth 0 -relief raised
+   frame $frm.frame3 -borderwidth 0 -relief raised ; #-- frame de la position du telescope
    pack $frm.frame3 -side top -fill x
 
-   frame $frm.frame4 -borderwidth 0 -relief raised
+   frame $frm.frame4 -borderwidth 0 -relief raised ; #-- frame du réglage de la vitesse de correction
    pack $frm.frame4 -in $frm.frame2 -side left -fill x -expand 1
 
-   frame $frm.frame5 -borderwidth 0 -relief raised
+   frame $frm.frame5 -borderwidth 0 -relief raised ; #-- frame du réglage de la vitesse de correction
    pack $frm.frame5 -in $frm.frame2 -side left -fill x
 
-   frame $frm.frame6 -borderwidth 0 -relief raised
+   frame $frm.frame6 -borderwidth 0 -relief raised ; #-- frame du changement de position
    pack $frm.frame6 -side top -fill x
 
-   frame $frm.frame7 -borderwidth 0 -relief raised
+   frame $frm.frame7 -borderwidth 0 -relief raised ; #-- frame du debug
    pack $frm.frame7 -side top -fill x
 
-   frame $frm.frame8 -borderwidth 0 -relief raised
+   frame $frm.frame8 -borderwidth 0 -relief raised ; #-- frame du choix de la raquette
    pack $frm.frame8 -side top -fill x
 
-   frame $frm.frame9 -borderwidth 0 -relief raised
+   frame $frm.frame9 -borderwidth 0 -relief raised ; #-- frame de l'url
    pack $frm.frame9 -side bottom -fill x -pady 2
 
    #--- Definition du port
@@ -448,9 +448,11 @@ proc ::temma::configureMonture { } {
 }
 
 #
+#------------------------------------------------------------
 # stop
 #    Arrete la monture Temma
-#
+#    Commande du bouton "Arreter"
+#------------------------------------------------------------
 proc ::temma::stop { } {
    variable private
 
@@ -474,10 +476,34 @@ proc ::temma::stop { } {
    set private(telNo) "0"
 }
 
+#------------------------------------------------------------
+# confTemmaInactif
+#  Desactive le bouton de changement de la position
+#  Lancee par ::temm::stop
+#------------------------------------------------------------
+proc ::temma::confTemmaInactif { } {
+   variable private
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::temma::isReady ] == 1 } {
+            #--- Initialise les variables comme a l'origine : indefinis
+            set ::audace(pos_tel_ew)  ""
+            set ::audace(chg_pos_tel) ""
+            #--- Boutons de la monture inactifs
+            $frm.init_zenith configure -state disabled
+            $frm.chg_pos_tel configure -state disabled
+         }
+      }
+   }
+}
+
 #
+#------------------------------------------------------------
 # confTemma
-# Permet d'activer ou de desactiver les boutons
-#
+#  Active ou Desactive les boutons
+#------------------------------------------------------------
 proc ::temma::confTemma { } {
    variable private
    global audace
@@ -510,32 +536,11 @@ proc ::temma::confTemma { } {
    }
 }
 
-#
-# confTemmaInactif
-#    Permet de desactiver le bouton a l'arret de la monture
-#
-proc ::temma::confTemmaInactif { } {
-   variable private
-
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::temma::isReady ] == 1 } {
-            #--- Initialise les variables comme a l'origine : indefinis
-            set ::audace(pos_tel_ew)  ""
-            set ::audace(chg_pos_tel) ""
-            #--- Boutons de la monture inactifs
-            $frm.init_zenith configure -state disabled
-            $frm.chg_pos_tel configure -state disabled
-         }
-      }
-   }
-}
-
-#
+#------------------------------------------------------------
 # configCorrectionTemma
-# Permet d'afficher une ou deux echelles de reglage de la vitesse normale de correction
-#
+#  Affiche une ou deux echelles de reglage de la vitesse normale de correction
+#  Commande du checkbutton "Correction AD et DEC liees"
+#------------------------------------------------------------
 proc ::temma::configCorrectionTemma { } {
    variable private
    global conf caption
@@ -574,10 +579,11 @@ proc ::temma::configCorrectionTemma { } {
    ::confColor::applyColor $frm
 }
 
-#
+#------------------------------------------------------------
 # setCorrectionSpeed
-# Permet de modifier les reglages de vitesse de correction lente durant la connexion
-#
+#  Modifie les reglages de vitesse de correction lente durant la connexion
+#  Commande des echelles de reglages
+#------------------------------------------------------------
 proc ::temma::setCorrectionSpeed { args } {
    variable private
    global audace conf
@@ -630,7 +636,7 @@ proc ::temma::getGuidingSpeed { } {
 # computeSpeed
 #    Affiche les corections et les vitesses de correction reelles
 #    (en arseconde par seconde de temps)
-# Paametres : radec initial, radecfinal, durees de corrections en ms
+# Parametres : radec initial, radecfinal, durees de corrections en ms
 #------------------------------------------------------------
 proc ::temma::computeSpeed { radec0 radec1 alphaDelay deltaDelay } {
 
