@@ -100,7 +100,6 @@ namespace eval ::collector {
       source [ file join $dirname collector collector_get.tcl ]
       source [ file join $dirname collector collector_gui.tcl ]
       source [ file join $dirname collector collector_init.tcl ]
-      source [ file join $dirname collector collector_park.tcl ]
       source [ file join $dirname collector collector_simul.tcl ]
       source [ file join $dirname collector collector_utils.tcl ]
 
