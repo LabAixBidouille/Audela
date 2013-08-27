@@ -35,8 +35,6 @@
          objname   { regexp -all {([\w|-|_]+)} $newValue match
                      if {[string length $newValue] == [string length $match]} {set test 1}
                    }
-         parkaz    { if {$newValue >= 0. && $newValue < 360.} {set test 1}}
-         parkelev  { if {$newValue <= +90.0 && $newValue >= -90.0} {set test 1}}
       }
 
       if {$test == 1} {
