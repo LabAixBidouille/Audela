@@ -345,7 +345,7 @@ namespace eval ::viseurPolaireEQ6 {
       set pressure        $audace(meteo,obs,pressure)
       set temperature     $audace(meteo,obs,temperature)
       set now             [ ::audace::date_sys2ut now ]
-      set hipRecord       [ list "1" "0.0" [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 0 0 0 0 ]
+      set hipRecord       [ list 1 0.0 [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 now 0 0 0 ]
       set ad_dec_v        [ mc_hip2tel $hipRecord $now $::audace(posobs,observateur,gps) $pressure $temperature ]
       set ad_LP_vrai      [ lindex $ad_dec_v 0 ]
       set dec_LP_vrai     [ lindex $ad_dec_v 1 ]
@@ -430,7 +430,7 @@ namespace eval ::viseurPolaireEQ6 {
          set pressure             $audace(meteo,obs,pressure)
          set temperature          $audace(meteo,obs,temperature)
          set now                  [ ::audace::date_sys2ut now ]
-         set hipRecord($i)        [ list "1" "0.0" [ mc_angle2deg $ad_cas($i) ] [ mc_angle2deg $dec_cas($i) ] J2000.0 0 0 0 0 ]
+         set hipRecord($i)        [ list 1 0.0 [ mc_angle2deg $ad_cas($i) ] [ mc_angle2deg $dec_cas($i) ] J2000.0 now 0 0 0 ]
          set ad_dec_v($i)         [ mc_hip2tel $hipRecord($i) $now $::audace(posobs,observateur,gps) $pressure $temperature ]
          set ad_cas_vrai($i)      [ lindex $ad_dec_v($i) 0 ]
          set dec_cas_vrai($i)     [ lindex $ad_dec_v($i) 1 ]
@@ -489,7 +489,7 @@ namespace eval ::viseurPolaireEQ6 {
          set pressure             $audace(meteo,obs,pressure)
          set temperature          $audace(meteo,obs,temperature)
          set now                  [ ::audace::date_sys2ut now ]
-         set hipRecord($i)        [ list "1" "0.0" [ mc_angle2deg $ad_uma($i) ] [ mc_angle2deg $dec_uma($i) ] J2000.0 0 0 0 0 ]
+         set hipRecord($i)        [ list 1 0.0 [ mc_angle2deg $ad_uma($i) ] [ mc_angle2deg $dec_uma($i) ] J2000.0 now 0 0 0 ]
          set ad_dec_v($i)         [ mc_hip2tel $hipRecord($i) $now $::audace(posobs,observateur,gps) $pressure $temperature ]
          set ad_uma_vrai($i)      [ lindex $ad_dec_v($i) 0 ]
          set dec_uma_vrai($i)     [ lindex $ad_dec_v($i) 1 ]

@@ -346,7 +346,7 @@ namespace eval ::viseurPolaireTaka {
       set pressure        $audace(meteo,obs,pressure)
       set temperature     $audace(meteo,obs,temperature)
       set now             [ ::audace::date_sys2ut now ]
-      set hipRecord       [ list "1" "0.0" [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 0 0 0 0 ]
+      set hipRecord       [ list 1 0.0 [ mc_angle2deg $ad_LP ] [ mc_angle2deg $dec_LP ] J2000.0 now 0 0 0 ]
       set ad_dec_v        [ mc_hip2tel $hipRecord $now $::audace(posobs,observateur,gps) $pressure $temperature ]
       set ad_LP_vrai      [ lindex $ad_dec_v 0 ]
       set dec_LP_vrai     [ lindex $ad_dec_v 1 ]
