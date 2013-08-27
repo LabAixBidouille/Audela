@@ -1350,8 +1350,8 @@ return
 
          } else {
 
-            set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
-            if {$r=="no"} {return}
+            #set r [tk_messageBox -message "L'objet n'est pas present dans l'image. Continer aura pour effet de charger une image où il est present." -type yesno]
+            #if {$r=="no"} {return}
             foreach dateok $::bdi_tools_astrometry::listref($name) {
                break
             }

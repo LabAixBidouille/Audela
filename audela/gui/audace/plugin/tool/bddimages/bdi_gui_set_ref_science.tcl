@@ -180,7 +180,7 @@ proc ::bdi_gui_set_ref_science::apply { } {
       foreach s $sources {
          incr ids
          set posastroid [lsearch -index 0 $s "ASTROID"]
-         if {$ids==35} {gren_info "s=$s\n"}
+         if {$ids==35} {gren_debug "s = $s\n"}
          if {$posastroid != -1} {
             set astroid [lindex $s $posastroid]
             set othf [lindex $astroid 2]
