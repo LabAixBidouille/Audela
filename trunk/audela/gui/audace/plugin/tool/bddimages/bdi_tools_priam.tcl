@@ -38,7 +38,8 @@ namespace eval bdi_tools_priam {
 # @return Le nom du fichier resultat, ou le code d'erreur -1 avec un message
 proc ::bdi_tools_priam::launch_priam { } {
 
-   set err [catch {exec sh ./$::bdi_tools_priam::filepriam} msg]
+   global bddconf
+   set err [catch {exec sh [file join $bddconf(dirtmp) $::bdi_tools_priam::filepriam]} msg]
    if {$err} {
       gren_info "Priam: error #$err: $msg\n" 
    }   

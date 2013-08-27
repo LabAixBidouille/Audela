@@ -598,7 +598,7 @@ proc ::bdi_tools_astrometry::init_ephem_imcce { name list_dates } {
    set num [string trim [lindex $n 1]]
    set nom [string trim [lrange $n 2 end]]
    set ephnom "-n $num"
-   if {$num == ""} {
+   if {$num == "" || $num == "-"} {
       set ephnom "-nom \"$nom\""
    }
 
