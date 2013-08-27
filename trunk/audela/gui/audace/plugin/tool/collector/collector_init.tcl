@@ -305,9 +305,8 @@
       if {$hasCoordinates == 1 && $hasControlSuivi == 1} {
          set do "show"
       }
-      configParkInit $notebook.tlscp $do $private(german)
 
-      #--   si necessaire, affiche l'onglet 'Allemnade'
+      #--   si necessaire, affiche l'onglet 'Allemande'
       if {$private(german) == "1"} {
          $notebook add $notebook.german
       }

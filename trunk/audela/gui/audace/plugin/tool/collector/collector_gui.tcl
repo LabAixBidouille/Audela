@@ -17,7 +17,6 @@
    # ::collector::configAddRemoveListener initCollector et closeMyNoteBook
    # ::collector::configTraceSuivi        onChangeMount
    # ::collector::configTraceRaDec        onChangeMount
-   # ::collector::configParkInit          onChangeMount et hideTel
    # ::collector::hideTel                 onChangeMount
 
    proc initCollector { {visuNo 1} } {
@@ -155,9 +154,7 @@
             #--   construit l'onglet pour une monture allemande
             buildOngletGerman $this.n.german $visuNo
          }
-      }
-
-      buildPark "$this.n.tlscp"
+     }
 
      #--   boutons de commande principaux
      frame $this.cmd
@@ -543,30 +540,6 @@
       }
    }
 
-   #------------------------------------------------------------
-   #  configParkInit
-   #  Masque ou affiche les fonctions d'initialisation/garage
-   #  Parametres : { show = affiche | forget == masque }
-   #------------------------------------------------------------
-   proc configParkInit { w state german } {
-
-      switch -exact $state {
-         "forget" {  grid forget $w.action1
-                     grid forget $w.coords
-                     grid forget $w.action3
-                  }
-         "show"   {  grid $w.action1 -row 8 -column 0 -columnspan 2 -sticky w -pady 3
-                     grid $w.coords -row 9 -column 0 -columnspan 2 -sticky w -pady 3
-                     grid $w.action3 -row 10 -column 0 -columnspan 2 -sticky w -pady 3
-                     #--   configure le choix du cote ou se trouve le tube pour les montures allemandes
-                     if {$german == 0} {
-                        pack forget $w.coords.parkside
-                     }
-                     cmdParkMode $w.coords
-                  }
-      }
-   }
-
    #---------------------------------------------------------------------------
    #  callFocuser
    #  Commande du bouton 'Modifier' (focuser)
@@ -597,9 +570,6 @@
 
       #--   supprime le suivi
       configTraceSuivi 0
-
-      #--   supprime l'affichage du parquage
-      configParkInit $notebook.tlscp forget 0
 
       #--   supprime l'affichage des vitesses
       configTraceRaDec 0
