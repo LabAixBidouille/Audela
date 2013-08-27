@@ -128,7 +128,8 @@ set telscript(def,speed_diurnal) [expr 360./(23*3600+56*60+4)] ; # diurnal motio
 # ################################################################################
 proc setup { } {
    global telscript audace
-   # --- Get useful variables
+   package require twapi
+  # --- Get useful variables
    set telname $telscript(def,telname)
    catch {exec espeak.exe -v fr "Démarre setup"}
 
@@ -219,7 +220,6 @@ proc setup { } {
       }
    }
    # --- open the Arduino
-   # --- Open the ports for combits
    set telscript($telname,comarduinonum0) 5
    set err [catch {
       set telscript($telname,comarduino0) [open COM$telscript($telname,comarduinonum0) "RDWR"]
@@ -399,15 +399,14 @@ proc loop { } {
          set ddec [expr $telscript($telname,coord_app_adu_dec)-$telscript($telname,coord0_app_adu_dec)]
          if {[expr abs($ddec)<2000]} { incr valid }
       }
-      #catch {exec espeak.exe -v fr "$telscript($telname,motion_next). valid egal $valid"}
       if {((($telscript($telname,mount_type)=="azelev")||($telscript($telname,mount_type)=="hadec"))&&($valid==2))||(($telscript($telname,mount_type)=="azelevrot")&&($valid==3))} {
          if {$telscript($telname,motion_next)=="slewing"} {
-            catch {exec espeak.exe -v fr "Premier pointage terminé."}
+            catch {espeak "Premier pointage terminé."}
             # - faire le second pointage
             set telscript($telname,action_next) "radec_goto2"
             lassign [object2radec] raj2000 decj2000 drift_ra drift_dec
          } else {
-            catch {exec espeak.exe -v fr "Second pointage terminé."}
+            catch {espeak "Second pointage terminé."}
             lassign $telscript($telname,goto,object) objname0 objtype objname raj2000 decj2000 drift_ra drift_dec
             if {($objname0=="*STOP")||($objname0=="*PARK")} {
                set telscript($telname,action_next) motor_off
@@ -489,7 +488,7 @@ proc loop { } {
    } elseif {$telscript($telname,action_next)=="radec_goto"} {
 
       # --- Action = radec_goto
-      catch {exec espeak.exe -v fr "Pointage."}
+      catch {espeak "Pointage."}
       lassign [object2radec] raj2000 decj2000 drift_ra drift_dec 3.
       radec2degs goto $raj2000 $decj2000 $drift_ra $drift_dec
       degs2adus goto
@@ -516,7 +515,7 @@ proc loop { } {
       set telscript($telname,dec00) $decj2000
       set telscript($telname,goto,object) ""
       stop_motors
-      catch {exec espeak.exe -v fr "Stoppe les moteurs."}
+      catch {espeak "Stoppe les moteurs."}
       set telscript($telname,motion_next) "stopped"
       set telscript($telname,action_next) "motor_off"
 
@@ -527,7 +526,7 @@ proc loop { } {
    } elseif {$telscript($telname,action_next)=="hadec_goto"} {
 
       # --- Action = hadec_goto
-
+     
    } elseif {$telscript($telname,action_next)=="move_start"} {
 
       # --- Action = move_start
@@ -577,6 +576,42 @@ proc loop { } {
       }
       set telscript($telname,action_next) $telscript($telname,motor_prev)
       set telscript($telname,move_virtual_pad) ""
+      
+   } elseif {$telscript($telname,action_next)=="focus_start +"} {
+
+      # --- Action = focus_start +
+      if {$telscript($telname,motion_next)!="correction"} {
+         if {$telscript($telname,comarduino0)!="simu0"} {
+            puts -nonewline $telscript($telname,comarduino0) "focus +\n"
+         }         
+      }
+      set telscript($telname,action_next) $telscript($telname,motor_prev)
+      set telscript($telname,move_virtual_foc) ""
+      
+   } elseif {$telscript($telname,action_next)=="focus_start -"} {
+
+      # --- Action = focus_start -
+      if {$telscript($telname,motion_next)!="correction"} {
+         if {$telscript($telname,comarduino0)!="simu0"} {
+            puts -nonewline $telscript($telname,comarduino0) "focus -\n"
+         }         
+      }
+      set telscript($telname,motion_next) "correction"
+      set telscript($telname,action_next) $telscript($telname,motor_prev)
+      set telscript($telname,move_virtual_foc) ""
+      
+   } elseif {$telscript($telname,action_next)=="focus_stop"} {
+
+      # --- Action = focus_stop
+      if {$telscript($telname,motion_next)!="correction"} {
+         if {$telscript($telname,comarduino0)!="simu0"} {
+            puts -nonewline $telscript($telname,comarduino0) "focus 0\n"
+         }         
+      }
+      set telscript($telname,motion_next) "correction"
+      set telscript($telname,action_next) $telscript($telname,motor_prev)
+      set telscript($telname,move_virtual_foc) ""
+
    }
 
    # === Store adus to detect the end of a slewing
@@ -669,15 +704,15 @@ proc get_pad_buttons {} {
       set v $telscript($telname,speed_virtual_pad)
       set telscript($telname,speed_virtual_pad) 0
       if {($v1 == 2) || ($v==1) }  {
-         catch {exec espeak.exe -v fr "raquette rapide."}
+         catch {espeak "raquette rapide."}
          set telscript($telname,drift_move_rate) 1
       }
       if {$v2 == 2 || ($v==2) }  {
-         catch {exec espeak.exe -v fr "raquette lente."}
+         catch {espeak "raquette lente."}
          set telscript($telname,drift_move_rate) 0.5
       }
       if {$v3 == 2 || ($v==3) }  {
-         catch {exec espeak.exe -v fr "raquette spectro."}
+         catch {espeak "raquette spectro."}
          set telscript($telname,drift_move_rate) 0.1
       }
 
@@ -753,105 +788,25 @@ proc get_pad_buttons {} {
 # ################################################################################
 # global inputs:
 # telscript($telname,motion_next)
-# telscript($telname,move_virtual_foc)
 # global outputs:
-# telscript($telname,action_next) "focus_start +" ou "focus_start -"
-# telscript($telname,move_generator_foc) 1
 # ################################################################################
 proc get_pad_focus {} {
    global telscript
    # --- Get useful variables
    set telname $telscript(def,telname)
-
    if {($telscript($telname,motion_next)!="slewing")&&($telscript($telname,motion_next)!="slewing2")} {
-
-      #ajout des bits de changement de mode des vitesses de raquette en les dédoublant pour eviter les courants fugififs
-      set v1 "[combit $telscript($telname,combitnum1) 1]"
-      set v2 "[combit $telscript($telname,combitnum1) 6]"
-      set v3 "[combit $telscript($telname,combitnum1) 8]"
-      after 100
-      set v11 "[combit $telscript($telname,combitnum1) 1]"
-      set v21 "[combit $telscript($telname,combitnum1) 6]"
-      set v31 "[combit $telscript($telname,combitnum1) 8]"
-      set v1 [expr $v1+$v11]
-      set v2 [expr $v2+$v21]
-      set v3 [expr $v3+$v31]
-      set v $telscript($telname,speed_virtual_pad)
-      set telscript($telname,speed_virtual_pad) 0
-      if {($v1 == 2) || ($v==1) }  {
-         catch {exec espeak.exe -v fr "raquette rapide."}
-         set telscript($telname,drift_move_rate) 1
-      }
-      if {$v2 == 2 || ($v==2) }  {
-         catch {exec espeak.exe -v fr "raquette lente."}
-         set telscript($telname,drift_move_rate) 0.5
-      }
-      if {$v3 == 2 || ($v==3) }  {
-         catch {exec espeak.exe -v fr "raquette spectro."}
-         set telscript($telname,drift_move_rate) 0.1
-      }
-
-      # mesure de la variable d'état des bits de rappel
-      if {$telscript($telname,move_virtual_pad)!=""} {
+      # mesure de la variable d'état des bits de focus Arduino
+      if {$telscript($telname,move_virtual_foc)!=""} {
          # utilisation raquette soft (boutons de l'interface graphique)
-         lassign $telscript($telname,move_virtual_pad) actif sens
-         set telscript($telname,speed_virtual_pad) ""
+         lassign $telscript($telname,move_virtual_foc) actif sens
          if {$telscript($telname,motion_next)!="correction"} {
             if {($actif=="1")}  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) [string toupper $sens]
+               set telscript($telname,action_next) "focus_start $sens"
                set telscript($telname,move_generator) 1
             }
          } else {
             if {($actif=="0")}  {
-               set telscript($telname,action_next) "move_stop"
-            }
-         }
-      } else {
-         # utilisation raquette physique (boutons combit)
-         if {$telscript($telname,motion_next)!="correction"} {
-            set rappel 0
-            set n "[combit $telscript($telname,combitnum0) 1]"
-            if {($n == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) N
-               set telscript($telname,move_generator) 1
-            }
-            set s "[combit $telscript($telname,combitnum0) 9]"
-            if {($s == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) S
-               set telscript($telname,move_generator) 1
-            }
-            set e "[combit $telscript($telname,combitnum0) 8]"
-            if {($e == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) E
-               set telscript($telname,move_generator) 1
-            }
-            set o "[combit $telscript($telname,combitnum0) 6]"
-            if {($o == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) W
-               set telscript($telname,move_generator) 1
-            }
-         } else {
-            # detecte la relache des bits de rappel (utilisation raquette soft)
-            set rappel 1
-            if {$telscript($telname,external_move_direction)=="N"} {
-               set rappel "[combit $telscript($telname,combitnum0) 1]"
-            }
-            if {$telscript($telname,external_move_direction)=="S"} {
-               set rappel "[combit $telscript($telname,combitnum0) 9]"
-            }
-            if {$telscript($telname,external_move_direction)=="E"} {
-               set rappel "[combit $telscript($telname,combitnum0) 8]"
-            }
-            if {$telscript($telname,external_move_direction)=="W"} {
-               set rappel "[combit $telscript($telname,combitnum0) 6]"
-            }
-            if {($rappel == 0)}  {
-               set telscript($telname,action_next) "move_stop"
+               set telscript($telname,action_next) "focus_stop"
             }
          }
       }
@@ -1854,6 +1809,49 @@ proc telscript_variables { } {
 }
 
 # ################################################################################
+# ### espeak
+# priority = wait : attend la fin du message precedent
+# priority = skip : passe le message si le precedent n'est pas termine
+# priority = over : superpose les messages
+# ################################################################################
+proc espeak { msg {priority wait} } {
+   global audace
+   set exe "$audace(rep_install)/bin/espeak.exe"
+   if {$priority=="wait")} {
+      set ever_launched 1
+      while {$ever_launched==1} {
+         set pids [twapi::get_process_ids]
+         set ever_launched 0
+         foreach pid $pids {
+            set res [twapi::get_process_info $pid -name]
+            set name [lindex $res 1]
+            if {$name=="espeak.exe"} {
+               set ever_launched 1
+               break
+            }
+         }
+      }
+   }
+   if {$priority=="skip")} {
+      set pids [twapi::get_process_ids]
+      set ever_launched 0
+      foreach pid $pids {
+         set res [twapi::get_process_info $pid -name]
+         set name [lindex $res 1]
+         if {$name=="espeak.exe"} {
+            set ever_launched 1
+            break
+         }
+      }
+      if {$ever_launched==1} {
+         return
+      }
+   }
+   set cmdline " -v fr \"$msg\""
+   twapi::create_process ${exe} -cmdline $cmdline -startdir [file dirname $exe] -detached 1
+}
+
+# ################################################################################
 # ### proc de creation du telescope
 # ################################################################################
 proc connect_tel { {mode_boot 0} } {
@@ -2172,7 +2170,7 @@ proc gui_calcul_coordonnees { objname0 } {
 # ################################################################################
 # ### proc appelée par l'appui sur les boutons de direction de la raquette virtuelle
 # ################################################################################
-proc �_shift { widget direction } {
+proc gui_start_shift { widget direction } {
    global telscript
    global paramscript
    set telname $telscript(def,telname)
@@ -2215,7 +2213,7 @@ proc gui_start_focus { widget direction } {
    eval "\$${widget} configure -bg $paramscript(color,greendark) -relief sunken"
    update
    set command ""
-   append command "set telscript($telscript(def,telname),move_virtual_foc) \"1 ${direction}\" "
+   append command "set telscript($telscript(def,telname),move_virtual_foc) ${direction} "
    tel1 loopeval "$command"
    after 300
 }
@@ -2229,10 +2227,11 @@ proc gui_stop_focus { widget direction } {
    set telname $telscript(def,telname)
    set base $telscript(def,base)
    set command ""
-   append command "set telscript($telscript(def,telname),move_virtual_foc) \"0 ${direction}\" "
+   append command "set telscript($telscript(def,telname),move_virtual_foc) \"\" "
    console::affiche_resultat "command=$command\n"
    tel1 loopeval "$command"
    after 300
+   eval "\$${widget} configure -bg $paramscript(color,back) -relief raised"
    update
    console::affiche_resultat "result=[tel1 loopresult]\n"
 }
@@ -2641,7 +2640,7 @@ proc telscript_gui { } {
                console::affiche_resultat "GOTO $app_az $app_elev $app_HA\n"
                # --
                if {$app_elev<0} {
-                  catch {exec espeak.exe -v fr "Pointage impossible."}
+                  catch {espeak "Pointage impossible."}
                   tk_messageBox -icon warning -type ok -message "Astre couché\nElevation=[format %.1f $app_elev] deg."
                   return
                }
@@ -2849,14 +2848,17 @@ proc telscript_gui { } {
       # --- focus
       frame $base.f.ffoc -bg $paramscript(color,back)
          frame $base.f.ffoc.fr2 -bg $paramscript(color,back)
-            label $base.f.ffoc.fr2.but_e -padx 100 -pady 15\
+            label $base.f.ffoc.fr2.lab1 -padx 90 -pady 15\
+               -bg $paramscript(color,back)
+            pack $base.f.ffoc.fr2.lab1 -side left -anchor center -padx 3 -pady 3
+            label $base.f.ffoc.fr2.but_e -padx 80 -pady 15\
                -borderwidth 3 -relief raised \
                -text "Foc -" -borderwidth 1 -bg $paramscript(color,back) \
                -fg $paramscript(color,text) -font $paramscript(font)
             pack $base.f.ffoc.fr2.but_e -side left -anchor center -padx 3 -pady 3
             bind $base.f.ffoc.fr2.but_e <ButtonPress-1> { gui_start_focus base.f.ffoc.fr2.but_e -}
             bind $base.f.ffoc.fr2.but_e <ButtonRelease-1> { gui_stop_focus base.f.ffoc.fr2.but_e -}
-            label $base.f.ffoc.fr2.but_w -padx 100 -pady 15\
+            label $base.f.ffoc.fr2.but_w -padx 80 -pady 15\
                -borderwidth 3 -relief raised \
                -text "Foc +" -borderwidth 1 -bg $paramscript(color,back) \
                -fg $paramscript(color,text) -font $paramscript(font)
