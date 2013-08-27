@@ -132,7 +132,7 @@
       set atmChildren [list tempair temprose hygro airpress winddir windsp seeing fwhm secz airmass]
       set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz focus_pos modifFocus psf filter]
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli isospeed]
-      set tlscpChildren [list telname suivi vra vdec vxPix vyPix separator1]
+      set tlscpChildren [list telname suivi vra vdec vxPix vyPix]
       set kwdsChildren [list observer modifObs sitename origin iau_code imagetyp objname separator1 editKwds writeKwds]
       set configChildren [list catname catAcc modifRep separator1 dispEtc simulimage]
 
