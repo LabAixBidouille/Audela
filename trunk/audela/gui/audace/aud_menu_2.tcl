@@ -273,7 +273,7 @@ namespace eval ::div {
    #---------------------------------------------------------------------------
    #  ::div::cmdImg2Clipboard
    #  Copy photo image into Windows clipboard
-   #  Commande du bouton 'Exporter'
+   #  Commande du bouton 'Exporter vers le presse-papier'
    #---------------------------------------------------------------------------
    proc cmdImg2Clipboard { visuNo } {
       package require Img
@@ -291,6 +291,41 @@ namespace eval ::div {
       twapi::empty_clipboard
       twapi::write_clipboard 8 $data
       twapi::close_clipboard
+
+      ::div::configGui $visuNo normal
+   }
+
+   #---------------------------------------------------------------------------
+   #  ::div::cmdImg2File
+   #  Copy photo image into a file
+   #  Commande du bouton 'Exporter vers un fichier'
+   #---------------------------------------------------------------------------
+   proc cmdImg2File { visuNo } {
+      global audace
+
+      package require Img
+
+      ::div::configGui $visuNo disabled
+
+      #--   extrait les dimensions de l'image Tk
+      set naxis1 [image width imagevisu$visuNo]
+      set naxis2 [image height imagevisu$visuNo]
+
+      #--   copie l'image Tk
+      set temp [image create photo -gamma 2]
+      $temp copy imagevisu$visuNo -from 1 1 $naxis1 $naxis2 -to 0 0 \
+         -zoom 1 -compositingrule set
+
+      set types {{"BMP" {.bmp}}}
+      set filename [tk_getSaveFile \
+         -filetypes $types \
+         -initialdir $audace(rep_images) \
+         -initialfile captureVisu$visuNo \
+         -defaultextension .bmp]
+      if {[llength $filename]} {
+         $temp write -format png $filename
+      }
+      image delete $temp
 
       ::div::configGui $visuNo normal
    }
@@ -1167,10 +1202,15 @@ namespace eval ::div {
          -relief raised -command "::div::cmdSaveMypal $visuNo"
       pack $tbl.spec.save -side left -pady 3
 
-      #--   bouton d'exportation de l'image (pour Windows seulement)
       if { $::tcl_platform(platform) == "windows" } {
+         #--   bouton d'exportation de l'image (pour Windows seulement)
          button $tbl.spec.copy -text $caption(div,copy) -borderwidth 2 -width 30 \
             -relief raised -command "::div::cmdImg2Clipboard $visuNo"
+         pack $tbl.spec.copy -side left -padx 5 -pady 3
+      } else {
+         #--   bouton d'exportation de l'image vers un fichier .png
+         button $tbl.spec.copy -text $caption(div,copy2file) -borderwidth 2 -width 30 \
+            -relief raised -command "::div::cmdImg2File $visuNo"
          pack $tbl.spec.copy -side left -padx 5 -pady 3
       }
 
