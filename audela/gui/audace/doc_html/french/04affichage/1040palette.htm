@@ -10,7 +10,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Palette</title></head><body>
-<p class="date">Date de mise &#224; jour : 26 ao&#251;t 2013</p>
+<p class="date">Date de mise &#224; jour : 28 ao&#251;t 2013</p>
 <h1>Palette</h1>
 <p><span style="font-weight: bold;">Note 1 :</span> Les
 r&#233;glages de la palette modifient uniquement l'affichage et
@@ -45,13 +45,15 @@ r&#233;glage est ferm&#233;e.</p>
 <td>
 <p>Elle comporte (de haut en bas) :</p>
 <ul>
-<li>Une zone graphique affichant l'<a href="#histogram">histogramme</a> des intensit&#233;s et la fonction
+<li>Une zone graphique affichant l'<a href=
+"#histogram">histogramme</a> des intensit&#233;s et la fonction
 de transfert. L'&#233;chelle de droite donne le poids % de chaque
 pas de l'histogramme.</li>
 <li>Une case &#224; cocher pour afficher l'histogramme de l'image
 du buffer ainsi que deux butons permettant de choisir une
 &#233;chelle lin&#233;aire ou logarithmique..</li>
-<li>Une ligne de r&#233;glage de la <a href="#niveaux">Dynamique</a>.</li>
+<li>Une ligne de r&#233;glage de la <a href=
+"#niveaux">Dynamique</a>.</li>
 <li>Si l'image est RVB, les r&#233;glages peuvent s'appliquer, au
 choix, aux trois plans (RVB) ou ind&#233;pendamment &#224; chaque
 plan couleur R ou V ou B (CF paragraphe <a href="#plan">4. Choix
@@ -60,8 +62,10 @@ du plan couleur)</a>.</li>
 fonction de la palette choisie. L'effet des r&#233;glages est
 imm&#233;diat et &#233;vite de t&#226;tonner dans la recherche de
 coefficients adapt&#233;s.</li>
-<li>Une combobox permettant de choisir la <a href="#palette">palette</a> (fonction de transfert).</li>
-<li>Une zone comportant une case &#224; cocher pour <a href="#inverse">inverser</a> la palette et les boutons des commandes
+<li>Une combobox permettant de choisir la <a href=
+"#palette">palette</a> (fonction de transfert).</li>
+<li>Une zone comportant une case &#224; cocher pour <a href=
+"#inverse">inverser</a> la palette et les boutons des commandes
 <a href="#mypal"><b>D&#233;finir ma palette</b></a> et
 <b><a href="#export">Exporter l'image</a></b>.</li>
 <li>Un bandeau de <a href="#cmdes">commandes</a>.</li>
@@ -70,7 +74,8 @@ coefficients adapt&#233;s.</li>
 </tr>
 </tbody>
 </table>
-<h2><b>2. <a name="histogram" id="histogram">Histogramme</a></b></h2>
+<h2><b>2. <a name="histogram" id=
+"histogram">Histogramme</a></b></h2>
 <p>L'histogramme normalis&#233; est calcul&#233; sur la plage des
 seuils s&#233;lectionn&#233;s &#224; chaque chargement d'image ou
 de changement de seuils. Compte tenu du temps de calcul
@@ -371,9 +376,11 @@ contraste ne sont pas accessibles.</p>
 <td><img src="images/ma_palette.gif" /></td>
 <td>Il est tr&#232;s facile de construire une palette
 sp&#233;cifique qui sera rappel&#233;e syst&#233;matiquement
-&#224; l'ouverture d'une image sans avoir &#224; retrouver les bons
-r&#233;glages. Les r&#233;glages &#233;tant effectu&#233;s, il
-suffit d'appuyer sur le bouton <b>D&#233;finir ma palette</b> uniquement (pas d'appuis additionnels sur Appliquer et/ou OK) :<br />
+&#224; l'ouverture d'une image sans avoir &#224; retrouver les
+bons r&#233;glages. Les r&#233;glages &#233;tant effectu&#233;s,
+il suffit d'appuyer sur le bouton <b>D&#233;finir ma palette</b>
+uniquement (pas d'appuis additionnels sur Appliquer et/ou OK)
+:<br />
 <ul>
 <li>La fonction de transfert initiale, les valeurs de la
 luminosit&#233; et du contraste disparaissent.</li>
@@ -382,15 +389,18 @@ palette</b>.</li>
 <li>Les valeurs num&#233;riques de cette palette sont
 stock&#233;es dans le r&#233;pertoire
 <b>$audace(rep_userPalette)</b> sous le nom
-<b>mypal_${visuNo}.pal</b>, donc mypal_1.pal pour la visu num&#233;ro 1 qui
-correspond &#224; la fen&#234;tre principale d'Aud'ACE, mypal_2.pal pour la visu
-num&#233;ro 2 qui correspond &#224; une nouvelle fen&#234;tre affich&#233;e par le menu
-d&#233;roulant <span style="font-weight: bold;">Affichage</span>&nbsp; --&gt; <span style="font-weight: bold;">Nouvelle 'visu'</span> et ainsi de suite pour la visu num&#233;ro 3, etc.<br />
-</li>
+<b>mypal_${visuNo}.pal</b>, donc mypal_1.pal pour la visu
+num&#233;ro 1 qui correspond &#224; la fen&#234;tre principale
+d'Aud'ACE, mypal_2.pal pour la visu num&#233;ro 2 qui correspond
+&#224; une nouvelle fen&#234;tre affich&#233;e par le menu
+d&#233;roulant <span style="font-weight: bold;">Affichage</span> 
+--&gt; <span style="font-weight: bold;">Nouvelle 'visu'</span> et
+ainsi de suite pour la visu num&#233;ro 3, etc.<br /></li>
 <li>Si elle existe, la s&#233;lection de la fonction <b>Ma
 palette</b> entra&#238;ne sa recopie vers le fichier
-<b>$audace(rep_temp)/fonction_transfert_${visuNo}.pal</b> , soit fonction_transfert_1.pal pour la fen&#234;tre principale d'Aud'ACE.<br />
-</li>
+<b>$audace(rep_temp)/fonction_transfert_${visuNo}.pal</b> , soit
+fonction_transfert_1.pal pour la fen&#234;tre principale
+d'Aud'ACE.<br /></li>
 <li>Elle sera pr&#233;sente &#224; l'ouverture d'Aud'ACE si elle
 est pr&#233;sente &#224; sa fermeture.</li>
 </ul>
@@ -415,12 +425,11 @@ quelle palette.</p>
 </tbody>
 </table>
 <h2>8. <a name="export" id="export">Exporter l'image</a></h2>
-<p>A la diff&#233;rence d'une copie d'&#233;cran, cette commande
-(disponible sur les plate-formes Windows) transf&#232;re la
-totalit&#233; de l'image visualis&#233;e, et seulement elle, au
-format bmp vers le Presse-Papiers. Si l'image a une grande
-taille, l'ex&#233;cution de cette commande peut prendre un
-certain temps.</p>
+<p>Pour les plate-formes Windows, le bouton <b>Exporter vers le
+Presse-papiers</b> permet de transf&#232;rer la totalit&#233; de
+l'image visualis&#233;e, et seulement elle, au format bmp vers le
+Presse-Papiers. Si l'image a une grande taille, l'ex&#233;cution
+de cette commande peut prendre un certain temps.</p>
 <p>Cette image peut &#234;tre import&#233;e dans un logiciel de
 visualisation qui comporte cette fonction, par exemple :<br />
 <b>Paint Shop Pro</b> : Menu <b>Edition/Coller comme nouvelle
@@ -429,6 +438,11 @@ image</b>.<br />
 Presse-papiers</b>.<br />
 <b>Photoshop</b> : Menu <b>Fichier/Nouveau</b> puis
 <b>Edition/Coller</b>.</p>
+<p>Sous les autres plate-formes que Windows, le bouton
+<b>Exporter vers un fichier</b> permet de sauver l'image telle
+que visualis&#233;e (au m&#234;me zoom) vers un fichier .bmp. Par
+d&#233;faut l'image porte le nom <b>captureVisu1</b> pour la visu
+N&#176;1 et le r&#233;pertoire est celui des images.</p>
 <h2>9. <a name="cmdes" id="cmdes">Bandeau de commandes</a></h2>
 <p><img src="images/commandes.gif" /></p>
 <p>Ce bandeau regroupe les commandes suivantes :</p>
@@ -447,10 +461,13 @@ les r&#233;glages courants.</li>
 </ul>
 <h2>10. Quelques r&#233;f&#233;rences</h2>
 <ul>
-<li>Alain Boucher IFI <a href="http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
+<li>Alain Boucher IFI <a href=
+"http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf">
 http://www2.ifi.auf.org/personnel/Alain.Boucher/cours/traitement_images/03-Convolution.pdf</a></li>
-<li>K. Okano <a href="http://www.asahi-net.or.jp/%7Ert6k-okn/">http://www.asahi-net.or.jp/~rt6k-okn/</a></li>
-<li>J&#233;r&#244;me Vicente IUSTI <a href="http://iusti.polytech.univ-mrs.fr/%7Evicente/supportcours/vision3-2006.pdf">
+<li>K. Okano <a href=
+"http://www.asahi-net.or.jp/%7Ert6k-okn/">http://www.asahi-net.or.jp/~rt6k-okn/</a></li>
+<li>J&#233;r&#244;me Vicente IUSTI <a href=
+"http://iusti.polytech.univ-mrs.fr/%7Evicente/supportcours/vision3-2006.pdf">
 http://iusti.polytech.univ-mrs.fr/~vicente/supportcours/vision3-2006.pdf</a></li>
 </ul>
 </div>
