@@ -5,7 +5,7 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Focaliseur USB_FOCUS</title></head><body>
-<p class="date">Date de mise à jour : 21 août 2013</p>
+<p class="date">Date de mise à jour : 29 août 2013</p>
 <h1>Focaliseur USB_FOCUS</h1>
 <p>Merci à Vincent Auvray pour les informations sur ce
 focaliseur, voir le <a href="http://www.usb-foc.us/"><b>site
@@ -122,7 +122,16 @@ sur le porte-oculaire et prévoir un système d'entraînement adhoc.
 <a href="http://www.skymeca.com/"><b>Skyméca</b></a> s'est chargé de faire la platine :</p>
 <p><img style="width: 400px; height: 267px;" alt="" src="images/platine_focuser.gif" /></p>
 Le bouton de mise au point du CN212 peut faire 14 tours. 
-Pour parcourir toute la plage de mise au point il faut sélectionner le mode <b>pas entier</b> qui permet d'obtenir un maximum de 65535/4000 = un peu plus de 16 tours et limiter la <b>course maximale</b> à 14*4000 = 56000 pas.
+Pour parcourir toute la plage de mise au point il faut sélectionner le mode <b>pas entier</b> 
+qui permet d'obtenir un maximum de 65535/4000 = un peu plus de 16 tours et limiter la 
+<b>course maximale</b> à 14*4000 = 56000 pas.
+<p>Un tour du bouton de mise au point du CN212 fait varier la focale 
+de 1 mm en mode Newton [f=820mm  F/D=3.9] 
+et de 3.2 mm en mode Cassegrain [f=23630 mm F/D=12.4] 
+(Source <b>Rémi Petitdemange d'Optique Unterlinden</b>). 
+Un pas codeur d'USB_Focus correspond donc, en théorie, 
+à 1mm/4000=0.25 microm&#232;tres en Newton et 
+à 3.2 mm/4000= 0.8 microm&#232;tres en Cassegrain.</p>
 <h2>7. Intégration dans l'outil Focalisation</h2>
 <p>Le panneau de configuration de USB_Focus donne accès
 à tous les réglages, y compris la position du
