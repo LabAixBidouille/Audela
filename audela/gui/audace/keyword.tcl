@@ -219,6 +219,10 @@ proc ::keyword::init { } {
    set private(nom_observateur)     ""
    set private(nom_observatoire)    ""
    set private(nom_organisation)    ""
+   set private(temperature_site)    ""
+   set private(pression_site)       ""
+   set private(humidite_site)       ""
+   set private(setMeteoData)        "$::caption(keyword,stationMeteo)"
    set private(instrument)          ""
    set private(diametre)            ""
    set private(focale_resultante)   ""
@@ -236,6 +240,7 @@ proc ::keyword::init { } {
    set private(CRVAL2)              ""
    set private(CRPIX1)              ""
    set private(CRPIX2)              ""
+   set private(object)              ""
    set private(objName)             ""
    set private(GotoManuelAuto)      "$::caption(keyword,manuel)"
    set private(ra)                  ""
@@ -262,6 +267,7 @@ proc ::keyword::init { } {
    set private(listTypeImage)       "$::conf(keyword,listTypeImage)"
    lappend private(listTypeImage)   "$::caption(keyword,newValue)"
    set private(listOutilsGoto)      [ list $::caption(keyword,manuel) $::caption(keyword,automatic) ]
+   set private(listMeteoData)       [ list $::caption(keyword,manuel) $::caption(keyword,stationMeteo) ]
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable, procedure, etc.) des mots cles
    set private(infosMotsClefs) ""
@@ -273,6 +279,9 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "SITELAT"  $::caption(keyword,lieu)        ::conf(posobs,nordsud_lat)              readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                        "" "" "string" "Observatory latitude"                            "degres, minutes, seconds" ]
    lappend private(infosMotsClefs) [ list "SITEELEV" $::caption(keyword,lieu)        ::conf(posobs,altitude)                 readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                        "" "" "string" "Observatory elevation above the sea level"       "m: meter" ]
    lappend private(infosMotsClefs) [ list "GEODSYS"  $::caption(keyword,lieu)        ::conf(posobs,ref_geodesique)           readonly $::caption(keyword,parcourir)  "::confPosObs::run $::audace(base).confPosObs" ""                                  ""                                        "" "" "string" "Geodetic datum for observatory position"         "" ]
+   lappend private(infosMotsClefs) [ list "TEMP"     $::caption(keyword,lieu)        ::keyword::private(temperature_site)    readonly $::caption(keyword,parcourir)  "::confEqt::run \"\" weather_station"          $::keyword::private(listMeteoData)  ::keyword::private(setMeteoData)          1  "" "float"  "Site temperature"                                "degres Celsius" ]
+   lappend private(infosMotsClefs) [ list "PRESSURE" $::caption(keyword,lieu)        ::keyword::private(pression_site)       readonly $::caption(keyword,parcourir)  "::confEqt::run \"\" weather_station"          $::keyword::private(listMeteoData)  ::keyword::private(setMeteoData)          1  "" "float"  "Air pressure"                                    "P" ]
+   lappend private(infosMotsClefs) [ list "HUMIDITY" $::caption(keyword,lieu)        ::keyword::private(humidite_site)       readonly $::caption(keyword,parcourir)  "::confEqt::run \"\" weather_station"          $::keyword::private(listMeteoData)  ::keyword::private(setMeteoData)          1  "" "float"  "Relative humidity "                              "percent" ]
    lappend private(infosMotsClefs) [ list "TELESCOP" $::caption(keyword,instrument)  ::keyword::private(instrument)          readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                        "" "" "string" "Telescop name"                                   "" ]
    lappend private(infosMotsClefs) [ list "APTDIA"   $::caption(keyword,instrument)  ::keyword::private(diametre)            readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                        "" "" "float"  "Telescop diameter"                               "m: meter" ]
    lappend private(infosMotsClefs) [ list "FOCLEN"   $::caption(keyword,instrument)  ::keyword::private(focale_resultante)   readonly $::caption(keyword,parcourir)  "::confOptic::run 1"                           ""                                  ""                                        "" "" "float"  "Resulting focal length of the telescop"          "m: meter" ]
@@ -290,11 +299,12 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "CRVAL2"   $::caption(keyword,instrument)  ::keyword::private(CRVAL2)              readonly ""                             ""                                             ""                                  ""                                        "" "" "float"  "Reference coordinate for naxis2"                 "degres" ]
    lappend private(infosMotsClefs) [ list "CRPIX1"   $::caption(keyword,instrument)  ::keyword::private(CRPIX1)              readonly ""                             ""                                             ""                                  ""                                        "" "" "float"  "Reference pixel for naxis1"                      "pixel" ]
    lappend private(infosMotsClefs) [ list "CRPIX2"   $::caption(keyword,instrument)  ::keyword::private(CRPIX2)              readonly ""                             ""                                             ""                                  ""                                        "" "" "float"  "Reference pixel for naxis2"                      "pixel" ]
+   lappend private(infosMotsClefs) [ list "OBJECT"   $::caption(keyword,cible)       ::keyword::private(object)              normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAuto)        0  "" "string" "Object observed"                                 "" ]
    lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)             normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAuto)        0  "" "string" "Object observed"                                 "" ]
    lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAutoBis)     0  "" "float"  "Object Right Ascension"                          "degres" ]
    lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAutoBis)     0  "" "float"  "Object Declination"                              "degres" ]
    lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             $::keyword::private(listOutilsGoto) ::keyword::private(GotoManuelAutoTer)     0  "" "float"  "Coordinates equinox"                             "" ]
-   lappend private(infosMotsClefs) [ list "AIRMASS"  $::caption(keyword,cible)       ::keyword::private(airmass)             readonly ""                             ""                                             ""                                  ""                                        "" "" "float"  "Relative air mass"                               "" ]
+   lappend private(infosMotsClefs) [ list "AIRMASS"  $::caption(keyword,cible)       ::keyword::private(airmass)             readonly ""                             ""                                             ""                                  ""                                        "" "" "float"  "Air mass"                                        "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             ""                                  ""                                        "" "" "string" "Coordinates system"                              "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           readonly ""                             ""                                             $::keyword::private(listTypeImage)  ::keyword::private(typeImageSelected)     0  "" "string" "Image type"                                      "" ]
    lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)            normal   ""                             ""                                             ""                                  ""                                        "" "" "string" "Series identifiant"                              "" ]
@@ -357,6 +367,10 @@ proc ::keyword::run { visuNo configNameVariable } {
 
    #--- je recupere la consigne et la temperature du CCD
    onChangeTemperature $visuNo
+
+   #--- je recupere la temperature du site, la pression atmospherique
+   #--- et l'humidite relative (si une station meteo est connectee)
+   onChangeMeteoData $visuNo
 
    #--- je recupere le nom de l'objet (si mode automatique)
    onChangeObjname $visuNo
@@ -643,6 +657,27 @@ proc ::keyword::onChangeCRPIXCRVAL { visuNo args } {
 }
 
 #------------------------------------------------------------------------------
+# onChangeMeteoData
+#    met a jour les mots cles TEMP, PRESSURE et HUMIDITY
+#
+# Parametres :
+#    visuNo
+# Return :
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::onChangeMeteoData { visuNo } {
+   variable private
+
+   if { $private(setMeteoData) == "$::caption(keyword,stationMeteo)" } {
+
+      set private(temperature_site) [ format "%3.2f" [ expr { $::audace(meteo,obs,temperature) - 273.15 } ] ]
+      set private(pression_site)    [ format "%6.1f" $::audace(meteo,obs,pressure) ]
+      set private(humidite_site)    $::audace(meteo,obs,humidity)
+
+   }
+}
+
+#------------------------------------------------------------------------------
 # onChangeObjname
 #    met a jour le mot cle du nom de l'objet
 #
@@ -655,6 +690,7 @@ proc ::keyword::onChangeObjname { visuNo } {
    variable private
 
    if { $private(GotoManuelAuto) == "$::caption(keyword,automatic)" } {
+      set private(object)  $::audace(telescope,targetName)
       set private(objName) $::audace(telescope,targetName)
    }
 }
@@ -727,20 +763,55 @@ proc ::keyword::openSetTemperature { visuNo } {
 proc ::keyword::onChangeValueComboBox { visuNo } {
    variable private
 
-   #--- Mot cle OBJNAME
+   #--- Mots cles TEMP, PRESSURE et HUMIDITY
+   if { $private(setMeteoData) == "$::caption(keyword,stationMeteo)" } {
+      #--- Je recupere le nomTK des entry
+      set wTEMP     [$::keyword::private($visuNo,table) windowpath TEMP,valeur ]
+      set wPRESSURE [$::keyword::private($visuNo,table) windowpath PRESSURE,valeur ]
+      set wHUMIDITY [$::keyword::private($visuNo,table) windowpath HUMIDITY,valeur ]
+      #--- Je configure l'etat des entry
+      $wTEMP     configure -state disabled
+      $wPRESSURE configure -state disabled
+      $wHUMIDITY configure -state disabled
+      #--- Je recupere les TEMP, PRESSURE et HUMIDITY du site
+      set private(temperature_site) [ format "%3.2f" [ expr { $::audace(meteo,obs,temperature) - 273.15 } ] ]
+      set private(pression_site)    [ format "%6.1f" $::audace(meteo,obs,pressure) ]
+      set private(humidite_site)    $::audace(meteo,obs,humidity)
+   } elseif { $private(setMeteoData) == "$::caption(keyword,manuel)" } {
+      #--- Je recupere le nomTK des entry
+      set wTEMP     [$::keyword::private($visuNo,table) windowpath TEMP,valeur ]
+      set wPRESSURE [$::keyword::private($visuNo,table) windowpath PRESSURE,valeur ]
+      set wHUMIDITY [$::keyword::private($visuNo,table) windowpath HUMIDITY,valeur ]
+      #--- Je configure l'etat des entry
+      $wTEMP     configure -state normal
+      $wPRESSURE configure -state normal
+      $wHUMIDITY configure -state normal
+      #--- Je vide les champs correspondants
+      set private(temperature_site) ""
+      set private(pression_site)    ""
+      set private(humidite_site)    ""
+   }
+
+   #--- Mots cles OBJECT et OBJNAME
    if { $private(GotoManuelAuto) == "$::caption(keyword,automatic)" } {
       #--- Je recupere le nomTK de l'entry
+      set wOBJECT  [$::keyword::private($visuNo,table) windowpath OBJECT,valeur ]
       set wOBJNAME [$::keyword::private($visuNo,table) windowpath OBJNAME,valeur ]
       #--- Je configure l'etat de l'entry
+      $wOBJECT  configure -state disabled
       $wOBJNAME configure -state disabled
       #--- Je recupere OBJNAME
+      set private(object)  $::audace(telescope,targetName)
       set private(objName) $::audace(telescope,targetName)
    } elseif { $private(GotoManuelAuto) == "$::caption(keyword,manuel)" } {
       #--- Je recupere le nomTK de l'entry
+      set wOBJECT  [$::keyword::private($visuNo,table) windowpath OBJECT,valeur ]
       set wOBJNAME [$::keyword::private($visuNo,table) windowpath OBJNAME,valeur ]
       #--- Je configure l'etat de l'entry
+      $wOBJECT  configure -state normal
       $wOBJNAME configure -state normal
-      #--- Je vide le champ correspondant
+      #--- Je vide les champs correspondants
+      set private(object)  ""
       set private(objName) ""
    }
 
@@ -1034,6 +1105,10 @@ proc ::keyword::getKeywords { visuNo configName { keywordNameList "" } } {
 
    #--- je recupere les mots cles CRPIX1, CRPIX2, CRVAL1 et CRVAL2
    onChangeCRPIXCRVAL $visuNo
+
+   #--- je recupere la temperature du site, la pression atmospherique
+   #--- et l'humidite relative (si une station meteo est connectee)
+   onChangeMeteoData $visuNo
 
    #--- je recupere le nom de l'objet (si mode automatique)
    onChangeObjname $visuNo
