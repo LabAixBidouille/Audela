@@ -301,6 +301,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtelscript", "libtel\libtelscript\vc90\libtelscript.vcproj", "{9A9C2369-CD23-4678-8E27-8F39EA8E58C8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libepixowl", "libcam\libepixowl\vc90\libepixowl.vcproj", "{A328475B-AC69-4BA0-8580-62197E3B2EFC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1BF90705-9548-45E3-8995-5DA73C791146} = {1BF90705-9548-45E3-8995-5DA73C791146}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_epix", "external\epix\vc90\external_epix.vcproj", "{1BF90705-9548-45E3-8995-5DA73C791146}"
 EndProject
