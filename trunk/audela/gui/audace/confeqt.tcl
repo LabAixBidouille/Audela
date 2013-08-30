@@ -371,7 +371,7 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 #
 # conditions :
 #    - le plugin doit avoir une procedure getPluginType qui retourne
-#      "equipment" ou "focuser" ou "spectroscope"
+#      "equipment" ou "focuser" ou "spectroscope" ou "weather_station"
 #    - le plugin doit avoir une procedure getPluginTitle
 #    - etc.
 #
@@ -395,7 +395,8 @@ proc ::confEqt::findPlugin { } {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type) == "equipment" || $pluginInfo(type) == "focuser" || $pluginInfo(type) == "spectroscope" } {
+            if { $pluginInfo(type) == "equipment" || $pluginInfo(type) == "focuser" || $pluginInfo(type) == "spectroscope"\
+               || $pluginInfo(type) == "weather_station" } {
                if { [ lsearch $pluginInfo(os) [ lindex $::tcl_platform(os) 0 ] ] != "-1" } {
                   #--- je charge le package
                   package require $pluginInfo(name)
