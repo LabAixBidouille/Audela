@@ -40,6 +40,7 @@ proc ::station_meteo::initPlugin { } {
    #--- Cree les variables dans conf(...) si elles n'existent pas
    #if { ! [ info exists conf(station_meteo,pressure) ] }    { set conf(station_meteo,pressure)    "101325" }
    #if { ! [ info exists conf(station_meteo,temperature) ] } { set conf(station_meteo,temperature) "290" }
+   #if { ! [ info exists conf(station_meteo,humidity) ] }    { set conf(station_meteo,humidity)    "40" }
 
    #--   Initialise le chemin d'acces complet au fichier des donnees meteo
    if { ! [ info exists conf(station_meteo,meteoFileAccess) ] } { set conf(station_meteo,meteoFileAccess) "" }
@@ -52,6 +53,7 @@ proc ::station_meteo::initPlugin { } {
    #--- Initialisation des variables audace
    set audace(meteo,obs,pressure)    "101325"
    set audace(meteo,obs,temperature) "290"
+   set audace(meteo,obs,humidity)    "40"
 }
 
 #------------------------------------------------------------
@@ -80,10 +82,10 @@ proc ::station_meteo::getPluginHelp { } {
 #  getPluginType
 #     retourne le type de plugin
 #
-#  return "equipment"
+#  return "weather_station"
 #------------------------------------------------------------
 proc ::station_meteo::getPluginType { } {
-   return "equipment"
+   return "weather_station"
 }
 
 #------------------------------------------------------------
@@ -120,8 +122,10 @@ proc ::station_meteo::fillConfigPage { frm } {
    #--- Copie de conf(...) dans la variable widget
    #set widget(pressure)    $conf(station_meteo,pressure)
    #set widget(temperature) $conf(station_meteo,temperature)
+   #set widget(humidity)    $conf(station_meteo,humidity)
    set widget(pressure)    $audace(meteo,obs,pressure)
-   set widget(temperature) [expr { $audace(meteo,obs,pressure)-273.15 }]
+   set widget(temperature) [expr { $audace(meteo,obs,temperature)-273.15 }]
+   set widget(humidity)    $audace(meteo,obs,humidity)
    if { $::tcl_platform(platform) == "windows" } {
       set sensorList [list "$caption(station_meteo,cumulus)"  "$caption(station_meteo,sentinel)"]
    } else {
@@ -254,12 +258,15 @@ proc ::station_meteo::configurePlugin { } {
    #set conf(station_meteo,pressure)        $audace(meteo,obs,pressure)
    #set conf(station_meteo,temperature)     $widget(temperature)
    #set conf(station_meteo,temperature)     $audace(meteo,obs,temperature)
+   #set conf(station_meteo,humidity)        $widget(humidity)
+   #set conf(station_meteo,humidity)        $audace(meteo,obs,humidity)
    set conf(station_meteo,meteoFileAccess) $widget(meteoFileAccess)
    set conf(station_meteo,cycle)           $widget(cycle)
 
    #--- Mise a jour des variables audace
    #set audace(meteo,obs,pressure)    $conf(station_meteo,pressure)
    #set audace(meteo,obs,temperature) $conf(station_meteo,temperature)
+   #set audace(meteo,obs,humidity)    $conf(station_meteo,humidity)
 }
 
 #------------------------------------------------------------
@@ -436,10 +443,11 @@ proc ::station_meteo::getValues { data } {
 
    lassign $data widget(temperature) widget(hygro) widget(temprose) widget(windsp) widget(winddir) widget(pressure)
    set audace(meteo,obs,temperature) [expr { $widget(temperature)+273.15 }]
-   set audace(meteo,obs,pressure) $widget(pressure)
+   set audace(meteo,obs,pressure)    $widget(pressure)
+   set audace(meteo,obs,humidity)    $widget(hygro)
 
    #--   Debug
-   #::console::disp "$widget(temperature) $widget(pressure)\n$audace(meteo,obs,temperature) $audace(meteo,obs,pressure)\n"
+   #::console::disp "$widget(temperature) $widget(pressure) $widget(hygro)\n$audace(meteo,obs,temperature) $audace(meteo,obs,pressure) $audace(meteo,obs,humidity)\n"
 }
 
 #---------------------------------------------------------------------------
