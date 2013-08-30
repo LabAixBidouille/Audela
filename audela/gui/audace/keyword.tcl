@@ -193,6 +193,7 @@ proc ::keyword::init { } {
    #--- Creation de la variable de la boite de configuration de l'en-tete FITS si elle n'existe pas
    if { ! [ info exists ::conf(keyword,geometry) ] }                  { set ::conf(keyword,geometry)                  "650x240+350+15" }
    if { ! [ info exists ::conf(keyword,listTypeImage) ] }             { set ::conf(keyword,listTypeImage)             [ list Offset Dark Flat Object Lamp ] }
+   if { ! [ info exists ::conf(keyword,default,setMeteoData) ] }      { set ::conf(keyword,default,setMeteoData)      "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,default,GotoManuelAuto) ] }    { set ::conf(keyword,default,GotoManuelAuto)    "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,default,GotoManuelAutoBis) ] } { set ::conf(keyword,default,GotoManuelAutoBis) "$::caption(keyword,manuel)" }
    if { ! [ info exists ::conf(keyword,default,GotoManuelAutoTer) ] } { set ::conf(keyword,default,GotoManuelAutoTer) "$::caption(keyword,manuel)" }
@@ -669,11 +670,9 @@ proc ::keyword::onChangeMeteoData { visuNo } {
    variable private
 
    if { $private(setMeteoData) == "$::caption(keyword,stationMeteo)" } {
-
       set private(temperature_site) [ format "%3.2f" [ expr { $::audace(meteo,obs,temperature) - 273.15 } ] ]
       set private(pression_site)    [ format "%6.1f" $::audace(meteo,obs,pressure) ]
       set private(humidite_site)    $::audace(meteo,obs,humidity)
-
    }
 }
 
@@ -1251,6 +1250,7 @@ proc ::keyword::createDialog { visuNo } {
    #--- Recupere la configuration dans le tableau private(...)
    set private($visuNo,geometry)                   $::conf(keyword,geometry)
    set private($private($visuNo,configName),check) $::conf(keyword,$private($visuNo,configName),check)
+   set private(setMeteoData)                       $::conf(keyword,$private($visuNo,configName),setMeteoData)
    set private(GotoManuelAuto)                     $::conf(keyword,$private($visuNo,configName),GotoManuelAuto)
    set private(GotoManuelAutoBis)                  $::conf(keyword,$private($visuNo,configName),GotoManuelAutoBis)
    set private(GotoManuelAutoTer)                  $::conf(keyword,$private($visuNo,configName),GotoManuelAutoTer)
@@ -1588,6 +1588,7 @@ proc ::keyword::cmdApply { visuNo} {
 
    #--- je sauvegarde la configuration et mets en forme les variables conf
    set ::conf(keyword,$private($visuNo,configName),check)             [ string trimleft $private($private($visuNo,configName),check) "{} " ]
+   set ::conf(keyword,$private($visuNo,configName),setMeteoData)      $private(setMeteoData)
    set ::conf(keyword,$private($visuNo,configName),GotoManuelAuto)    $private(GotoManuelAuto)
    set ::conf(keyword,$private($visuNo,configName),GotoManuelAutoBis) $private(GotoManuelAutoBis)
    set ::conf(keyword,$private($visuNo,configName),GotoManuelAutoTer) $private(GotoManuelAutoTer)
@@ -1742,6 +1743,7 @@ proc ::keyword::selectKeywords { visuNo configName keywordNameList } {
 
    #--- je verifie que la variable existe
    if { ! [ info exists ::conf(keyword,$configName,check) ] }             { set ::conf(keyword,$configName,check)             "default" }
+   if { ! [ info exists ::conf(keyword,$configName,setMeteoData) ] }      { set ::conf(keyword,$configName,setMeteoData)      $::conf(keyword,default,setMeteoData) }
    if { ! [ info exists ::conf(keyword,$configName,GotoManuelAuto) ] }    { set ::conf(keyword,$configName,GotoManuelAuto)    $::conf(keyword,default,GotoManuelAuto) }
    if { ! [ info exists ::conf(keyword,$configName,GotoManuelAutoBis) ] } { set ::conf(keyword,$configName,GotoManuelAutoBis) $::conf(keyword,default,GotoManuelAutoBis) }
    if { ! [ info exists ::conf(keyword,$configName,GotoManuelAutoTer) ] } { set ::conf(keyword,$configName,GotoManuelAutoTer) $::conf(keyword,default,GotoManuelAutoTer) }
