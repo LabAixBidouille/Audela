@@ -1657,6 +1657,40 @@ proc ::keyword::recupPosDim { visuNo } {
 }
 
 #------------------------------------------------------------------------------
+# getValueOneKeyword
+#    recupere la valeur d'un mot cle lorsque la fenetre des mots cles est ouverte
+#
+# Parametres :
+#    visuNo
+#    configName : nom de la configuration
+#    valueKeywordName : mot cle dont la valeur est a lire
+#------------------------------------------------------------------------------
+proc ::keyword::getValueOneKeyword { visuNo configName valueKeywordName } {
+   variable private
+
+   #--- Si la fenetre est fermee, je sors par anticipation
+   if { ! [ winfo exists $private($visuNo,frm) ] } {
+      return
+   }
+
+   #--- je cherche le nomTK de l'entry a lire
+   for {set i 0 } { $i < [$private($visuNo,table) size] } { incr i } {
+      set keywordName [ $private($visuNo,table) rowcget $i -name ]
+      #--- je recupere le nomTK de l'entry
+      set w [ $::keyword::private($visuNo,table) windowpath $i,valeur ]
+      #--- je m'arrete lorsque j'ai trouve le mot cle
+      if { $keywordName == $valueKeywordName } {
+         break
+      }
+   }
+
+   #--- je recupere la variable de l'entry
+   set variableNomTK [ $w cget -textvariable ]
+   #--- je lis le contenu de la variable de l'entry
+   set value [ expr $$variableNomTK ]
+}
+
+#------------------------------------------------------------------------------
 # getTypeImage
 #    Permet de recuperer le type courant de l'image
 #
@@ -1801,9 +1835,6 @@ proc ::keyword::deselectKeywords { visuNo configName keywordNameList } {
 #------------------------------------------------------------------------------
 proc ::keyword::deselectOneKeyword { visuNo configName keywordNameDeselect } {
    variable private
-
-   #--- je verifie que la variable existe
-   if { ! [ info exists ::conf(keyword,$configName,check) ] } { set ::conf(keyword,$configName,check) "default" }
 
    #--- je cherche le nomTK du checkbutton a deselectionner
    for {set i 0 } { $i < [$private($visuNo,table) size] } { incr i } {
