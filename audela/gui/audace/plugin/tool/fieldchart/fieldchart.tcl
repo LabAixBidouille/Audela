@@ -904,7 +904,7 @@ namespace eval ::fieldchart {
 
    #------------------------------------------------------------
    # getItemNo
-  #    Retourne le N° de l'item qui correspond aux RADEC de l'etoile
+   #    Retourne le N° de l'item qui correspond aux RADEC de l'etoile
    #------------------------------------------------------------
    proc getItemNo { w star_info } {
       global etoiles
