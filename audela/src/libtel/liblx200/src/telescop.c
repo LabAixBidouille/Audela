@@ -471,6 +471,7 @@ int mytel_radec_goto(struct telprop *tel)
 
    // Send MS
    mytel_sendLX(tel, tel->reponseSRSD, ss, "#:MS#");
+   // mytel_logConsole(tel, "Goto reponse |%s|",ss);
    if (ss[0]=='1' ) {
       /* The telescope can not complete the slew and tells something*/
       strcpy(tel->msg, "Object below Horizon");
