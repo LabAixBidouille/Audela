@@ -4644,7 +4644,7 @@ proc ::confVisu::createGraph { visuNo } {
    bind $This.graph <ButtonPress-1>   "::confVisu::onGraphRegionStart $visuNo %W %x %y "
    bind $This.graph <B1-Motion>       "::confVisu::onGraphRegionMotion $visuNo %W %x %y"
    bind $This.graph <ButtonRelease-1> "::confVisu::onGraphRegionEnd $visuNo %W %x %y"
-   bind $This.graph <ButtonRelease-3> "::confVisu::onGraphUnzoom $visuNo"
+   bind $This.graph <Double-ButtonRelease-1> "::confVisu::onGraphUnzoom $visuNo"
 
    #--- je cree la zone d'affichage des coordonnees
    set private($visuNo,graph,coordinate) ""
