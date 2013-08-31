@@ -14,7 +14,7 @@ namespace eval ::foc {
    # Parametres : binning, seeing et exposure
    # Return : Rien
    #------------------------------------------------------------
-   proc createImage { bin {seeing 3.0} {exposure 10} } {
+   proc createImage { bin {seeing 3.0} {exposure 10} { dfoc 0.0 } } {
       global audace conf panneau
 
       #--   raccourcis
@@ -31,7 +31,10 @@ namespace eval ::foc {
       if {$sens eq "W"} {
          set obs-long -${obs-long}
       }
-      set optic [::confOptic::getConfOptic A]
+      #--   recupere les parametres optiques
+      lassign [::confOptic::getConfOptic A] telescop aptdia foclen
+      set foclen [expr { $foclen*(1+$dfoc) }]
+
       set datetu [::audace::date_sys2ut now]
 
       #--   impose la camera
@@ -62,8 +65,6 @@ namespace eval ::foc {
       etc_params_set seeing $seeing #--   arcsec
       etc_params_set Elev $elev
 
-      #--   recupere les parametres optiques
-      lassign $optic telescop aptdia foclen
       set fond [format %.2f [expr {$foclen*1./$aptdia}]]
       etc_params_set D [format %0.3f $aptdia]
       etc_params_set FonD $fond
@@ -103,19 +104,19 @@ namespace eval ::foc {
       buf$bufNo setkwd [list APTDIA $aptdia float Diameter m]
       buf$bufNo setkwd [list BIN1 $bin1 int {} {}]
       buf$bufNo setkwd [list BIN2 $bin2 int {} {}]
-      buf$bufNo setkwd [list CDELT1 $cdeltx double {Scale along Naxis1} deg/pixel]
-      buf$bufNo setkwd [list CDELT2 $cdelty double {Scale along Naxis2} deg/pixel]
-      buf$bufNo setkwd [list CRPIX1 $crpix1 double {Reference pixel for Naxis1} pixel]
-      buf$bufNo setkwd [list CRPIX2 $crpix2 double {Reference pixel for Naxis2} pixel]
-      buf$bufNo setkwd [list CRVAL1 $ra_angle double {Reference coordinate for Naxis1} deg]
-      buf$bufNo setkwd [list CRVAL2 $$dec_angle double {Reference coordinate for Naxis2} deg]
-      buf$bufNo setkwd [list CROTA2 $crota2 double {Position angle of North} deg]
+      buf$bufNo setkwd [list CDELT1 $cdeltx float {Scale along Naxis1} deg/pixel]
+      buf$bufNo setkwd [list CDELT2 $cdelty float {Scale along Naxis2} deg/pixel]
+      buf$bufNo setkwd [list CRPIX1 $crpix1 float {Reference pixel for Naxis1} pixel]
+      buf$bufNo setkwd [list CRPIX2 $crpix2 float {Reference pixel for Naxis2} pixel]
+      buf$bufNo setkwd [list CRVAL1 $ra_angle float {Reference coordinate for Naxis1} deg]
+      buf$bufNo setkwd [list CRVAL2 $$dec_angle float {Reference coordinate for Naxis2} deg]
+      buf$bufNo setkwd [list CROTA2 $crota2 float {Position angle of North} deg]
       buf$bufNo setkwd [list DATE-OBS $datetu string {Start of exposure.FITS standard} {ISO 8601}]
       buf$bufNo setkwd [list DEC $dec_angle float {Expected DEC asked to telescope} deg]
       buf$bufNo setkwd [list DETNAM "Audine Kaf401ME"  string {Camera used} {}]
       buf$bufNo setkwd [list EXPOSURE $exposure float {Total time of exposure} s]
       buf$bufNo setkwd [list FILTER "$filtre" string {C U B V R I J H K z} {}]
-      buf$bufNo setkwd [list FOCLEN $foclen double {Resulting Focal length} m]
+      buf$bufNo setkwd [list FOCLEN $foclen float {Resulting Focal length} m]
       buf$bufNo setkwd [list FWHM $fwhm float {Full Width at Half Maximum} pixels]
       buf$bufNo setkwd [list OBJECT "$object" string {Object observed} {}]
       buf$bufNo setkwd [list OBJNAME "$objname" string {Object Name} {}]
@@ -123,8 +124,8 @@ namespace eval ::foc {
       buf$bufNo setkwd [list OBS-LAT $obs_lat float {Geodetic observatory latitude} deg]
       buf$bufNo setkwd [list OBS-LONG $obs_long float {East-positive observatory longitude} deg]
       buf$bufNo setkwd [list OBSERVER "$observer" string {Observers Names} {}]
-      buf$bufNo setkwd [list PIXSIZE1 $pixsize1 double {Pixel Width (with binning)} mum]
-      buf$bufNo setkwd [list PIXSIZE2 $pixsize2 double {Pixel Height (with binning)} mum]
+      buf$bufNo setkwd [list PIXSIZE1 $pixsize1 float {Pixel Width (with binning)} mum]
+      buf$bufNo setkwd [list PIXSIZE2 $pixsize2 float {Pixel Height (with binning)} mum]
       buf$bufNo setkwd [list RA $ra_angle double {Expected RA asked to telescope} deg]
       buf$bufNo setkwd [list SWCREATE "AudeLA" string {Acquisition Software} {}]
       buf$bufNo setkwd [list TELESCOP "$telescop" string {Telescope (name barlow reducer)} {}]
