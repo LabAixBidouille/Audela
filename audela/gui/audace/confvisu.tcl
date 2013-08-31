@@ -4640,10 +4640,10 @@ proc ::confVisu::createGraph { visuNo } {
    $This.graph axis configure y2 -hide true
    $This.graph legend configure -hide yes
 
-   bind $This.graph <Motion>          "::confVisu::onGraphMotion $visuNo %W %x %y"
-   bind $This.graph <ButtonPress-1>   "::confVisu::onGraphRegionStart $visuNo %W %x %y "
-   bind $This.graph <B1-Motion>       "::confVisu::onGraphRegionMotion $visuNo %W %x %y"
-   bind $This.graph <ButtonRelease-1> "::confVisu::onGraphRegionEnd $visuNo %W %x %y"
+   bind $This.graph <Motion>                 "::confVisu::onGraphMotion $visuNo %W %x %y"
+   bind $This.graph <ButtonPress-1>          "::confVisu::onGraphRegionStart $visuNo %W %x %y "
+   bind $This.graph <B1-Motion>              "::confVisu::onGraphRegionMotion $visuNo %W %x %y"
+   bind $This.graph <ButtonRelease-1>        "::confVisu::onGraphRegionEnd $visuNo %W %x %y"
    bind $This.graph <Double-ButtonRelease-1> "::confVisu::onGraphUnzoom $visuNo"
 
    #--- je cree la zone d'affichage des coordonnees
