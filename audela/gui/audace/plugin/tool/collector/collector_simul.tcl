@@ -239,7 +239,6 @@
       dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
       dict set dicokwd FWHM      {FWHM %s float {Full Width at Half Maximum} pixels}
       dict set dicokwd GEODSYS   {GEODSYS %s string {Geodetic datum for observatory position} {}}
-      dict set dicokwd HYGRO     {HYGRO %s int {Hydrometry} percent}
       dict set dicokwd HUMIDITY  {HUMIDITY %s int {Hydrometry} percent}
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
