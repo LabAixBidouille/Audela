@@ -139,14 +139,14 @@
       set list_of_kwd [list BIN1 BIN2 NAXIS1 NAXIS2 RA DEC CRVAL1 CRVAL2 CRPIX1 CRPIX2 \
          DATE-OBS MJD-OBS EXPOSURE FOCLEN CROTA2 FILTER FILTERNU FWHM \
          PIXSIZE1 PIXSIZE2 CDELT1 CDELT2 CD1_1 CD1_2 CD2_1 CD2_2 \
-         AIRPRESS TEMPAIR DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
+         PRESSURE TEMP HUMIDITY DETNAM CONFNAME IMAGETYP OBJNAME SWCREATE]
 
       #--   raccourcis
       foreach var [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
          bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter \
          detnam photocell1 photocell2 isospeed pixsize1 pixsize2 \
          crval1 crval2 crpix1 crpix2 \
-         airpress tempair temprose hygro winddir windsp \
+         pressure temp temprose humidity winddir windsp \
          observer sitename origin iau_code imagetyp objname] {
          set $var $private($var)
          #::console::affiche_resultat "$var \"$private($var)\"\n"
@@ -154,7 +154,7 @@
 
       set ra [mc_angle2deg $ra]
       set dec [mc_angle2deg $dec]
-      set airpress [expr { $airpress / 100. }]
+      set pressure [expr { $pressure / 100. }]
 
       #--   passe de arcsec en degres
       set cdelt1 [expr { $cdelt1 / 3600. }]
@@ -183,7 +183,7 @@
       set confname "myConf"
 
       #--   complete la liste des mots cles si leur valeur significative
-      set optKwd [list aptdia "-" isospeed "-" hygro "-" iau_code "" \
+      set optKwd [list aptdia "-" isospeed "-" humidity "-" iau_code "" \
          observer "-" origin "" sitename "-" telescop "-" temprose "-" \
          winddir "-" windsp "-"]
       foreach {var val} $optKwd {
@@ -212,7 +212,6 @@
    #--------------------------------------------------------------------------
    proc formatKeyword { {kwd " "} } {
 
-      dict set dicokwd AIRPRESS  {AIRPRESS %s float {[hPa] Atmospheric Pressure} hPa}
       dict set dicokwd APTDIA    {APTDIA %s float Diameter m}
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
@@ -241,6 +240,7 @@
       dict set dicokwd FWHM      {FWHM %s float {Full Width at Half Maximum} pixels}
       dict set dicokwd GEODSYS   {GEODSYS %s string {Geodetic datum for observatory position} {}}
       dict set dicokwd HYGRO     {HYGRO %s int {Hydrometry} percent}
+      dict set dicokwd HUMIDITY  {HUMIDITY %s int {Hydrometry} percent}
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
@@ -260,6 +260,7 @@
       dict set dicokwd PEDESTAL  {PEDESTAL %s int {add this value to each pixel value} {}}
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s float {Pixel Width (with binning)} mum}
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s float {Pixel Height (with binning)} mum}
+      dict set dicokwd PRESSURE  {PRESSURE %s float {[hPa] Atmospheric Pressure} hPa}
       dict set dicokwd RA        {RA %s float {Expected RA asked to telescope} {deg}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd SEING     {SEING %s float {Average FWHM} pixels}
@@ -269,7 +270,7 @@
       dict set dicokwd SITELONG  {SITELONG %s string {East-positive observatory longitude} deg}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
-      dict set dicokwd TEMPAIR   {TEMPAIR %s float {Air temperature} Celsius}
+      dict set dicokwd TEMP      {TEMP %s float {Air temperature} Celsius}
       dict set dicokwd TEMPROSE  {TEMPROSE %s float {Dew temperature} Celsius}
       dict set dicokwd WINDDIR   {WINDDIR %s float {Wind direction (0=S 90=W 180=N 270=E)} deg}
       dict set dicokwd WINDSP    {WINDSP %s float {Windspeed} {m/s}}
@@ -384,7 +385,7 @@
       ::tablelist::tablelist $tbl -borderwidth 2 \
          -columns [list \
             0 "$caption(collector,kwds)" left \
-            0 "$caption(collector,kwdvalue)" left \
+           0 "$caption(collector,kwdvalue)" left \
             0 "$caption(collector,kwdtype)" center \
             0 "$caption(collector,kwdcmt)" left \
             0 "$caption(collector,kwdunit)" center] \

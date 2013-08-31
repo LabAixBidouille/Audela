@@ -209,24 +209,30 @@
    #---------------------------------------------------------------------------
    proc getTPW { bufNo } {
 
-      set tempair [lindex [buf$bufNo getkwd TEMPAIR] 1]
-      if {$tempair eq ""} {set tempair [expr {290-273.15}]}
-      set tempair [format %0.2f $tempair]
+      set temp    [lindex [buf$bufNo getkwd TEMP] 1]
+      if {$temp eq ""} {
+         set temp [lindex [buf$bufNo getkwd TEMPAIR] 1]
+         if {$temp eq ""} {
+            set temp [expr {290-273.15}]
+         }
+      }
+      set temp [format %0.2f $temp]
 
       set temprose [lindex [buf$bufNo getkwd TEMPROSE] 1]
       if {$temprose eq ""} {set temprose "-"}
 
-      set hygro [lindex [buf$bufNo getkwd HYGRO] 1]
-      if {$hygro eq ""} {
-         set hydro [lindex [buf$bufNo getkwd HYDRO] 1]
-         if {$hygro ne ""} {
-            set hygro $hydro
-         } else {
-            set hygro "-"
+      set humidity [lindex [buf$bufNo getkwd HUMIDITY] 1]
+      if {$humidity eq ""} {
+         set humidity [lindex [buf$bufNo getkwd HYGRO] 1]
+         if {$humidity eq ""} {
+            set humidity [lindex [buf$bufNo getkwd HYDRO] 1]
+            if {$humidity eq ""} {
+               set humidity "0"
+            }
          }
       }
 
-       set winddir [lindex [buf$bufNo getkwd WINDDIR] 1]
+      set winddir [lindex [buf$bufNo getkwd WINDDIR] 1]
       if {$winddir eq ""} {set winddir "-"}
 
       set windsp [lindex [buf$bufNo getkwd WINDSP] 1]
@@ -235,17 +241,20 @@
       set windsp [lindex [buf$bufNo getkwd TEMPROSE] 1]
       if {$windsp eq ""} {set windsp "-"}
 
-      set airpress [lindex [buf$bufNo getkwd AIRPRESS] 1]
-      if {$airpress eq ""} {
-         set airpress 101325
-      } else {
-          set unit [string trim [lindex [buf$bufNo getkwd AIRPRESS] 4]]
-           if {$unit eq "hPa"} {
-            set airpress [expr {$airpress*100}]
+      set pressure [lindex [buf$bufNo getkwd PRESSURE] 1]
+      if {$pressure eq ""} {
+         set pressure [lindex [buf$bufNo getkwd AIRPRESS] 1]
+         if {$pressure ne ""} {
+            set unit [string trim [lindex [buf$bufNo getkwd AIRPRESS] 4]]
+            if {$unit eq "hPa"} {
+               set pressure [expr {$pressure*100}]
+            }
+         } else {
+            set pressure 101325
          }
       }
 
-      return [list $tempair $temprose $hygro $windsp $winddir $airpress]
+      return [list $temp $temprose $humidity $windsp $winddir $pressure]
    }
 
    #---------------------------------------------------------------------------
@@ -356,20 +365,22 @@
    #      deux coordonnees et TypeObs, couples :  {ra dec} EQUATORIAL ou {az elev} ALTAZ ou {hour_angle dec} HADEC
    #      dateTU      : date TU
    #      home        : gps
-   #      airpress    : atmospheric pressure (Pa)
-   #      temperature : °K
+   #      pressure    : atmospheric pressure (Pa)
+   #      temperature : °C
+   #      humidity    : %
    #---------------------------------------------------------------------------
    proc getCoordJ2000 { record } {
 
-      lassign $record angle1 angle2 TypeObs dateTu home airpress tempair
+      lassign $record angle1 angle2 TypeObs dateTu home pressure temp humidity
 
       #--   pm avec les options -model_only 1 -refraction 1, les coordonnees sont corrigées de
       #  la nutation, de l'aberration diurne, de la precession, de l'aberration annuelle et de le refraction
       #set symbols  { IH ID NP CH ME MA FO HF DAF TF }
       #set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
-      #lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $airpress $tempair $symbols $nulCoeff -model_only 1 -refraction 1] \
       #   raDeg decDeg
-      lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $airpress $tempair -model_only 1 -refraction 1] \
+      #--   passe en °K
+      set temperature [expr { $temp+273.15 }]
+      lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $pressure $temperature -model_only 1 -refraction 1 -humidity $humidity] \
          raDeg decDeg
 
       set ra2000 [mc_angle2hms $raDeg 360 zero 2 auto string]
@@ -385,8 +396,9 @@
    #       ra_hms,dec_dms : coordinates J2000.0
    #       datejd         : date JD
    #       home           : gps
-   #       airpress       : atmospheric pressure (Pa)
-   #       temperature    : °K
+   #       pressure       : atmospheric pressure (Pa)
+   #       temperature    : °C
+   #       himidity       : %
    #       coefNames      : liste des noms des coefficients de modpoi :
    #       * mode ALTAZ                  : {IA IE NPAE CA AN AW}
    #       * par defaut, mode EQUATORIAL : {IH ID NP CH ME MA FO HF DAF TF}
@@ -411,11 +423,14 @@
    #---------------------------------------------------------------------------
    proc getTrueCoordinates { data {coefNames {IH ID NP CH ME MA FO HF DAF TF} } { coefValues {0 0 0 0 0 0 0 0 0 0} } } {
 
-      lassign $data ra_hms dec_dms datetu home airpress temperature
+      lassign $data ra_hms dec_dms datetu home pressure temp humidity
 
       set hipRecord [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
       set drift 0
-      set result [mc_hip2tel $hipRecord $datetu $home $airpress $temperature $coefNames $coefValues -model_only 1 -refraction 1 -drift $drift]
+      #--   passe en °K
+      set temperature [expr { $temp+273.15 }]
+      set result [mc_hip2tel $hipRecord $datetu $home $pressure $temperature \
+         $coefNames $coefValues -model_only 1 -refraction 1 -drift $drift -humidity $humidity]
       lassign [lrange $result 10 14] ra_angle dec_angle ha az elev
 
       #--- formate les resultats
