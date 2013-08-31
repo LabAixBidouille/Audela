@@ -4433,29 +4433,29 @@ namespace eval ::ser2fits {
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
       dict set dicokwd BZERO     {BZERO %s int {offset data range to that of unsigned short} {}}
-      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along Naxis1} deg/pixel}
-      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along Naxis2} deg/pixel}
+      dict set dicokwd CDELT1    {CDELT1 %s float {Scale along Naxis1} deg/pixel}
+      dict set dicokwd CDELT2    {CDELT2 %s float {Scale along Naxis2} deg/pixel}
       dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of video.FITS standard} {ISO 8601}}
       dict set dicokwd DATE-END  {DATE-END %s string {End of video.FITS standard} {ISO 8601}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K} {}}
-      dict set dicokwd FOCLEN    {FOCLEN %s double {Resulting Focal length} m}
+      dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
-      dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
+      dict set dicokwd MJD-OBS   {MJD-OBS %s float {Start of exposure} d}
       dict set dicokwd OBJECT    {OBJECT %s string {Object observed} {}}
       dict set dicokwd OBJNAME   {OBJNAME %s string {Object Name} {}}
       dict set dicokwd OBSERVER  {OBSERVER %s string {Observers Names} {}}
-      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s double {Pixel Width (with binning)} mum}
-      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s double {Pixel Height (with binning)} mum}
+      dict set dicokwd PIXSIZE1  {PIXSIZE1 %s float {Pixel Width (with binning)} mum}
+      dict set dicokwd PIXSIZE2  {PIXSIZE2 %s float {Pixel Height (with binning)} mum}
       dict set dicokwd SWCREATE  {SWCREATE %s string {Acquisition Software} {}}
       dict set dicokwd SWMODIFY  {SWMODIFY %s string {Processing Software} {}}
       dict set dicokwd TELAPSE   {TELAPSE %s float {Elapsed time of observation} {s}}
       dict set dicokwd TELESCOP  {TELESCOP %s string {Telescope (name barlow reducer)} {}}
-      dict set dicokwd XPIXSZ    {XPIXSZ %s double {Pixel Width (without binning)} mum}
-      dict set dicokwd YPIXSZ    {YPIXSZ %s double {Pixel Height (without binning)} mum}
+      dict set dicokwd XPIXSZ    {XPIXSZ %s float {Pixel Width (without binning)} mum}
+      dict set dicokwd YPIXSZ    {YPIXSZ %s float {Pixel Height (without binning)} mum}
 
       set kwd_list [dict keys $dicokwd]
       if {$kwd eq " "} {return $kwd_list}
