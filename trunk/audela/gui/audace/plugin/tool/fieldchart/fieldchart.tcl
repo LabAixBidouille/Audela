@@ -769,12 +769,12 @@ namespace eval ::fieldchart {
 
       #--   met a jour l'en-tete FITS
       set bufNo $audace(bufNo)
-      buf$bufNo setkwd [ list CRPIX1 $crpix1 double { [pixel] Reference pixel for naxis1 } pixel ]
-      buf$bufNo setkwd [ list CRPIX2 $crpix2 double { [pixel] Reference pixel for naxis2 } pixel ]
+      buf$bufNo setkwd [ list CRPIX1 $crpix1 float { [pixel] Reference pixel for naxis1 } pixel ]
+      buf$bufNo setkwd [ list CRPIX2 $crpix2 float { [pixel] Reference pixel for naxis2 } pixel ]
       set ra  [mc_angle2deg $fieldchart(CentreRA) 360]
       set dec [mc_angle2deg $fieldchart(CentreDec) 90]
-      buf$bufNo setkwd [ list CRVAL1 $ra double { [deg] RA for CRPIX1 } deg ]
-      buf$bufNo setkwd [ list CRVAL2 $dec double { [deg] DEC for CRPIX2 } deg ]
+      buf$bufNo setkwd [ list CRVAL1 $ra float { [deg] RA for CRPIX1 } deg ]
+      buf$bufNo setkwd [ list CRVAL2 $dec float { [deg] DEC for CRPIX2 } deg ]
 
       #-- complete les mots cles WCS avec CDELT
       if { $fieldchart(Cdelt1) eq "" || $fieldchart(Cdelt2) eq "" } {
@@ -867,8 +867,8 @@ namespace eval ::fieldchart {
       set pi [expr 4*atan(1.)]
       set fieldchart(Cdelt1) [ expr {-2*atan($fieldchart(PixSize1)/$fieldchart(FocLen)*$mult/2.)*180/$pi} ]
       set fieldchart(Cdelt2) [ expr {2*atan($fieldchart(PixSize2)/$fieldchart(FocLen)*$mult/2.)*180/$pi} ]
-      buf$bufNo setkwd [ list CDELT1 $fieldchart(Cdelt1) double "X scale" deg/pixel ]
-      buf$bufNo setkwd [ list CDELT2 $fieldchart(Cdelt2) double "Y scale" deg/pixel ]
+      buf$bufNo setkwd [ list CDELT1 $fieldchart(Cdelt1) float "X scale" deg/pixel ]
+      buf$bufNo setkwd [ list CDELT2 $fieldchart(Cdelt2) float "Y scale" deg/pixel ]
 
       #--   si CROTA2 n'est pas defini alors CROTA2 == 0
       set inclin [ lindex [ buf$bufNo getkwd CROTA2 ] 1 ]
@@ -882,10 +882,10 @@ namespace eval ::fieldchart {
       set cd1_2 [expr  abs($fieldchart(Cdelt2))*$fieldchart(Cdelt1)/abs($fieldchart(Cdelt1))*$sinr ]
       set cd2_1 [expr -abs($fieldchart(Cdelt1))*$fieldchart(Cdelt2)/abs($fieldchart(Cdelt2))*$sinr ]
       set cd2_2 [expr $fieldchart(Cdelt2)*$cosr ]
-      buf$bufNo setkwd [ list CD1_1 $cd1_1 double "Matrix CD11" deg/pixel ]
-      buf$bufNo setkwd [ list CD1_2 $cd1_2 double "Matrix CD12" deg/pixel ]
-      buf$bufNo setkwd [ list CD2_1 $cd2_1 double "Matrix CD21" deg/pixel ]
-      buf$bufNo setkwd [ list CD2_2 $cd2_2 double "Matrix CD22" deg/pixel ]
+      buf$bufNo setkwd [ list CD1_1 $cd1_1 float "Matrix CD11" deg/pixel ]
+      buf$bufNo setkwd [ list CD1_2 $cd1_2 float "Matrix CD12" deg/pixel ]
+      buf$bufNo setkwd [ list CD2_1 $cd2_1 float "Matrix CD21" deg/pixel ]
+      buf$bufNo setkwd [ list CD2_2 $cd2_2 float "Matrix CD22" deg/pixel ]
    }
 
    #------------------------------------------------------------
@@ -904,7 +904,7 @@ namespace eval ::fieldchart {
 
    #------------------------------------------------------------
    # getItemNo
-   #    Retourne le N° de l'item qui correspond aux RADEC de l'etoile
+  #    Retourne le N° de l'item qui correspond aux RADEC de l'etoile
    #------------------------------------------------------------
    proc getItemNo { w star_info } {
       global etoiles
