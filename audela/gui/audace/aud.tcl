@@ -99,9 +99,6 @@ namespace eval ::audace {
       #--- Je recupere l'annee en cours pour la borne haute du Copyright
       set audace(endCopyright) [ clock format [ clock seconds ] -format "%Y" ]
 
-      #--- Je fixe la precision des nombres flottants a 17 decimales
-      set tcl_precision 17
-
       #--- On retourne dans le repertoire gui
       cd ..
       set audace(rep_gui) [pwd]
@@ -872,7 +869,15 @@ namespace eval ::audace {
       ::confFichierIma::initConf
       ::confPosObs::initConf
       ::confTypeFenetre::initConf
+      ::confNbreDecimales::initConf
       ::confEditScript::initConf
+
+      #--- Je fixe la precision des nombres flottants a 12 decimales
+      if { $conf(nbreDecimales) == "12" } {
+         set ::tcl_precision 12
+      } else {
+         set ::tcl_precision 17
+      }
 
       #--- Initialisation des executables
       ::audace::defaultExeUtils
