@@ -6,7 +6,7 @@
 # Description    : Environnement d analyse de courbes de lumiere
 #                  pour des images qui ont un wcs
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: bddimages_liste.tcl 6858 2011-03-06 14:19:15Z fredvachier $
+# Mise à jour $Id$
 #
 namespace eval gui_cdl_withwcs {
 
