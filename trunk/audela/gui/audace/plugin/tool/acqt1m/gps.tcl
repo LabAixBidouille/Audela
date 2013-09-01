@@ -126,9 +126,6 @@ namespace eval ::gps {
 
    proc ::gps::getdate { exposure bufNo } {
 
-      global tcl_precision
-
-      set tcl_precision 17
       set log 0
 
       # Recupere la date GPS
