@@ -4422,7 +4422,7 @@ namespace eval ::ser2fits {
             -message [format $caption(ser2fits,invalid) $racine "$caption(ser2fits,racine)"]
          set private(racine) [file rootname $private(choice)]
       }
-  }
+   }
 
    #--------------------------------------------------------------------------
    #  formatKeyword
@@ -4527,3 +4527,457 @@ namespace eval ::ser2fits {
 
 ######################## Fin du namespace ser2fits ##########################
 
+# Auteur : Raymond ZACHANTKE
+
+namespace eval ::trichro {
+
+   #------------------------------------------------------------
+   #  go2Trichro
+   #  Pilote la conversion
+   #  Parameters : visuNo
+   #               liste de trois fichiers,
+   #               nom complet de l'image trichro (avec extension)
+   #  Retourne : code erreur { 0 | 1}
+   #------------------------------------------------------------
+   proc go2Trichro { visuNo files nameOut } {
+      variable private
+      global audace caption conf
+
+      #--   raccourcis
+      set buf buf[visu$visuNo buf]
+      set ext [file extension $nameOut]
+      set gene [file rootname $nameOut]
+      set to_destroy ""
+
+      set err [ catch {
+         #--- charge, modifie les en-tetes et sauve les trois images
+         foreach img $files k { 1 2 3 } {
+
+            #--- charge chaque image (dans l'ordre : R, G et B)
+            $buf load $img
+
+            #--- au cas ou les seuils n'existeraient pas
+            $buf stat
+
+            #--- construit les en-tetes des seuils couleurs
+            set color [string map [list 1 R 2 G 3 B] $k]
+            foreach kwd { "MIPS-HI" "MIPS-LO" } level [ list "Hight" "Low" ] {
+               set val [ lindex [ $buf getkwd ${kwd} ] 1 ]
+               switch $color {
+                  R  {  set ${kwd}$color [ list ${kwd}$color $val float "Red $level Cut" "adu" ] }
+                  G  {  set ${kwd}$color [ list ${kwd}$color $val float "Green $level Cut" "adu" ] }
+                  B  {  set ${kwd}$color [ list ${kwd}$color $val float "Blue $level Cut" "adu" ] }
+               }
+            }
+
+            #--
+            set filename ${gene}$k$ext
+
+            #--- sauve les images avec un index numerique
+            $buf save $filename
+
+            #--- memorise les fichiers a detruire
+            lappend to_destroy $filename
+         }
+
+         #--- conversion en une image
+         fitsconvert3d ${gene} 3 $ext ${gene}
+         $buf load $nameOut
+
+         #--- inscrit les seuils couleurs dans l'en-tete
+         foreach kwd [ list "MIPS-LOR" "MIPS-HIR" "MIPS-LOG" "MIPS-HIG" "MIPS-LOB" "MIPS-HIB" ] {
+            $buf setkwd [ set $kwd ]
+         }
+         if {[$buf getkwd RGBFILTR] ne ""} {
+            $bud delkwd RGBFILTR
+         }
+
+         #--- sauve l'image couleur
+         $buf save $nameOut
+
+         ::confVisu::autovisu $visuNo
+
+         #--- supprime les images intermediaires
+         foreach file $to_destroy {
+            if {[file exists $file]} { file delete $file }
+         }
+      } msg ]
+
+      if { $err == "1" } {
+         ::trichro::errorMsg [format $caption(trichro,echec) $msg"]
+      }
+      return $err
+   }
+
+   #------------------------------------------------------------
+   #  getAllFiles
+   #  Filtre les images qui peuvent etre des plans couleurs
+   #  Parameter : none
+   #  Return : nb of files
+   #------------------------------------------------------------
+   proc getAllFiles { } {
+      variable private
+      variable bd
+      global audace caption
+
+      set dir $audace(rep_images)
+
+      #--   Liste les fichiers du repertoire images
+      set listeOfFiles [ glob -nocomplain -type f -type f -tails -dir $dir * ]
+
+      #--   arrete si la liste est vide
+      if {$listeOfFiles eq ""} {return 0}
+
+      set nbRGB   "0"
+      set nbCFA   "0"
+      set nbAutre "0"
+
+      #--   Filtre exclusivement les images en eliminant les fichiers .txt, .ser
+      foreach fichier $listeOfFiles {
+         set index [lsearch $listeOfFiles $fichier]
+         set err [ catch { set kwdsList [ fitsheader [file join $dir $fichier] ] } ]
+
+         if {$err == 0} {
+
+            #--   Cree un array avec les mots cles
+            foreach kwd $kwdsList {
+               array set kwds [list [lindex $kwd 0] [lindex $kwd 1]]
+            }
+
+            if {[lindex [array get kwds NAXIS3] 1] == 3} {
+               #--   Image couleur : supprime l'image de la liste
+               set listeOfFiles [lreplace $listeOfFiles $index $index]
+               incr nbRGB
+            } else {
+               #--   Image avec naxis == 2
+               set rgbfiltr  [lindex [array get kwds RGBFILTR] 1]
+               set rawfilte  [lindex [array get kwds RAWFILTE] 1]
+               set rawfilter [lindex [array get kwds RAWFILTER] 1]
+               #--   Plan couleur ou N&B (pas couleur ni CFA)
+               if {$rgbfiltr eq "" && $rawfilte eq "" && $rawfilter eq "" || $rgbfiltr ne "" } {
+                  set naxis1    [lindex [array get kwds NAXIS1] 1]
+                  set naxis2    [lindex [array get kwds NAXIS2] 1]
+                  #--   Plan couleur ou N&B (pas couleur ni CFA)
+                  array set bd [list $fichier [list $naxis1 $naxis2]]
+               } else {
+                  #--   Image CFA : supprime l'image de la liste
+                  set listeOfFiles [lreplace $listeOfFiles $index $index]
+                  incr nbCFA
+                }
+            }
+
+            array unset kwds
+         } else {
+            #--   Supprime le fichier (.txt, .ser, .CR2, erreur dans le FitsHeader, etc.) de la liste
+            set listeOfFiles [lreplace $listeOfFiles $index $index]
+            incr nbAutre
+         }
+      }
+
+      #--   Message dans la console
+      set tot [expr { $nbCFA+$nbRGB+$nbAutre }]
+      if {$tot != 0} {
+         ::trichro::errorMsg "[format $caption(trichro,manquant) $tot]"
+       }
+
+      set nb [llength $listeOfFiles]
+      if {$nb != 0} {
+         set private(files) $listeOfFiles
+      }
+
+      return $nb
+   }
+
+   #------------------------------------------------------------
+   #  buildGui
+   #  Interface graphique
+   #------------------------------------------------------------
+   proc buildGui { visuNo args } {
+      variable private
+      variable bd
+      global audace conf caption color
+
+      #--   Liste les fichiers du repertoire images et
+      #--   Arrete si pas de fichier valable
+      if {[::trichro::getAllFiles] == 0} {
+         ::trichro::errorMsg "$caption(trichro,no_file)"
+         return
+      }
+
+      set this $audace(base).trichro
+      if {[winfo exists $this]} {
+         destroy $this
+      }
+
+      if {![info exists conf(trichro,position)]} {
+         set conf(trichro,position) "+800+500"
+      }
+
+      #--- cree la fenetre
+      toplevel $this
+      wm resizable $this 0 0
+      wm title $this "$caption(audace,menu,trichro)"
+      wm geometry $this $conf(trichro,position)
+      wm protocol $this WM_DELETE_WINDOW "::trichro::cmdClose $this $visuNo"
+
+      frame $this.fr1 -relief raised -borderwidth 1
+      pack $this.fr1 -side top -ipady 5 -fill both -expand yes
+
+      #--   Calcule la largeur et la hauteur des combobox
+      set labelwidth [::tkutil::lgEntryComboBox $private(files)]
+      set len [llength  $private(files)]
+
+      #--   Selection du plan R
+      label $this.fr1.lab_red -text "$caption(trichro,red)"
+      grid $this.fr1.lab_red -row 0 -column 0 -sticky w
+
+      #--   cree la combobox des fichiers du repertoire
+      ComboBox $this.fr1.sel_red -textvariable ::trichro::private(selected_red) \
+         -relief sunken -height $len -width $labelwidth  \
+         -values $$private(files) -editable 0
+      grid $this.fr1.sel_red -row 0 -column 1 -columnspan 3 -sticky e
+
+      #--   Selection du plan G
+      label $this.fr1.lab_green -text "$caption(trichro,green)"
+      grid $this.fr1.lab_green -row 1 -column 0 -sticky w
+
+      #--   cree la combobox des fichiers du repertoire
+      ComboBox $this.fr1.sel_green -textvariable ::trichro::private(selected_green) \
+         -relief sunken -height $len -width $labelwidth  \
+         -values $$private(files) -editable 0
+      grid $this.fr1.sel_green -row 1 -column 1 -columnspan 3 -sticky e
+
+      #--   Selection du plan B
+      label $this.fr1.lab_blue -text "$caption(trichro,blue)"
+      grid $this.fr1.lab_blue -row 2 -column 0 -sticky w
+
+      #--   cree la combobox des fichiers du repertoire
+      ComboBox $this.fr1.sel_blue -textvariable ::trichro::private(selected_blue) \
+         -relief sunken -height $len -width $labelwidth  \
+         -values $private(files) -editable 0
+      grid $this.fr1.sel_blue -row 2 -column 1 -columnspan 3 -sticky e
+
+      #--   Definition du repertoire de sortie
+      label $this.fr1.lab_dest -text "$caption(trichro,dest)"
+      grid $this.fr1.lab_dest -row 3 -column 0 -sticky w
+
+      entry $this.fr1.dest -textvariable ::trichro::private(dest) \
+         -justify right -width $labelwidth -state disabled
+      grid $this.fr1.dest -row 3 -column 1 -columnspan 3 -sticky ew
+      $this.fr1.dest xview end
+
+      #--   cree le bouton "..."
+      button $this.fr1.search -text "$caption(trichro,search)" \
+         -width 2 -command {::trichro::getDirName}
+      grid $this.fr1.search -row 3 -column 4 -padx 5 -pady 10 -sticky news
+
+      #--   Définition du nom de l'image de sortie
+      label $this.fr1.lab_racine -text "$caption(trichro,name)"
+      grid $this.fr1.lab_racine -row 4 -column 0 -sticky w
+
+      entry $this.fr1.racine -textvariable ::trichro::private(racine) \
+         -justify right -width $labelwidth
+      grid $this.fr1.racine -row 4 -column 1 -columnspan 3 -sticky ew
+      bind $this.fr1.racine <Leave> {::trichro::testRacine}
+
+      grid columnconfigure $this.fr1 0 -weight 20 -pad 5
+      grid rowconfigure $this.fr1 [list 0 1 2 3 4] -pad 10
+
+      #--   cree le widget d'info
+
+      label $this.labURL -text "$caption(trichro,en_cours)" -justify center \
+         -borderwidth 1 -relief raised -fg $color(blue)
+
+      frame $this.cmd -relief raised -borderwidth 1
+
+         set cmdList [list apply left close right hlp right]
+         if { $conf(ok+appliquer)=="1" } {
+            set cmdList [linsert $cmdList 0 ok left]
+         }
+         foreach {but side} $cmdList  {
+            pack [button $this.cmd.$but -text "$caption(trichro,$but)" -width 10] \
+            -side $side -padx 10 -pady 3 -ipady 3
+         }
+         #-- specialisation des boutons
+         if {[winfo exists $this.cmd.ok]} {
+            $this.cmd.ok configure -command "::trichro::cmdOk $this $visuNo"
+         }
+         $this.cmd.apply configure -command "::trichro::cmdApply $this $visuNo"
+         $this.cmd.hlp configure   -command "::audace::showHelpItem $::help(dir,images) 1190trichro.htm"
+         $this.cmd.close configure -command "::trichro::cmdClose $this $visuNo"
+
+      pack $this.cmd -side bottom -fill both
+
+      #--   initialisation des variables
+      set private(selected_red)   "[lindex $private(files) 0]"
+      set private(selected_green) "$private(selected_red)"
+      set private(selected_blue)  "$private(selected_red)"
+      set private(dest)           "$audace(rep_images)"
+      set private(racine)         "$caption(trichro,racine)"
+
+      #--   Pour suivre le changement de repertoire image par l'utilisateur
+      if {[trace info variable audace(rep_images)] eq ""} {
+         trace add variable audace(rep_images) write "::trichro::buildGui $visuNo"
+      }
+
+      #--- La fenetre est active
+      focus $this
+
+      #--- mise a jour dynamique des couleurs
+      ::confColor::applyColor $this
+   }
+
+   #---------------------------------------------------------------------------
+   #  testRacine
+   #  Valide le nom
+   #---------------------------------------------------------------------------
+   proc testRacine { } {
+      variable private
+      global caption
+
+      set racine $private(racine)
+
+      #--   nom generique correct ?
+      regexp -all {[\w_-]+} $racine match
+
+      #--   si echec, message et retablit la valeur par defaut
+      if {![info exists match] || $match ne "$racine"} {
+         ::trichro::errorMsg "[format $caption(trichro,invalid) \"$racine\" "$caption(trichro,name)"]"
+         set private(racine) "$caption(trichro,racine)"
+      }
+   }
+
+   #------------------------------------------------------------
+   #  cmdOk
+   #  Parameter : chemin de la fenetre
+   #  Commande du bouton 'OK'
+   #------------------------------------------------------------
+   proc cmdOk { this visuNo } {
+
+      cmdApply $this $visuNo
+      cmdClose $this $visuNo
+   }
+
+   #------------------------------------------------------------
+   #  cmdApply
+   #  Commande du bouton 'Appliquer'
+   #------------------------------------------------------------
+   proc cmdApply { this visuNo} {
+      variable private
+      global audace caption conf
+
+      set dir $audace(rep_images)
+
+      ::trichro::configButtons $this disabled
+      set imagNameOut [file join $private(dest) $private(racine)$conf(extension,defaut)]
+
+      if {[::trichro::verify] == 0} {
+         set files [list \
+            [file join $dir $private(selected_red)] \
+            [file join $dir $private(selected_green)] \
+            [file join $dir $private(selected_blue)] \
+         ]
+         ::trichro::go2Trichro $visuNo $files $imagNameOut
+      } else {
+         ::trichro::errorMsg "$caption(trichro,err_dim)"
+      }
+      ::trichro::configButtons $this normal
+   }
+
+   #------------------------------------------------------------
+   #  verify
+   #     Verifie la coherence de la selection
+   #  Parameter : none
+   #  Return :
+   #------------------------------------------------------------
+   proc verify { } {
+      variable private
+      variable bd
+
+      set err 0
+      #-- Verifie si naxis1 (indice 0) et naxis2 (indice 1) des trois images sont identiques
+      foreach index [list 0 1] {
+         set dim1 [lindex [lindex [array get bd $private(selected_red)] 1 ] 0]
+         set dim2 [lindex [lindex [array get bd $private(selected_green)] 1 ] 0]
+         set dim3 [lindex [lindex [array get bd $private(selected_blue)] 1 ] 0]
+         if {$dim1 ne $dim2 || $dim1 ne $dim3} { incr err }
+      }
+
+      return $err
+   }
+
+   #---------------------------------------------------------------------------
+   #  configButtons
+   #  Inhibe/Desinhibe tous les boutons
+   #---------------------------------------------------------------------------
+   proc configButtons { this state } {
+
+      foreach w [list fr1.search cmd.ok cmd.apply cmd.hlp cmd.close] {
+         $this.$w configure -state $state
+      }
+      if {$state eq "normal"} {
+         pack forget $this.labURL
+      } else {
+         pack $this.labURL -ipady 5 -fill both
+      }
+      update
+   }
+
+   #------------------------------------------------------------
+   #  cmdClose
+   #  Commande du bouton 'Fermer'
+   #------------------------------------------------------------
+   proc cmdClose { this visuNo } {
+      global audace conf
+
+      #--   Supprime la trace
+      if {[trace info variable audace(rep_images)] ne ""} {
+         trace remove variable audace(rep_images) write "::trichro::buildGui $visuNo"
+      }
+
+      #--   equivalent de widgetToConf
+      regsub {([0-9]+x[0-9]+)} [wm geometry $this] "" conf(trichro,position)
+
+      destroy $this
+   }
+
+   #--------------------------------------------------------------------------
+   #  getDirName
+   #  Capture le nom d'un repertoire
+   #  Commande du bouton "..." de saisie du nom generique de sortie
+   #--------------------------------------------------------------------------
+   proc getDirName { } {
+      variable private
+      global audace caption
+
+      set initialDir $audace(rep_images)
+
+      set dirname [tk_chooseDirectory \
+         -title "$caption(trichro,dest)" \
+         -initialdir $initialDir]
+
+      if {$dirname eq "" || $dirname eq "$initialDir"} {
+         set dirname $initialDir
+      }
+
+      if {[string index $dirname end] ne "/"} {
+         append dirname "/"
+      }
+
+      set private(dest) $dirname
+   }
+
+   #------------------------------------------------------------
+   # Affiche une fenetre d'erreur
+   # parametre : contenu du message a afficher
+   #------------------------------------------------------------
+   proc errorMsg { msg } {
+      global caption
+
+      tk_messageBox -title $caption(trichro,attention)\
+         -icon error -type ok -message $msg
+   }
+
+}
+
+######################## Fin du namespace trichro ##########################
