@@ -16,8 +16,6 @@ package require math::statistics
 package require math::special
 package require math::linearalgebra
 
-set tcl_precision 17
-
       variable cols
       variable cdl
       variable nb

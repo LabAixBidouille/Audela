@@ -3,7 +3,7 @@
 #--------------------------------------------------
 #
 # Fichier        : gui_cdl_withwcs.tcl
-# Description    : Environnement d analyse de courbes de lumiere  
+# Description    : Environnement d analyse de courbes de lumiere
 #                  pour des images qui ont un wcs
 # Auteur         : Frederic Vachier
 # Mise à jour $Id: bddimages_liste.tcl 6858 2011-03-06 14:19:15Z fredvachier $
@@ -27,8 +27,6 @@ namespace eval gui_cdl_withwcs {
    proc ::gui_cdl_withwcs::inittoconf {  } {
 
      global bddconf
-   
-      set tcl_precision 17
 
       catch { unset ::tools_cdl::tabphotom                    }
       catch { unset ::tools_cdl::id_current_image             }
@@ -77,7 +75,7 @@ namespace eval gui_cdl_withwcs {
       set ::gui_cdl_withwcs::stoperreur 1
       set ::gui_cdl_withwcs::directaccess 1
 
-# Penser a retirer d ici lorsque modif createcata      
+# Penser a retirer d ici lorsque modif createcata
       ::gui_cata::inittoconf
 # -----------------------------------------------
 
@@ -122,7 +120,7 @@ namespace eval gui_cdl_withwcs {
       } else {
          gren_info "CHARGEMENT IMAGE DEPART\n"
          ::gui_cdl_withwcs::charge_current_image
-         
+
       }
    }
 
@@ -134,7 +132,7 @@ namespace eval gui_cdl_withwcs {
 
 
 
-   # Mesure photometrique d'une source sur l image courante. 
+   # Mesure photometrique d'une source sur l image courante.
 
    proc ::gui_cdl_withwcs::mesure_une { sources starx } {
 
@@ -145,7 +143,7 @@ namespace eval gui_cdl_withwcs {
                $::tools_cdl::tabsource($starx,delta) $::audace(bufNo)]} msg ]
 
       gren_info "PHOTOM $starx : $valeurs \n "
-      
+
       if { $valeurs == -1 } {
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,err) true
          $sources.ra.$starx configure -bg red
@@ -184,10 +182,10 @@ namespace eval gui_cdl_withwcs {
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snint)       [lindex $valeurs 10]
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,snpx)        [lindex $valeurs 11]
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,delta)       [lindex $valeurs 12]
-         
+
          set err [ catch {set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,maginstru)   [expr -log10([lindex $valeurs 5]/20000.)*2.5] } msg ]
          if {$err} {::console::affiche_erreur "Calcul mag_instru $err $msg $starx : $valeurs\n"}
-         
+
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,jjdate)      $::tools_cdl::current_image_jjdate
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,isodate)     $::tools_cdl::current_image_date
 
@@ -209,9 +207,9 @@ namespace eval gui_cdl_withwcs {
             #gren_info "DIFF $starx (mas): $xsmdiff $ysmdiff \n"
 
 
-            $sources.ra.$starx   delete 0 end 
+            $sources.ra.$starx   delete 0 end
             $sources.ra.$starx   insert end $ra_hms
-            $sources.dec.$starx  delete 0 end 
+            $sources.dec.$starx  delete 0 end
             $sources.dec.$starx  insert end $dec_dms
             $sources.mag.$starx  configure -bg "#ece9d8"
 
@@ -221,13 +219,13 @@ namespace eval gui_cdl_withwcs {
 
       }
 
-      
+
 # Recherche du Meilleur Delta
 
-         
+
       if { $::tools_cdl::bestdelta == 1 } {
 
-      
+
          for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
 
             set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) false
@@ -257,7 +255,7 @@ namespace eval gui_cdl_withwcs {
                   ::console::affiche_erreur "calcul mag_instru  $err $msg OBJ=$starx DELTA=[lindex $valeurs 12] FLUX=[lindex $valeurs 5] : $valeurs\n"
                }
 
-               
+
 
                if { [lindex $valeurs 7] > $::tools_cdl::saturation} {
                   set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,search_delta,$rdelta,err) true
@@ -272,7 +270,7 @@ namespace eval gui_cdl_withwcs {
          }
       # fin if bestdelta
       }
-      
+
       return
    }
 
@@ -299,9 +297,9 @@ namespace eval gui_cdl_withwcs {
       set err [catch {set resultcount [::bddimages_sql::sql select $sqlcmd]} msg]
       if {$err} {
          ::console::affiche_erreur "Erreur maj de la table $tabname\n"
-         ::console::affiche_erreur "	    sqlcmd = $sqlcmd\n"
-         ::console::affiche_erreur "	    err = $err\n"
-         ::console::affiche_erreur "	    msg = $msg\n"
+         ::console::affiche_erreur "       sqlcmd = $sqlcmd\n"
+         ::console::affiche_erreur "       err = $err\n"
+         ::console::affiche_erreur "       msg = $msg\n"
          return
       }
 
@@ -352,8 +350,8 @@ namespace eval gui_cdl_withwcs {
 
 
 
-  
-   
+
+
 
 
 
@@ -361,7 +359,7 @@ namespace eval gui_cdl_withwcs {
    proc ::gui_cdl_withwcs::get_stdev { magref starref star } {
 
       set mag ""
-      
+
       for {set i 0} {$i<$::tools_cdl::nb_img_list} {incr i} {
          if {  [info exists ::tools_cdl::tabphotom($i,$starref,fluxintegre) ] } {
             set fluxref $::tools_cdl::tabphotom($i,$starref,fluxintegre)
@@ -378,13 +376,13 @@ namespace eval gui_cdl_withwcs {
       foreach m $mag  {
          set sum [expr $sum + $m]
          incr cpt
-      }   
+      }
       set moy [expr $sum / $cpt ]
 
       set sum 0
       foreach m $mag  {
          set sum [expr $sum + pow($m - $moy,2)]
-      }   
+      }
       set stdev [expr sqrt($sum/$cpt)]
       return [list $moy $stdev]
    }
@@ -546,9 +544,9 @@ namespace eval gui_cdl_withwcs {
 
       # Mesure photometrique des etoiles
       set fluxref $::tools_cdl::tabphotom($::tools_cdl::id_current_image,$::tools_cdl::starref,fluxintegre)
-      
+
       for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
-         if { "star$x" == "$::tools_cdl::starref" } { 
+         if { "star$x" == "$::tools_cdl::starref" } {
             set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,mag) $::tools_cdl::magref
             if { $::tools_cdl::bestdelta == 1 } {
                for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
@@ -617,7 +615,7 @@ namespace eval gui_cdl_withwcs {
          $sources.mag.obj   configure -text [format "%2.3f" $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,mag)]
          $sources.stdev.obj configure -text [format "%2.3f" [lindex $val 1]]
       }
- 
+
       return
    }
 
@@ -651,7 +649,7 @@ namespace eval gui_cdl_withwcs {
       for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
          if { "star$x" == "$::tools_cdl::starref"} {
             if { [::gui_cdl_withwcs::is_good "star$x"] } {
-               $sources.name.$::tools_cdl::starref configure -foreground blue 
+               $sources.name.$::tools_cdl::starref configure -foreground blue
                set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) / 2.0 ]
                affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,x) \
                                  $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) \
@@ -659,45 +657,45 @@ namespace eval gui_cdl_withwcs {
             }
          } else {
             if { [::gui_cdl_withwcs::is_good "star$x"] } {
-               $sources.name.star$x configure -foreground darkgreen 
+               $sources.name.star$x configure -foreground darkgreen
                set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) / 2.0 ]
                affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,x) \
                                  $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) \
                                  green $radius 1
             } else {
                if { [::gui_cdl_withwcs::is_selected "star$x"] } {
-                  $sources.name.star$x configure -foreground red 
+                  $sources.name.star$x configure -foreground red
                   set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(star$x,delta)) / 2.0]
                   affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,x) \
                                     $::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) \
                                     red $radius 1
                } else {
-                  $sources.name.star$x configure -foreground black 
-               
+                  $sources.name.star$x configure -foreground black
+
                }
             }
          }
       }
-      
+
       if { [::gui_cdl_withwcs::is_good "obj"] } {
-         $sources.name.obj configure -foreground darkgreen 
+         $sources.name.obj configure -foreground darkgreen
          set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(obj,delta)) / 2.0 ]
          affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,x) \
                            $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,y) \
                            yellow $radius 1
       } else {
          if { [::gui_cdl_withwcs::is_selected "obj"] } {
-            $sources.name.obj configure -foreground red 
+            $sources.name.obj configure -foreground red
             set radius [expr floor ([::confVisu::getZoom $::audace(visuNo)] * $::tools_cdl::tabsource(obj,delta)) / 2.0 ]
             affich_un_rond_xy $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,x) \
                               $::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,y) \
                               red $radius 1
          } else {
-            $sources.name.obj configure -foreground black 
-         
+            $sources.name.obj configure -foreground black
+
          }
       }
-      
+
 
 
       return
@@ -718,7 +716,7 @@ namespace eval gui_cdl_withwcs {
 
 
    proc ::gui_cdl_withwcs::change_refstars { sources } {
-      
+
       gren_info "nb stars = $::gui_cdl_withwcs::nbstars \n"
 
       if {$::gui_cdl_withwcs::nbstars ==1 && $::gui_cdl_withwcs::nbstarssav == 1} {
@@ -731,12 +729,12 @@ namespace eval gui_cdl_withwcs {
 
          set x $::gui_cdl_withwcs::nbstarssav
 
-         destroy $sources.name.star$x   
-         destroy $sources.ra.star$x     
-         destroy $sources.dec.star$x    
-         destroy $sources.mag.star$x    
-         destroy $sources.delta.star$x  
-         destroy $sources.select.star$x 
+         destroy $sources.name.star$x
+         destroy $sources.ra.star$x
+         destroy $sources.dec.star$x
+         destroy $sources.mag.star$x
+         destroy $sources.delta.star$x
+         destroy $sources.select.star$x
 
       } else {
 
@@ -746,7 +744,7 @@ namespace eval gui_cdl_withwcs {
          entry   $sources.ra.star$x   -relief sunken -width 11
          entry   $sources.dec.star$x  -relief sunken -width 11
          label   $sources.mag.star$x  -width 9
-         label   $sources.stdev.star$x -width 9 
+         label   $sources.stdev.star$x -width 9
          spinbox $sources.delta.star$x -from 1 -to 100 -increment 1 -command "" -width 3 \
                    -command "::gui_cdl_withwcs::mesure_tout $sources" \
                    -textvariable ::tools_cdl::tabsource(star$x,delta)
@@ -758,7 +756,7 @@ namespace eval gui_cdl_withwcs {
          pack $sources.mag.star$x    -in $sources.mag    -side top -pady 2 -ipady 2
          pack $sources.stdev.star$x  -in $sources.stdev  -side top -pady 2 -ipady 2
          pack $sources.delta.star$x  -in $sources.delta  -side top -pady 2 -ipady 2
-         pack $sources.select.star$x -in $sources.select -side top 
+         pack $sources.select.star$x -in $sources.select -side top
 
          set ::tools_cdl::tabsource(star$x,delta) 15
       }
@@ -787,7 +785,7 @@ namespace eval gui_cdl_withwcs {
 
 
    proc ::gui_cdl_withwcs::select_source { sources starx } {
-      
+
       gren_info "source = $starx \n"
       gren_info "delta = $::tools_cdl::tabsource($starx,delta) \n"
 
@@ -801,7 +799,7 @@ namespace eval gui_cdl_withwcs {
             ::console::affiche_erreur "      * * * *\n"
             ::console::affiche_erreur "Selectionnez un cadre dans l'image\n"
             ::console::affiche_erreur "      * * * *\n"
-           
+
             return
          }
          set err [ catch {set valeurs [::tools_cdl::select_obj $rect $::audace(bufNo)]} msg ]
@@ -813,7 +811,7 @@ namespace eval gui_cdl_withwcs {
             return
          }
 
-         
+
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,x) [lindex $valeurs 0]
          set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,$starx,y) [lindex $valeurs 1]
          set ::tools_cdl::tabsource($starx,select) true
@@ -822,17 +820,17 @@ namespace eval gui_cdl_withwcs {
       } else {
          $sources.select.$starx  configure -relief raised
          set ::tools_cdl::tabsource($starx,select) false
-         if { "$::tools_cdl::starref" == "$starx" } { 
+         if { "$::tools_cdl::starref" == "$starx" } {
             unset ::tools_cdl::starref
             unset ::tools_cdl::magref
          }
       }
 
       ::gui_cdl_withwcs::mesure_tout $sources
-     
+
    }
 
-         
+
 
 
 
@@ -866,13 +864,13 @@ namespace eval gui_cdl_withwcs {
 
 # random --
 #
-#	Return a number in the range 0 .. $range-1
+#  Return a number in the range 0 .. $range-1
 #
 # Arguments:
-#	range    integer range constraint
+#  range    integer range constraint
 #
 # Results:
-#	Number in range [0..$range)
+#  Number in range [0..$range)
 #
 proc random {{range 100}} {
     return [expr {int(rand()*$range)}]
@@ -895,11 +893,11 @@ proc random {{range 100}} {
 
 
       set log 0
- 
+
       if {$log} {gren_info "\nExtrapolation d orbite\n"}
 
      set nbpt 0
-      
+
       for {set i 0} {$i<$::tools_cdl::nb_img_list} {incr i} {
 
          if { [info exists ::tools_cdl::tabphotom($i,obj,ra_deg)  ] && [info exists ::tools_cdl::tabphotom($i,obj,dec_deg) ] && [info exists ::tools_cdl::tabphotom($i,obj,jjdate)  ] } {
@@ -912,23 +910,23 @@ proc random {{range 100}} {
          }
 
       }
-      
+
       if {$log} {gren_info "nb points : $nbpt \n"}
 
       if { $nbpt == 0 } {
           # Avec zero point on peut rien faire
          return
       }
-      
+
       if { $nbpt == 1 } {
           # Avec un point on peut rien faire
           set ra  $tab(0,ra)
           set dec $tab(0,dec)
       } else {
-      
+
           #gren_info "nbporbit = $::tools_cdl::nbporbit\n"
-          
-          if { $nbpt < $::tools_cdl::nbporbit} { 
+
+          if { $nbpt < $::tools_cdl::nbporbit} {
              if {$nbpt == 2 } { set nbporbit 2}
              if {$nbpt == 3 } { set nbporbit 3}
              if {$nbpt == 4 } { set nbporbit 3}
@@ -939,8 +937,8 @@ proc random {{range 100}} {
           } else {
              set nbporbit $::tools_cdl::nbporbit
           }
-          
-          
+
+
           set c 0
           set part [ expr ($nbpt-1.0) / ($nbporbit-1.0) ]
           set i 0
@@ -950,8 +948,8 @@ proc random {{range 100}} {
              set c [expr ($c + $part)]
              incr i
           }
-                
-      
+
+
           # A Partir de 2 points on peut interpoler
           set  aa ""
           set  ad ""
@@ -960,10 +958,10 @@ proc random {{range 100}} {
                  set i $id($xi)
                  set j $id($xj)
                  #gren_info "i j  =  $i $j\n"
-                 lappend aa [expr ( $tab($i,ra)  - $tab($j,ra)   ) / ( $tab($i,date) - $tab($j,date) )] 
-                 lappend ad [expr ( $tab($i,dec) - $tab($j,dec)  ) / ( $tab($i,date) - $tab($j,date) )] 
-                 #lappend ba [expr ( $tab($j,ra)  * $tab($i,date)  -  $tab($i,ra)   * $tab($j,date) ) / ( $tab($i,date) - $tab($j,date) ) ] 
-                 #lappend bd [expr ( $tab($j,dec) * $tab($i,date)  -  $tab($i,dec)  * $tab($j,date) ) / ( $tab($i,date) - $tab($j,date) ) ] 
+                 lappend aa [expr ( $tab($i,ra)  - $tab($j,ra)   ) / ( $tab($i,date) - $tab($j,date) )]
+                 lappend ad [expr ( $tab($i,dec) - $tab($j,dec)  ) / ( $tab($i,date) - $tab($j,date) )]
+                 #lappend ba [expr ( $tab($j,ra)  * $tab($i,date)  -  $tab($i,ra)   * $tab($j,date) ) / ( $tab($i,date) - $tab($j,date) ) ]
+                 #lappend bd [expr ( $tab($j,dec) * $tab($i,date)  -  $tab($i,dec)  * $tab($j,date) ) / ( $tab($i,date) - $tab($j,date) ) ]
              }
           }
           set  aa [lsort $aa]
@@ -997,7 +995,7 @@ proc random {{range 100}} {
           set ra  [expr $aa * $::tools_cdl::current_image_jjdate + $ba]
           set dec [expr $ad * $::tools_cdl::current_image_jjdate + $bd]
        }
-       
+
        # Transformation en coordonnees XY
        if {$log} {gren_info "coord =  $ra $dec\n"}
 
@@ -1030,11 +1028,11 @@ proc random {{range 100}} {
       if { ! [info exists ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,x) ] \
         || ! [info exists ::tools_cdl::tabphotom($::tools_cdl::id_current_image,obj,y) ]  } {
          gren_info "obj n existe pas \n"
-        
+
          if {$::tools_cdl::movingobject } {
             ::gui_cdl_withwcs::mobile
          } else {
-         
+
             for {set i 0} {$i<$::tools_cdl::nb_img_list} {incr i} {
 
                if { [info exists ::tools_cdl::tabphotom($i,obj,ra_deg) ] && [info exists ::tools_cdl::tabphotom($i,obj,dec_deg) ] } {
@@ -1060,7 +1058,7 @@ proc random {{range 100}} {
             gren_info "star$x n existe pas \n"
 
             for {set i 0} {$i<$::tools_cdl::nb_img_list} {incr i} {
-            
+
                if { [info exists ::tools_cdl::tabphotom($i,star$x,ra_deg) ] && [info exists ::tools_cdl::tabphotom($i,star$x,dec_deg) ] } {
                   set ra_deg  $::tools_cdl::tabphotom($i,star$x,ra_deg)
                   set dec_deg $::tools_cdl::tabphotom($i,star$x,dec_deg)
@@ -1069,11 +1067,11 @@ proc random {{range 100}} {
                   set ::tools_cdl::tabphotom($::tools_cdl::id_current_image,star$x,y) [lindex $xy 1]
                   break
                }
-               
+
             }
 
 
-         } 
+         }
 
       }
 
@@ -1094,9 +1092,9 @@ proc random {{range 100}} {
    proc ::gui_cdl_withwcs::next { sources } {
 
          set cpt 0
-         
+
          while {$cpt<$::gui_cdl_withwcs::block} {
-         
+
             if {$::tools_cdl::id_current_image < $::tools_cdl::nb_img_list} {
                incr ::tools_cdl::id_current_image
                ::gui_cdl_withwcs::charge_current_image
@@ -1131,7 +1129,7 @@ proc random {{range 100}} {
             set ::gui_cdl_withwcs::directaccess 1
          }
          set ::gui_cdl_withwcs::directaccess $::tools_cdl::id_current_image
-         
+
          ::gui_cdl_withwcs::charge_current_image
          ::gui_cdl_withwcs::extrapole
          set err [::gui_cdl_withwcs::mesure_tout $sources]
@@ -1151,9 +1149,6 @@ proc random {{range 100}} {
       global audace
       global bddconf
 
-         set tcl_precision 17
-
-
          #�Charge l image en memoire
          set ::tools_cdl::current_image [lindex $::tools_cdl::img_list [expr $::tools_cdl::id_current_image - 1] ]
          set tabkey      [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
@@ -1170,19 +1165,19 @@ proc random {{range 100}} {
 
          gren_info "\nCharge Image cur: $date  ($exposure)\n"
          #gren_info "Charge Image cur: $::tools_cdl::current_image_date ($::tools_cdl::current_image_jjdate) \n"
-         
+
          #�Charge l image
          buf$::audace(bufNo) load $file
          cleanmark
-       
+
          # EFFECTUE UNCOSMIC
          if {$::tools_cdl::uncosm == 1} {
             ::tools_cdl::myuncosmic $::audace(bufNo)
          }
-         
+
          # VIsualisation par Sseuil automatique
          ::audace::autovisu $::audace(visuNo)
-          
+
          #�Mise a jour GUI
          $::gui_cdl_withwcs::fen.frm_cdlwcs.bouton.back configure -state disabled
          $::gui_cdl_withwcs::fen.frm_cdlwcs.bouton.back configure -state disabled
@@ -1204,8 +1199,8 @@ proc random {{range 100}} {
          if {$::tools_cdl::id_current_image < $::tools_cdl::nb_img_list } {
             $::gui_cdl_withwcs::fen.frm_cdlwcs.bouton.next configure -state normal
          }
-         
-                  
+
+
       # Affichage des asteroides dans l image
       set catafilenameexist [::bddimages_liste::lexist $::tools_cdl::current_image "catafilename"]
       if {$catafilenameexist==0} {return}
@@ -1219,7 +1214,7 @@ proc random {{range 100}} {
       ##set listsources [::tools_sources::set_common_fields_skybot $listsources]
       affich_rond $listsources SKYBOT $::gui_cata::color_skybot 1
       catch { file delete -force  $catafile}
-      
+
    }
 
 
@@ -1233,15 +1228,13 @@ proc random {{range 100}} {
       global audace
       global bddconf
 
-         set tcl_precision 17
-      
       # Chargement de la liste
       set ::tools_cdl::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
       set ::tools_cdl::nb_img_list [llength $::tools_cdl::img_list]
 
       # Verification du WCS
       foreach ::tools_cdl::current_image $::tools_cdl::img_list {
-         set tabkey      [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
+         set tabkey     [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
          set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
          set idbddimg    [::bddimages_liste::lget $::tools_cdl::current_image idbddimg]
          set bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
@@ -1321,7 +1314,7 @@ proc random {{range 100}} {
       global bddconf
 
 
-      
+
       ::gui_cdl_withwcs::inittoconf
       ::gui_cdl_withwcs::charge_list $img_list
 
@@ -1378,7 +1371,7 @@ proc random {{range 100}} {
              #--- Cree un checkbutton
              checkbutton $move.check -highlightthickness 0 -text "Objet en mouvement" -variable ::tools_cdl::movingobject
              pack $move.check -in $move -side left -padx 5 -pady 0
-  
+
         #--- Nb points pour deplacement
         set nbporbit [frame $frm.nbporbit -borderwidth 0 -cursor arrow -relief groove]
         pack $nbporbit -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -1400,7 +1393,7 @@ proc random {{range 100}} {
              spinbox $photom.max -from 1 -to 100 -increment 1 -command "" -width 3  \
                    -textvariable ::tools_cdl::deltamax
              pack  $photom.max -in $photom -side left -anchor w
-  
+
         #--- Niveau de saturation (ADU)
         set saturation [frame $frm.saturation -borderwidth 0 -cursor arrow -relief groove]
         pack $saturation -in $frm -anchor s -side top -expand 0 -fill x -padx 5 -pady 5
@@ -1466,7 +1459,7 @@ proc random {{range 100}} {
                 -justify center
              pack $directaccess.val -in $directaccess -side left -pady 1 -anchor w
              button $directaccess.go -text "Go" -borderwidth 1 -takefocus 1 \
-                -command "::gui_cdl_withwcs::go $sources" 
+                -command "::gui_cdl_withwcs::go $sources"
              pack $directaccess.go -side left -anchor e \
                 -padx 2 -pady 2 -ipadx 2 -ipady 2 -expand 0
 
@@ -1502,10 +1495,10 @@ proc random {{range 100}} {
 
 #--- Info etat avancement
 
- 
- 
- 
- 
+
+
+
+
         #--- Cree un frame pour afficher info image
         set infoimage [frame $frm.infoimage -borderwidth 0 -cursor arrow -relief groove]
         pack $infoimage -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -1531,21 +1524,21 @@ proc random {{range 100}} {
 
 
         #--- Sources
-        pack $sources -in $frm -anchor s -side top 
+        pack $sources -in $frm -anchor s -side top
            set name [frame $sources.name -borderwidth 0 -cursor arrow -relief groove]
-           pack $name -in $sources -anchor s -side left 
+           pack $name -in $sources -anchor s -side left
            set ra [frame $sources.ra -borderwidth 0 -cursor arrow -relief groove]
-           pack $ra -in $sources -anchor s -side left 
+           pack $ra -in $sources -anchor s -side left
            set dec [frame $sources.dec -borderwidth 0 -cursor arrow -relief groove]
-           pack $dec -in $sources -anchor s -side left 
+           pack $dec -in $sources -anchor s -side left
            set mag [frame $sources.mag -borderwidth 0 -cursor arrow -relief groove]
-           pack $mag -in $sources -anchor s -side left 
+           pack $mag -in $sources -anchor s -side left
            set stdev [frame $sources.stdev -borderwidth 0 -cursor arrow -relief groove]
-           pack $stdev -in $sources -anchor s -side left 
+           pack $stdev -in $sources -anchor s -side left
            set delta [frame $sources.delta -borderwidth 0 -cursor arrow -relief groove]
-           pack $delta -in $sources -anchor s -side left 
+           pack $delta -in $sources -anchor s -side left
            set select [frame $sources.select -borderwidth 0 -cursor arrow -relief groove]
-           pack $select -in $sources -anchor s -side left 
+           pack $select -in $sources -anchor s -side left
 
 
         #--- Objet
@@ -1553,8 +1546,8 @@ proc random {{range 100}} {
             label $name.obj    -text "Objet :"
             entry $ra.obj      -relief sunken -width 11
             entry $dec.obj     -relief sunken -width 11
-            label $mag.obj     -width 9 
-            label $stdev.obj   -width 9 
+            label $mag.obj     -width 9
+            label $stdev.obj   -width 9
             spinbox $delta.obj -from 1 -to 100 -increment 1 -command "" -width 3 \
                    -command "::gui_cdl_withwcs::mesure_tout $sources" \
                    -textvariable ::tools_cdl::tabsource(obj,delta)
@@ -1566,13 +1559,13 @@ proc random {{range 100}} {
             pack $mag.obj    -in $mag    -side top -pady 2 -ipady 2
             pack $stdev.obj  -in $stdev  -side top -pady 2 -ipady 2
             pack $delta.obj  -in $delta  -side top -pady 2 -ipady 2
-            pack $select.obj -in $select -side top  
+            pack $select.obj -in $select -side top
 
             label $name.star1    -text "Star1 :"
             entry $ra.star1      -relief sunken -width 11
             entry $dec.star1     -relief sunken -width 11
             label $mag.star1     -width 9 -textvariable ::tools_cdl::firstmagref
-            label $stdev.star1   -width 9 
+            label $stdev.star1   -width 9
             spinbox $delta.star1 -from 1 -to 100 -increment 1 -width 3 \
                    -command "::gui_cdl_withwcs::mesure_tout $sources" \
                    -textvariable ::tools_cdl::tabsource(star1,delta)
@@ -1584,7 +1577,7 @@ proc random {{range 100}} {
             pack $mag.star1    -in $mag    -side top -pady 2 -ipady 2
             pack $stdev.star1  -in $stdev  -side top -pady 2 -ipady 2
             pack $delta.star1  -in $delta  -side top -pady 2 -ipady 2
-            pack $select.star1 -in $select -side top    
+            pack $select.star1 -in $select -side top
 
 
 
@@ -1639,17 +1632,17 @@ proc random {{range 100}} {
    proc ::gui_cdl_withwcs::stat_mag2 { } {
 
       global bddconf
-      
+
       # creation des nom de fichier de sortie
       set ::tools_cdl::current_image [lindex $::tools_cdl::img_list 0 ]
       set tabkey      [::bddimages_liste::lget $::tools_cdl::current_image "tabkey"]
       set date        [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"]   1] ]
       set date [string range $date 0 9]
-      
+
       if {${::tools_cdl::nomobj}==""} {
-         set ::tools_cdl::nomobj "Unknown" 
+         set ::tools_cdl::nomobj "Unknown"
       }
-      
+
       set dirsave [file join $::tools_cdl::savedir "CDL_${date}_${::tools_cdl::nomobj}"]
       createdir_ifnot_exist $dirsave
 
@@ -1657,10 +1650,10 @@ proc random {{range 100}} {
       set ldelta ""
       if { $::tools_cdl::bestdelta == 1 } {
          for {set rdelta $::tools_cdl::deltamin} {$rdelta<=$::tools_cdl::deltamax} {incr rdelta} {
-            set ldelta [lappend ldelta $rdelta] 
+            set ldelta [lappend ldelta $rdelta]
          }
       }
-      
+
       foreach delta $ldelta {
          gren_info "$delta "
       }
@@ -1685,7 +1678,7 @@ proc random {{range 100}} {
       # Entete
 
          # Standard
-         set line "i,dateiso,datejj"    
+         set line "i,dateiso,datejj"
          append line [header_line_std obj]
          for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
              append line [header_line_std star$x]
@@ -1693,7 +1686,7 @@ proc random {{range 100}} {
          puts $f_std $line
 
          # Compact
-         set line "i,dateiso,datejj"    
+         set line "i,dateiso,datejj"
          append line [header_line_cpt obj]
          for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
              append line [header_line_cpt star$x]
@@ -1701,7 +1694,7 @@ proc random {{range 100}} {
          puts $f_cpt $line
 
          # Excel Fr
-         set line "i dateiso datejj"    
+         set line "i dateiso datejj"
          append line [header_line_exl obj]
          for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
              append line [header_line_exl star$x]
@@ -1709,7 +1702,7 @@ proc random {{range 100}} {
          puts $f_exl $line
 
          # Exploration du Delta
-         set line "i,dateiso,datejj"    
+         set line "i,dateiso,datejj"
          append line [header_line_std obj]
          for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
              append line [header_line_std star$x]
@@ -1743,7 +1736,7 @@ proc random {{range 100}} {
             foreach delta $ldelta {
                append line_delta($delta) [insert_line_delta $i obj $delta]
             }
-            
+
             # Etoiles de Reference
             for {set x 1} {$x<=$::gui_cdl_withwcs::nbstars} {incr x} {
                append line_std [insert_line_std $i star$x]
@@ -1822,11 +1815,11 @@ proc random {{range 100}} {
       if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ","}
       return $line
    }
-   
+
    proc field_std { x } {
       return ",$x"
    }
-   
+
 
 # Donnee Compacte : comprend le minimum pour faire une Courbe de lumiere
 
@@ -1888,7 +1881,7 @@ proc random {{range 100}} {
       return $line
    }
 
-   
+
    proc field_exl { x } {
       set x [regsub -all \[.\] $x ,]
       return " $x"
@@ -1922,10 +1915,11 @@ proc random {{range 100}} {
       if { [info exists ::tools_cdl::tabphotom($i,${n},saturation) ] } {append line ",$::tools_cdl::tabphotom($i,${n},saturation)" } else {append line ","}
       return $line
    }
-   
+
 
 
 
 
 # Fin du namespace
 }
+

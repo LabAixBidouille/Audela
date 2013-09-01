@@ -5,10 +5,10 @@
 #  @version   1.0
 #  @date      2013
 #  @copyright GNU Public License.
-#  @par Ressource 
+#  @par Ressource
 #  @code  source [file join $audace(rep_install) gui audace plugin tool bddimages bddimages_go.tcl]
 #  @endcode
-#  @todo      Normaliser l'ensemble des noms des fichiers sources 
+#  @todo      Normaliser l'ensemble des noms des fichiers sources
 
 # Mise à jour $Id$
 
@@ -66,7 +66,7 @@ proc ::bddimages::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 ## Initialisation du plugin
-#  @param tkbase 
+#  @param tkbase
 #  @return void
 #
 proc ::bddimages::initPlugin { tkbase } {
@@ -103,8 +103,6 @@ proc ::bddimages::initPlugin { tkbase } {
    set bddconf(extension_bdd) ".fits.gz"
    set bddconf(extension_tmp) ".fit"
 
-   set tcl_precision 17
-
    set ::bddimages::log_level "Info"
 
 }
@@ -119,7 +117,7 @@ proc ::bddimages::createPluginInstance { { in "" } { visuNo 1 } } {
 
    global audace
 
-   #--- Chargement des packages 
+   #--- Chargement des packages
    package require tablelist
    package require math::statistics
 
@@ -196,7 +194,7 @@ proc ::bddimages::ressource {  } {
 
    # Anciennes facon de nommage des routines
 
-   
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.tcl ]\""
@@ -433,7 +431,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
       pack $This.log -side top -fill x
 
          #--- Bouton de choix du niveau de log
-         label $This.log.lab -text "Log:" 
+         label $This.log.lab -text "Log:"
          menubutton $This.log.b -menu $This.log.b.m -textvar ::bddimages::log_level -width 10 -relief groove
          menu $This.log.b.m -tearoff 0
          $This.log.b.m add command -label "No"    -command {set ::bddimages::log_level "No"}
