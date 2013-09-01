@@ -1335,6 +1335,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
 
    set pressure    $::audace(meteo,obs,pressure)
    set temperature $::audace(meteo,obs,temperature)
+   set humidity    $::audace(meteo,obs,humidity)
    set date        [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
 
    #--- je calcule les coordonnées apparentes
@@ -1354,6 +1355,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #    Home        : position GPS de l'observatoire
    #    Pressure    : pression atmospherique, 101325 Pa, audace(meteo,obs,pressure)
    #    Temperature : temperature de l'air, 290 K, audace(meteo,obs,temperature)
+   #    Humidité    : hygrometrie de l'air, %, audace(meteo,obs,humidity)
    #    List_ModelSymbols
    #    List_ModelValues
    # @return
@@ -1373,7 +1375,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    #  13 az    AZ  apres correction modele de pointage
    #  14 h     EL  apres correction modele de pointage
 
-   set coords [mc_hip2tel $hipRecord $date $private(home) $pressure $temperature]
+   set coords [mc_hip2tel $hipRecord $date $private(home) $pressure $temperature -humidity $humidity]
    set raApp [lindex $coords 0]
    set deApp [lindex $coords 1]
    set haApp [lindex $coords 2]
