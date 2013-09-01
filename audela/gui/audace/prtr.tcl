@@ -1643,6 +1643,11 @@ namespace eval ::prtr {
       dict set STACK "$caption(audace,menu,obturateur)"           hlp "$help(dir,docLibtt) ttus1-fr.htm SHUTTER"
       dict set STACK "$caption(audace,menu,obturateur)"           par ""
       dict set STACK "$caption(audace,menu,obturateur)"           opt "$options nullpixel 0."
+      dict set STACK "$caption(audace,menu,drizzle)"              fun DRIZZLEWCS
+      dict set STACK "$caption(audace,menu,drizzle)"              hlp "$help(dir,docLibtt) ttus1-fr.htm DRIZZLEWCS"
+      dict set STACK "$caption(audace,menu,drizzle)"              par "drop_sizepix 0.5 oversampling 2"
+      dict set STACK "$caption(audace,menu,drizzle)"              opt "$options nullpixel 0."
+
 
       return [::prtr::consultDic STACK $function]
    }
@@ -2144,7 +2149,8 @@ namespace eval ::prtr {
       dict set Var   matchwcs          "boolean checkbutton"         ;#REGISTER
       dict set Var   translate         "alpha combobox"              ;#REGISTER
       dict set Var   delta             "integer labelentry"          ;#REGISTERFINE
-      dict set Var   oversampling      "integer labelentry"          ;#REGISTERFINE
+      dict set Var   oversampling      "integer labelentry"          ;#REGISTERFINE DRIZZLEWCS
+      dict set Var   drop_sizepix      "double labelentry"           ;#DRIZZLEWCS
    }
 
    #--------------------------------------------------------------------------
