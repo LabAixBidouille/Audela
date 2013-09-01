@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>Conversion SER -&gt; FITS</title></head><body>
+<p class="date">Date de mise à jour : 31 août 2013</p>
+<h1>Trichromie directe</h1>
+Cette fonction s'adresse &#224; des utilisateurs souhaitant
+mettre en &#339;uvre la technique du Mapped Color ou Trichromie
+directe sans cr&#233;er sp&#233;cifiquement les plans couleurs
+interm&#233;diaires.
+<table summary="">
+<tbody>
+<tr>
+<td><img style="width: 368px; height: 250px;" alt="" src=
+"images/trichro.gif" /></td>
+<td style="padding-left: 1em;">Cette interface ne s'ouvre que si
+le r&#233;pertoire images contient des fichiers <b>valides</b>
+pour &#234;tre trait&#233;s. Par fichier <b>valide</b>, on entend
+des fichiers d'images qui ne soient ni des images RAW, CFA ou
+RGB. Bien entendu, des fichiers qui ne sont pas des images FITS
+(exemple .ser ou .txt) ne sont pas non plus propos&#233;s. De
+m&#234;me des fichiers d'images dont les mots cl&#233;s seraient
+corrompus on non conformes sont &#233;cart&#233;s. Lors du
+lancement un message indique si le r&#233;pertoire ne contient
+aucune image valide ou le nombre de fichiers non valides.
+<ul>
+<li>Trois s&#233;lecteurs, un pour choisir le plan rouge, un
+second pour le plan vert et un troisi&#232;me pour le plan bleu,
+proposent la m&#234;me liste des fichiers contenus dans le
+r&#233;pertoire s&#233;lectionn&#233;. Au lancement les trois
+proposent le m&#234;me fichier (le premier de la liste).</li>
+<li>Un s&#233;lecteur de r&#233;pertoire de destination : Un
+bouton annexe permet de le modifier (il doit exister).</li>
+<li>La quatri&#232;me ligne permet de modifier le nom de sortie.
+Seuls les caract&#232;res alphanum&#233;riques, le tiret <b>-</b>
+et le undescore <b>_</b> sont admis (pas les points ni les
+espaces).</li>
+<li>3 ou 4 boutons pour les commandes habituelles.</li>
+<li>Un changement de r&#233;pertoire images provoque le
+rafra&#238;chissement de l'interface.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Il suffit de s&#233;lectionner chaque plan, de d&#233;finir le
+nom de sortie, de modifier &#233;ventuellement le r&#233;pertoire
+de destination puis d'appuyer sur <b>Appliquer</b> ou <b>OK</b>
+et d'attendre l'affichage de l'image.<br>
+Note : L'échec est certain si vous essayez de construire une image RGB avec des plans de tailles différentes :
+un message vous en avertira et vous rendra la main pour modifier le choix des plans.</p>
+</body>
+</html>
