@@ -26,6 +26,7 @@ set caption(audace,menu,r+v+b2rvb)                      "Convert R+G+B ---> RGB"
 set caption(audace,menu,assigner_r)                     "Assign channel Red"
 set caption(audace,menu,assigner_g)                     "Assign channel Green"
 set caption(audace,menu,assigner_b)                     "Assign channel Blue"
+set caption(audace,menu,trichro)                        "# Trichromie"
 set caption(audace,menu,ser2fits)                       "Convert SER ---> FITS"
 
 set caption(audace,menu,pretraitee)                     "Process raw image(s)"
@@ -112,6 +113,25 @@ set caption(audace,menu,hough)                          "Hough Function"
 
 set caption(audace,menu,convoluer)                      "Convolute"
 set caption(audace,menu,convolution)                    "Convolution"
+
+set caption(trichro,dest)                               "Output Folder Path"
+set caption(trichro,name)                               "Output Name"
+set caption(trichro,racine)                             "output_name"
+set caption(trichro,search)                             "..."
+set caption(trichro,en_cours)                           "In Progress... Please Wait..."
+set caption(trichro,ok)                                 "OK"
+set caption(trichro,apply)                              "Apply"
+set caption(trichro,hlp)                                "Help"
+set caption(trichro,close)                              "Close"
+set caption(trichro,attention)                          "Warning"
+set caption(trichro,red)                                "# Sélectionner le plan rouge"
+set caption(trichro,green)                              "# Sélectionner le plan vert"
+set caption(trichro,blue)                               "# Sélectionner le plan bleu"
+set caption(trichro,no_file)                            "No files in this folder can be converted."
+set caption(trichro,invalid)                            "%s is not a valid input for %s!"
+set caption(trichro,err_dim)                            "# Les dimensions des images sélectionnées ne sont pas identiques !"
+set caption(trichro,manquant)                           "# %s fichier(s) non pris en compte."
+set caption(trichro,echec)                              "Failed to convert %s: %s"
 
 set caption(ser2fits,start)                             "Image (original index) Nb"
 set caption(ser2fits,end)                               "Image (final index) Nb"
@@ -235,6 +255,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_g)                  "Assigner le plan Vert"
    set caption(audace,menu,assigner_b)                  "Assigner le plan Bleu"
    set caption(audace,menu,ser2fits)                    "Convertir SER ---> FITS"
+   set caption(audace,menu,trichro)                     "Trichromie"
 
    set caption(audace,menu,pretraitee)                  "Prétraiter image(s) brute(s)"
 
@@ -320,6 +341,25 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,convoluer)                   "Convoluer"
    set caption(audace,menu,convolution)                 "Convolution"
+
+   set caption(trichro,dest)                            "Chemin du dossier de sortie"
+   set caption(trichro,name)                            "Nom de sortie"
+   set caption(trichro,racine)                          "nom_de_sortie"
+   set caption(trichro,search)                          "..."
+   set caption(trichro,en_cours)                        "En cours... Patientez..."
+   set caption(trichro,ok)                              "OK"
+   set caption(trichro,apply)                           "Appliquer"
+   set caption(trichro,hlp)                             "Aide"
+   set caption(trichro,close)                           "Fermer"
+   set caption(trichro,attention)                       "Attention"
+   set caption(trichro,red)                             "Sélectionner le plan rouge"
+   set caption(trichro,green)                           "Sélectionner le plan vert"
+   set caption(trichro,blue)                            "Sélectionner le plan bleu"
+   set caption(trichro,no_file)                         "Aucun fichier convertible dans ce répertoire."
+   set caption(trichro,invalid)                         "%s n'est pas une entrée valide pour %s !"
+   set caption(trichro,err_dim)                         "Les dimensions des images sélectionnées ne sont pas identiques !"
+   set caption(trichro,manquant)                        "%s fichier(s) non pris en compte."
+   set caption(trichro,echec)                           "Echec de conversion : %s"
 
    set caption(ser2fits,start)                          "Image (index initial) n°"
    set caption(ser2fits,end)                            "Image (index final) n°"
@@ -442,6 +482,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assegnare il canale Rosso"
    set caption(audace,menu,assigner_g)                  "Assegnare il canale Verde"
    set caption(audace,menu,assigner_b)                  "Assegnare il canale Blu"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "Conversione SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Pretrattamento immagini raw"
@@ -650,6 +691,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Asignar plano Rojo"
    set caption(audace,menu,assigner_g)                  "Asignar plano Verde"
    set caption(audace,menu,assigner_b)                  "Asignar plano Azul"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "Conversion SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Procesar imágen(es) cruda(s)"
@@ -858,6 +900,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Roten Kanal zuweisen"
    set caption(audace,menu,assigner_g)                  "Grünen Kanal zuweisen"
    set caption(audace,menu,assigner_b)                  "Blauen Kanal zuweisen"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "SER -> FITS Umwandlung"
 
    set caption(audace,menu,pretraitee)                  "Rohbild(er) Bearbeitung"
@@ -1066,6 +1109,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Atribuir canal Vermelho"
    set caption(audace,menu,assigner_g)                  "Atribuir canal Verde"
    set caption(audace,menu,assigner_b)                  "Atribuir canal Azul"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "Conversão SER ---> FITS"
 
    set caption(audace,menu,pretraitee)                  "Processar imagem(ns) bruta(s)"
@@ -1274,6 +1318,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Peg på den røde kanal"
    set caption(audace,menu,assigner_g)                  "Peg på den grønne kanal"
    set caption(audace,menu,assigner_b)                  "Peg på den blå kanal"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "Konvertering: SER -> FITS"
 
    set caption(audace,menu,pretraitee)                  "Behandling af RAW billeder"
@@ -1482,6 +1527,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assign channel Red"
    set caption(audace,menu,assigner_g)                  "Assign channel Green"
    set caption(audace,menu,assigner_b)                  "Assign channel Blue"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "Convert SER -> FITS"
 
    set caption(audace,menu,pretraitee)                  "Process raw image(s)"
@@ -1690,6 +1736,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,assigner_r)                  "Assign channel Red"
    set caption(audace,menu,assigner_g)                  "Assign channel Green"
    set caption(audace,menu,assigner_b)                  "Assign channel Blue"
+   set caption(audace,menu,trichro)                     "# Trichromie"
    set caption(audace,menu,ser2fits)                    "Convert SER -> FITS"
 
    set caption(audace,menu,pretraitee)                  "Process raw image(s)"
