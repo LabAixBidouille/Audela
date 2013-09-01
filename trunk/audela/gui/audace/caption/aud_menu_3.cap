@@ -49,6 +49,7 @@ set caption(audace,menu,ecart_type)                     "Standard Deviation"
 set caption(audace,menu,moyenne_k)                      "Kappa-Sigma Average"
 set caption(audace,menu,moyenne_tri)                    "Percentile Sorting"
 set caption(audace,menu,obturateur)                     "Map shutter delay"
+set caption(audace,menu,drizzle)                        "WCS Drizzle"
 
 set caption(audace,menu,geometry)                       "Modify geometry"
 set caption(audace,menu,rot+90)                         "Rotate clockwise by 90°"
@@ -277,6 +278,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Moyenne kappa-sigma"
    set caption(audace,menu,moyenne_tri)                 "Tri centile"
    set caption(audace,menu,obturateur)                  "Cartographier le retard de l'obturateur"
+   set caption(audace,menu,drizzle)                     "Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Adapter la géométrie"
    set caption(audace,menu,rot+90)                      "Tourner 90° sens horaire"
@@ -505,6 +507,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Mediana Kappa-Sigma"
    set caption(audace,menu,moyenne_tri)                 "Ordinamento percentile"
    set caption(audace,menu,obturateur)                  "Mapping del ritardo dell'otturatore"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Adattare la geometria"
    set caption(audace,menu,rot+90)                      "Rotazione oraria 90°"
@@ -733,6 +736,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Promedio kappa-sigma"
    set caption(audace,menu,moyenne_tri)                 "Ordenar percentil"
    set caption(audace,menu,obturateur)                  "Dibujar el retardo de obturador"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Modificar la geometría"
    set caption(audace,menu,rot+90)                      "Rotar 90º en sentido horario"
@@ -961,6 +965,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Kappa-Sigma Durchschnitt"
    set caption(audace,menu,moyenne_tri)                 "Prozentrang Sortierung"
    set caption(audace,menu,obturateur)                  "Auslösungszeit des Verschluß Kartieren"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Die Geometrie anpassen"
    set caption(audace,menu,rot+90)                      "90° im Uhrzeigersinn drehen"
@@ -1189,6 +1194,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Média Kappa-Sigma"
    set caption(audace,menu,moyenne_tri)                 "Ordenar percentil"
    set caption(audace,menu,obturateur)                  "Cartografar o atraso do obturador"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Modificar geometria"
    set caption(audace,menu,rot+90)                      "Rodar 90° sentido horário"
@@ -1417,6 +1423,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Kappa-Sigma gennemsnit"
    set caption(audace,menu,moyenne_tri)                 "Percentil sortering"
    set caption(audace,menu,obturateur)                  "Afbild lukker forsinkelse"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Tilpas geometrien"
    set caption(audace,menu,rot+90)                      "Rotér 90°med uret"
@@ -1480,7 +1487,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,hough)                       "Hough Funktion"
 
    set caption(audace,menu,convoluer)                   "Brug Convolution"
-  set caption(audace,menu,convolution)                 "Convolution"
+   set caption(audace,menu,convolution)                 "Convolution"
 
    set caption(trichro,dest)                            "# Chemin du dossier de sortie"
    set caption(trichro,name)                            "# Nom de sortie"
@@ -1645,6 +1652,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Kappa-Sigma Average"
    set caption(audace,menu,moyenne_tri)                 "Percentile Sorting"
    set caption(audace,menu,obturateur)                  "Map shutter delay"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Modify geometry"
    set caption(audace,menu,rot+90)                      "Rotate clockwise by 90°"
@@ -1873,6 +1881,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,moyenne_k)                   "Kappa-Sigma Average"
    set caption(audace,menu,moyenne_tri)                 "Percentile Sorting"
    set caption(audace,menu,obturateur)                  "Map shutter delay"
+   set caption(audace,menu,drizzle)                     "# Drizzle WCS"
 
    set caption(audace,menu,geometry)                    "Modify geometry"
    set caption(audace,menu,rot+90)                      "Rotate clockwise by 90°"
