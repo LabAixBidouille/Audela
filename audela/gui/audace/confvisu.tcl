@@ -2471,6 +2471,8 @@ namespace eval ::confVisu {
             }
          }
          set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+         Menu_Command   $visuNo "$caption(audace,menu,convertir)" "$caption(audace,menu,trichro)..." \
+            "::trichro::buildGui $visuNo"
          Menu_Separator $visuNo "$caption(audace,menu,convertir)"
          Menu_Command   $visuNo "$caption(audace,menu,convertir)" "$caption(audace,menu,ser2fits)..." \
             "::ser2fits::buildGui $visuNo"
@@ -2923,6 +2925,8 @@ namespace eval ::confVisu {
          }
       }
       set function [lindex [::prtr::PRETRAITEEFunctions 0] end]
+      Menu_Command   $visuNo "$caption(audace,menu,convertir)" "$caption(audace,menu,trichro)..." \
+            "::trichro::buildGui $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,convertir)"
       Menu_Command   $visuNo "$caption(audace,menu,convertir)" "$caption(audace,menu,ser2fits)..." \
          "::ser2fits::buildGui $visuNo"
