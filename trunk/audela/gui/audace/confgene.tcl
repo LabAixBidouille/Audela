@@ -1791,6 +1791,182 @@ namespace eval ::confAlarmeFinPose {
 }
 
 #
+# NbreDecimales
+# Description : Configuration du nombre de decimales a afficher
+#
+
+namespace eval ::confNbreDecimales {
+
+   #
+   # confNbreDecimales::run this
+   # Cree la fenetre de configuration du choix du nombre de decimales
+   # this = chemin de la fenetre
+   #
+   proc run { this } {
+      variable This
+
+      set This $this
+      createDialog
+      tkwait visibility $This
+   }
+
+   #
+   # confNbreDecimales::ok
+   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
+   # et fermer la fenetre de configuration du choix du nombre de decimales
+   #
+   proc ok { } {
+      appliquer
+      fermer
+   }
+
+   #
+   # confNbreDecimales::appliquer
+   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
+   #
+   proc appliquer { } {
+      global conf confgene
+
+      if { $confgene(nbreDecimales) == "12" } {
+         set ::tcl_precision 12
+      } else {
+         set ::tcl_precision 17
+      }
+      widgetToConf
+   }
+
+   #
+   # confNbreDecimales::afficheAide
+   # Fonction appellee lors de l'appui sur le bouton 'Aide'
+   #
+   proc afficheAide { } {
+      global help
+
+      #---
+      ::audace::showHelpItem "$help(dir,config)" "1120nbredecimales.htm"
+   }
+
+   #
+   # confNbreDecimales::fermer
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc fermer { } {
+      variable This
+
+      destroy $This
+   }
+
+   #
+   # confNbreDecimales::initConf
+   # Initialisation des variables pour le lancement d'Aud'ACE
+   #
+   proc initConf { } {
+      global conf
+
+      if { ! [ info exists conf(nbreDecimales) ] } { set conf(nbreDecimales) "12" }
+   }
+
+   proc createDialog { } {
+      variable This
+      global caption conf confgene
+
+      #--- Initialisation indispensable de la variable pour le nombre de decimales dans aud.tcl (::audace::loadSetup)
+      #--- initConf
+
+      #--- confToWidget
+      set confgene(nbreDecimales) $conf(nbreDecimales)
+
+      #---
+      if { [winfo exists $This] } {
+         wm withdraw $This
+         wm deiconify $This
+         focus $This
+         return
+      }
+
+      #--- Cree la fenetre $This de niveau le plus haut
+      toplevel $This -class Toplevel
+      wm geometry $This +180+50
+      wm resizable $This 0 0
+      wm title $This $caption(confgene,nbreDecimales)
+
+      #--- Creation des differents frames
+      frame $This.frame1 -borderwidth 1 -relief raised
+      pack $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame2 -borderwidth 1 -relief raised
+      pack $This.frame2 -side top -fill x
+
+      frame $This.frame3 -borderwidth 0 -relief raised
+      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame4 -borderwidth 0 -relief raised
+      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
+
+      frame $This.frame5 -borderwidth 0 -relief raised
+      pack $This.frame5 -in $This.frame1 -side top -fill both -expand 1
+
+      #--- Affichage de l'action
+      label $This.lab1 -text "$caption(confgene,choixNbreDecimales)"
+      pack $This.lab1 -in $This.frame3 -anchor w -side left -padx 10 -pady 3
+
+      #--- Ouvre le choix au nombre de decimales
+      radiobutton $This.rad1 -anchor nw -highlightthickness 0 -value 12 \
+         -text "$caption(confgene,12decimales)" -variable confgene(nbreDecimales)
+      pack $This.rad1 -in $This.frame4 -anchor center -side top -fill x -padx 40 -pady 5
+
+      radiobutton $This.rad2 -anchor nw -highlightthickness 0 -value 17 \
+         -text "$caption(confgene,17decimales)" -variable confgene(nbreDecimales)
+      pack $This.rad2 -in $This.frame5 -anchor center -side top -fill x -padx 40 -pady 5
+
+      #--- Cree le bouton 'OK'
+      button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
+         -command { ::confNbreDecimales::ok }
+      if { $conf(ok+appliquer) == "1" } {
+         pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+      }
+
+      #--- Cree le bouton 'Appliquer'
+      button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
+         -command { ::confNbreDecimales::appliquer }
+      pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree un label 'Invisible' pour simuler un espacement
+      label $This.lab_invisible -width 10
+      pack $This.lab_invisible -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Fermer'
+      button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
+         -command { ::confNbreDecimales::fermer }
+      pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- Cree le bouton 'Aide'
+      button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
+         -command { ::confNbreDecimales::afficheAide }
+      pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
+
+      #--- La fenetre est active
+      focus $This
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { ::console::GiveFocus }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
+   }
+
+   #
+   # confNbreDecimales::widgetToConf
+   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+   #
+   proc widgetToConf { } {
+      global conf confgene
+
+      set conf(nbreDecimales) $confgene(nbreDecimales)
+   }
+}
+
+#
 # ProxyInternet
 # Description : Configuration d'un Proxy pour Internet
 #

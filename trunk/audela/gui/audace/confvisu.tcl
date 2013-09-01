@@ -2596,6 +2596,8 @@ namespace eval ::confVisu {
             -compound left -image $::icones::private(fontsIcon)
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,proxy)..." \
             { ::confProxyInternet::run "$audace(base).confProxyInternet" }
+         Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,nbreDecimales)..." \
+            { ::confNbreDecimales::run "$audace(base).confNbreDecimales" }
 
          Menu_Separator $visuNo "$caption(audace,menu,setup)"
          Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,camera)..." \
@@ -3062,6 +3064,8 @@ namespace eval ::confVisu {
          -compound left -image $::icones::private(fontsIcon)
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,proxy)..." \
          { ::confProxyInternet::run "$audace(base).confProxyInternet" }
+      Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,nbreDecimales)..." \
+         { ::confNbreDecimales::run "$audace(base).confNbreDecimales" }
       Menu_Separator $visuNo "$caption(audace,menu,setup)"
       Menu_Command   $visuNo "$caption(audace,menu,setup)" "$caption(audace,menu,camera)..." \
          "::confCam::run" \
