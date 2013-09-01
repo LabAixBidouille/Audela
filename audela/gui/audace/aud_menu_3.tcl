@@ -830,7 +830,7 @@ namespace eval ::conv2 {
 
             #--- construit les en-tetes des seuils couleurs
             set color [ string toupper $i ]
-            foreach kwd { MIPS-HI MIPS-LO } level [ list "Low" "Hight" ] {
+            foreach kwd { MIPS-HI MIPS-LO } level [ list "Hight" "Low"] {
                set val [ lindex [ $buf getkwd $kwd ] 1 ]
                switch $color {
                   R  {  set $kwd$color [ list $kwd$color $val float "Red $level Cut" "adu" ] }
@@ -4589,7 +4589,7 @@ namespace eval ::trichro {
             $buf setkwd [ set $kwd ]
          }
          if {[$buf getkwd RGBFILTR] ne ""} {
-            $bud delkwd RGBFILTR
+            $buf delkwd RGBFILTR
          }
 
          #--- sauve l'image couleur
