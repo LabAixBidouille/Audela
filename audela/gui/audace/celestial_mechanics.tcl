@@ -230,6 +230,47 @@ proc name2coord { args } {
          }
      }
    }
+   # --- GCVS star names
+   if {$found==0} {
+      set name0g [string tolower $name0]
+      set res2 [regsub -all " " $name0g ""]
+      set name0g [regsub -all "V0" $res2 "V"]
+      set ra ""
+      set dec ""
+      # --- lecture du catalogue GCVS
+      set fic [file join $audace(rep_gui) audace catalogues catagoto gcvs_cat.dat]
+      set f [open $fic r]
+      set lignes [split [read $f] \n]
+      close $f
+      set ligne2s ""
+      foreach ligne $lignes {
+         if {[string length $ligne]<10} { continue }
+         set k1 8
+         set k2 16
+         set res [string range $ligne $k1 $k2]
+         set res2 [regsub -all " " $res ""]
+         set name [regsub -all "V0" $res2 "V"]
+         set rah [string range $ligne 20 21]
+         if {$rah=="  "} { continue }
+         set ram [string range $ligne 22 23]
+         set ras [string range $ligne 24 27]
+         set decd [string range $ligne 28 30]
+         set decm [string range $ligne 31 32]
+         set decs [string range $ligne 33 34]
+         set ligne2 "$name ${rah}h${ram}m${ras}s ${decd}d${decm}m${decs}s"
+         #
+         set name [string tolower [string trim [lindex $name 0 ]]]
+         if {$name0g==$name} {
+            set found 1
+         }
+         if {$found==1} {
+            set ra  [lindex $ligne2 1]
+            set dec [lindex $ligne2 2]
+            break
+         }
+         #append ligne2s "${ligne2}\n"
+      }
+   }
    # --- else satellite
    if {$found==0} {
       set err [catch {satel_coords "$name0" $date} res]
