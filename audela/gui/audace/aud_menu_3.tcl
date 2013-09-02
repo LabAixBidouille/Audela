@@ -4433,8 +4433,8 @@ namespace eval ::ser2fits {
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
       dict set dicokwd BZERO     {BZERO %s int {offset data range to that of unsigned short} {}}
-      dict set dicokwd CDELT1    {CDELT1 %s float {Scale along Naxis1} deg/pixel}
-      dict set dicokwd CDELT2    {CDELT2 %s float {Scale along Naxis2} deg/pixel}
+      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along Naxis1} deg/pixel}
+      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along Naxis2} deg/pixel}
       dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of video.FITS standard} {ISO 8601}}
       dict set dicokwd DATE-END  {DATE-END %s string {End of video.FITS standard} {ISO 8601}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
