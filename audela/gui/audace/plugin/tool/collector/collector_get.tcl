@@ -360,24 +360,24 @@
 
    #---------------------------------------------------------------------------
    #  getCoordJ2000
-   #  Retourne        : Ra et Dec (equinoxe J2000.0) formatees
+   #  Retourne        : Ra et Dec (en degres, equinoxe J2000.0) formatees
    #  Parametres (une seule liste)
    #      deux coordonnees et TypeObs, couples :  {ra dec} EQUATORIAL ou {az elev} ALTAZ ou {hour_angle dec} HADEC
    #      dateTU      : date TU
    #      home        : gps
    #      pressure    : atmospheric pressure (Pa)
    #      temperature : °C
-   #      humidity    : %
+   #      humidity    : % (en absence -> par defaut =0%, mieux 40%)
    #---------------------------------------------------------------------------
    proc getCoordJ2000 { record } {
 
       lassign $record angle1 angle2 TypeObs dateTu home pressure temp humidity
 
-      #--   pm avec les options -model_only 1 -refraction 1, les coordonnees sont corrigées de
+      #--   pm avec les options -model_only 1 -refraction 1, les coordonnees sont corrigees de
       #  la nutation, de l'aberration diurne, de la precession, de l'aberration annuelle et de le refraction
       #set symbols  { IH ID NP CH ME MA FO HF DAF TF }
       #set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
-      #   raDeg decDeg
+
       #--   passe en °K
       set temperature [expr { $temp+273.15 }]
       lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $pressure $temperature -model_only 1 -refraction 1 -humidity $humidity] \
@@ -391,14 +391,14 @@
 
    #---------------------------------------------------------------------------
    #  getTrueCoordinates
-   #  Retourne AD, DEC, azimuth, elevation et angle horaire à viser par le telescope
+   #  Retourne AD, DEC, azimuth, elevation et angle horaire a viser par le telescope
    #     Input :
    #       ra_hms,dec_dms : coordinates J2000.0
    #       datejd         : date JD
    #       home           : gps
    #       pressure       : atmospheric pressure (Pa)
    #       temperature    : °C
-   #       himidity       : %
+   #       himidity       : % (en absence -> par defaut =0%, mieux 40%)
    #       coefNames      : liste des noms des coefficients de modpoi :
    #       * mode ALTAZ                  : {IA IE NPAE CA AN AW}
    #       * par defaut, mode EQUATORIAL : {IH ID NP CH ME MA FO HF DAF TF}
