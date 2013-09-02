@@ -215,20 +215,20 @@
       dict set dicokwd APTDIA    {APTDIA %s float Diameter m}
       dict set dicokwd BIN1      {BIN1 %s int {} {}}
       dict set dicokwd BIN2      {BIN2 %s int {} {}}
-      dict set dicokwd CD1_1     {CD1_1 %s float {Coord. transf. matrix CD11} deg/pixel}
-      dict set dicokwd CD1_2     {CD1_2 %s float {Coord. transf. matrix CD12} deg/pixel}
-      dict set dicokwd CD2_1     {CD2_1 %s float {Coord. transf. matrix CD21} deg/pixel}
-      dict set dicokwd CD2_2     {CD2_2 %s float {Coord. transf. matrix CD22} deg/pixel}
-      dict set dicokwd CDELT1    {CDELT1 %s float {Scale along Naxis1} deg/pixel}
-      dict set dicokwd CDELT2    {CDELT2 %s float {Scale along Naxis2} deg/pixel}
+      dict set dicokwd CD1_1     {CD1_1 %s double {Coord. transf. matrix CD11} deg/pixel}
+      dict set dicokwd CD1_2     {CD1_2 %s double {Coord. transf. matrix CD12} deg/pixel}
+      dict set dicokwd CD2_1     {CD2_1 %s double {Coord. transf. matrix CD21} deg/pixel}
+      dict set dicokwd CD2_2     {CD2_2 %s double {Coord. transf. matrix CD22} deg/pixel}
+      dict set dicokwd CDELT1    {CDELT1 %s double {Scale along Naxis1} deg/pixel}
+      dict set dicokwd CDELT2    {CDELT2 %s double {Scale along Naxis2} deg/pixel}
       dict set dicokwd CONFNAME  {CONFNAME %s string {Instrument Setup} {}}
-      dict set dicokwd CROTA2    {CROTA2 %s float {Position angle of North} deg}
-      dict set dicokwd CRPIX1    {CRPIX1 %s float {Reference pixel for Naxis1} pixel}
-      dict set dicokwd CRPIX2    {CRPIX2 %s float {Reference pixel for Naxis2} pixel}
-      dict set dicokwd CRVAL1    {CRVAL1 %s float {Reference coordinate for Naxis1} deg}
-      dict set dicokwd CRVAL2    {CRVAL2 %s float {Reference coordinate for Naxis2} deg}
+      dict set dicokwd CROTA2    {CROTA2 %s double {Position angle of North} deg}
+      dict set dicokwd CRPIX1    {CRPIX1 %s double {Reference pixel for Naxis1} pixel}
+      dict set dicokwd CRPIX2    {CRPIX2 %s double {Reference pixel for Naxis2} pixel}
+      dict set dicokwd CRVAL1    {CRVAL1 %s double {Reference coordinate for Naxis1} deg}
+      dict set dicokwd CRVAL2    {CRVAL2 %s double {Reference coordinate for Naxis2} deg}
       dict set dicokwd DATE-OBS  {DATE-OBS %s string {Start of exposure.FITS standard} {ISO 8601}}
-      dict set dicokwd DEC       {DEC %s float {Expected DEC asked to telescope} {deg}}
+      dict set dicokwd DEC       {DEC %s double {Expected DEC asked to telescope} {deg}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
       dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
@@ -260,7 +260,7 @@
       dict set dicokwd PIXSIZE1  {PIXSIZE1 %s float {Pixel Width (with binning)} mum}
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s float {Pixel Height (with binning)} mum}
       dict set dicokwd PRESSURE  {PRESSURE %s float {[hPa] Atmospheric Pressure} hPa}
-      dict set dicokwd RA        {RA %s float {Expected RA asked to telescope} {deg}}
+      dict set dicokwd RA        {RA %s double {Expected RA asked to telescope} {deg}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd SEING     {SEING %s float {Average FWHM} pixels}
       dict set dicokwd SITENAME  {SITENAME %s string {Observatory Name} {}}
