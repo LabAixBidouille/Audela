@@ -316,12 +316,12 @@ namespace eval ::div {
       $temp copy imagevisu$visuNo -from 1 1 $naxis1 $naxis2 -to 0 0 \
          -zoom 1 -compositingrule set
 
-      set types {{"BMP" {.bmp}}}
+      set types {{"PNG" {.png}}}
       set filename [tk_getSaveFile \
          -filetypes $types \
          -initialdir $audace(rep_images) \
          -initialfile captureVisu$visuNo \
-         -defaultextension .bmp]
+         -defaultextension .png]
       if {[llength $filename]} {
          $temp write -format png $filename
       }
