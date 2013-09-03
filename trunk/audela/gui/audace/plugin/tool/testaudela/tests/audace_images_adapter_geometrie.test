@@ -418,7 +418,7 @@ test imaseries_rotation2 {rotation de m57} -constraints {AUDACE} -setup {
    #--   verifie le deplacement du point {339 227}
    mesure set [lrange [buf$bufNo getpix [list 247 400]] 1 end]
    attendu expr {attendu-mesure}
-   attendu expr {abs(attendu) <= 1}
+   attendu expr {abs(attendu) <= 2}
    set result [llength [attendu search 1]]
    #--   les naxis ne sont pas conservés
    set liste [ list m57 rotent]
