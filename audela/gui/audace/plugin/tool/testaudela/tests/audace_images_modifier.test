@@ -1,7 +1,7 @@
+
 set visuNo 1
-global conf
-set prevExt $conf(extension,defaut)
-set conf(extension,defaut) .fit
+set prevExt $::conf(extension,defaut)
+set ::conf(extension,defaut) .fit
 set bufNo [::confVisu::getBufNo $visuNo]
 #--   le nom de la tablelist des fichiers
 set w ".audace.prtr.usr.choix.tablelist"
