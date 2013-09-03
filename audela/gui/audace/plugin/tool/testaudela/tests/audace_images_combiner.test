@@ -385,7 +385,6 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
 
    #--   selectionne rz_shutter1 rz_shutter2 rz_shutter3
    foreach  img {rz_shutter1 rz_shutter2 rz_shutter3} {
-::console::disp "path [$w windowpath $img,0]\n"
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom de sortie
