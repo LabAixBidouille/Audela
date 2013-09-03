@@ -865,6 +865,7 @@ namespace eval ::prtr {
             foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
                set $var [lindex [array get kwds [string toupper $var]] 1]
             }
+
             if {[info exists bzero] && $bzero ne ""} {set bitpix "$bitpix"}
             array unset kwds
             if {$naxis eq "2" || $naxis eq "3"} {
@@ -1650,7 +1651,7 @@ namespace eval ::prtr {
       dict set STACK "$caption(audace,menu,obturateur)"           opt "$options nullpixel 0."
       dict set STACK "$caption(audace,menu,drizzle)"              fun DRIZZLEWCS
       dict set STACK "$caption(audace,menu,drizzle)"              hlp "$help(dir,docLibtt) ttus1-fr.htm DRIZZLEWCS"
-      dict set STACK "$caption(audace,menu,drizzle)"              par "drop_sizepix 0.5 oversampling 2"
+      dict set STACK "$caption(audace,menu,drizzle)"              par "oversampling 2 drop_sizepix 0.5"
       dict set STACK "$caption(audace,menu,drizzle)"              opt "$options nullpixel 0."
 
 
