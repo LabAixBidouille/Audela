@@ -759,7 +759,8 @@ namespace eval ::prtr {
       #--   construit la bdd
       foreach file $files {
          set result [::prtr::analyseFitsHeader [file join $dir $file]]
-         if {$::prtr::operation eq "$::caption(audace,menu,reg_wcs)" && [lindex $result 8] == "0"} {
+          if {$::prtr::operation eq "$::caption(audace,menu,reg_wcs)" || \
+            $::prtr::operation eq "$::caption(audace,menu,drizzle)" && [lindex $result end] == "0"} {
             #--   filtre les images non wcs
             set result ""
          }
