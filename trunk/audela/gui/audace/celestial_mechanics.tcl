@@ -238,9 +238,11 @@ proc name2coord { args } {
       set ra ""
       set dec ""
       # --- lecture du catalogue GCVS
-      set fic [file join $audace(rep_gui) audace catalogues catagoto gcvs_cat.dat]
+      # http://www.sai.msu.su/gcvs/gcvs/iii/iii.dat
+      set fic [file join $audace(rep_gui) audace catalogues catagoto iii.dat]
       set f [open $fic r]
       set lignes [split [read $f] \n]
+      set lignes [lrange $lignes 2 end]
       close $f
       set ligne2s ""
       foreach ligne $lignes {
