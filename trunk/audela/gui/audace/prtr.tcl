@@ -742,9 +742,9 @@ namespace eval ::prtr {
       }
 
       #--   message d'avertissement si une image detectee
-      if {$count != 0} {
-         ::console::affiche_erreur "[format $::caption(prtr,err_extension) $count $::conf(extension,defaut)]\n"
-      }
+      #if {$count != 0} {
+      #   ::console::affiche_erreur "[format $::caption(prtr,err_extension) $count $::conf(extension,defaut)]\n"
+      #}
 
       #--   efface tout
       $w delete 0 end
