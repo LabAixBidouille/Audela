@@ -842,7 +842,8 @@ namespace eval ::prtr {
          }
          if { $error == "0" } {
             #--   test wcs
-            set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 dec foclen pixsize1 pixsize2 ra]
+            #set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 dec foclen pixsize1 pixsize2 ra]
+            set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 crval1 crval2 dec foclen ra]
             #--   test la presence des mot-cles
             foreach var $wcs_kwd {
                set $var 0
@@ -851,8 +852,12 @@ namespace eval ::prtr {
             }
 
             set wcs 0
+            #if {(($cd1_1 && $cd1_2 && $cd2_1 && $cd2_2) || ($cdelt1 && $cdelt2 && $crota2 ) || \
+            #   ($foclen && $pixsize1 && $pixsize2 && $ra && $dec && $crota2))== "1"} {
+            #      set wcs 1
+            #}
             if {(($cd1_1 && $cd1_2 && $cd2_1 && $cd2_2) || ($cdelt1 && $cdelt2 && $crota2 ) || \
-               ($foclen && $pixsize1 && $pixsize2 && $ra && $dec && $crota2))== "1"} {
+               ($foclen && $crval1 && $crval2 && $ra && $dec))== "1"} {
                   set wcs 1
             }
 
