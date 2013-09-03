@@ -85,6 +85,38 @@ test imastack_add {addition de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AU
    return $result
 } -cleanup $CLEANUP -result "4"
 
+#--   test IMA/STACK DRIZZLEWCS
+test imastack_drizzlewcs {compositage de m57_1 m_57_2 m57_3 m_57_4} -constraints {AUDACE} -setup {
+   #--   recopie les images nécessaires au test
+   set repIn $::conf(testaudela,rep_images)
+   set repOut $::audace(rep_images)
+   file copy -force [file join $repIn m57.fit] [file join $repOut m57_1.fit]
+   file copy -force [file join $repIn m57.fit] [file join $repOut m57_2.fit]
+   file copy -force [file join $repIn m57.fit] [file join $repOut m57_3.fit]
+   file copy -force [file join $repIn m57.fit] [file join $repOut m57_4.fit]
+} -body {
+   #--   clic sur le menu "Images/Combiner/Drizzle WCS..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,drizzle)..."
+   #--   selectionne m57_1 m57_2 m57_3 m57_4
+   foreach img {m57_1 m57_2 m57_3 m57_4} {
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+   }
+   #--   saisit le nom de sortie
+   set nom_image [file join $repOut drizzle$ext]
+   ::testaudela::putLabelEntry $z.sortie.out $nom_image
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   set result 0
+   if {[file exists $nom_image]} {
+      set result 1
+   }
+} -cleanup {
+   foreach img [list m57_1 m57_2 m57_3 m57_4 drizzle] {
+      file delete [file join $repOut $img.fit]
+   }
+} -result "1"
+
 #--   test IMA/STACK MEAN
 test imastack_moyenne {moyenne de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30} -constraints {AUDACE} -setup {} -body {
    #--   clic sur le menu "Images/Combiner/Moyenne..."
@@ -349,8 +381,11 @@ test imastack_shutter {shutter de rz_shutter1 rz_shutter2 rz_shutter3} -constrai
 } -body {
    #--   clic sur le menu "Images/Combiner/Obturateur..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,pile)" "$::caption(audace,menu,obturateur)..."
+   after 1000
+
    #--   selectionne rz_shutter1 rz_shutter2 rz_shutter3
    foreach  img {rz_shutter1 rz_shutter2 rz_shutter3} {
+::console::disp "path [$w windowpath $img,0]\n"
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #-- saisit le nom de sortie
