@@ -68,7 +68,7 @@
 
    # FIN
    gren_info "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info "FIN de script\n"
    
    set tt1 [clock clicks -milliseconds]

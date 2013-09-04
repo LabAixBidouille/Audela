@@ -174,7 +174,7 @@ while {$sortie=="no"} {
 # -- Debut Boucle de travail --------------------------------------------------------------------
 
  #gren_info "\n"
- #gren_info "- Current date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]"
+ #gren_info "- Current date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]"
  if {[ file exists "$bddconf(dirlog)/ssp.quit" ]} {
   gren_info "- Ending main loop by user request $bddconf(dirlog)/ssp.quit"
   break
@@ -513,11 +513,11 @@ while {$sortie=="no"} {
     }
    }
 
-   gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1] accepted=$accepted rejected=$rejected idc=$idbddcata idi=$idbddimg"
+   gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC] accepted=$accepted rejected=$rejected idc=$idbddcata idi=$idbddimg"
 
 
    # La date courante UTC en format ISO qui apparaitra dans la table ssp_astrometric et dans le fichier XML
-   set isodate_now [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]
+   set isodate_now [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
 
    # -- enregistrement des identifications dans la base locale
 
@@ -568,7 +568,7 @@ while {$sortie=="no"} {
    lappend xmlparams %IMAGE_FILTRE% [string trim $filter { }]
    lappend xmlparams %PARAM_EPOCH% $dateobs
 
-#   setxmlparam document/date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]
+#   setxmlparam document/date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
 #   setxmlparam document/ticket 0
 #   setxmlparam document/author "SolarSystemProcess"
 #   setxmlparam image/name $imgfilename

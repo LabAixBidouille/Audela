@@ -159,7 +159,7 @@
    ::manage_source::imprim_3_sources $listsources
 
    gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info " Identification \n"
    gren_info "****************************************************************** \n"
 
@@ -172,7 +172,7 @@
    #affich_rond $listsources "OVNI" "blue" 1
 
    gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info " Champs 'common' \n"
    gren_info "****************************************************************** \n"
 
@@ -188,7 +188,7 @@
 
    if {1==1} {
       gren_info "\n****************************************************************** \n"
-      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
       gren_info " Chargement TYCHO2 \n"
       gren_info "****************************************************************** \n"
 
@@ -197,7 +197,7 @@
       set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5 VT e_VT }]
       ::manage_source::imprim_3_sources $tycho2
 
-      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
       set a [buf$bddconf(bufno) xy2radec {680 1801}]
       set b [buf$bddconf(bufno) xy2radec {713 1826}]
       set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
@@ -211,7 +211,7 @@
 
    if {1==0} {
       gren_info "\n****************************************************************** \n"
-      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
       gren_info " Chargement UCAC2 \n"
       gren_info "****************************************************************** \n"
 
@@ -220,7 +220,7 @@
       set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
       ::manage_source::imprim_3_sources $ucac2
 
-      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
       set a [buf$bddconf(bufno) xy2radec {680 1801}]
       set b [buf$bddconf(bufno) xy2radec {713 1826}]
       set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
@@ -233,7 +233,7 @@
 
    if {1==0} {
       gren_info "\n****************************************************************** \n"
-      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+      gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
       gren_info " Chargement UCAC3 \n"
       gren_info "****************************************************************** \n"
 
@@ -242,7 +242,7 @@
       set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
       ::manage_source::imprim_3_sources $ucac3
 
-      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+      gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
       set a [buf$bddconf(bufno) xy2radec {680 1801}]
       set b [buf$bddconf(bufno) xy2radec {713 1826}]
       set f [list [lindex $a 0] [lindex $a 1] [lindex $b 0] [lindex $b 1] ]
@@ -255,7 +255,7 @@
 
 
    #gren_info "\n****************************************************************** \n"
-   #gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   #gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    #gren_info " Affichage des Etoiles \n"
    #gren_info "****************************************************************** \n"
 
@@ -268,7 +268,7 @@
 
 
    #gren_info "\n****************************************************************** \n"
-   #gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   #gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    #gren_info " Extraction des Etoiles de type Solaire\n"
    #gren_info "****************************************************************** \n"
 
@@ -276,7 +276,7 @@
 
    # FIN
    gren_info "****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info "FIN de script\n"
 
    set tt1 [clock clicks -milliseconds]

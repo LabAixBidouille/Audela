@@ -1673,6 +1673,37 @@ namespace eval bddimages_recherche {
 
    }
 
+   proc ::bddimages_recherche::unset_gestion { } {
+      
+      catch {
+         array unset ::bdi_tools_astrometry::listref
+         array unset ::bdi_tools_astrometry::tabscience
+         array unset ::bdi_tools_astrometry::tabdate
+         array unset ::bdi_tools_astrometry::listscience
+         array unset ::bdi_tools_astrometry::listdate
+         array unset ::bdi_gui_astrometry::graph_results
+         unset ::bdi_gui_astrometry::combo_list_object
+         unset ::tools_cata::date2id
+         array unset ::bdi_tools_astrometry::tabval
+         array unset ::gui_cata::cata_list
+         array unset ::bdi_tools_astrometry::dxdy_name
+         array unset ::bdi_tools_astrometry::dxdy_date
+         array unset ::bdi_tools_astrometry::dxdy
+         array unset ::tools_cata::cata_list_sav
+         unset ::tools_cata::img_list
+         unset ::tools_cata::current_image
+         unset ::tools_cata::id_current_image
+         unset ::tools_cata::create_cata
+         unset ::tools_cata::current_listsources
+         unset ::gui_cata::cataname      
+         array unset ::gui_cata::cataid
+         array unset ::gui_cata::cataname
+         array unset ::gui_cata::tklist
+         array unset ::gui_cata::tklist_list_of_columns
+      }
+      
+   }
+
 
    proc ::bddimages_recherche::bddimages_gestion_cata { } {
 
@@ -1682,6 +1713,9 @@ namespace eval bddimages_recherche {
       set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
+      
+      ::bddimages_recherche::unset_gestion
+      
       ::cata_gestion_gui::go $imglist
 
    }
@@ -1695,7 +1729,9 @@ namespace eval bddimages_recherche {
       set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
       set lid [lsort -decreasing -integer $lid]
       set imglist [::bddimages_liste_gui::new_normallist $lid]
-
+      
+      ::bddimages_recherche::unset_gestion
+      
       ::gui_cata_creation::go $imglist
 
       #::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id

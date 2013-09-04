@@ -42,7 +42,7 @@ proc get_skybot { dateobs ra dec radius uaicode} {
    set no_answer 0
    while { ! $skybot_answered } {
    
-       #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel au conesearch"
+       #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Appel au conesearch"
 
       # gren_info "$voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) $voconf(observer)"
 
@@ -91,7 +91,7 @@ proc get_skybot { dateobs ra dec radius uaicode} {
        }
 
    # -- Parse the votable and extract solar system objects from the parsed votable
-   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Parse le msg"
+   #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Parse le msg"
 
    set skybot_fields {}
    foreach n [::dom::selectNode $votable {descendant::FIELD/attribute::ID}] {
