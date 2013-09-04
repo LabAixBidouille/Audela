@@ -268,10 +268,15 @@ namespace eval ::console {
 
       if { [catch {uplevel #0 $cmd} res] != 0} {
          $This.txt1 insert end "# $res\n" style_erreur
+         regsub -all {;} $res "," res2
+         regsub -all \n $res2 " " res
          set Res [list 1 $res]
+         #$This.txt1 insert end "## $res\n" style_erreur
       } else {
          if { [string compare $res ""] != 0} {
             $This.txt1 insert end "# $res\n" style_resultat
+            regsub -all {;} $res "," res2
+            regsub -all \n $res2 " " res
             set Res [list 0 $res]
          } else {
             set Res [list 0 ""]
@@ -301,38 +306,51 @@ namespace eval ::console {
       if {$n>=1} {
          set action [lindex $args 0]
          set name console_client
-         if {($action=="open")||($action=="close")} {
+         if {$action=="open"} {
             set ip 127.0.0.1
             set port 5555
             if {$n>=2} { set ip [lindex $args 1] }
             if {$n>=3} { set port [lindex $args 2] }
-         }
-         if {$action=="open"} {
             if {[info exists audace(socket,client,$name)]==1} {
                error "client $name already opened"
             }
             console::socket_client_open $name $ip $port
-            console::affiche_resultat "Socket ${name} opened to ${ip}:${port}\n"
+            set sname $audace(socket,client,$name)
+            return "Socket ${name} ($sname) opened to ${ip}:${port}\n"
          } elseif {$action=="close"} {
+            set sname $audace(socket,client,$name)
             console::socket_client_close $name
-            console::affiche_resultat "Socket ${name} is closed\n"
+            return "Socket ${name} ($sname) is closed\n"
          } elseif {$action=="put"} {
             console::socket_client_put $name [lrange $args 1 end]
-            set errmsg "server response not ready"
+            return ""
+         } elseif {$action=="get"} {
+            set res [console::socket_client_get $name]
+            flush $audace(socket,client,$name)
+            lassign $res err msg
+            if {($err==1)} {
+               error $msg
+            } else {
+               return $msg
+            }
+         } elseif {$action=="putget"} {
+            console::socket_client_put $name [lrange $args 1 end]
+            set errmsg ""
             set res $errmsg
             while {($res==$errmsg)||($res=="")} {
                set res [console::socket_client_get $name]
-               #console::affiche_resultat "res=$res\n"
+               #console::affiche_resultat "res=<$res>\n"
                after 100
             }
+            flush $audace(socket,client,$name)
             lassign $res err msg
-            if {$err==0} {
-               console::affiche_resultat "$msg\n"
+            if {($err==1)} {
+               error $msg
             } else {
-               console::affiche_erreur "$msg\n"
+               return $msg
             }
          } else {
-            error "action must be open|close|put"
+            error "action must be open|close|put|get|putget"
          }
       } else {
          error "Usage: console::client open|close|put args"
@@ -361,7 +379,7 @@ namespace eval ::console {
    # Please use this proc as a canvas to write those dedicaded to your job.
    proc socket_server_accept {fid ip port} {
       global audace
-      fconfigure $fid -buffering line
+      fconfigure $fid -buffering line 
       fileevent $fid readable [list console::socket_server_respons $fid]
    }
    # ==========================================================================================
@@ -376,14 +394,17 @@ namespace eval ::console {
       variable Res
       set errsoc [ catch {
          gets $fid line
+         ::console::affiche_resultat "Remote command received: ${line}\n"
          if {[eof $fid]} {
             close $fid
          } elseif {![fblocked $fid]} {            
-            puts $fid "server response not ready"
-            flush $fid
+            if {[llength $line]==1} {
+               set line [lindex $line 0]
+            }
             set CmdLine $line
             console::onEnt1KeyReturn $This.ent1
-            puts $fid "$Res"
+            puts -nonewline $fid "${Res}"
+            flush $fid
          }
       } msgsoc]
       if {$errsoc==1} {
@@ -433,10 +454,11 @@ namespace eval ::console {
    proc socket_client_put { name msg } {
       global audace
       if {[info exists audace(socket,client,$name)]==0} {
-         error "client $name does not exists"
+         error "client $name does not exists. Use before: console::client open "
       }
       set errno [catch {
-         puts $audace(socket,client,$name) "$msg"
+         #console::affiche_resultat "ETAPE 1 audace(socket,client,$name)=$audace(socket,client,$name)\n"
+         puts $audace(socket,client,$name) "${msg}"
          flush $audace(socket,client,$name)
       } msg]
       if {$errno==1} {
@@ -450,11 +472,14 @@ namespace eval ::console {
    proc socket_client_get { name } {
       global audace
       if {[info exists audace(socket,client,$name)]==0} {
-         error "client $name does not exists"
+         error "client $name does not exists. Use before: console::client open "
       }
+      #console::affiche_resultat "ETAPE 2 audace(socket,client,$name)=$audace(socket,client,$name)\n"
       set errno [catch {
-         gets $audace(socket,client,$name)
+         read $audace(socket,client,$name)
       } msg]
+      flush $audace(socket,client,$name)
+      #console::affiche_resultat "ETAPE 3 errno=$errno msg=<$msg>\n"
       if {$errno==1} {
          error $msg
       } else {
