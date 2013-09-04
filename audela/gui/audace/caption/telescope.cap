@@ -97,8 +97,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,HS)               "HS"
    set caption(telescope,modele_lx200_gps) "LX200 GPS"
    set caption(telescope,modele_gemini)    "Losmandy Gemini"
-   set caption(telescope,cote_est)         "Coté est"
-   set caption(telescope,cote_ouest)       "Coté ouest"
+   set caption(telescope,cote_est)         "Côté est"
+   set caption(telescope,cote_ouest)       "Côté ouest"
 
    set caption(telescope,mobile_etoile)    "Suivi sidéral"
    set caption(telescope,ctl_mobile:)      "Contrôle de la vitesse de suivi :"
