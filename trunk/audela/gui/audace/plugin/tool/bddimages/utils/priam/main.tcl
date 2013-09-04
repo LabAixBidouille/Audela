@@ -187,7 +187,7 @@
    ::manage_source::imprim_3_sources $listsources
 
    gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info " Identification \n"
    gren_info "****************************************************************** \n"
 
@@ -200,7 +200,7 @@
    affich_rond $listsources "OVNI" "blue" 1
 
    gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info " Champs 'common' \n"
    gren_info "****************************************************************** \n"
 
@@ -209,14 +209,14 @@
    ::manage_source::imprim_3_sources $listsources
 
    gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info " Chargement TYCHO2 \n"
    gren_info "****************************************************************** \n"
 
    affich_rond $listsources SKYBOT "green"  3
 
    gren_info "\n****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info " sortie pour priam\n"
    gren_info "****************************************************************** \n"
 
@@ -229,7 +229,7 @@
 
    # FIN
    gren_info "****************************************************************** \n"
-   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: "
+   gren_info "** [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: "
    gren_info "FIN de script\n"
 
 

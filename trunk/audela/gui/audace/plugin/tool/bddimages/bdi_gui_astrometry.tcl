@@ -880,6 +880,13 @@ namespace eval bdi_gui_astrometry {
 
    proc ::bdi_gui_astrometry::create_report_txt {  } {
 
+# TESTASTROMETRY
+catch {
+unset ::bdi_gui_astrometry::omcvaruna_a
+unset ::bdi_gui_astrometry::omcvaruna_d
+}
+# TESTASTROMETRY
+
       # Reset du graphe
       #if {[info exists ::bdi_gui_astrometry::graph_results]} {
       #   unset ::bdi_gui_astrometry::graph_results
@@ -998,6 +1005,7 @@ namespace eval bdi_gui_astrometry {
       set airmass       ""
       set headtab3 [format $form "#" $name $date $ra_hms $dec_dms $res_a $res_d $mag $err_mag $ra_imcce_omc $dec_imcce_omc $ra_mpc_omc $dec_mpc_omc $datejj $alpha $delta $ra_imcce $dec_imcce $ra_mpc $dec_mpc $err_x $err_y $fwhm_x $fwhm_y $hauteur $airmass]
 
+      set pass 0
       # Pour chaque objet SCIENCE
       foreach {name y} $l {
 
@@ -1037,7 +1045,7 @@ namespace eval bdi_gui_astrometry {
             # 11  err_ysm
             # 12  fwhm_x
             # 13  fwhm_y
-            gren_info "itabval($name,$dateimg) = $::bdi_tools_astrometry::tabval($name,$dateimg)\n"
+            #gren_info "itabval($name,$dateimg) = $::bdi_tools_astrometry::tabval($name,$dateimg)\n"
 
             set rho     [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  3]]
             set res_a   [format "%.4f"  [lindex $::bdi_tools_astrometry::tabval($name,$dateimg)  4]]
@@ -1143,7 +1151,15 @@ namespace eval bdi_gui_astrometry {
             if {$dec_jpl_omc      != "-"} {lappend tabcalc(dec_jpl_omc)      $dec_jpl_omc}
             if {$ra_imccejpl_cmc  != "-"} {lappend tabcalc(ra_imccejpl_cmc)  $ra_imccejpl_cmc}
             if {$dec_imccejpl_cmc != "-"} {lappend tabcalc(dec_imccejpl_cmc) $dec_imccejpl_cmc}
-
+            
+# TESTASTROMETRY
+            if {$name == "SKYBOT_20000_Varuna"} {
+               
+               set ::bdi_gui_astrometry::omcvaruna_a($dateimg) $ra_imcce_omc
+               set ::bdi_gui_astrometry::omcvaruna_d($dateimg) $dec_imcce_omc
+            }
+# TESTASTROMETRY
+            
             # Formatage de certaines valeurs
             #gren_info "ra_imcce_deg = $ra_imcce_deg\n"
             if {$ra_imcce_deg  != "-"} {set ra_imcce_deg  [format "%.8f" $ra_imcce_deg]}
@@ -1187,8 +1203,8 @@ namespace eval bdi_gui_astrometry {
          set calc(res_d,stdev) [::bdi_gui_astrometry::stdev $tabcalc(res_d) "%.4f"]
          set calc(datejj,stdev) [::bdi_gui_astrometry::stdev $tabcalc(datejj) "%.4f"]
          
-         set calc(alpha,stdev) [expr [::bdi_gui_astrometry::stdev $tabcalc(alpha) "%.10f"] *3600000]
-         set calc(delta,stdev) [expr [::bdi_gui_astrometry::stdev $tabcalc(delta) "%.10f"] *3600000]
+         set calc(alpha,stdev) [expr [::bdi_gui_astrometry::stdev $tabcalc(alpha) "%.15f"] * 3600000]
+         set calc(delta,stdev) [expr [::bdi_gui_astrometry::stdev $tabcalc(delta) "%.15f"] * 3600000]
 
          set pi [expr 2*asin(1.0)]
 
@@ -1267,7 +1283,11 @@ namespace eval bdi_gui_astrometry {
          if {$calc(dec_imccejpl_cmc,stdev)>=0} {set calc(dec_imccejpl_cmc,stdev) "+$calc(dec_imccejpl_cmc,stdev)" }
 
          $::bdi_gui_astrometry::rapport_txt insert end $sep_txt
-         $::bdi_gui_astrometry::rapport_txt insert end  "# BODY NAME = [lrange [split $name "_"] 2 end]\n"
+         
+         #$::bdi_gui_astrometry::rapport_txt insert end  "# BODY NAME = [lrange [split $name "_"] 2 end]\n"
+         # sinon ne marche pas pour les etoiles
+         $::bdi_gui_astrometry::rapport_txt insert end  "# BODY NAME = $name\n"
+         
          $::bdi_gui_astrometry::rapport_txt insert end  "# Number of positions: $nbobs \n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# -\n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# Residus     RA  (arcsec): mean = $calc(res_a,mean) stedv = $calc(res_a,stdev)\n"
@@ -1288,12 +1308,345 @@ namespace eval bdi_gui_astrometry {
          $::bdi_gui_astrometry::rapport_txt insert end  "# Stdev RA   (mas): [format "%.1f" $calc(alpha,stdev)] \n"
          $::bdi_gui_astrometry::rapport_txt insert end  "# Stdev DEC  (mas): [format "%.1f" $calc(delta,stdev)] \n"
 
+         # TESTASTROMETRY
+         ### XTRA pour travail sur l astrometrie. verification de l occultation de Varuna/UCAC3
+         
+         if {$name == "SKYBOT_20000_Varuna"} {
+            incr pass
+            set moa [format "%.1f" [expr $calc(ra_imcce_omc,mean)*1000] ]
+            set mod [format "%.1f" [expr $calc(dec_imcce_omc,mean)*1000] ]
+            set soa [format "%.1f" [expr $calc(ra_imcce_omc,stdev)*1000] ]
+            set sod [format "%.1f" [expr $calc(dec_imcce_omc,stdev)*1000] ]
+         }
+
+         if {$name == "UCAC3_233-089504"} {
+
+            incr pass
+            set aref 117.40414125
+            set dref 26.4311219444
+            set offra [format "%.1f" [expr ($calc(alpha,mean)-$aref)*3600000] ]
+            set offde [format "%.1f" [expr ($calc(delta,mean)-$dref)*3600000] ]
+            set soa_star [format "%.1f" $calc(alpha,stdev)]
+            set sod_star [format "%.1f" $calc(delta,stdev)]          
+         }
+
          $::bdi_gui_astrometry::rapport_txt insert end $sep_txt
 
       }
+
+      if {$pass == 2} {
+            ::bdi_gui_astrometry::test_astrometry_carteresidu
+            #::bdi_gui_astrometry::test_astrometry_dxdy
+            
+            set diffra [format "%.1f" [expr $offra-$moa] ]
+            set diffde [format "%.1f" [expr $offde-$mod] ]
+            gren_info "Distance offset ($diffra,$diffde)\n"
+            gren_info "Erreur pos star : ($soa_star,$sod_star)\n"
+            gren_info "Erreur offset varuna : ($soa,$sod)\n"
+            $::bdi_gui_astrometry::rapport_txt insert end  "# Distance Offset RA : $diffra \n"
+            $::bdi_gui_astrometry::rapport_txt insert end  "# Distance Offset DEC: $diffde \n"
+            $::bdi_gui_astrometry::rapport_txt insert end  "# STAR Offset RA : $offra \n"
+            $::bdi_gui_astrometry::rapport_txt insert end  "# STAR Offset DEC: $offde \n"
+            $::bdi_gui_astrometry::rapport_txt insert end  "# 0,$calc(datejj,mean),$moa,$mod,$soa,$sod,VARUNA nuit \n"
+            $::bdi_gui_astrometry::rapport_txt insert end  "# 1,$calc(datejj,mean),$offra,$offde,[format "%.1f" $calc(alpha,stdev)],[format "%.1f" $calc(delta,stdev)],STAR nuit \n"
+         
+      }
+      
+      
       $::bdi_gui_astrometry::rapport_txt insert end "\n"
 
       return
+
+   }
+
+# TESTASTROMETRY
+   proc ::bdi_gui_astrometry::test_get_radec { name p_listsources } {
+
+      upvar $p_listsources listsources 
+
+      set idref [ ::manage_source::name2ids $name listsources]
+      set s [lindex $listsources [list 1 $idref] ]
+      foreach cata $s {
+         if {[lindex $cata 0] == "WFIBC"} {
+            set ra_ref  [format "%.6f" [lindex [lindex $cata 2] 0] ]
+            set dec_ref [format "%.6f" [lindex [lindex $cata 2] 1] ]
+            return [list $ra_ref $dec_ref]
+         }
+      }
+      return -1
+   }
+
+
+   proc ::bdi_gui_astrometry::test_astrometry_carteresidu {  } {
+
+      global bddconf
+      
+      if {1==1} {
+      
+         set chan0 [open [file join $bddconf(dirtmp) "carte_residus.csv"] w] 
+         puts $chan0 "name,date,catalog_ra,catalog_dec,xsm,ysm,priam_res_ra,priam_res_dec"
+         close $chan0
+         set chan0 [open [file join $bddconf(dirtmp) "carte_varuna.csv"] w] 
+         puts $chan0 "name,date,priam_ra,priam_dec,xsm,ysm,priam_res_ra,priam_res_dec,omcra,omcde"
+         close $chan0
+         set chan0 [open [file join $bddconf(dirtmp) "carte_UCAC3.csv"] w] 
+         puts $chan0 "name,date,priam_ra,priam_dec,xsm,ysm,priam_res_ra,priam_res_dec"
+         close $chan0
+
+      }
+
+      foreach date [array get ::bdi_tools_astrometry::dxdy_date] {
+
+         set pass 0
+
+         if {$date == "1"} {continue}
+
+         # extraction des info de la bonne image
+         set id_img 1
+         foreach img $::tools_cata::img_list {
+            set tabkey   [::bddimages_liste::lget $img "tabkey"]
+            set dateiso [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+            if {[::bdi_tools::is_isodates_equal $dateiso $date]} {
+               set pass 1
+               break
+            }
+            incr id_img
+         }
+         if {$pass == 0} {
+            continue
+         }
+
+         # extraction de listsource
+         set listsources $::gui_cata::cata_list($id_img)
+
+
+         # extraction des etoiles
+         foreach name [array get ::bdi_tools_astrometry::dxdy_name] {
+
+            if {$name == "1"} {continue}
+
+            if {[info exists ::bdi_tools_astrometry::dxdy($name,$date)]} {
+            
+               # position de l etoile dans le catalogue
+
+               if {$name == "SKYBOT_20000_Varuna"} {
+                  set priam_res_ra  [lindex $::bdi_tools_astrometry::dxdy($name,$date) 4]
+                  set priam_res_dec [lindex $::bdi_tools_astrometry::dxdy($name,$date) 5]
+                  set priam_ra      [lindex $::bdi_tools_astrometry::dxdy($name,$date) 6]
+                  set priam_dec     [lindex $::bdi_tools_astrometry::dxdy($name,$date) 7]
+                  set xsm           [lindex $::bdi_tools_astrometry::dxdy($name,$date) 0]
+                  set ysm           [lindex $::bdi_tools_astrometry::dxdy($name,$date) 1]
+                  set omcra         $::bdi_gui_astrometry::omcvaruna_a($date)
+                  set omcde         $::bdi_gui_astrometry::omcvaruna_d($date)
+                  
+                  #gren_info "$name,$date,$priam_ra,$priam_dec,$xsm,$ysm,$priam_res_ra,$priam_res_dec\n"
+                  gren_info "$name,$date: ($omcra,$omcde)\n"
+                  
+                  if { $omcra!="" && $omcde!="" } {
+                     set chan0 [open [file join $bddconf(dirtmp) "carte_varuna.csv"] a] 
+                     puts $chan0 "$name,$date,$priam_ra,$priam_dec,$xsm,$ysm,$priam_res_ra,$priam_res_dec,$omcra,$omcde"
+                     close $chan0
+                  }
+                  continue
+               }
+
+               set r [::bdi_gui_astrometry::test_get_radec $name listsources]
+               if {$r==-1} {
+                  #gren_erreur "etoile $name : pas de reference WFIBC dans cette image\n"
+                  continue
+               } 
+
+               set catalog_ra    [lindex $r 0]
+               set catalog_dec   [lindex $r 1]
+               set priam_res_ra  [lindex $::bdi_tools_astrometry::dxdy($name,$date) 4]
+               set priam_res_dec [lindex $::bdi_tools_astrometry::dxdy($name,$date) 5]
+               set priam_ra      [lindex $::bdi_tools_astrometry::dxdy($name,$date) 6]
+               set priam_dec     [lindex $::bdi_tools_astrometry::dxdy($name,$date) 7]
+               set xsm           [lindex $::bdi_tools_astrometry::dxdy($name,$date) 0]
+               set ysm           [lindex $::bdi_tools_astrometry::dxdy($name,$date) 1]
+               if {$priam_res_ra==""||$priam_res_dec==""} {
+                  gren_erreur "reference $starref $date: pas de residus\n"
+                  continue
+               }
+
+               if {$name == "UCAC3_233-089504"} {
+                  set chan0 [open [file join $bddconf(dirtmp) "carte_UCAC3.csv"] a] 
+                  puts $chan0 "$name,$date,$priam_ra,$priam_dec,$xsm,$ysm,$priam_res_ra,$priam_res_dec"
+                  close $chan0
+                  continue
+               }
+               set chan0 [open [file join $bddconf(dirtmp) "carte_residus.csv"] a] 
+               puts $chan0 "$name,$date,$catalog_ra,$catalog_dec,$xsm,$ysm,$priam_res_ra,$priam_res_dec"
+               close $chan0
+               
+            }
+         }
+      }
+
+
+
+   }
+
+
+
+
+   proc ::bdi_gui_astrometry::test_astrometry_dxdy {  } {
+
+      global bddconf
+      
+      set starref "WFIBC_117.418054+26.448215"
+      set starref "WFIBC_117.369850+26.394985"
+      set starref "WFIBC_117.419562+26.411274"
+      
+      
+      set a [array get ::bdi_tools_astrometry::dxdy_name]
+
+      if {1==1} {
+      
+         foreach name [array get ::bdi_tools_astrometry::dxdy_name] {
+            set chan0 [open [file join $bddconf(dirtmp) "dxdy_$name.dat"] w] 
+            puts $chan0 "name,date,dx,dy,ra,dec"
+            close $chan0
+         }
+         set chan0 [open [file join $bddconf(dirtmp) "dxdy_all.dat"] w] 
+         puts $chan0 "name,date,dx,dy,ra,dec"
+         close $chan0
+      }
+
+
+
+      foreach date [array get ::bdi_tools_astrometry::dxdy_date] {
+
+         set pass 0
+
+         # extraction des info de la bonne image
+         if {$date == "1"} {continue}
+
+         set id_img 1
+         foreach img $::tools_cata::img_list {
+            set tabkey   [::bddimages_liste::lget $img "tabkey"]
+            set dateiso [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+            if {[::bdi_tools::is_isodates_equal $dateiso $date]} {
+               set CD1_1 [string trim [lindex [::bddimages_liste::lget $tabkey "CD1_1"] 1] ]
+               set CD2_2 [string trim [lindex [::bddimages_liste::lget $tabkey "CD2_2"] 1] ]
+               set CD1_1 [expr $CD1_1*3600]
+               set CD2_2 [expr $CD2_2*3600]
+               #gren_info "date ok : $dateiso $CD1_1 $CD2_2 \n"
+               set pass 1
+               break
+            }
+            incr id_img
+         }
+         if {$pass == 0} {
+            #gren_erreur "*** Date $date n a pas d image\n"
+            continue
+         }
+         # extraction de listsource
+
+         set listsources $::gui_cata::cata_list($id_img)
+
+         # position de l etoile de reference dans le catalogue
+         
+         set r [::bdi_gui_astrometry::test_get_radec $starref listsources]
+         if {$r==-1} {
+            #gren_erreur "reference $starref : pas de reference WFIBC dans cette image\n"
+            continue
+         } else {
+            set catalog_ref_ra  [lindex $r 0]
+            set catalog_ref_dec [lindex $r 1]
+            set priam_res_ra   [lindex $::bdi_tools_astrometry::dxdy($starref,$date) 4]
+            set priam_res_dec  [lindex $::bdi_tools_astrometry::dxdy($starref,$date) 5]
+            if {$priam_res_ra==""||$priam_res_dec==""} {
+               gren_erreur "reference $starref ($date) $id_img: pas de residus\n"
+               break
+            }
+            set priam_ref_ra  [ expr $catalog_ref_ra-$priam_res_ra/3600 ]
+            set priam_ref_dec [ expr $catalog_ref_dec-$priam_res_dec/3600 ]
+            #gren_info "ra_ref = $ra_ref dec_ref=$dec_ref\n"
+         }
+
+
+
+
+         foreach name [array get ::bdi_tools_astrometry::dxdy_name] {
+
+            if {$name == "1"} {continue}
+            if {[info exists ::bdi_tools_astrometry::dxdy($starref,$date)]} {
+
+               if {[info exists ::bdi_tools_astrometry::dxdy($name,$date)]} {
+               
+                  # position de l etoile dans le catalogue
+
+                  set r [::bdi_gui_astrometry::test_get_radec $name listsources]
+                  if {$r==-1} {
+                     #gren_erreur "etoile $name : pas de reference WFIBC dans cette image\n"
+                     continue
+                  } 
+
+                  set catalog_ra    [lindex $r 0]
+                  set catalog_dec   [lindex $r 1]
+                  set priam_res_ra  [lindex $::bdi_tools_astrometry::dxdy($name,$date) 4]
+                  set priam_res_dec [lindex $::bdi_tools_astrometry::dxdy($name,$date) 5]
+                  if {$priam_res_ra==""||$priam_res_dec==""} {
+                     gren_erreur "reference $starref $date: pas de residus\n"
+                     continue
+                  }
+                  set priam_star_ra  [ expr $catalog_ra  - $priam_res_ra  /3600 ]
+                  set priam_star_dec [ expr $catalog_dec - $priam_res_dec /3600 ]
+                  #gren_info "ra = $ra dec_ref=$dec\n"
+
+                  set diff_catalog_ra  [expr ($catalog_ra  - $catalog_ref_ra ) * cos($catalog_dec*3.1415926535897931/180)*3600]
+                  set diff_catalog_dec [expr ($catalog_dec - $catalog_ref_dec) * 3600]
+
+                  set diff_priam_ra  [expr ($priam_star_ra  - $priam_ref_ra)  * cos($priam_star_dec*3.1415926535897931/180)*3600]
+                  set diff_priam_dec [expr ($priam_star_dec - $priam_ref_dec) * 3600]
+                  #gren_info "diff_ra_catalog = $diff_ra_catalog diff_dec_catalog=$diff_dec_catalog\n"
+
+                     
+
+                     
+               
+                  
+                  #set xref [lindex $::bdi_tools_astrometry::dxdy($starref,$date) 0]
+                  #set yref [lindex $::bdi_tools_astrometry::dxdy($starref,$date) 1]
+                  #set x    [lindex $::bdi_tools_astrometry::dxdy($name,$date) 0]
+                  #set y    [lindex $::bdi_tools_astrometry::dxdy($name,$date) 1]
+                  #set err_x [lindex $::bdi_tools_astrometry::dxdy($name,$date) 2]
+                  #set err_y [lindex $::bdi_tools_astrometry::dxdy($name,$date) 3]
+                  
+                  #set ddx [expr ($x - $xref)*$CD1_1]
+                  #set ddy [expr ($y - $yref)*$CD2_2]
+                            
+                  #set dx [expr ($x - $xref)*$CD1_1-$diff_ra_catalog ]
+                  #set dy [expr ($y - $yref)*$CD2_2-$diff_dec_catalog]
+                  
+                  # methode 2 : direct avec les ra dec donne par l astrometrie
+                            
+                  set dx [expr $diff_priam_ra  - $diff_catalog_ra ]
+                  set dy [expr $diff_priam_dec - $diff_catalog_dec]
+                  
+                  #gren_info "$name DXDY arcsec  : $dx $dy\n"
+
+                  #set dx [format "%.1f" [expr $dx * 1000]]
+                  #set dy [format "%.1f" [expr $dy * 1000]]
+                  
+                  
+                  #gren_info "$name DXDY mas  : $dx $dy\n"
+                   
+                  set chan0 [open [file join $bddconf(dirtmp) "dxdy_$name.dat"] a] 
+                  puts $chan0 "$name,$date,$dx,$dy,$priam_star_ra,$priam_star_dec"
+                  close $chan0
+                   
+                  set chan0 [open [file join $bddconf(dirtmp) "dxdy_all.dat"] a] 
+                  puts $chan0 "$name,$date,$dx,$dy,$priam_star_ra,$priam_star_dec"
+                  close $chan0
+                  
+               }
+
+            }
+            
+         }
+      }
 
    }
 

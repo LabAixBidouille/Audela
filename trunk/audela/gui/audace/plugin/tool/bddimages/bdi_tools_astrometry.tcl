@@ -395,9 +395,14 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
             # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
 
             # TODO ::bdi_tools_astrometry::extract_priam_results :: Modif du tabkey de chaque image de img_list
-            foreach kk [list FOCLEN RA DEC CRVAL1 CRVAL2 CDELT1 CDELT2 CROTA2 CD1_1 CD1_2 CD2_1 CD2_2 ] {
+            foreach kk [list FOCLEN RA DEC CRVAL1 CRVAL2 CROTA2 ] {
                if {$kk == $key } {
                   set val [format "%.10f" $val]
+               }
+            }
+            foreach kk [list CDELT1 CDELT2 CD1_1 CD1_2 CD2_1 CD2_2 ] {
+               if {$kk == $key } {
+                  set val [format "%.10e" $val]
                }
             }
             foreach kk [list CRPIX1 CRPIX2] {
@@ -888,6 +893,14 @@ proc ::bdi_tools_astrometry::create_vartab { } {
    if {[info exists ::bdi_tools_astrometry::listscience]} {unset ::bdi_tools_astrometry::listscience}
    if {[info exists ::bdi_tools_astrometry::listdate]}    {unset ::bdi_tools_astrometry::listdate}
 
+# TESTASTROMETRY
+   catch {
+         array unset ::bdi_tools_astrometry::dxdy_name
+         array unset ::bdi_tools_astrometry::dxdy_date
+         array unset ::bdi_tools_astrometry::dxdy
+   }
+# TESTASTROMETRY
+
    set id_current_image 0
 
    foreach current_image $::tools_cata::img_list {
@@ -930,8 +943,21 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set err_mag [::bdi_tools_psf::get_val othf "err_mag"]
          set err_xsm [::bdi_tools_psf::get_val othf "err_xsm"]
          set err_ysm [::bdi_tools_psf::get_val othf "err_ysm"]
-         set fwhmx  [::bdi_tools_psf::get_val othf "fwhmx"]
-         set fwhmy  [::bdi_tools_psf::get_val othf "fwhmy"]
+         set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
+         set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
+
+# TESTASTROMETRY
+         if {$name == "WFIBC_117.416265+26.453586" && $dateiso=="2013-01-06T22:52:15.000"} {
+            gren_erreur "ICI\n"
+            
+         }
+
+         set xsm [::bdi_tools_psf::get_val othf "xsm"]
+         set ysm [::bdi_tools_psf::get_val othf "ysm"]
+         set ::bdi_tools_astrometry::dxdy($name,$dateiso) [list  $xsm $ysm $err_xsm $err_ysm $res_ra $res_dec $ra $dec]
+         set ::bdi_tools_astrometry::dxdy_name($name) 1
+         set ::bdi_tools_astrometry::dxdy_date($dateiso) 1
+# TESTASTROMETRY
 
          if { $res_ra == "" || $res_dec == "" } {
             set rho     ""
@@ -988,6 +1014,14 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set err_ysm [::bdi_tools_psf::get_val othf "err_ysm"]
          set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
          set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
+
+# TESTASTROMETRY
+         set xsm [::bdi_tools_psf::get_val othf "xsm"]
+         set ysm [::bdi_tools_psf::get_val othf "ysm"]
+         set ::bdi_tools_astrometry::dxdy($name,$dateiso) [list  $xsm $ysm $err_xsm $err_ysm $res_ra $res_dec $ra $dec]
+         set ::bdi_tools_astrometry::dxdy_name($name) 1
+         set ::bdi_tools_astrometry::dxdy_date($dateiso) 1
+# TESTASTROMETRY
 
          if { $res_ra == "" || $res_dec == "" } {
             set rho  ""
@@ -1423,9 +1457,9 @@ proc ::bdi_tools_astrometry::save_images { } {
       buf$::audace(bufNo) load $fileimg
 
       foreach vals $::tools_cata::new_astrometry($id_current_image) {
+         #gren_info "KEY = $vals\n"
          buf$::audace(bufNo) setkwd $vals
       }
-
       set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
 
       # Creation de l image temporaire
@@ -1456,6 +1490,9 @@ proc ::bdi_tools_astrometry::save_images { } {
       set current_image [::bddimages_liste::lupdate $current_image idbddimg $idbddimg]
       set current_image [::bddimages_liste::lupdate $current_image tabkey $tabkey]
       set ::tools_cata::img_list [lreplace $::tools_cata::img_list [expr $id_current_image - 1] [expr $id_current_image - 1] $current_image]
+
+      #return
+
    }
 
    ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id

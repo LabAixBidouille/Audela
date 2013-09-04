@@ -153,7 +153,7 @@ fits/tarot_calern/2009/12/14
     set voconf(objfilter) 110
 
     gren_info "\n"
-    gren_info "- Current date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]"
+    gren_info "- Current date [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]"
     if {[ file exists "$bddconf(dirlog)/ssp.quit" ]} {
      gren_info "- Ending main loop by user request $bddconf(dirlog)/ssp.quit"
      break
@@ -162,7 +162,7 @@ fits/tarot_calern/2009/12/14
     # -- Recupere une image
 
     if { $log == 1 } {
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Appel sql catas "
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Appel sql catas "
       }
 
                        get_one_image
@@ -184,7 +184,7 @@ fits/tarot_calern/2009/12/14
    # -- Extraction_sources du fichier cata.txt.gz des sources non identifiees
 
     if { $log == 1 } {
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Extraction du fichier cata"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Extraction du fichier cata"
       }
 
                        get_cata
@@ -197,7 +197,7 @@ fits/tarot_calern/2009/12/14
    if { 1 == 1 } {
    
      if { $log == 1 } {
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Extraction de TYCHO"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Extraction de TYCHO"
       }
    #$ssp_image(ra) en heure
    set star_list [vo_vizier_query $ssp_image(ra) $ssp_image(dec) 100 arcmin I/239/tyc_main]
@@ -240,7 +240,7 @@ fits/tarot_calern/2009/12/14
    if { 1 == 1 } {
 
       if { $log == 1 } {
-        gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification des types Solaires"
+        gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification des types Solaires"
         }
 
                   set staridentification [ identification1 $sunlike_list $usno_list2 50.0 20.0 50.0 ]
@@ -250,13 +250,13 @@ fits/tarot_calern/2009/12/14
 
       set accepted [llength $staridentification] 
       set rejected [expr [llength $sunlike_list] - $accepted] 
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: accepted=$accepted rejected=$rejected"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: accepted=$accepted rejected=$rejected"
       #gren_info "star_list = $star_list"
 
       #set sunlike_list [extract_sun_star $staridentification]
 
       set magconst [calc_magconst $staridentification]
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: magconst=$magconst"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: magconst=$magconst"
     }
 
 
@@ -278,7 +278,7 @@ fits/tarot_calern/2009/12/14
  if { 0 == 1 } {
    
      if { $log == 1 } {
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Extraction de TYCHO"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Extraction de TYCHO"
       }
    
    set star_list [vo_cds_query "UCAC3" $ssp_image(ra) $ssp_image(dec) 10]
@@ -302,7 +302,7 @@ fits/tarot_calern/2009/12/14
    # -- Requete skybot
 
     if { $log == 1 } {
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Skybot Status"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Skybot Status"
       }
 
                        get_skybot
@@ -316,14 +316,14 @@ fits/tarot_calern/2009/12/14
    # -- Identification
 
     if { $log == 1 } {
-      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification"
+      gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification"
       }
 
                      set allidentifications [ identification1 $ovni_list2 $skybot_list2 50.0 20.0 50.0]
    
    set accepted [llength $allidentifications] 
    set rejected [expr [llength $skybot_list] - $accepted] 
-   gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: accepted=$accepted rejected=$rejected idc=$ssp_image(idbddcata) idi=$ssp_image(idbddimg)"
+   gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: accepted=$accepted rejected=$rejected idc=$ssp_image(idbddcata) idi=$ssp_image(idbddimg)"
 
 
 
@@ -337,21 +337,21 @@ fits/tarot_calern/2009/12/14
    # -- Stockage des resultats
 
     # La date courante UTC en format ISO qui apparaitra dans la table ssp_astrometric et dans le fichier XML
-    set isodate_now [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]
+    set isodate_now [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
 
-    if { $log == 1 } { gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Insertion des donnees sql" }
+    if { $log == 1 } { gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Insertion des donnees sql" }
 
     insert_data_sql $isodate_now
 
     if { 0 == 1 } {
-    if { $log == 1 } { gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Envoi a Podet" }
+    if { $log == 1 } { gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Envoi a Podet" }
 
     send_podet $isodate_now 
     } 
 
    # Mise a jour table bddimages.catas
 
-    if { $log == 1 } { gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Mise a jour de la table catas" }
+    if { $log == 1 } { gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Mise a jour de la table catas" }
 
     update_table_catas
 
@@ -374,7 +374,7 @@ fits/tarot_calern/2009/12/14
 
 
 
-    gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Fin de traitement" 
+    gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Fin de traitement" 
     if { $log == 1 } { 
        after 1000
        #exit

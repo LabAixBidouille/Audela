@@ -832,7 +832,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $usnoa2]\n"
          set usnoa2 [::manage_source::set_common_fields $usnoa2 USNOA2 { ra_deg dec_deg 5.0 magR 0.5 }]
          #::manage_source::imprim_3_sources $usnoa2
-         #gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $usnoa2 USNOA2 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set listsources [ ::manage_source::delete_catalog $listsources USNOA2CALIB ]
@@ -845,7 +845,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $tycho2]\n"
          set tycho2 [::manage_source::set_common_fields $tycho2 TYCHO2 { RAdeg DEdeg 5.0 VT e_VT }]
          #::manage_source::imprim_3_sources $tycho2
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $tycho2 TYCHO2 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_tycho2 [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
@@ -857,7 +857,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac2]\n"
          set ucac2 [::manage_source::set_common_fields $ucac2 UCAC2 { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }]
          #::manage_source::imprim_3_sources $ucac2
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac2 UCAC2 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac2 [::manage_source::get_nb_sources_by_cata $listsources UCAC2]
@@ -869,7 +869,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac3]\n"
          set ucac3 [::manage_source::set_common_fields $ucac3 UCAC3 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
          #::manage_source::imprim_3_sources $ucac3
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac3 UCAC3 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac3 [::manage_source::get_nb_sources_by_cata $listsources UCAC3]
@@ -881,7 +881,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ucac4]\n"
          set ucac4 [::manage_source::set_common_fields $ucac4 UCAC4 { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }]
          #::manage_source::imprim_3_sources $ucac4
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ucac4 UCAC4 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ucac4 [::manage_source::get_nb_sources_by_cata $listsources UCAC4]
@@ -893,7 +893,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmx]\n"
          set ppmx [::manage_source::set_common_fields $ppmx PPMX { RAJ2000 DECJ2000 errDec Vmag ErrVmag }]
          #::manage_source::imprim_3_sources $ppmx
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ppmx PPMX $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ppmx [::manage_source::get_nb_sources_by_cata $listsources PPMX]
@@ -905,7 +905,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $ppmxl]\n"
          set ppmxl [::manage_source::set_common_fields $ppmxl PPMXL { RAJ2000 DECJ2000 errDec magR1 0.5 }]
          #::manage_source::imprim_3_sources $ppmxl
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $ppmxl PPMXL $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_ppmxl [::manage_source::get_nb_sources_by_cata $listsources PPMXL]
@@ -917,7 +917,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $nomad1]\n"
          set nomad1 [::manage_source::set_common_fields $nomad1 NOMAD1 { RAJ2000 DECJ2000 errDec magV 0.5 }]
          #::manage_source::imprim_3_sources $nomad1
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $nomad1 NOMAD1 $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_nomad1 [::manage_source::get_nb_sources_by_cata $listsources NOMAD1]
@@ -929,7 +929,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $twomass]\n"
          set twomass [::manage_source::set_common_fields $twomass 2MASS { ra_deg dec_deg err_dec jMag jMagError }]
          #::manage_source::imprim_3_sources $twomass
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $twomass 2MASS $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_2mass [::manage_source::get_nb_sources_by_cata $listsources 2MASS]
@@ -941,7 +941,7 @@ namespace eval tools_cata {
          #gren_info "rollup = [::manage_source::get_nb_sources_rollup $wfibc]\n"
          set wfibc [::manage_source::set_common_fields $wfibc WFIBC { RA_deg DEC_deg error_Delta magR error_magR }]
          #::manage_source::imprim_3_sources $wfibc
-         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -gmt 1]: Identification\n"
+         #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Identification\n"
          set log 0
          set listsources [ identification $listsources IMG $wfibc WFIBC $::tools_cata::threshold_ident_pos_star $::tools_cata::threshold_ident_mag_star {} $log]
          set ::tools_cata::nb_wfibc [::manage_source::get_nb_sources_by_cata $listsources WFIBC]
