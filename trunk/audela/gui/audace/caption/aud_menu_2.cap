@@ -341,7 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(div,apply)                             "Aplicar"
    set caption(div,save)                              "Definir mi paleta"
    set caption(div,copy)                              "Copiar al portapapeles"
-   set caption(div,copy2file)                         "# Exporter l'image"
+   set caption(div,copy2file)                         "Exportar la imagen"
    set caption(div,help)                              "Ayuda"
    set caption(div,close)                             "Cerrar"
    set caption(div,annuler)                           "Cancelar"

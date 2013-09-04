@@ -211,7 +211,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "La variable %s no es compatible con una imagen a color."
    set caption(prtr,err_list_val)               "Las variables %s tienen valores incorrectos."
    set caption(prtr,err_opt_noir)               "La opción %s necesita un offset y un dark."
-   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
+   set caption(prtr,err_extension)              "%s imágenes tienen una extensión diferente de %s."
    set caption(prtr,sans)                       "%s procesada sin %s"
 
    set caption(prtr,ok)                         "OK"
