@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(astrometry,title)             "# Calibration WCS d'une seule image"
+set caption(astrometry,title)             "WCS calibration for a single image "
 set caption(astrometry,wcs,optic)         "From the Keywords of the Optical Setup"
 set caption(astrometry,wcs,classic)       "From the Usual WCS (World Coordinate System) Keywords"
 set caption(astrometry,wcs,matrix)        "From the Matrix WCS (World Coordinate System) Keywords"
@@ -341,7 +341,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(astrometry,title)          "# Calibration WCS d'une seule image"
+   set caption(astrometry,title)          "WCS calibration for a single image "
    set caption(astrometry,wcs,optic)      "From the Keywords of the Optical Setup"
    set caption(astrometry,wcs,classic)    "From the Usual WCS (World Coordinate System) Keywords"
    set caption(astrometry,wcs,matrix)     "From the Matrix WCS (World Coordinate System) Keywords"
@@ -396,7 +396,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
 
-   set caption(astrometry,title)          "# Calibration WCS d'une seule image"
+   set caption(astrometry,title)          "WCS calibration for a single image "
    set caption(astrometry,wcs,optic)      "From the Keywords of the Optical Setup"
    set caption(astrometry,wcs,classic)    "From the Usual WCS (World Coordinate System) Keywords"
    set caption(astrometry,wcs,matrix)     "From the Matrix WCS (World Coordinate System) Keywords"
@@ -451,7 +451,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
-   set caption(astrometry,title)          "# Calibration WCS d'une seule image"
+   set caption(astrometry,title)          "WCS calibration for a single image "
    set caption(astrometry,wcs,optic)      "From the Keywords of the Optical Setup"
    set caption(astrometry,wcs,classic)    "From the Usual WCS (World Coordinate System) Keywords"
    set caption(astrometry,wcs,matrix)     "From the Matrix WCS (World Coordinate System) Keywords"
