@@ -242,7 +242,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,apparence)              "Apariencia"
    set caption(audace,menu,police)                 "Fuentes"
    set caption(audace,menu,proxy)                  "Internet (Proxy)"
-   set caption(audace,menu,nbreDecimales)          "# Nombre de décimales"
+   set caption(audace,menu,nbreDecimales)          "Número de decimales"
    set caption(audace,menu,camera)                 "Cámara"
    set caption(audace,menu,monture)                "Montura"
    set caption(audace,menu,liaison)                "Enlace"
