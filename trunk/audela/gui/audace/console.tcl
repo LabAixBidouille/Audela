@@ -3,6 +3,7 @@
 # Description : Creation de la Console
 # Mise à jour $Id$
 #
+# e.g. source $audace(rep_install)/gui/audace/console.tcl
 
 namespace eval ::console {
 
@@ -263,16 +264,218 @@ namespace eval ::console {
 
    proc execute {cmd} {
       variable This
+      variable Res
 
       if { [catch {uplevel #0 $cmd} res] != 0} {
          $This.txt1 insert end "# $res\n" style_erreur
+         set Res [list 1 $res]
       } else {
          if { [string compare $res ""] != 0} {
             $This.txt1 insert end "# $res\n" style_resultat
+            set Res [list 0 $res]
+         } else {
+            set Res [list 0 ""]
          }
       }
       $This.txt1 insert end "\n"
    }
 
+   proc server { action { port 5555 } } {
+      global audace
+      set name console_server
+      if {$action=="open"} {
+         if {[info exists audace(socket,server,$name)]==1} {
+            error "server $name already opened"
+         }
+         console::socket_server_open $name $port console::socket_server_accept
+      } elseif {$action=="close"} {
+         console::socket_server_close $name      
+      } else {
+         error "action must be open or close"
+      }
+   }
+
+   proc client { args } {
+      global audace
+      set n [llength $args]
+      if {$n>=1} {
+         set action [lindex $args 0]
+         set name console_client
+         if {($action=="open")||($action=="close")} {
+            set ip 127.0.0.1
+            set port 5555
+            if {$n>=2} { set ip [lindex $args 1] }
+            if {$n>=3} { set port [lindex $args 2] }
+         }
+         if {$action=="open"} {
+            if {[info exists audace(socket,client,$name)]==1} {
+               error "client $name already opened"
+            }
+            console::socket_client_open $name $ip $port
+            console::affiche_resultat "Socket ${name} opened to ${ip}:${port}\n"
+         } elseif {$action=="close"} {
+            console::socket_client_close $name
+            console::affiche_resultat "Socket ${name} is closed\n"
+         } elseif {$action=="put"} {
+            console::socket_client_put $name [lrange $args 1 end]
+            set errmsg "server response not ready"
+            set res $errmsg
+            while {($res==$errmsg)||($res=="")} {
+               set res [console::socket_client_get $name]
+               #console::affiche_resultat "res=$res\n"
+               after 100
+            }
+            lassign $res err msg
+            if {$err==0} {
+               console::affiche_resultat "$msg\n"
+            } else {
+               console::affiche_erreur "$msg\n"
+            }
+         } else {
+            error "action must be open|close|put"
+         }
+      } else {
+         error "Usage: console::client open|close|put args"
+      }
+   }
+
+   # ==========================================================================================
+   # socket_server_open : to open a named socket server that calls a proc_accept
+   # e.g. source audace/socket_tools.tcl ; socket_server_open server1 60000 socket_server_accept
+   proc socket_server_open { name port {proc_accept socket_server_accept} } {
+      global audace
+      if {[info exists audace(socket,server,$name)]==1} {
+         error "server $name already opened"
+      }
+      set errno [catch {
+         set audace(socket,server,$name) [socket -server $proc_accept $port]
+      } msg]
+      if {$errno==1} {
+         error $msg
+      }
+   }
+   # ==========================================================================================
+
+   # ==========================================================================================
+   # socket_server_accept : this is the default proc_accept of a socket server
+   # Please use this proc as a canvas to write those dedicaded to your job.
+   proc socket_server_accept {fid ip port} {
+      global audace
+      fconfigure $fid -buffering line
+      fileevent $fid readable [list console::socket_server_respons $fid]
+   }
+   # ==========================================================================================
+
+   # ==========================================================================================
+   # socket_server_respons : this is the default proc_accept of a socket server
+   # Please use this proc as a canvas to write those dedicaded to your job.
+   proc socket_server_respons {fid} {
+      global audace
+      variable This
+      variable CmdLine
+      variable Res
+      set errsoc [ catch {
+         gets $fid line
+         if {[eof $fid]} {
+            close $fid
+         } elseif {![fblocked $fid]} {            
+            puts $fid "server response not ready"
+            flush $fid
+            set CmdLine $line
+            console::onEnt1KeyReturn $This.ent1
+            puts $fid "$Res"
+         }
+      } msgsoc]
+      if {$errsoc==1} {
+         ::console::affiche_resultat "socket error : $msgsoc\n"
+      }
+   }
+   # ==========================================================================================
+
+   # ==========================================================================================
+   # socket_server_close : to close a named socket server
+   proc socket_server_close { name } {
+      global audace
+      set errno [catch {
+         close $audace(socket,server,$name)
+      } msg]
+      if {$errno==0} {
+         unset audace(socket,server,$name)
+         catch {unset audace(socket,server,connected)}
+      } else {
+         error $msg
+      }
+   }
+   # ==========================================================================================
+   
+   # ==========================================================================================
+   # socket_client_open : to open a named socket client
+   # e.g. socket_client_open client1 127.0.0.1 60000
+   #      socket_client_put client1 "Blabla" ; set res [socket_client_get client1]
+   #      socket_client_close client1
+   proc socket_client_open { name host port } {
+      global audace
+      if {[info exists audace(socket,client,$name)]==1} {
+         error "client $name already opened"
+      }
+      set errno [catch {
+         set audace(socket,client,$name) [socket $host $port]
+         fconfigure $audace(socket,client,$name) -buffering line -blocking 0
+      } msg]
+      if {$errno==1} {
+         error $msg
+      }
+   }
+   # ==========================================================================================
+
+   # ==========================================================================================
+   # socket_client_put : send msg from the named socket client
+   proc socket_client_put { name msg } {
+      global audace
+      if {[info exists audace(socket,client,$name)]==0} {
+         error "client $name does not exists"
+      }
+      set errno [catch {
+         puts $audace(socket,client,$name) "$msg"
+         flush $audace(socket,client,$name)
+      } msg]
+      if {$errno==1} {
+         error $msg
+      }
+   }
+   # ==========================================================================================
+
+   # ==========================================================================================
+   # socket_client_get : receive msg from the server linked with the named socket client
+   proc socket_client_get { name } {
+      global audace
+      if {[info exists audace(socket,client,$name)]==0} {
+         error "client $name does not exists"
+      }
+      set errno [catch {
+         gets $audace(socket,client,$name)
+      } msg]
+      if {$errno==1} {
+         error $msg
+      } else {
+         return $msg
+      }
+   }
+   # ==========================================================================================
+
+   # ==========================================================================================
+   # socket_client_close : to close a named socket client
+   proc socket_client_close { name } {
+      global audace
+      set errno [catch {
+         close $audace(socket,client,$name)
+      } msg]
+      if {$errno==0} {
+         unset audace(socket,client,$name)
+      } else {
+         error $msg
+      }
+   }
+   # ==========================================================================================
 }
 

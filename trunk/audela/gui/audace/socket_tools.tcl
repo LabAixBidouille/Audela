@@ -6,7 +6,7 @@
 
 # ==========================================================================================
 # socket_server_open : to open a named socket server that calls a proc_accept
-# e.g. source audace/socket_tools.tcl ; socket_server_open server1 60000 socket_server_accept
+# e.g. source $audace(rep_install)/gui/audace/socket_tools.tcl ; socket_server_open server1 60000 socket_server_accept
 proc socket_server_open { name port {proc_accept socket_server_accept} } {
    global audace
    if {[info exists audace(socket,server,$name)]==1} {
