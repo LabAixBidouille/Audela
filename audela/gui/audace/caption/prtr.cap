@@ -264,7 +264,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_par_file)               "Parameter %s mit einem Farbbild nicht kompatibel."
    set caption(prtr,err_list_val)               "Parameter %s hat falsche Werte."
    set caption(prtr,err_opt_noir)               "Option %s nötigt ein Bias und ein Dark Bild."
-   set caption(prtr,err_extension)              "# %s images comportent une extension différente de %s."
+   set caption(prtr,err_extension)              "%s Bilder haben eine Endung anders als %s."
    set caption(prtr,sans)                       "%s ohne %s verarbeitet"
 
    set caption(prtr,ok)                         "OK"
