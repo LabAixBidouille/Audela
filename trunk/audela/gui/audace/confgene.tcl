@@ -272,6 +272,10 @@ namespace eval ::confPosObs {
       frame $This.frame20 -borderwidth 0 -relief raised
       pack $This.frame20 -in $This.frame9 -side top -fill both -expand 1
 
+      #--- Vertical scrollbar (AK)
+      scrollbar $This.scrlbar1 -orient vertical -command "" -takefocus 0 -borderwidth 1
+      pack $This.scrlbar1 -in $This.frame1 -side right -fill y
+      
       #--- Nom de l'organisation
       label $This.lab0 -text "$caption(confgene,nom_organisation)"
       pack $This.lab0 -in $This.frame2a -anchor w -side top -padx 10 -pady 5
@@ -461,9 +465,32 @@ namespace eval ::confPosObs {
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
          -command { ::confPosObs::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
-
+      
       #--- La fenetre est active
       focus $This
+      
+      #--- Taille de la fenetre pour les petits ecrans (AK)
+      update
+      set res [wm geometry $This]
+      console::affiche_resultat "res=$res This=$This\n"
+      regsub -all \\+ $res " " res2
+      regsub -all x $res2 " " res
+      lassign $res dimx dimy posx posy
+      lassign [wm maxsize $This] maxx maxy
+      #set maxy 680 ; # ligne pour tester
+      set offy 50 
+      console::affiche_resultat "dimy=$dimy  maxy-offy=[expr $maxy-$offy]\n"
+      if {$dimy>[expr $maxy-$offy]} {
+         set dimy [expr $maxy-$offy]
+         set posy $offy
+         #--- limite la dimension de la fenetre
+         wm geometry $This ${dimx}x${dimy}+${posx}+${posy}
+         #--- pack la scrollbar verticale
+         pack $This.scrlbar1 -in $This.frame1 -side right -fill y
+      } else {
+         #--- cache la scrollbar verticale
+         pack forget $This.scrlbar1
+      }
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { ::console::GiveFocus }
