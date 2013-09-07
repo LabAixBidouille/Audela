@@ -25,7 +25,7 @@ namespace eval ::confPosObs {
 
       set This $this
       ::confPosObs::createDialog
-      tkwait visibility $This
+     ### tkwait visibility $This
    }
 
    #
@@ -275,7 +275,7 @@ namespace eval ::confPosObs {
       #--- Vertical scrollbar (AK)
       scrollbar $This.scrlbar1 -orient vertical -command "" -takefocus 0 -borderwidth 1
       pack $This.scrlbar1 -in $This.frame1 -side right -fill y
-      
+
       #--- Nom de l'organisation
       label $This.lab0 -text "$caption(confgene,nom_organisation)"
       pack $This.lab0 -in $This.frame2a -anchor w -side top -padx 10 -pady 5
@@ -465,10 +465,10 @@ namespace eval ::confPosObs {
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
          -command { ::confPosObs::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
-      
+
       #--- La fenetre est active
       focus $This
-      
+
       #--- Taille de la fenetre pour les petits ecrans (AK)
       update
       set res [wm geometry $This]
@@ -478,7 +478,7 @@ namespace eval ::confPosObs {
       lassign $res dimx dimy posx posy
       lassign [wm maxsize $This] maxx maxy
       #set maxy 680 ; # ligne pour tester
-      set offy 50 
+      set offy 50
       console::affiche_resultat "dimy=$dimy  maxy-offy=[expr $maxy-$offy]\n"
       if {$dimy>[expr $maxy-$offy]} {
          set dimy [expr $maxy-$offy]
