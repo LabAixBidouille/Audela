@@ -1041,7 +1041,7 @@ int tt_util_match_translate(TT_IMA *p_ref,TT_IMA *p_in,double *a,int *nbmatched)
       tt_free(dist_in,"dist_in");
       return(TT_ERR_PB_MALLOC);
    }
-   nombre=nrows_in;
+   nombre=nrows_ref;
    taille=sizeof(int);
    index_ref=NULL;
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&index_ref,&nombre,&taille,"index_ref"))!=OK_DLL) {
