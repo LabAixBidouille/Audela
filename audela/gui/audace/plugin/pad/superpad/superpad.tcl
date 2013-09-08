@@ -235,7 +235,7 @@ namespace eval ::superpad {
    #  run
    #     cree la fenetre de la raquette
    #------------------------------------------------------------
-   proc run { {zoom .4} {positionxy 0+0} } {
+   proc run { {zoom .4} {positionxy +0+0} } {
       global caption color colorpad geompad
 
       if { [ string length [ info commands .superpad.display* ] ] != "0" } {
