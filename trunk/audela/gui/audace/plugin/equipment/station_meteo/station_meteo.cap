@@ -62,7 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(station_meteo,search)                      "..."
    set caption(station_meteo,meteo)                       "Leggi dati meteorologici ogni secondo"
    set caption(station_meteo,attention)                   "Attenzione"
-   set caption(station_meteo,erreur)                      "Indicare il percorso."
+   set caption(station_meteo,erreur)                      "Scegli il percorso giusto."
 
    set caption(station_meteo,site_web)                    "Sito Web di riferimento:"
    set caption(station_meteo,site_web_sentinel)           "http://www.shelyak.com/dossier.php?id_dossier=49"

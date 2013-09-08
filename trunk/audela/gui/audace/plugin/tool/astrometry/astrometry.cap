@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(astrometry,title)          "# Calibration WCS d'une seule image"
+   set caption(astrometry,title)          "Calibrazione WCS per una singola immagine"
    set caption(astrometry,wcs,optic)      "Dalle parole chiave della configurazione ottica"
    set caption(astrometry,wcs,classic)    "Dalle parole chiave WCS (World Coordinate System) classiche"
    set caption(astrometry,wcs,matrix)     "Dalla matrice WCS (World Coordinate System)"

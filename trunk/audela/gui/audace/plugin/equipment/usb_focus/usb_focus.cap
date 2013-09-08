@@ -91,7 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(usb_focus,configure)          "Configurare"
    set caption(usb_focus,version)            "Software del microcontrollore: V"
    set caption(usb_focus,reset)              "RESET"
-   set caption(usb_focus,maxstep)            "Massima posizione"
+   set caption(usb_focus,maxstep)            "Numero massimo di passi"
    set caption(usb_focus,set)                "SET"
    set caption(usb_focus,step)               "Incremento"
    set caption(usb_focus,halfstep)           "Mezzo passo"

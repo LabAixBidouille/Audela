@@ -225,10 +225,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,user)                               "Utente del Proxy:"
    set caption(confgene,password)                           "Password del Proxy:"
 
-   set caption(confgene,nbreDecimales)                      "# Nombre de décimales"
-   set caption(confgene,choixNbreDecimales)                 "# Choisir le nombre de décimales à afficher :"
-   set caption(confgene,12decimales)                        "# 12 décimales"
-   set caption(confgene,17decimales)                        "# 17 décimales"
+   set caption(confgene,nbreDecimales)                      "Numero di decimali"
+   set caption(confgene,choixNbreDecimales)                 "Scegli il numero di decimali da visualizzare:"
+   set caption(confgene,12decimales)                        "12 decimali"
+   set caption(confgene,17decimales)                        "17 decimali"
 
    set caption(confgene,position)                           "Posizione dell'osservatore"
    set caption(confgene,nom_organisation)                   "Nome dell'organizzazione (max. 70 caratteri):"
