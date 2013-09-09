@@ -261,6 +261,7 @@
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s float {Pixel Height (with binning)} mum}
       dict set dicokwd PRESSURE  {PRESSURE %s float {[hPa] Atmospheric Pressure} hPa}
       dict set dicokwd RA        {RA %s double {Expected RA asked to telescope} {deg}}
+      dict set dicokwd RADESYS   {RADECYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd SEING     {SEING %s float {Average FWHM} pixels}
       dict set dicokwd SITENAME  {SITENAME %s string {Observatory Name} {}}
@@ -323,29 +324,35 @@
       sextractor [ file join $mypath $sky0$ext ] -c [ file join $mypath config.sex ]
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" "
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
+      ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" "
       buf$bufNo load [file join ${mypath} ${sky}$ext ]
 
-      #--   provisoire, en attendant la correction de simulimage
-      buf$bufNo delkwd RADESYS
       buf$bufNo setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
 
-      #--   supprime les fichiers intermediaires
-      set fileList [list ascii.txt catalog.cat com.lst dif.lst \
-         eq.lst matrix.txt obs.lst pointzero.lst usno.lst  \
-         signal.sex xy.lst config.param config.sex default.nnw]
+      #-- Nettoie
+      set toDelete [list $sky0$ext x$sky$ext c$sky$ext z$sky$ext ascii.txt \
+         catalog.cat com.lst dif.lst eq.lst obs.lst pointzero.lst usno.lst xy.lst \
+         ${sky}a.jpg ${sky}b.jpg signal.sex config.sex config.param default.nnw]
 
-      foreach file $fileList {
-         if {[file exists [file join $rep $file]]} {
-            file delete [file join $rep $file]
-         }
-      }
+      ttscript2 "IMA/SERIES \"$mypath\" \"$toDelete\" * * . . . * . DELETE"
+
+      #--   supprime les fichiers intermediaires
+      #set fileList [list ascii.txt catalog.cat com.lst dif.lst \
+      #   eq.lst matrix.txt obs.lst pointzero.lst usno.lst  \
+      #   signal.sex xy.lst config.param config.sex default.nnw]
+
+      #foreach file $fileList {
+      #   if {[file exists [file join $rep $file]]} {
+      #      file delete [file join $rep $file]
+      #   }
+      #}
 
       #--   Suppression des fichiers 'dummy'
-      foreach file [list ${sky} c${sky} ${sky}0] {
-         if {[file exists [file join $mypath $file$ext ] ] } {
-            file delete [ file join $mypath $file$ext ]
-         }
-      }
+      #foreach file [list ${sky} c${sky} ${sky}0] {
+      #   if {[file exists [file join $mypath $file$ext ] ] } {
+      #      file delete [ file join $mypath $file$ext ]
+      #   }
+      #}
    }
 
    #--------------------------------------------------------------------------
