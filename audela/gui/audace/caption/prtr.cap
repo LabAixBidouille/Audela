@@ -36,6 +36,10 @@ set caption(prtr,en_cours)                      "In Progress... Please Wait..."
 set caption(prtr,fin_traitement)                "End of Processing."
 set caption(prtr,attention)                     "Warning"
 set caption(prtr,sortie_generique)              "Set Generic Output Name."
+#--  ajout RZ
+set caption(prtr,err_cat_folder)                "Le chemin du catalogue %s n'est pas défini\nou est invalide."
+set caption(prtr,prgrsbr)                       "# Image %s calibrée avec %s étoiles"
+#--  fin ajout RZ
 set caption(prtr,err_file_generique)            "This is not a generic name for a file."
 set caption(prtr,err_file_nb)                   "Select at least %s image(s)."
 set caption(prtr,err_no_file)                   "No File %s."
@@ -89,6 +93,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,fin_traitement)             "Fin du traitement."
    set caption(prtr,attention)                  "Attention"
    set caption(prtr,sortie_generique)           "Définir le nom générique de sortie."
+#--   ajout RZ
+   set caption(prtr,err_cat_folder)             "Le chemin du catalogue %s n'est pas défini\nou est invalide."
+   set caption(prtr,calibration)                "Calibration WCS"
+   set caption(prtr,prgrsbr)                    "Image %s calibrée avec %s étoiles"
+#--   fin ajout RZ
    set caption(prtr,err_file_generique)         "Ce n'est pas un nom générique de fichier."
    set caption(prtr,err_file_nb)                "Choisissez au moins %s image(s)."
    set caption(prtr,err_no_file)                "Le fichier %s n'existe pas."
@@ -107,6 +116,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(prtr,err_opt_noir)               "L'option %s nécessite un offset et un dark."
    set caption(prtr,err_extension)              "%s images comportent une extension différente de %s."
    set caption(prtr,sans)                       "%s réalisé sans %s"
+
 
    set caption(prtr,ok)                         "OK"
    set caption(prtr,appliquer)                  "Appliquer"

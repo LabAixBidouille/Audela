@@ -2555,6 +2555,10 @@ namespace eval ::confVisu {
          foreach function  [::prtr::EXTRACTFunctions 0] {
             Menu_Command $visuNo "$caption(audace,menu,extract)" "$function..." "::prtr::run \"$function\" "
          }
+         Menu_Cascade   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,calibration)"
+         foreach function  [::prtr::CALIBFunctions 0] {
+            Menu_Command $visuNo "$caption(audace,menu,calibration)" "$function..." "::prtr::run \"$function\" "
+         }
 
          Menu_Separator $visuNo "$caption(audace,menu,analysis)"
          #--- Affichage des plugins de type tool et de fonction analysis du menu deroulant Analyse
