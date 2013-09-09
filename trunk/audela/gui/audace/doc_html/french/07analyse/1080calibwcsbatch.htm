@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Calibration WCS par lot</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 9 septembre 2013</p>
+<h1>Calibration WCS par lot</h1>
+<h2>L'interface</h2>
+<p>Elle donne la liste des images pr&#233;sentes dans le
+r&#233;pertoire comportant les mots cl&#233;s WCS :</p>
+<ul>
+<li>nom court de l'image, sans extension,</li>
+<li>type M (monocolore) ou C (couleurs),</li>
+<li>dimensions de l'image (NAXIS1 et NAXIS2),</li>
+</ul>
+<p><b>Note 1</b> : Si une image est pr&#233;sente dans la visu
+lors du lancement de l'interface la ligne correspondante est
+coch&#233;e.<br />
+<b>Note 2</b> : la s&#233;lection de la premi&#232;re image
+provoque l'affichage des valeurs de ses mots cl&#233;s WCS. Si le
+traitement est lanc&#233; sans modification, ces param&#232;tres
+s'imposeront &#224; toutes les images suivantes.<br />
+<b>Note 3</b> : les images seront trait&#233;es dans l'ordre
+d'affichage et nom pas dans l'ordre de s&#233;lection.</p>
+<p><img src="images/calibwcsbatch.gif" /></p>
+<p>L'interface est partiellement configurable par l'utilisateur
+pour l'adapter &#224; la longueur de la liste et de la longueur
+des noms.</p>
+<h2>Les familles de commandes</h2>
+<h3>1. Tout s&#233;lectionner</h3>
+<p>Le fait de cocher cette commande a pour effet de cocher toutes
+les images.<br />
+Le fait de d&#233;cocher la commande a pour effet de
+d&#233;s&#233;lectionner toutes les images
+s&#233;lectionn&#233;es.</p>
+<h3>2. Les param&#232;tres</h3>
+<h4>Les param&#232;tres num&#233;riques</h4>
+<p>Les valeurs des mots cl&#233;s affich&#233;es pour RA, DEC,
+PIXSIZE1, PIXSIZE2, FOCLEN et CROTA2 sont celles de la
+premi&#232;re image s&#233;lectionn&#233;e (soit par
+l'utilisateur, soit la premi&#232;re de la liste avec <b>Tout
+s&#233;lectionner</b>). Elles sont modifiables par l'utilisateur.
+Les param&#232;tres CRPIX1 et CRPIX2 sont calcul&#233;s
+automatiquement pour le centre de l'image. Il est donc possible
+de traiter des images de tailles diff&#233;rentes mais prises
+avec les param&#232;tres affich&#233;s.</p>
+<h4>Catalogues de calibration</h4>
+<p>Deux formats de catalogue sont disponibles : <b>MICROCAT</b>
+et <b>USNO</b>.<br />
+Le choix de l'utilisateur est m&#233;moris&#233;.<br />
+L'int&#233;grit&#233; du catalogue affich&#233; dans le
+s&#233;lecteur est v&#233;rifi&#233;e &#224; l'ouverture de
+l'interface ou lors d'un changement de s&#233;lection. Un
+avertissement est &#233;mis si le chemin du r&#233;pertoire du
+catalogue n'est pas d&#233;fini, incorrect ou si le catalogue est
+incomplet et la fen&#234;tre de configuration des
+r&#233;pertoires s'ouvre.</p>
+<h3>3. Image de sortie</h3>
+<p>Il est inutile de pr&#233;ciser l'extension des images car
+c'est automatiquement celle s&#233;lectionn&#233;e dans
+<b>Configuration/Fichiers images...</b>.</p>
+<p>Cette entr&#233;e permet de d&#233;finir le r&#233;pertoire et
+le nom g&#233;n&#233;rique des images calibr&#233;es. Exemples de
+saisie :</p>
+<ul>
+<li>un seul point <b>.</b> : les images produites remplacent
+celles existantes (m&#234;me r&#233;pertoire et m&#234;me
+nom),</li>
+<li>un nom tel que <b>toto</b> : une s&#233;rie d'images sera
+produite dans le m&#234;me r&#233;pertoire ; son nom
+g&#233;n&#233;rique sera <b>toto</b> index&#233; &#224; partir de
+1,</li>
+<li><b>chemin_du_r&#233;pertoire</b> : les images calibr&#233;es
+seront dans le r&#233;pertoire d&#233;sign&#233; ; les images
+porteront le m&#234;me nom que les images &#224; traiter, Un
+bouton <b>...</b> permet de s&#233;lectionner un r&#233;pertoire
+existant.</li>
+<li><b>chemin_du_r&#233;pertoire/toto</b> : un s&#233;rie
+index&#233;e &#224; partir de 1 sera produite dans le
+r&#233;pertoire d&#233;sign&#233;.</li>
+</ul>
+La liste des images du r&#233;pertoire courant est
+rafra&#238;chie d&#232;s qu'une image est produite. Cette liste
+est &#233;videmment inchang&#233;e si le r&#233;pertoire de
+destination est diff&#233;rent.
+<h3>4. Divers</h3>
+<h4>Afficher l'image &#224; la fin du traitement</h4>
+<p>L'activation de cette commande permet d'afficher la
+derni&#232;re image produite.</p>
+<h4>Afficher les scripts</h4>
+<p>L'activation de cette commande permet d'&#233;diter les
+scripts tt dans la console au fur et &#224; mesure de leur appel.
+C'est utile pour le d&#233;bug ou pour connna&#238;tre la
+s&#233;quence des fonctions TT appel&#233;es.</p>
+<h4>Ligne de message</h4>
+<p>Cette ligne indique le nombre d'images s&#233;lectionn&#233;es
+et des informations diverses durant le traitement.</p>
+<h2>4. Suivi du traitement</h2>
+<p>Une barre de progression informe sur l'image trait&#233;e et
+le nombre d'&#233;toiles d&#233;tect&#233;es :</p>
+<p><img src="images/calibwcs_progressbar.gif" /></p>
+<body></html>

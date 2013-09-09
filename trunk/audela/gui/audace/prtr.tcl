@@ -13,7 +13,7 @@
    #  ::prtr::buildParam_obligatoire
    #  ::prtr::buildParam_optionnel
    #  ::prtr::configZone w liste
-   #  ::prtr::selectAll
+   #  ::prtr::selectDeselectAll
    #  ::prtr::dispOptions w
    #  ::prtr::selectFiles row
    #  ::prtr::confBitPix
@@ -65,6 +65,12 @@
    #  ::prtr::informeUser v1 v2
    #  ::prtr::cmdAligner data options
    #  ::prtr::searchMax box buf
+   #  ::prtr::seeWCSKeywords filename
+   #  ::prtr::checkCatalog
+   #  ::prtr::calibWCS data options
+   #  ::setKwdList options dirOut
+   #  ::prtr::getKwdValue filename
+   #  ::prtr::createProgressBar
 
 namespace eval ::prtr {
 
@@ -97,7 +103,7 @@ namespace eval ::prtr {
          trace add variable "::conf(fichier,compres)" write "::prtr::changeExtension $visuNo"
 
          set private(lineHeight) 40
-         set private(minWidth) 550
+         set private(minWidth)  550
          set private(minHeight) 404
 
          #--   intialise la variable si elle n'existe pas
@@ -131,10 +137,9 @@ namespace eval ::prtr {
 
       toplevel $This
       wm resizable $This 1 1
-      #--   pm la geometrie est fixee ::prtr::confToWidget
-      set height $private(minHeight)
-      wm minsize $private(this) $private(minWidth) $height
+      wm minsize $private(this) $private(minWidth) $private(minHeight)
       wm transient $This $audace(base)
+      #--   pm la geometrie est fixee ::prtr::confToWidget
       wm geometry $private(this) $conf(prtr,geometry)
       wm protocol $This WM_DELETE_WINDOW "::prtr::cmdClose $visuNo"
 
@@ -165,7 +170,7 @@ namespace eval ::prtr {
 
       #---  le check bouton pour selectionner tout
       checkbutton $this.all.select -variable ::prtr::all \
-         -text "$caption(prtr,select_all)" -command "::prtr::selectAll"
+         -text "$caption(prtr,select_all)" -command "::prtr::selectDeselectAll"
       pack $this.all.select -side left -padx 10 -pady 5
 
       #---  frame pour le fichier de sortie
@@ -236,7 +241,7 @@ namespace eval ::prtr {
          -xscrollcommand [list $this.hscroll set] \
          -yscrollcommand [list $This.usr.choix.vscroll set] \
          -exportselection 0 -setfocus 1 \
-        -activestyle none -stretch {1}
+         -activestyle none -stretch {1}
 
       #--- place la table et le vscrollbar dans la frame
       pack $tbl -anchor w -side left -fill both -expand 1
@@ -283,16 +288,18 @@ namespace eval ::prtr {
          ROTATION    { set titre "$caption(audace,menu,images) - $caption(audace,menu,geometry)"}
          TRANSFORM   { set titre "$caption(audace,menu,images) - $caption(audace,menu,transform)"}
          STACK       { set titre "$caption(audace,menu,images) - $caption(audace,menu,pile)"}
+         CALIB       { set titre "$caption(audace,menu,analysis) - $caption(audace,menu,calibration)"}
          default     { set titre "$caption(audace,menu,images) - $caption(audace,menu,[string tolower $private(ima)])"}
       }
+
       wm title $private(this) "$titre"
 
       #--   detruit le libelle et bouton de menu
       set this $private(this).usr.select
       if {[winfo exists $this]} {destroy $this.lbl $this.but}
 
-      #--   selectionne le libelle apparaissant a cote du bouton de menu
-      if {$private(ima) eq "PILE" || $private(ima) eq "MAITRE" || $private(ima) eq "CENTER" } {
+      #--   selectionne le libelle (lot ou image) apparaissant a cote du bouton de menu
+      if {$private(ima) in [list PILE MAITRE CENTER CALIB]} {
          set texte "$::caption(prtr,operation_lot)"
       } else {
          set texte "$::caption(prtr,operation_disk)"
@@ -318,9 +325,6 @@ namespace eval ::prtr {
             -variable ::prtr::operation
       }
       pack $this.but -side right -padx 18 -pady 10
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -349,6 +353,8 @@ namespace eval ::prtr {
             unset private($liste)
          }
       }
+      set private(todo) ""
+      set private(profil) ""
 
       #--   charge les nouvelles info
       lassign [${private(ima)}Functions "$::prtr::operation"] private(function) \
@@ -360,8 +366,8 @@ namespace eval ::prtr {
       ::prtr::configOutName
 
       #--   initialise les compteurs de lignes
-      set private(fun_lignes) 0
-      set private(tt_lignes) 1
+      set private(fun_lignes) "0"
+      set private(tt_lignes)  "1"
 
       #--   cree et initialise les variables lies aux parametres
       foreach liste {obligatoire optionnel} child {funoptions ttoptions} {
@@ -385,6 +391,19 @@ namespace eval ::prtr {
             trace remove variable "::confVisu::private($visuNo,boxSize)" write "::prtr::updateBox $visuNo"
          }
       }
+
+#--  ajout  CALIB
+      #--   Verifie le catalogue
+      if {$private(function) eq "CALIBWCS"} {
+         ::prtr::checkCatalog
+      }
+#--  fin ajout  CALIB
+
+      #--  Adapte la geometrie
+      ::prtr::confToWidget
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -401,7 +420,7 @@ namespace eval ::prtr {
       label $w.label  -text "$::caption(prtr,param)"
       set private(fun_lignes) [::prtr::configZone $w obligatoire]
       grid $w.label -row 0 -column 0 -padx 10 -pady 5 -rowspan $private(fun_lignes)
-      blt::table $private(table) $w 3,0 -fill both -cspan 2 \
+      blt::table $private(table) $w 3,0 -fill x -cspan 2 \
         -height [list [expr {$private(fun_lignes)*$private(lineHeight)}]]
 
       #--   modifie les variables initiales
@@ -420,9 +439,6 @@ namespace eval ::prtr {
             ::prtr::getWidthHeight $visuNo
          }
       }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $private(this)
    }
 
    #--------------------------------------------------------------------------
@@ -440,8 +456,16 @@ namespace eval ::prtr {
             -command "::prtr::dispOptions $w"
          grid $w.che -row 0 -column 0 -padx 10 -pady 5 -rowspan 1
       }
+
       ::prtr::confBitPix
       ::prtr::dispOptions $w
+#-- ajout CALIB
+      if {$private(function) eq "CALIBWCS"} {
+         #--   masque la ligne
+         set private(tt_lignes) 0
+         blt::table $private(table) $w 4,0 -height {0}
+      }
+#-- fin ajout CALIB
    }
 
    #--------------------------------------------------------------------------
@@ -471,15 +495,21 @@ namespace eval ::prtr {
             "labelentry"   {
                set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
                if {$valuewidth < "8"} {set valuewidth 9}
-               LabelEntry $w.$child -label "$child" -labelanchor e \
-                  -labelwidth $labelwidth -textvariable ::prtr::$child \
-                  -padx $d -width $valuewidth -justify center
-               grid $w.$child -row $row -column $col -padx $d -pady 5 -sticky e
-               if {$child in {file bias dark flat image_ref}} {
-                  $w.$child configure -width 30
+               if {$child ni [list file bias dark flat image_ref]} {
+                  #--   cas general
+                  LabelEntry $w.$child -label "$child" -labelanchor e \
+                     -labelwidth $labelwidth -textvariable ::prtr::$child \
+                     -padx $d -width $valuewidth -justify center
+                  grid $w.$child -row $row -column $col -padx $d -pady 5 -sticky e
+               } else {
+                  #--   cas des noms comportant un chemin
+                  LabelEntry $w.$child -label "$child" -labelanchor e \
+                     -labelwidth $labelwidth -textvariable ::prtr::$child \
+                     -padx $d -width 30 -justify center
+                  grid $w.$child -row $row -column $col -padx $d -pady 5 -sticky e
                   incr col
-                  button $w.explore_$child -text "$::caption(prtr,parcourir)" -width 1 \
-                     -command "::prtr::getFileName $w $child"
+				      button $w.explore_$child -text "$::caption(prtr,parcourir)" \
+				         -width 2 -command "::prtr::getFileName $w $child"
                   grid $w.explore_$child -row $row -column $col -padx $d -pady 5
                }
             }
@@ -512,15 +542,37 @@ namespace eval ::prtr {
                set kernel_coefValues  [list 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1]
                set type_thresholdValues  [list -1 0 +1]
                set translateValues [list after before never only]
+               set astromcatalogValues [list USNO MICROCAT]
                set height [llength [set ${child}Values]]
-               frame $w.combo$child
-               label $w.combo$child.lbl_$child -text "$child" -width $labelwidth
-               ComboBox $w.combo$child.$child -textvariable ::prtr::$child -relief sunken \
-                  -width 6 -height $height -values [set ${child}Values]
-               button $w.combo$child.aide -text "?" -width 2 \
-                  -command "::prtr::afficheAideBitpix"
-               pack $w.combo$child.lbl_$child $w.combo$child.$child $w.combo$child.aide -side left
-               grid $w.combo$child -row $row -column $col -padx $d -pady 5 -sticky e
+               set width [ ::tkutil::lgEntryComboBox [set ${child}Values] ]
+               if {$width < 6} {set width 6}
+               if {$child eq "astromcatalog"} {
+                  frame $w.combo$child
+                  label $w.combo$child.lbl_$child -text "$child" -width $labelwidth
+                  ComboBox $w.combo$child.$child -textvariable ::conf(prtr,astromcatalog) -relief sunken \
+                     -width $width -height $height -values [set ${child}Values] -editable 0 \
+                     -modifycmd {::prtr::checkCatalog}
+                  pack $w.combo$child.lbl_$child $w.combo$child.$child -side left
+                  grid $w.combo$child -row $row -column $col -columnspan 2 -pady 5
+                  incr col 2
+               } elseif {$child eq "bitpix"} {
+                  frame $w.combo$child
+                  label $w.combo$child.lbl_$child -text "$child" -width $labelwidth
+                  ComboBox $w.combo$child.$child -textvariable ::prtr::$child -relief sunken \
+                     -width $width -height $height -values [set ${child}Values] -editable 0
+                  button $w.combo$child.aide -text "?" -width 2 \
+                     -command "::prtr::afficheAideBitpix"
+                  pack $w.combo$child.lbl_$child $w.combo$child.$child $w.combo$child.aide -side left
+                  grid $w.combo$child -row $row -column $col -padx $d -pady 5 -sticky e
+               } else {
+                  frame $w.combo$child
+                  label $w.combo$child.lbl_$child -text "$child" -width $labelwidth
+                  ComboBox $w.combo$child.$child -textvariable ::prtr::$child -relief sunken \
+                     -width $width -height $height -values [set ${child}Values] -editable 0
+                  pack $w.combo$child.lbl_$child $w.combo$child.$child -side left
+                  grid $w.combo$child -row $row -column $col -padx $d -pady 5 -sticky e
+               }
+
                #--   retablit la valeur par defaut de bitpix
                if {$child eq "bitpix"} {
                   ::prtr::confBitPix
@@ -529,6 +581,9 @@ namespace eval ::prtr {
                }
             }
          }
+         #--   definit la hauteur de la ligne
+         grid rowconfigure $w $row -minsize [list $private(lineHeight) ]
+
          #--   memorise le nb de lignes
          set lignes $row
          incr col
@@ -546,39 +601,6 @@ namespace eval ::prtr {
    }
 
    #--------------------------------------------------------------------------
-   #  ::prtr::selectAll
-   #  Selectionne/deselectionne tous les checkbuttons de la tablelist
-   #  Commande du checkbutton "Sélectionner tout"
-   #--------------------------------------------------------------------------
-   proc selectAll { } {
-      variable private
-
-      #--   arrete si fonction d'extraction sur une image unique ou aucune selection
-      if {$::prtr::operation in [list $::caption(audace,menu,ligne) $::caption(audace,menu,colonne) \
-            $::caption(audace,menu,matrice)] || $private(profil) eq ""} {
-         return
-      }
-
-      set tbl $private(tbl)
-      set size [$tbl size]
-      if {$::prtr::all == 0} {
-         set cmd deselect
-      } else {
-         set cmd select
-      }
-      for {set row 0} {$row <= $size} {incr row} {
-         #--   cherche le contenu
-         set content "[lrange [$tbl get $row] 2 end]"
-         #--   compare le contenu au profil
-         if {[ string match $content  $private(profil)]} {
-            #--   selectionne l'image de profil identique a celui de la premiere image
-            [$tbl windowpath $row,0] $cmd
-         }
-      }
-      ::prtr::selectFiles 0
-   }
-
-   #--------------------------------------------------------------------------
    #  ::prtr::dispOptions w
    #  Commande du checkbutton pour afficher les options
    #--------------------------------------------------------------------------
@@ -593,13 +615,73 @@ namespace eval ::prtr {
          #--   il y a toujours au moins une ligne
          set private(tt_lignes) "1"
       }
+
+      #--   Adapte la geometrie a la configuration
       ::prtr::confToWidget
 
       blt::table $private(table) $w 4,0 -fill both -cspan 2 \
-            -height [list [expr {$private(tt_lignes)*$private(lineHeight)}]]
+         -height [list [expr {$private(tt_lignes)*$private(lineHeight)}]]
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $private(this)
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::selectDeselectAll
+   #  Selectionne/deselectionne tous les checkbuttons de la tablelist
+   #  Commande du checkbutton "Sélectionner tout"
+   #--------------------------------------------------------------------------
+   proc selectDeselectAll { } {
+      variable private
+
+      #--   arrete si fonction d'extraction sur une image unique ou aucune selection
+
+      if {$::prtr::operation in [list $::caption(audace,menu,ligne) $::caption(audace,menu,colonne) \
+            $::caption(audace,menu,matrice)] || $private(profil) eq "" && $private(function) ne "CALIBWCS"} {
+         return
+      }
+
+      set tbl $private(tbl)
+      if {$::prtr::all == 0} {
+         #--   deselectionne et desinhibe toutes les lignes
+         for {set row 0} {$row < $private(size)} {incr row} {
+            [$tbl windowpath $row,0] deselect
+            [$tbl windowpath $row,0] configure -state normal
+         }
+         set private(todo)   ""
+         set private(profil) ""
+         if {$private(function) eq "CALIBWCS"} {
+            #--   Efface les valeurs affichees
+            foreach param [list pixsize1 pixsize2 ra dec foclen crota2] {
+               set ::prtr::$param ""
+            }
+         }
+      } else {
+         #--   Examine toute la table
+         for {set row 0} {$row <  [$tbl size]} {incr row} {
+            set fileName [$tbl cellcget $row,1 -text]
+            if {$private(function) ne "CALIBWCS" } {
+               #--   compare le profil de l'image au profil selectionne
+               if {[lrange [$tbl get $row] 2 end] eq "$private(profil)"} {
+                  #--   selectionne tous les profils identiques a celui de la premiere image
+                  [$tbl windowpath $fileName,0] select
+                  if {$fileName ni $private(todo)} {
+                     lappend private(todo) $fileName
+                  }
+               }
+            } else {
+               #--   pas de filtrage pour CALIBWCS
+               [$tbl windowpath $row,0] select
+               if {$row == 0} {
+                  #--   affiche les valeurs des mots clés de la premiere image
+                  ::prtr::seeWCSKeywords $fileName
+               }
+               if {$fileName ni $private(todo)} {
+                  lappend private(todo) $fileName
+               }
+            }
+         }
+      }
    }
 
    #--------------------------------------------------------------------------
@@ -615,42 +697,52 @@ namespace eval ::prtr {
 
       set tbl $private(tbl)
 
-      #--   arrete si le repertoire est vide
-      if {[$tbl cellcget 0,1 -text] eq "$caption(prtr,no_file)" } {return}
-
-      #--   recommence la liste
-      set private(todo) ""
-
-      #--   identifie le profil de l'image selectionnee
+      #--   Identifie le nom de l'image selectionnee
+      set fileName [$tbl cellcget $row,1 -text]
+      #--   Identifie son profil
       set profil [lrange [$tbl get $row] 2 end]
 
-      #--   cree un profil referent avec la premiere image selectionnee
+      #--   Arrete si le repertoire est vide
+      if {$fileName eq "$caption(prtr,no_file)" } {return}
+
+      #--   Classe les fonctions par famille
+      if {$::prtr::operation in [list $caption(audace,menu,ligne) $caption(audace,menu,colonne) \
+            $caption(audace,menu,matrice)]} {
+         #--   on ne peut selectionner qu'une seule image
+         set function_type 1
+      } elseif {$private(function) eq "CALIBWCS"} {
+         #--   on peut selectionner toutes les images
+         set function_type 2
+      } else {
+         #--   on ne peut selectionner qu'une image avec le même profil
+         set function_type 0
+      }
+
+      #--   Recommence la liste
+      set private(todo) ""
+
+      #--   Cree un profil referent avec la premiere image selectionnee
       if {$private(profil) eq "" || $private(profil) ne "" && $private(profil) ne "$profil"} {
          set private(profil) $profil
          $tbl seecell $row,0
+         if {$private(function) eq "CALIBWCS"} {
+            ::prtr::seeWCSKeywords $fileName
+         }
       }
 
+      #--   Adapte l'etat (selectionnable ou non)
       if {$private(profil) ne ""} {
-         set  function_type 0
-         set  filtre [list $caption(audace,menu,ligne) $caption(audace,menu,colonne) \
-            $caption(audace,menu,matrice)]
-         if {$::prtr::operation in $filtre} {
-            set function_type 1
-         }
-
          for {set row 0} {$row < $private(size)} {incr row} {
+
+            #--   Identifie le chemin de la ligne
             set w [$tbl windowpath $row,0]
+
+            #--   Identifie son etat de selection
             set select_state $::prtr::private(file_$row)
-            if {$function_type == 1} {
-               #--   pour ces fonctions on ne peut selectionner qu'une seule image
-               if {$select_state eq "0"} {
-                  $w deselect
-                  $w configure -state disabled
-               } else {
-                  lappend private(todo) [$tbl cellcget $row,1 -text]
-               }
-            } else {
-               #--   pour ces fonctions on peut selectionner plusieurs images
+
+            #--   Action specifique au type de fonction
+            if {$function_type == 0} {
+                #--   pour ces fonctions on peut selectionner plusieurs images
                set match_profil [string match $private(profil) [lrange [$tbl get $row] 2 end]]
                if {$match_profil == "0"} {
                   $w deselect
@@ -660,27 +752,50 @@ namespace eval ::prtr {
                      lappend private(todo) [$tbl cellcget $row,1 -text]
                   }
                }
+             } elseif {$function_type == 1} {
+               if {$select_state eq "0"} {
+                  $w deselect
+                  $w configure -state disabled
+               } else {
+                  lappend private(todo) [$tbl cellcget $row,1 -text]
+               }
+            } elseif {$function_type == 2} {
+               #--   pour ces fonctions on peut selectionner toutes les images
+               if {$private(function) eq "CALIBWCS"} {
+                  if {$select_state == "1"} {
+                     lappend private(todo) [$tbl cellcget $row,1 -text]
+                  }
+               }
             }
          }
       }
 
-      #--   autorise toutes les selections si la liste est vide
       if {$private(todo) eq ""} {
-         foreach file $private(listFiles) {
-            [$tbl windowpath $file,0] configure -state normal
+         #--   Autorise toutes les selections si la liste est vide
+         for {set row 0} {$row < $private(size)} {incr row} {
+            [$tbl windowpath $row,0] configure -state normal
          }
-         #--   detruit le profil s'il existe
+
          set private(profil) ""
-         #--   retablit la valeur par defaut de bitpix
+
+         #--   Efface les valeurs affichees
+         if {$private(function) eq "CALIBWCS"} {
+             foreach param [list pixsize1 pixsize2 ra dec foclen crota2] {
+               set ::prtr::$param ""
+            }
+         }
+         #--   Retablit la valeur par defaut de bitpix
          ::prtr::confBitPix
+
       } else {
-        #--   cherche la valeur de bitpix
+
+         #--   Cherche la valeur de bitpix
          set info [lindex [array get bd [lindex $private(todo) 0]] 1]
          set ::prtr::bitpix [lindex [lindex $info 4]]
       }
 
       if {$::prtr::ttoptions eq 1} {
-         #--   affiche la bonne valeur de bitpix
+         #--   Affiche la bonne valeur de bitpix
          set k [lsearch [$private(table).ttoptions.combobitpix.bitpix cget -values] $::prtr::bitpix]
          $private(table).ttoptions.combobitpix.bitpix setvalue @$k
       }
@@ -742,9 +857,9 @@ namespace eval ::prtr {
       }
 
       #--   message d'avertissement si une image detectee
-      #if {$count != 0} {
-      #   ::console::affiche_erreur "[format $::caption(prtr,err_extension) $count $::conf(extension,defaut)]\n"
-      #}
+      if {$count != 0} {
+        ::console::affiche_erreur "[format $::caption(prtr,err_extension) $count "$::prtr::ext"]\n"
+      }
 
       #--   efface tout
       $w delete 0 end
@@ -771,7 +886,7 @@ namespace eval ::prtr {
       }
 
       #--   rafraichit la tablelist
-      set private(listFiles) [lsort -dictionary [ array names bd]]
+      set private(listFiles) [lsort -dictionary [array names bd]]
       set private(size) [llength $private(listFiles)]
 
       #--   arrete si la bd est vide et que le répertoire n'est pas vide
@@ -780,20 +895,23 @@ namespace eval ::prtr {
 
       set nb 0
       foreach cible $private(listFiles) {
-         foreach {naxis naxis3 naxis1 naxis2} [lindex [array get bd $cible] 1] {break}
+         foreach {naxis naxis3 naxis1 naxis2 bitpix crpix1 crpix2 mean wcs} [lindex [array get bd $cible] 1] {break}
          if {$naxis eq 2} {set type "M"} else {set type "C"}
-         if {$type eq "M" || ($type eq "C" && $private(ima) ni {MAITRE PRETRAITEE})} {
-            $w insert end [list "" "$cible" "$type" "${naxis1} X ${naxis2}"]
-            $w cellconfigure end,0 -window "::prtr::createCheckButton"
-            $w configrows $nb -name "$cible"
-            [$w windowpath $cible,0] deselect
-            incr nb
+         if {$private(function) ni [list DRIZZLEWCS CALIBWCS] || $private(function) in [list DRIZZLEWCS CALIBWCS] && $wcs == 1} {
+            if {$type eq "M" || ($type eq "C" && $private(ima) ni {MAITRE PRETRAITEE})} {
+               $w insert end [list "" "$cible" "$type" "${naxis1} X ${naxis2}"]
+               $w cellconfigure end,0 -window "::prtr::createCheckButton"
+               $w configrows $nb -name "$cible"
+               [$w windowpath $cible,0] deselect
+               incr nb
+            }
          }
       }
 
       set private(size) $nb
       if {$private(size) == "0"} {return}
 
+      set row -1
       set img  [::confVisu::getFileName $visuNo]
       if {[file exists $img]} {
          #--   image dans la visu
@@ -813,8 +931,12 @@ namespace eval ::prtr {
             if {$row ne "-1"} {
                $w seecell $row,0
                [$w windowpath $nom,0] invoke
-             }
+            }
          }
+      }
+
+      if {$row > 0} {
+         ::prtr::selectFiles $row
       }
 
       #--- Mise a jour dynamique des couleurs
@@ -844,8 +966,7 @@ namespace eval ::prtr {
          }
          if { $error == "0" } {
             #--   test wcs
-            #set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 dec foclen pixsize1 pixsize2 ra]
-            set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 crval1 crval2 dec foclen ra]
+            set wcs_kwd [list crota2 cd1_1 cd1_2 cd2_1 cd2_2 cdelt1 cdelt2 crval1 crval2 dec foclen pixsize1 pixsize2 ra]
             #--   test la presence des mot-cles
             foreach var $wcs_kwd {
                set $var 0
@@ -854,17 +975,13 @@ namespace eval ::prtr {
             }
 
             set wcs 0
-            #if {(($cd1_1 && $cd1_2 && $cd2_1 && $cd2_2) || ($cdelt1 && $cdelt2 && $crota2 ) || \
-            #   ($foclen && $pixsize1 && $pixsize2 && $ra && $dec && $crota2))== "1"} {
-            #      set wcs 1
-            #}
             if {(($cd1_1 && $cd1_2 && $cd2_1 && $cd2_2) || ($cdelt1 && $cdelt2 && $crota2 ) || \
-               ($foclen && $crval1 && $crval2 && $ra && $dec))== "1"} {
-                  set wcs 1
+               ($foclen && $crval1 && $crval2 && $ra && $dec && $pixsize1 && $pixsize2))== "1"} {
+               set wcs 1
             }
 
             #--   affecte les valeurs aux variables
-            foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3} {
+            foreach var {bitpix bzero crpix1 crpix2 mean naxis naxis1 naxis2 naxis3 pixsize1 pixsize2 ra dec foclen crota2} {
                set $var [lindex [array get kwds [string toupper $var]] 1]
             }
 
@@ -877,7 +994,9 @@ namespace eval ::prtr {
                   set crpix2 [expr {$naxis2/2}]
                }
                #-- rajout de l'indicateur wcs
-               set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean $wcs]
+#--	modif CALIB
+               set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean $wcs $pixsize1 $pixsize2 $ra $dec $foclen $crota2]
+#-- fin modif CALIB
             }
          }
       }
@@ -893,7 +1012,7 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::configOutName
-   #  Configure l'entree du nom de sortie
+   #  Configure la saisie du nom de sortie
    #--------------------------------------------------------------------------
    proc configOutName {} {
       variable private
@@ -931,7 +1050,7 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::getWidthHeight
-   #  Affiche les dimensions d el'image
+   #  Affiche les dimensions de l'image
    #  Lancee lors de la construction de l'activation de RESIZE
    #--------------------------------------------------------------------------
    proc getWidthHeight { $visuNo } {
@@ -1136,6 +1255,10 @@ namespace eval ::prtr {
                               set opt [linsert $opt 0 "x0=$x0" "y0=$y0"]
                               set private(error) [::prtr::cmdExec $data $opt]
                            }
+         "CALIBWCS"        {  #--   attention a l'espace
+                              append options $opt " path_astromcatalog=$::prtr::path_astromcatalog"
+                              set private(error) [::prtr::calibWCS $data $options]
+                           }
          default           {  switch $private(ima) PILE {set appl "IMA/STACK"} default {set appl "IMA/SERIES"}
                               set data [linsert $data 0 $appl]
                               lappend data "$private(function)"
@@ -1155,9 +1278,18 @@ namespace eval ::prtr {
          #--   ces fonctions ne produisent qu'une image
          if {$private(ima) in [list MAITRE PILE] || $nbImg eq "1"} { set nbImg "1"}
 
+         if {$private(function) eq "CALIBWCS"} {set nbImg ""}
+
          #--   designe l'image a afficher
          if {$nbImg eq "1"} {
-            set lastImage [file join "$dir" $generique$ext]
+               set lastImage [file join "$dir" $generique$ext]
+         } elseif {$nbImg eq ""} {
+             if {$generique eq ""} {
+               set generique "[lindex $imgList end]"
+            } else {
+               append generique [llength $imgList]
+            }
+            set lastImage [file join ${dir} ${generique}$ext]
          } else {
             set lastImage [file join "$dir" $generique$nbImg$ext]
          }
@@ -1171,6 +1303,10 @@ namespace eval ::prtr {
          #--  charge la derniere image si demande
          set private(lastImage) $lastImage
          if {$::prtr::disp eq 1} {::prtr::loadImg}
+      } else {
+         #--   Rend la main
+         set ::prtr::all "0"
+         ::prtr::selectDeselectAll
       }
 
       ::prtr::updateTbl $visuNo
@@ -1250,32 +1386,26 @@ namespace eval ::prtr {
 
       #--   inhibe/desinhibe tous les frames
       foreach frame $private(frames) {$frame configure -state $etat}
-
       #--- inhibe/desinhibe uniquement les checkbuttons selectionnables
+      set private(disabled) ""
       if {$etat eq "disabled"} {
+         #--- inhibe tous les checkbuttons selectionnables
          for {set row 0} {$row < $private(size)} {incr row} {
             set w [$tbl windowpath $row,0]
             if {[lindex [$w configure -state] end] eq "normal"} {
                #--   inhibe le checkbutton en etat normal
                $w configure -state $etat
             } else {
-               #--   memorise le nom de l'image
-               lappend private(disabled) "[$tbl windowpath $row,1]"
+               #--   memorise le nom de l'image inhibee
+               lappend private(disabled) $row
             }
          }
       } elseif {$etat eq "normal"} {
-         #--   active uniquement la liste qui etait selectionnable
-         foreach file $private(listFiles) {
-            if {![info exists private(disabled)]} {
-               set state $etat
-            } else {
-               if {[$tbl windowpath $file,1] ni $private(disabled)} {
-                  set state normal
-               } else {
-                  set state disabled
-               }
+         #--   desinhibe uniquement la liste qui etait selectionnable
+         for {set row 0} {$row < $private(size)} {incr row} {
+            if {$row ni $private(disabled)} {
+               [$tbl windowpath $row,0] configure -state $etat
             }
-            [$tbl windowpath $file,0] configure -state $etat
          }
          ::prtr::configOutName
       }
@@ -1369,7 +1499,8 @@ namespace eval ::prtr {
 
    #--------------------------------------------------------------------------
    #  ::prtr::widgetToConf
-   #  Calcul et sauvegarde de la geometrie avec la hauteur fixe
+   #  Calcul et sauvegarde de la geometrie a l'exclusion des parties variables
+   #  Lancee par cmdClose
    #--------------------------------------------------------------------------
    proc widgetToConf { } {
       variable private
@@ -1381,39 +1512,43 @@ namespace eval ::prtr {
       lassign [string map -nocase [list x " " + " "] $geometry] widgetWidth widgetHeight x y
 
       if {$widgetHeight ne ""} {
-         #--   cherche la hauteur de la table
-         set tableHeight [lindex [string map [list \{ "" \} "" ] [blt::table configure $private(table) -reqheight]] 1]
-         #--   calcule la hauteur sans la table
-         set fixeHeight [expr {$widgetHeight-$tableHeight}]
+         set variableHeight 0
+         #--   definit la hauteur variable (parametres+options) de l'interface
+         foreach child [list funoptions ttoptions] {
+            if {[winfo exists $private(table).$child]} {
+               set height [blt::table configure $private(table) $private(table).$child -reqheight]
+               set height [lindex [string map [list \{ "" \} "" ] $height] end]
+               incr variableHeight $height
+            }
+         }
+
+         #--   Calcule la hauteur invariable choisie pat l'utilisateur
+         set fixeHeight [expr { $widgetHeight-$variableHeight }]
          set conf(prtr,geometry) "${widgetWidth}x${fixeHeight}+${x}+${y}"
-      } else {
-         #--   configuration par defaut
-         set ::conf(prtr,geometry) "${private(minWidth)}x${private(minHeight)}+350+75"
       }
    }
 
    #--------------------------------------------------------------------------
    #  ::prtr::confToWidget
    #  Adapte la geometrie de la fenetre
+   #  Lancee lors du changement d'operation et de l'ouverture des options TT
    #--------------------------------------------------------------------------
    proc confToWidget { } {
       variable private
       global conf
 
-      #--   geometrie actuelle
-      set geometry [wm geometry $private(this)]
-      lassign [string map -nocase [list x " " + " "] $geometry] actualWidth height x y
+      lassign [string map -nocase [list x " " + " "] $conf(prtr,geometry)] width fixeHeight x y
 
-      #--   hauteur fixe de la table = + 18 (hscroll) + 4 lignes x 40 + 50 (commandes) = 204
-      set hauteurConstante 204
-      set TableHeight [expr {($private(fun_lignes)+$private(tt_lignes))*$private(lineHeight)+$hauteurConstante}]
-      blt::table configure $private(table) -reqheight $TableHeight
-
-      #--   cherche la hauteur de la fenetre
-      lassign [string map -nocase [list x " " + " "] $conf(prtr,geometry)] -> fixeHeight
-
-      #--   calcule la hauteur totale de la fenetre
-      set totalHeight [expr {$fixeHeight+$TableHeight}]
+      #--   definit la hauteur variable (parametres+options) de l'interface
+#--   modif CALIB
+      if {$private(function) ne "CALIBWCS"} {
+         set tt_lignes $private(tt_lignes)
+      } else {
+         set tt_lignes 0
+      }
+#--   fin modif CALIB
+      set variableHeight [expr { ($private(fun_lignes)+$tt_lignes)*$private(lineHeight) }]
+      set totalHeight [expr { $fixeHeight+$variableHeight }]
 
       #--   si la position existe (pas au demarrage)
       if {![info exists x] || ![info exists y]} {
@@ -1422,12 +1557,10 @@ namespace eval ::prtr {
       }
 
       #--   actualise la geometrie de la fenetre
-      wm geometry $private(this) "${actualWidth}x${totalHeight}+${x}+${y}"
+      set geometry "${width}x${totalHeight}+${x}+${y}"
+      wm geometry $private(this) "$geometry"
+      #wm minsize $private(this) $private(minWidth) 400
 
-      #--   calcule la hauteur minimale dans cette configuration
-      #--   pour que la liste des images soit toujours visible
-      set minHeight [expr {40+$TableHeight+120}]
-      wm minsize $private(this) $private(minWidth) $minHeight
       update
    }
 
@@ -1511,11 +1644,35 @@ namespace eval ::prtr {
          -command "::prtr::selectFiles $row"
    }
 
+#--	ajout CALIB
+
    #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
    #     -fun : nom de la fonction TT
    #     -hlp : nom du repertoire de la page, nom de la page et nom de l'ancre (si elle existe)
    #     -par : noms des parametres obligatoires alternant avec la valeur d'initialisation
    #     -opt : noms des parametres optionnels alternant avec la valeur d'initialisation
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::CALIBFunctions {0|nom_de_fonction}
+   #  Cree le dictionnaire des fonctions de pretraitement
+   #  Retourne la liste des fonctions ou les parametres d'une fonction
+   #--------------------------------------------------------------------------
+   proc CALIBFunctions {function} {
+      variable CALIB
+      global caption help conf
+
+      if {![info exists conf(prtr,astromcatalog)]} {
+         set conf(prtr,astromcatalog) "MICROCAT"
+      }
+
+      dict set CALIB "$caption(audace,menu,calibwcs)"            fun "CALIBWCS"
+      dict set CALIB "$caption(audace,menu,calibwcs)"            hlp "$help(dir,analyse) 1080calibwcsbatch.htm"
+      dict set CALIB "$caption(audace,menu,calibwcs)"            par "ra \"\" dec \"\" pixsize1 \"\" pixsize2 \"\" foclen \"\" crota2 0.0 astromcatalog $conf(prtr,astromcatalog)"
+      dict set CALIB "$caption(audace,menu,calibwcs)"            opt ""
+
+      return [consultDic CALIB $function]
+   }
+#--	fin ajout CALIB
 
    #--------------------------------------------------------------------------
    #  ::prtr::MAITREFunctions {0|nom_de_fonction}
@@ -2054,6 +2211,7 @@ namespace eval ::prtr {
          set result "[dict keys $dictionnaire]"
       }
       unset $dico
+
       return $result
    }
 
@@ -2064,7 +2222,7 @@ namespace eval ::prtr {
    proc searchFunction {oper} {
       variable private
 
-      set purDico {ARITHM CENTER EXTRACT FILTER IMPROVE MAITRE PILE PRETRAITEE TRANSFORM}
+      set purDico {ARITHM CENTER EXTRACT FILTER IMPROVE MAITRE PILE PRETRAITEE TRANSFORM CALIB}
       set agregDico {ROTATION GEOMETRY}
       set private(fonctions) ""
       set private(ima) ""
@@ -2159,6 +2317,14 @@ namespace eval ::prtr {
       dict set Var   delta             "integer labelentry"          ;#REGISTERFINE
       dict set Var   oversampling      "integer labelentry"          ;#REGISTERFINE DRIZZLEWCS
       dict set Var   drop_sizepix      "double labelentry"           ;#DRIZZLEWCS
+#--	ajout CALIB
+      dict set Var   ra                "double 360 labelentry"       ;#CALIB
+      dict set Var   dec               "double 90 labelentry"        ;#CALIB
+      dict set Var   pixsize1          "double labelentry"           ;#CALIB
+      dict set Var   pixsize2          "double labelentry"           ;#CALIB
+      dict set Var   foclen            "double labelentry"           ;#CALIB
+      dict set Var   crota2            "double 360 labelentry"       ;#CALIB
+      dict set Var   astromcatalog           "alpha combobox"              ;#CALIB
    }
 
    #--------------------------------------------------------------------------
@@ -2187,10 +2353,8 @@ namespace eval ::prtr {
          }
 
          #--   separe les elements
-         set info [::prtr::getInfoFile $::prtr::out]
-         set dir "[lindex $info 0]"
-         set ::prtr::generique "[lindex $info 1]"
-         set extension "[lindex $info 2]"
+         lassign [::prtr::getInfoFile $::prtr::out] dir ::prtr::generique extension
+
 
          if {![file exists $dir]} {
             return [::prtr::avertiUser err_file_dir $dir]
@@ -2203,9 +2367,13 @@ namespace eval ::prtr {
             return [::prtr::avertiUser err_file_ext "$prtr::out" "$::prtr::ext"]
          }
 
-         #--   nom_court correct ?
-         regexp -all {[\w_-]+} $::prtr::generique match
-         if {![ info exists match] || $match ne $::prtr::generique} {
+         if {$::prtr::generique ne ""} {
+            #--   nom_court correct ?
+            regexp -all {[\w_-]+} $::prtr::generique match
+            if {![ info exists match] || $match ne $::prtr::generique} {
+               return [::prtr::avertiUser err_file_generique]
+            }
+         } elseif {$::prtr::generique eq "" && $private(function) ne "CALIBWCS"} {
             return [::prtr::avertiUser err_file_generique]
          }
 
@@ -2301,7 +2469,12 @@ namespace eval ::prtr {
             return "$parametre=$value"
          } else {
             #--   si controle dimmensionnel
-            set mini "0"
+            if {$parametre ne "dec"} {
+               set mini "0"
+            } else {
+               #--   seuil mini de DEC
+               set mini "-90"
+            }
             if {$seuil in {naxis1 naxis2}} {
                #--   extrait le nom de la premiere image, naxis1 et naxis2
                set img [lindex $private(todo) 0]
@@ -2321,7 +2494,9 @@ namespace eval ::prtr {
          regexp -all {[\w_-]+} $value match
          if {[info exists match] && $value eq "$match"} {
             #--   cas du nom d'un fichier .txt
-            return "$parametre=$value.txt"
+            return "$parametre=\"$value.txt\""
+         } else {
+            return [::prtr::avertiUser err_par_def $value]
          }
       } elseif {$test eq "img"} {
 
@@ -2418,14 +2593,21 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    proc getInfoFile {file} {
 
-      set dir [file dirname $file]
-      if {$dir eq "."} {append dir /}
-      set nom_avec_extensions "[file tail $file]"
-      #--   extrait l'extension
+      set nom_court ""
       set extensions ""
-      regexp {(\.[a-zA-Z]{3,4}|\.[a-zA-Z]{3,4}.gz)} $nom_avec_extensions extensions
-      #--   ote toutes les extensions du nom
-      regsub "$extensions" $nom_avec_extensions "" nom_court
+      if {[file isdirectory "$file"]} {
+         set dir "$file"
+      } else {
+         set dir [file dirname $file]
+         if {$dir eq "."} {append dir /}
+         set nom_avec_extensions "[file tail $file]"
+         #--   extrait l'extension
+         set extensions ""
+         regexp {(\.[a-zA-Z]{3,4}|\.[a-zA-Z]{3,4}.gz)} $nom_avec_extensions extensions
+         #--   ote toutes les extensions du nom
+         regsub "$extensions" $nom_avec_extensions "" nom_court
+      }
+
       return [list $dir $nom_court $extensions]
    }
 
@@ -2672,7 +2854,9 @@ namespace eval ::prtr {
       foreach file $files {
          foreach {naxis naxis3} [lindex [array get bd $file] 1] {break}
          Vnaxis append $naxis
-         Vnaxis3 append $naxis3
+         if {$naxis3 ne ""} {
+            Vnaxis3 append $naxis3
+         }
       }
       switch [Vnaxis3 length] 0 {set type "M"} [Vnaxis length] {set type "C"} default {set type "error"}
       blt::vector destroy Vnaxis Vnaxis3
@@ -3663,6 +3847,378 @@ namespace eval ::prtr {
       set box [list $x1 $y1 $x2 $y2]
       lassign  [buf$buf centro $box] x y
       return [list $x $y]
+   }
+
+#--	ajout des proc CALIB
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::seeWCSKeywords
+   #  Affiche les valeurs des mots cles WCS
+   #  Parametre : nom court de l'image preleve dans la table
+   #  Lancee lors de la selection de la premiere image
+   #--------------------------------------------------------------------------
+   proc seeWCSKeywords { fileName } {
+      variable private
+      variable bd
+
+      #::console::disp "seeWCSKeywords [winfo exists $private(table)]\n"
+
+      #--   cherche les info dans bd
+      set info [lindex [array get bd $fileName] 1]
+      lassign [lrange $info 5 8] ::prtr::crpix1 ::prtr::crpix2 -> wcs
+
+      if {$wcs == 1} {
+         lassign [lrange $info 9 end] pixsize1 pixsize2 ::prtr::ra ::prtr::dec foclen crota2
+         set ::prtr::foclen  [format "%.3f" $foclen]
+         set ::prtr::crota2  [format "%.6f" $crota2]
+         set ::prtr::pixsize1 [format "%.2f" $pixsize1]
+         set ::prtr::pixsize2 [format "%.2f" $pixsize2]
+      }
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::checkCatalog
+   #  Selectionne le bon chemin s'il est configure
+   #  Commande associee a la combobox du choix du catalogue
+   #--------------------------------------------------------------------------
+   proc checkCatalog { } {
+      global conf
+
+      #--   racourci (astromcatalog est deja en majuscules)
+      set astromcatalog $::prtr::astromcatalog
+      set ok 1
+
+      #--   Definit le chemin en fonction du catalogue (CF Configuration/Répertoires)
+      switch -exact $astromcatalog {
+         MICROCAT {  set var "conf(tlscp,cataloguePath,MicroCat)" }
+         USNO     {  set var "conf(rep_userCatalogUsnoa2)" }
+      }
+
+      #--   Verifie si le nom de la variable existe
+      if {[info exists $var] == 1} {
+
+         #--   la variable existe
+         set path "[set $var]"
+
+         #--   Verifie l'existence du repertoire
+         if {[file exists $path] == 1} {
+
+            set path_astromcatalog "$path"
+            #--   Verifie l'integrite du catalogue
+            switch -exact $astromcatalog {
+               MICROCAT {  set fics [glob -nocomplain -dir [file join $path_astromcatalog usno] -type f *.ACC]
+                           if {[llength $fics]<24} {
+                              set ok 0
+                           }
+                           set fics [glob -nocomplain -dir [file join $path_astromcatalog tyc] -type f *.ACC]
+                           if {[llength $fics]<24} {
+                              set ok 0
+                           }
+                        }
+               USNO     {  set fics [glob -nocomplain [file join $path_astromcatalog "*.ACC"]]
+                           if {[llength $fics]<24} {
+                              set ok 0
+                           }
+                           set fics [glob -nocomplain [file join $path_astromcatalog "*.CAT"]]
+                           if {[llength $fics]<24} {
+                              set ok 0
+                           }
+                        }
+           }
+           #-- Tout est ok
+           set ::prtr::path_astromcatalog "$path_astromcatalog"
+        } else {
+           #--   Repertoire inexistant
+           set ok 0
+        }
+      } else {
+         #--   Variable conf non configuree
+         set ok 0
+      }
+
+      if {$ok == 0} {
+         #--   Message d'erreur
+         ::prtr::avertiUser err_cat_folder "$astromcatalog"
+         #--   Ouverture de Configuration/Répertoires...
+         ::cwdWindow::run \"$::audace(base).cwdWindow\"
+      }
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::calibWCS
+   #  Parametres :
+   #  @data    : liste de liste des images, repertoire de sortie, nom generique, extension
+   #  @options : liste de nom_variable=valeur, dans l'orde de presentation des variables dans l'interface
+   #             ex : "ra=291.366303542 dec=42.7843595 pixsize1=6.45 pixsize2=6.45
+   #                  foclen=0.133 crota2=86.688467 cat_format=MICROCAT
+   #                  cat_folder=C:/Documents and Settings/1/Application Data/AudeLA/catalog/microcat/"
+   #  Retourne : pas d'echec =0 , echec 1
+   #--------------------------------------------------------------------------
+   proc calibWCS { data options } {
+      variable private
+      global caption
+
+      #--   Affecte les valeurs a la liste des images, du repertoire de sortie
+      #     du nom generique de sortie et de l'extension
+      foreach {imgList dirOut nameOut ext} $data {break}
+
+      #--   Initialise des variables de la barre de progression
+      set n 0
+      set len [llength $imgList]
+      set todestroy [::prtr::createProgressBar]
+      update
+
+      set dirIn "$::audace(rep_images)"
+
+      #--   Definit les noms de sortie
+      if {$nameOut eq ""} {
+         #--   en absence de nom generique
+         #--   les noms de sortie sont identiques aux nom d'entree
+         set outList $imgList
+      } else {
+         #--   en presence de nom generique
+         #--   compose une liste de sortie
+         set outList ""
+         for {set i 1} {$i <= [llength $imgList]} {incr i} {
+            lappend outList ${nameOut}$i
+         }
+      }
+
+      if {$dirOut eq "./"} {set dirOut "."}
+
+      #--   Recupere astromcatalog et path_astromcatalog
+      set astromcatalog [lindex $options 6]
+      set path_astromcatalog [lrange $options 7 end]
+      set options [lrange $options 0 5]
+
+      #--- Remplace "$::audace(rep_images)" par "." dans "mypath" - Cela permet a
+      #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
+      #--- espaces et ayant une longueur superieure a 70 caracteres
+      #--   le repertoire de sortie devient le repertoire courant
+      cd "$dirOut"
+      set mypath "."
+      set sky    dummy
+      set sky0   dummy0
+      set erreur 0
+
+      foreach file $imgList out $outList {
+
+         #--   ATTENTION
+         #  file   = nom dans le repertoire initial
+         set inName  $file$ext
+         #  nameOut= nom dans le repertoire de destination
+         set outName $out$ext
+
+         #--   Recupere les naxis de l'image pour completer les options
+         lassign [::prtr::getKwdValue [file join $dirIn $file$ext]] naxis1 naxis2
+         set crpix1 [expr { $naxis1/2. }]
+         set crpix2 [expr { $naxis2/2. }]
+         append options " naxis1=$naxis1 naxis2=$naxis2"
+
+         #--   Ecrit les mots cles dans un fichier pour utiliser HEADERFITS
+         set kwdFile [::prtr::setKwdList $options "$dirOut"]
+
+         #--   Recopie les images avec les nouveaux mots cles
+         set script1 "IMA/SERIES \"$dirIn\" \"$file\" . . \"$ext\" \"${dirOut}\" \"$sky\" . \"$ext\" HEADERFITS \"file=${kwdFile}\" "
+         ::prtr::editScript $script1
+         ttscript2 $script1
+         createFileConfigSextractor
+         ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky0\" . \"$ext\" COPY"
+         sextractor [file join ${mypath} $sky0$ext] -c [file join $mypath config.sex]
+
+         set script2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"$path_astromcatalog\" $astromcatalog \"catafile=${mypath}/c$sky$ext\"  \"jpegfile_chart2=$mypath/${sky}a.jpg\" "
+         ::prtr::editScript $script2
+
+         if {[catch { ttscript2 $script2 } msg] == 0} {
+
+            #--   Continue le traitement
+            set script3 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
+            ::prtr::editScript $script3
+            ttscript2 $script3
+            set script4 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"$path_astromcatalog\" $astromcatalog \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
+            ::prtr::editScript $script4
+            ttscript2 $script4
+
+            #--   Renomme l'image finale
+            file rename -force $sky$ext $outName
+
+            lassign [::prtr::getKwdValue $outName] -> > catastar
+
+            #--   Met a jour de la barre de progression
+            incr n
+            set private(progress) [expr { $n*100./($len+0.025) }]
+            set private(calibrating) [format $caption(prtr,prgrsbr) "$inName" $catastar]
+            update
+
+            #-- Nettoie
+            set toDelete [list $sky0$ext x$sky$ext c$sky$ext z$sky$ext ascii.txt kwd.txt \
+               catalog.cat com.lst dif.lst eq.lst obs.lst pointzero.lst usno.lst xy.lst \
+               ${sky}a.jpg ${sky}b.jpg signal.sex config.sex config.param default.nnw]
+
+            ttscript2 "IMA/SERIES \"$mypath\" \"$toDelete\" * * . . . * . DELETE"
+
+         } else {
+            set erreur 1
+            ::console::affiche_erreur "$msg\n
+         }
+      }
+
+      #--   Retablit le repertoire
+      cd $dirIn
+
+      #--   Detruit la barre de progression
+      after 2000
+      destroy $todestroy
+      set private(progress) 0
+      set private(calibrating) ""
+
+      return $erreur
+   }
+
+   #--------------------------------------------------------------------------
+   #  ::prtr::setKwdList
+   #  Calcule les valeurs des mots cles et ecrit le fichier pour HEADERFITS
+   #  Parametres : liste de 8 couples {nom_variable=valeur}
+   #  ex : "ra=291.366303542 dec=42.7843595 pixsize1=6.45 pixsize2=6.45
+   #       foclen=0.133 crota2=86.688467 naxis1=490 naxis2=540"
+   #  Retourne : le chemin du fichier
+   #--------------------------------------------------------------------------
+   proc setKwdList { options dirOut } {
+
+      #--   Extrait les valeurs des variables
+      regsub -all "=" $options " " optVal
+      foreach {varName value} $optVal {
+         set $varName $value
+         #::console::disp "$varName $value\n"
+      }
+
+      #--   Calcule les intermediaires
+      set crpix1 [expr { $naxis1/2. }]
+      set crpix2 [expr { $naxis2/2. }]
+      set pi [expr 4*atan(1.)]
+      set mult 1e-6
+      set cdelt1 [expr { -2*atan($pixsize1/$foclen*$mult/2.)*180/$pi }]
+      set cdelt2 [expr { 2*atan($pixsize2/$foclen*$mult/2.)*180/$pi }]
+      set cosr   [expr { cos($crota2*$pi/180.) }]
+      set sinr   [expr { sin($crota2*$pi/180.) }]
+      set cd1_1  [expr { $cdelt1*$cosr }]
+      set cd1_2  [expr { abs($cdelt2)*$cdelt1/abs($cdelt1)*$sinr }]
+      set cd2_1  [expr { -abs($cdelt1)*$cdelt2/abs($cdelt2)*$sinr }]
+      set cd2_2  [expr { $cdelt2*$cosr }]
+
+      #--   Definit les mot cles avec variable
+      set cd1_1    [list CD1_1 $cd1_1 double "Matrix CD11" "deg/pixel"]
+      set cd1_2    [list CD1_2 $cd1_2 double "Matrix CD12" "deg/pixel"]
+      set cd2_1    [list CD2_1 $cd2_1 double "Matrix CD21" "deg/pixel"]
+      set cd2_2    [list CD2_2 $cd2_2 double "Matrix CD22" "deg/pixel"]
+      set cdelt1   [list CDELT1 $cdelt1 double "X scale" "deg/pixel"]
+      set cdelt2   [list CDELT2 $cdelt2 double "Y scale" "deg/pixel"]
+      set crota2   [list CROTA2 $crota2 double "Position angle of North" deg"]
+      set crpix1   [list CRPIX1 $crpix1 double "X ref pixel" "pixel"]
+      set crpix2   [list CRPIX2 $crpix2 double "Y ref pixel" "pixel"]
+      set crval1   [list CRVAL1 $ra double "RA for CRPIX1" "deg"]
+      set crval2   [list CRVAL2 $dec double "DEC for CRPIX2" "deg"]
+      set dec      [list DEC $dec double "DEC expected for CRPIX2" "deg"]
+      set foclen   [list FOCLEN $foclen double "Focal length" "m"]
+      set pixsize1 [list PIXSIZE1 $pixsize1 double "X pixel size binning included" "mum"]
+      set pixsize2 [list PIXSIZE2 $pixsize2 double "Y pixel size binning included" "mum"]
+      set ra       [list RA $ra double "RA expected for CRPIX1" "deg"]
+
+      #--   Definit les mot cles avec constante
+      #-- compense le fait que ne peut pas supprimer CATASTAR dans l'image
+      set catastar [list CATASTAR 0 int "Nb stars matched" ""]
+      set equinox  [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
+      set lonpole  [list LONPOLE 180 float "Long. of the celest.NP in native coor.sys" "degres"]
+      set ctype1   [list CTYPE1 RA---TAN string "Gnomonic projection" ""]
+      set ctype2   [list CTYPE2 DEC--TAN string "Gnomonic projection" ""]
+      set cunit1   [list CUNIT1 deg string "Angles are degrees always" ""]
+      set cunit2   [list CUNIT2 deg string "Angles are degrees always" ""]
+      set radesys  [list RADESYS FK5 string "Mean Place IAU 1984 system" ""]
+      set radecsys [list RADECSYS FK5 string "Mean Place IAU 1984 system" ""]
+
+      #--   Ecrit les mots dans un fichier .txt pour usage avec HEADERFITS
+      set listKwd [list cd1_1 cd1_2 cd2_1 cd2_2 catastar cdelt1 cdelt2 crota2 \
+         crpix1 crpix2 crval1 crval2 ctype1 ctype2 cunit1 cunit2 dec equinox \
+         foclen lonpole pixsize1 pixsize2 ra radesys radecsys]
+
+      set kwdFile [file join ${dirOut} kwd.txt]
+      set fileID [open $kwdFile w]
+      foreach sentence $listKwd {
+         lassign [set $sentence] kwd value type comment unit
+         puts $fileID "$kwd\n$value\n$type\n$comment\n$unit"
+      }
+      close $fileID
+
+      return "$kwdFile"
+   }
+
+   #------------------------------------------------------------
+   # ::prtr::getKwdValue
+   #   Marque la porgression de la calibration WCS
+   #   Parametre : chemin complet du fichier image
+   #   Retourne :
+   #------------------------------------------------------------
+   proc getKwdValue { fileName } {
+
+      set result ""
+      if {$fileName ne "" || [file exists $fileName] == 1} {
+         if {[catch { set kwdList [fitsheader $fileName] } msg] == 0} {
+            foreach kwd [list NAXIS1 NAXIS2 CATASTAR] {
+               set sentence [lsearch -all -regexp -inline $kwdList $kwd]
+               set value [lindex [lindex $sentence 0] 1]
+               if {[string is integer -strict $value]} {
+                  lappend result $value
+               }
+            }
+         } else {
+            #--   Erreur dans le header
+            ::console::affiche_erreur "$msg\n"
+         }
+      }
+
+      return $result
+   }
+
+   #------------------------------------------------------------
+   # ::prtr::createProgressBar
+   #   Marque la porgression de la calibration WCS
+   #   Retourne : le nom de la fenetre
+   #   Liee a proc ::prtr::calibWCS
+   #------------------------------------------------------------
+   proc createProgressBar { } {
+      variable private
+      global caption
+
+      package require Ttk
+
+      set this $private(this)
+      set w $this.prgrsbr
+
+      toplevel $w -class Toplevel
+      wm title $w "$caption(prtr,calibration)"
+      regsub -all {[\+|x]} [ wm geometry $this ]  " " pos
+      lassign $pos -> -> x y
+      incr x 80
+      incr y 250
+      wm geometry $w "420x78+$x+$y"
+      wm resizable $w 0 0
+      wm transient $w $this
+      wm protocol $w WM_DELETE_WINDOW ""
+
+      pack [frame $w.fr]
+      label $w.fr.label -textvariable ::prtr::private(calibrating) -width 40
+      pack $w.fr.label -padx 10 -pady 5
+      ttk::progressbar $w.fr.p -orient horizontal -length 400 -maximum 100.0 \
+         -mode determinate -variable ::prtr::private(progress)
+      pack $w.fr.p -padx 10 -pady 5
+
+      #--   Initialise
+      set private(calibrating) ""
+      set private(progress)    2.5
+
+      focus $w
+
+      return $w
    }
 
 }
