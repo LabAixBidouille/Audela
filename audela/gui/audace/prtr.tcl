@@ -871,13 +871,16 @@ namespace eval ::prtr {
          return
       }
 
+      set wcsFunctions [list "REGISTER matchwcs" DRIZZLEWCS CALIBWCS]
+
       #--   construit la bdd
       foreach file $files {
          set result [::prtr::analyseFitsHeader [file join $dir $file]]
-          if {$::prtr::operation eq "$::caption(audace,menu,reg_wcs)" || \
-            $::prtr::operation eq "$::caption(audace,menu,drizzle)" && [lindex $result end] == "0"} {
+         set wcs [lindex $result 8]
+         if {$private(function) in $wcsFunctions && $wcs == "0"} {
             #--   filtre les images non wcs
             set result ""
+
          }
          if {$result ne ""} {
             regsub "$::prtr::ext" [file tail $file] "" nom_court
@@ -894,22 +897,20 @@ namespace eval ::prtr {
       if {$private(size) == "0"} {return}
 
       set nb 0
-      foreach cible $private(listFiles) {
+      foreach cible [array names bd] {
          foreach {naxis naxis3 naxis1 naxis2 bitpix crpix1 crpix2 mean wcs} [lindex [array get bd $cible] 1] {break}
          if {$naxis eq 2} {set type "M"} else {set type "C"}
-         if {$private(function) ni [list DRIZZLEWCS CALIBWCS] || $private(function) in [list DRIZZLEWCS CALIBWCS] && $wcs == 1} {
-            if {$type eq "M" || ($type eq "C" && $private(ima) ni {MAITRE PRETRAITEE})} {
-               $w insert end [list "" "$cible" "$type" "${naxis1} X ${naxis2}"]
-               $w cellconfigure end,0 -window "::prtr::createCheckButton"
-               $w configrows $nb -name "$cible"
-               [$w windowpath $cible,0] deselect
-               incr nb
-            }
+         if {$type eq "M" || ($type eq "C" && $private(ima) ni {MAITRE PRETRAITEE})} {
+            $w insert end [list "" "$cible" "$type" "${naxis1} X ${naxis2}"]
+            $w cellconfigure end,0 -window "::prtr::createCheckButton"
+            $w configrows $nb -name "$cible"
+            [$w windowpath $cible,0] deselect
+            incr nb
          }
       }
 
       set private(size) $nb
-      if {$private(size) == "0"} {return}
+     if {$private(size) == "0"} {return}
 
       set row -1
       set img  [::confVisu::getFileName $visuNo]
