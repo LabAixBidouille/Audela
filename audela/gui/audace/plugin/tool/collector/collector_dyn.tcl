@@ -132,7 +132,7 @@
       global audace
 
       set data [list $private(ra) $private(dec) $private(jd) $private(gps) \
-         $audace(meteo,obs,pressure) $audace(meteo,obs,temp) $audace(meteo,obs,humidity)]
+         $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $audace(meteo,obs,humidity)]
       if {"-" in $data} {return}
 
       lassign [getTrueCoordinates $data] private(raTel) private(decTel) \
@@ -272,7 +272,7 @@
 
       #--   prepare la liste des donnees
       set record [list $coord1 $coord2 $TypeObs $private(tu) $private(gps) \
-         $audace(meteo,obs,pressure) $audace(meteo,obs,temp) $audace(meteo,obs,humidity)]
+         $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $audace(meteo,obs,humidity)]
 
       #--   coordonnees J2000 du telescope
       lassign [getCoordJ2000 $record] private(ra) private(dec)
@@ -291,15 +291,15 @@
       variable private
       global audace
 
-      set audace(meteo,obs,temp)     $::station_meteo::widget(temperature)
-      set audace(meteo,obs,humidity) $::station_meteo::widget(hygro)
-      set audace(meteo,obs,pressure) $::station_meteo::widget(pressure)
-      set private(temp)     $audace(meteo,obs,temp)
-      set private(humidity) $audace(meteo,obs,humidity)
-      set private(temprose) $::station_meteo::widget(temprose)
-      set private(windsp)   $::station_meteo::widget(windsp)
-      set private(winddir)  $::station_meteo::widget(winddir)
-      set private(pressure) $audace(meteo,obs,pressure)
+      set audace(meteo,obs,temperature) $::station_meteo::widget(temperature)
+      set audace(meteo,obs,humidity)    $::station_meteo::widget(hygro)
+      set audace(meteo,obs,pressure)    $::station_meteo::widget(pressure)
+      set private(temperature)          $audace(meteo,obs,temperature)
+      set private(humidity)             $audace(meteo,obs,humidity)
+      set private(temprose)             $::station_meteo::widget(temprose)
+      set private(windsp)               $::station_meteo::widget(windsp)
+      set private(winddir)              $::station_meteo::widget(winddir)
+      set private(pressure)             $audace(meteo,obs,pressure)
       update
 
       set cycle [expr { $::station_meteo::widget(cycle)*1000 }] ; #convertit en ms
