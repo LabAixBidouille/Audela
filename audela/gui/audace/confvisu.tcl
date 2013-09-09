@@ -3025,12 +3025,15 @@ namespace eval ::confVisu {
       foreach function  [::prtr::EXTRACTFunctions 0] {
          Menu_Command $visuNo "$caption(audace,menu,extract)" "$function..." "::prtr::run \"$function\" "
       }
+      foreach function  [::prtr::CALIBFunctions 0] {
+         Menu_Command $visuNo "$caption(audace,menu,calibration)" "$function..." "::prtr::run \"$function\" "
+      }
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
-      #--- Affichage des plugins de type tool et de fonction analysis du menu deroulant Analyse
-      ::confVisu::displayPlugins $visuNo analysis analysis
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
          "::carte::showMapFromBuffer buf$audace(bufNo)"
+      #--- Affichage des plugins de type tool et de fonction analysis du menu deroulant Analyse
+      ::confVisu::displayPlugins $visuNo analysis analysis
 
       #--- Je supprime toutes les entrees du menu Camera
       Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
