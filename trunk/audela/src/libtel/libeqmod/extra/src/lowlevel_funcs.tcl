@@ -13,10 +13,29 @@ proc eqmod_encode {int} {
    return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]
 }
 
+proc celestial_to_mount { h_deg dec_deg } {
+
+   set deg1 [expr - $h_deg - 90 ]
+   set deg2 [expr 180 - $dec_deg]
+   
+   return  [ list  $deg1 $deg2 ]
+
+}
+
+proc mount_to_celestial { deg1 deg2 } {
+
+   set h_deg [expr - $deg1 - 90 ]
+   set dec_deg [expr 180 - $deg2]
+   
+   return  [ list  $h_deg $dec_deg ]
+}
+
+
 proc affich_coord { } {
 
    set he1 [tel1 putread :j1]
    set de1 [eqmod_decode $he1]
+
    set hdeg [expr $de1 * 360. / 9024000. - 579.303829787234 ]
    set h  [mc_angle2hms $hdeg 360 zero 1 auto string]
 
