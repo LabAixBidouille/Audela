@@ -64,9 +64,21 @@ proc move_to_east { } {
 
 }
 
+proc move_to_east2 { } {
+
+   move_to_coord -180 180
+
+}
+
 proc move_to_west { } {
 
    move_to_coord 0 180
+
+}
+
+proc move_to_west2 { } {
+
+   move_to_coord 180 0
 
 }
 
