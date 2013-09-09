@@ -50,7 +50,7 @@ proc move_test { } {
 }
 
 
-proc move_to_north { } {
+proc move_to_north_pole { } {
 
    move_to_coord 0 90
  
@@ -82,8 +82,33 @@ proc move_to_south { } {
 proc move_to_zenith { } {
 
    set l [lindex $::eqmod::home 3]
-   ::console::affiche_resultat "Lat : $l\n"
    set de2 [expr 90 + $l]
    move_to_coord -90 $de2
 
 }
+
+proc move_to_north { } {
+
+   set l [lindex $::eqmod::home 3]
+   move_to_coord -90 $l
+}
+
+proc move_to_equator_south { } {
+
+   move_to_coord -90 180
+
+}
+
+proc move_to_equator_south_m1H { } {
+
+   move_to_coord -75 180
+
+}
+proc move_to_equator_south_p1H { } {
+
+   move_to_coord -105 180
+
+}
+
+
+
