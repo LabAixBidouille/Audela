@@ -384,7 +384,7 @@
       ::tablelist::tablelist $tbl -borderwidth 2 \
          -columns [list \
             0 "$caption(collector,kwds)" left \
-           0 "$caption(collector,kwdvalue)" left \
+            0 "$caption(collector,kwdvalue)" left \
             0 "$caption(collector,kwdtype)" center \
             0 "$caption(collector,kwdcmt)" left \
             0 "$caption(collector,kwdunit)" center] \
