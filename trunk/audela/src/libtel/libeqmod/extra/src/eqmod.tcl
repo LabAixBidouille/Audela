@@ -1,24 +1,27 @@
 # * Initial author : Fred Vachier <fv@imcce.fr>
 #   avec l aide et conseil de Alain KLOTZ <alain.klotz@free.fr>
 
-# source /srv/develop/audela/src/libtel/libeqmod/extra/src/lowlevel_funcs.tcl
+# source [file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]
 
 namespace eval eqmod {
 
 
 
    variable home
+   variable telno
 
 
 
 
 
    proc ::eqmod::ressource { } {
-      
-      source [file join $audace(rep_install) src libtel libeqmod extra src init.tcl]
-      source [file join $audace(rep_install) src libtel libeqmod extra src eqmod_move.tcl]
-      source [file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]
-      source [file join $audace(rep_install) src libtel libeqmod extra src eqmod_tools.tcl]
+
+      global audace
+
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src init.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_move.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_tools.tcl]\""
    }
 
 
@@ -54,9 +57,9 @@ namespace eval eqmod {
       upvar $p_de1 de1
       upvar $p_de2 de2
 
-      set he1 [tel1 putread :j1]
+      set he1 [tel$::eqmod::telno putread :j1]
       set de1 [::eqmod::decode $he1]
-      set he2 [tel1 putread :j2]
+      set he2 [tel$::eqmod::telno putread :j2]
       set de2 [::eqmod::decode $he2]
 
       return 0
@@ -117,29 +120,29 @@ namespace eval eqmod {
       ::console::affiche_resultat "diff_de2 : $diff_de2\n"
 
       if {$diff_de1!=0} {
-         tel1 put :K1
+         tel$::eqmod::telno put :K1
          if {$diff_de1>0} {
-            tel1 put :G100
+            tel$::eqmod::telno put :G100
          } else {
             set diff_de1 [expr -$diff_de1]
-            tel1 put :G101
+            tel$::eqmod::telno put :G101
          }
          set he1 [::eqmod::encode $diff_de1]
-         tel1 put :H1$he1
-         tel1 put :J1
+         tel$::eqmod::telno put :H1$he1
+         tel$::eqmod::telno put :J1
       }
 
       if {$diff_de2!=0} {
-         tel1 put :K2
+         tel$::eqmod::telno put :K2
          if {$diff_de2>0} {
-            tel1 put :G200
+            tel$::eqmod::telno put :G200
          } else {
             set diff_de2 [expr -$diff_de2]
-            tel1 put :G201
+            tel$::eqmod::telno put :G201
          }
          set he2 [::eqmod::encode $diff_de2]
-         tel1 put :H2$he2
-         tel1 put :J2
+         tel$::eqmod::telno put :H2$he2
+         tel$::eqmod::telno put :J2
       }
 
       return 0
@@ -159,8 +162,8 @@ namespace eval eqmod {
       ::console::affiche_resultat "Axe 2 HEX : $he2\n"
       ::console::affiche_resultat "Axe 2 DEC : $de2\n"
 
-      tel1 put :E1$he1
-      tel1 put :E2$he2
+      tel$::eqmod::telno put :E1$he1
+      tel$::eqmod::telno put :E2$he2
 
       return 0
    }

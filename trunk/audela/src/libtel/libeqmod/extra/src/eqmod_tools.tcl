@@ -8,13 +8,13 @@ namespace eval eqmod_tools {
 
    proc ::eqmod_tools::affich_coord { } {
 
-      set he1 [tel1 putread :j1]
+      set he1 [tel$::eqmod::telno putread :j1]
       set de1 [::eqmod::decode $he1]
 
       set h_deg [expr $de1 * 360. / 9024000. - 579.303829787234 ]
       set h  [mc_angle2hms $h_deg 360 zero 1 auto string]
 
-      set he2 [tel1 putread :j2]
+      set he2 [tel$::eqmod::telno putread :j2]
       set de2 [::eqmod::decode $he2]
       set dec_deg [expr 180 - $de2 * 360. / 9024000.]
       set dec  [mc_angle2dms $dec_deg 90 zero 1 + string]
