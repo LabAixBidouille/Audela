@@ -4,7 +4,12 @@
 #
 # =============================================================================
 
-package require mkLibsdl
+set err [catch {package require mkLibsdl} msg ]
+if {$err==0} {
+   set have_joystick 1
+} else {
+   set have_joystick 0
+}
 global key_axis0
 set key_axis0 0
 
@@ -52,12 +57,12 @@ place .pingpong.ball -x 100 -y 100
 # === Met en place les liaisons.
 # =========================================
 
-#--- destroy the toplevel window with the upper right cross
-#--- detruit la fenetre principale avec la croix en haut a droite
+# --- destroy the toplevel window with the upper right cross
+# --- detruit la fenetre principale avec la croix en haut a droite
 bind .pingpong <Destroy> { destroy .pingpong; exit }
-bind .pingpong <Key-Right> { global axis0 ; set key_axis0 10000 }
-bind .pingpong <Key-Left> { global axis0 ; set key_axis0 -10000 }
-bind .pingpong <Key-F1> { global axis0 ; set key_axis0 0 }
+bind .pingpong <Key-Right> { global key_axis0 ; set key_axis0 10000 }
+bind .pingpong <Key-Left> { global key_axis0 ; set key_axis0 -10000 }
+bind .pingpong <Key-F1> { global key_axis0 ; set key_axis0 0 }
 
 set point1his 0
 set megasortie 0
@@ -68,7 +73,7 @@ while {$megasortie==0} {
    # === Met en place le jeu
    # =========================================
    update
-
+   
    # --- Recupere la largeur de la fenetre
    set res [wm geometry .pingpong]
    set res [regsub -all \[+\] $res " "]
@@ -92,12 +97,14 @@ while {$megasortie==0} {
    place configure .pingpong.ball -y [expr $hauteur_b/4]
    set dxb 3
    set dyb 3
-
+   
    # --- Grande boucle du jeu
    set respons ""
    set sortie 0
    set point1s 0
    set point2s 0
+   set t0 [clock milliseconds]
+   set key_axis0 0
    while {$sortie==0} {
 
       update
@@ -127,11 +134,14 @@ while {$megasortie==0} {
       set yball [lindex [place configure .pingpong.ball -y] 4]
 
       # --- Calcule et place la nouvelle position de la balle
-      set xball [expr $xball+$dxb]
-      if {$xball<1} {set dxb [expr -1*$dxb]}
-      if {$xball>$largeur_b} {set dxb [expr -1*$dxb]}
-      set yball [expr $yball+$dyb]
-      if {$yball<1} {set dyb [expr -1*$dyb]}
+      set dt [expr [clock milliseconds]-$t0]
+      if {$dt>2000} {
+         set xball [expr $xball+$dxb]
+         if {$xball<1} {set dxb [expr -1*$dxb]}
+         if {$xball>$largeur_b} {set dxb [expr -1*$dxb]}
+         set yball [expr $yball+$dyb]
+         if {$yball<1} {set dyb [expr -1*$dyb]}
+      }
       if {$yball>$hauteur_b} {
          if {([expr $xball+$largeur_ball]>$xplayer)&&($xball<[expr $xplayer+$largeur_player])} {
             # --- on rebondit sur le player
@@ -152,7 +162,16 @@ while {$megasortie==0} {
             if {$point1s>$point1his} {
                set point1his $point1s
             }
-            set respons [tk_messageBox -message "Game over. $point1s points (high score $point1his)." -icon info -type yesno -detail "Voulez-vous recommencer ?"]
+            # --- fenetre de choix
+            set t [toplevel .t]
+            wm title $t ""
+            wm geometry $t 200x140+250+100
+            wm resizable $t 0 0            
+            pack [label $t.m -text "Game over.\n$point1s points (high score $point1his).\n\nVoulez-vous recommencer ?"]
+            place [button $t.yes -text "Yes" -command "set respons yes ; destroy $t"] -x 50 -y 80
+            place [button $t.no -text "No" -command "set respons no ; destroy $t"] -x 140 -y 80
+            tkwait window $t
+            #
             set sortie 1
             break
          }
