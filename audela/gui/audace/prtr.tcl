@@ -195,7 +195,6 @@ namespace eval ::prtr {
          -text "$caption(prtr,afficher_script)"
       pack $this.affiche.script -side left -padx 10 -pady 5 -expand yes
 
-
       #---  frame pour l'affichage du deroulement du traitement
       label $this.info.labURL1 -textvariable ::prtr::avancement -fg $color(blue)
       pack $this.info.labURL1 -side top -padx 10 -pady 5
@@ -264,6 +263,13 @@ namespace eval ::prtr {
       set img  [::confVisu::getFileName $visuNo]
       if {[file exists $img] == 1 && $private(function) == "CALIBWCS"} {
           ::prtr::seeWCSKeywords [file rootname [file tail $img]]
+      }
+
+      #--   Inhibe/Desinhibe le bouton "Tout sélectionner"
+      if {$private(size) > 0} {
+         $this.all.select configure -state normal
+      }  else {
+         $this.all.select configure -state disabled
       }
 
       #--- Focus
@@ -638,7 +644,6 @@ namespace eval ::prtr {
       variable private
 
       #--   arrete si fonction d'extraction sur une image unique ou aucune selection
-
       if {$::prtr::operation in [list $::caption(audace,menu,ligne) $::caption(audace,menu,colonne) \
             $::caption(audace,menu,matrice)] || $private(profil) eq "" && $private(function) ne "CALIBWCS"} {
          return
@@ -4012,8 +4017,6 @@ namespace eval ::prtr {
 
          #--   Recupere les naxis de l'image pour completer les options
          lassign [::prtr::getKwdValue [file join $dirIn $file$ext]] naxis1 naxis2
-         set crpix1 [expr { $naxis1/2. }]
-         set crpix2 [expr { $naxis2/2. }]
          append options " naxis1=$naxis1 naxis2=$naxis2"
 
          #--   Ecrit les mots cles dans un fichier pour utiliser HEADERFITS
@@ -4079,7 +4082,7 @@ namespace eval ::prtr {
    #--------------------------------------------------------------------------
    #  ::prtr::setKwdList
    #  Calcule les valeurs des mots cles et ecrit le fichier pour HEADERFITS
-   #  Parametres : liste de 8 couples {nom_variable=valeur}
+   #  Parametres : liste de 8 couples {nom_variable=valeur}, peu importe l'orde
    #  ex : "ra=291.366303542 dec=42.7843595 pixsize1=6.45 pixsize2=6.45
    #       foclen=0.133 crota2=86.688467 naxis1=490 naxis2=540"
    #  Retourne : le chemin du fichier
