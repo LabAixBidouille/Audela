@@ -2541,6 +2541,7 @@ namespace eval ::confVisu {
             [list ::traiteFilters::run "$caption(audace,menu,convoluer)" "$caption(audace,menu,convolution)" ]
          Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(kernel,titre)" [list ::kernel::run $visuNo]
          Menu_Command   $visuNo "$caption(audace,menu,convoluer)" "$caption(convfltr,titre)" [list ::convfltr::run $visuNo]
+
          Menu           $visuNo "$caption(audace,menu,analysis)"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,histo)" "::audace::Histo $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,coupe)" "::sectiongraph::init $visuNo"
@@ -2905,7 +2906,6 @@ namespace eval ::confVisu {
       Menu_Delete $visuNo "$caption(audace,menu,filter)" all
       Menu_Delete $visuNo "$caption(audace,menu,transform)" all
       Menu_Delete $visuNo "$caption(audace,menu,convoluer)" all
-
       #--- Je supprime toutes les entrees du menu Images
       Menu_Delete $visuNo "$caption(audace,menu,images)" entries
       #--- Rafraichissement du menu Images
@@ -3003,6 +3003,7 @@ namespace eval ::confVisu {
 
       #--- Je commence par supprimer les menus cascade du menu Analyse
       Menu_Delete $visuNo "$caption(audace,menu,extract)" all
+      Menu_Delete $visuNo "$caption(audace,menu,calibration)" all
       #--- Je supprime toutes les entrees du menu Analyse
       Menu_Delete $visuNo "$caption(audace,menu,analysis)" entries
       #--- Rafraichissement du menu Analyse
@@ -3025,15 +3026,16 @@ namespace eval ::confVisu {
       foreach function  [::prtr::EXTRACTFunctions 0] {
          Menu_Command $visuNo "$caption(audace,menu,extract)" "$function..." "::prtr::run \"$function\" "
       }
+      Menu_Cascade   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,calibration)"
       foreach function  [::prtr::CALIBFunctions 0] {
          Menu_Command $visuNo "$caption(audace,menu,calibration)" "$function..." "::prtr::run \"$function\" "
       }
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
+      #--- Affichage des plugins de type tool et de fonction analysis du menu deroulant Analyse
+      ::confVisu::displayPlugins $visuNo analysis analysis
       Menu_Separator $visuNo "$caption(audace,menu,analysis)"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,carte)" \
          "::carte::showMapFromBuffer buf$audace(bufNo)"
-      #--- Affichage des plugins de type tool et de fonction analysis du menu deroulant Analyse
-      ::confVisu::displayPlugins $visuNo analysis analysis
 
       #--- Je supprime toutes les entrees du menu Camera
       Menu_Delete $visuNo "$caption(audace,menu,acquisition)" entries
