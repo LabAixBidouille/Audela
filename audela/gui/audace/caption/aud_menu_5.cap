@@ -32,7 +32,7 @@ set caption(audace,menu,sort_x)                       "Percentile sort of column
 set caption(audace,menu,matrice)                      "One area"
 
 set caption(audace,menu,calibration)                  "# Calibrer"
-set caption(audace,menu,calib_wcs)                    "# Calibration WCS par lot"
+set caption(audace,menu,calibwcs)                     "# Calibration WCS par lot"
 
 set caption(audace,histo_titre)                       "Image Histogram"
 set caption(audace,histo_adu)                         "ADU"
