@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 9 septembre 2013</p>
+<p class="date">Date de mise &agrave; jour : 10 septembre 2013</p>
 <h1>Calibration WCS par lot</h1>
 <h2>L'interface</h2>
 <p>Elle donne la liste des images pr&#233;sentes dans le
@@ -64,8 +64,10 @@ r&#233;pertoires s'ouvre.</p>
 c'est automatiquement celle s&#233;lectionn&#233;e dans
 <b>Configuration/Fichiers images...</b>.</p>
 <p>Cette entr&#233;e permet de d&#233;finir le r&#233;pertoire et
-le nom g&#233;n&#233;rique des images calibr&#233;es. Exemples de
-saisie :</p>
+le nom g&#233;n&#233;rique des images calibr&#233;es. 
+Le nom générique des images peut être différent ou identique à 
+celui des images d'entrée. Les images peuvent être indexée ou no. 
+Exemples de saisie :</p>
 <ul>
 <li>un seul point <b>.</b> : les images produites remplacent
 celles existantes (m&#234;me r&#233;pertoire et m&#234;me
@@ -74,6 +76,10 @@ nom),</li>
 produite dans le m&#234;me r&#233;pertoire ; son nom
 g&#233;n&#233;rique sera <b>toto</b> index&#233; &#224; partir de
 1,</li>
+<li>un nom tel que <b>toto6</b> : une s&#233;rie d'images sera
+produite dans le m&#234;me r&#233;pertoire ; son nom
+g&#233;n&#233;rique sera <b>toto</b> index&#233; &#224; partir de
+6,</li>
 <li><b>chemin_du_r&#233;pertoire</b> : les images calibr&#233;es
 seront dans le r&#233;pertoire d&#233;sign&#233; ; les images
 porteront le m&#234;me nom que les images &#224; traiter, Un
@@ -81,9 +87,14 @@ bouton <b>...</b> permet de s&#233;lectionner un r&#233;pertoire
 existant.</li>
 <li><b>chemin_du_r&#233;pertoire/toto</b> : un s&#233;rie
 index&#233;e &#224; partir de 1 sera produite dans le
+r&#233;pertoire d&#233;sign&#233;,</li>
+<li><b>chemin_du_r&#233;pertoire/toto2</b> : un s&#233;rie
+index&#233;e &#224; partir de 2 sera produite dans le
 r&#233;pertoire d&#233;sign&#233;.</li>
 </ul>
-La liste des images du r&#233;pertoire courant est
+<p>Par convention le nom générique d'un fichier de sortie doit être composé 
+exclusivement de caractères alphanumériques, de tiret <b>-</b> ou d'underscore <b>_</b>.</p>
+<p>La liste des images du r&#233;pertoire courant est
 rafra&#238;chie d&#232;s qu'une image est produite. Cette liste
 est &#233;videmment inchang&#233;e si le r&#233;pertoire de
 destination est diff&#233;rent.
@@ -99,8 +110,11 @@ s&#233;quence des fonctions TT appel&#233;es.</p>
 <h4>Ligne de message</h4>
 <p>Cette ligne indique le nombre d'images s&#233;lectionn&#233;es
 et des informations diverses durant le traitement.</p>
-<h2>4. Suivi du traitement</h2>
+<h2>Suivi du traitement</h2>
 <p>Une barre de progression informe sur l'image trait&#233;e et
 le nombre d'&#233;toiles d&#233;tect&#233;es :</p>
 <p><img src="images/calibwcs_progressbar.gif" /></p>
+<h2>Pour les programmeurs</h2>
+<p>L'appel de la fonction <b>::prtr::getKwdValue chemin_complet_du fichier</b> retourne les valeurs de NAXIS1, NAXIS2 et CATASTAR
+sans avoir besoin d'ouvrir l'image dans la visu.</p>
 <body></html>
