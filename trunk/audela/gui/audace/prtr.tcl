@@ -68,7 +68,7 @@
    #  ::prtr::seeWCSKeywords filename
    #  ::prtr::checkCatalog
    #  ::prtr::calibWCS data options
-   #  ::prtr::::setKwdList options dirOut
+   #  ::prtr::setKwdList options dirOut
    #  ::prtr::getKwdValue filename
    #  ::prtr::createProgressBar
 
@@ -259,6 +259,12 @@ namespace eval ::prtr {
       bind $This <Key-Return> [list ::prtr::cmdOk $tbl $visuNo]
       bind $This <Key-Escape> [list ::prtr::cmdClose $visuNo]
       bind $This <Key-F1> {::console::GiveFocus}
+
+      #--   L'interface est terminee apres l'analyse des images
+      set img  [::confVisu::getFileName $visuNo]
+      if {[file exists $img] == 1 && $private(function) == "CALIBWCS"} {
+          ::prtr::seeWCSKeywords [file rootname [file tail $img]]
+      }
 
       #--- Focus
       focus $This
@@ -490,7 +496,7 @@ namespace eval ::prtr {
                if {$child eq "opt_black"} {incr col}
             }
             "labelentry"   {
-               set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
+                set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
                if {$valuewidth < "8"} {set valuewidth 9}
                if {$child ni [list file bias dark flat image_ref]} {
                   #--   cas general
@@ -723,6 +729,7 @@ namespace eval ::prtr {
          set private(profil) $profil
          $tbl seecell $row,0
          if {$private(function) eq "CALIBWCS"} {
+            #--   affiche les valeurs
             ::prtr::seeWCSKeywords $fileName
          }
       }
@@ -920,6 +927,7 @@ namespace eval ::prtr {
             $w seecell $row,0
             [$w windowpath $nom,0] invoke
          }
+
       } else {
          #--   pas image dans la visu
          if {[info exists private(lastImage)]} {
@@ -3835,19 +3843,14 @@ namespace eval ::prtr {
       return [list $x $y]
    }
 
-#--	ajout des proc CALIB
-
    #--------------------------------------------------------------------------
    #  ::prtr::seeWCSKeywords
    #  Affiche les valeurs des mots cles WCS
-   #  Parametre : nom court de l'image preleve dans la table
+   #  Parametre : nom court de l'image sans extension preleve dans la table
    #  Lancee lors de la selection de la premiere image
    #--------------------------------------------------------------------------
    proc seeWCSKeywords { fileName } {
-      variable private
       variable bd
-
-      #::console::disp "seeWCSKeywords [winfo exists $private(table)]\n"
 
       #--   cherche les info dans bd
       set info [lindex [array get bd $fileName] 1]
@@ -3860,6 +3863,8 @@ namespace eval ::prtr {
          set ::prtr::pixsize1 [format "%.2f" $pixsize1]
          set ::prtr::pixsize2 [format "%.2f" $pixsize2]
       }
+
+      update
    }
 
    #--------------------------------------------------------------------------
