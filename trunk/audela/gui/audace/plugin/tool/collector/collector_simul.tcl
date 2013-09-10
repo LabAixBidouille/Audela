@@ -261,7 +261,7 @@
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s float {Pixel Height (with binning)} mum}
       dict set dicokwd PRESSURE  {PRESSURE %s float {[hPa] Atmospheric Pressure} hPa}
       dict set dicokwd RA        {RA %s double {Expected RA asked to telescope} {deg}}
-      dict set dicokwd RADESYS   {RADECYS %s string {Mean Place IAU 1984 system} {}}
+      dict set dicokwd RADESYS   {RADESYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd SEING     {SEING %s float {Average FWHM} pixels}
       dict set dicokwd SITENAME  {SITENAME %s string {Observatory Name} {}}
