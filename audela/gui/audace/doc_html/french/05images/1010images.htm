@@ -2,8 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 
 
+
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Images et Analyse</title></head><body>
-<p class="date">Date de mise &#224; jour : 3 septembre 2013</p>
+<p class="date">Date de mise &#224; jour : 10 septembre 2013</p>
 <h1>Images et Analyse</h1>
 <h2>1. Fonctions</h2>
 <p>Cette interface g&#232;re de tr&#232;s nombreuses fonctions
@@ -26,9 +27,11 @@ et soustraire une gaussienne.</li>
 LOG, NORMOFFET, NORMGAIN et Ecr&#234;ter les extr&#234;mes.</li>
 <li>Filtrer : Masque flou, FILTER, CONV, RGRADIENT et
 RADIAL.</li>
-<li>Transformer : REC2POL, POL2REC et HOUGH.</li>
-<li>Extraire : BINX, MEDIANX, SORTX , BINY, MEDIANY, SORTY,
+<li>Transformer : REC2POL, POL2REC et HOUGH.</li><li>Extraire : BINX, MEDIANX, SORTX , BINY, MEDIANY, SORTY,
 PROFILE et MATRIX.</li>
+  <li>Calibrer WCS : CALIBWCS.<br />
+  </li>
+
 </ul>
 <ul class="noindent">
 <li>Sur une image, une s&#233;rie index&#233;e ou
@@ -239,13 +242,22 @@ effectivement utilis&#233;s :</p>
 <ul>
 <li>audace_images_elaborer_maitre.test</li>
 <li>audace_images_aligner.test</li>
+  <li>audace_images_aligner_intercorrelation.test<br />
+  </li>
+
 <li>audace_images_combiner.test</li>
 <li>audace_images_adapter_geometrie.test</li>
 <li>audace_images_retoucher.test</li>
 <li>audace_images_modifier.test</li>
 <li>audace_images_filtrer.test</li>
 <li>audace_images_transformer.test</li>
+  <li>audace_images_convolution.test<br />
+  </li>
+
 <li>audace_analyse_extraire.test</li>
+  <li>audace_analyse_calibwcs_lot.test<br />
+  </li>
+
 </ul>
 <h2>12. Ex&#233;cution en ligne de commande</h2>
 <p>Les commandes Tourner de +90&#176;, -90&#176;et 180&#176; ainsi
