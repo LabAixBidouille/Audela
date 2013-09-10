@@ -432,6 +432,10 @@ proc aag_read { channel name} {
    global audace
    set tempo $audace(meteosensor,private,$name,tempo)
    set ress [aag_send $channel M $tempo]
+   if {$ress==""} {
+      # --- retry (useful for the first access)
+      set ress [aag_send $channel M $tempo]
+   }
    foreach res $ress {
       set key [lindex $res 0]
       set val [lindex $res 1]
