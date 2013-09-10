@@ -68,7 +68,7 @@
    #  ::prtr::seeWCSKeywords filename
    #  ::prtr::checkCatalog
    #  ::prtr::calibWCS data options
-   #  ::setKwdList options dirOut
+   #  ::prtr::::setKwdList options dirOut
    #  ::prtr::getKwdValue filename
    #  ::prtr::createProgressBar
 
@@ -392,12 +392,10 @@ namespace eval ::prtr {
          }
       }
 
-#--  ajout  CALIB
       #--   Verifie le catalogue
       if {$private(function) eq "CALIBWCS"} {
          ::prtr::checkCatalog
       }
-#--  fin ajout  CALIB
 
       #--  Adapte la geometrie
       ::prtr::confToWidget
@@ -459,13 +457,12 @@ namespace eval ::prtr {
 
       ::prtr::confBitPix
       ::prtr::dispOptions $w
-#-- ajout CALIB
+
       if {$private(function) eq "CALIBWCS"} {
          #--   masque la ligne
          set private(tt_lignes) 0
          blt::table $private(table) $w 4,0 -height {0}
       }
-#-- fin ajout CALIB
    }
 
    #--------------------------------------------------------------------------
@@ -994,10 +991,8 @@ namespace eval ::prtr {
                   set crpix1 [expr {$naxis1/2}]
                   set crpix2 [expr {$naxis2/2}]
                }
-               #-- rajout de l'indicateur wcs
-#--	modif CALIB
+               #-- rajout des variables wcs
                set result [list $naxis $naxis3 $naxis1 $naxis2 $bitpix $crpix1 $crpix2 $mean $wcs $pixsize1 $pixsize2 $ra $dec $foclen $crota2]
-#-- fin modif CALIB
             }
          }
       }
@@ -1104,7 +1099,7 @@ namespace eval ::prtr {
       variable bd
 
       #--   arrete si pas fonction avec une box
-      #if {$private(function) ni {WINDOW MATRIX}} {return}
+      if {$private(function) ni {WINDOW MATRIX}} {return}
 
       set box  [::confVisu::getBox $visuNo]
       if {$box eq ""} {
@@ -1283,14 +1278,9 @@ namespace eval ::prtr {
 
          #--   designe l'image a afficher
          if {$nbImg eq "1"} {
-               set lastImage [file join "$dir" $generique$ext]
+             set lastImage [file join "$dir" $generique$ext]
          } elseif {$nbImg eq ""} {
-             if {$generique eq ""} {
-               set generique "[lindex $imgList end]"
-            } else {
-               append generique [llength $imgList]
-            }
-            set lastImage [file join ${dir} ${generique}$ext]
+             set lastImage [file join $dir [lindex $private(outList) end]$ext]
          } else {
             set lastImage [file join "$dir" $generique$nbImg$ext]
          }
@@ -1541,13 +1531,12 @@ namespace eval ::prtr {
       lassign [string map -nocase [list x " " + " "] $conf(prtr,geometry)] width fixeHeight x y
 
       #--   definit la hauteur variable (parametres+options) de l'interface
-#--   modif CALIB
       if {$private(function) ne "CALIBWCS"} {
          set tt_lignes $private(tt_lignes)
       } else {
+         #--   masque la ligne des options
          set tt_lignes 0
       }
-#--   fin modif CALIB
       set variableHeight [expr { ($private(fun_lignes)+$tt_lignes)*$private(lineHeight) }]
       set totalHeight [expr { $fixeHeight+$variableHeight }]
 
@@ -1645,8 +1634,6 @@ namespace eval ::prtr {
          -command "::prtr::selectFiles $row"
    }
 
-#--	ajout CALIB
-
    #--   chaque fonction est accompagnee de quatre variables (eventuellement vides) :
    #     -fun : nom de la fonction TT
    #     -hlp : nom du repertoire de la page, nom de la page et nom de l'ancre (si elle existe)
@@ -1673,7 +1660,6 @@ namespace eval ::prtr {
 
       return [consultDic CALIB $function]
    }
-#--	fin ajout CALIB
 
    #--------------------------------------------------------------------------
    #  ::prtr::MAITREFunctions {0|nom_de_fonction}
@@ -2318,14 +2304,13 @@ namespace eval ::prtr {
       dict set Var   delta             "integer labelentry"          ;#REGISTERFINE
       dict set Var   oversampling      "integer labelentry"          ;#REGISTERFINE DRIZZLEWCS
       dict set Var   drop_sizepix      "double labelentry"           ;#DRIZZLEWCS
-#--	ajout CALIB
-      dict set Var   ra                "double 360 labelentry"       ;#CALIB
-      dict set Var   dec               "double 90 labelentry"        ;#CALIB
-      dict set Var   pixsize1          "double labelentry"           ;#CALIB
-      dict set Var   pixsize2          "double labelentry"           ;#CALIB
-      dict set Var   foclen            "double labelentry"           ;#CALIB
-      dict set Var   crota2            "double 360 labelentry"       ;#CALIB
-      dict set Var   astromcatalog           "alpha combobox"              ;#CALIB
+      dict set Var   ra                "double 360 labelentry"       ;#CALIBWCS
+      dict set Var   dec               "double 90 labelentry"        ;#CALIBWCS
+      dict set Var   pixsize1          "double labelentry"           ;#CALIBWCS
+      dict set Var   pixsize2          "double labelentry"           ;#CALIBWCS
+      dict set Var   foclen            "double labelentry"           ;#CALIBWCS
+      dict set Var   crota2            "double 360 labelentry"       ;#CALIBWCS
+      dict set Var   astromcatalog     "alpha combobox"              ;#CALIBWCS
    }
 
    #--------------------------------------------------------------------------
@@ -3975,13 +3960,23 @@ namespace eval ::prtr {
       if {$nameOut eq ""} {
          #--   en absence de nom generique
          #--   les noms de sortie sont identiques aux nom d'entree
-         set outList $imgList
+         set private(outList) $imgList
       } else {
          #--   en presence de nom generique
          #--   compose une liste de sortie
-         set outList ""
-         for {set i 1} {$i <= [llength $imgList]} {incr i} {
-            lappend outList ${nameOut}$i
+         set lastCar [string index $nameOut [expr { [string length $nameOut]-1 }]]
+         if {[string is integer -strict $lastCar] == 1} {
+            set racine [string range $nameOut 0 end-1]
+            set firstIndex "$lastCar"
+            set lastIndex [expr { $firstIndex+$len-1 }]
+         } else {
+            set racine $nameOut
+            set firstIndex 1
+            set lastIndex $len
+         }
+         set private(outList) ""
+         for {set i $firstIndex} {$i <= $lastIndex} {incr i} {
+            lappend private(outList) ${racine}$i
          }
       }
 
@@ -4002,7 +3997,7 @@ namespace eval ::prtr {
       set sky0   dummy0
       set erreur 0
 
-      foreach file $imgList out $outList {
+      foreach file $imgList out $private(outList) {
 
          #--   ATTENTION
          #  file   = nom dans le repertoire initial
@@ -4060,7 +4055,7 @@ namespace eval ::prtr {
 
          } else {
             set erreur 1
-            ::console::affiche_erreur "$msg\n
+            ::console::affiche_erreur "$msg\n"
          }
       }
 
@@ -4155,9 +4150,9 @@ namespace eval ::prtr {
 
    #------------------------------------------------------------
    # ::prtr::getKwdValue
-   #   Marque la porgression de la calibration WCS
+   #   Marque la progression de la calibration WCS
    #   Parametre : chemin complet du fichier image
-   #   Retourne :
+   #   Retourne : liste des valeurs NAXIS1, NAXIS2 et CATASTAR
    #------------------------------------------------------------
    proc getKwdValue { fileName } {
 
@@ -4192,7 +4187,11 @@ namespace eval ::prtr {
 
       package require Ttk
 
-      set this $private(this)
+      if {![info exists private(this)]} {
+         set this "$::audace(base)"
+      } else {
+         set this $private(this)
+      }
       set w $this.prgrsbr
 
       toplevel $w -class Toplevel
