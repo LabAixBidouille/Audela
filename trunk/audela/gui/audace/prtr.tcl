@@ -3857,6 +3857,8 @@ namespace eval ::prtr {
    proc seeWCSKeywords { fileName } {
       variable bd
 
+      if {![info exists $fileName]} {return}
+
       #--   cherche les info dans bd
       set info [lindex [array get bd $fileName] 1]
       lassign [lrange $info 5 8] ::prtr::crpix1 ::prtr::crpix2 -> wcs
