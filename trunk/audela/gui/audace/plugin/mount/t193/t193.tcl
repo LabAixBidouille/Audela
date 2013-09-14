@@ -580,12 +580,12 @@ proc ::t193::configureMonture { } {
 
        #--- Je configure le modele de pointage
       if { $::conf(t193,model,enabled) == 1 } {
-          set modelId $::conf(t193,model,id)
-          tel$telNo radec model -enabled 1 \
+         set modelId $::conf(t193,model,id)
+         tel$telNo radec model -enabled 1 \
             -symbols $::conf(confTel,model,$modelId,symbols) \
             -coefficients $::conf(confTel,model,$modelId,coefficients)
       } else {
-          #tel$telNo radec model -enabled 0
+         #tel$telNo radec model -enabled 0
       }
 
       #--- Je parametre le niveau de trace
@@ -890,11 +890,11 @@ proc ::t193::onSelectModel { tkCombo } {
    set modelId [::confTel::getModelIdentifiant [$tkCombo get]]
    if { $modelId != "" } {
       #--- j'ajoute les parametres manquants (en cas d'evolution de la liste des attributs d'un modele)
-      if { [info exists ::conf(confTel,model,$modelId,name)] == 0 } { set ::conf(confTel,model,$modelId,name) $modelId }
-      if { [info exists ::conf(confTel,model,$modelId,symbols)] == 0 } { set ::conf(confTel,model,$modelId,symbols) "" }
+      if { [info exists ::conf(confTel,model,$modelId,name)] == 0 }         { set ::conf(confTel,model,$modelId,name)         $modelId }
+      if { [info exists ::conf(confTel,model,$modelId,symbols)] == 0 }      { set ::conf(confTel,model,$modelId,symbols)      "" }
       if { [info exists ::conf(confTel,model,$modelId,coefficients)] == 0 } { set ::conf(confTel,model,$modelId,coefficients) "" }
 
-      set widget(model,id) $modelId
+      set widget(model,id)   $modelId
       set widget(model,date) $::conf(confTel,model,$modelId,date)
    }
 }
