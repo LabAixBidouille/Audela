@@ -13,20 +13,6 @@ namespace eval ::atos_analysis_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::atos_analysis_gui::reinitialise { } {
 
       # 
@@ -71,8 +57,8 @@ namespace eval ::atos_analysis_gui {
       # 
       set ::atos_analysis_gui::raw_filename_short ""
       set ::atos_analysis_gui::raw_filename       ""
-      set ::atos_analysis_gui::raw_integ_offset   ""
-      set ::atos_analysis_gui::raw_integ_nb_img   ""
+      set ::atos_analysis_gui::raw_integ_offset   0
+      set ::atos_analysis_gui::raw_integ_nb_img   1
       set ::atos_analysis_gui::int_corr           ""
       set ::atos_analysis_gui::tps_corr           ""
       set ::atos_analysis_gui::theo_expo          ""
@@ -209,16 +195,6 @@ namespace eval ::atos_analysis_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
    #
    # Chargement des captions
    #
@@ -245,11 +221,6 @@ namespace eval ::atos_analysis_gui {
 
 
    }
-
-
-
-
-
 
 
 
@@ -732,18 +703,19 @@ namespace eval ::atos_analysis_gui {
       if {![info exists ::atos_analysis_gui::raw_integ_offset]} {return}
       if {![info exists ::atos_analysis_gui::raw_integ_nb_img]} {return}
       
-      
-      if {$::atos_analysis_gui::int_corr==1} {
+      if {$::atos_analysis_gui::int_corr == 1} {
          ::atos_analysis_tools::correction_integration $::atos_analysis_gui::raw_integ_offset $::atos_analysis_gui::raw_integ_nb_img
       }
-      if {$::atos_analysis_gui::tps_corr==1} {
+      if {$::atos_analysis_gui::tps_corr == 1} {
          set ::atos_analysis_gui::time_correction [expr ($::atos_analysis_gui::theo_expo/2.0 + $::atos_analysis_gui::time_offset)]
       ::console::affiche_resultat " time_correction  = $::atos_analysis_gui::time_correction\n"
          ::atos_analysis_tools::correction_temporelle
       } else {
          set ::atos_analysis_gui::time_correction 0.0
       }
-      
+      if {$::atos_analysis_gui::ref_corr == 1} {
+         ::atos_analysis_tools::correction_refetoile
+      }
       
       # cree la courbe Rouges pour retrouver les paquets 
       set ::atos_analysis_gui::x ""

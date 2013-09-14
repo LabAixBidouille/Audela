@@ -202,7 +202,7 @@
              pack $titrefich -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                   #--- Cree un label
-                  label $titrefich.l -text "Fichiers et R该rtoires : " -font $atosconf(font,courier_10_b)
+                  label $titrefich.l -text "Fichiers et Repertoires : " -font $atosconf(font,courier_10_b)
                   pack  $titrefich.l -side left -anchor e
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -211,7 +211,7 @@
 
                   #--- Creation du bouton open
                   button $buttons.but_gen \
-                     -text "G诩rer" -borderwidth 2 \
+                     -text "Gerer" -borderwidth 2 \
                      -command "::atos_analysis_gui::generer $visuNo"
                   pack $buttons.but_gen \
                      -side right -anchor e \
@@ -475,7 +475,7 @@
                        pack $dhelio -in $paramgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Cree un label
-                            label $dhelio.l1 -text "Distance Heliocentrique (UA) : "
+                            label $dhelio.l1 -text "Distance heliocentrique (UA) : "
                             pack  $dhelio.l1 -side left -anchor e
 
                             #--- Cree un label pour le chemin de l'AVI
@@ -551,7 +551,7 @@
                        pack $magv -in $paramdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Cree un label
-                            label $magv.l1 -text "Magnitude apparente estim裠: "
+                            label $magv.l1 -text "Magnitude apparente estimee: "
                             pack  $magv.l1 -side left -anchor e
 
                             #--- Cree un label pour le chemin de l'AVI
@@ -639,7 +639,7 @@
                              pack  $info.l1.blank2 -in $info.l1 -side left -anchor w
 
                         #--- Cree un label
-                        label $info.l1.dureel -text "duree�(sec):"
+                        label $info.l1.dureel -text "duree (sec):"
                         pack  $info.l1.dureel -in $info.l1 -side left -anchor w
 
                         #--- Cree un label
@@ -679,7 +679,7 @@
                              pack  $info.l2.blank -in $info.l2 -side left -anchor w
 
                         #--- Cree un label
-                        label $info.l2.dendl -text "Date de Fin :"
+                        label $info.l2.dendl -text "Date de fin :"
                         pack  $info.l2.dendl -in $info.l2 -side left -anchor w
 
                         #--- Cree un label
@@ -903,7 +903,7 @@
                              pack  $info.l1.blank2 -in $info.l1 -side left -anchor w
 
                         #--- Cree un label
-                        label $info.l1.dureel -text "dur裠(sec):"
+                        label $info.l1.dureel -text "duree (sec):"
                         pack  $info.l1.dureel -in $info.l1 -side left -anchor w
 
                         #--- Cree un label
@@ -929,7 +929,7 @@
                    pack  $info.l2 -in $info -side top -expand 0 -anchor w
 
                         #--- Cree un label
-                        label $info.l2.dbegl -text "Date de d衵t :"
+                        label $info.l2.dbegl -text "Date de debut :"
                         pack  $info.l2.dbegl -in $info.l2 -side left -anchor w
 
                         #--- Cree un label
@@ -942,7 +942,7 @@
                              pack  $info.l2.blank -in $info.l2 -side left -anchor w
 
                         #--- Cree un label
-                        label $info.l2.dendl -text "Date de Fin :"
+                        label $info.l2.dendl -text "Date de fin :"
                         pack  $info.l2.dendl -in $info.l2 -side left -anchor w
 
                         #--- Cree un label
@@ -980,7 +980,7 @@
                             pack  $events.e1.blank -in  $events.e1 -side left -anchor w
 
                        #--- Cree un label
-                       label $events.e1.dendl -text "Dur裠:"
+                       label $events.e1.dendl -text "Duree:"
                        pack  $events.e1.dendl -in $events.e1 -side left -anchor w
 
                        #--- Cree un label
@@ -996,7 +996,7 @@
                        button $events.e2.but_select -image .p2 -compound center \
                           -borderwidth 2 -takefocus 1 -command "::atos_analysis_gui::select_event 2"
                        pack $events.e2.but_select -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
-                       DynamicHelp::add  $events.e2.but_select -text "Immersion : Prendre autant de point d'un cot矱ue de l'autre \n autour de l'immersion. Eviter de prendre trop proche de l'emersion"
+                       DynamicHelp::add  $events.e2.but_select -text "Immersion : Prendre autant de point d'un cote que de l'autre \n autour de l'immersion. Eviter de prendre trop proche de l'emersion"
 
                        #--- Cree un label
                        label $events.e2.dbegl -text "Nb img :"
@@ -1012,7 +1012,7 @@
                             pack  $events.e2.blank -in  $events.e2 -side left -anchor w
 
                        #--- Cree un label
-                       label $events.e2.dendl -text "Dur裠:"
+                       label $events.e2.dendl -text "Duree:"
                        pack  $events.e2.dendl -in $events.e2 -side left -anchor w
 
                        #--- Cree un label
@@ -1044,7 +1044,7 @@
                             pack  $events.e3.blank -in  $events.e3 -side left -anchor w
 
                        #--- Cree un label
-                       label $events.e3.dendl -text "Dur裠:"
+                       label $events.e3.dendl -text "Duree:"
                        pack  $events.e3.dendl -in $events.e3 -side left -anchor w
 
                        #--- Cree un label
@@ -1060,7 +1060,7 @@
                        button $events.e4.but_select -image .p4 -compound center \
                           -borderwidth 2 -takefocus 1 -command "::atos_analysis_gui::select_event 4"
                        pack $events.e4.but_select -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
-                       DynamicHelp::add  $events.e4.but_select -text "Emersion : Prendre autant de point d'un cot矱ue de l'autre \n autour de l'emersion. Eviter de prendre trop proche de l'immersion"
+                       DynamicHelp::add  $events.e4.but_select -text "Emersion : Prendre autant de point d'un cote que de l'autre \n autour de l'emersion. Eviter de prendre trop proche de l'immersion"
 
                        #--- Cree un label
                        label $events.e4.dbegl -text "Nb img :"
@@ -1076,7 +1076,7 @@
                             pack  $events.e4.blank -in  $events.e4 -side left -anchor w
 
                        #--- Cree un label
-                       label $events.e4.dendl -text "Dur裠:"
+                       label $events.e4.dendl -text "Duree:"
                        pack  $events.e4.dendl -in $events.e4 -side left -anchor w
 
                        #--- Cree un label
@@ -1108,7 +1108,7 @@
                             pack  $events.e5.blank -in  $events.e5 -side left -anchor w
 
                        #--- Cree un label
-                       label $events.e5.dendl -text "Dur裠:"
+                       label $events.e5.dendl -text "Duree:"
                        pack  $events.e5.dendl -in $events.e5 -side left -anchor w
 
                        #--- Cree un label
@@ -1124,10 +1124,10 @@
                        button $events.e6.but_select -image .immersion -compound center \
                           -borderwidth 2 -takefocus 1 -command "::atos_analysis_gui::select_event 6"
                        pack $events.e6.but_select -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
-                       DynamicHelp::add  $events.e6.but_select -text "Selection de l'immersion : prendre un carr石err矡utour de l'evenement"
+                       DynamicHelp::add  $events.e6.but_select -text "Selection de l'immersion : prendre un carre autour de l'evenement"
 
                        #--- Cree un label
-                       label $events.e6.dendl -text "Date de l'跨nement :"
+                       label $events.e6.dendl -text "Date de l'evenement :"
                        pack  $events.e6.dendl -in $events.e6 -side left -anchor w
 
                        #--- Cree un label
@@ -1143,10 +1143,10 @@
                        button $events.e7.but_select -image .emersion -compound center \
                           -borderwidth 2 -takefocus 1 -command "::atos_analysis_gui::select_event 7"
                        pack $events.e7.but_select -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
-                       DynamicHelp::add  $events.e7.but_select -text "Selection de l'emersion : prendre un carr石err矡utour de l'evenement"
+                       DynamicHelp::add  $events.e7.but_select -text "Selection de l'emersion : prendre un carre autour de l'evenement"
 
                        #--- Cree un label
-                       label $events.e7.dendl -text "Date de l'跨nement :"
+                       label $events.e7.dendl -text "Date de l'evenement :"
                        pack  $events.e7.dendl -in $events.e7 -side left -anchor w
 
                        #--- Cree un label
@@ -1232,7 +1232,7 @@
              pack $nometoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $nometoile.l1 -text "D販gnation : "
+                  label $nometoile.l1 -text "Designation : "
                   pack  $nometoile.l1 -side left -anchor e
 
                   #--- Cree un entry
@@ -1330,7 +1330,7 @@
              pack $irep -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label pour le chemin de l'AVI
-                  checkbutton $irep.v -variable ::atos_analysis_tools::irep -text "R误nse instrumentale"
+                  checkbutton $irep.v -variable ::atos_analysis_tools::irep -text "Reponse instrumentale"
                   pack $irep.v -side left -padx 3 -pady 1 -fill x
 
 
@@ -1369,7 +1369,7 @@
                   pack $duree -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #---
-                       label $duree.l -text "Nombre de points mesur豠autour l'赥nement : "
+                       label $duree.l -text "Nombre de points mesure autour l'evenement : "
                        pack  $duree.l -side left -anchor e
                        #---
                        label $duree.v -textvariable ::atos_analysis_tools::nb_p2
@@ -1391,7 +1391,7 @@
                   pack $dureemax -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #--- Cree un label
-                       label $dureemax.l -text "Dur裠maxi estim裠de l'赥nement : "
+                       label $dureemax.l -text "Duree maxi estimee de l'evenement : "
                        pack  $dureemax.l -side left -anchor e
 
                        #--- Cree un entry ( == ::atos_analysis_tools::duree)
@@ -1444,7 +1444,7 @@
                   pack $frmdureesearchi -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $frmdureesearchi.l -text "Dur裠de recherche autour de l'evenement : "
+                       label $frmdureesearchi.l -text "Duree de recherche autour de l'evenement : "
                        pack  $frmdureesearchi.l -side left -anchor e
 
                        #--- Creation du bouton calcul
@@ -1518,7 +1518,7 @@
                        pack $nfit_chi2_min -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $nfit_chi2_min.l -text "Nombre de points utilis豠pour l'ajustement : "
+                            label $nfit_chi2_min.l -text "Nombre de points utilises pour l'ajustement : "
                             pack  $nfit_chi2_min.l -side left -anchor e
 
                             #--- Cree un label
@@ -1534,7 +1534,7 @@
                        pack $t0_chi2_min -in $frmdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $t0_chi2_min.l -text "t0 normalis瞺 "
+                            label $t0_chi2_min.l -text "t0 normalise "
                             pack  $t0_chi2_min.l -side left -anchor e
 
                             #--- Cree un label
@@ -1625,7 +1625,7 @@
                             pack $graphe1.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
                             #--- Cree un label
-                            label $graphe1.lab -text "Signal photom賲ique" -font $atosconf(font,courier_10_b)
+                            label $graphe1.lab -text "Signal photometrique" -font $atosconf(font,courier_10_b)
                             pack  $graphe1.lab -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
@@ -1681,7 +1681,7 @@
                             pack $graphe23.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
                             #--- Cree un label
-                            label $graphe23.lab -text "Ombre interpol裠sur les points d'observation" -font $atosconf(font,courier_10_b)
+                            label $graphe23.lab -text "Ombre interpolee sur les points d'observation" -font $atosconf(font,courier_10_b)
                             pack  $graphe23.lab -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
@@ -1694,7 +1694,7 @@
                             pack $graphe20.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
                             #--- Cree un label
-                            label $graphe20.lab -text "Ombre g训賲ique"
+                            label $graphe20.lab -text "Ombre generique"
                             pack  $graphe20.lab -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
@@ -1759,7 +1759,7 @@
                   pack $duree -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #---
-                       label $duree.l -text "Nombre de points mesur豠autour l'赥nement : "
+                       label $duree.l -text "Nombre de points mesures autour l'evenement : "
                        pack  $duree.l -side left -anchor e
                        #---
                        label $duree.v -textvariable ::atos_analysis_tools::nb_p4
@@ -1781,7 +1781,7 @@
                   pack $dureemax -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                        #--- Cree un label
-                       label $dureemax.l -text "Dur裠maxi estim裠de l'赥nement : "
+                       label $dureemax.l -text "Duree maxi estimee de l'evenement : "
                        pack  $dureemax.l -side left -anchor e
 
                        #--- Cree un entry ( == ::atos_analysis_tools::duree)
@@ -1834,7 +1834,7 @@
                   pack $dureesearch -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $dureesearch.l -text "Dur裠de recherche autour de l'evenement : "
+                       label $dureesearch.l -text "Duree de recherche autour de l'evenement : "
                        pack  $dureesearch.l -side left -anchor e
 
                        #--- Creation du bouton calcul
@@ -1909,7 +1909,7 @@
                        pack $nfit_chi2_min -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $nfit_chi2_min.l -text "Nombre de points utilis豠pour l'ajustement : "
+                            label $nfit_chi2_min.l -text "Nombre de points utilises pour l'ajustement : "
                             pack  $nfit_chi2_min.l -side left -anchor e
 
                             #--- Cree un label
@@ -1925,7 +1925,7 @@
                        pack $t0_chi2_min -in $frmdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $t0_chi2_min.l -text "t0 normalis瞺 "
+                            label $t0_chi2_min.l -text "t0 normalise "
                             pack  $t0_chi2_min.l -side left -anchor e
 
                             #--- Cree un label
@@ -2019,7 +2019,7 @@
                             pack $graphe1.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
                             #--- Cree un label
-                            label $graphe1.lab -text "Signal photom賲ique" -font $atosconf(font,courier_10_b)
+                            label $graphe1.lab -text "Signal photometrique" -font $atosconf(font,courier_10_b)
                             pack  $graphe1.lab -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
@@ -2075,7 +2075,7 @@
                             pack $graphe23.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
                             #--- Cree un label
-                            label $graphe23.lab -text "Ombre interpol裠sur les points d'observation" -font $atosconf(font,courier_10_b)
+                            label $graphe23.lab -text "Ombre interpolee sur les points d'observation" -font $atosconf(font,courier_10_b)
                             pack  $graphe23.lab -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
@@ -2088,7 +2088,7 @@
                             pack $graphe20.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
                             #--- Cree un label
-                            label $graphe20.lab -text "Ombre g训賲ique"
+                            label $graphe20.lab -text "Ombre generique"
                             pack  $graphe20.lab -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
@@ -2182,7 +2182,7 @@
              pack $blck -in $info1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "T譩phone : " -width $sizecol
+                  label $blck.l -text "Telephone : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -2473,7 +2473,7 @@
              pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "Transparence athmosph豩que : " -width $sizecol
+                  label $blck.l -text "Transparence athmospherique : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -2497,7 +2497,7 @@
              pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "Temp象ture : " -width $sizecol
+                  label $blck.l -text "Temperature : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -2509,7 +2509,7 @@
              pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "Stabilit矤e l'image : " -width $sizecol
+                  label $blck.l -text "Stabilitee de l'image : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -2521,7 +2521,7 @@
              pack $blck -in $info3 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "Visibilit矤e la planete : " -width $sizecol
+                  label $blck.l -text "Visibilite de la planete : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -2566,7 +2566,7 @@
              pack $titrerecap -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $titrerecap.l -text "R袡pitulatif : " -font $atosconf(font,courier_10_b)
+                  label $titrerecap.l -text "Recapitulatif : " -font $atosconf(font,courier_10_b)
                   pack  $titrerecap.l -side left -anchor e
 
              #--- Cree un frame pour le chargement d'un fichier
@@ -2626,7 +2626,7 @@
                        pack $duree -in $recap -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $duree.l1 -text "Dur裠de l'赥nement : " -width 30
+                            label $duree.l1 -text "Duree de l'evenement : " -width 30
                             pack  $duree.l1 -side left -anchor e
 
                             #--- Cree un label
@@ -2659,7 +2659,7 @@
              pack $titreresult -in $rapport -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $titreresult.l -text "R貵ltat : " -font $atosconf(font,courier_10_b)
+                  label $titreresult.l -text "Resultat : " -font $atosconf(font,courier_10_b)
                   pack  $titreresult.l -side left -anchor e
 
              #--- Cree un frame pour le chargement d'un fichier

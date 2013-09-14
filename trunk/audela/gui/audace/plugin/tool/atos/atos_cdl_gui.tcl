@@ -22,6 +22,9 @@ namespace eval ::atos_cdl_gui {
       wm withdraw .
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool atos atos_cdl_gui.cap ]
+
+      ::atos_cdl_tools::init
+
    }
 
 
@@ -37,11 +40,11 @@ namespace eval ::atos_cdl_gui {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                           { set ::atos::parametres(atos,$visuNo,messages)                           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }                      { set ::atos::parametres(atos,$visuNo,save_file_log)                      "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }                   { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)                   "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] }           { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }              { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                 { set ::atos::parametres(atos,$visuNo,messages)                           "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }            { set ::atos::parametres(atos,$visuNo,save_file_log)                      "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }         { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)                   "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] } { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)           "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }    { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
 
    }
 
@@ -277,7 +280,7 @@ namespace eval ::atos_cdl_gui {
 
                       #--- Cree un label pour
                       label $intitle.destdir -font $atosconf(font,courier_10) -padx 3 \
-                            -text "repertoire destination"
+                            -text "repertoire des images"
                       pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
 
                       #--- Cree un label pour
