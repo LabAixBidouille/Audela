@@ -543,7 +543,7 @@ proc ::epixraptor::getPluginProperty { camItem propertyName } {
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
       hasShutter       { return 0 }
-      hasTempSensor    { return 0 }
+      hasTempSensor    { return 1 }
       hasSetTemp       { return 0 }
       hasVideo         { return 1 }
       hasWindow        { return 1 }
