@@ -1012,7 +1012,7 @@ proc bm_correctprism { args } {
          set fichier [ file rootname  $fichier ]
          #bifsconv $fichier
          buf$audace(bufNo) load [ file join $audace(rep_images) $fichier$conf(extension,defaut) ]
-         buf$audace(bufNo) setkwd { COMMENT 0 int "" "" }
+         buf$audace(bufNo) setkwd { COMMENT 0 string "" "" }
          buf$audace(bufNo) save [ file join $audace(rep_images) $fichier$conf(extension,defaut) ]
       }
 
@@ -1563,7 +1563,7 @@ proc bm_sflat { args } {
       buf$audace(bufNo) setkwd [ list NAXIS 2 int "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS2 $naxis2 int "" "" ]
-      buf$audace(bufNo) setkwd [ list EXPOSURE $duree_pose int "" "s" ]
+      buf$audace(bufNo) setkwd [ list EXPOSURE $duree_pose float "" "s" ]
       buf$audace(bufNo) setkwd [ list BIN1 1 int "" "" ]
       buf$audace(bufNo) setkwd [ list BIN2 1 int "" "" ]
       buf$audace(bufNo) save "$audace(rep_images)/$nom_flat"

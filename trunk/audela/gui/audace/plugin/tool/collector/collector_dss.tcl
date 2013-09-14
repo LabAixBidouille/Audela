@@ -232,8 +232,8 @@
          }
          set private(aptdia) $aptdia
          set private(foclen) $foclen
-         buf$bufNo setkwd [list APTDIA "$private(aptdia)" double Diameter m]
-         buf$bufNo setkwd [list FOCLEN "$private(foclen)" double {Resulting Focal length} m]
+         buf$bufNo setkwd [list APTDIA "$private(aptdia)" float Diameter m]
+         buf$bufNo setkwd [list FOCLEN "$private(foclen)" float {Resulting Focal length} m]
 
         lassign [getFonDResolution $aptdia $foclen] private(fond) private(resolution)
       }

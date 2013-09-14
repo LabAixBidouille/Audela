@@ -1502,10 +1502,10 @@ namespace eval ::acqfen {
          }
 
          #--- Rajoute les coordonnees de la fenetre dans l'en-tete FITS
-         buf$::audace(bufNo) setkwd [list WINDOWX1 $panneau(acqfen,X1) integer "Window coordinate" "pixel"]
-         buf$::audace(bufNo) setkwd [list WINDOWY1 $panneau(acqfen,Y1) integer "Window coordinate" "pixel"]
-         buf$::audace(bufNo) setkwd [list WINDOWX2 $panneau(acqfen,X2) integer "Window coordinate" "pixel"]
-         buf$::audace(bufNo) setkwd [list WINDOWY2 $panneau(acqfen,Y2) integer "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWX1 $panneau(acqfen,X1) int "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWY1 $panneau(acqfen,Y1) int "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWX2 $panneau(acqfen,X2) int "Window coordinate" "pixel"]
+         buf$::audace(bufNo) setkwd [list WINDOWY2 $panneau(acqfen,Y2) int "Window coordinate" "pixel"]
 
          #--- Mise a jour du nom du fichier dans le titre et de la fenetre de l'en-tete FITS
          ::confVisu::setFileName $audace(visuNo) ""

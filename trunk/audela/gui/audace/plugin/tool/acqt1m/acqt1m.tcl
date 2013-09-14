@@ -2809,11 +2809,11 @@ proc ::acqt1m::get_filename { visuNo } {
 
    if {$panneau(acqt1m,$visuNo,ra)!=""} {
       set ra [mc_angle2deg "$panneau(acqt1m,$visuNo,ra) h"]
-      buf$bufNo setkwd [list "RA" $ra float "Right Ascension" "degrees"]
+      buf$bufNo setkwd [list "RA" $ra double "Right Ascension" "degrees"]
    }
    if {$panneau(acqt1m,$visuNo,dec)!=""} {
       set dec [mc_angle2deg $panneau(acqt1m,$visuNo,dec)]
-      buf$bufNo setkwd [list "DEC" $dec float "Declination" "degrees"]
+      buf$bufNo setkwd [list "DEC" $dec double "Declination" "degrees"]
    }
 
    # hauteur du soleil

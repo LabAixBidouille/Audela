@@ -1,7 +1,7 @@
 #
 # Fichier : camerathread.tcl
-# Description : procedures d'acquisition et de traitement avec
-#         plusieurs cameras simultanees exploitant le mode multithread
+# Description : Procedures d'acquisition et de traitement avec plusieurs
+#               cameras simultanees exploitant le mode multithread
 # Auteur : Michel PUJOL
 # Mise à jour $Id$
 #
@@ -766,19 +766,19 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName c
 
 ##::camerathread::disp "crval1=$crval1  crval2=$crval2 pixsize1=$pixsize1 pixsize2=$pixsize2 crpix1=$crpix1 crpix2=$crpix2 foclen=$foclen crota2=$crota2\n"
    #--- je cree les mots cles necessaires a la calibration
-   buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float {[um] Pixel size along naxis1} "mum" ]
-   buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float {[um] Pixel size along naxis2} "mum" ]
-   buf$bufNo setkwd [list "CRPIX1"     $crpix1     float {[pixel] reference pixel for naxis1} "pixel" ]
-   buf$bufNo setkwd [list "CRPIX2"     $crpix2     float {[pixel] reference pixel for naxis2} "pixel" ]
-   buf$bufNo setkwd [list "CRVAL1"     $crval1     float {[pixel] reference pixel for naxis1} "pixel" ]
-   buf$bufNo setkwd [list "CRVAL2"     $crval2     float {[pixel] reference pixel for naxis2} "pixel" ]
-   buf$bufNo setkwd [list "FOCLEN"     $foclen     double "Focal length" "m"]
-   buf$bufNo setkwd [list "CROTA2"     $crota2     double "position angle" "deg"]
+   buf$bufNo setkwd [list "PIXSIZE1"   $pixsize1   float  {[mum] Pixel size along naxis1} "mum" ]
+   buf$bufNo setkwd [list "PIXSIZE2"   $pixsize2   float  {[mum] Pixel size along naxis2} "mum" ]
+   buf$bufNo setkwd [list "CRPIX1"     $crpix1     double {[pixel] Reference pixel for naxis1} "pixel" ]
+   buf$bufNo setkwd [list "CRPIX2"     $crpix2     double {[pixel] Reference pixel for naxis2} "pixel" ]
+   buf$bufNo setkwd [list "CRVAL1"     $crval1     double {[pixel] Reference pixel for naxis1} "pixel" ]
+   buf$bufNo setkwd [list "CRVAL2"     $crval2     double {[pixel] Reference pixel for naxis2} "pixel" ]
+   buf$bufNo setkwd [list "FOCLEN"     $foclen     float  "Focal length" "m"]
+   buf$bufNo setkwd [list "CROTA2"     $crota2     double "Position angle" "deg"]
    buf$bufNo setkwd [list "CTYPE1"     "RA---TAN"  string "Gnomonic projection" "" ]
    buf$bufNo setkwd [list "CTYPE2"     "DEC--TAN"  string "Gnomonic projection" "" ]
    buf$bufNo setkwd [list "CUNIT1"     "deg"       string "Angles are degrees always" "" ]
    buf$bufNo setkwd [list "CUNIT2"     "deg"       string "Angles are degrees always" "" ]
-   buf$bufNo setkwd [list "EQUINOX"    "J2000.0" string "System of equatorial coordinates" "" ]
+   buf$bufNo setkwd [list "EQUINOX"    "J2000.0"   string "System of equatorial coordinates" "" ]
 
    #---- recherche des etoiles dans l'image
    #  input :

@@ -173,7 +173,7 @@ namespace eval ::gps {
       buf$bufNo setkwd [list DATE-PC  $datepc       string  "Begining date of the observation from Computer Clock" "Date ISO8601"]
       buf$bufNo setkwd [list DATE-GPS $dategps      string  "Begining date of the observation from GPS Clock"      "Date ISO8601"]
       buf$bufNo setkwd [list GPS-FLAG $::gps::flag  boolean "flag = 1 if GPS datation is valid, 0 otherwise"       none]
-      buf$bufNo setkwd [list GPS-PC   $gpspc        double  "difference between GPS Clock and Computer Clock"      second]
+      buf$bufNo setkwd [list GPS-PC   $gpspc        float   "Difference between GPS Clock and Computer Clock"      second]
       if {[info exists ::gps::antenna]}     {buf$bufNo setkwd [list GPS-ANTE $::gps::antenna      string  "Status of GPS Antenna" ""]}
       if {[info exists ::gps::sync]}        {buf$bufNo setkwd [list GPS-SYNC $::gps::sync         string  "Status of GPS Synchronization" ""]}
       if {[info exists ::gps::flagantenna]} {buf$bufNo setkwd [list GPS-FANT $::gps::flagantenna  boolean  "flag = 1 if GPS Antenna is connected, 0 otherwise" ""]}

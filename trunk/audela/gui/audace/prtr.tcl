@@ -4125,9 +4125,9 @@ namespace eval ::prtr {
       set crval1   [list CRVAL1 $ra double "RA for CRPIX1" "deg"]
       set crval2   [list CRVAL2 $dec double "DEC for CRPIX2" "deg"]
       set dec      [list DEC $dec double "DEC expected for CRPIX2" "deg"]
-      set foclen   [list FOCLEN $foclen double "Focal length" "m"]
-      set pixsize1 [list PIXSIZE1 $pixsize1 double "X pixel size binning included" "mum"]
-      set pixsize2 [list PIXSIZE2 $pixsize2 double "Y pixel size binning included" "mum"]
+      set foclen   [list FOCLEN $foclen float "Focal length" "m"]
+      set pixsize1 [list PIXSIZE1 $pixsize1 float "X pixel size binning included" "mum"]
+      set pixsize2 [list PIXSIZE2 $pixsize2 float "Y pixel size binning included" "mum"]
       set ra       [list RA $ra double "RA expected for CRPIX1" "deg"]
 
       #--   Definit les mot cles avec constante

@@ -707,7 +707,7 @@ proc ::eshel::exportbess::saveFile { visuNo } {
    #--- controle BSS_VHEL
    #---    Verifier le longueur du champ
    #---    Verifier que c'est un reel
-   if { [string is double $private($visuNo,value,BSS_VHEL)] == 0  } {
+   if { [string is float $private($visuNo,value,BSS_VHEL)] == 0  } {
       append badKeywords "BSS_VHEL: $::caption(eshelvisu,exportBess,label,BSS_VHEL) is not decimal value\n"
    }
 

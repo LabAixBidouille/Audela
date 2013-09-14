@@ -472,9 +472,9 @@ namespace eval ::ohp {
                   set foclen 13.0
                   set crota 180.
                   set cdelt [expr $pixsize/$foclen*180./$pi]
-                  buf$audace(bufNo) setkwd [list PIXSIZE1 $pixsize double "Pixel dimension" "m"]
-                  buf$audace(bufNo) setkwd [list PIXSIZE2 $pixsize double "Pixel dimension" "m"]
-                  buf$audace(bufNo) setkwd [list FOCLEN  $foclen    double "Focal length" "m"]
+                  buf$audace(bufNo) setkwd [list PIXSIZE1 $pixsize float "Pixel dimension" "m"]
+                  buf$audace(bufNo) setkwd [list PIXSIZE2 $pixsize float "Pixel dimension" "m"]
+                  buf$audace(bufNo) setkwd [list FOCLEN $foclen float "Focal length" "m"]
                   buf$audace(bufNo) setkwd [list RA $ra double "RA J2000.0" "deg"]
                   buf$audace(bufNo) setkwd [list DEC $dec double "DEC J2000.0" "deg"]
                   buf$audace(bufNo) setkwd [list CRVAL1 $ra double "" "deg"]
@@ -496,9 +496,9 @@ namespace eval ::ohp {
                   set foclen 7.2
                   set crota 0.
                   set cdelt [expr $pixsize/$foclen*180./$pi]
-                  buf$audace(bufNo) setkwd [list PIXSIZE1 $pixsize double "Pixel dimension" "m"]
-                  buf$audace(bufNo) setkwd [list PIXSIZE2 $pixsize double "Pixel dimension" "m"]
-                  buf$audace(bufNo) setkwd [list FOCLEN  $foclen    double "Focal length" "m"]
+                  buf$audace(bufNo) setkwd [list PIXSIZE1 $pixsize float "Pixel dimension" "m"]
+                  buf$audace(bufNo) setkwd [list PIXSIZE2 $pixsize float "Pixel dimension" "m"]
+                  buf$audace(bufNo) setkwd [list FOCLEN  $foclen float "Focal length" "m"]
                   buf$audace(bufNo) setkwd [list CDELT1 [expr -$cdelt] double "X scale" "deg/pix"]
                   buf$audace(bufNo) setkwd [list CDELT2 $cdelt double "Y scale" "deg/pix"]
                   buf$audace(bufNo) setkwd [list CROTA2 $crota double "" "deg"]

@@ -1413,7 +1413,7 @@ proc calibwcs {args} {
       #--- Mise a jour du Header Fits
       set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
       set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              mum                             mum}
-      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
+      set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        float          float                           float}
       set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
 
       set n [llength $astrom(kwds)]
@@ -1639,7 +1639,7 @@ proc simulimage {args} {
          #---
          set astrom(kwds)     {RA                       DEC                       CRPIX1        CRPIX2        CRVAL1          CRVAL2           CDELT1    CDELT2    CROTA2                    CD1_1         CD1_2         CD2_1         CD2_2         FOCLEN         PIXSIZE1                        PIXSIZE2}
          set astrom(units)    {deg                      deg                       pixel         pixel         deg             deg              deg/pixel deg/pixel deg                       deg/pixel     deg/pixel     deg/pixel     deg/pixel     m              mum                             mum}
-         set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        double         double                          double}
+         set astrom(types)    {double                   double                    double        double        double          double           double    double    double                    double        double        double        double        float          float                           float}
          set astrom(comments) {"RA expected for CRPIX1" "DEC expected for CRPIX2" "X ref pixel" "Y ref pixel" "RA for CRPIX1" "DEC for CRPIX2" "X scale" "Y scale" "Position angle of North" "Matrix CD11" "Matrix CD12" "Matrix CD21" "Matrix CD22" "Focal length" "X pixel size binning included" "Y pixel size binning included"}
          #---
          set n [llength $astrom(kwds)]
@@ -1845,7 +1845,7 @@ proc simulimage2 {args} {
          set dateobs [mc_date2iso8601 [lindex $ListDates $k]]
          ::console::affiche_resultat "Build image ${out}$k1 : $dateobs $mag\n"
          buf$::audace(bufNo) setkwd [list DATE-OBS $dateobs string ISO8601 "Star of exposure"]
-         buf$::audace(bufNo) setkwd [list EXPOSURE $exposure double s "Time of exposure"]
+         buf$::audace(bufNo) setkwd [list EXPOSURE $exposure float s "Time of exposure"]
          set toeval "simulimage"
          foreach arg0 $arg0s {
             append toeval " \{$arg0\}"

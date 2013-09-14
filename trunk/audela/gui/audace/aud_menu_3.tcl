@@ -4438,7 +4438,7 @@ namespace eval ::ser2fits {
       dict set dicokwd DATE-BEG  {DATE-BEG %s string {Start of video.FITS standard} {ISO 8601}}
       dict set dicokwd DATE-END  {DATE-END %s string {End of video.FITS standard} {ISO 8601}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
-      dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
+      dict set dicokwd EQUINOX   {EQUINOX %s string {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K} {}}
       dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
