@@ -165,7 +165,7 @@ package require math::linearalgebra
             lappend med $::atos_analysis_tools::cdl($k,obj_fint)
          }
          set med [::math::statistics::median $med]
-         ::console::affiche_resultat "MED=$med\n"
+         #::console::affiche_resultat "MED=$med\n"
 
          # on cree 2 nouvelles courbes
          for {set j 1} {$j<=$bloc} {incr j} {

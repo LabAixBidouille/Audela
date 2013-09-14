@@ -820,7 +820,7 @@ variable timing
                  #::console::affiche_resultat "$idfrmav < $idfrmap"
                  if { $idfrmav == -1 || $idfrmap == -1 } {
                     set idfrmav [ get_idfrmap 0 1]
-                    set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1)] 1]
+                    set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
                  }
                  #::console::affiche_resultat "VO : $idframe ($idfrmav<$idfrmap)  "
 
@@ -879,7 +879,7 @@ variable timing
                  }
                  if { $idfrmav == -1 || $idfrmap == -1 } {
                     set idfrmav [ get_idfrmap 0 1]
-                    set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1)] 1]
+                    set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
                  }
                  #::console::affiche_resultat "I : $idframe ($idfrmav<$idfrmap)  "
                  set jdav $::atos_ocr_tools::timing($idfrmav,jd)
