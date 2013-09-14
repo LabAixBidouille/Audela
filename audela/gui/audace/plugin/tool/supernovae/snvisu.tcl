@@ -721,10 +721,10 @@ proc snBufLog { numbuf bufno } {
    if {$sh<=$sb} {
       set sh [expr $sb+10.*$sigma]
    }
-   buf$bufno setkwd  [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
-   buf$bufno setkwd  [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
-   buf$numbuf setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
-   buf$numbuf setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
+   buf$bufno setkwd  [list MIPS-LO [expr int($sb)] float "seuil bas" ""]
+   buf$bufno setkwd  [list MIPS-HI [expr int($sh)] float "seuil haut" ""]
+   buf$numbuf setkwd [list MIPS-LO [expr int($sb)] float "seuil bas" ""]
+   buf$numbuf setkwd [list MIPS-HI [expr int($sh)] float "seuil haut" ""]
    return [list $sh $sb]
 }
 

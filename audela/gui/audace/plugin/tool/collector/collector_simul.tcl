@@ -231,7 +231,7 @@
       dict set dicokwd DEC       {DEC %s double {Expected DEC asked to telescope} {deg}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
-      dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
+      dict set dicokwd EQUINOX   {EQUINOX %s string {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
       dict set dicokwd EXPTIME   {EXPTIME %s float {Exposure Time} s}
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K z} {}}
@@ -239,7 +239,7 @@
       dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
       dict set dicokwd FWHM      {FWHM %s float {Full Width at Half Maximum} pixels}
       dict set dicokwd GEODSYS   {GEODSYS %s string {Geodetic datum for observatory position} {}}
-      dict set dicokwd HUMIDITY  {HUMIDITY %s int {Hydrometry} percent}
+      dict set dicokwd HUMIDITY  {HUMIDITY %s float {Hydrometry} percent}
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
@@ -263,7 +263,7 @@
       dict set dicokwd RA        {RA %s double {Expected RA asked to telescope} {deg}}
       dict set dicokwd RADESYS   {RADESYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
-      dict set dicokwd SEING     {SEING %s float {Average FWHM} pixels}
+      dict set dicokwd SEEING    {SEEING %s float {Average FWHM} pixels}
       dict set dicokwd SITENAME  {SITENAME %s string {Observatory Name} {}}
       dict set dicokwd SITEELEV  {SITEELEV %s float {Elevation above sea of observatory} m}
       dict set dicokwd SITELAT   {SITELAT %s string {Geodetic observatory latitude} deg}

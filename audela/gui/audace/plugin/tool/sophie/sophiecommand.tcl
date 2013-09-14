@@ -2017,8 +2017,8 @@ proc ::sophie::callbackAcquisition { visuNo command args } {
                ::confVisu::setZoom $::audace(visuNo) $zoom
             }
             #--- j'ajoute des mots cles RA et DEC dans l'en-tete FITS
-            buf$private(bufNo) setkwd  [list "RA"  [ mc_angle2deg $::audace(telescope,getra)]  float "Telescope Right Ascension" "degres"]
-            buf$private(bufNo) setkwd  [list "DEC" [ mc_angle2deg $::audace(telescope,getdec)] float "Telescope Declination" "degres" ]
+            buf$private(bufNo) setkwd  [list "RA"  [ mc_angle2deg $::audace(telescope,getra)]  double "Telescope Right Ascension" "degres"]
+            buf$private(bufNo) setkwd  [list "DEC" [ mc_angle2deg $::audace(telescope,getdec)] double "Telescope Declination" "degres" ]
 
             #--- j'affiche l'image
             ::confVisu::autovisu $visuNo

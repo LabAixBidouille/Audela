@@ -275,7 +275,7 @@ namespace eval ::bess {
             set respow [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
             set reslon [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
             buf$audace(bufNo) setkwd [ list "BSS_ESRP" $respow float "Power of resolution at wavelength BSS_RESW" "" ]
-            buf$audace(bufNo) setkwd [ list "BSS_SRPW" $reslon double "Wavelength where BSS_ESRP was measured" "Angstrom" ]
+            buf$audace(bufNo) setkwd [ list "BSS_SRPW" $reslon float "Wavelength where BSS_ESRP was measured" "Angstrom" ]
          }
 
          # On liste les mots-clé BeSS
@@ -525,7 +525,7 @@ namespace eval ::bess {
          }
 
          "EXPTIME" {
-            if {!([string is double $parametres(EXPTIME)])} {
+            if {!([string is float $parametres(EXPTIME)])} {
                 set message_erreur $caption(pb_exptime)
                 tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
                 set result -2
@@ -535,7 +535,7 @@ namespace eval ::bess {
           }
 
          "BSS_VHEL" {
-            if {!([string is double $parametres(BSS_VHEL)])} {
+            if {!([string is float $parametres(BSS_VHEL)])} {
                set message_erreur $caption(pb_vhel)
                tk_messageBox -message $message_erreur -icon error -title $caption(probleme)
                set result -2
@@ -623,8 +623,8 @@ namespace eval ::bess {
          # On peut maintenant enregistrer les mots-clés
          # J'initialise les valeurs qui seront mises dans le header
          set formatmotcle(OBJNAME)  "string"
-         set formatmotcle(BSS_RA)   "float"
-         set formatmotcle(BSS_DEC)  "float"
+         set formatmotcle(BSS_RA)   "double"
+         set formatmotcle(BSS_DEC)  "double"
          set formatmotcle(OBSERVER) "string"
          set formatmotcle(BSS_INST) "string"
          set formatmotcle(BSS_SITE) "string"

@@ -260,8 +260,8 @@ proc ::sophie::spectro::saveImage { alphaMean alphaRms deltaMean deltaRms seeing
                buf$sumBufNo setkwd $keyword
             }
 
-            buf$sumBufNo setkwd  [list "STARFLUX" $starFlux double "Star flux" "ADU/s" ]
-            buf$sumBufNo setkwd  [list "SKYLEVEL" $skyLevel double "sky level" "ADU/s" ]
+            buf$sumBufNo setkwd  [list "STARFLUX" $starFlux float "Star flux" "ADU/s" ]
+            buf$sumBufNo setkwd  [list "SKYLEVEL" $skyLevel float "Sky level" "ADU/s" ]
 
             #--- Sauvegarde de l'image
             buf$sumBufNo save $fileName
