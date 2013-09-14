@@ -19,6 +19,27 @@ namespace eval ::atos_cdl_tools {
    variable file_mesure
    variable sortie
 
+   variable x_obj_threshold
+   variable y_obj_threshold
+   variable x_ref_threshold
+   variable y_ref_threshold
+
+
+   #
+   # Existance et chargement d un fichier time
+   #
+   proc ::atos_cdl_tools::init {  } {
+
+      set ::atos_cdl_tools::delta 5
+
+      set ::atos_cdl_tools::x_obj_threshold 5
+      set ::atos_cdl_tools::y_obj_threshold 5
+      set ::atos_cdl_tools::x_ref_threshold 5
+      set ::atos_cdl_tools::y_ref_threshold 5
+
+   }
+
+
 
    #
    # Existance et chargement d un fichier time
@@ -251,10 +272,10 @@ namespace eval ::atos_cdl_tools {
 
       cleanmark
 
-      set delta [ $frm.photom.values.object.v.r.delta get]
+      set ::atos_cdl_tools::delta [ $frm.photom.values.object.v.r.delta get]
       set statebutton [ $frm.photom.values.object.t.select cget -relief]
       if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+         ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $::atos_cdl_tools::delta
       }
 
    }
@@ -273,10 +294,10 @@ namespace eval ::atos_cdl_tools {
 
       cleanmark
 
-      set delta [ $frm.photom.values.reference.v.r.delta get]
+      set ::atos_cdl_tools::delta [ $frm.photom.values.reference.v.r.delta get]
       set statebutton [ $frm.photom.values.reference.t.select cget -relief]
       if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $::atos_cdl_tools::delta
       }
 
    }
@@ -288,13 +309,17 @@ namespace eval ::atos_cdl_tools {
    #
    # Effectue la photometrie de la reference et l affiche
    #
-   proc ::atos_cdl_tools::mesure_ref { xsm ysm visuNo frm delta} {
+   proc ::atos_cdl_tools::mesure_ref {xsm ysm visuNo frm delta} {
 
       global color
 
-      set bufNo [ ::confVisu::getBufNo $visuNo ]
       set err 0
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
 
+      set xsm_save $xsm
+      set ysm_save $ysm
+
+      # Mesure du photocentre
       set err [ catch { set valeurs  [::atos_photom::mesure_obj $xsm $ysm $delta $bufNo] } msg ]
 
       if {$err>0} {
@@ -344,22 +369,45 @@ namespace eval ::atos_cdl_tools {
       $frm.v.r.snint        configure -text "$visusnint"     -fg $color(blue)
       $frm.v.r.snpx         configure -text "$visusnpx"      -fg $color(blue)
 
-      set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm]
-      set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm]
-      ::bddimages_cdl::affich_un_rond [expr $xsm + 1] [expr $ysm - 1] blue $delta
+      set lost_ref 0
+      if {[expr abs($xsm_save - $xsm)] <= $::atos_cdl_tools::x_ref_threshold} {
+         set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm]
+      } else {
+         set lost_ref 1
+         set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm_save]
+      }
+      if {[expr abs($ysm_save - $ysm)] <= $::atos_cdl_tools::y_ref_threshold} {
+         set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm]
+      } else {
+         set lost_ref 1
+         set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm_save]
+      }
+
+      ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::ref(x) + 1] [expr $::atos_cdl_tools::ref(y) - 1] red $delta
+
+      if {$lost_ref == 1} {
+         return -1
+      } else {
+         return 0
+      }
+
    }
 
 
    #
    # Effectue la photometrie de l objet et l affiche
    #
-   proc ::atos_cdl_tools::mesure_obj { xsm ysm visuNo frm delta} {
+   proc ::atos_cdl_tools::mesure_obj {xsm ysm visuNo frm delta} {
 
       global color
 
-      set bufNo [ ::confVisu::getBufNo $visuNo ]
       set err 0
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
 
+      set xsm_save $xsm
+      set ysm_save $ysm
+
+      # Mesure le photocentre
       set err [ catch { set valeurs  [::atos_photom::mesure_obj $xsm $ysm $delta $bufNo] } msg ]
 
       if {$err>0} {
@@ -409,9 +457,28 @@ namespace eval ::atos_cdl_tools {
       $frm.v.r.snint        configure -text "$visusnint"     -fg $color(blue)
       $frm.v.r.snpx         configure -text "$visusnpx"      -fg $color(blue)
 
-      set ::atos_cdl_tools::obj(x) [format "%4.2f" $xsm]
-      set ::atos_cdl_tools::obj(y) [format "%4.2f" $ysm]
-      ::bddimages_cdl::affich_un_rond [expr $xsm + 1] [expr $ysm - 1] green $delta
+      set lost_obj 0
+      if {[expr abs($xsm_save - $xsm)] <= $::atos_cdl_tools::x_obj_threshold} {
+         set ::atos_cdl_tools::obj(x) [format "%4.2f" $xsm]
+      } else {
+         set lost_obj 1
+         set ::atos_cdl_tools::obj(x) [format "%4.2f" $xsm_save]
+      }
+      if {[expr abs($ysm_save - $ysm)] <= $::atos_cdl_tools::y_obj_threshold} {
+         set ::atos_cdl_tools::obj(y) [format "%4.2f" $ysm]
+      } else {
+         set lost_obj 1
+         set ::atos_cdl_tools::obj(y) [format "%4.2f" $ysm_save]
+      }
+
+      ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::obj(x) + 1] [expr $::atos_cdl_tools::obj(y) - 1] green $delta
+
+      if {$lost_obj == 1} {
+         return -1
+      } else {
+         return 0
+      }
+
    }
 
 
@@ -508,13 +575,6 @@ namespace eval ::atos_cdl_tools {
 
 
 
-
-
-
-
-
-
-
    #
    # Selection d un objet a partir d une getBox sur l image
    #
@@ -550,12 +610,12 @@ namespace eval ::atos_cdl_tools {
             return
          }
 
-         set xsm      [lindex $valeurs 0]
-         set ysm      [lindex $valeurs 1]
-         set delta 5
+         set xsm [lindex $valeurs 0]
+         set ysm [lindex $valeurs 1]
+         #set delta 5
          $frm.v.r.delta delete 0 end
-         $frm.v.r.delta insert 0 $delta
-         ::atos_cdl_tools::mesure_obj $xsm $ysm $visuNo $frm $delta
+         $frm.v.r.delta insert 0 $::atos_cdl_tools::delta
+         ::atos_cdl_tools::mesure_obj $xsm $ysm $visuNo $frm $::atos_cdl_tools::delta
          $frm.t.select  configure -relief sunken
          return
       }
@@ -581,13 +641,6 @@ namespace eval ::atos_cdl_tools {
       return
 
    }
-
-
-
-
-
-
-
 
 
 
@@ -631,10 +684,10 @@ namespace eval ::atos_cdl_tools {
 
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
-         set delta 5
+         #set delta 5
          $frm.v.r.delta delete 0 end
-         $frm.v.r.delta insert 0 $delta
-         ::atos_cdl_tools::mesure_ref $xsm $ysm $visuNo $frm $delta
+         $frm.v.r.delta insert 0 $::atos_cdl_tools::delta
+         ::atos_cdl_tools::mesure_ref $xsm $ysm $visuNo $frm $::atos_cdl_tools::delta
          $frm.t.select  configure -relief sunken
          return
       }
@@ -771,18 +824,6 @@ namespace eval ::atos_cdl_tools {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
    #
    # Lance les mesures photometriques
    #
@@ -805,22 +846,29 @@ namespace eval ::atos_cdl_tools {
          cleanmark
 
          set statebutton [ $frm.photom.values.object.t.select cget -relief]
-         if { $statebutton=="sunken" } {
+         if { $statebutton == "sunken" } {
             set delta [ $frm.photom.values.object.v.r.delta get]
-            ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+            set status [::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta]
+            if {$status == -1} {
+               ::atos_cdl_tools::stop
+            }
          }
+
          set statebutton [ $frm.photom.values.reference.t.select cget -relief]
-         if { $statebutton=="sunken" } {
+         if { $statebutton == "sunken" } {
             set delta [ $frm.photom.values.reference.v.r.delta get]
-            ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+            set status [::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta]
+            if {$status == -1} {
+               ::atos_cdl_tools::stop
+            }
          }
+
          set statebutton [ $frm.photom.values.image.t.select cget -relief]
-         if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+         if { $statebutton == "sunken" } {
+            ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
          }
 
          set ::atos_cdl_tools::mesure($idframe,mesure_obj) 1
-
 
          # mesure objet
          set ::atos_cdl_tools::mesure($idframe,obj_delta)     [$frm.photom.values.object.v.r.delta     get]

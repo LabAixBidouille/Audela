@@ -25,12 +25,6 @@ package require math::linearalgebra
 
 
 
-
-
-
-
-
-
    proc ::atos_analysis_tools::charge_csv { file } {
 
 
@@ -94,17 +88,17 @@ package require math::linearalgebra
 
       for {set i 1} {$i<=$nb} {incr i} {
 
-         if { $::atos_analysis_tools::csv($i,idframe)==""}  {continue}
-         if { $::atos_analysis_tools::csv($i,jd)==""}       {continue}
-         if { $::atos_analysis_tools::csv($i,dateiso)==""}  {continue}
-         if { $::atos_analysis_tools::csv($i,obj_fint)==""} {continue}
+         if { $::atos_analysis_tools::csv($i,idframe) == ""}  {continue}
+         if { $::atos_analysis_tools::csv($i,jd) == ""}       {continue}
+         if { $::atos_analysis_tools::csv($i,dateiso) == ""}  {continue}
+         if { $::atos_analysis_tools::csv($i,obj_fint) == ""} {continue}
 
          set ::atos_analysis_tools::cdl($cpt,idframe)  $::atos_analysis_tools::csv($i,idframe)
          set ::atos_analysis_tools::cdl($cpt,jd)       $::atos_analysis_tools::csv($i,jd)
          set ::atos_analysis_tools::cdl($cpt,dateiso)  $::atos_analysis_tools::csv($i,dateiso)
          set ::atos_analysis_tools::cdl($cpt,obj_fint) $::atos_analysis_tools::csv($i,obj_fint)
 
-         if { $::atos_analysis_tools::csv($i,ref_fint)!=""} {
+         if { $::atos_analysis_tools::csv($i,ref_fint) != ""} {
             set ::atos_analysis_tools::cdl($cpt,ref_fint) $::atos_analysis_tools::csv($i,ref_fint)
             incr ::atos_analysis_tools::nb_pt_ref
          }
@@ -120,7 +114,7 @@ package require math::linearalgebra
       set ::atos_analysis_tools::raw_date_begin  $::atos_analysis_tools::cdl(1,dateiso)
       set ::atos_analysis_tools::raw_date_end  $::atos_analysis_tools::cdl($::atos_analysis_tools::raw_nbframe,dateiso)
       set ::atos_analysis_tools::raw_duree  [format "%.3f" [expr ($::atos_analysis_tools::cdl($::atos_analysis_tools::raw_nbframe,jd) \
-            - $::atos_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
+                                                                 - $::atos_analysis_tools::cdl(1,jd) ) * 86400.0 ]]
       set ::atos_analysis_tools::raw_fps  [format "%.3f" [expr ($::atos_analysis_tools::raw_nbframe /$::atos_analysis_tools::raw_duree )]]
       set ::atos_analysis_tools::orig $::atos_analysis_tools::cdl(1,jd)
 
@@ -132,13 +126,25 @@ package require math::linearalgebra
 
 
 
+
+
+   proc ::atos_analysis_tools::correction_refetoile { } {
+
+      for {set i 1} {$i<=$::atos_analysis_tools::raw_nbframe} {incr i} {
+         if {![info exists ::atos_analysis_tools::finalcdl($i,ref_fint)]} {continue}
+         set ::atos_analysis_tools::finalcdl($i,obj_fint) [expr $::atos_analysis_tools::finalcdl($i,obj_fint) / $::atos_analysis_tools::finalcdl($i,ref_fint)]
+      }
+
+   }
+
+
+
    proc ::atos_analysis_tools::correction_temporelle { } {
 
       for {set i 1} {$i<=$::atos_analysis_tools::raw_nbframe} {incr i} {
          if {![info exists ::atos_analysis_tools::finalcdl($i,jd)]} {continue}
          set ::atos_analysis_tools::finalcdl($i,jd) [expr $::atos_analysis_tools::finalcdl($i,jd) - ($::atos_analysis_gui::time_correction/86400.0)]
       }
-
 
    }
 
@@ -147,8 +153,8 @@ package require math::linearalgebra
       if {[info exists ::atos_analysis_tools::medianecdl]} {unset ::atos_analysis_tools::medianecdl}
       if {[info exists ::atos_analysis_tools::finalcdl]} {unset ::atos_analysis_tools::finalcdl}
 
-      set fin "no"
       set i 1
+      set fin "no"
       while {$fin=="no"} {
 
          # on evite un nb d image de debut = offset
@@ -158,14 +164,16 @@ package require math::linearalgebra
          }
 
          # on calcule la mediane
-         set med ""
+         set medobj ""
+         set medref ""
          set k $i
          for {set j 1} {$j<=$bloc} {incr j} {
             incr k
-            lappend med $::atos_analysis_tools::cdl($k,obj_fint)
+            lappend medobj $::atos_analysis_tools::cdl($k,obj_fint)
+            lappend medref $::atos_analysis_tools::cdl($k,ref_fint)
          }
-         set med [::math::statistics::median $med]
-         #::console::affiche_resultat "MED=$med\n"
+         set medobj [::math::statistics::median $medobj]
+         set medref [::math::statistics::median $medref]
 
          # on cree 2 nouvelles courbes
          for {set j 1} {$j<=$bloc} {incr j} {
@@ -173,10 +181,12 @@ package require math::linearalgebra
             if {$j==1} {
                set ::atos_analysis_tools::finalcdl($i,idframe)  $::atos_analysis_tools::cdl($i,idframe)
                set ::atos_analysis_tools::finalcdl($i,jd)       $::atos_analysis_tools::cdl($i,jd)
-               set ::atos_analysis_tools::finalcdl($i,obj_fint) $med
+               set ::atos_analysis_tools::finalcdl($i,obj_fint) $medobj
+               set ::atos_analysis_tools::finalcdl($i,ref_fint) $medref
             }
             set ::atos_analysis_tools::medianecdl($i,jd) $::atos_analysis_tools::cdl($i,jd)
-            set ::atos_analysis_tools::medianecdl($i,obj_fint) $med
+            set ::atos_analysis_tools::medianecdl($i,obj_fint) $medobj
+            set ::atos_analysis_tools::medianecdl($i,ref_fint) $medref
          }
          set reste [expr $::atos_analysis_tools::raw_nbframe - $i]
          if {$reste<$bloc} {break}
@@ -185,10 +195,6 @@ package require math::linearalgebra
 
 
    }
-
-
-
-
 
 
 

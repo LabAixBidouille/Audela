@@ -137,11 +137,12 @@ proc ::atos::ressource {  } {
 
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool atos atos_go.cap ]
+
    #--- Chargement des fichiers auxiliaires
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_acq.tcl            ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_gui.tcl        ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl.tcl            ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_tools.tcl      ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_gui.tcl        ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_extraction.tcl     ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_go.tcl             ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr_gui.tcl        ]\""

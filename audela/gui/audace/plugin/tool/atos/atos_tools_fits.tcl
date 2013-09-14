@@ -22,6 +22,9 @@ namespace eval ::atos_tools_fits {
 
       set bufNo [ visu$visuNo buf ]
 
+      buf$bufNo clear
+      visu$visuNo clear
+
       set destdir [ $frm.form.field.v.destdir get ]
       set prefix  [ $frm.form.field.v.prefix get  ]
 
@@ -200,8 +203,8 @@ namespace eval ::atos_tools_fits {
       set ::atos_tools::cur_idframe $idframe
       set filename [file join ${::atos_tools::destdir} "${::atos_tools::prefix}${::atos_tools::cur_idframe}.fits"]
       set bufNo [ visu$visuNo buf ]
-      buf$bufNo load $filename
-
+#      buf$bufNo load $filename
+      loadima $filename
    }
 
 
