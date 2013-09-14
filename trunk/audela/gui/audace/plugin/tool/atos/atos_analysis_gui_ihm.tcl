@@ -446,7 +446,7 @@
              pack $paramtitre -in $ephem -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                   #--- Cree un label
-                  label $paramtitre.l -text "Distances et autres param糲es : " -font $atosconf(font,courier_10_b)
+                  label $paramtitre.l -text "Distances et autres parametres : " -font $atosconf(font,courier_10_b)
                   pack  $paramtitre.l -side left -anchor e
 
 
@@ -463,7 +463,7 @@
                        pack $dist -in $paramgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Cree un label
-                            label $dist.l1 -text "Distance �'observateur (UA) : "
+                            label $dist.l1 -text "Distance a l'observateur (UA) : "
                             pack  $dist.l1 -side left -anchor e
 
                             #--- Cree un label pour le chemin de l'AVI
@@ -639,7 +639,7 @@
                              pack  $info.l1.blank2 -in $info.l1 -side left -anchor w
 
                         #--- Cree un label
-                        label $info.l1.dureel -text "dur裠(sec):"
+                        label $info.l1.dureel -text "duree�(sec):"
                         pack  $info.l1.dureel -in $info.l1 -side left -anchor w
 
                         #--- Cree un label
@@ -666,7 +666,7 @@
                    pack  $info.l2 -in $info -side top -expand 0 -anchor w
 
                         #--- Cree un label
-                        label $info.l2.dbegl -text "Date de d衵t :"
+                        label $info.l2.dbegl -text "Date de debut :"
                         pack  $info.l2.dbegl -in $info.l2 -side left -anchor w
 
                         #--- Cree un label
@@ -711,7 +711,7 @@
                   pack $offset -in $corr_integ -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un label
-                       label $offset.label -text "Nb d'images �upprimer en debut de courbe : "
+                       label $offset.label -text "Nb d'images a supprimer en debut de courbe : "
                        pack  $offset.label -side left -anchor w
 
                        #--- Creation du bouton open
@@ -762,7 +762,7 @@
                   pack $expo -in $corrtemp -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                        #--- Cree un label
-                       label $expo.l -text "Temps d'exposition th讲ique : "
+                       label $expo.l -text "Temps d'exposition theorique : "
                        pack  $expo.l -side left -anchor e
 
                        #--- Cree un label pour le chemin de l'AVI
@@ -774,7 +774,7 @@
                   pack $offsettime -in $corrtemp -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                        #--- Cree un label
-                       label $offsettime.l -text "Saut d'int覲ation d'une image : "
+                       label $offsettime.l -text "Saut d'integration d'une image : "
                        pack  $offsettime.l -side left -anchor e
 
                        #--- Cree un label pour le chemin de l'AVI
@@ -790,7 +790,7 @@
                   pack $corr_ref_titre.v -side left -padx 3 -pady 1 -fill x
 
                   #--- Cree un label
-                  label $corr_ref_titre.l -text "Correction par une 賯ile de r觩rence : " -font $atosconf(font,courier_10_b)
+                  label $corr_ref_titre.l -text "Correction par une etoile de reference : " -font $atosconf(font,courier_10_b)
                   pack  $corr_ref_titre.l -side left -anchor e
 
              #--- Cree un frame pour le chargement d'un fichier
