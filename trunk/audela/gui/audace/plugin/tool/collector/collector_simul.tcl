@@ -244,7 +244,7 @@
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
       dict set dicokwd ISOSPEED  {ISOSPEED %s int {ISO camera setting} {ISO}}
-      dict set dicokwd MJD-OBS   {MJD-OBS %s float {Start of exposure} d}
+      dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd NAXIS1    {NAXIS1 %s int {Length of data axis 1} {}}
       dict set dicokwd NAXIS2    {NAXIS2 %s int {Length of data axis 2} {}}
       dict set dicokwd NBSTARS   {NBSTARS %s int {Nb of stars detected by Sextractor} {}}
