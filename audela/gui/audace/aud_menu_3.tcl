@@ -4444,7 +4444,7 @@ namespace eval ::ser2fits {
       dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
-      dict set dicokwd MJD-OBS   {MJD-OBS %s float {Start of exposure} d}
+      dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd OBJECT    {OBJECT %s string {Object observed} {}}
       dict set dicokwd OBJNAME   {OBJNAME %s string {Object Name} {}}
       dict set dicokwd OBSERVER  {OBSERVER %s string {Observers Names} {}}
