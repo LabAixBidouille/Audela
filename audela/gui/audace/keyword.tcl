@@ -167,12 +167,12 @@ proc ::keyword::addJDayOBSandEND { } {
    #--- Rajoute la date de debut de pose en jour julien dans l'en-tete FITS
    set date_obs [ lindex [ buf$::audace(bufNo) getkwd DATE-OBS ] 1 ]
    set date_obs [ mc_date2jd $date_obs ]
-   buf$::audace(bufNo) setkwd [list JDAY-OBS $date_obs string "Julian Day for begin of scan exposure" ""]
+   buf$::audace(bufNo) setkwd [list JDAY-OBS $date_obs double "Julian Day for begin of scan exposure" ""]
 
    #--- Rajoute la date de fin de pose en jour julien dans l'en-tete FITS
    set date_end [ lindex [ buf$::audace(bufNo) getkwd DATE-END ] 1 ]
    set date_end [ mc_date2jd $date_end ]
-   buf$::audace(bufNo) setkwd [list JDAY-END $date_end string "Julian Day for end of scan exposure" ""]
+   buf$::audace(bufNo) setkwd [list JDAY-END $date_end double "Julian Day for end of scan exposure" ""]
 }
 
 #########################################################################################################
