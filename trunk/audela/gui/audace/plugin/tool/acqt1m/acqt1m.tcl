@@ -2819,7 +2819,7 @@ proc ::acqt1m::get_filename { visuNo } {
    # hauteur du soleil
    set t [lindex [mc_ephem sun now -equinox apparent] 0]
    set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $audace(posobs,observateur,gps) now] 1]
-   gren_info "Sun Elev = [mc_angle2dms $sunelev string 2]\n"
+   #gren_info "Sun Elev = [mc_angle2dms $sunelev 90 zero 2]\n"
    buf$bufNo setkwd [list "SUNELEV" $sunelev float "Sun Elevation" "degrees"]
 
 
