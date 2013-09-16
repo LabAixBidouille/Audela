@@ -70,7 +70,7 @@
 
       #--   liste les variables 'entry' avec binding, modifiables par l'utilisateur
       set private(entry) [list ra dec bin1 bin2 naxis1 naxis2 crota2 m snr t \
-         tu seeing temp pressure psf photocell1 photocell2 eta gain noise therm ampli isospeed objname]
+         tu seeing temperature pressure psf photocell1 photocell2 eta gain noise therm ampli isospeed objname]
 
       #--   liste les variables necessaires pour synthetiser une image
       set private(syn_variables) [list snr m t aptdia foclen fond psf filter \
@@ -79,7 +79,7 @@
       #--   liste les variables necessaires pour synthetiser une image, sans image dans la visu
       set private(special_variables) [list ra dec gps t tu jd tsl telescop aptdia foclen fwhm \
          bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter detnam photocell1 photocell2 \
-         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 temp pressure \
+         pixsize1 pixsize2 crval1 crval2 crpix1 crpix2 temperature pressure \
          observer sitename imagetyp objname]
 
       #--   liste les variables necessaires pour activer le bouton 'image DSS'
@@ -128,7 +128,7 @@
       set dynamicChildren [list m error snr t prior]
       set poseChildren [list bin1 bin2 cdelt1 cdelt2 naxis1 naxis2 fov1 fov2 crota2]
       set localChildren [list gps modifGps tu jd tsl moonphas moonalt]
-      set atmChildren [list temp temprose humidity pressure winddir windsp seeing fwhm secz airmass]
+      set atmChildren [list temperature temprose humidity pressure winddir windsp seeing fwhm secz airmass]
       set opticChildren [list telescop modifOptic aptdia foclen fond resolution ncfz focus_pos modifFocus psf filter]
       set camChildren [list detnam photocell1 photocell2 eta noise therm gain ampli isospeed]
       set tlscpChildren [list telname suivi vra vdec vxPix vyPix]
