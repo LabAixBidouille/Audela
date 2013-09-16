@@ -209,14 +209,14 @@
    #---------------------------------------------------------------------------
    proc getTPW { bufNo } {
 
-      set temp    [lindex [buf$bufNo getkwd TEMP] 1]
-      if {$temp eq ""} {
-         set temp [lindex [buf$bufNo getkwd TEMPAIR] 1]
-         if {$temp eq ""} {
-            set temp [expr {290-273.15}]
+      set temperature    [lindex [buf$bufNo getkwd TEMP] 1]
+      if {$temperature eq ""} {
+         set temperature [lindex [buf$bufNo getkwd TEMPAIR] 1]
+         if {$temperature eq ""} {
+            set temperature [expr {290-273.15}]
          }
       }
-      set temp [format %0.2f $temp]
+      set temperature [format %0.2f $temperature]
 
       set temprose [lindex [buf$bufNo getkwd TEMPROSE] 1]
       if {$temprose eq ""} {set temprose "-"}
@@ -254,7 +254,7 @@
          }
       }
 
-      return [list $temp $temprose $humidity $windsp $winddir $pressure]
+      return [list $temperature $temprose $humidity $windsp $winddir $pressure]
    }
 
    #---------------------------------------------------------------------------
@@ -371,7 +371,7 @@
    #---------------------------------------------------------------------------
    proc getCoordJ2000 { record } {
 
-      lassign $record angle1 angle2 TypeObs dateTu home pressure temp humidity
+      lassign $record angle1 angle2 TypeObs dateTu home pressure temperature humidity
 
       #--   pm avec les options -model_only 1 -refraction 1, les coordonnees sont corrigees de
       #  la nutation, de l'aberration diurne, de la precession, de l'aberration annuelle et de le refraction
@@ -379,7 +379,7 @@
       #set nulCoeff [list 0 0 0 0 0 0 0 0 0 0]
 
       #--   passe en °K
-      set temperature [expr { $temp+273.15 }]
+      set temperature [expr { $temperature+273.15 }]
       lassign [mc_tel2cat [list $angle1 $angle2] $TypeObs $dateTu $home $pressure $temperature -model_only 1 -refraction 1 -humidity $humidity] \
          raDeg decDeg
 
@@ -423,12 +423,12 @@
    #---------------------------------------------------------------------------
    proc getTrueCoordinates { data {coefNames {IH ID NP CH ME MA FO HF DAF TF} } { coefValues {0 0 0 0 0 0 0 0 0 0} } } {
 
-      lassign $data ra_hms dec_dms datetu home pressure temp humidity
+      lassign $data ra_hms dec_dms datetu home pressure temperature humidity
 
       set hipRecord [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
       set drift 0
       #--   passe en °K
-      set temperature [expr { $temp+273.15 }]
+      set temperature [expr { $temperature+273.15 }]
       set result [mc_hip2tel $hipRecord $datetu $home $pressure $temperature \
          $coefNames $coefValues -model_only 1 -refraction 1 -drift $drift -humidity $humidity]
       lassign [lrange $result 10 14] ra_angle dec_angle ha az elev
@@ -711,7 +711,7 @@
       return [list $vra $vdec $vxPix $vyPix]
    }
 
-   #------------------------------------------------------------
+  #------------------------------------------------------------
    #  getCD
    #  Retourne les coefficients CD en degre/pixel
    #  Parametres : crota2 (degres), cdelt1 et cdelt2 (degres/pixel)
