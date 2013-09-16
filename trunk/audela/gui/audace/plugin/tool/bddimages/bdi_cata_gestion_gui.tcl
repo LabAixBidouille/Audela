@@ -803,7 +803,7 @@ namespace eval cata_gestion_gui {
                }
             }
             
-            gren_info "\n*** s = $s \n\n"
+            #gren_info "\n*** s = $s \n\n"
             if {$cata!=""} {
                set name [::manage_source::naming $s $cata]
             } else {
@@ -830,7 +830,7 @@ namespace eval cata_gestion_gui {
 
             if {$i == $::tools_cata::id_current_image} { continue }
                
-            gren_info "Image =$i / $::tools_cata::nb_img_list\n"
+            #gren_info "Image =$i / $::tools_cata::nb_img_list\n"
 
             array set tklist                             $::gui_cata::tk_list($i,tklist)
             array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($i,list_of_columns)
@@ -1374,7 +1374,7 @@ namespace eval cata_gestion_gui {
    proc ::cata_gestion_gui::unset_flag { tbl } {
 
       set flag ""
-      gren_info "tbl=$tbl\n"
+      #gren_info "tbl=$tbl\n"
       set onglets $::cata_gestion_gui::fen.appli.onglets
       set cataselect [lindex [split [$onglets.nb tab [expr [string range [lindex [split $tbl .] 5] 1 end] -1] -text] ")"] 1]
       set idcata [string range [lindex [split $tbl .] 5] 1 end]
@@ -1480,14 +1480,14 @@ namespace eval cata_gestion_gui {
       set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
       set x [lsearch -index 0 $a "ASTROID"]
       set a [lindex [lindex $a $x] 2]
-      gren_info "AV UNSET $a\n"
+      #gren_info "AV UNSET $a\n"
 
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       
       set a [lindex [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] [expr $id - 1]]
       set x [lsearch -index 0 $a "ASTROID"]
       set a [lindex [lindex $a $x] 2]
-      gren_info "UNSET $a\n"
+      #gren_info "UNSET $a\n"
       
       set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist) [array get ::gui_cata::tklist]
       return

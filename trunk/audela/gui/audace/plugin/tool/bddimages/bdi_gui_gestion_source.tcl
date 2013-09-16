@@ -46,8 +46,29 @@ namespace eval bdi_gui_gestion_source {
 
 
 
+   proc ::bdi_gui_gestion_source::free_memory { } {
+      
+      catch {
+         unset ::bdi_gui_gestion_source::new_names
+         unset ::bdi_gui_gestion_source::work_id
+         unset ::bdi_gui_gestion_source::nb_img_list 
+         unset ::bdi_gui_gestion_source::work_nb_list
+         unset ::bdi_gui_gestion_source::work_list
+         unset ::bdi_gui_gestion_source::dateimg
+         unset ::bdi_gui_gestion_source::id_img
+         unset ::bdi_gui_gestion_source::gui_catalogues_data
+         unset ::bdi_gui_gestion_source::new_mobile
+         unset ::bdi_gui_gestion_source::fennew
+         unset ::bdi_gui_gestion_source::visucrop
+         unset ::bdi_gui_gestion_source::bufcrop
+         unset ::bdi_gui_gestion_source::fen
+         unset ::bdi_gui_gestion_source::gui_catalogues
 
-
+         array unset ::bdi_gui_gestion_source::idd2gui_list
+         array unset ::bdi_gui_gestion_source::current2idd_list
+         array unset ::bdi_gui_gestion_source::butcata
+      }
+   }
 
    #----------------------------------------------------------------------------
    ## Initialisation des variables de namespace pour la Fenetre
