@@ -125,6 +125,7 @@ proc ::bdi_tools_mpc::convert_name { name } {
          if {[string length [lindex $sname 1]] > 1} {
             # Sso official number 
             set onum [lindex $sname 1]
+            gren_erreur "onum = $onum $name\n"
             if {$onum < 100000} {
                # Official number
                set mpc_name [format "%05u%7s%1s" $onum " " " "]
@@ -132,7 +133,8 @@ proc ::bdi_tools_mpc::convert_name { name } {
                # Official number in packed form
                set x [expr {int($onum/10000.0)}]
                set p [string map {10 A 11 B 12 C 13 D 14 E 15 F 16 G 17 H 18 I 19 J 20 K 21 L 22 M 23 N 24 O 25 P 26 Q 27 R 28 S 29 T 30 U 31 V 32 W 33 X 34 Y 35 Z} $x]
-               set mpc_name [format "%1s%04u%7s%1s" $p [string range $onum 2 end] " " " "]
+               set mpc_name [format "%05u%7s%1s" $onum " " " "]
+               #set mpc_name [format "%1s%04u%7s%1s" $p [string range $onum 2 end] " " " "]
             }
          } else {
             # No number, then get packed form of the provisional designation
