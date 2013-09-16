@@ -98,6 +98,19 @@ proc horloge_astro2 {} {
       } else {
          #--- Rien
       }
+      $base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"
+      
+      set t [lindex [mc_ephem sun now -equinox apparent] 0]
+      set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $paramhorloge(home) now] 1]
+      set sunelev [mc_angle2dms $sunelev 90 zero 2]
+      
+      
+      $base.f.lab_sunlev configure -text "Sun Elev =  ${sunelev}"
+      update
+      #--- An infinite loop to change the language interactively
+      after 1000 ::calcul
+   } else {
+      #--- Rien
    }
 
    proc met_a_jour { } {
