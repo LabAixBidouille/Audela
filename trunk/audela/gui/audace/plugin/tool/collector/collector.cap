@@ -53,7 +53,7 @@ set caption(collector,moonphas)              "Moon Phase \[deg\]"
 set caption(collector,moonalt)               "Moon Elevation \[deg\]"
 
 set caption(collector,atm)                   "Weather"
-set caption(collector,temp)                  "Outdoor Temperature \[°C\]"
+set caption(collector,temperature)           "Outdoor Temperature \[°C\]"
 set caption(collector,temprose)              "Dew Point \[°C\]"
 set caption(collector,pressure)              "Relative Air Pressure \[Pa\]"
 set caption(collector,humidity)              "Outdoor Humidity\[%\]"
@@ -203,7 +203,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(collector,moonalt)            "Hauteur de la Lune \[deg\]"
 
    set caption(collector,atm)                "Météo"
-   set caption(collector,temp)               "Température extérieure \[°C\]"
+   set caption(collector,temperature)        "Température extérieure \[°C\]"
    set caption(collector,temprose)           "Température de rosée \[°C\]"
    set caption(collector,pressure)           "Pression atmosphérique relative \[Pa\]"
    set caption(collector,humidity)           "Hygrométrie extérieure \[%\]"
