@@ -113,7 +113,7 @@
       variable private
 
       if {[buf$bufNo imageready]} {
-         lassign [getTPW $bufNo] private(temp) private(temprose) private(humidity) \
+         lassign [getTPW $bufNo] private(temperature) private(temprose) private(humidity) \
             private(winddir) private(windsp) private(pressure)
       } else {
          refreshMeteo
