@@ -129,10 +129,9 @@
    #------------------------------------------------------------
    proc computeTelCoord { } {
       variable private
-      global audace
 
       set data [list $private(ra) $private(dec) $private(jd) $private(gps) \
-         $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) $audace(meteo,obs,humidity)]
+         $private(pressure) $private(temperature) $private(humidity)]
       if {"-" in $data} {return}
 
       lassign [getTrueCoordinates $data] private(raTel) private(decTel) \
@@ -285,21 +284,22 @@
    #------------------------------------------------------------
    #  refreshMeteo : mise a jour de 'Météo'
    #  Lit les donnees de realtime.txt ou de infodata.txt
-   #  Note : la temperature, la pression et l'humidite sont des variables de hip2tel
    #------------------------------------------------------------
    proc refreshMeteo { } {
       variable private
       global audace
 
+      #--   actualise les variables audace
       set audace(meteo,obs,temperature) $::station_meteo::widget(temperature)
       set audace(meteo,obs,humidity)    $::station_meteo::widget(hygro)
       set audace(meteo,obs,pressure)    $::station_meteo::widget(pressure)
-      set private(temperature)          $audace(meteo,obs,temperature)
-      set private(humidity)             $audace(meteo,obs,humidity)
+      #--   actualise les variables collector
+      set private(temperature)          $::station_meteo::widget(temperature)
+      set private(humidity)             $::station_meteo::widget(hygro)
       set private(temprose)             $::station_meteo::widget(temprose)
       set private(windsp)               $::station_meteo::widget(windsp)
       set private(winddir)              $::station_meteo::widget(winddir)
-      set private(pressure)             $audace(meteo,obs,pressure)
+      set private(pressure)             $::station_meteo::widget(pressure)
       update
 
       set cycle [expr { $::station_meteo::widget(cycle)*1000 }] ; #convertit en ms
