@@ -107,7 +107,6 @@
 
    #------------------------------------------------------------
    #  initAtm : mise a jour de Meteo
-   #  Note : la temperature et la pression sont des variables de hip2tel
    #------------------------------------------------------------
    proc initAtm { bufNo } {
       variable private
@@ -116,7 +115,7 @@
          lassign [getTPW $bufNo] private(temperature) private(temprose) private(humidity) \
             private(winddir) private(windsp) private(pressure)
       } else {
-         refreshMeteo
+         ::collector::refreshMeteo
       }
    }
 
