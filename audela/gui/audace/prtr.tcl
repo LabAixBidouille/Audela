@@ -260,14 +260,13 @@ namespace eval ::prtr {
       bind $This <Key-F1> {::console::GiveFocus}
 
       #--   L'interface est terminee apres l'analyse des images
-      set img  [::confVisu::getFileName $visuNo]
-      if {[file exists $img] == 1 && $private(function) == "CALIBWCS"} {
-          ::prtr::seeWCSKeywords [file rootname [file tail $img]]
-      }
-
       #--   Inhibe/Desinhibe le bouton "Tout sélectionner"
       if {$private(size) > 0} {
          $this.all.select configure -state normal
+         set img  [::confVisu::getFileName $visuNo]
+         if {[file exists $img] == 1 && $private(function) == "CALIBWCS"} {
+            ::prtr::seeWCSKeywords [file rootname [file tail $img]]
+         }
       }  else {
          $this.all.select configure -state disabled
       }
@@ -1264,7 +1263,7 @@ namespace eval ::prtr {
                               set opt [linsert $opt 0 "x0=$x0" "y0=$y0"]
                               set private(error) [::prtr::cmdExec $data $opt]
                            }
-         "CALIBWCS"        {  #--   attention a l'espace
+         "CALIBWCS"        {  #--   Attention a l'espace
                               append options $opt " path_astromcatalog=$::prtr::path_astromcatalog"
                               set private(error) [::prtr::calibWCS $data $options]
                            }
@@ -1291,9 +1290,9 @@ namespace eval ::prtr {
 
          #--   designe l'image a afficher
          if {$nbImg eq "1"} {
-             set lastImage [file join "$dir" $generique$ext]
+            set lastImage [file join "$dir" $generique$ext]
          } elseif {$nbImg eq ""} {
-             set lastImage [file join $dir [lindex $private(outList) end]$ext]
+            set lastImage [file join $dir [lindex $private(outList) end]$ext]
          } else {
             set lastImage [file join "$dir" $generique$nbImg$ext]
          }
@@ -2353,7 +2352,6 @@ namespace eval ::prtr {
 
          #--   separe les elements
          lassign [::prtr::getInfoFile $::prtr::out] dir ::prtr::generique extension
-
 
          if {![file exists $dir]} {
             return [::prtr::avertiUser err_file_dir $dir]
@@ -3857,8 +3855,6 @@ namespace eval ::prtr {
    proc seeWCSKeywords { fileName } {
       variable bd
 
-      if {![info exists $fileName]} {return}
-
       #--   cherche les info dans bd
       set info [lindex [array get bd $fileName] 1]
       lassign [lrange $info 5 8] ::prtr::crpix1 ::prtr::crpix2 -> wcs
@@ -3950,6 +3946,7 @@ namespace eval ::prtr {
    #             ex : "ra=291.366303542 dec=42.7843595 pixsize1=6.45 pixsize2=6.45
    #                  foclen=0.133 crota2=86.688467 cat_format=MICROCAT
    #                  cat_folder=C:/Documents and Settings/1/Application Data/AudeLA/catalog/microcat/"
+   #  Note     : cat_format et cat_folder doivent etre les derniers de la liste
    #  Retourne : pas d'echec =0 , echec 1
    #--------------------------------------------------------------------------
    proc calibWCS { data options } {
@@ -4012,9 +4009,9 @@ namespace eval ::prtr {
       foreach file $imgList out $private(outList) {
 
          #--   ATTENTION
-         #  file   = nom dans le repertoire initial
+         #  inName  = nom dans le repertoire initial
          set inName  $file$ext
-         #  nameOut= nom dans le repertoire de destination
+         #  nameOut = nom dans le repertoire de destination
          set outName $out$ext
 
          #--   Recupere les naxis de l'image pour completer les options
@@ -4160,7 +4157,7 @@ namespace eval ::prtr {
 
    #------------------------------------------------------------
    # ::prtr::getKwdValue
-   #   Marque la progression de la calibration WCS
+   #   Extrait des valeurs du header d'une image
    #   Parametre : chemin complet du fichier image
    #   Retourne : liste des valeurs NAXIS1, NAXIS2 et CATASTAR
    #------------------------------------------------------------
