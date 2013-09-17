@@ -359,12 +359,12 @@ proc ::station_meteo::refreshMeteo { } {
       return
    }
 
-   #--   Compare les dates jd et arrete si l'ecart est superieur a 50 cycles
+   #--   Compare les dates jd et arrete si l'ecart est superieur a 10 cycles
    #     ou si le nb de donnes est incorrect
    set t1 [lindex $result 0]
    set t2 [mc_date2jd [clock format [clock seconds] -format "%Y %m %d %H %M %S" -timezone :localtime]]
    set deltaTime [expr { $t2-$t1 }]
-   set seuil [expr { 60.*$widget(cycle)/86400 }]
+   set seuil [expr { 10.*$widget(cycle)/86400 }]
    if {[llength $result] != 7 || $deltaTime > $seuil} {
       onChangeMeteo stop
       return
@@ -414,7 +414,7 @@ proc ::station_meteo::onChangeMeteo { {do ""} } {
       }
 
       #--   Initialise par defaut
-      ::station_meteo::getValues [list 16.85 - - - - 101325]
+      ::station_meteo::getValues [list 16.85 40 - - - 101325]
 
       if {[info exists widget(meteo)] && $widget(meteo) == 1} {
          ::console::disp "Stop reading $widget(sensorName)\n"
@@ -442,7 +442,7 @@ proc ::station_meteo::getValues { data } {
    global audace
 
    lassign $data widget(temperature) widget(hygro) widget(temprose) widget(windsp) widget(winddir) widget(pressure)
-   set audace(meteo,obs,temperature) [expr { $widget(temperature)+273.15 }]
+   set audace(meteo,obs,temperature) $widget(temperature)
    set audace(meteo,obs,pressure)    $widget(pressure)
    set audace(meteo,obs,humidity)    $widget(hygro)
 
