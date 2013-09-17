@@ -146,7 +146,7 @@
          bin1 bin2 naxis1 naxis2 cdelt1 cdelt2 crota2 filter \
          detnam photocell1 photocell2 isospeed pixsize1 pixsize2 \
          crval1 crval2 crpix1 crpix2 \
-         pressure temp temprose humidity winddir windsp \
+         pressure temperature temprose humidity winddir windsp \
          observer sitename origin iau_code imagetyp objname] {
          set $var $private($var)
          #::console::affiche_resultat "$var \"$private($var)\"\n"
@@ -155,6 +155,7 @@
       set ra [mc_angle2deg $ra]
       set dec [mc_angle2deg $dec]
       set pressure [expr { $pressure / 100. }]
+      set temp $temperature
 
       #--   passe de arcsec en degres
       set cdelt1 [expr { $cdelt1 / 3600. }]
@@ -231,7 +232,7 @@
       dict set dicokwd DEC       {DEC %s double {Expected DEC asked to telescope} {deg}}
       dict set dicokwd DETNAM    {DETNAM %s string {Camera used} {}}
       dict set dicokwd EGAIN     {EGAIN %s float {electronic gain in} {e/ADU}}
-      dict set dicokwd EQUINOX   {EQUINOX %s float {System of equatorial coordinates} {}}
+      dict set dicokwd EQUINOX   {EQUINOX %s string {System of equatorial coordinates} {}}
       dict set dicokwd EXPOSURE  {EXPOSURE %s float {Total time of exposure} s}
       dict set dicokwd EXPTIME   {EXPTIME %s float {Exposure Time} s}
       dict set dicokwd FILTER    {FILTER %s string {C U B V R I J H K z} {}}
@@ -239,12 +240,12 @@
       dict set dicokwd FOCLEN    {FOCLEN %s float {Resulting Focal length} m}
       dict set dicokwd FWHM      {FWHM %s float {Full Width at Half Maximum} pixels}
       dict set dicokwd GEODSYS   {GEODSYS %s string {Geodetic datum for observatory position} {}}
-      dict set dicokwd HUMIDITY  {HUMIDITY %s int {Hydrometry} percent}
+      dict set dicokwd HUMIDITY  {HUMIDITY %s float {Hygrometry} percent}
       dict set dicokwd IAU_CODE  {IAU_CODE %s string {IAU Code for the observatory} {}}
       dict set dicokwd IMAGETYP  {IMAGETYP %s string {Image Type} {}}
       dict set dicokwd INSTRUME  {INSTRUME %s string {Camera used} {}}
       dict set dicokwd ISOSPEED  {ISOSPEED %s int {ISO camera setting} {ISO}}
-      dict set dicokwd MJD-OBS   {MJD-OBS %s float {Start of exposure} d}
+      dict set dicokwd MJD-OBS   {MJD-OBS %s double {Start of exposure} d}
       dict set dicokwd NAXIS1    {NAXIS1 %s int {Length of data axis 1} {}}
       dict set dicokwd NAXIS2    {NAXIS2 %s int {Length of data axis 2} {}}
       dict set dicokwd NBSTARS   {NBSTARS %s int {Nb of stars detected by Sextractor} {}}
@@ -261,8 +262,9 @@
       dict set dicokwd PIXSIZE2  {PIXSIZE2 %s float {Pixel Height (with binning)} mum}
       dict set dicokwd PRESSURE  {PRESSURE %s float {[hPa] Atmospheric Pressure} hPa}
       dict set dicokwd RA        {RA %s double {Expected RA asked to telescope} {deg}}
+      dict set dicokwd RADESYS   {RADESYS %s string {Mean Place IAU 1984 system} {}}
       dict set dicokwd RADECSYS  {RADECSYS %s string {Mean Place IAU 1984 system} {}}
-      dict set dicokwd SEING     {SEING %s float {Average FWHM} pixels}
+      dict set dicokwd SEEING    {SEEING %s float {Average FWHM} pixels}
       dict set dicokwd SITENAME  {SITENAME %s string {Observatory Name} {}}
       dict set dicokwd SITEELEV  {SITEELEV %s float {Elevation above sea of observatory} m}
       dict set dicokwd SITELAT   {SITELAT %s string {Geodetic observatory latitude} deg}
@@ -323,29 +325,35 @@
       sextractor [ file join $mypath $sky0$ext ] -c [ file join $mypath config.sex ]
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" "
       ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
+      ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" "
       buf$bufNo load [file join ${mypath} ${sky}$ext ]
 
-      #--   provisoire, en attendant la correction de simulimage
-      buf$bufNo delkwd RADESYS
       buf$bufNo setkwd [list EQUINOX J2000.0 string "System of equatorial coordinates" ""]
 
-      #--   supprime les fichiers intermediaires
-      set fileList [list ascii.txt catalog.cat com.lst dif.lst \
-         eq.lst matrix.txt obs.lst pointzero.lst usno.lst  \
-         signal.sex xy.lst config.param config.sex default.nnw]
+      #-- Nettoie
+      set toDelete [list $sky0$ext x$sky$ext c$sky$ext z$sky$ext ascii.txt \
+         catalog.cat com.lst dif.lst eq.lst obs.lst pointzero.lst usno.lst xy.lst \
+         ${sky}a.jpg ${sky}b.jpg signal.sex config.sex config.param default.nnw]
 
-      foreach file $fileList {
-         if {[file exists [file join $rep $file]]} {
-            file delete [file join $rep $file]
-         }
-      }
+      ttscript2 "IMA/SERIES \"$mypath\" \"$toDelete\" * * . . . * . DELETE"
+
+      #--   supprime les fichiers intermediaires
+      #set fileList [list ascii.txt catalog.cat com.lst dif.lst \
+      #   eq.lst matrix.txt obs.lst pointzero.lst usno.lst  \
+      #   signal.sex xy.lst config.param config.sex default.nnw]
+
+      #foreach file $fileList {
+      #   if {[file exists [file join $rep $file]]} {
+      #      file delete [file join $rep $file]
+      #   }
+      #}
 
       #--   Suppression des fichiers 'dummy'
-      foreach file [list ${sky} c${sky} ${sky}0] {
-         if {[file exists [file join $mypath $file$ext ] ] } {
-            file delete [ file join $mypath $file$ext ]
-         }
-      }
+      #foreach file [list ${sky} c${sky} ${sky}0] {
+      #   if {[file exists [file join $mypath $file$ext ] ] } {
+      #      file delete [ file join $mypath $file$ext ]
+      #   }
+      #}
    }
 
    #--------------------------------------------------------------------------
