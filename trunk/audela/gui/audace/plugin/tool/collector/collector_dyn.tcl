@@ -289,17 +289,12 @@
       variable private
       global audace
 
-      #--   actualise les variables audace
-      set audace(meteo,obs,temperature) $::station_meteo::widget(temperature)
-      set audace(meteo,obs,humidity)    $::station_meteo::widget(hygro)
-      set audace(meteo,obs,pressure)    $::station_meteo::widget(pressure)
-      #--   actualise les variables collector
-      set private(temperature)          $::station_meteo::widget(temperature)
-      set private(humidity)             $::station_meteo::widget(hygro)
+      set private(temperature)          $audace(meteo,obs,temperature)
+      set private(humidity)             $audace(meteo,obs,humidity)
       set private(temprose)             $::station_meteo::widget(temprose)
       set private(windsp)               $::station_meteo::widget(windsp)
       set private(winddir)              $::station_meteo::widget(winddir)
-      set private(pressure)             $::station_meteo::widget(pressure)
+      set private(pressure)             $audace(meteo,obs,pressure)
       update
 
       set cycle [expr { $::station_meteo::widget(cycle)*1000 }] ; #convertit en ms
