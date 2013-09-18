@@ -369,11 +369,10 @@ proc ::usb_focus::stopMove { } {
    set private(command) "FQUITx"
    ::usb_focus::writePort
 
-   #--   reponse attendue == "*LFCR*LFCR" ; longueur 6 car
-   if {[::usb_focus::waitAnswer 6] eq "**"} {
+   #--   reponse attendue == "*LFCR" ; longueur 3 car
+   if {[::usb_focus::waitAnswer 3] eq "*"} {
       ::usb_focus::getPosition
    }
-
    #--   libere toutes les commandes, a l'exception du bouton STOP
    ::usb_focus::setState normal manual
 }
