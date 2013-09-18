@@ -567,7 +567,7 @@ proc ::confTel::setModelFileName { modelFileName } {
       set modelSymbols       [lindex $result 4]
       set modelCoeffficients [lindex $result 5]
       set modelPressure      $::audace(meteo,obs,pressure)
-      set modelTemperature   $::audace(meteo,obs,temperature)
+      set modelTemperature   [ expr $::audace(meteo,obs,temperature) + 273.15 ]
       if { $private(telNo) != 0 } {
          #--- j'active le modele de pointage
          #--- j'active le modele de pointage
@@ -617,7 +617,7 @@ proc ::confTel::configureModel { modelEnabled modelName modelDate modelSymbols m
    tel$private(telNo) home name $::conf(posobs,nom_observatoire)
 
    set modelPressure    $::audace(meteo,obs,pressure)
-   set modelTemperature $::audace(meteo,obs,temperature)
+   set modelTemperature [ expr $::audace(meteo,obs,temperature) + 273.15 ]
 
    if { $modelEnabled == 1 } {
       #--- j'active le modele de pointage

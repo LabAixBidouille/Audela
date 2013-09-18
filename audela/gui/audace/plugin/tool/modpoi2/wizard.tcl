@@ -1334,7 +1334,7 @@ proc ::modpoi2::wizard::modpoi_wiz4 { } {
    ::modpoi2::wizard::modpoi_setState disabled
 
    set pressure    $::audace(meteo,obs,pressure)
-   set temperature $::audace(meteo,obs,temperature)
+   set temperature [ expr $::audace(meteo,obs,temperature) + 273.15 ]
    set humidity    $::audace(meteo,obs,humidity)
    set date        [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]
 
