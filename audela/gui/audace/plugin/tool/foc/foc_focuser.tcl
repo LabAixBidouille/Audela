@@ -32,25 +32,32 @@ namespace eval ::foc {
    #
    #------------------------------------------------------------
    proc cmdFocus { command } {
+      variable This
       global conf
 
-      #--- Gestion graphique des boutons
-      #--   Boutons d'acquisition
-      if {$command eq "stop"} {
-         ::foc::setAcqState normal
-      }  else {
-         ::foc::setAcqState disabled
+      #--   Ne doit jamais survenir
+      if { $::panneau(foc,focuser) eq "" } {
+         return
       }
+
       #--- Commande et gestion de l'erreur
       set catchResult [ catch {
-         if { $::panneau(foc,focuser) != "" } {
+         if {$command ne "stop"} {
+            #--   Inhibe prealablement les boutons "GO CCD" et "RAZ"
+            ::foc::setAcqState goto disabled
             ::focus::move $::panneau(foc,focuser) $command
-            #--   delai de stabilisation
-            if {$command eq "stop"} {
-               after $conf(foc,attente)
-            }
+         } else {
+            #--   Stop d'abord le focuser
+            ::focus::move $::panneau(foc,focuser) $command
+            #--   Delai de stabilisation
+            after $conf(foc,attente)
+            #--   Relaxe les boutons -/+
+            ::foc::relaxeManualCmd
+            #--   Libere les boutons "GO CCD" et "RAZ"
+            ::foc::setAcqState goto normal
          }
-      } ]
+      }]
+
       #--- Traitement de l'erreur
       if { $catchResult == "1" } {
 
@@ -59,7 +66,25 @@ namespace eval ::foc {
 
          #--- J'arrete les acquisitions continues
          ::foc::cmdStop
+
+         #--   Dans ce cas libere les boutons "GO CCD" et "RAZ"
+         ::foc::setAcqState goto normal
+         #--   Relaxe les boutons -/+
+         ::foc::relaxeManualCmd
       }
+   }
+
+   #------------------------------------------------------------
+   # relaxeManualCmd
+   #    #--   Relaxe les boutons -/+ (etat normal =ridge)
+   #------------------------------------------------------------
+   proc relaxeManualCmd { } {
+      variable This
+
+     $This.fra4.we.canv1PoliceInvariant configure -relief ridge
+     $This.fra4.we.canv2PoliceInvariant configure -relief ridge
+     update
+
    }
 
    #------------------------------------------------------------
