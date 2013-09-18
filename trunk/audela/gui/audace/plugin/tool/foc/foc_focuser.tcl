@@ -111,6 +111,7 @@ namespace eval ::foc {
 
          #--- Gestion des limites
          lassign [::foc::getLimits $panneau(foc,focuser)] limite1 limite2
+         set panneau(foc,end) $limite2
          if {$audace(focus,targetFocus) >= $limite1 && $audace(focus,targetFocus) <= $limite2} {
             #--   tout est bon
             #--- Lit la position du compteur de foc
