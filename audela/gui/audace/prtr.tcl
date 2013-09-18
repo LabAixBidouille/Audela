@@ -1042,6 +1042,8 @@ namespace eval ::prtr {
    proc configTableState { w  etat } {
       variable private
 
+      $private(table).cmd.fermer configure -state $etat
+
       #--   modifie inconditionnellement la variable etat si la liste est vide
       if {$private(size) == "0"} {
          $w insert end [list "" "$::caption(prtr,no_file)" " " " " ]
@@ -1053,7 +1055,6 @@ namespace eval ::prtr {
          $private(table).cmd.ok configure -state $etat
       }
       $private(table).cmd.appliquer configure -state $etat
-      $private(table).cmd.fermer configure -state $etat
    }
 
    #--------------------------------------------------------------------------
