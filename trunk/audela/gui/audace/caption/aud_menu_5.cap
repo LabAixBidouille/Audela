@@ -205,8 +205,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,sort_x)                    "Ordenar percentil de columnas"
    set caption(audace,menu,matrice)                   "Una zona"
 
-   set caption(audace,menu,calibration)               "# Calibrer"
-   set caption(audace,menu,calib_wcs)                 "# Calibration WCS par lot"
+   set caption(audace,menu,calibration)               "Calibrar"
+   set caption(audace,menu,calib_wcs)                 "Calibración WCS por lotes"
 
    set caption(audace,histo_titre)                    "Histograma de la imagen"
    set caption(audace,histo_adu)                      "Unidades digitales (ADU)"
