@@ -39,7 +39,7 @@ proc ::station_meteo::initPlugin { } {
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
    #if { ! [ info exists conf(station_meteo,pressure) ] }    { set conf(station_meteo,pressure)    "101325" }
-   #if { ! [ info exists conf(station_meteo,temperature) ] } { set conf(station_meteo,temperature) "290" }
+   #if { ! [ info exists conf(station_meteo,temperature) ] } { set conf(station_meteo,temperature) "16.85" }
    #if { ! [ info exists conf(station_meteo,humidity) ] }    { set conf(station_meteo,humidity)    "40" }
 
    #--   Initialise le chemin d'acces complet au fichier des donnees meteo
@@ -52,7 +52,7 @@ proc ::station_meteo::initPlugin { } {
 
    #--- Initialisation des variables audace
    set audace(meteo,obs,pressure)    "101325"
-   set audace(meteo,obs,temperature) "290"
+   set audace(meteo,obs,temperature) "16.85"
    set audace(meteo,obs,humidity)    "40"
 }
 
