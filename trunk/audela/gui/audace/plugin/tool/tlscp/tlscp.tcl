@@ -1033,7 +1033,7 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
       set dateUtc     [::audace::date_sys2ut now]
       set home        $::audace(posobs,observateur,gps)
       set pressure    $::audace(meteo,obs,pressure)
-      set temperature $::audace(meteo,obs,temperature)
+      set temperature [ expr $::audace(meteo,obs,temperature) + 273.15 ]
       set listRaDec   [mc_tel2cat $radec EQUATORIAL $dateUtc $home $pressure $temperature]
       set ra          [lindex $listRaDec 0]
       set dec         [lindex $listRaDec 1]

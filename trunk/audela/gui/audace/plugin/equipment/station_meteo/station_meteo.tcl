@@ -124,7 +124,7 @@ proc ::station_meteo::fillConfigPage { frm } {
    #set widget(temperature) $conf(station_meteo,temperature)
    #set widget(humidity)    $conf(station_meteo,humidity)
    set widget(pressure)    $audace(meteo,obs,pressure)
-   set widget(temperature) [expr { $audace(meteo,obs,temperature)-273.15 }]
+   set widget(temperature) $audace(meteo,obs,temperature)
    set widget(humidity)    $audace(meteo,obs,humidity)
    if { $::tcl_platform(platform) == "windows" } {
       set sensorList [list "$caption(station_meteo,cumulus)"  "$caption(station_meteo,sentinel)"]
@@ -326,7 +326,7 @@ proc ::station_meteo::isReady { } {
 #  refreshMeteo : mise a jour de 'Météo'
 #     lit les donnees de realtime.txt ou de infodata.txt
 #  return nothing
-#  Note : la temperature et la pression sont des variables de hip2tel
+#  Note : la temperature, la pression et l'humidite sont des variables de hip2tel
 #------------------------------------------------------------
 proc ::station_meteo::refreshMeteo { } {
    variable widget

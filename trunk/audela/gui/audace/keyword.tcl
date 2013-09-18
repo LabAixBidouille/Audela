@@ -514,7 +514,7 @@ proc ::keyword::calculateAirMass { visuNo } {
 
    #--- Je calcule l'elevation de l'astre
    set hip  [ list 1 0.0 $ra $dec J2000.0 now 0 0 0 ]
-   set res  [ mc_hip2tel $hip $jd $home $audace(meteo,obs,pressure) $audace(meteo,obs,temperature) ]
+   set res  [ mc_hip2tel $hip $jd $home $audace(meteo,obs,pressure) [ expr $audace(meteo,obs,temperature) + 273.15 ] ]
    set elev [ lindex $res 14 ]
 
    #--- Je calcule la masse d'air
@@ -670,9 +670,9 @@ proc ::keyword::onChangeMeteoData { visuNo } {
    variable private
 
    if { $private(setMeteoData) == "$::caption(keyword,stationMeteo)" } {
-      set private(temperature_site) [ format "%3.2f" [ expr { $::audace(meteo,obs,temperature) - 273.15 } ] ]
+      set private(temperature_site) [ format "%3.1f" $::audace(meteo,obs,temperature) ]
       set private(pression_site)    [ format "%6.1f" $::audace(meteo,obs,pressure) ]
-      set private(humidite_site)    $::audace(meteo,obs,humidity)
+      set private(humidite_site)    [ format "%3.1f" $::audace(meteo,obs,humidity) ]
    }
 }
 
@@ -773,9 +773,9 @@ proc ::keyword::onChangeValueComboBox { visuNo } {
       $wPRESSURE configure -state disabled
       $wHUMIDITY configure -state disabled
       #--- Je recupere les TEMP, PRESSURE et HUMIDITY du site
-      set private(temperature_site) [ format "%3.2f" [ expr { $::audace(meteo,obs,temperature) - 273.15 } ] ]
+      set private(temperature_site) [ format "%3.1f" $::audace(meteo,obs,temperature) ]
       set private(pression_site)    [ format "%6.1f" $::audace(meteo,obs,pressure) ]
-      set private(humidite_site)    $::audace(meteo,obs,humidity)
+      set private(humidite_site)    [ format "%3.1f" $::audace(meteo,obs,humidity) ]
    } elseif { $private(setMeteoData) == "$::caption(keyword,manuel)" } {
       #--- Je recupere le nomTK des entry
       set wTEMP     [$::keyword::private($visuNo,table) windowpath TEMP,valeur ]
