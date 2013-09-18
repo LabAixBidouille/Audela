@@ -985,8 +985,25 @@ namespace eval ::prtr {
             }
 
             set wcs 0
-            if {(($cd1_1 && $cd1_2 && $cd2_1 && $cd2_2) || ($cdelt1 && $cdelt2 && $crota2 ) || \
-               ($foclen && $crval1 && $crval2 && $ra && $dec && $pixsize1 && $pixsize2))== "1"} {
+            set optic 0
+            set classic 0
+            set matrix 0
+            #--   WCS optic
+            if {$ra && $dec && $foclen && $crota2 && $pixsize1 && $pixsize2} {
+               #--   precaution
+               set ra  [mc_angle2deg $ra 360]
+               set dec [mc_angle2deg $ra 90]
+               set optic 1
+            }
+            #--   WCS classic
+            if {$crval1 && $crval2 && $cdelt1 && $cdelt2 && $crota2 && $pixsize1 && $pixsize2} {
+               set classic 1
+            }
+            #--   WCS matrix
+            if {$crval1 && $crval2 && $cd1_1 && $cd1_2 && $cd2_1 && $cd2_2 && $pixsize1 && $pixsize2} {
+               set maxtrix 1
+            }
+            if {($optic == 1 && $private(function) eq "CALIBWCS")  || ($optic == 1 || $classic == 1 || $matrix ==1 && $private(function) ne "CALIBWCS")} {
                set wcs 1
             }
 
