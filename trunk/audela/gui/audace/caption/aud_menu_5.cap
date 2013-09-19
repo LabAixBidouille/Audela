@@ -263,8 +263,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,sort_x)                    "Prozentrang Sortierung der Kolumnen"
    set caption(audace,menu,matrice)                   "Eine Zone"
 
-   set caption(audace,menu,calibration)               "# Calibrer"
-   set caption(audace,menu,calib_wcs)                 "# Calibration WCS par lot"
+   set caption(audace,menu,calibration)               "Kalibrieren"
+   set caption(audace,menu,calib_wcs)                 "Menge WCS Kalibrierung"
 
    set caption(audace,histo_titre)                    "Histogramm des Bild"
    set caption(audace,histo_adu)                      "ADU"
