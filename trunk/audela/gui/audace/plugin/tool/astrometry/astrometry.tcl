@@ -125,8 +125,7 @@ namespace eval ::astrometry {
    #------------------------------------------------------------
    proc startTool { visuNo } {
       #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::astrometry::updatewcs"
-      ::confVisu::addFileNameListener $visuNo "::astrometry::update_keywords"
+      ::confVisu::addFileNameListener $visuNo "::astrometry::updatewcs ; ::astrometry::update_keywords"
       #--- J'ouvre la fenetre
       ::astrometry::create $visuNo
    }
@@ -527,12 +526,14 @@ namespace eval ::astrometry {
       #if {(valid_matrix>=8)} {}
       if {($valid_optic>=8)&&($valid_classic<7)} {
          set pi [expr 4*atan(1.)]
-         set cosr [expr cos($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
-         set sinr [expr sin($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
-         set ::astrometry::astrom(wcsvalues,CD1_1) [expr $::astrometry::astrom(wcsvalues,CDELT1)*$cosr ]
-         set ::astrometry::astrom(wcsvalues,CD1_2) [expr  abs($::astrometry::astrom(wcsvalues,CDELT2))*$::astrometry::astrom(wcsvalues,CDELT1)/abs($::astrometry::astrom(wcsvalues,CDELT1))*$sinr ]
-         set ::astrometry::astrom(wcsvalues,CD2_1) [expr -abs($::astrometry::astrom(wcsvalues,CDELT1))*$::astrometry::astrom(wcsvalues,CDELT2)/abs($::astrometry::astrom(wcsvalues,CDELT2))*$sinr ]
-         set ::astrometry::astrom(wcsvalues,CD2_2) [expr $::astrometry::astrom(wcsvalues,CDELT2)*$cosr ]
+         if { $::astrometry::astrom(wcsvalues,CROTA2) != "" } {
+            set cosr [expr cos($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
+            set sinr [expr sin($::astrometry::astrom(wcsvalues,CROTA2)*$pi/180.)]
+            set ::astrometry::astrom(wcsvalues,CD1_1) [expr $::astrometry::astrom(wcsvalues,CDELT1)*$cosr ]
+            set ::astrometry::astrom(wcsvalues,CD1_2) [expr  abs($::astrometry::astrom(wcsvalues,CDELT2))*$::astrometry::astrom(wcsvalues,CDELT1)/abs($::astrometry::astrom(wcsvalues,CDELT1))*$sinr ]
+            set ::astrometry::astrom(wcsvalues,CD2_1) [expr -abs($::astrometry::astrom(wcsvalues,CDELT1))*$::astrometry::astrom(wcsvalues,CDELT2)/abs($::astrometry::astrom(wcsvalues,CDELT2))*$sinr ]
+            set ::astrometry::astrom(wcsvalues,CD2_2) [expr $::astrometry::astrom(wcsvalues,CDELT2)*$cosr ]
+         }
       }
       #--- Display the values of header keywords
       ::astrometry::keyword optic RA
