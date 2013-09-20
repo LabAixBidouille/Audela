@@ -285,6 +285,13 @@ namespace eval ::console {
       $This.txt1 insert end "\n"
    }
 
+   proc clear { } {
+      variable This
+      variable CmdLine
+      variable LastSpace
+      $This.txt1 delete 0.0 end
+   }
+   
    proc server { action { port 5555 } } {
       global audace
       set name console_server
