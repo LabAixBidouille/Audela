@@ -37,7 +37,7 @@ int Cmd_xxtcl_gzip(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 /****************************************************************************/
 {   
    int result,nb,errno,nbf,k,isfile;
-   char lignetcl[1024];
+   char lignetcl[50024];
    char **argvv=NULL;
    int argcc;
 
@@ -81,7 +81,11 @@ int Cmd_xxtcl_gzip(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       if (isfile==1) {
          strcpy(lignetcl,"set gzip_name");
          Tcl_Eval(interp,lignetcl);
-         sprintf(lignetcl,"%s \"%s\"",strndup(argv[0]+2,strlen(argv[0])),Tcl_GetStringResult(interp));
+	 if (argv[0][0]==':') {
+	    sprintf(lignetcl,"%s \"%s\"",strndup(argv[0]+2,strlen(argv[0])),Tcl_GetStringResult(interp));
+	 } else {
+            sprintf(lignetcl,"%s \"%s\"",argv[0],Tcl_GetStringResult(interp));
+	 }
          Tcl_SplitList(interp,lignetcl,&argcc,(char***)&argvv);
          result=gzipmain(argcc,argvv);
          if (result!=2) {
