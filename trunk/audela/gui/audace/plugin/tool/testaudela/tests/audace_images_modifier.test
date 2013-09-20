@@ -2,21 +2,38 @@
 set visuNo 1
 set prevExt $::conf(extension,defaut)
 set ::conf(extension,defaut) .fit
+set ::conf(fichier,compres) 0
 set bufNo [::confVisu::getBufNo $visuNo]
 #--   le nom de la tablelist des fichiers
 set w ".audace.prtr.usr.choix.tablelist"
 #--   le nom de la zone de cmd
 set z ".audace.prtr.usr.table"
 
+
 variable SETUP {
-   set ::conf(fichier,compres) 0
    ::blt::vector create attendu mesure temp -watchunset 1
    foreach file {rz_rgbr_8 rz_rgbr_15} {
       file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
    }
-   loadima [file join $::audace(rep_images) rz_rgbr_15.fit]
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    set coords [list 110 100]
    attendu set [lrange [buf$bufNo getpix $coords] 1 end]
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+}
+
+variable SETUP2 {
+   ::blt::vector create attendu mesure temp -watchunset 1
+   foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
+      file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
+   }
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   set coords [list 107 100]
+   attendu set [lrange [buf$bufNo getpix $coords] 1 end]
+   loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
+   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #--   efface rz_rgbr_30.fit apres mesure
+   file delete rz_rgbr_30.fit
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
 }
@@ -36,22 +53,6 @@ variable CLEANUP {
 #--   avec une troisième image venant de testaudela (sans recopie)
 #--   le test porte sur la concordance entre les valeurs au point {1 1} et les valeurs calculees
 #-----------------------------------------------------------------------------
-
-variable SETUP2 {
-   ::blt::vector create attendu mesure temp -watchunset 1
-   foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
-   }
-   loadima [file join $::audace(rep_images) rz_rgbr_15.fit]
-   set coords [list 110 100]
-   attendu set [lrange [buf$bufNo getpix $coords] 1 end]
-   loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
-   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   #--   efface rz_rgbr_30.fit apres mesure
-   file delete rz_rgbr_30.fit
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
-}
 
 #--   IMA/SERIES ADD
 test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
@@ -75,11 +76,9 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   attendu expr {attendu+mesure}
+   attendu expr {attendu+mesure+$offset}
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   attendu expr {attendu+$offset}
-   set indexes [temp search 1]
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    #--   compte le nombre de resultats nuls
@@ -170,7 +169,7 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
       file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
    }
-   loadima [file join $::audace(rep_images) rz_rgbr_15.fit]
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    attendu set [lrange [buf$bufNo getpix $coords] 1 end]
    loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
@@ -287,16 +286,16 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
    foreach img {rz_rgbr_8 rz_rgbr_15} {
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
-   #--   saisit la constante
-   set coef 20
-   ::testaudela::putLabelEntry $z.funoptions.coef $coef
-   #--   saisit l'offset_log
-   set offsetlog 10
+   #--   saisit l'offset_log ; valeur pour que value-offsetlog=10000 et log10(10000) =4
+   set offsetlog 19200
    ::testaudela::putLabelEntry $z.funoptions.offsetlog $offsetlog
+   #--   saisit la constante multiplicative pour que resultat = log10(10000)*100=4000
+   set coef 1000
+   ::testaudela::putLabelEntry $z.funoptions.coef $coef
    #--   selectionne l'option "Options"
    ::testaudela::clicCheckButton $z.ttoptions.che "1"
-   #--   saisit bitpix
-   set bitpix "16"
+   #--   saisit bitpix 16
+   set bitpix "32"
    set prtr::bitpix $bitpix
    #-- saisit le nom de sortie
    set name_out "log"
@@ -305,59 +304,23 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
+   set result 0
    #--   charge le resultat obtenu
+   for {set l 0} {$l <= 2} {incr l} {
+      if {$attendu($l) <= $offsetlog} {
+         set attendu($l) 0 ; # ==nullpixel
+      } else {
+         set attendu($l) [expr { log10($attendu($l)-$offsetlog)*$coef }]
+      }
+   }
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   attendu expr {log10(attendu-$offsetlog)*$coef}
    #--   calcule le ratio
-   attendu expr {round(mesure/attendu)}
-   #--   compte le nombre de resultats nuls (bizarre bizarre)
-   set result [llength [attendu search 363]]
+   attendu expr {round(attendu-mesure)}
+   #--   compte le nombre de diffrence nulles
+   set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq $bitpix} {incr result}
    return $result
 } -cleanup $CLEANUP -result "4"
-
-#-----------------------------------------------------------------------------
-#--   chaque test NORMOFFSET a pour entree une images RGB
-#--   le test porte sur la concordance entre les valeurs au point {110 100} et
-#     les valeurs obtenues dans une image de reference
-#     Le bitpix reste a short !
-#-----------------------------------------------------------------------------
-#--   IMA/SERIES NORMOFFSET
-test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints {AUDACE} -setup {
-   ::blt::vector create attendu mesure -watchunset 1
-   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
-} -body {
-   #--   clic sur le menu "Images/Modifier/Normaliser le fond du ciel..."
-   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,noffset)..."
-   #--   selectionne rz_rgbr_8
-   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
-   #--   saisit la valeur de normalisation
-   set normoffset_value "0."
-   ::testaudela::putLabelEntry $z.funoptions.normoffset_value "$normoffset_value"
-   #-- saisit le nom de sortie
-   set name_out "norm_offset"
-   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
-   #--   clic sur le bouton Appliquer
-   ::testaudela::clicButton $z.cmd.appliquer
-
-   #--   procedure de controle
-   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   #--   valeurs mesurees sur une image obtenue par la voie classique
-   attendu set [list -1362 -787 28637]
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
-   #--   compte le nombre de resultats concordants
-   set result [llength [attendu search 0]]
-   return $result
-} -cleanup {
-   #--   clic sur le bouton Fermer
-   ::testaudela::clicButton $z.cmd.fermer
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
-   set liste [list rz_rgbr_8 norm_offset]
-   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
-   ::blt::vector destroy attendu mesure
-} -result "3"
 
 #--   IMA/SERIES NORMGAIN
 test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup {
@@ -404,6 +367,49 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    set result [llength [attendu search 1]]
    return $result
 } -cleanup $CLEANUP -result "3"
+
+#-----------------------------------------------------------------------------
+#--   chaque test NORMOFFSET a pour entree une images RGB
+#--   le test porte sur la concordance entre les valeurs au point {110 100} et
+#     les valeurs obtenues dans une image de reference
+#     Le bitpix reste a short !
+#-----------------------------------------------------------------------------
+#--   IMA/SERIES NORMOFFSET
+test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints {AUDACE} -setup {
+   ::blt::vector create attendu mesure -watchunset 1
+   file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+} -body {
+   #--   clic sur le menu "Images/Modifier/Normaliser le fond du ciel..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,noffset)..."
+   #--   selectionne rz_rgbr_8
+   ::testaudela::clicCheckButton [$w windowpath rz_rgbr_8,0] 1
+   #--   saisit la valeur de normalisation
+   set normoffset_value "0."
+   ::testaudela::putLabelEntry $z.funoptions.normoffset_value "$normoffset_value"
+   #-- saisit le nom de sortie
+   set name_out "norm_offset"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #--   procedure de controle
+   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #--   valeurs mesurees sur une image obtenue par la voie classique
+   attendu set [list -1362 -787 28637]
+   #--   calcule la difference
+   attendu expr {round(attendu-mesure)}
+   #--   compte le nombre de resultats concordants
+   set result [llength [attendu search 0]]
+   return $result
+} -cleanup {
+   #--   clic sur le bouton Fermer
+   ::testaudela::clicButton $z.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list rz_rgbr_8 norm_offset]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   ::blt::vector destroy attendu mesure
+} -result "3"
 
 #-----------------------------------------------------------------------------
 #--   chaque test clip_min_clip_max a pour entree une images RGB
