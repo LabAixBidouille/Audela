@@ -2127,3 +2127,15 @@ proc sdrizzlewcs {args} {
    }
 }
 
+# loadima hotpixels ; hotpixels "P 25 25 L 5 C 5"
+proc hotpixels {args} {
+   #--- 
+   if {[llength $args] == 1} {
+      set ext $::conf(extension,defaut)
+      set hot_pixel_list [lindex $args 0]
+      buf$::audace(bufNo) imaseries "HOTPIXEL \"hot_pixel_list=${hot_pixel_list} \""
+      ::audace::autovisu $::audace(visuNo)
+   } else {
+      error "Usage: hotpixels hot_pixel_list"
+   }
+}
