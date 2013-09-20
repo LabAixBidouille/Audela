@@ -22,6 +22,7 @@ set caption(bddimages_go,insertion)             "Inserting Images"
 set caption(bddimages_go,recherche)             "Search"
 set caption(bddimages_go,test)                  "Test"
 set caption(bddimages_go,ressource)             "Re-source"
+set caption(bddimages_go,cleanconsole)          "clean console"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {

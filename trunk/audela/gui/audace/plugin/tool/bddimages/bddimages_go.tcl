@@ -439,6 +439,16 @@ proc ::bddimages::bddimagesBuildIF { This } {
          $This.log.b.m add command -label "Debug" -command {set ::bddimages::log_level "Debug"}
          grid $This.log.lab $This.log.b -pady 5 -ipadx 3 -ipady 3
 
+      #--- Frame des services
+      frame $This.clean -borderwidth 1 -relief groove
+      pack $This.clean -side top -fill x
+
+         #--- Bouton d'ouverture de l'outil de recherche d images
+         button $This.clean.but1 -borderwidth 2 -text $caption(bddimages_go,cleanconsole) \
+            -command { console::clear}
+         pack $This.clean.but1 -in $This.clean -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Coloration du menubouton du choix de la bdd
