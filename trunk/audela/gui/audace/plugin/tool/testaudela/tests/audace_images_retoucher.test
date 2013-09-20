@@ -122,7 +122,6 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
    #--   procedure de controle
    set result 0
    set mesure [lrange [buf$bufNo getpix $coords] 1 end]
-::console::disp "mesure $mesure\n"
    set attendu "37598"
    if {[expr {int($mesure)-$attendu}] == 0} {incr result}
    return $result
