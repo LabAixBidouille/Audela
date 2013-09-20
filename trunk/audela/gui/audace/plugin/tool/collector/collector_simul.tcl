@@ -336,24 +336,6 @@
          ${sky}a.jpg ${sky}b.jpg signal.sex config.sex config.param default.nnw]
 
       ttscript2 "IMA/SERIES \"$mypath\" \"$toDelete\" * * . . . * . DELETE"
-
-      #--   supprime les fichiers intermediaires
-      #set fileList [list ascii.txt catalog.cat com.lst dif.lst \
-      #   eq.lst matrix.txt obs.lst pointzero.lst usno.lst  \
-      #   signal.sex xy.lst config.param config.sex default.nnw]
-
-      #foreach file $fileList {
-      #   if {[file exists [file join $rep $file]]} {
-      #      file delete [file join $rep $file]
-      #   }
-      #}
-
-      #--   Suppression des fichiers 'dummy'
-      #foreach file [list ${sky} c${sky} ${sky}0] {
-      #   if {[file exists [file join $mypath $file$ext ] ] } {
-      #      file delete [ file join $mypath $file$ext ]
-      #   }
-      #}
    }
 
    #--------------------------------------------------------------------------
