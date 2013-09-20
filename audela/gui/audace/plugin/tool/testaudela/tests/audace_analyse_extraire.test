@@ -5,10 +5,10 @@ set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr.choix.tablelist"
 #--   le nom de la zone de cmd
 set z ".audace.prtr.usr.table"
+set ::conf(extension,defaut) .fit
+set ::conf(fichier,compres) 0
 
 variable SETUP {
-   set ::conf(extension,defaut) .fit
-   set ::conf(fichier,compres) 0
    ::blt::vector create attendu mesure -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
    loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
@@ -16,11 +16,10 @@ variable SETUP {
 }
 
 variable SETUP2 {
+   ::blt::vector create attendu mesure redValue greenValue blueValue temp -watchunset 1
    foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
       file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
    }
-   ::blt::vector create attendu mesure redValue greenValue blueValue temp -watchunset 1
-   loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
 }
 
 variable CLEANUP {
@@ -40,6 +39,7 @@ variable CLEANUP2 {
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 rz_rgbr_15 rz_rgbr_30 ${name_out}1 ${name_out}2 ${name_out}3]
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   ::blt::vector destroy attendu mesure redValue greenValue blueValue temp
 }
 
 #-----------------------------------------------------------------------------
@@ -145,6 +145,7 @@ test imaseries_matrix {extraire une zone de rz_rbgr_8} -constraints {AUDACE} -se
 
 #--   test IMA/SERIES BINX
 test imaseries_bin_x {binning des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    for {set i 101} {$i <= 110} {incr i} {
       set val [lrange [buf$bufNo getpix [list $i 1]] 1 end ]
       redValue append [lindex $val 0]
@@ -159,7 +160,7 @@ test imaseries_bin_x {binning des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,bin_x)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-     ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit les entrees
    ::testaudela::putLabelEntry $z.funoptions.x1 "101"
@@ -187,12 +188,12 @@ test imaseries_bin_x {binning des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -
       ${name_out}3r.jpg ${name_out}3g.jpg ${name_out}3b.jpg] {
       if {[file exists $file]} {incr result}
    }
-   ::blt::vector destroy attendu mesure redValue greenValue blueValue temp
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
 #--   test IMA/SERIES MEDIANX
 test imaseries_median_x {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    for {set i 101} {$i <= 200} {incr i} {
       set val [lrange [buf$bufNo getpix [list $i 1]] 1 end ]
       redValue append [lindex $val 0]
@@ -231,13 +232,13 @@ test imaseries_median_x {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
    incr result [llength [attendu search 1]]
-   ::blt::vector destroy attendu mesure redValue greenValue blueValue temp
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
 #--   nature du test IMA/SERIES SORTX :
 #     concordance des intensites R G B constatees avec celles calculees
 test imaseries_sortx {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    for {set i 101} {$i <= 200} {incr i} {
       set val [lrange [buf$bufNo getpix [list $i 1]] 1 end ]
       redValue append [lindex $val 0]
@@ -260,7 +261,7 @@ test imaseries_sortx {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,sort_x)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-     ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit les entrees
    ::testaudela::putLabelEntry $z.funoptions.x1 "101"
@@ -284,12 +285,12 @@ test imaseries_sortx {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
    incr result [llength [attendu search 1]]
-   ::blt::vector destroy attendu mesure redValue greenValue blueValue
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
 #--   test IMA/SERIES BINY
 test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    for {set i 101} {$i <= 200} {incr i} {
      set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
       redValue append [lindex $val 0]
@@ -311,6 +312,7 @@ test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -co
    ::testaudela::putLabelEntry $z.funoptions.y2 "200"
    set height "1"
    ::testaudela::putLabelEntry $z.funoptions.height $height
+   #--   change le bitpix
    #-- saisit le nom de sortie
    set name_out "add_li"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
@@ -326,28 +328,28 @@ test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -co
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
    incr result [llength [attendu search 1]]
-   ::blt::vector destroy attendu mesure redValue greenValue blueValue temp
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
 #--   test IMA/SERIES MEDIANY
 test imaseries_median_y {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    for {set i 101} {$i <= 200} {incr i} {
       set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
       redValue append [lindex $val 0]
       greenValue append [lindex $val 1]
       blueValue append [lindex $val 2]
    }
-  #---  efface l'image
+   #---  efface l'image
    ::confVisu::deleteImage $visuNo
-  #--   clic sur le menu "Analyse/Extraire/Médiane de lignes..."
+   #--   clic sur le menu "Analyse/Extraire/Médiane de lignes..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,med_y)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-     ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit les entrees
-  ::testaudela::putLabelEntry $z.funoptions.y1 "101"
+   ::testaudela::putLabelEntry $z.funoptions.y1 "101"
    ::testaudela::putLabelEntry $z.funoptions.y2 "200"
    set height "45"
    ::testaudela::putLabelEntry $z.funoptions.height $height
@@ -370,15 +372,15 @@ test imaseries_median_y {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    #--   nb de differences egale a 1
    attendu expr {abs(attendu) <= 1.0}
    incr result [llength [attendu search 1]]
-   ::blt::vector destroy attendu mesure redValue greenValue blueValue temp
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
 #--   nature du test IMA/SERIES SORTY :
 #     concordance des intensites R G B constatees avec celles calculees
 test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
    for {set i 101} {$i <= 200} {incr i} {
-      set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
+     set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
       redValue append [lindex $val 0]
       greenValue append [lindex $val 1]
       blueValue append [lindex $val 2]
@@ -399,12 +401,12 @@ test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,extract)" "$::caption(audace,menu,sort_y)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    foreach img {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-    ::testaudela::clicCheckButton [$w windowpath $img,0] 1
+      ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit les entrees
    ::testaudela::putLabelEntry $z.funoptions.y1 "101"
    ::testaudela::putLabelEntry $z.funoptions.y2 "200"
-  set height "50"
+   set height "50"
    ::testaudela::putLabelEntry $z.funoptions.height "$height"
    ::testaudela::putLabelEntry $z.funoptions.percent $seuil
    #-- saisit le nom de sortie
@@ -422,7 +424,6 @@ test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
    incr result [llength [attendu search 1]]
-   ::blt::vector destroy attendu mesure redValue greenValue blueValue
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
