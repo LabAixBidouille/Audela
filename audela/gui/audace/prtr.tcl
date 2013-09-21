@@ -2371,6 +2371,7 @@ namespace eval ::prtr {
 
       #--   nom de sortie defini ?
       if {$private(function) ni [list "PROFILE direction=x" "PROFILE direction=y" "MATRIX"]} {
+
          if {$prtr::out eq "" || $prtr::out eq "\"\""} {
             return [::prtr::avertiUser sortie_generique]
          }
@@ -2457,7 +2458,8 @@ namespace eval ::prtr {
 
       #--   teste si une valeur existe
       if {$value eq ""} {
-         if {$parametre ni {bias dark flat}} {
+         #--   teste un parametre alphanumerique
+         if {$parametre ni [list bias dark flat hot_pixel_list]} {
             return [::prtr::avertiUser err_par_def $parametre ]
          } else {
             return ""
@@ -2476,7 +2478,7 @@ namespace eval ::prtr {
             return "$parametre=$value"
          }
       } elseif {$test eq "alpha"} {
-         #--   teste un parametre alphanumerique
+         #--   teste un parametre alphanumerique (astromcatalog et translate)
          if {![string is $test -strict $value]} {
             return [::prtr::avertiUser err_par_type $parametre $test]
          }
@@ -2512,7 +2514,7 @@ namespace eval ::prtr {
             }
          }
       } elseif {$test in {filename filematrix}} {
-         #--   teste si le nom est valide
+         #--   teste si le nom est valide (filename filematrix)
          regexp -all {[\w_-]+} $value match
          if {[info exists match] && $value eq "$match"} {
             #--   cas du nom d'un fichier .txt
@@ -2521,7 +2523,7 @@ namespace eval ::prtr {
             return [::prtr::avertiUser err_par_def $value]
          }
       } elseif {$test eq "img"} {
-
+         #--   teste le nom d'une image (file bias dark et flat)
          lassign [::prtr::getInfoFile $value] dir nom_court extension
 
          #--   verifie l'extension
@@ -2589,7 +2591,8 @@ namespace eval ::prtr {
             return "\"$parametre=$value\""
          }
       } elseif {$test eq "liste"} {
-         if {$parametre ne "hot_pixel_list"} {
+         if {$parametre eq "paramresample"} {
+            #--   teste paramresample
             #--   il doit y avoir exactement 6 parametres
             if {[llength $value] ne 6 } {
                return [::prtr::avertiUser err_par_def $parametre]
@@ -2608,29 +2611,46 @@ namespace eval ::prtr {
             blt::vector destroy temp
             return "\"paramresample=$value\""
          } else {
-            #--   hotpixel
+            #--   teste hot_pixel_list
+            set error 0
             set result ""
-            foreach col [lsearch -regexp -all $value {(P)}] {
+            regsub -all "X" [lindex $private(profil) 1] "" naxis
+            lassign $naxis naxis1 naxis2
+
+            foreach point [lsearch -exact -all $value "P"] {
                #--   compare les deux valeurs suivantes a un entier
-               set v1 [lindex $value [expr { $col+1 }]]
-               set v2 [lindex $value [expr { $col+2 }]]
-               if {![string is integer -strict $v1] || ![string is integer -strict $v2]} {
-                  return [::prtr::avertiUser err_list_val $parametre]
+               set v1 [lindex $value [expr { $point+1 }]]
+               set v2 [lindex $value [expr { $point+2 }]]
+               if {[string is integer -strict $v1] && [string is integer -strict $v2] \
+                  && $v1 <= $naxis1 && $v2 <= $naxis2} {
+                  append result "P $v1 $v2 "
                } else {
-                  append result "[lindex $value $col] $v1 $v2 "
+                  set error 1
                }
             }
-            foreach col [lsearch -regexp -all $value {[L|C]}] {
+            foreach li [lsearch -exact -all $value "L"] {
+               #--   compare la valeur suivante a un entier
+               set v [lindex $value [expr { $li+1 }]]
+               if {[string is integer -strict $v] && $v <= $naxis2} {
+                  append result "L $v "
+               } else {
+                  set error 1
+               }
+            }
+            foreach col [lsearch -exact -all $value "C"] {
                #--   compare la valeur suivante a un entier
                set v [lindex $value [expr { $col+1 }]]
-               if {![string is integer -strict $v]} {
-                  return [::prtr::avertiUser err_list_val $parametre]
+               if {[string is integer -strict $v] && $v <= $naxis1} {
+                  append result "C $v "
                } else {
-                  #--   refait une liste propre
-                  append result "[lindex $value $col] $v "
+                  set error 1
                }
             }
-            return "\"hot_pixel_list=$result\""
+            if {$error == 0} {
+               return "\"hot_pixel_list=$result\""
+            } else {
+               return [::prtr::avertiUser err_list_val $parametre]
+            }
          }
       }
    }
