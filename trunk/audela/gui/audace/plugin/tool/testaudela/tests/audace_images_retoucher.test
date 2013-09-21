@@ -4,6 +4,7 @@ set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr.choix.tablelist"
 #--   le nom de la zone de cmd
 set z ".audace.prtr.usr.table"
+set ::conf(extension,defaut) .fit
 
 #-- Test a batir : UNSMEAR
 
@@ -11,7 +12,6 @@ set z ".audace.prtr.usr.table"
 #--  Le test COSMIC a pour entree une images N&B a traiter
 #-----------------------------------------------------------------------------
 test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AUDACE} -setup {
-   set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) hd21620-5.fit] $::audace(rep_images)
    loadima [file join $::audace(rep_images) hd21620-5.fit]
@@ -49,6 +49,54 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
 } -result "0"
 
 #-----------------------------------------------------------------------------
+#--  Le test HOTPIXEL a pour entree une images N&B synthetique a traiter
+#-----------------------------------------------------------------------------
+test imaseries_hotpixel {corrige des pixels chauds} -constraints {AUDACE} -setup {
+   set ::conf(fichier,compres) "0"
+   buf$bufNo setpixels CLASS_GRAY 50 50 FORMAT_BYTE COMPRESS_NONE 0
+   #--   place un point chaud a {25 25}
+   buf$bufNo setpix [list 25 25] 255
+   #--   place une ligne chaude a y =5
+   for {set c 1} {$c <= 50} {incr c} {
+      buf$bufNo setpix [list $c 5] 255
+   }
+   #--   place une colonne chaude a x =5
+   for {set l 1} {$l <= 50} {incr l} {
+      buf$bufNo setpix [list 5 $l] 255
+   }
+   buf$bufNo save hotpixel.fit
+} -body {
+   #--   clic sur le menu "Images/Retoucher/Supprimer des points chauds..."
+   ::testaudela::clicMenu $visuNo "$::caption(audace,menu,improve)" "$::caption(audace,menu,hotpixel)..."
+   ::testaudela::clicCheckButton [$w windowpath hotpixel,0] 1
+   #--   saisit la valeur
+   set hot_pixel_list "P 25 25 L 5 C 5"
+   ::testaudela::putLabelEntry $z.funoptions.hot_pixel_list $hot_pixel_list
+   #-- saisit le nom de sortie
+   set name_out "hot"
+   ::testaudela::putLabelEntry $z.sortie.out "$name_out"
+   #--   clic sur le bouton Appliquer
+   ::testaudela::clicButton $z.cmd.appliquer
+
+   #--   procedure de controle
+   set result "0"
+   #--   teste l'intensite du point {25 25}
+   if {[lindex [buf$bufNo getpix [list 25 25]] 1] == 0} {incr result}
+   #--   teste l'intensite du point {1 5} (ligne 5)
+   if {[lindex [buf$bufNo getpix [list 1 5]] 1] == 0} {incr result}
+   #--   teste l'intensite du point {5 1} (colonne 5)
+   if {[lindex [buf$bufNo getpix [list 5 1]] 1] == 0} {incr result}
+   return $result
+} -cleanup {
+#--   clic sur le bouton Fermer
+   ::testaudela::clicButton $z.cmd.fermer
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
+   set liste [list hotpixel $name_out]
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+} -result "3"
+
+#-----------------------------------------------------------------------------
 #--   Le test BACK a pour entree une images RGB a traiter
 #--   le test porte sur la concordance des intensites R G B constatees avec celles d'une image de reference
 #-----------------------------------------------------------------------------
@@ -56,7 +104,6 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
 #     concordance des intensites R G B constatees avec celles
 #     de l'image de reference obtenue par la voie classique
 test imaseries_back {soustraire le fond du ciel de rz_rgbr_8} -constraints {AUDACE} -setup {
-   set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) "0"
    ::blt::vector create attendu mesure -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
@@ -105,7 +152,6 @@ test imaseries_optimisation_du_noir {optimisation du noir de rz_cfa_rgbr_8} -con
    file copy -force [file join $::conf(testaudela,rep_images) rz_cfa_rgbr_8.fit.gz] $::audace(rep_images)
    loadima [file join $::audace(rep_images) rz_cfa_rgbr_8.fit.gz]
    set coords [list 198 51]
-   set ::conf(extension,defaut) ".fit"
    set ::conf(fichier,compres) "1"
 } -body {
 
