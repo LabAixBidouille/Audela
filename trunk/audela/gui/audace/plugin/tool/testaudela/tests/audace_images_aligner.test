@@ -4,19 +4,22 @@ set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr.choix.tablelist"
 #--   le nom de la zone de cmd
 set z ".audace.prtr.usr.table"
+#--   configure l'extension et la compression
+set ::conf(extension,defaut) ".fit"
+set ::conf(fichier,compres) 0
+
 
 variable SETUP {
-   #--   configure l'extension et la compression
-   set ::conf(extension,defaut) ".fit"
-   set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
-   buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
-   set coords [list 381 391]
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans1 . .fit TRANS trans_x=20 trans_y=20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans2 . .fit TRANS trans_x=20 trans_y=-20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans3 . .fit TRANS trans_x=-20 trans_y=20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans4 . .fit TRANS trans_x=-20 trans_y=-20"
+   buf$bufNo load trans4.fit
+   set coords [list 380 391]
    set attendu [lindex [buf$bufNo getpix $coords] 1]
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=20 trans_y=20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=20 trans_y=-20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-20 trans_y=20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-20 trans_y=-20"
+   #---  efface l'image
+   ::confVisu::deleteImage $visuNo
 }
 
 variable CLEANUP {
@@ -24,7 +27,7 @@ variable CLEANUP {
    ::confVisu::deleteImage $visuNo
    #--   clic sur le bouton Fermer
    ::testaudela::clicButton $z.cmd.fermer
-   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
+   file delete m45_champ.fit trans1.fit trans2.fit trans3.fit trans4.fit
 }
 
 test aligner_translation_automatique {alignement automatique} -constraints {AUDACE} -setup $SETUP -body {
@@ -44,11 +47,13 @@ test aligner_translation_automatique {alignement automatique} -constraints {AUDA
    set result 0
    #--   verifie l'existence de 5 images recadrees
    for {set i 1} {$i <= 5} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         if {[lindex [buf$bufNo getpix $coords] 1] eq $attendu} {incr result}
+         set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
+         #--   trans4 sert de reference
+         if {$diff == 0} {incr result}
          file delete $file
       }
    }
@@ -72,12 +77,13 @@ test aligner_astrometrie {alignement par astrometrie wcs} -constraints {AUDACE} 
    set result 0
    #--   verifie l'existence de 4 images recalees
    for {set i 1} {$i <= 4} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
+         set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
          #--   trans1 sert de reference
-         if {[lindex [buf$bufNo getpix [list 401 411]] 1] eq $attendu} {incr result}
+         if {$diff == 0} {incr result}
          file delete $file
       }
    }
@@ -101,11 +107,13 @@ test aligner_translation_affine {alignement affine} -constraints {AUDACE} -setup
    set result 0
    #--   verifie l'existence de 4 images recadrees
    for {set i 1} {$i <= 4} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         if {[lindex [buf$bufNo getpix [list 401 411]] 1] eq $attendu} {incr result}
+         set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
+         #--   trans1 sert de reference
+         if {$diff == 0} {incr result}
          file delete $file
       }
    }
@@ -113,17 +121,11 @@ test aligner_translation_affine {alignement affine} -constraints {AUDACE} -setup
 } -cleanup $CLEANUP -result "8"
 
 test aligner_translation_moindres_carres {alignement par moindes carres} -constraints {AUDACE} -setup {
-   #--   configure l'extension et la compression
-   set ::conf(extension,defaut) ".fit"
-   set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
-   buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
-   #set coords [list 381 391]
-   set attendu [lindex [buf$bufNo getpix $coords] 1]
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=2 trans_y=2"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=2 trans_y=-2"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-2 trans_y=2"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-2 trans_y=-2"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans1 . .fit TRANS trans_x=2 trans_y=2"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans2 . .fit TRANS trans_x=2 trans_y=-2"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans3 . .fit TRANS trans_x=-2 trans_y=2"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans4 . .fit TRANS trans_x=-2 trans_y=-2"
 } -body {
    #--   clic sur le menu "Images/Aligner/Moindres carrés..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_fine)..."
@@ -142,16 +144,17 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
    #-- procédure de controle
    set result 0
    ::blt::vector create resultat_exp -watchunset 1
-   resultat_exp set [list 155 67 55 98]
+   resultat_exp set [list 120 79 53 63]
    resultat_exp offset 1
 
    #--   verifie l'existence de 4 images
    for {set i 1} {$i <= 4} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         if {[lindex [buf$bufNo getpix  $coords] 1] == "$resultat_exp($i)"} {incr result}
+         set mesure [lindex [buf$bufNo getpix $coords] 1]
+         if {$mesure == $resultat_exp($i)} {incr result}
          file delete $file
       }
    }
@@ -161,7 +164,7 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
 
 test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
     ::confVisu::clear $visuNo
-   #--- j'impose le mode seuil iris , car le mode "loadima" ne focntionne pas bien
+   #--- j'impose le mode seuil iris , car le mode "loadima" ne fonctionne pas bien
    set conf(seuils,visu$visuNo,mode) "iris"
 
    #---- je fabrique une image avec 4 etoiles
@@ -184,17 +187,17 @@ test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
    #--- j'enregistre dans un fichier
    saveima [file join $::audace(rep_images) trans1.fit] $visuNo
 
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=2 trans_y=5"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=13 trans_y=-18"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-5 trans_y=17"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" trans1 . . .fit  \"$::audace(rep_images)\" trans5 . .fit TRANS trans_x=-17 trans_y=-4"
+   ttscript2 "IMA/SERIES . trans1 . . .fit . trans2 . .fit TRANS trans_x=2 trans_y=5"
+   ttscript2 "IMA/SERIES . trans1 . . .fit . trans3 . .fit TRANS trans_x=13 trans_y=-18"
+   ttscript2 "IMA/SERIES . trans1 . . .fit . trans4 . .fit TRANS trans_x=-5 trans_y=17"
+   ttscript2 "IMA/SERIES . trans1 . . .fit . trans5 . .fit TRANS trans_x=-17 trans_y=-4"
    set x0 100
    set y0 200
    set attendu [lindex [buf$bufNo getpix [list 100 200 ]] 1]
 
 } -body {
    set w  "$::audace(base).traiteWindow"
-   loadima [file join $::audace(rep_images) trans1.fit]
+   loadima trans1.fit
    #--dessine la boite de selection
    set x1 [expr {$x0-20} ]
    set x2 [expr {$x0+20} ]
@@ -222,7 +225,7 @@ test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
    set result 0
    #--   verifie l'existence de 4 images
    for {set i 1} {$i <= 5} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          buf$bufNo load $file
          if {[lindex [buf$bufNo getpix [list $x0 $y0]] 1] eq "$attendu"} {incr result}
