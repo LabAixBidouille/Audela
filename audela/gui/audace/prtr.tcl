@@ -501,9 +501,9 @@ namespace eval ::prtr {
                if {$child eq "opt_black"} {incr col}
             }
             "labelentry"   {
-                set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
+               set valuewidth [expr {[string length [set ::prtr::$child]]+4}]
                if {$valuewidth < "8"} {set valuewidth 9}
-               if {$child ni [list file bias dark flat image_ref]} {
+               if {$child ni [list file bias dark flat image_ref hot_pixel_list]} {
                   #--   cas general
                   LabelEntry $w.$child -label "$child" -labelanchor e \
                      -labelwidth $labelwidth -textvariable ::prtr::$child \
@@ -515,10 +515,13 @@ namespace eval ::prtr {
                      -labelwidth $labelwidth -textvariable ::prtr::$child \
                      -padx $d -width 30 -justify center
                   grid $w.$child -row $row -column $col -padx $d -pady 5 -sticky e
-                  incr col
-				      button $w.explore_$child -text "$::caption(prtr,parcourir)" \
-				         -width 2 -command "::prtr::getFileName $w $child"
-                  grid $w.explore_$child -row $row -column $col -padx $d -pady 5
+                  #--   rajout un bouton "..."
+                  if {$child ne "hot_pixel_list"} {
+                     incr col
+				         button $w.explore_$child -text "$::caption(prtr,parcourir)" \
+				            -width 2 -command "::prtr::getFileName $w $child"
+                     grid $w.explore_$child -row $row -column $col -padx $d -pady 5
+                  }
                }
             }
             "radiobutton" {
@@ -1955,6 +1958,10 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,cosmic)"              hlp "$help(dir,docLibtt) ttus1-fr.htm COSMIC"
       dict set SERIES "$caption(audace,menu,cosmic)"              par "cosmic_threshold 400"
       dict set SERIES "$caption(audace,menu,cosmic)"              opt $options
+      dict set SERIES "$caption(audace,menu,hotpixel)"            fun HOTPIXEL
+      dict set SERIES "$caption(audace,menu,hotpixel)"            hlp "$help(dir,docLibtt) ttus1-fr.htm HOTPIXEL"
+      dict set SERIES "$caption(audace,menu,hotpixel)"            par "hot_pixel_list \"[list P 3 4 L 3 C 3 ]\""
+      dict set SERIES "$caption(audace,menu,hotpixel)"            opt $options
       dict set SERIES "$caption(audace,menu,opt_noir)"            fun OPT
       dict set SERIES "$caption(audace,menu,opt_noir)"            hlp "$help(dir,docLibtt) ttus1-fr.htm OPT"
       dict set SERIES "$caption(audace,menu,opt_noir)"            par "bias img dark img therm_kappa 0.25"
@@ -2173,7 +2180,7 @@ namespace eval ::prtr {
 
       dict set SERIES "$caption(audace,menu,ligne)"               fun "PROFILE direction=x"
       dict set SERIES "$caption(audace,menu,ligne)"               hlp "$help(dir,docLibtt) ttus1-fr.htm PROFILE"
-      dict set SERIES "$caption(audace,menu,ligne)"               par "offset 1 filename row "
+      dict set SERIES "$caption(audace,menu,ligne)"               par "offset 1 filename row"
       dict set SERIES "$caption(audace,menu,ligne)"               opt $options
       dict set SERIES "$caption(audace,menu,bin_y)"               fun BINY
       dict set SERIES "$caption(audace,menu,bin_y)"               hlp "$help(dir,docLibtt) ttus1-fr.htm BINY"
@@ -2341,6 +2348,7 @@ namespace eval ::prtr {
       dict set Var   foclen            "double labelentry"           ;#CALIBWCS
       dict set Var   crota2            "double 360 labelentry"       ;#CALIBWCS
       dict set Var   astromcatalog     "alpha combobox"              ;#CALIBWCS
+      dict set Var   hot_pixel_list    "liste labelentry"            ;#HOTPIXEL
    }
 
    #--------------------------------------------------------------------------
@@ -2363,7 +2371,6 @@ namespace eval ::prtr {
 
       #--   nom de sortie defini ?
       if {$private(function) ni [list "PROFILE direction=x" "PROFILE direction=y" "MATRIX"]} {
-
          if {$prtr::out eq "" || $prtr::out eq "\"\""} {
             return [::prtr::avertiUser sortie_generique]
          }
@@ -2582,23 +2589,49 @@ namespace eval ::prtr {
             return "\"$parametre=$value\""
          }
       } elseif {$test eq "liste"} {
-         #--   il doit y avoir exactement 6 parametres
-         if {[llength $value] ne 6 } {
-            return [::prtr::avertiUser err_par_def $parametre]
-         }
-         #--   tous les parametres doivent etre numeriques
-         blt::vector create temp -watchunset 1
-         if {[catch {temp append $value}]} {
+         if {$parametre ne "hot_pixel_list"} {
+            #--   il doit y avoir exactement 6 parametres
+            if {[llength $value] ne 6 } {
+               return [::prtr::avertiUser err_par_def $parametre]
+            }
+            #--   tous les parametres doivent etre numeriques
+            blt::vector create temp -watchunset 1
+            if {[catch {temp append $value}]} {
+               blt::vector destroy temp
+               return [::prtr::avertiUser err_par_def $parametre]
+            }
+            #--   teste les valeurs
+            if {[expr {$temp(1)*$temp(3)-$temp(0)*$temp(4)}] == "0"} {
+               blt::vector destroy temp
+               return [::prtr::avertiUser err_list_val $parametre]
+            }
             blt::vector destroy temp
-            return [::prtr::avertiUser err_par_def $parametre]
+            return "\"paramresample=$value\""
+         } else {
+            #--   hotpixel
+            set result ""
+            foreach col [lsearch -regexp -all $value {(P)}] {
+               #--   compare les deux valeurs suivantes a un entier
+               set v1 [lindex $value [expr { $col+1 }]]
+               set v2 [lindex $value [expr { $col+2 }]]
+               if {![string is integer -strict $v1] || ![string is integer -strict $v2]} {
+                  return [::prtr::avertiUser err_list_val $parametre]
+               } else {
+                  append result "[lindex $value $col] $v1 $v2 "
+               }
+            }
+            foreach col [lsearch -regexp -all $value {[L|C]}] {
+               #--   compare la valeur suivante a un entier
+               set v [lindex $value [expr { $col+1 }]]
+               if {![string is integer -strict $v]} {
+                  return [::prtr::avertiUser err_list_val $parametre]
+               } else {
+                  #--   refait une liste propre
+                  append result "[lindex $value $col] $v "
+               }
+            }
+            return "\"hot_pixel_list=$result\""
          }
-         #--   teste les valeurs
-         if {[expr {$temp(1)*$temp(3)-$temp(0)*$temp(4)}] == "0"} {
-            blt::vector destroy temp
-            return [::prtr::avertiUser err_list_val $parametre]
-         }
-         blt::vector destroy temp
-         return "\"paramresample=$value\""
       }
    }
 
