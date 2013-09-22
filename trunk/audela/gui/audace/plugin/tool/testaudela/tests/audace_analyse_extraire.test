@@ -11,7 +11,7 @@ set ::conf(fichier,compres) 0
 variable SETUP {
    ::blt::vector create attendu mesure -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    attendu set [lrange [buf$bufNo getpix {1 1}] 1 end]
 }
 
@@ -65,10 +65,10 @@ test imaseries_profile_x {extraire une ligne de rz_rbgr_8} -constraints {AUDACE}
    #--   le nom de sortie du fichier txt est le nom par defaut (row)
    set name $::prtr::filename
    foreach file [list ${name}r.txt ${name}g.txt ${name}b.txt] {
-      if {[file exists [file join $::audace(rep_images) $file]]} {
+      if {[file exists $file]} {
          incr result
          #--   ouvre le fichier
-         set fd [open "./$file" r+]
+         set fd [open $file r+]
          gets $fd content
          mesure append [lindex [gets $fd] end]
          close $fd
@@ -94,10 +94,10 @@ test imaseries_profile_y {extraire une colonne de rz_rbgr_8b} -constraints {AUDA
    #--   procedure de controle
    set result "0"
    foreach file [list ${name}r.txt ${name}g.txt ${name}b.txt] {
-      if {[file exists "./$file"]} {
+      if {[file exists $file]} {
          incr result
          #--   ouvre le fichier
-         set fd [open "./$file" r+]
+         set fd [open "$file" r+]
          gets $fd content
          mesure append [lindex [gets $fd] end]
          close $fd
@@ -124,7 +124,7 @@ test imaseries_matrix {extraire une zone de rz_rbgr_8} -constraints {AUDACE} -se
    #--   procedure de controle
    set result "0"
    foreach file [list ${name}r.txt ${name}g.txt ${name}b.txt] {
-      if {[file exists "./$file"]} {
+      if {[file exists $file]} {
          incr result
          #--   ouvre le fichier
          set fd [open "./$file" r+]
@@ -145,7 +145,7 @@ test imaseries_matrix {extraire une zone de rz_rbgr_8} -constraints {AUDACE} -se
 
 #--   test IMA/SERIES BINX
 test imaseries_bin_x {binning des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    for {set i 101} {$i <= 110} {incr i} {
       set val [lrange [buf$bufNo getpix [list $i 1]] 1 end ]
       redValue append [lindex $val 0]
@@ -193,7 +193,7 @@ test imaseries_bin_x {binning des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -
 
 #--   test IMA/SERIES MEDIANX
 test imaseries_median_x {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    for {set i 101} {$i <= 200} {incr i} {
       set val [lrange [buf$bufNo getpix [list $i 1]] 1 end ]
       redValue append [lindex $val 0]
@@ -238,7 +238,7 @@ test imaseries_median_x {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
 #--   nature du test IMA/SERIES SORTX :
 #     concordance des intensites R G B constatees avec celles calculees
 test imaseries_sortx {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    for {set i 101} {$i <= 200} {incr i} {
       set val [lrange [buf$bufNo getpix [list $i 1]] 1 end ]
       redValue append [lindex $val 0]
@@ -291,8 +291,8 @@ test imaseries_sortx {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
 #--   test IMA/SERIES BINY
 test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
    loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
-   for {set i 101} {$i <= 200} {incr i} {
-     set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
+   for {set i 101} {$i <= 110} {incr i} {
+      set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
       redValue append [lindex $val 0]
       greenValue append [lindex $val 1]
       blueValue append [lindex $val 2]
@@ -309,7 +309,7 @@ test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -co
    }
    #--   saisit les entrees
    ::testaudela::putLabelEntry $z.funoptions.y1 "101"
-   ::testaudela::putLabelEntry $z.funoptions.y2 "200"
+   ::testaudela::putLabelEntry $z.funoptions.y2 "110"
    set height "1"
    ::testaudela::putLabelEntry $z.funoptions.height $height
    #--   change le bitpix
@@ -324,16 +324,15 @@ test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -co
    if {[lindex [buf$bufNo getkwd NAXIS2] 1] == $height} {incr result}
    #--   cherche la valeur du point {1 1}
    mesure set [lrange [buf$bufNo getpix {1 1}] 1 end]
-   attendu expr {round(attendu-mesure)}
+   attendu expr {(attendu-mesure) >= 1}
    #--   nb de difference < 1
-   attendu expr {abs(attendu) <= 1.0}
-   incr result [llength [attendu search 1]]
+   incr result [llength [attendu search 0]]
    return $result
 } -cleanup $CLEANUP2 -result "4"
 
 #--   test IMA/SERIES MEDIANY
 test imaseries_median_y {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    for {set i 101} {$i <= 200} {incr i} {
       set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
       redValue append [lindex $val 0]
@@ -378,7 +377,7 @@ test imaseries_median_y {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
 #--   nature du test IMA/SERIES SORTY :
 #     concordance des intensites R G B constatees avec celles calculees
 test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    for {set i 101} {$i <= 200} {incr i} {
      set val [lrange [buf$bufNo getpix [list 1 $i]] 1 end ]
       redValue append [lindex $val 0]
@@ -386,7 +385,7 @@ test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
       blueValue append [lindex $val 2]
    }
    #--   definit le niveau
-   set seuil "30"
+  set seuil "30"
    #--
    set index [expr {int([redValue length]*$seuil/100)}]
    #--   constitue le vecteur de sortie
