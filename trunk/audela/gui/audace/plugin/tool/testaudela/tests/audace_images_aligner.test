@@ -15,11 +15,10 @@ variable SETUP {
    ttscript2 "IMA/SERIES . m45_champ . . .fit . trans2 . .fit TRANS trans_x=20 trans_y=-20"
    ttscript2 "IMA/SERIES . m45_champ . . .fit . trans3 . .fit TRANS trans_x=-20 trans_y=20"
    ttscript2 "IMA/SERIES . m45_champ . . .fit . trans4 . .fit TRANS trans_x=-20 trans_y=-20"
+   set coords [list 381 391]
    buf$bufNo load trans4.fit
-   set coords [list 380 391]
    set attendu [lindex [buf$bufNo getpix $coords] 1]
-   #---  efface l'image
-   ::confVisu::deleteImage $visuNo
+   buf$bufNo clear
 }
 
 variable CLEANUP {
@@ -33,7 +32,7 @@ variable CLEANUP {
 test aligner_translation_automatique {alignement automatique} -constraints {AUDACE} -setup $SETUP -body {
    #--   clic sur le menu "Images/Aligner/Translation automatique..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,center)" "$::caption(audace,menu,reg_trans)..."
-   #--   selection des images
+   #--   selectionne aussi des images
    foreach img {m45_champ trans1 trans2 trans3 trans4} {
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
@@ -83,7 +82,7 @@ test aligner_astrometrie {alignement par astrometrie wcs} -constraints {AUDACE} 
          buf$bufNo load $file
          set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
          #--   trans1 sert de reference
-         if {$diff == 0} {incr result}
+        if {$diff == 0} {incr result}
          file delete $file
       }
    }
@@ -144,7 +143,7 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
    #-- procédure de controle
    set result 0
    ::blt::vector create resultat_exp -watchunset 1
-   resultat_exp set [list 120 79 53 63]
+   resultat_exp set [list 98 155 67 55]
    resultat_exp offset 1
 
    #--   verifie l'existence de 4 images

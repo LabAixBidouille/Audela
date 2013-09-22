@@ -79,8 +79,8 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    attendu expr {attendu+mesure+$offset}
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    return $result
@@ -119,8 +119,8 @@ test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15} -constr
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu+$offset}
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq $bitpix} {incr result}
@@ -157,9 +157,10 @@ test imaseries_div {division de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    attendu expr {attendu*$constante}
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
-   #--   compte le nombre de resultats concordants
-   attendu expr {abs(attendu) <= 1}
-   set result [llength [attendu search 1]]
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
+   #--   compte le nombre de resultats nuls
+   set result [llength [attendu search 0]]
    return $result
 } -cleanup $CLEANUP -result "3"
 
@@ -205,6 +206,8 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq "$bitpix"} {incr result}
@@ -212,7 +215,7 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
 } -cleanup $CLEANUP -result "4"
 
 #-----------------------------------------------------------------------------
-#--   chaque test OFFSET MULT LOG  a pour entree deux images RGB a traiter
+#--   chaque test OFFSET MULT LOG a pour entree deux images RGB a traiter
 #--   le test porte sur la concordance entre les valeurs au point {110 100} et les valeurs calculees
 #-----------------------------------------------------------------------------
 #--   IMA/SERIES OFFSET
@@ -236,8 +239,8 @@ test imaseries_offset {ajouter une constante a rz_rgbr_8 rz_rgbr_15} -constraint
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu+$offset}
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    return $result
@@ -269,9 +272,8 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu*$constante}
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
-   attendu expr {attendu <-1 || attendu > 1}
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq "$bitpix"} {incr result}
@@ -314,9 +316,9 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
       }
    }
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   #--   calcule le ratio
-   attendu expr {round(attendu-mesure)}
-   #--   compte le nombre de diffrence nulles
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
+   #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    if {[lindex [buf$bufNo getkwd BITPIX] 1] eq $bitpix} {incr result}
    return $result
@@ -328,15 +330,16 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    foreach file {rz_rgbr_8 rz_rgbr_15} {
       file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
    }
-   #--   decompose rz_rgbr_15 en plans couleurs
-   set nom_sans_extension [file join $::audace(rep_images) rz_rgbr_15]
+   #--   decompose rz_rgbr_8 en plans couleurs
+   set nom_sans_extension [file join $::audace(rep_images) rz_rgbr_8]
    ::conv2::Do_rgb2r+g+b $nom_sans_extension.fit $nom_sans_extension
    foreach color {r g b} {
-      loadima [file join $::audace(rep_images) rz_rgbr_15$color.fit]
+      loadima [file join $::audace(rep_images) rz_rgbr_8$color.fit]
       buf$bufNo stat
       moyenne append [ lindex [buf$bufNo getkwd MEAN] 1]
    }
-   loadima [file join $::audace(rep_images) rz_rgbr_15.fit]
+   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   set coords [list 110 100]
    attendu set [lrange [buf$bufNo getpix $coords] 1 end]
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
@@ -348,7 +351,7 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   saisit la valeur de normalisation du gain
-   set normgain_value "5000"
+   set normgain_value "1000"
    ::testaudela::putLabelEntry $z.funoptions.normgain_value $normgain_value
    #-- saisit le nom de sortie
    set name_out "norm"
@@ -357,14 +360,14 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    ::testaudela::clicButton $z.cmd.appliquer
 
    #--   procedure de controle
-   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
-   #--   calcule le resultat attendu
+   #--   calcule resultat attendu
    attendu expr {attendu*$normgain_value/moyenne}
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
+   #--   mesure l'intensite
+   mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
-   attendu expr {abs(attendu) <= 1}
-   set result [llength [attendu search 1]]
+   set result [llength [attendu search 0]]
    return $result
 } -cleanup $CLEANUP -result "3"
 
@@ -378,6 +381,7 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
 test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints {AUDACE} -setup {
    ::blt::vector create attendu mesure -watchunset 1
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
+   set coords [list 110 100]
 } -body {
    #--   clic sur le menu "Images/Modifier/Normaliser le fond du ciel..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,noffset)..."
@@ -396,9 +400,9 @@ test imaseries_normoffset {normaliser le fond du ciel de rz_rgbr_8} -constraints
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    #--   valeurs mesurees sur une image obtenue par la voie classique
    attendu set [list -1362 -787 28637]
-   #--   calcule la difference
-   attendu expr {round(attendu-mesure)}
-   #--   compte le nombre de resultats concordants
+   #--   admet un ecart maximal de 1 pour cause d'arrondi
+   attendu expr {(attendu-mesure) >1}
+   #--   compte le nombre de resultats nuls
    set result [llength [attendu search 0]]
    return $result
 } -cleanup {
