@@ -38,7 +38,7 @@ test imastack_init {initialisation} {AUDACE} {
    #--   initialise les vecteurs
    ::blt::vector create red_value green_value blue_value exposure attendu mesure temp -watchunset 1
    foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
-      loadima [file join $::audace(rep_images) $file.fit]
+      loadima $file.fit
       #--   liste les intensités R G B des trois images
       set intensite [lrange [buf$bufNo getpix $coords] 1 end]
       red_value append [lindex $intensite 0]

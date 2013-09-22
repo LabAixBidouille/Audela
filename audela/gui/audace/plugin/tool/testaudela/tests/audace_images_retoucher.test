@@ -26,6 +26,7 @@ test imaseries_cosmic {corrige un pixel chaud de hd21620-5.fit} -constraints {AU
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $z.cmd.appliquer
+
    #--- j'affiche la map dans une nouvelle visu
    set visu2 [confVisu::create]
    set bufNo2 [::confVisu::getBufNo $visu2]
