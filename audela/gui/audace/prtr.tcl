@@ -2518,7 +2518,7 @@ namespace eval ::prtr {
          regexp -all {[\w_-]+} $value match
          if {[info exists match] && $value eq "$match"} {
             #--   cas du nom d'un fichier .txt
-            return "$parametre=\"$value.txt\""
+            return "\"$parametre=$value.txt\""
          } else {
             return [::prtr::avertiUser err_par_def $value]
          }
