@@ -118,3 +118,4 @@ test aligner_intercorrelation_RGB {alignement RGB par intercorrelation} -constra
    ::testaudela::clicButton $z.cmd.fermer
    file delete rz_rgbr_8.fit rz_rgbr_15.fit
 } -result "2"
+

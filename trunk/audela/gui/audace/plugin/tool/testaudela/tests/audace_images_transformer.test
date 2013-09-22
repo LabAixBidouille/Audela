@@ -86,3 +86,4 @@ test imaseries_pol2rec {coordonnees rectangulaires polaire.fit} -constraints {AU
    ::confVisu::deleteImage $visuNo
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
 } -result "2"
+

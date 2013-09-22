@@ -305,7 +305,7 @@ test imaseries_filter_gradright {application d'un filtre gradient DG à rz_rgbr_8
 
 #--   test IMA/SERIES CONV kernel_type=gauss
 test imaseries_gauss {application d'un filtre gaussien à rz_rgbr_8.fit} -constraints {AUDACE} -setup $SETUP -body {
-  #--   clic sur le menu "Images/Filtrer/Filtre gaussien..."
+   #--   clic sur le menu "Images/Filtrer/Filtre gaussien..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,filter)" "$::caption(audace,menu,filtre_gaussien)..."
    #--   selectionne l'option "Options"
    ::testaudela::clicCheckButton $z.ttoptions.che "1"
@@ -456,3 +456,4 @@ test masque_flou_ligne_de_commande {application d'un masque_flou à rz_rgbr_8.fit
    ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
    ::blt::vector destroy attendu mesure
 } -result "3"
+
