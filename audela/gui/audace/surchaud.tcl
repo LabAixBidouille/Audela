@@ -13,6 +13,7 @@
 # div  operand value
 # div1  in operand out const ?tt_options?
 # div2  in operand out const number ?first_index? ?tt_options?
+# hotpixels  hot_pixel_list
 # mult  const
 # mult1  in out const ?tt_options?
 # mult2  in out const number ?first_index? ?tt_options?
@@ -35,6 +36,7 @@
 # sadd  in out number ?first_index? ?tt_options?
 # scale1  in out scale_x scale_y ?tt_options?
 # scale2  in out number scale_x scale_y ?first_index? ?tt_options?
+# sdrizzlewcs  in out number drop_sizepix oversampling ?first_index? ?tt_options?"
 # smean  in out number ?first_index? ?tt_options?
 # smedian  in out number ?first_index? ?tt_options?
 # sprod  in out number ?first_index? ?tt_options?
@@ -55,7 +57,6 @@
 # uncosmic2  in out number coef ?first_index? ?tt_options?
 # window1  in out {x1 y1 x2 y2} ?tt_options?
 # window2  in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
-# sdrizzlewcs  in out number drop_sizepix oversampling ?first_index? ?tt_options?"
 #
 # calibwcs  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder
 # calibwcs2  Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder number ?first_index?
@@ -2127,9 +2128,9 @@ proc sdrizzlewcs {args} {
    }
 }
 
-# loadima hotpixels ; hotpixels "P 25 25 L 5 C 5"
+# loadima image_hotpixels ; hotpixels "P 25 25 L 5 C 5"
 proc hotpixels {args} {
-   #--- 
+   #---
    if {[llength $args] == 1} {
       set ext $::conf(extension,defaut)
       set hot_pixel_list [lindex $args 0]
@@ -2139,3 +2140,4 @@ proc hotpixels {args} {
       error "Usage: hotpixels hot_pixel_list"
    }
 }
+

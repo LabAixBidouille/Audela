@@ -287,13 +287,13 @@ namespace eval ::console {
 
    proc clear { } {
       variable This
-      variable CmdLine
-      variable LastSpace
+
       $This.txt1 delete 0.0 end
    }
-   
+
    proc server { action { port 5555 } } {
       global audace
+
       set name console_server
       if {$action=="open"} {
          if {[info exists audace(socket,server,$name)]==1} {
@@ -301,7 +301,7 @@ namespace eval ::console {
          }
          console::socket_server_open $name $port console::socket_server_accept
       } elseif {$action=="close"} {
-         console::socket_server_close $name      
+         console::socket_server_close $name
       } else {
          error "action must be open or close"
       }
@@ -309,6 +309,7 @@ namespace eval ::console {
 
    proc client { args } {
       global audace
+
       set n [llength $args]
       if {$n>=1} {
          set action [lindex $args 0]
@@ -369,6 +370,7 @@ namespace eval ::console {
    # e.g. source audace/socket_tools.tcl ; socket_server_open server1 60000 socket_server_accept
    proc socket_server_open { name port {proc_accept socket_server_accept} } {
       global audace
+
       if {[info exists audace(socket,server,$name)]==1} {
          error "server $name already opened"
       }
@@ -386,7 +388,8 @@ namespace eval ::console {
    # Please use this proc as a canvas to write those dedicaded to your job.
    proc socket_server_accept {fid ip port} {
       global audace
-      fconfigure $fid -buffering line 
+
+      fconfigure $fid -buffering line
       fileevent $fid readable [list console::socket_server_respons $fid]
    }
    # ==========================================================================================
@@ -395,16 +398,17 @@ namespace eval ::console {
    # socket_server_respons : this is the default proc_accept of a socket server
    # Please use this proc as a canvas to write those dedicaded to your job.
    proc socket_server_respons {fid} {
-      global audace
       variable This
       variable CmdLine
       variable Res
+      global audace
+
       set errsoc [ catch {
          gets $fid line
          ::console::affiche_resultat "Remote command received: ${line}\n"
          if {[eof $fid]} {
             close $fid
-         } elseif {![fblocked $fid]} {            
+         } elseif {![fblocked $fid]} {
             if {[llength $line]==1} {
                set line [lindex $line 0]
             }
@@ -424,6 +428,7 @@ namespace eval ::console {
    # socket_server_close : to close a named socket server
    proc socket_server_close { name } {
       global audace
+
       set errno [catch {
          close $audace(socket,server,$name)
       } msg]
@@ -435,7 +440,7 @@ namespace eval ::console {
       }
    }
    # ==========================================================================================
-   
+
    # ==========================================================================================
    # socket_client_open : to open a named socket client
    # e.g. socket_client_open client1 127.0.0.1 60000
@@ -443,6 +448,7 @@ namespace eval ::console {
    #      socket_client_close client1
    proc socket_client_open { name host port } {
       global audace
+
       if {[info exists audace(socket,client,$name)]==1} {
          error "client $name already opened"
       }
@@ -460,6 +466,7 @@ namespace eval ::console {
    # socket_client_put : send msg from the named socket client
    proc socket_client_put { name msg } {
       global audace
+
       if {[info exists audace(socket,client,$name)]==0} {
          error "client $name does not exists. Use before: console::client open "
       }
@@ -478,6 +485,7 @@ namespace eval ::console {
    # socket_client_get : receive msg from the server linked with the named socket client
    proc socket_client_get { name } {
       global audace
+
       if {[info exists audace(socket,client,$name)]==0} {
          error "client $name does not exists. Use before: console::client open "
       }
@@ -499,6 +507,7 @@ namespace eval ::console {
    # socket_client_close : to close a named socket client
    proc socket_client_close { name } {
       global audace
+
       set errno [catch {
          close $audace(socket,client,$name)
       } msg]
