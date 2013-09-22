@@ -254,7 +254,7 @@ convert_shared_image(ClientData cdata, Tcl_Interp *interp, int argc, const char 
 
     {
         char s[4000];
-        sprintf(s,"buf%d setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", bufno, width, height, (long)pFrameRGB->data[0]);
+        sprintf(s,"buf%d setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld -reverse_y 1", bufno, width, height, (long)pFrameRGB->data[0]);
         if (Tcl_Eval(interp, s) == TCL_ERROR) {
             sprintf(cmd,"buf%d setpixels failed in %s.", bufno, LIBNAME);
             Tcl_SetResult(interp, cmd, TCL_VOLATILE);
@@ -301,7 +301,7 @@ avi_next(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 
                 {
                     char s[4000];
-                    sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld", avi->pCodecCtx->width, avi->pCodecCtx->height, (long)avi->pFrameRGB->data[0]);
+                    sprintf(s,"buf1 setpixels CLASS_GRAY %d %d FORMAT_BYTE COMPRESS_NONE %ld -reverse_y 1", avi->pCodecCtx->width, avi->pCodecCtx->height, (long)avi->pFrameRGB->data[0]);
                     if (Tcl_Eval(interp, s) == TCL_ERROR) {
                         Tcl_SetResult(interp, "buf1 setpixels failed in " LIBNAME ".", TCL_VOLATILE);
                         return TCL_ERROR;
