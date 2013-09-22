@@ -121,7 +121,7 @@ test audace_pretrait_dark_ligne_de_commande {faire un dark sans et avec offset} 
    #--   calcule la difference
    set difference [expr {$attenduDark-$mesure}]
    if {$difference eq "0.0"} {incr result}
-    #--   supprime l'image non compressee
+   #--   supprime l'image non compressee
    file delete -force $nom_dark.fit.gz
 
    #--   test avec offset----------------------------------------

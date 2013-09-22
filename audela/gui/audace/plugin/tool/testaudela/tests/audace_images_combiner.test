@@ -260,7 +260,7 @@ test imastack_produit {produit de rz_rgbr_8, rz_rgbr_15 et rz_rgbr_30 avec power
    attendu expr {abs(attendu) <= 1}
    set result [llength [attendu search 1]]
    #--   exposure est bon si la difference est inferieur a 0.001 sec
-  if {[expr {$exposure(sum)-[lindex [buf$bufNo getkwd EXPOSURE] 1]}] < "0.001"} {
+   if {[expr {$exposure(sum)-[lindex [buf$bufNo getkwd EXPOSURE] 1]}] < "0.001"} {
       incr result
    }
    return $result

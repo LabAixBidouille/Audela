@@ -1,6 +1,5 @@
 set visuNo 1
 
-
 #--   Convoluer/Editeur de noyaux :
 test editeur_noyau {editeur} -constraints {AUDACE} -setup {
     set w ".audace.k.kernel"
@@ -117,3 +116,4 @@ test convolution_spatiale {convolution spatiale de 47toucan.jpg} -constraints {A
    ::confVisu::setZoom $visuNo $previous_zoom
 
 } -result "5"
+

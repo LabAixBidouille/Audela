@@ -282,7 +282,7 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
 
 #--   IMA/SERIES LOG
 test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {AUDACE} -setup $SETUP -body {
-  #--   clic sur le menu "Images/Modifier/Logarithme..."
+   #--   clic sur le menu "Images/Modifier/Logarithme..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,arithm)" "$::caption(audace,menu,log)..."
    #--   selectionne rz_rgbr_8 rz_rgbr_15
    foreach img {rz_rgbr_8 rz_rgbr_15} {
@@ -532,3 +532,4 @@ test ecreter_les_extremes_ligne_de_commande {ecreter rz_rgbr_8} -constraints {AU
 } -result "6"
 
 set conf(extension,defaut) $prevExt
+

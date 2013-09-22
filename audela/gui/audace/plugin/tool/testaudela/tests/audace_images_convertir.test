@@ -235,3 +235,4 @@ test convertir_rvb2r+v+b {decompose une image RGB en plans couleurs} -constraint
       }
    }
 } -result "3"
+

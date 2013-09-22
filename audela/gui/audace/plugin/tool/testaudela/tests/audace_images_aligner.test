@@ -162,7 +162,7 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
 } -cleanup $CLEANUP -result "8"
 
 test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
-    ::confVisu::clear $visuNo
+   ::confVisu::clear $visuNo
    #--- j'impose le mode seuil iris , car le mode "loadima" ne fonctionne pas bien
    set conf(seuils,visu$visuNo,mode) "iris"
 
@@ -239,11 +239,4 @@ test aligner_selection {alignement par selection} -constraints {AUDACE} -setup {
    ::testaudela::clicButton $w.cmd.fermer
    file delete trans1.fit trans2.fit trans3.fit trans4.fit trans5.fit
 } -result "4"
-
-
-
-
-
-
-
 
