@@ -9,7 +9,7 @@ variable SETUP {
    set ::conf(extension,defaut) .fit
    set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
-   loadima [file join $::audace(rep_images) rz_rgbr_8.fit]
+   loadima rz_rgbr_8.fit
    set coords {245 100}
    set attendu [lrange [buf$bufNo getpix $coords] 1 end]
    set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
@@ -30,7 +30,7 @@ variable SETUP2 {
    foreach file {rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} {
       file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
    }
-   loadima [file join $::audace(rep_images) rz_rgbr_30.fit]
+   loadima rz_rgbr_8.fit
    set coords [list 227 108]
    set attendu [lrange [buf$bufNo getpix $coords] 1 end]
    #--   cherche les dimensions de l'image
@@ -46,7 +46,7 @@ variable CLEANUP2 {
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 rz_rgbr_15 rz_rgbr_30 ${name_out}1 ${name_out}2 ${name_out}3]
-   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   #ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
 }
 
 #-----------------------------------------------------------------------------
@@ -225,7 +225,7 @@ test imaseries_mirror_y {miroir horizontal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -
    set result 0
    #--   verifie le deplacement du point {227 108}
    #--   naxis2=231 => colonne centrale=116
-   #--   point 108 => delta =108-116=-8 ; symétrique = 116+8 =124
+   #--   point 108 => delta =108-116=-8 ; symetrique = 116+8 =124
    set y [ expr {int(116-(108-116))}]
    set mesure [lrange [buf$bufNo getpix [list 227 $y]] 1 end]
    if {$mesure eq "$attendu"} {set result 1}
@@ -252,7 +252,7 @@ test imaseries_mirror_xy {miroir diagonal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -c
     set result 0
    #--   verifie le deplacement du point {227 108}
    set mesure [lrange [buf$bufNo getpix {108 227}] 1 end]
-   if {$mesure eq "$attendu"} {set result 1}
+  if {$mesure eq "$attendu"} {set result 1}
    return $result
 } -cleanup $CLEANUP2 -result "1"
 
