@@ -46,7 +46,7 @@ variable CLEANUP2 {
    #---  efface l'image
    ::confVisu::deleteImage $visuNo
    set liste [list rz_rgbr_8 rz_rgbr_15 rz_rgbr_30 ${name_out}1 ${name_out}2 ${name_out}3]
-   #ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
+   ttscript2 "IMA/SERIES . \"$liste\" * * .fit . . . . DELETE"
 }
 
 #-----------------------------------------------------------------------------
