@@ -82,7 +82,7 @@ test convolution_spatiale {convolution spatiale de 47toucan.jpg} -constraints {A
    ::testaudela::clicButton $w.cmd.appliquer
 
    #--   teste l'existence de l'image filtree
-   set product [file join $::audace(rep_images) inversion_-1_1x1_47toucan.jpg]
+   set product "inversion_-1_1x1_47toucan.jpg"
    if {[file exists $product]} {incr result}
 
    #--   teste les valeurs d'un point

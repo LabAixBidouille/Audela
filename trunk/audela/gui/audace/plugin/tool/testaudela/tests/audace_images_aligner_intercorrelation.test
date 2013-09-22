@@ -4,19 +4,19 @@ set bufNo [::confVisu::getBufNo $visuNo]
 set w ".audace.prtr.usr.choix.tablelist"
 #--   le nom de la zone de cmd
 set z ".audace.prtr.usr.table"
+#--   configure l'extension et la compression
+set ::conf(extension,defaut) ".fit"
+set ::conf(fichier,compres) 0
 
 variable SETUP {
-   #--   configure l'extension et la compression
-   set ::conf(extension,defaut) ".fit"
-   set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
    buf$bufNo load [file join $::audace(rep_images) m45_champ.fit]
    set coords [list 381 391]
    set attendu [lindex [buf$bufNo getpix $coords] 1]
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans1 . .fit TRANS trans_x=20 trans_y=20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans2 . .fit TRANS trans_x=20 trans_y=-20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans3 . .fit TRANS trans_x=-20 trans_y=20"
-   ttscript2 "IMA/SERIES \"$::audace(rep_images)\" m45_champ . . .fit  \"$::audace(rep_images)\" trans4 . .fit TRANS trans_x=-20 trans_y=-20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans1 . .fit TRANS trans_x=20 trans_y=20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans2 . .fit TRANS trans_x=20 trans_y=-20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans3 . .fit TRANS trans_x=-20 trans_y=20"
+   ttscript2 "IMA/SERIES . m45_champ . . .fit . trans4 . .fit TRANS trans_x=-20 trans_y=-20"
 }
 
 variable CLEANUP {
@@ -47,7 +47,7 @@ test aligner_intercorrelation {alignement par intercorrelation} -constraints {AU
    set result 0
    #--   verifie l'existence de 5 images recadrees
    for {set i 1} {$i <= 5} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
@@ -86,9 +86,6 @@ test aligner_intercorrelation_ligne_de_commandes {alignement par intercorrelatio
 } -result "10"
 
 test aligner_intercorrelation_RGB {alignement RGB par intercorrelation} -constraints {AUDACE} -setup {
-   #--   configure l'extension et la compression
-   set ::conf(extension,defaut) ".fit"
-   set ::conf(fichier,compres) 0
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_8.fit] $::audace(rep_images)
    file copy -force [file join $::conf(testaudela,rep_images) rz_rgbr_15.fit] $::audace(rep_images)
 } -body {
@@ -107,7 +104,7 @@ test aligner_intercorrelation_RGB {alignement RGB par intercorrelation} -constra
    set result 0
    #--   verifie l'existence de 2 images recadrees
    for {set i 1} {$i <= 2} {incr i} {
-      set file [file join $::audace(rep_images) ${name_out}$i.fit]
+      set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
       }
