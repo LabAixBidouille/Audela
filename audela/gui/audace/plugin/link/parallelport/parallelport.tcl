@@ -196,57 +196,63 @@ proc ::parallelport::confToWidget { } {
 proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment args } {
    variable private
 
+   package require registry
+
    if { $::tcl_platform(os) == "Windows NT" } {
-      #--- j'installe porttalk si ce n'est pas deja fait
-      if { $private(porttalkInstalled) == 0 } {
-         #--- j'installe porttalk
-         set res [ catch { set result [ porttalk open all ] } msg ]
-         set no_administrator "PortTalk: You do not have rights to access"
-         if { $res == "1" } {
-            #--- l'installation de porttalk n'a pas reussi parce que l'utilisateur
-            #--- n'est pas administrateur de la machine.
-            if { [ string range $msg 0 41 ] != "$no_administrator" } {
-               ::console::affiche_erreur "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n"
-            } else {
-               ::console::affiche_erreur "$msg\n"
-            }
-            if { $::conf(parallelport,porttalkQuestion) == "1" } {
-               #--- je demande a l'utilisateur s'il ne veut plus que Audela essaie
-               #--- d'installer porttalk
-               set base ".allowio"
-               toplevel $base
-               wm geometry $base +50+100
-               wm resizable $base 0 0
-               wm deiconify $base
-               wm title $base "$::caption(parallelport,porttalk_erreur)"
+      #--- je verifie que l'OS est une version 32 bits (allowio n'est pas compatible 64 bits)
+      set version [ lindex [ ::registry get "HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0" Identifier] 0 ]
+      if { $version == "x86" } {
+         #--- j'installe porttalk si ce n'est pas deja fait
+         if { $private(porttalkInstalled) == 0 } {
+            #--- j'installe porttalk
+            set res [ catch { set result [ porttalk open all ] } msg ]
+            set no_administrator "PortTalk: You do not have rights to access"
+            if { $res == "1" } {
+               #--- l'installation de porttalk n'a pas reussi parce que l'utilisateur
+               #--- n'est pas administrateur de la machine.
                if { [ string range $msg 0 41 ] != "$no_administrator" } {
-                  message $base.msg -text "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n" -justify center -width 350
+                  ::console::affiche_erreur "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n"
                } else {
-                  message $base.msg -text "$msg\n" -justify center -width 350
+                  ::console::affiche_erreur "$msg\n"
                }
-               pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
-               frame $base.frame1
-                  set saveallowio "0"
-                  checkbutton $base.frame1.check1 -variable saveallowio
-                  pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-                  label $base.frame1.lab1 -text "$::caption(parallelport,porttalk_message)"
-                  pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
-               pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
-               button $base.but1 -text "$::caption(parallelport,ok)" \
-                  -command {
-                     if { $saveallowio == "1" } {
-                        set ::conf(parallelport,porttalkQuestion) "0"
-                     }
-                     destroy .allowio
+               if { $::conf(parallelport,porttalkQuestion) == "1" } {
+                  #--- je demande a l'utilisateur s'il ne veut plus que Audela essaie
+                  #--- d'installer porttalk
+                  set base ".allowio"
+                  toplevel $base
+                  wm geometry $base +50+100
+                  wm resizable $base 0 0
+                  wm deiconify $base
+                  wm title $base "$::caption(parallelport,porttalk_erreur)"
+                  if { [ string range $msg 0 41 ] != "$no_administrator" } {
+                     message $base.msg -text "$msg\n\n$::caption(parallelport,porttalk_msg_erreur)\n" -justify center -width 350
+                  } else {
+                     message $base.msg -text "$msg\n" -justify center -width 350
                   }
-               pack $base.but1 -in $base -anchor center -side top -padx 5 -pady 5 -ipadx 10 -ipady 5
-               focus -force $base
-               tkwait window $base
+                  pack $base.msg -in $base -anchor center -side top -fill x -padx 0 -pady 0 -expand 0
+                  frame $base.frame1
+                     set saveallowio "0"
+                     checkbutton $base.frame1.check1 -variable saveallowio
+                     pack $base.frame1.check1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
+                     label $base.frame1.lab1 -text "$::caption(parallelport,porttalk_message)"
+                     pack $base.frame1.lab1 -anchor w -side left -fill x -padx 1 -pady 1 -expand 1
+                  pack $base.frame1 -in $base -anchor center -side top -fill none -padx 0 -pady 0 -expand 0
+                  button $base.but1 -text "$::caption(parallelport,ok)" \
+                     -command {
+                        if { $saveallowio == "1" } {
+                           set ::conf(parallelport,porttalkQuestion) "0"
+                        }
+                        destroy .allowio
+                     }
+                  pack $base.but1 -in $base -anchor center -side top -padx 5 -pady 5 -ipadx 10 -ipady 5
+                  focus -force $base
+                  tkwait window $base
+               }
+            } else {
+                #--- l'installation de porttalk a reussi
+                set private(porttalkInstalled) 1
+                ::console::affiche_prompt "$::caption(parallelport,porttalk_titre) $result\n\n"
             }
-         } else {
-             #--- l'installation de porttalk a reussi
-             set private(porttalkInstalled) 1
-             ::console::affiche_prompt "$::caption(parallelport,porttalk_titre) $result\n\n"
          }
       }
    }
