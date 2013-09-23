@@ -2402,6 +2402,7 @@ namespace eval ::confVisu {
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::clear $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_console)" "::console::clear"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
@@ -2732,6 +2733,7 @@ namespace eval ::confVisu {
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_console)" "::console::clear"
 
          Menu_Separator $visuNo "$caption(audace,menu,display)"
          Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
@@ -2852,6 +2854,7 @@ namespace eval ::confVisu {
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
+      Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_console)" "::console::clear"
       Menu_Separator $visuNo "$caption(audace,menu,display)"
       Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
          "::div::initDiv $visuNo" \
@@ -3167,6 +3170,7 @@ namespace eval ::confVisu {
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,pas_outil)" "::audace::pasOutil $visuNo"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_image)" "::confVisu::deleteImage"
+                  Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,efface_console)" "::console::clear"
                   Menu_Separator $visuNo "$caption(audace,menu,display)"
                   Menu_Command   $visuNo "$caption(audace,menu,display)" "$caption(audace,menu,palette)" \
                      "::div::initDiv $visuNo" \
