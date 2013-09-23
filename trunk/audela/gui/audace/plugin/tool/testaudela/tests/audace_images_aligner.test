@@ -8,7 +8,6 @@ set z ".audace.prtr.usr.table"
 set ::conf(extension,defaut) ".fit"
 set ::conf(fichier,compres) 0
 
-
 variable SETUP {
    file copy -force [file join $::conf(testaudela,rep_images) m45_champ.fit] $::audace(rep_images)
    ttscript2 "IMA/SERIES . m45_champ . . .fit . trans1 . .fit TRANS trans_x=20 trans_y=20"
@@ -50,12 +49,14 @@ test aligner_translation_automatique {alignement automatique} -constraints {AUDA
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
+         set mesure [lindex [buf$bufNo getpix $coords] 1]
+         set diff [expr { $attendu-$mesure }]
+         #::disp "translation_automatique $file attendu $attendu mesure $mesure\n"
          #--   trans4 sert de reference
          if {$diff == 0} {incr result}
          file delete $file
       }
-   }
+::console   }
    return $result
 } -cleanup $CLEANUP -result "10"
 
@@ -80,9 +81,11 @@ test aligner_astrometrie {alignement par astrometrie wcs} -constraints {AUDACE} 
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
+         set mesure [lindex [buf$bufNo getpix $coords] 1]
+         set diff [expr { $attendu-$mesure }]
+         #::console::disp "astrometrie $file attendu $attendu mesure $mesure\n"
          #--   trans1 sert de reference
-        if {$diff == 0} {incr result}
+         if {$diff == 0} {incr result}
          file delete $file
       }
    }
@@ -110,12 +113,14 @@ test aligner_translation_affine {alignement affine} -constraints {AUDACE} -setup
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
-         set diff [expr { $attendu-[lindex [buf$bufNo getpix $coords] 1] }]
+         set mesure [lindex [buf$bufNo getpix $coords] 1]
+         set diff [expr { $attendu-$mesure }]
+         #::console::disp "translation_affine $file attendu $attendu mesure $mesure\n"
          #--   trans1 sert de reference
          if {$diff == 0} {incr result}
          file delete $file
       }
-   }
+  }
    return $result
 } -cleanup $CLEANUP -result "8"
 
@@ -133,31 +138,30 @@ test aligner_translation_moindres_carres {alignement par moindes carres} -constr
       ::testaudela::clicCheckButton [$w windowpath $img,0] 1
    }
    #--   l'image de reference
-  ::testaudela::putLabelEntry $z.funoptions.file "./m45_champ.fit"
+   ::testaudela::putLabelEntry $z.funoptions.file "./m45_champ.fit"
    #-- saisit le nom de sortie
    set name_out "trans_mc"
    ::testaudela::putLabelEntry $z.sortie.out "$name_out"
    #--   clic sur le bouton Appliquer
    ::testaudela::clicButton $z.cmd.appliquer
 
-   #-- procédure de controle
+   #-- procedure de controle
+   set attendus [list 98 155 67 55]
    set result 0
-   ::blt::vector create resultat_exp -watchunset 1
-   resultat_exp set [list 98 155 67 55]
-   resultat_exp offset 1
-
    #--   verifie l'existence de 4 images
    for {set i 1} {$i <= 4} {incr i} {
       set file ${name_out}$i.fit
       if {[file exists $file]} {
          incr result
          buf$bufNo load $file
+         set attendu [lindex $attendus [expr { $i-1 }]]
          set mesure [lindex [buf$bufNo getpix $coords] 1]
-         if {$mesure == $resultat_exp($i)} {incr result}
+         set diff [expr { $attendu-$mesure }]
+         #::console::disp "translation_moindres_carres $file attendu $attendu mesure $mesure\n"
+         if {$diff == 0} {incr result}
          file delete $file
       }
    }
-   ::blt::vector destroy resultat_exp
    return $result
 } -cleanup $CLEANUP -result "8"
 

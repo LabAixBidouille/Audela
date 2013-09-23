@@ -79,6 +79,7 @@ test imaseries_add {additionner rz_rgbr_8 et rz_rgbr_15 avec rz_rgbr_30} -constr
    attendu expr {attendu+mesure+$offset}
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #::console::disp "imaseries_add attendu $attendu(:) mesure $mesure(:)\n"
    #--   admet un ecart maximal de 1 pour cause d'arrondi
    attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
@@ -119,6 +120,7 @@ test imaseries_sub {soustraire rz_rgbr_30 de rz_rgbr_8 et de rz_rgbr_15} -constr
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu+$offset}
+   #::console::disp "imaseries_sub attendu $attendu(:) mesure $mesure(:)\n"
    #--   admet un ecart maximal de 1 pour cause d'arrondi
    attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
@@ -155,6 +157,7 @@ test imaseries_div {division de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu*$constante}
+   #::console::disp "imaseries_div attendu $attendu(:) mesure $mesure(:)\n"
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    #--   admet un ecart maximal de 1 pour cause d'arrondi
@@ -204,6 +207,7 @@ test imaseries_prod {produit de rz_rgbr_8 et rz_rgbr_15 par rgb_30} -constraints
    #--   procedure de controle
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #::console::disp "imaseries_prod attendu $attendu(:) mesure $mesure(:)\n"
    #--   calcule la difference
    attendu expr {round(attendu-mesure)}
    #--   admet un ecart maximal de 1 pour cause d'arrondi
@@ -239,6 +243,7 @@ test imaseries_offset {ajouter une constante a rz_rgbr_8 rz_rgbr_15} -constraint
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu+$offset}
+   #::console::disp "imaseries_offset attendu $attendu(:) mesure $mesure(:)\n"
    #--   admet un ecart maximal de 1 pour cause d'arrondi
    attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
@@ -272,6 +277,7 @@ test imaseries_mult {multiplier rz_rgbr_8 rz_rgbr_15 par constante} -constraints
    #--   charge le resultat obtenu
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
    attendu expr {attendu*$constante}
+   #::console::disp "imaseries_mult attendu $attendu(:) mesure $mesure(:)\n"
    #--   admet un ecart maximal de 1 pour cause d'arrondi
    attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
@@ -316,6 +322,7 @@ test imaseries_log {appliquer logarithme a rz_rgbr_8 rz_rgbr_15} -constraints {A
       }
    }
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #::console::disp "imaseries_log attendu $attendu(:) mesure $mesure(:)\n"
    #--   admet un ecart maximal de 1 pour cause d'arrondi
    attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls
@@ -364,6 +371,7 @@ test imaseries_normgain {normaliser le gain de rz_rgbr_8 rz_rgbr_15} -constraint
    attendu expr {attendu*$normgain_value/moyenne}
    #--   mesure l'intensite
    mesure set [lrange [buf$bufNo getpix $coords] 1 end]
+   #::console::disp "imaseries_normgain attendu $attendu(:) mesure $mesure(:)\n"
    #--   admet un ecart maximal de 1 pour cause d'arrondi
    attendu expr {(attendu-mesure) >1}
    #--   compte le nombre de resultats nuls

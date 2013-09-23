@@ -31,7 +31,7 @@ variable SETUP2 {
       file copy -force [file join $::conf(testaudela,rep_images) $file.fit] $::audace(rep_images)
    }
    loadima rz_rgbr_8.fit
-   set coords [list 227 108]
+   set coords [list 250 100]
    set attendu [lrange [buf$bufNo getpix $coords] 1 end]
    #--   cherche les dimensions de l'image
    set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
@@ -176,7 +176,7 @@ test rotation-90_ligne_de_commande {rotation de rz_rgbr_8} -constraints {AUDACE}
 
 #-----------------------------------------------------------------------------
 #--   chaque test INVERT a pour entree trois images RGB a traiter
-#--   le test porte sur la constance des intensites RGB lors du deplacement du point {227 108}
+#--   le test porte sur la constance des intensites RGB lors du deplacement du point {250 100}
 #-----------------------------------------------------------------------------
 
 #--   test IMA/SERIES INVERT mirror
@@ -196,17 +196,19 @@ test imaseries_mirror_x {miroir vertical de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -co
 
    #--   procedure de controle
    set result 0
-   #--   verifie le deplacement du point {227 108}
+   #--   verifie le deplacement du point {250 100}
    #--   naxis1=347 => colonne centrale=174
-   #--   point 227 => delta =227-174=53 ; symétrique = 174-53 =121
-   set x [ expr {int(174-(227-174))}]
-   set mesure [lrange [buf$bufNo getpix [list $x 108]] 1 end]
+   #--   point 250 => delta =250-174=76 ; symétrique = 174-76 =98
+   #--   calcule la coordonnee x du point
+   set x [ expr {int(174-(250-174))}]
+   set mesure [lrange [buf$bufNo getpix [list $x 100]] 1 end]
+   #::console::disp "iimaseries_mirror_x attendu $attendu mesure $mesure\n"
    if {$mesure eq "$attendu"} {set result 1}
    return $result
 } -cleanup $CLEANUP2 -result "1"
 
 #--   nature du test IMA/SERIES INVERT flip :
-#     constance des intensites RGB lors du deplacement du point {227 108}
+#     constance des intensites RGB lors du deplacement du point {250 100}
 test imaseries_mirror_y {miroir horizontal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
    #--   clic sur le menu "Images/Adapter la géométrie/Miroir horizontal..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,miroir_y)..."
@@ -223,17 +225,19 @@ test imaseries_mirror_y {miroir horizontal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -
 
    #--   procedure de controle
    set result 0
-   #--   verifie le deplacement du point {227 108}
+   #--   verifie le deplacement du point {250 100}
    #--   naxis2=231 => colonne centrale=116
-   #--   point 108 => delta =108-116=-8 ; symetrique = 116+8 =124
-   set y [ expr {int(116-(108-116))}]
-   set mesure [lrange [buf$bufNo getpix [list 227 $y]] 1 end]
+   #--   point 100 => delta =100-116=-16 ; symetrique = 116+16 =132
+   #--   calcule la coordonnee y du point
+   set y [ expr {int(116-(100-116))}]
+   set mesure [lrange [buf$bufNo getpix [list 250 $y]] 1 end]
+   #::console::disp "imaseries_mirror_y attendu $attendu mesure $mesure\n"
    if {$mesure eq "$attendu"} {set result 1}
    return $result
 } -cleanup $CLEANUP2 -result "1"
 
 #--   nature du test IMA/SERIES INVERT xy :
-#     constance des intensites RGB lors du deplacement du point {227 108}
+#     constance des intensites RGB lors du deplacement du point {250 100}
 test imaseries_mirror_xy {miroir diagonal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
    #--   clic sur le menu "Images/Adapter la géométrie/Miroir diagonal..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,miroir_xy)..."
@@ -250,20 +254,19 @@ test imaseries_mirror_xy {miroir diagonal de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -c
 
    #--   procedure de controle
     set result 0
-   #--   verifie le deplacement du point {227 108}
-   set mesure [lrange [buf$bufNo getpix {108 227}] 1 end]
-  if {$mesure eq "$attendu"} {set result 1}
+   #--   verifie le deplacement du point {250 100}
+   set mesure [lrange [buf$bufNo getpix {100 250}] 1 end]
+   #::console::disp "maseries_mirror_xy attendu $attendu mesure $mesure\n"
+   if {$mesure eq "$attendu"} {set result 1}
    return $result
 } -cleanup $CLEANUP2 -result "1"
 
 #-----------------------------------------------------------------------------
-#--   chaque test TRANS a pour entree trois images RGB a traiter
+#--   le test TRANS a pour entree trois images RGB a traiter
 #--   l'option jpegfile est testee systematiquement
-#--   le test porte sur la constance des intensites RGB lors du deplacement du point {227 108}
+#--   le test porte sur la constance des intensites RGB lors du deplacement du point {250 100}
 #-----------------------------------------------------------------------------
-
 #--   nature du test IMA/SERIES TRANS :
-#     constance des intensites RGB lors du deplacement du point {227 108}
 test imaseries_trans {translation de de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constraints {AUDACE} -setup $SETUP2 -body {
    #--   clic sur le menu "Images/Adapter la géométrie/Translater..."
    ::testaudela::clicMenu $visuNo "$::caption(audace,menu,geometry)" "$::caption(audace,menu,translate)..."
@@ -283,8 +286,11 @@ test imaseries_trans {translation de de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -constr
 
    #--   procedure de controle
    set result 0
-   #--   verifie le deplacement du point {227 108}
-   set mesure [lrange [buf$bufNo getpix {207 128}] 1 end]
+   #--   verifie le deplacement du point {250 100}
+   #--   corrige les coordonnees du montant des deplacements
+   set x [expr { 250-20 }]; set y [expr { 100+20 }]
+   set mesure [lrange [buf$bufNo getpix [list $x $y]] 1 end]
+   #::console::disp "imaseries_trans attendu $attendu mesure $mesure\n"
    if {"$attendu" eq "$mesure"} {set result 1}
    return $result
 } -cleanup $CLEANUP2 -result "1"
