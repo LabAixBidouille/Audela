@@ -179,6 +179,7 @@ test imaseries_bin_x {binning des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -
    if {[lindex [buf$bufNo getkwd NAXIS1] 1] == $width} {incr result}
    #--   cherche la valeur du point {1 1}
    mesure set [lrange [buf$bufNo getpix {1 1}] 1 end]
+   #::console::disp "imaseries_bin_x attendu $attendu(:) mesure $mesure(:)\n"
    attendu expr {round(attendu-mesure)}
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
@@ -228,6 +229,7 @@ test imaseries_median_x {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
    if {[lindex [buf$bufNo getkwd NAXIS1] 1] == $width} {incr result}
    #--   cherche la valeur du point {1 1}
    mesure set [lrange [buf$bufNo getpix {1 1}] 1 end]
+   #::console::disp "imaseries_median_x attendu $attendu(:) mesure $mesure(:)\n"
    attendu expr {round(attendu-mesure)}
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
@@ -281,6 +283,7 @@ test imaseries_sortx {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    if {[lindex [buf$bufNo getkwd NAXIS1] 1] == $width} {incr result}
    #--   cherche la valeur du point {1 1}
    mesure set [lrange [buf$bufNo getpix {1 1}] 1 end]
+   #::console::disp "imaseries_sortx attendu $attendu(:) mesure $mesure(:)\n"
    attendu expr {round(attendu-mesure)}
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
@@ -324,6 +327,7 @@ test imaseries_bin_y {binning des lignes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30} -co
    if {[lindex [buf$bufNo getkwd NAXIS2] 1] == $height} {incr result}
    #--   cherche la valeur du point {1 1}
    mesure set [lrange [buf$bufNo getpix {1 1}] 1 end]
+   #::console::disp "imaseries_bin_y attendu $attendu(:) mesure $mesure(:)\n"
    attendu expr {(attendu-mesure) >= 1}
    #--   nb de difference < 1
    incr result [llength [attendu search 0]]
@@ -367,6 +371,7 @@ test imaseries_median_y {mediane des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_30
       temp expr {median($vector)}
       attendu append temp
    }
+   #::console::disp "imaseries_median_y attendu $attendu(:) mesure $mesure(:)\n"
    attendu expr {round(attendu-mesure)}
    #--   nb de differences egale a 1
    attendu expr {abs(attendu) <= 1.0}
@@ -419,6 +424,7 @@ test imaseries_sorty {valeur triée des colonnes de rz_rgbr_8 rz_rgbr_15 rz_rgbr_
    if {[lindex [buf$bufNo getkwd NAXIS2] 1] == $height} {incr result}
    #--   cherche la valeur du point {1 1}
    mesure set [lrange [buf$bufNo getpix {1 1}] 1 end]
+   #::console::disp "imaseries_sorty attendu $attendu(:) mesure $mesure(:)\n"
    attendu expr {round(attendu-mesure)}
    #--   nb de difference < 1
    attendu expr {abs(attendu) <= 1.0}
