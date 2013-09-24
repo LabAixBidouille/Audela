@@ -100,8 +100,8 @@ set caption(collector,vyPix)                 "Y Speed \[pix/s\] SOUTH(-) NORTH(+
 
 set caption(collector,german)                "Equatorial"
 set caption(collector,postel)                "Equatorial Mount Current Position"
-set caption(collector,west)                  "W"
-set caption(collector,east)                  "E"
+set caption(collector,west)                  "West"
+set caption(collector,east)                  "East"
 set caption(collector,elevInf)               "Elevation Lower Limit \[deg\]"
 set caption(collector,buteeEast)             "East Stop at \[deg\]"
 set caption(collector,buteeWest)             "West Stop at \[deg\]"
@@ -250,8 +250,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(collector,german)             "Equatoriale"
    set caption(collector,postel)             "Position actuelle de la monture équatoriale"
-   set caption(collector,west)               "O"
-   set caption(collector,east)               "E"
+   set caption(collector,west)               "Ouest"
+   set caption(collector,east)               "Est"
    set caption(collector,elevInf)            "Elévation minimale \[deg\]"
    set caption(collector,buteeEast)          "Angle horaire limite Est \[deg\]"
    set caption(collector,buteeWest)          "Angle horaire limite Ouest \[deg\]"
