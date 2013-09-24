@@ -189,8 +189,6 @@ variable timing
           set box [$frm.datation.values.setup.t.typespin get]
           #::console::affiche_resultat "box : $box \n"
 
-
-
           #set rect [$frm.datation.values.setup.t.selectbox get]
           set rect $::atos_photom::rect_img
           #::console::affiche_resultat "rect : $rect \n"
@@ -331,16 +329,18 @@ variable timing
 
           set idframe $::atos_tools::cur_idframe
 
-          ::console::affiche_resultat "$idframe - "
-          ::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,verif) . "
-          ::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,ocr) . "
-          ::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,interpol) \n"
+          #::console::affiche_resultat "$idframe - "
+          #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,verif) . "
+          #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,ocr) . "
+          #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,interpol) \n"
 
 
           $frm.infofrm.v.nbimage configure -text $::atos_tools::nb_frames
 
           $frm.infofrm.v.nbverif configure -text $::atos_ocr_tools::nbverif
 
+          #::console::affiche_resultat "nbocr= $::atos_ocr_tools::nbocr ; nb_frames = $::atos_tools::nb_frames\n"
+          
           set p [format %2.1f [expr $::atos_ocr_tools::nbocr/($::atos_tools::nb_frames*1.0)*100.0]]
           $frm.infofrm.v.nbocr configure -text "$::atos_ocr_tools::nbocr ($p %)"
 
@@ -692,10 +692,11 @@ variable timing
 
       while {$::atos_ocr_tools::sortie == 0} {
 
+         update
          getinfofrm $visuNo $frm
          set idframe $::atos_tools::cur_idframe
          #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
-         ::console::affiche_resultat "."
+         #::console::affiche_resultat "."
          if {$idframe == $::atos_tools::frame_end} {
             set ::atos_ocr_tools::sortie 1
          }
@@ -707,7 +708,7 @@ variable timing
      # Verifié
 
          if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
-
+            #::console::affiche_resultat "verif: $idframe => $::atos_ocr_tools::timing($idframe,dateiso)\n"
             # calcul jd
             set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
             #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] V\n"
@@ -720,6 +721,7 @@ variable timing
 
          if {$pass == "no"} {
             set res [::atos_ocr_tools::workimage $visuNo $frm]
+            #::console::affiche_resultat "ocr?: $res\n"
             if {$res==1} {
 
                # calcul iso
@@ -773,7 +775,7 @@ variable timing
                   ::atos_tools::next_image $visuNo
                   set pass "ok"
                }
-            }
+            } 
          }
 
        # interpolation
@@ -787,7 +789,10 @@ variable timing
          }
 
 
-
+         # DEBUG
+         #if {$idframe > 10} {
+         #   set ::atos_ocr_tools::sortie 1
+         #}
        }
 
        set idframefin $idframe
@@ -805,6 +810,7 @@ variable timing
           set idframe $idframedebut
           while {$::atos_ocr_tools::sortie == 0} {
 
+             update
              #::console::affiche_resultat "."
              if {$idframe == $idframefin} {
                 set ::atos_ocr_tools::sortie 1
@@ -812,8 +818,8 @@ variable timing
 
              if {$::atos_ocr_tools::timing($idframe,ocr) == 1} {
 
-               # OK on interpole !
-                 #::console::affiche_resultat "-$idframe-"
+                 # OK on interpole !
+                 #::console::affiche_resultat "OK on interpole ! $idframe"
 
                  set idfrmav [ get_idfrmav $idframe 2]
                  set idfrmap [ get_idfrmap $idframe 1]
@@ -858,10 +864,14 @@ variable timing
              if {$idframe == $idframefin} {
                 set ::atos_ocr_tools::sortie 1
              }
+             update
 
              if {$::atos_ocr_tools::timing($idframe,interpol) == 1} {
-
+                 
                # OK on interpole !
+                 
+                 #::console::affiche_resultat "OK on interpole 2 ! $idframe"
+                 
                  #::console::affiche_resultat "-$idframe-"
 
                  set idfrmav [ get_idfrmav $idframe 2]
@@ -877,6 +887,7 @@ variable timing
                     set idfrmap $idfrmav
                     set idfrmav [ get_idfrmav $idfrmav 2]
                  }
+                 #::console::affiche_resultat "$idfrmav << $idfrmap"
                  if { $idfrmav == -1 || $idfrmap == -1 } {
                     set idfrmav [ get_idfrmap 0 1]
                     set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
@@ -997,6 +1008,7 @@ variable timing
       $frm.action.start configure -command "::atos_ocr_tools::start $visuNo $frm"
       ::console::affiche_resultat "Fin\n"
 
+      update
    }
 
 

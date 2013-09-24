@@ -196,22 +196,30 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::next_image { } {
 
+      #::console::affiche_resultat "\nnext_image deb : $::atos_tools::cur_idframe \n"
       ::atos_tools_avi::avi1 next
       set ::atos_tools::cur_idframe [expr int($::atos_tools::cur_idframe + 1)]
       if { $::atos_tools::cur_idframe > $::atos_tools::frame_end } {
          set ::atos_tools::cur_idframe $::atos_tools::frame_end
       }
+      #::console::affiche_resultat "next_image fin : $::atos_tools::cur_idframe \n"
+
+      set nbf [expr  $::atos_tools::nb_open_frames * 1.0]
+      set pc [expr ($::atos_tools::cur_idframe-1) / ($nbf+1.0) ]
+      #::console::affiche_resultat "next_image idframe = $::atos_tools::cur_idframe ; pc = $pc\n"
 
    }
 
 
    proc ::atos_tools_avi::prev_image { } {
 
+      #::console::affiche_resultat "\nprev_image av : $::atos_tools::cur_idframe \n "
       set idframe [expr int($::atos_tools::cur_idframe - 1)]
       if { $idframe < $::atos_tools::frame_begin } {
          set idframe $::atos_tools::frame_begin
       }
       ::atos_tools_avi::set_frame $idframe
+      #::console::affiche_resultat "prev_image ap : $::atos_tools::cur_idframe \n"
    }
 
 
@@ -239,8 +247,12 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
+# next_image idframe = 1 ; pc = 0.0
+# next_image idframe = 2 ; pc = 8.685079034219212e-05
+# next_image idframe = 3 ; pc = 0.00017370158068438424
+# next_image idframe = 4 ; pc = 0.00026055237102657632
+# next_image idframe = 5 ; pc = 0.00034740316136876848
+# next_image idframe = 6 ; pc = 0.00043425395171096059
 
 
 
@@ -261,13 +273,21 @@ namespace eval ::atos_tools_avi {
          set idframe $::atos_tools::frame_begin
       }
 
-
+      set ::atos_tools::cur_idframe [expr int($idframe)]
       set pc [expr ($idframe-1) / ($nbf+1.0) ]
 
+      #::console::affiche_resultat "set_frame idframe = $idframe ; pc = $pc\n"
+
       ::atos_tools_avi::avi1 seekpercent $pc
+      
+      set ::atos_tools::cur_idframe [expr int($idframe-1)]
+      
       ::atos_tools_avi::next_image
+      #::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n"
 
       set ::atos_tools::cur_idframe [expr int($idframe)]
+      #::console::affiche_resultat "set_frame cur_idframe fin = $::atos_tools::cur_idframe\n"
+
    }
 
 
