@@ -283,7 +283,7 @@
       $notebook add $notebook.tlscp
       $notebook select $notebook.tlscp
 
-      lassign [getTelConnexion] private(product) private(telname) \
+      lassign [getTelConnexion $telNo] private(product) private(telname) \
          hasCoordinates hasControlSuivi
 
       #--   active le suivi
@@ -299,15 +299,10 @@
       #--   active les vitesses
       configTraceRaDec $hasCoordinates
 
-      #--   configure les lignes du parquage
-      set do "forget"
-      if {$hasCoordinates == 1 && $hasControlSuivi == 1} {
-         set do "show"
-      }
-
       #--   si necessaire, affiche l'onglet 'Allemande'
       if {$private(german) == "1"} {
          $notebook add $notebook.german
+         #initMyTel
       }
 
       #--   met en place la trace du nom de l'objet selectionne dans le panneau telescope
