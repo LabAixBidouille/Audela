@@ -423,22 +423,29 @@
    #---------------------------------------------------------------------------
    proc getTrueCoordinates { data {coefNames {IH ID NP CH ME MA FO HF DAF TF} } { coefValues {0 0 0 0 0 0 0 0 0 0} } } {
 
-      lassign $data ra_hms dec_dms datetu home pressure temperature humidity
+      #--   reponse par defaut
+      lassign [list - - - - -] raTel decTel haTel azTel elevTel
+
+      lassign $data ra_hms dec_dms datejd home pressure temperature humidity
+
+      #::console::disp "$ra_hms $dec_dms $datejd\n"
 
       set hipRecord [list 1 1 [mc_angle2deg $ra_hms] [mc_angle2deg $dec_dms 90] J2000.0 J2000.0 0 0 0]
       set drift 0
       #--   passe en °K
       set temperature [expr { $temperature+273.15 }]
-      set result [mc_hip2tel $hipRecord $datetu $home $pressure $temperature \
+      set result [mc_hip2tel $hipRecord $datejd $home $pressure $temperature \
          $coefNames $coefValues -model_only 1 -refraction 1 -drift $drift -humidity $humidity]
       lassign [lrange $result 10 14] ra_angle dec_angle ha az elev
 
       #--- formate les resultats
-      set raTel [mc_angle2hms $ra_angle 360 zero 2 auto string]
-      set decTel [mc_angle2dms $dec_angle 90 zero 2 + string]
-      set haTel [format "%0.4f" $ha]
-      set azTel [format %.2f $az]
-      set elevTel [format %.2f $elev]
+      if {$ra_angle ni [list "-1.#IND" "1.#QNAN"]} {
+         set raTel [mc_angle2hms $ra_angle 360 zero 2 auto string]
+         set decTel [mc_angle2dms $dec_angle 90 zero 2 + string]
+         set haTel [format "%0.4f" $ha]
+         set azTel [format %.2f $az]
+         set elevTel [format %.2f $elev]
+      }
 
       return [list $raTel $decTel $haTel $azTel $elevTel]
    }
@@ -655,30 +662,33 @@
    #  Retourne le nom de la monture, le modele,
    #  les proprietes hasCoordinates et hasControlSuivi
    #------------------------------------------------------------
-   proc getTelConnexion { {telNo 1} } {
+   proc getTelConnexion { telNo } {
       global conf caption
 
       lassign [list - - 0 0 0] product name hasCoordinates hasControlSuivi
 
-      #--   passe en minuscules
-      set product [string tolower [tel$telNo product]]
-      #--   supprime les espaces dans 'delta tau'
-      set product [string map -nocase [list " " ""] $product]
+      if {$telNo != 0} {
 
-      foreach propertyName [list name hasCoordinates hasControlSuivi] {
-         set $propertyName [::${product}::getPluginProperty $propertyName]
-      }
+         #--   passe en minuscules
+         set product [string tolower [tel$telNo product]]
+         #--   supprime les espaces dans 'delta tau'
+         set product [string map -nocase [list " " ""] $product]
 
-      if {[::${product}::getPluginProperty hasModel] == 1} {
-         switch -exact $name {
-            ASCOM {  set model [lindex $conf(ascom,modele) 1 ]}
-            LX200 {  set model $conf(lx200,modele)}
-            Temma {  set modelNo $conf(temma,modele)
-                     incr modelNo
-                     set model $caption(temma,modele_$modelNo)
-                  }
+         foreach propertyName [list name hasCoordinates hasControlSuivi] {
+            set $propertyName [::${product}::getPluginProperty $propertyName]
          }
-         append name " ($model)"
+
+         if {[::${product}::getPluginProperty hasModel] == 1} {
+            switch -exact $name {
+               ASCOM {  set model [lindex $conf(ascom,modele) 1 ]}
+               LX200 {  set model $conf(lx200,modele)}
+               Temma {  set modelNo $conf(temma,modele)
+                        incr modelNo
+                        set model $caption(temma,modele_$modelNo)
+                     }
+            }
+            append name " ($model)"
+         }
       }
 
       return [list $product "$name" $hasCoordinates $hasControlSuivi]
