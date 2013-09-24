@@ -244,8 +244,6 @@
       variable private
       global audace
 
-      if {$private(telInitialise) ==0} {return}
-
       #--   met a jour les coordonnees visees a partir des coordonnees du telescope
       refreshCoordsJ2000 $audace(telescope,getra) $audace(telescope,getdec) EQUATORIAL
 
