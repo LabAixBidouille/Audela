@@ -579,9 +579,13 @@
       set private(vxPix) [format %0.1f 0]
       set private(vyPix) [format %0.1f 0]
 
-      #--   si trace presente et telescope deconnecte
-      set bufNo 1
       set visuNoTel [::confVisu::getToolVisuNo ::tlscp]
+      if {$visuNoTel ne ""} {
+         set bufNo [::confVisu::getBufNo $visuNoTel]
+      } else {
+         set bufNo [::confVisu::getBufNo 1]
+      }
+      #--   si trace presente et telescope deconnecte
       if {[trace info variable ::tlscp::private($visuNoTel,nomObjet)] ne ""} {
          trace remove variable ::tlscp::private($visuNoTel,nomObjet) write "::collector::onChangeObjName $bufNo"
       }
