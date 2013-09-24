@@ -346,7 +346,6 @@ namespace eval ::atos_ocr_gui {
              pack $frm.open \
                   -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-
              #--- Creation du bouton open
              button $frm.open.but_open \
                 -text "open" -borderwidth 2 \

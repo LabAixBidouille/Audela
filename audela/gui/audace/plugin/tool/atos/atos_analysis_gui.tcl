@@ -2454,6 +2454,17 @@ catch {
          if { [regexp {.*(\d+) h +(\d+) m +(\d+)\.(\d+) s (.+?).* (\d+) d +(\d+) ' +(\d+)\.(\d+) " +(.+?).* ([-+]?\d*\.?\d*) m.*} $t str loh lom los loms lowe lad lam las lams lans alt] } {
             # "
             set ::atos_analysis_gui::longitude [format "%s %02d %02d %02d.%03d" $lowe $loh $lom $los $loms ]
+            
+            # cas particulier des nombre 001
+            if {[ string index $lams 0]=="0"} {
+               set lams [string range $lams 1 end]
+               if {[ string index $lams 0]=="0"} {
+                  set lams [string range $lams 1 end]
+               }
+            }
+            
+            set lams [expr int($lams)]
+            gren_info "Latitude = $lans $lad $lam $las $lams \n"
             set ::atos_analysis_gui::latitude  [format "%s %02d %02d %02d.%03d" $lans $lad $lam $las $lams ]
             set ::atos_analysis_gui::altitude  $alt
          }      
