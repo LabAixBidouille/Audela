@@ -425,7 +425,7 @@
          private(colTel) private(colButee) private(colSector)
 
       if {![info exists conf(collector,butees)]} {
-         set conf(collector,butees) [list 90 270]
+         set conf(collector,butees) [list +7 -7]
       }
       lassign $conf(collector,butees) private(buteeWest) private(buteeEast)
 
@@ -458,7 +458,7 @@
       #---  trace les changements d'image
       ::confVisu::${op}FileNameListener $visuNo "::collector::onChangeImage $visuNo"
       #---  trace les changements de Cam
-      ::confVisu::${op}CameraListener $visuNo "::collector::onChangeCam $bufNo"
+     ::confVisu::${op}CameraListener $visuNo "::collector::onChangeCam $bufNo"
       #---  trace les changements de configuration optique
       ::confOptic::${op}OpticListener "::collector::onChangeOptic $bufNo"
       #---  trace les changements de position du focuser
