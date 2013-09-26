@@ -8,7 +8,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" /><title>Collector</title></head><body>
 
-<p class="date">Date de mise &#224; jour : 30 août 2013.</p>
+<p class="date">Date de mise &#224; jour : 26 septembre 2013.</p>
 <h1>Collector</h1>
 <h2>1. Fonctions</h2>
 <p><b>Collector</b> collecte, calcule et met en forme des
@@ -129,15 +129,17 @@ seeing sont modifiables. Ces informations proviennent soit de
 l'en-t&#234;te de l'image, soit d'une station m&#233;t&#233;o,
 soit d'une saisie directe (temp&#233;rature, pression, seeing) :
 <ul>
-<li>Temp&#233;rature : En &#176;C, valeur par d&#233;faut
+<li>Temp&#233;rature : En &#176;C, valeur par d&#233;faut de
+$audace(meteo,obs,temperature) &#233;gale &#224;
 16.85&#176;C,</li>
 <li>Temp&#233;rature de ros&#233;e : En &#176;C, valeur par
 d&#233;faut "-",</li>
 <li>Hygrom&#233;trie ext&#233;rieure : En %, valeur par
-d&#233;faut "-",</li>
+d&#233;faut $audace(meteo,obs,humidity) &#233;gale &#224;
+40%,</li>
 <li>Pression atmosph&#233;rique relative (corrig&#233;e de
-l'altitude): En Pa, valeur par d&#233;faut 101325 Pa (1013.25
-hPa),</li>
+l'altitude): En Pa, valeur par d&#233;faut de
+$audace(meteo,obs,pressure) 101325 Pa (1013.25 hPa),</li>
 <li>Vent, direction : En degr&#233;s, valeur par d&#233;faut
 "-",</li>
 <li>Vent, vitesse : En m/s, valeur par d&#233;faut "-",</li>
@@ -362,7 +364,8 @@ MICROCAT. Son r&#233;glage est indispensable pour les fonctions
 <li>Le chemin du r&#233;pertoire peut &#234;tre modifi&#233; par
 la commande du menu <b>Configuration/R&#233;pertoires</b> ou
 &#224; l'aide du bouton <b>Modifier</b>.</li>
-<li>Le choix du catalogue d'&#233;toiles est m&#233;moris&#233;.</li>
+<li>Le choix du catalogue d'&#233;toiles est
+m&#233;moris&#233;.</li>
 </ul>
 <p>Il comporte &#233;galement deux boutons :</p>
 <ul>
@@ -457,12 +460,12 @@ dessous de l'Horizon (&#233;l&#233;vation inf&#233;rieure &#224;
 "images/equat_zenith_W.gif" /></td>
 <td style="padding-left: 1em;">
 <p>D&#232;s que la position du t&#233;lescope est
-initialis&#233;e, sa position
-actuelle est mise &#224; jour au m&#234;me rythme que le
-rafra&#238;chissement des coordonn&#233;es d'Ascension Droite et
-de D&#233;clinaison. Le sch&#233;ma de gauche illustre une
-position "Z&#233;nith, tube c&#244;t&#233; Ouest". Le triangle
-symbolise sch&#233;matiquement une lunette.</p>
+initialis&#233;e, sa position actuelle est mise &#224; jour au
+m&#234;me rythme que le rafra&#238;chissement des
+coordonn&#233;es d'Ascension Droite et de D&#233;clinaison. Le
+sch&#233;ma de gauche illustre une position "Z&#233;nith, tube
+c&#244;t&#233; Ouest". Le triangle symbolise sch&#233;matiquement
+une lunette.</p>
 <p>Les donn&#233;es figurant dans la partie gauche sont les
 suivantes (de haut en bas) :</p>
 <ul>
@@ -554,7 +557,5 @@ fonction <b>Editer les mots cl&#233;s dans la Console</b> et si
 tout est conforme <b>Actualiser l'en-t&#234;te de l'image</b>.
 C'est bien pratique si les images sont acquises avec un APN ou
 une cam&#233;ra non reconnues par Aud'ACE.</p>
-<h2><a name="cumulus" id="cumulus">15. Lecture de stations
-m&#233;t&#233;o</a></h2>
 </body>
 </html>
