@@ -721,7 +721,7 @@
       return [list $vra $vdec $vxPix $vyPix]
    }
 
-  #------------------------------------------------------------
+   #------------------------------------------------------------
    #  getCD
    #  Retourne les coefficients CD en degre/pixel
    #  Parametres : crota2 (degres), cdelt1 et cdelt2 (degres/pixel)
