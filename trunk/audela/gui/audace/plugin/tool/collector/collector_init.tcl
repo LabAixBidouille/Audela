@@ -302,7 +302,7 @@
       #--   si necessaire, affiche l'onglet 'Allemande'
       if {$private(german) == "1"} {
          $notebook add $notebook.german
-         #initMyTel
+         initMyTel
       }
 
       #--   met en place la trace du nom de l'objet selectionne dans le panneau telescope
