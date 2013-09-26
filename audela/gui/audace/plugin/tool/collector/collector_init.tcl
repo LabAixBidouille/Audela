@@ -183,9 +183,9 @@
 
          lassign $result private(bin1) private(bin2) private(naxis1) private(naxis2) private(pixsize1) private(pixsize2)
 
-         #if {$private(crota2) eq "-"} {
-         #   set private(crota2) "0."
-         #}
+         if {![string is double -strict $private(crota2)]} {
+            set private(crota2) "0."
+         }
 
          set t $::audace(etc,input,ccd,t)
          set audace(etc,param,ccd,bin1) 1
@@ -302,7 +302,10 @@
       #--   si necessaire, affiche l'onglet 'Allemande'
       if {$private(german) == "1"} {
          $notebook add $notebook.german
-         initMyTel
+         #--   modifie la position
+         refreshMyTel
+         #--   demasque le telescope
+         showTelescope $private(canvas) 1 $private(colTel) $private(colFond)
       }
 
       #--   met en place la trace du nom de l'objet selectionne dans le panneau telescope
