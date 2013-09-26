@@ -439,6 +439,10 @@
          set private($topic) $conf(collector,$topic)
       }
 
+      if {[info exists conf(collector,cam)]} {
+         set private(cam) $conf(collector,cam)
+      }
+
       #editCamerasArray
    }
 
