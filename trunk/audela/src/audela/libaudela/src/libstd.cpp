@@ -67,7 +67,6 @@ extern "C" {
    #endif
    #include <winsock.h>
    #include <porttalk_interface.h>
-   #include <intrin.h>           // pour __cpuid
 #endif
 
 //------------------------------------------------------------------------------
@@ -88,7 +87,6 @@ void vlogfile(char *fmt, ...);
 
 char* message(int error);
 int CmdGetBitApp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int CmdGetBitOs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdTestGetClicks(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdHistory(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdLibstdId(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -197,48 +195,6 @@ int CmdGetBitApp(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
 }
-
-//------------------------------------------------------------------------------
-//
-//
-int CmdGetBitOs(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
-{
-   char s[256];
-   //Detect if long mode is available by checking bit 29 in EDX when calling 
-   //CPUID Extended Processor Info and Feature Bits.
-#if defined(OS_WIN)
-   int results[4];//eax, ebx, ecx & edx
-   __cpuid(results,0x80000001);
-   if(results[3]&29) {
-      //64bits
-      strcpy(s,"x64");
-   } else {
-      //32bits
-      strcpy(s,"x86");
-   }
-#else 
-   /*  ... a tester sous linux
-   int results[4];//eax, ebx, ecx & edx
-   asm volatile
-      ("cpuid" : "=a" (results[0]), "=b" (results[1]), "=c" (results[2]), "=d" (results[3])
-       : "a" (0x80000001));
-  if(results[3]&29) {
-      //64bits
-      strcpy(s,"x64");
-   } else {
-      //32bits
-      strcpy(s,"x86");
-   }
-   */
-
-   strcpy(s,"");
-
-#endif
-   Tcl_SetResult(interp,s,TCL_VOLATILE);
-   return TCL_OK;
-}
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -600,7 +556,6 @@ void audelaInit(Tcl_Interp *interp)
    Tcl_CreateCommand(interp,"fitsconvert3d",(Tcl_CmdProc *)CmdFitsConvert3d,NULL,NULL);
 
    Tcl_CreateCommand(interp,"getbitapp",(Tcl_CmdProc *)CmdGetBitApp,NULL,NULL);
-   Tcl_CreateCommand(interp,"getbitos",(Tcl_CmdProc *)CmdGetBitOs,NULL,NULL);
    Tcl_CreateCommand(interp,"getclicks",(Tcl_CmdProc *)CmdTestGetClicks,NULL,NULL);
    Tcl_CreateCommand(interp,"hostaddress",(Tcl_CmdProc *)CmdHostaddress,NULL,NULL);
    Tcl_CreateCommand(interp,"ping",(Tcl_CmdProc *)CmdPing,NULL,NULL);
