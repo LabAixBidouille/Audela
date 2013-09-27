@@ -372,7 +372,7 @@ proc ::eshel::acquisition::startSequence { visuNo actionList { sequenceName "" }
                      set dateObs  [mc_date2ymdhms [lindex [buf$bufNo getkwd "DATE-OBS" ] 1]]
                      set dateObs  [split $private(currentSeriesId) {-T:.} ]
 
-                     set fileDate [format "%04d%02d%02d-%02d%02d%02d" [lindex $dateObs 0] [lindex $dateObs 1] [lindex $dateObs 2] [lindex $dateObs 3] [lindex $dateObs 4] [expr [lindex $dateObs 5]] ]
+                     set fileDate [format "%04s%02s%02s-%02s%02s%02s" [lindex $dateObs 0] [lindex $dateObs 1] [lindex $dateObs 2] [lindex $dateObs 3] [lindex $dateObs 4] [lindex $dateObs 5] ]
                      #--- j'ajoute le repertoire et la date a l'avant du nom
                      set shortName "$fileDate-$fileName"
                      set fileName [file join $::conf(eshel,rawDirectory) $shortName]
