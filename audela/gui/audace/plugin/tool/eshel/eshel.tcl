@@ -136,6 +136,7 @@ proc ::eshel::createPluginInstance { {tkbase "" } { visuNo 1 } } {
       source [ file join $dir eshelfile.tcl]
       source [ file join $dir visu.tcl]
       source [ file join $dir response.tcl]
+      source [ file join $dir makeseries.tcl ]
       if { [file exists [ file join $dir libeshel.dll]]  } {
          set catchResult [ catch {
             load [ file join $dir libeshel.dll]
