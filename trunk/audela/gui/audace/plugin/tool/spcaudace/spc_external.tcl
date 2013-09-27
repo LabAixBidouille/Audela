@@ -43,7 +43,7 @@ proc spc_versionsite {} {
    if { $spcaudace(flag_verifversion) } { return "" }
 
    #--- Recherche la version diponible sur le site d'Spcaudace :
-   set pagecontent [ spc_read_url_contents $spcaudace(webpage) ]
+   set pagecontent [ spc_read_url_contents ${spcaudace(webpage)}index.php ]
    set spcaudace(flag_verifversion) 1
 
    if { $pagecontent!=0 } {
