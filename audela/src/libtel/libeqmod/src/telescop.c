@@ -130,6 +130,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->latitude=43.75203;
    sprintf(tel->home,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
 	tel->gotoblocking=0;
+	tel->flag_gotoparking=0;
 
    start_motor = 0; // On ne demarre pas le moteur par défaut
    ha = 0.0;
@@ -478,6 +479,7 @@ int tel_radec_goto(struct telprop *tel)
 /* ----------------------------------- */
 {
 	tel->ha_pointing=0;
+	tel->flag_gotoparking=0;
    return eqmod2_action_goto(tel);
 }
 
@@ -494,6 +496,7 @@ int tel_radec_stop(struct telprop *tel,char *direction)
 /* --- called by : tel1 radec stop --- */
 /* ----------------------------------- */
 {
+	tel->flag_gotoparking=0;
    return eqmod2_action_stop(tel,direction);
 }
 
@@ -1305,6 +1308,11 @@ int eqmod2_goto(struct telprop *tel)
 			}
 		}
 
+		// Etape4b : cas particulier du GOTO parking
+		if (tel->flag_gotoparking==1) {
+			adu_ha = tel->ha_park;
+			adu_dec = tel->dec_park;
+		}
 
 		// Etape 5: calcul du trajet a parcourir (en ADU)
 		dha = adu_ha - tel->coord_adu_ha;
@@ -1334,6 +1342,7 @@ int eqmod2_goto(struct telprop *tel)
 	}
 
    // Etape 6: Pointage de la monture
+	tel->flag_gotoparking=0;
 
 	HA=(int)(dha);
 	DEC=(int)(ddec);

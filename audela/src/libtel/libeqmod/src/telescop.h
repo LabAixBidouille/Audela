@@ -123,6 +123,7 @@ struct telprop {
 	double dec_park;
 	int gotoblocking;
 	double ha0;
+	int flag_gotoparking;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);

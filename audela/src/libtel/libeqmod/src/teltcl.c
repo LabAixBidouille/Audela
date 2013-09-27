@@ -350,7 +350,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          }
       } else if (strcmp(argv[2],"stop")==0) {
          // --- stop --- //
-         if (argc>=4) {
+			if (argc>=4) {
             tel_radec_stop(tel,argv[3]);
          } else {
             tel_radec_stop(tel,"");
@@ -672,6 +672,7 @@ int cmdTelGotoparking(ClientData clientData, Tcl_Interp *interp, int argc, char 
    char s[1024];
    struct telprop *tel;
    tel = (struct telprop *)clientData;   
+	tel->flag_gotoparking=1;
 	sprintf(s,"tel%d hadec goto {%f %f} -blocking 0",tel->telno,tel->ha_park,tel->dec_park);
    Tcl_Eval(interp,s);
    strcpy(s,interp->result);
