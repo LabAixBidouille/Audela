@@ -528,7 +528,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,improve)                     "Ritocco"
    set caption(audace,menu,trainee)                     "Eliminare artefatti"
    set caption(audace,menu,cosmic)                      "Eliminare raggi cosmici"
-   set caption(audace,menu,hotpixel)                    "# Supprimer des pixels chauds"
+   set caption(audace,menu,hotpixel)                    "Eliminare pixel caldi"
    set caption(audace,menu,opt_noir)                    "Ottimizzare dark frame"
    set caption(audace,menu,subsky)                      "Sottrarre fondo cielo"
    set caption(audace,menu,scar)                        "Mascherare"

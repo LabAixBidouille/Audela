@@ -205,7 +205,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,nouvelle_visu)             "Nuovo 'visu'"
    set caption(audace,menu,pas_outil)                 "Visualizzare/Nascondi pannello"
    set caption(audace,menu,efface_image)              "Cancellare immagine"
-   set caption(audace,menu,efface_console)            "# Effacer le contenu de la Console"
+   set caption(audace,menu,efface_console)            "Cancellare il contenuto della Console"
    set caption(audace,menu,palette)                   "Palette & Funzione di trasferimento"
    set caption(audace,menu,seuils)                    "Soglie"
    set caption(audace,menu,balance_rvb)               "Bilanciamento RVB"
