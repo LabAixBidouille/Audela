@@ -697,7 +697,7 @@
    #------------------------------------------------------------
    #  getMountSpeed
    #  Retourne les vitesses de deplacement en deg/sec et en pix/sec
-   #  Parametres : cdelt en arcsec/pix
+   #  Parametres : variation de RA, DEC, temps, cdelt en arcsec/pix, crota2
    #------------------------------------------------------------
    proc getMountSpeed { deltaRA deltaDEC deltaTime cdelt1 cdelt2 crota2 } {
 
