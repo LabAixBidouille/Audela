@@ -445,6 +445,20 @@ namespace eval ::audace {
          ::console::affiche_erreur "$::errorInfo\n"
       }
 
+      #--- Creation du repertoire WFIBC
+      set catchError [ catch {
+         if { ! [ info exists conf(rep_userCatalogWFIBC) ] } {
+            set conf(rep_userCatalogWFIBC) [ file join $audace(rep_home) catalog WFIBC cat ]
+         }
+         if { ! [ file exists $conf(rep_userCatalogWFIBC) ] } {
+            file mkdir $conf(rep_userCatalogWFIBC)
+         }
+         set audace(rep_userCatalogWFIBC) $conf(rep_userCatalogWFIBC)
+      } ]
+      if { $catchError != "0" } {
+         ::console::affiche_erreur "$::errorInfo\n"
+      }
+
       #--- Creation du repertoire 2MASS
       set catchError [ catch {
          if { ! [ info exists conf(rep_userCatalog2mass) ] } {
