@@ -39,6 +39,7 @@ namespace eval ::cwdWindow {
          set cwdWindow(dir_cata_ppmx)          [file nativename $audace(rep_userCatalogPpmx)]
          set cwdWindow(dir_cata_ppmxl)         [file nativename $audace(rep_userCatalogPpmxl)]
          set cwdWindow(dir_cata_nomad1)        [file nativename $audace(rep_userCatalogNomad1)]
+         set cwdWindow(dir_cata_wfibc)         [file nativename $audace(rep_userCatalogWFIBC)]
          set cwdWindow(dir_cata_2mass)         [file nativename $audace(rep_userCatalog2mass)]
          set cwdWindow(dir_archives)           [file nativename $audace(rep_archives)]
          set cwdWindow(long)                   [string length $cwdWindow(dir_images)]
@@ -81,6 +82,9 @@ namespace eval ::cwdWindow {
          if {[string length $cwdWindow(dir_cata_nomad1)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_cata_nomad1)]
          }
+         if {[string length $cwdWindow(dir_cata_wfibc)] > $cwdWindow(long)} {
+            set cwdWindow(long) [string length $cwdWindow(dir_cata_wfibc)]
+         }
          if {[string length $cwdWindow(dir_cata_2mass)] > $cwdWindow(long)} {
             set cwdWindow(long) [string length $cwdWindow(dir_cata_2mass)]
          }
@@ -121,7 +125,7 @@ namespace eval ::cwdWindow {
 
       #---
       toplevel $This
-      wm geometry $This +180+50
+      wm geometry $This +180+0
       wm resizable $This 0 0
       wm title $This "$caption(cwdWindow,repertoire)"
       wm protocol $This WM_DELETE_WINDOW ::cwdWindow::cmdClose
@@ -326,6 +330,16 @@ namespace eval ::cwdWindow {
                entry $This.usr.3.cata_nomad1.ent3 -textvariable cwdWindow(dir_cata_nomad1) -width $cwdWindow(long)
                pack $This.usr.3.cata_nomad1.ent3 -side right -padx 5 -pady 5
             pack $This.usr.3.cata_nomad1 -side top -fill both -expand 1
+            #--- Frame du repertoire du catalogue WFIBC
+            frame $This.usr.3.cata_wfibc -borderwidth 0 -relief raised
+               label $This.usr.3.cata_wfibc.lab3 -text "$caption(cwdWindow,repertoire_cata_wfibc)"
+               pack $This.usr.3.cata_wfibc.lab3 -side left -padx 20 -pady 5
+               button $This.usr.3.cata_wfibc.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command "::cwdWindow::changeRepUserCatalog cata_wfibc"
+               pack $This.usr.3.cata_wfibc.explore -side right -padx 5 -pady 0 -ipady 5
+               entry $This.usr.3.cata_wfibc.ent3 -textvariable cwdWindow(dir_cata_wfibc) -width $cwdWindow(long)
+               pack $This.usr.3.cata_wfibc.ent3 -side right -padx 5 -pady 5
+            pack $This.usr.3.cata_wfibc -side top -fill both -expand 1
             #--- Frame du repertoire du catalogue 2MASS
             frame $This.usr.3.cata_2mass -borderwidth 0 -relief raised
                label $This.usr.3.cata_2mass.lab3 -text "$caption(cwdWindow,repertoire_cata_2mass)"
@@ -612,6 +626,7 @@ namespace eval ::cwdWindow {
       set normalized_dir_cata_ppmx     [file normalize $cwdWindow(dir_cata_ppmx)]
       set normalized_dir_cata_ppmxl    [file normalize $cwdWindow(dir_cata_ppmxl)]
       set normalized_dir_cata_nomad1   [file normalize $cwdWindow(dir_cata_nomad1)]
+      set normalized_dir_cata_wfibc    [file normalize $cwdWindow(dir_cata_wfibc)]
       set normalized_dir_cata_2mass    [file normalize $cwdWindow(dir_cata_2mass)]
       set normalized_dir_archives      [file normalize $cwdWindow(dir_archives)]
 
@@ -786,6 +801,16 @@ namespace eval ::cwdWindow {
          set audace(rep_userCatalogNomad1) $normalized_dir_cata_nomad1
       } else {
          set m "$cwdWindow(dir_cata_nomad1)"
+         append m "$caption(cwdWindow,pas_repertoire)"
+         tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
+         return -1
+      }
+
+      if {[file exists $normalized_dir_cata_wfibc] && [file isdirectory $normalized_dir_cata_wfibc]} {
+         set conf(rep_userCatalogWFIBC)   $normalized_dir_cata_wfibc
+         set audace(rep_userCatalogWFIBC) $normalized_dir_cata_wfibc
+      } else {
+         set m "$cwdWindow(dir_cata_wfibc)"
          append m "$caption(cwdWindow,pas_repertoire)"
          tk_messageBox -message $m -title "$caption(cwdWindow,boite_erreur)"
          return -1
