@@ -3672,7 +3672,6 @@ namespace eval ::prtr {
       if {$::conf(fichier,compres) eq "0"} {
          set ext $extOut
       } else {
-         set toCompress ""
          regsub ".gz" $extIn "" ext
          #--   decompresse les fichiers .gz
          foreach img $imgList {
@@ -3680,6 +3679,7 @@ namespace eval ::prtr {
             #--   prepare la liste des compressions
             lappend toCompress [file join $dirOut $img$ext]
          }
+         set extIn $ext
       }
 
       #--   identifie le type d'images
