@@ -2086,6 +2086,11 @@ proc creeFenetrePrFC { } {
             -text $caption(pretrfc,NrPLUBut3) -value opt
          pack $audace(base).fenetrePretr.et5.ligne3.rad3 -side left
       pack $audace(base).fenetrePretr.et5.ligne3 -side top -fill x
+      #--- Quatrieme ligne de l'etape 5
+      frame $audace(base).fenetrePretr.et5.ligne4
+         label $audace(base).fenetrePretr.et5.ligne4.lab1 -text $caption(pretrfc,NoteSoustrNrPLU)
+         pack $audace(base).fenetrePretr.et5.ligne4.lab1 -side left
+      pack $audace(base).fenetrePretr.et5.ligne4 -side top -fill x
    pack $audace(base).fenetrePretr.et5 -side top -fill x
 
    #--- Trame de l'etape 6
@@ -2153,6 +2158,11 @@ proc creeFenetrePrFC { } {
             -text $caption(pretrfc,NrBut3) -value opt
          pack $audace(base).fenetrePretr.et6.ligne3.rad3 -side left
       pack $audace(base).fenetrePretr.et6.ligne3 -side top -fill x
+      #--- Quatrieme ligne de l'etape 6
+      frame $audace(base).fenetrePretr.et6.ligne4
+         label $audace(base).fenetrePretr.et6.ligne4.lab1 -text $caption(pretrfc,NoteSoustrNr)
+         pack $audace(base).fenetrePretr.et6.ligne4.lab1 -side left
+      pack $audace(base).fenetrePretr.et6.ligne4 -side top -fill x
    pack $audace(base).fenetrePretr.et6 -side top -fill x
 
    #--- Trame pour la configuration et l'aide
