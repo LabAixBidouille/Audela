@@ -3678,7 +3678,7 @@ namespace eval ::prtr {
          foreach img $imgList {
             gunzip $img$extIn
             #--   prepare la liste des compressions
-            lappend toCompress [file join $dir $img$ext]
+            lappend toCompress [file join $dirOut $img$ext]
          }
       }
 
