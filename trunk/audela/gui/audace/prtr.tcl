@@ -845,17 +845,9 @@ namespace eval ::prtr {
       if {$::conf(fichier,compres) eq "1"} {append ::prtr::ext ".gz"}
       array unset bd
 
-      #--   liste les images dans le repertoire
-      if { $::tcl_platform(platform) eq "windows" } {
-         set pattern "\{$::prtr::ext\}"
-      } else {
-         set pattern "\{[string tolower $::prtr::ext] [string toupper $::prtr::ext]\}"
-         regsub -all " " $pattern "," pattern
-      }
-
       set files [glob -nocomplain -type f -tails -dir $dir *$::prtr::ext]
 
-      #--   filtre les repertoires et les images d'extensions differentes (sensible a la casse)
+      #--   filtre les repertoires et les images d'extensions differentes
       set count 0
       foreach file $files {
          set index [string first "." $file]
