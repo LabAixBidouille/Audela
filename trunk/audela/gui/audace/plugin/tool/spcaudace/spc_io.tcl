@@ -127,7 +127,7 @@ proc spc_buildhtml { args } {
       #-- Cropping ses profils :
       file copy -force "$repimgdflt/$spectre_rescaled$conf(extension,defaut)" "$audace(rep_images)/$spectre_rescaled$conf(extension,defaut)"
       set spectre_cropped [ spc_select "$spectre_rescaled" $lambda_min $lambda_max ]
-      lappend listepng [ spc_autofit2png "$spectre_cropped" "$objname" $lambda_min $lambda_max $ymin $ymax ]
+      lappend listepng [ spc_autofit2png "$spectre_cropped" "$objname" $lambda_min $lambda_max $ymin $ymax jpeg ]
       file delete -force "$audace(rep_images)/$spectre_rescaled$conf(extension,defaut)"
       file delete -force "$repimgdflt/$spectre_rescaled$conf(extension,defaut)"
       file delete -force "$audace(rep_images)/$spectre_cropped$conf(extension,defaut)"
@@ -152,11 +152,11 @@ proc spc_buildhtml { args } {
    puts $file_id "<head>"
    puts $file_id "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">"
    puts $file_id "  <title>$objname</title>"
-   puts $file_id "  <meta name=\"generator\" content=\"SpcAudace, see http://bmauclaire.free.fr/spcaudace/\">"
+   puts $file_id "  <meta name=\"generator\" content=\"SpcAudace, see http://wsdiscovery.free.fr/spcaudace/\">"
    puts $file_id "</head>"
    puts $file_id "<body bgcolor=\"#ffffff\">"
    puts $file_id "<br>"
-   puts $file_id "<center><h1><span style=\"color: #00008B\">Chronological catalog of $objname spectra</span></h1><p>Updated: $mounth/$day/$year</p></center><br>"
+   puts $file_id "<center><h1><span style=\"color: #00008B\">Chronological catalog of $objname spectra</span></h1><p>Updated: $day/$mounth/$year</p></center><br>"
    puts $file_id "<center>"
    puts $file_id "<table border=\"0\" cellpadding=\"0\" cellspacing=\"10\">"
 
@@ -168,7 +168,10 @@ proc spc_buildhtml { args } {
       puts $file_id "  <tr>"
       for { set j 1 } { $j<=$nb_cols } { incr j } {
          set fichier [ lindex $listepng $i ]
-         puts $file_id "    <td><a href=\"$fichier\"><img border=\"0\" src=\"$fichier\" width=\"320\" heigh=\"240\" alt=\"$fichier\" title=\"Clic to enlarge $fichier\"></a></td>"
+         set fichier_jpg [ file rootname $fichier ]
+         set fichier_jpg "${fichier_jpg}.jpg"
+         # puts $file_id "    <td><a href=\"$fichier\"><img border=\"0\" src=\"$fichier\" width=\"320\" heigh=\"240\" alt=\"$fichier\" title=\"Clic to enlarge $fichier\"></a></td>"
+         puts $file_id "    <td><a href=\"$fichier\"><img border=\"0\" src=\"$fichier_jpg\" alt=\"$fichier\" title=\"Clic to enlarge $fichier\"></a></td>"
          set fichierfit [ file rootname "$fichier" ]
          file delete -force "$audace(rep_images)/weboutput/$fichierfit$conf(extension,defaut)"
          if { $j!=$nb_cols } { incr i -1 }
@@ -1944,13 +1947,6 @@ proc spc_fit2pngopt { args } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
 
-            #-- Adapte la légende de l'abscisse
-            if { $xdeb0 == 1.0 && $legendex=="" } {
-                set legendex "Position (Pixel)"
-            } else {
-                set legendex "Wavelength (A)"
-            }
-            set legendey "Relative intensity"
             #-- Détermine les bornes du graphique :
             buf$audace(bufNo) load "$audace(rep_images)/$fichier"
             set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
@@ -1962,6 +1958,13 @@ proc spc_fit2pngopt { args } {
             set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
             set ydeb "*"
             set yfin "*"
+            #-- Adapte la légende de l'abscisse
+            if { $xdeb0 == 1.0 && $legendex=="" } {
+                set legendex "Position (Pixel)"
+            } else {
+                set legendex "Wavelength (A)"
+            }
+            set legendey "Relative intensity"
         } elseif { [llength $args] == 4 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
@@ -2013,10 +2016,10 @@ proc spc_fit2pngopt { args } {
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
         if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+            ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         } else {
             set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+            ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         }
 
         #--- Effacement des fichiers de batch :
@@ -2028,6 +2031,118 @@ proc spc_fit2pngopt { args } {
         return "${spcfile}.png"
     } else {
         ::console::affiche_erreur "Usage: spc_fit2pngopt fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
+    }
+}
+####################################################################
+
+
+
+####################################################################
+#  Procedure de conversion d'une série de fichiers profil de raie calibré .fit en .jpg evec précision de la légende
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-01-2007
+# Date modification : 16-02-2007
+# Arguments : fichier .fit du profil de raie, titre, ?legende_x legende_y?
+####################################################################
+
+proc spc_fit2tnjpg { args } {
+    global audace spcaudace
+    global conf
+    global tcl_platform
+    set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
+    #-- 3%=0.03
+    set lpart 0
+
+    if { [llength $args] == 8 || [llength $args] == 6 || [llength $args] == 4 || [llength $args] == 2 } {
+        if { [llength $args] == 2 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+
+            #-- Détermine les bornes du graphique :
+            buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+            #-- Demarre et fini le graphe en deçca de "lpart" % des limites pour l'esthetique
+            set largeur [ expr $lpart*$naxis1 ]
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            set xdeb [ expr $xdeb0+$largeur ]
+            set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+            set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+            set ydeb "*"
+            set yfin "*"
+            #-- Adapte la légende de l'abscisse
+            if { $xdeb0 == 1.0 && $legendex=="" } {
+                set legendex "Position (Pixel)"
+            } else {
+                set legendex "Wavelength (A)"
+            }
+            set legendey "Relative intensity"
+        } elseif { [llength $args] == 4 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+
+            #-- Détermine les bornes du graphique :
+            buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+            #-- Demarre et fini le graphe en deçca de "lpart" % des limites pour l'esthetique
+            set largeur [ expr $lpart*$naxis1 ]
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            set xdeb [ expr $xdeb0+$largeur ]
+            set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+            set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+            set ydeb "*"
+            set yfin "*"
+        } elseif { [llength $args] == 6 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+        } elseif { [llength $args] == 8 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+            set ydeb [ lindex $args 6 ]
+            set yfin [ lindex $args 7 ]
+        } else {
+            ::console::affiche_erreur "Usage: spc_fit2tnjpg fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
+            return 0
+        }
+
+        #-- spc_fits2dat renvoie un nom avec une extension : fichier.dat
+        set fileout [ spc_fits2dat $fichier ]
+        #-- Retire l'extension .fit du nom du fichier
+        set spcfile [ file rootname $fichier ]
+
+        #--- Créée le fichier script pour gnuplot :
+        set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
+        puts $file_id "call \"$spcaudace(repgp)/gp_tnjpg.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/${spcfile}.jpg\" \"$legendex\" \"$legendey\" "
+        close $file_id
+
+        #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+        if { $tcl_platform(platform)=="unix" } {
+            set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
+            ::console::affiche_resultat "gnuplot résultat (1=OK) : $answer\n"
+        } else {
+            set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+            ::console::affiche_resultat "gnuplot résultat (1=OK) : $answer\n"
+        }
+
+        #--- Effacement des fichiers de batch :
+        file delete -force "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
+        file delete -force "$audace(rep_images)/${spcfile}.gp"
+
+        #--- Fin du script :
+        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.jpg\n"
+        return "${spcfile}.jpg"
+    } else {
+        ::console::affiche_erreur "Usage: spc_fit2tnjpg fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
     }
 }
 ####################################################################
@@ -2142,6 +2257,117 @@ proc spc_fit2pnglarge { args } {
     }
 }
 ####################################################################
+
+
+####################################################################
+#  Procedure de conversion d'une série de fichiers profil de raie calibré .fit en .png evec précision de la légende
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-01-2007
+# Date modification : 4-08-2013
+# Arguments : fichier .fit du profil de raie, titre, ?legende_x legende_y?
+####################################################################
+
+proc spc_fit2pngvlarge { args } {
+    global audace spcaudace
+    global conf
+    global tcl_platform
+    set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
+    #-- 3%=0.03
+    set lpart 0
+
+    if { [llength $args] == 8 || [llength $args] == 6 || [llength $args] == 4 || [llength $args] == 2 } {
+        if { [llength $args] == 2 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            #-- Détermine les bornes du graphique :
+            buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+            #-- Demarre et fini le graphe en deçca de "lpart" % des limites pour l'esthetique
+            set largeur [ expr $lpart*$naxis1 ]
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            set xdeb [ expr $xdeb0+$largeur ]
+            set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+            set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+            set ydeb "*"
+            set yfin "*"
+            #-- Adapte la légende de l'abscisse
+            if { $xdeb0 == 1.0 && $legendex=="" } {
+                set legendex "Position (Pixel)"
+            } else {
+                set legendex "Wavelength (A)"
+            }
+            set legendey "Relative intensity"
+        } elseif { [llength $args] == 4 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+
+            #-- Détermine les bornes du graphique :
+            buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+            #-- Demarre et fini le graphe en deçca de "lpart" % des limites pour l'esthetique
+            set largeur [ expr $lpart*$naxis1 ]
+            set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            set xdeb [ expr $xdeb0+$largeur ]
+            set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+            set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
+            set ydeb "*"
+            set yfin "*"
+        } elseif { [llength $args] == 6 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+        } elseif { [llength $args] == 8 } {
+            set fichier [ file rootname [ lindex $args 0 ] ]
+            set titre [ lindex $args 1 ]
+            set legendex [ lindex $args 2 ]
+            set legendey [ lindex $args 3 ]
+            set xdeb [ lindex $args 4 ]
+            set xfin [ lindex $args 5 ]
+            set ydeb [ lindex $args 6 ]
+            set yfin [ lindex $args 7 ]
+        } else {
+            ::console::affiche_erreur "Usage: spc_fit2pngvlarge fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
+            return 0
+        }
+
+        #-- spc_fits2dat renvoie un nom avec une extension : fichier.dat
+        set fileout [ spc_fits2dat $fichier ]
+        #-- Retire l'extension .fit du nom du fichier
+        set spcfile [ file rootname $fichier ]
+
+        #--- Créée le fichier script pour gnuplot :
+        set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
+        puts $file_id "call \"$spcaudace(repgp)/gp_novisuvlarge.cfg\" \"$audace(rep_images)/${spcfile}$spcaudace(extdat)\" \"$titre\" $ydeb $yfin $xdeb $xfin * \"$audace(rep_images)/${spcfile}.png\" \"$legendex\" \"$legendey\" "
+        close $file_id
+
+        #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
+        if { $tcl_platform(platform)=="unix" } {
+            set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
+            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+        } else {
+            set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
+            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+        }
+
+        #--- Effacement des fichiers de batch :
+        file delete -force "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
+        file delete -force "$audace(rep_images)/${spcfile}.gp"
+
+        #--- Fin du script :
+        ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
+        return "${spcfile}.png"
+    } else {
+        ::console::affiche_erreur "Usage: spc_fit2pngvlarge fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
+    }
+}
+####################################################################
+
 
 
 
@@ -2507,7 +2733,7 @@ proc spc_multifit2pngdec { args } {
       if { $lambda_ref==0 } {
          set legendex "Wavelength (A)"
       } else {
-         set legendex "Radial velocity (km/s)"
+         set legendex "Radial velocity with respect to the wavelength $lambda_ref A (km/s)"
          set xdeb [ expr ($xdeb-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
          set xfin [ expr ($xfin-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
       }
@@ -2526,15 +2752,19 @@ proc spc_multifit2pngdec { args } {
 
    #--- Initialisation des legendes :
    set nbfiles [ llength $listefiledec ]
-   set jd_deb [ expr [ lindex $listejd 0 ]+2400000. ]
-   set jd_fin [ expr [ lindex $listejd [ expr $nbfiles-1 ] ]+2400000. ]
+   set jd_deb [ format "%7.4f" [ expr [ lindex $listejd 0 ]+2400000. ] ]
+   set jd_fin [ format "%7.4f" [ expr [ lindex $listejd [ expr $nbfiles-1 ] ]+2400000. ] ]
    #regsub " " "$objname" "" objname
    if { $objname == "" } {
       set titre "Time evolution from $jd_deb to $jd_fin"
    } else {
       set titre "Time evolution of $objname from $jd_deb to $jd_fin"
    }
-   set legendey "Spectra shifted by $offset unit along intensity axis"
+   if { $offset==0. } {
+      set legendey "Relative intensity"
+   } else {
+      set legendey "Spectra shifted by $offset unit along intensity axis"
+   }
    
    #--- Conversion en dat :
    set i 1
@@ -3516,22 +3746,24 @@ proc spc_autofit2png { args } {
     set labely "Relative intensity"
 
     set nbargs [ llength $args ]
-    if { $nbargs==2 || $nbargs==4 || $nbargs==6 } {
-        if { $nbargs== 2 } {
+    if { $nbargs==2 || $nbargs==4 || $nbargs==6 || $nbargs==7 } {
+        if { $nbargs==2 } {
             set spectre [ file rootname [ lindex $args 0 ] ]
             set nom_objet [ lindex $args 1 ]
             set xdeb "*"
             set xfin "*"
             set ydeb "*"
             set yfin "*"
-        } elseif { $nbargs == 4 } {
+            set flagjpeg 0
+        } elseif { $nbargs==4 } {
             set spectre [ file rootname [ lindex $args 0 ] ]
             set nom_objet [ lindex $args 1 ]
             set xdeb [ lindex $args 2 ]
             set xfin [ lindex $args 3 ]
             set ydeb "*"
             set yfin "*"
-        } elseif { $nbargs== 6 } {
+            set flagjpeg 0
+        } elseif { $nbargs==6 } {
             set spectre [ file rootname [ lindex $args 0 ] ]
             set nom_objet [ lindex $args 1 ]
             set xdeb [ lindex $args 2 ]
@@ -3539,8 +3771,18 @@ proc spc_autofit2png { args } {
             set ydeb [ lindex $args 4 ]
 	    if { $ydeb<0 } { set ydeb "*" }
             set yfin [ lindex $args 5 ]
+            set flagjpeg 0
+        } elseif { $nbargs==7 } {
+            set spectre [ file rootname [ lindex $args 0 ] ]
+            set nom_objet [ lindex $args 1 ]
+            set xdeb [ lindex $args 2 ]
+            set xfin [ lindex $args 3 ]
+            set ydeb [ lindex $args 4 ]
+	    if { $ydeb<0 } { set ydeb "*" }
+            set yfin [ lindex $args 5 ]
+            set flagjpeg [ lindex $args 6 ]
         } else {
-            ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin??\n\n"
+            ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin? ?jpeg?\n\n"
             return 0
         }
 
@@ -3569,9 +3811,14 @@ proc spc_autofit2png { args } {
           set equipement [ lindex [ buf$audace(bufNo) getkwd "BSS_INST" ] 1 ]
         }
 
-        #--- Détermination de la date de prise de vue :
+        #--- Détermination de la date de prise de vue : $cdfrac/$mo/$y
         if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
-            set ladate [ bm_datefrac $spectre ]
+           set ladate [ bm_datefrac $spectre ]
+           #-- Impose 3 decimales a la fraction de jour :
+           regexp {([0-9]+\.[0-9]+)/.+} $ladate match fracjour
+           set fracjour [ format "%2.3f" $fracjour ]
+           regexp {[0-9]+\.[0-9]+(/.+)} $ladate match restedate
+           set ladate "$fracjour$restedate"
         }
 
         #--- Détermination des paramètres d'exposition :
@@ -3637,7 +3884,7 @@ proc spc_autofit2png { args } {
             }
             if { $xdeb != 1. } {
                set dispersion_precise [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-               set dispersion [ expr round($dispersion_precise*1000.)/1000. ]
+               set dispersion [ format "%3.3f" [ expr round($dispersion_precise*1000.)/1000. ] ]
                if { $nbargs==2 } {
                   set xfin [ spc_calpoly $naxis1 1 $xdeb $dispersion_precise 0 0 ]
                }
@@ -3688,6 +3935,8 @@ proc spc_autofit2png { args } {
 
         #--- Tracé du graphique :
        set largeur [ expr $xfin-$xdeb ]
+       #----------------------------------------------------------------#
+       if { 1==0 } {
        if { $naxis1<=3500 } {
           if { $largeur<=2000 && $flag_cal==1 } {
              set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
@@ -3697,11 +3946,35 @@ proc spc_autofit2png { args } {
              set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
           }
        } else {
-	  if { $dispersion>=2 } {
-	     set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
-	  } else {
+		  if { $dispersion>=2 } {
+	         set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+	      } else {
              set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
-	  }
+	      }
+       }
+       }
+       #-----------------------------------------------------#
+	   
+       if { $flag_cal==1 } {
+          if { $largeur<=1000 } {
+             if { $dispersion<=0.4 } {
+                set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+                if { $flagjpeg=="jpeg" } { set fileout_jpg [ spc_fit2tnjpg "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ] }
+             } else {
+                set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+             }
+          } elseif { $naxis1>=10000 && $dispersion<=0.2 } {
+             set fileout [ spc_fit2pngvlarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          } else {
+             set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          }
+       } else {
+          if { $naxis1<=3500 } {
+             set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+             if { $flagjpeg=="jpeg" } { set fileout_jpg [ spc_fit2tnjpg "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ] }
+          } else {
+             set fileout [ spc_fit2pnglarge "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
+          }
        }
 
         #--- Fabrication de la date du fichier :
@@ -3721,17 +3994,19 @@ proc spc_autofit2png { args } {
             set nom_sans_espaces "$nom_objet_lower"
         }
         if { [ regexp {.+(\.[a-zA-Z]{3})} "$fileout" match extimg ] } {
-            file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
+           file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
+           if { $flagjpeg=="jpeg" } { file rename -force "$audace(rep_images)/$fileout_jpg" "$audace(rep_images)/${nom_sans_espaces}_${datefile}.jpg" }
         } else {
-            set extimg ".png"
-            file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
+           set extimg ".png"
+           file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
+           if { $flagjpeg=="jpeg" } { file rename -force "$audace(rep_images)/$fileout_jpg" "$audace(rep_images)/${nom_sans_espaces}_${datefile}.jpg" }
         }
 
         #--- Fin du script :
         file copy -force "$audace(rep_images)/$spectre$conf(extension,defaut)" "$audace(rep_images)/${nom_sans_espaces}_$datefile$conf(extension,defaut)"
         return "${nom_sans_espaces}_$datefile$extimg"
     } else {
-        ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin??\n\n"
+        ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin? ?jpeg??\n\n"
     }
 }
 #**********************************************************************************#

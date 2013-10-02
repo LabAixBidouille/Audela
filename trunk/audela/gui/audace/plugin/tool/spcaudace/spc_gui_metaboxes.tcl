@@ -262,7 +262,7 @@ namespace eval ::param_spc_audace_calibre2 {
 	  set geom [wm geometry .param_spc_audace_calibre2]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
 
       #--- Supprime la fenetre
@@ -492,7 +492,7 @@ namespace eval ::param_spc_audace_calibre2file {
 	  set geom [wm geometry .param_spc_audace_calibre2file]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
 
       #--- Supprime la fenetre
@@ -607,7 +607,7 @@ namespace eval ::param_spc_audace_calibre2loifile {
 	   set geom [wm geometry .param_spc_audace_calibre2loifile]
 	   set deb [expr 1+[string first + $geom ]]
 	   set fin [string length $geom]
-	   set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	   set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
        }
 
        #--- Supprime la fenetre
@@ -947,7 +947,7 @@ namespace eval ::param_spc_audace_geom2calibre {
 	  set geom [wm geometry .param_spc_audace_geom2calibre]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -1338,7 +1338,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	  set geom [wm geometry .param_spc_audace_geom2rinstrum]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -1733,7 +1733,7 @@ namespace eval ::param_spc_audace_geom2rinstrum {
 	  set geom [wm geometry .param_spc_audace_geom2rinstrum]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -2392,7 +2392,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  set geom [wm geometry .param_spc_audace_calibreprofil]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -2854,7 +2854,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
 	  set geom [wm geometry .param_spc_audace_traite2scalibre]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -3208,7 +3208,7 @@ if { 1==0 } {
 	  set geom [wm geometry .param_spc_audace_lampe2calibre]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -3835,7 +3835,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
 	  set geom [wm geometry .param_spc_audace_traite2rinstrum]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -4412,7 +4412,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
 	  set geom [wm geometry .param_spc_audace_traite2srinstrum]
 	  set deb [expr 1+[string first + $geom ]]
 	  set fin [string length $geom]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -5020,7 +5020,7 @@ namespace eval ::param_spc_audace_traitestellaire {
 	  set geom [ wm geometry .param_spc_audace_traitestellaire ]
 	  set deb [ expr 1+[string first + $geom ] ]
 	  set fin [ string length $geom ]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 
@@ -5177,7 +5177,7 @@ namespace eval ::param_spc_audace_traitenebula {
          -borderwidth 1    \
          -editable 1       \
          -textvariable audace(param_spc_audace,traitenebula,config,brut) \
-         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -font $audace(param_spc_audace,traitenebula,font,c12b) \
          -values $liste_noms_generiques
       pack  .param_spc_audace_traitenebula.brut.combobox -in .param_spc_audace_traitenebula.brut -side right -fill none
 
@@ -5206,7 +5206,7 @@ namespace eval ::param_spc_audace_traitenebula {
          -borderwidth 1    \
          -editable 1       \
          -textvariable audace(param_spc_audace,traitenebula,config,noir) \
-         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -font $audace(param_spc_audace,traitenebula,font,c12b) \
          -values $liste_noms_generiques
       pack  .param_spc_audace_traitenebula.noir.combobox -in .param_spc_audace_traitenebula.noir -side right -fill none
 
@@ -5236,7 +5236,7 @@ namespace eval ::param_spc_audace_traitenebula {
          -borderwidth 1    \
          -editable 1       \
          -textvariable audace(param_spc_audace,traitenebula,config,plu) \
-         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -font $audace(param_spc_audace,traitenebula,font,c12b) \
          -values $liste_noms_generiques
       pack  .param_spc_audace_traitenebula.plu.combobox -in .param_spc_audace_traitenebula.plu -side right -fill none
 
@@ -5266,7 +5266,7 @@ namespace eval ::param_spc_audace_traitenebula {
          -borderwidth 1    \
          -editable 1       \
          -textvariable audace(param_spc_audace,traitenebula,config,noirplu) \
-         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -font $audace(param_spc_audace,traitenebula,font,c12b) \
          -values $liste_noms_generiques
       pack  .param_spc_audace_traitenebula.noirplu.combobox -in .param_spc_audace_traitenebula.noirplu -side right -fill none
 
@@ -5296,7 +5296,7 @@ namespace eval ::param_spc_audace_traitenebula {
          -borderwidth 1    \
          -editable 1       \
          -textvariable audace(param_spc_audace,traitenebula,config,offset) \
-         -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+         -font $audace(param_spc_audace,traitenebula,font,c12b) \
          -values $liste_noms_generiques
       pack  .param_spc_audace_traitenebula.offset.combobox -in .param_spc_audace_traitenebula.offset -side right -fill none
 
@@ -5626,7 +5626,7 @@ namespace eval ::param_spc_audace_traitenebula {
 	  set geom [ wm geometry .param_spc_audace_traitenebula ]
 	  set deb [ expr 1+[string first + $geom ] ]
 	  set fin [ string length $geom ]
-	  set conf(param_spc_audace,position) "+[string range $geom $deb $fin]"
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
       }
   }
 

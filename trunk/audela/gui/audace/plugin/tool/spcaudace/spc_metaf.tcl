@@ -738,6 +738,7 @@ proc spc_lampe2calibre { args } {
 	   set wincoords [ lindex $args 8 ]
        } else {
 	   ::console::affiche_erreur "Usage: spc_lampe2calibre spectre_2D_lampe nom_générique_images_objet_(sans extension) nom_dark uncosmic (o/n) méthode_détection_spectre (large, serre) mirrorx (o/n) méthode_binning (add, rober, horne) sélection_manuelle_raie_géométrie (o/n) ?liste_corrdonnées_zone?\n\n"
+          return ""
        }
 
        #--- Prend la première image et le premier dark ou le masterdark :
@@ -891,6 +892,9 @@ proc spc_lampe2calibre { args } {
       ::console::affiche_resultat "\nCalcul la résolution du spectre...\n"
       # set lambda_raiemax [ lindex [ lindex [ spc_findbiglines $lampecalibree e ] 0 ] 0 ]
       set liste_raies [ spc_findbiglines $lampecalibree e ]
+      #- Selection des raies dont I>=0.1*Imax et trie selon les abscisses :
+      set liste_raies [ spc_selectstronglines $liste_raies ]
+
       #-- Recherhe de la raie la plus proche du centre, sinon prend la plus brillante :
       #- Reucpere les parametres du spectre :
       buf$audace(bufNo) load "$audace(rep_images)/$lampecalibree"
@@ -1309,6 +1313,7 @@ proc spc_traite2rinstrum { args } {
           ::console::affiche_prompt "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c-ocal\n\n"
        } else {
           spc_loadfit "${img}-profil-1c"
+          ::console::affiche_prompt "\n\n****** FIN DU TRAITEMENT ******\n\n"
           ::console::affiche_prompt "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c\n\n"
        }
        loadima "$audace(rep_images)/${img}-spectre2D-traite"
@@ -1953,6 +1958,7 @@ proc spc_traitestellaire { args } {
 
       #-- Affichage du resultat :
       spc_load "$profil_final_termine"
+      ::console::affiche_prompt "\n\n****** FIN DU TRAITEMENT ******\n\n"
       ::console::affiche_prompt "\n\n**** Spectre final traité, corrigé et calibré sauvé sous ****\n$profil_final_termine\n\n"
       return "$profil_final_termine"
    } else {
@@ -2121,6 +2127,7 @@ proc spc_traitenebula { args } {
        #--- Résultat des traitements :
        # file copy -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)" "$audace(rep_images)/${brut}-profil-traite-final$conf(extension,defaut)"
        # file delete -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)"
+       ::console::affiche_prompt "\n\n****** FIN DU TRAITEMENT ******\n\n"
        ::console::affiche_prompt "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-final\n\n"
        return "${brut}-profil-final"
    } else {

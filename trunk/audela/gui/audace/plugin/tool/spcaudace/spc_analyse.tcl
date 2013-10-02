@@ -544,7 +544,8 @@ proc spc_fitgauss { args } {
          set icontr [ spc_icontinuum $fichier $xright ]
          set icont [ expr 0.5*($icontl+$icontr) ]
          ::console::affiche_resultat "Continuum autour de la raie : $icont\n"
-         set gausssynth [ spc_gaussienne $fichier $centre $intensite [ expr 8*$fwhm ] $type $icont ]
+         #set gausssynth [ spc_gaussienne $fichier $centre $intensite [ expr 8*$fwhm ] $type $icont ]
+         set gausssynth [ spc_gaussienne $fichier $centre [ expr $intensite/4.3 ] [ expr 4*$fwhm ] $type $icont ]
       } else {
          set gausssynth [ spc_gaussienne $fichier $centre $intensite [ expr 7*$fwhm ] $type ]
       }
@@ -1096,6 +1097,7 @@ proc spc_compare { args } {
 proc spc_findbiglineslamp { args } {
 # Date de création : 22-07-12
 # Date de modification : 24-07-12
+# Auteur : P. Lailly
 # Arguments : nom_profil_raies largeur_raie
 # amelioration de spc_findbiglines faite par Benji : 
 # on recherche les raies par intercorrelation avec une gaussienne de meme largeur que les raies du neon
@@ -1147,8 +1149,8 @@ proc spc_findbiglineslamp { args } {
       }
       #transformation du fichier fits en fichier 2D
       buf$audace(bufNo) load $nom_fich
-      buf$audace(bufNo) setkwd [ list CDELT1 $cdelt1 int "" "" ]
-      buf$audace(bufNo) setkwd [ list CRVAL1 $crval1 float "" "" ]
+      buf$audace(bufNo) setkwd [ list CDELT1 $cdelt1 double "" "" ]
+      buf$audace(bufNo) setkwd [ list CRVAL1 $crval1 double "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS 2 int "number of data axes" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS2 1 int "length of data axis 2" "" ]
 		
@@ -1171,9 +1173,8 @@ proc spc_findbiglineslamp { args } {
       set nbunit "float"
       set nbunit1 "double"
       buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-      buf$audace(bufNo) setkwd [ list "NAXIS" 2 int "" "" ]
+      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
       buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
-      buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
       buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
       #-- Dispersion
       buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 $nbunit1 "" "Angstrom/pixel"]

@@ -1008,7 +1008,7 @@ proc spc_vradialecorr { args } {
 	   set dec_d [ lindex $args 7 ]
 	   set dec_m [ lindex $args 8 ]
 	   set dec_s [ lindex $args 9 ]
-	   set jj [ lindex $args 10 ]
+	   set dd [ lindex $args 10 ]
 	   set mm [ lindex $args 12 ]
 	   set aaaa [ lindex $args 12 ]
        } else {
@@ -1210,7 +1210,7 @@ proc spc_vradialecorraccur { args } {
 	   set dec_d [ lindex $args 8 ]
 	   set dec_m [ lindex $args 9 ]
 	   set dec_s [ lindex $args 10 ]
-	   set jj [ lindex $args 11 ]
+	   set dd [ lindex $args 11 ]
 	   set mm [ lindex $args 12 ]
 	   set aaaa [ lindex $args 13 ]
        } else {
@@ -3777,7 +3777,7 @@ proc spc_dynagraph { args } {
       file delete -force "$audace(rep_images)/$fichier_echant$conf(extension,defaut)"
 
       #--- Verifie si le spectre est mis a l'echelle du continuum à 1 et decale les intensites de $yoffset :
-      ::console::affiche_prompt "Normalisation du spectre...\n"
+      ::console::affiche_prompt "Mise à l'échelle du continuum...\n"
       set icont [ spc_icontinuum $fichier_sel ]
       if { [ expr abs($icont-1.) ]>0.2 } {
          set fileout1 [ spc_rescalecont $fichier_sel ]
