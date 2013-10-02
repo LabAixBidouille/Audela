@@ -265,6 +265,7 @@ proc spc_winini { } {
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sommekappa_w) -command "spc_sommekappa_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cfwhmbinning_w) -command "spc_cafwhmbinning_w" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_hbinning_w) -command "spc_hbinning_w" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_rmedgesa_w) -command "spc_rmedgesa_w" -underline 0
 
 
       .spc configure -menu .spc.menuBar

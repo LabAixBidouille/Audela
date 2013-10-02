@@ -157,6 +157,7 @@ set caption(spcaudace,gui,spc_br_w)                         "Activate low resolu
 set caption(spcaudace,gui,spc_hr_w)                         "Activate high resolution mode"
 set caption(spcaudace,gui,spc_cmd)                          "Apply a command to all files present in working directory"
 set caption(spcaudace,gui,spc_exportcalibbr)                "Low resolution wavelength calibration with Neon and Balmer lines"
+set caption(spcaudace,gui,spc_rmedgesa_w)                   "Switch off null edges removing on lines profiles"
 
 #--- Menu Astrophysique ---#
 set caption(spcaudace,gui,spc_analyse)                      "Astrophysic"
@@ -285,7 +286,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_offset_w)                  "Ajoute une valeur aux intensités"
    set caption(spcaudace,gui,spc_multc_w)                   "Multiplie les intensités par un nombre"
    set caption(spcaudace,gui,spc_ajustpoints_w)             "Ajustement du continuum avec des points choisis"
-   set caption(spcaudace,gui,spc_cfwhmbinning_w)            "Régler amnuellement le coéfficient multiplicateur de la FWHM de binning"
+   set caption(spcaudace,gui,spc_cfwhmbinning_w)            "Régler manuellement le coéfficient multiplicateur de la FWHM de binning"
    set caption(spcaudace,gui,spc_hbinning_w)                "Régler manuellement la hauteur de binning"
 
 
@@ -341,6 +342,7 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_hr_w)                      "Activer le mode haute résolution"
    set caption(spcaudace,gui,spc_cmd)                       "Applique une commande à l'ensemble des fichiers du répertoire de travail"
    set caption(spcaudace,gui,spc_exportcalibbr)             "Calibration basse résolution à l'aide du néon et des raies de Balmer"
+   set caption(spcaudace,gui,spc_rmedgesa_w)                "Désactiver la découpe des bords nuls des profils"
 
    #--- Menu Astrophysique ---#
    set caption(spcaudace,gui,spc_analyse)                   "Astrophysique"

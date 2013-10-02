@@ -8,9 +8,26 @@
 # Mise a jour $Id$
 
 
+########################################################################
+# Desactiver la decoupe des bords nuls
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 01-09-2013
+# Date de modification : 01-09-2013
+########################################################################
+
+proc spc_rmedgesa_w {} {
+
+   global audace spcaudace
+
+   set spcaudace(rm_edges) "n"
+   ::console::affiche_prompt "Découpe des bords nuls désactivée.\nPour la réactiver durant votre session, tapper : set spcaudace(rm_edges) \"o\"\n\n"
+}
+#**********************************************************************#
+
 
 ########################################################################
-# Interface pour l'appel de la fonction spc_buildhtml
+# Interface pour l'appel de la fonction buildhtml
 #
 # Auteurs : Benjamin Mauclaire
 # Date de création : 07-08-2012

@@ -43,7 +43,7 @@ proc spc_ssk { args } {
 # Auteur : Patrick LAILLY
 # Date de création : 20-08-12
 # Date de modification : 20-08-12
-# Le profil d'entree est censé être calibré linéairement
+# Le profil d'entree est censé être calibré linéairement 
 # Le fichier de sortie est créé avec le suffixe _extend.
 # La numerotation des echantillons est celle des fichiers fits ( depart a 1)
 # Exemple spc_extend profile_data.fit samplelast
@@ -72,17 +72,17 @@ proc spc_extend { args } {
       if { $lastsampl <= $naxis1 } {
 	 ::console::affiche_erreur " spc_extend : le dernier echantillon specifie $lastsampl est inferieur a naxis1 $naxis1 : l'application de la procedure n'a pas de sens \n\n"
       	return ""
-      }
+      } 
       for { set i $naxis1 } { $i < $lastsampl } { incr i } {
 	 lappend ordonnees $value
       }
-      set newnaxis1 $lastsampl
+      set newnaxis1 $lastsampl		
       ::console::affiche_resultat "spc_extend : longueur nouveau fichier : $newnaxis1 echantilllons \n"
       #--- Creation du nouveau fichier :
       set suff _extend
       set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $ordonnees $suff ]
-      return $nom_fich_output
-      #return $file_out
+      return $nom_fich_output     
+      #return $file_out 
    } else {
       ::console::affiche_erreur "Usage: spc_extend profile_data.fits lastsample\n\n"
       return ""
@@ -98,7 +98,7 @@ proc spc_extend { args } {
 # Date de modification : 8-12-2010
 # Cette procédure cree un profil de raies (fichier fits) complete par des zeros en fin d'un profil spectral de facon a
 # se conformer a un nombre d'echantillons fixe par l'utilisateur.
-# Le profil d'entree est censé être calibré linéairement
+# Le profil d'entree est censé être calibré linéairement 
 # Le fichier de sortie est créé avec le suffixe _zeropad.
 # La numerotation des echantillons est celle des fichiers fits ( depart a 1)
 # Exemple spc_zeropad profile_data.fit samplelast
@@ -125,13 +125,13 @@ proc spc_zeropad { args } {
       for { set i $naxis1 } { $i <= $lastsampl } { incr i } {
 	 		lappend ordonnees 0.
       }
-      set newnaxis1 $lastsampl
+      set newnaxis1 $lastsampl		
       ::console::affiche_resultat "spc_zeropad : longueur nouveau fichier : $newnaxis1 echantilllons \n"
       #--- Creation du nouveau fichier :
       set suff _zeropad
       set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $ordonnees $suff ]
-      return $nom_fich_output
-      #return $file_out
+      return $nom_fich_output     
+      #return $file_out 
    } else {
       ::console::affiche_erreur "Usage: spc_zeropad profile_data.fits lastsample\n\n"
       return ""
@@ -146,8 +146,8 @@ proc spc_zeropad { args } {
 # Date de création : 26-10-2009
 # Date de modification : 8-12-2010
 # Cette procédure cree un profil de raies (fichier fits) en selectionnant un intervalle
-# d'echantillons dans le profil d'entree (que ce profil est cense contenir).
-# Le profil d'entree est censé être calibré linéairement.
+# d'echantillons dans le profil d'entree (que ce profil est cense contenir). 
+# Le profil d'entree est censé être calibré linéairement. 
 # Le fichier de sortie est créé avec le suffixe _sampsel.
 # La numerotation des echantillons est celle des fichiers fits ( depart a 1)
 # Exemple spc_selectpixels profile_data.fit sample1 samplelast
@@ -178,22 +178,22 @@ proc spc_selectpixels { args } {
 	 set newabsc [ lrange $abscisses $first $last ]
 	 set newnaxis1 [ expr $last -$first +1 ]
 	 set crval1 [ lindex $newabsc 0 ]
-
+      	
 	 ::console::affiche_resultat "spc_selectpixels : longueur nouveau fichier : $newnaxis1 echantilllons \n"
 	 #set file_out [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $newordonn $suff non ]
 	 #return $file_out
 	 #--- Creation du nouveau fichier :
 	 set suff _sel
 	 set nom_fich_output [ spc_fileupdate $nom_fich_input $crval1 $cdelt1 $newordonn $suff ]
-
+	 
 	 ::console::affiche_resultat "spc_selectpixels : Profil sauvé sous $nom_fich_output\n"
 	 #buf$audace(bufNo) bitpix short
-	 return $nom_fich_output
-	 #return $file_out
+	 return $nom_fich_output     
+	 #return $file_out 
       } else {
 	 ::console::affiche_erreur "spc_selectpixels : les numeros d'echantillons donnes ( $sample1 et $lastsampl ) ne sont pas dans le profil entree : \n\n"
 	 return ""
-      }
+      } 
    } else {
       ::console::affiche_erreur "Usage: spc_selectpixels profile_data.fits? sample1 ? lastsample ?\n\n"
       return ""
@@ -215,7 +215,7 @@ proc spc_selectpixels { args } {
 proc spc_rmneg { args } {
    global audace conf spcaudace
 
-   set nbargs [ llength $args ]
+   set nbargs [ llength $args ] 
    if { $nbargs==1 } {
       set fichier [ file rootname [ lindex $args 0 ] ]
 
@@ -238,7 +238,7 @@ proc spc_rmneg { args } {
       #--- Sauvegarde du resultat :
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${fichier}_rm0"
-      buf$audace(bufNo) bitpix short
+      buf$audace(bufNo) bitpix short    
       return "${fichier}_rm0"
    } else {
       ::console::affiche_erreur "Usage: spc_rmneg nom_spectre\n"
@@ -260,7 +260,7 @@ proc spc_rmextrema { args } {
    global audace conf spcaudace
    set facteur_imax 10.
 
-   set nbargs [ llength $args ]
+   set nbargs [ llength $args ] 
    if { $nbargs==1 } {
       set fichier [ file rootname [ lindex $args 0 ] ]
 
@@ -292,7 +292,7 @@ proc spc_rmextrema { args } {
       #--- Sauvegarde du resultat :
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${fichier}_rm0"
-      buf$audace(bufNo) bitpix short
+      buf$audace(bufNo) bitpix short    
       return "${fichier}_rm0"
    } else {
       ::console::affiche_erreur "Usage: spc_rmextrema nom_spectre\n"
@@ -307,32 +307,37 @@ proc spc_rmextrema { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 2010-04-19
-# Date modification : 2010-04-19
+# Date modification : 2013-07-31
 # Arguments : nom_objet_sans_espace
 ####################################################################
 
 proc spc_anim { args } {
    global audace conf spcaudace tcl_platform
 
-   set nbargs [ llength $args ]
+   set nbargs [ llength $args ] 
    if { $nbargs==1 } {
       set nom_astre [ lindex $args 0 ]
       set delay_images 60
    } elseif { $nbargs==2 } {
       set nom_astre [ lindex $args 0 ]
       set delay_images [ lindex $args 1 ]
-   } elseif { $nbargs==6 } {
+   } elseif { $nbargs==3 } {
       set nom_astre [ lindex $args 0 ]
       set delay_images [ lindex $args 1 ]
-      set lambda_min [ lindex $args 2 ]
-      set lambda_max [ lindex $args 3 ]
-      set ymin [ lindex $args 4 ]
-      set ymax [ lindex $args 5 ]
+      set meth_norma [ lindex $args 2 ]
+   } elseif { $nbargs==7 } {
+      set nom_astre [ lindex $args 0 ]
+      set delay_images [ lindex $args 1 ]
+      set meth_norma [ lindex $args 2 ]
+      set lambda_min [ lindex $args 3 ]
+      set lambda_max [ lindex $args 4 ]
+      set ymin [ lindex $args 5 ]
+      set ymax [ lindex $args 6 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces ?delay_images(40) ?lambda_min lambda_max ymin ymax??\n"
+      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces ?delay_images(40) ?methode_normalisation(norma/rescale)?? ?lambda_min lambda_max ymin ymax???\n"
       return ""
    }
-
+      
 
    #--- Copie des fichiers :
    set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *$conf(extension,defaut) ] ]
@@ -346,9 +351,9 @@ proc spc_anim { args } {
    }
 
 
-   if { $nbargs<=2 } {
+   if { $nbargs<=3 } {
       #--- Determination de lambda_min et lambda_max :
-      ::console::affiche_prompt "\nDétermination de lambda_max et lambda_min...\n"
+      ::console::affiche_prompt "\nDétermination de lambda_max et lambda_min communes...\n"
       set bande_liste [ list ]
       foreach fichier $listefichiers {
          set resultats [ spc_info $fichier ]
@@ -372,11 +377,29 @@ proc spc_anim { args } {
 
 
    #--- Normalisation :
-   ::console::affiche_prompt "\nNormalisation des spectres...\n"
-   set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
-   foreach fichier $listefichiers {
-      spc_autonorma "$fichier"
-      file delete -force "$audace(rep_images)/$fichier"
+   if { $nbargs>=3 } {
+      if { "$meth_norma"=="norma" } {
+         ::console::affiche_prompt "\nNormalisation des spectres...\n"
+         set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
+         foreach fichier $listefichiers {
+            spc_autonorma "$fichier"
+            file delete -force "$audace(rep_images)/$fichier"
+         }
+      } elseif { "$meth_norma"=="rescale" } {
+         ::console::affiche_prompt "\nMise à l'échelle du continuum des spectres...\n"
+         set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
+         foreach fichier $listefichiers {
+            spc_rescalecont "$fichier"
+            file delete -force "$audace(rep_images)/$fichier"
+         }
+      }
+   } else {
+      ::console::affiche_prompt "\nNormalisation des spectres...\n"
+      set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
+      foreach fichier $listefichiers {
+         spc_autonorma "$fichier"
+         file delete -force "$audace(rep_images)/$fichier"
+      }
    }
 
 
@@ -430,7 +453,7 @@ proc spc_anim { args } {
          return ""
       }
    }
-
+   
    #--- Traitement du resultat :
    ::console::affiche_resultat "Animation sauvée sous ${nom_astre}_anim.gif.\n"
    return "${nom_astre}_anim.gif"
@@ -455,7 +478,7 @@ proc spc_rmcosmics { args } {
    ## set pas 10
    set ecart 4.0
    set nbsigma $spcaudace(cosmics_nbsigma)
-
+   
    set nbargs [ llength $args ]
    if { $nbargs<=4 } {
       if { $nbargs==1 } {
@@ -483,9 +506,9 @@ proc spc_rmcosmics { args } {
          return ""
       }
       set pas [ expr int($largeur/2) ]
-
+      
       set continuum [ expr $imoy_part*[ spc_icontinuum $filename ] ]
-
+      
       #--- Gestion des profils calibrés en longueur d'onde :
       buf$audace(bufNo) load "$audace(rep_images)/$filename"
       set listemotsclef [ buf$audace(bufNo) getkwds ]
@@ -508,7 +531,7 @@ proc spc_rmcosmics { args } {
          return ""
       }
 
-
+      
       #-- Retire les petites raies qui seraient des pixels chauds ou autre :
       # commenté le 2008-03-21
       # buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
@@ -517,7 +540,7 @@ proc spc_rmcosmics { args } {
       set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
       set nbrange [ expr int($naxis1/$largeur) ]
       # ::console::affiche_resultat "nb intervalles : $nbrange\n"
-
+      
       #--- Recherche des raies d'émission :
       ::console::affiche_resultat "Recherche des raies d'émission...\n"
       for { set i 1 } { $i<=[ expr $naxis1-2*$largeur ] } { set i [ expr $i+$pas ] } {
@@ -537,24 +560,24 @@ proc spc_rmcosmics { args } {
          lappend fwhms [ lindex $gauss 2 ]
          #set xc [ lindex $gauss 1 ]
          #::console::affiche_resultat "Centre $i trouvé; Xfin=$xfin\n"
-
+         
          #-- Meth 2 : centroide
          ##lappend intensites [ lindex [ buf$audace(bufNo) flux $coords ]  0 ]
          #lappend intensites [ lindex [ buf$audace(bufNo) fitgauss $coords ] 0 ]
          #lappend xcenters [ lindex [ buf$audace(bufNo) centro $coords ]  0 ]
       }
-
+      
       #-- Contruit les elements de la liste :
       foreach imax $intensites abscisse $xcenters fwhm $fwhms {
          lappend doubleliste [ list $abscisse $imax $fwhm ]
       }
-
-
+      
+      
       #--- Elimination des raies trop proches :
       set doubleliste [ lsort -increasing -real -index 0 $doubleliste ]
-
+      
       #::console::affiche_resultat "[ lrange $doubleliste 0 20]\n"
-
+      
       set len [ expr [ llength $doubleliste ]-1 ]
       set doublelistesorted [ list ]
       for { set j 0 } { $j<$len } { incr j } {
@@ -571,8 +594,8 @@ proc spc_rmcosmics { args } {
          }
       }
       # ::console::affiche_resultat "[ lrange $doublelistesorted 0 20 ]\n"
-
-
+      
+      
       #--- Elimination des raies trop faibles :
       ::console::affiche_resultat "Elimination des raies trop faibles...\n"
       set doublelistesorted [ lsort -decreasing -real -index 1 $doublelistesorted ]
@@ -584,10 +607,10 @@ proc spc_rmcosmics { args } {
       }
       set doublelistesorted [ lrange $doublelistesorted 0 $k ]
       ::console::affiche_resultat "$k raies restantes.\n"
-
-
+      
+      
       #::console::affiche_resultat "[ lrange $doublelistesorted 0 20 ]\n"
-
+      
       #--- Elimination des raies dont la fwhm>fwhm_max :
       ::console::affiche_resultat "Elimination des raies trop larges...\n"
       set doublelistesorted [ lsort -increasing -real -index 2 $doublelistesorted ]
@@ -599,12 +622,12 @@ proc spc_rmcosmics { args } {
       }
       set doublelistesorted [ lrange $doublelistesorted 0 [ expr $k-1 ] ]
       ::console::affiche_resultat "$k raies restantes.\n"
-
-
+      
+      
       #--- Tri par intensite decroissante :
       set doublelistesorted [ lsort -increasing -real -index 0 $doublelistesorted ]
       set nbraies [ llength $doublelistesorted ]
-
+      
       if { $k != 0 } {
          #--- Cicatrisation des cosmics :
          ::console::affiche_resultat "Cicatrisation des cosmics...\n"
@@ -627,15 +650,15 @@ proc spc_rmcosmics { args } {
          }
          ::console::affiche_resultat "Zones à cicatriser : $zones\n"
          #set leszones [ lindex $zones 0 ]
-         #spc_scar "$filename" $leszones
+         #spc_scar "$filename" $leszones      
          set zones [ linsert $zones 0 "$filename" ]
          set spectre_cic [ spc_scar $zones ]
       } else {
          ::console::affiche_resultat "Aucune zone à cicatriser trouvée.\n"
          set spectre_cic "$filename"
       }
-
-
+      
+      
       #--- Conversion des abscisses en longueur d'onde :
       set selection6 $doublelistesorted
       foreach raie $selection6 {
@@ -646,8 +669,8 @@ proc spc_rmcosmics { args } {
          set selection6 [ lreplace $selection6 $k $k [ list $abscisse $intensite $fwhm ] ]
          incr k
       }
-
-
+      
+      
       #--- Affichage du résultat :
       set selection6 [ lrange $selection6 0 14 ]
       set mylistabscisses $selection6
@@ -692,7 +715,7 @@ proc spc_scar { args } {
        ::console::affiche_erreur "Usage : spc_scar nom_profil_de_raies {lambda1 lambda2} {lambda1 lambda2} ...\n\n"
        return ""
     }
-
+       
 
        #--- Recupere les informations :
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
@@ -858,12 +881,12 @@ proc spc_offset { args } {
 
 
 ####################################################################
-# Procedure d'ajustement d'une fonction polynomiale sur quelques points extraits d'un spectre
+# Procedure d'ajustement d'une fonction polynomiale sur quelques points extraits d'un spectre 
 # Auteur : Patrick LAILLY
 # Date creation : 07-06-2008
 # Date modification : 30-08-2008
-# Algo : ajustement par moindres carrés des données (résultat division) par une fonction
-# polynomiale
+# Algo : ajustement par moindres carrés des données (résultat division) par une fonction 
+# polynomiale 
 # C'est l'algo classique que l'on fait fonctionner en une étape après avoir mis a 1 les poids associés aux écahntillons sélectionnés et à 0 les autres
 #
 # Arguments : fichier .fit du profil de raie liste d'abscisses (degre du polynome : optionnel)
@@ -876,17 +899,17 @@ proc spc_ajustpoints { args } {
    global conf
    global audace
    set nul_pcent_intens .65
-
+   
    set nb_args [ llength $args ]
    if { $nb_args<=3 && $nb_args>1 } {
       set filenamespc [ lindex $args 0 ]
       set listepoints [ lindex $args 1 ]
       set ndeg 4
-
+	
       if { $nb_args==3 } {
 	 set ndeg [ lindex $args 2 ]
       }
-
+	
       if { $ndeg>5 } {
 	 ::console::affiche_erreur "Le degré du polynome doit etre <=5 \n\n"
 	 return 0
@@ -903,7 +926,7 @@ proc spc_ajustpoints { args } {
       set abscissesorig [ lindex $contenu 0 ]
       set ordonneesorig [ lindex $contenu 1 ]
       set lenorig [llength $ordonneesorig ]
-
+      
       #-- elimination des termes nuls au bord
       set limits [ spc_findnnul $ordonneesorig ]
       set i_inf [ lindex $limits 0 ]
@@ -933,7 +956,7 @@ proc spc_ajustpoints { args } {
       set nechant_util [ expr $i_sup - $i_inf +1 ]
       # intens_moy est la valeur moyenne de l'intensite
       ::console::affiche_resultat "intensite moyenne : $intens_moy \n"
-
+	
       #calcul matrice B
       set B [ list ]
       for { set i 0 } { $i<$nmilieu0 } { incr i } {
@@ -961,7 +984,7 @@ proc spc_ajustpoints { args } {
 	 set j [ expr round (($lambda_i-$lambdamin)*$nechant_util / $ecartlambda) -1 ]
 	 set poids [ lreplace $poids $j $j 1. ]
       }
-
+		
 
       #-- calcul de l' ajustement
       set result [ gsl_mfitmultilin $ordonnees $B $poids ]
@@ -971,7 +994,7 @@ proc spc_ajustpoints { args } {
       set covar [ lindex $result 2 ]
       set riliss [ gsl_mmult $B $coeffs ]
       set resid [ gsl_msub $ordonnees $riliss ]
-
+	
       #-- evaluation et analyse des residus
       #::console::affiche_resultat "longueur B : [llength $B]\n"
       #::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
@@ -980,22 +1003,22 @@ proc spc_ajustpoints { args } {
       set rms_pat [ lindex $rms_pat1 0 ]
       set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
       set rms_pat [expr sqrt($rms_pat)]
-
+	
       ::console::affiche_resultat "Lissage effectué.\n"
-
+	
       #normalisation des poids pour la visu
       for { set i 0 } { $i<$nmilieu0 } { incr i } {
 	 set poidsi [ expr [ lindex $poids $i ]*$intens_moy ]
-	 set poids [ lreplace $poids $i $i $poidsi ]
-
+	 set poids [ lreplace $poids $i $i $poidsi ]		
+		
       }
-
+	
       #-- mise a zero d'eventuels echantillons tres petits
       set zero 0.
       set seuil_min [ expr $intens_moy*$nul_pcent_intens/100. ]
       for { set i 0 } {$i<$nmilieu0} {incr i} {
-	 if { [ lindex $riliss $i ] < $seuil_min } {
-	    set riliss [ lreplace $riliss $i $i $zero ]
+	 if { [ lindex $riliss $i ] < $seuil_min } { 
+	    set riliss [ lreplace $riliss $i $i $zero ] 
 	 }
       }
 
@@ -1005,19 +1028,19 @@ proc spc_ajustpoints { args } {
       set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
       for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
 	 set riliss [ linsert $riliss [ expr $len_cut+$i ] 0.0 ]
-	 #set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]
+	 #set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]    
       }
       for { set i 0 } { $i<$i_inf } { incr i } {
 	 set riliss [ linsert $riliss 0 0.0 ]
 	 #set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
       }
-
+	
       ::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
-
+	
       #--- CrÃ©e le fichier fits de sortie
-      set abscisses $abscissesorig
+      set abscisses $abscissesorig 
       set filename [ file rootname $filenamespc ]
-
+        
       buf$audace(bufNo) load "$audace(rep_images)/$filename"
       set k 1
       foreach x $abscisses {
@@ -1030,11 +1053,11 @@ proc spc_ajustpoints { args } {
       buf$audace(bufNo) bitpix short
       ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
 
-
+	
       #--- Affichage du resultat :
       #set visus 'o'
       #set testvisu 'n'
-      #if { $visus != $testvisu } {
+      #if { $visus != $testvisu } {       
       ::plotxy::clf
       ::plotxy::figure 1
       ::plotxy::plot $abscissesorig $riliss r 1
@@ -1047,8 +1070,8 @@ proc spc_ajustpoints { args } {
       ::plotxy::xlabel "lambda"
       ::plotxy::ylabel "intensity"
       ::plotxy::title "bleu : original ; rouge : lissage par polynome de degre $ndeg"
-      #}
-
+      #}	
+	
       return ${filename}_conti
    } else {
       ::console::affiche_erreur "Usage: spc_ajustpoints profil_de_raies.fit {liste de longueurs d'onde des points par lesquels passer}.\n\n"
@@ -1062,7 +1085,7 @@ proc spc_ajustpoints { args } {
 # Auteur : Patrick LAILLY
 # Date de crÃ©ation : 1-09-08
 # Date de modification : 17-07-2009
-# Cette procÃ©dure rÃ©Ã©chantillone un profil de raies (fichier fits) avec le meme pas
+# Cette procÃ©dure rÃ©Ã©chantillone un profil de raies (fichier fits) avec le meme pas 
 # d'echantillonage qu'un fichier modÃ¨le : le fichier de sortie est limitÃ© Ã  l'intervalle
 # de longueurs d'ondes du fichier de dÃ©part. Les deux fichiers sont censÃ©s Ãªtre calibrÃ©s
 # linÃ©airement. Le fichier de sortie est crÃ©Ã© avec le suffixe _newsamp. En option on peut
@@ -1078,7 +1101,7 @@ proc spc_echantmodel { args } {
       set nom_fich_input [ file rootname $nom_fich_input ]
       set nom_fich_model [ lindex $args 0 ]
       set nom_fich_model [ file rootname $nom_fich_model ]
-
+	
       #set nbunit "float"
       set nbunit "double"
       set precision 0.05
@@ -1109,8 +1132,8 @@ proc spc_echantmodel { args } {
 
 
 ###########################################################################################
-# Procedure pour reechantilloner un profil spectral suivant un pas d'echantillonage passe en
-# argument
+# Procedure pour reechantilloner un profil spectral suivant un pas d'echantillonage passe en 
+# argument  
 # Auteur : Patrick LAILLY
 # Date de crÃ©ation : 12-12-08
 # Date de modification : 17-07-09
@@ -1118,21 +1141,21 @@ proc spc_echantmodel { args } {
 # spÃ©cifiÃ© en argument et exprimÃ© en Angstroems. En option on peut changer le lambda de dÃ©part
 # mais l'argument, exprimÃ© en angstroems, est contraint Ã  etre situÃ© dans l'intervalle des
 # longueurs d'ondes couvert par le profil d'entrÃ©e.
-# Le profil data est censÃ© Ãªtre calibrÃ© linÃ©airement. Le fichier de sortie est crÃ©Ã© avec le
+# Le profil data est censÃ© Ãªtre calibrÃ© linÃ©airement. Le fichier de sortie est crÃ©Ã© avec le 
 # suffixe _newsampl
-# Exemples
+# Exemples 
 # spc_echantdelt profile_data.fit .001
 # spc_echantdelt profile_data.fit 10.
 # spc_echantdelt profile_data.fit 10. 6563.
 ##############################################################################################
 proc spc_echantdelt { args } {
-   global conf
-   global audace
+   global conf 
+   global audace 
 
    set nbargs [ llength $args ]
    if { $nbargs == 2 || $nbargs == 3} {
       set nom_fich_input [ file rootname [ lindex $args 0 ] ]
-      set newsamplingrate [ lindex $args 1 ]
+      set newsamplingrate [ lindex $args 1 ]	
       #set nbunit "float"
       set nbunit "double"
       if { [ spc_testlincalib $nom_fich_input ] == -1 } {
@@ -1152,13 +1175,13 @@ proc spc_echantdelt { args } {
          set crpix1 1
       }
       set crvalnew $crval1
-      if { $nbargs == 3} {
+      if { $nbargs == 3} { 
       	set crvalnew [ lindex $args 2 ]
       }
       set contenu [ spc_fits2data $nom_fich_input ]
       set abscisses [ lindex $contenu 0 ]
       set ordonnees [ lindex $contenu 1 ]
-
+      
       ::console::affiche_resultat "spc_echantdelt : Caractéristiques fichier data cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
 
       #--- Rééchantillonnage :
@@ -1182,7 +1205,7 @@ proc spc_echantdelt { args } {
        buf$newBufNo copykwd $audace(bufNo)
        buf$newBufNo setkwd [ list "NAXIS" 1 int "" "" ]
        buf$newBufNo setkwd [ list "NAXIS1" $newnaxis1 int "" "" ]
-
+       
        buf$newBufNo setpixels CLASS_GRAY $newnaxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
        #set nbunit "float"
         #set nbunit1 "double"
@@ -1198,11 +1221,11 @@ proc spc_echantdelt { args } {
       ::console::affiche_resultat "lambdamin=$lambdamin ; lambdamax=$lambdamax \n"
       buf$newBufNo bitpix float
       for {set k 0} { $k < $newnaxis1 } {incr k} {
-
+         
          buf$newBufNo setpix [list [expr $k+1] 1] [lindex $profile $k ]
          #- set intensite 0
       }
-
+      
       #--- Sauvegarde du fichier fits ainsi créé :
 
       set suff _newsampl
@@ -1210,7 +1233,7 @@ proc spc_echantdelt { args } {
       buf$newBufNo save "$audace(rep_images)/$nom_fich_output"
       ::console::affiche_resultat "Profil rééchantillonné sauvé sous $nom_fich_output\n"
       buf::delete $newBufNo
-      return $nom_fich_output
+      return $nom_fich_output     
    } else {
       ::console::affiche_erreur "Usage: spc_echantdelt profil_lineaire_a_reechantillonner.fits?  newsampl?\n\n"
    }
@@ -1295,7 +1318,7 @@ proc spc_merge { args } {
       }
       set lc_deb $crvalrouge
 
-      # a changer !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # a changer !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
       #--- Mise au meme niveau du continuum des deux spectres : A CHANGER !! vomme au tel
       #-- C le spectre rouge qui sera multipliÃ© car c'est toujours le moins bruitÃ© :
       # commentaire Pat : pour moi qui n'ai rien changÃ©, c'est OK
@@ -1312,9 +1335,9 @@ proc spc_merge { args } {
          set spectre_rouge_mult "$spectre_rouge"
          ::console::affiche_erreur "Pas de rescaling du continuum possible.\n"
       }
-
+      
       #-- Uniformisation de l'echantillonnage des spectres :
-      set newnaxisbleu [ expr $naxisbleu + $increment ]
+      set newnaxisbleu [ expr $naxisbleu + $increment ] 
       set cdeltnew [ expr ( $crvalrouge - $crvalbleu )/ ( $newnaxisbleu -1 ) ]
       set newbleu [ spc_echantdelt $spectre_bleu $cdeltnew ]
       set newrouge [ spc_echantdelt $spectre_rouge_mult $cdeltnew ]
@@ -1327,7 +1350,7 @@ proc spc_merge { args } {
       #- set ndebrouge [ expr int( ( $crvalrouge -$crvalbleu + $epsilon ) / $cdeltnew) + 1 ]
       set ndebrouge [ expr int( ( $crvalrouge -$crvalbleu + $epsilon ) / $cdeltnew) + $crpix1 ]
       #- ::console::affiche_resultat " ndebrouge = $ndebrouge\n"
-
+      
       #--- Extraction des numeros des pixels et des intensites bleu :
       set inputfile [ open "$audace(rep_gui)/bleu.dat" r ]
       set contents [split [read $inputfile] \n]
@@ -1338,7 +1361,7 @@ proc spc_merge { args } {
       foreach ligne $contents {
          #::console::affiche_resultat " $ligne \n"
          if { $kk != 0 } {
-            lappend abscissesbleu [ lindex $ligne 0 ]
+            lappend abscissesbleu [ lindex $ligne 0 ]	
             lappend intensitebleu [ lindex $ligne 1 ]
          }
          incr kk
@@ -1355,12 +1378,12 @@ proc spc_merge { args } {
       foreach ligne $contents {
          #::console::affiche_resultat " $ligne \n"
          if { $kk != 0 } {
-            lappend abscissesrouge [ lindex $ligne 0 ]
+            lappend abscissesrouge [ lindex $ligne 0 ]	
             lappend intensiterouge [ lindex $ligne 1 ]
          }
          incr kk
       }
-      set longrouge [ llength $abscissesrouge ]
+      set longrouge [ llength $abscissesrouge ] 
       ::console::affiche_resultat "Longueur des profils apres reechantillonage bleu = $longbleu rouge = $longrouge \n"
       #-- Merge des listes :
       set ndebrouge_2 [ expr $ndebrouge - 2 ]
@@ -1375,7 +1398,7 @@ proc spc_merge { args } {
       ::console::affiche_resultat "Naxis1b = $naxis1b ; newnaxisbleu= $newnaxisbleu \n"
       #- commentaire Pat :je ne comprends pas pourquoi newnaxisbleu est != de naxis1b
       set newnaxisbleu $naxis1b
-      for { set i $ndebrouge_1 } { $i < $newnaxisbleu } { incr i } {
+      for { set i $ndebrouge_1 } { $i < $newnaxisbleu } { incr i } { 
          set intensite_bleu [ lindex $intensitebleu $i ]
          set intensite_rouge [ lindex $intensiterouge [ expr $i -$ndebrouge_1 ] ]
          set nbechant [ expr $newnaxisbleu - $ndebrouge_1 ]
@@ -1392,7 +1415,7 @@ proc spc_merge { args } {
       #::console::affiche_resultat " long =  [llength $intensite_suite ]\n"
       set intensite [ concat $intensite $intensite_suite ]
       set newnaxis1 [ llength $intensite ]
-
+      
       #--- Creation du nouveau fichier :
       set bufn2 [ buf::create ]
       buf$bufn2 load "$audace(rep_images)/$spectre1$conf(extension,defaut)"
@@ -1409,7 +1432,7 @@ proc spc_merge { args } {
       #set intensite [ list ]
       for {set k 0} { $k < $newnaxis1 } {incr k} {
          #if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {}
-         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $intensite $k ]
+         buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $intensite $k ]  
       }
 
       #--- Sauvegarde du fichier fits ainsi créé :
@@ -1422,7 +1445,7 @@ proc spc_merge { args } {
       file delete -force "$audace(rep_images)/$newbleu$conf(extension,defaut)"
       file delete -force "$audace(rep_images)/$newrouge$conf(extension,defaut)"
       file delete -force "$audace(rep_images)/$spectre_rouge_mult$conf(extension,defaut)"
-      return $nom_fich_output
+      return $nom_fich_output 
    } else {
    	::console::affiche_erreur "Usage : spc_merge spectre1_lineaire spectre2_lineaire\n\n"
    }
@@ -3162,7 +3185,7 @@ proc spc_divbrut { args } {
 
    global audace
    global conf
-
+   
    set nbargs [ llength $args ]
    if { $nbargs==2 } {
       set numerateur [ lindex $args 0 ]
@@ -3170,14 +3193,14 @@ proc spc_divbrut { args } {
 
       set fichier [ file tail [ file rootname $numerateur ] ]
       #--- Ne vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
-
+      
       #--- Création des listes de valeur :
       set contenu1 [ spc_fits2data $numerateur ]
       set contenu2 [ spc_fits2data $denominateur ]
       set abscisses [ lindex $contenu1 0 ]
       set ordonnees1 [ lindex $contenu1 1 ]
       set ordonnees2 [ lindex $contenu2 1 ]
-
+      
       #--- Division :
       #-- Meth2 : division simple sans gestion des valeurs devenues gigantesques :
       buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
@@ -3201,14 +3224,14 @@ proc spc_divbrut { args } {
          }
       }
       ::console::affiche_resultat "Fin de la division : $nbdivz divisions par 0.\n"
-
+      
       #--- Fin du script :
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${fichier}_div"
       buf$audace(bufNo) bitpix short
       ::console::affiche_resultat "Division des 2 profils sauvée sous ${fichier}_div$conf(extension,defaut)\n"
       return ${fichier}_div
-
+      
    } else {
       ::console::affiche_erreur "Usage : spc_divbrut profil_de_raies_numérateur_fits profil_de_raies_dénominateur_fits\n\n"
    }
@@ -3224,7 +3247,7 @@ proc spc_divbrut { args } {
 # Date de modification : 21-08-2012
 # Cette procédure cree un profil de raies (fichier fits) en divisant un profil par l'autre sur l'intervalle
 # de longueurs d'ondes qu'ils ont en commun après elimination des echantillons du denominateur nuls au bord
-# Avant la division ils seront reechantillones de facon a se conformer a l'echantillonage du numerateur.
+# Avant la division ils seront reechantillones de facon a se conformer a l'echantillonage du numerateur. 
 # Le fichier de sortie est créé avec le suffixe _divripat. Il aura le meme nombre d'echantillons que le numerateur et
 # commencera a une longueur d'onde proche de la longueur d'onde de depart du numrateur (definie par le mot cle CRVAL1
 # Exemple spc_divri profil_numerateur profil_denominateur
@@ -3267,13 +3290,13 @@ proc spc_divri { args } {
            }
            set newnum [ lindex $newdata 0 ]
            set newden [ lindex $newdata 1 ]
-           #--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+           #--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques   
            if { [ spc_compare $newnum $newden ] == 1 } {
               set suff _ricorr
               set ext $conf(extension,defaut)
               set result $nom_fich_num$suff
               set toto [ spc_divbrut $newnum $newden ]
-              #::console::affiche_resultat " le profil apres application de spc_divbrut a ete sauvegarde sous $toto \n"
+              #::console::affiche_resultat " le profil apres application de spc_divbrut a ete sauvegarde sous $toto \n" 
               file rename -force "$audace(rep_images)/$toto$ext" "$audace(rep_images)/$nom_fich_num$suff$ext"
               ::console::affiche_resultat " le profil apres application de spc_divri a ete sauvegarde sous $nom_fich_num$suff \n"
               #effacement des fichiers temporaires
@@ -3293,7 +3316,7 @@ proc spc_divri { args } {
    } else {
       ::console::affiche_erreur "Usage: spc_divri profil_numerateur profil_denominateur\n\n"
       return ""
-   }
+   }  
 }
 #*********************************************************************#
 
@@ -3953,7 +3976,7 @@ proc spc_divri_21102006 { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$fichier_out"
             buf$audace(bufNo) setkwd [ list "DATE-OBS" "$dateobs" string "Start of exposure. FITS standard" "Iso 8601" ]
             buf$audace(bufNo) setkwd [ list "MJD-OBS" "$mjdobs" double "Start of exposure" "d" ]
-            buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" float "Total time of exposure" "s" ]
+            buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" double "Total time of exposure" "s" ]
             if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
                 buf$audace(bufNo) setkwd [list "CRPIX1" 1 int "" ""]
             }

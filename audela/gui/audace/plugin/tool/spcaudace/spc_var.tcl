@@ -12,8 +12,8 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(num_version) "3.3"
-set spcaudace(version) "$spcaudace(num_version) - 16/03/2013"
+set spcaudace(num_version) "3.5"
+set spcaudace(version) "$spcaudace(num_version) - 01/09/2013"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 set spcaudace(flag_verifversion) 0
@@ -29,7 +29,7 @@ set spcaudace(exttxt) ".txt"
 set spcaudace(extvspec) ".spc"
 
 #--- Répertoire d'SpcAudace :
-if { [regexp {1.3.3} $audela(version) match resu ] } {
+if { [regexp {1.3.5} $audela(version) match resu ] } {
    set spcaudace(rep_spc) [ file join $audace(rep_scripts) spcaudace ]
 } else {
    set spcaudace(rep_spc) [ file join $audace(rep_plugin) tool spcaudace ]
@@ -89,15 +89,15 @@ set spcaudace(motsheaderdef) [ list "Current name of the object" "Telescop" "Sys
 
 #--- Lieu de la documentation d'SpcAudACE :
 set spcaudace(spcdoc) [ file join $spcaudace(rep_spc) doc liste_fonctions.html ]
-set spcaudace(sitedoc) "http://bmauclaire.free.fr/spcaudace/fonctions.html"
+set spcaudace(sitedoc) "http://wsdiscovery.free.fr/spcaudace/fonctions.html"
 
 
 #--- Site de bases de données :
-set spcaudace(webpage) "http://bmauclaire.free.fr/spcaudace/"
+set spcaudace(webpage) "http://wsdiscovery.free.fr/spcaudace/"
 set spcaudace(sitebess) "http://basebe.obspm.fr/basebe/"
 set spcaudace(siteuves) "http://www.sc.eso.org/santiago/uvespop/interface.html"
 set spcaudace(sitesimbad) "http://simbad.u-strasbg.fr/simbad/sim-fid"
-set spcaudace(sitesurveys) "http://bmauclaire.free.fr/astronomie/research/"
+set spcaudace(sitesurveys) "http://wsdiscovery.free.fr/astronomie/research/"
 set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 
@@ -170,7 +170,7 @@ set spcaudace(dmax) 0.5
 #-- Bande spectrale considérée comme basse résolution 500 A :
 set spcaudace(bp_br) 500.
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
-set spcaudace(hmax) 3.3
+set spcaudace(hmax) 3.5
 #-- Pourcentage de l'intensité moyenne en deça de laquelle il y a mise a 0 (spc_pwl*) :
 set spcaudace(nulpcent) 0.6
 #-- Epaisseur de binning en cas de sélection manuelle de raie de calibration :
@@ -188,7 +188,7 @@ set spcaudace(cafwhm_binning) 1.9
 #- Pour spc_detectmoy :
 set spcaudace(cmfwhm_binning) 1.7
 #- Pour spc_detect :
-set spcaudace(clfwhm_binning) 3.3
+set spcaudace(clfwhm_binning) 3.5
 #-- Epaisseur de binning par défaut pour flats et détections géométriques :
 set spcaudace(largeur_binning) 7
 #-- Coefficient de rejection des cosmics lors du binning (0-100) :

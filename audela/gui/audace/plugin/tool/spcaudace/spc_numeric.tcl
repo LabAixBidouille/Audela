@@ -2384,7 +2384,8 @@ proc spc_gaussienne { args } {
                #-- pour fwhm de spc_fwhm non multipliee par 2 et plus realiste :
                # set y [ expr -(-$imax+$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm)+$icont ]
                #-- 21120103 :
-               set y [ expr $icont-($imax-$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm) ]
+               #set y [ expr $icont-($imax-$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm) ]
+               set y [ expr $icont-($imax+$icont)*exp(-0.5*($x-$xc)*($x-$xc)/$fwhm) ]
             } else {
                set y $icont
             }

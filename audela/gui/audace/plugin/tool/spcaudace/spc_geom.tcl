@@ -523,11 +523,18 @@ proc spc_registerh { args } {
       }
 
       #-- Détection des raies les plus brillantes :
-      #- Liste des coupes (x,I) et sélectionne la plus brillante :
+      #- Liste des coupes (x,I) et sélectionne la plus brillante de la 1iere lampe :
       set listeraies [ spc_findbiglines $profil_lampe1 e ]
+      #- Selection des raies dont I>=0.1*Imax et trie selon les abscisses :
+      set listeraies [ lsort -decreasing -real -index 1 [ spc_selectstronglines $listeraies ] ]
       set abscisselinemax1 [ lindex [ lindex $listeraies 0 ] 0 ]
+      ::console::affiche_resultat "Raies de calibration sélectionnées : $listeraies dont la plus intense est $abscisselinemax1\n"
+      #- Liste des coupes (x,I) et sélectionne la plus brillante de la 2ieme lampe :
       set listeraies [ spc_findbiglines $profil_lampe2 e ]
+      #- Selection des raies dont I>=0.1*Imax et trie selon les abscisses :
+      set listeraies [ lsort -decreasing -real -index 1 [ spc_selectstronglines $listeraies ] ]
       set abscisselinemax2 [ lindex [ lindex $listeraies 0 ] 0 ]
+      ::console::affiche_resultat "Raies de calibration sélectionnées : $listeraies dont la plus intense est $abscisselinemax2\n"
 
       #--- Détermine l'équation linéaire de la loi du décalage horizontal en pixel au cours du temps :
       #-- Calcul l'écart en pixel la raie la plus braillante entre ces 2 spectres :
