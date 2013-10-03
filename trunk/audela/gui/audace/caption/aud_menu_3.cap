@@ -988,7 +988,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,improve)                     "Ein Bild bearbeiten"
    set caption(audace,menu,trainee)                     "Einen Streifen Artefakt entfernen"
    set caption(audace,menu,cosmic)                      "Einen kosmischen Artefakt entfernen"
-   set caption(audace,menu,hotpixel)                    "# Supprimer des pixels chauds"
+   set caption(audace,menu,hotpixel)                    "Hot Pixels entfernen"
    set caption(audace,menu,opt_noir)                    "Schwarz Bild optimieren"
    set caption(audace,menu,subsky)                      "Den Hinterhimmel abziehen"
    set caption(audace,menu,scar)                        "Verheilen"

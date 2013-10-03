@@ -395,7 +395,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,nouvelle_visu)             "Neue 'visu'"
    set caption(audace,menu,pas_outil)                 "Anzeigen/Tafel ausblenden"
    set caption(audace,menu,efface_image)              "Das Bild löschen"
-   set caption(audace,menu,efface_console)            "# Effacer le contenu de la Console"
+   set caption(audace,menu,efface_console)            "Den Inhalt der Console löschen"
    set caption(audace,menu,palette)                   "Palette & Transfert Funktion"
    set caption(audace,menu,seuils)                    "Schwellen"
    set caption(audace,menu,balance_rvb)               "RGB Balance"
