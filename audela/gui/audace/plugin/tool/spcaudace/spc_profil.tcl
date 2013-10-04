@@ -894,7 +894,7 @@ proc spc_binlopt { args } {
 	#--- SAuvegarde du profil 1D
 	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre2d}_spc"
 	buf$audace(bufNo) bitpix short
@@ -1224,7 +1224,7 @@ proc spc_profil { args } {
             }
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 double "" "" ]
-            buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+            buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
             buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
             #--- Nettoie les mots clefs finissant en 2 :
             spc_header1d $audace(bufNo)
@@ -1350,7 +1350,7 @@ proc spc_profilzone { args } {
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 float "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 float "" "" ]
-	    buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+	    buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
             #--- Nettoie les mots clefs finissant en 2 :
             spc_header1d $audace(bufNo)
 
@@ -1497,7 +1497,7 @@ proc spc_bin { args } {
 	## Initialisation des mots-clef spectroscopie
 	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
 
 	## On sauvegarde le spectre avec correction du fond du ciel
 	::console::affiche_resultat "Profil de raies sauvé sous ${filenamespc_spatial}_spc$conf(extension,defaut)\n"
@@ -1567,7 +1567,7 @@ proc spc_bins { args } {
       buf$audace(bufNo) imaseries "biny y1=1 y2=$ht_spectre height=1"
       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
       buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-      buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+      buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
       buf$audace(bufNo) bitpix float
 
       #--- Nettoie les mots clefs finissant en 2 :
@@ -1692,7 +1692,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     ## Initialisation des mots-clef spectroscopie
     buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
     buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-    buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+    buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
     buf$audace(bufNo) bitpix float
 
     #--- Nettoie les mots clefs finissant en 2 :
@@ -1783,7 +1783,7 @@ proc spc_profily { args } {
 	buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
 	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
 	buf$audace(bufNo) bitpix float
 
         #--- Nettoie les mots clefs finissant en 2 :
@@ -2482,7 +2482,7 @@ proc spc_profillampe { args } {
        buf$audace(bufNo) delkwd "NAXIS2"
        buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-       buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+       buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save $audace(rep_images)/${spectre_lampe}_spc
        buf$audace(bufNo) bitpix short
@@ -2524,7 +2524,7 @@ proc spc_profillampezone { args } {
        buf$audace(bufNo) delkwd "NAXIS2"
        buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
-       buf$audace(bufNo) setkwd [ list "CRPIX1" 1 int "Reference pixel" "pixel" ]
+       buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save1d $audace(rep_images)/${spectre_lampe}_spc
        buf$audace(bufNo) bitpix short

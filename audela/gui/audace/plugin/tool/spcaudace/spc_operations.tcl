@@ -2980,7 +2980,7 @@ proc spc_echant { args } {
        buf$newBufNo setkwd [ list "NAXIS1" $naxis1 int "" "" ]
        buf$newBufNo setkwd [ list "CRVAL1" $crval1 double "" "Angstrom" ]
        buf$newBufNo setkwd [ list "CDELT1" $cdelt1 double "" "Angstrom/pixel" ]
-       buf$newBufNo setkwd [ list "CRPIX1" $crpix1 int "Reference pixel" "pixel" ]
+       buf$newBufNo setkwd [ list "CRPIX1" $crpix1 double "Reference pixel" "pixel" ]
        buf$newBufNo save "$audace(rep_images)/${fichier_a_echant2}_ech$conf(extension,defaut)"
        buf$newBufNo bitpix short
        ::console::affiche_resultat "Fichier fits sauve sous $audace(rep_images)/${fichier_a_echant2}_ech$conf(extension,defaut)\n"
@@ -3978,7 +3978,7 @@ proc spc_divri_21102006 { args } {
             buf$audace(bufNo) setkwd [ list "MJD-OBS" "$mjdobs" double "Start of exposure" "d" ]
             buf$audace(bufNo) setkwd [ list "EXPOSURE" "$exposure" float "Total time of exposure" "s" ]
             if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-                buf$audace(bufNo) setkwd [list "CRPIX1" 1 int "" ""]
+                buf$audace(bufNo) setkwd [list "CRPIX1" 1 double "" ""]
             }
             if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
                 buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]

@@ -41,10 +41,10 @@
 # Auteur : Patrick LAILLY
 # Date de création : 1-09-10
 # Date de modification : 10-06-11
-# cette procédure calcule le  periodogramme associé à la mesure d'une quantité physique en fonction du temps calendaire  
+# cette procédure calcule le  periodogramme associé à la mesure d'une quantité physique en fonction du temps calendaire
 # 3 arguments  d'entree obligatoires : le nom du fichier dat contenant les donnees mesurees, l'unite utilisee pour la
 # mesure du temps calendaire, nature de la quantite physique mesuree
-# 4 arguments d'entree facultatifs :  nombres de periodes plausibles qui seront affichees a la console (valeur par défaut : 10),  borne inferieure a la periode recherchée (valeur par défaut : 0.), periode maximum (valeur par defaut : duree d'enregistrement des mesures), estimation d'une borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut =(pe#riod_max-period_min) /(nb_data*30 ). 
+# 4 arguments d'entree facultatifs :  nombres de periodes plausibles qui seront affichees a la console (valeur par défaut : 10),  borne inferieure a la periode recherchée (valeur par défaut : 0.), periode maximum (valeur par defaut : duree d'enregistrement des mesures), estimation d'une borne inférieure au pas d'echantillonage du periodogramme (valeur par defaut =(pe#riod_max-period_min) /(nb_data*30 ).
 # la procedure retourne le nom du fichier contenant les echantillons du periodogramme et cree un fichier png donnant le graphique du
 # periodogramme
 # L'algorithme utilise est celui decrit par Scargle (Astrophys. J., 263:835-853, 1982)
@@ -68,7 +68,7 @@ proc spc_periodogram { args } {
       set measured_quantity [ lindex $args 2 ]
       set nb_printed_period 10
       set period_min 0.01
-      
+
       if { $nargs >= 4 } {
 	 set nb_printed_period [ lindex $args 3 ]
       }
@@ -90,7 +90,7 @@ proc spc_periodogram { args } {
       set nb_echant [llength $contents]
       # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
       set nb_echant [ expr $nb_echant -1 ]
-      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      set nb_echant_1 [ expr $nb_echant - 1 ]
       set abscisses [ list ]
       set ordonnees_orig [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
@@ -98,8 +98,8 @@ proc spc_periodogram { args } {
 	 set x [lindex $ligne 0]
 	 set y [lindex $ligne 1]
 	 #::console::affiche_resultat " x= $x   y= $y \n"
-	 lappend abscisses [lindex $ligne 0] 
-	 lappend ordonnees_orig [lindex $ligne 1] 
+	 lappend abscisses [lindex $ligne 0]
+	 lappend ordonnees_orig [lindex $ligne 1]
       }
       set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
       # elimination de la composante continue
@@ -110,7 +110,7 @@ proc spc_periodogram { args } {
       set dc [ expr $dc / $nb_echant ]
       set ordonnees [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
-	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]	
+	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]
       }
       if { $nargs < 6 } {
 	 set period_max [ expr $temps_max * .5 ]
@@ -141,7 +141,7 @@ proc spc_periodogram { args } {
 	 ::console::affiche_erreur "spc_periodogram : la valeur specifiee pour le pas d'echantillonage $sample_min apparait trop grossiere : le programme va la changer  \n\n"
 	 set nn 8
       }
-      set llperiod [ list ] 
+      set llperiod [ list ]
       set lldensity [ list ]
       #premier echantillonage avec n=8
       set n 8
@@ -169,10 +169,10 @@ proc spc_periodogram { args } {
 	    if { [ expr abs ( 1. - .5 * ( $y1 + $y3 ) / $y2 ) > $precision ] } {
 	       break
 	    }
-	    # ni est alors l'indice de la liste pour lequel le test s'est avere negatif pour la premiere fois  
+	    # ni est alors l'indice de la liste pour lequel le test s'est avere negatif pour la premiere fois
 	 }
 	 set curr_sampling [ expr [ lindex $lperiod [ expr $ni +1 ] ] - [ lindex $lperiod $ni ] ]
-      	
+
 	 if { $ni != 1 && $curr_sampling  > $sample_min } {
 	    #::console::affiche_resultat " test precision negatif pour ni= $ni  \n\n"
 	    set last_period [ lindex $lperiod $ni ]
@@ -183,7 +183,7 @@ proc spc_periodogram { args } {
 	    #set llperiod [ concat [ lrange $lperiod [ expr $ni + 1 ] $last ] $llperiod ]
 	    set llperiod [ concat [ lrange $lperiod [ expr $ni +2 ] $last ] $llperiod ]
 	    #set lldensity [ concat [ lrange $ldensity [ expr $ni + 1 ] $last ] $llperiod ]
-	    set lldensity [ concat [ lrange $ldensity [ expr $ni + 2 ] $last ] $lldensity ]     			
+	    set lldensity [ concat [ lrange $ldensity [ expr $ni + 2 ] $last ] $lldensity ]
 	    set n [ expr $n + 1 ]
 	 } else {
 	    break
@@ -218,13 +218,13 @@ proc spc_periodogram { args } {
 #***************************************************************************************************************#
 
 #################################################################################################################
-#Procedure pour calculer un periodogramme sur un intervalle de periodes specifiees à partir de donnees liste 
+#Procedure pour calculer un periodogramme sur un intervalle de periodes specifiees à partir de donnees liste
 #d'abscisses et liste d'ordonnees, l'echantillonage etant obtenu en subdivisant l'intervalle de periodes considérées
-#par un nombre qui sera une puissance de 2. 
+#par un nombre qui sera une puissance de 2.
 # Auteur : Patrick LAILLY
 # Date de création : 23-03-11
 # Date de modification : 23-03-11
-# entrees : liste d'abscisses (temps) , liste d'ordonnees (mesures associees a ces temps), periode min, periode max, puissance a 
+# entrees : liste d'abscisses (temps) , liste d'ordonnees (mesures associees a ces temps), periode min, periode max, puissance a
 # laquelle sera elevee le nombre 2 pour definir le nombre des sous intervalles, unite_temps.
 # exemple  : spc_calperiodog $abscisses $ordonnees $period_min $period_max 9
 #################################################################################################################
@@ -237,13 +237,13 @@ proc spc_calperiodog { args } {
       set exposant [ lindex $args 4 ]
       set time_unit [ lindex $args 5 ]
       set pi [ expr acos(-1.) ]
-      set nb_echant [ llength $abscisses ] 
+      set nb_echant [ llength $abscisses ]
       if { $period_min > $period_max } {
 	 ::console::affiche_erreur "spc_calperiodog : la periode minimale $period_min est plus grande que la periode max $period_max ! \n\n"
          return ""
       }
       set nb_sample_periodog_1 [ expr pow(2,$exposant) ]
-      set nb_sample_periodog [ expr $nb_sample_periodog_1 + 1 ] 
+      set nb_sample_periodog [ expr $nb_sample_periodog_1 + 1 ]
       set period_samplingrate [ expr ( $period_max - $period_min ) / $nb_sample_periodog_1 ]
       ::console::affiche_resultat "on [ clock format [ clock seconds ] -locale LOCALE ], the period sampling rate (subdivision of the interval to be explored in 2^$exposant intervals) is $period_samplingrate\n"
       #calcul des echantillons du periodogramme
@@ -281,7 +281,7 @@ proc spc_calperiodog { args } {
 	 #::console::affiche_resultat " $k $result \n"
 	 lappend ldensity $result
       }
-     
+
       set lperiodog [ list ]
       lappend lperiodog $lperiod
       lappend lperiodog $ldensity
@@ -325,7 +325,7 @@ proc spc_periodog_old { args } {
       set nb_echant [llength $contents]
       # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
       set nb_echant [ expr $nb_echant -1 ]
-      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      set nb_echant_1 [ expr $nb_echant - 1 ]
       #::console::affiche_resultat " donnees spc_periodog : $nom_dat $unit_temps $nb_period \n"
       set abscisses [ list ]
       set ordonnees_orig [ list ]
@@ -334,8 +334,8 @@ proc spc_periodog_old { args } {
 	 set x [lindex $ligne 0]
 	 set y [lindex $ligne 1]
 	 #::console::affiche_resultat " x= $x   y= $y \n"
-	 lappend abscisses [lindex $ligne 0] 
-	 lappend ordonnees_orig [lindex $ligne 1] 
+	 lappend abscisses [lindex $ligne 0]
+	 lappend ordonnees_orig [lindex $ligne 1]
       }
       set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
       set inv_nb_period [ expr 1./ $nb_period ]
@@ -347,14 +347,14 @@ proc spc_periodog_old { args } {
       set dc [ expr $dc / $nb_echant ]
       set ordonnees [ list ]
       for {set k 0} { $k < $nb_echant } {incr k} {
-	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]	
+	 lappend ordonnees [ expr [ lindex $ordonnees_orig $k ] - $dc ]
       }
-		
+
       # gestion de l'echelle des temps sur le peridogramme
       set period_max [ expr $temps_max *$inv_nb_period ]
       #set nb_sample_periodog [ expr $nb_echant * 3 /4 ]
       set nb_sample_periodog [ expr $nb_echant * 30 ]
-      set nb_sample_periodog_1 [ expr $nb_sample_periodog - 1 ] 
+      set nb_sample_periodog_1 [ expr $nb_sample_periodog - 1 ]
       set period_samplingrate [ expr $period_max / $nb_sample_periodog_1 ]
       #calcul des echantillons du periodogramme
       ::console::affiche_resultat "Nombre d'echantillons de donnees : $nb_echant\n"
@@ -395,7 +395,7 @@ proc spc_periodog_old { args } {
       }
       #-- Representation graphique :
       ::plotxy::clf
-      #::plotxy::plot $abscisses $int ob 0   
+      #::plotxy::plot $abscisses $int ob 0
       ::plotxy::plot $lperiod $ldensity r 1
       #::plotxy::hold on
       #::plotxy::plot $abscisses $newintens b 1
@@ -429,7 +429,7 @@ proc spc_periodog_old { args } {
 # Date de création : 23-02-11
 # Date de modification : 23-02-11
 # La procedure analyse le fit des donnees avec la fonction sinusoidale associee a la periode (on calcule au passage le dephasage optimal : cette analyse est menee en visualisant les données en fonction de la phase (export PNG) et les donnees en fonction du temps en superposition avec la sinusoide associee (plotxy).  Le decalage temporel caracterisant la sinusoide est affiche a la console.
-# 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse 
+# 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse
 # La procedure retourne le nom du fichier .png representant les donnees en fonction de la phase.
 # Exemple : spc_phaseplot data.dat "julian days" "radial velocity (m/s)" 7.84
 ###########################################################################################
@@ -437,7 +437,7 @@ proc spc_phaseplot { args } {
    global audace
    set nb_args [ llength $args ]
    if { $nb_args ==4 } {
-      set fileout data_phase.dat 
+      set fileout data_phase.dat
       set nom_dat [ lindex $args 0 ]
       set unit_temps [ lindex $args 1 ]
       set measured_quantity [ lindex $args 2 ]
@@ -446,7 +446,7 @@ proc spc_phaseplot { args } {
       set amplit [ lindex $sine_caract 0 ]
       set time_shift [ lindex $sine_caract 1 ]
       if { $amplit < 0. } {
-	 set time_shift [ expr $time_shift - .5 * $period ] 
+	 set time_shift [ expr $time_shift - .5 * $period ]
       }
       #lecture du fichier dat
       set input [open "$audace(rep_images)/$nom_dat" r]
@@ -455,7 +455,7 @@ proc spc_phaseplot { args } {
       set nb_echant [llength $contents]
       # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
       set nb_echant [ expr $nb_echant -1 ]
-      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      set nb_echant_1 [ expr $nb_echant - 1 ]
       #::console::affiche_resultat " donnees spc_sinefit : $nom_dat $unit_temps $period \n"
       set pi [ expr acos(-1.) ]
       set abscisses [ list ]
@@ -465,8 +465,8 @@ proc spc_phaseplot { args } {
 	 #set x [lindex $ligne 0]
 	 #set y [lindex $ligne 1]
 	 #::console::affiche_resultat " x= $x   y= $y \n"
-	 lappend abscisses [lindex $ligne 0] 
-	 lappend ordonnees [lindex $ligne 1] 
+	 lappend abscisses [lindex $ligne 0]
+	 lappend ordonnees [lindex $ligne 1]
       }
       set temps_deb [ lindex $abscisses 0 ]
       #set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
@@ -482,7 +482,7 @@ proc spc_phaseplot { args } {
       # classement par phase croissante
       set resultat [ list ]
       for { set k 0 } { $k < $nb_echant } { incr k } {
-	 set couple [list ] 
+	 set couple [list ]
 	 set x [ lindex $phase $k ]
 	 set y [ lindex $ordonnees $k ]
 	 set couple " $x $y "
@@ -523,7 +523,7 @@ proc spc_phaseplot { args } {
 # Date de création : 23-02-11
 # Date de modification : 09-06-11
 # La procedure analyse le fit des donnees avec la fonction sinusoidale associee a la periode (on calcule au passage le dephasage optimal : cette analyse est menee en visualisant les données en fonction de la phase (export PNG) et les donnees en fonction du temps en superposition avec la sinusoide associee (plotxy).  Le decalage temporel caracterisant la sinusoide est affiche a la console.
-# 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse 
+# 4 paramètres obligatoires : nom du fichier dat donnant l'evolution de la quantite physique en fonction du temps calendaire, unite de temps utilisee, nature de la quantite physique mesuree, periode sur laquelle l'utilisateur veut mener l'analyse
 # La procedure retourne le nom du fichier .png representant les donnees en fonction de la phase.
 # La procedure spc_phaseplot_err se distingue de spc_phaseplot par la possibilite de gerer une 3eme colonne dans le fichier dat, cette colonne donnant les incertitudes sur les mesures realisees. Dans la version actuelle la gestion des incertudes ne porte que sur la représentation graphique du résultat.
 # Exemple : spc_phaseplot_err data.dat "julian days" "radial velocity (m/s)" 7.84
@@ -532,7 +532,7 @@ proc spc_phaseplot_err { args } {
    global audace
    set nb_args [ llength $args ]
    if { $nb_args ==4 } {
-      set fileout data_phase.dat 
+      set fileout data_phase.dat
       set nom_dat [ lindex $args 0 ]
       set unit_temps [ lindex $args 1 ]
       set measured_quantity [ lindex $args 2 ]
@@ -541,7 +541,7 @@ proc spc_phaseplot_err { args } {
       set amplit [ lindex $sine_caract 0 ]
       set time_shift [ lindex $sine_caract 1 ]
       if { $amplit < 0. } {
-	 set time_shift [ expr $time_shift - .5 * $period ] 
+	 set time_shift [ expr $time_shift - .5 * $period ]
       }
       #lecture du fichier dat
       set input [open "$audace(rep_images)/$nom_dat" r]
@@ -550,7 +550,7 @@ proc spc_phaseplot_err { args } {
       set nb_echant [llength $contents]
       # modification ad hoc : a comprendre !!!!!!!!!!!!!!!!!!!!!!!!
       set nb_echant [ expr $nb_echant -1 ]
-      set nb_echant_1 [ expr $nb_echant - 1 ] 
+      set nb_echant_1 [ expr $nb_echant - 1 ]
       #::console::affiche_resultat " donnees spc_sinefit : $nom_dat $unit_temps $period \n"
       set pi [ expr acos(-1.) ]
       set abscisses [ list ]
@@ -560,9 +560,9 @@ proc spc_phaseplot_err { args } {
 	 #set x [lindex $ligne 0]
 	 #set y [lindex $ligne 1]
 	 #::console::affiche_resultat " x= $x   y= $y \n"
-	 lappend abscisses [lindex $ligne 0] 
+	 lappend abscisses [lindex $ligne 0]
 	 lappend ordonnees [lindex $ligne 1]
-	 lappend yerrors [lindex $ligne 2] 
+	 lappend yerrors [lindex $ligne 2]
       }
       set temps_deb [ lindex $abscisses 0 ]
       #set temps_max [ expr [ lindex $abscisses $nb_echant_1 ] - [ lindex $abscisses 0 ] ]
@@ -578,7 +578,7 @@ proc spc_phaseplot_err { args } {
       # classement par phase croissante
       set resultat [ list ]
       for { set k 0 } { $k < $nb_echant } { incr k } {
-	 set couple [list ] 
+	 set couple [list ]
 	 set x [ lindex $phase $k ]
 	 set y [ lindex $ordonnees $k ]
 	 set z [ lindex $yerrors $k ]
@@ -715,7 +715,7 @@ proc spc_vhelio { args } {
 	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
            } elseif { [ lsearch $listemotsclef "RA" ] !=-1 } {
                set raf [ lindex [buf$audace(bufNo) getkwd "RA" ] 1 ]
-               if { [ regexp {\s+} $raf match resul ] } { 
+               if { [ regexp {\s+} $raf match resul ] } {
                  ::console::affiche_erreur "Aucune coordonnée trouvée.\n"
                  return ""
                }
@@ -848,7 +848,7 @@ proc spc_vheliocorr { args } {
 	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
            } elseif { [ lsearch $listemotsclef "RA" ] !=-1 } {
                set raf [ lindex [buf$audace(bufNo) getkwd "RA" ] 1 ]
-               if { [ regexp {\s+} $raf match resul ] } { 
+               if { [ regexp {\s+} $raf match resul ] } {
                  ::console::affiche_erreur "Aucune coordonnée trouvée.\n"
                  return ""
                }
@@ -2485,7 +2485,7 @@ proc spc_ew4 { args } {
    set ew [ expr $aires-$airec-($xfin-$xdeb) ]
    }
 
-   
+
    #--- Détermine le type de raie : émission ou absorption et donne un signe à EW
    if { 1==0 } {
       set valsselect [ list $xsel $ysel ]
@@ -2494,7 +2494,7 @@ proc spc_ew4 { args } {
          set ew [ expr -1.*$ew ]
       }
    }
-   
+
    #--- Calcul de l'erreur (sigma) sur la mesure (Chalabaev, A. and Maillard, J.P.-1983) :
    set deltal [ expr abs($xfin-$xdeb) ]
    set snr [ spc_snr $filename ]
@@ -2519,7 +2519,7 @@ proc spc_ew4 { args } {
       spc_loadmore "$spectre_conti" green
    }
 
-   
+
    #--- Formatage des résultats :
    set l_fin [ expr 0.01*round($xfin*100) ]
    set l_deb [ expr 0.01*round($xdeb*100) ]
@@ -2530,7 +2530,7 @@ proc spc_ew4 { args } {
    set jd_short [ expr 0.001*round($jd*1000) ]
    set ew_large "EW($delta_l=$l_deb-$l_fin)=$ew_short\ A."
    set lamesure [ list $ew_short $sigma_ew $snr_short $jd_short $ew_large ]
-   
+
    #--- Affichage des résultats :
    ::console::affiche_resultat "\n"
    ::console::affiche_resultat "Date: $ladate\n"
@@ -2561,7 +2561,7 @@ proc spc_ew3 { args } {
        set filename [ lindex $args 0 ]
        set xdeb [ lindex $args 1 ]
        set xfin [ lindex $args 2 ]
-       
+
        #--- Conversion des données en liste :
        set listevals [ spc_fits2data $filename ]
        set xvals [ lindex $listevals 0 ]
@@ -2583,7 +2583,7 @@ proc spc_ew3 { args } {
           set icont [ spc_icontinuum $spectre_cont ]
        }
        file delete -force "$audace(rep_images)/$spectre_cont$conf(extension,defaut)"
-       
+
 
 	#--- Calcul de l'aire sous la raie :
 	set aire 0.
@@ -2832,26 +2832,26 @@ proc spc_ewcourbe { args } {
    global audace spcaudace
    global conf
    global tcl_platform
-   
+
    set ewfile "ewcourbe"
    set ext ".dat"
-   
+
    set nbargs [ llength $args ]
    if { $nbargs==1 } {
       set lambda [ lindex $args 0 ]
    } elseif { $nbargs==2 } {
-      set ldeb [ lindex $args 0 ] 
+      set ldeb [ lindex $args 0 ]
       set lfin [ lindex $args 1 ]
    } else {
       ::console::affiche_erreur "Usage: spc_ewcourbe lambda_raie/lambda_deb lambda_fin\n\n"
       return ""
    }
-   
+
    set ldates ""
    set list_ew ""
    set intensite_raie 1
    set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
-   
+
    foreach fichier $fileliste {
       ::console::affiche_prompt "\nTraitement de $fichier...\n"
       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -2876,7 +2876,7 @@ proc spc_ewcourbe { args } {
       lappend list_sigmaew [ lindex $results 1 ]
       lappend list_snr [ lindex $results 2 ]
    }
-   
+
    #--- Création du fichier de données
    # ::console::affiche_resultat "$ldates \n $list_ew\n"
    set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
@@ -2884,7 +2884,7 @@ proc spc_ewcourbe { args } {
       puts $file_id1 "$sdate\t$ew\t$sew\t$snr"
    }
    close $file_id1
-   
+
    #--- Création du script de tracage avec gnuplot :
    set ew0 [ lindex $list_ew 0 ]
    if { $ew0<0 } {
@@ -2910,14 +2910,14 @@ proc spc_ewcourbe { args } {
       set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
       ::console::affiche_resultat "$answer\n"
    }
-   
+
    #--- Affichage du graphe PNG :
    if { $conf(edit_viewer)!="" } {
       set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/ew_courbe.png" & } ]
    } else {
       ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
    }
-     
+
    #--- Traitement du résultat :
    return "ew_courbe.png"
 }
@@ -3367,7 +3367,7 @@ proc spc_ajustplanck { args } {
    # dans la definition de la norme H1
    set beta 1.
 
-   set nbargs [ llength $args ] 
+   set nbargs [ llength $args ]
    if { $nbargs==1 } {
       set fichier [ file rootname [ lindex $args 0 ] ]
       set tpas 1000
@@ -3395,7 +3395,7 @@ proc spc_ajustplanck { args } {
       set diff [ expr [ lindex $lintens $ip1 ] - [ lindex $lintens $i ] ]
       lappend ldiff $diff
    }
-      
+
    #-- calcul de la norme l2 et de la semi norme h1 des intensites
    set mintens [ list ]
    lappend mintens $lintens
@@ -3403,9 +3403,9 @@ proc spc_ajustplanck { args } {
    lappend mdiff $ldiff
    set tintens [ gsl_mtranspose $mintens ]
    set tdiff [ gsl_mtranspose $mdiff ]
-   set l2 [ gsl_mindex [ gsl_mmult $mintens $tintens ] 1 1 ] 
+   set l2 [ gsl_mindex [ gsl_mmult $mintens $tintens ] 1 1 ]
    set h1 [ gsl_mindex [ gsl_mmult $mdiff $tdiff ] 1 1 ]
-   # ci-dessous ratio est calcule de facon a rendre le poids de la seminorme h1 beta fois plus grand 
+   # ci-dessous ratio est calcule de facon a rendre le poids de la seminorme h1 beta fois plus grand
    # que la norme l2
    # on definit ainsi le produit  scalaire h1
    ::console::affiche_resultat "l2= $l2, h1= $h1, len=$len ; "
@@ -3425,13 +3425,13 @@ proc spc_ajustplanck { args } {
 	 set iplanck [ spc_planckval $tempe $abscisse ]
 	 lappend lplanck $iplanck
       }
-      #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur 
+      #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur
       #-- ajustement sur la courbe de Planck pour la temperature consideree
       set corr [ spc_scalh1 $lintens $lplanck $ratio ]
       set alpha3 [ expr $corr / $norm2 ]
       #-- calcul de l'ecart quadratique entre planck et les intensites renormalisees
       set diff2 [ spc_quad $lintens $lplanck $alpha3 $ratio ]
-         
+
       if { $i==1 } {
 	 lappend rmss [ expr sqrt($diff2)/$len ]
 	 set tempe [ expr $tempe+$tpas ]
@@ -3443,7 +3443,7 @@ proc spc_ajustplanck { args } {
 	    set iplanck [ spc_planckval $tempe $abscisse ]
 	    lappend lplanck $iplanck
 	 }
-	 #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur 
+	 #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur
 	 #-- ajustement sur la courbe de Planck pour la temperature consideree
 	 set corr [ spc_scalh1 $lintens $lplanck $ratio ]
 	 set alpha2 [ expr $corr / $norm2 ]
@@ -3460,7 +3460,7 @@ proc spc_ajustplanck { args } {
 	    set iplanck [ spc_planckval $tempe $abscisse ]
 	    lappend lplanck $iplanck
 	 }
-	 #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur 
+	 #-- calcul du coefficient multiplicatif des intensites qui permet le meilleur
 	 #-- ajustement sur la courbe de Planck pour la temperature consideree
 	 set corr [ spc_scalh1 $lintens $lplanck $ratio ]
 	 set alpha3 [ expr $corr / $norm2 ]
@@ -3471,7 +3471,7 @@ proc spc_ajustplanck { args } {
       } else {
 	 set rms1 [ lindex $rmss 0 ]
 	 set rms2 [ lindex $rmss 1 ]
-	 set rms3 [ lindex $rmss 2 ]            
+	 set rms3 [ lindex $rmss 2 ]
 	 set rmss [ lreplace $rmss 0 0 $rms2 ]
 	 set rmss [ lreplace $rmss 1 1 $rms3 ]
 	 set rms [ expr sqrt($diff2)/$len ]
@@ -3515,13 +3515,13 @@ proc spc_ajustplanck { args } {
       lappend iplancks [ spc_planckval $tempe $nabscisse ]
    }
 
-      
-      
+
+
 
    #-- Representation graphique :
    ::plotxy::clf
    #::plotxy::plot $abscisses $intensites ob 0
-      
+
    ::plotxy::plot $nabscisses $iplancks r 1
    ::plotxy::hold on
    ::plotxy::plot $abscisses $newintens b 1
@@ -3566,7 +3566,7 @@ proc spc_quad { args } {
    set quad [ spc_scalh1 $ldiff $ldiff $ratio ]
    set quad [ expr $quad / $coeff2 ]
    return $quad
-}	
+}
 #*****************************************************************#
 
 
@@ -3598,15 +3598,15 @@ proc spc_scalh1 { args } {
    set m2 [ list ]
    set mdiff1 [ list ]
    set mdiff2 [ list ]
-   lappend m1 $list1  
-   lappend m2 $list2 
-   lappend mdiff1 $ldiff1 
-   lappend mdiff2 $ldiff2 
+   lappend m1 $list1
+   lappend m2 $list2
+   lappend mdiff1 $ldiff1
+   lappend mdiff2 $ldiff2
    #set t1 [ gsl_mtranspose $m1 ]
    set t2 [ gsl_mtranspose $m2 ]
    #set tdiff1 [ gsl_mtranspose $mdiff1 ]
    set tdiff2 [ gsl_mtranspose $mdiff2 ]
-   set l2 [ gsl_mindex [ gsl_mmult $m1 $t2 ] 1 1 ] 
+   set l2 [ gsl_mindex [ gsl_mmult $m1 $t2 ] 1 1 ]
    set h1 [ gsl_mindex [ gsl_mmult $mdiff1 $tdiff2 ] 1 1 ]
    #::console::affiche_resultat "dim matrice [ gsl_mlength [ gsl_mmult $mdiff1 $tdiff2 ] ] ; "
    set prodscal [ expr $l2 + $ratio * $h1 ]
@@ -3682,7 +3682,7 @@ proc spc_dynagraph { args } {
    #-- Interpolation : Oui par defaut
    set flag_interpol "o"
 
-   set nbargs [ llength $args ]   
+   set nbargs [ llength $args ]
    if { $nbargs==10 } {
       set xsdeb [ lindex $args 0 ]
       set xsfin [ lindex $args 1 ]
@@ -3803,7 +3803,7 @@ proc spc_dynagraph { args } {
    buf$newBufNo copykwd $audace(bufNo)
    buf$newBufNo setkwd [ list "NAXIS" 2 int "" "" ]
    buf$newBufNo setkwd [ list "NAXIS1" $naxis1 int "" "" ]
-   buf$newBufNo setkwd [ list "CRPIX1" $crpix1 int "" "" ]
+   buf$newBufNo setkwd [ list "CRPIX1" $crpix1 double "" "" ]
    buf$newBufNo setkwd [ list "NAXIS2" $nb_jours int "" "" ]
    #-- Echelle en vitesse radiale :
    set crval1 [ expr ($xsdeb-$lambda_ref)*$spcaudace(vlum)/$lambda_ref ]
@@ -3871,7 +3871,7 @@ if { $flag_oneday==0 } {
                set jtime [ expr $jdate+$pas_date_manyday ]
                #- Boucle aux limites :
                #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
-               #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k } 
+               #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k }
                for { set k 1 } { $k<=$nb_inter } { incr k } {
                   #set jtime $k
                   #-- Calcul des intensites la date jtime :
@@ -3902,7 +3902,7 @@ if { $flag_oneday==0 } {
             continue
          }
       }
-         
+
       #--- Incremention du n° de spectre :
       incr index_listspectres
    }
@@ -3959,7 +3959,7 @@ if { $flag_oneday==0 } {
                set jtime [ expr $jdate+$pas_date_oneday ]
                #- Boucle aux limites :
                #- for { set jtime [ expr int($jdate+1) ] } { $jtime<$jd_next } { incr jtime }
-               #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k } 
+               #- for { set k [ expr int($jdate+1) ] } { $k<[ expr int($jd_next)+1 ] } { incr k }
                for { set k 1 } { $k<=$nb_inter } { incr k } {
                   #set jtime $k
                   #-- Calcul des intensites la date jtime :
@@ -3990,7 +3990,7 @@ if { $flag_oneday==0 } {
             continue
          }
       }
-         
+
       #--- Incremention du n° de spectre :
       incr index_listspectres
    }
