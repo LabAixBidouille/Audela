@@ -34,7 +34,7 @@
 # Procedure : dediee a priori a la basse resolution, decompose un morceau de profil en la superposition d'un certain
 #nombre de raies modeles dont le centre est precise ainsi que la largeur a mi hauteur (supposee identique pour toutes les
 # raies modeles). Cette largeur aura ete estimee prealablement en mesurant la fwhm d'une raie isolee. La precision dans
-# cette estimation est tres critique : il est surement souhaitable de faire de moyenner differentes estimations. 
+# cette estimation est tres critique : il est surement souhaitable de faire de moyenner differentes estimations.
 # On autorise aussi un certain décalage en longueur d'onde entre le profil modele et le profil mesure : ce
 # decalage se veut prendre en compte l'imprecision dans la calibration du profil mesuré. Ne pas hesiter a pecher par
 # exces.
@@ -76,7 +76,7 @@ proc spc_degauss { args } {
       set nom_fich_input [ spc_select $nom_fich_input $lambda_min $lambda_max ]
       # creation de la liste de decalage en lambdas a explorer
       set list_decal [ list ]
-      set delt_decal [ expr $incert_lambda * .1 ] 
+      set delt_decal [ expr $incert_lambda * .1 ]
       set decal_min [ expr -1. * $incert_lambda ]
       for { set i 0 } { $i < $ndecal } { incr i } {
 	 set decal [ expr  $decal_min + $i * $delt_decal ]
@@ -108,12 +108,12 @@ proc spc_degauss { args } {
       set rms [ list ]
       foreach decal $list_decal {
 	 # construction de la matrice X requise pour caracteriser l'application linéaire
-			
+
 	 set X [ list ]
 	 for { set i 0 } { $i <= $nlambda_1 } { incr i } {
 	    #set Xi [ spc_gausslist $nechant $delt_decal $fwhm [ lindex lambda_list $i ] ]
 	    set Xi [ spc_gausslist $listlambdas $decal $sigma [ lindex $lambda_list $i ] ]
-	    lappend X $Xi				
+	    lappend X $Xi
 	 }
 	 set Y [ gsl_mmult $X $d ]
 	 set Y [ gsl_mtranspose $Y ]
@@ -121,11 +121,11 @@ proc spc_degauss { args } {
 	 #set Y [ gsl_mtranspose $Y ]
 	 set XX [gsl_mmult $X [ gsl_mtranspose $X ] ]
 	 #set d [ gsl_mtranspose $d ]
-			
+
 	 set xparam [ gsl_msolvelin $XX $Y ]
-	 set xparam [ gsl_mtranspose $xparam] 
+	 set xparam [ gsl_mtranspose $xparam]
 	 # calcul des intensites optimales pour le decalage considere
-	 #set result [ gsl_mfitmultilin $d $X $W ] 
+	 #set result [ gsl_mfitmultilin $d $X $W ]
 	 set dimxparam [ gsl_mlength $xparam ]
 	 set dimd [ gsl_mlength $Y ]
 	 #::console::affiche_resultat " $dimxparam $dimd \n\n"
@@ -133,14 +133,14 @@ proc spc_degauss { args } {
 	 set rrms [ gsl_mmult $xparam $Y ]
 	 set rrmms [ lindex [ lindex $rrms 0 ] 0 ]
 	 #::console::affiche_resultat " $decal rms= $rrms \n\n"
-	 lappend rms [ expr -1. *$rrmms ] 
+	 lappend rms [ expr -1. *$rrmms ]
 	 lappend param [ lindex $xparam 0 ]
       }
       # selection du decalage optimal
       set rmsord [ lsort -real -increasing $rms ]
       set rmsmin [ lindex $rmsord 0 ]
       set i [ lsearch -exact $rms $rmsmin ]
-      set contrib [ lindex $param $i ] 
+      set contrib [ lindex $param $i ]
       set decal [ lindex $list_decal $i ]
       # affichage du graphique synthetisant l'exploration de l'espace des decalages
       ::plotxy::plot $list_decal $rms r 1
@@ -148,11 +148,11 @@ proc spc_degauss { args } {
       ::plotxy::xlabel "Lambda (A)"
       ::plotxy::ylabel "rms"
       ::plotxy::title "rms en fonction des decalages"
-      # creation du fichier fit 
+      # creation du fichier fit
       set X [ list ]
       for { set i 0 } { $i <= $nlambda_1 } { incr i } {
 	 set Xi [ spc_gausslist $listlambdas $decal $sigma [ lindex $lambda_list $i ] ]
-	 lappend X $Xi				
+	 lappend X $Xi
       }
 
       #set XX [ list ]
@@ -172,7 +172,7 @@ proc spc_degauss { args } {
       set suff _mod
       set nom_fich_input [ lindex $args 0 ]
       set nom_fich_input [ file rootname $nom_fich_input ]
-      set nom_fich_output $nom_fich_input$suff 
+      set nom_fich_output $nom_fich_input$suff
       set result [ spc_data2fits $nom_fich_output $coord float]
       ::console::affiche_resultat "spc_decompraies : ecriture du fichier $nom_fich_output\n\n"
       set contrib [ lindex $contrib 0 ]
@@ -180,7 +180,7 @@ proc spc_degauss { args } {
    } else {
       ::console::affiche_erreur "Usage: spc_degauss nom_profil \{liste longueurs d'ondes des raies\} fwhm incertitude_lambda\n\n"
       return 0
-   }  
+   }
 }
 #***************************************************************************#
 
@@ -394,7 +394,7 @@ proc spc_centergaussl { args } {
      }
 
      #--- Détermine les valaurs d'encadrement :
-     #- 2007-04-27 : int -> round 
+     #- 2007-04-27 : int -> round
      set xdeb [ expr round(($ldeb-$crval)/$cdelt+$crpix1) ]
      set xfin [ expr round(($lfin-$crval)/$cdelt+$crpix1) ]
 
@@ -489,7 +489,7 @@ proc spc_fitgauss { args } {
       }
 
       #--- Détermine les valaurs d'encadrement :
-      #- 2007-04-27 : int -> round 
+      #- 2007-04-27 : int -> round
       if { $flag_cal==1 } {
          set xdeb [ expr round(($ldeb-$spc_a)/$spc_b+$crpix1) ]
          set xfin [ expr round(($lfin-$spc_a)/$spc_b+$crpix1) ]
@@ -1099,7 +1099,7 @@ proc spc_findbiglineslamp { args } {
 # Date de modification : 24-07-12
 # Auteur : P. Lailly
 # Arguments : nom_profil_raies largeur_raie
-# amelioration de spc_findbiglines faite par Benji : 
+# amelioration de spc_findbiglines faite par Benji :
 # on recherche les raies par intercorrelation avec une gaussienne de meme largeur que les raies du neon
 # on effectuer ainsi un lissage qui ameliore le rapport S/B
 # le nombre maximum de raies detectees est defini via la variable d'environnement nb_pics (cf. spc_var)
@@ -1122,7 +1122,7 @@ proc spc_findbiglineslamp { args } {
       set nom_fich [ file rootname $filename ]
       ::console::affiche_resultat " nom fichier entree $filename largeur= $largeur \n"
       #set nom_fich [ spc_linearcal $nom_fich ]
-      set suff .fit  
+      set suff .fit
       #set typeraies e
       # lecture du profil a analyser
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich"
@@ -1153,7 +1153,7 @@ proc spc_findbiglineslamp { args } {
       buf$audace(bufNo) setkwd [ list CRVAL1 $crval1 double "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS 2 int "number of data axes" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS2 1 int "length of data axis 2" "" ]
-		
+
       # sauvegarde des modifications
       #set nom_fich $filename
       buf$audace(bufNo) bitpix float
@@ -1166,9 +1166,9 @@ proc spc_findbiglineslamp { args } {
       set sigma [ expr $largeur / 2.3548 ]
       for { set i 1 } { $i <= $naxis1 } { incr i } {
 	 set absc [ expr ($i - $icentre) ]
-	 lappend lgauss [ expr (1 / $sigma ) * exp (-.5 * ( $absc / $sigma ) * ( $absc / $sigma )) ] 
+	 lappend lgauss [ expr (1 / $sigma ) * exp (-.5 * ( $absc / $sigma ) * ( $absc / $sigma )) ]
       }
-      
+
       # sauvegarde du profil gaussien
       set nbunit "float"
       set nbunit1 "double"
@@ -1178,7 +1178,7 @@ proc spc_findbiglineslamp { args } {
       buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
       #-- Dispersion
       buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 $nbunit1 "" "Angstrom/pixel"]
-      buf$audace(bufNo) setkwd [list "CRPIX1" 1 int "" "Pixel"]
+      buf$audace(bufNo) setkwd [list "CRPIX1" 1 double "" "Pixel"]
       for {set k 0} { $k < $naxis1 } {incr k} {
 	 buf$audace(bufNo) setpix [list [expr $k+1] 1] [lindex $lgauss $k ]
       }
@@ -1210,12 +1210,12 @@ proc spc_findbiglineslamp { args } {
       file delete -force "$audace(rep_images)/$nom_fich$ext$conf(extension,defaut)"
       file delete -force "$audace(rep_images)/pl_crosscorr.fit"
       file delete -force "$audace(rep_images)/pl_crosscorr.dat"
-      return $listmax			
+      return $listmax
    } else {
       ::console::affiche_erreur "Usage: spc_findbiglineslamp nom_profil_de_raies type_raies ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
-      
+
       return ""
-   }	
+   }
 }
 
 #***************************************************************************#
@@ -1458,7 +1458,7 @@ proc spc_snr { args } {
       return ""
    }
 
- 
+
    #--- Capture des renseignements
    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
@@ -1486,7 +1486,7 @@ proc spc_snr { args } {
       set lmin [ expr $crval1+0.5*$largeur*$disp ]
       set lmax [ expr [ spc_calpoly $naxis1 1 $crval1 $disp 0 0 ]-$largeur*0.5*$disp ]
       if { $lambda_mid<$lmin || $lambda_mid>$lmax } {
-         ::console::affiche_erreur "La longueur d'onde doit etre comprise entre $lmin et $lmax.\n"  
+         ::console::affiche_erreur "La longueur d'onde doit etre comprise entre $lmin et $lmax.\n"
          return ""
       }
    }
@@ -1535,7 +1535,7 @@ proc spc_snr { args } {
       for { set i [ expr $xdeb-1 ] } { $i<$xfin } { incr i } {
          set intensite [ lindex $intensites $i ]
          set somme [ expr $somme+pow($intensite-$S,2) ]
-      }        
+      }
       set N [ expr sqrt($somme/($xfin-$xdeb+1)) ]
    }
    #-----#
