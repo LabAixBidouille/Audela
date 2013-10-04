@@ -5137,7 +5137,7 @@ proc spc_spc2fits2 { args } {
    #set xincr [expr 0.5*($dl2+$dl1)]
 
    ::console::affiche_resultat "Dispersion : $xincr\n"
-   buf$audace(bufNo) setkwd [list "CDELT1" $xincr float "" ""]
+   buf$audace(bufNo) setkwd [list "CDELT1" $xincr double "" ""]
    # Type de dispersion : LINEAR, NONLINEAR
    #if { [expr abs($dl2-$dl1)] <= 0.001 } {
    #    buf$audace(bufNo) setkwd [list "CTYPE1" "LINEAR" string "" ""]

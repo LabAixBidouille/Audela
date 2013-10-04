@@ -3904,7 +3904,7 @@ proc spc_autocalibrehaeau1 { args } {
         #-- Longueur d'onde de départ :
         buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
         #-- Dispersion moyenne :
-        #buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+        #buf$audace(bufNo) setkwd [list "CDELT1" $a1 double "" "angstrom/pixel"]
         #buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
         #-- Corrdonnée représentée sur l'axe 1 (ie X) :
         #buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
@@ -5707,7 +5707,7 @@ proc spc_calibre3pil { args } {
     #-- Longueur d'onde de départ
     buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
     #-- Dispersion
-    #buf$audace(bufNo) setkwd [list "CDELT1" "$dispersionm" float "" "Angtrom/pixel"]
+    #buf$audace(bufNo) setkwd [list "CDELT1" "$dispersionm" double "" "Angtrom/pixel"]
     buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "Angtrom/pixel"]
     #-- Longueur d'onde centrale
     #buf$audace(bufNo) setkwd [list "CRPIX1" "$lcentre" double "" "angstrom"]
@@ -6099,7 +6099,7 @@ proc spc_autocalibrehaeau { args } {
         #-- Longueur d'onde de départ :
         buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0deg1 double "" "angstrom"]
         #-- Dispersion moyenne :
-        #buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+        #buf$audace(bufNo) setkwd [list "CDELT1" $a1 double "" "angstrom/pixel"]
         #buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
         #-- Corrdonnée représentée sur l'axe 1 (ie X) :
         #buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
