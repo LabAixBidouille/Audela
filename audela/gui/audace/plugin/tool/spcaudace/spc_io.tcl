@@ -5114,7 +5114,7 @@ proc spc_spc2fits2 { args } {
    buf$audace(bufNo) setkwd [list "NAXIS2" "1" int "" ""]
    # Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
    set xdepart [ expr 1.0*[lindex $profilspc(pixels) 0] ]
-   buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart float "" ""]
+   buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart double "" ""]
    # Valeur de la longueur d'onde/pixel central(e)
    set xdernier [lindex $profilspc(pixels) [expr $profilspc(naxis1)-1]]
    ::console::affiche_resultat "Xdep : $xdepart ; Xfin : $xdernier\n"

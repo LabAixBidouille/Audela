@@ -892,7 +892,7 @@ proc spc_binlopt { args } {
         spc_header1d $audace(bufNo)
 
 	#--- SAuvegarde du profil 1D
-	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
         buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
 	buf$audace(bufNo) bitpix float
@@ -1348,7 +1348,7 @@ proc spc_profilzone { args } {
 
             #--- Binning :
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
-	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 float "" "" ]
+	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 float "" "" ]
 	    buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
             #--- Nettoie les mots clefs finissant en 2 :
@@ -1495,7 +1495,7 @@ proc spc_bin { args } {
 	buf$audace(bufNo) mult -0.5
 	buf$audace(bufNo) add "$audace(rep_images)/${filenamespc_spatial}_sp" 0
 	## Initialisation des mots-clef spectroscopie
-	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
         buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
 
@@ -1565,7 +1565,7 @@ proc spc_bins { args } {
       buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_zone"
       set ht_spectre [lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1]
       buf$audace(bufNo) imaseries "biny y1=1 y2=$ht_spectre height=1"
-      buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+      buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
       buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
       buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
       buf$audace(bufNo) bitpix float
@@ -1690,7 +1690,7 @@ proc spc_binsup { {filenamespc_zone_rep ""} {filenamespc_spatial_rep ""} {listco
     buf$audace(bufNo) mult -1
     buf$audace(bufNo) add "$audace(rep_images)/${filenamespc_spatial}_sp" 0
     ## Initialisation des mots-clef spectroscopie
-    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
     buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
     buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
     buf$audace(bufNo) bitpix float
@@ -1781,7 +1781,7 @@ proc spc_profily { args } {
 	#--- Sauvegarde du profil
 	buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
 	buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
-	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
 	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
         buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
 	buf$audace(bufNo) bitpix float
@@ -2480,7 +2480,7 @@ proc spc_profillampe { args } {
        buf$audace(bufNo) imaseries "BINY y1=$yinf y2=$ysup height=1"
        buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
        buf$audace(bufNo) delkwd "NAXIS2"
-       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
        buf$audace(bufNo) bitpix float
@@ -2522,7 +2522,7 @@ proc spc_profillampezone { args } {
        buf$audace(bufNo) imaseries "BINY y1=$y1 y2=$y2 height=1"
        buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
        buf$audace(bufNo) delkwd "NAXIS2"
-       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+       buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
        buf$audace(bufNo) bitpix float
@@ -2639,7 +2639,7 @@ proc spc_profilx_07062006 { args } {
 	}
 	#--- Sauvegarde du profil
 	set sortie [ spc_dat2fits ${fichier}_spcx$extsp ]
-	#buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	#buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
 	#buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
 	#buf$audace(bufNo) bitpix float
 	#buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcx"
