@@ -2739,7 +2739,7 @@ proc spc_select2 { args } {
        #--- Initatialisation de l'entête
        set ldepart [ expr $crval1+$xdeb*$disper ]
        buf$audace(bufNo) setkwd [list "CRVAL1" $ldepart double "" ""]
-       buf$audace(bufNo) setkwd [list "CDELT1" $disper float "" ""]
+       buf$audace(bufNo) setkwd [list "CDELT1" $disper double "" ""]
 
        #--- Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float
@@ -2858,7 +2858,7 @@ proc spc_select0 { args } {
        set xdepart [ lindex $nabscisses 0 ]
        buf$audace(bufNo) setkwd [list "CRVAL1" "$xdepart" double "" ""]
        set xfin [ lindex $nabscisses $len ]
-       buf$audace(bufNo) setkwd [list "CDELT1" "$disper" float "" ""]
+       buf$audace(bufNo) setkwd [list "CDELT1" "$disper" double "" ""]
 
        #--- Enregistrement du fichier fits final
        buf$audace(bufNo) bitpix float
@@ -4354,7 +4354,7 @@ proc spc_echant01 { args } {
        # normaflux=1 permet de garder la dynamique initiale.
        set lfactor [ list $facteur 1 ]
        buf$audace(bufNo) scale  $lfactor 1
-       buf$audace(bufNo) setkwd [list "CDELT1" "$newdisp" float "" ""]
+       buf$audace(bufNo) setkwd [list "CDELT1" "$newdisp" double "" ""]
        buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_ech$conf(extension,defaut)"
        buf$audace(bufNo) bitpix short
