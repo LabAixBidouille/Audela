@@ -2738,7 +2738,7 @@ proc spc_select2 { args } {
 
        #--- Initatialisation de l'entête
        set ldepart [ expr $crval1+$xdeb*$disper ]
-       buf$audace(bufNo) setkwd [list "CRVAL1" $ldepart float "" ""]
+       buf$audace(bufNo) setkwd [list "CRVAL1" $ldepart double "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" $disper float "" ""]
 
        #--- Enregistrement du fichier fits final
@@ -2856,7 +2856,7 @@ proc spc_select0 { args } {
        #--- Initatialisation de l'entête
        buf$audace(bufNo) setkwd [list "NAXIS1" "$len" int "" ""]
        set xdepart [ lindex $nabscisses 0 ]
-       buf$audace(bufNo) setkwd [list "CRVAL1" "$xdepart" float "" ""]
+       buf$audace(bufNo) setkwd [list "CRVAL1" "$xdepart" double "" ""]
        set xfin [ lindex $nabscisses $len ]
        buf$audace(bufNo) setkwd [list "CDELT1" "$disper" float "" ""]
 
