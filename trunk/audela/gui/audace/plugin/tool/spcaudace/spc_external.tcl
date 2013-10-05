@@ -149,16 +149,19 @@ proc spc_help {} {
     global spcaudace conf
 
     if { $conf(editsite_htm)!="" } {
+       ::audace::Lance_Site_htm "$spcaudace(sitedoc)"
+       if { 1==0 } {
         if { $::tcl_platform(platform) == "windows" } {
-            ::audace::Lance_Site_htm [ file join file:///[ file join $::audace(rep_plugin) tool \
-                spcaudace doc "$spcaudace(spcdoc)" ] ]
+           ::audace::Lance_Site_htm [ file join file:///[ file join $::audace(rep_plugin) tool spcaudace doc "$spcaudace(spcdoc)" ] ]
+
         } else {
             if { [ file exists $spcaudace(spcdoc) ] } {
-                set answer [ catch { exec $conf(editsite_htm) $spcaudace(spcdoc) & } ]
-            } else {
-                set answer [ catch { exec $conf(editsite_htm) $spcaudace(sitedoc) & } ]
-            }
+               set answer [ catch { exec $conf(editsite_htm) $spcaudace(spcdoc) & } ]
+           } else {
+               set answer [ catch { exec $conf(editsite_htm) $spcaudace(sitedoc) & } ]
+           }
         }
+       }
     } else {
         ::console::affiche_resultat "Configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la documentation d'SpcAudACE\n"
     }
