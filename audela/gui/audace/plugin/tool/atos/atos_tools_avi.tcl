@@ -119,6 +119,7 @@ namespace eval ::atos_tools_avi {
       set ::atos_tools::frame_end $::atos_tools::nb_frames
 
       ::atos_tools_avi::next_image
+      ::audace::autovisu $audace(visuNo)
 
    }
 
@@ -464,6 +465,7 @@ namespace eval ::atos_tools_avi {
         if {[ file exists /dev/shm/pict.yuv422 ]} {
            ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
            visu$visuNo disp
+	   ::audace::autovisu $visuNo
            file delete -force /dev/shm/pict.yuv422
 
            cleanmark
@@ -607,6 +609,7 @@ namespace eval ::atos_tools_avi {
             if {[file exists /dev/shm/pict.yuv422 ]} {
                 ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
                 visu$visuNo disp
+		::audace::autovisu $visuNo
                 file delete -force /dev/shm/pict.yuv422
             } else {
                 ::console::affiche_erreur "Image inexistante \n"
@@ -677,6 +680,7 @@ namespace eval ::atos_tools_avi {
             if {[file exists /dev/shm/pict.yuv422 ]} {
                 ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
                 visu$visuNo disp
+		::audace::autovisu $visuNo
                 file delete -force /dev/shm/pict.yuv422
             } else {
                 ::console::affiche_erreur "Image inexistante \n"
