@@ -300,10 +300,24 @@ namespace eval ::console {
             error "server $name already opened"
          }
          console::socket_server_open $name $port console::socket_server_accept
+         set audace(console,server,port) $port
       } elseif {$action=="close"} {
          console::socket_server_close $name
+         catch {unset audace(console,server,port)}
+      } elseif {$action=="status"} {
+         if {([info exists audace(socket,server,$name)]==1)&&([info exists audace(console,server,port)]==1)} {
+            return opened
+         } else {
+            return closed
+         }      
+      } elseif {$action=="port"} {
+         if {([info exists audace(socket,server,$name)]==1)&&([info exists audace(console,server,port)]==1)} {
+            return $audace(console,server,port)
+         } else {
+            return ""
+         }      
       } else {
-         error "action must be open or close"
+         error "action must be open|status|port|close"
       }
    }
 
@@ -405,7 +419,9 @@ namespace eval ::console {
 
       set errsoc [ catch {
          gets $fid line
-         ::console::affiche_resultat "Remote command received: ${line}\n"
+         if {$line!=""} {
+            ::console::affiche_resultat "Remote command received: ${line}\n"
+         }
          if {[eof $fid]} {
             close $fid
          } elseif {![fblocked $fid]} {
