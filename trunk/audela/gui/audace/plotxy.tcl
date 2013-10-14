@@ -81,6 +81,7 @@ namespace eval ::plotxy {
             #--- init private variables of properties for this figure
             set plotxy(fig0,privates) {lastline}
             set plotxy(fig$num,lastline) 0
+            set plotxy(fig$num,lasttext) 0
             #--- init frame for this figure
             if {$parentframe==""} {
                if {$plotxy(audace)==1} {
@@ -345,6 +346,17 @@ namespace eval ::plotxy {
       }
    }
 
+   proc text { x y text2plot } {
+      # plotxy::plot {1 3} {0 5} r ; plotxy::text 1.0 1.0 toto
+      global audace
+      global plotxy
+      #--- extract the current index of the figure
+      set num $plotxy(currentfigure)
+      set baseplotxy $plotxy(fig$num,parent)
+      set texte "$baseplotxy.xy marker create text -text \"$text2plot\" -coords [list $x $y]"
+      lappend plotxy(fig$num,markers) [eval $texte]
+   }
+   
    #=== Matlab equivalents pour colorsymbol
    #       y     yellow        .     point
    #       m     magenta       o     circle
@@ -502,6 +514,13 @@ namespace eval ::plotxy {
       }
       #--   affichage des grilles
       $baseplotxy.xy grid configure -dashes 2 -color black -hide no -minor yes
+      
+      # plotxy::plot {0 3} {0 5} r
+      # .audace.plotxy1.xy marker create text -text toto -name tutu
+      # .audace.plotxy1.xy marker type tutu
+      # .audace.plotxy1.xy marker configure tutu -text "tytytyty"
+      #$baseplotxy.xy marker create text -text toto -name tutu
+      #console::affiche_resultat "$baseplotxy.xy\n"
 
       #--   gestion du zoom
       createBindingsZoom $baseplotxy
