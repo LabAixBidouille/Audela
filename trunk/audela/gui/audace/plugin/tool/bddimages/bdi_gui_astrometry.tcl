@@ -62,6 +62,7 @@ namespace eval bdi_gui_astrometry {
    #  @param args argument non utilise
    proc ::bdi_gui_astrometry::cmdButton1Click_srpt { w args } {
 
+      gren_info "nb selected = [llength [$w curselection]] : "
       foreach select [$w curselection] {
          set name [lindex [$w get $select] 0]
          gren_info "srpt name = $name \n"

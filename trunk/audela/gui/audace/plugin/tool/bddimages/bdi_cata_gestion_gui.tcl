@@ -486,7 +486,7 @@ namespace eval cata_gestion_gui {
         $popupTbl add separator
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "Unset" -command "::cata_gestion_gui::unset_flag $tbl"
+        $popupTbl add command -label "(u) Unset" -command "::cata_gestion_gui::unset_flag $tbl"
 
         # Separateur
         $popupTbl add separator
@@ -2166,7 +2166,7 @@ namespace eval cata_gestion_gui {
          set id [lindex $s 0]
          set ra [lindex $s [::gui_cata::get_pos_col ra]]
          set dec [lindex $s [::gui_cata::get_pos_col dec]]
-         affich_un_rond $ra $dec red 2
+         affich_un_rond $ra $dec red 1
       }
       return
 
@@ -2200,7 +2200,7 @@ namespace eval cata_gestion_gui {
    proc ::cata_gestion_gui::cmdButton1Click { w args } {
 
       set color red
-      set width 2
+      set width 1
       cleanmark
       gren_info "Nbs selected images: [llength [$w curselection]]\n"
       foreach select [$w curselection] {

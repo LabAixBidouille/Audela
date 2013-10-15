@@ -45,7 +45,7 @@ proc affich_un_rond { ra dec color width } {
    set x [lindex $img_xy 0]
    set y [lindex $img_xy 1]
    #gren_info "affich_un_rond_xy $x $y $color 5 $width\n"
-   affich_un_rond_xy $x $y $color 5 $width
+   affich_un_rond_xy $x $y $color 10 $width
 
 }
 
