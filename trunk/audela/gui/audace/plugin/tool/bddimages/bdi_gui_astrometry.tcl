@@ -470,21 +470,33 @@ namespace eval bdi_gui_astrometry {
 
       # Efface la zone de rapport
       $::bdi_gui_astrometry::rapport_mpc delete 0.0 end
+      set pos_last_header_field_num 10
 
       # Entete
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#COD $::bdi_tools_astrometry::rapport_uai_code \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#CON $::bdi_tools_astrometry::rapport_rapporteur \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#CON $::bdi_tools_astrometry::rapport_mail \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#CON Software Reduction : Audela Bddimages Priam \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#OBS $::bdi_tools_astrometry::rapport_observ \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#MEA $::bdi_tools_astrometry::rapport_reduc \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#TEL $::bdi_tools_astrometry::rapport_instru \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#NET $::bdi_tools_astrometry::rapport_cata \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#ACK Batch $::bdi_tools_astrometry::rapport_batch \n"
-      $::bdi_gui_astrometry::rapport_mpc insert end  "#AC2 $::bdi_tools_astrometry::rapport_mail \n"
-      #$::bdi_gui_astrometry::rapport_mpc insert end  "#NUM $::bdi_tools_astrometry::rapport_nb \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "COD $::bdi_tools_astrometry::rapport_uai_code \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "CON $::bdi_tools_astrometry::rapport_rapporteur \n"
+      if {[llength $::bdi_tools_astrometry::rapport_adresse]>0} {
+         incr pos_last_header_field_num
+         $::bdi_gui_astrometry::rapport_mpc insert end  "CON $::bdi_tools_astrometry::rapport_adresse \n"
+      }
+      if {[llength $::bdi_tools_astrometry::rapport_mail]>0} {
+         incr pos_last_header_field_num
+         $::bdi_gui_astrometry::rapport_mpc insert end  "CON $::bdi_tools_astrometry::rapport_mail \n"
+      }
+      $::bdi_gui_astrometry::rapport_mpc insert end  "OBS $::bdi_tools_astrometry::rapport_observ \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "MEA $::bdi_tools_astrometry::rapport_reduc \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "TEL $::bdi_tools_astrometry::rapport_instru \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "NET $::bdi_tools_astrometry::rapport_cata \n"
 
+      if {$::bdi_tools_astrometry::rapport_cata=="WFIBC"} {
+         incr pos_last_header_field_num
+         $::bdi_gui_astrometry::rapport_mpc insert end  "COM WFIBC : Reference Star Catalog from Assafin et al. 2010, 2012 A&A \n"
+      }
+      $::bdi_gui_astrometry::rapport_mpc insert end  "COM Software Reduction : Audela Bddimages Priam (http://www.audela.org) \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "ACK Batch $::bdi_tools_astrometry::rapport_batch \n"
+      $::bdi_gui_astrometry::rapport_mpc insert end  "AC2 $::bdi_tools_astrometry::rapport_mail \n"
 
+      
       # Constant parameters
       # - Note 1: alphabetical publishable note or (those sites that use program codes) an alphanumeric
       #           or non-alphanumeric character program code => http://www.minorplanetcenter.net/iau/info/ObsNote.html
@@ -493,7 +505,7 @@ namespace eval bdi_gui_astrometry {
       set note2 "C"
 
       # Format of MPC line
-      set form "%13s%1s%1s%17s%12s%12s         %6s      %3s\n"
+      set form "%13s%1s%1s%16s%12s%12s         %6s      %3s\n"
       set nb 0
       set l [array get ::bdi_tools_astrometry::listscience]
       foreach {name y} $l {
@@ -523,9 +535,8 @@ namespace eval bdi_gui_astrometry {
             incr nb
          }
       }
-      $::bdi_gui_astrometry::rapport_mpc insert 11.0  "#NUM $nb\n"
+      $::bdi_gui_astrometry::rapport_mpc insert $pos_last_header_field_num.0  "NUM $nb\n"
       $::bdi_gui_astrometry::rapport_mpc insert end  "\n\n\n"
-
    }
 
 
@@ -902,6 +913,7 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       $::bdi_gui_astrometry::rapport_txt insert end $sep_txt
       $::bdi_gui_astrometry::rapport_txt insert end  "# IAU code       : $::bdi_tools_astrometry::rapport_uai_code \n"
       $::bdi_gui_astrometry::rapport_txt insert end  "# Subscriber     : $::bdi_tools_astrometry::rapport_rapporteur \n"
+      $::bdi_gui_astrometry::rapport_txt insert end  "# Address        : $::bdi_tools_astrometry::rapport_adresse \n"
       $::bdi_gui_astrometry::rapport_txt insert end  "# Mail           : $::bdi_tools_astrometry::rapport_mail \n"
       $::bdi_gui_astrometry::rapport_txt insert end  "# Software       : Audela Bddimages Priam \n"
       $::bdi_gui_astrometry::rapport_txt insert end  "# Observers      : $::bdi_tools_astrometry::rapport_observ \n"
@@ -1688,6 +1700,17 @@ unset ::bdi_gui_astrometry::omcvaruna_d
                    "$::votable::Field::ARRAYSIZE \"64\"" \
                    "$::votable::Field::WIDTH \"64\"" ]
       lappend p "$::votable::Param::VALUE \"${::bdi_tools_astrometry::rapport_rapporteur}\""; # attribut value doit toijours etre present
+      set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+      append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+      set description "Address"
+      set p [ list "$::votable::Field::ID \"address\"" \
+                   "$::votable::Field::NAME \"Address\"" \
+                   "$::votable::Field::UCD \"\"" \
+                   "$::votable::Field::DATATYPE \"char\"" \
+                   "$::votable::Field::ARRAYSIZE \"64\"" \
+                   "$::votable::Field::WIDTH \"64\"" ]
+      lappend p "$::votable::Param::VALUE \"${::bdi_tools_astrometry::rapport_adresse}\""; # attribut value doit toijours etre present
       set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
       append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
 
@@ -2605,8 +2628,8 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       gren_info "Generation des rapports d'observations ...\n"
 
       # Batch
-      set ::bdi_tools_astrometry::rapport_batch [clock format [clock scan now] -format "Audela BDI %Y-%m-%dT%H:%M:%S %Z"]
-
+      set ::bdi_tools_astrometry::rapport_batch [clock format [clock scan now] -format "Audela_BDI_%Y-%m-%dT%H:%M:%S_%Z"]
+  
       # Liste des catalogue de reference
       set l [array get ::bdi_tools_astrometry::listref]
       set clist ""
@@ -2678,6 +2701,92 @@ unset ::bdi_gui_astrometry::omcvaruna_d
 
    }
 
+   proc ::bdi_gui_astrometry::get_first_date {  } {
+
+
+      set i 0
+      set l [array get ::bdi_tools_astrometry::listscience]
+      foreach {name y} $l {
+         set cata [::manage_source::name_cata $name]
+         if {$cata != "SKYBOT"} {continue}
+         foreach date $::bdi_tools_astrometry::listscience($name) {
+            incr i
+            set date [string range $date 0 9]
+            if {$i==1} { 
+               set datemin $date
+               continue
+            }
+            if {[string compare $datemin $date]==1} {
+               set datemin $date
+            }
+         }
+      }
+      return "DateObs.$datemin"
+   }
+
+   proc ::bdi_gui_astrometry::cut_object_name { name } {
+      # ::bdi_gui_astrometry::cut_object_name SKYBOT_202421_2005_UQ513
+      
+      set pos [expr [string first _ $name] +1]
+      set name [string range $name $pos end]
+      set pos [expr [string first _ $name] +1]
+      set name [string range $name $pos end]
+      return $name
+   }
+   
+   proc ::bdi_gui_astrometry::get_objects {  } {
+
+      set names ".Obj"
+      set l [array get ::bdi_tools_astrometry::listscience]
+      foreach {name y} $l {
+         set cata [::manage_source::name_cata $name]
+         if {$cata != "SKYBOT"} {continue}
+            gren_info "name = $name\n"
+            append names ".[::bdi_gui_astrometry::cut_object_name $name]"
+      }
+      return $names
+   }
+
+   proc ::bdi_gui_astrometry::save_all_reports {  } {
+
+      gren_info "Sauvegarde de tous les rapports :\n"
+
+      # Recuperation des info pour construction des nom de fichier
+      set part_date    [::bdi_gui_astrometry::get_first_date]
+      set part_objects [::bdi_gui_astrometry::get_objects]
+      if {$::bdi_tools_astrometry::rapport_mpc_submit==0} {
+         set part_submit ".submitMPC.no"
+      } else {
+         set part_submit ".submitMPC.yes"
+      }
+      set part_batch ".Batch.${::bdi_tools_astrometry::rapport_batch}"
+      
+      # Sauveagarde des donnees MPC
+      set file "${part_date}${part_objects}${part_submit}${part_batch}.mpc"
+      set file [file join $::bdi_tools_astrometry::rapport_mpc_dir $file]
+      set chan [open $file w]
+      puts $chan "[$::bdi_gui_astrometry::rapport_mpc get 0.0 end]"
+      close $chan
+      gren_info "Rapport MPC : $file\n"
+      # Sauveagarde des donnees IMCCE
+      set file "${part_date}${part_objects}${part_batch}.txt"
+      set file [file join $::bdi_tools_astrometry::rapport_imc_dir $file]
+      set chan [open $file w]
+      puts $chan "[$::bdi_gui_astrometry::rapport_txt get 0.0 end]"
+      close $chan
+      gren_info "Rapport IMCCE TXT: $file\n"
+      # Sauveagarde des donnees XML
+      set file "${part_date}${part_objects}${part_batch}.xml"
+      set file [file join $::bdi_tools_astrometry::rapport_xml_dir $file]
+      set chan [open $file w]
+      puts $chan "$::bdi_gui_astrometry::rapport_xml"
+      close $chan
+      gren_info "Rapport IMCCE XML: $file\n"
+
+
+
+      return 0
+   }
 
    #----------------------------------------------------------------------------
 
@@ -3193,6 +3302,10 @@ unset ::bdi_gui_astrometry::omcvaruna_d
             pack $misc -in $onglets_rapports.list -expand yes -fill both
             $onglets_rapports.list add $misc -text "MISC"
 
+            set save [frame $onglets_rapports.list.save -borderwidth 1]
+            pack $save -in $onglets_rapports.list -expand yes -fill both
+            $onglets_rapports.list add $save -text "SAVE"
+
          #--- TABLE Sources - References Parent (par liste de source et moyenne)
          set srp [frame $onglets_sources.list.references.parent -borderwidth 1 -cursor arrow -relief groove -background white]
          pack $srp -in $onglets_sources.list.references -expand yes -fill both -side left
@@ -3468,6 +3581,15 @@ unset ::bdi_gui_astrometry::omcvaruna_d
                entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_rapporteur
                pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
+         set block [frame $entetes.adresse  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Adresse : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_adresse
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
          set block [frame $entetes.mail  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $entetes -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -3603,6 +3725,51 @@ unset ::bdi_gui_astrometry::omcvaruna_d
                button $block.posyx -text "Save pixel positions" -borderwidth 2 -takefocus 1 \
                        -command ::bdi_gui_astrometry::save_posxy
                pack $block.posyx -side top -anchor c -expand 0
+
+         #--- Onglet RAPPORT - SAVE
+         set block [frame $save.dirmpc  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $save -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Repertoire MPC : " -borderwidth 1 -width 15
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_mpc_dir
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $save.dirimc  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $save -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Repertoire IMCCE : " -borderwidth 1 -width 15
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_imc_dir
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $save.dirxml  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $save -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+               label  $block.lab -text "Repertoire XML : " -borderwidth 1 -width 15
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_xml_dir
+               pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+         set block [frame $save.submit -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $save -side top -expand 0 -padx 2 -pady 5
+
+               label  $block.lab -text "" -borderwidth 1 -width 15
+               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+               checkbutton $block.mpc -highlightthickness 0 -text " Le rapport MPC a ete soumis" \
+                  -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::rapport_mpc_submit
+               pack $block.mpc -in $block -side left -padx 5 -pady 2 -anchor w
+
+         set block [frame $save.save -borderwidth 0 -cursor arrow -relief groove]
+         pack $block -in $save -side top -expand 0 -padx 2 -pady 5
+
+               button $block.saveall -text "Sauver tous les rapports" -borderwidth 2 -takefocus 1 \
+                       -command ::bdi_gui_astrometry::save_all_reports
+               pack $block.saveall -side top -anchor c -expand 0
 
          #--- Onglet GRAPHS
          set onglet_graphes [frame $graphes.selinobj -borderwidth 0 -cursor arrow -relief groove]

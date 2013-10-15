@@ -1956,7 +1956,7 @@ namespace eval cata_gestion_gui {
          
          incr cpt
          set tt [format "%.0f" [expr ([clock clicks -milliseconds] - $tt0)/$cpt/1000.*($nd_sources-$current)]]
-         gren_info "ID = $id $current (plus que $tt secondes)\n"
+         # gren_info "ID = $id $current (plus que $tt secondes)\n"
 
       }
 

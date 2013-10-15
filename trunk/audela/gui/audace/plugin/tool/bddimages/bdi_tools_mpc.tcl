@@ -32,7 +32,7 @@ proc ::bdi_tools_mpc::convert_hms { val } {
    set m [expr $r * 60.]
    set mint [expr int($m)]
    set r [expr $m - $mint]
-   set sec [format "%.3f" [expr $r * 60.]]
+   set sec [format "%.2f" [expr $r * 60.]]
    if {$hint < 10.0} {set hint "0$hint"}
    if {$mint < 10.0} {set m "0$mint"}
    if {$sec  < 10.0} {set sec "0$sec"}
@@ -57,7 +57,7 @@ proc ::bdi_tools_mpc::convert_dms { val } {
    set m [expr $r * 60.]
    set mint [expr int($m)]
    set r [expr $m - $mint]
-   set sec [format "%.2f" [expr $r * 60.]]
+   set sec [format "%.1f" [expr $r * 60.]]
    if {$d    < 10.0} {set d "0$d"}
    if {$mint < 10.0} {set m "0$mint"}
    if {$sec  < 10.0} {set sec "0$sec"}
@@ -82,7 +82,7 @@ proc ::bdi_tools_mpc::convert_date { date } {
    if {$h ==""} {set h  0}
    if {$mn==""} {set mn 0}
    if {$s ==""} {set s  0}
-   set day [format "%.6f" [expr $d + $h / 24. + $mn / 24. / 60. + $s / 24. /3600.]]
+   set day [format "%.5f" [expr $d + $h / 24. + $mn / 24. / 60. + $s / 24. /3600.]]
    if {$day <10.0} {set day "0$day"}
    return "$a $m $day"
 
@@ -100,12 +100,24 @@ proc ::bdi_tools_mpc::convert_mag { mag } {
    set bandmag "R"
    # Observed magnitude and band: F5.2,A1
    if {$mag==""} {set mag 0}
-   set mpc_mag [format "%5.2f%1s" $mag $bandmag]
+   set mpc_mag [format "%5.1f %1s" $mag $bandmag]
 
    return "$mpc_mag"
 }
 
 
+#----------------------------------------------------------------------------
+## Conversion d un partie du nom d'un Sso au format MPC
+# @details : exemple 0178 > 178
+# @param name string
+# @return integer
+proc ::bdi_tools_mpc::delete_zero_first { onum } {
+   
+   while {[string first 0 $onum]==0} {
+      set onum [string range $onum 1 end]
+   }
+   return $onum
+}
 #----------------------------------------------------------------------------
 ## Conversion du nom d'un Sso au format MPC
 # @details La convention de nommage du MPC pour les asteroides est : 
@@ -125,7 +137,7 @@ proc ::bdi_tools_mpc::convert_name { name } {
          if {[string length [lindex $sname 1]] > 1} {
             # Sso official number 
             set onum [lindex $sname 1]
-            gren_erreur "onum = $onum $name\n"
+            #gren_erreur "onum = $onum $name\n"
             if {$onum < 100000} {
                # Official number
                set mpc_name [format "%05u%7s%1s" $onum " " " "]
@@ -133,8 +145,10 @@ proc ::bdi_tools_mpc::convert_name { name } {
                # Official number in packed form
                set x [expr {int($onum/10000.0)}]
                set p [string map {10 A 11 B 12 C 13 D 14 E 15 F 16 G 17 H 18 I 19 J 20 K 21 L 22 M 23 N 24 O 25 P 26 Q 27 R 28 S 29 T 30 U 31 V 32 W 33 X 34 Y 35 Z} $x]
-               set mpc_name [format "%05u%7s%1s" $onum " " " "]
-               #set mpc_name [format "%1s%04u%7s%1s" $p [string range $onum 2 end] " " " "]
+               
+               set onum [::bdi_tools_mpc::delete_zero_first [string range $onum 2 end]]
+               
+               set mpc_name [format "%1s%04u%7s%1s" $p $onum " " " "]
             }
          } else {
             # No number, then get packed form of the provisional designation
