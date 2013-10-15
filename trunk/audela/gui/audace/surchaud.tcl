@@ -1342,6 +1342,96 @@ proc window2 {args} {
    ttscript2 $script
 }
 
+
+# Fonction qui ajoute les champs SIA a une image
+# Ici determine les coordonnees du polynome
+# proc appelee par set_poly_sia
+proc put_poly { cpt x y bufno } {
+
+   set radec [buf$bufno xy2radec [list $x $y]]
+   incr cpt
+   buf$bufno setkwd [list "SIAP$cpt"  "$x;$y;[lindex $radec 0];[lindex $radec 1]" "string" "Polygon point $cpt" ""]
+   return $cpt
+}
+
+# Fonction qui ajoute les champs SIA a une image
+# proc appelee par calibwcs
+proc set_poly_sia { {bufno 1} } {
+
+   buf$bufno setkwd [list "SIAKWDS"  "Y"   "string"   "Header Fits SIA Compliant" "Y or N"]
+   buf$bufno setkwd [list "COORDSYS" "FK5" "string" "coordinate system used"    "FK5 or ICRS"]
+   
+   set nbpts 40
+   buf$bufno setkwd [list "SIAPOLNB"  $nbpts "int" "x;y;ra;dec : Polygon point number" ""]
+
+   set naxis1 [lindex [buf$bufno getkwd "NAXIS1"] 1]
+   set naxis2 [lindex [buf$bufno getkwd "NAXIS2"] 1]
+
+   set xpas [expr int($naxis1 / ( ($nbpts / 4) - 0.5 ) ) ]
+   set ypas [expr int($naxis2 / ( ($nbpts / 4) - 0.5 ) ) ]
+   set cpt 0
+
+   # 1er coin
+   set x 0
+   set y 0
+   set cpt [put_poly $cpt $x $y $bufno]
+
+
+   # 1ere ligne X
+   for {set x $xpas} {$x < $naxis1} {incr x $xpas} {
+      set cpt [put_poly $cpt $x $y $bufno]
+   }
+
+   # 2eme coin
+   set x [expr $naxis1 -1 ]
+   set cpt [put_poly $cpt $x $y $bufno]
+
+   # 2eme ligne Y
+   for {set y $ypas} {$y < $naxis2} {incr y $ypas} {
+      set cpt [put_poly $cpt $x $y $bufno]
+   }
+
+   # 3eme coin
+   set y [expr $naxis2 -1 ]
+   set cpt [put_poly $cpt $x $y $bufno]
+
+   # 3eme ligne Y
+   set x 0
+   for {set y $ypas} {$y < $naxis2} {incr y $ypas} {
+      set cpt [put_poly $cpt $x $y $bufno]
+   }
+
+   # 4eme coin
+   set y [expr $naxis2 -1 ]
+   set cpt [put_poly $cpt $x $y $bufno]
+
+   # 4eme ligne Y
+   for {set x $xpas} {$x < $naxis1} {incr x $xpas} {
+      set cpt [put_poly $cpt $x $y $bufno]
+   }
+
+}
+
+# Fonction de calibration automatique de l image dans le buffer
+
+# Appel a la fonction : 
+
+#    calibwcs ra dec pixsize1 pixsize2 foclen USNO Path_of_Catalog
+
+# ou en utilisant les mots cles du header de l image : 
+#    calibwcs * * * * * USNO Path_of_Catalog 
+
+# ou en combinant : 
+#    calibwcs ra * * * foclen USNO Path_of_Catalog 
+
+# Parametres optionels : 
+# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)
+# -del_tmp_files 0 : garde tous les fichiers temporaires
+# -yes_visu 0      : ne visualise pas l image a la fin du traitement
+# -yes_visu 1      : visualise l image a la fin du traitement (par defaut)
+# -maglimit 10     : magnitude limite des etoiles du catalogue (par default aucune limite)
+# -add_sia         : Ajoute les champs SIA a une image
+
 proc calibwcs {args} {
    set argc [llength $args]
    if {$argc >= 5} {
@@ -1359,6 +1449,8 @@ proc calibwcs {args} {
       }
       set del_tmp_files 1
       set yes_visu 1
+      set add_sia 0
+      set maglim ""
       if {$argc >= 9} {
          for {set k 7} {$k<[expr $argc-1]} {incr k} {
             set key [lindex $args $k]
@@ -1367,6 +1459,13 @@ proc calibwcs {args} {
             }
             if {$key=="-yes_visu"} {
                set yes_visu [lindex $args [expr $k+1]]
+            }
+            if {$key=="-maglim"} {
+               set maglim [lindex $args [expr $k+1]]
+               set maglim "\"magrlim=$maglim\" \"magblim=$maglim\""
+            }
+            if {$key=="-add_sia"} {
+               set add_sia 1
             }
          }
       }
@@ -1488,10 +1587,12 @@ proc calibwcs {args} {
          createFileConfigSextractor
          buf$::audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
          sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
-         set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
+                  
+         set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype $maglim \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if {$erreur==0} {
+            puts "yop"
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
-            ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" "
+            ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" $maglim "
             ttscript2 "IMA/SERIES \"$mypath\" \"x$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             ttscript2 "IMA/SERIES \"$mypath\" \"c$sky\" . . \"$ext\" . . . \"$ext\" DELETE"
             buf$::audace(bufNo) load [ file join ${mypath} ${sky}$ext ]
@@ -1506,10 +1607,24 @@ proc calibwcs {args} {
       if {$yes_visu==1} {
          ::audace::autovisu $::audace(visuNo)
       }
+      if {$add_sia==1} {
+         set_poly_sia $::audace(bufNo)
+      }
       set catastar [lindex [buf$::audace(bufNo) getkwd CATASTAR] 1]
       return $catastar
    } else {
-      error "Usage: calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder"
+      set line "Usage: \n"
+      append line "calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder\n"
+      append line "# ou en utilisant les mots cles du header de l image :\n"
+      append line "calibwcs * * * * * USNO|MICROCAT cat_folder \n"
+      append line "# Parametres optionels :\n"
+      append line "# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)\n"
+      append line "# -del_tmp_files 0 : garde tous les fichiers temporaires\n"
+      append line "# -yes_visu 0        : ne visualise pas l image a la fin du traitement\n"
+      append line "# -yes_visu 1        : visualise l image a la fin du traitement (par defaut)\n"
+      append line "# -maglimit 10       : magnitude limite des etoiles du catalogue (par default aucune limite)\n"
+      append line "# -add_sia             : Ajoute les champs SIA a une image\n"
+      error $line
    }
 }
 
