@@ -45,6 +45,7 @@ namespace eval bdi_tools_astrometry {
    variable rapport_uai_code
    variable rapport_uai_location
    variable rapport_rapporteur
+   variable rapport_adresse
    variable rapport_mail
    variable rapport_observ
    variable rapport_reduc
@@ -139,6 +140,13 @@ proc ::bdi_tools_astrometry::inittoconf { } {
          set ::bdi_tools_astrometry::rapport_rapporteur ""
       }
    }
+   if {! [info exists ::bdi_tools_astrometry::rapport_adresse] } {
+      if {[info exists conf(bddimages,astrometry,rapport,adresse)]} {
+         set ::bdi_tools_astrometry::rapport_adresse $conf(bddimages,astrometry,rapport,adresse)
+      } else {
+         set ::bdi_tools_astrometry::rapport_adresse ""
+      }
+   }
    if {! [info exists ::bdi_tools_astrometry::rapport_mail] } {
       if {[info exists conf(bddimages,astrometry,rapport,mail)]} {
          set ::bdi_tools_astrometry::rapport_mail $conf(bddimages,astrometry,rapport,mail)
@@ -181,7 +189,28 @@ proc ::bdi_tools_astrometry::inittoconf { } {
          set ::bdi_tools_astrometry::rapport_desti "mpc@cfa.harvard.edu"
       }
    }
-
+   if {! [info exists ::bdi_tools_astrometry::rapport_mpc_dir] } {
+      if {[info exists conf(bddimages,astrometry,rapport,mpc_dir)]} {
+         set ::bdi_tools_astrometry::rapport_mpc_dir $conf(bddimages,astrometry,rapport,mpc_dir)
+      } else {
+         set ::bdi_tools_astrometry::rapport_mpc_dir ""
+      }
+   }
+   if {! [info exists ::bdi_tools_astrometry::rapport_imc_dir] } {
+      if {[info exists conf(bddimages,astrometry,rapport,imc_dir)]} {
+         set ::bdi_tools_astrometry::rapport_imc_dir $conf(bddimages,astrometry,rapport,imc_dir)
+      } else {
+         set ::bdi_tools_astrometry::rapport_imc_dir ""
+      }
+   }
+   if {! [info exists ::bdi_tools_astrometry::rapport_xml_dir] } {
+      if {[info exists conf(bddimages,astrometry,rapport,xml_dir)]} {
+         set ::bdi_tools_astrometry::rapport_xml_dir $conf(bddimages,astrometry,rapport,xml_dir)
+      } else {
+         set ::bdi_tools_astrometry::rapport_xml_dir ""
+      }
+   }
+  set ::bdi_tools_astrometry::rapport_mpc_submit 0
 }
 
 #----------------------------------------------------------------------------
@@ -201,11 +230,15 @@ proc ::bdi_tools_astrometry::closetoconf {  } {
    set conf(bddimages,astrometry,rapport,uai_code)     $::bdi_tools_astrometry::rapport_uai_code
    set conf(bddimages,astrometry,rapport,uai_location) $::bdi_tools_astrometry::rapport_uai_location
    set conf(bddimages,astrometry,rapport,rapporteur)   $::bdi_tools_astrometry::rapport_rapporteur
+   set conf(bddimages,astrometry,rapport,adresse)      $::bdi_tools_astrometry::rapport_adresse
    set conf(bddimages,astrometry,rapport,mail)         $::bdi_tools_astrometry::rapport_mail
    set conf(bddimages,astrometry,rapport,observ)       $::bdi_tools_astrometry::rapport_observ
    set conf(bddimages,astrometry,rapport,reduc)        $::bdi_tools_astrometry::rapport_reduc
    set conf(bddimages,astrometry,rapport,instru)       $::bdi_tools_astrometry::rapport_instru
    set conf(bddimages,astrometry,rapport,cata)         $::bdi_tools_astrometry::rapport_cata
+   set conf(bddimages,astrometry,rapport,mpc_dir)      $::bdi_tools_astrometry::rapport_mpc_dir
+   set conf(bddimages,astrometry,rapport,imc_dir)      $::bdi_tools_astrometry::rapport_imc_dir
+   set conf(bddimages,astrometry,rapport,xml_dir)      $::bdi_tools_astrometry::rapport_xml_dir
 
 }
 
@@ -692,9 +725,9 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
       set tt0 [clock clicks -milliseconds]
       set err [catch {exec sh $cmdfile} msg]
       gren_info "en [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]] sec.\n"
-            gren_info "err = $err\n"
-            gren_info "msg = $msg\n"
-            gren_info "cmdfile = $cmdfile\n"
+      gren_info "err = $err\n"
+      #gren_info "msg = $msg\n"
+      gren_info "cmdfile = $cmdfile\n"
       if { $err } {
             gren_info "dateimg = $name $dateimg $midepoch\n"
          gren_erreur "ERROR ephemcc #$err: $msg\n"
@@ -705,7 +738,7 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
          array unset ephem
          set cata [lindex [split $name "_"] 0]
          foreach line [split $msg "\n"] {
-            gren_info "line = $line\n"
+            #gren_info "line = $line\n"
             set line [string trim $line]
             set c [string index $line 0]
             if {$c == "#"} {continue}
@@ -742,7 +775,7 @@ proc ::bdi_tools_astrometry::get_ephem_imcce {  } {
          }
          # Sauvegarde des ephemerides de l'objet courant
          array set ::bdi_tools_astrometry::ephemsav [array get ephem]
-         gren_info "ephem = [array get ephem]\n"
+         #gren_info "ephem = [array get ephem]\n"
          set a [array get ephem]
          if {$a==""} {
             gren_erreur "No ephemeris for this body\n"
@@ -1460,6 +1493,42 @@ proc ::bdi_tools_astrometry::save_images { } {
          #gren_info "KEY = $vals\n"
          buf$::audace(bufNo) setkwd $vals
       }
+      
+      # On modifie le header fits avec l onglet entetes 
+      # "IAU_CODE" -- ::bdi_tools_astrometry::rapport_uai_code
+      # "OBSERVER" -- ::bdi_tools_astrometry::rapport_observ
+      # "INSTRUME" -- ::bdi_tools_astrometry::rapport_instru
+      set buflist [buf$::audace(bufNo) getkwds]
+
+      if {[info exists ::bdi_tools_astrometry::rapport_uai_code]} {
+         if {[lsearch -exact $buflist "IAU_CODE"]>=0} {
+            set bk [buf$::audace(bufNo) getkwd "IAU_CODE"]
+            set bk [lreplace $bk 1 1 $::bdi_tools_astrometry::rapport_uai_code]
+         } else {
+            set bk [list "IAU_CODE" $::bdi_tools_astrometry::rapport_uai_code string "Observatory IAU Code" ""]
+         }
+         buf$::audace(bufNo) setkwd $bk
+      }
+      if {[info exists ::bdi_tools_astrometry::rapport_observ]} {
+         if {[lsearch -exact $buflist "OBSERVER"]>=0} {
+            set bk [buf$::audace(bufNo) getkwd "OBSERVER"]
+            set bk [lreplace $bk 1 1 $::bdi_tools_astrometry::rapport_observ]
+         } else {
+            set bk [list "OBSERVER" $::bdi_tools_astrometry::rapport_observ string "Observer name" ""]
+         }
+         buf$::audace(bufNo) setkwd $bk
+      }
+      if {[info exists ::bdi_tools_astrometry::rapport_instru]} {
+         if {[lsearch -exact $buflist "INSTRUME"]>=0} {
+            set bk [buf$::audace(bufNo) getkwd "INSTRUME"]
+            set bk [lreplace $bk 1 1 $::bdi_tools_astrometry::rapport_instru]
+         } else {
+            set bk [list "INSTRUME" $::bdi_tools_astrometry::rapport_instru string "Instrument" ""]
+         }
+         buf$::audace(bufNo) setkwd $bk
+      }
+      
+      
       set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
 
       # Creation de l image temporaire

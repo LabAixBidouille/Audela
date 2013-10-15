@@ -226,7 +226,7 @@ proc insertion_auto { } {
 
    gren_info "Insertion Automatique \n"
 
-   set fichlock "$conf(bddimages,dirinco)/lock"
+   set fichlock "$bddconf(dirinco)/lock"
 
    while { 0 < 1 } {
       
@@ -371,7 +371,7 @@ proc insertion_solo { nomfich } {
    global caption
    global entetelog
 
-   set fichlock "$conf(bddimages,dirinco)/lock"
+   set fichlock "$bddconf(dirinco)/lock"
    if {[file exists $fichlock]==1} {
       gren_info "Insertion Solo : BDI locked : inserez plus tard \n"
       return -code 1
