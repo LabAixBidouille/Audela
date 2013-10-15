@@ -48,6 +48,7 @@ namespace eval bdi_tools {
          close $chan0
 
          # Ouvre la fenetre de mailto de Thunderbird
+         gren_info "$body\n"
          set err [catch {exec $::bdi_tools::sendmail::thunderbird -compose "to='$to',subject='$subject',body='$body'"} msg]
          if {$err != 0} {
             gren_erreur "ERROR: unable to launch thunderbird ($msg)"
