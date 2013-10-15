@@ -34,7 +34,7 @@ proc ::bdi_tools_mpc::convert_hms { val } {
    set r [expr $m - $mint]
    set sec [format "%.2f" [expr $r * 60.]]
    if {$hint < 10.0} {set hint "0$hint"}
-   if {$mint < 10.0} {set m "0$mint"}
+   if {$mint < 10.0} {set mint "0$mint"}
    if {$sec  < 10.0} {set sec "0$sec"}
    return "$hint $mint $sec"
 
