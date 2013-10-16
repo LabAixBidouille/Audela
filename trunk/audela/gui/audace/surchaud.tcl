@@ -1342,12 +1342,10 @@ proc window2 {args} {
    ttscript2 $script
 }
 
-
 # Fonction qui ajoute les champs SIA a une image
 # Ici determine les coordonnees du polynome
 # proc appelee par set_poly_sia
 proc put_poly { cpt x y bufno } {
-
    set radec [buf$bufno xy2radec [list $x $y]]
    incr cpt
    buf$bufno setkwd [list "SIAP$cpt"  "$x;$y;[lindex $radec 0];[lindex $radec 1]" "string" "Polygon point $cpt" ""]
@@ -1357,10 +1355,9 @@ proc put_poly { cpt x y bufno } {
 # Fonction qui ajoute les champs SIA a une image
 # proc appelee par calibwcs
 proc set_poly_sia { {bufno 1} } {
-
    buf$bufno setkwd [list "SIAKWDS"  "Y"   "string"   "Header Fits SIA Compliant" "Y or N"]
    buf$bufno setkwd [list "COORDSYS" "FK5" "string" "coordinate system used"    "FK5 or ICRS"]
-   
+
    set nbpts 40
    buf$bufno setkwd [list "SIAPOLNB"  $nbpts "int" "x;y;ra;dec : Polygon point number" ""]
 
@@ -1375,7 +1372,6 @@ proc set_poly_sia { {bufno 1} } {
    set x 0
    set y 0
    set cpt [put_poly $cpt $x $y $bufno]
-
 
    # 1ere ligne X
    for {set x $xpas} {$x < $naxis1} {incr x $xpas} {
@@ -1409,27 +1405,26 @@ proc set_poly_sia { {bufno 1} } {
    for {set x $xpas} {$x < $naxis1} {incr x $xpas} {
       set cpt [put_poly $cpt $x $y $bufno]
    }
-
 }
 
-# Fonction de calibration automatique de l image dans le buffer
+# Fonction de calibration automatique de l'image dans le buffer
 
-# Appel a la fonction : 
+# Appel a la fonction :
 
 #    calibwcs ra dec pixsize1 pixsize2 foclen USNO Path_of_Catalog
 
-# ou en utilisant les mots cles du header de l image : 
-#    calibwcs * * * * * USNO Path_of_Catalog 
+# ou en utilisant les mots cles du header de l'image :
+#    calibwcs * * * * * USNO Path_of_Catalog
 
-# ou en combinant : 
-#    calibwcs ra * * * foclen USNO Path_of_Catalog 
+# ou en combinant :
+#    calibwcs ra * * * foclen USNO Path_of_Catalog
 
-# Parametres optionels : 
-# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)
-# -del_tmp_files 0 : garde tous les fichiers temporaires
-# -yes_visu 0      : ne visualise pas l image a la fin du traitement
-# -yes_visu 1      : visualise l image a la fin du traitement (par defaut)
-# -maglimit 10     : magnitude limite des etoiles du catalogue (par default aucune limite)
+# Parametres optionels :
+# -del_tmp_files 1 : Efface tous les fichiers temporaires (par defaut)
+# -del_tmp_files 0 : Garde tous les fichiers temporaires
+# -yes_visu 0      : Ne visualise pas l'image a la fin du traitement
+# -yes_visu 1      : Visualise l'image a la fin du traitement (par defaut)
+# -maglimit 10     : Magnitude limite des etoiles du catalogue (par default aucune limite)
 # -add_sia         : Ajoute les champs SIA a une image
 
 proc calibwcs {args} {
@@ -1535,7 +1530,6 @@ proc calibwcs {args} {
       buf$::audace(bufNo) setkwd [list CUNIT2 deg string "Angles are degrees always" ""]
       buf$::audace(bufNo) setkwd [list CATASTAR 0 int "Nb stars matched" ""]
 
-
       #--- check les catalogues
       if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
          set comment "This catalog ($cat_format) is not valid. It must be only USNO or MICROCAT!"
@@ -1587,7 +1581,7 @@ proc calibwcs {args} {
          createFileConfigSextractor
          buf$::audace(bufNo) save [ file join ${mypath} ${sky}$ext ]
          sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
-                  
+
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype $maglim \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
          if {$erreur==0} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
