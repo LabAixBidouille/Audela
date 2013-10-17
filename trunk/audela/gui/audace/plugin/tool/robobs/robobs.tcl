@@ -276,16 +276,30 @@ proc ::robobs::log { msg {verbose_level 0} } {
    if {$verbose_level>=$robobs(verbose_level)} {
       return ""
    }
-   set path $audace(rep_travail)
-   set texte "[mc_date2iso8601 [::audace::date_sys2ut]] : $msg"
+   # --- date du log
+   set date [::audace::date_sys2ut]
+   set date [mc_date2iso8601 $date]
+   set datelog [string range $date 0 3][string range $date 5 6][string range $date 8 9]
+   # --- log sur la console
+   set texte "$date : $msg"
    ::console::affiche_resultat "$texte\n"
+   # --- log en fichier sur le dossier de travail
+   set path $audace(rep_travail)
    catch {
-      set f [open ${path}/robobs.log a]
+      set f [open ${path}/robobs_${datelog}.log a]
       puts $f "$texte"
       close $f
    }
+   # --- log sur le web
    if {$robobsconf(webserver)==1} {
       set path $robobsconf(webserver,htdocs)
+      # --- log journalier
+      catch {
+         file mkdir ${path}/robobs/logs
+         set fid [open "${path}/robobs/logs/robobs_${datelog}.log" "a"]
+         puts $fid "$texte"
+         close $fid
+      }
       # --- historique des 30 dernieres lignes
       if {[info exists robobs(log,lasts)]==0} {
          set robobs(log,lasts) "$msg"
@@ -303,10 +317,11 @@ proc ::robobs::log { msg {verbose_level 0} } {
          foreach ligne $robobs(log,lasts) {
             append lignes "$ligne\n"
          }
-            file mkdir ${path}/robobs/logs
-            set fid [open "${path}/robobs/logs/acquisition_last.log" "w"]
+         catch {
+            set fid [open "${path}/robobs/logs/robobs_last.log" "w"]
             puts $fid $lignes
             close $fid
+         }
       }
       
    }
