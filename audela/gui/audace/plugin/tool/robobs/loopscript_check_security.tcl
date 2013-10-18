@@ -140,7 +140,7 @@ proc robobs_tel_park {} {
 		   ::robobs::log "Telescope slew park finished in $dt seconds" 3
 	   }		
 	}
-	if {$robobs(planif,mode)=="makes_t60"} {
+	if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
 		telpark
 		::robobs::log "Start park the telescope" 3
 		after 5000
