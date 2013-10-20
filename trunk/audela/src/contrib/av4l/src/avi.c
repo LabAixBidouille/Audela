@@ -359,6 +359,19 @@ avi_test(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
 
 
 
+static int
+avi_seekto_frame(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
+{
+	int i;
+	int frameno; // frame number, from 0 to ...
+	int64_t timestamp;
+
+	Tcl_GetInt(interp, argv[2], &frameno);
+	timestamp = frameno * 1000000 / 25;
+	i = av_seek_frame(avi->pFormatCtx, -1, timestamp, 0);
+	return TCL_OK;
+}
+
 
 static int
 avi_seek_percent(struct aviprop * avi, Tcl_Interp *interp, int argc, char * argv[])
@@ -494,6 +507,8 @@ cmdAvi(ClientData cdata, Tcl_Interp *interp, int argc, char * argv[])
         return avi_seek_percent(avi,interp,argc,argv);
     } else if (strcmp(argv[1], "seekbyte") == 0) {
         return avi_seek_byte(avi,interp,argc,argv);
+    } else if (strcmp(argv[1], "seektoframe") == 0) {
+        return avi_seekto_frame(avi,interp,argc,argv);
     } else if (strcmp(argv[1], "getoffset") == 0) {
         return avi_get_offset(avi,interp,argc,argv);
     } else if (strcmp(argv[1], "getpreviousoffset") == 0) {
