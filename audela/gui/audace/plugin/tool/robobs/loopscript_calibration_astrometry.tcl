@@ -121,7 +121,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
       saveima $fname      
 		::robobs::log "WCS calibration : Image $fname saved."
       lappend robobs(image,afilenames) "$fname"
-		::robobs::log "WCS calibration : lappend robobs(image,afilenames)."      
+		::robobs::log "WCS calibration : robobs(image,afilenames)=$robobs(image,afilenames)."      
       # --- save a Jpeg
       lassign [visu1 cut] sh sb
       buf1 savejpeg c:/srv/www/htdocs/robobs_last.jpg 60 $sb $sh
