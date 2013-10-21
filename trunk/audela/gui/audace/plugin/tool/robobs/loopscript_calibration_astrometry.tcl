@@ -114,10 +114,13 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
       if {$err==0} {
          ::robobs::log "WCS calibration : $catastar stars matched."
       }
-      saveima $fname
+      saveima $fname      
 		::robobs::log "WCS calibration : Image $fname saved."
       lappend robobs(image,afilenames) "$fname"
 		::robobs::log "WCS calibration : lappend robobs(image,afilenames)."      
+      # --- save a Jpeg
+      lassign [visu1 cut] sh sb
+      buf1 savejpeg c:/srv/www/htdocs/robobs_last.jpg 60 $sb $sh
 	}
 
 }
