@@ -105,14 +105,18 @@ if {($robobs(planif,mode)=="snresearch1")&&($robobs(image,dfilenames)!="")} {
 
 if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!="")} {
    
+   ::robobs::log "robobs(image,ffilenames)=$robobs(image,ffilenames)"
    foreach fname $robobs(image,ffilenames) {
+      ::robobs::log "fname=$fname"
 		# --- WCS calibration
 		set cdpath $robobs(conf,astrometry,cat_folder,value)
 		set cattype $robobs(conf,astrometry,cat_name,value)
-      ::robobs::log "WCS calibration : calibwcs * * * * * $cattype $cdpath"
       set err [catch {calibwcs * * * * * $cattype $cdpath} catastar]
       if {$err==0} {
          ::robobs::log "WCS calibration : $catastar stars matched."
+      } else {
+         ::robobs::log "WCS calibration : calibwcs * * * * * $cattype $cdpath"
+         ::robobs::log "WCS calibration : Error = $catastar"
       }
       saveima $fname      
 		::robobs::log "WCS calibration : Image $fname saved."

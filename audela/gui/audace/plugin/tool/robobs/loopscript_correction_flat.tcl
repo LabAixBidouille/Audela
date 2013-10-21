@@ -83,6 +83,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,dfilenames)!=
 		foreach dfname $robobs(image,dfilenames) {
 			lappend robobs(image,ffilenames) $robobs(image,dfilenames)
 		}
+      ::robobs::log "robobs(image,ffilenames)=$robobs(image,ffilenames)"
 	}
 }
 
