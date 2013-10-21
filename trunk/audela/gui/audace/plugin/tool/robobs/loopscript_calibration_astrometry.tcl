@@ -112,7 +112,9 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
 		set catastar [calibwcs * * * * * $cattype $cdpath]
 		::robobs::log "WCS calibration : $catastar stars matched."
       saveima $fname
+		::robobs::log "WCS calibration : Image $fname saved."
       lappend robobs(image,afilenames) "$fname"
+		::robobs::log "WCS calibration : lappend robobs(image,afilenames)."
 	}
 
 }
