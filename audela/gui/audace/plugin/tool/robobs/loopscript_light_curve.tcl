@@ -10,8 +10,10 @@ set bufNo $audace(bufNo)
 # === Body of script
 if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!="")} {
 	set ffname [lindex $robobs(image,ffilenames) end]
+   ::robobs::log "[info script] ffname=$ffname"
 	if {$ffname!=""} {
 		loadima $ffname
+      ::robobs::log "[info script] step 1"
 		set objename [lindex [buf$bufNo getkwd OBJENAME] 1]
 		set ra [lindex [buf$bufNo getkwd RA] 1]
 		set dec [lindex [buf$bufNo getkwd DEC] 1]		

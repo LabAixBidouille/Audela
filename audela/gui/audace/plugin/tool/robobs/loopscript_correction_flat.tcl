@@ -74,7 +74,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,dfilenames)!=
 			loadima $dfname
 			set commande "div $fflat 10000"
 			set err1 [catch {eval $commande} msg]
-			::robobs::log "FLAT division $dfname"
+			::robobs::log "FLAT division $dfname by the flat frame $fflat"
 			set ffname "$robobs(conf,folders,rep_images,value)/tmp$robobs(conf,fichier_image,extension,value)"
 			saveima $ffname
 			lappend robobs(image,ffilenames) $ffname
