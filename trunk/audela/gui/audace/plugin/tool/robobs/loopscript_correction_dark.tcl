@@ -238,12 +238,14 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,filenames)!="
 		}
 	}
 	if {$valid==1} {
+      set index 0
 		foreach fname $robobs(image,filenames) {
+         incr index
 			loadima $fname
 			set commande "sub $fdark 0"
 			set err1 [catch {eval $commande} msg]
 			::robobs::log "DARK substraction $fname by the dark frame $fdark"
-			set dfname "$robobs(conf,folders,rep_images,value)/tmp$robobs(conf,fichier_image,extension,value)"
+			set dfname "$robobs(conf,folders,rep_images,value)/tmp${index}$robobs(conf,fichier_image,extension,value)"
 			saveima $dfname
 			lappend robobs(image,dfilenames) $dfname
 		}
