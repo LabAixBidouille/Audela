@@ -108,6 +108,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
    ::robobs::log "WCS calibration : robobs(image,ffilenames)=$robobs(image,ffilenames)"
    foreach fname $robobs(image,ffilenames) {
       ::robobs::log "WCS calibration : fname=$fname"
+      buf$bufNo load $fname
 		# --- WCS calibration
 		set cdpath $robobs(conf,astrometry,cat_folder,value)
 		set cattype $robobs(conf,astrometry,cat_name,value)
