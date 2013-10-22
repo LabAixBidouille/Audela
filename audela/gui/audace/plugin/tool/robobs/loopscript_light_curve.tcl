@@ -45,6 +45,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
       lappend errmags  [lindex $ligne 2]
    }
    # --- Graphics
+   ::robobs::log "Light curve contains [llength $jds] dates"
    if {[llength $jds]>1} {
       ::plotxy::figure 1
       ::plotxy::clf
@@ -62,8 +63,10 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
    # --- Copy the light curve for the web site
    if {$robobsconf(webserver)==1} {
       file mkdir $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)
-      file copy -force -- $robobs(conf,folders,rep_images,value)/${objename}.txt $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)/${objename}.txt
-      file copy -force -- $robobs(conf,folders,rep_images,value)/${objename}.gif $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)/${objename}.gif
+      catch {
+         file copy -force -- $robobs(conf,folders,rep_images,value)/${objename}.txt $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)/${objename}.txt
+         file copy -force -- $robobs(conf,folders,rep_images,value)/${objename}.gif $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)/${objename}.gif
+      }
    }      
 }
 
