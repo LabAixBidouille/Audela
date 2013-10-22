@@ -300,19 +300,19 @@ proc ::robobs::log { msg {verbose_level 0} } {
          puts $fid "$texte"
          close $fid
       }
-      # --- historique des 30 dernieres lignes
+      # --- historique des 40 dernieres lignes
       if {[info exists robobs(log,lasts)]==0} {
-         set robobs(log,lasts) "$msg"
+         set robobs(log,lasts) "$date : $msg"
       } else {
          if {[info exists robobs(log,nlig_lasts)]==0} {
-            set robobs(log,nlig_lasts) 30
+            set robobs(log,nlig_lasts) 40
          }
          set n [llength $robobs(log,lasts)]
          set kfin [expr $n-1]
          set kdeb [expr $kfin-$robobs(log,nlig_lasts)]
          if {$kdeb<0} { set kdeb 0 }
          set robobs(log,lasts) [lrange $robobs(log,lasts) $kdeb $kfin]
-         lappend robobs(log,lasts) "$msg"
+         lappend robobs(log,lasts) "$date : $msg"
          set lignes ""
          foreach ligne $robobs(log,lasts) {
             append lignes "$ligne\n"
