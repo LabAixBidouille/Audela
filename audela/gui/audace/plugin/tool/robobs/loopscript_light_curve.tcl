@@ -20,7 +20,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
       buf$bufNo save $fname
    }
    set ni $index
-   ::robobs::log "photrel_wcs2cat tmp $ni append\n"
+   ::robobs::log "photrel_wcs2cat tmp $ni append"
    photrel_wcs2cat tmp $ni append
    set objename [lindex [buf$bufNo getkwd OBJENAME] 1]
    set ra [lindex [buf$bufNo getkwd RA] 1]
@@ -32,7 +32,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
       lassign [visu1 cut] sh sb
       buf$bufNo savejpeg $robobsconf(webserver,htdocs)/robobs_last.jpg 60 $sb $sh
       file mkdir $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)
-      file copy -force -- $path/$starname.txt $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)/${starname}.txt
+      file copy -force -- $robobsconf(webserver,htdocs)/$starname.txt $robobsconf(webserver,htdocs)/rrlyr/$robobs(private,nightdate)/${starname}.txt
    }      
 }
 
