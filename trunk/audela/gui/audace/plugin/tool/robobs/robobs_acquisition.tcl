@@ -253,6 +253,7 @@ namespace eval robobs_acquisition {
       global robobs
       global caption
       global audace
+      global robobsconf
       
       ::robobs::log "Enter in the acquisition loop"
       if {[::robobs_acquisition::signal_loop]!="Exit"} {
@@ -341,7 +342,7 @@ namespace eval robobs_acquisition {
    #    
    #------------------------------------------------------------
    proc signal_loop { {actions ""} } {
-      global audace panneau caption robobs
+      global audace panneau caption robobs robobsconf
       variable This
       if {[info exists robobs(signal_loop)]==0} {
          set robobs(signal_loop) "Exit"
@@ -363,6 +364,7 @@ namespace eval robobs_acquisition {
       global robobs
       global caption
       global audace
+      global robobsconf
       
       if {$robobs(signal_loop)!="Exit"} {
          ::robobs_acquisition::signal_loop 0
@@ -379,6 +381,7 @@ namespace eval robobs_acquisition {
       global robobs
       global caption
       global audace
+      global robobsconf
       
       if {$robobs(signal_loop)!="Exit"} {
          ::robobs_acquisition::signal_loop 1
@@ -411,6 +414,7 @@ namespace eval robobs_acquisition {
       global robobs
       global caption
       global audace
+      global robobsconf
       
       if {$robobs(signal_loop)!="Exit"} {
          ::robobs_acquisition::signal_loop 3
@@ -425,7 +429,7 @@ namespace eval robobs_acquisition {
    #    
    #------------------------------------------------------------
    proc state_loop { {actions ""} } {
-      global audace panneau caption robobs
+      global audace panneau caption robobs robobsconf
       variable This
       if {[info exists robobs(state_loop)]==0} {
          set robobs(state_loop) "Outside the loop"
