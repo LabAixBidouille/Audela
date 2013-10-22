@@ -37,7 +37,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
    foreach ligne $lignes {
       set car [string index $ligne 0]
       set err [catch {expr $car+1} msg]
-      if {($err==1)||([llength $ligne]<4)} {
+      if {($err==1)||([llength $ligne]<3)} {
          continue
       }
       lappend jds [lindex $ligne 0]
