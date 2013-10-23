@@ -709,7 +709,7 @@ int eqmod_putread(struct telprop *tel,char *cmd,char *res)
 int eqmod_decode(struct telprop *tel,char *chars,int *num)
 {
    char s[2048];
-   sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ]) ]",chars,chars,chars,chars);
+   sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])",chars,chars,chars,chars);
 	//sprintf(s,"expr int(0x[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ]00) / 256",chars,chars,chars);
    if (mytel_tcleval(tel,s)==1) {
       *num=0;
