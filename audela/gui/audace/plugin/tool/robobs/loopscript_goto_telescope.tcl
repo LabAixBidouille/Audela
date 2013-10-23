@@ -69,6 +69,9 @@ if {$robobs(next_scene,action)=="Science images"} {
 			}
 			set radec0 $radec
 		}
+      if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
+         after 5000
+      }      
    }
    set dt [expr [clock seconds]-$t0]
    ::robobs::log "Telescope slew finished in $dt seconds" 3
