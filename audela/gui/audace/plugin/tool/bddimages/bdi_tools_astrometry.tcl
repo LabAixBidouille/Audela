@@ -186,7 +186,7 @@ proc ::bdi_tools_astrometry::inittoconf { } {
       if {[info exists conf(bddimages,astrometry,rapport,mpc_mail)]} {
          set ::bdi_tools_astrometry::rapport_desti $conf(bddimages,astrometry,rapport,mpc_mail)
       } else {
-         set ::bdi_tools_astrometry::rapport_desti "mpc@cfa.harvard.edu"
+         set ::bdi_tools_astrometry::rapport_desti "obs@cfa.harvard.edu"
       }
    }
    if {! [info exists ::bdi_tools_astrometry::rapport_mpc_dir] } {
@@ -944,7 +944,7 @@ proc ::bdi_tools_astrometry::create_vartab { } {
       set tabkey  [::bddimages_liste::lget $current_image "tabkey"]
       set dateiso [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
 
-      gren_info "-- IMG : $id_current_image / [llength $::tools_cata::img_list] :: "
+      gren_info "-- IMG : $id_current_image / [llength $::tools_cata::img_list] :: $dateiso "
 
       # REFERENCES
 
