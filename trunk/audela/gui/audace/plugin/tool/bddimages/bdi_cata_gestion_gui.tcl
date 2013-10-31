@@ -1960,7 +1960,7 @@ namespace eval cata_gestion_gui {
 
       }
 
-      if {$pass=="no"} { return }
+      if {$pass=="no"} { return $current }
       
       set ::tools_cata::current_listsources [lreplace $::tools_cata::current_listsources 1 1 $sources]
       ::bdi_tools_psf::set_fields_astroid ::tools_cata::current_listsources

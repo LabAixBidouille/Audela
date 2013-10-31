@@ -1166,11 +1166,11 @@ unset ::bdi_gui_astrometry::omcvaruna_d
             if {$dec_imccejpl_cmc != "-"} {lappend tabcalc(dec_imccejpl_cmc) $dec_imccejpl_cmc}
             
 # TESTASTROMETRY
-            if {$name == "SKYBOT_20000_Varuna"} {
-               
-               set ::bdi_gui_astrometry::omcvaruna_a($dateimg) $ra_imcce_omc
-               set ::bdi_gui_astrometry::omcvaruna_d($dateimg) $dec_imcce_omc
-            }
+#            if {$name == "SKYBOT_20000_Varuna"} {
+#               
+#               set ::bdi_gui_astrometry::omcvaruna_a($dateimg) $ra_imcce_omc
+#               set ::bdi_gui_astrometry::omcvaruna_d($dateimg) $dec_imcce_omc
+#            }
 # TESTASTROMETRY
             
             # Formatage de certaines valeurs
@@ -1324,24 +1324,24 @@ unset ::bdi_gui_astrometry::omcvaruna_d
          # TESTASTROMETRY
          ### XTRA pour travail sur l astrometrie. verification de l occultation de Varuna/UCAC3
          
-         if {$name == "SKYBOT_20000_Varuna"} {
-            incr pass
-            set moa [format "%.1f" [expr $calc(ra_imcce_omc,mean)*1000] ]
-            set mod [format "%.1f" [expr $calc(dec_imcce_omc,mean)*1000] ]
-            set soa [format "%.1f" [expr $calc(ra_imcce_omc,stdev)*1000] ]
-            set sod [format "%.1f" [expr $calc(dec_imcce_omc,stdev)*1000] ]
-         }
+#         if {$name == "SKYBOT_20000_Varuna"} {
+#            incr pass
+#            set moa [format "%.1f" [expr $calc(ra_imcce_omc,mean)*1000] ]
+#            set mod [format "%.1f" [expr $calc(dec_imcce_omc,mean)*1000] ]
+#            set soa [format "%.1f" [expr $calc(ra_imcce_omc,stdev)*1000] ]
+#            set sod [format "%.1f" [expr $calc(dec_imcce_omc,stdev)*1000] ]
+#         }
 
-         if {$name == "UCAC3_233-089504"} {
+#         if {$name == "UCAC3_233-089504"} {
 
-            incr pass
-            set aref 117.40414125
-            set dref 26.4311219444
-            set offra [format "%.1f" [expr ($calc(alpha,mean)-$aref)*3600000] ]
-            set offde [format "%.1f" [expr ($calc(delta,mean)-$dref)*3600000] ]
-            set soa_star [format "%.1f" $calc(alpha,stdev)]
-            set sod_star [format "%.1f" $calc(delta,stdev)]          
-         }
+#            incr pass
+#            set aref 117.40414125
+#            set dref 26.4311219444
+#            set offra [format "%.1f" [expr ($calc(alpha,mean)-$aref)*3600000] ]
+#            set offde [format "%.1f" [expr ($calc(delta,mean)-$dref)*3600000] ]
+##            set soa_star [format "%.1f" $calc(alpha,stdev)]
+#            set sod_star [format "%.1f" $calc(delta,stdev)]          
+##         }
 
          $::bdi_gui_astrometry::rapport_txt insert end $sep_txt
 
@@ -1999,12 +1999,10 @@ unset ::bdi_gui_astrometry::omcvaruna_d
          set votSources ""
          foreach dateimg $::bdi_tools_astrometry::listscience($name) {
 
-
             # Rend effectif le crop du graphe
             if {[info exists ::bdi_gui_astrometry::graph_results($name,$dateimg,good)]} {
                if {$::bdi_gui_astrometry::graph_results($name,$dateimg,good)==0} {continue}
             }
-
 
             incr nrows
             append votSources [::votable::openElement $::votable::Element::TR {}]
@@ -2868,6 +2866,8 @@ unset ::bdi_gui_astrometry::omcvaruna_d
    #----------------------------------------------------------------------------
    proc ::bdi_gui_astrometry::charge_solution_astrometrique {  } {
 
+         gren_info "DATEOBS charge_solution_astrometrique *** \n"
+
       set id_current_image 0
       ::bdi_tools_astrometry::set_fields_astrom astrom
       set n [llength $astrom(kwds)]
@@ -2885,6 +2885,7 @@ unset ::bdi_gui_astrometry::omcvaruna_d
          set dateobs [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
          # Exposure
          set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+         
          if {$exposure == -1} {
             gren_erreur "WARNING: Exposure inconnu pour l'image : $date\n"
             set midexpo 0
@@ -2893,7 +2894,9 @@ unset ::bdi_gui_astrometry::omcvaruna_d
          }
          # Calcul de midate au format JD
          array set ::tools_cata::date2midate [list $dateobs [expr [mc_date2jd $dateobs] + $midexpo]]
-
+         
+         gren_info "DATEOBS : $dateobs :: MIDDATE : [mc_date2iso8601 [expr [mc_date2jd $dateobs] + $midexpo]] :: MIDDATE : [expr [mc_date2jd $dateobs] + $midexpo] :: $exposure [expr $midexpo * 86400.0 * 2.0]\n"
+         
          for {set k 0 } { $k<$n } {incr k} {
             set kwd [lindex $astrom(kwds) $k]
             foreach key $tabkey {
@@ -2906,9 +2909,7 @@ unset ::bdi_gui_astrometry::omcvaruna_d
                }
             }
          }
-
       }
-
    }
 
 
