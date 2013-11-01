@@ -110,7 +110,7 @@ proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    if { ! [ info exists conf(updateaudela,geometry) ] }          { set conf(updateaudela,geometry)           "300x200+250+75" }
    if { ! [ info exists conf(updateaudela,kitDirectory) ] }      { set conf(updateaudela,kitDirectory)       "$::audace(rep_install)" }
    if { ! [ info exists conf(updateaudela,downloadAndInstall ] } { set conf(updateaudela,downloadAndInstall) "1" }
-   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList)        [list "http://www.audela.org/test2.php" "http://pagesperso-orange.fr/michel.pujol/audela/" "http://bmauclaire.free.fr/spcaudace/"] }
+   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList)        [list "http://www.audela.org/test2.php" "http://pagesperso-orange.fr/michel.pujol/audela/" "http://wsdiscovery.free.fr/spcaudace/"] }
 
    set private(base)            $in
    set private(kitDirectory)    "$::audace(rep_install)"
