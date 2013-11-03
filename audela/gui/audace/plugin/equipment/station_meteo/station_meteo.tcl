@@ -306,15 +306,15 @@ proc ::station_meteo::deletePlugin { } {
 #  isReady
 #     informe de l'etat de fonctionnement du plugin
 #
-#  return 0 (ready) , 1 (not ready)
+#  return 1 (ready) , 0 (not ready)
 #------------------------------------------------------------
 proc ::station_meteo::isReady { } {
    variable widget
 
    if {[info exists widget(meteo)] && $widget(meteo) == 1} {
-      return "0"
-   } else {
       return "1"
+   } else {
+      return "0"
    }
 }
 
