@@ -1897,7 +1897,6 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
 
 
 
-
    #
    # Sauvegarde du fichier projet
    #
@@ -1910,6 +1909,148 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       }
 
       set chan [open $::atos_analysis_gui::prj_file w]
+
+
+      if {![info exists ::atos_analysis_gui::occ_obj     ]} {set ::atos_analysis_gui::occ_obj      ""}
+      if {![info exists ::atos_analysis_gui::occ_date    ]} {set ::atos_analysis_gui::occ_date     ""}
+      if {![info exists ::atos_analysis_gui::occ_pos     ]} {set ::atos_analysis_gui::occ_pos      ""}
+      if {![info exists ::atos_analysis_gui::occ_pos_type]} {set ::atos_analysis_gui::occ_pos_type ""}
+      if {![info exists ::atos_analysis_gui::occ_obj_name]} {set ::atos_analysis_gui::occ_obj_name ""}
+      if {![info exists ::atos_analysis_gui::occ_obj_id  ]} {set ::atos_analysis_gui::occ_obj_id   ""}
+      if {![info exists ::atos_analysis_gui::prj_file_short]} {set ::atos_analysis_gui::prj_file_short ""}
+      if {![info exists ::atos_analysis_gui::prj_file      ]} {set ::atos_analysis_gui::prj_file       ""}
+      if {![info exists ::atos_analysis_gui::prj_dir       ]} {set ::atos_analysis_gui::prj_dir        ""}
+      if {![info exists ::atos_analysis_gui::jd         ]} {set ::atos_analysis_gui::jd          ""}
+      if {![info exists ::atos_analysis_gui::rajapp     ]} {set ::atos_analysis_gui::rajapp      ""}
+      if {![info exists ::atos_analysis_gui::decapp     ]} {set ::atos_analysis_gui::decapp      ""}
+      if {![info exists ::atos_analysis_gui::dist       ]} {set ::atos_analysis_gui::dist        ""}
+      if {![info exists ::atos_analysis_gui::magv       ]} {set ::atos_analysis_gui::magv        ""}
+      if {![info exists ::atos_analysis_gui::phase      ]} {set ::atos_analysis_gui::phase       ""}
+      if {![info exists ::atos_analysis_gui::elong      ]} {set ::atos_analysis_gui::elong       ""}
+      if {![info exists ::atos_analysis_gui::dracosd    ]} {set ::atos_analysis_gui::dracosd     ""}
+      if {![info exists ::atos_analysis_gui::ddec       ]} {set ::atos_analysis_gui::ddec        ""}
+      if {![info exists ::atos_analysis_gui::vn         ]} {set ::atos_analysis_gui::vn          ""}
+      if {![info exists ::atos_analysis_gui::tsl        ]} {set ::atos_analysis_gui::tsl         ""}
+      if {![info exists ::atos_analysis_gui::raj2000    ]} {set ::atos_analysis_gui::raj2000     ""}
+      if {![info exists ::atos_analysis_gui::decj2000   ]} {set ::atos_analysis_gui::decj2000    ""}
+      if {![info exists ::atos_analysis_gui::hourangle  ]} {set ::atos_analysis_gui::hourangle   ""}
+      if {![info exists ::atos_analysis_gui::decapp     ]} {set ::atos_analysis_gui::decapp      ""}
+      if {![info exists ::atos_analysis_gui::azimuth    ]} {set ::atos_analysis_gui::azimuth     ""}
+      if {![info exists ::atos_analysis_gui::hauteur    ]} {set ::atos_analysis_gui::hauteur     ""}
+      if {![info exists ::atos_analysis_gui::airmass    ]} {set ::atos_analysis_gui::airmass     ""}
+      if {![info exists ::atos_analysis_gui::dhelio     ]} {set ::atos_analysis_gui::dhelio      ""}
+      if {![info exists ::atos_analysis_gui::raw_filename_short]} {set ::atos_analysis_gui::raw_filename_short ""}
+      if {![info exists ::atos_analysis_gui::raw_filename      ]} {set ::atos_analysis_gui::raw_filename       ""}
+      if {![info exists ::atos_analysis_gui::raw_integ_offset  ]} {set ::atos_analysis_gui::raw_integ_offset   ""}
+      if {![info exists ::atos_analysis_gui::raw_integ_nb_img  ]} {set ::atos_analysis_gui::raw_integ_nb_img   ""}
+      if {![info exists ::atos_analysis_gui::int_corr          ]} {set ::atos_analysis_gui::int_corr           ""}
+      if {![info exists ::atos_analysis_gui::tps_corr          ]} {set ::atos_analysis_gui::tps_corr           ""}
+      if {![info exists ::atos_analysis_gui::theo_expo         ]} {set ::atos_analysis_gui::theo_expo          ""}
+      if {![info exists ::atos_analysis_gui::time_offset       ]} {set ::atos_analysis_gui::time_offset        ""}
+      if {![info exists ::atos_analysis_gui::ref_corr          ]} {set ::atos_analysis_gui::ref_corr           ""}
+      if {![info exists ::atos_analysis_gui::corr_filename_short       ]} {set ::atos_analysis_gui::corr_filename_short        ""}
+      if {![info exists ::atos_analysis_gui::corr_filename             ]} {set ::atos_analysis_gui::corr_filename              ""}
+      if {![info exists ::atos_analysis_tools::id_p1                   ]} {set ::atos_analysis_tools::id_p1                    ""}
+      if {![info exists ::atos_analysis_tools::corr_duree_e1           ]} {set ::atos_analysis_tools::corr_duree_e1            ""}
+      if {![info exists ::atos_analysis_tools::nb_p1                   ]} {set ::atos_analysis_tools::nb_p1                    ""}
+      if {![info exists ::atos_analysis_gui::duree_max_immersion_search]} {set ::atos_analysis_gui::duree_max_immersion_search ""}
+      if {![info exists ::atos_analysis_tools::id_p2                   ]} {set ::atos_analysis_tools::id_p2                    ""}
+      if {![info exists ::atos_analysis_tools::corr_duree_e2           ]} {set ::atos_analysis_tools::corr_duree_e2            ""}
+      if {![info exists ::atos_analysis_tools::nb_p2                   ]} {set ::atos_analysis_tools::nb_p2                    ""}
+      if {![info exists ::atos_analysis_tools::id_p3                   ]} {set ::atos_analysis_tools::id_p3                    ""}
+      if {![info exists ::atos_analysis_tools::corr_duree_e3           ]} {set ::atos_analysis_tools::corr_duree_e3            ""}
+      if {![info exists ::atos_analysis_tools::nb_p3                   ]} {set ::atos_analysis_tools::nb_p3                    ""}
+      if {![info exists ::atos_analysis_gui::duree_max_emersion_search ]} {set ::atos_analysis_gui::duree_max_emersion_search  ""}
+      if {![info exists ::atos_analysis_tools::id_p4                   ]} {set ::atos_analysis_tools::id_p4                    ""}
+      if {![info exists ::atos_analysis_tools::corr_duree_e4           ]} {set ::atos_analysis_tools::corr_duree_e4            ""}
+      if {![info exists ::atos_analysis_tools::nb_p4                   ]} {set ::atos_analysis_tools::nb_p4                    ""}
+      if {![info exists ::atos_analysis_tools::id_p5                   ]} {set ::atos_analysis_tools::id_p5                    ""}
+      if {![info exists ::atos_analysis_tools::corr_duree_e5           ]} {set ::atos_analysis_tools::corr_duree_e5            ""}
+      if {![info exists ::atos_analysis_tools::nb_p5                   ]} {set ::atos_analysis_tools::nb_p5                    ""}
+      if {![info exists ::atos_analysis_gui::duree_max_immersion_evnmt ]} {set ::atos_analysis_gui::duree_max_immersion_evnmt  ""}
+      if {![info exists ::atos_analysis_tools::id_p6                   ]} {set ::atos_analysis_tools::id_p6                    ""}
+      if {![info exists ::atos_analysis_gui::date_immersion            ]} {set ::atos_analysis_gui::date_immersion             ""}
+      if {![info exists ::atos_analysis_gui::duree_max_emersion_evnmt  ]} {set ::atos_analysis_gui::duree_max_emersion_evnmt   ""}
+      if {![info exists ::atos_analysis_tools::id_p7                   ]} {set ::atos_analysis_tools::id_p7                    ""}
+      if {![info exists ::atos_analysis_gui::date_emersion             ]} {set ::atos_analysis_gui::date_emersion              ""}
+      if {![info exists ::atos_analysis_gui::width            ]} {set ::atos_analysis_gui::width             ""}
+      if {![info exists ::atos_analysis_gui::occ_star_name    ]} {set ::atos_analysis_gui::occ_star_name     ""}
+      if {![info exists ::atos_analysis_gui::occ_star_B       ]} {set ::atos_analysis_gui::occ_star_B        ""}
+      if {![info exists ::atos_analysis_gui::occ_star_V       ]} {set ::atos_analysis_gui::occ_star_V        ""}
+      if {![info exists ::atos_analysis_gui::occ_star_K       ]} {set ::atos_analysis_gui::occ_star_K        ""}
+      if {![info exists ::atos_analysis_gui::occ_star_size_mas]} {set ::atos_analysis_gui::occ_star_size_mas ""}
+      if {![info exists ::atos_analysis_gui::occ_star_size_km ]} {set ::atos_analysis_gui::occ_star_size_km  ""}
+      if {![info exists ::atos_analysis_gui::wvlngth          ]} {set ::atos_analysis_gui::wvlngth           ""}
+      if {![info exists ::atos_analysis_gui::dlambda          ]} {set ::atos_analysis_gui::dlambda           ""}
+      if {![info exists ::atos_analysis_tools::irep           ]} {set ::atos_analysis_tools::irep            ""}
+      if {![info exists ::atos_analysis_gui::nheure           ]} {set ::atos_analysis_gui::nheure            ""}
+      if {![info exists ::atos_analysis_gui::pas_heure        ]} {set ::atos_analysis_gui::pas_heure         ""}
+      if {![info exists ::atos_analysis_tools::corr_exposure  ]} {set ::atos_analysis_tools::corr_exposure   ""}
+      if {![info exists ::atos_analysis_gui::date_begin_obs   ]} {set ::atos_analysis_gui::date_begin_obs    ""}
+      if {![info exists ::atos_analysis_gui::date_end_obs     ]} {set ::atos_analysis_gui::date_end_obs      ""}
+      if {![info exists ::atos_analysis_gui::date_immersion_sol ]} {set ::atos_analysis_gui::date_immersion_sol  ""}
+      if {![info exists ::atos_analysis_gui::im_chi2_min        ]} {set ::atos_analysis_gui::im_chi2_min         ""}
+      if {![info exists ::atos_analysis_gui::im_nfit_chi2_min   ]} {set ::atos_analysis_gui::im_nfit_chi2_min    ""}
+      if {![info exists ::atos_analysis_gui::im_t0_chi2_min     ]} {set ::atos_analysis_gui::im_t0_chi2_min      ""}
+      if {![info exists ::atos_analysis_gui::im_t_inf           ]} {set ::atos_analysis_gui::im_t_inf            ""}
+      if {![info exists ::atos_analysis_gui::im_t_sup           ]} {set ::atos_analysis_gui::im_t_sup            ""}
+      if {![info exists ::atos_analysis_gui::im_t_diff          ]} {set ::atos_analysis_gui::im_t_diff           ""}
+      if {![info exists ::atos_analysis_gui::im_t_inf_3s        ]} {set ::atos_analysis_gui::im_t_inf_3s         ""}
+      if {![info exists ::atos_analysis_gui::im_t_sup_3s        ]} {set ::atos_analysis_gui::im_t_sup_3s         ""}
+      if {![info exists ::atos_analysis_gui::im_t_diff_3s       ]} {set ::atos_analysis_gui::im_t_diff_3s        ""}
+      if {![info exists ::atos_analysis_gui::date_emersion_sol  ]} {set ::atos_analysis_gui::date_emersion_sol   ""}
+      if {![info exists ::atos_analysis_gui::em_chi2_min        ]} {set ::atos_analysis_gui::em_chi2_min         ""}
+      if {![info exists ::atos_analysis_gui::em_nfit_chi2_min   ]} {set ::atos_analysis_gui::em_nfit_chi2_min    ""}
+      if {![info exists ::atos_analysis_gui::em_t0_chi2_min     ]} {set ::atos_analysis_gui::em_t0_chi2_min      ""}
+      if {![info exists ::atos_analysis_gui::em_t_inf           ]} {set ::atos_analysis_gui::em_t_inf            ""}
+      if {![info exists ::atos_analysis_gui::em_t_sup           ]} {set ::atos_analysis_gui::em_t_sup            ""}
+      if {![info exists ::atos_analysis_gui::em_t_diff          ]} {set ::atos_analysis_gui::em_t_diff           ""}
+      if {![info exists ::atos_analysis_gui::em_t_inf_3s        ]} {set ::atos_analysis_gui::em_t_inf_3s         ""}
+      if {![info exists ::atos_analysis_gui::em_t_sup_3s        ]} {set ::atos_analysis_gui::em_t_sup_3s         ""}
+      if {![info exists ::atos_analysis_gui::em_t_diff_3s       ]} {set ::atos_analysis_gui::em_t_diff_3s        ""}
+      if {![info exists ::atos_analysis_gui::bande     ]} {set ::atos_analysis_gui::bande      ""}
+      if {![info exists ::atos_analysis_gui::duree     ]} {set ::atos_analysis_gui::duree      ""}
+      if {![info exists ::atos_analysis_gui::result    ]} {set ::atos_analysis_gui::result     ""}
+      if {![info exists ::atos_analysis_gui::occ_observers  ]} {set ::atos_analysis_gui::occ_observers   ""}
+      if {![info exists ::atos_analysis_gui::prj_reduc      ]} {set ::atos_analysis_gui::prj_reduc       ""}
+      if {![info exists ::atos_analysis_gui::prj_mail       ]} {set ::atos_analysis_gui::prj_mail        ""}
+      if {![info exists ::atos_analysis_gui::prj_phone      ]} {set ::atos_analysis_gui::prj_phone       ""}
+      if {![info exists ::atos_analysis_gui::prj_address    ]} {set ::atos_analysis_gui::prj_address     ""}
+      if {![info exists ::atos_analysis_gui::type1_station]} {set ::atos_analysis_gui::type1_station ""}
+      if {![info exists ::atos_analysis_gui::latitude     ]} {set ::atos_analysis_gui::latitude      ""}
+      if {![info exists ::atos_analysis_gui::longitude    ]} {set ::atos_analysis_gui::longitude     ""}
+      if {![info exists ::atos_analysis_gui::altitude     ]} {set ::atos_analysis_gui::altitude      ""}
+      if {![info exists ::atos_analysis_gui::datum        ]} {set ::atos_analysis_gui::datum         ""}
+      if {![info exists ::atos_analysis_gui::nearest_city ]} {set ::atos_analysis_gui::nearest_city  ""}
+      if {![info exists ::atos_analysis_gui::type2_station]} {set ::atos_analysis_gui::type2_station ""}
+      if {![info exists ::atos_analysis_gui::telescop_type]} {set ::atos_analysis_gui::telescop_type ""}
+      if {![info exists ::atos_analysis_gui::telescop_aper]} {set ::atos_analysis_gui::telescop_aper ""}
+      if {![info exists ::atos_analysis_gui::telescop_magn]} {set ::atos_analysis_gui::telescop_magn ""}
+      if {![info exists ::atos_analysis_gui::telescop_moun]} {set ::atos_analysis_gui::telescop_moun ""}
+      if {![info exists ::atos_analysis_gui::telescop_moto]} {set ::atos_analysis_gui::telescop_moto ""}
+      if {![info exists ::atos_analysis_gui::record_evin]} {set ::atos_analysis_gui::record_evin ""}
+      if {![info exists ::atos_analysis_gui::record_time]} {set ::atos_analysis_gui::record_time ""}
+      if {![info exists ::atos_analysis_gui::record_sens]} {set ::atos_analysis_gui::record_sens ""}
+      if {![info exists ::atos_analysis_gui::record_prod]} {set ::atos_analysis_gui::record_prod ""}
+      if {![info exists ::atos_analysis_gui::record_tiin]} {set ::atos_analysis_gui::record_tiin ""}
+      if {![info exists ::atos_analysis_gui::record_comp]} {set ::atos_analysis_gui::record_comp ""}
+      if {![info exists ::atos_analysis_gui::obscond_tran]} {set ::atos_analysis_gui::obscond_tran ""}
+      if {![info exists ::atos_analysis_gui::obscond_wind]} {set ::atos_analysis_gui::obscond_wind ""}
+      if {![info exists ::atos_analysis_gui::obscond_temp]} {set ::atos_analysis_gui::obscond_temp ""}
+      if {![info exists ::atos_analysis_gui::obscond_stab]} {set ::atos_analysis_gui::obscond_stab ""}
+      if {![info exists ::atos_analysis_gui::obscond_visi]} {set ::atos_analysis_gui::obscond_visi ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
+      if {![info exists ::atos_analysis_gui::occ_obj]} {set ::atos_analysis_gui::occ_obj ""}
 
 catch {
       puts $chan "###############################################################"
@@ -2248,16 +2389,49 @@ catch {
       puts $chan "  Event   Time (UT)    P.E.   Acc."
       puts $chan "  Code   HH MM SS.ss   S.ss   S.ss"
       puts $chan ""
-      puts $chan [format "    S  - %2d %2d %s   -      -         :" $hs $ms $ss] 
+      
+      if {$hs==""||$ms==""||$ss==""} {
+         puts $chan [format "    S  - %2s %2s %s    -      -         :" "HH" "MM" "SS.SS"]
+      } else {
+         puts $chan [format "    S  - %2d %2d %s   -      -         :" $hs $ms $ss]
+      }
+
       puts $chan "       -                -      -         :"
-      puts $chan [format "    D  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
-      puts $chan [format "    R  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
+
+      if {$hd==""||$md==""||$sd==""||$ad==""||$int==""} {
+         puts $chan [format "    D  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
+      } else {
+         puts $chan [format "    D  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
+      }
+
+      if {$hr==""||$mr==""||$sr==""||$ar==""||$int==""} {
+         puts $chan [format "    R  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
+      } else {
+         puts $chan [format "    R  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
+      }
+
       puts $chan "       -                -      -         :"
-      puts $chan [format "    E  - %2d %2d %s   -      -         :" $he $me $se]
+
+      if {$he==""||$me==""||$se==""} {
+         puts $chan [format "    E  - %2s %2s %s    -      -         :" "HH" "MM" "SS.SS"]
+      } else {
+         puts $chan [format "    E  - %2d %2d %s   -      -         :" $he $me $se]
+      }
+      
       puts $chan ""
-      puts $chan [format "                          Duration : %.3f s" $::atos_analysis_gui::duree]
+
+      if {$::atos_analysis_gui::duree==""} {
+         puts $chan [format "                          Duration : %s s" "SS.SS"]
+      } else {
+         puts $chan [format "                          Duration : %.3f s" $::atos_analysis_gui::duree]
+      }
+
+
+
       puts $chan [format "                         Mid-event : %s UTC" $midevent]
+
       puts $chan [format "                             Width : %s km" $::atos_analysis_gui::bande]
+
       puts $chan ""
       puts $chan "  Was your reaction time applied to the above timings? $reaction_time"
       puts $chan ""
