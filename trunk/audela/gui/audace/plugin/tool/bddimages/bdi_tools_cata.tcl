@@ -1711,5 +1711,18 @@ namespace eval tools_cata {
 
    }
 
-
+   proc ::tools_cata::date2idcata { date } {
+      
+      set id_current_image 0
+      foreach current_image $::tools_cata::img_list {
+         incr id_current_image
+         set tabkey  [::bddimages_liste::lget $current_image "tabkey"]
+         set dateiso [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+         if {[::bdi_tools::is_isodates_equal $dateiso $date]} {
+            return $id_current_image
+         }
+      }
+      return -1
+   }
+   
 }

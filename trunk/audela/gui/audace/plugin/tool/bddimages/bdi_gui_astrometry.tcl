@@ -66,7 +66,7 @@ namespace eval bdi_gui_astrometry {
       foreach select [$w curselection] {
          set name [lindex [$w get $select] 0]
          gren_info "srpt name = $name \n"
-
+         set ::bdi_tools_astrometry::srpt_selected $name
          # Construit la table enfant
          $::bdi_gui_astrometry::sret delete 0 end
          foreach date $::bdi_tools_astrometry::listref($name) {
@@ -176,6 +176,7 @@ namespace eval bdi_gui_astrometry {
       foreach select [$w curselection] {
          set name [lindex [$w get $select] 0]
          gren_info "sspt name = $name \n"
+         set ::bdi_tools_astrometry::sspt_selected $name
 
          # Construit la table enfant
          $::bdi_gui_astrometry::sset delete 0 end
@@ -205,7 +206,7 @@ namespace eval bdi_gui_astrometry {
       foreach select [$w curselection] {
          set date [lindex [$w get $select] 0]
          gren_info "dspt date = $date \n"
-
+         set ::bdi_tools_astrometry::dspt_selected $date
          # Construit la table enfant
          $::bdi_gui_astrometry::dset delete 0 end
          foreach name $::bdi_tools_astrometry::listdate($date) {
@@ -260,7 +261,7 @@ namespace eval bdi_gui_astrometry {
          gren_info "date = $datei \n"
          #gren_info "tabkey = $::tools_cata::new_astrometry($id) \n"
 
-         ::bdi_gui_astrometry::voir_dwet %w
+         #::bdi_gui_astrometry::voir_dwet %w
 
          $::bdi_gui_astrometry::dwet delete 0 end
          foreach val $::tools_cata::new_astrometry($id) {
@@ -3330,8 +3331,16 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $srp.vsb -in $srp -side left -fill y
 
               menu $srp.popupTbl -title "Actions"
-                  $srp.popupTbl add command -label "Mesurer le photocentre" \
-                     -command "::bdi_gui_astrometry::psf srp $::bdi_gui_astrometry::srpt"
+
+                  menu $srp.popupTbl.psf -tearoff 0
+                  $srp.popupTbl add cascade -label "PSF" -menu $srp.popupTbl.psf
+
+                       $srp.popupTbl.psf add command -label "Manuel" \
+                          -command "::bdi_gui_astrometry::psf srp $::bdi_gui_astrometry::srpt"
+
+                       $srp.popupTbl.psf add command -label "Auto" \
+                          -command "::cata_gestion_gui::psf_auto srpt $::bdi_gui_astrometry::srpt"
+                          
                   $srp.popupTbl add command -label "Voir l'objet dans une image" \
                       -command {::gui_cata::voirobj_srpt}
                   $srp.popupTbl add command -label "Supprimer de toutes les images" \
@@ -3372,8 +3381,16 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $sre.vsb -in $sre -side right -fill y
 
               menu $sre.popupTbl -title "Actions"
-                  $sre.popupTbl add command -label "Mesurer le photocentre" \
-                     -command "::bdi_gui_astrometry::psf sre $::bdi_gui_astrometry::sret"
+
+                  menu $sre.popupTbl.psf -tearoff 0
+                  $sre.popupTbl add cascade -label "PSF" -menu $sre.popupTbl.psf
+
+                       $sre.popupTbl.psf add command -label "Manuel" \
+                          -command "::bdi_gui_astrometry::psf sre $::bdi_gui_astrometry::sret"
+
+                       $sre.popupTbl.psf add command -label "Auto" \
+                          -command "::cata_gestion_gui::psf_auto sret $::bdi_gui_astrometry::sret"
+                          
                   $sre.popupTbl add command -label "Voir l'objet dans cette image" \
                       -command "::gui_cata::voirobj_sret"
                   $sre.popupTbl add command -label "Supprimer de cette image uniquement" \
@@ -3405,8 +3422,14 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $ssp.vsb -in $ssp -side left -fill y
 
               menu $ssp.popupTbl -title "Actions"
-                  $ssp.popupTbl add command -label "Mesurer le photocentre" \
-                     -command "::bdi_gui_astrometry::psf ssp $::bdi_gui_astrometry::sspt"
+
+                  menu $ssp.popupTbl.psf -tearoff 0
+                  $ssp.popupTbl add cascade -label "PSF" -menu $ssp.popupTbl.psf
+                       $ssp.popupTbl.psf add command -label "Manuel" \
+                          -command "::bdi_gui_astrometry::psf ssp $::bdi_gui_astrometry::sspt"
+                       $ssp.popupTbl.psf add command -label "Auto" \
+                          -command "::cata_gestion_gui::psf_auto sspt $::bdi_gui_astrometry::sspt"
+
                   $ssp.popupTbl add command -label "Voir l'objet dans une image" \
                       -command "::gui_cata::voirobj_sspt"
                   $ssp.popupTbl add command -label "Supprimer de toutes les images" \
@@ -3439,8 +3462,14 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $sse.vsb -in $sse -side right -fill y
 
               menu $sse.popupTbl -title "Actions"
-                  $sse.popupTbl add command -label "Mesurer le photocentre" \
-                     -command "::bdi_gui_astrometry::psf sse $::bdi_gui_astrometry::sset"
+
+                  menu $sse.popupTbl.psf -tearoff 0
+                  $sse.popupTbl add cascade -label "PSF" -menu $sse.popupTbl.psf
+                       $sse.popupTbl.psf add command -label "Manuel" \
+                          -command "::bdi_gui_astrometry::psf sse $::bdi_gui_astrometry::sset"
+                       $sse.popupTbl.psf add command -label "Auto" \
+                          -command "::cata_gestion_gui::psf_auto sset $::bdi_gui_astrometry::sset"
+
                   $sse.popupTbl add command -label "Voir l'objet dans cette image" \
                       -command "::gui_cata::voirobj_sset"
                   $sse.popupTbl add command -label "Supprimer de cette image uniquement" \
@@ -3472,6 +3501,14 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $dsp.vsb -in $dsp -side left -fill y
 
               menu $dsp.popupTbl -title "Actions"
+
+                  menu $dsp.popupTbl.psf -tearoff 0
+                  $dsp.popupTbl add cascade -label "PSF" -menu $dsp.popupTbl.psf
+                       $dsp.popupTbl.psf add command -label "Manuel" \
+                          -command "::bdi_gui_astrometry::psf dsp $::bdi_gui_astrometry::dspt"
+                       $dsp.popupTbl.psf add command -label "Auto" \
+                          -command "::cata_gestion_gui::psf_auto dspt $::bdi_gui_astrometry::dspt"
+
                   $dsp.popupTbl add command -label "Voir cette image" -command "::gui_cata::voirimg_dspt"
                   $dsp.popupTbl add command -label "Supprimer cette image" -command "" -state disable
 
@@ -3502,6 +3539,13 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $dse.vsb -in $dse -side right -fill y
 
               menu $dse.popupTbl -title "Actions"
+
+                  menu $dse.popupTbl.psf -tearoff 0
+                  $dse.popupTbl add cascade -label "PSF" -menu $dse.popupTbl.psf
+                       $dse.popupTbl.psf add command -label "Manuel" \
+                          -command "::bdi_gui_astrometry::psf dse $::bdi_gui_astrometry::dset"
+                       $dse.popupTbl.psf add command -label "Auto" \
+                          -command "::cata_gestion_gui::psf_auto dset $::bdi_gui_astrometry::dset"
 
                   $dse.popupTbl add command -label "Supprimer de cette image uniquement" -command "" -state disable
 
@@ -3560,6 +3604,16 @@ unset ::bdi_gui_astrometry::omcvaruna_d
               pack $dwe.vsb -in $dwe -side left -fill y
 
               pack $::bdi_gui_astrometry::dwet -in $dwe -expand yes -fill both
+
+
+
+
+
+
+
+
+
+
 
          #--- Onglet RAPPORT - Entetes
          set block [frame $entetes.uai_code  -borderwidth 0 -cursor arrow -relief groove]

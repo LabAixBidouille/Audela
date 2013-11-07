@@ -25,16 +25,21 @@ namespace eval cata_gestion_gui {
 
 
 
-# Anciennement ::gui_cata::fermer_feng
 # ferme la fenetre de gestion de catalogues
 
    proc ::cata_gestion_gui::fermer { } {
 
-      cleanmark
-      efface_carre
-      set ::cata_gestion_gui::state_gestion 0
-      destroy $::cata_gestion_gui::fen
+      set answer [tk_messageBox -message "Avez vous pensez a sauvegarder ?" -type yesno -parent $::cata_gestion_gui::fen]
 
+      switch -- $answer {
+         yes {
+            cleanmark
+            efface_carre
+            set ::cata_gestion_gui::state_gestion 0
+            destroy $::cata_gestion_gui::fen
+         }
+      }
+      return
    }
 
 
@@ -516,7 +521,10 @@ namespace eval cata_gestion_gui {
         $popupTbl add command -label "PSF manuel : premiere selection sur toutes les images" -command "::cata_gestion_gui::psf_popup_manuel_1obj_allimg $tbl" -state normal
 
         # Edite la liste selectionnee
-        $popupTbl add command -label "PSF Auto" -command "::cata_gestion_gui::psf_popup_auto $tbl" -state normal
+        $popupTbl add command -label "PSF Auto sur 1 image" -command "::cata_gestion_gui::psf_auto popup_gestion_current_image $tbl" -state normal
+
+        # Edite la liste selectionnee
+        $popupTbl add command -label "PSF Auto sur toutes images" -command "::cata_gestion_gui::psf_auto popup_gestion_all_image $tbl" -state normal
 
         # Edite la liste selectionnee
         $popupTbl add command -label "Console ASTROID" -command "::cata_gestion_gui::console_astroid $tbl" -state normal
@@ -549,7 +557,6 @@ namespace eval cata_gestion_gui {
 
  
  
-
 
 
 
@@ -1855,28 +1862,6 @@ namespace eval cata_gestion_gui {
 
 
 
-# Anciennement ::cata_gestion_gui::psf_auto_go
-
-   proc ::cata_gestion_gui::psf_auto_go { type list_id nd_sources} {
-
-      if {$type == "one"} {
-         ::cata_gestion_gui::psf_auto_go_one "oneimage" $nd_sources
-      }
-      if {$type == "popup"} {
-      
-      }
-      if {$type == "all"} {
-         ::cata_gestion_gui::psf_auto_go_all $nd_sources "listimage"
-      }
-      if {$type == "one_flag"} {
-         ::cata_gestion_gui::psf_auto_go_one "flag" $nd_sources
-      }
-      if {$type == "all_flag"} {
-         ::cata_gestion_gui::psf_auto_go_all $nd_sources "list_flag"
-      }
-
-   }
-
 
 
 
@@ -1921,13 +1906,26 @@ namespace eval cata_gestion_gui {
 
          incr id
          
-         if {$worktype == "flag" || $worktype == "list_flag" } {
+         if {$worktype == "flag" || $worktype == "all_flag" } {
             set pos [lsearch -index 0 $s "ASTROID"]
             if {$pos==-1} { continue }
             set othf [ lindex [lindex $s $pos] 2]
             set flag [::bdi_tools_psf::get_val othf "flagastrom"]
             if {$flag == ""} { continue }
          }
+         if {$worktype == "list_id"} {
+            set bpass "no"
+            foreach mysource $::cata_gestion_gui::list_id {
+               set mycata [::manage_source::name_cata $mysource]
+               set name [::manage_source::naming $s $mycata]
+               if {$name==$mysource} {
+                  set bpass "yes"
+                  break
+               }
+            }
+            if {$bpass == "no"} { continue }
+         }
+         
          
          ::cata_gestion_gui::set_popupprogress $current $nd_sources
 
@@ -1959,7 +1957,7 @@ namespace eval cata_gestion_gui {
          # gren_info "ID = $id $current (plus que $tt secondes)\n"
 
       }
-
+      #gren_info "psf_auto_go_one : pass = $pass\n"
       if {$pass=="no"} { return $current }
       
       set ::tools_cata::current_listsources [lreplace $::tools_cata::current_listsources 1 1 $sources]
@@ -1974,7 +1972,7 @@ namespace eval cata_gestion_gui {
       # pack les resultats
       set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
       
-      if {$worktype == "oneimage" || $worktype == "flag"} {
+      if {$worktype == "oneimage" || $worktype == "flag" || $worktype == "list_id" } {
          ::tools_cata::current_listsources_to_tklist
          set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
          set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
@@ -1982,6 +1980,65 @@ namespace eval cata_gestion_gui {
          ::cata_gestion_gui::charge_image_directaccess
       }
       
+      return $current
+   }
+   
+
+
+# nouvelle adaptation pour travailler sur des worklist
+
+   proc ::cata_gestion_gui::psf_auto_go_one2 { type nd_sources current } {
+
+      #gren_info "id_current_image = $::tools_cata::id_current_image \n"
+      gren_info "ASTROID sur l'image $::tools_cata::id_current_image\n"
+
+      set fields  [lindex $::tools_cata::current_listsources 0]
+      set sources [lindex $::tools_cata::current_listsources 1]
+
+      set pass "no"
+      set id 0
+      set cpt 0
+
+      #set tt0 [clock clicks -milliseconds]
+      #gren_info "Sources selectionnees ($nd_sources): \n"
+
+      foreach ids $::cata_gestion_gui::worklist($::tools_cata::id_current_image) {
+         
+         set s [lindex $sources $ids]
+                  
+         set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
+         
+         #set name [::manage_source::naming $s [::manage_source::namable $s] ]
+         #gren_erreur "$id ($name)-> ($err) ($err_psf) ($msg)\n"
+
+         if {$err} {
+            ::manage_source::delete_catalog_in_source s "ASTROID"
+         } else {
+            if { $err_psf != ""} {
+               gren_erreur "*ERREUR PSF err_psf ($id): $err_psf\n"
+            } else {
+               set pass "yes"
+            }
+         }
+
+         set sources [lreplace $sources $ids $ids $s]
+         incr current
+         
+         incr cpt
+         ::cata_gestion_gui::set_popupprogress $current $nd_sources
+         #set tt [format "%.0f" [expr ([clock clicks -milliseconds] - $tt0)/$cpt/1000.*($nd_sources-$current)]]
+         # gren_info "ID = $id $current (plus que $tt secondes)\n"
+      }
+      #gren_info "psf_auto_go_one : pass = $pass\n"
+      if {$pass=="no"} { return $current }
+      
+      set ::tools_cata::current_listsources [lreplace $::tools_cata::current_listsources 1 1 $sources]
+      ::bdi_tools_psf::set_fields_astroid ::tools_cata::current_listsources
+      
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
+      ::bdi_tools_psf::set_mag ::tools_cata::current_listsources
+      
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]\n"
       return $current
    }
    
@@ -1995,13 +2052,40 @@ namespace eval cata_gestion_gui {
 
 
 
+   proc ::cata_gestion_gui::psf_auto_go { type nd_sources } {
+      
+      $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state disabled
+      
+      set tt0 [clock clicks -milliseconds]
+      set cpt 0
+      set current 0
+      foreach ::tools_cata::id_current_image $::cata_gestion_gui::worklist(list_id) {
+         set ::cata_gestion_gui::directaccess $::tools_cata::id_current_image
+         ::cata_gestion_gui::charge_image_directaccess
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+         set current [::cata_gestion_gui::psf_auto_go_one2 $type $nd_sources $current]
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+         ::tools_cata::current_listsources_to_tklist
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+      }
+
+      set ::cata_gestion_gui::directaccess 1
+      ::cata_gestion_gui::charge_image_directaccess
+      set tt [format "%.0f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      tk_messageBox -message "Traitements photometriques effectues en $tt secondes\nPensez a sauvegarder !" -type ok
+
+      $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state active
+
+   }
 
 
 
 
 
 
-   proc ::cata_gestion_gui::psf_auto_go_all { nd_sources { flag "" } } {
+   proc ::cata_gestion_gui::psf_auto_go_all { type list_id nd_sources } {
 
       #gren_info "id_current_image = $::tools_cata::id_current_image \n"
       set cpt 0
@@ -2043,54 +2127,204 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::psf_auto { type { tbl ""} } {
 
-
-
-      set list_id [list "nothing"]
-      if {$type == "one"} {
-         set nd_sources [llength [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]]
-      }
-      if {$type == "popup"} {
-         set list_id ""
-         foreach select [$tbl curselection] {
-            set list_id [linsert $list_id end [lindex [$tbl get $select] 0] ]
+      array unset ::cata_gestion_gui::worklist
+      set nd_sources 0
+      
+      switch $type {
+         "current_image" {
+            set nd_sources [llength [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]]
+            lappend ::cata_gestion_gui::worklist(list_id) $::tools_cata::id_current_image
+            for {set ids 0} {$ids < $nd_sources} {incr ids} {
+               lappend ::cata_gestion_gui::worklist($::tools_cata::id_current_image) $ids
+            }
          }
-         set list_id [list $list_id]
-         #gren_info "psf_popup_auto tbl = $tbl \n"
-      }
-      if {$type == "all"} {
-         set nd_sources 0
-         for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
-            incr nd_sources [llength [lindex $::gui_cata::cata_list($i) 1]]
-         }
-      }
-      if {$type == "one_flag"} {
-         set sources [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1] 
-         set nd_sources 0
-         foreach s $sources {
-            set pos [lsearch -index 0 $s "ASTROID"]
-            if {$pos!=-1} {
-               set othf [ lindex [lindex $s $pos] 2]
-               set flag [::bdi_tools_psf::get_val othf "flagastrom"]
-               if {$flag != ""} {
+         
+         "srpt" {
+            foreach select [$tbl curselection] {
+               set name [lindex [$tbl get $select] 0]
+               foreach date $::bdi_tools_astrometry::listref($name) {
+                  set idcata [::tools_cata::date2idcata $date]
+                  if {[info exists ::cata_gestion_gui::worklist(list_id)]} {
+                     if {!($idcata in $::cata_gestion_gui::worklist(list_id))} {
+                        lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                     }
+                  } else {
+                     lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                  }
+                  set ids [::manage_source::name2ids $name ::gui_cata::cata_list($idcata)]
+                  lappend ::cata_gestion_gui::worklist($idcata) $ids
                   incr nd_sources
                }
             }
          }
-      }
-      if {$type == "all_flag"} {
-         set nd_sources 0
-         for {set i 1} {$i<=$::tools_cata::nb_img_list} {incr i} {
-            set sources [lindex $::gui_cata::cata_list($i) 1]
+
+         "sret" {
+            # quel est l objet selectionne ?
+            gren_info "Source selectionnee = $::bdi_tools_astrometry::srpt_selected \n"
+
+            # recupere la liste des images selectionnes
+            foreach select [$tbl curselection] {
+               set ids [expr [lindex [$tbl get $select] 0] -1]
+               set date [lindex [$tbl get $select] 1]
+               set idcata [::tools_cata::date2idcata $date]
+               lappend ::cata_gestion_gui::worklist(list_id) $idcata
+               lappend ::cata_gestion_gui::worklist($idcata) $ids
+               incr nd_sources
+            }
+         }
+         
+         "sspt" {
+            foreach select [$tbl curselection] {
+               set name [lindex [$tbl get $select] 0]
+               foreach date $::bdi_tools_astrometry::listscience($name) {
+                  set idcata [::tools_cata::date2idcata $date]
+                  if {[info exists ::cata_gestion_gui::worklist(list_id)]} {
+                     if {!($idcata in $::cata_gestion_gui::worklist(list_id))} {
+                        lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                     }
+                  } else {
+                     lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                  }
+                  set ids [::manage_source::name2ids $name ::gui_cata::cata_list($idcata)]
+                  lappend ::cata_gestion_gui::worklist($idcata) $ids
+                  incr nd_sources
+               }
+            }
+         }
+
+         "sset" {
+            # quel est l objet selectionne ?
+            gren_info "Source selectionnee = $::bdi_tools_astrometry::sspt_selected \n"
+
+            # recupere la liste des images selectionnes
+            foreach select [$tbl curselection] {
+               set ids [expr [lindex [$tbl get $select] 0] -1]
+               set date [lindex [$tbl get $select] 1]
+               set idcata [::tools_cata::date2idcata $date]
+               lappend ::cata_gestion_gui::worklist(list_id) $idcata
+               lappend ::cata_gestion_gui::worklist($idcata) $ids
+               incr nd_sources
+            }
+         }
+
+         "dspt" {
+            foreach select [$tbl curselection] {
+               set date [lindex [$tbl get $select] 0]
+               foreach name $::bdi_tools_astrometry::listdate($date) {
+                  set idcata [::tools_cata::date2idcata $date]
+                  if {[info exists ::cata_gestion_gui::worklist(list_id)]} {
+                     if {!($idcata in $::cata_gestion_gui::worklist(list_id))} {
+                        lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                     }
+                  } else {
+                     lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                  }
+                  set ids [::manage_source::name2ids $name ::gui_cata::cata_list($idcata)]
+                  lappend ::cata_gestion_gui::worklist($idcata) $ids
+                  incr nd_sources
+               }
+            }
+         }
+
+         "dset" {
+            # quel est l image selectionnee ?
+            set date $::bdi_tools_astrometry::dspt_selected
+            set idcata [::tools_cata::date2idcata $date]
+            gren_info "Cata selectionne,id = $idcata, date = $date\n"
+            lappend ::cata_gestion_gui::worklist(list_id) $idcata
+            # recupere la liste des sources selectionnes
+            foreach select [$tbl curselection] {
+               set ids [expr [lindex [$tbl get $select] 0] -1]
+               lappend ::cata_gestion_gui::worklist($idcata) $ids
+               incr nd_sources
+            }
+         }
+
+         "all_flag" {
+            gren_info "nb_img_list = $::tools_cata::nb_img_list\n"
+
+            for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
+               set sources [lindex $::gui_cata::cata_list($idcata) 1]
+               set ids -1
+               foreach s $sources {
+                  incr ids
+                  set pos [lsearch -index 0 $s "ASTROID"]
+                  if {$pos==-1} { continue }
+                  set othf [ lindex [lindex $s $pos] 2]
+                  set flag [::bdi_tools_psf::get_val othf "flagastrom"]
+                  if {$flag == ""} { continue }
+
+                  # ok la source est flaguee S ou M
+                  gren_info "ok la source est flaguee $flag\n"
+
+                  if {[info exists ::cata_gestion_gui::worklist(list_id)]} {
+                     if {!($idcata in $::cata_gestion_gui::worklist(list_id))} {
+                        lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                     }
+                  } else {
+                     lappend ::cata_gestion_gui::worklist(list_id) $idcata
+                  }
+                  lappend ::cata_gestion_gui::worklist($idcata) $ids
+                  incr nd_sources
+               }
+            }
+         }
+         
+         "all" {
+            for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
+               set nbs [llength [lindex $::gui_cata::cata_list($idcata) 1]]
+               incr nd_sources $nbs
+               lappend ::cata_gestion_gui::worklist(list_id) $idcata
+               for {set ids 0} {$ids < $nbs} {incr ids} {
+                  lappend ::cata_gestion_gui::worklist($idcata) $ids
+               }
+            }
+         }
+         
+         "popup_gestion_current_image" {
+            lappend ::cata_gestion_gui::worklist(list_id) $::tools_cata::id_current_image
+            foreach select [$tbl curselection] {
+               set ids [lindex [$tbl get $select] 0]
+               lappend ::cata_gestion_gui::worklist($::tools_cata::id_current_image) $ids
+               incr nd_sources
+            }
+         }
+         "popup_gestion_all_image" {
+             gren_erreur "A faire\n"
+         }
+
+         "current_image_flag" {
+            lappend ::cata_gestion_gui::worklist(list_id) $::tools_cata::id_current_image
+            set sources [lindex $::gui_cata::cata_list($::tools_cata::id_current_image) 1]
+            set ids -1
             foreach s $sources {
+               incr ids
                set pos [lsearch -index 0 $s "ASTROID"]
                if {$pos==-1} { continue }
                set othf [ lindex [lindex $s $pos] 2]
                set flag [::bdi_tools_psf::get_val othf "flagastrom"]
                if {$flag == ""} { continue }
+               # ok la source est flaguee S ou M
+               lappend ::cata_gestion_gui::worklist($::tools_cata::id_current_image) $ids
                incr nd_sources
             }
+
          }
+
+
+      # fin du switch
       }
+
+
+      gren_info "nd_sources = $nd_sources\n"
+      if {$nd_sources==0} {return 1}
+      ::cata_gestion_gui::psf_auto_gui $type $nd_sources $tbl
+      
+      return 0
+   }
+
+
+   proc ::cata_gestion_gui::psf_auto_gui { type nd_sources { tbl ""} } {
 
       set ::cata_gestion_gui::popupprogress 0
 
@@ -2136,7 +2370,7 @@ namespace eval cata_gestion_gui {
              pack   $data.fermer -side right -anchor c -padx 0 -padx 10 -pady 5
 
              button $data.go -state active -text "Go" -relief "raised" \
-                -command "::cata_gestion_gui::psf_auto_go $type $list_id $nd_sources ; destroy $::gui_cata::fenpopuppsf"
+                -command "$::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state disabled ; ::cata_gestion_gui::psf_auto_go $type $nd_sources ; $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state active ; destroy $::gui_cata::fenpopuppsf"
              pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
 
 
@@ -2325,9 +2559,9 @@ namespace eval cata_gestion_gui {
            menu $menubar.psf.menu -tearoff 0
 
              $menubar.psf.menu add command -label "Manuel sur l'image" -command "::bdi_gui_gestion_source::run current"
-             $menubar.psf.menu add command -label "Auto sur l'image" -command "::cata_gestion_gui::psf_auto one"
+             $menubar.psf.menu add command -label "Auto sur l'image" -command "::cata_gestion_gui::psf_auto current_image"
              $menubar.psf.menu add command -label "Auto toutes images" -command "::cata_gestion_gui::psf_auto all"
-             $menubar.psf.menu add command -label "Auto sources Flag sur l'image" -command "::cata_gestion_gui::psf_auto one_flag"
+             $menubar.psf.menu add command -label "Auto sources Flag sur l'image" -command "::cata_gestion_gui::psf_auto current_image_flag"
              $menubar.psf.menu add command -label "Auto sources Flag toutes images" -command "::cata_gestion_gui::psf_auto all_flag"
 
              #$This.frame0.file.menu add command -label "$caption(bddimages_recherche,delete_list)" -command " ::bddimages_recherche::cmd_list_delete $This.frame6.liste.tbl "
