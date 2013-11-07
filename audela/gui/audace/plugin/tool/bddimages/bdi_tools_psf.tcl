@@ -431,11 +431,21 @@ namespace eval bdi_tools_psf {
 
       if { $cata == "" } {
          set cata [lindex $s 0]
+         foreach c [list USER SKYBOT WFIBC UCAC4 UCAC2 TYCHO2 UCAC3 PPMX PPMXL 2MASS USNOA2 ASTROID IMG] {
+            set pos [lsearch -index 0 $s $c]
+            #gren_info "get_xy: $c $pos\n"
+            if {$pos != -1 } {
+               set cata [lindex $s $pos]
+               #gren_info "get_xy: $cata\n"
+               break
+            }
+         }
       } else {
          set cata [lindex $s [lsearch -index 0 $s $cata]]
       }
       set ra   [lindex $cata {1 0}] 
       set dec  [lindex $cata {1 1}]
+      #gren_info "get_xy: $ra $dec\n"
       return [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
    }
 
@@ -588,7 +598,8 @@ namespace eval bdi_tools_psf {
       } else {
          set xy  [::bdi_tools_psf::get_xy s]
       }
-
+      #gren_info "get_psf_source: xy  = $xy\n"
+      
       set othf_old [::bdi_tools_psf::get_astroid_othf_from_source $s]
       set p        [::bdi_tools_psf::get_otherfields_astroid]
       if {[llength $othf_old ] !=  [llength $p ]} {
@@ -638,6 +649,7 @@ namespace eval bdi_tools_psf {
       foreach key $fields {
          set pos [lsearch $p $key]
          set othf_old [lreplace $othf_old $pos $pos [lindex $othf $pos] ]
+         #gren_info "$key = [lindex $othf $pos]\n"
       }
       
       # on nomme la source
@@ -653,7 +665,7 @@ namespace eval bdi_tools_psf {
       set err_psf [::bdi_tools_psf::get_val othf_old "err_psf"]
       if {$err_psf == "" } {
          ::bdi_tools_psf::set_astroid_in_source s othf_old
-          #gren_info "s = $s\n"
+         # gren_info "s apres = $s\n"
       } else {
          #gren_erreur "Erreur PSF\n"
          return -code 5 $err_psf

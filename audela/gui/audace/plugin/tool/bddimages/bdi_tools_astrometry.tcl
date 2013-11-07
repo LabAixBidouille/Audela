@@ -979,6 +979,10 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
          set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
 
+         if {$name == "WFIBC_117.403397+26.387455"} {
+            gren_info "res = $res_ra $res_dec \n"
+         }
+
 # TESTASTROMETRY
          if {$name == "WFIBC_117.416265+26.453586" && $dateiso=="2013-01-06T22:52:15.000"} {
             gren_erreur "ICI\n"
@@ -1013,6 +1017,11 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          lappend ::bdi_tools_astrometry::listref($name)     $dateiso
          lappend ::bdi_tools_astrometry::listdate($dateiso) $name
          set ::bdi_tools_astrometry::date_to_id($dateiso)   $id_current_image
+
+         if {$name == "WFIBC_117.403397+26.387455"} {
+            gren_info "xy = $xsm $ysm rho = $rho\n"
+         }
+
 
       }
 
