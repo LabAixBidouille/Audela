@@ -24,9 +24,38 @@ namespace eval eqmod {
 
    }
 
+   proc ::eqmod::testcar { s } {
+      set good [list A B C D E F a b c d e f 0 1 2 3 4 5 6 7 8 9]
+      if {$s in $good} { 
+         return 1
+      } else {
+        return 0
+      }
+   }
 
    proc ::eqmod::decode {s} {
-      set i [ expr int(0x[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]00) / 256 ]
+      ::console::affiche_erreur "decode s : ($s) \n" 
+
+#     set good [list A B C D E F a b c d e f 0 1 2 3 4 5 6 7 8 9]
+#     set n [string length $s]
+#     set ns ""
+#     for {set i 0} {$i<$n} {incr i} {
+#        set c [string range $s $i $i]
+#        if {$c in $good} { 
+#           append ns $c
+#        }
+#     }
+#     set s $ns
+#
+#
+      set n [string length [format %%0X -1]]
+      set sig [expr int(0x[string index $s 4])]
+      if {$sig<=7} { set sym 0 } else { set sym F }
+      set comp [string repeat $sym [expr $n-6]]
+      set i [expr int(0x${comp}[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ])]
+   
+      #set i [ expr int(0x[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]00) / 256 ]
+
 #      if {$i > 9024000} {set i [expr $i - 16777216]}
 #      if {$i < 0 } { 
 #         ::console::affiche_erreur "decode : $i \n" 
@@ -145,7 +174,18 @@ namespace eval eqmod {
 
 
 
-
+      if {$diff_de2!=0} {
+         tel$::eqmod::telno put :K2
+         if {$diff_de2>0} {
+            tel$::eqmod::telno put :G200
+         } else {
+            set diff_de2 [expr -$diff_de2]
+            tel$::eqmod::telno put :G201
+         }
+         set he2 [::eqmod::encode $diff_de2]
+         tel$::eqmod::telno put :H2$he2
+         tel$::eqmod::telno put :J2
+      }
 
       if {$diff_de1!=0} {
          tel$::eqmod::telno put :K1
@@ -164,23 +204,93 @@ namespace eval eqmod {
          tel$::eqmod::telno put :J1
          if {$log} {::console::affiche_resultat "tel$::eqmod::telno put :J1\n"}
       }
-
-      if {$diff_de2!=0} {
-         tel$::eqmod::telno put :K2
-         if {$diff_de2>0} {
-            tel$::eqmod::telno put :G200
-         } else {
-            set diff_de2 [expr -$diff_de2]
-            tel$::eqmod::telno put :G201
+      
+      # attente de l arret de l axe de declinaison
+      set che2sav 0
+      for {set j 0} {$j<1000} {incr j} {   
+         set che2 [tel$::eqmod::telno putread :j2]
+         if {$che2==$che2sav} {
+            gren_info "** Axe DEC semble ne plus bouger\n"
+            gren_info "   on verifie : "
+            after 10
+            set che2 [tel$::eqmod::telno putread :j2]
+            if {$che2==$che2sav} {
+               gren_info "Axe DEC ne bouge plus\n"
+               break
+            } else {
+               gren_info "Axe DEC  bouge encore un peu\n"
+            }
          }
-         set he2 [::eqmod::encode $diff_de2]
-         tel$::eqmod::telno put :H2$he2
-         tel$::eqmod::telno put :J2
-      }
+         set che2sav $che2
+         after 10
+      }      
 
-      return 0
+      # attente de l arret de l axe horaire
+      set che1sav 0
+      for {set i 0} {$i<1000} {incr i} {   
+         set che1 [tel$::eqmod::telno putread :j1]
+         if {$che1==$che1sav} {
+            gren_info "** Axe RA semble ne plus bouger\n"
+            gren_info "   on verifie : "
+            after 10
+            set che1 [tel$::eqmod::telno putread :j1]
+            if {$che1==$che1sav} {
+               gren_info "Axe RA ne bouge plus\n"
+               break
+            } else {
+               gren_info "Axe RA  bouge encore un peu\n"
+            }
+         }
+         set che1sav $che1
+         after 10
+      }      
+      
+      
+      # 
+      gren_info "On sort $i $j\n"
 
    }
+
+
+   proc ::eqmod::get_mount { } {
+
+      set he1 [tel$::eqmod::telno putread :j1]
+      set de1 [::eqmod::decode $he1]
+#      set h_deg [expr $de1 * 360. / 9024000. - 579.303829787234 ]
+      set h_deg [expr $de1 * 360. / 9024000. ]
+
+      set h  [mc_angle2hms $h_deg 360 zero 1 auto string]
+
+      set he2 [tel$::eqmod::telno putread :j2]
+      set de2 [::eqmod::decode $he2]
+      set dec_deg [expr 180 - $de2 * 360. / 9024000.]
+      set dec  [mc_angle2dms $dec_deg 90 zero 1 + string]
+
+
+      set r [::eqmod::coord_hour_to_equatorial $h_deg $dec_deg]
+      set ra_deg [lindex $r 0]
+      set ra  [mc_angle2hms $ra_deg 360 zero 1 auto string]
+
+      set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
+      set tsl [mc_date2lst $now $::eqmod::home]
+      set t "[lindex $tsl 0] h [lindex $tsl 1] m [format "%.1f" [lindex $tsl 2] ] s"
+
+      ::console::affiche_resultat "Axe 1 HEX : $he1\n"
+      ::console::affiche_resultat "Axe 1 DEC : $de1\n"
+      ::console::affiche_resultat "Axe 2 HEX : $he2\n"
+      ::console::affiche_resultat "Axe 2 DEC : $de2\n"
+      ::console::affiche_resultat "--\n"
+      ::console::affiche_resultat "H deg : $h_deg\n"
+      ::console::affiche_resultat "H hms : $h\n"
+      ::console::affiche_resultat "RA  deg : $ra_deg\n"
+      ::console::affiche_resultat "RA  hms : $ra\n"
+      ::console::affiche_resultat "Dec deg : $dec_deg\n"
+      ::console::affiche_resultat "Dec dms : $dec\n"
+      ::console::affiche_resultat "TSL hms : $t\n"
+
+   }
+
+
 
    proc ::eqmod::set_coord_mount { hm dm } {
 

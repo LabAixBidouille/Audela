@@ -87,6 +87,7 @@ namespace eval eqmod_move {
       }
       if {$a=="stop"} {
          tel$::eqmod::telno put :K1
+         after 50
       }
    }
 
