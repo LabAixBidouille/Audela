@@ -59,12 +59,11 @@ proc ::bdi_tools_mpc::convert_dms { val } {
    set r [expr $m - $mint]
    set sec [format "%.1f" [expr $r * 60.]]
    if {$d    < 10.0} {set d "0$d"}
-   if {$mint < 10.0} {set m "0$mint"}
+   if {$mint < 10.0} {set mint "0$mint"}
    if {$sec  < 10.0} {set sec "0$sec"}
    return "$s$d $mint $sec"
    
 }
-
 
 #----------------------------------------------------------------------------
 ## Conversion d'une date ISO au format MPC

@@ -132,7 +132,9 @@ proc get_ascii_txt { } {
  global audace
 
    set filenametmp [ file join [pwd] ascii.txt ]
-
+   if {![file exists $filenametmp]} {
+      return -1
+   }
 #{ 
 # { 
 #  { IMG   {list field crossmatch} {list fields}} 
