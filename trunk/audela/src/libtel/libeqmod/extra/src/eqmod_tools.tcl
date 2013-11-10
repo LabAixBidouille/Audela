@@ -45,5 +45,53 @@ namespace eval eqmod_tools {
 
    }
 
+# FFFF7F  8388607 (maximum)
+# 000100      256
+# 100000       16
+# 0F0000       15
+# 010000        1
+# 000000        0
+# FFFFFF       -1
+# F1FFFF      -15
+# F0FFFF      -16
+# 00FFFF     -256
+# 000080 -8388608 (minimum)
+
+   proc ::eqmod_tools::test_table_decimale { } {
+   
+   set v [::eqmod::decode FFFF7F] ; if {$v !=  8388607} { return -1}
+   set v [::eqmod::decode 000100] ; if {$v !=      256} { return -1}
+   set v [::eqmod::decode 100000] ; if {$v !=       16} { return -1}
+   set v [::eqmod::decode 0F0000] ; if {$v !=       15} { return -1}
+   set v [::eqmod::decode 010000] ; if {$v !=        1} { return -1}
+   set v [::eqmod::decode 000000] ; if {$v !=        0} { return -1}
+   set v [::eqmod::decode FFFFFF] ; if {$v !=       -1} { return -1}
+   set v [::eqmod::decode F1FFFF] ; if {$v !=      -15} { return -1}
+   set v [::eqmod::decode F0FFFF] ; if {$v !=      -16} { return -1}
+   set v [::eqmod::decode 00FFFF] ; if {$v !=     -256} { return -1}
+   set v [::eqmod::decode 000080] ; if {$v != -8388608} { return -1}
+   
+   return 0   
+   
+   }
+   proc ::eqmod_tools::test_table_decimale_compil { } {
+   
+   set v [ tel1 decode FFFF7F] ; if {$v !=  8388607} { return -1}
+   set v [ tel1 decode 000100] ; if {$v !=      256} { return -1}
+   set v [ tel1 decode 100000] ; if {$v !=       16} { return -1}
+   set v [ tel1 decode 0F0000] ; if {$v !=       15} { return -1}
+   set v [ tel1 decode 010000] ; if {$v !=        1} { return -1}
+   set v [ tel1 decode 000000] ; if {$v !=        0} { return -1}
+   set v [ tel1 decode FFFFFF] ; if {$v !=       -1} { return -1}
+   set v [ tel1 decode F1FFFF] ; if {$v !=      -15} { return -1}
+   set v [ tel1 decode F0FFFF] ; if {$v !=      -16} { return -1}
+   set v [ tel1 decode 00FFFF] ; if {$v !=     -256} { return -1}
+   set v [ tel1 decode 000080] ; if {$v != -8388608} { return -1}
+   
+   return 0   
+   
+   }
+
+
 
 }
