@@ -66,13 +66,15 @@ set caption(audace,MPC_format)                        "MPC Format:"
 set caption(audace,gauss_attention)                   "Warning:"
 set caption(audace,UAI_site_image)                    "UAI %s site must be where the image was acquired."
 
+set caption(audace,menu,psfimcce)                     "Fit a Psf"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audace,menu,analysis)                  "Analyse"
    set caption(audace,menu,histo)                     "Histogramme"
    set caption(audace,menu,coupe)                     "Coupe"
-  set caption(audace,menu,statwin)                   "Statistiques dans la fenêtre"
+   set caption(audace,menu,statwin)                   "Statistiques dans la fenêtre"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajuster une gaussienne"
    set caption(audace,menu,centro)                    "Photocentre"
@@ -123,6 +125,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,MPC_format)                     "Format MPC :"
    set caption(audace,gauss_attention)                "Attention :"
    set caption(audace,UAI_site_image)                 "Le site UAI %s doit être celui où l'image a été acquise."
+
+   set caption(audace,menu,psfimcce)                  "Ajuster une Psf"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
