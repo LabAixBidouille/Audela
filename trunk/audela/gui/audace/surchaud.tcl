@@ -1455,7 +1455,7 @@ proc calibwcs {args} {
             if {$key=="-yes_visu"} {
                set yes_visu [lindex $args [expr $k+1]]
             }
-            if {$key=="-maglim"} {
+            if {$key=="-maglimit"} {
                set maglim [lindex $args [expr $k+1]]
                set maglim "\"magrlim=$maglim\" \"magblim=$maglim\""
             }
@@ -1561,7 +1561,7 @@ proc calibwcs {args} {
          set comment "Path to the catalog does not exists:\n$cat_folder\n"
          error $comment
       }
-
+ 
       #--- Identification des sources
       if {($cat_format!="")} {
          set ext $::conf(extension,defaut)
@@ -1583,6 +1583,7 @@ proc calibwcs {args} {
          sextractor [ file join $mypath $sky0$ext ] -c "[ file join $mypath config.sex ]"
 
          set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype $maglim \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
+            
          if {$erreur==0} {
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
             ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"z$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}b.jpg\" $maglim "

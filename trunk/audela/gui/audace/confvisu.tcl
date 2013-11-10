@@ -2549,6 +2549,7 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,statwin)" "statwin $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,psfimcce)" "psfimcce $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" "center $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
 
@@ -2788,6 +2789,7 @@ namespace eval ::confVisu {
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,statwin)" "statwin $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fwhm)" "fwhm $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" "fitgauss $visuNo"
+         Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,psfimcce)" "psfimcce $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" "center $visuNo"
          Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" "photom $visuNo"
 
@@ -3020,6 +3022,8 @@ namespace eval ::confVisu {
          "fwhm $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,fitgauss)" \
          "fitgauss $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,psfimcce)" \
+         "psfimcce $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,centro)" \
          "center $visuNo"
       Menu_Command   $visuNo "$caption(audace,menu,analysis)" "$caption(audace,menu,phot)" \
@@ -3603,6 +3607,8 @@ namespace eval ::confVisu {
          -command "fwhm $visuNo"
       $menu add command -label $caption(audace,menu,fitgauss) \
          -command "fitgauss $visuNo"
+      $menu add command -label $caption(audace,menu,psfimcce) \
+         -command "psfimcce $visuNo"
       $menu add command -label $caption(audace,menu,centro) \
          -command "center $visuNo"
       $menu add command -label $caption(audace,menu,phot) \
