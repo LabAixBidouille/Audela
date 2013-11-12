@@ -81,7 +81,7 @@ namespace eval bdi_tools_cdl {
    
    
    proc ::bdi_tools_cdl::get_memory {  } {
-      gren_info "$::bdi_tools_cdl::memory(memview)\n"
+
       if {$::bdi_tools_cdl::memory(memview)==0} {return}
 
       set pid [exec pidof audela]

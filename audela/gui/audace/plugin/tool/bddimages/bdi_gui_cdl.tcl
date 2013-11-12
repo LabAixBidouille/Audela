@@ -309,23 +309,36 @@ namespace eval bdi_gui_cdl {
 
       # Onglet References
       $::bdi_gui_cdl::dataline delete 0 end
-      for {set id 1} {$id<=$::tools_cata::nb_img_list} {incr id} {
-         set sources [lindex  $::gui_cata::cata_list($id) 1]
-         
+      for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
+
+         set sources [lindex  $::gui_cata::cata_list($idcata) 1]         
+         set ids 0
          foreach s $sources {
             set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            set name [::bdi_tools_psf::get_val othf "name"]
-            set list_of_name [::manage_source::list_of_name $s]
-            gren_info "list_of_name = $list_of_name \n"
-
-            #set table_noms(astroid,$name) 
             
-            
+            set name [::manage_source::namincata $s]
             if {$name == ""} {continue}
-            set nbimg 1
+            
+            #set list_of_name [::manage_source::list_of_name $s]
+            #gren_info "list_of_name = $list_of_name \n"
+            
+            if {[info exists table_noms($name)]} {
+               set table_nbcata($name) [expr $table_nbcata($name)+1]
+            } else {
+               set table_nbcata($name) 1
+            }
+            set table_noms($name) 1
+            
             set mag [::bdi_tools_psf::get_val othf "mag"]
-            $::bdi_gui_cdl::dataline insert end [list "0" $name $nbimg $mag]
+#            $::bdi_gui_cdl::dataline insert end [list "0" $name $nbimg $mag]
          }
+         incr $ids
+      }
+
+      #gren_info "table_noms = [array get table_noms] \n"
+      
+      foreach {name y} [array get table_noms] {
+         $::bdi_gui_cdl::dataline insert end [list "0" $name $table_nbcata($name) $mag]
       }
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
