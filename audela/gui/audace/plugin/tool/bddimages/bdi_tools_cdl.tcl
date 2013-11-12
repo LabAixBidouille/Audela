@@ -50,6 +50,36 @@ namespace eval bdi_tools_cdl {
          ::bdi_tools_cdl::set_progress $id $::tools_cata::nb_img_list
          ::bdi_tools_cdl::get_memory      
       }    
+
+
+      for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
+
+         set sources [lindex  $::gui_cata::cata_list($idcata) 1]         
+         set ids 0
+         foreach s $sources {
+            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            
+            set name [::manage_source::namincata $s]
+            if {$name == ""} {continue}
+            
+            #set list_of_name [::manage_source::list_of_name $s]
+            #gren_info "list_of_name = $list_of_name \n"
+            
+            if {[info exists ::bdi_tools_cdl::table_noms($name)]} {
+               set ::bdi_tools_cdl::table_nbcata($name) [expr $::bdi_tools_cdl::table_nbcata($name)+1]
+            } else {
+               set ::bdi_tools_cdl::table_nbcata($name) 1
+            }
+            set ::bdi_tools_cdl::table_noms($name) 1
+
+            set mag [::bdi_tools_psf::get_val othf "mag"]
+            if {$mag != ""} {
+               lappend ::bdi_tools_cdl::table_values($name,mag) [::bdi_tools_psf::get_val othf "mag"]
+            }
+         }
+         incr $ids
+      }
+
          
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Chargement complet en $tt sec \n"
