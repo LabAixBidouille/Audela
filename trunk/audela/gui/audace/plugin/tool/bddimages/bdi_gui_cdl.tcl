@@ -254,17 +254,17 @@ namespace eval bdi_gui_cdl {
 
          #--- Cree un frame pour afficher les boutons
          set info [frame $center.info  -borderwidth 0 -cursor arrow -relief groove]
-         pack $info  -in $center -anchor s -side top -expand 0 -fill y -padx 10 -pady 5
+         pack $info  -in $center -anchor s -side top -expand 0 -padx 10 -pady 5
 
-             label $info.labjob -text "Mem Job :" -width 10 -justify left
-             label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid) -width 10 -justify left
-             label $info.labmem -text "Mem % :" -width 10 -justify left
-             label $info.valmem -textvariable ::bdi_tools_cdl::memory(mem) -width 10 -justify left
-             label $info.labswa -text "Swap % :" -width 10 -justify left
-             label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap) -width 10 -justify left
+             label $info.labjob -text "Mem Job :"  -justify left
+             label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid)  -justify left
+             label $info.labmem -text "Mem Free % :"  -justify left
+             label $info.valmem -textvariable ::bdi_tools_cdl::memory(mem)  -justify left
+             label $info.labswa -text "Swap % :"  -justify left
+             label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap)  -justify left
 
 
-             grid $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa -sticky w
+             grid $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa 
              
          #--- Cree un frame pour afficher les boutons
          set center [frame $frm.actions  -borderwidth 2 -cursor arrow -relief groove]
