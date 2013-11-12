@@ -209,7 +209,8 @@ namespace eval bdi_gui_cdl {
          pack $info  -in $center -anchor s -side top -expand 0 -padx 10 -pady 5
  
  
-             checkbutton $info.check -variable ::bdi_tools_cdl::memory(memview)  -justify left
+             checkbutton $info.check -variable ::bdi_tools_cdl::memory(memview)  -justify left \
+                -command "::bdi_tools_cdl::get_memory"
              label $info.labjob -text "Mem Job :"  -justify left
              label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid)  -justify left
              label $info.labmem -text "Mem Free % :"  -justify left
