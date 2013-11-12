@@ -79,59 +79,6 @@ namespace eval bdi_gui_cdl {
 
 
 
-   # Structure ASTROID :
-   #  0    "xsm" 
-   #  1    "ysm" 
-   #  2    "err_xsm" 
-   #  3    "err_ysm" 
-   #  4    "fwhmx" 
-   #  5    "fwhmy" 
-   #  6    "fwhm" 
-   #  7    "flux" 
-   #  8    "err_flux" 
-   #  9    "pixmax"
-   #  10   "intensity" 
-   #  11   "sky" 
-   #  12   "err_sky" 
-   #  13   "snint" 
-   #  14   "radius" 
-   #  15   "rdiff" 
-   #  16   "err_psf" 
-   #  17   "ra" 
-   #  18   "dec"
-   #  19   "res_ra" 
-   #  20   "res_dec" 
-   #  21   "omc_ra" 
-   #  22   "omc_dec" 
-   #  23   "mag" 
-   #  24   "err_mag" 
-   #  25   "name" 
-   #  26   "flagastrom" 
-   #  27   "flagphotom" 
-   #  28   "cataastrom"
-   #  29   "cataphotom"
-   proc ::bdi_gui_cdl::affiche_data { } {
-
-      set tt0 [clock clicks -milliseconds]
-
-      # Onglet References
-      $::bdi_gui_cdl::dataline delete 0 end
-      for {set id 1} {$id<=$::tools_cata::nb_img_list} {incr id} {
-         set sources [lindex  $::gui_cata::cata_list($id) 1]
-         foreach s $sources {
-            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            set name [::bdi_tools_psf::get_val othf "name"]
-            if {$name == ""} {continue}
-            set nbimg 1
-            set mag [::bdi_tools_psf::get_val othf "mag"]
-            $::bdi_gui_cdl::dataline insert end [list "0" $name $nbimg $mag]
-         }
-      }
-
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Affichage complet en $tt sec \n"
-
-   }
 
 
    proc ::bdi_gui_cdl::cmdButton1Click_dataline { w args } {
@@ -144,7 +91,7 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::run { } {
 
       ::bdi_gui_cdl::inittoconf
-      
+      ::bdi_tools_cdl::get_memory
       ::bdi_gui_cdl::create_dialog
    }
 
@@ -303,5 +250,71 @@ namespace eval bdi_gui_cdl {
 
               grid $actions.aide      -row 2 -column 0 -sticky news
               grid $actions.fermer    -row 2 -column 1 -sticky news
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+   # Structure ASTROID :
+   #  0    "xsm" 
+   #  1    "ysm" 
+   #  2    "err_xsm" 
+   #  3    "err_ysm" 
+   #  4    "fwhmx" 
+   #  5    "fwhmy" 
+   #  6    "fwhm" 
+   #  7    "flux" 
+   #  8    "err_flux" 
+   #  9    "pixmax"
+   #  10   "intensity" 
+   #  11   "sky" 
+   #  12   "err_sky" 
+   #  13   "snint" 
+   #  14   "radius" 
+   #  15   "rdiff" 
+   #  16   "err_psf" 
+   #  17   "ra" 
+   #  18   "dec"
+   #  19   "res_ra" 
+   #  20   "res_dec" 
+   #  21   "omc_ra" 
+   #  22   "omc_dec" 
+   #  23   "mag" 
+   #  24   "err_mag" 
+   #  25   "name" 
+   #  26   "flagastrom" 
+   #  27   "flagphotom" 
+   #  28   "cataastrom"
+   #  29   "cataphotom"
+   proc ::bdi_gui_cdl::affiche_data { } {
+
+      set tt0 [clock clicks -milliseconds]
+
+      # Onglet References
+      $::bdi_gui_cdl::dataline delete 0 end
+      for {set id 1} {$id<=$::tools_cata::nb_img_list} {incr id} {
+         set sources [lindex  $::gui_cata::cata_list($id) 1]
+         foreach s $sources {
+            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            set name [::bdi_tools_psf::get_val othf "name"]
+            if {$name == ""} {continue}
+            set nbimg 1
+            set mag [::bdi_tools_psf::get_val othf "mag"]
+            $::bdi_gui_cdl::dataline insert end [list "0" $name $nbimg $mag]
+         }
+      }
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Affichage complet en $tt sec \n"
 
    }
