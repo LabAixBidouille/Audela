@@ -1822,12 +1822,15 @@ namespace eval bddimages_recherche {
           return
        }
       
+      set tt0 [clock clicks -milliseconds]
       if { [ info exists ::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
       if { [ info exists ::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
       if { [ info exists ::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
       set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img [::bddimages_liste_gui::new_normallist $lid]]
       set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
       set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Preparation img_list en $tt sec \n"
       set z [::bdi_gui_cdl::run]
 
    }
