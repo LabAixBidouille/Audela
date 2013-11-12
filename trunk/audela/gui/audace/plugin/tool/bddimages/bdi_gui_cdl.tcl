@@ -141,6 +141,7 @@ namespace eval bdi_gui_cdl {
             $onglets.nb select $f_dataline
             ttk::notebook::enableTraversal $onglets.nb
 
+         # References
          set results [frame $f_dataline.dataline  -borderwidth 10 -relief groove]
          pack $results -in $f_dataline -expand yes -fill both
             
@@ -176,6 +177,8 @@ namespace eval bdi_gui_cdl {
 
                $results.popupTbl add command -label "Voir l'objet dans une image" \
                    -command "" -state disabled
+               $results.popupTbl add command -label "Supprimer" \
+                   -command "::bdi_gui_cdl::unset_dataline" 
 
             # Binding
             bind $::bdi_gui_cdl::dataline <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_dataline %W ]
@@ -192,6 +195,61 @@ namespace eval bdi_gui_cdl {
                set pcol [expr int ([lsearch $cols $ncol]/3)]
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode real
             }
+
+         # Variations
+         set results [frame $f_starstar.starstar  -borderwidth 10 -relief groove]
+         pack $results -in $f_starstar -expand yes -fill both
+            
+            set cols [list 0 " "       left  \
+                           0 "Name"    left  \
+                           0 "Nb img"  right \
+                           0 "Moy Mag" right \
+                           0 "StDev Mag" right \
+                     ]
+            # Table
+            set ::bdi_gui_cdl::starstar $results.table
+            tablelist::tablelist $::bdi_gui_cdl::starstar \
+              -columns $cols \
+              -labelcommand tablelist::sortByColumn \
+              -xscrollcommand [ list $results.hsb set ] \
+              -yscrollcommand [ list $results.vsb set ] \
+              -selectmode extended \
+              -activestyle none \
+              -stripebackground "#e0e8f0" \
+              -showseparators 1
+    
+            # Scrollbar
+            scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::starstar xview]
+            pack $results.hsb -in $results -side bottom -fill x
+            scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::starstar yview]
+            pack $results.vsb -in $results -side right -fill y 
+
+            # Pack la Table
+            pack $::bdi_gui_cdl::starstar -in $results -expand yes -fill both
+
+            # Popup
+            menu $results.popupTbl -title "Actions"
+
+               $results.popupTbl add command -label "Voir l'objet dans une image" \
+                   -command "" -state disabled
+
+            # Binding
+            bind $::bdi_gui_cdl::starstar <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
+            bind [$::bdi_gui_cdl::starstar bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+
+            # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
+            #    Ascii
+            foreach ncol [list "Name"] {
+               set pcol [expr int ([lsearch $cols $ncol]/3)]
+               $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode ascii
+            }
+            #    Reel
+            foreach ncol [list "Nb img" "Moy Mag" "StDev Mag"] {
+               set pcol [expr int ([lsearch $cols $ncol]/3)]
+               $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode real
+            }
+
+
 
          #--- Cree un frame 
          set pb [frame $frm.pb  -borderwidth 0 -cursor arrow -relief groove]
@@ -310,52 +368,24 @@ namespace eval bdi_gui_cdl {
 
       # Onglet References
       $::bdi_gui_cdl::dataline delete 0 end
-      
-      for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
-
-         set sources [lindex  $::gui_cata::cata_list($idcata) 1]         
-         set ids 0
-         foreach s $sources {
-            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            
-            set name [::manage_source::namincata $s]
-            if {$name == ""} {continue}
-            
-            #set list_of_name [::manage_source::list_of_name $s]
-            #gren_info "list_of_name = $list_of_name \n"
-            
-            if {[info exists table_noms($name)]} {
-               set table_nbcata($name) [expr $table_nbcata($name)+1]
-            } else {
-               set table_nbcata($name) 1
-            }
-            set table_noms($name) 1
-            set mag [::bdi_tools_psf::get_val othf "mag"]
-            if {$mag != ""} {
-               lappend table_values($name,mag) [::bdi_tools_psf::get_val othf "mag"]
-            }
-#            $::bdi_gui_cdl::dataline insert end [list "0" $name $nbimg $mag]
-         }
-         incr $ids
-      }
-
-      #gren_info "table_noms = [array get table_noms] \n"
       set ids 0
-      foreach {name y} [array get table_noms] {
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
-         if { [info exists table_values($name,mag)] } {
-            if {[llength $table_values($name,mag)]>1} {
-               set mag_mean  [format "%0.4f" [::math::statistics::mean $table_values($name,mag)]]
-               set mag_stdev [format "%0.4f" [::math::statistics::stdev $table_values($name,mag)]]
+         gren_info "$ids\n"
+         if {$y == 0} {continue}
+         if { [info exists ::bdi_tools_cdl::table_values($name,mag)] } {
+            if {[llength $::bdi_tools_cdl::table_values($name,mag)]>1} {
+               set mag_mean  [format "%0.4f" [::math::statistics::mean $::bdi_tools_cdl::table_values($name,mag)]]
+               set mag_stdev [format "%0.4f" [::math::statistics::stdev $::bdi_tools_cdl::table_values($name,mag)]]
             } else {
-               set mag_mean  [format "%0.4f" [lindex $table_values($name,mag) 0]]
+               set mag_mean  [format "%0.4f" [lindex $::bdi_tools_cdl::table_values($name,mag) 0]]
                set mag_stdev 0
             }
          } else {
                set mag_mean  "-99"
                set mag_stdev "0"
          }
-         $::bdi_gui_cdl::dataline insert end [list $ids $name $table_nbcata($name) $mag_mean $mag_stdev]
+         $::bdi_gui_cdl::dataline insert end [list $ids $name $::bdi_tools_cdl::table_nbcata($name) $mag_mean $mag_stdev]
       }
 
       # Onglet variation
@@ -367,4 +397,14 @@ namespace eval bdi_gui_cdl {
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
 
+   }
+
+   proc ::bdi_gui_cdl::unset_dataline { } {
+
+      foreach select [$::bdi_gui_cdl::dataline curselection] {
+         set name [lindex [$::bdi_gui_cdl::dataline get $select] 1]      
+         gren_info "name = $name\n"
+         set ::bdi_tools_cdl::table_noms($name) 0
+      }
+      ::bdi_gui_cdl::affiche_data
    }
