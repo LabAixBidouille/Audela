@@ -274,6 +274,19 @@ namespace eval ::manage_source {
    }
    
 
+   proc ::manage_source::namincata { mysource } {
+
+      set list_of_cata [list SKYBOT TYCHO2 UCAC4 UCAC3 UCAC2 2MASS PPMX PPMXL USNOA2 WFIBC]
+      foreach cata $list_of_cata {
+          foreach mycata $mysource {
+             if {[lindex $mycata 0] == $cata} {
+                return [::manage_source::naming $mysource $cata]
+             }
+          }
+      }
+      return ""
+   }
+
 
 
    proc ::manage_source::namable { mysource } {
