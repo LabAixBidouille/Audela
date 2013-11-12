@@ -1212,6 +1212,7 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Key-v>         { ::bddimages_recherche::bddimages_voir_cata }
       bind [$tbl bodypath] <Key-V>         { ::bddimages_recherche::bddimages_verifier_cata }
       bind [$tbl bodypath] <Key-p>         { ::bddimages_recherche::psf }
+      bind [$tbl bodypath] <Key-P>         { ::bddimages_recherche::creation_cdlcata }
       bind [$tbl bodypath] <Key-Delete>    { ::bddimages_recherche::bddimages_images_delete }
 
    }
