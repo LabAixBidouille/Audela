@@ -51,7 +51,7 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::fermer {  } {
 
 
-      array unset ::gui_cata::cata_list
+      #array unset ::gui_cata::cata_list
       destroy $::bdi_gui_cdl::fen
       
       unset ::bdi_gui_cdl::fen
@@ -93,7 +93,10 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::run { } {
 
       ::bdi_gui_cdl::inittoconf
+   
+      set ::bdi_tools_cdl::memory(memview) 0
       ::bdi_tools_cdl::get_memory
+
       ::bdi_gui_cdl::create_dialog
    }
 
@@ -204,7 +207,9 @@ namespace eval bdi_gui_cdl {
          #--- Cree un frame pour afficher les boutons
          set info [frame $center.info  -borderwidth 0 -cursor arrow -relief groove]
          pack $info  -in $center -anchor s -side top -expand 0 -padx 10 -pady 5
-
+ 
+ 
+             checkbutton $info.check -variable ::bdi_tools_cdl::memory(memview)  -justify left
              label $info.labjob -text "Mem Job :"  -justify left
              label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid)  -justify left
              label $info.labmem -text "Mem Free % :"  -justify left
@@ -212,8 +217,7 @@ namespace eval bdi_gui_cdl {
              label $info.labswa -text "Swap Free % :"  -justify left
              label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap)  -justify left
 
-
-             grid $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa 
+             grid $info.check $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa 
              
          #--- Cree un frame pour afficher les boutons
          set center [frame $frm.actions  -borderwidth 2 -cursor arrow -relief groove]
@@ -313,7 +317,7 @@ namespace eval bdi_gui_cdl {
             set list_of_name [::manage_source::list_of_name $s]
             gren_info "list_of_name = $list_of_name \n"
 
-            set table_noms(astroid,$name) 
+            #set table_noms(astroid,$name) 
             
             
             if {$name == ""} {continue}
