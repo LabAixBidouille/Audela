@@ -1164,7 +1164,7 @@ namespace eval bddimages_recherche {
            $popupTbl.analyse add command -label "CdL avec WCS" \
               -command { ::bddimages_recherche::creation_cdlwcs}
 
-           $popupTbl.analyse add command -label "CdL avec CATA" \
+           $popupTbl.analyse add command -label "(P) CdL avec CATA" \
               -command { ::bddimages_recherche::creation_cdlcata}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) \
