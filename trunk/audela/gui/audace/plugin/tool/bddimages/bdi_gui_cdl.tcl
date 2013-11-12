@@ -74,6 +74,11 @@ namespace eval bdi_gui_cdl {
    }
 
 
+
+
+
+
+
    # Structure ASTROID :
    #  0    "xsm" 
    #  1    "ysm" 
@@ -208,7 +213,7 @@ namespace eval bdi_gui_cdl {
             scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::dataline xview]
             pack $results.hsb -in $results -side bottom -fill x
             scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::dataline yview]
-            pack $results.vsb -in $results -side left -fill y 
+            pack $results.vsb -in $results -side right -fill y 
 
             # Pack la Table
             pack $::bdi_gui_cdl::dataline -in $results -expand yes -fill both
@@ -251,9 +256,15 @@ namespace eval bdi_gui_cdl {
          set info [frame $center.info  -borderwidth 0 -cursor arrow -relief groove]
          pack $info  -in $center -anchor s -side top -expand 0 -fill y -padx 10 -pady 5
 
-             label $info.labmem -text "Mem :" -width 10 -justify left
-             label $info.valmem -textvariable ::bdi_tools_cdl::mem -width 10 -justify left
-             grid $info.labmem $info.valmem -sticky w
+             label $info.labjob -text "Mem Job :" -width 10 -justify left
+             label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid) -width 10 -justify left
+             label $info.labmem -text "Mem % :" -width 10 -justify left
+             label $info.valmem -textvariable ::bdi_tools_cdl::memory(mem) -width 10 -justify left
+             label $info.labswa -text "Swap % :" -width 10 -justify left
+             label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap) -width 10 -justify left
+
+
+             grid $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa -sticky w
              
          #--- Cree un frame pour afficher les boutons
          set center [frame $frm.actions  -borderwidth 2 -cursor arrow -relief groove]
