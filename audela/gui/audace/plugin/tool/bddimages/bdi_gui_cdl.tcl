@@ -64,11 +64,13 @@ namespace eval bdi_gui_cdl {
 
       ::bddimages::ressource
       ::bdi_gui_cdl::fermer
-      ::bdi_gui_cdl::run $::tools_cata::img_list
+      ::bdi_gui_cdl::run
       foreach img $::tools_cata::img_list {
          gren_info "IMG = [llength $img]\n"
          break
       }
+      ::bdi_tools_cdl::get_memory
+
    }
 
 
@@ -137,6 +139,7 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::run { } {
 
       ::bdi_gui_cdl::inittoconf
+      
       ::bdi_gui_cdl::create_dialog
    }
 
@@ -232,9 +235,33 @@ namespace eval bdi_gui_cdl {
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode real
             }
 
+         #--- Cree un frame 
+         set pb [frame $frm.pb  -borderwidth 0 -cursor arrow -relief groove]
+         pack $pb  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             set ::bdi_tools_cdl::progress 0
+             set    pf [ ttk::progressbar $pb.p -variable ::bdi_tools_cdl::progress -orient horizontal -mode determinate]
+             pack   $pf -in $pb -side left -expand 1 -fill x 
+
          #--- Cree un frame pour afficher les boutons
-         set actions [frame $frm.actions  -borderwidth 0 -cursor arrow -relief groove]
-         pack $actions  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
+         set center [frame $frm.info  -borderwidth 2 -cursor arrow -relief groove]
+         pack $center  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
+
+         #--- Cree un frame pour afficher les boutons
+         set info [frame $center.info  -borderwidth 0 -cursor arrow -relief groove]
+         pack $info  -in $center -anchor s -side top -expand 0 -fill y -padx 10 -pady 5
+
+             label $info.labmem -text "Mem :" -width 10 -justify left
+             label $info.valmem -textvariable ::bdi_tools_cdl::mem -width 10 -justify left
+             grid $info.labmem $info.valmem -sticky w
+             
+         #--- Cree un frame pour afficher les boutons
+         set center [frame $frm.actions  -borderwidth 2 -cursor arrow -relief groove]
+         pack $center  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
+
+         #--- Cree un frame pour afficher les boutons
+         set actions [frame $center.actions  -borderwidth 4 -cursor arrow -relief groove]
+         pack $actions  -in $center -anchor s -side top -expand 0 -fill y -padx 10 -pady 5
 
               button $actions.ressource -text "Ressource" -borderwidth 2 -takefocus 1 \
                  -command "::bddimages::ressource"

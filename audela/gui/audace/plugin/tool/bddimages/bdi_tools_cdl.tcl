@@ -27,7 +27,7 @@
 #  @warning   Appel SANS GUI
 namespace eval bdi_tools_cdl {
 
-   variable fen      ; # Variable definissant la racine de la fenetre de l'outil
+   variable progress      ; # Barre de progression
 }
 
 
@@ -47,6 +47,8 @@ namespace eval bdi_tools_cdl {
          incr id
          ::gui_cata::load_cata
          set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
+         ::bdi_tools_cdl::set_progress $id $::tools_cata::nb_img_list
+         ::bdi_tools_cdl::get_memory      
       }    
          
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
@@ -58,4 +60,29 @@ namespace eval bdi_tools_cdl {
 
    proc ::bdi_tools_cdl::charge_cata_list { } {
 
+   }
+
+   proc ::bdi_tools_cdl::set_progress { cur max } {
+      set ::bdi_tools_cdl::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+   }
+
+   proc ::bdi_tools_cdl::get_memory {  } {
+
+      set pid [exec pidof audela]
+      
+      gren_info "pid = $pid\n"
+      
+      set info [exec cat /proc/$pid/status ]
+      set ::bdi_tools_cdl::info $info
+      
+      set a [string first "VmSize:" $info]
+      set a [ string range $::bdi_tools_cdl::info [expr $a + 8] [expr $a + 30] ]
+      set b [expr [string first "kB" $a] +1]
+      set a [ string range $a 0 $b ]
+      set a [ string trim $a]
+            
+      set ::bdi_tools_cdl::mem $a 
+      gren_info "a=$a\n" 
+      
    }
