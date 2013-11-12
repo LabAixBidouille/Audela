@@ -345,7 +345,6 @@ namespace eval bdi_gui_cdl {
          incr ids
          if { [info exists table_values($name,mag)] } {
             if {[llength $table_values($name,mag)]>1} {
-               gren_info "$table_values($name,mag)\n"
                set mag_mean  [format "%0.4f" [::math::statistics::mean $table_values($name,mag)]]
                set mag_stdev [format "%0.4f" [::math::statistics::stdev $table_values($name,mag)]]
             } else {
