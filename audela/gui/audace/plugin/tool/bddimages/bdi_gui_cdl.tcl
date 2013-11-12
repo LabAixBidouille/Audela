@@ -384,6 +384,7 @@ namespace eval bdi_gui_cdl {
                set mag_stdev "0"
          }
          $::bdi_gui_cdl::dataline insert end [list $ids $name $::bdi_tools_cdl::table_nbcata($name) $mag_mean $mag_stdev]
+         update
          set ::bdi_tools_cdl::id_to_name($ids) $name
       }
 
