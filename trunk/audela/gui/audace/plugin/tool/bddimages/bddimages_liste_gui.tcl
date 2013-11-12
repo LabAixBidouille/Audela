@@ -1753,17 +1753,32 @@ namespace eval bddimages_liste_gui {
       foreach img $img_list {
          set idbddimg [::bddimages_liste::lget $img "idbddimg"]
          if {[info exists cata($idbddimg,idbddcata)]} {
-
+            set cata($idbddimg,cataexist) 1
+            set cata($idbddimg,cataloaded) 0
             foreach key $keys  {
-               lappend img [list $key $cata($idbddimg,$key)]
+               set pos [lsearch -index 0 $img $key]
+               if {$pos != -1 } {
+                  set img [ lreplace $img $pos $pos [list $key $cata($idbddimg,$key)]]
+               } else {
+                  lappend img [list $key $cata($idbddimg,$key)]
+               }
             }
-            lappend img [list cataexist 1] 
-            lappend img [list cataloaded 0] 
-
          } else {
-
-            lappend img [list cataexist 0] 
-            lappend img [list cataloaded 0] 
+            set pos [lsearch -index 0 $img cataexist]
+            if {$pos != -1 } {
+               set img [ lreplace $img $pos $pos [list cataexist 0]]
+            } else {
+               lappend img [list cataexist 0]
+            }
+            set pos [lsearch -index 0 $img cataloaded]
+            if {$pos != -1 } {
+               set img [ lreplace $img $pos $pos [list cataloaded 0]]
+            } else {
+               lappend img [list cataloaded 0]
+            }
+            
+            #lappend img [list cataexist 0]
+            #lappend img [list cataloaded 0]
             
          }
          lappend result_img_list $img

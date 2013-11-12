@@ -165,6 +165,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_methodes_psf.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astrometry.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata_user.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cdl.tcl ]\""
 
 
    #--- Chargement des fichiers gui
@@ -178,6 +179,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_psf.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_astrometry.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata_delete.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cdl.tcl ]\""
 
 
 # TODO
