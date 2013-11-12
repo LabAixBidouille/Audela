@@ -50,6 +50,8 @@ namespace eval bdi_gui_cdl {
    # \c conf
    proc ::bdi_gui_cdl::fermer {  } {
 
+
+      array unset ::gui_cata::cata_list
       destroy $::bdi_gui_cdl::fen
       
       unset ::bdi_gui_cdl::fen
@@ -207,7 +209,7 @@ namespace eval bdi_gui_cdl {
              label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid)  -justify left
              label $info.labmem -text "Mem Free % :"  -justify left
              label $info.valmem -textvariable ::bdi_tools_cdl::memory(mem)  -justify left
-             label $info.labswa -text "Swap % :"  -justify left
+             label $info.labswa -text "Swap Free % :"  -justify left
              label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap)  -justify left
 
 
@@ -304,9 +306,16 @@ namespace eval bdi_gui_cdl {
       $::bdi_gui_cdl::dataline delete 0 end
       for {set id 1} {$id<=$::tools_cata::nb_img_list} {incr id} {
          set sources [lindex  $::gui_cata::cata_list($id) 1]
+         
          foreach s $sources {
             set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set name [::bdi_tools_psf::get_val othf "name"]
+            set list_of_name [::manage_source::list_of_name $s]
+            gren_info "list_of_name = $list_of_name \n"
+
+            set table_noms(astroid,$name) 
+            
+            
             if {$name == ""} {continue}
             set nbimg 1
             set mag [::bdi_tools_psf::get_val othf "mag"]

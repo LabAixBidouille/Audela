@@ -289,6 +289,29 @@ namespace eval ::manage_source {
       return ""
    }
 
+   proc ::manage_source::list_of_cata { mysource } {
+
+      set list_of_cata ""
+      foreach mycata $mysource {
+         set mycata [lindex $mycata 0]
+         if {[lsearch $list_of_cata $mycata]==-1} {
+            set list_of_cata [linsert $list_of_cata end $mycata]
+         }
+      }
+      return $list_of_cata
+   }
+
+   proc ::manage_source::list_of_name { mysource } {
+
+      set list_of_name ""
+      foreach mycata $mysource {
+         set mycata [lindex $mycata 0]
+         set name [::manage_source::naming $mysource $mycata]
+         set list_of_name [linsert $list_of_name end $name]
+      }
+      return $list_of_name
+   }
+
    #
    # manage_source::name_cata
    # retourne le nom du catalogue pour un nom de source 
