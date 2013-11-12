@@ -28,6 +28,9 @@
 namespace eval bdi_tools_cdl {
 
    variable progress      ; # Barre de progression
+   variable table_noms      ; # 
+   variable table_nbcata      ; # 
+   variable table_values      ; # 
 }
 
 
@@ -42,15 +45,22 @@ namespace eval bdi_tools_cdl {
 
       set tt0 [clock clicks -milliseconds]
 
+      array unset ::bdi_tools_cdl::table_noms  
+      array unset ::bdi_tools_cdl::table_nbcata
+      array unset ::bdi_tools_cdl::table_values
+      array unset ::gui_cata::cata_list
+
+
+      set ::bdi_tools_cdl::encours_charge_cata_xml 1
       set id 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
+         if {$::bdi_tools_cdl::encours_charge_cata_xml!=1} { break }
          incr id
          ::gui_cata::load_cata
          set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
          ::bdi_tools_cdl::set_progress $id $::tools_cata::nb_img_list
          ::bdi_tools_cdl::get_memory      
-      }    
-
+      }
 
       for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
 
@@ -80,13 +90,18 @@ namespace eval bdi_tools_cdl {
          incr $ids
       }
 
-         
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Chargement complet en $tt sec \n"
 
       return
 
    }
+
+   proc ::bdi_tools_cdl::stop_charge_cata_xml { } {
+     set ::bdi_tools_cdl::encours_charge_cata_xml 0
+   }
+
+
 
    proc ::bdi_tools_cdl::charge_cata_list { } {
 

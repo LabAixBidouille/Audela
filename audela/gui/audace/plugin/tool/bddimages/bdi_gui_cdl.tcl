@@ -200,12 +200,7 @@ namespace eval bdi_gui_cdl {
          set results [frame $f_starstar.starstar  -borderwidth 10 -relief groove]
          pack $results -in $f_starstar -expand yes -fill both
             
-            set cols [list 0 " "       left  \
-                           0 "Name"    left  \
-                           0 "Nb img"  right \
-                           0 "Moy Mag" right \
-                           0 "StDev Mag" right \
-                     ]
+            set cols [list 0 " " left ]
             # Table
             set ::bdi_gui_cdl::starstar $results.table
             tablelist::tablelist $::bdi_gui_cdl::starstar \
@@ -239,15 +234,15 @@ namespace eval bdi_gui_cdl {
 
             # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
             #    Ascii
-            foreach ncol [list "Name"] {
-               set pcol [expr int ([lsearch $cols $ncol]/3)]
-               $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode ascii
-            }
+           #  foreach ncol [list "Name"] {
+            #    set pcol [expr int ([lsearch $cols $ncol]/3)]
+            #    $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode ascii
+           #  }
             #    Reel
-            foreach ncol [list "Nb img" "Moy Mag" "StDev Mag"] {
-               set pcol [expr int ([lsearch $cols $ncol]/3)]
-               $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode real
-            }
+           #  foreach ncol [list "Nb img" "Moy Mag" "StDev Mag"] {
+           #     set pcol [expr int ([lsearch $cols $ncol]/3)]
+            #    $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode real
+           #  }
 
 
 
@@ -296,6 +291,8 @@ namespace eval bdi_gui_cdl {
 
               button $actions.chargexml -text "Charge XML" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::charge_cata_xml"
+              button $actions.stopxml -text "STOP XML" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::stop_charge_cata_xml"
               button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::charge_cata_list"
               button $actions.voir -text "Voir" -borderwidth 2 -takefocus 1 \
@@ -311,8 +308,9 @@ namespace eval bdi_gui_cdl {
               grid $actions.clean     -row 0 -column 2 -sticky news
 
               grid $actions.chargexml  -row 1 -column 0 -sticky news
-              grid $actions.chargelist -row 1 -column 1 -sticky news
-              grid $actions.voir       -row 1 -column 2 -sticky news
+              grid $actions.stopxml    -row 1 -column 1 -sticky news
+              grid $actions.chargelist -row 1 -column 2 -sticky news
+              grid $actions.voir       -row 1 -column 3 -sticky news
 
               grid $actions.aide      -row 2 -column 0 -sticky news
               grid $actions.fermer    -row 2 -column 1 -sticky news
@@ -368,10 +366,10 @@ namespace eval bdi_gui_cdl {
 
       # Onglet References
       $::bdi_gui_cdl::dataline delete 0 end
+      
       set ids 0
       foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
-         gren_info "$ids\n"
          if {$y == 0} {continue}
          if { [info exists ::bdi_tools_cdl::table_values($name,mag)] } {
             if {[llength $::bdi_tools_cdl::table_values($name,mag)]>1} {
@@ -386,24 +384,43 @@ namespace eval bdi_gui_cdl {
                set mag_stdev "0"
          }
          $::bdi_gui_cdl::dataline insert end [list $ids $name $::bdi_tools_cdl::table_nbcata($name) $mag_mean $mag_stdev]
+         set ::bdi_tools_cdl::id_to_name($ids) $name
       }
 
       # Onglet variation
-
-
-
-
+      ::bdi_gui_cdl::affiche_starstar
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
 
    }
 
+
+
+
+
+   proc ::bdi_gui_cdl::affiche_starstar { } {
+
+
+      $::bdi_gui_cdl::starstar delete 0 end
+      $::bdi_gui_cdl::starstar deletecolumns 0 end  
+      
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 0} {continue}
+         $::bdi_gui_cdl::starstar insertcolumns end 0 $ids left
+      }
+
+
+
+   }
+
+
    proc ::bdi_gui_cdl::unset_dataline { } {
 
       foreach select [$::bdi_gui_cdl::dataline curselection] {
          set name [lindex [$::bdi_gui_cdl::dataline get $select] 1]      
-         gren_info "name = $name\n"
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
