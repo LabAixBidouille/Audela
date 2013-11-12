@@ -67,22 +67,37 @@ namespace eval bdi_tools_cdl {
       update
    }
 
+   proc ::bdi_tools_cdl::get_mem { p_info key } {
+      upvar $p_info info
+
+      set a [string first $key $info]
+      set a [ string range $info [expr $a + [string length $key]] [expr $a + 30] ]
+      set b [expr [string first "kB" $a] -1]
+      set a [ string range $a 0 $b ]
+      set a [ string trim $a]
+      return $a 
+   }
+   
+   
+   
    proc ::bdi_tools_cdl::get_memory {  } {
 
       set pid [exec pidof audela]
-      
-      gren_info "pid = $pid\n"
-      
-      set info [exec cat /proc/$pid/status ]
-      set ::bdi_tools_cdl::info $info
-      
-      set a [string first "VmSize:" $info]
-      set a [ string range $::bdi_tools_cdl::info [expr $a + 8] [expr $a + 30] ]
-      set b [expr [string first "kB" $a] +1]
-      set a [ string range $a 0 $b ]
-      set a [ string trim $a]
             
-      set ::bdi_tools_cdl::mem $a 
-      gren_info "a=$a\n" 
+      set info [exec cat /proc/$pid/status ]
       
+      set ::bdi_tools_cdl::memory(mempid) [format "%0.1f Mb" [expr \
+                  [::bdi_tools_cdl::get_mem info "VmSize:"] / 1024.0 ] ]
+
+      set info [exec cat /proc/meminfo ]
+
+      set ::bdi_tools_cdl::memory(memtotal) [::bdi_tools_cdl::get_mem info "MemTotal:"]
+      gren_info "memtotal = $::bdi_tools_cdl::memory(memtotal) \n"
+      set ::bdi_tools_cdl::memory(memfree) [::bdi_tools_cdl::get_mem info "MemFree:"]
+      gren_info "memfree = $::bdi_tools_cdl::memory(memfree) \n"
+      set ::bdi_tools_cdl::memory(swaptotal) [::bdi_tools_cdl::get_mem info "SwapTotal:"]
+      set ::bdi_tools_cdl::memory(swapfree) [::bdi_tools_cdl::get_mem info "SwapFree:"]
+      set ::bdi_tools_cdl::memory(mem) [format "%0.1f" [expr 1.0*$::bdi_tools_cdl::memory(memfree)/$::bdi_tools_cdl::memory(memtotal)]]
+      set ::bdi_tools_cdl::memory(swap) [format "%0.1f" [expr 1.0*$::bdi_tools_cdl::memory(swapfree)/$::bdi_tools_cdl::memory(swaptotal)]]
+
    }
