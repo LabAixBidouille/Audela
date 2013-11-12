@@ -71,41 +71,6 @@ namespace eval bdi_gui_cdl {
       }
    }
 
-   #----------------------------------------------------------------------------
-   ## Chargement de la liste d'image selectionnee dans l'outil Recherche.
-   #  \param img_list structure de liste d'images
-   #  \note le resultat de cette procedure affecte la variable de
-   # namespace  \c tools_cata::img_list puis charge toutes l'info des cata
-   # associes aux images
-   #----------------------------------------------------------------------------
-   proc ::bdi_gui_cdl::charge_list { img_list } {
-
-      if { [ info exists $::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
-      if { [ info exists $::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
-      if { [ info exists $::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
-
-      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
-      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
-      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
-   }
-
-   proc ::bdi_gui_cdl::charge_cata { } {
-
-      set tt0 [clock clicks -milliseconds]
-
-      set id 0
-      foreach ::tools_cata::current_image $::tools_cata::img_list {
-         incr id
-         ::gui_cata::load_cata
-         set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
-      }    
-         
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Chargement complet en $tt sec \n"
-
-      return
-
-   }
 
    # Structure ASTROID :
    #  0    "xsm" 
@@ -172,7 +137,7 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::run { img_list } {
 
       ::bdi_gui_cdl::inittoconf
-      ::bdi_gui_cdl::charge_list $img_list
+      ::bdi_tools_cdl::charge_list $img_list
       ::bdi_gui_cdl::create_dialog
    }
 
@@ -279,8 +244,10 @@ namespace eval bdi_gui_cdl {
               button $actions.clean -text "Clean" -borderwidth 2 -takefocus 1 \
                  -command "console::clear"
 
-              button $actions.charge -text "Charge" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::charge_cata"
+              button $actions.chargexml -text "Charge XML" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::charge_cata_xml"
+              button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::charge_cata_list"
               button $actions.voir -text "Voir" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::affiche_data"
 
@@ -293,8 +260,9 @@ namespace eval bdi_gui_cdl {
               grid $actions.relance   -row 0 -column 1 -sticky news
               grid $actions.clean     -row 0 -column 2 -sticky news
 
-              grid $actions.charge    -row 1 -column 0 -sticky news
-              grid $actions.voir      -row 1 -column 1 -sticky news
+              grid $actions.chargexml  -row 1 -column 0 -sticky news
+              grid $actions.chargelist -row 1 -column 1 -sticky news
+              grid $actions.voir       -row 1 -column 2 -sticky news
 
               grid $actions.aide      -row 2 -column 0 -sticky news
               grid $actions.fermer    -row 2 -column 1 -sticky news
