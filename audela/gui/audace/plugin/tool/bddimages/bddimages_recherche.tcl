@@ -1822,8 +1822,13 @@ namespace eval bddimages_recherche {
           return
        }
       
-      set imglist [::bddimages_liste_gui::new_normallist $lid]
-      set z [::bdi_gui_cdl::run $imglist]
+      if { [ info exists ::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+      if { [ info exists ::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+      if { [ info exists ::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img [::bddimages_liste_gui::new_normallist $lid]]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      set z [::bdi_gui_cdl::run]
 
    }
 

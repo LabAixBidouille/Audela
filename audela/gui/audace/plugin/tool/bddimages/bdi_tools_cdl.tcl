@@ -38,17 +38,6 @@ namespace eval bdi_tools_cdl {
    # namespace  \c tools_cata::img_list puis charge toutes l'info des cata
    # associes aux images
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::charge_list { img_list } {
-
-      if { [ info exists ::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
-      if { [ info exists ::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
-      if { [ info exists ::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
-
-      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img $img_list]
-      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
-      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
-   }
-
    proc ::bdi_tools_cdl::charge_cata_xml { } {
 
       set tt0 [clock clicks -milliseconds]

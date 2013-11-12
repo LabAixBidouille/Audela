@@ -134,10 +134,9 @@ namespace eval bdi_gui_cdl {
    #----------------------------------------------------------------------------
    ## Demarrage de l'outil
    #  \param img_list structure de liste d'images
-   proc ::bdi_gui_cdl::run { img_list } {
+   proc ::bdi_gui_cdl::run { } {
 
       ::bdi_gui_cdl::inittoconf
-      ::bdi_tools_cdl::charge_list $img_list
       ::bdi_gui_cdl::create_dialog
    }
 
