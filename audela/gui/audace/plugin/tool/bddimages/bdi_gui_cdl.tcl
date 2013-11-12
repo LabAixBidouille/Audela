@@ -147,7 +147,8 @@ namespace eval bdi_gui_cdl {
             set cols [list 0 " "       left  \
                            0 "Name"    left  \
                            0 "Nb img"  right \
-                           0 "moy Mag" right \
+                           0 "Moy Mag" right \
+                           0 "StDev Mag" right \
                      ]
             # Table
             set ::bdi_gui_cdl::dataline $results.table
@@ -187,7 +188,7 @@ namespace eval bdi_gui_cdl {
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode ascii
             }
             #    Reel
-            foreach ncol [list "Nb img" "moy Mag"] {
+            foreach ncol [list "Nb img" "Moy Mag" "StDev Mag"] {
                set pcol [expr int ([lsearch $cols $ncol]/3)]
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode real
             }
@@ -309,6 +310,7 @@ namespace eval bdi_gui_cdl {
 
       # Onglet References
       $::bdi_gui_cdl::dataline delete 0 end
+      
       for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
 
          set sources [lindex  $::gui_cata::cata_list($idcata) 1]         
@@ -328,18 +330,40 @@ namespace eval bdi_gui_cdl {
                set table_nbcata($name) 1
             }
             set table_noms($name) 1
-            
             set mag [::bdi_tools_psf::get_val othf "mag"]
+            if {$mag != ""} {
+               lappend table_values($name,mag) [::bdi_tools_psf::get_val othf "mag"]
+            }
 #            $::bdi_gui_cdl::dataline insert end [list "0" $name $nbimg $mag]
          }
          incr $ids
       }
 
       #gren_info "table_noms = [array get table_noms] \n"
-      
+      set ids 0
       foreach {name y} [array get table_noms] {
-         $::bdi_gui_cdl::dataline insert end [list "0" $name $table_nbcata($name) $mag]
+         incr ids
+         if { [info exists table_values($name,mag)] } {
+            if {[llength $table_values($name,mag)]>1} {
+               gren_info "$table_values($name,mag)\n"
+               set mag_mean  [format "%0.4f" [::math::statistics::mean $table_values($name,mag)]]
+               set mag_stdev [format "%0.4f" [::math::statistics::stdev $table_values($name,mag)]]
+            } else {
+               set mag_mean  [format "%0.4f" [lindex $table_values($name,mag) 0]]
+               set mag_stdev 0
+            }
+         } else {
+               set mag_mean  "-99"
+               set mag_stdev "0"
+         }
+         $::bdi_gui_cdl::dataline insert end [list $ids $name $table_nbcata($name) $mag_mean $mag_stdev]
       }
+
+      # Onglet variation
+
+
+
+
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
