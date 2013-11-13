@@ -98,8 +98,6 @@ namespace eval bdi_tools_cdl {
 
 
 
-
-
 # Chargement des structure de variable pour l affichage
    proc ::bdi_tools_cdl::charge_cata_list { } {
 
@@ -123,9 +121,9 @@ namespace eval bdi_tools_cdl {
                incr nbimg
                set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
                set mag [::bdi_tools_psf::get_val othf "mag"]
-               if {$mag!="" && [string is double $mag]} { lappend tab(mag) $mag }
+               if {$mag != "" && [string is double $mag] && $mag+1 != $mag} { lappend tab(mag) $mag }
                set flux [::bdi_tools_psf::get_val othf "flux"]
-               if {$flux!="" && [string is double $flux]} { lappend tab(flux) $flux }
+               if {$flux != "" && [string is double $flux] && $flux+1 != $flux} { lappend tab(flux) $flux }
             }
          }
 
@@ -133,7 +131,7 @@ namespace eval bdi_tools_cdl {
          #gren_info "$tab(mag)\n"
                   
          if { [info exists tab(mag)] } {
-            if {[llength $tab(mag)]>1} {
+            if {[llength $tab(mag)] > 1} {
                set mag_mean  [format "%0.4f" [::math::statistics::mean $tab(mag)]]
                set mag_stdev [format "%0.4f" [::math::statistics::stdev $tab(mag)]]
             } else {
@@ -159,18 +157,17 @@ namespace eval bdi_tools_cdl {
             if {![info exists ::bdi_tools_cdl::table_othf($name1,$idcata,othf)]} { continue }
             set othf $::bdi_tools_cdl::table_othf($name1,$idcata,othf)
             set flux1 [::bdi_tools_psf::get_val othf "flux"]
-            if { $flux1=="" && $flux1<=0} { continue }
+            if {$flux1 == "" || $flux1 <= 0 || $flux1+1 == $flux1} { continue }
 
             foreach ids2 $::bdi_tools_cdl::list_of_stars {
                set name2 $::bdi_tools_cdl::id_to_name($ids2)
                if {![info exists ::bdi_tools_cdl::table_othf($name2,$idcata,othf)]} { continue }
                set othf $::bdi_tools_cdl::table_othf($name2,$idcata,othf)
                set flux2 [::bdi_tools_psf::get_val othf "flux"]
-               if { $flux2=="" && $flux2<=0 } { continue }
-               
+               if {$flux2 == "" || $flux2 <= 0 || $flux2+1 == $flux2} { continue }
+
                lappend ::bdi_tools_cdl::table_variations($ids1,$ids2,flux) [expr 1.0*$flux1/$flux2]
                lappend ::bdi_tools_cdl::table_variations($ids2,$ids1,flux) [expr 1.0*$flux2/$flux1]
-
             }
 
          }
@@ -182,15 +179,13 @@ namespace eval bdi_tools_cdl {
          foreach ids2 $::bdi_tools_cdl::list_of_stars {
             if { [info exists ::bdi_tools_cdl::table_variations($ids1,$ids2,flux)] } {
                set tab(flux) $::bdi_tools_cdl::table_variations($ids1,$ids2,flux)
-               
-               
                set nbmes [llength $tab(flux)]
-               if {$nbmes>1} {
+               if {$nbmes > 1} {
                   set meanflux  [::math::statistics::mean  $tab(flux)]
                   set stdevflux [::math::statistics::stdev $tab(flux)]
                   set mag ""
                   foreach rflux $tab(flux) {
-                     lappend mag [expr  - 2.5*log10($rflux)]
+                     lappend mag [expr - 2.5*log10($rflux)]
                   }
                   set stdevmag  [::math::statistics::stdev $mag]
                } else {
