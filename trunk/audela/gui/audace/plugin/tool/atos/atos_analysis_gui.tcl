@@ -2289,61 +2289,87 @@ catch {
          if {$res == "no"} {return -code 0 "no"}
       }
 
-
-      # Was your reaction time applied to the above timings ?
-      if {$::atos_analysis_gui::tps_corr} {
-         set reaction_time "YES"
-      } else {
-         set reaction_time "NO"
-      }
+      # Parametres dans tous les cas
+      set reaction_time ""
 
       # Constantes 
-      set ::atos_analysis_gui::type2_station   "Single"
+      set ::atos_analysis_gui::type2_station "Single"
       set ::atos_analysis_gui::record_evin ""
 
       # A Calculer  
       set obscond_alti [format "%+d deg" [lindex [split $::atos_analysis_gui::hauteur ":"] 0] ]
-      set occ_date_short [lindex [split $::atos_analysis_gui::date_immersion_sol "T"] 0]
+      set occ_date_short [lindex [split $::atos_analysis_tools::raw_date_begin "T"] 0]
 
       # debut obs
-      set datetmp [lindex [split $::atos_analysis_gui::date_begin_obs "T"] 1]
+      set datetmp [lindex [split $::atos_analysis_tools::raw_date_begin "T"] 1]
       set datetmp [split $datetmp ":"]
       set hs  [lindex $datetmp 0]
       set ms  [lindex $datetmp 1]
       set ss  [lindex $datetmp 2]
 
       # immersion
-      set datetmp [lindex [split $::atos_analysis_gui::date_immersion_sol "T"] 1]
-      set datetmp [split $datetmp ":"]
-      set hd  [lindex $datetmp 0]
-      set md  [lindex $datetmp 1]
-      set sd  [lindex $datetmp 2]
+      set hd ""
+      set md ""
+      set sd ""
 
       # emersion
-      set datetmp [lindex [split $::atos_analysis_gui::date_emersion_sol "T"] 1]
-      set datetmp [split $datetmp ":"]
-      set hr  [lindex $datetmp 0]
-      set mr  [lindex $datetmp 1]
-      set sr  [lindex $datetmp 2]
+      set hr ""
+      set mr ""
+      set sr ""
 
       # fin obs
-      set datetmp [lindex [split $::atos_analysis_gui::date_end_obs "T"] 1]
+      set datetmp [lindex [split $::atos_analysis_tools::raw_date_end "T"] 1]
       set datetmp [split $datetmp ":"]
       set he  [lindex $datetmp 0]
       set me  [lindex $datetmp 1]
       set se  [lindex $datetmp 2]
 
       # incertitude imm et em
-      set ad  $::atos_analysis_gui::im_t_diff
-      set ar  $::atos_analysis_gui::em_t_diff
+      set ad ""
+      set ar ""
       # duree integration
-      set int $::atos_analysis_tools::corr_exposure
+      set int ""
       # mid evenement
-      set midevent  [mc_date2iso8601 [expr ([mc_date2jd $::atos_analysis_gui::date_emersion_sol]+[mc_date2jd $::atos_analysis_gui::date_immersion_sol])/2.0] ]
+      set midevent ""
       # Commentaires
       set comments "8 frame integration used (Watec setting 4 Slow) Codec use for grab : No recompression YUY2"
       set comments [$::atos_analysis_gui::gui_comment.v get 1.0 end]
 
+      # Parametres dans le cas POSITIF
+      if {$::atos_analysis_gui::result == "POSITIVE"} {
+
+         # Was your reaction time applied to the above timings ?
+         if {$::atos_analysis_gui::tps_corr} {
+            set reaction_time "YES"
+         } else {
+            set reaction_time "NO"
+         }
+
+         set occ_date_short [lindex [split $::atos_analysis_gui::date_immersion_sol "T"] 0]
+
+         # immersion
+         set datetmp [lindex [split $::atos_analysis_gui::date_immersion_sol "T"] 1]
+         set datetmp [split $datetmp ":"]
+         set hd  [lindex $datetmp 0]
+         set md  [lindex $datetmp 1]
+         set sd  [lindex $datetmp 2]
+   
+         # emersion
+         set datetmp [lindex [split $::atos_analysis_gui::date_emersion_sol "T"] 1]
+         set datetmp [split $datetmp ":"]
+         set hr  [lindex $datetmp 0]
+         set mr  [lindex $datetmp 1]
+         set sr  [lindex $datetmp 2]
+
+         # incertitude imm et em
+         set ad  $::atos_analysis_gui::im_t_diff
+         set ar  $::atos_analysis_gui::em_t_diff
+         # duree integration
+         set int $::atos_analysis_tools::corr_exposure
+         # mid evenement
+         set midevent [mc_date2iso8601 [expr ([mc_date2jd $::atos_analysis_gui::date_emersion_sol]+[mc_date2jd $::atos_analysis_gui::date_immersion_sol])/2.0] ]
+
+      }
 
 # Ecriture du rapport
 
@@ -2396,21 +2422,23 @@ catch {
          puts $chan [format "    S  - %2d %2d %s   -      -         :" $hs $ms $ss]
       }
 
-      puts $chan "       -                -      -         :"
-
-      if {$hd==""||$md==""||$sd==""||$ad==""||$int==""} {
-         puts $chan [format "    D  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
+      if {$::atos_analysis_gui::result == "POSITIVE"} {
+         puts $chan "       -                -      -         :"
+         if {$hd == "" || $md == "" || $sd == "" || $ad == "" || $int == ""} {
+            puts $chan [format "    D  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
+         } else {
+            puts $chan [format "    D  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
+         }
+         if {$hr == "" || $mr == "" || $sr == "" || $ar == "" || $int == ""} {
+            puts $chan [format "    R  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
+         } else {
+            puts $chan [format "    R  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
+         }
+         puts $chan "       -                -      -         :"
       } else {
-         puts $chan [format "    D  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
+         puts $chan "    D  - "
+         puts $chan "    R  - "
       }
-
-      if {$hr==""||$mr==""||$sr==""||$ar==""||$int==""} {
-         puts $chan [format "    R  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
-      } else {
-         puts $chan [format "    R  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
-      }
-
-      puts $chan "       -                -      -         :"
 
       if {$he==""||$me==""||$se==""} {
          puts $chan [format "    E  - %2s %2s %s    -      -         :" "HH" "MM" "SS.SS"]
@@ -2419,18 +2447,19 @@ catch {
       }
       
       puts $chan ""
-
-      if {$::atos_analysis_gui::duree==""} {
-         puts $chan [format "                          Duration : %s s" "SS.SS"]
+      if {$::atos_analysis_gui::result == "POSITIVE"} {
+         if {$::atos_analysis_gui::duree == ""} {
+            puts $chan [format "                          Duration : %s s" "SS.SS"]
+         } else {
+            puts $chan [format "                          Duration : %.3f s" $::atos_analysis_gui::duree]
+         }
+         puts $chan [format "                         Mid-event : %s UTC" $midevent]
+         puts $chan [format "                             Width : %s km" $::atos_analysis_gui::bande]
       } else {
-         puts $chan [format "                          Duration : %.3f s" $::atos_analysis_gui::duree]
+         puts $chan "                          Duration : 0s"
+         puts $chan [format "                         Mid-event : %s UTC" $midevent]
+         puts $chan [format "                             Width : %s km" $::atos_analysis_gui::bande]
       }
-
-
-
-      puts $chan [format "                         Mid-event : %s UTC" $midevent]
-
-      puts $chan [format "                             Width : %s km" $::atos_analysis_gui::bande]
 
       puts $chan ""
       puts $chan "  Was your reaction time applied to the above timings? $reaction_time"
