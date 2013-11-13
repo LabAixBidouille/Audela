@@ -230,6 +230,9 @@ namespace eval bdi_gui_cdl {
 
                $results.popupTbl add command -label "Voir l'objet dans une image" \
                    -command "" -state disabled
+               $results.popupTbl add command -label "Supprimer" \
+                   -command "::bdi_gui_cdl::unset_starstar" 
+
 
             # Binding
             bind $::bdi_gui_cdl::starstar <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
@@ -401,92 +404,30 @@ namespace eval bdi_gui_cdl {
          $::bdi_gui_cdl::starstar insert end $line
       }
 
-
-
-
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
 
       return
 
-      # Onglet References
-      $::bdi_gui_cdl::dataline delete 0 end
-      
-      set ids 0
-      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$y == 0} {continue}
-         if { [info exists ::bdi_tools_cdl::table_values($name,mag)] } {
-            if {[llength $::bdi_tools_cdl::table_values($name,mag)]>1} {
-               set mag_mean  [format "%0.4f" [::math::statistics::mean $::bdi_tools_cdl::table_values($name,mag)]]
-               set mag_stdev [format "%0.4f" [::math::statistics::stdev $::bdi_tools_cdl::table_values($name,mag)]]
-            } else {
-               set mag_mean  [format "%0.4f" [lindex $::bdi_tools_cdl::table_values($name,mag) 0]]
-               set mag_stdev 0
-            }
-         } else {
-               set mag_mean  "-99"
-               set mag_stdev "0"
-         }
-         $::bdi_gui_cdl::dataline insert end [list $ids $name $::bdi_tools_cdl::table_nbcata($name) $mag_mean $mag_stdev]
-         update
-         set ::bdi_tools_cdl::id_to_name($ids) $name
-      }
-
-      # Onglet variation
-      ::bdi_gui_cdl::affiche_starstar
-
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Affichage complet en $tt sec \n"
-
    }
 
 
 
-
-
-   proc ::bdi_gui_cdl::affiche_starstar { } {
-
-      $::bdi_gui_cdl::starstar delete 0 end
-      $::bdi_gui_cdl::starstar deletecolumns 0 end  
-      
-      set ids 0
-      $::bdi_gui_cdl::starstar insertcolumns end 0 "" left
-      set line 0
-      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$y == 0} {continue}
-         $::bdi_gui_cdl::starstar insertcolumns end 0 $ids left
-         lappend line 0
-      }
-      gren_info "$line\n"
-      set ids 0
-      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$y == 0} {continue}
-         set line [lreplace $line 0 0 $ids]
-         $::bdi_gui_cdl::starstar insert end $line
-      }
-
-      set ids 0
-      set line 0
-      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$y == 0} {continue}
-         set starstar(flux,$ids,$ids) "1"
-         
-      }
-
-
-
-
-   }
 
 
    proc ::bdi_gui_cdl::unset_dataline { } {
 
       foreach select [$::bdi_gui_cdl::dataline curselection] {
          set name [lindex [$::bdi_gui_cdl::dataline get $select] 1]      
+         set ::bdi_tools_cdl::table_noms($name) 0
+      }
+      ::bdi_gui_cdl::affiche_data
+   }
+   proc ::bdi_gui_cdl::unset_starstar { } {
+
+      foreach select [$::bdi_gui_cdl::starstar curselection] {
+         set ids [lindex [$::bdi_gui_cdl::starstar get $select] 0]
+         set name $::bdi_tools_cdl::id_to_name($ids)
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
