@@ -499,6 +499,7 @@ namespace eval bdi_gui_cdl {
 
       $::bdi_gui_cdl::ss_flux_rapport insertcolumns end 0 "" left
       $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 "" left
+      $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 "sum" center
       $::bdi_gui_cdl::ss_nbmes        insertcolumns end 0 "" left
 
       set pcol 0
@@ -512,29 +513,44 @@ namespace eval bdi_gui_cdl {
          incr pcol
       }
 
-      foreach ids1 $::bdi_tools_cdl::list_of_stars {
+      set magmax -1
+      set col 0
+      foreach ids1 $::bdi_tools_cdl::list_of_stars { 
          set line_flux_rapport $ids1
-         set line_mag_stedv $ids1
+         set line_mag_stedv [list $ids1 "-"]
          set line_nbmes $ids1
+         set row 2
+         set sum 0
          foreach ids2 $::bdi_tools_cdl::list_of_stars {
+            set mag $::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)
+            set sum [expr $sum + $mag]
+            if {$mag>$magmax} {
+              # gren_info "$mag>$magmax $row,$col\n"
+               set magmax $mag
+               set colmax $col
+               set rowmax $row
+            }
             lappend line_flux_rapport [format "%.3f" $::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)]
-            lappend line_mag_stedv    [format "%.3f" $::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)]
+            lappend line_mag_stedv    [format "%.3f" $mag]
             lappend line_nbmes        [format "%d" $::bdi_tools_cdl::table_variations($ids1,$ids2,flux,nbmes)]
+            incr row
          }
+         set line_mag_stedv [lreplace $line_mag_stedv 1 1 [format "%.3f" $sum]]
          $::bdi_gui_cdl::ss_flux_rapport insert end $line_flux_rapport
          $::bdi_gui_cdl::ss_mag_stedv    insert end $line_mag_stedv
          $::bdi_gui_cdl::ss_nbmes        insert end $line_nbmes
+         incr col
       }
  
+      $::bdi_gui_cdl::ss_mag_stedv cellconfigure $colmax,$rowmax -background red
       set pcol 0
       foreach ids1 $::bdi_tools_cdl::list_of_stars {
          $::bdi_gui_cdl::ss_flux_rapport cellconfigure $pcol,[expr $pcol+1] -background darkgrey
-         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,[expr $pcol+1] -background darkgrey
+         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,[expr $pcol+2] -background darkgrey
+         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,1 -background "#d3d0ab"
          $::bdi_gui_cdl::ss_nbmes        cellconfigure $pcol,[expr $pcol+1] -background darkgrey
          incr pcol
       }
-
-
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
