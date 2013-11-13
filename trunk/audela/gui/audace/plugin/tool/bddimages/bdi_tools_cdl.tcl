@@ -34,9 +34,13 @@ namespace eval bdi_tools_cdl {
 }
 
 
+   proc ::bdi_tools_cdl::stop_charge_cata_xml { } {
+     set ::bdi_tools_cdl::encours_charge_cata_xml 0
+   }
+
    #----------------------------------------------------------------------------
-   ## Chargement de la liste d'image selectionnee dans l'outil Recherche.
-   #  \param img_list structure de liste d'images
+   ## Chargement des cata de la liste d'image selectionnee dans l'outil Recherche.
+   #  \param void
    #  \note le resultat de cette procedure affecte la variable de
    # namespace  \c tools_cata::img_list puis charge toutes l'info des cata
    # associes aux images
@@ -47,47 +51,41 @@ namespace eval bdi_tools_cdl {
 
       array unset ::bdi_tools_cdl::table_noms  
       array unset ::bdi_tools_cdl::table_nbcata
-      array unset ::bdi_tools_cdl::table_values
-      array unset ::gui_cata::cata_list
+      array unset ::bdi_tools_cdl::table_othf
+
+      # array unset ::gui_cata::cata_list
 
 
       set ::bdi_tools_cdl::encours_charge_cata_xml 1
-      set id 0
+      set idcata 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
          if {$::bdi_tools_cdl::encours_charge_cata_xml!=1} { break }
-         incr id
+         incr idcata
          ::gui_cata::load_cata
-         set ::gui_cata::cata_list($id) $::tools_cata::current_listsources
-         ::bdi_tools_cdl::set_progress $id $::tools_cata::nb_img_list
+         ::bdi_tools_cdl::set_progress $idcata $::tools_cata::nb_img_list
          ::bdi_tools_cdl::get_memory      
-      }
 
-      for {set idcata 1} {$idcata<=$::tools_cata::nb_img_list} {incr idcata} {
+         # set ::gui_cata::cata_list($idcata) $::tools_cata::current_listsources
+         
+         set sources [lindex  $::tools_cata::current_listsources 1]         
 
-         set sources [lindex  $::gui_cata::cata_list($idcata) 1]         
-         set ids 0
          foreach s $sources {
-            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            
+
             set name [::manage_source::namincata $s]
             if {$name == ""} {continue}
-            
-            #set list_of_name [::manage_source::list_of_name $s]
-            #gren_info "list_of_name = $list_of_name \n"
-            
+
             if {[info exists ::bdi_tools_cdl::table_noms($name)]} {
-               set ::bdi_tools_cdl::table_nbcata($name) [expr $::bdi_tools_cdl::table_nbcata($name)+1]
+               incr ::bdi_tools_cdl::table_nbcata($name)
             } else {
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
             set ::bdi_tools_cdl::table_noms($name) 1
 
-            set mag [::bdi_tools_psf::get_val othf "mag"]
-            if {$mag != ""} {
-               lappend ::bdi_tools_cdl::table_values($name,mag) [::bdi_tools_psf::get_val othf "mag"]
-            }
+            set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            
          }
-         incr $ids
+
+      # Fin boucle sur les images
       }
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
@@ -97,15 +95,123 @@ namespace eval bdi_tools_cdl {
 
    }
 
-   proc ::bdi_tools_cdl::stop_charge_cata_xml { } {
-     set ::bdi_tools_cdl::encours_charge_cata_xml 0
-   }
 
 
 
+
+
+# Chargement des structure de variable pour l affichage
    proc ::bdi_tools_cdl::charge_cata_list { } {
 
+      set tt0 [clock clicks -milliseconds]
+
+      array unset ::bdi_tools_cdl::id_to_name
+      array unset ::bdi_tools_cdl::table_dataline
+      array unset ::bdi_tools_cdl::table_variations
+      if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
+      
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 0} {continue}
+
+         array unset tab
+
+         set nbimg 0
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+            if {[info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {
+               incr nbimg
+               set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+               set mag [::bdi_tools_psf::get_val othf "mag"]
+               if {$mag!=""} { lappend tab(mag) $mag }
+               set flux [::bdi_tools_psf::get_val othf "flux"]
+               if {$flux!=""} { lappend tab(flux) $flux }
+            }
+         }
+
+         #gren_info "[llength $tab(mag)] $nbimg\n"
+         #gren_info "$tab(mag)\n"
+                  
+         if { [info exists tab(mag)] } {
+            if {[llength $tab(mag)]>1} {
+               set mag_mean  [format "%0.4f" [::math::statistics::mean $tab(mag)]]
+               set mag_stdev [format "%0.4f" [::math::statistics::stdev $tab(mag)]]
+            } else {
+               set mag_mean  [format "%0.4f" [lindex $tab(mag) 0]]
+               set mag_stdev 0
+            }
+         } else {
+               set mag_mean  "-99"
+               set mag_stdev "0"
+         }
+
+         lappend ::bdi_tools_cdl::list_of_stars $ids
+         set ::bdi_tools_cdl::id_to_name($ids) $name
+         set ::bdi_tools_cdl::table_dataline($name) [list $ids $name $nbimg $mag_mean $mag_stdev]
+
+      }
+
+      # Onglet variation
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+
+         foreach ids1 $::bdi_tools_cdl::list_of_stars {
+            set name1 $::bdi_tools_cdl::id_to_name($ids1)
+            if {![info exists ::bdi_tools_cdl::table_othf($name1,$idcata,othf)]} { continue }
+            set othf $::bdi_tools_cdl::table_othf($name1,$idcata,othf)
+            set flux1 [::bdi_tools_psf::get_val othf "flux"]
+            if { $flux1=="" && $flux1<=0} { continue }
+
+            foreach ids2 $::bdi_tools_cdl::list_of_stars {
+               set name2 $::bdi_tools_cdl::id_to_name($ids2)
+               if {![info exists ::bdi_tools_cdl::table_othf($name2,$idcata,othf)]} { continue }
+               set othf $::bdi_tools_cdl::table_othf($name2,$idcata,othf)
+               set flux2 [::bdi_tools_psf::get_val othf "flux"]
+               if { $flux2=="" && $flux2<=0 } { continue }
+               
+               lappend ::bdi_tools_cdl::table_variations($ids1,$ids2,flux) [expr 1.0*$flux1/$flux2]
+               lappend ::bdi_tools_cdl::table_variations($ids2,$ids1,flux) [expr 1.0*$flux2/$flux1]
+               
+            }
+
+         }
+
+      }
+
+      array unset tab
+      foreach ids1 $::bdi_tools_cdl::list_of_stars {
+         foreach ids2 $::bdi_tools_cdl::list_of_stars {
+            if { [info exists ::bdi_tools_cdl::table_variations($ids1,$ids2,flux)] } {
+               set tab(flux) $::bdi_tools_cdl::table_variations($ids1,$ids2,flux)
+               if {[llength $tab(flux)]>1} {
+                  set mean  [::math::statistics::mean $tab(flux)]
+                  set stdev [::math::statistics::stdev $tab(flux)]
+               } else {
+                  set mean  [lindex $tab(flux) 0]
+                  set stdev 0
+               }
+            } else {
+               set mean  "-99"
+               set stdev "-99"
+            }
+
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)  $mean
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,stdev) $stdev
+         }
+      }
+
+      #::bdi_gui_cdl::affiche_starstar
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Affichage complet en $tt sec \n"
+
    }
+
+
+
+
+
+
+
 
    proc ::bdi_tools_cdl::set_progress { cur max } {
       set ::bdi_tools_cdl::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
