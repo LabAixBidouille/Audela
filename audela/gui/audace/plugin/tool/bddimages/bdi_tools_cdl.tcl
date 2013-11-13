@@ -123,9 +123,9 @@ namespace eval bdi_tools_cdl {
                incr nbimg
                set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
                set mag [::bdi_tools_psf::get_val othf "mag"]
-               if {$mag!=""} { lappend tab(mag) $mag }
+               if {$mag!="" && [string is double $mag]} { lappend tab(mag) $mag }
                set flux [::bdi_tools_psf::get_val othf "flux"]
-               if {$flux!=""} { lappend tab(flux) $flux }
+               if {$flux!="" && [string is double $flux]} { lappend tab(flux) $flux }
             }
          }
 
@@ -170,7 +170,7 @@ namespace eval bdi_tools_cdl {
                
                lappend ::bdi_tools_cdl::table_variations($ids1,$ids2,flux) [expr 1.0*$flux1/$flux2]
                lappend ::bdi_tools_cdl::table_variations($ids2,$ids1,flux) [expr 1.0*$flux2/$flux1]
-               
+
             }
 
          }
@@ -182,20 +182,32 @@ namespace eval bdi_tools_cdl {
          foreach ids2 $::bdi_tools_cdl::list_of_stars {
             if { [info exists ::bdi_tools_cdl::table_variations($ids1,$ids2,flux)] } {
                set tab(flux) $::bdi_tools_cdl::table_variations($ids1,$ids2,flux)
-               if {[llength $tab(flux)]>1} {
-                  set mean  [::math::statistics::mean $tab(flux)]
-                  set stdev [::math::statistics::stdev $tab(flux)]
+               
+               
+               set nbmes [llength $tab(flux)]
+               if {$nbmes>1} {
+                  set meanflux  [::math::statistics::mean  $tab(flux)]
+                  set stdevflux [::math::statistics::stdev $tab(flux)]
+                  set mag ""
+                  foreach rflux $tab(flux) {
+                     lappend mag [expr  - 2.5*log10($rflux)]
+                  }
+                  set stdevmag  [::math::statistics::stdev $mag]
                } else {
-                  set mean  [lindex $tab(flux) 0]
-                  set stdev 0
+                  set meanflux  [lindex $tab(flux) 0]
+                  set stdevflux 0
+                  set stdevmag  "-98"
                }
             } else {
-               set mean  "-99"
-               set stdev "-99"
+               set nbmes -1
+               set meanflux  "-99"
+               set stdevflux "-99"
             }
 
-            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)  $mean
-            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,stdev) $stdev
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)  $meanflux
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,stdev) $stdevflux
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)  $stdevmag
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,nbmes) $nbmes
          }
       }
 

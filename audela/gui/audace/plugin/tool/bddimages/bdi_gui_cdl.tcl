@@ -145,7 +145,7 @@ namespace eval bdi_gui_cdl {
             ttk::notebook::enableTraversal $onglets.nb
 
          # References
-         set results [frame $f_dataline.dataline  -borderwidth 10 -relief groove]
+         set results [frame $f_dataline.dataline  -borderwidth 1 -relief groove]
          pack $results -in $f_dataline -expand yes -fill both
             
             set cols [list 0 " "       left  \
@@ -199,56 +199,159 @@ namespace eval bdi_gui_cdl {
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode real
             }
 
+
          # Variations
-         set results [frame $f_starstar.starstar  -borderwidth 10 -relief groove]
+         set results [frame $f_starstar.starstar  -borderwidth 1 -relief groove]
          pack $results -in $f_starstar -expand yes -fill both
             
-            set cols [list 0 " " left ]
-            # Table
-            set ::bdi_gui_cdl::starstar $results.table
-            tablelist::tablelist $::bdi_gui_cdl::starstar \
-              -columns $cols \
-              -labelcommand tablelist::sortByColumn \
-              -xscrollcommand [ list $results.hsb set ] \
-              -yscrollcommand [ list $results.vsb set ] \
-              -selectmode extended \
-              -activestyle none \
-              -stripebackground "#e0e8f0" \
-              -showseparators 1
-    
-            # Scrollbar
-            scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::starstar xview]
-            pack $results.hsb -in $results -side bottom -fill x
-            scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::starstar yview]
-            pack $results.vsb -in $results -side right -fill y 
-
-            # Pack la Table
-            pack $::bdi_gui_cdl::starstar -in $results -expand yes -fill both
-
-            # Popup
-            menu $results.popupTbl -title "Actions"
-
-               $results.popupTbl add command -label "Voir l'objet dans une image" \
-                   -command "" -state disabled
-               $results.popupTbl add command -label "Supprimer" \
-                   -command "::bdi_gui_cdl::unset_starstar" 
 
 
-            # Binding
-            bind $::bdi_gui_cdl::starstar <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
-            bind [$::bdi_gui_cdl::starstar bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+            set onglets [frame $results.onglets]
+            pack $onglets -in $results -expand yes -fill both
 
-            # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
-            #    Ascii
-           #  foreach ncol [list "Name"] {
-            #    set pcol [expr int ([lsearch $cols $ncol]/3)]
-            #    $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode ascii
-           #  }
-            #    Reel
-           #  foreach ncol [list "Nb img" "Moy Mag" "StDev Mag"] {
-           #     set pcol [expr int ([lsearch $cols $ncol]/3)]
-            #    $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode real
-           #  }
+               pack [ttk::notebook $onglets.nb] -expand yes -fill both 
+               set ss_flux_rapport [frame $onglets.nb.ss_flux_rapport]
+               set ss_flux_stdev   [frame $onglets.nb.ss_flux_stdev  ]
+               set ss_mag_stedv    [frame $onglets.nb.ss_mag_stedv   ]
+               set ss_nbmes        [frame $onglets.nb.ss_nbmes       ]
+
+               $onglets.nb add $ss_flux_rapport -text "Rapport Flux"
+               $onglets.nb add $ss_flux_stdev   -text "Flux stdev"
+               $onglets.nb add $ss_mag_stedv    -text "Mag stdev"
+               $onglets.nb add $ss_nbmes        -text "Nb mesure"
+
+               $onglets.nb select $ss_flux_rapport
+               ttk::notebook::enableTraversal $onglets.nb
+
+
+
+               # Rapport de flux
+               set results [frame $ss_flux_rapport.frm  -borderwidth 1 -relief groove]
+               pack $results -in $ss_flux_rapport -expand yes -fill both
+
+                  set cols [list 0 " " left ]
+                  # Table
+                  set ::bdi_gui_cdl::ss_flux_rapport $results.table
+                  tablelist::tablelist $::bdi_gui_cdl::ss_flux_rapport \
+                    -columns $cols \
+                    -labelcommand tablelist::sortByColumn \
+                    -xscrollcommand [ list $results.hsb set ] \
+                    -yscrollcommand [ list $results.vsb set ] \
+                    -selectmode extended \
+                    -activestyle none \
+                    -stripebackground "#e0e8f0" \
+                    -showseparators 1
+
+                  # Scrollbar
+                  scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::ss_flux_rapport xview]
+                  pack $results.hsb -in $results -side bottom -fill x
+                  scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::ss_flux_rapport yview]
+                  pack $results.vsb -in $results -side right -fill y 
+
+                  # Pack la Table
+                  pack $::bdi_gui_cdl::ss_flux_rapport -in $results -expand yes -fill both
+
+                  # Popup
+                  menu $results.popupTbl -title "Actions"
+
+                     $results.popupTbl add command -label "Voir l'objet dans une image" \
+                         -command "" -state disabled
+                     $results.popupTbl add command -label "Supprimer" \
+                         -command "::bdi_gui_cdl::unset_starstar $::bdi_gui_cdl::ss_flux_rapport" 
+
+
+                  # Binding
+                  bind $::bdi_gui_cdl::ss_flux_rapport <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
+                  bind [$::bdi_gui_cdl::ss_flux_rapport bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+
+
+
+               # Mag stdev
+               set results [frame $ss_mag_stedv.frm  -borderwidth 1 -relief groove]
+               pack $results -in $ss_mag_stedv -expand yes -fill both
+
+                  set cols [list 0 " " left ]
+                  # Table
+                  set ::bdi_gui_cdl::ss_mag_stedv $results.table
+                  tablelist::tablelist $::bdi_gui_cdl::ss_mag_stedv \
+                    -columns $cols \
+                    -labelcommand tablelist::sortByColumn \
+                    -xscrollcommand [ list $results.hsb set ] \
+                    -yscrollcommand [ list $results.vsb set ] \
+                    -selectmode extended \
+                    -activestyle none \
+                    -stripebackground "#e0e8f0" \
+                    -showseparators 1
+
+                  # Scrollbar
+                  scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::ss_mag_stedv xview]
+                  pack $results.hsb -in $results -side bottom -fill x
+                  scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::ss_mag_stedv yview]
+                  pack $results.vsb -in $results -side right -fill y 
+
+                  # Pack la Table
+                  pack $::bdi_gui_cdl::ss_mag_stedv -in $results -expand yes -fill both
+
+                  # Popup
+                  menu $results.popupTbl -title "Actions"
+
+                     $results.popupTbl add command -label "Voir l'objet dans une image" \
+                         -command "" -state disabled
+                     $results.popupTbl add command -label "Supprimer" \
+                         -command "::bdi_gui_cdl::unset_starstar $::bdi_gui_cdl::ss_mag_stedv" 
+
+
+                  # Binding
+                  bind $::bdi_gui_cdl::ss_mag_stedv <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
+                  bind [$::bdi_gui_cdl::ss_mag_stedv bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+
+
+
+               # Nb mesure
+               set results [frame $ss_nbmes.frm  -borderwidth 1 -relief groove]
+               pack $results -in $ss_nbmes -expand yes -fill both
+
+                  set cols [list 0 " " left ]
+                  # Table
+                  set ::bdi_gui_cdl::ss_nbmes $results.table
+                  tablelist::tablelist $::bdi_gui_cdl::ss_nbmes \
+                    -columns $cols \
+                    -labelcommand tablelist::sortByColumn \
+                    -xscrollcommand [ list $results.hsb set ] \
+                    -yscrollcommand [ list $results.vsb set ] \
+                    -selectmode extended \
+                    -activestyle none \
+                    -stripebackground "#e0e8f0" \
+                    -showseparators 1
+
+                  # Scrollbar
+                  scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::ss_nbmes xview]
+                  pack $results.hsb -in $results -side bottom -fill x
+                  scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::ss_nbmes yview]
+                  pack $results.vsb -in $results -side right -fill y 
+
+                  # Pack la Table
+                  pack $::bdi_gui_cdl::ss_nbmes -in $results -expand yes -fill both
+
+                  # Popup
+                  menu $results.popupTbl -title "Actions"
+
+                     $results.popupTbl add command -label "Voir l'objet dans une image" \
+                         -command "" -state disabled
+                     $results.popupTbl add command -label "Supprimer" \
+                         -command "::bdi_gui_cdl::unset_starstar $::bdi_gui_cdl::ss_nbmes" 
+
+
+                  # Binding
+                  bind $::bdi_gui_cdl::ss_nbmes <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
+                  bind [$::bdi_gui_cdl::ss_nbmes bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+
+
+
+
+
+
+
 
 
 
@@ -373,6 +476,7 @@ namespace eval bdi_gui_cdl {
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
 
       # Onglet References
+
       $::bdi_gui_cdl::dataline delete 0 end
 
       set ids 0
@@ -385,24 +489,46 @@ namespace eval bdi_gui_cdl {
 
       # Onglet variation
 
-      $::bdi_gui_cdl::starstar delete 0 end
-      catch { $::bdi_gui_cdl::starstar deletecolumns 0 end } 
+      $::bdi_gui_cdl::ss_flux_rapport delete 0 end
+      $::bdi_gui_cdl::ss_mag_stedv    delete 0 end
+      $::bdi_gui_cdl::ss_nbmes        delete 0 end
 
-      $::bdi_gui_cdl::starstar insertcolumns end 0 "" left
+      catch { $::bdi_gui_cdl::ss_flux_rapport deletecolumns 0 end } 
+      catch { $::bdi_gui_cdl::ss_mag_stedv    deletecolumns 0 end } 
+      catch { $::bdi_gui_cdl::ss_nbmes        deletecolumns 0 end } 
+
+      $::bdi_gui_cdl::ss_flux_rapport insertcolumns end 0 "" left
+      $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 "" left
+      $::bdi_gui_cdl::ss_nbmes        insertcolumns end 0 "" left
+
       set pcol 0
       foreach ids $::bdi_tools_cdl::list_of_stars {
-         $::bdi_gui_cdl::starstar insertcolumns end 0 $ids left
-         $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode real
+         $::bdi_gui_cdl::ss_flux_rapport insertcolumns end 0 $ids right
+         $::bdi_gui_cdl::ss_flux_rapport columnconfigure $pcol -sortmode real
+         $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 $ids right
+         $::bdi_gui_cdl::ss_mag_stedv    columnconfigure $pcol -sortmode real
+         $::bdi_gui_cdl::ss_nbmes        insertcolumns end 0 $ids right
+         $::bdi_gui_cdl::ss_nbmes        columnconfigure $pcol -sortmode real
          incr pcol
       }
 
       foreach ids1 $::bdi_tools_cdl::list_of_stars {
-         set line $ids1
+         set line_flux_rapport $ids1
+         set line_mag_stedv $ids1
+         set line_nbmes $ids1
          foreach ids2 $::bdi_tools_cdl::list_of_stars {
-            lappend line [format "%.6f" $::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)]
+            lappend line_flux_rapport [format "%.3f" $::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)]
+            lappend line_mag_stedv    [format "%.3f" $::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)]
+            lappend line_nbmes        [format "%d" $::bdi_tools_cdl::table_variations($ids1,$ids2,flux,nbmes)]
          }
-         $::bdi_gui_cdl::starstar insert end $line
+         $::bdi_gui_cdl::ss_flux_rapport insert end $line_flux_rapport
+         $::bdi_gui_cdl::ss_mag_stedv    insert end $line_mag_stedv
+         $::bdi_gui_cdl::ss_nbmes        insert end $line_nbmes
       }
+
+
+
+
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
@@ -423,10 +549,11 @@ namespace eval bdi_gui_cdl {
       }
       ::bdi_gui_cdl::affiche_data
    }
-   proc ::bdi_gui_cdl::unset_starstar { } {
 
-      foreach select [$::bdi_gui_cdl::starstar curselection] {
-         set ids [lindex [$::bdi_gui_cdl::starstar get $select] 0]
+   proc ::bdi_gui_cdl::unset_starstar { tbl } {
+
+      foreach select [$tbl curselection] {
+         set ids [lindex [$tbl get $select] 0]
          set name $::bdi_tools_cdl::id_to_name($ids)
          set ::bdi_tools_cdl::table_noms($name) 0
       }
