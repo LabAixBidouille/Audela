@@ -538,7 +538,7 @@ namespace eval ::atos_ocr_gui {
 
               #--- Cree un spinbox
               spinbox $ocr.t.typespin -font $atosconf(font,courier_10) -fg $color(blue) \
-                    -value [ list "Black Box" "TIM-10 small font" "TIM-10 big font"] -width 10  -state disabled
+                    -value [ list "Black Box" "TIM-10 small font" "TIM-10 big font" "IOTA-VTI"] -width 10  -state disabled
               pack  $ocr.t.typespin -in $ocr.t -side left -anchor w
 
               #--- Cree un label
@@ -548,7 +548,7 @@ namespace eval ::atos_ocr_gui {
 
               #--- Cree un bouton
               button $ocr.t.selectbox -text "Select" -borderwidth 1 -takefocus 1 \
-                    -command "::atos_ocr_tools::select_time $visuNo $frm"  -state disabled
+                    -command "::atos_ocr_tools::select_time $visuNo $frm" -state disabled
               pack $ocr.t.selectbox -in $ocr.t -side left -anchor e 
 
           #--- Cree un frame pour activation/desactivation ocr

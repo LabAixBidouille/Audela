@@ -2339,7 +2339,7 @@
              pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "Ouverture : " -width $sizecol
+                  label $blck.l -text "Grossissement : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -2387,7 +2387,7 @@
              pack $blck -in $info2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $blck.l -text "Source : " -width $sizecol
+                  label $blck.l -text "Source datation : " -width $sizecol
                   pack  $blck.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
