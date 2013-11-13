@@ -148,7 +148,7 @@ namespace eval bdi_gui_cdl {
          set results [frame $f_dataline.dataline  -borderwidth 1 -relief groove]
          pack $results -in $f_dataline -expand yes -fill both
             
-            set cols [list 0 " "       left  \
+            set cols [list 0 "Id"       left  \
                            0 "Name"    left  \
                            0 "Nb img"  right \
                            0 "Moy Mag" right \
@@ -194,7 +194,7 @@ namespace eval bdi_gui_cdl {
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode ascii
             }
             #    Reel
-            foreach ncol [list "Nb img" "Moy Mag" "StDev Mag"] {
+            foreach ncol [list "Id" "Nb img" "Moy Mag" "StDev Mag"] {
                set pcol [expr int ([lsearch $cols $ncol]/3)]
                $::bdi_gui_cdl::dataline columnconfigure $pcol -sortmode real
             }
@@ -525,8 +525,14 @@ namespace eval bdi_gui_cdl {
          $::bdi_gui_cdl::ss_mag_stedv    insert end $line_mag_stedv
          $::bdi_gui_cdl::ss_nbmes        insert end $line_nbmes
       }
-
-
+ 
+      set pcol 0
+      foreach ids1 $::bdi_tools_cdl::list_of_stars {
+         $::bdi_gui_cdl::ss_flux_rapport cellconfigure $pcol,[expr $pcol+1] -background darkgrey
+         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,[expr $pcol+1] -background darkgrey
+         $::bdi_gui_cdl::ss_nbmes        cellconfigure $pcol,[expr $pcol+1] -background darkgrey
+         incr pcol
+      }
 
 
 
