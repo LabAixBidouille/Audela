@@ -81,6 +81,9 @@ namespace eval bdi_gui_cdl {
 
 
 
+   proc ::bdi_gui_cdl::cmdButton1Click_starstar { w args } {
+
+   }
 
 
    proc ::bdi_gui_cdl::cmdButton1Click_dataline { w args } {
@@ -364,6 +367,48 @@ namespace eval bdi_gui_cdl {
 
       set tt0 [clock clicks -milliseconds]
 
+      if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
+
+      # Onglet References
+      $::bdi_gui_cdl::dataline delete 0 end
+
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 0} {continue}
+         $::bdi_gui_cdl::dataline insert end $::bdi_tools_cdl::table_dataline($name)
+         lappend ::bdi_tools_cdl::list_of_stars $ids
+      }
+
+      # Onglet variation
+
+      $::bdi_gui_cdl::starstar delete 0 end
+      catch { $::bdi_gui_cdl::starstar deletecolumns 0 end } 
+
+      $::bdi_gui_cdl::starstar insertcolumns end 0 "" left
+      set pcol 0
+      foreach ids $::bdi_tools_cdl::list_of_stars {
+         $::bdi_gui_cdl::starstar insertcolumns end 0 $ids left
+         $::bdi_gui_cdl::starstar columnconfigure $pcol -sortmode real
+         incr pcol
+      }
+
+      foreach ids1 $::bdi_tools_cdl::list_of_stars {
+         set line $ids1
+         foreach ids2 $::bdi_tools_cdl::list_of_stars {
+            lappend line [format "%.6f" $::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)]
+         }
+         $::bdi_gui_cdl::starstar insert end $line
+      }
+
+
+
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Affichage complet en $tt sec \n"
+
+      return
+
       # Onglet References
       $::bdi_gui_cdl::dataline delete 0 end
       
@@ -402,16 +447,36 @@ namespace eval bdi_gui_cdl {
 
    proc ::bdi_gui_cdl::affiche_starstar { } {
 
-
       $::bdi_gui_cdl::starstar delete 0 end
       $::bdi_gui_cdl::starstar deletecolumns 0 end  
       
       set ids 0
+      $::bdi_gui_cdl::starstar insertcolumns end 0 "" left
+      set line 0
       foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
          if {$y == 0} {continue}
          $::bdi_gui_cdl::starstar insertcolumns end 0 $ids left
+         lappend line 0
       }
+      gren_info "$line\n"
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 0} {continue}
+         set line [lreplace $line 0 0 $ids]
+         $::bdi_gui_cdl::starstar insert end $line
+      }
+
+      set ids 0
+      set line 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 0} {continue}
+         set starstar(flux,$ids,$ids) "1"
+         
+      }
+
 
 
 
