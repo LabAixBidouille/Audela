@@ -141,7 +141,7 @@ namespace eval bdi_gui_cdl {
             $onglets.nb add $f_classif  -text "Classification"
             $onglets.nb add $f_timeline -text "Timeline"
 
-            $onglets.nb select $f_dataline
+            #$onglets.nb select $f_dataline
             ttk::notebook::enableTraversal $onglets.nb
 
          # References
@@ -349,9 +349,70 @@ namespace eval bdi_gui_cdl {
 
 
 
+         # Classification
+         set results [frame $f_classif.classif  -borderwidth 1 -relief groove]
+         pack $results -in $f_classif -expand yes -fill both
+            
+            set cols [list 0 "Id"             left  \
+                           0 "Name"           left  \
+                           0 "Class"          left  \
+                           0 "USNOA2_magB"    left  \
+                           0 "USNOA2_magR"    left  \
+                           0 "UCAC4_im1_mag"  left  \
+                           0 "UCAC4_im2_mag"  left  \
+                           0 "NOMAD1_magB"    left  \
+                           0 "NOMAD1_magV"    left  \
+                           0 "NOMAD1_magR"    left  \
+                           0 "NOMAD1_magJ"    left  \
+                           0 "NOMAD1_magH"    left  \
+                           0 "NOMAD1_magK"    left  \
+                     ]
 
+            # Table
+            set ::bdi_gui_cdl::classif $results.table
+            tablelist::tablelist $::bdi_gui_cdl::classif \
+              -columns $cols \
+              -labelcommand tablelist::sortByColumn \
+              -xscrollcommand [ list $results.hsb set ] \
+              -yscrollcommand [ list $results.vsb set ] \
+              -selectmode extended \
+              -activestyle none \
+              -stripebackground "#e0e8f0" \
+              -showseparators 1
+    
+            # Scrollbar
+            scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::classif xview]
+            pack $results.hsb -in $results -side bottom -fill x
+            scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::classif yview]
+            pack $results.vsb -in $results -side right -fill y 
 
+            # Pack la Table
+            pack $::bdi_gui_cdl::classif -in $results -expand yes -fill both
 
+            # Popup
+            menu $results.popupTbl -title "Actions"
+
+               $results.popupTbl add command -label "Voir l'objet dans une image" \
+                   -command "" -state disabled
+               $results.popupTbl add command -label "Supprimer" \
+                   -command "::bdi_gui_cdl::unset_classif" 
+
+            # Binding
+            bind $::bdi_gui_cdl::classif <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_classif %W ]
+            bind [$::bdi_gui_cdl::classif bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+
+            # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
+            #    Ascii
+            foreach ncol [list "Name" "Class"] {
+               set pcol [expr int ([lsearch $cols $ncol]/3)]
+               $::bdi_gui_cdl::classif columnconfigure $pcol -sortmode ascii
+            }
+            #    Reel
+            foreach ncol [list "Id" "USNOA2_magB" "USNOA2_magR" "UCAC4_im1_mag" "UCAC4_im2_mag" "NOMAD1_magB" \
+                               "NOMAD1_magV" "NOMAD1_magR"  "NOMAD1_magJ" "NOMAD1_magH" "NOMAD1_magK" ] {
+               set pcol [expr int ([lsearch $cols $ncol]/3)]
+               $::bdi_gui_cdl::classif columnconfigure $pcol -sortmode real
+            }
 
 
 
@@ -547,10 +608,32 @@ namespace eval bdi_gui_cdl {
       foreach ids1 $::bdi_tools_cdl::list_of_stars {
          $::bdi_gui_cdl::ss_flux_rapport cellconfigure $pcol,[expr $pcol+1] -background darkgrey
          $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,[expr $pcol+2] -background darkgrey
-         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,1 -background "#d3d0ab"
+         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,1 -background ivory
          $::bdi_gui_cdl::ss_nbmes        cellconfigure $pcol,[expr $pcol+1] -background darkgrey
          incr pcol
       }
+
+
+      # Onglet Classification
+      $::bdi_gui_cdl::classif delete 0 end
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 0} {continue}
+         set line [list $ids $name $::bdi_tools_cdl::table_values($name,sptype)]
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magB)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magR)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag) }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magB)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magV)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magV)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magR)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magH)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magH)   }
+         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magK)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magK)   }
+         $::bdi_gui_cdl::classif insert end $line
+      }
+
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
