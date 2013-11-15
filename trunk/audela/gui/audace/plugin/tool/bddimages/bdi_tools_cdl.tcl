@@ -171,7 +171,7 @@ namespace eval bdi_tools_cdl {
                set mag [::bdi_tools_psf::get_val othf "mag"]
                if {$mag!="" && [string is double $mag] && $mag+1 != $mag} { lappend tab(mag) $mag }
                set flux [::bdi_tools_psf::get_val othf "flux"]
-               if {$flux!="" && [string is double $flux] && $mag+1 != $mag} { lappend tab(flux) $flux }
+               if {$flux!="" && [string is double $flux] && $flux+1 != $flux} { lappend tab(flux) $flux }
             }
          }
 
@@ -247,6 +247,7 @@ namespace eval bdi_tools_cdl {
             } else {
                set nbmes -1
                set meanflux  "-99"
+               set stdevmag  "-99"
                set stdevflux "-99"
             }
 
