@@ -96,7 +96,7 @@ set caption(audace,psfimcce_r3)                       "r3 ="
 set caption(audace,psfimcce_xRayon)                   "x Radius"
 set caption(audace,psfimcce_Calculrapide)             "# Calcul rapide"
 set caption(audace,psfimcce_Hauteprecision)           "# Haute précision"
-set caption(audace,psfimcce_message1)                 "# Arrêt de la méthode globale suite a"
+set caption(audace,psfimcce_message1)                 "# Arrêt de la méthode globale suite à"
 set caption(audace,psfimcce_message2)                 "# erreurs consécutives"
 set caption(audace,psfimcce_message3)                 "# Détermination du ciel impossible"
 
@@ -188,7 +188,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "x Rayon"
    set caption(audace,psfimcce_Calculrapide)          "Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "Haute précision"
-   set caption(audace,psfimcce_message1)              "Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "erreurs consécutives"
    set caption(audace,psfimcce_message3)              "Détermination du ciel impossible"
 
@@ -280,7 +280,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "# x Rayon"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
@@ -372,7 +372,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "# x Rayon"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
@@ -464,7 +464,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "# x Rayon"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
@@ -556,7 +556,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "# x Rayon"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
@@ -648,7 +648,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "# x Rayon"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
@@ -740,7 +740,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "x Radius"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
@@ -832,7 +832,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,psfimcce_xRayon)                "x Radius"
    set caption(audace,psfimcce_Calculrapide)          "# Calcul rapide"
    set caption(audace,psfimcce_Hauteprecision)        "# Haute précision"
-   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite a"
+   set caption(audace,psfimcce_message1)              "# Arrêt de la méthode globale suite à"
    set caption(audace,psfimcce_message2)              "# erreurs consécutives"
    set caption(audace,psfimcce_message3)              "# Détermination du ciel impossible"
 
