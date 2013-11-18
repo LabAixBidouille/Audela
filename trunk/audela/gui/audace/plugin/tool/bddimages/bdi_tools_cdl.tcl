@@ -54,7 +54,6 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_noms  
       array unset ::bdi_tools_cdl::table_nbcata
       array unset ::bdi_tools_cdl::table_othf
-      array unset ::bdi_tools_cdl::table_othf
 
       # array unset ::gui_cata::cata_list
 
@@ -67,6 +66,11 @@ namespace eval bdi_tools_cdl {
          ::gui_cata::load_cata
          ::bdi_tools_cdl::set_progress $idcata $::tools_cata::nb_img_list
          ::bdi_tools_cdl::get_memory      
+
+         set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+
+
 
          # set ::gui_cata::cata_list($idcata) $::tools_cata::current_listsources
          
@@ -83,6 +87,8 @@ namespace eval bdi_tools_cdl {
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
             set ::bdi_tools_cdl::table_noms($name) 1
+            
+            set ::bdi_tools_cdl::table_date($idcata) $dateobs
 
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
 
@@ -117,16 +123,13 @@ namespace eval bdi_tools_cdl {
                   }
                }
             }
-            gren_info "MAGS $name = $USNOA2_magB  $USNOA2_magR  $UCAC4_im1_mag $UCAC4_im2_mag \
-                                           $NOMAD1_magB  $NOMAD1_magV  $NOMAD1_magR   $NOMAD1_magJ \
-                                           $NOMAD1_magH  $NOMAD1_magK   \n"
             set r [::bdi_tools_cdl::get_spectral_type \
                                     [list \
                                            $USNOA2_magB  $USNOA2_magR  $UCAC4_im1_mag $UCAC4_im2_mag \
                                            $NOMAD1_magB  $NOMAD1_magV  $NOMAD1_magR   $NOMAD1_magJ \
                                            $NOMAD1_magH  $NOMAD1_magK  ] \
                    ]
-            set ::bdi_tools_cdl::table_values($name,sptype)      [lindex $r 0]
+            set  ::bdi_tools_cdl::table_values($name,sptype)      [lindex $r 0]
             set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
             set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
             #break
@@ -151,27 +154,49 @@ namespace eval bdi_tools_cdl {
 
       set tt0 [clock clicks -milliseconds]
 
+      array unset ::bdi_tools_cdl::table_mesure
       array unset ::bdi_tools_cdl::id_to_name
-      array unset ::bdi_tools_cdl::table_dataline
+      array unset ::bdi_tools_cdl::table_data_source
       array unset ::bdi_tools_cdl::table_variations
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
       
+
+
+
+      # reference 
       set ids 0
       foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+
          incr ids
-         if {$y == 0} {continue}
+         if {$y != 1} {continue}
 
          array unset tab
 
          set nbimg 0
+         set nbmes 0
+         
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
             if {[info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {
+
                incr nbimg
+
                set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
-               set mag [::bdi_tools_psf::get_val othf "mag"]
-               if {$mag!="" && [string is double $mag] && $mag+1 != $mag} { lappend tab(mag) $mag }
                set flux [::bdi_tools_psf::get_val othf "flux"]
-               if {$flux!="" && [string is double $flux] && $flux+1 != $flux} { lappend tab(flux) $flux }
+
+               # gren_info "$name $idcata FLUX=$flux\n"
+
+               if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} {
+
+                  set ::bdi_tools_cdl::table_mesure($idcata,$name) 1
+                  lappend tab(flux) $flux
+                  incr nbmes
+                  set mag [::bdi_tools_psf::get_val othf "mag"]
+                  if {$mag!="" && [string is double $mag] && $mag+1 != $mag} { lappend tab(mag) $mag }
+
+               } else {
+                  #set ::bdi_tools_cdl::table_noms($name) 0
+                  continue
+               }
             }
          }
 
@@ -193,9 +218,64 @@ namespace eval bdi_tools_cdl {
 
          lappend ::bdi_tools_cdl::list_of_stars $ids
          set ::bdi_tools_cdl::id_to_name($ids) $name
-         set ::bdi_tools_cdl::table_dataline($name) [list $ids $name $nbimg $mag_mean $mag_stdev]
+         set ::bdi_tools_cdl::table_data_source($name) [list $ids $name $nbimg $nbmes $mag_mean $mag_stdev]
 
       }
+
+
+      # science
+      
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+
+         incr ids
+         if {$y != 2 && $y != 0} {continue}
+
+         array unset tab
+
+         set nbimg 0
+         set nbmes 0
+         
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+            if {[info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {
+               incr nbimg
+               set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+               set flux [::bdi_tools_psf::get_val othf "flux"]
+               if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} {
+                  lappend tab(flux) $flux
+                  incr nbmes
+                  set mag [::bdi_tools_psf::get_val othf "mag"]
+                  if {$mag!="" && [string is double $mag] && $mag+1 != $mag} { lappend tab(mag) $mag }
+               } else {
+                  continue
+               }
+            }
+         }
+
+         if { [info exists tab(mag)] } {
+            if {[llength $tab(mag)]>1} {
+               set mag_mean  [format "%0.4f" [::math::statistics::mean $tab(mag)]]
+               set mag_stdev [format "%0.4f" [::math::statistics::stdev $tab(mag)]]
+            } else {
+               set mag_mean  [format "%0.4f" [lindex $tab(mag) 0]]
+               set mag_stdev 0
+            }
+         } else {
+               set mag_mean  "-99"
+               set mag_stdev "0"
+         }
+
+         set ::bdi_tools_cdl::table_data_source($name) [list $ids $name $nbimg $nbmes $mag_mean $mag_stdev]
+
+      }
+
+
+
+
+
+
+
+
 
       # Onglet variation
       for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
@@ -260,6 +340,14 @@ namespace eval bdi_tools_cdl {
 
       # Onglet Classification
 
+      # Onglet Timeline
+      set idcata 0
+      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         # date iso -> ::bdi_tools_cdl::table_date($idcata)
+         # date iso -> ::bdi_tools_cdl::table_date($idcata)
+         
+      } 
+      
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
 
@@ -287,6 +375,10 @@ namespace eval bdi_tools_cdl {
       set a [ string trim $a]
       return $a 
    }
+   
+   
+   
+   
    
    
    
@@ -348,8 +440,6 @@ namespace eval bdi_tools_cdl {
       if {$NOMAD1_magH   != "" && $NOMAD1_magH   > -10 } {set H $NOMAD1_magH  }
       if {$NOMAD1_magK   != "" && $NOMAD1_magK   > -10 } {set K $NOMAD1_magK  }
 
-      gren_info "band = B=$B V=$V R=$R J=$J H=$H K=$K \n"
-
       set UB ""
       set BV ""
       set VR ""
@@ -398,16 +488,18 @@ namespace eval bdi_tools_cdl {
          set mean -99
          set sep  -99
       }
-      gren_info "result = $mean [lindex $::bdi_tools_cdl::table_sptype(sptype) $mean] $cpt $sep\n"
       if {$mean>=0 && $mean<50} {
          return [list [lindex $::bdi_tools_cdl::table_sptype(sptype) $mean] $cpt $sep]
       }
       return "?"
    }
 
-   proc ::bdi_tools_cdl::get_indice_by_band { band mag} {
 
-      gren_info "get_indice_by_band = $band $mag \n"
+
+
+
+
+   proc ::bdi_tools_cdl::get_indice_by_band { band mag} {
 
       set min 99
       set idst 0
@@ -421,8 +513,6 @@ namespace eval bdi_tools_cdl {
          }
          incr idst
       }
-
-      gren_info "get_indice_by_band = $idmin \n"
       return $idmin
    }
 
@@ -630,23 +720,365 @@ namespace eval bdi_tools_cdl {
                        ]
 
       set ::bdi_tools_cdl::table_sptype(sptype) [list \
-                       B0.0 B0.5 B1.0 B1.5 B2.0 \
-                       B2.5 B3.0 B3.5 B4.0 B4.5 \
-                       B5.0 B6.0 B7.0 B7.5 B8.0 \
-                       B8.5 B9.0 B9.5 A0.0 A1.0 \
-                       A2.0 A3.0 A4.0 A5.0 A6.0 \
-                       A7.0 A8.0 A9.0 F0.0 F1.0 \
-                       F2.0 F5.0 F8.0 G0.0 G2.0 \
-                       G3.0 G5.0 G8.0 K0.0 K1.0 \
-                       K2.0 K3.0 K4.0 K5.0 K7.0 \
-                       M0.0 M1.0 M2.0 M3.0 M4.0 \
+                "(01) B0.0" "(02) B0.5" "(03) B1.0" "(04) B1.5" "(05) B2.0" \
+                "(06) B2.5" "(07) B3.0" "(08) B3.5" "(09) B4.0" "(10) B4.5" \
+                "(11) B5.0" "(12) B6.0" "(13) B7.0" "(14) B7.5" "(15) B8.0" \
+                "(16) B8.5" "(17) B9.0" "(18) B9.5" "(19) A0.0" "(20) A1.0" \
+                "(21) A2.0" "(22) A3.0" "(23) A4.0" "(24) A5.0" "(25) A6.0" \
+                "(26) A7.0" "(27) A8.0" "(28) A9.0" "(29) F0.0" "(30) F1.0" \
+                "(31) F2.0" "(32) F5.0" "(33) F8.0" "(34) G0.0" "(35) G2.0" \
+                "(36) G3.0" "(37) G5.0" "(38) G8.0" "(39) K0.0" "(40) K1.0" \
+                "(41) K2.0" "(42) K3.0" "(43) K4.0" "(44) K5.0" "(45) K7.0" \
+                "(46) M0.0" "(47) M1.0" "(48) M2.0" "(49) M3.0" "(50) M4.0" \
                        ]
 
     }    
-    
-    
 
 
 
+
+
+
+   proc ::bdi_tools_cdl::calcul_const_mags { } {
+      
+      set tt0 [clock clicks -milliseconds]
+      
+      set fluxcst 100000.0
+      
+      # preparation des donnees
+      array unset ::bdi_tools_cdl::table_superstar_flux
+      array unset ::bdi_tools_cdl::table_superstar_id
+      array unset ::bdi_tools_cdl::table_superstar_idcata
+      array unset ::bdi_tools_cdl::table_superstar_exist
+      array unset ::bdi_tools_cdl::table_star_flux
+      set table_idcata ""
+      array unset table_name
+      array unset table_ids
+      set idcata 0
+      set id_superstar 0
+      set nb_superstar 0
+
+      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         
+         if {![info exists ::bdi_tools_cdl::table_date($idcata)]} { 
+            continue 
+         }
+         set table_name($idcata) ""
+         set indice_superstar ""
+         set cpt 0
+         set ids 0
+         set sum 0
+         foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+            incr ids
+            if {$y != 1} {continue}
+            if {![info exists ::bdi_tools_cdl::table_mesure($idcata,$name)]} { continue }
+            if { $::bdi_tools_cdl::table_mesure($idcata,$name) != 1 } { continue }
+            lappend table_name($idcata) $name
+            lappend table_ids($idcata) $ids
+
+            set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+            set flux [::bdi_tools_psf::get_val othf "flux"]
+            if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} { 
+               #gren_info "idcata $idcata name $name ids $ids\n"
+               set ::bdi_tools_cdl::table_star_flux($name,$idcata,flux) $flux
+               set sum [expr $sum + $::bdi_tools_cdl::table_star_flux($name,$idcata,flux)]
+               
+               if {$cpt == 0} { 
+                  append indice_superstar $ids 
+                  set ::bdi_tools_cdl::table_superstar_list($idcata) [list $ids]
+               }
+               if {$cpt != 0} { 
+                  append indice_superstar ",$ids" 
+                  lappend ::bdi_tools_cdl::table_superstar_list($idcata) $ids
+               }
+               incr cpt
+
+            } else {
+               
+               ::console::affiche_erreur "Attention calcul de la const mag incorrect\n"
+               ::console::affiche_erreur "Flux invalide pour l etoile $name\n"
+               ::console::affiche_erreur "FLUX = $flux\n"
+               ::console::affiche_erreur "IDCATA = $idcata\n"
+               ::console::affiche_erreur "DATE  = $::bdi_tools_cdl::table_date($idcata)\n"
+               return
+ 
+            }
+
+         }
+         if {[llength $table_name($idcata)] > 0} {
+            lappend table_idcata $idcata
+         }
+         
+         if {$indice_superstar != ""} {
+            if {[info exists ::bdi_tools_cdl::table_superstar_exist($indice_superstar)]} {
+               set id_superstar $::bdi_tools_cdl::table_superstar_exist($indice_superstar)
+            } else {
+               incr nb_superstar 
+               set id_superstar $nb_superstar
+               set ::bdi_tools_cdl::table_superstar_exist($indice_superstar) $id_superstar
+            }
+            set ::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata) $sum
+            set ::bdi_tools_cdl::table_superstar_idcata($idcata) $id_superstar
+            set ::bdi_tools_cdl::table_superstar_id($id_superstar) [split $indice_superstar ,]
+            #gren_info "superstar_exist: $id_superstar $indice_superstar $idcata ($::bdi_tools_cdl::table_superstar_id($id_superstar)) Flux = $::bdi_tools_cdl::table_superstar_flux($id_superstar)\n"
+         }
+         
+      }
+      #gren_info "nb_superstar = $nb_superstar \n"
+
+      # Affichage des superstars
+      #foreach {indice_superstar id_superstar} [array get ::bdi_tools_cdl::table_superstar_exist] {
+         #gren_info "id_superstar $id_superstar indice_superstar $indice_superstar \n"
+      #   continue
+      #}
+
+      
+      for {set k 1} {$k < 5} { incr k } {
+
+         # calcul des magnitudes des superstars
+         array unset ::bdi_tools_cdl::table_superstar_mag
+         array unset ::bdi_tools_cdl::table_superstar_solu
+         array unset ::bdi_tools_cdl::table_star_mag
+
+
+         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+
+            set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
+            #if { $id_superstar !=1 } { continue }
+
+            #gren_info "idcata $idcata : id_superstar $id_superstar \n"
+            #gren_info "starlist ($::bdi_tools_cdl::table_superstar_id($id_superstar))\n"
+            #gren_info "Flux superstar = $::bdi_tools_cdl::table_superstar_flux($id_superstar)\n"
+
+            foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
+
+               set name  $::bdi_tools_cdl::id_to_name($ids)
+               set mag   [lindex $::bdi_tools_cdl::table_data_source($name) 4]
+               set flux  $::bdi_tools_cdl::table_star_flux($name,$idcata,flux)
+
+               set magss [expr $mag -2.5 * log10(1.0 * $::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata) / $flux) ]
+               #lappend ::bdi_tools_cdl::table_superstar_mag 
+               #gren_info "ids = $ids Mag = $mag Flux = $flux -> mag superstar ($id_superstar) = $magss\n"
+
+               if {![info exists ::bdi_tools_cdl::table_superstar_mag($id_superstar)]} {
+                  set ::bdi_tools_cdl::table_superstar_mag($id_superstar) [list $magss]
+               } else {
+                  lappend ::bdi_tools_cdl::table_superstar_mag($id_superstar) $magss
+               }
+            }
+
+         }
+
+         # superstars moyennes 
+         foreach {indice_superstar id_superstar} [array get ::bdi_tools_cdl::table_superstar_exist] {
+
+            #if { $id_superstar !=1 } { continue }
+
+            if {![info exists ::bdi_tools_cdl::table_superstar_mag($id_superstar)]} {
+               continue
+            }
+
+            set ::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) 0
+            set ::bdi_tools_cdl::table_superstar_solu($id_superstar,stdevmag) 0
+
+            set nb [llength $::bdi_tools_cdl::table_superstar_mag($id_superstar)]
+            if {$nb == 0} {
+               continue
+            }
+            if {$nb == 1} {
+               set mean  [lindex $::bdi_tools_cdl::table_superstar_mag($id_superstar) 0]
+               set stdev 0
+            }
+            if {$nb > 1} {
+               set mean [::math::statistics::mean $::bdi_tools_cdl::table_superstar_mag($id_superstar)]
+               set stdev [::math::statistics::stdev $::bdi_tools_cdl::table_superstar_mag($id_superstar)]
+            }
+
+            set ::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) $mean
+            set ::bdi_tools_cdl::table_superstar_solu($id_superstar,stdevmag) $stdev
+
+
+            #gren_info "id_superstar $id_superstar nb = $nb  mag = $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) stdev = $::bdi_tools_cdl::table_superstar_solu($id_superstar,stdevmag) \n"
+            continue
+         }
+
+         # Maj des magnitudes des etoiles de references
+         array unset mag_stars
+         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+            set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
+            #if { $id_superstar !=1 } { continue }
+            foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
+               set name  $::bdi_tools_cdl::id_to_name($ids)
+               set flux  $::bdi_tools_cdl::table_star_flux($name,$idcata,flux)
+               set mag [expr $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) -2.5 * log10(1.0 * $flux / $::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata)) ]
+               if {![info exists mag_stars($ids)]} {
+                  set mag_stars($ids) [list $mag]
+               } else {
+                  lappend mag_stars($ids) $mag
+               }
+               set ::bdi_tools_cdl::table_star_mag($ids,$idcata) $mag
+            }
+         }
+
+         foreach {ids tab_mag} [array get mag_stars] {
+            set name  $::bdi_tools_cdl::id_to_name($ids)
+            #gren_info "Star $ids : $tab_mag \n"
+            if {![info exists tab_mag]} {
+               continue
+            }
+            set nb [llength $tab_mag]
+            if {$nb == 0} {
+               continue
+            }
+            if {$nb == 1} {
+               set mean  [lindex $tab_mag 0]
+               set stdev 0
+            }
+            if {$nb > 1} {
+               set mean [::math::statistics::mean $tab_mag]
+               set stdev [::math::statistics::stdev $tab_mag]
+            }
+            set mean [format "%0.4f" $mean]
+            set stdev [format "%0.4f" $stdev]
+            set ::bdi_tools_cdl::table_data_source($name) [lreplace $::bdi_tools_cdl::table_data_source($name) 4 4 $mean]
+            set ::bdi_tools_cdl::table_data_source($name) [lreplace $::bdi_tools_cdl::table_data_source($name) 5 5 $stdev]
+            #gren_info "Star $ids : nb = $nb :  mag = $mean stdev = $stdev \n"
+         }
+     
+      }
+# 1 2 3   -> c1 
+# 1 2 3 4 -> c1, c2, c3   
+# 1 2   4 -> c3     
+      
+      # Fin de calcul de la constante de magnitude
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Calcul de la constante de magnitude en $tt sec \n"
+      
+   }    
+
+
+
+   proc ::bdi_tools_cdl::calcul_science { } {
+
+      set tt0 [clock clicks -milliseconds]
+         # Maj des magnitudes des etoiles de references
+         array unset mag_sciences
+         array unset ::bdi_tools_cdl::table_science_mag
+
+         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+            set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
+            #if { $id_superstar !=1 } { continue }
+            set ids 0
+            foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+               incr ids
+               if {$y != 2} {continue}
+               #gren_info "=> $::bdi_tools_cdl::table_data_source($name)\n"
+               if {![info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {continue}
+               set ::bdi_tools_cdl::id_to_name($ids) $name
+               set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+               set flux [::bdi_tools_psf::get_val othf "flux"]
+               if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} { 
+                  #gren_info "flux = $flux\n"
+                  set mag [expr $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) -2.5 * log10(1.0 * $flux / $::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata)) ]
+                  
+                  #gren_info "mag = $idcata $mag\n"
+                  if {![info exists mag_sciences($ids)]} {
+                     set mag_sciences($ids) [list $mag]
+                  } else {
+                     lappend mag_sciences($ids) $mag
+                  }
+                  set ::bdi_tools_cdl::table_science_mag($ids,$idcata) $mag
+               }
+            }
+         }
+
+         foreach {ids tab_mag} [array get mag_sciences] {
+            set name $::bdi_tools_cdl::id_to_name($ids)
+            if {![info exists tab_mag]} {
+               continue
+            }
+            set nb [llength $tab_mag]
+            if {$nb == 0} {
+               continue
+            }
+            if {$nb == 1} {
+               set mean  [lindex $tab_mag 0]
+               set stdev 0
+            }
+            if {$nb > 1} {
+               set mean [::math::statistics::mean $tab_mag]
+               set stdev [::math::statistics::stdev $tab_mag]
+            }
+            set mean [format "%0.4f" $mean]
+            set stdev [format "%0.4f" $stdev]
+            set ::bdi_tools_cdl::table_data_source($name) [lreplace $::bdi_tools_cdl::table_data_source($name) 4 4 $mean]
+            set ::bdi_tools_cdl::table_data_source($name) [lreplace $::bdi_tools_cdl::table_data_source($name) 5 5 $stdev]
+            #gren_info "Star $ids : nb = $nb :  mag = $mean stdev = $stdev \n"
+         }
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Calcul des sciences en $tt sec \n"
+   }    
+
+
+   proc ::bdi_tools_cdl::calcul_rejected { } {
+
+      set tt0 [clock clicks -milliseconds]
+         # Maj des magnitudes des etoiles de references
+         array unset mag_rejected
+
+         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+            set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
+            #if { $id_superstar !=1 } { continue }
+            set ids 0
+            foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+               incr ids
+               if {$y != 0} {continue}
+               #gren_info "=> $::bdi_tools_cdl::table_data_source($name)\n"
+               if {![info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {continue}
+               set ::bdi_tools_cdl::id_to_name($ids) $name
+               set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+               set flux [::bdi_tools_psf::get_val othf "flux"]
+               if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0 } { 
+                  #gren_info "flux = $flux\n"
+                  set mag [expr $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) -2.5 * log10(1.0 * $flux / $::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata)) ]
+                  
+                  #gren_info "mag = $idcata $mag\n"
+                  if {![info exists mag_rejected($ids)]} {
+                     set mag_rejected($ids) [list $mag]
+                  } else {
+                     lappend mag_rejected($ids) $mag
+                  }
+               }
+            }
+         }
+
+         foreach {ids tab_mag} [array get mag_rejected] {
+            set name $::bdi_tools_cdl::id_to_name($ids)
+            if {![info exists tab_mag]} {
+               continue
+            }
+            set nb [llength $tab_mag]
+            if {$nb == 0} {
+               continue
+            }
+            if {$nb == 1} {
+               set mean  [lindex $tab_mag 0]
+               set stdev 0
+            }
+            if {$nb > 1} {
+               set mean [::math::statistics::mean $tab_mag]
+               set stdev [::math::statistics::stdev $tab_mag]
+            }
+            set mean [format "%0.4f" $mean]
+            set stdev [format "%0.4f" $stdev]
+            set ::bdi_tools_cdl::table_data_source($name) [lreplace $::bdi_tools_cdl::table_data_source($name) 4 4 $mean]
+            set ::bdi_tools_cdl::table_data_source($name) [lreplace $::bdi_tools_cdl::table_data_source($name) 5 5 $stdev]
+            #gren_info "Star $ids : nb = $nb :  mag = $mean stdev = $stdev \n"
+         }
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Calcul des sources rejetees en $tt sec \n"
+   }    
 
 
