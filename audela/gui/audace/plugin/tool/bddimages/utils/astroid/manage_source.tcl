@@ -435,6 +435,7 @@ namespace eval ::manage_source {
 
          }
       }
+      return ""
    }
 
    #

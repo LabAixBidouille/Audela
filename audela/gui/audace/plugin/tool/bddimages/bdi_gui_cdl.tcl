@@ -41,7 +41,7 @@ namespace eval bdi_gui_cdl {
    #             dans la variable globale \c conf
    proc ::bdi_gui_cdl::inittoconf {  } {
       
-      
+      ::bdi_tools_cdl::free_memory
    }
 
    #----------------------------------------------------------------------------
@@ -120,20 +120,40 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::create_dialog
    }
 
+   proc ::bdi_gui_cdl::clean_gui_photometry { } {
 
+      $::bdi_gui_cdl::data_reference delete 0 end
+      $::bdi_gui_cdl::data_science   delete 0 end
+      $::bdi_gui_cdl::data_rejected  delete 0 end
+      $::bdi_gui_cdl::classif        delete 0 end
+      $::bdi_gui_cdl::ss_mag_stdev   delete 0 end 
+      $::bdi_gui_cdl::timeline       delete 0 end
+
+      catch { $::bdi_gui_cdl::timeline     deletecolumns 0 end } 
+      catch { $::bdi_gui_cdl::ss_mag_stdev deletecolumns 0 end } 
+
+   }
+
+   proc ::bdi_gui_cdl::charge_from_gestion { } {
+
+      ::bdi_tools_cdl::free_memory
+      ::bdi_gui_cdl::clean_gui_photometry
+      ::bdi_gui_cdl::affich_gestion
+      ::bdi_tools_cdl::charge_from_gestion
+   }
 
    #----------------------------------------------------------------------------
    ## Affichage de l outil de gestion des cata
    proc ::bdi_gui_cdl::affich_gestion { } {
 
       set tt0 [clock clicks -milliseconds]
-      catch {destroy $::cata_gestion_gui::fen}
-      gren_info "Chargement des fichiers XML\n"
-      ::cata_gestion_gui::go $::tools_cata::img_list
+      #catch {destroy $::cata_gestion_gui::fen}
+      if {[winfo exists $::cata_gestion_gui::fen]==0} {
+         ::cata_gestion_gui::go $::tools_cata::img_list
+      }
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Chargement Gestion des CATA en $tt sec \n"
+      gren_info "Chargement de la fenetre Gestion en $tt sec \n"
       
-      ::bdi_tools_cdl::pre_charge_cata_list
    }
 
 
@@ -143,7 +163,7 @@ namespace eval bdi_gui_cdl {
 
       global audace
 
-      ::bdi_gui_cdl::affich_gestion
+      
 
 
       set ::bdi_gui_cdl::fen .photometry
@@ -400,8 +420,8 @@ namespace eval bdi_gui_cdl {
 
                   set cols [list 0 " " left ]
                   # Table
-                  set ::bdi_gui_cdl::ss_mag_stedv $results.table
-                  tablelist::tablelist $::bdi_gui_cdl::ss_mag_stedv \
+                  set ::bdi_gui_cdl::ss_mag_stdev $results.table
+                  tablelist::tablelist $::bdi_gui_cdl::ss_mag_stdev \
                     -columns $cols \
                     -labelcommand tablelist::sortByColumn \
                     -xscrollcommand [ list $results.hsb set ] \
@@ -412,13 +432,13 @@ namespace eval bdi_gui_cdl {
                     -showseparators 1
 
                   # Scrollbar
-                  scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::ss_mag_stedv xview]
+                  scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::ss_mag_stdev xview]
                   pack $results.hsb -in $results -side bottom -fill x
-                  scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::ss_mag_stedv yview]
+                  scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::ss_mag_stdev yview]
                   pack $results.vsb -in $results -side right -fill y 
 
                   # Pack la Table
-                  pack $::bdi_gui_cdl::ss_mag_stedv -in $results -expand yes -fill both
+                  pack $::bdi_gui_cdl::ss_mag_stdev -in $results -expand yes -fill both
 
                   # Popup
                   menu $results.popupTbl -title "Actions"
@@ -426,12 +446,12 @@ namespace eval bdi_gui_cdl {
                      $results.popupTbl add command -label "Voir l'objet dans une image" \
                          -command "" -state disabled
                      $results.popupTbl add command -label "Supprimer" \
-                         -command "::bdi_gui_cdl::unset_starstar $::bdi_gui_cdl::ss_mag_stedv" 
+                         -command "::bdi_gui_cdl::unset_starstar $::bdi_gui_cdl::ss_mag_stdev" 
 
 
                   # Binding
-                  bind $::bdi_gui_cdl::ss_mag_stedv <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
-                  bind [$::bdi_gui_cdl::ss_mag_stedv bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
+                  bind $::bdi_gui_cdl::ss_mag_stdev <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_starstar %W ]
+                  bind [$::bdi_gui_cdl::ss_mag_stdev bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
 
 
 
@@ -615,14 +635,28 @@ namespace eval bdi_gui_cdl {
                  -command "::bdi_gui_cdl::relance"
               button $actions.clean -text "Clean" -borderwidth 2 -takefocus 1 \
                  -command "console::clear"
+              button $actions.testgui -text "Test GUI" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::test_gui"
 
               label $actions.labcharge -text "Chargement"  -justify left
-              button $actions.chargexml -text "Charge XML" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::charge_cata_xml_alavolee"
-              button $actions.stopxml -text "STOP XML" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::stop_charge_cata_xml"
+              button $actions.charge_alavolee -text "A la volee" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::charge_cata_alavolee"
+              button $actions.stop -text "STOP" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::stop_charge_cata_alavolee"
+              button $actions.charge_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::charge_from_gestion"
               button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::charge_cata_list"
+
+              label $actions.labexport -text "Export"  -justify left
+              button $actions.export_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::export_cata_to_gestion"
+
+              label $actions.labsauve -text "Sauvegarde"  -justify left
+              button $actions.sauve_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::save_cata_from_gestion"
+              button $actions.sauve_result -text "Resultats" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::save_photometry"
 
               label $actions.labvoir -text "Affichage"  -justify left
               button $actions.voir -text "Tables" -borderwidth 2 -takefocus 1 \
@@ -652,35 +686,46 @@ namespace eval bdi_gui_cdl {
                  -command "::bdi_gui_cdl::fermer"
               button $actions.aide -text "Aide" -borderwidth 2 -takefocus 1 \
                  -command "" -state disabled
+
+
+             grid $actions.labdev       -row 0 -column 0 -sticky news
+             grid $actions.ressource    -row 1 -column 0 -sticky news
+             grid $actions.relance      -row 2 -column 0 -sticky news
+             grid $actions.clean        -row 3 -column 0 -sticky news
+             grid $actions.testgui      -row 4 -column 0 -sticky news
+
+             grid $actions.labcharge       -row 0 -column 1 -sticky news
+             grid $actions.charge_alavolee -row 1 -column 1 -sticky news
+             grid $actions.stop            -row 2 -column 1 -sticky news
+             grid $actions.charge_gestion  -row 3 -column 1 -sticky news
+             grid $actions.chargelist      -row 4 -column 1 -sticky news
+
+             grid $actions.labexport      -row 0 -column 2 -sticky news
+             grid $actions.export_gestion -row 1 -column 2 -sticky news
+
+             grid $actions.labsauve       -row 0 -column 3 -sticky news
+             grid $actions.sauve_gestion  -row 1 -column 3 -sticky news
+             grid $actions.sauve_result   -row 2 -column 3 -sticky news
+
+             grid $actions.labvoir      -row 0 -column 4 -sticky news
+             grid $actions.voir         -row 1 -column 4 -sticky news
+
+             grid $actions.labcalc      -row 0 -column 5 -sticky news
+             grid $actions.magcst       -row 1 -column 5 -sticky news
+             grid $actions.calcsci      -row 2 -column 5 -sticky news
+             grid $actions.calcrej      -row 3 -column 5 -sticky news
+
+             grid $actions.labref       -row 0 -column 6 -sticky news
+             grid $actions.const_mag    -row 1 -column 6 -sticky news
+             grid $actions.stars_mag    -row 2 -column 6 -sticky news
+
+             grid $actions.labscience   -row 0 -column 8 -sticky news
+             grid $actions.science_mag  -row 1 -column 8 -sticky news
+
+             grid $actions.aide         -row 2 -column 10 -sticky news 
+             grid $actions.fermer       -row 3 -column 10 -sticky news 
+
               
-              grid $actions.labdev       -row 0 -column 0 -sticky news
-              grid $actions.ressource    -row 1 -column 0 -sticky news
-              grid $actions.relance      -row 2 -column 0 -sticky news
-              grid $actions.clean        -row 3 -column 0 -sticky news
-
-              grid $actions.labcharge    -row 0 -column 1 -sticky news
-              grid $actions.chargexml    -row 1 -column 1 -sticky news
-              grid $actions.stopxml      -row 2 -column 1 -sticky news
-              grid $actions.chargelist   -row 3 -column 1 -sticky news
-
-              grid $actions.labvoir      -row 0 -column 2 -sticky news
-              grid $actions.voir         -row 1 -column 2 -sticky news
-
-              grid $actions.labcalc      -row 0 -column 3 -sticky news
-              grid $actions.magcst       -row 1 -column 3 -sticky news
-              grid $actions.calcsci      -row 2 -column 3 -sticky news
-              grid $actions.calcrej      -row 3 -column 3 -sticky news
-
-              grid $actions.labref       -row 0 -column 4 -sticky news
-              grid $actions.const_mag    -row 1 -column 4 -sticky news
-              grid $actions.stars_mag    -row 2 -column 4 -sticky news
-
-              grid $actions.labscience   -row 0 -column 5 -sticky news
-              grid $actions.science_mag  -row 1 -column 5 -sticky news
-
-              grid $actions.aide         -row 2 -column 7 -sticky news 
-              grid $actions.fermer       -row 3 -column 7 -sticky news 
-
    }
 
 
@@ -688,8 +733,10 @@ namespace eval bdi_gui_cdl {
 
 
 
+   proc ::bdi_gui_cdl::test_gui { } {
 
 
+   }
 
 
 
@@ -732,6 +779,8 @@ namespace eval bdi_gui_cdl {
 
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
 
+      if {![info exists ::bdi_tools_cdl::table_data_source]} {return}
+
       # Onglet References
 
       $::bdi_gui_cdl::data_reference delete 0 end
@@ -768,120 +817,126 @@ namespace eval bdi_gui_cdl {
 
       # Onglet variation
 
-      $::bdi_gui_cdl::ss_mag_stedv    delete 0 end
+      $::bdi_gui_cdl::ss_mag_stdev    delete 0 end
 
-      catch { $::bdi_gui_cdl::ss_mag_stedv    deletecolumns 0 end } 
+      catch { $::bdi_gui_cdl::ss_mag_stdev deletecolumns 0 end } 
 
-      $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 "" left
-      $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 "sum" center
+      $::bdi_gui_cdl::ss_mag_stdev    insertcolumns end 0 "" left
+      $::bdi_gui_cdl::ss_mag_stdev    insertcolumns end 0 "sum" center
 
-      set pcol 0
-      foreach ids $::bdi_tools_cdl::list_of_stars {
-         $::bdi_gui_cdl::ss_mag_stedv    insertcolumns end 0 $ids right
-         $::bdi_gui_cdl::ss_mag_stedv    columnconfigure $pcol -sortmode real
-         incr pcol
-      }
+      
+      if {[info exists ::bdi_tools_cdl::list_of_stars]} {
 
-      set magmax -1
-      set col 0
-      foreach ids1 $::bdi_tools_cdl::list_of_stars { 
-         set line_mag_stedv [list $ids1 "-"]
-         set row 2
-         set sum 0
-         foreach ids2 $::bdi_tools_cdl::list_of_stars {
-            set mag $::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)
-            set sum [expr $sum + $mag]
-            if {$mag>$magmax} {
-              # gren_info "$mag>$magmax $row,$col\n"
-               set magmax $mag
-               set colmax $col
-               set rowmax $row
+         set pcol 0
+         foreach ids $::bdi_tools_cdl::list_of_stars {
+            $::bdi_gui_cdl::ss_mag_stdev    insertcolumns end 0 $ids right
+            $::bdi_gui_cdl::ss_mag_stdev    columnconfigure $pcol -sortmode real
+            incr pcol
+         }
+      
+         set magmax -1
+         set col 0
+         foreach ids1 $::bdi_tools_cdl::list_of_stars {
+            set line_mag_stdev [list $ids1 "-"]
+            set row 2
+            set sum 0
+            foreach ids2 $::bdi_tools_cdl::list_of_stars {
+               set mag $::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)
+               set sum [expr $sum + $mag]
+               if {$mag>$magmax} {
+                 # gren_info "$mag>$magmax $row,$col\n"
+                  set magmax $mag
+                  set colmax $col
+                  set rowmax $row
+               }
+               lappend line_mag_stdev    [format "%.3f" $mag]
+               incr row
             }
-            lappend line_mag_stedv    [format "%.3f" $mag]
-            incr row
+            set line_mag_stdev [lreplace $line_mag_stdev 1 1 [format "%.3f" $sum]]
+            $::bdi_gui_cdl::ss_mag_stdev    insert end $line_mag_stdev
+            incr col
          }
-         set line_mag_stedv [lreplace $line_mag_stedv 1 1 [format "%.3f" $sum]]
-         $::bdi_gui_cdl::ss_mag_stedv    insert end $line_mag_stedv
-         incr col
-      }
- 
-      $::bdi_gui_cdl::ss_mag_stedv cellconfigure $colmax,$rowmax -background red
-      set pcol 0
-      foreach ids1 $::bdi_tools_cdl::list_of_stars {
-         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,[expr $pcol+2] -background darkgrey
-         $::bdi_gui_cdl::ss_mag_stedv    cellconfigure $pcol,1 -background ivory
-         incr pcol
-      }
-      $::bdi_gui_cdl::ss_mag_stedv sortbycolumn 1 -decreasing
 
-
-      # Onglet Classification
-      $::bdi_gui_cdl::classif delete 0 end
-      set ids 0
-      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$y != 1} {continue}
-         set line [list $ids $name $::bdi_tools_cdl::table_values($name,sptype)]
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magB)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magR)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag) }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magB)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magV)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magV)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magR)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magH)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magH)   }
-         if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magK)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magK)   }
-         $::bdi_gui_cdl::classif insert end $line
-      }
-      $::bdi_gui_cdl::classif columnconfigure 2 -sortmode ascii
-      $::bdi_gui_cdl::classif sortbycolumn 2
-
-      # Onglet Timeline
-
-      $::bdi_gui_cdl::timeline    delete 0 end
-
-      catch { $::bdi_gui_cdl::timeline    deletecolumns 0 end } 
-
-      $::bdi_gui_cdl::timeline insertcolumns end 0 "idcata"  left
-      $::bdi_gui_cdl::timeline insertcolumns end 0 "Date"    center
-      $::bdi_gui_cdl::timeline insertcolumns end 0 "NbStars" center
-
-      set pcol 0
-      foreach ids $::bdi_tools_cdl::list_of_stars {
-         $::bdi_gui_cdl::timeline    insertcolumns end 0 $ids right
-         $::bdi_gui_cdl::timeline    columnconfigure $pcol -sortmode real
-         incr pcol
-      }
-
-      set idcata 0
-      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-         
-         if {![info exists ::bdi_tools_cdl::table_date($idcata)]} { 
-            continue 
+         $::bdi_gui_cdl::ss_mag_stdev cellconfigure $colmax,$rowmax -background red
+         set pcol 0
+         foreach ids1 $::bdi_tools_cdl::list_of_stars {
+            $::bdi_gui_cdl::ss_mag_stdev    cellconfigure $pcol,[expr $pcol+2] -background darkgrey
+            $::bdi_gui_cdl::ss_mag_stdev    cellconfigure $pcol,1 -background ivory
+            incr pcol
          }
-         set line [list $idcata $::bdi_tools_cdl::table_date($idcata) ""]
-         set cpt 0
+         $::bdi_gui_cdl::ss_mag_stdev sortbycolumn 1 -decreasing
+
+
+         # Onglet Classification
+         $::bdi_gui_cdl::classif delete 0 end
+         set ids 0
          foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+            incr ids
             if {$y != 1} {continue}
-            if {![info exists ::bdi_tools_cdl::table_mesure($idcata,$name)]} { 
-               lappend line 0
-               continue 
-            }
-            if { $::bdi_tools_cdl::table_mesure($idcata,$name) != 1 } { 
-               lappend line 0
-               continue 
-            }
-
-            incr cpt
-            lappend line 1
+            set line [list $ids $name $::bdi_tools_cdl::table_values($name,sptype)]
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magB)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magR)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag) }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magB)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magV)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magV)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magR)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magH)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magH)   }
+            if { ![info exists ::bdi_tools_cdl::table_mag($name,NOMAD1_magK)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,NOMAD1_magK)   }
+            $::bdi_gui_cdl::classif insert end $line
          }
-         set line [lreplace $line 2 2 $cpt]
-         $::bdi_gui_cdl::timeline insert end $line
+         $::bdi_gui_cdl::classif columnconfigure 2 -sortmode ascii
+         $::bdi_gui_cdl::classif sortbycolumn 2
+
+         # Onglet Timeline
+
+         $::bdi_gui_cdl::timeline    delete 0 end
+
+         catch { $::bdi_gui_cdl::timeline    deletecolumns 0 end } 
+
+         $::bdi_gui_cdl::timeline insertcolumns end 0 "idcata"  left
+         $::bdi_gui_cdl::timeline insertcolumns end 0 "Date"    center
+         $::bdi_gui_cdl::timeline insertcolumns end 0 "NbStars" center
+
+         set pcol 0
+         foreach ids $::bdi_tools_cdl::list_of_stars {
+            $::bdi_gui_cdl::timeline    insertcolumns end 0 $ids right
+            $::bdi_gui_cdl::timeline    columnconfigure $pcol -sortmode real
+            incr pcol
+         }
+
+         set idcata 0
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+
+            if {![info exists ::bdi_tools_cdl::table_date($idcata)]} { 
+               continue 
+            }
+            set line [list $idcata $::bdi_tools_cdl::table_date($idcata) ""]
+            set cpt 0
+            foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+               if {$y != 1} {continue}
+               if {![info exists ::bdi_tools_cdl::table_mesure($idcata,$name)]} { 
+                  lappend line 0
+                  continue 
+               }
+               if { $::bdi_tools_cdl::table_mesure($idcata,$name) != 1 } { 
+                  lappend line 0
+                  continue 
+               }
+
+               incr cpt
+               lappend line 1
+            }
+            set line [lreplace $line 2 2 $cpt]
+            $::bdi_gui_cdl::timeline insert end $line
+         }
+         $::bdi_gui_cdl::timeline columnconfigure 0 -sortmode real
+         $::bdi_gui_cdl::timeline columnconfigure 1 -sortmode ascii
+         $::bdi_gui_cdl::timeline sortbycolumn 1 
+
+      # fin test : if {![info exists ::bdi_tools_cdl::list_of_stars]} {}
       }
-      $::bdi_gui_cdl::timeline columnconfigure 0 -sortmode real
-      $::bdi_gui_cdl::timeline columnconfigure 1 -sortmode ascii
-      $::bdi_gui_cdl::timeline sortbycolumn 1 
 
       # Fin de visualisation des donnees
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
