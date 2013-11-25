@@ -1464,6 +1464,10 @@ namespace eval tools_cata {
 
       set nbcata  [llength $fields]
 
+      array unset ::gui_cata::tklist
+      array unset ::gui_cata::tklist_list_of_columns
+      array unset ::gui_cata::cataname
+
       catch {
          unset ::gui_cata::cataname
          unset ::gui_cata::cataid

@@ -28,10 +28,19 @@
 namespace eval bdi_tools_cdl {
 
    variable progress      ; # Barre de progression
-   variable table_noms    ; # 
-   variable table_nbcata  ; # 
-   variable table_values  ; # 
+
+   variable table_mesure      ; # 
+   variable id_to_name        ; # 
+   variable table_data_source ; # 
+   variable table_variations  ; # 
+   variable table_noms        ; # 
+   variable table_othf        ; # 
+   variable table_data_source ; # 
+   variable table_nbcata      ; # 
+   variable table_star_exist  ; # 
+   variable table_values      ; # 
 }
+
 
 
 
@@ -41,10 +50,56 @@ namespace eval bdi_tools_cdl {
    ## Pretraitement et initialisation apres avoir charge la liste cata_list
    #  \param void
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::pre_charge_cata_list { } {
+   proc ::bdi_tools_cdl::save_photometry { } {
 
       set tt0 [clock clicks -milliseconds]
 
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Sauvegarde des resultats en $tt sec \n"
+   }    
+
+
+   proc ::bdi_tools_cdl::export_cata_to_gestion { } {
+
+      set tt0 [clock clicks -milliseconds]
+
+      set list_name_R ""
+      set list_name_S ""
+      
+      # Onglet References
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 1} {
+            lappend list_name_R $name
+            continue
+         }
+         if {$y == 2} {
+            lappend list_name_S $name
+            continue
+         }
+      }
+
+
+      gren_info "list_name_R = $list_name_R \n"
+      gren_info "list_name_S = $list_name_S \n"
+      
+      ::cata_gestion_gui::export_photom_to_gestion $list_name_R $list_name_S
+
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Export vers la fenetre gestion en $tt sec \n"
+   }    
+
+
+
+
+
+
+
+   proc ::bdi_tools_cdl::charge_from_gestion { } {
+
+      set tt0 [clock clicks -milliseconds]
       ::bdi_tools_cdl::init_spectral_type
       
       array unset ::bdi_tools_cdl::table_noms  
@@ -66,23 +121,60 @@ namespace eval bdi_tools_cdl {
          
          set sources [lindex  $::tools_cata::current_listsources 1]         
 
-         set ids 0
+         set ids -1
          foreach s $sources {
-
+            incr ids
+            
             set name [::manage_source::namincata $s]
             if {$name == ""} {continue}
 
             if {[info exists ::bdi_tools_cdl::table_noms($name)]} {
                incr ::bdi_tools_cdl::table_nbcata($name)
             } else {
+               set ::bdi_tools_cdl::table_noms($name)   0
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
-            set ::bdi_tools_cdl::table_noms($name) 1
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
 
-            
+# set ::bdi_tools_cdl::test_sources [lindex $::gui_cata::cata_list(8) 1]
+
+# set ::bdi_tools_cdl::test_sources [lindex $::tools_cata::current_listsources 1]
+
+# set a [lindex $::bdi_tools_cdl::test_sources 13]
+# set b [lindex $::bdi_tools_cdl::test_sources 110]
+# if {$a == $b} {gren_info "idem\n"}
+
+            # Sciences References Rejetees
+            if {$idcata == 10} {
+               set ::bdi_tools_cdl::test_sources $sources
+               
+               set nameuc [::manage_source::naming $s UCAC4]
+               if {$nameuc == "UCAC4_442-052846"} {
+                  gren_info "$idcata $ids $nameuc $name othf=$::bdi_tools_cdl::table_othf($name,$idcata,othf)\n"
+                  gren_info "$s\n"
+               }
+            }
+
+
+
+            set flagphotom [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flagphotom]
+            set cataphotom [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) cataphotom]
+            switch $flagphotom {
+               "R" {
+                    set ::bdi_tools_cdl::table_noms($name) 1
+                    gren_info "($idcata) $name as reference $flagphotom $cataphotom\n"   
+               }
+               "S" {
+                    
+                    if {$::bdi_tools_cdl::table_noms($name) != 1 } {
+                       set ::bdi_tools_cdl::table_noms($name) 2
+                    }
+               }
+               default {
+               }
+            }
             
             set USNOA2_magB     ""
             set USNOA2_magR     ""
@@ -125,21 +217,14 @@ namespace eval bdi_tools_cdl {
             set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
             set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
             #break
-            incr ids
          }
 
       # Fin boucle sur les images
       }
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Chargement des tableaux preparatifs en $tt sec \n"
-
-      return
-
-   }
-
-
-
+      gren_info "Charegement depuis la fenetre gestion en $tt sec \n"
+   }    
 
 
 
@@ -148,7 +233,7 @@ namespace eval bdi_tools_cdl {
    ## Stope le chargement des cata XML a la volee.
    #  \param void
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::stop_charge_cata_xml { } {
+   proc ::bdi_tools_cdl::stop_charge_cata_alavolee { } {
      set ::bdi_tools_cdl::encours_charge_cata_xml 0
    }
 
@@ -164,7 +249,7 @@ namespace eval bdi_tools_cdl {
    # namespace  \c tools_cata::img_list puis charge toutes l'info des cata
    # associes aux images
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::charge_cata_xml_alavolee { } {
+   proc ::bdi_tools_cdl::charge_cata_alavolee { } {
 
       set tt0 [clock clicks -milliseconds]
 
@@ -279,6 +364,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::id_to_name
       array unset ::bdi_tools_cdl::table_data_source
       array unset ::bdi_tools_cdl::table_variations
+
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
       
 
@@ -463,11 +549,11 @@ namespace eval bdi_tools_cdl {
 
       # Onglet Timeline
       set idcata 0
-      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+      #for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
          # date iso -> ::bdi_tools_cdl::table_date($idcata)
          # date iso -> ::bdi_tools_cdl::table_date($idcata)
          
-      } 
+      #} 
       
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage complet en $tt sec \n"
@@ -499,7 +585,21 @@ namespace eval bdi_tools_cdl {
    
    
    
-   
+   proc ::bdi_tools_cdl::free_memory {  } {
+
+      array unset ::bdi_tools_cdl::table_mesure
+      array unset ::bdi_tools_cdl::id_to_name
+      array unset ::bdi_tools_cdl::table_data_source
+      array unset ::bdi_tools_cdl::table_variations
+      array unset ::bdi_tools_cdl::table_noms
+      array unset ::bdi_tools_cdl::table_othf
+      array unset ::bdi_tools_cdl::table_data_source
+      array unset ::bdi_tools_cdl::table_nbcata
+      array unset ::bdi_tools_cdl::table_star_exist
+      array unset ::bdi_tools_cdl::table_values
+      
+      if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
+   }
    
    
    
@@ -1201,5 +1301,4 @@ namespace eval bdi_tools_cdl {
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Calcul des sources rejetees en $tt sec \n"
    }    
-
 
