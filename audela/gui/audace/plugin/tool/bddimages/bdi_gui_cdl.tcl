@@ -120,11 +120,31 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::create_dialog
    }
 
+
+
+   #----------------------------------------------------------------------------
+   ## Affichage de l outil de gestion des cata
+   proc ::bdi_gui_cdl::affich_gestion { } {
+
+      set tt0 [clock clicks -milliseconds]
+      catch {destroy $::cata_gestion_gui::fen}
+      gren_info "Chargement des fichiers XML\n"
+      ::cata_gestion_gui::go $::tools_cata::img_list
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Chargement Gestion des CATA en $tt sec \n"
+      
+      ::bdi_tools_cdl::pre_charge_cata_list
+   }
+
+
    #----------------------------------------------------------------------------
    ## Creation de la boite de dialogue.
    proc ::bdi_gui_cdl::create_dialog { } {
 
       global audace
+
+      ::bdi_gui_cdl::affich_gestion
+
 
       set ::bdi_gui_cdl::fen .photometry
       if { [winfo exists $::bdi_gui_cdl::fen] } {
@@ -203,7 +223,7 @@ namespace eval bdi_gui_cdl {
             menu $results.popupTbl -title "Actions"
 
                $results.popupTbl add command -label "Voir l'objet dans une image" \
-                   -command "" -state disabled
+                   -command "::gui_cata::voirobj_photom_ref" 
                $results.popupTbl add command -label "Definir Science" \
                    -command "::bdi_gui_cdl::set_to_science_data_reference" 
                $results.popupTbl add command -label "Rejeter" \
@@ -598,7 +618,7 @@ namespace eval bdi_gui_cdl {
 
               label $actions.labcharge -text "Chargement"  -justify left
               button $actions.chargexml -text "Charge XML" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::charge_cata_xml"
+                 -command "::bdi_tools_cdl::charge_cata_xml_alavolee"
               button $actions.stopxml -text "STOP XML" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::stop_charge_cata_xml"
               button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \

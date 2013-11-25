@@ -1308,8 +1308,164 @@ return
 
 
 
+   #
+   # Photometrie: Affiche les sources de reference dans l'image courante
+   # qui ont ete selectionnees dans la table
+   # Si l etoile (ou les etoiles) n'apparaissent pas dans l'image courante
+   # alors on fait appel a la fonction d'affichage de l'image qui contient
+   # le plus grand nombre de ces sources
+   #
+   proc ::gui_cata::voirobj_photom_ref {  } {
+
+      set color red
+      set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+      array unset tab
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+         set tab($idcata) ""
+      }
+
+      
+      foreach select [$::bdi_gui_cdl::data_reference curselection] {
+         set data [$::bdi_gui_cdl::data_reference get $select]
+         set id [lindex $data 0]
+         set name [lindex $data 1]
+#         gren_info "Id = $id Name = $name\n"
+         set date $::tools_cata::current_image_date
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+            if {[info exists ::bdi_tools_cdl::table_star_exist($name,$idcata)]} {
+               lappend tab($idcata) $name
+            }
+         }
+      }
+
+      set nbvue 0
+      set idvue -1
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+         if {[llength $tab($idcata)]>$nbvue} {
+            set nbvue [llength $tab($idcata)]
+            set idvue $idcata
+         }
+      }
+      
+#      gren_info "Idcata = $idvue, Nb star visible = $nbvue\n"
+      
+      # Chargement de l image 
+      if {$idvue != -1} {
+         if {$::cata_gestion_gui::directaccess != $idvue } {
+            set ::cata_gestion_gui::directaccess $idvue
+            ::cata_gestion_gui::charge_image_directaccess
+         }
+      }
+      
+      gren_info "Etoiles visible dans l image ($idvue) date = $::tools_cata::current_image_date: \n"
+      foreach name $tab($idvue) {
+         set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
+         set s [lindex  $::tools_cata::current_listsources 1 $ids] 
+         set xy [::bdi_tools_psf::get_xy s]
+         gren_info "$name ($ids) : $xy\n"
+         set radec [buf$::audace(bufNo) xy2radec [list [lindex $xy 0] [lindex $xy 1] ]]
+         
+         affich_un_rond [lindex $radec 0] [lindex $radec 1] $color $width
+         
+      }
 
 
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      $onglets select $onglets.f$tabid(ASTROID)
+      set f [$onglets select]
+     
+      
+   }
+
+   #
+   # Photometrie: Affiche une source de reference dans une l'image (de la table srpt)
+   # ici on affiche l image qui contient le plus d etoiles selectionnees
+   #
+   proc ::gui_cata::voirobj_photom_ref_pas_dans_currentimage {  } {
+
+      set color red
+      set width 2
+
+      if {![winfo exists .gestion_cata.appli.onglets.nb]} {
+         tk_messageBox -message "La GUI de gestion du CATA doit etre ouverte" -type ok
+         return
+      }
+
+      cleanmark
+      array unset tab
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+         set tab($idcata) ""
+      }
+
+      
+      foreach select [$::bdi_gui_cdl::data_reference curselection] {
+         set data [$::bdi_gui_cdl::data_reference get $select]
+         set id [lindex $data 0]
+         set name [lindex $data 1]
+#         gren_info "Id = $id Name = $name\n"
+         set date $::tools_cata::current_image_date
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+            if {[info exists ::bdi_tools_cdl::table_star_exist($name,$idcata)]} {
+               lappend tab($idcata) $name
+            }
+         }
+      }
+
+      set nbvue 0
+      set idvue -1
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+         if {[llength $tab($idcata)]>$nbvue} {
+            set nbvue [llength $tab($idcata)]
+            set idvue $idcata
+         }
+      }
+      
+#      gren_info "Idcata = $idvue, Nb star visible = $nbvue\n"
+      
+      # Chargement de l image 
+      if {$idvue != -1} {
+         if {$::cata_gestion_gui::directaccess != $idvue } {
+            set ::cata_gestion_gui::directaccess $idvue
+            ::cata_gestion_gui::charge_image_directaccess
+         }
+      }
+      
+      gren_info "Etoiles visible dans l image ($idvue) date = $::tools_cata::current_image_date: \n"
+      foreach name $tab($idvue) {
+         set ids $::bdi_tools_cdl::table_star_exist($name,$idvue)
+         set s [lindex  $::tools_cata::current_listsources 1 $ids] 
+         set xy [::bdi_tools_psf::get_xy s]
+         gren_info "$name ($ids) : $xy\n"
+         set radec [buf$::audace(bufNo) xy2radec [list [lindex $xy 0] [lindex $xy 1] ]]
+         
+         affich_un_rond [lindex $radec 0] [lindex $radec 1] $color $width
+         
+      }
+
+
+      # Selection de l'onglet du cata ASTROID dans la GUI Gestion du CATA
+      set onglets .gestion_cata.appli.onglets.nb
+      array set cataname $::gui_cata::tk_list($::tools_cata::id_current_image,cataname)
+      foreach {x y} [array get cataname] {
+         set tabid($y) $x
+      }
+      $onglets select $onglets.f$tabid(ASTROID)
+      set f [$onglets select]
+     
+      
+   }
 
 
 

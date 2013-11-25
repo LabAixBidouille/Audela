@@ -28,24 +28,20 @@
 namespace eval bdi_tools_cdl {
 
    variable progress      ; # Barre de progression
-   variable table_noms      ; # 
-   variable table_nbcata      ; # 
-   variable table_values      ; # 
+   variable table_noms    ; # 
+   variable table_nbcata  ; # 
+   variable table_values  ; # 
 }
 
 
-   proc ::bdi_tools_cdl::stop_charge_cata_xml { } {
-     set ::bdi_tools_cdl::encours_charge_cata_xml 0
-   }
+
+
 
    #----------------------------------------------------------------------------
-   ## Chargement des cata de la liste d'image selectionnee dans l'outil Recherche.
+   ## Pretraitement et initialisation apres avoir charge la liste cata_list
    #  \param void
-   #  \note le resultat de cette procedure affecte la variable de
-   # namespace  \c tools_cata::img_list puis charge toutes l'info des cata
-   # associes aux images
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::charge_cata_xml { } {
+   proc ::bdi_tools_cdl::pre_charge_cata_list { } {
 
       set tt0 [clock clicks -milliseconds]
 
@@ -54,6 +50,130 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_noms  
       array unset ::bdi_tools_cdl::table_nbcata
       array unset ::bdi_tools_cdl::table_othf
+      array unset ::bdi_tools_cdl::table_star_exist
+
+      set idcata 0
+      foreach ::tools_cata::current_image $::tools_cata::img_list {
+         incr idcata
+
+         ::bdi_tools_cdl::set_progress $idcata $::tools_cata::nb_img_list
+         ::bdi_tools_cdl::get_memory      
+
+         set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
+         set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
+
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($idcata)
+         
+         set sources [lindex  $::tools_cata::current_listsources 1]         
+
+         set ids 0
+         foreach s $sources {
+
+            set name [::manage_source::namincata $s]
+            if {$name == ""} {continue}
+
+            if {[info exists ::bdi_tools_cdl::table_noms($name)]} {
+               incr ::bdi_tools_cdl::table_nbcata($name)
+            } else {
+               set ::bdi_tools_cdl::table_nbcata($name) 1
+            }
+            set ::bdi_tools_cdl::table_noms($name) 1
+            set ::bdi_tools_cdl::table_date($idcata) $dateobs
+            set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
+
+            
+            
+            set USNOA2_magB     ""
+            set USNOA2_magR     ""
+            set UCAC4_im1_mag   ""
+            set UCAC4_im2_mag   ""
+            set NOMAD1_magB     ""
+            set NOMAD1_magV     ""
+            set NOMAD1_magR     ""
+            set NOMAD1_magJ     ""
+            set NOMAD1_magH     ""
+            set NOMAD1_magK     ""
+
+            foreach cata $s {
+               switch [lindex $cata 0] {
+                  "USNOA2" {
+                     set USNOA2_magB   [lindex $cata 2 6]
+                     set USNOA2_magR   [lindex $cata 2 7]
+                  }
+                  "UCAC4" {
+                     set UCAC4_im1_mag [lindex $cata 2 4]
+                     set UCAC4_im2_mag [lindex $cata 2 5]
+                  }
+                  "NOMAD1" {
+                     set NOMAD1_magB   [lindex $cata 2 13]
+                     set NOMAD1_magV   [lindex $cata 2 15]
+                     set NOMAD1_magR   [lindex $cata 2 17]
+                     set NOMAD1_magJ   [lindex $cata 2 18]
+                     set NOMAD1_magH   [lindex $cata 2 19]
+                     set NOMAD1_magK   [lindex $cata 2 20]
+                  }
+               }
+            }
+            set r [::bdi_tools_cdl::get_spectral_type \
+                                    [list \
+                                           $USNOA2_magB  $USNOA2_magR  $UCAC4_im1_mag $UCAC4_im2_mag \
+                                           $NOMAD1_magB  $NOMAD1_magV  $NOMAD1_magR   $NOMAD1_magJ \
+                                           $NOMAD1_magH  $NOMAD1_magK  ] \
+                   ]
+            set  ::bdi_tools_cdl::table_values($name,sptype)      [lindex $r 0]
+            set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
+            set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
+            #break
+            incr ids
+         }
+
+      # Fin boucle sur les images
+      }
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Chargement des tableaux preparatifs en $tt sec \n"
+
+      return
+
+   }
+
+
+
+
+
+
+
+   #----------------------------------------------------------------------------
+   ## Stope le chargement des cata XML a la volee.
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_tools_cdl::stop_charge_cata_xml { } {
+     set ::bdi_tools_cdl::encours_charge_cata_xml 0
+   }
+
+
+
+
+
+
+   #----------------------------------------------------------------------------
+   ## Chargement des cata de la liste d'image selectionnee dans l'outil Recherche.
+   #  \param void
+   #  \note le resultat de cette procedure affecte la variable de
+   # namespace  \c tools_cata::img_list puis charge toutes l'info des cata
+   # associes aux images
+   #----------------------------------------------------------------------------
+   proc ::bdi_tools_cdl::charge_cata_xml_alavolee { } {
+
+      set tt0 [clock clicks -milliseconds]
+
+      ::bdi_tools_cdl::init_spectral_type
+      
+      array unset ::bdi_tools_cdl::table_noms  
+      array unset ::bdi_tools_cdl::table_nbcata
+      array unset ::bdi_tools_cdl::table_othf
+      array unset ::bdi_tools_cdl::table_star_exist
 
       # array unset ::gui_cata::cata_list
 
@@ -76,6 +196,7 @@ namespace eval bdi_tools_cdl {
          
          set sources [lindex  $::tools_cata::current_listsources 1]         
 
+         set ids 0
          foreach s $sources {
 
             set name [::manage_source::namincata $s]
@@ -87,10 +208,9 @@ namespace eval bdi_tools_cdl {
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
             set ::bdi_tools_cdl::table_noms($name) 1
-            
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
-
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            set ::bdi_tools_cdl::table_star_exist($name,$idcata) $ids
 
             set USNOA2_magB     ""
             set USNOA2_magR     ""
@@ -133,6 +253,7 @@ namespace eval bdi_tools_cdl {
             set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
             set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
             #break
+            incr ids
          }
 
       # Fin boucle sur les images
