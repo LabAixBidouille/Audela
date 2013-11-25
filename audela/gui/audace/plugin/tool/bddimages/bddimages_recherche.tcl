@@ -1387,26 +1387,23 @@ namespace eval bddimages_recherche {
       set img_list [::bddimages_liste_gui::new_normallist $lid]
       foreach img $img_list {
 
-         set filename    [string trim [::bddimages_liste::lget $img "filename"] ]
-         set dirfilename [string trim [::bddimages_liste::lget $img "dirfilename"] ]
-         set fichier [ file join $bddconf(dirbase) $dirfilename $filename]
+         set catafilename    [string trim [::bddimages_liste::lget $img "catafilename"] ]
+         set catadirfilename [string trim [::bddimages_liste::lget $img "catadirfilename"] ]
+         set fichier [ file join $bddconf(dirbase) $catadirfilename $catafilename]
          set fc [file tail $fichier]
          set fd [file join $bddconf(dirtmp) $fc]
          if {[file exists $fichier] != 1} {
             ::console::affiche_erreur "image inconue : $fichier\n"
             continue
          }
-         #set errnum [catch {file copy -force -- $fichier $fd} msg]
-         #if {$errnum != 0} {
-         #   ::console::affiche_erreur "cp image impossible : $fichier\n"
-         #   ::console::affiche_erreur "err : $errnum\n"
-         #   ::console::affiche_erreur "msg : $msg\n"
-         #   continue
-         #}
-         #::console::affiche_resultat "cp image : $fc\n"
-         ::console::affiche_erreur "export_cata A FAIRE!\n"
-         
-      
+         set errnum [catch {file copy -force -- $fichier $fd} msg]
+         if {$errnum != 0} {
+            ::console::affiche_erreur "cp image impossible : $fichier\n"
+            ::console::affiche_erreur "err : $errnum\n"
+            ::console::affiche_erreur "msg : $msg\n"
+            continue
+         }
+         ::console::affiche_resultat "cp image : $fc\n"
       }
 
 
