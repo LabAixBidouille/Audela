@@ -114,15 +114,15 @@ namespace eval bdi_tools_cdl {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
             set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
 
-            set midexpo_jd  [format "%23s" $::bdi_tools_cdl::table_jdmidexpo($idcata)                                          ]
-            set midexpo_iso [format "%23s" [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]                        ]
-            set err_mag     [format "%23s" 0                                                                                   ]
-            set fwhm        [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) fwhm]     ]
-            set ra          [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) ra]       ]
-            set dec         [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) dec]      ]
-            set flux        [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flux]     ]
-            set err_flux    [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) err_flux] ]
-            set mag $::bdi_tools_cdl::table_science_mag($ids,$idcata)
+            set midexpo_iso [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]                        
+            set midexpo_jd  $::bdi_tools_cdl::table_jdmidexpo($idcata)                                          
+            set mag         $::bdi_tools_cdl::table_science_mag($ids,$idcata)
+            set err_mag     0                                                                                   
+            set fwhm        [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) fwhm]     
+            set ra          [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) ra]       
+            set dec         [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) dec]      
+            set flux        [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flux]     
+            set err_flux    [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) err_flux] 
 
             set midexpo_iso [format "%23s"   $midexpo_iso ]
             set midexpo_jd  [format "%0.10f" $midexpo_jd  ]
@@ -144,7 +144,7 @@ namespace eval bdi_tools_cdl {
                set err_flux [format "%17s" "Nan"]
             }
 
-            gren_info "Data = $midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux \n"
+#            gren_info "Data = $midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux \n"
             puts $chan "$midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux"
          }
          close $chan
