@@ -106,6 +106,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_nbcata
       array unset ::bdi_tools_cdl::table_othf
       array unset ::bdi_tools_cdl::table_star_exist
+      array unset ::bdi_tools_cdl::idcata_to_jdc
 
       set idcata 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
@@ -116,7 +117,15 @@ namespace eval bdi_tools_cdl {
 
          set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
-
+         set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+         
+         if {$idcata==1} {
+            set jdc_orig [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0]
+            set ::bdi_tools_cdl::idcata_to_jdc(1) 0.0
+         } else {
+            set ::bdi_tools_cdl::idcata_to_jdc($idcata) [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0 - $jdc_orig]
+         }
+                  
          set ::tools_cata::current_listsources $::gui_cata::cata_list($idcata)
          
          set sources [lindex  $::tools_cata::current_listsources 1]         
@@ -138,24 +147,16 @@ namespace eval bdi_tools_cdl {
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
 
-# set ::bdi_tools_cdl::test_sources [lindex $::gui_cata::cata_list(8) 1]
-
-# set ::bdi_tools_cdl::test_sources [lindex $::tools_cata::current_listsources 1]
-
-# set a [lindex $::bdi_tools_cdl::test_sources 13]
-# set b [lindex $::bdi_tools_cdl::test_sources 110]
-# if {$a == $b} {gren_info "idem\n"}
-
             # Sciences References Rejetees
-            if {$idcata == 10} {
-               set ::bdi_tools_cdl::test_sources $sources
-               
-               set nameuc [::manage_source::naming $s UCAC4]
-               if {$nameuc == "UCAC4_442-052846"} {
-                  gren_info "$idcata $ids $nameuc $name othf=$::bdi_tools_cdl::table_othf($name,$idcata,othf)\n"
-                  gren_info "$s\n"
-               }
-            }
+            #if {$idcata == 10} {
+            #   set ::bdi_tools_cdl::test_sources $sources
+            #   
+            #   set nameuc [::manage_source::naming $s UCAC4]
+            #   if {$nameuc == "UCAC4_442-052846"} {
+            #      gren_info "$idcata $ids $nameuc $name othf=$::bdi_tools_cdl::table_othf($name,$idcata,othf)\n"
+            #      gren_info "$s\n"
+            #   }
+            #}
 
 
 
@@ -223,9 +224,72 @@ namespace eval bdi_tools_cdl {
       }
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Charegement depuis la fenetre gestion en $tt sec \n"
+      gren_info "Chargement depuis la fenetre gestion en $tt sec \n"
    }    
 
+
+   #----------------------------------------------------------------------------
+   ## Procedure de test a virer
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_tools_cdl::proc_test_sources { } {
+
+      # set ::bdi_tools_cdl::test_sources [lindex $::gui_cata::cata_list(10) 1]
+
+      # set ::bdi_tools_cdl::test_sources [lindex $::tools_cata::current_listsources 1]
+
+      # set a [lindex $::bdi_tools_cdl::test_sources 13]
+      # set othf [::bdi_tools_psf::get_astroid_othf_from_source $a ]
+      # set flagphotom [::bdi_tools_psf::get_val othf flagphotom]
+
+      # set a [lindex $::bdi_tools_cdl::test_sources 13]
+      # set b [lindex $::bdi_tools_cdl::test_sources 110]
+      # if {$a == $b} {gren_info "idem\n"}
+      
+      set flag ""
+      set ::tools_cata::current_listsources $::gui_cata::cata_list(10)
+      set fields  [lindex  $::tools_cata::current_listsources 0]         
+      set sources [lindex  $::tools_cata::current_listsources 1]         
+      set othf_null [::bdi_tools_psf::get_astroid_null]
+      
+      set ids -1
+      set newsources $sources
+      foreach s $sources {
+         incr ids
+         if {$ids!=17} {continue}
+            
+         set nameuc [::manage_source::naming $s UCAC4]
+         if {$nameuc == "UCAC4_442-052846"} {
+            gren_info "$::tools_cata::id_current_image $nameuc\n"
+         }
+
+         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+         if {$othf==$othf_null} {continue}
+
+         set flagphotom [::bdi_tools_psf::get_val othf flagphotom]
+         ::bdi_tools_psf::set_by_key othf flagphotom $flag
+         ::bdi_tools_psf::set_by_key othf cataphotom $flag
+
+         ::bdi_tools_psf::set_astroid_in_source s othf
+         set newsources [lreplace $newsources $ids $ids $s]
+
+         set flagphotom_apres [::bdi_tools_psf::get_val othf flagphotom]
+         gren_info "$nameuc F=($flagphotom)->($flagphotom_apres) othf=$othf\n"
+
+      }
+
+      set ::tools_cata::current_listsources [list $fields $newsources]
+      set ::gui_cata::cata_list(10) $::tools_cata::current_listsources
+
+      ::tools_cata::current_listsources_to_tklist
+
+      set ::gui_cata::tk_list(10,tklist)          [array get ::gui_cata::tklist]
+      set ::gui_cata::tk_list(10,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+      set ::gui_cata::tk_list(10,cataname)        [array get ::gui_cata::cataname]
+
+      ::cata_gestion_gui::charge_image_directaccess
+
+   }
 
 
 
@@ -259,6 +323,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_nbcata
       array unset ::bdi_tools_cdl::table_othf
       array unset ::bdi_tools_cdl::table_star_exist
+      array unset ::bdi_tools_cdl::idcata_to_jdc
 
       # array unset ::gui_cata::cata_list
 
@@ -274,15 +339,24 @@ namespace eval bdi_tools_cdl {
 
          set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
-
+         set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+         
+         if {$idcata==1} {
+            set jdc_orig [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0]
+            set ::bdi_tools_cdl::idcata_to_jdc(1) 0.0
+         } else {
+            set ::bdi_tools_cdl::idcata_to_jdc($idcata) [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0 - $jdc_orig]
+         }
+                  
 
 
          # set ::gui_cata::cata_list($idcata) $::tools_cata::current_listsources
          
          set sources [lindex  $::tools_cata::current_listsources 1]         
 
-         set ids 0
+         set ids -1
          foreach s $sources {
+            incr ids
 
             set name [::manage_source::namincata $s]
             if {$name == ""} {continue}
@@ -290,13 +364,31 @@ namespace eval bdi_tools_cdl {
             if {[info exists ::bdi_tools_cdl::table_noms($name)]} {
                incr ::bdi_tools_cdl::table_nbcata($name)
             } else {
+               set ::bdi_tools_cdl::table_noms($name)   0
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
-            set ::bdi_tools_cdl::table_noms($name) 1
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set ::bdi_tools_cdl::table_star_exist($name,$idcata) $ids
 
+            set flagphotom [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flagphotom]
+            set cataphotom [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) cataphotom]
+            switch $flagphotom {
+               "R" {
+                    set ::bdi_tools_cdl::table_noms($name) 1
+                    gren_info "($idcata) $name as reference $flagphotom $cataphotom\n"   
+               }
+               "S" {
+                    
+                    if {$::bdi_tools_cdl::table_noms($name) != 1 } {
+                       set ::bdi_tools_cdl::table_noms($name) 2
+                    }
+               }
+               default {
+               }
+            }
+
+            # Couleurs
             set USNOA2_magB     ""
             set USNOA2_magR     ""
             set UCAC4_im1_mag   ""
@@ -338,7 +430,6 @@ namespace eval bdi_tools_cdl {
             set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
             set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
             #break
-            incr ids
          }
 
       # Fin boucle sur les images
@@ -367,9 +458,6 @@ namespace eval bdi_tools_cdl {
 
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
       
-
-
-
       # reference 
       set ids 0
       foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
@@ -477,12 +565,11 @@ namespace eval bdi_tools_cdl {
       }
 
 
-
-
-
-
-
-
+      if {![info exists ::bdi_tools_cdl::list_of_stars]} {
+        gren_info "Aucunes references\n"
+        return
+      }
+      
 
       # Onglet variation
       for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
@@ -561,10 +648,76 @@ namespace eval bdi_tools_cdl {
    }
 
 
+   proc ::bdi_tools_cdl::add_to_ref { name idps } {
 
+      lappend ::bdi_tools_cdl::list_of_stars $idps
 
+      # Onglet variation
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
 
+         if {[info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} { continue }
 
+         foreach ids1 $::bdi_tools_cdl::list_of_stars {
+            set name1 $::bdi_tools_cdl::id_to_name($ids1)
+            if {![info exists ::bdi_tools_cdl::table_othf($name1,$idcata,othf)]} { continue }
+            set othf $::bdi_tools_cdl::table_othf($name1,$idcata,othf)
+            set flux1 [::bdi_tools_psf::get_val othf "flux"]
+            if { $flux1=="" || $flux1<=0 || $flux1+1 == $flux1} { continue }
+
+            set name2 $name
+            if {![info exists ::bdi_tools_cdl::table_othf($name2,$idcata,othf)]} { continue }
+            set othf $::bdi_tools_cdl::table_othf($name2,$idcata,othf)
+            set flux2 [::bdi_tools_psf::get_val othf "flux"]
+            if { $flux2=="" || $flux2<=0 || $flux2+1 == $flux2 } { continue }
+            
+            lappend ::bdi_tools_cdl::table_variations($ids1,$ids2,flux) [expr 1.0*$flux1/$flux2]
+            lappend ::bdi_tools_cdl::table_variations($ids2,$ids1,flux) [expr 1.0*$flux2/$flux1]
+
+         }
+
+      }
+      
+      array unset tab
+      foreach ids1 $::bdi_tools_cdl::list_of_stars {
+         foreach ids2 $::bdi_tools_cdl::list_of_stars {
+
+            # condition du calcul necessaire
+            if {$ids1 != $idps && $ids2 != $idps } {continue}
+
+            if { [info exists ::bdi_tools_cdl::table_variations($ids1,$ids2,flux)] } {
+               set tab(flux) $::bdi_tools_cdl::table_variations($ids1,$ids2,flux)
+               
+               
+               set nbmes [llength $tab(flux)]
+               if {$nbmes>1} {
+                  set meanflux  [::math::statistics::mean  $tab(flux)]
+                  set stdevflux [::math::statistics::stdev $tab(flux)]
+                  set mag ""
+                  foreach rflux $tab(flux) {
+                     lappend mag [expr  - 2.5*log10($rflux)]
+                  }
+                  set stdevmag  [::math::statistics::stdev $mag]
+               } else {
+                  set meanflux  [lindex $tab(flux) 0]
+                  set stdevflux 0
+                  set stdevmag  "-98"
+               }
+            } else {
+               set nbmes -1
+               set meanflux  "-99"
+               set stdevmag  "-99"
+               set stdevflux "-99"
+            }
+
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,mean)  $meanflux
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,stdev) $stdevflux
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,mag,stdev)  $stdevmag
+            set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,nbmes) $nbmes
+         }
+      }
+      
+
+   }
 
 
    proc ::bdi_tools_cdl::set_progress { cur max } {
@@ -597,6 +750,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_nbcata
       array unset ::bdi_tools_cdl::table_star_exist
       array unset ::bdi_tools_cdl::table_values
+      array unset ::bdi_tools_cdl::idcata_to_jdc
       
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
    }
@@ -1054,13 +1208,12 @@ namespace eval bdi_tools_cdl {
       #}
 
       
-      for {set k 1} {$k < 5} { incr k } {
+      for {set k 1} {$k <= 1} { incr k } {
 
          # calcul des magnitudes des superstars
          array unset ::bdi_tools_cdl::table_superstar_mag
          array unset ::bdi_tools_cdl::table_superstar_solu
          array unset ::bdi_tools_cdl::table_star_mag
-
 
          for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
 

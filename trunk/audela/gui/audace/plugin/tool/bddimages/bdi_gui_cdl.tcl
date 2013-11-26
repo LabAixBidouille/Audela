@@ -127,9 +127,7 @@ namespace eval bdi_gui_cdl {
       $::bdi_gui_cdl::data_rejected  delete 0 end
       $::bdi_gui_cdl::classif        delete 0 end
       $::bdi_gui_cdl::ss_mag_stdev   delete 0 end 
-      $::bdi_gui_cdl::timeline       delete 0 end
 
-      catch { $::bdi_gui_cdl::timeline     deletecolumns 0 end } 
       catch { $::bdi_gui_cdl::ss_mag_stdev deletecolumns 0 end } 
 
    }
@@ -140,6 +138,9 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::clean_gui_photometry
       ::bdi_gui_cdl::affich_gestion
       ::bdi_tools_cdl::charge_from_gestion
+      
+      ::bdi_tools_cdl::charge_cata_list
+      ::bdi_gui_cdl::affiche_data
    }
 
    #----------------------------------------------------------------------------
@@ -195,14 +196,12 @@ namespace eval bdi_gui_cdl {
             set f_data_rejected  [frame $onglets.nb.f_data_rejected]
             set f_starstar       [frame $onglets.nb.f_starstar]
             set f_classif        [frame $onglets.nb.f_classif]
-            set f_timeline       [frame $onglets.nb.f_timeline]
 
             $onglets.nb add $f_data_reference -text "References"
             $onglets.nb add $f_data_science   -text "Sciences"
             $onglets.nb add $f_data_rejected  -text "Rejetees"
             $onglets.nb add $f_starstar       -text "Variations"
             $onglets.nb add $f_classif        -text "Classification"
-            $onglets.nb add $f_timeline       -text "Timeline"
 
             #$onglets.nb select $f_data_reference
             ttk::notebook::enableTraversal $onglets.nb
@@ -417,7 +416,10 @@ namespace eval bdi_gui_cdl {
          set results [frame $f_starstar.starstar  -borderwidth 1 -relief groove]
          pack $results -in $f_starstar -expand yes -fill both
             
-
+              button $results.calc -text "Calcul" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::calcul_variation"
+              pack $results.calc -in $results -expand no -fill x
+         
                   set cols [list 0 " " left ]
                   # Table
                   set ::bdi_gui_cdl::ss_mag_stdev $results.table
@@ -460,11 +462,15 @@ namespace eval bdi_gui_cdl {
          set results [frame $f_classif.classif  -borderwidth 1 -relief groove]
          pack $results -in $f_classif -expand yes -fill both
             
+
             global audace
             package require Img
             set photo [image create photo -file [ file join $audace(rep_plugin) tool bddimages images classification_spectrale.png ]]
             label $results.cs -image $photo -borderwidth 2 -width 850 -height 81
             pack $results.cs -in $results -side top -expand no 
+              button $results.calc -text "Calcul" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::calcul_classification"
+              pack $results.calc -in $results -expand no -fill x
             
             set cols [list 0 "Id"             left  \
                            0 "Name"           left  \
@@ -529,60 +535,6 @@ namespace eval bdi_gui_cdl {
 
 
 
-
-         # Timeline
-         set results [frame $f_timeline.tab  -borderwidth 1 -relief groove]
-         pack $results -in $f_timeline -expand yes -fill both
-            
-            set cols [list 0 "Idcata"         left  \
-                           0 "Date"           left  \
-                           0 "NbStars"        left  \
-                     ]
-
-            # Table
-            set ::bdi_gui_cdl::timeline $results.table
-            tablelist::tablelist $::bdi_gui_cdl::timeline \
-              -columns $cols \
-              -labelcommand tablelist::sortByColumn \
-              -xscrollcommand [ list $results.hsb set ] \
-              -yscrollcommand [ list $results.vsb set ] \
-              -selectmode extended \
-              -activestyle none \
-              -stripebackground "#e0e8f0" \
-              -showseparators 1
-    
-            # Scrollbar
-            scrollbar $results.hsb -orient horizontal -command [list $::bdi_gui_cdl::timeline xview]
-            pack $results.hsb -in $results -side bottom -fill x
-            scrollbar $results.vsb -orient vertical -command [list $::bdi_gui_cdl::timeline yview]
-            pack $results.vsb -in $results -side right -fill y 
-
-            # Pack la Table
-            pack $::bdi_gui_cdl::timeline -in $results -expand yes -fill both
-
-            # Popup
-            menu $results.popupTbl -title "Actions"
-
-               $results.popupTbl add command -label "Voir l'objet dans une image" \
-                   -command "" -state disabled
-               $results.popupTbl add command -label "Supprimer" \
-                   -command "::bdi_gui_cdl::unset_timeline" 
-
-            # Binding
-            bind $::bdi_gui_cdl::timeline <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_timeline %W ]
-            bind [$::bdi_gui_cdl::timeline bodypath] <ButtonPress-3> [ list tk_popup $results.popupTbl %X %Y ]
-
-            # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
-            #    Ascii
-            foreach ncol [list "Date" ] {
-               set pcol [expr int ([lsearch $cols $ncol]/3)]
-               $::bdi_gui_cdl::classif columnconfigure $pcol -sortmode ascii
-            }
-            #    Reel
-            foreach ncol [list "Idcata" "NbStars" ] {
-               set pcol [expr int ([lsearch $cols $ncol]/3)]
-               $::bdi_gui_cdl::classif columnconfigure $pcol -sortmode real
-            }
 
 
 
@@ -654,7 +606,7 @@ namespace eval bdi_gui_cdl {
 
               label $actions.labsauve -text "Sauvegarde"  -justify left
               button $actions.sauve_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::save_cata_from_gestion"
+                 -command "::gui_cata::save_cata"
               button $actions.sauve_result -text "Resultats" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::save_photometry"
 
@@ -675,6 +627,8 @@ namespace eval bdi_gui_cdl {
                  -command "::bdi_gui_cdl::graph_const_mag"
               button $actions.stars_mag -text "Stars" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::graph_stars_mag"
+              button $actions.timeline  -text "Timeline" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::graph_timeline"
 
               label $actions.labscience -text "Sciences"  -justify left
               button $actions.science_mag -text "Mag" -borderwidth 2 -takefocus 1 \
@@ -718,6 +672,7 @@ namespace eval bdi_gui_cdl {
              grid $actions.labref       -row 0 -column 6 -sticky news
              grid $actions.const_mag    -row 1 -column 6 -sticky news
              grid $actions.stars_mag    -row 2 -column 6 -sticky news
+             grid $actions.timeline     -row 3 -column 6 -sticky news
 
              grid $actions.labscience   -row 0 -column 8 -sticky news
              grid $actions.science_mag  -row 1 -column 8 -sticky news
@@ -815,6 +770,24 @@ namespace eval bdi_gui_cdl {
          $::bdi_gui_cdl::data_rejected insert end $::bdi_tools_cdl::table_data_source($name)
       }
 
+      # Fin de visualisation des donnees
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Affichage complet en $tt sec \n"
+
+      return
+
+   }
+
+
+
+
+
+
+
+   proc ::bdi_gui_cdl::calcul_variation { } {
+
+      set tt0 [clock clicks -milliseconds]
+
       # Onglet variation
 
       $::bdi_gui_cdl::ss_mag_stdev    delete 0 end
@@ -866,6 +839,24 @@ namespace eval bdi_gui_cdl {
          }
          $::bdi_gui_cdl::ss_mag_stdev sortbycolumn 1 -decreasing
 
+      }
+
+
+
+      set ttu [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Calcul des variations en $ttu sec \n"
+
+   }
+
+
+
+
+
+   proc ::bdi_gui_cdl::calcul_classification { } {
+
+      set tt0 [clock clicks -milliseconds]
+
+      if {[info exists ::bdi_tools_cdl::list_of_stars]} {
 
          # Onglet Classification
          $::bdi_gui_cdl::classif delete 0 end
@@ -889,67 +880,13 @@ namespace eval bdi_gui_cdl {
          $::bdi_gui_cdl::classif columnconfigure 2 -sortmode ascii
          $::bdi_gui_cdl::classif sortbycolumn 2
 
-         # Onglet Timeline
-
-         $::bdi_gui_cdl::timeline    delete 0 end
-
-         catch { $::bdi_gui_cdl::timeline    deletecolumns 0 end } 
-
-         $::bdi_gui_cdl::timeline insertcolumns end 0 "idcata"  left
-         $::bdi_gui_cdl::timeline insertcolumns end 0 "Date"    center
-         $::bdi_gui_cdl::timeline insertcolumns end 0 "NbStars" center
-
-         set pcol 0
-         foreach ids $::bdi_tools_cdl::list_of_stars {
-            $::bdi_gui_cdl::timeline    insertcolumns end 0 $ids right
-            $::bdi_gui_cdl::timeline    columnconfigure $pcol -sortmode real
-            incr pcol
-         }
-
-         set idcata 0
-         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-
-            if {![info exists ::bdi_tools_cdl::table_date($idcata)]} { 
-               continue 
-            }
-            set line [list $idcata $::bdi_tools_cdl::table_date($idcata) ""]
-            set cpt 0
-            foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-               if {$y != 1} {continue}
-               if {![info exists ::bdi_tools_cdl::table_mesure($idcata,$name)]} { 
-                  lappend line 0
-                  continue 
-               }
-               if { $::bdi_tools_cdl::table_mesure($idcata,$name) != 1 } { 
-                  lappend line 0
-                  continue 
-               }
-
-               incr cpt
-               lappend line 1
-            }
-            set line [lreplace $line 2 2 $cpt]
-            $::bdi_gui_cdl::timeline insert end $line
-         }
-         $::bdi_gui_cdl::timeline columnconfigure 0 -sortmode real
-         $::bdi_gui_cdl::timeline columnconfigure 1 -sortmode ascii
-         $::bdi_gui_cdl::timeline sortbycolumn 1 
 
       # fin test : if {![info exists ::bdi_tools_cdl::list_of_stars]} {}
       }
 
-      # Fin de visualisation des donnees
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Affichage complet en $tt sec \n"
-
-      return
-
+      gren_info "Calcul des Classifications en $tt sec \n"
    }
-
-
-
-
-
 
 
 
@@ -968,9 +905,11 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::set_to_reference_data_science { } {
 
       foreach select [$::bdi_gui_cdl::data_science curselection] {
+         set idps [lindex [$::bdi_gui_cdl::data_science get $select] 0]      
          set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 1
       }
+      ::bdi_tools_cdl::add_to_ref $name $idps
       ::bdi_gui_cdl::affiche_data
 
    }
@@ -978,9 +917,11 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::set_to_reference_data_rejected { } {
 
       foreach select [$::bdi_gui_cdl::data_rejected curselection] {
+         set idps [lindex [$::bdi_gui_cdl::data_rejected get $select] 0]      
          set name [lindex [$::bdi_gui_cdl::data_rejected get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 1
       }
+      ::bdi_tools_cdl::add_to_ref $name $idps
       ::bdi_gui_cdl::affiche_data
 
    }
@@ -1018,10 +959,6 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::affiche_data
    }
 
-
-
-
-
    proc ::bdi_gui_cdl::unset_classif { } {
 
       foreach select [$::bdi_gui_cdl::classif curselection] {
@@ -1039,7 +976,19 @@ namespace eval bdi_gui_cdl {
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcul_variation
    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1051,6 +1000,8 @@ namespace eval bdi_gui_cdl {
       ::plotxy::hold on 
       ::plotxy::position {0 0 600 400}
       ::plotxy::title "Constantes des magnitudes au cours du temps" 
+      ::plotxy::xlabel "Time (jd)" 
+      ::plotxy::ylabel "Mag" 
 
       array unset x  
       array unset y
@@ -1070,7 +1021,7 @@ namespace eval bdi_gui_cdl {
 
             set magss [expr $mag -2.5 * log10(1.0 * $::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata) / $flux) ]
 
-            lappend x($id_superstar)  $idcata
+            lappend x($id_superstar)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($id_superstar)  $magss
 
          }
@@ -1100,6 +1051,8 @@ namespace eval bdi_gui_cdl {
       ::plotxy::position {0 0 600 400}
 
       ::plotxy::title "Magnitude des etoiles de reference au cours du temps" 
+      ::plotxy::xlabel "Time (jd)" 
+      ::plotxy::ylabel "Mag" 
 
       array unset x  
       array unset y
@@ -1110,7 +1063,7 @@ namespace eval bdi_gui_cdl {
          set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
 
          foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
-            lappend x($ids) $idcata
+            lappend x($ids) $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($ids) $::bdi_tools_cdl::table_star_mag($ids,$idcata)
             set list_star($ids) 1
          }
@@ -1137,7 +1090,9 @@ namespace eval bdi_gui_cdl {
       ::plotxy::figure 1 
       ::plotxy::hold on 
       ::plotxy::position {0 0 600 400}
-      ::plotxy::title "Courbe de lumiere des objets sciences " 
+      ::plotxy::title "Courbe de lumiere des objets sciences\n Magnitudes absolues" 
+      ::plotxy::xlabel "Time (jd)" 
+      ::plotxy::ylabel "Mag" 
       array unset x  
       array unset y
       set list_source ""
@@ -1156,7 +1111,7 @@ namespace eval bdi_gui_cdl {
 
          for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
-            lappend x($ids)  $idcata
+            lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($ids)  $::bdi_tools_cdl::table_science_mag($ids,$idcata)
          }
 
@@ -1176,7 +1131,10 @@ namespace eval bdi_gui_cdl {
       ::plotxy::figure 1 
       ::plotxy::hold on 
       ::plotxy::position {0 0 600 400}
-      ::plotxy::title "Courbe de lumiere des objets sciences " 
+      ::plotxy::title "Courbe de lumiere des objets sciences\n Magnitudes differentielles centrees sur zero" 
+      ::plotxy::xlabel "Time (jd)" 
+      ::plotxy::ylabel "Diff Mag" 
+
       array unset x  
       array unset y
       set list_source ""
@@ -1199,7 +1157,7 @@ namespace eval bdi_gui_cdl {
 
          for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
-            lappend x($ids)  $idcata
+            lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($ids)  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
          }
 
@@ -1210,3 +1168,44 @@ namespace eval bdi_gui_cdl {
 
 
    }
+
+
+   proc ::bdi_gui_cdl::graph_timeline { } {
+
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "Timeline" 
+      ::plotxy::xlabel "Time" 
+      ::plotxy::ylabel "Id Stars" 
+
+      array unset x  
+      array unset y
+      array unset list_star
+
+      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+
+         set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
+
+         foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
+            lappend x($ids) $::bdi_tools_cdl::idcata_to_jdc($idcata)
+            lappend y($ids) $ids
+            set list_star($ids) 1
+         }
+      }
+
+      set color [list black blue red green yellow grey ]
+      set cpt 0
+      foreach { ids o } [array get list_star] {
+         set h [::plotxy::plot $x($ids) $y($ids) o]
+         gren_info "ids = $ids cpt = $cpt\n"
+         plotxy::sethandler $h [list -color [lindex $color $cpt] -linewidth 0]
+         incr cpt
+         if { $cpt >= [llength $color] } {
+            set cpt 0
+         }
+      }
+
+   }
+

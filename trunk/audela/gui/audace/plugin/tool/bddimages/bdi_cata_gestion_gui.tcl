@@ -1628,12 +1628,10 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::export_photom_to_gestion { list_name_R list_name_S } {
  
-      # On flag Rejetee sur toutes les sources
-      # Afaire
-      set flag ""
       set othf_null [::bdi_tools_psf::get_astroid_null]
-      
-      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image < $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
+
+      # On flag Rejetee sur toutes les sources
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
       
          set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
          set fields  [lindex  $::tools_cata::current_listsources 0]         
@@ -1643,32 +1641,21 @@ namespace eval cata_gestion_gui {
          set newsources $sources
          foreach s $sources {
             incr ids
-
-               set nameuc [::manage_source::naming $s UCAC4]
-               if {$nameuc == "UCAC4_442-052846"} {
-                  gren_info "$::tools_cata::id_current_image $nameuc othf=$othf\n"
-               }
-
-
             set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
             if {$othf==$othf_null} {continue}
-            ::bdi_tools_psf::set_by_key othf flagphotom $flag
-            ::bdi_tools_psf::set_by_key othf cataphotom $flag
+            set fp_av [::bdi_tools_psf::get_val othf flagphotom]
+            ::bdi_tools_psf::set_by_key othf flagphotom ""
+            ::bdi_tools_psf::set_by_key othf cataphotom ""
+            set fp_ap [::bdi_tools_psf::get_val othf flagphotom]
             ::bdi_tools_psf::set_astroid_in_source s othf
             set newsources [lreplace $newsources $ids $ids $s]
-            if {$::tools_cata::id_current_image == 10} {
-               set nameuc [::manage_source::naming $s UCAC4]
-               if {$nameuc == "UCAC4_442-052846"} {
-                  gren_info "$nameuc othf=$othf\n"
-               }
+            if {$fp_ap != $fp_av} {
+               set nameuc [::manage_source::naming $s [::manage_source::namable $s] ]
+               gren_info "$nameuc Raz de Flag ($fp_av)->($fp_ap)\n"
             }
-
          }
 
          set ::tools_cata::current_listsources [list $fields $newsources]
-
-
-
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
 
          ::tools_cata::current_listsources_to_tklist
@@ -1678,73 +1665,47 @@ namespace eval cata_gestion_gui {
          set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
 
       }
-      ::cata_gestion_gui::charge_image_directaccess
-return
+
       # On boucle sur les nom des sources a flagger Reference
-      set flag "R"
-      foreach name $list_name_R {
-         
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
-         
-            set listsources $::gui_cata::cata_list($idcata)
-            set fields  [lindex  $listsources 0]         
-            set sources [lindex  $listsources 1]         
-            set ids [::manage_source::name2ids $name listsources]
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
+      
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+         set fields  [lindex  $::tools_cata::current_listsources 0]         
+         set sources [lindex  $::tools_cata::current_listsources 1]         
+
+
+         foreach name $list_name_R {
+            set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
             set s [lindex $sources $ids]
             set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            ::bdi_tools_psf::set_by_key othf flagphotom $flag
+            if {$othf==$othf_null} {continue}
+            ::bdi_tools_psf::set_by_key othf flagphotom "R"
             ::bdi_tools_psf::set_astroid_in_source s othf
             set sources [lreplace $sources $ids $ids $s]
-            set listsources [list $fields $sources]
-            set ::gui_cata::cata_list($idcata) $listsources 
-
-            #array set tklist                             $::gui_cata::tk_list($idcata,tklist)
-            #array set ::gui_cata::tklist_list_of_columns $::gui_cata::tk_list($idcata,list_of_columns)
-            #array set cataname                           $::gui_cata::tk_list($idcata,cataname)
-            #array unset getid
-            #foreach {x y} [array get cataname] {
-            #   set getid($y) $x
-            #}
-            #set nbcol [array size ::gui_cata::tklist_list_of_columns]
-            #foreach {idcata cata} [array get cataname] {
-            #   
-            #}
          }
-      }
-      #set name SKYBOT_7132_Casulli
-      # On boucle sur les nom des sources a flagger Science
-      set flag "S"
-      foreach name $list_name_S {
-         
-         for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image < $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
-         
-            set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-            set fields  [lindex  $::tools_cata::current_listsources 0]         
-            set sources [lindex  $::tools_cata::current_listsources 1]         
-            set ids [::manage_source::name2ids $name listsources]
+         foreach name $list_name_S {
+            set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
             set s [lindex $sources $ids]
             set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            ::bdi_tools_psf::set_by_key othf flagphotom $flag
+            if {$othf==$othf_null} {continue}
+            ::bdi_tools_psf::set_by_key othf flagphotom "S"
             ::bdi_tools_psf::set_astroid_in_source s othf
             set sources [lreplace $sources $ids $ids $s]
-            set ::tools_cata::current_listsources [list $fields $sources]
-            set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-
-            ::tools_cata::current_listsources_to_tklist
-
-            set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-            set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-            set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
-
          }
-
+         
+         set ::tools_cata::current_listsources [list $fields $sources]
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+         ::tools_cata::current_listsources_to_tklist
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
       }
 
-      # on met a jour la gui gestion
+
+      # On reaffiche gestion
       ::cata_gestion_gui::charge_image_directaccess
 
       return
- 
    }
  
  
