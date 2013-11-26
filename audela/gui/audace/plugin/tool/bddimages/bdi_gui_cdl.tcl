@@ -41,6 +41,7 @@ namespace eval bdi_gui_cdl {
    #             dans la variable globale \c conf
    proc ::bdi_gui_cdl::inittoconf {  } {
       
+      ::bdi_tools_cdl::inittoconf
       ::bdi_tools_cdl::free_memory
    }
 
@@ -50,6 +51,8 @@ namespace eval bdi_gui_cdl {
    # \c conf
    proc ::bdi_gui_cdl::fermer {  } {
 
+      # sauvegarde de la configuration
+      ::bdi_tools_cdl::closetoconf
 
       #array unset ::gui_cata::cata_list
       destroy $::bdi_gui_cdl::fen
@@ -196,15 +199,18 @@ namespace eval bdi_gui_cdl {
             set f_data_rejected  [frame $onglets.nb.f_data_rejected]
             set f_starstar       [frame $onglets.nb.f_starstar]
             set f_classif        [frame $onglets.nb.f_classif]
+            set f_results        [frame $onglets.nb.f_results]
 
             $onglets.nb add $f_data_reference -text "References"
             $onglets.nb add $f_data_science   -text "Sciences"
             $onglets.nb add $f_data_rejected  -text "Rejetees"
             $onglets.nb add $f_starstar       -text "Variations"
             $onglets.nb add $f_classif        -text "Classification"
+            $onglets.nb add $f_results        -text "Resultats"
 
             #$onglets.nb select $f_data_reference
             ttk::notebook::enableTraversal $onglets.nb
+
 
          # References
          set results [frame $f_data_reference.data_reference  -borderwidth 1 -relief groove]
@@ -536,8 +542,20 @@ namespace eval bdi_gui_cdl {
 
 
 
+         # Resultats
+         set results [frame $f_results.data_reference  -borderwidth 1 -relief groove]
+         pack $results -in $f_results -expand yes -fill both
 
+            set block [frame $results.dirbasic  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
+                  label  $block.labtxt -text "Repertoire sortie TXT : " -borderwidth 1 -width 20
+                  entry  $block.valtxt -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_txt_dir
+                  label  $block.labxml -text "Repertoire IMCCE : " -borderwidth 1 -width 20
+                  entry  $block.valxml -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_imc_dir
+
+                  grid $block.labtxt $block.valtxt -sticky news
+                  grid $block.labxml $block.valxml -sticky news
 
 
 
@@ -608,7 +626,7 @@ namespace eval bdi_gui_cdl {
               button $actions.sauve_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
                  -command "::gui_cata::save_cata"
               button $actions.sauve_result -text "Resultats" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::save_photometry"
+                 -command "::bdi_tools_cdl::save_reports"
 
               label $actions.labvoir -text "Affichage"  -justify left
               button $actions.voir -text "Tables" -borderwidth 2 -takefocus 1 \
@@ -1006,7 +1024,7 @@ namespace eval bdi_gui_cdl {
       array unset x  
       array unset y
       
-      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
 
          set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
          #if { $id_superstar !=1 } { continue }
@@ -1058,7 +1076,7 @@ namespace eval bdi_gui_cdl {
       array unset y
       array unset list_star
 
-      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
 
          set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
 
@@ -1109,7 +1127,7 @@ namespace eval bdi_gui_cdl {
             set cpt 0
          }
 
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
             lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($ids)  $::bdi_tools_cdl::table_science_mag($ids,$idcata)
@@ -1155,7 +1173,7 @@ namespace eval bdi_gui_cdl {
             set cpt 0
          }
 
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
             lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($ids)  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
@@ -1184,7 +1202,7 @@ namespace eval bdi_gui_cdl {
       array unset y
       array unset list_star
 
-      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
 
          set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
 

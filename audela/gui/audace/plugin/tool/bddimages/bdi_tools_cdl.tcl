@@ -43,16 +43,114 @@ namespace eval bdi_tools_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Initialisation des variables de namespace
+   #  \details   Si la variable n'existe pas alors on va chercher
+   #             dans la variable globale \c conf
+   proc ::bdi_tools_cdl::inittoconf {  } {
+      
+      if {! [info exists ::bdi_tools_cdl::rapport_txt_dir] } {
+         if {[info exists conf(bddimages,astrometry,rapport,mpc_dir)]} {
+            set ::bdi_tools_cdl::rapport_txt_dir $conf(bddimages,photometry,rapport,txt_dir)
+         } else {
+            set ::bdi_tools_cdl::rapport_txt_dir ""
+         }
+      }
+      if {! [info exists ::bdi_tools_cdl::rapport_imc_dir] } {
+         if {[info exists conf(bddimages,astrometry,rapport,imc_dir)]} {
+            set ::bdi_tools_cdl::rapport_imc_dir $conf(bddimages,photometry,rapport,imc_dir)
+         } else {
+            set ::bdi_tools_cdl::rapport_imc_dir ""
+         }
+      }
+      
+   }
 
 
+   #----------------------------------------------------------------------------
+   ## Sauvegarde des variables de namespace
+   # @return void
+   #
+   proc ::bdi_tools_cdl::closetoconf {  } {
+
+      set conf(bddimages,photometry,rapport,txt_dir)      $::bdi_tools_cdl::rapport_txt_dir
+      set conf(bddimages,photometry,rapport,imc_dir)      $::bdi_tools_cdl::rapport_imc_dir
+      
+   }
 
    #----------------------------------------------------------------------------
    ## Pretraitement et initialisation apres avoir charge la liste cata_list
    #  \param void
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::save_photometry { } {
+   proc ::bdi_tools_cdl::save_reports { } {
 
       set tt0 [clock clicks -milliseconds]
+
+
+
+      set rapport_batch [clock format [clock scan now] -format "Audela_BDI_%Y-%m-%dT%H:%M:%S_%Z"]
+      set part_batch ".Batch.${rapport_batch}"
+
+      set part_date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+
+
+      array unset x  
+      array unset y
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$o != 2} {continue}
+         set part_objects $name
+
+         set file "${part_date}${part_objects}${part_batch}.txt"
+         set file [file join $::bdi_tools_cdl::rapport_txt_dir $file]
+         set chan [open $file w]
+
+         puts $chan "#OBJECT = $name"
+         puts $chan "#Date ISO               Julian Date        Mag     ErrMag FWHM RA         DEC           Flux                  Err Flux"
+         puts $chan "#----------------------------------------------------------------------------------------------------------------------"
+
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
+            set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+
+            set midexpo_jd  [format "%23s" $::bdi_tools_cdl::table_jdmidexpo($idcata)                                          ]
+            set midexpo_iso [format "%23s" [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]                        ]
+            set err_mag     [format "%23s" 0                                                                                   ]
+            set fwhm        [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) fwhm]     ]
+            set ra          [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) ra]       ]
+            set dec         [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) dec]      ]
+            set flux        [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flux]     ]
+            set err_flux    [format "%23s" [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) err_flux] ]
+            set mag $::bdi_tools_cdl::table_science_mag($ids,$idcata)
+
+            set midexpo_iso [format "%23s"   $midexpo_iso ]
+            set midexpo_jd  [format "%0.10f" $midexpo_jd  ]
+            set mag         [format "%0.4f"  $mag         ]
+            set err_mag     [format "%0.4f"  $err_mag     ]
+            set fwhm        [format "%0.2f"  $fwhm        ]
+            set ra          [format "%0.6f"  $ra          ]
+            set dec         [format "%0.6f"  $dec         ]
+
+            if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} { 
+               set flux [format "%15.2f" $flux ]
+            } else {
+               set flux [format "%17s" "Nan"]
+            }
+            if {$err_flux!="" && [string is double $err_flux] && $err_flux+1 != $err_flux && $err_flux > 0} { 
+               gren_erreur "err_flux = $err_flux \n"
+               set err_flux [format "%15.2f" $err_flux ]
+            } else {
+               set err_flux [format "%17s" "Nan"]
+            }
+
+            gren_info "Data = $midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux \n"
+            puts $chan "$midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux"
+         }
+         close $chan
+         gren_info "Rapport TXT : $file\n"
+
+      }
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Sauvegarde des resultats en $tt sec \n"
@@ -107,6 +205,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_othf
       array unset ::bdi_tools_cdl::table_star_exist
       array unset ::bdi_tools_cdl::idcata_to_jdc
+      array unset ::bdi_tools_cdl::table_jdmidexpo
 
       set idcata 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
@@ -118,14 +217,22 @@ namespace eval bdi_tools_cdl {
          set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
          set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+
+         if {$exposure == -1} {
+            gren_erreur "WARNING: Exposure inconnu pour l'image : $date\n"
+            set midexpo 0
+         } else {
+            set midexpo [expr ($exposure/2.0) / 86400.0]
+         }
          
          if {$idcata==1} {
-            set jdc_orig [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0]
+            set jdc_orig [expr [mc_date2jd $dateobs] + $midexpo]
             set ::bdi_tools_cdl::idcata_to_jdc(1) 0.0
          } else {
-            set ::bdi_tools_cdl::idcata_to_jdc($idcata) [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0 - $jdc_orig]
+            set ::bdi_tools_cdl::idcata_to_jdc($idcata) [expr [mc_date2jd $dateobs] + $midexpo - $jdc_orig]
          }
-                  
+         
+         
          set ::tools_cata::current_listsources $::gui_cata::cata_list($idcata)
          
          set sources [lindex  $::tools_cata::current_listsources 1]         
@@ -143,6 +250,7 @@ namespace eval bdi_tools_cdl {
                set ::bdi_tools_cdl::table_noms($name)   0
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
+            set ::bdi_tools_cdl::table_jdmidexpo($idcata) [expr [mc_date2jd $dateobs] + $midexpo]
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
@@ -636,7 +744,7 @@ namespace eval bdi_tools_cdl {
 
       # Onglet Timeline
       set idcata 0
-      #for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+      #for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
          # date iso -> ::bdi_tools_cdl::table_date($idcata)
          # date iso -> ::bdi_tools_cdl::table_date($idcata)
          
@@ -751,6 +859,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_star_exist
       array unset ::bdi_tools_cdl::table_values
       array unset ::bdi_tools_cdl::idcata_to_jdc
+      array unset ::bdi_tools_cdl::table_jdmidexpo
       
       if {[info exists ::bdi_tools_cdl::list_of_stars]} {unset ::bdi_tools_cdl::list_of_stars}
    }
@@ -1133,7 +1242,7 @@ namespace eval bdi_tools_cdl {
       set id_superstar 0
       set nb_superstar 0
 
-      for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
          
          if {![info exists ::bdi_tools_cdl::table_date($idcata)]} { 
             continue 
@@ -1215,7 +1324,7 @@ namespace eval bdi_tools_cdl {
          array unset ::bdi_tools_cdl::table_superstar_solu
          array unset ::bdi_tools_cdl::table_star_mag
 
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
 
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
@@ -1278,7 +1387,7 @@ namespace eval bdi_tools_cdl {
 
          # Maj des magnitudes des etoiles de references
          array unset mag_stars
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
             foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
@@ -1339,7 +1448,7 @@ namespace eval bdi_tools_cdl {
          array unset mag_sciences
          array unset ::bdi_tools_cdl::table_science_mag
 
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
             set ids 0
@@ -1401,7 +1510,7 @@ namespace eval bdi_tools_cdl {
          # Maj des magnitudes des etoiles de references
          array unset mag_rejected
 
-         for {set idcata 1} {$idcata < $::tools_cata::nb_img_list} { incr idcata } {
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
             set ids 0
