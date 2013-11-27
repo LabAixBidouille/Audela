@@ -48,6 +48,10 @@ namespace eval bdi_tools_cdl {
    #  \details   Si la variable n'existe pas alors on va chercher
    #             dans la variable globale \c conf
    proc ::bdi_tools_cdl::inittoconf {  } {
+
+      set ::bdi_tools_cdl::nbref      0
+      set ::bdi_tools_cdl::nbscience  0
+      set ::bdi_tools_cdl::nbrej      0
       
       if {! [info exists ::bdi_tools_cdl::rapport_txt_dir] } {
          if {[info exists conf(bddimages,astrometry,rapport,mpc_dir)]} {
@@ -69,7 +73,7 @@ namespace eval bdi_tools_cdl {
 
    #----------------------------------------------------------------------------
    ## Sauvegarde des variables de namespace
-   # @return void
+   # \return void
    #
    proc ::bdi_tools_cdl::closetoconf {  } {
 
@@ -84,9 +88,14 @@ namespace eval bdi_tools_cdl {
    #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::save_reports { } {
 
+      if {$::bdi_tools_cdl::rapport_txt_dir == ""} {
+         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie TXT"
+      }
+      if {$::bdi_tools_cdl::rapport_imc_dir == ""} {
+         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie IMCCE"
+      }
+
       set tt0 [clock clicks -milliseconds]
-
-
 
       set rapport_batch [clock format [clock scan now] -format "Audela_BDI_%Y-%m-%dT%H:%M:%S_%Z"]
       set part_batch ".Batch.${rapport_batch}"
@@ -116,7 +125,7 @@ namespace eval bdi_tools_cdl {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
             set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
 
-            set midexpo_iso [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]                        
+            set midexpo_iso [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]
             set midexpo_jd  $::bdi_tools_cdl::table_jdmidexpo($idcata)                                          
             set mag         $::bdi_tools_cdl::table_science_mag($ids,$idcata)
             set err_mag     0                                                                                   
@@ -156,6 +165,8 @@ namespace eval bdi_tools_cdl {
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Sauvegarde des resultats en $tt sec \n"
+      
+      return -code 0 ""
    }    
 
 
@@ -289,7 +300,7 @@ namespace eval bdi_tools_cdl {
             switch $flagphotom {
                "R" {
                     set ::bdi_tools_cdl::table_noms($name) 1
-                    gren_info "($idcata) $name as reference $flagphotom $cataphotom\n"   
+                    #gren_info "($idcata) $name as reference $flagphotom $cataphotom\n"   
                }
                "S" {
                     
@@ -347,74 +358,42 @@ namespace eval bdi_tools_cdl {
       # Fin boucle sur les images
       }
 
+      ::bdi_tools_cdl::calc_nb_sources
+      
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Chargement depuis la fenetre gestion en $tt sec \n"
    }    
 
 
+
+
    #----------------------------------------------------------------------------
-   ## Procedure de test a virer
+   ## Calcule le nombre de sources dans les differents ensemble de donnees
+   # References, Sciences et Rejetees
    #  \param void
    #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::proc_test_sources { } {
+   proc ::bdi_tools_cdl::calc_nb_sources { } {
 
-      # set ::bdi_tools_cdl::test_sources [lindex $::gui_cata::cata_list(10) 1]
+      set ::bdi_tools_cdl::nbref      0
+      set ::bdi_tools_cdl::nbscience  0
+      set ::bdi_tools_cdl::nbrej      0
 
-      # set ::bdi_tools_cdl::test_sources [lindex $::tools_cata::current_listsources 1]
-
-      # set a [lindex $::bdi_tools_cdl::test_sources 13]
-      # set othf [::bdi_tools_psf::get_astroid_othf_from_source $a ]
-      # set flagphotom [::bdi_tools_psf::get_val othf flagphotom]
-
-      # set a [lindex $::bdi_tools_cdl::test_sources 13]
-      # set b [lindex $::bdi_tools_cdl::test_sources 110]
-      # if {$a == $b} {gren_info "idem\n"}
-      
-      set flag ""
-      set ::tools_cata::current_listsources $::gui_cata::cata_list(10)
-      set fields  [lindex  $::tools_cata::current_listsources 0]         
-      set sources [lindex  $::tools_cata::current_listsources 1]         
-      set othf_null [::bdi_tools_psf::get_astroid_null]
-      
-      set ids -1
-      set newsources $sources
-      foreach s $sources {
-         incr ids
-         if {$ids!=17} {continue}
-            
-         set nameuc [::manage_source::naming $s UCAC4]
-         if {$nameuc == "UCAC4_442-052846"} {
-            gren_info "$::tools_cata::id_current_image $nameuc\n"
+      foreach { name o } [array get ::bdi_tools_cdl::table_noms] {
+         switch $o {
+            "1" {
+                 incr ::bdi_tools_cdl::nbref
+            }
+            "2" {
+                 incr ::bdi_tools_cdl::nbscience
+            }
+            default {
+                 incr ::bdi_tools_cdl::nbrej
+            }
          }
-
-         set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-         if {$othf==$othf_null} {continue}
-
-         set flagphotom [::bdi_tools_psf::get_val othf flagphotom]
-         ::bdi_tools_psf::set_by_key othf flagphotom $flag
-         ::bdi_tools_psf::set_by_key othf cataphotom $flag
-
-         ::bdi_tools_psf::set_astroid_in_source s othf
-         set newsources [lreplace $newsources $ids $ids $s]
-
-         set flagphotom_apres [::bdi_tools_psf::get_val othf flagphotom]
-         gren_info "$nameuc F=($flagphotom)->($flagphotom_apres) othf=$othf\n"
-
       }
-
-      set ::tools_cata::current_listsources [list $fields $newsources]
-      set ::gui_cata::cata_list(10) $::tools_cata::current_listsources
-
-      ::tools_cata::current_listsources_to_tklist
-
-      set ::gui_cata::tk_list(10,tklist)          [array get ::gui_cata::tklist]
-      set ::gui_cata::tk_list(10,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-      set ::gui_cata::tk_list(10,cataname)        [array get ::gui_cata::cataname]
-
-      ::cata_gestion_gui::charge_image_directaccess
-
    }
-
+   
+   
 
 
    #----------------------------------------------------------------------------
@@ -559,6 +538,8 @@ namespace eval bdi_tools_cdl {
       # Fin boucle sur les images
       }
 
+      ::bdi_tools_cdl::calc_nb_sources
+
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Chargement complet en $tt sec \n"
 
@@ -569,8 +550,10 @@ namespace eval bdi_tools_cdl {
 
 
 
-
-# Chargement des structure de variable pour l affichage
+   #----------------------------------------------------------------------------
+   ## Chargement des variables necessaires au calcul de photometrie
+   #  \param void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::charge_cata_list { } {
 
       set tt0 [clock clicks -milliseconds]
@@ -772,9 +755,62 @@ namespace eval bdi_tools_cdl {
    }
 
 
+
+
+   #----------------------------------------------------------------------------
+   ## Ajoute une reference
+   #  \param name : Nom de la source de reference a ajouter
+   #  \param idps : identifiant numerique dans l'appli photometrie
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::add_to_ref { name idps } {
 
       lappend ::bdi_tools_cdl::list_of_stars $idps
+
+      if {![info exists ::bdi_tools_cdl::id_to_name($idps)]} {   
+
+         array unset tab
+         set nbimg 0
+         set nbmes 0
+         
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+            if {[info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {
+
+               incr nbimg
+
+               set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+               set flux [::bdi_tools_psf::get_val othf "flux"]
+
+               if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} {
+
+                  set ::bdi_tools_cdl::table_mesure($idcata,$name) 1
+                  lappend tab(flux) $flux
+                  incr nbmes
+                  set mag [::bdi_tools_psf::get_val othf "mag"]
+                  if {$mag!="" && [string is double $mag] && $mag+1 != $mag} { lappend tab(mag) $mag }
+
+               } else {
+                  continue
+               }
+            }
+         }
+
+         if { [info exists tab(mag)] } {
+            if {[llength $tab(mag)]>1} {
+               set mag_mean  [format "%0.4f" [::math::statistics::mean $tab(mag)]]
+               set mag_stdev [format "%0.4f" [::math::statistics::stdev $tab(mag)]]
+            } else {
+               set mag_mean  [format "%0.4f" [lindex $tab(mag) 0]]
+               set mag_stdev 0
+            }
+         } else {
+               set mag_mean  "-99"
+               set mag_stdev "0"
+         }
+
+         set ::bdi_tools_cdl::id_to_name($idps) $name
+         set ::bdi_tools_cdl::table_data_source($name) [list $idps $name $nbimg $nbmes $mag_mean $mag_stdev]
+
+      }
 
       # Onglet variation
       for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
@@ -839,27 +875,19 @@ namespace eval bdi_tools_cdl {
             set ::bdi_tools_cdl::table_variations($ids1,$ids2,flux,nbmes) $nbmes
          }
       }
-      
-
    }
 
 
+   #----------------------------------------------------------------------------
+   ## Met a jour la variable de progression
+   #  \param cur : pas courant
+   #  \param max : pax maximum
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::set_progress { cur max } {
       set ::bdi_tools_cdl::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
       update
    }
 
-   proc ::bdi_tools_cdl::get_mem { p_info key } {
-      upvar $p_info info
-
-      set a [string first $key $info]
-      set a [ string range $info [expr $a + [string length $key]] [expr $a + 30] ]
-      set b [expr [string first "kB" $a] -1]
-      set a [ string range $a 0 $b ]
-      set a [ string trim $a]
-      return $a 
-   }
-   
    
    
    proc ::bdi_tools_cdl::free_memory {  } {
@@ -881,7 +909,29 @@ namespace eval bdi_tools_cdl {
    }
    
    
+   #----------------------------------------------------------------------------
+   ## Parser des champs de memoire
+   #  \param info : lignes de texte
+   #  \param key : cle dont la valeur est a recuperer
+   #  \return valeur : la valeur est a recuperer
+   #----------------------------------------------------------------------------
+   proc ::bdi_tools_cdl::get_mem { p_info key } {
+      upvar $p_info info
+
+      set a [string first $key $info]
+      set a [ string range $info [expr $a + [string length $key]] [expr $a + 30] ]
+      set b [expr [string first "kB" $a] -1]
+      set a [ string range $a 0 $b ]
+      set a [ string trim $a]
+      return $a 
+   }
    
+   
+   #----------------------------------------------------------------------------
+   ## Recupere les info de la memoire
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::get_memory {  } {
 
       if {$::bdi_tools_cdl::memory(memview)==0} {return}
@@ -903,6 +953,13 @@ namespace eval bdi_tools_cdl {
       set ::bdi_tools_cdl::memory(swap) [format "%0.1f" [expr 100.0*$::bdi_tools_cdl::memory(swapfree)/$::bdi_tools_cdl::memory(swaptotal)]]
    }
    
+   #----------------------------------------------------------------------------
+   ## Recupere les info de la memoire le type spectral d'une etoile 
+   #  \param liste_mag : liste des magnitude dans les differents filtres
+   #  \return liste_results : liste de 3 parametres : indice spectral (0.0-50.0),
+   #  nombre de filtres, sep : sparation entre les indices min et max qui 
+   # peux s'interpreter comme l'erreur sur la determination du type spectral
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::get_spectral_type { l } {
 
       set USNOA2_magB    [ lindex $l  0 ]
@@ -998,7 +1055,12 @@ namespace eval bdi_tools_cdl {
 
 
 
-
+   #----------------------------------------------------------------------------
+   ## Calcul l'indice numerique du type spectral pour une bande de magnitude 
+   #  \param band : bande de magnitude (ex : B-V)
+   #  \param mag : valeur ed la magnitude (ex : magB-MagV)
+   #  \return idmin : indice numerique
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::get_indice_by_band { band mag} {
 
       set min 99
@@ -1016,74 +1078,80 @@ namespace eval bdi_tools_cdl {
       return $idmin
    }
 
-# The following table aims to provide a guide to the unreddened 
-# colours expected for main sequence stars of spectral types B0 
-# to M4. The data are taken from Fitzgerald (1970 - A&A 4, 234), 
-# who provides UBV data for spectral classes O5 to M8, and from 
-# Ducati et al. (2001 - ApJ, 558, 309), who cover B0 to M4. Both 
-# compilations also present data for giants and supergiants. 
-# Ducati et al. present photometry on the Johnson 11-colour 
-# system, and we have used the relations given by Bessell (1979 
-# - PASP 91, 589) to transform the (V-R) and (V-I) colours to 
-# the Cousins system. The L (3.5 micron), M (4.8 micron) and N 
-# (10.5 micron) colours are essentially on the PbS-based system 
-# and give only a guide to the colours with modern photometers, 
-# detectors and filters. 
-# 
-#  
-# SpType   U-B   (B-V)  (V-R)C  (V-I)C   (V-J)   (V-H)   (V-K)   (V-L)   (V-M)   (V-N)  (V-R)J  (V-I)J
-# B0.0   -1.08   -0.30   -0.19   -0.31   -0.80   -0.92   -0.97   -1.13   -1.00   -9.99   -0.22   -0.44
-# B0.5   -1.00   -0.28   -0.18   -0.31   -0.77   -0.89   -0.95   -1.11   -0.99   -9.99   -0.20   -0.43
-# B1.0   -0.95   -0.26   -0.16   -0.30   -0.73   -0.85   -0.93   -1.08   -0.96   -9.99   -0.18   -0.42
-# B1.5   -0.88   -0.25   -0.15   -0.29   -0.70   -0.82   -0.91   -1.05   -0.94   -9.99   -0.17   -0.41
-# B2.0   -0.81   -0.24   -0.14   -0.29   -0.67   -0.79   -0.89   -1.02   -0.92   -9.99   -0.15   -0.40
-# B2.5   -0.72   -0.22   -0.13   -0.28   -0.64   -0.76   -0.86   -0.97   -0.88   -0.96   -0.14   -0.39
-# B3.0   -0.68   -0.20   -0.12   -0.27   -0.60   -0.72   -0.82   -0.92   -0.84   -0.91   -0.13   -0.38
-# B3.5   -0.65   -0.19   -0.12   -0.26   -0.58   -0.70   -0.80   -0.90   -0.82   -0.87   -0.12   -0.37
-# B4.0   -0.63   -0.18   -0.11   -0.25   -0.56   -0.68   -0.77   -0.86   -0.79   -0.84   -0.11   -0.35
-# B4.5   -0.61   -0.17   -0.11   -0.24   -0.54   -0.65   -0.74   -0.83   -0.76   -0.80   -0.11   -0.34
-# B5.0   -0.58   -0.16   -0.10   -0.24   -0.51   -0.62   -0.71   -0.78   -0.73   -0.75   -0.10   -0.33
-# B6.0   -0.49   -0.14   -0.10   -0.21   -0.46   -0.57   -0.64   -0.70   -0.65   -0.66   -0.09   -0.29
-# B7.0   -0.43   -0.13   -0.09   -0.19   -0.41   -0.51   -0.57   -0.61   -0.58   -0.58   -0.08   -0.26
-# B7.5   -0.40   -0.12   -0.09   -0.17   -0.39   -0.48   -0.54   -0.57   -0.54   -0.53   -0.08   -0.24
-# B8.0   -0.36   -0.11   -0.08   -0.16   -0.36   -0.45   -0.49   -0.52   -0.49   -0.48   -0.07   -0.22
-# B8.5   -0.27   -0.09   -0.08   -0.13   -0.31   -0.40   -0.43   -0.43   -0.42   -0.39   -0.07   -0.18
-# B9.0   -0.18   -0.07   -0.07   -0.10   -0.26   -0.34   -0.33   -0.34   -0.34   -0.30   -0.06   -0.14
-# B9.5   -0.10   -0.04   -0.05   -0.08   -0.22   -0.29   -0.26   -0.27   -0.26   -0.22   -0.03   -0.11
-# A0.0   -0.02   -0.01   -0.04   -0.04   -0.16   -0.19   -0.17   -0.18   -0.18   -0.14   -0.01   -0.05
-# A1.0    0.01    0.02   -0.02   -0.02   -0.11   -0.12   -0.11   -0.12   -0.13   -0.08    0.01   -0.03
-# A2.0    0.05    0.05   -0.01    0.00   -0.07   -0.04   -0.05   -0.07   -0.08   -0.02    0.03    0.00
-# A3.0    0.08    0.08    0.01    0.02   -0.02    0.03    0.01   -0.01   -0.02    0.03    0.05    0.02
-# A4.0    0.09    0.12    0.02    0.05    0.03    0.11    0.08    0.05   -0.04    0.09    0.07    0.07
-# A5.0    0.09    0.15    0.04    0.09    0.09    0.19    0.15    0.12    0.10    0.16    0.10    0.12
-# A6.0    0.10    0.17    0.05    0.12    0.13    0.30    0.21    0.17    0.15    0.21    0.11    0.16
-# A7.0    0.10    0.20    0.06    0.15    0.18    0.32    0.27    0.23    0.20    0.26    0.13    0.19
-# A8.0    0.09    0.27    0.09    0.20    0.25    0.42    0.36    0.33    0.29    0.34    0.16    0.26
-# A9.0    0.08    0.30    0.10    0.24    0.31    0.49    0.44    0.41    0.36    0.41    0.18    0.31
-# F0.0    0.03    0.32    0.12    0.28    0.37    0.57    0.52    0.49    0.43    0.48    0.21    0.36
-# F1.0    0.00    0.34    0.14    0.31    0.43    0.64    0.58    0.57    0.49    0.54    0.23    0.40
-# F2.0    0.00    0.35    0.15    0.35    0.48    0.71    0.66    0.66    0.56    0.60    0.25    0.45
-# F5.0   -0.02    0.45    0.21    0.44    0.67    0.93    0.89    0.90    0.77    0.80    0.33    0.57
-# F8.0    0.02    0.53    0.24    0.50    0.79    1.06    1.03    1.06    0.91    0.91    0.37    0.64 
-# G0.0    0.06    0.60    0.27    0.54    0.87    1.15    1.14    1.18    1.01    1.01    0.41    0.70 
-# G2.0    0.09    0.63    0.30    0.58    0.97    1.25    1.26    1.31    1.12    1.11    0.45    0.75 
-# G3.0    0.12    0.65    0.30    0.59    0.98    1.27    1.28    1.33    1.14    1.13    0.45    0.76 
-# G5.0    0.20    0.68    0.31    0.61    1.02    1.31    1.32    1.38    1.18    1.17    0.47    0.78 
-# G8.0    0.30    0.74    0.35    0.66    1.14    1.44    1.47    1.55    1.34    1.30    0.52    0.85 
-# K0.0    0.44    0.81    0.42    0.75    1.34    1.67    1.74    1.85    1.61    1.54    0.61    0.97 
-# K1.0    0.48    0.86    0.46    0.82    1.46    1.80    1.89    2.02    1.78    1.68    0.67    1.05 
-# K2.0    0.67    0.92    0.50    0.89    1.60    1.94    2.06    2.21    1.97    1.84    0.73    1.14 
-# K3.0    0.73    0.95    0.55    0.97    1.73    2.09    2.23    2.40    2.17    2.01    0.80    1.25 
-# K4.0    1.00    1.00    0.60    1.04    1.84    2.22    2.38    2.57    2.36    2.15    0.86    1.34 
-# K5.0    1.06    1.15    0.68    1.20    2.04    2.46    2.66    2.87    2.71    2.44    0.97    1.54 
-# K7.0    1.21    1.33    0.62    1.45    2.30    2.78    3.01    3.25    3.21    2.83    1.13    1.86 
-# M0.0    1.23    1.37    0.70    1.67    2.49    3.04    3.29    3.54    3.65    3.16    1.26    2.15 
-# M1.0    1.18    1.47    0.76    1.84    2.61    3.22    3.47    3.72    3.95    3.39    1.36    2.36 
-# M2.0    1.15    1.47    0.83    2.06    2.74    3.42    3.67    3.92    4.31    3.66    1.46    2.62 
-# M3.0    1.17    1.50    0.89    2.24    2.84    3.58    3.83    4.08    4.62    3.89    1.56    2.84 
-# M4.0    1.07    1.52    0.94    2.43    2.93    3.74    3.98    4.22    4.93    4.11    1.65    3.07 
-# 
-# 
+   #----------------------------------------------------------------------------
+   ## Definition de la table de calcul des indeices numeriques du type spectral
+   # en fonction des valeurs des bandes.
+   # Initialisation du tableau en variable de namespace
+   #  \param void 
+   #  \return void
+   #  \brief Explication de la table :
+   # The following table aims to provide a guide to the unreddened 
+   # colours expected for main sequence stars of spectral types B0 
+   # to M4. The data are taken from Fitzgerald (1970 - A&A 4, 234), 
+   # who provides UBV data for spectral classes O5 to M8, and from 
+   # Ducati et al. (2001 - ApJ, 558, 309), who cover B0 to M4. Both 
+   # compilations also present data for giants and supergiants. 
+   # Ducati et al. present photometry on the Johnson 11-colour 
+   # system, and we have used the relations given by Bessell (1979 
+   # - PASP 91, 589) to transform the (V-R) and (V-I) colours to 
+   # the Cousins system. The L (3.5 micron), M (4.8 micron) and N 
+   # (10.5 micron) colours are essentially on the PbS-based system 
+   # and give only a guide to the colours with modern photometers, 
+   # detectors and filters. 
+   # 
+   #  
+   # SpType   U-B   (B-V)  (V-R)C  (V-I)C   (V-J)   (V-H)   (V-K)   (V-L)   (V-M)   (V-N)  (V-R)J  (V-I)J
+   # B0.0   -1.08   -0.30   -0.19   -0.31   -0.80   -0.92   -0.97   -1.13   -1.00   -9.99   -0.22   -0.44
+   # B0.5   -1.00   -0.28   -0.18   -0.31   -0.77   -0.89   -0.95   -1.11   -0.99   -9.99   -0.20   -0.43
+   # B1.0   -0.95   -0.26   -0.16   -0.30   -0.73   -0.85   -0.93   -1.08   -0.96   -9.99   -0.18   -0.42
+   # B1.5   -0.88   -0.25   -0.15   -0.29   -0.70   -0.82   -0.91   -1.05   -0.94   -9.99   -0.17   -0.41
+   # B2.0   -0.81   -0.24   -0.14   -0.29   -0.67   -0.79   -0.89   -1.02   -0.92   -9.99   -0.15   -0.40
+   # B2.5   -0.72   -0.22   -0.13   -0.28   -0.64   -0.76   -0.86   -0.97   -0.88   -0.96   -0.14   -0.39
+   # B3.0   -0.68   -0.20   -0.12   -0.27   -0.60   -0.72   -0.82   -0.92   -0.84   -0.91   -0.13   -0.38
+   # B3.5   -0.65   -0.19   -0.12   -0.26   -0.58   -0.70   -0.80   -0.90   -0.82   -0.87   -0.12   -0.37
+   # B4.0   -0.63   -0.18   -0.11   -0.25   -0.56   -0.68   -0.77   -0.86   -0.79   -0.84   -0.11   -0.35
+   # B4.5   -0.61   -0.17   -0.11   -0.24   -0.54   -0.65   -0.74   -0.83   -0.76   -0.80   -0.11   -0.34
+   # B5.0   -0.58   -0.16   -0.10   -0.24   -0.51   -0.62   -0.71   -0.78   -0.73   -0.75   -0.10   -0.33
+   # B6.0   -0.49   -0.14   -0.10   -0.21   -0.46   -0.57   -0.64   -0.70   -0.65   -0.66   -0.09   -0.29
+   # B7.0   -0.43   -0.13   -0.09   -0.19   -0.41   -0.51   -0.57   -0.61   -0.58   -0.58   -0.08   -0.26
+   # B7.5   -0.40   -0.12   -0.09   -0.17   -0.39   -0.48   -0.54   -0.57   -0.54   -0.53   -0.08   -0.24
+   # B8.0   -0.36   -0.11   -0.08   -0.16   -0.36   -0.45   -0.49   -0.52   -0.49   -0.48   -0.07   -0.22
+   # B8.5   -0.27   -0.09   -0.08   -0.13   -0.31   -0.40   -0.43   -0.43   -0.42   -0.39   -0.07   -0.18
+   # B9.0   -0.18   -0.07   -0.07   -0.10   -0.26   -0.34   -0.33   -0.34   -0.34   -0.30   -0.06   -0.14
+   # B9.5   -0.10   -0.04   -0.05   -0.08   -0.22   -0.29   -0.26   -0.27   -0.26   -0.22   -0.03   -0.11
+   # A0.0   -0.02   -0.01   -0.04   -0.04   -0.16   -0.19   -0.17   -0.18   -0.18   -0.14   -0.01   -0.05
+   # A1.0    0.01    0.02   -0.02   -0.02   -0.11   -0.12   -0.11   -0.12   -0.13   -0.08    0.01   -0.03
+   # A2.0    0.05    0.05   -0.01    0.00   -0.07   -0.04   -0.05   -0.07   -0.08   -0.02    0.03    0.00
+   # A3.0    0.08    0.08    0.01    0.02   -0.02    0.03    0.01   -0.01   -0.02    0.03    0.05    0.02
+   # A4.0    0.09    0.12    0.02    0.05    0.03    0.11    0.08    0.05   -0.04    0.09    0.07    0.07
+   # A5.0    0.09    0.15    0.04    0.09    0.09    0.19    0.15    0.12    0.10    0.16    0.10    0.12
+   # A6.0    0.10    0.17    0.05    0.12    0.13    0.30    0.21    0.17    0.15    0.21    0.11    0.16
+   # A7.0    0.10    0.20    0.06    0.15    0.18    0.32    0.27    0.23    0.20    0.26    0.13    0.19
+   # A8.0    0.09    0.27    0.09    0.20    0.25    0.42    0.36    0.33    0.29    0.34    0.16    0.26
+   # A9.0    0.08    0.30    0.10    0.24    0.31    0.49    0.44    0.41    0.36    0.41    0.18    0.31
+   # F0.0    0.03    0.32    0.12    0.28    0.37    0.57    0.52    0.49    0.43    0.48    0.21    0.36
+   # F1.0    0.00    0.34    0.14    0.31    0.43    0.64    0.58    0.57    0.49    0.54    0.23    0.40
+   # F2.0    0.00    0.35    0.15    0.35    0.48    0.71    0.66    0.66    0.56    0.60    0.25    0.45
+   # F5.0   -0.02    0.45    0.21    0.44    0.67    0.93    0.89    0.90    0.77    0.80    0.33    0.57
+   # F8.0    0.02    0.53    0.24    0.50    0.79    1.06    1.03    1.06    0.91    0.91    0.37    0.64 
+   # G0.0    0.06    0.60    0.27    0.54    0.87    1.15    1.14    1.18    1.01    1.01    0.41    0.70 
+   # G2.0    0.09    0.63    0.30    0.58    0.97    1.25    1.26    1.31    1.12    1.11    0.45    0.75 
+   # G3.0    0.12    0.65    0.30    0.59    0.98    1.27    1.28    1.33    1.14    1.13    0.45    0.76 
+   # G5.0    0.20    0.68    0.31    0.61    1.02    1.31    1.32    1.38    1.18    1.17    0.47    0.78 
+   # G8.0    0.30    0.74    0.35    0.66    1.14    1.44    1.47    1.55    1.34    1.30    0.52    0.85 
+   # K0.0    0.44    0.81    0.42    0.75    1.34    1.67    1.74    1.85    1.61    1.54    0.61    0.97 
+   # K1.0    0.48    0.86    0.46    0.82    1.46    1.80    1.89    2.02    1.78    1.68    0.67    1.05 
+   # K2.0    0.67    0.92    0.50    0.89    1.60    1.94    2.06    2.21    1.97    1.84    0.73    1.14 
+   # K3.0    0.73    0.95    0.55    0.97    1.73    2.09    2.23    2.40    2.17    2.01    0.80    1.25 
+   # K4.0    1.00    1.00    0.60    1.04    1.84    2.22    2.38    2.57    2.36    2.15    0.86    1.34 
+   # K5.0    1.06    1.15    0.68    1.20    2.04    2.46    2.66    2.87    2.71    2.44    0.97    1.54 
+   # K7.0    1.21    1.33    0.62    1.45    2.30    2.78    3.01    3.25    3.21    2.83    1.13    1.86 
+   # M0.0    1.23    1.37    0.70    1.67    2.49    3.04    3.29    3.54    3.65    3.16    1.26    2.15 
+   # M1.0    1.18    1.47    0.76    1.84    2.61    3.22    3.47    3.72    3.95    3.39    1.36    2.36 
+   # M2.0    1.15    1.47    0.83    2.06    2.74    3.42    3.67    3.92    4.31    3.66    1.46    2.62 
+   # M3.0    1.17    1.50    0.89    2.24    2.84    3.58    3.83    4.08    4.62    3.89    1.56    2.84 
+   # M4.0    1.07    1.52    0.94    2.43    2.93    3.74    3.98    4.22    4.93    4.11    1.65    3.07 
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::init_spectral_type { } {
       
       array unset ::bdi_tools_cdl::table_sptype
@@ -1239,6 +1307,11 @@ namespace eval bdi_tools_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Calcul des constantes de magnitudes
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::calcul_const_mags { } {
       
       set tt0 [clock clicks -milliseconds]
@@ -1341,6 +1414,9 @@ namespace eval bdi_tools_cdl {
          array unset ::bdi_tools_cdl::table_star_mag
 
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+            
+            if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
+            
 
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
@@ -1404,6 +1480,9 @@ namespace eval bdi_tools_cdl {
          # Maj des magnitudes des etoiles de references
          array unset mag_stars
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+
+            if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
+
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
             foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
@@ -1445,9 +1524,6 @@ namespace eval bdi_tools_cdl {
          }
      
       }
-# 1 2 3   -> c1 
-# 1 2 3 4 -> c1, c2, c3   
-# 1 2   4 -> c3     
       
       # Fin de calcul de la constante de magnitude
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
@@ -1457,6 +1533,11 @@ namespace eval bdi_tools_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Calcul de la photometrie des objets sciences
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::calcul_science { } {
 
       set tt0 [clock clicks -milliseconds]
@@ -1465,6 +1546,7 @@ namespace eval bdi_tools_cdl {
          array unset ::bdi_tools_cdl::table_science_mag
 
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+            if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
             set ids 0
@@ -1520,6 +1602,11 @@ namespace eval bdi_tools_cdl {
    }    
 
 
+   #----------------------------------------------------------------------------
+   ## Calcul de la photometrie des objets rejetes
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::calcul_rejected { } {
 
       set tt0 [clock clicks -milliseconds]
@@ -1527,6 +1614,7 @@ namespace eval bdi_tools_cdl {
          array unset mag_rejected
 
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+            if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
             set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
             #if { $id_superstar !=1 } { continue }
             set ids 0
