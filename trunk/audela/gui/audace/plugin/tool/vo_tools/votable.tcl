@@ -2921,6 +2921,20 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
                        "$::votable::Field::ARRAYSIZE \"16\"" \
                        "$::votable::Field::WIDTH \"16\""
       }
+      psf_method {
+         set description "Name of the method used to measure the PSF of sources"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
+      }
+      globale {
+         set description "Values of the radii interval (as rad1:rad2) used in the global PSF method"
+         lappend field "$::votable::Field::UCD \"meta.code\"" \
+                       "$::votable::Field::DATATYPE \"char\"" \
+                       "$::votable::Field::ARRAYSIZE \"32\"" \
+                       "$::votable::Field::WIDTH \"32\""
+      }
       ra -
       dec {
          if {[string equal -nocase $key "ra"]} {
@@ -3010,20 +3024,6 @@ proc ::votable::getFieldFromKey_ASTROID { key } {
       }
       cataphotom {
          set description "Photometric reference catalogue name"
-         lappend field "$::votable::Field::UCD \"meta.code\"" \
-                       "$::votable::Field::DATATYPE \"char\"" \
-                       "$::votable::Field::ARRAYSIZE \"32\"" \
-                       "$::votable::Field::WIDTH \"32\""
-      }
-      psf_method {
-         set description "Name of the method used to measure the PSF of sources"
-         lappend field "$::votable::Field::UCD \"meta.code\"" \
-                       "$::votable::Field::DATATYPE \"char\"" \
-                       "$::votable::Field::ARRAYSIZE \"32\"" \
-                       "$::votable::Field::WIDTH \"32\""
-      }
-      globale {
-         set description "Values of the radii interval (as rad1:rad2) used in the global PSF method"
          lappend field "$::votable::Field::UCD \"meta.code\"" \
                        "$::votable::Field::DATATYPE \"char\"" \
                        "$::votable::Field::ARRAYSIZE \"32\"" \
