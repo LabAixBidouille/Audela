@@ -150,8 +150,6 @@ namespace eval bdi_gui_cdl {
    ## Affichage de l outil de gestion des cata
    proc ::bdi_gui_cdl::affich_gestion { } {
 
-      set tt0 [clock clicks -milliseconds]
-      #catch {destroy $::cata_gestion_gui::fen}
       if {![info exists ::cata_gestion_gui::fen]} {
          ::cata_gestion_gui::go $::tools_cata::img_list
       } else {
@@ -159,9 +157,7 @@ namespace eval bdi_gui_cdl {
             ::cata_gestion_gui::go $::tools_cata::img_list
          }
       }
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Chargement de la fenetre Gestion en $tt sec \n"
-      
+      return
    }
 
 
@@ -574,29 +570,27 @@ namespace eval bdi_gui_cdl {
              set    pf [ ttk::progressbar $pb.p -variable ::bdi_tools_cdl::progress -orient horizontal -mode determinate]
              pack   $pf -in $pb -side left -expand 1 -fill x 
 
-         #--- Cree un frame pour afficher les boutons
-         set center [frame $frm.info  -borderwidth 2 -cursor arrow -relief groove]
-         pack $center  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
 
          #--- Cree un frame pour afficher les boutons
-         set info [frame $center.info  -borderwidth 0 -cursor arrow -relief groove]
-         pack $info  -in $center -anchor s -side top -expand 0 -padx 10 -pady 5
- 
- 
-             checkbutton $info.check -variable ::bdi_tools_cdl::memory(memview)  -justify left \
-                -command "::bdi_tools_cdl::get_memory"
-             label $info.labjob -text "Mem Job :"  -justify left
-             label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid)  -justify left
-             label $info.labmem -text "Mem Free % :"  -justify left
-             label $info.valmem -textvariable ::bdi_tools_cdl::memory(mem)  -justify left
-             label $info.labswa -text "Swap Free % :"  -justify left
-             label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap)  -justify left
+         set center [frame $frm.cnbsources  -borderwidth 2 -cursor arrow -relief groove]
+         pack $center  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             grid $info.check $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa 
-             
+         #--- Cree un frame 
+         set nbsources [frame $center.nbsources  -borderwidth 0 -cursor arrow -relief groove]
+         pack $nbsources  -in $center -anchor s -side top -expand 0 -padx 10 -pady 5
+
+              label $nbsources.labref -text "Nb References :"  
+              label $nbsources.nbref  -textvariable ::bdi_tools_cdl::nbref
+              label $nbsources.labsci -text " - Nb Sciences :"  
+              label $nbsources.nbsci  -textvariable ::bdi_tools_cdl::nbscience
+              label $nbsources.labrej -text " - Nb Rejetees :"  
+              label $nbsources.nbrej  -textvariable ::bdi_tools_cdl::nbrej
+
+              grid $nbsources.labref $nbsources.nbref  $nbsources.labsci $nbsources.nbsci  $nbsources.labrej $nbsources.nbrej -sticky news
+
          #--- Cree un frame pour afficher les boutons
          set center [frame $frm.actions  -borderwidth 2 -cursor arrow -relief groove]
-         pack $center  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
+         pack $center  -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
          #--- Cree un frame pour afficher les boutons
          set actions [frame $center.actions  -borderwidth 4 -cursor arrow -relief groove]
@@ -617,20 +611,16 @@ namespace eval bdi_gui_cdl {
                  -command "::bdi_tools_cdl::charge_cata_alavolee"
               button $actions.stop -text "STOP" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::stop_charge_cata_alavolee"
-              button $actions.charge_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::charge_from_gestion"
               button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_tools_cdl::charge_cata_list"
 
-              label $actions.labexport -text "Export"  -justify left
-              button $actions.export_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
+              label $actions.labgestion -text "Gestion"  -justify left
+              button $actions.charge_gestion -text "Charge" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::charge_from_gestion"
+              button $actions.export_gestion -text "Export" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::export_cata_to_gestion"
-
-              label $actions.labsauve -text "Sauvegarde"  -justify left
-              button $actions.sauve_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
+              button $actions.sauve_gestion -text "Sauve" -borderwidth 2 -takefocus 1 \
                  -command "::gui_cata::save_cata"
-              button $actions.sauve_result -text "Resultats" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::save_reports"
 
               label $actions.labvoir -text "Affichage"  -justify left
               button $actions.voir -text "Tables" -borderwidth 2 -takefocus 1 \
@@ -655,6 +645,12 @@ namespace eval bdi_gui_cdl {
               label $actions.labscience -text "Sciences"  -justify left
               button $actions.science_mag -text "Mag" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::graph_science_mag"
+              button $actions.science_unset -text "Clean graph" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::unset_science_in_graph"
+
+              label $actions.labsauve -text "Sauvegarde"  -justify left
+              button $actions.sauve_result -text "Resultats" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::save_reports"
 
 
 
@@ -673,18 +669,15 @@ namespace eval bdi_gui_cdl {
              grid $actions.labcharge       -row 0 -column 1 -sticky news
              grid $actions.charge_alavolee -row 1 -column 1 -sticky news
              grid $actions.stop            -row 2 -column 1 -sticky news
-             grid $actions.charge_gestion  -row 3 -column 1 -sticky news
              grid $actions.chargelist      -row 4 -column 1 -sticky news
 
-             grid $actions.labexport      -row 0 -column 2 -sticky news
-             grid $actions.export_gestion -row 1 -column 2 -sticky news
+             grid $actions.labgestion      -row 0 -column 2 -sticky news
+             grid $actions.charge_gestion  -row 1 -column 2 -sticky news
+             grid $actions.export_gestion  -row 2 -column 2 -sticky news
+             grid $actions.sauve_gestion   -row 3 -column 2 -sticky news
 
-             grid $actions.labsauve       -row 0 -column 3 -sticky news
-             grid $actions.sauve_gestion  -row 1 -column 3 -sticky news
-             grid $actions.sauve_result   -row 2 -column 3 -sticky news
-
-             grid $actions.labvoir      -row 0 -column 4 -sticky news
-             grid $actions.voir         -row 1 -column 4 -sticky news
+             grid $actions.labvoir         -row 0 -column 3 -sticky news
+             grid $actions.voir            -row 1 -column 3 -sticky news
 
              grid $actions.labcalc      -row 0 -column 5 -sticky news
              grid $actions.magcst       -row 1 -column 5 -sticky news
@@ -696,13 +689,39 @@ namespace eval bdi_gui_cdl {
              grid $actions.stars_mag    -row 2 -column 6 -sticky news
              grid $actions.timeline     -row 3 -column 6 -sticky news
 
-             grid $actions.labscience   -row 0 -column 8 -sticky news
-             grid $actions.science_mag  -row 1 -column 8 -sticky news
+             grid $actions.labscience    -row 0 -column 8 -sticky news
+             grid $actions.science_mag   -row 1 -column 8 -sticky news
+             grid $actions.science_unset -row 2 -column 8 -sticky news
+
+             grid $actions.labsauve        -row 0 -column 9 -sticky news
+             grid $actions.sauve_result    -row 1 -column 9 -sticky news
 
              grid $actions.aide         -row 2 -column 10 -sticky news 
              grid $actions.fermer       -row 3 -column 10 -sticky news 
 
               
+
+         #--- Cree un frame pour afficher les boutons
+         set center [frame $frm.info  -borderwidth 2 -cursor arrow -relief groove]
+         pack $center  -in $frm -anchor s -side bottom -expand 0 -fill x -padx 10 -pady 5
+
+         #--- Cree un frame pour afficher les boutons
+         set info [frame $center.info  -borderwidth 0 -cursor arrow -relief groove]
+         pack $info  -in $center -anchor s -side top -expand 0 -padx 10 -pady 5
+ 
+ 
+             checkbutton $info.check -variable ::bdi_tools_cdl::memory(memview)  -justify left \
+                -command "::bdi_tools_cdl::get_memory"
+             label $info.labjob -text "Mem Job :"  -justify left
+             label $info.valjob -textvariable ::bdi_tools_cdl::memory(mempid)  -justify left
+             label $info.labmem -text "Mem Free % :"  -justify left
+             label $info.valmem -textvariable ::bdi_tools_cdl::memory(mem)  -justify left
+             label $info.labswa -text "Swap Free % :"  -justify left
+             label $info.valswa -textvariable ::bdi_tools_cdl::memory(swap)  -justify left
+
+             grid $info.check $info.labjob $info.valjob $info.labmem $info.valmem $info.labswa $info.valswa 
+             
+
    }
 
 
@@ -865,8 +884,8 @@ namespace eval bdi_gui_cdl {
 
 
 
-      set ttu [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Calcul des variations en $ttu sec \n"
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Calcul des variations en $tt sec \n"
 
    }
 
@@ -913,9 +932,24 @@ namespace eval bdi_gui_cdl {
 
 
 
-   proc ::bdi_gui_cdl::set_to_science_data_reference { } {
 
+
+
+
+
+
+
+
+
+
+
+   proc ::bdi_gui_cdl::set_to_science_data_reference { } {
+      
       foreach select [$::bdi_gui_cdl::data_reference curselection] {
+
+         incr ::bdi_tools_cdl::nbscience
+         incr ::bdi_tools_cdl::nbref -1
+      
          set name [lindex [$::bdi_gui_cdl::data_reference get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 2
          gren_info "$name to Science\n"
@@ -927,6 +961,9 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::set_to_reference_data_science { } {
 
       foreach select [$::bdi_gui_cdl::data_science curselection] {
+         incr ::bdi_tools_cdl::nbref
+         incr ::bdi_tools_cdl::nbscience -1
+      
          set idps [lindex [$::bdi_gui_cdl::data_science get $select] 0]      
          set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 1
@@ -939,6 +976,8 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::set_to_reference_data_rejected { } {
 
       foreach select [$::bdi_gui_cdl::data_rejected curselection] {
+         incr ::bdi_tools_cdl::nbref
+         incr ::bdi_tools_cdl::nbrej -1
          set idps [lindex [$::bdi_gui_cdl::data_rejected get $select] 0]      
          set name [lindex [$::bdi_gui_cdl::data_rejected get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 1
@@ -951,6 +990,8 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::set_to_science_data_rejected { } {
 
       foreach select [$::bdi_gui_cdl::data_rejected curselection] {
+         incr ::bdi_tools_cdl::nbscience
+         incr ::bdi_tools_cdl::nbrej -1
          set name [lindex [$::bdi_gui_cdl::data_rejected get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 2
       }
@@ -958,14 +999,11 @@ namespace eval bdi_gui_cdl {
 
    }
 
-
-
-
-
-
    proc ::bdi_gui_cdl::unset_data_reference { } {
 
       foreach select [$::bdi_gui_cdl::data_reference curselection] {
+         incr ::bdi_tools_cdl::nbrej
+         incr ::bdi_tools_cdl::nbref -1
          set name [lindex [$::bdi_gui_cdl::data_reference get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 0
       }
@@ -975,6 +1013,8 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::unset_data_science { } {
 
       foreach select [$::bdi_gui_cdl::data_science curselection] {
+         incr ::bdi_tools_cdl::nbrej
+         incr ::bdi_tools_cdl::nbscience -1
          set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 0
       }
@@ -984,15 +1024,20 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::unset_classif { } {
 
       foreach select [$::bdi_gui_cdl::classif curselection] {
+         incr ::bdi_tools_cdl::nbrej
+         incr ::bdi_tools_cdl::nbref -1
          set name [lindex [$::bdi_gui_cdl::classif get $select] 1]      
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcul_classification
    }
 
    proc ::bdi_gui_cdl::unset_starstar { tbl } {
 
       foreach select [$tbl curselection] {
+         incr ::bdi_tools_cdl::nbrej
+         incr ::bdi_tools_cdl::nbref -1
          set ids [lindex [$tbl get $select] 0]
          set name $::bdi_tools_cdl::id_to_name($ids)
          set ::bdi_tools_cdl::table_noms($name) 0
@@ -1014,7 +1059,13 @@ namespace eval bdi_gui_cdl {
    }
 
 
+   proc ::bdi_gui_cdl::save_reports {  } {
 
+      set err [ catch { ::bdi_tools_cdl::save_reports } msg]
+      if {$err} {
+         tk_messageBox -message "Erreur : $msg" -type ok
+      }
+   }
 
 
 
@@ -1031,14 +1082,13 @@ namespace eval bdi_gui_cdl {
 
       array unset x  
       array unset y
-      
+      set pass "no"
       for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
 
+         if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
+         set pass "yes"
          set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
-         #if { $id_superstar !=1 } { continue }
-
-
-         gren_info "$idcata=> id_superstar $id_superstar ($::bdi_tools_cdl::table_superstar_id($id_superstar))\n"
+         #gren_info "$idcata=> id_superstar $id_superstar ($::bdi_tools_cdl::table_superstar_id($id_superstar))\n"
          foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
 
             set name  $::bdi_tools_cdl::id_to_name($ids)
@@ -1051,12 +1101,17 @@ namespace eval bdi_gui_cdl {
             lappend y($id_superstar)  $magss
 
          }
-
       }
+
+      if {$pass=="no"} {
+         tk_messageBox -message "Veuillez ajouter des sources de references" -type ok
+         return
+      }
+
       set color [list black blue red green yellow grey ]
       set cpt 0
       foreach {indice_superstar id_superstar} [array get ::bdi_tools_cdl::table_superstar_exist] {
-         gren_info "id_superstar $id_superstar mag = $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) stdev = $::bdi_tools_cdl::table_superstar_solu($id_superstar,stdevmag) \n"
+         #gren_info "id_superstar $id_superstar mag = $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) stdev = $::bdi_tools_cdl::table_superstar_solu($id_superstar,stdevmag) \n"
          set h [::plotxy::plot $x($id_superstar) $y($id_superstar) .]
          plotxy::sethandler $h [list -color [lindex $color $cpt] -linewidth 0]
          incr cpt
@@ -1065,9 +1120,19 @@ namespace eval bdi_gui_cdl {
          }
       }
 
-      
+      return
    }
    
+
+
+
+
+   #----------------------------------------------------------------------------
+   ## Affichage du graphe qui presente la magnitude des etoiles de reference 
+   # au cours du temps
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::graph_stars_mag {  } {
 
       
@@ -1083,9 +1148,12 @@ namespace eval bdi_gui_cdl {
       array unset x  
       array unset y
       array unset list_star
+      set pass "no"
 
       for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
 
+         if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
+         set pass "yes"
          set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
 
          foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
@@ -1095,11 +1163,15 @@ namespace eval bdi_gui_cdl {
          }
       }
 
+      if {$pass=="no"} {
+         tk_messageBox -message "Veuillez ajouter des sources de references" -type ok
+         return
+      }
+
       set color [list black blue red green yellow grey ]
       set cpt 0
       foreach { ids o } [array get list_star] {
          set h [::plotxy::plot $x($ids) $y($ids) .]
-         gren_info "ids = $ids cpt = $cpt\n"
          plotxy::sethandler $h [list -color [lindex $color $cpt] -linewidth 1]
          incr cpt
          if { $cpt >= [llength $color] } {
@@ -1107,8 +1179,65 @@ namespace eval bdi_gui_cdl {
          }
       }
 
+      return
+   }
+
+
+
+
+
+   #----------------------------------------------------------------------------
+   ## Affichage du graphe Timeline 
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::graph_timeline { } {
+
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "Timeline" 
+      ::plotxy::xlabel "Time" 
+      ::plotxy::ylabel "Id Stars" 
+
+      array unset x  
+      array unset y
+      array unset list_star
+      set pass "no"
+
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+
+         if {![info exists ::bdi_tools_cdl::table_superstar_idcata($idcata)]} {continue}
+         set pass "yes"
+         set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
+
+         foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
+            lappend x($ids) $::bdi_tools_cdl::idcata_to_jdc($idcata)
+            lappend y($ids) $ids
+            set list_star($ids) 1
+         }
+      }
+
+      if {$pass=="no"} {
+         tk_messageBox -message "Veuillez ajouter des sources de references" -type ok
+         return
+      }
+
+      set color [list black blue red green yellow grey ]
+      set cpt 0
+      foreach { ids o } [array get list_star] {
+         set h [::plotxy::plot $x($ids) $y($ids) o]
+         plotxy::sethandler $h [list -color [lindex $color $cpt] -linewidth 0]
+         incr cpt
+         if { $cpt >= [llength $color] } {
+            set cpt 0
+         }
+      }
 
    }
+
+
 
    proc ::bdi_gui_cdl::graph_science_mag_popup {  } {
 
@@ -1121,13 +1250,11 @@ namespace eval bdi_gui_cdl {
       ::plotxy::ylabel "Mag" 
       array unset x  
       array unset y
-      set list_source ""
       set colors [list blue red green yellow grey black ]
       set cpt 0
       foreach select [$::bdi_gui_cdl::data_science curselection] {
          set ids [lindex [$::bdi_gui_cdl::data_science get $select] 0]
          set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]
-         lappend list_source $ids
          set color [lindex $colors $cpt]
          gren_info "Graph $name color : $color\n"
          incr cpt
@@ -1157,13 +1284,12 @@ namespace eval bdi_gui_cdl {
       ::plotxy::figure 1 
       ::plotxy::hold on 
       ::plotxy::position {0 0 600 400}
-      ::plotxy::title "Courbe de lumiere des objets sciences\n Magnitudes differentielles centrees sur zero" 
+      ::plotxy::title "Courbe de lumiere des objets sciences\n Magnitudes centrees sur zero" 
       ::plotxy::xlabel "Time (jd)" 
       ::plotxy::ylabel "Diff Mag" 
 
       array unset x  
       array unset y
-      set list_source ""
       set colors [list blue red green yellow grey black ]
       set cpt 0
 
@@ -1173,7 +1299,6 @@ namespace eval bdi_gui_cdl {
          incr ids
          if {$o != 2} {continue}
 
-         lappend list_source $ids
          set color [lindex $colors $cpt]
          gren_info "Graph $name color : $color\n"
          incr cpt
@@ -1196,42 +1321,54 @@ namespace eval bdi_gui_cdl {
    }
 
 
-   proc ::bdi_gui_cdl::graph_timeline { } {
+   proc ::bdi_gui_cdl::unset_science_in_graph {  } {
 
-      ::plotxy::clf 1
-      ::plotxy::figure 1 
-      ::plotxy::hold on 
-      ::plotxy::position {0 0 600 400}
-      ::plotxy::title "Timeline" 
-      ::plotxy::xlabel "Time" 
-      ::plotxy::ylabel "Id Stars" 
-
-      array unset x  
-      array unset y
-      array unset list_star
-
-      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-
-         set id_superstar $::bdi_tools_cdl::table_superstar_idcata($idcata)
-
-         foreach ids $::bdi_tools_cdl::table_superstar_id($id_superstar) {
-            lappend x($ids) $::bdi_tools_cdl::idcata_to_jdc($idcata)
-            lappend y($ids) $ids
-            set list_star($ids) 1
-         }
+      if {[::plotxy::figure] == 0 } {
+         gren_erreur "Pas de graphe actif\n"
+         return
       }
 
-      set color [list black blue red green yellow grey ]
-      set cpt 0
-      foreach { ids o } [array get list_star] {
-         set h [::plotxy::plot $x($ids) $y($ids) o]
-         gren_info "ids = $ids cpt = $cpt\n"
-         plotxy::sethandler $h [list -color [lindex $color $cpt] -linewidth 0]
-         incr cpt
-         if { $cpt >= [llength $color] } {
-            set cpt 0
+      set err [ catch {set rect [::plotxy::get_selected_region]} msg]
+      if {$err} {
+         return
+      }
+      set x1 [lindex $rect 0]
+      set x2 [lindex $rect 2]
+      set y1 [lindex $rect 1]
+      set y2 [lindex $rect 3]
+
+      if {$x1>$x2} {
+         set t $x1
+         set x1 $x2
+         set x2 $t
+      }
+      if {$y1>$y2} {
+         set t $y1
+         set y1 $y2
+         set y2 $t
+      }
+      
+#      gren_info "Crop Zone = $x1 : $x2 / $y1 : $y2\n"
+
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$o != 2} {continue}
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
+            set x  $::bdi_tools_cdl::idcata_to_jdc($idcata)
+            set y  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
+            
+            if {$x >= $x1 && $x < $x2 && $y > $y1 && $y < $y2 } {
+               unset ::bdi_tools_cdl::table_science_mag($ids,$idcata)
+               gren_info "Suppression idcata = $idcata, midepoch = [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)] name=$name \n"
+            }
          }
+
       }
 
+      ::bdi_gui_cdl::graph_science_mag
    }
+
+
 
