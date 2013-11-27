@@ -191,7 +191,8 @@ namespace eval bdi_tools_methodes_psf {
             set taboid(err_sky) [ expr 2.0 * [::math::statistics::stdev $tab] ]
          }
       }
-
+      set taboid(psf_method) "psfimcce_gauss2Drot_HighPrec"
+      set taboid(globale) "${::bdi_tools_psf::psf_limitradius_min}:${::bdi_tools_psf::psf_limitradius_max}"
       set taboid(err_psf) ""
       set othf [::bdi_tools_psf::get_astroid_null]
       foreach key [::bdi_tools_psf::get_basic_fields] {
@@ -417,6 +418,8 @@ namespace eval bdi_tools_methodes_psf {
       set taboid(err_xsm) ""
       set taboid(err_ysm) ""
       set taboid(err_flux) ""
+      set taboid(psf_method) "fitgauss2d_photom"
+      set taboid(globale) ""
 
       set othf [::bdi_tools_psf::get_astroid_null]
       foreach key [::bdi_tools_psf::get_basic_fields] {
@@ -487,6 +490,8 @@ namespace eval bdi_tools_methodes_psf {
       set taboid(err_sky) ""
       set taboid(snint) ""
       set taboid(rdiff) ""
+      set taboid(psf_method) "fitgauss"
+      set taboid(globale) ""
 
       set othf [::bdi_tools_psf::get_astroid_null]
       foreach key [::bdi_tools_psf::get_fitgauss_fields] {
