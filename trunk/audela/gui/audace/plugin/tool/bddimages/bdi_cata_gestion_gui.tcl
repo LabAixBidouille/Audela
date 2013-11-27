@@ -2412,7 +2412,9 @@ namespace eval cata_gestion_gui {
 
 
    proc ::cata_gestion_gui::psf_auto_gui { type nd_sources { tbl ""} } {
-
+      
+      psf_init $::audace(visuNo)
+      
       set ::cata_gestion_gui::popupprogress 0
 
       set ::gui_cata::fenpopuppsf .popuppsf
@@ -2435,13 +2437,14 @@ namespace eval cata_gestion_gui {
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $::gui_cata::fenpopuppsf -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
 
-         ::bdi_gui_psf::gui_configuration $frm
+         psf_gui_methodes $::audace(visuNo) $frm
+         #::bdi_gui_psf::gui_configuration $frm
 
          set info  [frame $frm.info -borderwidth 0 -cursor arrow -relief groove]
-         pack $info -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         pack $info -in $frm -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
 
              label $info.l -text "Nb sources = $nd_sources" 
-             pack  $info.l -side left -padx 2 -pady 0
+             pack  $info.l -side top -padx 2 -pady 0
 
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2449,27 +2452,46 @@ namespace eval cata_gestion_gui {
              set    pf [ ttk::progressbar $data.p -variable ::cata_gestion_gui::popupprogress -orient horizontal -length 200 -mode determinate]
              pack   $pf -in $data -side top
 
-         set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
-         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+         set data  [frame $frm.boutons -borderwidth 1 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -padx 10 -pady 5
 
              button $data.fermer -state active -text "Fermer" -relief "raised" \
-                -command "destroy $::gui_cata::fenpopuppsf"
-             pack   $data.fermer -side right -anchor c -padx 0 -padx 10 -pady 5
+                -command "::cata_gestion_gui::psf_auto_gui_fermer"
+#             pack   $data.fermer -side right -anchor e -padx 0 -padx 10 -pady 5
+
+             button $data.annul -state active -text "Annuler" -relief "raised" \
+                -command "::cata_gestion_gui::psf_auto_gui_annul"
+#             pack   $data.annul -side top -anchor c -padx 0 -padx 10 -pady 5
 
              button $data.go -state active -text "Go" -relief "raised" \
-                -command "$::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state disabled ; ::cata_gestion_gui::psf_auto_go $type $nd_sources ; $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state active ; destroy $::gui_cata::fenpopuppsf"
-             pack   $data.go -side left -anchor c -padx 0 -padx 10 -pady 5
+                -command "::cata_gestion_gui::psf_auto_gui_go $type $nd_sources"
+#             pack   $data.go -side left -anchor w -padx 0 -padx 10 -pady 5
 
-
+             grid $data.go     -row 0 -column 0 -sticky nws  -padx 10 -pady 5
+             grid $data.annul  -row 0 -column 1 -sticky news -padx 10 -pady 5
+             grid $data.fermer -row 0 -column 2 -sticky nes  -padx 10 -pady 5
+             # -columnspan 2 -ipadx 10 -ipady 10 -padx 10 -pady 10
    }
 
 
+   proc ::cata_gestion_gui::psf_auto_gui_go { type nd_sources } {
 
+      set ::cata_gestion_gui::psf_auto_gui_annul_activ 0
+      $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state disabled 
+      ::cata_gestion_gui::psf_auto_go $type $nd_sources 
+      $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state active
+      destroy $::gui_cata::fenpopuppsf
+   }
 
-
-
+   proc ::cata_gestion_gui::psf_auto_gui_annul {  } {
+      set ::cata_gestion_gui::psf_auto_gui_annul_activ 1
+   }
+   proc ::cata_gestion_gui::psf_auto_gui_fermer {  } {
+      
+      psf_close_to_conf $::audace(visuNo) 
+      destroy $::gui_cata::fenpopuppsf
  
- 
+   }
  
  
  
