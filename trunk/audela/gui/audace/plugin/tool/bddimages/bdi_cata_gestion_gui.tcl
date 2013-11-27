@@ -1703,7 +1703,7 @@ namespace eval cata_gestion_gui {
 
 
       # On reaffiche gestion
-      ::cata_gestion_gui::charge_image_directaccess
+      #::cata_gestion_gui::charge_image_directaccess
 
       return
    }

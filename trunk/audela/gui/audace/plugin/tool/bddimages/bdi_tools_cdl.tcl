@@ -107,6 +107,8 @@ namespace eval bdi_tools_cdl {
          set chan [open $file w]
 
          puts $chan "#OBJECT = $name"
+
+
          puts $chan "#Date ISO               Julian Date        Mag     ErrMag FWHM RA         DEC           Flux                  Err Flux"
          puts $chan "#----------------------------------------------------------------------------------------------------------------------"
 
@@ -183,6 +185,20 @@ namespace eval bdi_tools_cdl {
       gren_info "list_name_S = $list_name_S \n"
       
       ::cata_gestion_gui::export_photom_to_gestion $list_name_R $list_name_S
+
+
+
+      # On flag Rejetee sur toutes les sources
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
+      
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+         set id_superstar       $::bdi_tools_cdl::table_superstar_idcata($::tools_cata::id_current_image)
+         set mag_superstar      $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag)
+         set flux_superstar     $::bdi_tools_cdl::table_superstar_flux($id_superstar,$::tools_cata::id_current_image)
+         set err_mag_superstar  0
+         set err_flux_superstar 0
+
+      }
 
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]

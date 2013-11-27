@@ -152,8 +152,12 @@ namespace eval bdi_gui_cdl {
 
       set tt0 [clock clicks -milliseconds]
       #catch {destroy $::cata_gestion_gui::fen}
-      if {[winfo exists $::cata_gestion_gui::fen]==0} {
+      if {![info exists ::cata_gestion_gui::fen]} {
          ::cata_gestion_gui::go $::tools_cata::img_list
+      } else {
+         if {[winfo exists $::cata_gestion_gui::fen]==0} {
+            ::cata_gestion_gui::go $::tools_cata::img_list
+         }
       }
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Chargement de la fenetre Gestion en $tt sec \n"
@@ -620,7 +624,7 @@ namespace eval bdi_gui_cdl {
 
               label $actions.labexport -text "Export"  -justify left
               button $actions.export_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::export_cata_to_gestion"
+                 -command "::bdi_gui_cdl::export_cata_to_gestion"
 
               label $actions.labsauve -text "Sauvegarde"  -justify left
               button $actions.sauve_gestion -text "Gestion" -borderwidth 2 -takefocus 1 \
@@ -1002,8 +1006,12 @@ namespace eval bdi_gui_cdl {
 
 
 
+   proc ::bdi_gui_cdl::export_cata_to_gestion {  } {
 
-
+      ::bdi_tools_cdl::export_cata_to_gestion
+      # On reaffiche gestion
+      ::cata_gestion_gui::charge_image_directaccess
+   }
 
 
 
