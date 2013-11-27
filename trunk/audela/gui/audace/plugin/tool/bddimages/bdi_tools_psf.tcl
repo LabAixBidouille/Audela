@@ -200,7 +200,7 @@ namespace eval bdi_tools_psf {
    proc ::bdi_tools_psf::get_otherfields_astroid { } {
 
       return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
-                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec" \
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "psf_method" "globale" "ra" "dec" \
                    "res_ra" "res_dec" "omc_ra" "omc_dec" "mag" "err_mag" "name" "flagastrom" "flagphotom" "cataastrom" \
                    "cataphotom"]
    }
@@ -214,7 +214,7 @@ namespace eval bdi_tools_psf {
    proc ::bdi_tools_psf::get_globale_fields { } {
 
       return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
-                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec"]
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "psf_method" "globale" "ra" "dec"]
    }
 
    #------------------------------------------------------------
@@ -226,7 +226,7 @@ namespace eval bdi_tools_psf {
    proc ::bdi_tools_psf::get_basic_fields { } {
 
       return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
-                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec"]
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "psf_method" "globale" "ra" "dec"]
    }
 
    #------------------------------------------------------------
@@ -237,7 +237,7 @@ namespace eval bdi_tools_psf {
    #
    proc ::bdi_tools_psf::get_fitgauss_fields { } {
       return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "flux" "err_flux" "pixmax" \
-                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "ra" "dec" \
+                   "intensity" "sky" "err_sky" "snint" "radius" "rdiff" "err_psf" "psf_method" "globale" "ra" "dec" \
              ]
    }
 
@@ -449,6 +449,10 @@ namespace eval bdi_tools_psf {
       return [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
    }
 
+
+
+
+
    #------------------------------------------------------------
    ## Fonction qui renvoit les coordonnees X Y de la source
    # dont le catalogue ASTROID est present 
@@ -471,9 +475,6 @@ namespace eval bdi_tools_psf {
          return -1
       }
    }
-
-
-
 
 
 
