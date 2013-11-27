@@ -90,7 +90,7 @@ namespace eval bdi_gui_psf {
 
 
 
-   proc ::bdi_gui_psf::gui_configuration { frm } {
+   proc ::bdi_gui_psf::gui_configuration_obsolete { frm } {
 
       
       set spinlist ""
