@@ -2091,6 +2091,8 @@ namespace eval cata_gestion_gui {
 
       foreach ids $::cata_gestion_gui::worklist($::tools_cata::id_current_image) {
          
+         if {$::cata_gestion_gui::psf_auto_gui_annul_activ == 1} {break}
+         
          set s [lindex $sources $ids]
                   
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
@@ -2147,6 +2149,9 @@ namespace eval cata_gestion_gui {
       set cpt 0
       set current 0
       foreach ::tools_cata::id_current_image $::cata_gestion_gui::worklist(list_id) {
+
+         if {$::cata_gestion_gui::psf_auto_gui_annul_activ == 1} {break}
+
          set ::cata_gestion_gui::directaccess $::tools_cata::id_current_image
          ::cata_gestion_gui::charge_image_directaccess
          set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
@@ -2409,6 +2414,15 @@ namespace eval cata_gestion_gui {
       
       return 0
    }
+
+
+
+
+
+
+
+
+
 
 
    proc ::cata_gestion_gui::psf_auto_gui { type nd_sources { tbl ""} } {
