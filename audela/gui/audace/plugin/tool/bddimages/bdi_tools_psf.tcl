@@ -151,7 +151,7 @@ namespace eval bdi_tools_psf {
    proc ::bdi_tools_psf::get_astroid_null { } {
       
       set r ""
-      for {set i 1} {$i<=30} {incr i} {
+      for {set i 1} {$i<=[llength [::bdi_tools_psf::get_otherfields_astroid]]} {incr i} {
          lappend r ""
       }
       return $r
@@ -182,19 +182,21 @@ namespace eval bdi_tools_psf {
    #  14   "radius" 
    #  15   "rdiff" 
    #  16   "err_psf" 
-   #  17   "ra" 
-   #  18   "dec"
-   #  19   "res_ra" 
-   #  20   "res_dec" 
-   #  21   "omc_ra" 
-   #  22   "omc_dec" 
-   #  23   "mag" 
-   #  24   "err_mag" 
-   #  25   "name" 
-   #  26   "flagastrom" 
-   #  27   "flagphotom" 
-   #  28   "cataastrom"
-   #  29   "cataphotom"
+   #  17   "psf_method" 
+   #  18   "globale" 
+   #  19   "ra" 
+   #  20   "dec"
+   #  21   "res_ra" 
+   #  22   "res_dec" 
+   #  23   "omc_ra" 
+   #  24   "omc_dec" 
+   #  25   "mag" 
+   #  26   "err_mag" 
+   #  27   "name" 
+   #  28   "flagastrom" 
+   #  29   "flagphotom" 
+   #  30   "cataastrom"
+   #  31   "cataphotom"
    # @return liste des champs d'une source ASTROID
    #
    proc ::bdi_tools_psf::get_otherfields_astroid { } {
@@ -587,10 +589,106 @@ namespace eval bdi_tools_psf {
 
    #------------------------------------------------------------
    ## Fonction qui mesure le photocentre d'une source
+   #
+   # @param s pointeur d'une source qui se verra modifiee
+   #
+   # @return void
+   #------------------------------------------------------------
+   proc ::bdi_tools_psf::get_psf_source { p_s  { manual "no" } } {
+
+      upvar $p_s s
+      
+      global private
+      
+      gren_erreur "get_psf_source\n"
+
+      if {$manual == "yes" } {
+         set xy  [list [lindex $s {0 2 2}] [lindex $s {0 2 3}] ]
+      } else {
+         set xy  [::bdi_tools_psf::get_xy s]
+      }
+      gren_erreur "xy = $xy\n"
+
+      # Recupere les champs ASTROID de la source 
+      set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+      gren_erreur "othf old = $othf\n"
+      
+      # Met a jour les champs ASTROID S ils ne sont pas standard      
+      set p [::bdi_tools_psf::get_otherfields_astroid]
+      if {[llength $othf ] !=  [llength $p ]} {
+         set othf [::bdi_tools_psf::get_astroid_null]
+         gren_erreur "Null on ASTROID\n"
+      }
+
+      # Met a jour la methode qui va etre applique
+      #gren_erreur "visu\n"
+      set visuNo $::audace(visuNo)
+      #gren_erreur "Methode :: \n"
+      #gren_erreur "array :: [array get private]\n"
+      
+      #gren_erreur "Methode : $private(psf_toolbox,$visuNo,methode)\n"
+      gren_erreur "Methode : $private(psf_toolbox,$::audace(visuNo),methode)\n"
+      ::bdi_tools_psf::set_by_key othf "psf_method" $private(psf_toolbox,$::audace(visuNo),methode)
+
+      # Effectue la mesure
+      gren_erreur "Globale : $private(psf_toolbox,$::audace(visuNo),globale)\n"
+      set private(psf_toolbox,$::audace(visuNo),gui) 0
+      if {$private(psf_toolbox,$::audace(visuNo),globale)} {
+         PSF_globale $::audace(visuNo) $x $y
+         ::bdi_tools_psf::set_by_key othf "globale"    "$private(psf_toolbox,$::audace(visuNo),globale,min):$private(psf_toolbox,$::audace(visuNo),globale,max)"
+      } else {
+         PSF_one_radius $::audace(visuNo) $x $y
+         ::bdi_tools_psf::set_by_key othf "globale"    ""
+      }
+
+      gren_erreur "Resultats\n"
+      # Met a jour les resultats
+      ::bdi_tools_psf::set_by_key othf "xsm"        $private(psf_toolbox,$::audace(visuNo),psf,xsm)      
+      ::bdi_tools_psf::set_by_key othf "ysm"        $private(psf_toolbox,$::audace(visuNo),psf,ysm)      
+      ::bdi_tools_psf::set_by_key othf "err_xsm"    $private(psf_toolbox,$::audace(visuNo),psf,err_xsm)  
+      ::bdi_tools_psf::set_by_key othf "err_ysm"    $private(psf_toolbox,$::audace(visuNo),psf,err_ysm)  
+      ::bdi_tools_psf::set_by_key othf "fwhmx"      $private(psf_toolbox,$::audace(visuNo),psf,fwhmx)    
+      ::bdi_tools_psf::set_by_key othf "fwhmy"      $private(psf_toolbox,$::audace(visuNo),psf,fwhmy)    
+      ::bdi_tools_psf::set_by_key othf "fwhm"       $private(psf_toolbox,$::audace(visuNo),psf,fwhm)     
+      ::bdi_tools_psf::set_by_key othf "flux"       $private(psf_toolbox,$::audace(visuNo),psf,flux)     
+      ::bdi_tools_psf::set_by_key othf "err_flux"   $private(psf_toolbox,$::audace(visuNo),psf,err_flux) 
+      ::bdi_tools_psf::set_by_key othf "pixmax"     $private(psf_toolbox,$::audace(visuNo),psf,pixmax)   
+      ::bdi_tools_psf::set_by_key othf "intensity"  $private(psf_toolbox,$::audace(visuNo),psf,intensity)
+      ::bdi_tools_psf::set_by_key othf "sky"        $private(psf_toolbox,$::audace(visuNo),psf,sky)      
+      ::bdi_tools_psf::set_by_key othf "err_sky"    $private(psf_toolbox,$::audace(visuNo),psf,err_sky)  
+      ::bdi_tools_psf::set_by_key othf "snint"      $private(psf_toolbox,$::audace(visuNo),psf,snint)    
+      ::bdi_tools_psf::set_by_key othf "radius"     $private(psf_toolbox,$::audace(visuNo),psf,radius)   
+      ::bdi_tools_psf::set_by_key othf "rdiff"      $private(psf_toolbox,$::audace(visuNo),psf,rdiff)  
+      ::bdi_tools_psf::set_by_key othf "err_psf"    $private(psf_toolbox,$::audace(visuNo),psf,err_psf) 
+
+      # on nomme la source
+      set name_cata [::manage_source::namable $s]
+      if {$name_cata!=""} {
+         set name_source [::manage_source::naming $s $name_cata]
+         ::bdi_tools_psf::set_by_key othf "name" $name_source
+      }
+
+      # Sauvegarde du resultat
+      ::bdi_tools_psf::set_astroid_in_source s othf
+      
+      # Mode Debug ... 
+       gren_erreur "name_cata = $name_cata\n"
+      # gren_erreur "name_source = $name_source\n"
+       gren_erreur "othf = $othf\n"
+      # Affichage des resultats dans la console
+      #::bdi_tools_psf::gren_astroid othf
+
+      return $err_psf
+   }
+
+
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
    # @param s pointeur d'une source qui se verra modifiee
    # @return void
    #
-   proc ::bdi_tools_psf::get_psf_source { p_s  { manual "no" } } {
+   proc ::bdi_tools_psf::get_psf_source_obsolete { p_s  { manual "no" } } {
 
       upvar $p_s s
       
@@ -673,8 +771,6 @@ namespace eval bdi_tools_psf {
       }
       return $err_psf
    }
-
-
 
 
 
