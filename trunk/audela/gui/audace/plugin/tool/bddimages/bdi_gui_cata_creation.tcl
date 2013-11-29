@@ -67,11 +67,16 @@ namespace eval gui_cata_creation {
 
       global conf action_label
 
+      # Sauvegarde des parametres de mesure de psf
+      psf_close_to_conf $::audace(visuNo)
+
       # Fermeture de cette GUI
       ::gui_cata_creation::closetoconf
+
       # Destruction de la fenetre
       ::gui_cata_creation::recup_position
       destroy $::gui_cata_creation::fen
+
       # Rechargement des listes
       ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
       ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
@@ -2335,7 +2340,10 @@ return
                pack $methconf -in $psf  -side top -anchor e -expand 0 -fill x  -padx 3 -pady 3
 
 
-               ::bdi_gui_psf::gui_configuration $methconf
+               global private
+               psf_init $::audace(visuNo)
+               psf_gui_methodes $::audace(visuNo) $methconf
+#               ::bdi_gui_psf::gui_configuration $methconf
 
 
                #::gui_cata_creation::handlePSFParams $psf
