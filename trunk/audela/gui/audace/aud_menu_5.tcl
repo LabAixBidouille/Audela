@@ -1365,7 +1365,7 @@ proc psf_toolbox { visuNo } {
                      set sav $private(psf_toolbox,$visuNo,radius)
                      spinbox $limit.radiusc -values $spinlist -from 1 -to $private(psf_toolbox,$visuNo,radius,max) \
                          -textvariable private(psf_toolbox,$visuNo,radius) -width 3 \
-                         -command "refreshPSF_simple $visuNo"
+                         -command "if {$private(psf_toolbox,$visuNo,gui)} {refreshPSF_simple $visuNo}"
                      pack  $limit.radiusc -side left 
                      set private(psf_toolbox,$visuNo,radius) $sav
                      $limit.radiusc set $private(psf_toolbox,$visuNo,radius)
@@ -1391,7 +1391,7 @@ proc psf_toolbox { visuNo } {
                      set sav $private(psf_toolbox,$visuNo,radius)
                      spinbox $limit.radiusc -values $spinlist -from 1 -to $private(psf_toolbox,$visuNo,radius,max) \
                          -textvariable private(psf_toolbox,$visuNo,radius) -width 3 \
-                         -command "refreshPSF_simple $visuNo"
+                         -command "if {$private(psf_toolbox,$visuNo,gui)} {refreshPSF_simple $visuNo}"
                      pack  $limit.radiusc -side left 
                      set private(psf_toolbox,$visuNo,radius) $sav
                      $limit.radiusc set $private(psf_toolbox,$visuNo,radius)
@@ -1403,7 +1403,7 @@ proc psf_toolbox { visuNo } {
                      set sav $private(psf_toolbox,$visuNo,radius)
                      spinbox $limit.radiusc -values $spinlist -from 1 -to $private(psf_toolbox,$visuNo,radius,max) \
                          -textvariable private(psf_toolbox,$visuNo,radius) -width 3 \
-                         -command "refreshPSF_simple $visuNo"
+                         -command "if {$private(psf_toolbox,$visuNo,gui)} {refreshPSF_simple $visuNo}"
                      pack  $limit.radiusc -side left 
                      set private(psf_toolbox,$visuNo,radius) $sav
                      $limit.radiusc set $private(psf_toolbox,$visuNo,radius)
@@ -1417,7 +1417,10 @@ proc psf_toolbox { visuNo } {
 
       }
 
-      refreshPSF_simple $visuNo
+
+      if {$private(psf_toolbox,$visuNo,gui)} {
+         refreshPSF_simple $visuNo
+      }
 
    }
 
@@ -1701,7 +1704,7 @@ proc psf_toolbox { visuNo } {
    proc PSF_one_radius { visuNo x y } {
 
       global private
-      
+
       # duree du traitement
       if { $private(psf_toolbox,$visuNo,globale) == 0 } {
          set tt0 [clock clicks -milliseconds]
@@ -1783,11 +1786,14 @@ proc psf_toolbox { visuNo } {
    proc PSF_globale { visuNo x y } {
 
       global private
-      variable private_graph
+      global private_graph
       global caption
 
       array unset private_graph
       
+      # duree du traitement
+      set tt0 [clock clicks -milliseconds]
+
       # Mode GUI
       if {$private(psf_toolbox,$visuNo,gui)} {
          # Effacement des marques
@@ -1825,7 +1831,9 @@ proc psf_toolbox { visuNo } {
 
          # Arret si trop d erreurs
          if {$private(psf_toolbox,$visuNo,globale,arret) && $nberror>=$private(psf_toolbox,$visuNo,globale,nberror)} {
-            ::console::affiche_erreur "$caption(audace,psf_toolbox_message1) $nberror $caption(audace,psf_toolbox_message2)\n"
+            if {$private(psf_toolbox,$visuNo,gui)} {
+               ::console::affiche_erreur "$caption(audace,psf_toolbox_message1) $nberror $caption(audace,psf_toolbox_message2)\n"
+            }
             break
          }
 
@@ -1968,6 +1976,10 @@ proc psf_toolbox { visuNo } {
                               blue globalePSF
          }
       }
+
+      # duree du traitement
+      set private(psf_toolbox,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
+
    }
 
    #------------------------------------------------------------
@@ -2049,7 +2061,7 @@ proc psf_toolbox { visuNo } {
    proc psf_compar { visuNo frm } {
 
       global private
-      variable graph_compar
+      global graph_compar
 
       array unset graph_compar
 
@@ -2137,7 +2149,7 @@ proc psf_toolbox { visuNo } {
    proc psf_graph_compar { visuNo key } {
 
       global private
-      variable graph_compar
+      global graph_compar
 
       ::plotxy::clf 1
       ::plotxy::figure 1 
@@ -2343,4 +2355,5 @@ proc psf_toolbox { visuNo } {
          set private(psf_toolbox,$visuNo,psf,$key) "-"
       }
       set private(psf_toolbox,$visuNo,duree) ""
+      set private(psf_toolbox,$visuNo,gui) 0
    }
