@@ -969,7 +969,6 @@ namespace eval tools_cata {
          set tt0 [clock clicks -milliseconds]
 
          ::bdi_tools_psf::get_psf_listsources listsources
-         set ::tools_cata::current_listsources_sav $listsources
          set ::tools_cata::nb_astroid [::manage_source::get_nb_sources_by_cata $listsources ASTROID]
    
          set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]

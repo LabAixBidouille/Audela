@@ -422,11 +422,13 @@ namespace eval bdi_tools_psf {
    # common de la source.
    # Si "cata" n est pas renseigne, le premier catalogue 
    # de la liste sera considere
+   #
    # @param s pointeur de la source envoyee en argument
    # @param cata (optionnel) fixe le nom du catalogue pour 
    # en calculer la position x y 
-   # @return {x y} la liste des coordonnees pixels de la source
    #
+   # @return {x y} la liste des coordonnees pixels de la source
+   #------------------------------------------------------------
    proc ::bdi_tools_psf::get_xy { p_s { cata ""} } {
 
       upvar $p_s s
@@ -448,7 +450,21 @@ namespace eval bdi_tools_psf {
       set ra   [lindex $cata {1 0}] 
       set dec  [lindex $cata {1 1}]
       #gren_info "get_xy: $ra $dec\n"
-      return [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]
+      if {$ra==""||$dec==""} {
+         gren_erreur "\n-----------------------------\n"
+         gren_erreur "Erreur sur fonction radec2xy\n"
+         gren_erreur "cata=$cata\n"
+         gren_erreur "s=$s\n"
+         gren_erreur "\n-----------------------------\n"
+         return -code 101 "Erreur sur fonction radec2xy : ra=$ra dec=$dec cata=$cata"
+      }
+      
+      set err [ catch {set res [ buf$::audace(bufNo) radec2xy [list $ra $dec ] ]} msg ]
+      if {$err} {
+         return -code 102 "Erreur sur fonction radec2xy : ra=$ra dec=$dec cata=$cata"
+      }
+      
+      return $res
    }
 
 
@@ -460,9 +476,11 @@ namespace eval bdi_tools_psf {
    # dont le catalogue ASTROID est present 
    # les coordonnees X et Y sont celles mesurees dans l'image
    # lors de l'ajustement de la PSF
-   # @param s pointeur de la source envoyee en argument
-   # @return {x y} la liste des coordonnees pixels de la source
    #
+   # @param s pointeur de la source envoyee en argument
+   #
+   # @return {x y} la liste des coordonnees pixels de la source
+   #------------------------------------------------------------
    proc ::bdi_tools_psf::get_xy_astroid { p_s  } {
 
       upvar $p_s s
@@ -599,49 +617,47 @@ namespace eval bdi_tools_psf {
       upvar $p_s s
       
       global private
+      global audace
       
-      gren_erreur "get_psf_source\n"
-
       if {$manual == "yes" } {
          set xy  [list [lindex $s {0 2 2}] [lindex $s {0 2 3}] ]
       } else {
-         set xy  [::bdi_tools_psf::get_xy s]
+         set err [ catch {set xy  [::bdi_tools_psf::get_xy s]} msg ]
+         if {$err} {
+            return -code $err $msg
+         }
       }
-      gren_erreur "xy = $xy\n"
+      set x [lindex $xy 0] 
+      set y [lindex $xy 1]
 
       # Recupere les champs ASTROID de la source 
       set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
-      gren_erreur "othf old = $othf\n"
       
       # Met a jour les champs ASTROID S ils ne sont pas standard      
       set p [::bdi_tools_psf::get_otherfields_astroid]
       if {[llength $othf ] !=  [llength $p ]} {
          set othf [::bdi_tools_psf::get_astroid_null]
-         gren_erreur "Null on ASTROID\n"
+         #gren_erreur "Null on ASTROID\n"
       }
 
       # Met a jour la methode qui va etre applique
-      #gren_erreur "visu\n"
-      set visuNo $::audace(visuNo)
-      #gren_erreur "Methode :: \n"
-      #gren_erreur "array :: [array get private]\n"
-      
-      #gren_erreur "Methode : $private(psf_toolbox,$visuNo,methode)\n"
-      gren_erreur "Methode : $private(psf_toolbox,$::audace(visuNo),methode)\n"
       ::bdi_tools_psf::set_by_key othf "psf_method" $private(psf_toolbox,$::audace(visuNo),methode)
 
+
       # Effectue la mesure
-      gren_erreur "Globale : $private(psf_toolbox,$::audace(visuNo),globale)\n"
       set private(psf_toolbox,$::audace(visuNo),gui) 0
       if {$private(psf_toolbox,$::audace(visuNo),globale)} {
+
          PSF_globale $::audace(visuNo) $x $y
          ::bdi_tools_psf::set_by_key othf "globale"    "$private(psf_toolbox,$::audace(visuNo),globale,min):$private(psf_toolbox,$::audace(visuNo),globale,max)"
+
       } else {
+
          PSF_one_radius $::audace(visuNo) $x $y
          ::bdi_tools_psf::set_by_key othf "globale"    ""
+
       }
 
-      gren_erreur "Resultats\n"
       # Met a jour les resultats
       ::bdi_tools_psf::set_by_key othf "xsm"        $private(psf_toolbox,$::audace(visuNo),psf,xsm)      
       ::bdi_tools_psf::set_by_key othf "ysm"        $private(psf_toolbox,$::audace(visuNo),psf,ysm)      
@@ -661,6 +677,15 @@ namespace eval bdi_tools_psf {
       ::bdi_tools_psf::set_by_key othf "rdiff"      $private(psf_toolbox,$::audace(visuNo),psf,rdiff)  
       ::bdi_tools_psf::set_by_key othf "err_psf"    $private(psf_toolbox,$::audace(visuNo),psf,err_psf) 
 
+      set err [ catch {
+         set radec [ buf$::audace(bufNo) xy2radec [list $private(psf_toolbox,$::audace(visuNo),psf,xsm) $private(psf_toolbox,$::audace(visuNo),psf,ysm)]]
+         ::bdi_tools_psf::set_by_key othf "ra"  [lindex $radec 0]
+         ::bdi_tools_psf::set_by_key othf "dec" [lindex $radec 1]
+      } msg ]
+      if {$err} {
+         return -code $err $msg
+      }
+
       # on nomme la source
       set name_cata [::manage_source::namable $s]
       if {$name_cata!=""} {
@@ -672,13 +697,15 @@ namespace eval bdi_tools_psf {
       ::bdi_tools_psf::set_astroid_in_source s othf
       
       # Mode Debug ... 
-       gren_erreur "name_cata = $name_cata\n"
+      # gren_erreur "name_cata = $name_cata\n"
       # gren_erreur "name_source = $name_source\n"
-       gren_erreur "othf = $othf\n"
+      #gren_erreur "othf = $othf\n"
+      # gren_erreur "s = $s\n"
       # Affichage des resultats dans la console
       #::bdi_tools_psf::gren_astroid othf
+      #gren_erreur "get_psf_source: err_psf = $private(psf_toolbox,$::audace(visuNo),psf,err_psf)\n"
 
-      return $err_psf
+      return $private(psf_toolbox,$::audace(visuNo),psf,err_psf)
    }
 
 
@@ -796,32 +823,25 @@ namespace eval bdi_tools_psf {
       set fields  [lindex $listsources 0]
       set sources [lindex $listsources 1]
       set pass "no"
-      set id 0
+      set ids -1
       foreach s $sources {
-
+         incr ids
          #gren_erreur "Mesure source $id / [llength $sources]\n"
 
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s $manual] } msg ]
          
-         if {$id == -1} {
-            gren_info "err=$err\n"
-            gren_info "err_psf=$err_psf\n"
-            gren_info "s=$s\n"
-         }
-         
          if {$err} {
-            #gren_erreur "err=$err $msg\n"
+            gren_erreur "**ERREUR PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
             ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
-            if { $err_psf != ""} {
-               gren_erreur "*ERREUR PSF err_psf: $err_psf\n"
+            if { $err_psf != "-"} {
+            gren_erreur "**WARNING PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
             } else {
                set pass "yes"
             }
          }
-         #gren_info "s = $s\n"
-         set sources [lreplace $sources $id $id $s]
-         incr id
+
+         set sources [lreplace $sources $ids $ids $s]
       }
       if {$pass=="no"} { return }
       
@@ -890,7 +910,7 @@ namespace eval bdi_tools_psf {
             }
          }
       }
-      gren_info "nb data = [llength $tabmaginst] == [llength $tabmagcata] \n"
+      #gren_info "nb data = [llength $tabmaginst] == [llength $tabmagcata] \n"
       if {[llength $tabmaginst]==0||[llength $tabmagcata]==0} {return}
       set median_maginst [::math::statistics::median $tabmaginst ]
       set median_magcata [::math::statistics::median $tabmagcata ]

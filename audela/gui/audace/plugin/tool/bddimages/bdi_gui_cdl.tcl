@@ -167,9 +167,6 @@ namespace eval bdi_gui_cdl {
 
       global audace
 
-      
-
-
       set ::bdi_gui_cdl::fen .photometry
       if { [winfo exists $::bdi_gui_cdl::fen] } {
          wm withdraw $::bdi_gui_cdl::fen

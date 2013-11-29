@@ -2083,7 +2083,6 @@ namespace eval cata_gestion_gui {
       set sources [lindex $::tools_cata::current_listsources 1]
 
       set pass "no"
-      set id 0
       set cpt 0
 
       #set tt0 [clock clicks -milliseconds]
@@ -2097,14 +2096,12 @@ namespace eval cata_gestion_gui {
                   
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
          
-         #set name [::manage_source::naming $s [::manage_source::namable $s] ]
-         #gren_erreur "$id ($name)-> ($err) ($err_psf) ($msg)\n"
-
          if {$err} {
+            gren_erreur "**ERREUR PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
             ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
-            if { $err_psf != ""} {
-               gren_erreur "*ERREUR PSF err_psf ($id): $err_psf\n"
+            if { $err_psf != "-"} {
+            gren_erreur "**WARNING PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
             } else {
                set pass "yes"
             }
@@ -2118,6 +2115,7 @@ namespace eval cata_gestion_gui {
          #set tt [format "%.0f" [expr ([clock clicks -milliseconds] - $tt0)/$cpt/1000.*($nd_sources-$current)]]
          # gren_info "ID = $id $current (plus que $tt secondes)\n"
       }
+
       #gren_info "psf_auto_go_one : pass = $pass\n"
       if {$pass=="no"} { return $current }
       
@@ -2427,7 +2425,10 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::psf_auto_gui { type nd_sources { tbl ""} } {
       
+      global private
+
       psf_init $::audace(visuNo)
+      set private(psf_toolbox,$::audace(visuNo),duree) "***"
       
       set ::cata_gestion_gui::popupprogress 0
 
@@ -2454,11 +2455,20 @@ namespace eval cata_gestion_gui {
          psf_gui_methodes $::audace(visuNo) $frm
          #::bdi_gui_psf::gui_configuration $frm
 
-         set info  [frame $frm.info -borderwidth 0 -cursor arrow -relief groove]
-         pack $info -in $frm -anchor c -side top -expand 1 -fill x -padx 10 -pady 5
+         set center  [frame $frm.infocenter -borderwidth 0 -cursor arrow -relief groove]
+         pack $center -in $frm -anchor c -side top -expand 0 -fill x -padx 10 -pady 5
+
+         set info  [frame $center.info -borderwidth 1 -cursor arrow -relief groove]
+         pack $info -in $center -anchor c -side top -expand 0 -padx 10 -pady 5
 
              label $info.l -text "Nb sources = $nd_sources" 
-             pack  $info.l -side top -padx 2 -pady 0
+             pack  $info.l -side left -padx 2 -pady 0
+             label $info.a -text " (1 source =" 
+             pack  $info.a -side left -padx 2 -pady 0
+             label $info.b -textvariable private(psf_toolbox,$::audace(visuNo),duree)
+             pack  $info.b -side left -padx 2 -pady 0
+             label $info.c -text " sec)" 
+             pack  $info.c -side left -padx 2 -pady 0
 
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -2490,6 +2500,9 @@ namespace eval cata_gestion_gui {
 
    proc ::cata_gestion_gui::psf_auto_gui_go { type nd_sources } {
 
+      # Sauvegarde des parametres de mesure de psf
+      psf_close_to_conf $::audace(visuNo)
+
       set ::cata_gestion_gui::psf_auto_gui_annul_activ 0
       $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state disabled 
       ::cata_gestion_gui::psf_auto_go $type $nd_sources 
@@ -2502,7 +2515,7 @@ namespace eval cata_gestion_gui {
    }
    proc ::cata_gestion_gui::psf_auto_gui_fermer {  } {
       
-      psf_close_to_conf $::audace(visuNo) 
+      psf_close_to_conf $::audace(visuNo)
       destroy $::gui_cata::fenpopuppsf
  
    }

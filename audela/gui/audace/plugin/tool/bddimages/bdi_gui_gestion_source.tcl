@@ -158,6 +158,9 @@ namespace eval bdi_gui_gestion_source {
 
    proc ::bdi_gui_gestion_source::fermer { } {
       
+      # Sauvegarde des parametres de mesure de psf
+      psf_close_to_conf $::audace(visuNo)
+
       if { [winfo exists $::cata_gestion_gui::fen] } {
          gren_info "Fenetre gestion des catalogues existe\n"
          ::cata_gestion_gui::charge_image_directaccess
@@ -1647,6 +1650,9 @@ namespace eval bdi_gui_gestion_source {
 #  \sa bdi_gui_gestion_source::gestion_mode_manuel_init
    proc ::bdi_gui_gestion_source::run { { worklist "" } } {
 
+      global private
+      
+      psf_init $::audace(visuNo)
       ::bdi_gui_gestion_source::init $worklist
       
       gren_info "worklist = $worklist\n"
@@ -1754,16 +1760,11 @@ namespace eval bdi_gui_gestion_source {
          pack $actions -in $frm -anchor c -side top
 
              label $actions.lab1 -text "Methode pour PSF : " 
-             ComboBox $actions.combo \
-                -width 50 -height [llength [::bdi_tools_psf::get_methodes]] \
-                -relief sunken -borderwidth 1 -editable 0 -width 10\
-                -textvariable ::bdi_tools_psf::psf_methode \
-                -values [::bdi_tools_psf::get_methodes]
-
+             label $actions.b -textvar private(psf_toolbox,$::audace(visuNo),methode) -width 10 -relief groove
              button $actions.psfc -state active -text "PSF" -relief "raised" \
                   -command "::bdi_gui_gestion_source::psf"
  
-             grid $actions.lab1 $actions.combo $actions.psfc -sticky nsw -pady 3
+             grid $actions.lab1 $actions.b $actions.psfc -sticky nsw -pady 3
 
          set actions [frame $frm.actions4 -borderwidth 1 -cursor arrow -relief groove]
          pack $actions -in $frm -anchor c -side top
@@ -1862,7 +1863,8 @@ namespace eval bdi_gui_gestion_source {
          pack $methodes -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
               
 
-              ::bdi_gui_psf::gui_configuration $methodes
+              psf_gui_methodes $::audace(visuNo) $f2
+#              ::bdi_gui_psf::gui_configuration $methodes
 
 
 #              # configuration par onglets
