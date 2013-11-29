@@ -7,6 +7,7 @@
 namespace eval ::audace {
 }
 
+
 #
 # Histo visuNo
 # Visualisation de l'histogramme de l'image affichee dans la visu
@@ -879,1108 +880,6 @@ proc confPhotom { visuNo args } {
 }
 
 ###################################################################################
-
-#
-# psfimcce visuNo
-# Ajuste une psf dans une fenetre d'une image
-# Auteur : Frederic VACHIER
-#
-
-proc psfimcce { visuNo } {
-   variable private
-   global caption conf
-
-   #---
-   set base [ ::confVisu::getBase $visuNo ]
-
-   #---
-   set private(psfimcce,$visuNo,frm) "$base.psfimcce$visuNo"
-   set frm $private(psfimcce,$visuNo,frm)
-   if [ winfo exists $frm ] {
-      ferme_fenetre_analyse $visuNo $frm psfimcce
-   }
-
-   #--- Capture de la fenetre d'analyse
-   set private(psfimcce,$visuNo,box) [ ::confVisu::getBox $visuNo ]
-   if { $private(psfimcce,$visuNo,box) == "" } {
-      return
-   }
-
-   #--- Initialisation de la position de la fenetre
-   psf_init $visuNo
-
-   #--- Creation de la fenetre
-   toplevel $frm
-   wm transient $frm $base
-   wm resizable $frm 0 0
-   wm title $frm "$caption(audace,menu,psfimcce) (visu$visuNo)"
-   wm geometry $frm $conf(psfimcce,$visuNo,position)
-   wm protocol $frm WM_DELETE_WINDOW "psf_fermer $visuNo $frm"
-
-   set onglets [frame $frm.onglets]
-   pack $onglets -in $frm
-
-         pack [ttk::notebook $onglets.nb] -expand yes -fill both
-#         set f1 [frame $onglets.nb.f1]
-         set f_res  [frame $onglets.nb.f_res]
-         set f_img  [frame $onglets.nb.f_img]
-         set f_mark [frame $onglets.nb.f_mark]
-         set f_comp [frame $onglets.nb.f_comp]
-
-#         $onglets.nb add $f1 -text "Methode"
-         $onglets.nb add $f_res -text "$caption(audace,psfimcce_Mesures)"
-         $onglets.nb add $f_img -text "$caption(audace,psfimcce_Image)"
-         $onglets.nb add $f_mark -text "$caption(audace,psfimcce_Marques)"
-         $onglets.nb add $f_comp -text "$caption(audace,psfimcce_Comparaison)"
-
-         $onglets.nb select $f_res
-         ttk::notebook::enableTraversal $onglets.nb
-
-         # onglets : methodes
-
-         #set methodes [frame $f1.methodes]
-         #pack $methodes -in $f1 -padx 5 -pady 5
-
-         # psf_gui_methodes $visuNo $methodes
-
-         # onglets : mesures
-
-         set results [frame $f_res.results]
-         pack $results -in $f_res
-
-              set block [frame $results.params]
-              pack $block -in $results
-
-                  set values [ frame $block.valuesleft]
-                  pack $values -in $block -anchor n -side left
-
-                         foreach key [get_fields_current_psf_left] {
-
-                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
-                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 0 -pady 0
-
-                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="err_psf"} {
-                                      set active disabled
-                                   } else {
-                                      set active active
-                                   }
-                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "psf_graph $visuNo $key"
-                                   label $value.lab1 -text " = "
-                                   label $value.lab2 -textvariable private(psfimcce,$visuNo,psf,$key) -width 8
-                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
-                         }
-
-                  set values [ frame $block.valuesright]
-                  pack $values -in $block -anchor n -side right
-
-                         foreach key [get_fields_current_psf_right] {
-
-                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
-                              pack $value -in $values -anchor n -side top -padx 0 -pady 0
-
-                                   if {$key=="err_flux"||$key=="radius"||$key=="err_sky"||$key=="pixmax"} {
-                                      set active disabled
-                                   } else {
-                                      set active active
-                                   }
-                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "psf_graph $visuNo $key"
-                                   label $value.lab1 -text " = "
-                                   label $value.lab2 -textvariable private(psfimcce,$visuNo,psf,$key)  -width 8
-                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
-                         }
-
-         # onglets : images
-
-         set images [frame $f_img.images]
-         pack $images -in $f_img -expand yes -fill both
-
-              set block1 [frame $images.block1 -borderwidth 2 -relief groove]
-              set block2 [frame $images.block2 -borderwidth 2 -relief groove]
-              set block3 [frame $images.block3 -borderwidth 2 -relief groove]
-              set block4 [frame $images.block4 -borderwidth 2 -relief groove]
-
-              grid $block1 -in $images -row 0 -column 0 -sticky news
-              grid $block2 -in $images -row 0 -column 1 -sticky news
-              grid $block3 -in $images -row 1 -column 0 -sticky news
-              grid $block4 -in $images -row 1 -column 1 -sticky news
-
-              grid rowconfigure $images {0 1} -weight 1
-              grid columnconfigure $images 0 -weight 1
-              grid columnconfigure $images 1 -weight 1
-
-              label $block1.lab -text "$caption(audace,psfimcce_imagenondispo)" -justify center
-              grid $block1.lab -in $block1 -row 0 -column 0 -sticky es -pady 10 -padx 10
-
-              label $block2.lab -text "$caption(audace,psfimcce_imagenondispo)" -justify center -pady 10 -padx 10
-              grid $block2.lab -in $block2 -row 0 -column 0 -sticky news
-
-              label $block3.lab -text "$caption(audace,psfimcce_imagenondispo)" -justify center -pady 10 -padx 10
-              grid $block3.lab -in $block3 -row 0 -column 0 -sticky news
-
-         # onglets : Marques
-
-         set marks [frame $f_mark.marks]
-         pack $marks -in $f_mark -expand yes -fill both
-
-              set block [frame $marks.marks]
-              pack $block -in $marks
-
-                  checkbutton $block.voir -text "$caption(audace,psfimcce_Voirlescercles)" \
-                                    -variable private(psfimcce,$visuNo,marks,cercle)
-                  button $block.delete -text "$caption(audace,psfimcce_Nettoyerlesmarques)" -relief "raised" -height 1\
-                                    -command "psf_clean_mark $visuNo"
-                  grid $block.voir     -sticky nsw -pady 8
-                  grid $block.delete   -sticky nsw -pady 3
-
-         # onglets : Comparaison
-
-         set compar [frame $f_comp.compar]
-         pack $compar -in $f_comp -expand yes -fill both
-
-              set block [frame $compar.methodes]
-              pack $block -in $compar
-
-                  label       $block.lab        -text "$caption(audace,psfimcce_Compdesmethodes)" -justify left
-                  checkbutton $block.photom     -text "photom" -variable private(psfimcce,$visuNo,compar,photom)
-                  checkbutton $block.fitgauss2D -text "fitgauss2D" -variable private(psfimcce,$visuNo,compar,fitgauss2D)
-                  checkbutton $block.psfimcce   -text "psfimcce" -variable private(psfimcce,$visuNo,compar,psfimcce)
-
-                  button $block.go -text "$caption(audace,psfimcce_Go)" -relief "raised" -width 8 -height 1\
-                                   -command "psf_compar $visuNo $compar"
-
-                  grid $block.lab        -sticky nsw -pady 8
-                  grid $block.photom     -sticky nsw -pady 3
-                  grid $block.fitgauss2D -sticky nsw -pady 3
-                  grid $block.psfimcce   -sticky nsw -pady 3
-                  grid $block.go         -sticky nsw -pady 10
-
-              set block [frame $compar.graph]
-              pack $block -in $compar
-
-                  button $block.xsm -state normal -text "xsm" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo xsm"
-                  button $block.ysm -state normal -text "ysm" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo ysm"
-                  button $block.fwhmx -state normal -text "fwhmx" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo fwhmx"
-                  button $block.fwhmy -state normal -text "fwhmy" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo fwhmy"
-                  button $block.fwhm -state normal -text "fwhm" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo fwhm"
-                  button $block.flux -state normal -text "flux" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo flux"
-                  button $block.sky -state normal -text "sky" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo sky"
-                  button $block.snint -state normal -text "snint" -relief "raised" -width 8 -height 1\
-                                    -command "psf_graph_compar $visuNo snint"
-
-                  grid $block.xsm $block.fwhmx  $block.fwhm $block.sky   -sticky nsw -pady 3
-                  grid $block.ysm $block.fwhmy  $block.flux $block.snint -sticky nsw -pady 3
-
-   #--- Creation d'une frame
-   frame $frm.config -borderwidth 2 -relief raised
-   pack $frm.config -side top -fill both -expand 1
-
-         psf_gui_methodes $visuNo $frm.config
-
-   #--- Creation d'une frame
-   frame $frm.temps -borderwidth 2 -relief raised
-   pack $frm.temps -side top -fill both -expand 1 -anchor c
-
-         label $frm.temps.lab -text "$caption(audace,psfimcce_Duree)" -justify center -pady 1 -padx 1
-         label $frm.temps.val -textvariable private(psfimcce,$visuNo,duree) -justify center -pady 1 -padx 1
-         label $frm.temps.sec -text "$caption(audace,psfimcce_sec)" -justify center -pady 1 -padx 1
-
-         grid $frm.temps.lab $frm.temps.val $frm.temps.sec -sticky news
-
-   #--- Creation d'une frame
-   frame $frm.frame2 -borderwidth 2 -relief raised
-
-      #--- Cree le checkbutton pour choisir le mode de rafraichissement
-      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
-         -variable conf(psfimcce,$visuNo,modeRefresh) -command "::confFitgauss $visuNo"\
-         -state disabled
-
-      button $frm.frame2.buthelp -text "$caption(audace,psfimcce_aide)" \
-         -command "psf_help $visuNo" -width 10
-
-      #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
-      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
-         -command "::refreshPSF $visuNo"
-
-      #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
-      button $frm.frame2.butFermer -text "$caption(audace,psfimcce_fermer)" \
-         -command "psf_fermer $visuNo $frm" -width 10
-
-      grid $frm.frame2.modeRefresh -columnspan 3 -sticky news
-      grid $frm.frame2.buthelp $frm.frame2.butRefresh $frm.frame2.butFermer -sticky news
-
-   pack $frm.frame2 -side top -fill both -expand 1
-
-   #--- Rafraichit les valeurs
-   #::refreshPSF $visuNo
-   ::refreshPSF_simple $visuNo
-
-   #--- Rafraichit la fenetre
-   #::confFitgauss $visuNo
-
-   #--- La fenetre est active
-   focus $frm
-
-   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   bind $frm <Key-r> {catch {::console::affiche_erreur "ressource\n" ; source /srv/develop/audela/gui/audace/aud_menu_5.tcl}}
-   bind $frm <Key-n> {catch {::console::affiche_erreur "edit source : \n nc /srv/develop/audela/gui/audace/aud_menu_5.tcl\n" }}
-   bind $frm <Key-F1> { ::console::GiveFocus }
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
-}
-
-proc get_fields_current_psf { } {
-   return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" "flux" "err_flux" "pixmax" \
-                "intensity" "sky" "err_sky" "snint" "radius" ]
-}
-
-proc get_fields_current_psf_left { } {
-   return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" ]
-}
-
-proc get_fields_current_psf_right { } {
-   return [list "flux" "err_flux" "pixmax" "intensity" "sky" "err_sky" "snint" "radius" ]
-}
-
-proc psf_get_methodes { } {
-   return { fitgauss photom fitgauss2D psfimcce }
-}
-
-proc psf_gui_methodes { visuNo frm } {
-   variable private
-   global caption
-
-   set spinlist ""
-   for {set i 1} {$i<$private(psfimcce,$visuNo,radius,max)} {incr i} {lappend spinlist $i}
-
-   set actions [frame $frm.actions -borderwidth 0 -cursor arrow -relief groove]
-   pack $actions -in $frm -anchor c -side top
-
-        label $actions.lab1 -text "$caption(audace,psfimcce_MethodepourPSF) "
-        menubutton $actions.b -menu $actions.b.m -textvar private(psfimcce,$visuNo,methode) -width 10 -relief groove
-        menu $actions.b.m -tearoff 0
-        foreach value [psf_get_methodes] {
-           $actions.b.m add command -label $value -command "psf_set_methode $visuNo $frm $value"
-        }
-        grid $actions.lab1 $actions.b
-        #$actions.b.m select
-
-   set conf [frame $frm.config -borderwidth 0 -cursor arrow -relief groove]
-   pack $conf -in $frm -anchor c -side top
-
-   set glo [frame $frm.glo -borderwidth 0 -cursor arrow -relief groove]
-   pack $glo -in $frm -anchor c -side top
-
-      set glocheck [frame $glo.check -borderwidth 0 -cursor arrow -relief groove]
-      pack $glocheck -in $glo -anchor c -side top
-      set glocconf [frame $glo.conf -borderwidth 0 -cursor arrow -relief groove]
-      pack $glocconf -in $glo -anchor c -side top
-
-         checkbutton $glocheck.globale -text "$caption(audace,psfimcce_Rechercheglobale)" \
-            -variable private(psfimcce,$visuNo,globale) \
-            -command "psf_switch_globale $visuNo $glocconf $value"
-         grid $glocheck.globale
-
-   set ecr [frame $frm.ecr -borderwidth 0 -cursor arrow -relief groove]
-   pack $ecr -in $frm -anchor c -side top
-
-      set ecrcheck [frame $ecr.check -borderwidth 0 -cursor arrow -relief groove]
-      pack $ecrcheck -in $ecr -anchor c -side top
-      set ecrcconf [frame $ecr.conf -borderwidth 0 -cursor arrow -relief groove]
-      pack $ecrcconf -in $ecr -anchor c -side top
-
-         checkbutton $ecrcheck.ecrbale -text "$caption(audace,psfimcce_Ecretage)" \
-            -variable private(psfimcce,$visuNo,ecretage) \
-            -command "psf_switch_ecretage $visuNo $ecrcconf $value"
-         grid $ecrcheck.ecrbale
-}
-
-proc psf_switch_globale { visuNo frm value } {
-   variable private
-   global caption
-
-   set block $frm.here
-   destroy $block
-   set conf [frame $block -borderwidth 0 -cursor arrow -relief groove]
-   pack $conf -in $frm -anchor c -side top
-
-   if {$private(psfimcce,$visuNo,globale)==1} {
-
-      label $block.radl1 -text "$caption(audace,psfimcce_Limitemin)"
-      entry $block.radv1 -textvariable private(psfimcce,$visuNo,globale,min) -relief sunken -width 5
-
-      label $block.radl2 -text "$caption(audace,psfimcce_Limitemax)"
-      entry $block.radv2 -textvariable private(psfimcce,$visuNo,globale,max) -relief sunken -width 5
-
-      checkbutton $block.arret -text " $caption(audace,psfimcce_Arretsi)" -variable private(psfimcce,$visuNo,globale,arret)
-
-      set sav $private(psfimcce,$visuNo,globale,nberror)
-
-      spinbox $block.nberror   -values [list 1 2 3 5 10] -from 1 -to 10 \
-                               -textvariable private(psfimcce,$visuNo,globale,nberror) -width 3
-      set private(psfimcce,$visuNo,globale,nberror) $sav
-
-      label $block.arretlab    -text "$caption(audace,psfimcce_erreurs)"
-
-      grid $block.radl1  $block.radv1 -sticky nsw -columnspan 2 -pady 3
-      grid $block.radl2  $block.radv2 -sticky nsw -columnspan 2 -pady 3
-      grid $block.arret  $block.nberror $block.arretlab -columnspan 1 -sticky nsw -pady 3
-   }
-}
-
-proc psf_switch_ecretage { visuNo frm value } {
-   variable private
-   global caption
-
-   set block $frm.here
-   destroy $block
-   set conf [frame $block -borderwidth 0 -cursor arrow -relief groove]
-   pack $conf -in $frm -anchor c -side top
-
-   if {$private(psfimcce,$visuNo,ecretage)==1} {
-
-      label $block.satl -text "$caption(audace,psfimcce_Saturation) "
-      entry $block.satv -textvariable private(psfimcce,$visuNo,saturation) -relief sunken -width 5
-
-      label $block.thrl -text "$caption(audace,psfimcce_Seuil) "
-      entry $block.thrv -textvariable private(psfimcce,$visuNo,threshold) -relief sunken -width 5
-
-      grid $block.satl  $block.satv -sticky nsw -pady 3
-      grid $block.thrl  $block.thrv -sticky nsw -pady 3
-   }
-}
-
-proc psf_set_methode { visuNo frm value } {
-   variable private
-   global caption
-
-   set private(psfimcce,$visuNo,methode) $value
-
-   set block $frm.config.here
-   destroy $block
-   set conf [frame $block -borderwidth 0 -cursor arrow -relief groove]
-   pack $conf -in $frm.config -anchor c -side top
-
-   set spinlist ""
-   for {set i 1} {$i<$private(psfimcce,$visuNo,radius,max)} {incr i} {lappend spinlist $i}
-
-   switch $value {
-        "photom" {
-                  label $block.radl -text "$caption(audace,psfimcce_Rayon) "
-                  set sav $private(psfimcce,$visuNo,radius)
-                  spinbox $block.radiusc -values $spinlist -from 1 -to $private(psfimcce,$visuNo,radius,max) \
-                      -textvariable private(psfimcce,$visuNo,radius) -width 3 \
-                      -command "refreshPSF_simple $visuNo"
-                  pack  $block.radiusc -side left
-                  set private(psfimcce,$visuNo,radius) $sav
-                  $block.radiusc set $private(psfimcce,$visuNo,radius)
-
-                  LabelEntry $block.r1 -label "$caption(audace,psfimcce_r1) " -textvariable private(psfimcce,$visuNo,photom,r1) \
-                     -relief sunken -width 5
-                  label $block.r1s -text "$caption(audace,psfimcce_xRayon)"
-
-                  LabelEntry $block.r2 -label "$caption(audace,psfimcce_r2) " -textvariable private(psfimcce,$visuNo,photom,r2) \
-                     -relief sunken -width 5
-                  label $block.r2s -text "$caption(audace,psfimcce_xRayon)"
-
-                  LabelEntry $block.r3 -label "$caption(audace,psfimcce_r3) " -textvariable private(psfimcce,$visuNo,photom,r3) \
-                     -relief sunken -width 5
-                  label $block.r3s -text "$caption(audace,psfimcce_xRayon)"
-
-                  grid $block.radl  $block.radiusc -sticky nsw -pady 0
-                  grid $block.r1 $block.r1s -sticky nesw -pady 0 -padx 3 -columnspan 2
-                  grid $block.r2 $block.r2s -sticky nesw -pady 0 -padx 3 -columnspan 2
-                  grid $block.r3 $block.r3s -sticky nesw -pady 0 -padx 3 -columnspan 2
-               }
-
-      "fitgauss2D"
-                 {
-                  label $block.radl -text "$caption(audace,psfimcce_Rayon) "
-                  set sav $private(psfimcce,$visuNo,radius)
-                  spinbox $block.radiusc -values $spinlist -from 1 -to $private(psfimcce,$visuNo,radius,max) \
-                      -textvariable private(psfimcce,$visuNo,radius) -width 3 \
-                      -command "refreshPSF_simple $visuNo"
-                  pack  $block.radiusc -side left
-                  set private(psfimcce,$visuNo,radius) $sav
-                  $block.radiusc set $private(psfimcce,$visuNo,radius)
-
-                  grid $block.radl $block.radiusc -sticky nsw -pady 3
-               }
-      "psfimcce" {
-                  label $block.radl -text "$caption(audace,psfimcce_Rayon) "
-                  set sav $private(psfimcce,$visuNo,radius)
-                  spinbox $block.radiusc -values $spinlist -from 1 -to $private(psfimcce,$visuNo,radius,max) \
-                      -textvariable private(psfimcce,$visuNo,radius) -width 3 \
-                      -command "refreshPSF_simple $visuNo"
-                  pack  $block.radiusc -side left
-                  set private(psfimcce,$visuNo,radius) $sav
-                  $block.radiusc set $private(psfimcce,$visuNo,radius)
-
-                  radiobutton $block.preclow  -text "$caption(audace,psfimcce_Calculrapide)" \
-                     -variable private(psfimcce,$visuNo,precision) -value low
-                  radiobutton $block.prechigh -text "$caption(audace,psfimcce_Hauteprecision)" \
-                     -variable private(psfimcce,$visuNo,precision) -value high
-
-                  grid $block.radl    $block.radiusc  -sticky nsw -pady 3
-                  grid $block.preclow $block.prechigh -sticky nsw -pady 3
-               }
-
-   }
-   refreshPSF_simple $visuNo
-}
-
-proc refreshPSF { visuNo args } {
-   variable private
-   global caption
-
-   #--- Capture de la fenetre d'analyse
-   set private(center,box) [ ::confVisu::getBox $visuNo ]
-   if { $private(center,box) == "" } {
-      return
-   }
-
-   set bufNo [ ::confVisu::getBufNo $visuNo ]
-   set r [ buf$bufNo fitgauss $private(center,box) ]
-   set x [lindex $r 1]
-   set y [lindex $r 5]
-
-   set tt0 [clock clicks -milliseconds]
-   if { $private(psfimcce,$visuNo,globale) == 0 } {
-      mesurePSF $visuNo $x $y
-   } else {
-      globalePSF $visuNo $x $y
-   }
-   set private(psfimcce,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
-
-   return
-}
-
-proc refreshPSF_simple { visuNo } {
-   #--- Capture de la fenetre d'analyse
-   set private(center,box) [ ::confVisu::getBox $visuNo ]
-   if { $private(center,box) == "" } {
-      return
-   }
-
-   set bufNo [ ::confVisu::getBufNo $visuNo ]
-   set r [ buf$bufNo fitgauss $private(center,box) ]
-   set x [lindex $r 1]
-   set y [lindex $r 5]
-
-   set tt0 [clock clicks -milliseconds]
-   mesurePSF $visuNo $x $y
-   set private(psfimcce,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
-
-   return
-}
-
-proc mesurePSF { visuNo x y } {
-   variable private
-
-   $private(psfimcce,$visuNo,hcanvas) delete mesurePSF
-
-   if { $private(psfimcce,$visuNo,globale) == 0 } {
-      set tt0 [clock clicks -milliseconds]
-   }
-   set private(center,box) [ ::confVisu::getBox $visuNo ]
-   if { $private(center,box) == "" } {
-      return
-   }
-
-   set bufNo [ ::confVisu::getBufNo $visuNo ]
-#      foreach key [get_fields_current_psf] {
-#         set private(psfimcce,$visuNo,psf,$key) "-"
-#      }
-
-   switch $private(psfimcce,$visuNo,methode) {
-      "fitgauss" {
-         set r [ buf$bufNo fitgauss $private(center,box) ]
-         set private(psfimcce,$visuNo,psf,xsm)       [format "%.4f" [lindex $r 1] ]
-         set private(psfimcce,$visuNo,psf,ysm)       [format "%.4f" [lindex $r 5] ]
-         set private(psfimcce,$visuNo,psf,err_xsm)   "-"
-         set private(psfimcce,$visuNo,psf,err_ysm)   "-"
-         set private(psfimcce,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
-         set private(psfimcce,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 6] ]
-         set private(psfimcce,$visuNo,psf,fwhm)      [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 2],2 ) + pow ( [lindex $r 6],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,flux)      "-"
-         set private(psfimcce,$visuNo,psf,err_flux)  "-"
-         set private(psfimcce,$visuNo,psf,pixmax)    "-"
-         set private(psfimcce,$visuNo,psf,intensity) [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 0],2 ) + pow ( [lindex $r 4],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,sky)       [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 3],2 ) + pow ( [lindex $r 7],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,err_sky)   "-"
-         set private(psfimcce,$visuNo,psf,snint)     "-"
-         set private(psfimcce,$visuNo,psf,radius)    "-"
-         set private(psfimcce,$visuNo,psf,err_psf)   "-"
-
-      }
-      "photom" {
-         set r [ buf$bufNo fitgauss $private(center,box) ]
-         set xs0 [expr int($x - $private(psfimcce,$visuNo,radius))]
-         set ys0 [expr int($y - $private(psfimcce,$visuNo,radius))]
-         set xs1 [expr int($x + $private(psfimcce,$visuNo,radius))]
-         set ys1 [expr int($y + $private(psfimcce,$visuNo,radius))]
-         set r1  [expr int($private(psfimcce,$visuNo,photom,r1) * $private(psfimcce,$visuNo,radius))]
-         set r2  [expr int($private(psfimcce,$visuNo,photom,r2) * $private(psfimcce,$visuNo,radius))]
-         set r3  [expr int($private(psfimcce,$visuNo,photom,r3) * $private(psfimcce,$visuNo,radius))]
-         set err [ catch { set photom [buf$bufNo photom [list $xs0 $ys0 $xs1 $ys1] square $r1 $r2 $r3 ] } msg ]
-         if {$err} {
-            set private(psfimcce,$visuNo,psf,err_psf)  "Erreur buf photom"
-            return -code -1 "Erreur buf photom : $photom"
-         }
-         set err [ catch { set stat [buf$bufNo stat [list $xs0 $ys0 $xs1 $ys1] ] } msg ]
-         if {$err} {
-            set private(psfimcce,$visuNo,psf,err_psf)  "Erreur buf stat"
-            return -code -1 "Erreur buf stat : $stat"
-         }
-         set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
-
-         set private(psfimcce,$visuNo,psf,xsm)       [format "%.4f" $x ]
-         set private(psfimcce,$visuNo,psf,ysm)       [format "%.4f" $y ]
-         set private(psfimcce,$visuNo,psf,err_xsm)   "-"
-         set private(psfimcce,$visuNo,psf,err_ysm)   "-"
-         set private(psfimcce,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
-         set private(psfimcce,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 6] ]
-         set private(psfimcce,$visuNo,psf,fwhm)      [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 2],2 ) + pow ( [lindex $r 6],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,flux)      [format "%.2f" [lindex $photom 0] ]
-         set private(psfimcce,$visuNo,psf,err_flux)  "-"
-         set private(psfimcce,$visuNo,psf,pixmax)    [format "%.2f" [lindex $stat 2] ]
-         set private(psfimcce,$visuNo,psf,intensity) [format "%.2f" [expr [lindex $stat 2] - [lindex $photom 2] ] ]
-         set private(psfimcce,$visuNo,psf,sky)       [format "%.2f" [lindex $photom 2] ]
-         set private(psfimcce,$visuNo,psf,err_sky)   [format "%.2f" [lindex $photom 3] ]
-         set private(psfimcce,$visuNo,psf,snint)     [format "%.2f" [expr [lindex $photom 0] / sqrt ([lindex $photom 0]+[lindex $photom 4]*[lindex $photom 2] ) ] ]
-         set private(psfimcce,$visuNo,psf,radius)    $private(psfimcce,$visuNo,radius)
-         set private(psfimcce,$visuNo,psf,err_psf)   "-"
-
-      }
-      "fitgauss2D" {
-         set xs0 [expr int($x - $private(psfimcce,$visuNo,radius))]
-         set ys0 [expr int($y - $private(psfimcce,$visuNo,radius))]
-         set xs1 [expr int($x + $private(psfimcce,$visuNo,radius))]
-         set ys1 [expr int($y + $private(psfimcce,$visuNo,radius))]
-         set r [buf$bufNo fitgauss2d [list $xs0 $ys0 $xs1 $ys1]]
-
-         set err [ catch { set stat [buf$bufNo stat [list $xs0 $ys0 $xs1 $ys1] ] } msg ]
-         if {$err} {
-            set private(psfimcce,$visuNo,psf,err_psf)  "Erreur buf stat"
-            return -code -1 "Erreur buf stat : $stat"
-         }
-         set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
-
-         set private(psfimcce,$visuNo,psf,xsm)       [format "%.4f" [lindex $r  1] ]
-         set private(psfimcce,$visuNo,psf,ysm)       [format "%.4f" [lindex $r  5] ]
-         set private(psfimcce,$visuNo,psf,err_xsm)   "-"
-         set private(psfimcce,$visuNo,psf,err_ysm)   "-"
-         set private(psfimcce,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
-         set private(psfimcce,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 6] ]
-         set private(psfimcce,$visuNo,psf,fwhm)      [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 2],2 ) + pow ( [lindex $r 6],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,flux)      [format "%.2f" [expr (([lindex $r 0])+([lindex $r 4])) / 2. * 2 * 3.14159265359 * [lindex $r 2] * [lindex $r 6] / 2.35482 / 2.35482] ]
-         set private(psfimcce,$visuNo,psf,err_flux)  "-"
-         set private(psfimcce,$visuNo,psf,pixmax)    [format "%.2f" [lindex $stat 2] ]
-         set private(psfimcce,$visuNo,psf,intensity) [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 0],2 ) + pow ( [lindex $r 4],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,sky)       [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 3],2 ) + pow ( [lindex $r 7],2 ) ) / 2.0 ) ] ]
-         set private(psfimcce,$visuNo,psf,err_sky)   "-"
-         set private(psfimcce,$visuNo,psf,snint)     [format "%.2f" [expr $private(psfimcce,$visuNo,psf,flux) / sqrt ($private(psfimcce,$visuNo,psf,flux)+$npix*$private(psfimcce,$visuNo,psf,sky) ) ] ]
-         set private(psfimcce,$visuNo,psf,radius)    $private(psfimcce,$visuNo,radius)
-         set private(psfimcce,$visuNo,psf,err_psf)   "-"
-
-      }
-      "psfimcce" {
-         set xs0 [expr int($x - $private(psfimcce,$visuNo,radius))]
-         set ys0 [expr int($y - $private(psfimcce,$visuNo,radius))]
-         set xs1 [expr int($x + $private(psfimcce,$visuNo,radius))]
-         set ys1 [expr int($y + $private(psfimcce,$visuNo,radius))]
-         set r [buf$bufNo psfimcce [list $xs0 $ys0 $xs1 $ys1]]
-         set private(psfimcce,$visuNo,psf,xsm)       [format "%.4f" [lindex $r  0] ]
-         set private(psfimcce,$visuNo,psf,ysm)       [format "%.4f" [lindex $r  1] ]
-         set private(psfimcce,$visuNo,psf,err_xsm)   "-"
-         set private(psfimcce,$visuNo,psf,err_ysm)   "-"
-         set private(psfimcce,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r  4] ]
-         set private(psfimcce,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r  5] ]
-         set private(psfimcce,$visuNo,psf,fwhm)      [format "%.2f" [lindex $r  6] ]
-         set private(psfimcce,$visuNo,psf,flux)      [format "%.1f" [lindex $r  7] ]
-         set private(psfimcce,$visuNo,psf,err_flux)  "-"
-         set private(psfimcce,$visuNo,psf,pixmax)    [format "%d" [expr int([lindex $r  9])] ]
-         set private(psfimcce,$visuNo,psf,intensity) [format "%.2f" [lindex $r 10] ]
-         set private(psfimcce,$visuNo,psf,sky)       [format "%.2f" [lindex $r 11] ]
-         set private(psfimcce,$visuNo,psf,err_sky)   "-"
-         set private(psfimcce,$visuNo,psf,snint)     [format "%.2f" [lindex $r 13] ]
-         set private(psfimcce,$visuNo,psf,radius)    [format "%d" [lindex $r 14] ]
-         if {[lindex $r 15] ==0} {
-            set private(psfimcce,$visuNo,psf,err_psf)   "-"
-         } else {
-            set private(psfimcce,$visuNo,psf,err_psf)   [format "%s" [lindex $r 15] ]
-         }
-      }
-   }
-   if { $private(psfimcce,$visuNo,ecretage) == 1 } {
-      set rdiff [expr sqrt((($private(psfimcce,$visuNo,psf,xsm)-$x)**2 + ($private(psfimcce,$visuNo,psf,ysm)-$y)**2)) / 2.0]
-
-      if {$rdiff>$private(psfimcce,$visuNo,threshold)} {
-         set private(psfimcce,$visuNo,psf,err_psf) "Too Far"
-      }
-
-      if {$private(psfimcce,$visuNo,psf,pixmax)>$private(psfimcce,$visuNo,saturation)} {
-         set private(psfimcce,$visuNo,psf,err_psf) "Saturated"
-      }
-   }
-   if { $private(psfimcce,$visuNo,globale) == 0 } {
-      set private(psfimcce,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
-   }
-   if { $private(psfimcce,$visuNo,marks,cercle) == 1 } {
-      psf_display_circle $visuNo $private(psfimcce,$visuNo,psf,xsm) \
-                        $private(psfimcce,$visuNo,psf,ysm) $private(psfimcce,$visuNo,radius) \
-                        green mesurePSF
-   }
-}
-
-proc globalePSF { visuNo x y } {
-   variable private
-   variable private_graph
-   global caption
-
-   $private(psfimcce,$visuNo,hcanvas) delete globalePSF
-
-   array unset private_graph
-   set nberror 0
-   for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-      set private(psfimcce,$visuNo,radius) $radius
-      mesurePSF $visuNo $x $y
-      if {$private(psfimcce,$visuNo,psf,err_psf)=="-"} {
-         set nberror 0
-         set x $private(psfimcce,$visuNo,psf,xsm)
-         set y $private(psfimcce,$visuNo,psf,ysm)
-         foreach key [get_fields_current_psf] {
-            set private_graph($radius,$key) $private(psfimcce,$visuNo,psf,$key)
-         }
-      } else {
-         incr nberror
-      }
-      update
-      if {$private(psfimcce,$visuNo,globale,arret) && $nberror>=$private(psfimcce,$visuNo,globale,nberror)} {
-         ::console::affiche_erreur "$caption(audace,psfimcce_message1) $nberror $caption(audace,psfimcce_message2)\n"
-         break
-      }
-   }
-
-   # on cherche les meilleurs rayons
-   # par critere sur le fond du ciel minimal
-   set sky ""
-   set flux ""
-   for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-      if {[info exists private_graph($radius,sky)]} {
-         lappend sky [list $radius $private_graph($radius,sky)]
-         lappend flux [list $radius $private_graph($radius,flux)]
-      }
-   }
-   set sky [lsort -index 1 -real -increasing $sky]
-   set n [expr [llength $sky]/2]
-   set zsky [lrange $sky 0 $n]
-   set data ""
-   foreach v $zsky {
-      lappend data [lindex $v 1]
-   }
-   set err [ catch {
-      set mean [::math::statistics::mean $data]
-      set stdev [::math::statistics::stdev $data]
-   } msg ]
-
-   if { $err } {
-      ::console::affiche_erreur "$caption(audace,psfimcce_message3)\n"
-      return
-   }
-
-   set limit [expr $mean + 3*$stdev]
-
-   set list_radius ""
-   foreach v $sky {
-      if {[lindex $v 1]<$limit} {
-         lappend list_radius [lindex $v 0]
-      }
-   }
-
-   # on calcule les moyennes et erreurs
-   foreach key [get_fields_current_psf] {
-      if {$key in [list "err_xsm" "err_ysm" "err_flux" "err_sky" "radius"]} {continue}
-      set data ""
-      foreach radius $list_radius {
-         if {[info exists private_graph($radius,$key)]} {
-            lappend data $private_graph($radius,$key)
-         }
-      }
-      if {$key == "err_psf"} {
-         if {[llength $data]>0} {
-            set private(psfimcce,$visuNo,psf,err_psf) "-"
-         } else {
-            set private(psfimcce,$visuNo,psf,err_psf) "Globale no data"
-         }
-         continue
-      }
-
-      set err [ catch {
-         set mean [::math::statistics::mean $data]
-         set stdev [::math::statistics::stdev $data]
-      } msg ]
-
-      if { $err } {
-         #::console::affiche_erreur "determination de $key impossible\n"
-         set private(psfimcce,$visuNo,psf,$key) "-"
-         continue
-      }
-
-      switch $key {
-         "xsm" {
-            set private(psfimcce,$visuNo,psf,xsm)      [format "%.4f" $mean]
-            set private(psfimcce,$visuNo,psf,err_xsm)  [format "%.4f" [expr 3.0 * $stdev] ]
-         }
-         "ysm" {
-            set private(psfimcce,$visuNo,psf,ysm)      [format "%.4f" $mean]
-            set private(psfimcce,$visuNo,psf,err_ysm)  [format "%.4f" [expr 3.0 * $stdev] ]
-         }
-         "flux" {
-            set private(psfimcce,$visuNo,psf,flux)     [format "%.2f" $mean]
-            set private(psfimcce,$visuNo,psf,err_flux) [format "%.2f" [expr 3.0 * $stdev] ]
-         }
-         "sky" {
-            set private(psfimcce,$visuNo,psf,sky)      [format "%.2f" $mean]
-            set private(psfimcce,$visuNo,psf,err_sky)  [format "%.2f" [expr 3.0 * $stdev] ]
-         }
-         "fwhmx" - "fwhmy" - "fwhm" - "intensity" - "snint"  {
-            set private(psfimcce,$visuNo,psf,$key)     [format "%.2f" $mean]
-         }
-         "pixmax" {
-            set private(psfimcce,$visuNo,psf,$key)     [format "%d" [expr int($mean)] ]
-         }
-      }
-   }
-
-   # calcul du meilleur radius
-   set flux [lsort -index 0  -integer -increasing $flux]
-   foreach v $flux {
-      if {[lindex $v 1] > $private(psfimcce,$visuNo,psf,flux)} {
-         set private(psfimcce,$visuNo,psf,radius) [lindex $v 0]
-         break
-      }
-   }
-
-   if { $private(psfimcce,$visuNo,marks,cercle) == 1 } {
-
-      $private(psfimcce,$visuNo,hcanvas) delete mesurePSF
-
-      set list_radius [lsort -integer -increasing $list_radius]
-      set radius [lindex $list_radius 0]
-      if {$radius == $private(psfimcce,$visuNo,globale,min)} { incr radius  }
-      psf_display_circle $visuNo $private(psfimcce,$visuNo,psf,xsm) \
-                        $private(psfimcce,$visuNo,psf,ysm) $radius \
-                        yellow globalePSF
-      set radius [lindex $list_radius end]
-      if {$radius == $private(psfimcce,$visuNo,globale,max)} { incr radius -1 }
-      psf_display_circle $visuNo $private(psfimcce,$visuNo,psf,xsm) \
-                        $private(psfimcce,$visuNo,psf,ysm) $radius \
-                        yellow globalePSF
-      psf_display_circle $visuNo $private(psfimcce,$visuNo,psf,xsm) \
-                        $private(psfimcce,$visuNo,psf,ysm) $private(psfimcce,$visuNo,psf,radius) \
-                        green globalePSF
-      psf_display_circle $visuNo $private(psfimcce,$visuNo,psf,xsm) \
-                        $private(psfimcce,$visuNo,psf,ysm) $private(psfimcce,$visuNo,globale,min) \
-                        blue globalePSF
-      psf_display_circle $visuNo $private(psfimcce,$visuNo,psf,xsm) \
-                        $private(psfimcce,$visuNo,psf,ysm) $private(psfimcce,$visuNo,globale,max) \
-                        blue globalePSF
-   }
-}
-
-proc psf_graph { visuNo key } {
-   variable private
-   variable private_graph
-
-   set x ""
-   set y ""
-   for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-      if {[info exists private_graph($radius,$key)]} {
-         if {$private_graph($radius,$key)!="-"} {
-            lappend x $radius
-            lappend y $private_graph($radius,$key)
-         }
-      }
-   }
-
-   ::plotxy::clf 1
-   ::plotxy::figure 1
-   ::plotxy::hold on
-   ::plotxy::position {0 0 600 400}
-   ::plotxy::title "$key VS radius"
-   ::plotxy::xlabel radius
-   ::plotxy::ylabel $key
-
-   if {[llength $y] == 0} { return }
-
-   set h [::plotxy::plot $x $y .]
-   plotxy::sethandler $h [list -color "#18ad86" -linewidth 1]
-
-   ::console::affiche_erreur "y $private(psfimcce,$visuNo,psf,$key) $private(psfimcce,$visuNo,psf,$key)\n"
-   # Affichage de la valeur obtenue sous forme d'une ligne horizontale
-   set x0 [list 0 $private(psfimcce,$visuNo,globale,max)]
-   set y0 [list $private(psfimcce,$visuNo,psf,$key) $private(psfimcce,$visuNo,psf,$key)]
-   set h [::plotxy::plot $x0 $y0 .]
-   plotxy::sethandler $h [list -color black -linewidth 2]
-
-   # Affichage des barres d erreurs
-   if {$key in [list "xsm" "ysm" "flux" "sky"]} {
-      if { $private(psfimcce,$visuNo,psf,err_$key) == "-" } { return }
-      ::console::affiche_erreur "$private(psfimcce,$visuNo,psf,$key) + $private(psfimcce,$visuNo,psf,err_$key)\n"
-
-      set yl [expr $private(psfimcce,$visuNo,psf,$key) + $private(psfimcce,$visuNo,psf,err_$key)]
-      set x0 [list 0 $private(psfimcce,$visuNo,globale,max)]
-      set y0 [list $yl $yl]
-      set h [::plotxy::plot $x0 $y0 .]
-      plotxy::sethandler $h [list -color "#808080" -linewidth 2]
-
-      set yl [expr $private(psfimcce,$visuNo,psf,$key) - $private(psfimcce,$visuNo,psf,err_$key)]
-      set x0 [list 0 $private(psfimcce,$visuNo,globale,max)]
-      set y0 [list $yl $yl]
-      set h [::plotxy::plot $x0 $y0 .]
-      plotxy::sethandler $h [list -color "#808080" -linewidth 2]
-   }
-}
-
-proc psf_compar { visuNo frm } {
-   variable private
-   variable graph_compar
-
-   array unset graph_compar
-
-   set tt0 [clock clicks -milliseconds]
-
-   #--- Capture de la fenetre d'analyse
-   set private(center,box) [ ::confVisu::getBox $visuNo ]
-   if { $private(center,box) == "" } {
-      return
-   }
-
-   set bufNo [ ::confVisu::getBufNo $visuNo ]
-   set r [ buf$bufNo fitgauss $private(center,box) ]
-
-   set x [lindex $r 1]
-   set y [lindex $r 5]
-
-   if { $private(psfimcce,$visuNo,compar,photom) == 1} {
-      set private(psfimcce,$visuNo,methode) "photom"
-      for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-         set private(psfimcce,$visuNo,radius) $radius
-         mesurePSF $visuNo $x $y
-         if {$private(psfimcce,$visuNo,psf,err_psf)=="-"} {
-            set x $private(psfimcce,$visuNo,psf,xsm)
-            set y $private(psfimcce,$visuNo,psf,ysm)
-            foreach key [get_fields_current_psf] {
-               set graph_compar(psfimcce,compar,photom,$radius,$key) $private(psfimcce,$visuNo,psf,$key)
-            }
-         }
-         update
-      }
-   }
-
-   set x [lindex $r 1]
-   set y [lindex $r 5]
-
-   if { $private(psfimcce,$visuNo,compar,fitgauss2D) == 1} {
-      set private(psfimcce,$visuNo,methode) "fitgauss2D"
-      for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-         set private(psfimcce,$visuNo,radius) $radius
-         mesurePSF $visuNo $x $y
-         if {$private(psfimcce,$visuNo,psf,err_psf)=="-"} {
-            set x $private(psfimcce,$visuNo,psf,xsm)
-            set y $private(psfimcce,$visuNo,psf,ysm)
-            foreach key [get_fields_current_psf] {
-               set graph_compar(psfimcce,compar,fitgauss2D,$radius,$key) $private(psfimcce,$visuNo,psf,$key)
-            }
-         }
-         update
-      }
-   }
-
-   set x [lindex $r 1]
-   set y [lindex $r 5]
-
-   if { $private(psfimcce,$visuNo,compar,psfimcce) == 1} {
-      set private(psfimcce,$visuNo,methode) "psfimcce"
-      for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-         set private(psfimcce,$visuNo,radius) $radius
-         mesurePSF $visuNo $x $y
-         if {$private(psfimcce,$visuNo,psf,err_psf)=="-"} {
-            set x $private(psfimcce,$visuNo,psf,xsm)
-            set y $private(psfimcce,$visuNo,psf,ysm)
-            foreach key [get_fields_current_psf] {
-               set graph_compar(psfimcce,compar,psfimcce,$radius,$key) $private(psfimcce,$visuNo,psf,$key)
-            }
-         }
-         update
-      }
-   }
-
-   set private(psfimcce,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
-}
-
-proc psf_graph_compar { visuNo key } {
-   variable private
-   variable graph_compar
-
-   ::plotxy::clf 1
-   ::plotxy::figure 1
-   ::plotxy::hold on
-   ::plotxy::position {0 0 600 400}
-   ::plotxy::title "$key VS radius (green = photom, red = fitgauss2D, black = psfimcce)"
-   ::plotxy::xlabel radius
-   ::plotxy::ylabel $key
-
-   if { $private(psfimcce,$visuNo,compar,photom) == 1} {
-      set xphotom ""
-      set yphotom ""
-      for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-         if {[info exists graph_compar(psfimcce,compar,photom,$radius,$key)]} {
-            if {$graph_compar(psfimcce,compar,photom,$radius,$key)!="-"} {
-               lappend xphotom $radius
-               lappend yphotom $graph_compar(psfimcce,compar,photom,$radius,$key)
-            }
-         }
-      }
-      set h1 [::plotxy::plot $xphotom $yphotom o]
-      plotxy::sethandler $h1 [list -color "#18ad86" -linewidth 1]
-   }
-
-   if { $private(psfimcce,$visuNo,compar,fitgauss2D) == 1} {
-      set xfitgauss2D ""
-      set yfitgauss2D ""
-      for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-         if {[info exists graph_compar(psfimcce,compar,fitgauss2D,$radius,$key)]} {
-            if {$graph_compar(psfimcce,compar,fitgauss2D,$radius,$key)!="-"} {
-               lappend xfitgauss2D $radius
-               lappend yfitgauss2D $graph_compar(psfimcce,compar,fitgauss2D,$radius,$key)
-            }
-         }
-      }
-      set h2 [::plotxy::plot $xfitgauss2D $yfitgauss2D +]
-      plotxy::sethandler $h2 [list -color red -linewidth 1]
-   }
-
-   if { $private(psfimcce,$visuNo,compar,psfimcce) == 1} {
-      set xpsfimcce ""
-      set ypsfimcce ""
-      for {set radius $private(psfimcce,$visuNo,globale,min)} {$radius <= $private(psfimcce,$visuNo,globale,max)} {incr radius} {
-         if {[info exists graph_compar(psfimcce,compar,psfimcce,$radius,$key)]} {
-            if {$graph_compar(psfimcce,compar,psfimcce,$radius,$key)!="-"} {
-               lappend xpsfimcce $radius
-               lappend ypsfimcce $graph_compar(psfimcce,compar,psfimcce,$radius,$key)
-            }
-         }
-      }
-      set h3 [::plotxy::plot $xpsfimcce $ypsfimcce x]
-      plotxy::sethandler $h3 [list -color black -linewidth 1]
-   }
-}
-
-proc psf_display_circle { visuNo xpic ypic radius color tag } {
-   variable private
-
-   if {$xpic=="-" || $ypic=="-" || $radius=="-"} {return}
-
-   set xi [expr $xpic - $radius]
-   set yi [expr $ypic - $radius]
-   set can_xy [::confVisu::picture2Canvas $visuNo [list $xi $yi]]
-   set cxi [lindex $can_xy 0]
-   set cyi [lindex $can_xy 1]
-
-   set xs [expr $xpic + $radius]
-   set ys [expr $ypic + $radius]
-   set can_xy [::confVisu::picture2Canvas $visuNo [list $xs $ys]]
-   set cxs [lindex $can_xy 0]
-   set cys [lindex $can_xy 1]
-
-   $private(psfimcce,$visuNo,hcanvas) create oval $cxi $cyi $cxs $cys \
-              -fill {} -outline $color -width 2 -activewidth 3 \
-              -tag $tag
-}
-
-proc psf_clean_mark { visuNo } {
-   variable private
-
-   $private(psfimcce,$visuNo,hcanvas) delete mesurePSF
-   $private(psfimcce,$visuNo,hcanvas) delete globalePSF
-}
-
-proc psf_help { visuNo } {
-   global help
-
-   ::audace::showHelpItem $help(dir,analyse) "1110psf.htm"
-}
-
-proc  psf_fermer { visuNo frm } {
-   variable private
-   global conf
-
-   set conf(psfimcce,$visuNo,radius)            $private(psfimcce,$visuNo,radius)
-   set conf(psfimcce,$visuNo,radius,min)        $private(psfimcce,$visuNo,radius,min)
-   set conf(psfimcce,$visuNo,radius,max)        $private(psfimcce,$visuNo,radius,max)
-   set conf(psfimcce,$visuNo,globale,min)       $private(psfimcce,$visuNo,globale,min)
-   set conf(psfimcce,$visuNo,globale,max)       $private(psfimcce,$visuNo,globale,max)
-   set conf(psfimcce,$visuNo,saturation)        $private(psfimcce,$visuNo,saturation)
-   set conf(psfimcce,$visuNo,threshold)         $private(psfimcce,$visuNo,threshold)
-   set conf(psfimcce,$visuNo,globale)           $private(psfimcce,$visuNo,globale)
-   set conf(psfimcce,$visuNo,ecretage)          $private(psfimcce,$visuNo,ecretage)
-   set conf(psfimcce,$visuNo,methode)           $private(psfimcce,$visuNo,methode)
-   set conf(psfimcce,$visuNo,precision)         $private(psfimcce,$visuNo,precision)
-   set conf(psfimcce,$visuNo,photom,r1)         $private(psfimcce,$visuNo,photom,r1)
-   set conf(psfimcce,$visuNo,photom,r2)         $private(psfimcce,$visuNo,photom,r2)
-   set conf(psfimcce,$visuNo,photom,r3)         $private(psfimcce,$visuNo,photom,r3)
-   set conf(psfimcce,$visuNo,marks,cercle)      $private(psfimcce,$visuNo,marks,cercle)
-   set conf(psfimcce,$visuNo,globale,arret)     $private(psfimcce,$visuNo,globale,arret)
-   set conf(psfimcce,$visuNo,globale,nberror)   $private(psfimcce,$visuNo,globale,nberror)
-
-   ferme_fenetre_analyse $visuNo $frm psfimcce
-}
-
-proc  psf_init { visuNo } {
-   variable private
-   global conf
-
-   if { ! [ info exists conf(psfimcce,$visuNo,position)        ] } { set conf(psfimcce,$visuNo,position)             "+350+75" }
-   if { ! [ info exists conf(psfimcce,$visuNo,modeRefresh)     ] } { set conf(psfimcce,$visuNo,modeRefresh)          "0" }
-
-   if { ! [ info exists conf(psfimcce,$visuNo,radius)          ] } { set private(psfimcce,$visuNo,radius)            15         } else { set private(psfimcce,$visuNo,radius)          $conf(psfimcce,$visuNo,radius)          }
-   if { ! [ info exists conf(psfimcce,$visuNo,radius,min)      ] } { set private(psfimcce,$visuNo,radius,min)        1          } else { set private(psfimcce,$visuNo,radius,min)      $conf(psfimcce,$visuNo,radius,min)      }
-   if { ! [ info exists conf(psfimcce,$visuNo,radius,max)      ] } { set private(psfimcce,$visuNo,radius,max)        300        } else { set private(psfimcce,$visuNo,radius,max)      $conf(psfimcce,$visuNo,radius,max)      }
-   if { ! [ info exists conf(psfimcce,$visuNo,globale,min)     ] } { set private(psfimcce,$visuNo,globale,min)       5          } else { set private(psfimcce,$visuNo,globale,min)     $conf(psfimcce,$visuNo,globale,min)     }
-   if { ! [ info exists conf(psfimcce,$visuNo,globale,max)     ] } { set private(psfimcce,$visuNo,globale,max)       40         } else { set private(psfimcce,$visuNo,globale,max)     $conf(psfimcce,$visuNo,globale,max)     }
-   if { ! [ info exists conf(psfimcce,$visuNo,saturation)      ] } { set private(psfimcce,$visuNo,saturation)        65000      } else { set private(psfimcce,$visuNo,saturation)      $conf(psfimcce,$visuNo,saturation)      }
-   if { ! [ info exists conf(psfimcce,$visuNo,threshold)       ] } { set private(psfimcce,$visuNo,threshold)         3          } else { set private(psfimcce,$visuNo,threshold)       $conf(psfimcce,$visuNo,threshold)       }
-   if { ! [ info exists conf(psfimcce,$visuNo,globale)         ] } { set private(psfimcce,$visuNo,globale)           0          } else { set private(psfimcce,$visuNo,globale)         $conf(psfimcce,$visuNo,globale)         }
-   if { ! [ info exists conf(psfimcce,$visuNo,ecretage)        ] } { set private(psfimcce,$visuNo,ecretage)          0          } else { set private(psfimcce,$visuNo,ecretage)        $conf(psfimcce,$visuNo,ecretage)        }
-   if { ! [ info exists conf(psfimcce,$visuNo,methode)         ] } { set private(psfimcce,$visuNo,methode)           "fitgauss" } else { set private(psfimcce,$visuNo,methode)         $conf(psfimcce,$visuNo,methode)         }
-   if { ! [ info exists conf(psfimcce,$visuNo,precision)       ] } { set private(psfimcce,$visuNo,precision)         high       } else { set private(psfimcce,$visuNo,precision)       $conf(psfimcce,$visuNo,precision)       }
-   if { ! [ info exists conf(psfimcce,$visuNo,photom,r1)       ] } { set private(psfimcce,$visuNo,photom,r1)         1          } else { set private(psfimcce,$visuNo,photom,r1)       $conf(psfimcce,$visuNo,photom,r1)       }
-   if { ! [ info exists conf(psfimcce,$visuNo,photom,r2)       ] } { set private(psfimcce,$visuNo,photom,r2)         2          } else { set private(psfimcce,$visuNo,photom,r2)       $conf(psfimcce,$visuNo,photom,r2)       }
-   if { ! [ info exists conf(psfimcce,$visuNo,photom,r3)       ] } { set private(psfimcce,$visuNo,photom,r3)         2.6        } else { set private(psfimcce,$visuNo,photom,r3)       $conf(psfimcce,$visuNo,photom,r3)       }
-   if { ! [ info exists conf(psfimcce,$visuNo,marks,cercle)    ] } { set private(psfimcce,$visuNo,marks,cercle)      1          } else { set private(psfimcce,$visuNo,marks,cercle)    $conf(psfimcce,$visuNo,marks,cercle)    }
-   if { ! [ info exists conf(psfimcce,$visuNo,globale,arret)   ] } { set private(psfimcce,$visuNo,globale,arret)     1          } else { set private(psfimcce,$visuNo,globale,arret)   $conf(psfimcce,$visuNo,globale,arret)   }
-   if { ! [ info exists conf(psfimcce,$visuNo,globale,nberror) ] } { set private(psfimcce,$visuNo,globale,nberror)   3          } else { set private(psfimcce,$visuNo,globale,nberror) $conf(psfimcce,$visuNo,globale,nberror) }
-
-   set private(psfimcce,$visuNo,hcanvas) [::confVisu::getCanvas $visuNo]
-   foreach key [get_fields_current_psf] {
-      set private(psfimcce,$visuNo,psf,$key) "-"
-   }
-   set private(psfimcce,$visuNo,duree) ""
-
-}
-
-###################################################################################
 # Procedures annexes des procedures ci-dessus
 ###################################################################################
 
@@ -2010,3 +909,1438 @@ proc ferme_fenetre_analyse { visuNo frm nom_conf } {
 
 ###################################################################################
 
+
+###################################################################################
+#
+# psf_toolbox visuNo
+# Ajuste une psf dans une fenetre d'une image
+#
+
+proc psf_toolbox { visuNo } {
+
+   global private
+   global caption
+   global conf
+
+   #---
+   set base [ ::confVisu::getBase $visuNo ]
+
+   #---
+   set private(psf_toolbox,$visuNo,frm) "$base.psfimcce$visuNo"
+   set frm $private(psf_toolbox,$visuNo,frm)
+   if [ winfo exists $frm ] {
+      ferme_fenetre_analyse $visuNo $frm psfimcce
+   }
+
+   #--- Capture de la fenetre d'analyse
+   set private(psf_toolbox,$visuNo,box) [ ::confVisu::getBox $visuNo ]
+   if { $private(psf_toolbox,$visuNo,box) == "" } {
+      return
+   }
+
+   #--- Initialisation de la position de la fenetre
+   psf_init $visuNo
+
+   #--- On se trouve dans une GUI
+   set private(psf_toolbox,$visuNo,gui) 1
+
+   #--- Creation de la fenetre
+   toplevel $frm
+   wm transient $frm $base
+   wm resizable $frm 0 0
+   wm title $frm "$caption(audace,menu,psf_toolbox) Visu$visuNo"
+   wm geometry $frm $conf(psf_toolbox,$visuNo,position)
+   wm protocol $frm WM_DELETE_WINDOW "psf_fermer $visuNo $frm"
+
+
+   set onglets [frame $frm.onglets]
+   pack $onglets -in $frm
+
+         pack [ttk::notebook $onglets.nb] -expand yes -fill both 
+#          set f1 [frame $onglets.nb.f1]
+         set f_res  [frame $onglets.nb.f_res]
+         set f_img  [frame $onglets.nb.f_img]
+         set f_mark [frame $onglets.nb.f_mark]
+         set f_comp [frame $onglets.nb.f_comp]
+
+#         $onglets.nb add $f1 -text "Methode"
+         $onglets.nb add $f_res  -text "$caption(audace,psf_toolbox_Mesures)"
+         $onglets.nb add $f_img  -text "$caption(audace,psf_toolbox_Image)"
+         $onglets.nb add $f_mark -text "$caption(audace,psf_toolbox_Marques)"
+         $onglets.nb add $f_comp -text "$caption(audace,psf_toolbox_Comparaison)"
+
+          $onglets.nb select $f_res
+         ttk::notebook::enableTraversal $onglets.nb
+
+         # onglets : methodes
+
+         #set methodes [frame $f1.methodes]
+         #pack $methodes -in $f1 -padx 5 -pady 5
+              
+         #     psf_gui_methodes $visuNo $methodes
+
+         # onglets : mesures
+
+         set results [frame $f_res.results]
+         pack $results -in $f_res
+
+              set block [frame $results.params]
+              pack $block -in $results
+
+                  set values [ frame $block.valuesleft]
+                  pack $values -in $block -anchor n -side left
+                          
+                         foreach key [get_fields_current_psf_left]  {
+
+                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 0 -pady 0
+
+                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="err_psf"} {
+                                      set active disabled
+                                   } else {
+                                      set active active
+                                   }
+                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
+                                      -command "psf_graph $visuNo $key" 
+                                   label $value.lab1 -text " = " 
+                                   label $value.lab2 -textvariable private(psf_toolbox,$visuNo,psf,$key) -width 8
+                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
+                         }
+
+                  set values [ frame $block.valuesright]
+                  pack $values -in $block -anchor n -side right
+
+                         foreach key [get_fields_current_psf_right] {
+
+                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                              pack $value -in $values -anchor n -side top -padx 0 -pady 0
+
+                                   if {$key=="err_flux"||$key=="radius"||$key=="err_sky"||$key=="pixmax"} {
+                                      set active disabled
+                                   } else {
+                                      set active active
+                                   }
+                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
+                                      -command "psf_graph $visuNo $key" 
+                                   label $value.lab1 -text " = " 
+                                   label $value.lab2 -textvariable private(psf_toolbox,$visuNo,psf,$key)  -width 8
+                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
+                         }
+
+         # onglets : images
+
+         set images [frame $f_img.images]
+         pack $images -in $f_img -expand yes -fill both
+
+              set block1 [frame $images.block1 -borderwidth 2 -relief groove]
+              set block2 [frame $images.block2 -borderwidth 2 -relief groove]
+              set block3 [frame $images.block3 -borderwidth 2 -relief groove]
+              set block4 [frame $images.block4 -borderwidth 2 -relief groove]
+
+              grid $block1 -in $images -row 0 -column 0 -sticky news
+              grid $block2 -in $images -row 0 -column 1 -sticky news
+              grid $block3 -in $images -row 1 -column 0 -sticky news
+              grid $block4 -in $images -row 1 -column 1 -sticky news
+
+              grid rowconfigure $images {0 1} -weight 1
+              grid columnconfigure $images 0 -weight 1
+              grid columnconfigure $images 1 -weight 1
+
+              label $block1.lab -text "$caption(audace,psf_toolbox_imagenondispo)" -justify center
+              grid $block1.lab -in $block1 -row 0 -column 0 -sticky es -pady 10 -padx 10
+
+              label $block2.lab -text "$caption(audace,psf_toolbox_imagenondispo)"  -justify center -pady 10 -padx 10
+              grid $block2.lab -in $block2 -row 0 -column 0 -sticky news
+
+              label $block3.lab -text "$caption(audace,psf_toolbox_imagenondispo)"  -justify center -pady 10 -padx 10
+              grid $block3.lab -in $block3 -row 0 -column 0 -sticky news
+
+         # onglets : Marques
+
+         set marks [frame $f_mark.marks]
+         pack $marks -in $f_mark -expand yes -fill both
+
+              set block [frame $marks.marks]
+              pack $block -in $marks
+
+                  checkbutton $block.voir -text "$caption(audace,psf_toolbox_Voirlescercles)" \
+                                    -variable private(psf_toolbox,$visuNo,marks,cercle)
+                  button $block.delete -text "$caption(audace,psf_toolbox_Nettoyerlesmarques)" -relief "raised"  -height 1\
+                                    -command "psf_clean_mark $visuNo" 
+                  grid $block.voir     -sticky nsw -pady 8
+                  grid $block.delete   -sticky nsw -pady 3
+
+         # onglets : Comparaison
+
+         set compar [frame $f_comp.compar]
+         pack $compar -in $f_comp -expand yes -fill both
+
+              set block [frame $compar.methodes]
+              pack $block -in $compar
+
+                  label       $block.lab        -text "$caption(audace,psf_toolbox_Compdesmethodes)"  -justify left 
+                  checkbutton $block.photom     -text "photom" -variable private(psf_toolbox,$visuNo,compar,photom)
+                  checkbutton $block.fitgauss2D -text "fitgauss2D" -variable private(psf_toolbox,$visuNo,compar,fitgauss2D)
+                  checkbutton $block.psfimcce   -text "psfimcce" -variable private(psf_toolbox,$visuNo,compar,psfimcce)
+
+                  button $block.go -text "$caption(audace,psf_toolbox_Go)" -relief "raised" -width 8 -height 1\
+                                    -command "psf_compar $visuNo $compar" 
+
+                  grid $block.lab        -sticky nsw -pady 8
+                  grid $block.photom     -sticky nsw -pady 3
+                  grid $block.fitgauss2D -sticky nsw -pady 3
+                  grid $block.psfimcce   -sticky nsw -pady 3
+                  grid $block.go         -sticky nsw -pady 10
+
+              set block [frame $compar.graph]
+              pack $block -in $compar
+
+                  button $block.xsm -state normal -text "xsm" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo xsm" 
+                  button $block.ysm -state normal -text "ysm" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo ysm" 
+                  button $block.fwhmx -state normal -text "fwhmx" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo fwhmx" 
+                  button $block.fwhmy -state normal -text "fwhmy" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo fwhmy" 
+                  button $block.fwhm -state normal -text "fwhm" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo fwhm" 
+                  button $block.flux -state normal -text "flux" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo flux" 
+                  button $block.sky -state normal -text "sky" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo sky" 
+                  button $block.snint -state normal -text "snint" -relief "raised" -width 8 -height 1\
+                                    -command "psf_graph_compar $visuNo snint" 
+                          
+                  grid $block.xsm $block.fwhmx  $block.fwhm $block.sky   -sticky nsw -pady 3
+                  grid $block.ysm $block.fwhmy  $block.flux $block.snint -sticky nsw -pady 3
+
+
+   #--- Creation d'une frame
+   frame $frm.config -borderwidth 2 -relief raised
+   pack $frm.config -side top -fill both -expand 1
+
+         psf_gui_methodes $visuNo $frm.config
+
+   #--- Creation d'une frame
+   frame $frm.temps -borderwidth 2 -relief raised
+   pack $frm.temps -side top -fill both -expand 1 -anchor c
+
+         label $frm.temps.lab -text "$caption(audace,psf_toolbox_Duree)"  -justify center -pady 1 -padx 1
+         label $frm.temps.val -textvariable private(psf_toolbox,$visuNo,duree) -justify center -pady 1 -padx 1
+         label $frm.temps.sec -text "$caption(audace,psf_toolbox_sec)"  -justify center -pady 1 -padx 1
+
+         grid $frm.temps.lab $frm.temps.val $frm.temps.sec -sticky news
+
+   #--- Creation d'une frame
+   frame $frm.frame2 -borderwidth 2 -relief raised
+
+      #--- Cree le checkbutton pour choisir le mode de rafraichissement
+      checkbutton $frm.frame2.modeRefresh -text "$caption(audace,refreshAuto)" \
+         -variable conf(psf_toolbox,$visuNo,modeRefresh) -command "::confFitgauss $visuNo"\
+         -state disabled
+
+      button $frm.frame2.buthelp -text "$caption(audace,psf_toolbox_aide)" \
+         -command "psf_help $visuNo" -width 10
+
+      #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
+      button $frm.frame2.butRefresh -text "$caption(audace,refreshManuel)" \
+         -command "::refreshPSF $visuNo"
+
+      #--- Cree le bouton pour rafraichir l'ajustement de la gaussienne
+      button $frm.frame2.butFermer -text "$caption(audace,psf_toolbox_fermer)" \
+         -command "psf_fermer $visuNo $frm" -width 10
+
+      grid $frm.frame2.modeRefresh -columnspan 3 -sticky news
+      grid $frm.frame2.buthelp $frm.frame2.butRefresh $frm.frame2.butFermer -sticky news
+
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+
+
+
+   #--- Rafraichit les valeurs
+   #::refreshPSF $visuNo
+   ::refreshPSF_simple $visuNo
+
+   #--- Rafraichit la fenetre
+   #::confFitgauss $visuNo
+
+   #--- La fenetre est active
+   focus $frm
+   
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $frm <Key-r> {catch {::console::affiche_erreur "ressource\n" ; source /srv/develop/audela/gui/audace/aud_menu_5.tcl}}
+   bind $frm <Key-n> {catch {::console::affiche_erreur "edit source : \n nc /srv/develop/audela/gui/audace/aud_menu_5.tcl\n" }}
+   bind $frm <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+}
+
+
+   proc get_fields_current_psf { } {
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" "flux" "err_flux" "pixmax" \
+                   "intensity" "sky" "err_sky" "snint" "radius" ]
+   }
+   proc get_fields_current_psf_left { } {
+      return [list "xsm" "ysm" "err_xsm" "err_ysm" "fwhmx" "fwhmy" "fwhm" "err_psf" ]
+   }
+
+   proc get_fields_current_psf_right { } {
+      return [list "flux" "err_flux" "pixmax" "intensity" "sky" "err_sky" "snint" "radius" ]
+   }
+
+   proc psf_get_methodes { } {
+   
+      return { fitgauss photom fitgauss2D psfimcce }
+   
+   }
+
+   proc psf_gui_methodes { visuNo frm } {
+
+   global private
+   global caption
+
+      set spinlist ""
+      for {set i 1} {$i<$private(psf_toolbox,$visuNo,radius,max)} {incr i} {lappend spinlist $i}
+
+      set block_methodes [frame $frm.block_methodes -borderwidth 1 -cursor arrow -relief groove]
+      pack $block_methodes -in $frm -anchor c -side top
+
+      
+      # Choix de methode
+      set actions [frame $block_methodes.actions -borderwidth 0 -cursor arrow -relief groove]
+      pack $actions -in $block_methodes -anchor w -side top
+
+           label $actions.lab1 -text "$caption(audace,psf_toolbox_MethodepourPSF)" 
+           menubutton $actions.b -menu $actions.b.m -textvar private(psf_toolbox,$visuNo,methode) -width 10 -relief groove
+           menu $actions.b.m -tearoff 0
+           foreach value [psf_get_methodes] { 
+              $actions.b.m add command -label $value -command "psf_set_methode $visuNo $block_methodes $value"
+           }
+           grid $actions.lab1 $actions.b
+           #$actions.b.m select 
+
+      # Configuration de la methode
+      set conf [frame $block_methodes.config -borderwidth 0 -cursor arrow -relief groove]
+      pack $conf -in $block_methodes -anchor w -side top
+
+
+      # Configuration de la globale
+      set glo [frame $block_methodes.glo -borderwidth 0 -cursor arrow -relief groove]
+      pack $glo -in $block_methodes -anchor w -side top
+
+         set glocheck [frame $glo.check -borderwidth 0 -cursor arrow -relief groove]
+         pack $glocheck -in $glo -anchor w -side top
+         set glocconf [frame $glo.conf -borderwidth 0 -cursor arrow -relief groove]
+         pack $glocconf -in $glo -anchor w -side top
+
+            checkbutton $glocheck.globale -text "$caption(audace,psf_toolbox_Rechercheglobale)" \
+               -variable private(psf_toolbox,$visuNo,globale) \
+               -command "psf_switch_globale $visuNo $glocconf"
+            grid $glocheck.globale
+
+      # Configuration de l Ecretage
+      set ecr [frame $block_methodes.ecr -borderwidth 0 -cursor arrow -relief groove]
+      pack $ecr -in $block_methodes -anchor w -side top
+
+         set ecrcheck [frame $ecr.check -borderwidth 0 -cursor arrow -relief groove]
+         pack $ecrcheck -in $ecr -anchor w -side top
+         set ecrcconf [frame $ecr.conf -borderwidth 0 -cursor arrow -relief groove]
+         pack $ecrcconf -in $ecr -anchor w -side top
+
+            checkbutton $ecrcheck.ecrbale -text "$caption(audace,psf_toolbox_Ecretage)" \
+               -variable private(psf_toolbox,$visuNo,ecretage) \
+               -command "psf_switch_ecretage $visuNo $ecrcconf"
+            grid $ecrcheck.ecrbale
+
+
+
+   psf_set_methode $visuNo $block_methodes $private(psf_toolbox,$visuNo,methode)
+   psf_switch_globale $visuNo $glocconf
+   psf_switch_ecretage $visuNo $ecrcconf
+
+   }
+
+   proc psf_switch_globale { visuNo frm }  {
+  
+      global private
+      global caption
+
+      set block $frm.here
+      destroy $block
+      set conf [frame $block -borderwidth 0 -cursor arrow -relief groove]
+      pack $conf -in $frm -anchor w -side top
+
+      if {$private(psf_toolbox,$visuNo,globale)==1} {
+
+
+         label $conf.c1 -text "" -width 5
+         set limit [frame $conf.limit -borderwidth 0 -cursor arrow -relief groove]
+         grid $conf.c1 $limit  -sticky news
+
+            label $limit.radl1 -text "$caption(audace,psf_toolbox_Limitemin)" 
+            entry $limit.radv1 -textvariable private(psf_toolbox,$visuNo,globale,min) -relief sunken -width 5
+
+            label $limit.radl2 -text "$caption(audace,psf_toolbox_Limitemax)" 
+            entry $limit.radv2 -textvariable private(psf_toolbox,$visuNo,globale,max) -relief sunken -width 5
+
+            grid $limit.radl1 $limit.radv1 -sticky news
+            grid $limit.radl2 $limit.radv2 -sticky news
+
+
+         label $conf.c2 -text "" -width 5
+         set errors [frame $conf.errors -borderwidth 0 -cursor arrow -relief groove]
+         grid $conf.c2 $errors -sticky news
+         
+            checkbutton $errors.arret -text "$caption(audace,psf_toolbox_Arretsi)" -variable private(psf_toolbox,$visuNo,globale,arret)
+            set sav $private(psf_toolbox,$visuNo,globale,nberror)
+            spinbox $errors.nberror   -values [list 1 2 3 5 10] -from 1 -to 10 \
+                                     -textvariable private(psf_toolbox,$visuNo,globale,nberror) -width 3
+            set private(psf_toolbox,$visuNo,globale,nberror) $sav
+            label $errors.arretlab    -text "$caption(audace,psf_toolbox_erreurs)" 
+
+            grid $errors.arret  $errors.nberror $errors.arretlab -sticky news
+
+      }
+
+   }
+
+   proc psf_switch_ecretage { visuNo frm }  {
+  
+      global private
+      global caption
+
+      set block $frm.here
+      destroy $block
+      set conf [frame $block -borderwidth 0 -cursor arrow -relief groove]
+      pack $conf -in $frm -anchor w -side top
+
+      if {$private(psf_toolbox,$visuNo,ecretage)==1} {
+
+         label $conf.c1 -text "" -width 5
+         set limit [frame $conf.limit -borderwidth 0 -cursor arrow -relief groove]
+         grid $conf.c1 $limit  -sticky nws
+
+            label $limit.satl -text "$caption(audace,psf_toolbox_Saturation)" 
+            entry $limit.satv -textvariable private(psf_toolbox,$visuNo,saturation)  -relief sunken -width 5
+
+            label $limit.thrl -text "$caption(audace,psf_toolbox_Seuil)" 
+            entry $limit.thrv -textvariable private(psf_toolbox,$visuNo,threshold) -relief sunken -width 5
+
+            grid $limit.satl  $limit.satv -sticky nsw -pady 3
+            grid $limit.thrl  $limit.thrv -sticky nsw -pady 3
+      }
+
+   }
+
+   proc psf_set_methode { visuNo frm value }  {
+  
+      global private
+      global caption
+
+      set private(psf_toolbox,$visuNo,methode) $value
+      ::console::affiche_resultat "Methode : $private(psf_toolbox,$visuNo,methode)\n"
+
+      set block $frm.config.here
+      destroy $block
+      set conf [frame $block -borderwidth 0 -cursor arrow -relief groove]
+      pack $conf -in $frm.config -anchor w -side top -expand 0 
+ 
+      set spinlist ""
+      for {set i 1} {$i<$private(psf_toolbox,$visuNo,radius,max)} {incr i} {lappend spinlist $i}
+
+
+         label $conf.c1 -text "" -width 5
+         set limit [frame $conf.limit -borderwidth 0 -cursor arrow -relief groove]
+         grid $conf.c1 $limit -sticky nws
+
+
+      switch $value {
+         "photom" {
+                     label $limit.radl -text "$caption(audace,psf_toolbox_Rayon)" 
+                     set sav $private(psf_toolbox,$visuNo,radius)
+                     spinbox $limit.radiusc -values $spinlist -from 1 -to $private(psf_toolbox,$visuNo,radius,max) \
+                         -textvariable private(psf_toolbox,$visuNo,radius) -width 3 \
+                         -command "refreshPSF_simple $visuNo"
+                     pack  $limit.radiusc -side left 
+                     set private(psf_toolbox,$visuNo,radius) $sav
+                     $limit.radiusc set $private(psf_toolbox,$visuNo,radius)
+
+                     LabelEntry $limit.r1 -label "$caption(audace,psf_toolbox_r1)" -textvariable private(psf_toolbox,$visuNo,photom,r1) -relief sunken -width 5
+                     label $limit.r1s -text "$caption(audace,psf_toolbox_xRayon)" 
+
+                     LabelEntry $limit.r2 -label "$caption(audace,psf_toolbox_r2)" -textvariable private(psf_toolbox,$visuNo,photom,r2) -relief sunken -width 5
+                     label $limit.r2s -text "$caption(audace,psf_toolbox_xRayon)" 
+
+                     LabelEntry $limit.r3 -label "$caption(audace,psf_toolbox_r2)" -textvariable private(psf_toolbox,$visuNo,photom,r3) -relief sunken -width 5
+                     label $limit.r3s -text "$caption(audace,psf_toolbox_xRayon)" 
+
+                     grid $limit.radl  $limit.radiusc -sticky nsw -pady 1
+                     grid $limit.r1 $limit.r1s -sticky nsw -pady 0 -columnspan 2
+                     grid $limit.r2 $limit.r2s -sticky nsw -pady 0 -columnspan 2
+                     grid $limit.r3 $limit.r3s -sticky nsw -pady 0 -columnspan 2
+                  }
+
+         "fitgauss2D" 
+                    {
+                     label $limit.radl -text "$caption(audace,psf_toolbox_Rayon)" 
+                     set sav $private(psf_toolbox,$visuNo,radius)
+                     spinbox $limit.radiusc -values $spinlist -from 1 -to $private(psf_toolbox,$visuNo,radius,max) \
+                         -textvariable private(psf_toolbox,$visuNo,radius) -width 3 \
+                         -command "refreshPSF_simple $visuNo"
+                     pack  $limit.radiusc -side left 
+                     set private(psf_toolbox,$visuNo,radius) $sav
+                     $limit.radiusc set $private(psf_toolbox,$visuNo,radius)
+
+                     grid $limit.radl  $limit.radiusc -sticky nsw -pady 3
+                  }
+         "psfimcce" {
+                     label $limit.radl -text "$caption(audace,psf_toolbox_Rayon)" 
+                     set sav $private(psf_toolbox,$visuNo,radius)
+                     spinbox $limit.radiusc -values $spinlist -from 1 -to $private(psf_toolbox,$visuNo,radius,max) \
+                         -textvariable private(psf_toolbox,$visuNo,radius) -width 3 \
+                         -command "refreshPSF_simple $visuNo"
+                     pack  $limit.radiusc -side left 
+                     set private(psf_toolbox,$visuNo,radius) $sav
+                     $limit.radiusc set $private(psf_toolbox,$visuNo,radius)
+
+                     radiobutton $limit.preclow  -text "$caption(audace,psf_toolbox_Calculrapide)" -variable private(psf_toolbox,$visuNo,precision) -value low
+                     radiobutton $limit.prechigh -text "$caption(audace,psf_toolbox_Hauteprecision)" -variable private(psf_toolbox,$visuNo,precision) -value high
+
+                     grid $limit.radl    $limit.radiusc  -sticky nsw -pady 3
+                     grid $limit.preclow $limit.prechigh -sticky nsw -pady 3
+                  }
+
+      }
+
+      refreshPSF_simple $visuNo
+
+   }
+
+   proc refreshPSF { visuNo args } {
+
+      global private
+      global caption
+
+      $private(psf_toolbox,$visuNo,hcanvas) delete globalePSF
+
+      #--- Capture de la fenetre d'analyse
+      set private(center,box) [ ::confVisu::getBox $visuNo ]
+      if { $private(center,box) == "" } {
+         return
+      }
+
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set r [ buf$bufNo fitgauss $private(center,box) ]
+      set x [lindex $r 1]
+      set y [lindex $r 5]
+
+      set tt0 [clock clicks -milliseconds]
+
+      if { $private(psf_toolbox,$visuNo,globale) } {
+         PSF_globale $visuNo $x $y
+      } else {
+         PSF_one_radius $visuNo $x $y
+      }
+
+      set private(psf_toolbox,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
+      
+      return
+   }
+
+   proc refreshPSF_simple { visuNo } {
+
+      global private
+      #--- Capture de la fenetre d'analyse
+      set private(center,box) [ ::confVisu::getBox $visuNo ]
+      if { $private(center,box) == "" } {
+         return
+      }
+
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set r [ buf$bufNo fitgauss $private(center,box) ]
+      set x [lindex $r 1]
+      set y [lindex $r 5]
+
+      set tt0 [clock clicks -milliseconds]
+
+      PSF_one_radius $visuNo $x $y
+
+      set private(psf_toolbox,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
+
+      return
+   }
+
+
+
+
+
+
+
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # suivant la methode fournit par l appel a 
+   # buf1 fitgauss
+   # 
+   # @brief Normalisation des donnees resultats
+   # 
+   # @param visuNo
+   # @param x : coordonnee pixel de la source dans l'image
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc PSF_method_fitgauss { visuNo x y } {
+
+      global private
+
+      set bufNo [::confVisu::getBufNo $visuNo ]
+
+      set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
+      set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
+      set xs1 [expr int($x + $private(psf_toolbox,$visuNo,radius))]
+      set ys1 [expr int($y + $private(psf_toolbox,$visuNo,radius))]
+      set box [list $xs0 $ys0 $xs1 $ys1]
+      set r [ buf$bufNo fitgauss $box ]
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r 1] ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r 5] ]
+      set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
+      set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
+      set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
+      set private(psf_toolbox,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 6] ]
+      set private(psf_toolbox,$visuNo,psf,fwhm)      [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 2],2 ) + pow ( [lindex $r 6],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,flux)      "-"
+      set private(psf_toolbox,$visuNo,psf,err_flux)  "-"
+      set private(psf_toolbox,$visuNo,psf,pixmax)    "-"
+      set private(psf_toolbox,$visuNo,psf,intensity) [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 0],2 ) + pow ( [lindex $r 4],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,sky)       [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 3],2 ) + pow ( [lindex $r 7],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,err_sky)   "-"
+      set private(psf_toolbox,$visuNo,psf,snint)     "-"
+      set private(psf_toolbox,$visuNo,psf,radius)    "-"
+      set private(psf_toolbox,$visuNo,psf,err_psf)   "-"
+      return
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # suivant la methode fournit par l appel a 
+   # buf1 fitgauss pour la postion et buf1 photom pour la 
+   # photometrie
+   # 
+   # @brief Normalisation des donnees resultats
+   # 
+   # @param visuNo
+   # @param x : coordonnee pixel de la source dans l'image
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc PSF_method_photom { visuNo x y } {
+
+      global private
+
+      set bufNo [::confVisu::getBufNo $visuNo ]
+
+      set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
+      set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
+      set xs1 [expr int($x + $private(psf_toolbox,$visuNo,radius))]
+      set ys1 [expr int($y + $private(psf_toolbox,$visuNo,radius))]
+      set box [list $xs0 $ys0 $xs1 $ys1]
+      set r [ buf$bufNo fitgauss $box ]
+      set r1  [expr int($private(psf_toolbox,$visuNo,photom,r1) * $private(psf_toolbox,$visuNo,radius))]
+      set r2  [expr int($private(psf_toolbox,$visuNo,photom,r2) * $private(psf_toolbox,$visuNo,radius))]
+      set r3  [expr int($private(psf_toolbox,$visuNo,photom,r3) * $private(psf_toolbox,$visuNo,radius))]
+      set err [ catch { set photom [buf$bufNo photom $box square $r1 $r2 $r3 ] } msg ]
+      if {$err} {
+         set private(psf_toolbox,$visuNo,psf,err_psf)  "Erreur buf photom"
+         return -code -1 "Erreur buf photom : $photom"
+      }
+      set err [ catch { set stat [buf$bufNo stat $box ] } msg ]
+      if {$err} {
+         set private(psf_toolbox,$visuNo,psf,err_psf)  "Erreur buf stat"
+         return -code -1 "Erreur buf stat : $stat"
+      }
+      set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
+
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" $x ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" $y ]
+      set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
+      set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
+      set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
+      set private(psf_toolbox,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 6] ]
+      set private(psf_toolbox,$visuNo,psf,fwhm)      [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 2],2 ) + pow ( [lindex $r 6],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,flux)      [format "%.2f" [lindex $photom 0] ]
+      set private(psf_toolbox,$visuNo,psf,err_flux)  "-"
+      set private(psf_toolbox,$visuNo,psf,pixmax)    [format "%.2f" [lindex $stat 2] ]
+      set private(psf_toolbox,$visuNo,psf,intensity) [format "%.2f" [expr [lindex $stat 2] - [lindex $photom 2] ] ]
+      set private(psf_toolbox,$visuNo,psf,sky)       [format "%.2f" [lindex $photom 2] ]
+      set private(psf_toolbox,$visuNo,psf,err_sky)   [format "%.2f" [lindex $photom 3] ]
+      set private(psf_toolbox,$visuNo,psf,snint)     [format "%.2f" [expr [lindex $photom 0] / sqrt ([lindex $photom 0]+[lindex $photom 4]*[lindex $photom 2] ) ] ]
+      set private(psf_toolbox,$visuNo,psf,radius)    $private(psf_toolbox,$visuNo,radius)
+      set private(psf_toolbox,$visuNo,psf,err_psf)   "-"
+      return
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # suivant la methode fournit par l appel a 
+   # buf1 fitgauss2d
+   # 
+   # @brief Normalisation des donnees resultats
+   # 
+   # @param visuNo
+   # @param x : coordonnee pixel de la source dans l'image
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc PSF_method_fitgauss2D { visuNo x y } {
+
+      global private
+
+      set bufNo [::confVisu::getBufNo $visuNo ]
+
+      set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
+      set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
+      set xs1 [expr int($x + $private(psf_toolbox,$visuNo,radius))]
+      set ys1 [expr int($y + $private(psf_toolbox,$visuNo,radius))]
+      set box [list $xs0 $ys0 $xs1 $ys1]
+      set r [buf$bufNo fitgauss2d $box]
+
+      set err [ catch { set stat [buf$bufNo stat $box] } msg ]
+      if {$err} {
+         set private(psf_toolbox,$visuNo,psf,err_psf)  "Erreur buf stat"
+         return -code -1 "Erreur buf stat : $stat"
+      }
+      set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
+
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r  1] ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r  5] ]
+      set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
+      set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
+      set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
+      set private(psf_toolbox,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 6] ]
+      set private(psf_toolbox,$visuNo,psf,fwhm)      [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 2],2 ) + pow ( [lindex $r 6],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,flux)      [format "%.2f" [expr (([lindex $r 0])+([lindex $r 4])) / 2. * 2 * 3.14159265359 * [lindex $r 2] * [lindex $r 6] / 2.35482 / 2.35482] ]
+      set private(psf_toolbox,$visuNo,psf,err_flux)  "-"
+      set private(psf_toolbox,$visuNo,psf,pixmax)    [format "%.2f" [lindex $stat 2] ]
+      set private(psf_toolbox,$visuNo,psf,intensity) [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 0],2 ) + pow ( [lindex $r 4],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,sky)       [format "%.2f" [expr sqrt ( ( pow ( [lindex $r 3],2 ) + pow ( [lindex $r 7],2 ) ) / 2.0 ) ] ]
+      set private(psf_toolbox,$visuNo,psf,err_sky)   "-"
+      set private(psf_toolbox,$visuNo,psf,snint)     [format "%.2f" [expr $private(psf_toolbox,$visuNo,psf,flux) / sqrt ($private(psf_toolbox,$visuNo,psf,flux)+$npix*$private(psf_toolbox,$visuNo,psf,sky) ) ] ]
+      set private(psf_toolbox,$visuNo,psf,radius)    $private(psf_toolbox,$visuNo,radius)
+      set private(psf_toolbox,$visuNo,psf,err_psf)   "-"
+      return
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # suivant la methode fournit par l appel a 
+   # buf1 psfimcce
+   # 
+   # @brief Normalisation des donnees resultats
+   # 
+   # @param visuNo
+   # @param x : coordonnee pixel de la source dans l'image
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc PSF_method_psfimcce { visuNo x y } {
+
+      global private
+
+      set bufNo [::confVisu::getBufNo $visuNo ]
+
+      set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
+      set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
+      set xs1 [expr int($x + $private(psf_toolbox,$visuNo,radius))]
+      set ys1 [expr int($y + $private(psf_toolbox,$visuNo,radius))]
+      set box [list $xs0 $ys0 $xs1 $ys1]
+      set r [buf$bufNo psfimcce $box]
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r  0] ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r  1] ]
+      set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
+      set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
+      set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r  4] ]
+      set private(psf_toolbox,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r  5] ]
+      set private(psf_toolbox,$visuNo,psf,fwhm)      [format "%.2f" [lindex $r  6] ]
+      set private(psf_toolbox,$visuNo,psf,flux)      [format "%.1f" [lindex $r  7] ]
+      set private(psf_toolbox,$visuNo,psf,err_flux)  "-"
+      set private(psf_toolbox,$visuNo,psf,pixmax)    [format "%d" [expr int([lindex $r  9])] ]
+      set private(psf_toolbox,$visuNo,psf,intensity) [format "%.2f" [lindex $r 10] ]
+      set private(psf_toolbox,$visuNo,psf,sky)       [format "%.2f" [lindex $r 11] ]
+      set private(psf_toolbox,$visuNo,psf,err_sky)   "-"
+      set private(psf_toolbox,$visuNo,psf,snint)     [format "%.2f" [lindex $r 13] ]
+      set private(psf_toolbox,$visuNo,psf,radius)    [format "%d" [lindex $r 14] ]
+      if {[lindex $r 15] == 0} {
+         set private(psf_toolbox,$visuNo,psf,err_psf)   "-"
+      } else {
+         set private(psf_toolbox,$visuNo,psf,err_psf)   [format "%s" [lindex $r 15] ]
+      }
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # pour un seul rayon de mesure et ne fournissant que les
+   # positions X Y pixel dans l image.
+   # 
+   # @brief Cette fonction dialogue avec une GUI ou non
+   # 
+   # @param visuNo
+   # @param x : coordonnee pixel de la source dans l'image
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc PSF_one_radius { visuNo x y } {
+
+      global private
+      
+      # duree du traitement
+      if { $private(psf_toolbox,$visuNo,globale) == 0 } {
+         set tt0 [clock clicks -milliseconds]
+      }
+
+      # Mode GUI
+      if {$private(psf_toolbox,$visuNo,gui)} {
+   
+         # Effacement des marques
+         $private(psf_toolbox,$visuNo,hcanvas) delete mesurePSF
+
+         # Recupere la boite selectionnee dans la visu
+         set private(center,box) [ ::confVisu::getBox $visuNo ]
+         if { $private(center,box) == "" } {
+            return
+         }
+
+      }          
+
+      # Appel des methodes
+      switch $private(psf_toolbox,$visuNo,methode) {
+
+         "fitgauss"   { PSF_method_fitgauss $visuNo $x $y }
+         "photom"     { PSF_method_photom $visuNo $x $y }
+         "fitgauss2D" { PSF_method_fitgauss2D $visuNo $x $y }
+         "psfimcce"   { PSF_method_psfimcce $visuNo $x $y }
+
+         default      { PSF_method_psfimcce $visuNo $x $y }
+      }
+      
+      # Ecretage
+      if { $private(psf_toolbox,$visuNo,ecretage) == 1 } {
+         set private(psf_toolbox,$visuNo,psf,rdiff) [expr sqrt((($private(psf_toolbox,$visuNo,psf,xsm)-$x)**2 + ($private(psf_toolbox,$visuNo,psf,ysm)-$y)**2)) / 2.0] 
+         
+         if { $private(psf_toolbox,$visuNo,psf,rdiff) > $private(psf_toolbox,$visuNo,threshold) } {
+            set private(psf_toolbox,$visuNo,psf,err_psf) "Too Far"
+         }
+         
+         if { $private(psf_toolbox,$visuNo,psf,pixmax) > $private(psf_toolbox,$visuNo,saturation) } {
+            set private(psf_toolbox,$visuNo,psf,err_psf) "Saturated"
+         }
+      }
+
+      # Mode GUI
+      if {$private(psf_toolbox,$visuNo,gui)} {
+
+         # Affichage des cercles
+         if { $private(psf_toolbox,$visuNo,marks,cercle) == 1 } {
+            psf_display_circle $visuNo $private(psf_toolbox,$visuNo,psf,xsm) \
+                              $private(psf_toolbox,$visuNo,psf,ysm) $private(psf_toolbox,$visuNo,radius) \
+                              green mesurePSF
+         }
+
+      }
+
+      # duree du traitement
+      if { $private(psf_toolbox,$visuNo,globale) == 0 } {
+         set private(psf_toolbox,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
+      }
+
+      return 
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui mesure le photocentre d'une source
+   # pour un ensemble de rayons de mesure et ne fournissant 
+   # que les positions X Y pixel dans l image.
+   # 
+   # @brief la variable globale private permet de fixer 
+   # les parametres pour dialoguer avec une gui et/ou 
+   # stoquer les resultats pour effectuer des graphes
+   # 
+   # @param visuNo
+   # @param x : coordonnee pixel de la source dans l'image
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc PSF_globale { visuNo x y } {
+
+      global private
+      variable private_graph
+      global caption
+
+      array unset private_graph
+      
+      # Mode GUI
+      if {$private(psf_toolbox,$visuNo,gui)} {
+         # Effacement des marques
+         $private(psf_toolbox,$visuNo,hcanvas) delete globalePSF
+      }          
+
+      # Mesure les photocentres
+      set nberror 0
+      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+
+         set private(psf_toolbox,$visuNo,radius) $radius
+
+         # Effectue une mesure
+         PSF_one_radius $visuNo $x $y
+
+         if {$private(psf_toolbox,$visuNo,psf,err_psf)=="-"} {
+
+            # Si ca marche le compteur d erreur consecutives retombent a zero
+            set nberror 0
+
+            # Recupere les donnees intermediaires
+            foreach key [get_fields_current_psf] {
+               set private_graph($radius,$key) $private(psf_toolbox,$visuNo,psf,$key)
+            }
+
+            
+         } else {
+            incr nberror
+         }
+
+         # Mise a jour de la GUI
+         if {$private(psf_toolbox,$visuNo,gui)} {
+            update
+         }
+
+         # Arret si trop d erreurs
+         if {$private(psf_toolbox,$visuNo,globale,arret) && $nberror>=$private(psf_toolbox,$visuNo,globale,nberror)} {
+            ::console::affiche_erreur "$caption(audace,psf_toolbox_message1) $nberror $caption(audace,psf_toolbox_message2)\n"
+            break
+         }
+
+      }
+
+      # on cherche les meilleurs rayons
+      # par critere sur le fond du ciel minimal
+
+      set sky "" 
+      set flux "" 
+      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+         if {[info exists private_graph($radius,sky)]} {
+            lappend sky [list $radius $private_graph($radius,sky)]
+            lappend flux [list $radius $private_graph($radius,flux)]
+         }
+      }
+      set sky [lsort -index 1  -real -increasing $sky]
+      set n [expr [llength $sky]/2]
+      set zsky [lrange $sky 0 $n]
+      set data ""
+      foreach v $zsky {
+         lappend data [lindex $v 1]
+      }
+      set err [ catch {
+         set mean [::math::statistics::mean $data]
+         set stdev [::math::statistics::stdev $data]
+      } msg ]
+      
+      if { $err } {
+         ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n"
+         return
+      }
+      
+      set limit [expr $mean + 3*$stdev]
+      
+      set list_radius ""
+      foreach v $sky {
+         if {[lindex $v 1]<$limit} {
+            lappend list_radius [lindex $v 0]
+         }
+      }
+      
+      # on calcule les moyennes et erreurs 
+
+      foreach key [get_fields_current_psf] {
+
+         if {$key in [list  "err_xsm" "err_ysm" "err_flux" "err_sky" "radius"]} {continue}
+         set data ""
+         foreach radius $list_radius {
+            if {[info exists private_graph($radius,$key)]} {
+               lappend data $private_graph($radius,$key)
+            }
+         }
+         if {$key == "err_psf"} {
+            if {[llength $data]>0} {
+               set private(psf_toolbox,$visuNo,psf,err_psf) "-"
+            } else {
+               set private(psf_toolbox,$visuNo,psf,err_psf) "Globale no data"
+            }
+            continue
+         }
+
+         set err [ catch {
+            set max   [::math::statistics::max $data]
+            set mean  [::math::statistics::mean $data]
+            set stdev [::math::statistics::stdev $data]
+         } msg ]
+
+         if { $err } {
+            ::console::affiche_erreur "determination de $key impossible\n"
+            set private(psf_toolbox,$visuNo,psf,$key) "-"
+            continue
+         }
+
+         switch $key {
+            "xsm" {
+               set private(psf_toolbox,$visuNo,psf,xsm)      [format "%.4f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_xsm)  [format "%.4f" [expr 3.0 * $stdev] ]
+            }
+            "ysm" {
+               set private(psf_toolbox,$visuNo,psf,ysm)      [format "%.4f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_ysm)  [format "%.4f" [expr 3.0 * $stdev] ]
+            }
+            "flux" {
+               set private(psf_toolbox,$visuNo,psf,flux)     [format "%.2f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_flux) [format "%.2f" [expr 3.0 * $stdev] ]
+            }
+            "sky" {
+               set private(psf_toolbox,$visuNo,psf,sky)      [format "%.2f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_sky)  [format "%.2f" [expr 3.0 * $stdev] ]
+            }
+            "fwhmx" - "fwhmy" - "fwhm" - "intensity" - "snint"  {
+               set private(psf_toolbox,$visuNo,psf,$key)     [format "%.2f" $mean]
+            }
+            "pixmax" {
+               set private(psf_toolbox,$visuNo,psf,$key)     [format "%d" [expr int($mean)] ]
+            }
+            "rdiff" {
+               set private(psf_toolbox,$visuNo,psf,$key)     [format "%.2f" [expr int($max)] ]
+            }
+         }
+      }
+      
+      # Calcul du rayon ideal
+      set flux [lsort -index 0  -integer -increasing $flux]
+      foreach v $flux {
+         if {[lindex $v 1] > $private(psf_toolbox,$visuNo,psf,flux)} {
+            set private(psf_toolbox,$visuNo,psf,radius) [lindex $v 0]
+            break
+         }
+      }
+      
+      # Mode GUI
+      if {$private(psf_toolbox,$visuNo,gui)} {
+
+         # Affichage des marques
+         if { $private(psf_toolbox,$visuNo,marks,cercle) == 1 } {
+
+            $private(psf_toolbox,$visuNo,hcanvas) delete mesurePSF
+
+            set list_radius [lsort -integer -increasing $list_radius]
+            set radius [lindex $list_radius 0]
+            if {$radius == $private(psf_toolbox,$visuNo,globale,min)} { incr radius  }
+            psf_display_circle $visuNo $private(psf_toolbox,$visuNo,psf,xsm) \
+                              $private(psf_toolbox,$visuNo,psf,ysm) $radius \
+                              yellow globalePSF
+            set radius [lindex $list_radius end]
+            if {$radius == $private(psf_toolbox,$visuNo,globale,max)} { incr radius -1 }
+            psf_display_circle $visuNo $private(psf_toolbox,$visuNo,psf,xsm) \
+                              $private(psf_toolbox,$visuNo,psf,ysm) $radius \
+                              yellow globalePSF
+            psf_display_circle $visuNo $private(psf_toolbox,$visuNo,psf,xsm) \
+                              $private(psf_toolbox,$visuNo,psf,ysm) $private(psf_toolbox,$visuNo,psf,radius) \
+                              green globalePSF
+            psf_display_circle $visuNo $private(psf_toolbox,$visuNo,psf,xsm) \
+                              $private(psf_toolbox,$visuNo,psf,ysm) $private(psf_toolbox,$visuNo,globale,min) \
+                              blue globalePSF
+            psf_display_circle $visuNo $private(psf_toolbox,$visuNo,psf,xsm) \
+                              $private(psf_toolbox,$visuNo,psf,ysm) $private(psf_toolbox,$visuNo,globale,max) \
+                              blue globalePSF
+         }
+      }
+   }
+
+   #------------------------------------------------------------
+   ## Fonction qui affiche un graaphique montrant l evolution
+   # d'un parametre en fonction de la taille du rayon choisi.
+   # 
+   # @brief Cette fonction dialogue avec une GUI
+   # 
+   # @param visuNo
+   # @param key : parametre que l on veut grapher
+   # @param y : coordonnee pixel de la source dans l'image
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc psf_graph { visuNo key } {
+
+      global private
+      variable private_graph
+
+      set x ""
+      set y ""
+      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+         if {[info exists private_graph($radius,$key)]} {
+            if {$private_graph($radius,$key)!="-"} {
+               lappend x $radius
+               lappend y $private_graph($radius,$key)
+            }
+         }
+      }
+
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "$key VS radius"
+      ::plotxy::xlabel radius
+      ::plotxy::ylabel $key
+
+      if {[llength $y] == 0} { return }
+      
+      set h [::plotxy::plot $x $y .]
+      plotxy::sethandler $h [list -color "#18ad86" -linewidth 1]
+
+      # Affichage de la valeur obtenue sous forme d'une ligne horizontale
+      set x0 [list 0 $private(psf_toolbox,$visuNo,globale,max)]
+      set y0 [list $private(psf_toolbox,$visuNo,psf,$key) $private(psf_toolbox,$visuNo,psf,$key)]
+      set h [::plotxy::plot $x0 $y0 .]
+      plotxy::sethandler $h [list -color black -linewidth 2]
+
+      # Affichage des barres d erreurs
+      if {$key in [list "xsm" "ysm" "flux" "sky"]} {
+         if { $private(psf_toolbox,$visuNo,psf,err_$key) == "-" } { return }
+         
+         set yl [expr $private(psf_toolbox,$visuNo,psf,$key) + $private(psf_toolbox,$visuNo,psf,err_$key)]
+         set x0 [list 0 $private(psf_toolbox,$visuNo,globale,max)]
+         set y0 [list $yl $yl]
+         set h [::plotxy::plot $x0 $y0 .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 2]
+
+         set yl [expr $private(psf_toolbox,$visuNo,psf,$key) - $private(psf_toolbox,$visuNo,psf,err_$key)]
+         set x0 [list 0 $private(psf_toolbox,$visuNo,globale,max)]
+         set y0 [list $yl $yl]
+         set h [::plotxy::plot $x0 $y0 .]
+         plotxy::sethandler $h [list -color "#808080" -linewidth 2]
+      }
+      
+   }
+
+   #------------------------------------------------------------
+   ## Fonction generale de comparaison des methodes
+   # 
+   # @brief Cette fonction dialogue avec une GUI
+   # 
+   # @param visuNo
+   # @param frm : frame de la gui
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc psf_compar { visuNo frm } {
+
+      global private
+      variable graph_compar
+
+      array unset graph_compar
+
+      set tt0 [clock clicks -milliseconds]
+
+      #--- Capture de la fenetre d'analyse
+      set private(center,box) [ ::confVisu::getBox $visuNo ]
+      if { $private(center,box) == "" } {
+         return
+      }
+
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set r [ buf$bufNo fitgauss $private(center,box) ]
+
+      set x [lindex $r 1]
+      set y [lindex $r 5]
+
+      if { $private(psf_toolbox,$visuNo,compar,photom) == 1} {
+         set private(psf_toolbox,$visuNo,methode) "photom"
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            set private(psf_toolbox,$visuNo,radius) $radius
+            PSF_one_radius $visuNo $x $y
+            if {$private(psf_toolbox,$visuNo,psf,err_psf)=="-"} {
+               set x $private(psf_toolbox,$visuNo,psf,xsm)
+               set y $private(psf_toolbox,$visuNo,psf,ysm)
+               foreach key [get_fields_current_psf] {
+                  set graph_compar(psfimcce,compar,photom,$radius,$key) $private(psf_toolbox,$visuNo,psf,$key)
+               }
+            }
+            update
+         }
+      }
+
+      set x [lindex $r 1]
+      set y [lindex $r 5]
+
+      if { $private(psf_toolbox,$visuNo,compar,fitgauss2D) == 1} {
+         set private(psf_toolbox,$visuNo,methode) "fitgauss2D"
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            set private(psf_toolbox,$visuNo,radius) $radius
+            PSF_one_radius $visuNo $x $y
+            if {$private(psf_toolbox,$visuNo,psf,err_psf)=="-"} {
+               set x $private(psf_toolbox,$visuNo,psf,xsm)
+               set y $private(psf_toolbox,$visuNo,psf,ysm)
+               foreach key [get_fields_current_psf] {
+                  set graph_compar(psfimcce,compar,fitgauss2D,$radius,$key) $private(psf_toolbox,$visuNo,psf,$key)
+               }
+            }
+            update
+         }
+      }
+
+      set x [lindex $r 1]
+      set y [lindex $r 5]
+
+      if { $private(psf_toolbox,$visuNo,compar,psfimcce) == 1} {
+         set private(psf_toolbox,$visuNo,methode) "psfimcce"
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            set private(psf_toolbox,$visuNo,radius) $radius
+            PSF_one_radius $visuNo $x $y
+            if {$private(psf_toolbox,$visuNo,psf,err_psf)=="-"} {
+               set x $private(psf_toolbox,$visuNo,psf,xsm)
+               set y $private(psf_toolbox,$visuNo,psf,ysm)
+               foreach key [get_fields_current_psf] {
+                  set graph_compar(psfimcce,compar,psfimcce,$radius,$key) $private(psf_toolbox,$visuNo,psf,$key)
+               }
+            }
+            update
+         }
+      }
+
+      set private(psf_toolbox,$visuNo,duree) [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.] ]
+   }
+
+   #------------------------------------------------------------
+   ## Tracer des mesures comparatives pour un parametre
+   # 
+   # @brief Cette fonction dialogue avec une GUI
+   # 
+   # @param visuNo
+   # @param key : nom du parametre
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc psf_graph_compar { visuNo key } {
+
+      global private
+      variable graph_compar
+
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "$key VS radius (green = photom, red = fitgauss2D, black = psfimcce)"
+      ::plotxy::xlabel radius
+      ::plotxy::ylabel $key
+      
+      if { $private(psf_toolbox,$visuNo,compar,photom) == 1} {
+         set xphotom ""
+         set yphotom ""
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            if {[info exists graph_compar(psfimcce,compar,photom,$radius,$key)]} {
+               if {$graph_compar(psfimcce,compar,photom,$radius,$key)!="-"} {
+                  lappend xphotom $radius
+                  lappend yphotom $graph_compar(psfimcce,compar,photom,$radius,$key)
+               }
+            }
+         }
+         set h1 [::plotxy::plot $xphotom $yphotom o]
+         plotxy::sethandler $h1 [list -color "#18ad86" -linewidth 1]
+      }
+      
+      if { $private(psf_toolbox,$visuNo,compar,fitgauss2D) == 1} {
+         set xfitgauss2D ""
+         set yfitgauss2D ""
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            if {[info exists graph_compar(psfimcce,compar,fitgauss2D,$radius,$key)]} {
+               if {$graph_compar(psfimcce,compar,fitgauss2D,$radius,$key)!="-"} {
+                  lappend xfitgauss2D $radius
+                  lappend yfitgauss2D $graph_compar(psfimcce,compar,fitgauss2D,$radius,$key)
+               }
+            }
+         }
+         set h2 [::plotxy::plot $xfitgauss2D $yfitgauss2D +]
+         plotxy::sethandler $h2 [list -color red -linewidth 1]
+      }
+      
+      if { $private(psf_toolbox,$visuNo,compar,psfimcce) == 1} {
+         set xpsfimcce ""
+         set ypsfimcce ""
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            if {[info exists graph_compar(psfimcce,compar,psfimcce,$radius,$key)]} {
+               if {$graph_compar(psfimcce,compar,psfimcce,$radius,$key)!="-"} {
+                  lappend xpsfimcce $radius
+                  lappend ypsfimcce $graph_compar(psfimcce,compar,psfimcce,$radius,$key)
+               }
+            }
+         }
+         set h3 [::plotxy::plot $xpsfimcce $ypsfimcce x]
+         plotxy::sethandler $h3 [list -color black -linewidth 1]
+      }
+   }
+
+   #------------------------------------------------------------
+   ## Tracer d un cercle dans la visu
+   # 
+   # @brief Cette fonction dialogue avec une GUI
+   # 
+   # @param visuNo
+   # @param xpic
+   # @param ypic
+   # @param radius
+   # @param color
+   # @param tag
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc psf_display_circle { visuNo xpic ypic radius color tag } {
+
+      global private
+
+      if {$xpic=="-" || $ypic=="-" || $radius=="-"} {return}
+      
+      set xi [expr $xpic - $radius]
+      set yi [expr $ypic - $radius]
+      set can_xy [::confVisu::picture2Canvas $visuNo [list $xi $yi]]
+      set cxi [lindex $can_xy 0]
+      set cyi [lindex $can_xy 1]
+
+      set xs [expr $xpic + $radius]
+      set ys [expr $ypic + $radius]
+      set can_xy [::confVisu::picture2Canvas $visuNo [list $xs $ys]]
+      set cxs [lindex $can_xy 0]
+      set cys [lindex $can_xy 1]
+
+      $private(psf_toolbox,$visuNo,hcanvas) create oval $cxi $cyi $cxs $cys \
+                 -fill {} -outline $color -width 2 -activewidth 3 \
+                 -tag $tag
+      
+   }
+
+   #------------------------------------------------------------
+   ## Efface les marques dans la visu
+   # 
+   # @param visuNo
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc psf_clean_mark { visuNo } {
+   
+      global private
+      
+      $private(psf_toolbox,$visuNo,hcanvas) delete mesurePSF
+      $private(psf_toolbox,$visuNo,hcanvas) delete globalePSF
+      
+   }
+
+   #------------------------------------------------------------
+   ## Affichage de l'Aide dans Audace
+   # 
+   # @param visuNo
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc psf_help { visuNo } {
+      global help
+      ::audace::showHelpItem $help(dir,analyse) "1110psf.htm"
+   }
+
+   #------------------------------------------------------------
+   ## Clos la fenetre de mesure de PSF
+   # 
+   # @param visuNo
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc  psf_fermer { visuNo frm } {
+
+      psf_close_to_conf $visuNo
+      ferme_fenetre_analyse $visuNo $frm psfimcce
+
+   }
+
+   #------------------------------------------------------------
+   ## Enregistre les parametres dans la configuration de Audela
+   # 
+   # @param visuNo
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc  psf_close_to_conf { visuNo } {
+
+      global private
+      global conf
+
+      set conf(psf_toolbox,$visuNo,radius)            $private(psf_toolbox,$visuNo,radius)         
+      set conf(psf_toolbox,$visuNo,radius,min)        $private(psf_toolbox,$visuNo,radius,min)     
+      set conf(psf_toolbox,$visuNo,radius,max)        $private(psf_toolbox,$visuNo,radius,max)     
+      set conf(psf_toolbox,$visuNo,globale,min)       $private(psf_toolbox,$visuNo,globale,min)    
+      set conf(psf_toolbox,$visuNo,globale,max)       $private(psf_toolbox,$visuNo,globale,max)    
+      set conf(psf_toolbox,$visuNo,saturation)        $private(psf_toolbox,$visuNo,saturation)     
+      set conf(psf_toolbox,$visuNo,threshold)         $private(psf_toolbox,$visuNo,threshold)      
+      set conf(psf_toolbox,$visuNo,globale)           $private(psf_toolbox,$visuNo,globale)        
+      set conf(psf_toolbox,$visuNo,ecretage)          $private(psf_toolbox,$visuNo,ecretage)       
+      set conf(psf_toolbox,$visuNo,methode)           $private(psf_toolbox,$visuNo,methode)        
+      set conf(psf_toolbox,$visuNo,precision)         $private(psf_toolbox,$visuNo,precision)      
+      set conf(psf_toolbox,$visuNo,photom,r1)         $private(psf_toolbox,$visuNo,photom,r1)      
+      set conf(psf_toolbox,$visuNo,photom,r2)         $private(psf_toolbox,$visuNo,photom,r2)      
+      set conf(psf_toolbox,$visuNo,photom,r3)         $private(psf_toolbox,$visuNo,photom,r3)      
+      set conf(psf_toolbox,$visuNo,marks,cercle)      $private(psf_toolbox,$visuNo,marks,cercle)   
+      set conf(psf_toolbox,$visuNo,globale,arret)     $private(psf_toolbox,$visuNo,globale,arret)  
+      set conf(psf_toolbox,$visuNo,globale,nberror)   $private(psf_toolbox,$visuNo,globale,nberror)
+   }
+
+   #------------------------------------------------------------
+   ## Initialise l environnement a partir de la configuration
+   # de Audela
+   # 
+   # @param visuNo
+   # 
+   # @return void
+   #------------------------------------------------------------
+   proc  psf_init { visuNo } {
+
+      global private
+      global conf
+
+      if { ! [ info exists conf(psf_toolbox,$visuNo,position)    ] } { set conf(psf_toolbox,$visuNo,position)    "+350+75" }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,modeRefresh) ] } { set conf(psf_toolbox,$visuNo,modeRefresh) "0" }
+ 
+      if { ! [ info exists conf(psf_toolbox,$visuNo,radius)          ] } { set private(psf_toolbox,$visuNo,radius)            15         } else { set private(psf_toolbox,$visuNo,radius)          $conf(psf_toolbox,$visuNo,radius)          }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,radius,min)      ] } { set private(psf_toolbox,$visuNo,radius,min)        1          } else { set private(psf_toolbox,$visuNo,radius,min)      $conf(psf_toolbox,$visuNo,radius,min)      }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,radius,max)      ] } { set private(psf_toolbox,$visuNo,radius,max)        300        } else { set private(psf_toolbox,$visuNo,radius,max)      $conf(psf_toolbox,$visuNo,radius,max)      }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,min)     ] } { set private(psf_toolbox,$visuNo,globale,min)       5          } else { set private(psf_toolbox,$visuNo,globale,min)     $conf(psf_toolbox,$visuNo,globale,min)     }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,max)     ] } { set private(psf_toolbox,$visuNo,globale,max)       40         } else { set private(psf_toolbox,$visuNo,globale,max)     $conf(psf_toolbox,$visuNo,globale,max)     }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,saturation)      ] } { set private(psf_toolbox,$visuNo,saturation)        65000      } else { set private(psf_toolbox,$visuNo,saturation)      $conf(psf_toolbox,$visuNo,saturation)      }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,threshold)       ] } { set private(psf_toolbox,$visuNo,threshold)         3          } else { set private(psf_toolbox,$visuNo,threshold)       $conf(psf_toolbox,$visuNo,threshold)       }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale)         ] } { set private(psf_toolbox,$visuNo,globale)           0          } else { set private(psf_toolbox,$visuNo,globale)         $conf(psf_toolbox,$visuNo,globale)         }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,ecretage)        ] } { set private(psf_toolbox,$visuNo,ecretage)          0          } else { set private(psf_toolbox,$visuNo,ecretage)        $conf(psf_toolbox,$visuNo,ecretage)        }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,methode)         ] } { set private(psf_toolbox,$visuNo,methode)           "fitgauss" } else { set private(psf_toolbox,$visuNo,methode)         $conf(psf_toolbox,$visuNo,methode)         }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,precision)       ] } { set private(psf_toolbox,$visuNo,precision)         high       } else { set private(psf_toolbox,$visuNo,precision)       $conf(psf_toolbox,$visuNo,precision)       }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r1)       ] } { set private(psf_toolbox,$visuNo,photom,r1)         1          } else { set private(psf_toolbox,$visuNo,photom,r1)       $conf(psf_toolbox,$visuNo,photom,r1)       }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r2)       ] } { set private(psf_toolbox,$visuNo,photom,r2)         2          } else { set private(psf_toolbox,$visuNo,photom,r2)       $conf(psf_toolbox,$visuNo,photom,r2)       }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r3)       ] } { set private(psf_toolbox,$visuNo,photom,r3)         2.6        } else { set private(psf_toolbox,$visuNo,photom,r3)       $conf(psf_toolbox,$visuNo,photom,r3)       }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,marks,cercle)    ] } { set private(psf_toolbox,$visuNo,marks,cercle)      1          } else { set private(psf_toolbox,$visuNo,marks,cercle)    $conf(psf_toolbox,$visuNo,marks,cercle)    }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,arret)   ] } { set private(psf_toolbox,$visuNo,globale,arret)     1          } else { set private(psf_toolbox,$visuNo,globale,arret)   $conf(psf_toolbox,$visuNo,globale,arret)   }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,nberror) ] } { set private(psf_toolbox,$visuNo,globale,nberror)   3          } else { set private(psf_toolbox,$visuNo,globale,nberror) $conf(psf_toolbox,$visuNo,globale,nberror) }
+
+      set private(psf_toolbox,$visuNo,hcanvas) [::confVisu::getCanvas $visuNo]
+      foreach key [get_fields_current_psf] {
+         set private(psf_toolbox,$visuNo,psf,$key) "-"
+      }
+      set private(psf_toolbox,$visuNo,duree) ""
+   }
