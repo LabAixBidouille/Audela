@@ -2341,11 +2341,14 @@ namespace eval cata_gestion_gui {
                   set pos [lsearch -index 0 $s "ASTROID"]
                   if {$pos==-1} { continue }
                   set othf [ lindex [lindex $s $pos] 2]
-                  set flag [::bdi_tools_psf::get_val othf "flagastrom"]
-                  if {$flag == ""} { continue }
+                  set flagastrom [::bdi_tools_psf::get_val othf "flagastrom"]
+                  set flagphotom [::bdi_tools_psf::get_val othf "flagphotom"]
+                  #gren_info "ids flagastrom flagphotom = $ids $flagastrom $flagphotom\n"
+                  
+                  if {$flagastrom == "" && $flagphotom == "" } { continue }
 
                   # ok la source est flaguee S ou M
-                  gren_info "ok la source est flaguee $flag\n"
+                  #gren_info "ok la source est flaguee\n"
 
                   if {[info exists ::cata_gestion_gui::worklist(list_id)]} {
                      if {!($idcata in $::cata_gestion_gui::worklist(list_id))} {
