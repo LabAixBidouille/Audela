@@ -34,7 +34,12 @@ puts "name=$name"
 
 # Monter l environnement
 
-
+   set err [catch {package require Thread} msg]
+   if {$err} {
+      puts "Multithread : No "
+   } else {
+      puts "Multithread : Yes (version = $msg)"
+   }
 
 
 
