@@ -112,7 +112,7 @@ namespace eval bddimages_sql {
    set lib [file join $audace(rep_install) bin "libmysqltcl[info sharedlibextension]"]
    set err [catch {load $lib} msg]
    if {$err == 1} {
-      gren_erreur "Cannot load libmysqtcl[info sharedlibextension]\n"
+      gren_erreur "Cannot load libmysqltcl[info sharedlibextension]\n"
    } else {
       set err [catch {package require mysqltcl} msg]
       gren_info "Mysql: mysqltcl $msg loaded\n"
