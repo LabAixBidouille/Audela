@@ -3,7 +3,11 @@ AudeLA-2.x.0
 Une présentation graphique décrit pas à pas la façon
 de compiler AudeLA sous Windows et Linux dans le fichier:
 
-audela/src/tools/audela_svn_windows_linux_en.odp
+audela/doc/compil/audela_svn_windows_linux_en.odp
+
+et un exemple non graphique d'installation sur une OpenSuse 13.1 64 bits
+
+audela/doc/compil/INSTALL.Linux.OpenSuse13.1_64b
 
 1. Sources
 ==========
