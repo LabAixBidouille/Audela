@@ -105,7 +105,7 @@ int Fourier::tfd_2d_directe_simple( Fourier::Parametres * param_src, Fourier::Pa
         fourier_debug2( "\n" );
     }
 
-    data = tfd_2d( data, largeur, hauteur, forward );
+    data = tfd_2d( data, largeur, hauteur, gsl_fft_forward );
 
     TYPE_PIXELS * ptr1 = param_1->pixels()->pointeur();
     TYPE_PIXELS * ptr2 = param_2->pixels()->pointeur();
@@ -164,7 +164,7 @@ int Fourier::tfd_2d_directe_complete( Fourier::Parametres * param_src, Fourier::
         }
     }
 
-    data = tfd_2d( data, largeur, hauteur, forward );
+    data = tfd_2d( data, largeur, hauteur, gsl_fft_forward );
 
     float dest_max = 0.0;
     float dest_min = (float)surface * (float)val_max;
@@ -285,7 +285,7 @@ int Fourier::tfd_2d_inverse_simple( Fourier::Parametres * s1, Fourier::Parametre
         fourier_debug2( "\n" );
     }
 
-    data = tfd_2d( data, largeur, hauteur, backward );
+    data = tfd_2d( data, largeur, hauteur, gsl_fft_backward );
 
     TYPE_PIXELS * d_ptr = d->pixels()->pointeur();
     fourier_debug( "image de sortie" );
@@ -425,7 +425,7 @@ int Fourier::tfd_2d_inverse_complete( Fourier::Parametres * param_1, Fourier::Pa
         }
     }
 
-    data = tfd_2d( data, largeur, hauteur, backward );
+    data = tfd_2d( data, largeur, hauteur, gsl_fft_backward );
 
 
     for ( int ligne = 0; ligne < hauteur ; ligne++ )
