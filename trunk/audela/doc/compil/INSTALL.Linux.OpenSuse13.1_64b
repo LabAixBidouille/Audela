@@ -1,0 +1,147 @@
+AudeLA-2.x.0
+
+Voici un exemple pas à pas d'installation de Audela en version de développement
+sur une OpenSuse 13.1 64bits
+
+- ne pas installer tcl tk a partir du gestionnaire des paquetages car il installe maintenant
+par défaut la version 8.6
+
+- Dans ce qui va suivre :
+root> signifie qu'il faut etre le superutilisateur pour procéder aux installations
+user> votre utilisateur habituel
+%     en utilisant l interpréteur tcl
+
+==========
+1 Installer tcl
+==========
+
+telecharger : http://prdownloads.sourceforge.net/tcl/tcl8.5.15-src.tar.gz
+et desarchiver dans /opt (par exemple)
+
+root> cd /opt/tcl8.5.15/unix
+root> ./configure --enable-threads --bindir=/usr/local
+root> make
+root> make install
+
+==========
+2 Installer l'extension thread
+==========
+
+télécharger : http://sourceforge.net/projects/tcl/files/Thread%20Extension/2.7.0/thread2.7.0.tar.gz/download
+et désarchiver dans /opt
+
+root> cd /opt/thread2.7.0
+root> ./configure --enable-threads --bindir=/usr/local --with-tcl=/usr/local/lib64
+root> make
+root> make install
+
+==========
+3 Tester tcl en mode multithread
+==========
+
+user> tclsh8.5
+% package require Thread
+2.7.0
+
+==========
+4 Installer tkhtml
+==========
+
+télécharger : http://tkhtml.tcl.tk/tkhtml3-alpha-16.tar.gz
+et désarchiver dans /opt
+
+root> cd /opt/htmlwidget
+root> ./configure --with-tcl=/usr/local/lib64 --with-tk=/usr/local/lib64
+root> make
+root> make install
+
+==========
+5 Installer libmysqltcl
+==========
+
+télécharger : http://www.xdobry.de/mysqltcl/mysqltcl-3.052.tar.gz
+et désarchiver dans /opt
+
+root> cd /opt/mysqltcl-3.052
+root> ./configure --with-tcl=/usr/local/lib64 --with-mysql-lib=/usr/lib64
+root> make
+root> make install
+
+==========
+6 Installer tkimg
+==========
+telecharger : https://sourceforge.net/projects/tkimg/
+et desarchiver dans /opt
+
+root> cd /opt/tkimg1.4
+root> ./configure --with-tcl=/usr/local/lib64 --with-tk=/usr/local/lib64
+
+erreur !
+
+checking for Tcl private include files... configure: error: Cannot find private header tclInt.h in
+configure: error: ./configure failed for pixmap
+
+Etape a resoudre !
+
+==========
+7 Gestion des clés SSH
+==========
+se mettre dans le répertoire ~/.ssh
+
+taper la commande :
+ > ssh-keygen -t dsa -C "USERNAME@shell.sf.net"
+en remplaçant USERNAME par votre login sourceforge
+
+ceci cree 2 fichiers :
+id_dsa : la clé privée
+id_dsa.pub : la clé publique
+
+aller sur le site :  https://sourceforge.net/account/services
+puis Edit SSH Keys for Shell/CVS
+copier le contenu du fichier id_dsa.pub (en faisant bien attention qu il
+n y ait pas de retour charriot dans la ligne)
+puis cliquer sur update.
+
+retour a la page : https://sourceforge.net/account/services
+vérifier que la clé est bien prise en compte
+
+==========
+8 Dépôt Sourceforge de Audela
+==========
+se mettre (par exemple) dans le répertoire /srv/develop (façon ros)
+
+Télécharger Audela :
+
+user> svn checkout --username=USERNAMEsvn+ssh://fredvachier@svn.code.sf.net/p/audela/code/trunk/audela audela
+
+==========
+9 Installer Audela
+==========
+user> cd /srv/develop/audela/src
+user> ./configure --with-tcl=/usr/local/lib64 --with-tk=/usr/local/lib64 --with-ffmpeg --with-tls --enable-threads
+
+éditer le fichier Makefile.defs
+supprimer les entrées tkhtml et mysqltcl à la ligne où apparait EXTERNAL= (~ ligne 55)
+
+user> make external
+user> make contrib
+user> make
+
+==========
+10 Subtilité pour mysqltcl
+==========
+
+user> cd /srv/develop/audela/bin
+user> ln -s /usr/local/lib64/mysqltcl-3.052/libmysqltcl3.052.so libmysqltcl.so
+
+==========
+11 demarrage de Audela
+==========
+user> cd /srv/develop/audela/bin
+user> ./audela.sh
+
+Vérifier la console que tous les paquetages sont bien lancés
+
+
+
+
