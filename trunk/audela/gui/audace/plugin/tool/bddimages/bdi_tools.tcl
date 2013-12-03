@@ -190,7 +190,13 @@ proc ::bdi_tools::gunzip_old { fname_in {fname_out ""} } {
    return [list $errnum $msgzip]
 }
 
-proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
+#------------------------------------------------------------
+## Fonction gunzip compatible multi OS
+# @param fname_in string Nom complet du fichier a degziper /data/fi.fits.gz
+# @param fname_out string Nom complet du fichier de sortie /data/fi.fits
+# @return liste composee of errnum and msgzip
+#
+proc ::bdi_tools::gunzip_without_exec { fname_in {fname_out ""} } {
 
    if {$fname_out == ""} {
       set fname_out [file rootname $fname_in]
@@ -213,6 +219,17 @@ proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
    } msgzip ]
 
    return [list $errnum $msgzip]
+}
+
+#------------------------------------------------------------
+## Fonction gunzip compatible multi OS
+# @param fname_in string Nom complet du fichier a degziper /data/fi.fits.gz
+# @param fname_out string Nom complet du fichier de sortie /data/fi.fits
+# @return liste composee of errnum and msgzip
+#
+proc ::bdi_tools::gunzip { fname_in {fname_out ""} } {
+
+   ::bdi_tools::gunzip_old $fname_in $fname_out
 }
 
 #------------------------------------------------------------
