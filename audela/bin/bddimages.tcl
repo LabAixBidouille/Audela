@@ -42,8 +42,8 @@ puts "name=$name"
    }
 
 
-
-
+# arriver a faire cette commande !
+# buf1 load monimage
 
 
 
