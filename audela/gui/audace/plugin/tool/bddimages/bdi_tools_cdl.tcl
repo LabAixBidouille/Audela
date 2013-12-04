@@ -49,22 +49,59 @@ namespace eval bdi_tools_cdl {
    #             dans la variable globale \c conf
    proc ::bdi_tools_cdl::inittoconf {  } {
 
+      global conf
+
       set ::bdi_tools_cdl::nbref      0
       set ::bdi_tools_cdl::nbscience  0
       set ::bdi_tools_cdl::nbrej      0
       
       if {! [info exists ::bdi_tools_cdl::rapport_txt_dir] } {
-         if {[info exists conf(bddimages,astrometry,rapport,mpc_dir)]} {
+         if {[info exists conf(bddimages,photometry,rapport,txt_dir)]} {
             set ::bdi_tools_cdl::rapport_txt_dir $conf(bddimages,photometry,rapport,txt_dir)
          } else {
             set ::bdi_tools_cdl::rapport_txt_dir ""
          }
       }
       if {! [info exists ::bdi_tools_cdl::rapport_imc_dir] } {
-         if {[info exists conf(bddimages,astrometry,rapport,imc_dir)]} {
+         if {[info exists conf(bddimages,photometry,rapport,imc_dir)]} {
             set ::bdi_tools_cdl::rapport_imc_dir $conf(bddimages,photometry,rapport,imc_dir)
          } else {
             set ::bdi_tools_cdl::rapport_imc_dir ""
+         }
+      }
+      if {! [info exists ::bdi_tools_cdl::rapport_rapporteur] } {
+         if {[info exists conf(bddimages,photometry,rapport,rapporteur)]} {
+            set ::bdi_tools_cdl::rapport_rapporteur $conf(bddimages,photometry,rapport,rapporteur)
+         } else {
+            set ::bdi_tools_cdl::rapport_rapporteur ""
+         }
+      }
+      if {! [info exists ::bdi_tools_cdl::rapport_adresse] } {
+         if {[info exists conf(bddimages,photometry,rapport,adresse)]} {
+            set ::bdi_tools_cdl::rapport_adresse $conf(bddimages,photometry,rapport,adresse)
+         } else {
+            set ::bdi_tools_cdl::rapport_adresse ""
+         }
+      }
+      if {! [info exists ::bdi_tools_cdl::rapport_mail] } {
+         if {[info exists conf(bddimages,photometry,rapport,mail)]} {
+            set ::bdi_tools_cdl::rapport_mail $conf(bddimages,photometry,rapport,mail)
+         } else {
+            set ::bdi_tools_cdl::rapport_mail ""
+         }
+      }
+      if {! [info exists ::bdi_tools_cdl::rapport_reduc] } {
+         if {[info exists conf(bddimages,photometry,rapport,reduc)]} {
+            set ::bdi_tools_cdl::rapport_reduc $conf(bddimages,photometry,rapport,reduc)
+         } else {
+            set ::bdi_tools_cdl::rapport_reduc ""
+         }
+      }
+      if {! [info exists ::bdi_tools_cdl::rapport_instru] } {
+         if {[info exists conf(bddimages,photometry,rapport,instru)]} {
+            set ::bdi_tools_cdl::rapport_instru $conf(bddimages,photometry,rapport,instru)
+         } else {
+            set ::bdi_tools_cdl::rapport_instru ""
          }
       }
       
@@ -77,144 +114,19 @@ namespace eval bdi_tools_cdl {
    #
    proc ::bdi_tools_cdl::closetoconf {  } {
 
+      global conf
+
       set conf(bddimages,photometry,rapport,txt_dir)      $::bdi_tools_cdl::rapport_txt_dir
       set conf(bddimages,photometry,rapport,imc_dir)      $::bdi_tools_cdl::rapport_imc_dir
+      set conf(bddimages,photometry,rapport,rapporteur)   $::bdi_tools_cdl::rapport_rapporteur
+      set conf(bddimages,photometry,rapport,adresse)      $::bdi_tools_cdl::rapport_adresse
+      set conf(bddimages,photometry,rapport,mail)         $::bdi_tools_cdl::rapport_mail
+      set conf(bddimages,photometry,rapport,reduc)        $::bdi_tools_cdl::rapport_reduc
+      set conf(bddimages,photometry,rapport,instru)       $::bdi_tools_cdl::rapport_instru
       
    }
 
-   #----------------------------------------------------------------------------
-   ## Pretraitement et initialisation apres avoir charge la liste cata_list
-   #  \param void
-   #----------------------------------------------------------------------------
-   proc ::bdi_tools_cdl::save_reports { } {
 
-      if {$::bdi_tools_cdl::rapport_txt_dir == ""} {
-         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie TXT"
-      }
-      if {$::bdi_tools_cdl::rapport_imc_dir == ""} {
-         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie IMCCE"
-      }
-
-      set tt0 [clock clicks -milliseconds]
-
-      set rapport_batch [clock format [clock scan now] -format "Audela_BDI_%Y-%m-%dT%H:%M:%S_%Z"]
-      set part_batch ".Batch.${rapport_batch}"
-
-      set part_date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
-
-
-      array unset x  
-      array unset y
-      set ids 0
-      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$o != 2} {continue}
-         set part_objects $name
-
-         set file "${part_date}${part_objects}${part_batch}.txt"
-         set file [file join $::bdi_tools_cdl::rapport_txt_dir $file]
-         set chan [open $file w]
-
-         puts $chan "#OBJECT = $name"
-
-
-         puts $chan "#Date ISO               Julian Date        Mag     ErrMag FWHM RA         DEC           Flux                  Err Flux"
-         puts $chan "#----------------------------------------------------------------------------------------------------------------------"
-
-         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
-            set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
-
-            set midexpo_iso [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]
-            set midexpo_jd  $::bdi_tools_cdl::table_jdmidexpo($idcata)                                          
-            set mag         $::bdi_tools_cdl::table_science_mag($ids,$idcata)
-            set err_mag     0                                                                                   
-            set fwhm        [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) fwhm]     
-            set ra          [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) ra]       
-            set dec         [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) dec]      
-            set flux        [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flux]     
-            set err_flux    [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) err_flux] 
-
-            set midexpo_iso [format "%23s"   $midexpo_iso ]
-            set midexpo_jd  [format "%0.10f" $midexpo_jd  ]
-            set mag         [format "%0.4f"  $mag         ]
-            set err_mag     [format "%0.4f"  $err_mag     ]
-            set fwhm        [format "%0.2f"  $fwhm        ]
-            set ra          [format "%0.6f"  $ra          ]
-            set dec         [format "%0.6f"  $dec         ]
-
-            if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} { 
-               set flux [format "%15.2f" $flux ]
-            } else {
-               set flux [format "%17s" "Nan"]
-            }
-            if {$err_flux!="" && [string is double $err_flux] && $err_flux+1 != $err_flux && $err_flux > 0} { 
-               gren_erreur "err_flux = $err_flux \n"
-               set err_flux [format "%15.2f" $err_flux ]
-            } else {
-               set err_flux [format "%17s" "Nan"]
-            }
-
-#            gren_info "Data = $midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux \n"
-            puts $chan "$midexpo_iso $midexpo_jd $mag $err_mag $fwhm $ra $dec $flux $err_flux"
-         }
-         close $chan
-         gren_info "Rapport TXT : $file\n"
-
-      }
-
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Sauvegarde des resultats en $tt sec \n"
-      
-      return -code 0 ""
-   }    
-
-
-   proc ::bdi_tools_cdl::export_cata_to_gestion { } {
-
-      set tt0 [clock clicks -milliseconds]
-
-      set list_name_R ""
-      set list_name_S ""
-      
-      # Onglet References
-      set ids 0
-      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
-         incr ids
-         if {$y == 1} {
-            lappend list_name_R $name
-            continue
-         }
-         if {$y == 2} {
-            lappend list_name_S $name
-            continue
-         }
-      }
-
-
-      gren_info "list_name_R = $list_name_R \n"
-      gren_info "list_name_S = $list_name_S \n"
-      
-      ::cata_gestion_gui::export_photom_to_gestion $list_name_R $list_name_S
-
-
-
-      # On flag Rejetee sur toutes les sources
-      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
-      
-         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
-         set id_superstar       $::bdi_tools_cdl::table_superstar_idcata($::tools_cata::id_current_image)
-         set mag_superstar      $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag)
-         set flux_superstar     $::bdi_tools_cdl::table_superstar_flux($id_superstar,$::tools_cata::id_current_image)
-         set err_mag_superstar  0
-         set err_flux_superstar 0
-
-      }
-
-
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Export vers la fenetre gestion en $tt sec \n"
-   }    
 
 
 
@@ -244,6 +156,12 @@ namespace eval bdi_tools_cdl {
          set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
          set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+         set ::bdi_tools_cdl::rapport_uai_code [string trim [lindex [::bddimages_liste::lget $tabkey "IAU_CODE"] 1] ]
+         set ::bdi_tools_cdl::rapport_observ   [string trim [lindex [::bddimages_liste::lget $tabkey "OBSERVER"] 1] ]
+         set ex [::bddimages_liste::lexist $tabkey "INSTRUME"]
+         if {$ex != 0} {
+            set ::bdi_tools_cdl::rapport_instru [string trim [lindex [::bddimages_liste::lget $tabkey "INSTRUME"] 1] ]
+         }
 
          if {$exposure == -1} {
             gren_erreur "WARNING: Exposure inconnu pour l'image : $date\n"
@@ -443,6 +361,12 @@ namespace eval bdi_tools_cdl {
          set tabkey   [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
          set dateobs  [string trim [lindex [::bddimages_liste::lget $tabkey "date-obs"] 1] ]
          set exposure [string trim [lindex [::bddimages_liste::lget $tabkey "exposure"] 1] ]
+         set ::bdi_tools_cdl::rapport_uai_code [string trim [lindex [::bddimages_liste::lget $tabkey "IAU_CODE"] 1] ]
+         set ::bdi_tools_cdl::rapport_observ   [string trim [lindex [::bddimages_liste::lget $tabkey "OBSERVER"] 1] ]
+         set ex [::bddimages_liste::lexist $tabkey "INSTRUME"]
+         if {$ex != 0} {
+            set ::bdi_tools_cdl::rapport_instru [string trim [lindex [::bddimages_liste::lget $tabkey "INSTRUME"] 1] ]
+         }
          
          if {$idcata==1} {
             set jdc_orig [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0]
@@ -1568,7 +1492,18 @@ namespace eval bdi_tools_cdl {
                   } else {
                      lappend mag_sciences($ids) $mag
                   }
-                  set ::bdi_tools_cdl::table_science_mag($ids,$idcata) $mag
+                  set ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag) $mag
+                  
+                  # Calcul de l'erreur en mag
+                  set err_flux [::bdi_tools_psf::get_val othf "err_flux"]
+                  if {$err_flux!="" && [string is double $err_flux] && $err_flux+1 != $err_flux && $err_flux > 0} { 
+
+                     set magmax [expr $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) \
+                                    -2.5 * log10(1.0 * ($flux + $err_flux) / $::bdi_tools_cdl::table_superstar_flux($id_superstar,$idcata)) ]
+                     set err_mag [expr $mag - $magmax]
+                     set ::bdi_tools_cdl::table_science_mag($ids,$idcata,err_mag) $err_mag
+
+                  }
                }
             }
          }
@@ -1668,3 +1603,690 @@ namespace eval bdi_tools_cdl {
       gren_info "Calcul des sources rejetees en $tt sec \n"
    }    
 
+
+
+
+#----------------------------------------------------------------------------
+## Avancement de la barre de progression lors de la sauvegarde des
+# @param cur real Valeur courante
+# @param max real Valeur maximum de la barre de progression
+# @return void
+proc ::bdi_tools_cdl::set_savprogress { cur max } {
+
+   set ::bdi_tools_cdl::savprogress [format "%0.0f" [expr $cur * 100. /$max ] ]
+   update
+
+}
+
+
+#----------------------------------------------------------------------------
+## Sauvegarde des images et des catas a la suite de la reduction photometrique
+# @return void
+   proc ::bdi_tools_cdl::save_images { } {
+
+      global audace bddconf
+
+      # reflag les source dans les cata_list
+      set list_name_R ""
+      set list_name_S ""
+      
+      set ids 0
+      foreach {name y} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$y == 1} {
+            lappend list_name_R $name
+            continue
+         }
+         if {$y == 2} {
+            lappend list_name_S $name
+            continue
+         }
+      }
+      ::cata_gestion_gui::export_photom_to_gestion $list_name_R $list_name_S
+
+
+      # on sauve les cata et les images
+      set id_current_image 0
+      foreach current_image $::tools_cata::img_list {
+
+         incr id_current_image
+
+         # Progression
+         ::bdi_tools_cdl::set_savprogress $id_current_image $::tools_cata::nb_img_list
+         if { $::bdi_tools_cdl::savannul } { break }
+
+         # Tabkey
+         set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
+         set tabkey   [::bddimages_liste::lget $current_image "tabkey"]
+
+         # Noms des fichiers
+         set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+         set cataxml "${f}_cata.xml"
+
+         # buf$::audace(bufNo) setkwd [list $kwd $val $type $unit $comment]
+
+         set ident [bddimages_image_identification $idbddimg]
+         set fileimg  [lindex $ident 1]
+         set filecata [lindex $ident 3]
+
+         # Maj du buffer
+         buf$::audace(bufNo) load $fileimg
+
+         # On modifie le header fits avec l onglet entetes 
+         set buflist [buf$::audace(bufNo) getkwds]
+         set id_superstar       $::bdi_tools_cdl::table_superstar_idcata($id_current_image)
+
+         set mag_superstar      $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag)
+         set bk [list "REFMAG" $mag_superstar "double" "Magnitude of synthetic reference star" ""]
+         buf$::audace(bufNo) setkwd $bk
+
+         set flux_superstar     $::bdi_tools_cdl::table_superstar_flux($id_superstar,$id_current_image)
+         set bk [list "REFFLUX" $flux_superstar "double" "Integrated Flux of synthetic reference star" "ADU"]
+         buf$::audace(bufNo) setkwd $bk
+
+         set bk [list "BDDIMAGES PHOTOMETRY" "incomplete" "string" "Photometry performed" ""]
+         buf$::audace(bufNo) setkwd $bk
+
+         set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
+
+         # Creation de l image temporaire
+         set fichtmpunzip [unzipedfilename $fileimg]
+         set filetmp   [file join $::bddconf(dirtmp)  [file tail $fichtmpunzip]]
+         set filefinal [file join $::bddconf(dirinco) [file tail $fileimg]]
+         createdir_ifnot_exist $bddconf(dirtmp)
+         buf$::audace(bufNo) save $filetmp
+         lassign [::bdi_tools::gzip $filetmp $filefinal] errnum msg
+
+         # efface l image dans la base et le disque
+         bddimages_image_delete_fromsql $ident
+         bddimages_image_delete_fromdisk $ident
+
+         # insere l image dans la base
+         set err [catch {set idbddimg [insertion_solo $filefinal]} msg]
+         if {$err} {
+            gren_info "Erreur Insertion (ERR=$err) (MSG=$msg) (RESULT=$idbddimg) \n"
+         }
+
+         # Effacement de l image du repertoire tmp
+         set errnum [catch {file delete $filetmp} msg]
+
+         # insere le cata dans la base
+         ::tools_cata::save_cata $::gui_cata::cata_list($id_current_image) $tabkey $cataxml
+
+         # Maj  ::tools_cata::img_list
+         set current_image [::bddimages_liste::lupdate $current_image idbddimg $idbddimg]
+         set current_image [::bddimages_liste::lupdate $current_image tabkey $tabkey]
+         set ::tools_cata::img_list [lreplace $::tools_cata::img_list [expr $id_current_image - 1] [expr $id_current_image - 1] $current_image]
+
+         #return
+
+      }
+
+      ::bddimages_recherche::get_intellist $::bddimages_recherche::current_list_id
+      ::bddimages_recherche::Affiche_Results $::bddimages_recherche::current_list_id [array get action_label]
+
+   }
+
+
+   #----------------------------------------------------------------------------
+   ## Pretraitement et initialisation apres avoir charge la liste cata_list
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_tools_cdl::save_reports { } {
+
+      set tt0 [clock clicks -milliseconds]
+      # Verfifie les repertoires
+      
+      if {$::bdi_tools_cdl::rapport_txt_dir == ""} {
+         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie TXT"
+      }
+      if {$::bdi_tools_cdl::rapport_imc_dir == ""} {
+         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie IMCCE"
+      }
+
+      # Prepare les entetes
+      set ::bdi_tools_cdl::rapport_batch [clock format [clock scan now] -format "Audela_BDI_%Y-%m-%dT%H:%M:%S_%Z"]
+
+      # Prepare la table
+      array unset ::bdi_tools_cdl::results_table
+
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$o != 2} {continue}
+
+         set cpt 0
+         for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)]} {continue}
+            set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+
+            set midexpo_iso [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)]
+            set midexpo_jd  $::bdi_tools_cdl::table_jdmidexpo($idcata)                                          
+            set mag         $::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)
+            set fwhm        [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) fwhm]     
+            set ra          [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) ra]       
+            set dec         [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) dec]      
+            set flux        [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flux]     
+            set err_flux    [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) err_flux] 
+            set psf_method  [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) psf_method] 
+            set globale     [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) globale   ] 
+            set radius      [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) radius    ] 
+
+            # Flitre
+            set current_image [lindex $::tools_cata::img_list [expr $idcata-1]]
+            set tabkey      [::bddimages_liste::lget $current_image "tabkey"]
+            set filter      [string trim [lindex [::bddimages_liste::lget $tabkey "FILTER"]   1] ]
+            set exposure    [string trim [lindex [::bddimages_liste::lget $tabkey "EXPOSURE"] 1] ]
+
+            set midexpo_iso [format "%23s"   $midexpo_iso ]
+            set midexpo_jd  [format "%0.10f" $midexpo_jd  ]
+            set mag         [format "%7.4f"  $mag         ]
+            set fwhm        [format "%5.2f"  $fwhm        ]
+            set filter      [format "%-10s"  $filter      ]
+            set exposure    [format "%7.2f"  $exposure    ]
+            set ra          [format "%10.6f" $ra          ]
+            set dec         [format "%10.6f" $dec         ]
+            set radius      [format "%5s"    $radius      ]
+            set globale     [format "%8s"    $globale     ]
+            set psf_method  [format "%-32s"  $psf_method  ]
+
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,err_mag)]} {
+               set err_mag     "-     "                                                                            
+            } else {
+               set err_mag     [format "%0.4f" $::bdi_tools_cdl::table_science_mag($ids,$idcata,err_mag)]                                                                                  
+            }
+            if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} { 
+               set flux [format "%15.2f" $flux ]
+            } else {
+               set flux [format "%17s" "Nan"]
+            }
+            if {$err_flux!="" && [string is double $err_flux] && $err_flux+1 != $err_flux && $err_flux > 0} { 
+               #gren_erreur "err_flux = $err_flux \n"
+               set err_flux [format "%15.2f" $err_flux ]
+            } else {
+               set err_flux [format "%15s" "Nan"]
+            }
+
+            incr cpt
+            set ::bdi_tools_cdl::results_table($name,$cpt,midexpo_iso)  $midexpo_iso
+            set ::bdi_tools_cdl::results_table($name,$cpt,midexpo_jd)   $midexpo_jd
+            set ::bdi_tools_cdl::results_table($name,$cpt,mag)          $mag
+            set ::bdi_tools_cdl::results_table($name,$cpt,err_mag)      $err_mag
+            set ::bdi_tools_cdl::results_table($name,$cpt,fwhm)         $fwhm
+            set ::bdi_tools_cdl::results_table($name,$cpt,filter)       $filter
+            set ::bdi_tools_cdl::results_table($name,$cpt,exposure)     $exposure
+            set ::bdi_tools_cdl::results_table($name,$cpt,ra)           $ra
+            set ::bdi_tools_cdl::results_table($name,$cpt,dec)          $dec
+            set ::bdi_tools_cdl::results_table($name,$cpt,flux)         $flux
+            set ::bdi_tools_cdl::results_table($name,$cpt,err_flux)     $err_flux
+            set ::bdi_tools_cdl::results_table($name,$cpt,radius)       $radius
+            set ::bdi_tools_cdl::results_table($name,$cpt,globale)      $globale
+            set ::bdi_tools_cdl::results_table($name,$cpt,psf_method)   $psf_method
+         }
+            set ::bdi_tools_cdl::results_table($name,nb) $cpt
+
+      }
+
+
+
+
+
+      # Enregistre les rapports
+
+      ::bdi_tools_cdl::create_report_txt
+      ::bdi_tools_cdl::create_report_xml
+
+      array unset ::bdi_tools_cdl::results_table
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Sauvegarde des resultats en $tt sec \n"
+
+   }
+   
+
+
+
+
+
+   proc ::bdi_tools_cdl::create_report_txt { } {
+
+      set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
+      set part_date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$o != 2} {continue}
+         set part_objects $name
+
+         set file "${part_date}${part_objects}${part_batch}.txt"
+         set file [file join $::bdi_tools_cdl::rapport_txt_dir $file]
+         set chan [open $file w]
+
+         puts $chan "#OBJECT      = $name"
+         puts $chan "#IAU code    = ${::bdi_tools_cdl::rapport_uai_code}"
+         puts $chan "#Subscriber  = ${::bdi_tools_cdl::rapport_rapporteur}"
+         puts $chan "#Address     = ${::bdi_tools_cdl::rapport_adresse}"
+         puts $chan "#Mail        = ${::bdi_tools_cdl::rapport_mail}"
+         puts $chan "#Software    = Audela Bddimages Photometry v3"
+         puts $chan "#Observers   = ${::bdi_tools_cdl::rapport_observ}"
+         puts $chan "#Reduction   = ${::bdi_tools_cdl::rapport_reduc}"
+         puts $chan "#Instrument  = ${::bdi_tools_cdl::rapport_instru}"
+         puts $chan "#Batch       = ${::bdi_tools_cdl::rapport_batch}"
+         puts $chan "#Nb of dates = $::bdi_tools_cdl::results_table($name,nb)"
+         
+         set line ""
+         
+         append line "#\n"
+         append line "#Description of columns   :\n"
+         append line "# col  1 : Date ISO    : ISO-Date at mid-exposure \n"
+         append line "# col  2 : Julian Date : Julian Date at mid-exposure\n"
+         append line "# col  3 : Mag         : Measured magnitude\n"
+         append line "# col  4 : ErrMag      : Uncertainty on measured magnitude\n"
+         append line "# col  5 : FWHM        : Full width at half maximum\n"
+         append line "# col  6 : Filter      : Image filter\n"
+         append line "# col  7 : Exposure    : Exposure time of Image in second\n"
+         append line "# col  7 : RA          : Astrometric J2000 right ascension\n"
+         append line "# col  8 : DEC         : Astrometric J2000 declination\n"
+         append line "# col  9 : Flux        : Integrated Flux\n"
+         append line "# col 10 : Err Flux    : Uncertainty on integrated Flux\n"
+         append line "# col 11 : Radius      : Radius inside which the PSF where fitted\n"
+         append line "# col 12 : Global      : The set of radius where Globale method processed\n"
+         append line "# col 13 : PSF_Model   : PSF model\n"
+
+         append line "#\n"
+         append line "#Date ISO               Julian Date        Mag     ErrMag  FWHM    Filter Exposure   RA         DEC             Flux          Err_Flux   Radius Global  PSF_Model\n"
+         append line "#---------------------------------------------------------------------------------------------------------------------------------------------------------------\n"
+
+         for {set cpt 1} {$cpt <= $::bdi_tools_cdl::results_table($name,nb)} { incr cpt } {
+            
+            append line $::bdi_tools_cdl::results_table($name,$cpt,midexpo_iso) ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,midexpo_jd)  ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,mag)         ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,err_mag)     ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,fwhm)        ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,filter)      ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,exposure)    ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,ra)          ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,dec)         ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,flux)        ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,err_flux)    ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,radius)      ; append line " "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,globale)     ; append line "  "
+            append line $::bdi_tools_cdl::results_table($name,$cpt,psf_method)  ; append line "\n"
+
+         }
+
+         puts $chan $line
+         close $chan
+         gren_info "Rapport TXT : $file\n"
+      }
+
+      
+      return -code 0 ""
+   }    
+
+
+   proc ::bdi_tools_cdl::create_report_xml {  } {
+
+      set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
+      set part_date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+
+         incr ids
+         if {$o != 2} {continue}
+         set object $name
+         set part_objects $name
+      
+         set file "${part_date}${part_objects}${part_batch}.xml"
+         set file [file join $::bdi_tools_cdl::rapport_imc_dir $file]
+
+         # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
+         ::votable::init "1.1" ""
+         # Ouvre une VOTable
+         set votable [::votable::openVOTable]
+         # Ajoute l'element INFO pour definir le QUERY_STATUS = "OK" | "ERROR"
+         append votable [::votable::addInfoElement "status" "QUERY_STATUS" "OK"] "\n"
+         # Ouvre l'element RESOURCE
+         append votable [::votable::openResourceElement {} ] "\n"
+
+         # Definition des champs PARAM
+         set votParams ""
+         set description "Observatory IAU code"
+         set p [ list "$::votable::Field::ID \"iaucode\"" \
+                      "$::votable::Field::NAME \"IAUCode\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"3\"" \
+                      "$::votable::Field::WIDTH \"3\"" ]
+         lappend p "$::votable::Param::VALUE ${::bdi_tools_cdl::rapport_uai_code}"; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Subscriber"
+         set p [ list "$::votable::Field::ID \"subscriber\"" \
+                      "$::votable::Field::NAME \"Subscriber\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_rapporteur}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Address"
+         set p [ list "$::votable::Field::ID \"address\"" \
+                      "$::votable::Field::NAME \"Address\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_adresse}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Mail"
+         set p [ list "$::votable::Field::ID \"mail\"" \
+                      "$::votable::Field::NAME \"Mail\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_mail}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Software"
+         set p [ list "$::votable::Field::ID \"software\"" \
+                      "$::votable::Field::NAME \"Software\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"Audela Bddimages\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Observers"
+         set p [ list "$::votable::Field::ID \"observers\"" \
+                      "$::votable::Field::NAME \"Observers\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_observ}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Reduction"
+         set p [ list "$::votable::Field::ID \"reduction\"" \
+                      "$::votable::Field::NAME \"Reduction\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_reduc}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Instrument"
+         set p [ list "$::votable::Field::ID \"instrument\"" \
+                      "$::votable::Field::NAME \"Instrument\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_instru}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Batch"
+         set p [ list "$::votable::Field::ID \"batch\"" \
+                      "$::votable::Field::NAME \"Batch\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"64\"" \
+                      "$::votable::Field::WIDTH \"64\"" ]
+         lappend p "$::votable::Param::VALUE \"${::bdi_tools_cdl::rapport_batch}\""; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "NumberOfPositions"
+         set p [ list "$::votable::Field::ID \"numbdate\"" \
+                      "$::votable::Field::NAME \"NumberOfDates\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"int\"" \
+                      "$::votable::Field::WIDTH \"6\"" ]
+         lappend p "$::votable::Param::VALUE $::bdi_tools_cdl::results_table($name,nb)"; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         set description "Object Name"
+         set p [ list "$::votable::Field::ID \"object\"" \
+                      "$::votable::Field::NAME \"Object\"" \
+                      "$::votable::Field::UCD \"meta.id;meta.name\"" \
+                      "$::votable::Field::DATATYPE \"globale\"" \
+                      "$::votable::Field::WIDTH \"24\"" ]
+         lappend p "$::votable::Param::VALUE ${object}"; # attribut value doit toijours etre present
+         set param [list $p [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votParams [::votable::addElement $::votable::Element::PARAM [lindex $param 0] [lindex $param 1]] "\n"
+
+         # Ajoute les params a la votable
+         append votable $votParams
+
+         # Definition des champs FIELDS
+         set description "ISO-Date at mid-exposure"
+         set f [ list "$::votable::Field::ID \"isodate\"" \
+                      "$::votable::Field::NAME \"ISO-Date\"" \
+                      "$::votable::Field::UCD \"time.epoch\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"24\"" \
+                      "$::votable::Field::WIDTH \"24\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Julian date at mid-exposure"
+         set f [ list "$::votable::Field::ID \"jddate\"" \
+                      "$::votable::Field::NAME \"JD-Date\"" \
+                      "$::votable::Field::UCD \"time.epoch\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"16\"" \
+                      "$::votable::Field::PRECISION \"8\"" \
+                      "$::votable::Field::UNIT \"d\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Measured magnitude"
+         set f [ list "$::votable::Field::ID \"mag\"" \
+                      "$::votable::Field::NAME \"Magnitude\"" \
+                      "$::votable::Field::UCD \"phot.mag\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"13\"" \
+                      "$::votable::Field::PRECISION \"2\"" \
+                      "$::votable::Field::UNIT \"mag\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Uncertainty on measured magnitude"
+         set f [ list "$::votable::Field::ID \"mag_err\"" \
+                      "$::votable::Field::NAME \"Err Mag\"" \
+                      "$::votable::Field::UCD \"stat.error;phot.mag\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"13\"" \
+                      "$::votable::Field::PRECISION \"2\"" \
+                      "$::votable::Field::UNIT \"mag\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Full width at half maximum"
+         set f [ list "$::votable::Field::ID \"fwhm\"" \
+                      "$::votable::Field::NAME \"fwhm\"" \
+                      "$::votable::Field::UCD \"obs.param;phys.angSize\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"10\"" \
+                      "$::votable::Field::PRECISION \"4\"" \
+                      "$::votable::Field::UNIT \"px\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Image filter"
+         set f [ list "$::votable::Field::ID \"filter\"" \
+                      "$::votable::Field::NAME \"Filter\"" \
+                      "$::votable::Field::UCD \"meta.id;instr.filter\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::ARRAYSIZE \"8\"" \
+                      "$::votable::Field::WIDTH \"8\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Exposure time of Image in second"
+         set f [ list "$::votable::Field::ID \"exposure\"" \
+                      "$::votable::Field::NAME \"Exposure\"" \
+                      "$::votable::Field::UCD \"time.duration;obs.exposure\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"7\"" \
+                      "$::votable::Field::PRECISION \"2\"" \
+                      "$::votable::Field::UNIT \"sec\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Astrometric J2000 right ascension"
+         set f [ list "$::votable::Field::ID \"ra\"" \
+                      "$::votable::Field::NAME \"RA\"" \
+                      "$::votable::Field::UCD \"pos.eq.ra;meta.main\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"10\"" \
+                      "$::votable::Field::PRECISION \"6\"" \
+                      "$::votable::Field::UNIT \"deg\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Astrometric J2000 declination"
+         set f [ list "$::votable::Field::ID \"dec\"" \
+                      "$::votable::Field::NAME \"DEC\"" \
+                      "$::votable::Field::UCD \"pos.eq.dec;meta.main\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"10\"" \
+                      "$::votable::Field::PRECISION \"6\"" \
+                      "$::votable::Field::UNIT \"deg\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Integrated Flux"
+         set f [ list "$::votable::Field::ID \"flux\"" \
+                      "$::votable::Field::NAME \"Flux\"" \
+                      "$::votable::Field::UCD \"phot.flux\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"10\"" \
+                      "$::votable::Field::PRECISION \"2\"" \
+                      "$::votable::Field::UNIT \"adu\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Uncertainty on integrated Flux"
+         set f [ list "$::votable::Field::ID \"err_flux\"" \
+                      "$::votable::Field::NAME \"Err Flux\"" \
+                      "$::votable::Field::UCD \"stat.error;phot.flux\"" \
+                      "$::votable::Field::DATATYPE \"double\"" \
+                      "$::votable::Field::WIDTH \"10\"" \
+                      "$::votable::Field::PRECISION \"2\"" \
+                      "$::votable::Field::UNIT \"adu\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "Radius inside which the PSF where fitted"
+         set f [ list "$::votable::Field::ID \"radius\"" \
+                      "$::votable::Field::NAME \"Radius\"" \
+                      "$::votable::Field::UCD \"phys.size.radius;instr.pixel\"" \
+                      "$::votable::Field::DATATYPE \"int\"" \
+                      "$::votable::Field::WIDTH \"6\"" \
+                      "$::votable::Field::UNIT \"px\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "The set of radius where Globale method processed"
+         set f [ list "$::votable::Field::ID \"globale\"" \
+                      "$::votable::Field::NAME \"Globale\"" \
+                      "$::votable::Field::UCD \"\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::WIDTH \"8\"" \
+                      "$::votable::Field::UNIT \"px\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+         set description "PSF model"
+         set f [ list "$::votable::Field::ID \"psf_method\"" \
+                      "$::votable::Field::NAME \"PSF Model\"" \
+                      "$::votable::Field::UCD \"stat.fit;instr.det.psf\"" \
+                      "$::votable::Field::DATATYPE \"char\"" \
+                      "$::votable::Field::WIDTH \"32\"" ]
+         set field [list $f [::votable::addElement $::votable::Element::DESCRIPTION {} $description]]
+         append votFields [::votable::addElement $::votable::Element::FIELD [lindex $field 0] [lindex $field 1]] "\n"
+
+
+         # Construit la table des donnees
+
+         set nrows 0
+         set votSources ""
+
+         for {set cpt 1} {$cpt <= $::bdi_tools_cdl::results_table($name,nb)} { incr cpt } {
+
+            append votSources [::votable::openElement $::votable::Element::TR {}]
+
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,midexpo_iso) ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,midexpo_jd)  ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,mag)         ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,err_mag)     ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,fwhm)        ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,filter)      ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,exposure)    ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,ra)          ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,dec)         ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,flux)        ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,err_flux)    ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,radius)      ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,globale)     ] ]
+            append votSources [::votable::addElement $::votable::Element::TD {} [string trim $::bdi_tools_cdl::results_table($name,$cpt,psf_method)  ] ]
+
+            append votSources [::votable::closeElement $::votable::Element::TR] "\n"
+
+         }
+
+         set zname [lrange [split $name "_"] 2 end]
+         # Ouvre l'element TABLE
+         append votable [::votable::openTableElement [list "$::votable::Table::NAME \"Photometric results for $zname\"" "$::votable::Table::NROWS $::bdi_tools_cdl::results_table($name,nb)"]] "\n"
+         #  Ajoute un element de description de la table
+         append votable [::votable::addElement $::votable::Element::DESCRIPTION {} "Photometric measures of science object $zname obtained by Audela/Bddimages"] "\n"
+         #  Ajoute les definitions des colonnes
+         append votable $votFields
+         #  Ouvre l'element DATA
+         append votable [::votable::openElement $::votable::Element::DATA {}] "\n"
+         #   Ouvre l'element TABLEDATA
+         append votable [::votable::openElement $::votable::Element::TABLEDATA {}] "\n"
+         #    Ajoute les sources
+         append votable $votSources
+         #   Ferme l'element TABLEDATA
+         append votable [::votable::closeElement $::votable::Element::TABLEDATA] "\n"
+         #  Ferme l'element DATA
+         append votable [::votable::closeElement $::votable::Element::DATA] "\n"
+         # Ferme l'element TABLE
+         append votable [::votable::closeTableElement] "\n"
+
+         # Ferme l'element RESOURCE
+         append votable [::votable::closeResourceElement] "\n"
+         # Ferme la VOTable
+         append votable [::votable::closeVOTable]
+
+         # ecrit le fichier
+         set chan [open $file w]
+         puts $chan $votable
+         close $chan
+         gren_info "Rapport IMCCE : $file\n"
+
+      }
+
+      return
+
+   }

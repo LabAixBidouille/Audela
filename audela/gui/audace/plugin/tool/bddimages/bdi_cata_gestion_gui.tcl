@@ -1651,22 +1651,13 @@ namespace eval cata_gestion_gui {
             set newsources [lreplace $newsources $ids $ids $s]
             if {$fp_ap != $fp_av} {
                set nameuc [::manage_source::naming $s [::manage_source::namable $s] ]
-               gren_info "$nameuc Raz de Flag ($fp_av)->($fp_ap)\n"
+               #gren_info "$nameuc Raz de Flag ($fp_av)->($fp_ap)\n"
             }
          }
-
          set ::tools_cata::current_listsources [list $fields $newsources]
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-
-         ::tools_cata::current_listsources_to_tklist
-
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
-
       }
 
-      # On boucle sur les nom des sources a flagger Reference
       for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
       
          set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
@@ -1674,6 +1665,7 @@ namespace eval cata_gestion_gui {
          set sources [lindex  $::tools_cata::current_listsources 1]         
 
 
+         # On boucle sur les nom des sources a flagger Reference
          foreach name $list_name_R {
             set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
             set s [lindex $sources $ids]
@@ -1683,6 +1675,7 @@ namespace eval cata_gestion_gui {
             ::bdi_tools_psf::set_astroid_in_source s othf
             set sources [lreplace $sources $ids $ids $s]
          }
+         # On boucle sur les nom des sources a flagger Science
          foreach name $list_name_S {
             set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
             set s [lindex $sources $ids]
@@ -1695,15 +1688,7 @@ namespace eval cata_gestion_gui {
          
          set ::tools_cata::current_listsources [list $fields $sources]
          set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
-         ::tools_cata::current_listsources_to_tklist
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
-         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
       }
-
-
-      # On reaffiche gestion
-      #::cata_gestion_gui::charge_image_directaccess
 
       return
    }
