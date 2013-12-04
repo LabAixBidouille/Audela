@@ -538,6 +538,7 @@ namespace eval bdi_gui_cdl {
 
 
 
+      set wdth 13
 
          # Resultats
          set results [frame $f_results.data_reference  -borderwidth 1 -relief groove]
@@ -554,6 +555,72 @@ namespace eval bdi_gui_cdl {
                   grid $block.labtxt $block.valtxt -sticky news
                   grid $block.labxml $block.valxml -sticky news
 
+            #--- Onglet RAPPORT - Entetes
+            set block [frame $results.uai_code  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "IAU Code : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 5 -textvariable ::bdi_tools_cdl::rapport_uai_code
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+                  label  $block.loc -textvariable ::bdi_tools_astrometry::rapport_uai_location -borderwidth 1 -width $wdth
+                  pack   $block.loc -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.rapporteur  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Rapporteur : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_rapporteur
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.adresse  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Adresse : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_adresse
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.mail  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Mail : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80  -textvariable ::bdi_tools_cdl::rapport_mail
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.observ  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Observateurs : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_observ
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.reduc  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Reduction : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_reduc
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.instru  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Instrument : " -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_instru
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
 
 
@@ -614,10 +681,8 @@ namespace eval bdi_gui_cdl {
               label $actions.labgestion -text "Gestion"  -justify left
               button $actions.charge_gestion -text "Charge" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::charge_from_gestion"
-              button $actions.export_gestion -text "Export" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::export_cata_to_gestion"
               button $actions.sauve_gestion -text "Sauve" -borderwidth 2 -takefocus 1 \
-                 -command "::gui_cata::save_cata"
+                 -command "::bdi_gui_cdl::save_image_cata"
 
               label $actions.labvoir -text "Affichage"  -justify left
               button $actions.voir -text "Tables" -borderwidth 2 -takefocus 1 \
@@ -670,8 +735,7 @@ namespace eval bdi_gui_cdl {
 
              grid $actions.labgestion      -row 0 -column 2 -sticky news
              grid $actions.charge_gestion  -row 1 -column 2 -sticky news
-             grid $actions.export_gestion  -row 2 -column 2 -sticky news
-             grid $actions.sauve_gestion   -row 3 -column 2 -sticky news
+             grid $actions.sauve_gestion   -row 2 -column 2 -sticky news
 
              grid $actions.labvoir         -row 0 -column 3 -sticky news
              grid $actions.voir            -row 1 -column 3 -sticky news
@@ -1045,19 +1109,89 @@ namespace eval bdi_gui_cdl {
 
 
 
+   proc ::bdi_gui_cdl::save_image_cata {  } {
 
+#      $::bdi_gui_astrometry::fen.appli.info.fermer configure -state disabled
+#      $::bdi_gui_astrometry::fen.appli.info.enregistrer configure -state disabled
 
+      set tt0 [clock clicks -milliseconds]
 
-   proc ::bdi_gui_cdl::export_cata_to_gestion {  } {
+      set ::bdi_tools_cdl::savprogress 0
+      set ::bdi_tools_cdl::savannul 0
 
-      ::bdi_tools_cdl::export_cata_to_gestion
+      set ::bdi_gui_cdl::fensav .savprogress
+      if { [winfo exists $::bdi_gui_cdl::fensav] } {
+         wm withdraw $::bdi_gui_cdl::fensav
+         wm deiconify $::bdi_gui_cdl::fensav
+         focus $::bdi_gui_cdl::fensav
+         return
+      }
+
+      toplevel $::bdi_gui_cdl::fensav -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::bdi_gui_cdl::fensav ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::bdi_gui_cdl::fensav ] "+" ] 2 ]
+      wm geometry $::bdi_gui_cdl::fensav +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::bdi_gui_cdl::fensav 1 1
+      wm title $::bdi_gui_cdl::fensav "Enregistrement"
+      wm protocol $::bdi_gui_cdl::fensav WM_DELETE_WINDOW ""
+
+      set frm $::bdi_gui_cdl::fensav.appli
+
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $::bdi_gui_cdl::fensav -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+         set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             set    pf [ ttk::progressbar $data.p -variable ::bdi_tools_cdl::savprogress -orient horizontal -length 200 -mode determinate]
+             pack   $pf -in $data -side top
+
+         set data  [frame $frm.boutons -borderwidth 0 -cursor arrow -relief groove]
+         pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+             button $data.annul -state active -text "Annuler" -relief "raised" \
+                -command "::bdi_gui_cdl::annul_save_images"
+             pack   $data.annul -side top -anchor c -padx 0 -padx 10 -pady 5
+
+      update
+      ::bdi_tools_cdl::save_images
+
+      # on met a jour les table de la gui de gestion
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+         ::tools_cata::current_listsources_to_tklist
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,tklist)          [array get ::gui_cata::tklist]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,list_of_columns) [array get ::gui_cata::tklist_list_of_columns]
+         set ::gui_cata::tk_list($::tools_cata::id_current_image,cataname)        [array get ::gui_cata::cataname]
+      }
+      
       # On reaffiche gestion
       ::cata_gestion_gui::charge_image_directaccess
+
+      destroy $::bdi_gui_cdl::fensav
+
+#      $::bdi_gui_cdl::fen.appli.info.fermer configure -state normal
+#      $::bdi_gui_cdl::fen.appli.info.enregistrer configure -state normal
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Sauvegarde des images et cata en $tt sec \n"
+
    }
+
+
+
+
+   proc ::bdi_gui_cdl::annul_save_images { } {
+
+      $::bdi_gui_cdl::fensav.appli.boutons.annul configure -state disabled
+      set ::bdi_tools_cdl::savannul 1
+
+   }
+
 
 
    proc ::bdi_gui_cdl::save_reports {  } {
 
+      ::bdi_tools_cdl::closetoconf
       set err [ catch { ::bdi_tools_cdl::save_reports } msg]
       if {$err} {
          tk_messageBox -message "Erreur : $msg" -type ok
@@ -1260,9 +1394,10 @@ namespace eval bdi_gui_cdl {
          }
 
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)]} {continue}
             lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
-            lappend y($ids)  $::bdi_tools_cdl::table_science_mag($ids,$idcata)
+            lappend y($ids)  $::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)
+            gren_info "($ids) ($x($ids)) ($y($ids)) \n"
          }
 
          set h [::plotxy::plot $x($ids) $y($ids) .]
@@ -1304,9 +1439,9 @@ namespace eval bdi_gui_cdl {
          }
 
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)]} {continue}
             lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
-            lappend y($ids)  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
+            lappend y($ids)  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata,mag) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
          }
 
          set h [::plotxy::plot $x($ids) $y($ids) .]
@@ -1352,12 +1487,12 @@ namespace eval bdi_gui_cdl {
          incr ids
          if {$o != 2} {continue}
          for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
-            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata)]} {continue}
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)]} {continue}
             set x  $::bdi_tools_cdl::idcata_to_jdc($idcata)
-            set y  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
+            set y  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata,mag) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
             
             if {$x >= $x1 && $x < $x2 && $y > $y1 && $y < $y2 } {
-               unset ::bdi_tools_cdl::table_science_mag($ids,$idcata)
+               unset ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)
                gren_info "Suppression idcata = $idcata, midepoch = [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)] name=$name \n"
             }
          }
