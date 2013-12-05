@@ -1155,32 +1155,35 @@ namespace eval bddimages_recherche {
       menu $popupTbl.analyse -tearoff 0
       $popupTbl add cascade -label "Analyse" -menu $popupTbl.analyse
 
-           $popupTbl.analyse add command -label "(p) Photocentre" \
-              -command { ::bddimages_recherche::psf }
+           $popupTbl.analyse add command -label "$caption(bddimages_recherche,astroid)" \
+              -command { ::bddimages_recherche::astroid}
 
-           $popupTbl.analyse add command -label "CdL" \
-              -command { ::bddimages_cdl::run }
+           menu $popupTbl.analyse.photocentre -tearoff 0
+           $popupTbl.analyse add cascade -label "Photocentre" -menu $popupTbl.analyse.photocentre
 
-           $popupTbl.analyse add command -label "CdL avec WCS" \
-              -command { ::bddimages_recherche::creation_cdlwcs}
+                $popupTbl.analyse.photocentre add command -label "Manuel" \
+                   -command { ::bddimages_recherche::psf_manuel }
 
-           $popupTbl.analyse add command -label "(P) CdL avec CATA" \
-              -command { ::bddimages_recherche::creation_cdlcata}
+                $popupTbl.analyse.photocentre add command -label "Automatique" \
+                   -command { ::bddimages_recherche::psf_auto } -state disabled
 
-           $popupTbl.analyse add command -label $caption(bddimages_recherche,astroid) \
-              -command { ::bddimages_recherche::run_astroid} -state disabled
+           menu $popupTbl.analyse.photometrie -tearoff 0
+           $popupTbl.analyse add cascade -label "Photometrie" -menu $popupTbl.analyse.photometrie
 
-           $popupTbl.analyse add command -label $caption(bddimages_recherche,photom) -state disabled \
-              -command { ::gui_cata::run_photom}
+                $popupTbl.analyse.photometrie add command -label "(p) avec CATA" \
+                   -command { ::bddimages_recherche::creation_cdlcata}
+
+                $popupTbl.analyse.photometrie add command -label "avec WCS" \
+                   -command { ::bddimages_recherche::creation_cdlwcs}
+
+                $popupTbl.analyse.photometrie add command -label "Simple" \
+                   -command { ::bddimages_cdl::run }
 
            $popupTbl.analyse add command -label "(a) $caption(bddimages_recherche,astrom)" \
               -command { ::bddimages_recherche::bddimages_astrometrie}
 
            $popupTbl.analyse add command -label $caption(bddimages_recherche,binast) \
               -command { ::bddimages_recherche::bddimages_binast}
-
-           $popupTbl.analyse add command -label $caption(bddimages_recherche,cata) -state disabled \
-              -command { ::gui_cata::run_cata}
 
       menu $popupTbl.developpement -tearoff 0
       $popupTbl add cascade -label "Divers" -menu $popupTbl.developpement
@@ -1211,8 +1214,7 @@ namespace eval bddimages_recherche {
       bind [$tbl bodypath] <Key-a>         { ::bddimages_recherche::bddimages_astrometrie }
       bind [$tbl bodypath] <Key-v>         { ::bddimages_recherche::bddimages_voir_cata }
       bind [$tbl bodypath] <Key-V>         { ::bddimages_recherche::bddimages_verifier_cata }
-      bind [$tbl bodypath] <Key-p>         { ::bddimages_recherche::psf }
-      bind [$tbl bodypath] <Key-P>         { ::bddimages_recherche::creation_cdlcata }
+      bind [$tbl bodypath] <Key-p>         { ::bddimages_recherche::creation_cdlcata }
       bind [$tbl bodypath] <Key-Delete>    { ::bddimages_recherche::bddimages_images_delete }
 
    }
@@ -1409,38 +1411,6 @@ namespace eval bddimages_recherche {
 
       return
    }
-
-   #--------------------------------------------------
-   #  export_cata {  }
-   #--------------------------------------------------
-   #
-   #    fonction  : execute astroid
-   #
-   #    variables en entree :
-   #
-   #    variables en sortie : void
-   #
-   #--------------------------------------------------
-   proc ::bddimages_recherche::run_astroid {  } {
-
-      variable This
-      global bddconf
-
-      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
-      set lid [lsort -decreasing -integer $lid]
-      set img_list [::bddimages_liste_gui::new_normallist $lid]
-
-      foreach img $img_list {
-
-         set ::tools_cata::id_current_image $img
-         ::tools_astroid::astroid
-         break
-      }
-
-
-      return
-   }
-
 
    #--------------------------------------------------
    #  bddimages_images_copy_calib {  }
@@ -1740,7 +1710,7 @@ namespace eval bddimages_recherche {
 
    }
 
-   proc ::bddimages_recherche::psf { } {
+   proc ::bddimages_recherche::psf_manuel { } {
 
       variable This
       global caption
@@ -1753,6 +1723,31 @@ namespace eval bddimages_recherche {
 
    }
 
+   proc ::bddimages_recherche::astroid { } {
+
+      variable This
+      global caption
+
+      set lid [$::bddimages_recherche::This.frame6.result.tbl curselection ]
+      set lid [lsort -decreasing -integer $lid]
+
+       if { [llength $lid] == 0 } {
+          tk_messageBox -message "Veuillez selectionner des images dans la liste" -type ok
+          return
+       }
+      
+      set tt0 [clock clicks -milliseconds]
+      if { [ info exists ::tools_cata::img_list ] }           {unset ::tools_cata::img_list}
+      if { [ info exists ::tools_cata::current_image ] }      {unset ::tools_cata::current_image}
+      if { [ info exists ::tools_cata::current_image_name ] } {unset ::tools_cata::current_image_name}
+      set ::tools_cata::img_list    [::bddimages_imgcorrection::chrono_sort_img [::bddimages_liste_gui::new_normallist $lid]]
+      set ::tools_cata::img_list    [::bddimages_liste_gui::add_info_cata_list $::tools_cata::img_list]
+      set ::tools_cata::nb_img_list [llength $::tools_cata::img_list]
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Preparation img_list en $tt sec \n"
+      set z [::bdi_gui_astroid::astroid]
+
+   }
 
    proc ::bddimages_recherche::bddimages_astrometrie { } {
 
