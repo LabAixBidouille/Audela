@@ -33,6 +33,7 @@
 #  @warning   Appel par GUI uniquement
 namespace eval bdi_gui_psf {
 
+}
 
    #------------------------------------------------------------
    ## Initialisation des parametres de PSF au niveau GUI
@@ -442,5 +443,3 @@ return
 
    } 
 
-
-}

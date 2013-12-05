@@ -137,6 +137,8 @@ proc ::bddimages::ressource {  } {
 
    global audace
 
+   set ::bddimages::log_level "Info"
+
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool bddimages bddimages_go.cap ]
 
@@ -145,6 +147,12 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools sampTools.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votable.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools votableUtil.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools vo_tools_go.tcl ]\""
+
+   #--- Chargement des fichiers prioritaires
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_xml.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
+
 
    #--- Chargement des fichiers tools
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
@@ -160,7 +168,6 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_sources.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_verifcata.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_xml.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_psf.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_methodes_psf.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astrometry.tcl ]\""
@@ -169,17 +176,18 @@ proc ::bddimages::ressource {  } {
 
 
    #--- Chargement des fichiers gui
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_astroid.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_astrometry.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata_creation.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata_delete.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cdl.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_config.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_gestion_source.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_psf.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_set_ref_science.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_gestion_source.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_psf.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_astrometry.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata_delete.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cdl.tcl ]\""
 
 
 # TODO
@@ -207,7 +215,6 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sub_insertion.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_liste_gui.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_admin.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_define.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_imgcorrection.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_astroid.tcl ]\""
@@ -230,6 +237,11 @@ proc ::bddimages::ressource {  } {
 
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
+
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils multihtread bdi_gui_multithread.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils multihtread bdi_tools_multithread.tcl ]\""
+
+
    load libcatalog[info sharedlibextension]
 
    ::Samp::destroy
@@ -449,6 +461,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
          button $This.clean.but1 -borderwidth 2 -text $caption(bddimages_go,cleanconsole) \
             -command { console::clear}
          pack $This.clean.but1 -in $This.clean -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+      #--- Frame des services
+      frame $This.test -borderwidth 1 -relief groove
+      pack $This.test -side top -fill x
+
+         #--- Bouton d'ouverture de l'outil de recherche d images
+         button $This.test.but1 -borderwidth 2 -text "Test" \
+            -command "::bdi_gui_multithread::gui_test"
+         pack $This.test.but1 -in $This.test -anchor center -fill both -pady 5 -ipadx 5 -ipady 3
 
 
       #--- Mise a jour dynamique des couleurs
