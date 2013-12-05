@@ -1839,6 +1839,33 @@ proc psf_toolbox { visuNo } {
 
       }
 
+      # on supprime les valeurs dont le flux diminue en debut de courbe
+      set cpt 0
+      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+         if {[info exists private_graph($radius,flux)]} {
+            incr cpt
+            
+            # premier contact
+            if {$cpt==1} {
+               set flux $private_graph($radius,flux)
+               set last_radius $radius
+               continue
+            }
+            
+            if {$private_graph($radius,flux)>$flux} {
+               # le flux est croissant, on sort
+               break
+            } else {
+               # le flux est decroissant
+               foreach key [get_fields_current_psf] {
+                  unset private_graph($last_radius,$key)
+               }
+               set flux $private_graph($radius,flux)
+               set last_radius $radius
+            }
+         }
+      }
+
       # on cherche les meilleurs rayons
       # par critere sur le fond du ciel minimal
 
