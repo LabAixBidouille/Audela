@@ -1013,6 +1013,10 @@ int tt_ima_series_registerfine_1(TT_IMA_SERIES *pseries)
    a[5]=-trans_y0;
    tt_util_update_wcs(p_in,p_out,a,2,NULL);
 
+	/* --- nouveaux mots cles ---*/
+   tt_imanewkey(p_out,"OPT_DX",&trans_x0,TDOUBLE,"TT Registerfine trans_x","pix");
+   tt_imanewkey(p_out,"OPT_DY",&trans_y0,TDOUBLE,"TT Registerfine trans_y","pix");
+
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
    pseries->exptime_stack=pseries->exptime[index-1];
