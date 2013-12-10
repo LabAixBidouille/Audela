@@ -123,6 +123,9 @@ proc ::bddimages::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Chargement des procedures
    ::bddimages::ressource
+   ::Samp::destroy
+   
+   ::bddimages_sql::mysql_init
 
    #--- Mise en place de l'interface graphique
    ::bddimages::createPanel $in.bddimages
@@ -189,6 +192,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
 
 # TODO
 
@@ -198,15 +202,12 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_ihm.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_binast_tools.tcl ]\""
 
-
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_go.tcl ]\""
-
 
    # Anciennes facon de nommage des routines
 
-
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_insertion.tcl ]\""
+
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_recherche.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_identification.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_entete_preminforecon.tcl ]\""
@@ -240,11 +241,6 @@ proc ::bddimages::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils multihtread bdi_gui_multithread.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils multihtread bdi_tools_multithread.tcl ]\""
-
-
-   load libcatalog[info sharedlibextension]
-
-   ::Samp::destroy
 
 }
 

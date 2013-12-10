@@ -427,7 +427,17 @@ proc bddimages_insertion_unfich { ligne } {
       set insert_id [lindex $result 1]
       set msg       [lindex $result 2]
       set typefich "cata"
+      if {!$err} {
+          #puts "Effacement du cata $nomfich"
+          #set errnum [catch {file delete $nomfich} msg]
+          #if {$errnum!=0} {
+          #   puts "Effacement impossible"
+          #} else {
+          #   #puts "Effacement impossible"
+          #}
+          
       }
+   }
 
    return [list $err $nomfich $insert_id $msg $typefich]
 }

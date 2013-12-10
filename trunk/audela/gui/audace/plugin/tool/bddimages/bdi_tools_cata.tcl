@@ -667,7 +667,7 @@ namespace eval tools_cata {
 
       global bddconf
 
-      gren_info "Chargement du cata xml: $catafile \n"
+#      gren_info "Chargement du cata xml: $catafile \n"
 
       set fields ""
       set fxml [open $catafile "r"]
@@ -1015,7 +1015,7 @@ namespace eval tools_cata {
 
       set dateobs  [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
       #gren_info "date = $dateobs\n"
-      gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+      #gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
       # Creation de la VOTable en memoire
       set votable [::votableUtil::list2votable $listsources $tabkey]
@@ -1030,7 +1030,7 @@ namespace eval tools_cata {
       
       # Insertion du cata dans bdi
       set err [ catch { insertion_solo $cataxml } msg ]
-      #gren_info "** INSERTION_SOLO = $err $msg\n"
+      gren_info "** INSERTION_SOLO = $err $msg\n"
       set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
       if {$cataexist==0} {
          set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]
