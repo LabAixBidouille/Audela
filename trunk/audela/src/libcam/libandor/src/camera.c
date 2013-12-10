@@ -451,7 +451,7 @@ void cam_measure_temperature(struct camprop *cam)
    /* --- Get Temperature ---*/
    cam->drv_status=GetTemperature(&temperature);
    if(cam->drv_status!=DRV_SUCCESS) {
-      if ((cam->drv_status!=DRV_TEMP_OFF)&&(cam->drv_status!=DRV_TEMP_STABILIZED)&&(cam->drv_status!=DRV_TEMP_NOT_REACHED)) {
+      if ((cam->drv_status!=DRV_TEMP_OFF)&&(cam->drv_status!=DRV_TEMP_STABILIZED)&&(cam->drv_status!=DRV_TEMP_NOT_REACHED)&&(cam->drv_status!=DRV_TEMPERATURE_NOT_STABILIZED)) {
         sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
         return;
 	  }
