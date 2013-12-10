@@ -616,6 +616,7 @@ namespace eval bdi_tools_psf {
 
       upvar $p_s s
       
+
       global private
       global audace
       
@@ -642,7 +643,6 @@ namespace eval bdi_tools_psf {
 
       # Met a jour la methode qui va etre applique
       ::bdi_tools_psf::set_by_key othf "psf_method" $private(psf_toolbox,$::audace(visuNo),methode)
-
 
       # Effectue la mesure
       set private(psf_toolbox,$::audace(visuNo),gui) 0
@@ -678,6 +678,7 @@ namespace eval bdi_tools_psf {
       ::bdi_tools_psf::set_by_key othf "err_psf"    $private(psf_toolbox,$::audace(visuNo),psf,err_psf) 
 
       set err [ catch {
+      
          set radec [ buf$::audace(bufNo) xy2radec [list $private(psf_toolbox,$::audace(visuNo),psf,xsm) $private(psf_toolbox,$::audace(visuNo),psf,ysm)]]
          ::bdi_tools_psf::set_by_key othf "ra"  [lindex $radec 0]
          ::bdi_tools_psf::set_by_key othf "dec" [lindex $radec 1]
@@ -699,7 +700,7 @@ namespace eval bdi_tools_psf {
       # Mode Debug ... 
       # gren_erreur "name_cata = $name_cata\n"
       # gren_erreur "name_source = $name_source\n"
-      #gren_erreur "othf = $othf\n"
+      # gren_erreur "othf = $othf\n"
       # gren_erreur "s = $s\n"
       # Affichage des resultats dans la console
       #::bdi_tools_psf::gren_astroid othf
@@ -826,21 +827,20 @@ namespace eval bdi_tools_psf {
       set ids -1
       foreach s $sources {
          incr ids
-         #gren_erreur "Mesure source $id / [llength $sources]\n"
 
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s $manual] } msg ]
-         
+
          if {$err} {
             gren_erreur "**ERREUR PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
             ::manage_source::delete_catalog_in_source s "ASTROID"
          } else {
             if { $err_psf != "-"} {
-            gren_erreur "**WARNING PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
+            #gren_erreur "**WARNING PSF (ids=$ids): (Errnum:$err) (msg:$msg)\n"
             } else {
                set pass "yes"
             }
          }
-
+         
          set sources [lreplace $sources $ids $ids $s]
       }
       if {$pass=="no"} { return }

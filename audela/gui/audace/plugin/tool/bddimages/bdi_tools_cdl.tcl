@@ -1658,6 +1658,7 @@ proc ::bdi_tools_cdl::set_savprogress { cur max } {
          # Tabkey
          set idbddimg [::bddimages_liste::lget $current_image "idbddimg"]
          set tabkey   [::bddimages_liste::lget $current_image "tabkey"]
+         set imgfilename    [::bddimages_liste::lget $current_image filename]
 
          # Noms des fichiers
          set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]

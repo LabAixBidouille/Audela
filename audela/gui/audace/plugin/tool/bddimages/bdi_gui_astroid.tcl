@@ -15,7 +15,11 @@ namespace eval bdi_gui_astroid {
    proc ::bdi_gui_astroid::fermer {  } {
 
       destroy $::bdi_gui_astroid::fen
+      psf_close_to_conf $::audace(visuNo)
 
+   }
+   proc ::bdi_gui_astroid::stop {  } {
+      set ::bdi_tools_astroid::stop 1
    }
 
    proc ::bdi_gui_astroid::ressource {  } {
@@ -36,14 +40,14 @@ namespace eval bdi_gui_astroid {
 
    }
 
-   proc ::bdi_gui_astroid::set_progress { cur max } {
-      set ::bdi_tools_astroid::progress [format "%0.0f" [expr $cur * 100. /$max ] ]
-      update
-   }
 
 
    proc ::bdi_gui_astroid::astroid {  } {
       
+      global private
+
+      psf_init $::audace(visuNo)
+
       set ::bdi_tools_astroid::progress 0
 
       set fen .astroid
@@ -66,6 +70,12 @@ namespace eval bdi_gui_astroid {
 
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $fen -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+         set  psf  [frame $frm.psf -borderwidth 1 -cursor arrow -relief groove]
+         pack $psf -in $frm -anchor c -side top -expand 0 -padx 10 -pady 5
+
+            psf_gui_methodes $::audace(visuNo) $psf
+
 
 
          set  threads  [frame $frm.threads -borderwidth 1 -cursor arrow -relief groove]
@@ -93,7 +103,7 @@ namespace eval bdi_gui_astroid {
          set data  [frame $frm.progress -borderwidth 0 -cursor arrow -relief groove]
          pack $data -in $frm -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-             set    pf [ ttk::progressbar $data.p -variable ::bdi_tools_astroid::popupprogress -orient horizontal -length 200 -mode determinate]
+             set    pf [ ttk::progressbar $data.p -variable ::bdi_tools_astroid::progress -orient horizontal -length 200 -mode determinate]
              pack   $pf -in $data -side top
 
          set data  [frame $frm.boutons -borderwidth 1 -cursor arrow -relief groove]
@@ -103,16 +113,20 @@ namespace eval bdi_gui_astroid {
                 -command "::bdi_gui_astroid::fermer"
 #             pack   $data.fermer -side right -anchor e -padx 0 -padx 10 -pady 5
 
-             button $data.annul -state active -text "Ressource" -relief "raised" \
+             button $data.ressource -state active -text "Ressource" -relief "raised" \
                 -command "::bdi_gui_astroid::ressource"
+
+             button $data.annul -state active -text "Stop" -relief "raised" \
+                -command "::bdi_gui_astroid::stop"
 #             pack   $data.annul -side top -anchor c -padx 0 -padx 10 -pady 5
 
              button $data.go -state active -text "Go" -relief "raised" \
                 -command "::bdi_gui_astroid::go"
 #             pack   $data.go -side left -anchor w -padx 0 -padx 10 -pady 5
 
-             grid $data.go     -row 0 -column 0 -sticky nws  -padx 10 -pady 5
-             grid $data.annul  -row 0 -column 1 -sticky news -padx 10 -pady 5
-             grid $data.fermer -row 0 -column 2 -sticky nes  -padx 10 -pady 5
+             grid $data.go         -row 0 -column 0 -sticky nws  -padx 10 -pady 5
+             grid $data.ressource  -row 0 -column 1 -sticky news -padx 10 -pady 5
+             grid $data.annul      -row 0 -column 2 -sticky news -padx 10 -pady 5
+             grid $data.fermer     -row 0 -column 3 -sticky nes  -padx 10 -pady 5
              # -columnspan 2 -ipadx 10 -ipady 10 -padx 10 -pady 10
    }
