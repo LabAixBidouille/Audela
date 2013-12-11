@@ -3634,7 +3634,7 @@ proc ::acqt1m::ccdtemp { visuNo } {
       global audace
 
       if {![winfo exists .horloge_astro]} {
-         horloge_astro2
+         ::acqt1m_ha::horloge_astro2
       }
    }
 
