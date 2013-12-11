@@ -193,7 +193,7 @@ namespace eval bdi_tools_astroid {
 
       set dir [file join $audace(rep_gui) audace]
 
-      uplevel #0 "source \"[ file join $dir confvisu.tcl            ]\""
+#      uplevel #0 "source \"[ file join $dir confvisu.tcl            ]\""
 
       uplevel #0 "source \"[ file join $dir menu.tcl                ]\""
 
