@@ -4,71 +4,34 @@
 # Auteur : Alain KLOTZ
 # Mise à jour $Id$
 #
+namespace eval ::acqt1m_ha {
+}
 
-proc horloge_astro2 {} {
-   global audace
-   global caption
-   global base
-   global paramhorloge
+   proc ::acqt1m_ha::fermer { } {
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_scripts) horloge_astro horloge_astro.cap ]
-
-   #--- Initialisation
-   set paramhorloge(sortie)     "0"
-   set paramhorloge(ra)         "21 44 11.2"
-   set paramhorloge(dec)        "+09 52 30"
-   set paramhorloge(home)       $audace(posobs,observateur,gps)
-   set paramhorloge(color,back) #123456
-   set paramhorloge(color,text) #FFFFAA
-   set paramhorloge(font)       {times 30 bold}
-
-   set paramhorloge(new,ra)     "$paramhorloge(ra)"
-   set paramhorloge(new,dec)    "$paramhorloge(dec)"
-
-   #--- Create the toplevel window
-   set base .horloge_astro
-   toplevel $base -class Toplevel
-   wm geometry $base 700x530+10+10
-   wm focusmodel $base passive
-   wm minsize $base 700 530
-   wm resizable $base 1 1
-   wm deiconify $base
-   wm title $base "$caption(horloge_astro,titre)"
-   wm protocol $base WM_DELETE_WINDOW fermer
-   bind $base <Destroy> { destroy .horloge_astro }
-   $base configure -bg $paramhorloge(color,back)
-   wm withdraw .
-   focus -force $base
-
-   proc fermer { } {
-      global base
-      global paramhorloge
-
-      set paramhorloge(sortie) "1"
-      destroy $base
+      set ::acqt1m_ha::paramhorloge(sortie) "1"
+      destroy $::acqt1m_ha::base
    }
 
-   proc calcul { } {
-      global caption
-      global base
-      global paramhorloge
+   proc ::acqt1m_ha::calcul { } {
 
-      if { $paramhorloge(sortie) != "1" } {
+      global caption
+
+      if { $::acqt1m_ha::paramhorloge(sortie) != "1" } {
          set now [clock format [clock seconds] -timezone :UTC -format "%Y %m %d %H %M %S"]
          set tu  [mc_date2ymdhms $now ]
          set h   [format "%02d" [lindex $tu 3]]
          set m   [format "%02d" [lindex $tu 4]]
          set s   [format "%02d" [expr int(floor([lindex $tu 5]))]]
-         $base.f.lab_tu configure -text "$caption(horloge_astro,tu) ${h}h ${m}mn ${s}s"
-         set tsl [mc_date2lst $now $paramhorloge(home)]
+         $::acqt1m_ha::base.f.lab_tu configure -text "$caption(horloge_astro,tu) ${h}h ${m}mn ${s}s"
+         set tsl [mc_date2lst $now $::acqt1m_ha::paramhorloge(home)]
          set h   [format "%02d" [lindex $tsl 0]]
          set m   [format "%02d" [lindex $tsl 1]]
          set s   [format "%02d" [expr int(floor([lindex $tsl 2]))]]
-         $base.f.lab_tsl configure -text "$caption(horloge_astro,tsl) ${h}h ${m}mn ${s}s"
-         set paramhorloge(ra1) "[ lindex $paramhorloge(ra) 0 ]h[ lindex $paramhorloge(ra) 1 ]m[ lindex $paramhorloge(ra) 2 ]"
-         set paramhorloge(dec1) "[ lindex $paramhorloge(dec) 0 ]d[ lindex $paramhorloge(dec) 1 ]m[ lindex $paramhorloge(dec) 2 ]"
-         set res [mc_radec2altaz "$paramhorloge(ra1)" "$paramhorloge(dec1)" "$paramhorloge(home)" $now]
+         $::acqt1m_ha::base.f.lab_tsl configure -text "$caption(horloge_astro,tsl) ${h}h ${m}mn ${s}s"
+         set ::acqt1m_ha::paramhorloge(ra1) "[ lindex $::acqt1m_ha::paramhorloge(ra) 0 ]h[ lindex $::acqt1m_ha::paramhorloge(ra) 1 ]m[ lindex $::acqt1m_ha::paramhorloge(ra) 2 ]"
+         set ::acqt1m_ha::paramhorloge(dec1) "[ lindex $::acqt1m_ha::paramhorloge(dec) 0 ]d[ lindex $::acqt1m_ha::paramhorloge(dec) 1 ]m[ lindex $::acqt1m_ha::paramhorloge(dec) 2 ]"
+         set res [mc_radec2altaz "$::acqt1m_ha::paramhorloge(ra1)" "$::acqt1m_ha::paramhorloge(dec1)" "$::acqt1m_ha::paramhorloge(home)" $now]
          set az  [format "%5.2f" [lindex $res 0]]
          set alt [format "%5.2f" [lindex $res 1]]
          set ha  [lindex $res 2]
@@ -76,8 +39,8 @@ proc horloge_astro2 {} {
          set h   [format "%02d" [lindex $res 0]]
          set m   [format "%02d" [lindex $res 1]]
          set s   [format "%02d" [expr int(floor([lindex $res 2]))]]
-         $base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
-         $base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
+         $::acqt1m_ha::base.f.lab_ha configure -text "$caption(horloge_astro,angle_horaire) ${h}h ${m}mn ${s}s"
+         $::acqt1m_ha::base.f.lab_altaz configure -text "$caption(horloge_astro,azimut) ${az}° - $caption(horloge_astro,hauteur) ${alt}°"
          if { $alt >= "0" } {
             set distanceZenithale [ expr 90.0 - $alt ]
             set distanceZenithale [ mc_angle2rad $distanceZenithale ]
@@ -85,100 +48,146 @@ proc horloge_astro2 {} {
          } else {
             set secz "$caption(horloge_astro,horizon)"
          }
-         $base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"
+         set err [catch {$::acqt1m_ha::base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"} msg]
+         if {$err} {
+            return
+         }
 
          set t [lindex [mc_ephem sun now -equinox apparent] 0]
-         set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $paramhorloge(home) now] 1]
+         set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $::acqt1m_ha::paramhorloge(home) now] 1]
          set sunelev [mc_angle2dms $sunelev string 2]
 
-         $base.f.lab_sunlev configure -text "Sun Elev =  ${sunelev}"
+         $::acqt1m_ha::base.f.lab_sunlev configure -text "Sun Elev =  ${sunelev}"
          update
          #--- An infinite loop to change the language interactively
-         after 1000 ::calcul
+         #after 1000 ::acqt1m_ha::calcul
       } else {
          #--- Rien
       }
-      $base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"
-      
+
+      set err [catch {$::acqt1m_ha::base.f.lab_secz configure -text "$caption(horloge_astro,secz) ${secz}"} msg]
+      if {$err} {
+         return
+      }
+       
       set t [lindex [mc_ephem sun now -equinox apparent] 0]
-      set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $paramhorloge(home) now] 1]
+      set sunelev [lindex [mc_radec2altaz [lindex $t 1] [lindex $t 2] $::acqt1m_ha::paramhorloge(home) now] 1]
       set sunelev [mc_angle2dms $sunelev 90 zero 2]
       
       
-      $base.f.lab_sunlev configure -text "Sun Elev =  ${sunelev}"
+      $::acqt1m_ha::base.f.lab_sunlev configure -text "Sun Elev =  ${sunelev}"
       update
       #--- An infinite loop to change the language interactively
-      after 1000 ::calcul
-   } else {
-      #--- Rien
+      after 1000 ::acqt1m_ha::calcul
    }
 
-   proc met_a_jour { } {
-      global paramhorloge
 
-      set paramhorloge(ra) "$paramhorloge(new,ra)"
-      set paramhorloge(dec) "$paramhorloge(new,dec)"
+
+
+   proc ::acqt1m_ha::met_a_jour { } {
+
+      set ::acqt1m_ha::paramhorloge(ra) "$::acqt1m_ha::paramhorloge(new,ra)"
+      set ::acqt1m_ha::paramhorloge(dec) "$::acqt1m_ha::paramhorloge(new,dec)"
    }
 
-   frame $base.f -bg $paramhorloge(color,back)
+
+
+
+proc ::acqt1m_ha::horloge_astro2 {} {
+
+   global audace
+   global caption
+
+   #--- Chargement des captions
+   source [ file join $audace(rep_scripts) horloge_astro horloge_astro.cap ]
+
+   #--- Initialisation
+   set ::acqt1m_ha::paramhorloge(sortie)     "0"
+   set ::acqt1m_ha::paramhorloge(ra)         "21 44 11.2"
+   set ::acqt1m_ha::paramhorloge(dec)        "+09 52 30"
+   set ::acqt1m_ha::paramhorloge(home)       $audace(posobs,observateur,gps)
+   set ::acqt1m_ha::paramhorloge(color,back) #123456
+   set ::acqt1m_ha::paramhorloge(color,text) #FFFFAA
+   set ::acqt1m_ha::paramhorloge(font)       {times 30 bold}
+
+   set ::acqt1m_ha::paramhorloge(new,ra)     "$::acqt1m_ha::paramhorloge(ra)"
+   set ::acqt1m_ha::paramhorloge(new,dec)    "$::acqt1m_ha::paramhorloge(dec)"
+
+   #--- Create the toplevel window
+   set ::acqt1m_ha::base .horloge_astro
+   toplevel $::acqt1m_ha::base -class Toplevel
+   wm geometry $::acqt1m_ha::base 700x530+10+10
+   wm focusmodel $::acqt1m_ha::base passive
+   wm minsize $::acqt1m_ha::base 700 530
+   wm resizable $::acqt1m_ha::base 1 1
+   wm deiconify $::acqt1m_ha::base
+   wm title $::acqt1m_ha::base "$caption(horloge_astro,titre)"
+   wm protocol $::acqt1m_ha::base WM_DELETE_WINDOW ::acqt1m_ha::fermer
+   bind $::acqt1m_ha::base <Destroy> { destroy .horloge_astro }
+   $::acqt1m_ha::base configure -bg $::acqt1m_ha::paramhorloge(color,back)
+   wm withdraw .
+   focus -force $::acqt1m_ha::base
+   frame $::acqt1m_ha::base.f -bg $::acqt1m_ha::paramhorloge(color,back)
       #---
-      label $base.f.lab_tu \
-         -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-         -font $paramhorloge(font)
-      label $base.f.lab_tsl \
-         -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-         -font $paramhorloge(font)
-      pack $base.f.lab_tu -fill none -pady 2
-      pack $base.f.lab_tsl -fill none -pady 2
+      label $::acqt1m_ha::base.f.lab_tu \
+         -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+         -font $::acqt1m_ha::paramhorloge(font)
+      label $::acqt1m_ha::base.f.lab_tsl \
+         -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+         -font $::acqt1m_ha::paramhorloge(font)
+      pack $::acqt1m_ha::base.f.lab_tu -fill none -pady 2
+      pack $::acqt1m_ha::base.f.lab_tsl -fill none -pady 2
       #---
-      frame $base.f.ra -bg $paramhorloge(color,back)
-         label $base.f.ra.lab1 -text "$caption(horloge_astro,ad) " \
-            -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-            -font $paramhorloge(font)
-         entry $base.f.ra.ent1 -textvariable paramhorloge(new,ra) \
-            -width 10  -font $paramhorloge(font) \
-            -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
+      frame $::acqt1m_ha::base.f.ra -bg $::acqt1m_ha::paramhorloge(color,back)
+         label $::acqt1m_ha::base.f.ra.lab1 -text "$caption(horloge_astro,ad) " \
+            -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+            -font $::acqt1m_ha::paramhorloge(font)
+         entry $::acqt1m_ha::base.f.ra.ent1 -textvariable ::acqt1m_ha::paramhorloge(new,ra) \
+            -width 10  -font $::acqt1m_ha::paramhorloge(font) \
+            -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
             -relief flat
-         pack $base.f.ra.lab1 -side left -fill none
-         pack $base.f.ra.ent1 -side left -fill none
-      pack $base.f.ra -fill none -pady 2
-      frame $base.f.dec -bg $paramhorloge(color,back)
-         label $base.f.dec.lab1 -text "$caption(horloge_astro,dec) " \
-            -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-            -font $paramhorloge(font)
-         entry $base.f.dec.ent1 -textvariable paramhorloge(new,dec) \
-            -width 10  -font $paramhorloge(font) \
-            -bg $paramhorloge(color,back) \
-            -fg $paramhorloge(color,text) -relief flat
-         pack $base.f.dec.lab1 -side left -fill none
-         pack $base.f.dec.ent1 -side left -fill none
-      pack $base.f.dec -fill none -pady 2
-      button $base.f.but1 -text "$caption(horloge_astro,valider)" -command { met_a_jour }
-      pack $base.f.but1 -ipadx 5 -ipady 5
+         pack $::acqt1m_ha::base.f.ra.lab1 -side left -fill none
+         pack $::acqt1m_ha::base.f.ra.ent1 -side left -fill none
+      pack $::acqt1m_ha::base.f.ra -fill none -pady 2
+      frame $::acqt1m_ha::base.f.dec -bg $::acqt1m_ha::paramhorloge(color,back)
+         label $::acqt1m_ha::base.f.dec.lab1 -text "$caption(horloge_astro,dec) " \
+            -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+            -font $::acqt1m_ha::paramhorloge(font)
+         entry $::acqt1m_ha::base.f.dec.ent1 -textvariable ::acqt1m_ha::paramhorloge(new,dec) \
+            -width 10  -font $::acqt1m_ha::paramhorloge(font) \
+            -bg $::acqt1m_ha::paramhorloge(color,back) \
+            -fg $::acqt1m_ha::paramhorloge(color,text) -relief flat
+         pack $::acqt1m_ha::base.f.dec.lab1 -side left -fill none
+         pack $::acqt1m_ha::base.f.dec.ent1 -side left -fill none
+      pack $::acqt1m_ha::base.f.dec -fill none -pady 2
+      button $::acqt1m_ha::base.f.but1 -text "$caption(horloge_astro,valider)" -command { ::acqt1m_ha::met_a_jour  }
+      pack $::acqt1m_ha::base.f.but1 -ipadx 5 -ipady 5
       #---
-      label $base.f.lab_ha \
-         -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-         -font $paramhorloge(font)
-      label $base.f.lab_altaz \
-         -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-         -font $paramhorloge(font)
-      pack $base.f.lab_ha -fill none -pady 2
-      pack $base.f.lab_altaz -fill none -pady 2
-      label $base.f.lab_secz \
-         -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-         -font $paramhorloge(font)
-      pack $base.f.lab_secz -fill none -pady 2
-      label $base.f.lab_sunlev \
-         -bg $paramhorloge(color,back) -fg $paramhorloge(color,text) \
-         -font $paramhorloge(font)
-      pack $base.f.lab_sunlev -fill none -pady 2
-   pack $base.f -fill both
+      label $::acqt1m_ha::base.f.lab_ha \
+         -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+         -font $::acqt1m_ha::paramhorloge(font)
+      label $::acqt1m_ha::base.f.lab_altaz \
+         -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+         -font $::acqt1m_ha::paramhorloge(font)
+      pack $::acqt1m_ha::base.f.lab_ha -fill none -pady 2
+      pack $::acqt1m_ha::base.f.lab_altaz -fill none -pady 2
+      label $::acqt1m_ha::base.f.lab_secz \
+         -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+         -font $::acqt1m_ha::paramhorloge(font)
+      pack $::acqt1m_ha::base.f.lab_secz -fill none -pady 2
+      label $::acqt1m_ha::base.f.lab_sunlev \
+         -bg $::acqt1m_ha::paramhorloge(color,back) -fg $::acqt1m_ha::paramhorloge(color,text) \
+         -font $::acqt1m_ha::paramhorloge(font)
+      pack $::acqt1m_ha::base.f.lab_sunlev -fill none -pady 2
+   pack $::acqt1m_ha::base.f -fill both
 
-   bind $base.f.ra.ent1 <Enter> { met_a_jour }
-   bind $base.f.dec.ent1 <Enter> { met_a_jour }
+   bind $::acqt1m_ha::base.f.ra.ent1 <Enter> { ::acqt1m_ha::met_a_jour  }
+   bind $::acqt1m_ha::base.f.dec.ent1 <Enter> { ::acqt1m_ha::met_a_jour  }
 
    #---
-   ::calcul
+   ::acqt1m_ha::calcul
+   }
 
-}
+
+
 
