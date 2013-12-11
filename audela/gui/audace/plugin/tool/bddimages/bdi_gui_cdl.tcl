@@ -250,6 +250,8 @@ namespace eval bdi_gui_cdl {
                    -command "::bdi_gui_cdl::set_to_science_data_reference" 
                $results.popupTbl add command -label "Rejeter" \
                    -command "::bdi_gui_cdl::unset_data_reference" 
+               $results.popupTbl add command -label "Table" \
+                   -command "::bdi_gui_cdl::table_popup ref" 
 
             # Binding
             bind $::bdi_gui_cdl::data_reference <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_data_reference %W ]
@@ -317,6 +319,8 @@ namespace eval bdi_gui_cdl {
                    -command "::bdi_gui_cdl::unset_data_science" 
                $results.popupTbl add command -label "Graphe" \
                    -command "::bdi_gui_cdl::graph_science_mag_popup" 
+               $results.popupTbl add command -label "Table" \
+                   -command "::bdi_gui_cdl::table_popup sci" 
 
             # Binding
             bind $::bdi_gui_cdl::data_science <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_data_science %W ]
@@ -790,6 +794,12 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #-------------------------------------------------------------------
+   ## Effectue un test de la GUI
+   # \ l idee est d afficher un grand nombre de ligne pour voir 
+   # evoluer la memoire
+   #  \param void 
+   #  \return void
    proc ::bdi_gui_cdl::test_gui { } {
 
 
@@ -799,6 +809,9 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #-------------------------------------------------------------------
+   ## Affiche les valeurs dans les tables Science References et Rejets
+   # \brief
    # Structure ASTROID :
    #  0    "xsm" 
    #  1    "ysm" 
@@ -830,6 +843,9 @@ namespace eval bdi_gui_cdl {
    #  27   "flagphotom" 
    #  28   "cataastrom"
    #  29   "cataphotom"
+   #
+   #  \param void 
+   #  \return void
    proc ::bdi_gui_cdl::affiche_data { } {
 
       set tt0 [clock clicks -milliseconds]
@@ -886,6 +902,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche le calcul de la variation etoile a etoile de reference
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::calcul_variation { } {
 
       set tt0 [clock clicks -milliseconds]
@@ -943,8 +964,6 @@ namespace eval bdi_gui_cdl {
 
       }
 
-
-
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Calcul des variations en $tt sec \n"
 
@@ -954,6 +973,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche la classification spectrale des etoiles 
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::calcul_classification { } {
 
       set tt0 [clock clicks -milliseconds]
@@ -1004,6 +1028,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Definit un objet science dans la tables des objets references
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::set_to_science_data_reference { } {
       
       foreach select [$::bdi_gui_cdl::data_reference curselection] {
@@ -1019,6 +1048,11 @@ namespace eval bdi_gui_cdl {
 
    }
 
+   #----------------------------------------------------------------------------
+   ## Definit un objet reference dans la tables des objets sciences
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::set_to_reference_data_science { } {
 
       foreach select [$::bdi_gui_cdl::data_science curselection] {
@@ -1034,6 +1068,11 @@ namespace eval bdi_gui_cdl {
 
    }
 
+   #----------------------------------------------------------------------------
+   ## Definit un objet reference dans la tables des objets rejetes
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::set_to_reference_data_rejected { } {
 
       foreach select [$::bdi_gui_cdl::data_rejected curselection] {
@@ -1048,6 +1087,11 @@ namespace eval bdi_gui_cdl {
 
    }
 
+   #----------------------------------------------------------------------------
+   ## Definit un objet science dans la tables des objets rejetes
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::set_to_science_data_rejected { } {
 
       foreach select [$::bdi_gui_cdl::data_rejected curselection] {
@@ -1060,6 +1104,11 @@ namespace eval bdi_gui_cdl {
 
    }
 
+   #----------------------------------------------------------------------------
+   ## Rejete une source dans la table des objets references
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::unset_data_reference { } {
 
       foreach select [$::bdi_gui_cdl::data_reference curselection] {
@@ -1071,6 +1120,11 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::affiche_data
    }
 
+   #----------------------------------------------------------------------------
+   ## Rejete une source dans la table des objets sciences
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::unset_data_science { } {
 
       foreach select [$::bdi_gui_cdl::data_science curselection] {
@@ -1082,6 +1136,11 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::affiche_data
    }
 
+   #----------------------------------------------------------------------------
+   ## Rejete une source dans la table des types spectraux
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::unset_classif { } {
 
       foreach select [$::bdi_gui_cdl::classif curselection] {
@@ -1094,6 +1153,11 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::calcul_classification
    }
 
+   #----------------------------------------------------------------------------
+   ## Rejete une source dans la table des variations
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::unset_starstar { tbl } {
 
       foreach select [$tbl curselection] {
@@ -1109,6 +1173,12 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Enregistre les images et cata en affichant une barre de pregression
+   # et un bouton d'annulation du traitement
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::save_image_cata {  } {
 
 #      $::bdi_gui_astrometry::fen.appli.info.fermer configure -state disabled
@@ -1180,6 +1250,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Annule l'enregistrement en cours, des images et cata
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::annul_save_images { } {
 
       $::bdi_gui_cdl::fensav.appli.boutons.annul configure -state disabled
@@ -1189,6 +1264,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Enregistre les resultats sous forme de rapport Texte et XML/VOTABLE  
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::save_reports {  } {
 
       ::bdi_tools_cdl::closetoconf
@@ -1201,6 +1281,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affichage du graphe de la constante des magnitudes  
+   #  \param void 
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::graph_const_mag {  } {
       
       ::plotxy::clf 1
@@ -1319,6 +1404,7 @@ namespace eval bdi_gui_cdl {
 
    #----------------------------------------------------------------------------
    ## Affichage du graphe Timeline 
+   # ce graphe represente la presence au cours du temps des etoiles de reference
    #  \param void 
    #  \return void
    #----------------------------------------------------------------------------
@@ -1370,6 +1456,11 @@ namespace eval bdi_gui_cdl {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche un graphe representant les magnitudes differentielles des objets
+   #  sciences. Les moyennes des magnitudes sont les magnitudes absolues
+   #  \param void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::graph_science_mag_popup {  } {
 
       ::plotxy::clf 1
@@ -1410,6 +1501,11 @@ namespace eval bdi_gui_cdl {
       
    }
 
+   #----------------------------------------------------------------------------
+   ## Affiche un graphe representant les magnitudes differentielles des objets
+   #  sciences. Les moyennes des magnitudes sont centrees sur zero
+   #  \param void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::graph_science_mag {  } {
 
       ::plotxy::clf 1
@@ -1453,6 +1549,11 @@ namespace eval bdi_gui_cdl {
    }
 
 
+   #----------------------------------------------------------------------------
+   ## Supprime partiellement un point de mesure et le rejete pour le rapport
+   #  Mais les points supprimes ne le sont pas dans les fichiers cata
+   #  \param void
+   #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::unset_science_in_graph {  } {
 
       if {[::plotxy::figure] == 0 } {
@@ -1503,4 +1604,198 @@ namespace eval bdi_gui_cdl {
    }
 
 
+   #----------------------------------------------------------------------------
+   ## Affiche une fenetre representant les donnees d'une source
+   #  sur l'ensemble des images
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::table_popup { onglet } {
 
+      if {$onglet == "ref" } {
+         if {[llength [$::bdi_gui_cdl::data_reference curselection]]!=1} {
+            tk_messageBox -message "Veuillez selectionner 1 source" -type ok
+            return
+         }
+         set select [$::bdi_gui_cdl::data_reference curselection]
+         set name [lindex [$::bdi_gui_cdl::data_reference get $select] 1]
+      }
+   
+      if {$onglet == "sci" } {
+         if {[llength [$::bdi_gui_cdl::data_science curselection]]!=1} {
+            tk_messageBox -message "Veuillez selectionner 1 source" -type ok
+            return
+         }
+         set select [$::bdi_gui_cdl::data_science curselection]
+         set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]
+      }
+
+      set ::bdi_gui_cdl::fentable .photometry_table
+      if { [winfo exists $::bdi_gui_cdl::fentable] } {
+         destroy $::bdi_gui_cdl::fentable
+      }
+      toplevel $::bdi_gui_cdl::fentable -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $::bdi_gui_cdl::fentable ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $::bdi_gui_cdl::fentable ] "+" ] 2 ]
+      wm geometry $::bdi_gui_cdl::fentable 1000x600+[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      wm resizable $::bdi_gui_cdl::fentable 1 1
+      wm title $::bdi_gui_cdl::fentable $name
+      wm protocol $::bdi_gui_cdl::fentable WM_DELETE_WINDOW "destroy $::bdi_gui_cdl::fentable"
+
+      set frm $::bdi_gui_cdl::fentable.appli
+      #--- Cree un frame general
+      frame $frm  -cursor arrow -relief groove
+      pack $frm -in $::bdi_gui_cdl::fentable -anchor s -side top -expand yes -fill both -padx 10 -pady 5
+
+            set cols [list 0 "Ids"        left  \
+                           0 "idcata"     left  \
+                           0 "date-obs"   left  \
+                           0 "flux"       right \
+                           0 "err_flux"   right \
+                           0 "mag"        right \
+                           0 "err_mag"    right \
+                           0 "pixmax"     right \
+                           0 "sky"        right \
+                           0 "snint"      right \
+                           0 "fwhm"       right \
+                           0 "radius"     right \
+                           0 "err_psf"    right \
+                           0 "psf_method" right \
+                           0 "globale"    right \
+                     ]
+         
+            set ::bdi_gui_cdl::data_source $frm.table
+            tablelist::tablelist $::bdi_gui_cdl::data_source \
+              -columns $cols \
+              -labelcommand tablelist::sortByColumn \
+              -xscrollcommand [ list $frm.hsb set ] \
+              -yscrollcommand [ list $frm.vsb set ] \
+              -selectmode extended \
+              -activestyle none \
+              -stripebackground "#e0e8f0" \
+              -showseparators 1
+   
+            # Scrollbar
+            scrollbar $frm.hsb -orient horizontal -command [list $::bdi_gui_cdl::data_source xview]
+            pack $frm.hsb -in $frm -side bottom -fill x
+            scrollbar $frm.vsb -orient vertical -command [list $::bdi_gui_cdl::data_source yview]
+            pack $frm.vsb -in $frm -side right -fill y 
+
+            # Pack la Table
+            pack $::bdi_gui_cdl::data_source -in $frm -expand yes -fill both
+
+            # Popup
+            menu $frm.popupTbl -title "Actions"
+
+               $frm.popupTbl add command -label "Voir l'objet dans l'image" \
+                   -command "::bdi_gui_cdl::table_voir" 
+               $frm.popupTbl add command -label "Mesurer" \
+                   -command "::bdi_gui_cdl::table_mesure" 
+               $frm.popupTbl add command -label "Rejeter" \
+                   -command "::bdi_gui_cdl::table_rejet" 
+
+            # Binding
+            # bind $::bdi_gui_cdl::data_source <<ListboxSelect>> [ list ::bdi_gui_cdl::cmdButton1Click_data_source %W ]
+            bind [$::bdi_gui_cdl::data_source bodypath] <ButtonPress-3> [ list tk_popup $frm.popupTbl %X %Y ]
+
+            # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
+            #    Ascii
+            foreach ncol [list "date-obs" "err_psf" "psf_method" "globale"] {
+               set pcol [expr int ([lsearch $cols $ncol]/3)]
+               $::bdi_gui_cdl::data_source columnconfigure $pcol -sortmode ascii
+            }
+            #    Reel
+            foreach ncol [list "Ids" "idcata" "flux" "err_flux" "mag" "err_mag" "pixmax" "sky" \
+                               "snint" "fwhm" "radius" ] {
+               set pcol [expr int ([lsearch $cols $ncol]/3)]
+               $::bdi_gui_cdl::data_source columnconfigure $pcol -sortmode real
+            }
+            
+   
+      $::bdi_gui_cdl::data_source delete 0 end
+
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
+         if {[info exists ::bdi_tools_cdl::table_othf($name,$idcata,othf)]} {
+            set othf $::bdi_tools_cdl::table_othf($name,$idcata,othf)
+            set ids [expr $::bdi_tools_cdl::table_star_ids($name,$idcata) +1]
+            set dateobs $::bdi_tools_cdl::table_date($idcata)
+            set flux [::bdi_tools_psf::get_val othf "flux"]
+            set err_flux [::bdi_tools_psf::get_val othf "err_flux"]
+            set mag [::bdi_tools_psf::get_val othf "mag"]
+            set err_mag [::bdi_tools_psf::get_val othf "err_mag"]
+            set pixmax [::bdi_tools_psf::get_val othf "pixmax"]
+            set sky [::bdi_tools_psf::get_val othf "sky"]
+            set snint [::bdi_tools_psf::get_val othf "snint"]
+            set fwhm [::bdi_tools_psf::get_val othf "fwhm"]
+            set radius [::bdi_tools_psf::get_val othf "radius"]
+            set err_psf [::bdi_tools_psf::get_val othf "err_psf"]
+            set psf_method [::bdi_tools_psf::get_val othf "psf_method"]
+            set globale [::bdi_tools_psf::get_val othf "globale"]
+
+            if {![string is double $flux]||$flux==""} {set flux -1}
+            if {![string is double $err_flux]||$err_flux==""} {set err_flux -1}
+            if {![string is double $mag]||$mag==""} {set mag -1}
+            if {![string is double $err_mag]||$err_mag==""} {set err_mag -1}
+            if {![string is double $pixmax]||$pixmax==""} {set pixmax -1}
+            if {![string is double $sky]||$sky==""} {set sky -1}
+            if {![string is double $snint]||$snint==""} {set snint -1}
+            if {![string is double $fwhm]||$fwhm==""} {set fwhm -1}
+            if {![string is double $radius]||$radius==""} {set radius -1}
+            $::bdi_gui_cdl::data_source insert end [list $ids $idcata $dateobs $flux \
+                $err_flux $mag $err_mag $pixmax $sky $snint $fwhm $radius $err_psf \
+                $psf_method $globale]
+         }
+      }
+   }
+
+
+   #----------------------------------------------------------------------------
+   ## Affiche un rond dans l'image de la source a la date selectionnee
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::table_voir {  } {
+
+      set color red
+      set width 2
+         
+      if {[llength [$::bdi_gui_cdl::data_source curselection]]!=1} {
+         tk_messageBox -message "Veuillez selectionner 1 date" -type ok
+         return
+      }
+      set select [$::bdi_gui_cdl::data_source curselection]
+      set ids [lindex [$::bdi_gui_cdl::data_source get $select] 0]
+      set idcata [lindex [$::bdi_gui_cdl::data_source get $select] 1]
+
+      set ::cata_gestion_gui::directaccess $idcata
+      ::cata_gestion_gui::charge_image_directaccess
+      set ids [expr $ids -1]
+      set s [lindex  $::tools_cata::current_listsources 1 $ids] 
+      set xy [::bdi_tools_psf::get_xy s]
+      set radec [buf$::audace(bufNo) xy2radec [list [lindex $xy 0] [lindex $xy 1] ]]
+
+      affich_un_rond [lindex $radec 0] [lindex $radec 1] $color $width
+      
+   }
+
+   #----------------------------------------------------------------------------
+   ## Effectue une mesure de photocentre manuelle sur la source 
+   # aux dates/images selectionnees
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::table_mesure {  } {
+
+      foreach select [$::bdi_gui_cdl::data_source curselection] {
+         set ids [lindex [$::bdi_gui_cdl::data_source get $select] 0]
+         set idcata [lindex [$::bdi_gui_cdl::data_source get $select] 1]
+         lappend worklist [list $idcata $ids]
+      }
+      ::bdi_gui_gestion_source::run $worklist
+   }
+   
+   #----------------------------------------------------------------------------
+   ## supprime le flag de la source
+   # aux dates/images selectionnees
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::table_rejet {  } {
+
+   }

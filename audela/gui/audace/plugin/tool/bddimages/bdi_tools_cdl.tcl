@@ -145,6 +145,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_star_exist
       array unset ::bdi_tools_cdl::idcata_to_jdc
       array unset ::bdi_tools_cdl::table_jdmidexpo
+      array unset ::bdi_tools_cdl::table_star_ids
 
       set idcata 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
@@ -199,6 +200,7 @@ namespace eval bdi_tools_cdl {
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
+            set ::bdi_tools_cdl::table_star_ids($name,$idcata) $ids
 
             # Sciences References Rejetees
             #if {$idcata == 10} {
@@ -345,6 +347,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_othf
       array unset ::bdi_tools_cdl::table_star_exist
       array unset ::bdi_tools_cdl::idcata_to_jdc
+      array unset ::bdi_tools_cdl::table_star_ids
 
       # array unset ::gui_cata::cata_list
 
@@ -396,7 +399,8 @@ namespace eval bdi_tools_cdl {
             }
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
-            set ::bdi_tools_cdl::table_star_exist($name,$idcata) $ids
+            set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
+            set ::bdi_tools_cdl::table_star_ids($name,$idcata) $ids
 
             set flagphotom [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) flagphotom]
             set cataphotom [::bdi_tools_psf::get_val ::bdi_tools_cdl::table_othf($name,$idcata,othf) cataphotom]
@@ -1606,22 +1610,116 @@ namespace eval bdi_tools_cdl {
 
 
 
-#----------------------------------------------------------------------------
-## Avancement de la barre de progression lors de la sauvegarde des
-# @param cur real Valeur courante
-# @param max real Valeur maximum de la barre de progression
-# @return void
-proc ::bdi_tools_cdl::set_savprogress { cur max } {
-
-   set ::bdi_tools_cdl::savprogress [format "%0.0f" [expr $cur * 100. /$max ] ]
-   update
-
-}
 
 
-#----------------------------------------------------------------------------
-## Sauvegarde des images et des catas a la suite de la reduction photometrique
-# @return void
+   #----------------------------------------------------------------------------
+   ## Prepare cata_list pour une sauvegarde 
+   # met a jour les magnitudes des sources qui contienne le catalogue ASTROID
+   # met a jour les flag photometriques
+   #  \param list_name_R : Liste des sources de reference
+   #  \param list_name_S : Liste des sources sciences
+   #  \return void
+   #----------------------------------------------------------------------------
+   proc ::bdi_tools_cdl::export_photom_to_gestion { list_name_R list_name_S } {
+ 
+      set othf_null [::bdi_tools_psf::get_astroid_null]
+
+      # On flag Rejetee sur toutes les sources
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
+      
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+         set fields  [lindex  $::tools_cata::current_listsources 0]         
+         set sources [lindex  $::tools_cata::current_listsources 1]         
+
+         set ids -1
+         set newsources $sources
+         foreach s $sources {
+            incr ids
+            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            if {$othf==$othf_null} {continue}
+            set fp_av [::bdi_tools_psf::get_val othf flagphotom]
+            ::bdi_tools_psf::set_by_key othf flagphotom ""
+            ::bdi_tools_psf::set_by_key othf cataphotom ""
+            set fp_ap [::bdi_tools_psf::get_val othf flagphotom]
+
+            # Maj des magnitudes
+            set flux [::bdi_tools_psf::get_val othf "flux"]
+            if {$flux!="" && [string is double $flux] && $flux+1 != $flux && $flux > 0} {
+
+               set id_superstar   $::bdi_tools_cdl::table_superstar_idcata($::tools_cata::id_current_image)
+               set mag_superstar  $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag)
+               set flux_superstar $::bdi_tools_cdl::table_superstar_flux($id_superstar,$::tools_cata::id_current_image)
+               set mag [expr $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) -2.5 * log10(1.0 * $flux / $::bdi_tools_cdl::table_superstar_flux($id_superstar,$::tools_cata::id_current_image)) ]
+               set err_mag -1
+               set err_flux [::bdi_tools_psf::get_val othf "err_flux"]
+               if {$err_flux!="" && [string is double $err_flux] && $err_flux+1 != $err_flux && $err_flux > 0} { 
+                  set magmax [expr $::bdi_tools_cdl::table_superstar_solu($id_superstar,mag) \
+                                 -2.5 * log10(1.0 * ($flux + $err_flux) / $::bdi_tools_cdl::table_superstar_flux($id_superstar,$::tools_cata::id_current_image)) ]
+                  set err_mag [expr $mag - $magmax]
+               }
+               ::bdi_tools_psf::set_by_key othf "mag" $mag
+               ::bdi_tools_psf::set_by_key othf "err_mag" $err_mag
+            }
+
+            # Recombine la source
+            ::bdi_tools_psf::set_astroid_in_source s othf
+            set newsources [lreplace $newsources $ids $ids $s]
+         }
+         set ::tools_cata::current_listsources [list $fields $newsources]
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      }
+
+      for {set ::tools_cata::id_current_image 1} {$::tools_cata::id_current_image <= $::tools_cata::nb_img_list} { incr ::tools_cata::id_current_image } {
+      
+         set ::tools_cata::current_listsources $::gui_cata::cata_list($::tools_cata::id_current_image)
+         set fields  [lindex  $::tools_cata::current_listsources 0]         
+         set sources [lindex  $::tools_cata::current_listsources 1]         
+
+
+         # On boucle sur les nom des sources a flagger Reference
+         foreach name $list_name_R {
+            set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
+            set s [lindex $sources $ids]
+            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            if {$othf==$othf_null} {continue}
+            ::bdi_tools_psf::set_by_key othf flagphotom "R"
+            ::bdi_tools_psf::set_astroid_in_source s othf
+            set sources [lreplace $sources $ids $ids $s]
+         }
+         # On boucle sur les nom des sources a flagger Science
+         foreach name $list_name_S {
+            set ids [::manage_source::name2ids $name ::tools_cata::current_listsources]
+            set s [lindex $sources $ids]
+            set othf [::bdi_tools_psf::get_astroid_othf_from_source $s]
+            if {$othf==$othf_null} {continue}
+            ::bdi_tools_psf::set_by_key othf flagphotom "S"
+            ::bdi_tools_psf::set_astroid_in_source s othf
+            set sources [lreplace $sources $ids $ids $s]
+         }
+         set ::tools_cata::current_listsources [list $fields $sources]
+         set ::gui_cata::cata_list($::tools_cata::id_current_image) $::tools_cata::current_listsources
+      }
+
+      return
+   }
+
+
+   #----------------------------------------------------------------------------
+   ## Avancement de la barre de progression lors de la sauvegarde des
+   # @param cur real Valeur courante
+   # @param max real Valeur maximum de la barre de progression
+   # @return void
+   proc ::bdi_tools_cdl::set_savprogress { cur max } {
+
+      set ::bdi_tools_cdl::savprogress [format "%0.0f" [expr $cur * 100. /$max ] ]
+      update
+
+   }
+
+
+   #----------------------------------------------------------------------------
+   ## Sauvegarde des images et des catas a la suite de la reduction photometrique
+   # @return void
    proc ::bdi_tools_cdl::save_images { } {
 
       global audace bddconf
@@ -1642,7 +1740,7 @@ proc ::bdi_tools_cdl::set_savprogress { cur max } {
             continue
          }
       }
-      ::cata_gestion_gui::export_photom_to_gestion $list_name_R $list_name_S
+      ::bdi_tools_cdl::export_photom_to_gestion $list_name_R $list_name_S
 
 
       # on sauve les cata et les images
@@ -1730,7 +1828,7 @@ proc ::bdi_tools_cdl::set_savprogress { cur max } {
 
 
    #----------------------------------------------------------------------------
-   ## Pretraitement et initialisation apres avoir charge la liste cata_list
+   ## Enregistrement des resultats en vue d'une diffusion ou d'un stockage
    #  \param void
    #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::save_reports { } {
@@ -1828,10 +1926,6 @@ proc ::bdi_tools_cdl::set_savprogress { cur max } {
 
       }
 
-
-
-
-
       # Enregistre les rapports
 
       ::bdi_tools_cdl::create_report_txt
@@ -1849,6 +1943,10 @@ proc ::bdi_tools_cdl::set_savprogress { cur max } {
 
 
 
+   #----------------------------------------------------------------------------
+   ## Creation d'un rapport sous forme de fichier texte tabule.
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::create_report_txt { } {
 
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
@@ -1928,6 +2026,10 @@ proc ::bdi_tools_cdl::set_savprogress { cur max } {
    }    
 
 
+   #----------------------------------------------------------------------------
+   ## Creation d'un rapport sous forme de fichier XML VOTABLE
+   #  \return void
+   #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::create_report_xml {  } {
 
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
