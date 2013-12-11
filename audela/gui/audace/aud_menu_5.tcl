@@ -137,7 +137,10 @@ proc refreshStatwin { visuNo args } {
    }
 
    #--- Lecture des parametres dans la fenetre
-   set private(statwin,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] stat $private(statwin,box) ]
+   set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+   if {$err} { set bufNo 1 }
+   
+   set private(statwin,valeurs) [ buf$bufNo stat $private(statwin,box) ]
 
    #--- Mise a jour des variables
    set private(statwin,maxi)                 "$caption(audace,maxi) [ lindex $private(statwin,valeurs) 2 ]"
@@ -273,7 +276,9 @@ proc refreshFwhm { visuNo args } {
    }
 
    #--- Lecture des parametres dans la fenetre
-   set private(fwhm,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] fwhm $private(fwhm,box) ]
+   set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+   if {$err} { set bufNo 1 }
+   set private(fwhm,valeurs) [ buf$bufNo fwhm $private(fwhm,box) ]
 
    #--- Mise a jour des variables
    set private(fwhm,x) "$caption(audace,fwhm_x) [ lindex $private(fwhm,valeurs) 0 ]"
@@ -418,7 +423,9 @@ proc refreshFitgauss { visuNo args } {
    set base [ ::confVisu::getBase $visuNo ]
 
    #--- Lecture de la gaussienne d'ajustement
-   set bufNo [ ::confVisu::getBufNo $visuNo ]
+   set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+   if {$err} { set bufNo 1 }
+
    set valeurs [ buf$bufNo fitgauss $private(fitgauss,box) ]
    set naxis1 [lindex [buf$bufNo getkwd NAXIS1] 1]
    if {$naxis1=={}} { set naxis1 1 }
@@ -536,7 +543,11 @@ proc refreshFitgauss { visuNo args } {
    ::console::affiche_resultat "$texte\n"
    ::console::affiche_saut "\n"
    if { [ $base.fra1.labURLX cget -fg ] == "$color(blue)" } {
-      set radec [ buf[ ::confVisu::getBufNo $visuNo ] xy2radec [ list [ lindex $valeurs 1 ] [ lindex $valeurs 5 ] ] ]
+
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
+
+      set radec [ buf$bufNo xy2radec [ list [ lindex $valeurs 1 ] [ lindex $valeurs 5 ] ] ]
       set ra [ lindex $radec 0 ]
       set dec [ lindex $radec 1 ]
       set rah [ mc_angle2hms $ra 360 zero 2 auto string ]
@@ -550,8 +561,8 @@ proc refreshFitgauss { visuNo args } {
       #--- C2003 10 18.89848 : Indique la date du milieu de la pose pour l'image
       #--- (annee, mois, jour decimal --> qui permet d'avoir l'heure du milieu de la pose a la seconde pres)
       set mpc "OLD $caption(audace,MPC_format)\n     .        C"
-      set demiexposure [ expr ( [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]+0. )/86400./2. ]
-      set d [mc_date2iso8601 [ mc_datescomp [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd DATE-OBS ] 1 ] + $demiexposure ] ]
+      set demiexposure [ expr ( [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]+0. )/86400./2. ]
+      set d [mc_date2iso8601 [ mc_datescomp [ lindex [ buf$bufNo getkwd DATE-OBS ] 1 ] + $demiexposure ] ]
       set annee [ string range $d 0 3 ]
       set mois  [ string range $d 5 6 ]
       set jour  [ string range $d 8 9 ]
@@ -575,7 +586,7 @@ proc refreshFitgauss { visuNo args } {
       set s [ string replace $s 2 2 . ]
       append mpc "$d $m $s "
       append mpc "         "
-      set cmagr [ expr ( [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd CMAGR ] 1 ]+0. ) ]
+      set cmagr [ expr ( [ lindex [ buf$bufNo getkwd CMAGR ] 1 ]+0. ) ]
       if { $cmagr == "0" } { set cmagr "23" }
       set mag [ expr $cmagr+$mag0 ]
       append mpc "[ format %04.1f $mag ]"
@@ -726,7 +737,9 @@ proc refreshCenter { visuNo args } {
    }
 
    #--- Lecture des parametres dans la fenetre
-   set private(center,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] centro $private(center,box) ]
+   set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+   if {$err} { set bufNo 1 }
+   set private(center,valeurs) [ buf$bufNo centro $private(center,box) ]
 
    #--- Mise a jour des variables
    set private(center,centro) "$caption(audace,center_xy) : ( [ format "%.2f" [ lindex $private(center,valeurs) 0 ] ] / [ format "%.2f" [ lindex $private(center,valeurs) 1 ] ] )"
@@ -850,7 +863,9 @@ proc refreshPhotom { visuNo args } {
    }
 
    #--- Lecture des parametres dans la fenetre
-   set private(photom,valeurs) [ buf[ ::confVisu::getBufNo $visuNo ] phot $private(photom,box) ]
+   set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+   if {$err} { set bufNo 1 }
+   set private(photom,valeurs) [ buf$bufNo phot $private(photom,box) ]
 
    #--- Mise a jour des variables
    set private(photom,integflux) "$caption(audace,integflux) : [ lindex $private(photom,valeurs) 0 ]"
@@ -1437,7 +1452,9 @@ proc psf_toolbox { visuNo } {
          return
       }
 
-      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
+
       set r [ buf$bufNo fitgauss $private(center,box) ]
       set x [lindex $r 1]
       set y [lindex $r 5]
@@ -1464,7 +1481,9 @@ proc psf_toolbox { visuNo } {
          return
       }
 
-      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
+
       set r [ buf$bufNo fitgauss $private(center,box) ]
       set x [lindex $r 1]
       set y [lindex $r 5]
@@ -1502,7 +1521,8 @@ proc psf_toolbox { visuNo } {
 
       global private
 
-      set bufNo [::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
 
       set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
       set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
@@ -1547,7 +1567,8 @@ proc psf_toolbox { visuNo } {
 
       global private
 
-      set bufNo [::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
 
       set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
       set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
@@ -1606,7 +1627,8 @@ proc psf_toolbox { visuNo } {
 
       global private
 
-      set bufNo [::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
 
       set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
       set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
@@ -1658,7 +1680,8 @@ proc psf_toolbox { visuNo } {
 
       global private
 
-      set bufNo [::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo]} msg]
+      if {$err} { set bufNo 1 }
 
       set xs0 [expr int($x - $private(psf_toolbox,$visuNo,radius))]
       set ys0 [expr int($y - $private(psf_toolbox,$visuNo,radius))]
@@ -1727,12 +1750,12 @@ proc psf_toolbox { visuNo } {
       # Appel des methodes
       switch $private(psf_toolbox,$visuNo,methode) {
 
-         "fitgauss"   { PSF_method_fitgauss $visuNo $x $y }
-         "photom"     { PSF_method_photom $visuNo $x $y }
+         "fitgauss"   { PSF_method_fitgauss   $visuNo $x $y }
+         "photom"     { PSF_method_photom     $visuNo $x $y }
          "fitgauss2D" { PSF_method_fitgauss2D $visuNo $x $y }
-         "psfimcce"   { PSF_method_psfimcce $visuNo $x $y }
+         "psfimcce"   { PSF_method_psfimcce   $visuNo $x $y }
 
-         default      { PSF_method_psfimcce $visuNo $x $y }
+         default      { PSF_method_psfimcce   $visuNo $x $y }
       }
       
       # Ecretage
@@ -1890,7 +1913,10 @@ proc psf_toolbox { visuNo } {
       } msg ]
       
       if { $err } {
-         ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n"
+         set err [ catch { ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n" } msg2 ]
+         if { $err } {
+            gren_erreur "$caption(audace,psf_toolbox_message3) (Err msg: $msg)\n"
+         }
          return
       }
       
@@ -2100,7 +2126,8 @@ proc psf_toolbox { visuNo } {
          return
       }
 
-      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set err [catch {set bufNo [::confVisu::getBufNo $visuNo ]} msg]
+      if {$err} { set bufNo 1 }
       set r [ buf$bufNo fitgauss $private(center,box) ]
 
       set x [lindex $r 1]
