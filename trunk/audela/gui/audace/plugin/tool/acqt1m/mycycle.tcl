@@ -20,7 +20,7 @@ namespace eval ::mycycle {
 
    proc ::mycycle::use { } {
 
-      ::mycycle::TNO
+      ::mycycle::snovae
    
    }
 
@@ -86,6 +86,20 @@ namespace eval ::mycycle {
       # Liste le mouvement de la roue  [Filtre    Exposure   nbimg   binning   ]
       set ::cycle::roue          [list [list "Rs"   90        1        1      ] \
                                        [list "Rs"   300         1        1      ] \
+                                 ]
+
+   }
+
+   proc ::mycycle::snovae { } {
+
+      set ::cycle::object         "SN"      
+      set ::cycle::ra             "11 29 3"
+      set ::cycle::dec            "17 14 19.41"
+   
+      # Liste le mouvement de la roue  [Filtre    Exposure   nbimg   binning   ]
+      set ::cycle::roue          [list [list "Rs"   600         1        1      ] \
+                                       [list "B"    900         1        1      ] \
+                                       [list "V"    900         1        1      ] \
                                  ]
 
    }
