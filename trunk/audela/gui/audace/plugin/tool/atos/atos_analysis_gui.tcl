@@ -708,12 +708,13 @@ namespace eval ::atos_analysis_gui {
       }
       if {$::atos_analysis_gui::tps_corr == 1} {
          set ::atos_analysis_gui::time_correction [expr ($::atos_analysis_gui::theo_expo/2.0 + $::atos_analysis_gui::time_offset)]
-      ::console::affiche_resultat " time_correction  = $::atos_analysis_gui::time_correction\n"
+         ::console::affiche_resultat " time_correction  = $::atos_analysis_gui::time_correction\n"
          ::atos_analysis_tools::correction_temporelle
       } else {
          set ::atos_analysis_gui::time_correction 0.0
       }
       if {$::atos_analysis_gui::ref_corr == 1} {
+         ::console::affiche_resultat " correction_refetoile \n"
          ::atos_analysis_tools::correction_refetoile
       }
       

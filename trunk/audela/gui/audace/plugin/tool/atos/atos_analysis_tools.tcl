@@ -173,8 +173,10 @@ package require math::linearalgebra
             lappend medref $::atos_analysis_tools::cdl($k,ref_fint)
          }
          set medobj [::math::statistics::median $medobj]
-         set medref [::math::statistics::median $medref]
-
+         if {$::atos_analysis_gui::ref_corr} {
+            set medref [::math::statistics::median $medref]
+         }
+         
          # on cree 2 nouvelles courbes
          for {set j 1} {$j<=$bloc} {incr j} {
             incr i
@@ -182,11 +184,15 @@ package require math::linearalgebra
                set ::atos_analysis_tools::finalcdl($i,idframe)  $::atos_analysis_tools::cdl($i,idframe)
                set ::atos_analysis_tools::finalcdl($i,jd)       $::atos_analysis_tools::cdl($i,jd)
                set ::atos_analysis_tools::finalcdl($i,obj_fint) $medobj
-               set ::atos_analysis_tools::finalcdl($i,ref_fint) $medref
+               if {$::atos_analysis_gui::ref_corr} {
+                  set ::atos_analysis_tools::finalcdl($i,ref_fint) $medref
+               }
             }
             set ::atos_analysis_tools::medianecdl($i,jd) $::atos_analysis_tools::cdl($i,jd)
             set ::atos_analysis_tools::medianecdl($i,obj_fint) $medobj
-            set ::atos_analysis_tools::medianecdl($i,ref_fint) $medref
+            if {$::atos_analysis_gui::ref_corr} {
+               set ::atos_analysis_tools::medianecdl($i,ref_fint) $medref
+            }
          }
          set reste [expr $::atos_analysis_tools::raw_nbframe - $i]
          if {$reste<$bloc} {break}
