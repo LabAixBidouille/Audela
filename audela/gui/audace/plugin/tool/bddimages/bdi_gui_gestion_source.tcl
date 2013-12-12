@@ -379,9 +379,9 @@ namespace eval bdi_gui_gestion_source {
       #$onglets.nb select $onglets.nb.f1
 
 
-      if { [winfo exists .audace.plotxy1] } {
-         ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
-      }
+      #if { [winfo exists .audace.plotxy1] } {
+      #   ::bdi_gui_psf::graph $::bdi_gui_psf::graph_current_key
+      #}
       
       return
       
@@ -1807,63 +1807,15 @@ namespace eval bdi_gui_gestion_source {
          set results [frame $f1.results -borderwidth 0 -cursor arrow -relief groove]
          pack $results -in $f1 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-              set block [frame $results.params -borderwidth 0 -cursor arrow -relief groove]
-              pack $block -in $results -anchor n -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  set values [ frame $block.valuesleft -borderwidth 0 -cursor arrow -relief groove ]
-                  pack $values -in $block -anchor n -side left -expand 1 -fill both -padx 10 -pady 2
-                          
-                         foreach key [::bdi_tools_psf::get_fields_current_psf_left]  {
-
-                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
-                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
-
-                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="err_psf"} {
-                                      set active disabled
-                                   } else {
-                                      set active active
-                                   }
-                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "::bdi_gui_psf::graph $key" 
-                                   label $value.lab1 -text " = " 
-                                   label $value.lab2 -textvariable ::gui_cata::current_psf($key)
-                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
-                         }
-
-                  set values [ frame $block.valuesright -borderwidth 0 -cursor arrow -relief groove ]
-                  pack $values -in $block -anchor n -side right -expand 1 -fill both -padx 10 -pady 2
-
-                         foreach key [::bdi_tools_psf::get_fields_current_psf_right] {
-
-                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
-                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 2 -pady 0
-
-                                   if {$key=="err_flux"||$key=="radius"||$key=="err_sky"||$key=="pixmax"} {
-                                      set active disabled
-                                   } else {
-                                      set active active
-                                   }
-                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "::bdi_gui_psf::graph $key" 
-                                   label $value.lab1 -text " = " 
-                                   label $value.lab2 -textvariable ::gui_cata::current_psf($key)
-                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
-                         }
-
-              set actions [frame $results.actions -borderwidth 0 -cursor arrow -relief groove]
-              pack $actions -in $results -anchor c -side top 
-
-                   button $actions.crop -state active -text "Crop" -relief "raised" \
-                        -command "::bdi_gui_psf::setval"
-                   grid $actions.crop -sticky nsw -pady 3
-                   
+         psf_gui_graphes $::audace(visuNo) $results  
+         
          # onglets : methodes
 
          set methodes [frame $f2.methodes -borderwidth 0 -cursor arrow -relief groove]
          pack $methodes -in $f2 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
               
 
-              psf_gui_methodes $::audace(visuNo) $f2
+              psf_gui_methodes $::audace(visuNo) $methodes
 #              ::bdi_gui_psf::gui_configuration $methodes
 
 

@@ -17,7 +17,7 @@ set caption(audace,menu,coupe)                        "Section"
 set caption(audace,menu,statwin)                      "Statistics in Window"
 set caption(audace,menu,fwhm)                         "Fwhm"
 set caption(audace,menu,fitgauss)                     "Fit a gaussian"
-set caption(audace,menu,psf_toolbox)                  "Fit a PSF"
+set caption(audace,menu,psf_toolbox)                  "PSF ToolBox"
 set caption(audace,menu,centro)                       "Photocenter"
 set caption(audace,menu,phot)                         "Integrated Photometry"
 
@@ -109,7 +109,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Statistiques dans la fenêtre"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajuster une gaussienne"
-   set caption(audace,menu,psf_toolbox)                  "Ajuster une PSF"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Photocentre"
    set caption(audace,menu,phot)                      "Photométrie intégrale"
 
@@ -201,7 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Statistiche zona selezionata"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Applicare una gaussiana"
-   set caption(audace,menu,psf_toolbox)                  "Applicare una PSF"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Baricentro fotografico"
    set caption(audace,menu,phot)                      "Fotometria integrale"
 
@@ -293,7 +293,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Ventana de estadísticas"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajustar perfil Gauss"
-   set caption(audace,menu,psf_toolbox)                  "Ajustar perfil PSF"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Centro fotométrico"
    set caption(audace,menu,phot)                      "Fotometría integrada"
 
@@ -385,7 +385,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Statistiken in das Fenster"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Eine Gauss Kurve einstellen"
-   set caption(audace,menu,psf_toolbox)                  "Eine PSF Kurve einstellen"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Photozentrum"
    set caption(audace,menu,phot)                      "Integrale Photomessung"
 
@@ -477,7 +477,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Janela de estatísticas"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Ajustar perfil gaussiano"
-   set caption(audace,menu,psf_toolbox)                  "Ajustar perfil PSF"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Centro fotométrico"
    set caption(audace,menu,phot)                      "Fotometria integrada"
 
@@ -569,7 +569,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Statistik in Vindue"
    set caption(audace,menu,fwhm)                      "Halvværdibredde (Fwhm)"
    set caption(audace,menu,fitgauss)                  "Tilpas en Gausskurve"
-   set caption(audace,menu,psf_toolbox)                  "Tilpas en PSFkurve"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Center på fotoet"
    set caption(audace,menu,phot)                      "Integreret fotometri"
 
@@ -661,7 +661,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Statistics in Window"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Fit a gaussian"
-   set caption(audace,menu,psf_toolbox)                  "Fit a PSF"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Photocenter"
    set caption(audace,menu,phot)                      "Integrated Photometry"
 
@@ -753,7 +753,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,statwin)                   "Statistics in Window"
    set caption(audace,menu,fwhm)                      "Fwhm"
    set caption(audace,menu,fitgauss)                  "Fit a gaussian"
-   set caption(audace,menu,psf_toolbox)               "Fit a PSF"
+   set caption(audace,menu,psf_toolbox)               "PSF ToolBox"
    set caption(audace,menu,centro)                    "Photocenter"
    set caption(audace,menu,phot)                      "Integrated Photometry"
 

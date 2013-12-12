@@ -999,49 +999,8 @@ proc psf_toolbox { visuNo } {
          set results [frame $f_res.results]
          pack $results -in $f_res
 
-              set block [frame $results.params]
-              pack $block -in $results
-
-                  set values [ frame $block.valuesleft]
-                  pack $values -in $block -anchor n -side left
-                          
-                         foreach key [get_fields_current_psf_left]  {
-
-                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
-                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 0 -pady 0
-
-                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="err_psf"} {
-                                      set active disabled
-                                   } else {
-                                      set active active
-                                   }
-                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "psf_graph $visuNo $key" 
-                                   label $value.lab1 -text " = " 
-                                   label $value.lab2 -textvariable private(psf_toolbox,$visuNo,psf,$key) -width 8
-                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
-                         }
-
-                  set values [ frame $block.valuesright]
-                  pack $values -in $block -anchor n -side right
-
-                         foreach key [get_fields_current_psf_right] {
-
-                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
-                              pack $value -in $values -anchor n -side top -padx 0 -pady 0
-
-                                   if {$key=="err_flux"||$key=="radius"||$key=="err_sky"||$key=="pixmax"} {
-                                      set active disabled
-                                   } else {
-                                      set active active
-                                   }
-                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
-                                      -command "psf_graph $visuNo $key" 
-                                   label $value.lab1 -text " = " 
-                                   label $value.lab2 -textvariable private(psf_toolbox,$visuNo,psf,$key)  -width 8
-                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
-                         }
-
+         psf_gui_graphes $visuNo $results
+         
          # onglets : images
 
          set images [frame $f_img.images]
@@ -1212,6 +1171,52 @@ proc psf_toolbox { visuNo } {
    
       return { fitgauss photom fitgauss2D psfimcce }
    
+   }
+
+   proc psf_gui_graphes { visuNo frm } {
+
+              set block [frame $frm.params]
+              pack $block -in $frm
+
+                  set values [ frame $block.valuesleft]
+                  pack $values -in $block -anchor n -side left
+                          
+                         foreach key [get_fields_current_psf_left]  {
+
+                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                              pack $value -in $values -anchor n -side top -expand 1 -fill both -padx 0 -pady 0
+
+                                   if {$key=="err_xsm"||$key=="err_ysm"||$key=="err_psf"} {
+                                      set active disabled
+                                   } else {
+                                      set active active
+                                   }
+                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
+                                      -command "psf_graph $visuNo $key" 
+                                   label $value.lab1 -text " = " 
+                                   label $value.lab2 -textvariable private(psf_toolbox,$visuNo,psf,$key) -width 8
+                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
+                         }
+
+                  set values [ frame $block.valuesright]
+                  pack $values -in $block -anchor n -side right
+
+                         foreach key [get_fields_current_psf_right] {
+
+                              set value [ frame $values.$key -borderwidth 0 -cursor arrow -relief groove ]
+                              pack $value -in $values -anchor n -side top -padx 0 -pady 0
+
+                                   if {$key=="err_flux"||$key=="radius"||$key=="err_sky"||$key=="pixmax"} {
+                                      set active disabled
+                                   } else {
+                                      set active active
+                                   }
+                                   button $value.graph -state $active -text "$key" -relief "raised" -width 8 -height 1\
+                                      -command "psf_graph $visuNo $key" 
+                                   label $value.lab1 -text " = " 
+                                   label $value.lab2 -textvariable private(psf_toolbox,$visuNo,psf,$key)  -width 8
+                                   grid $value.graph $value.lab1 $value.lab2 -sticky nsw -pady 3
+                         }
    }
 
    proc psf_gui_methodes { visuNo frm } {
@@ -2334,6 +2339,7 @@ proc psf_toolbox { visuNo } {
    #------------------------------------------------------------
    proc  psf_fermer { visuNo frm } {
 
+      psf_clean_mark $visuNo
       psf_close_to_conf $visuNo
       ferme_fenetre_analyse $visuNo $frm psfimcce
 
