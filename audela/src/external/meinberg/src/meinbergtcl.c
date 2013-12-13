@@ -930,7 +930,7 @@ meinberg_gps fastread
             Tcl_SetResult(interp,s,TCL_VOLATILE);
           }
 				
-          //printf("Read %d events\n",j);
+          printf("Read %d events\n",j);
 
           strcpy(s,"");
 
