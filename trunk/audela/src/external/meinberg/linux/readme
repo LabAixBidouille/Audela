@@ -8,3 +8,10 @@ meinberg_gps fastread
 
 meinberg_gps status
 meinberg_gps close
+
+
+# compilation du driver 
+# mbgtools-lx-dev-2013-03-15.tar.gz
+# aller dans le repertoire et faire 
+# make 
+# make install
