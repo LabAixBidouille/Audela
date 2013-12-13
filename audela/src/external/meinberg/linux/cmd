@@ -18,7 +18,7 @@ gcc -fPIC -Wall -O2 -I. -I./include  -DMBGDEVIO_SIMPLE=1   -c -o lan_util.o ./sr
 
 gcc -O2  -fPIC  -DTCL_THREADS  -fno-stack-protector -c -Wall -DUSE_TCL_STUBS -DUSE_TK_STUBS -DUSE_COMPAT_CONST -I./include -I../../../include -I/usr/include -I/usr/include/tcl8.5 -o libmeinberg.o ../src/libmeinberg.c
 gcc -O2  -fPIC  -DTCL_THREADS  -fno-stack-protector -c -Wall -DUSE_TCL_STUBS -DUSE_TK_STUBS -DUSE_COMPAT_CONST -I./include -I../../../include -I/usr/include -I/usr/include/tcl8.5 -o meinbergtcl.o ../src/meinbergtcl.c
-gcc -O2 -fPIC -fno-stack-protector -c -Wall -DUSE_COMPAT_CONST -I./include -I../../../include -I/usr/include -o meinberg.o ../src/meinberg.c
+#gcc -O2 -fPIC -fno-stack-protector -c -Wall -DUSE_COMPAT_CONST -I./include -I../../../include -I/usr/include -o meinberg.o ../src/meinberg.c
 
 gcc libmeinberg.o meinbergtcl.o mbgdevio.o toolutil.o gpsutils.o pcpsutil.o mbgmktm.o pcpslstr.o pcpsmktm.o parmpcps.o parmgps.o ctrydttm.o ctry.o lan_util.o -shared  -ldl -lm -lstdc++ -L/usr/lib -ltclstub8.5 -L../../../../bin/ -ltkstub8.5 -o libmeinberg.so 
 
