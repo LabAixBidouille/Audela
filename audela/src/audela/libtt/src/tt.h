@@ -766,6 +766,9 @@ typedef struct {
    int *hotPixelList;
    double drop_pixsize;
    double oversampling;
+   double xcenter;
+   double ycenter;
+   double radius;
    TT_PTYPE cosmicThreshold;
    TT_USER1_IMA_STACK user1;
    TT_USER2_IMA_STACK user2;
