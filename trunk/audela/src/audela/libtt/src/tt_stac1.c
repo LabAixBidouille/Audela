@@ -738,6 +738,9 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    pstack->jpeg_qualite = 75;
    pstack->drop_pixsize = 0.5;
    pstack->oversampling = 2;
+   pstack->xcenter=0.;
+   pstack->ycenter=0.;
+   pstack->radius=0.;
 
    for (k=11;k<(pstack->nbkeys);k++) {
       int nombre, taille, msg;
@@ -837,6 +840,21 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
       else if (strcmp(mot,"COSMIC_THRESHOLD")==0) {
          pstack->cosmicThreshold=(TT_PTYPE)fabs(atof(argu));
       }   
+      else if (strcmp(mot,"XCENTER")==0) {
+         if (strcmp(argu,"")!=0) {
+            pstack->xcenter=(double)atof(argu);
+         }
+      }
+      else if (strcmp(mot,"YCENTER")==0) {
+         if (strcmp(argu,"")!=0) {
+            pstack->ycenter=(double)atof(argu);
+         }
+      }
+      else if (strcmp(mot,"RADIUS")==0) {
+         if (strcmp(argu,"")!=0) {
+            pstack->radius=(double)atof(argu);
+         }
+      }
 
       tt_free(mot,"mot");
       tt_free(argu,"argu");

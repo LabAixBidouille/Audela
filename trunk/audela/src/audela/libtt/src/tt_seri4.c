@@ -1240,6 +1240,9 @@ int tt_ima_series_normgain_1(TT_IMA_SERIES *pseries)
    int kkk,index;
    double normgain_value;
    float mipslo,mipshi;
+   double xcenter,ycenter,radius,dx,dy,d2,dmax2;
+   int ii,jj,kk,imax,jmax,kkkk;
+   double valeur,i=0.,mu_i=0.,mu_ii=0.,sx_i,sx_ii=0.,delta;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1247,6 +1250,9 @@ int tt_ima_series_normgain_1(TT_IMA_SERIES *pseries)
    nelem=pseries->nelements;
    index=pseries->index;
    normgain_value=pseries->normgain_value;
+   xcenter=pseries->xcenter-1;
+   ycenter=pseries->ycenter-1;
+   radius=fabs(pseries->radius);
 
    /* --- raz des variables a calculer ---*/
    pseries->mean=0.;
@@ -1264,16 +1270,55 @@ int tt_ima_series_normgain_1(TT_IMA_SERIES *pseries)
    tt_util_bgk(p_in,&(pseries->bgmean),&(pseries->bgsigma));
    /*
    if (pseries->bgmean==0) {
-      mult=1;
+	 mult=1;
    } else {
-      mult=(normgain_value)/(pseries->bgmean);
+	 mult=(normgain_value)/(pseries->bgmean);
    }
    */
    tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
    if (fabs(pseries->mean)<=TT_EPS_DOUBLE) {
-      mult=0.0;
+	 mult=0.0;
    } else {
-      mult=(normgain_value)/(pseries->mean);
+	 mult=(normgain_value)/(pseries->mean);
+   }
+   if (radius>=1) {
+      imax=p_in->naxis1;
+      jmax=p_in->naxis2;
+      dmax2=radius*radius;
+      sx_i=0;
+      kkkk=0;
+      for(ii=0;ii<imax;ii++) {
+	 dx=ii-xcenter;
+	 if (fabs(dx)>radius) {
+	    continue;
+	 }
+	 for(jj=0;jj<jmax;jj++) {
+	    dy=jj-ycenter;
+	    if (fabs(dy)>radius) {
+	       continue;
+	    }
+	    d2=dx*dx+dy*dy;
+	    if (d2>dmax2) {
+	       continue;
+	    }
+	    kk=jj*imax+ii;
+	    /* --- algo de la valeur moy et ecart type de Miller ---*/
+	    valeur=p_in->p[kk];
+	    if (kkkk==0) {mu_i=valeur;}
+	    i=(double) (kkkk+1);
+	    delta=valeur-mu_i;
+	    mu_ii=mu_i+delta/(i);
+	    sx_ii=sx_i+delta*(valeur-mu_ii);
+	    mu_i=mu_ii;
+	    sx_i=sx_ii;
+	    kkkk++;
+	 }
+      }
+      if (mu_i<=TT_EPS_DOUBLE) {
+	 mult=0.0;
+      } else {
+	 mult=(normgain_value)/(mu_i);
+      }
    }
 
    /* --- calcul de la fonction ---*/
@@ -1324,6 +1369,9 @@ int tt_ima_series_normoffset_1(TT_IMA_SERIES *pseries)
    int kkk,index;
    double normoffset_value;
    float mipslo,mipshi;
+   double xcenter,ycenter,radius,dx,dy,d2,dmax2;
+   int ii,jj,kk,imax,jmax,kkkk;
+   double valeur,i=0.,mu_i=0.,mu_ii=0.,sx_i,sx_ii=0.,delta;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1331,6 +1379,9 @@ int tt_ima_series_normoffset_1(TT_IMA_SERIES *pseries)
    nelem=pseries->nelements;
    index=pseries->index;
    normoffset_value=pseries->normoffset_value;
+   xcenter=pseries->xcenter-1;
+   ycenter=pseries->ycenter-1;
+   radius=fabs(pseries->radius);
 
    /* --- raz des variables a calculer ---*/
    pseries->mean=0.;
@@ -1347,6 +1398,41 @@ int tt_ima_series_normoffset_1(TT_IMA_SERIES *pseries)
    /* --- Calcul des parametres de fond de ciel ---*/
    tt_util_bgk(p_in,&(pseries->bgmean),&(pseries->bgsigma));
    offset=normoffset_value-(pseries->bgmean);
+   if (radius>=1) {
+      imax=p_in->naxis1;
+      jmax=p_in->naxis2;
+      dmax2=radius*radius;
+      sx_i=0;
+      kkkk=0;
+      for(ii=0;ii<imax;ii++) {
+	 dx=ii-xcenter;
+	 if (fabs(dx)>radius) {
+	    continue;
+	 }
+	 for(jj=0;jj<jmax;jj++) {
+	    dy=jj-ycenter;
+	    if (fabs(dy)>radius) {
+	       continue;
+	    }
+	    d2=dx*dx+dy*dy;
+	    if (d2>dmax2) {
+	       continue;
+	    }
+	    kk=jj*imax+ii;
+	    /* --- algo de la valeur moy et ecart type de Miller ---*/
+	    valeur=p_in->p[kk];
+	    if (kkkk==0) {mu_i=valeur;}
+	    i=(double) (kkkk+1);
+	    delta=valeur-mu_i;
+	    mu_ii=mu_i+delta/(i);
+	    sx_ii=sx_i+delta*(valeur-mu_ii);
+	    mu_i=mu_ii;
+	    sx_i=sx_ii;
+	    kkkk++;
+	 }
+      }
+      offset=normoffset_value-mu_i;
+   }
 
    /* --- calcul de la fonction ---*/
    /*tt_imabuilder(p_out);*/
