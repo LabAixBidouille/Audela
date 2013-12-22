@@ -39,8 +39,9 @@ static struct cmditem cmdlist[] = {
    {"lst",(Tcl_CmdProc *)cmdTelLst},\
    {"park",(Tcl_CmdProc *)cmdTelPark},\
    {"dfmfocus",(Tcl_CmdProc *)cmdTelDFMFocus},\
-	{"dfmtracking",(Tcl_CmdProc *)cmdTelDFMTracking},\
+   {"dfmtracking",(Tcl_CmdProc *)cmdTelDFMTracking},\
    {"blockingmethod",(Tcl_CmdProc *)cmdTelBlockingMethod},\
+   {"tempo", (Tcl_CmdProc *)cmdTelTempo},\
    {NULL, NULL}
 };
 
