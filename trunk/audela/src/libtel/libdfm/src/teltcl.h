@@ -40,6 +40,7 @@ int cmdTelPark(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdTelDFMFocus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelDFMTracking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelBlockingMethod(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #ifdef __cplusplus
 }

@@ -452,3 +452,27 @@ int cmdTelBlockingMethod(ClientData clientData, Tcl_Interp *interp, int argc, ch
 	Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	return result;
 }
+
+int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,pb=0;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if((argc!=2)&&(argc!=3)) {
+      pb=1;
+   } else if(argc==2) {
+      pb=0;
+   } else {
+      pb=0;
+      tel->tempo=(int)fabs((double)atoi(argv[2]));
+   }
+   if (pb==1) {
+      sprintf(ligne,"Usage: %s %s ?ms?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      sprintf(ligne,"%d",tel->tempo);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   }
+   return result;
+}
