@@ -78,6 +78,7 @@
    Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_Qinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_Qinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_P",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_P,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"gsl_cdf_ugaussian_Pinv",(Tcl_CmdProc *)Cmd_gsltcltcl_cdf_ugaussian_Pinv,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"gsl_multimin_fminimizer_nmsimplex",(Tcl_CmdProc *)Cmd_gsltcltcl_multimin_fminimizer_nmsimplex,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    /* Dev by Harald Rischbieter ( har.risch@gmx.de ) */
    Tcl_CreateCommand(interp,"gsl_sphharm",(Tcl_CmdProc *)Cmd_gsltcltcl_msphharm,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
