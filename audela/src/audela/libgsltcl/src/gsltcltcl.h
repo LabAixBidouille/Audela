@@ -36,6 +36,10 @@
 /***************************************************************************/
 
 #include "libgsltcl.h"
+#ifdef LIBRARY_DLL
+#define GSL_DLL
+#endif
+
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_math.h>
@@ -47,9 +51,15 @@
 #include <gsl/gsl_fft_complex.h>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_sf_gamma.h>
+#include <gsl/gsl_multimin.h>
 
 #define REAL(z,i) ((z)[2*(i)])
 #define IMAG(z,i) ((z)[2*(i)+1])
+
+typedef struct {
+	Tcl_Interp *interp;
+	char proc[200];
+} struct_my_f;
 
 /***************************************************************************/
 /*      Prototypes des fonctions d'extension C appelables par Tcl          */
@@ -77,6 +87,7 @@ int Cmd_gsltcltcl_cdf_ugaussian_Q(ClientData clientData, Tcl_Interp *interp, int
 int Cmd_gsltcltcl_cdf_ugaussian_Qinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_gsltcltcl_cdf_ugaussian_P(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_gsltcltcl_cdf_ugaussian_Pinv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_gsltcltcl_multimin_fminimizer_nmsimplex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 /* Dev by Harald Rischbieter ( har.risch@gmx.de ) */
 int Cmd_gsltcltcl_msphharm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 

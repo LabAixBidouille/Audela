@@ -78,3 +78,4 @@ char *gsltcl_d2s(double val)
 	}		
    return s+kk;
 }
+

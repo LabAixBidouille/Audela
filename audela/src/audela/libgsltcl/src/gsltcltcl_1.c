@@ -1338,3 +1338,162 @@ int Cmd_gsltcltcl_cdf_ugaussian_Pinv(ClientData clientData, Tcl_Interp *interp, 
    }
    return TCL_OK;
 }
+
+/* This function is called by the Simplex algorithm of Nelder and Mead. */
+double my_f (const gsl_vector *v, void *params)
+{
+	double residu;
+	Tcl_Interp *interp;
+	int k,res;
+	char s[2000],ss[200];
+	struct_my_f *p;
+	//interp=(Tcl_Interp*)params;
+	p=(struct_my_f*)params;
+	interp=p->interp;
+	// boucle sur les inconnues à optimiser
+	sprintf(s,"%s {",p->proc);
+	for (k=0 ; k<(int)v->size ; k++ ) {
+		//sprintf(ss,"%e ",gsl_vector_get(v, k));
+		sprintf(ss,"%s ",gsltcl_d2s(gsl_vector_get(v, k)));
+		strcat(s,ss);
+	}
+	strcat(s,"}");
+	// evalue la proc Tcl
+   res=Tcl_Eval(interp,s);
+   if (res==TCL_OK) {
+      residu=atof(interp->result);
+	} else {
+		residu=0;
+	}
+	return residu;
+}
+
+int Cmd_gsltcltcl_multimin_fminimizer_nmsimplex(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* This is the Simplex algorithm of Nelder and Mead.                        */
+/*                                                                          */
+/* A Tcl proc computes and returns a scalar value according a given         */
+/* vector values. gsl_multimin_fminimizer_nmsimplex calls this proc         */
+/* and search the vector values which minimizes the scalar value of         */
+/* the proc.                                                                */
+/****************************************************************************/
+/* Example:
+proc toto { v } {
+	set x0 [lindex $v 0]
+	set x1 [lindex $v 1]
+	set dp0 1.0
+	set dp1 2.0
+	set residu [expr 10.0 * ($x0 - $dp0) * ($x0 - $dp0) + 20.0 * ($x1 - $dp1) * ($x1 - $dp1) + 30.0] 
+	return $residu
+}
+gsl_multimin_fminimizer_nmsimplex toto {5 7} 1e-2 100
+*/
+/****************************************************************************/
+/* Bibliography:                                                            */
+/* http://linux.math.tifr.res.in/programming-doc/gsl/gsl-ref_34.html        */
+/****************************************************************************/
+{
+   char st[200];
+	int code;
+   
+   if(argc<=4) {
+      sprintf(st,"Usage: %s procname list_of_initial_values epsabs maxiter", argv[0]);
+      Tcl_SetResult(interp,st,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+		int np;
+		const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex;
+		gsl_multimin_fminimizer *s = NULL;
+		gsl_vector *ss, *x;
+		gsl_multimin_function minex_func;
+		Tcl_DString dsptr;
+		Tcl_DString dsptr2;
+		struct_my_f p;
+		double epsabs;
+		int maxiter;
+
+		size_t iter = 0, i;
+		int status;
+		double size;
+
+		/* epsabs */
+      epsabs=fabs(atof(argv[3]));
+
+		/* maxiter */
+      maxiter=atoi(argv[4]);
+
+		/* Starting point */
+      code=gsltcltcl_getgslvector(interp,argv[2],&x,&np);
+
+		/* Initial vertex size vector */
+		ss = gsl_vector_alloc (np);
+
+		/* Set all step sizes to 1 */
+		gsl_vector_set_all (ss, 1.0);
+
+		/* Initialize method and iterate */
+		minex_func.f = &my_f;
+		minex_func.n = np;
+		p.interp=interp;
+		strcpy(p.proc,argv[1]);
+		minex_func.params = (void *)&p;
+
+		s = gsl_multimin_fminimizer_alloc (T, np);
+		gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
+
+		Tcl_DStringInit(&dsptr);
+		Tcl_DStringInit(&dsptr2);
+
+		do
+		 {
+			iter++;
+			status = gsl_multimin_fminimizer_iterate(s);
+		   
+			if (status) 
+			  break;
+
+			size = gsl_multimin_fminimizer_size (s);
+			status = gsl_multimin_test_size (size, epsabs);
+
+			if (status == GSL_SUCCESS)
+			  {
+				sprintf (st,"converged to minimum at\n");
+		 		Tcl_DStringAppend(&dsptr,st,-1);
+			  }
+
+			sprintf (st,"iter = %d vector = ", iter);
+		 	Tcl_DStringAppend(&dsptr,st,-1);
+			for (i = 0; i < (size_t)np; i++)
+			  {
+				 sprintf (st,"%10.3e ", gsl_vector_get (s->x, i));
+			 	Tcl_DStringAppend(&dsptr,st,-1);
+			  }
+			sprintf (st,"f = %e size = %e\n", s->fval, size);
+		 	Tcl_DStringAppend(&dsptr,st,-1);
+		 }
+		while (status == GSL_CONTINUE && iter < maxiter);
+
+		sprintf (st,"status=%d\n", status);
+	 	Tcl_DStringAppend(&dsptr,st,-1);
+
+		Tcl_DStringAppend(&dsptr2,"{",-1);
+		for (i = 0; i < (size_t)np; i++)
+		  {
+         sprintf(st,"%s ",gsltcl_d2s(gsl_vector_get (s->x, i)));
+		 	Tcl_DStringAppend(&dsptr2,st,-1);
+		  }
+		Tcl_DStringAppend(&dsptr2,"} {",-1);
+		Tcl_DStringAppend(&dsptr2,dsptr.string,-1);
+		Tcl_DStringAppend(&dsptr2,"}",-1);
+
+		Tcl_DStringResult(interp,&dsptr2);
+		Tcl_DStringFree(&dsptr);
+		Tcl_DStringFree(&dsptr2);
+
+		gsl_vector_free(x);
+		gsl_vector_free(ss);
+		gsl_multimin_fminimizer_free (s);
+
+   }
+   return TCL_OK;
+}
