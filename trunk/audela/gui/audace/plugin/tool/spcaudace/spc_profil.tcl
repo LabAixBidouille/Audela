@@ -23,6 +23,35 @@
 # Mise a jour $Id$
 
 
+###############################################################################
+# Procédure de changement du mode d'affichage des profils
+# Auteur : Benjamin MAUCLAIRE
+# Date création :  28-12-2013
+# Date de mise à jour : 28-12-2013
+################################################################################
+
+proc spc_displaymode { args } {
+   global spcaudace
+
+   if { [ llength $args ]==1 } {
+      set mode [ lindex $args 0 ]
+   } else {
+      ::console::affiche_erreur "Usage: spc_displaymode spline/real\n"
+      return
+   }
+
+   if { $mode=="spline" } {
+      set spcaudace(display_real) 0
+      ::console::affiche_resultat "Mode lissé activé pour les prochains affichages.\n"
+   } elseif { $mode=="real" } {
+      set spcaudace(display_real) 1
+      ::console::affiche_resultat "Mode réél (escaliers) activé pour les prochains affichages.\n"
+   }
+}
+#*********************************************************#
+
+
+
 ####################################################################
 # Nettoie les mots clefs finissant en 2 :
 #
@@ -1213,6 +1242,7 @@ proc spc_profil { args } {
 		}
 	    }
 
+#**** REVOIR application algo de Horne !! argument file=somme mediane des spectres 2D
             #--- Binning :
 	    buf$audace(bufNo) bitpix float
             if { $methodebin == "rober" } {
