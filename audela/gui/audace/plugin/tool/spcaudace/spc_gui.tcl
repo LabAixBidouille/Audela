@@ -151,6 +151,9 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_traitea_w) -command "spc_traitea" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_select) -command "spc_select" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_cfwhmbinning_w) -command "spc_cafwhmbinning_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_hbinning_w) -command "spc_hbinning_w" -underline 0
+
       #.spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_profil_zone" -underline 0
       #.spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_profil_zone" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
@@ -173,9 +176,10 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_rmcosmics_w) -command "spc_rmcosmics_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_offset_w) -command "spc_offset_w" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_multc_w) -command "spc_multc_w" -underline 0
-      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_file_space)
-      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_cfwhmbinning_w) -command "spc_cafwhmbinning_w" -underline 0
-      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_hbinning_w) -command "spc_hbinning_w" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_displaymode_spline) -command "spc_displaymode spline" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_displaymode_real) -command "spc_displaymode real" -underline 0
+
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
@@ -422,12 +426,16 @@ proc pvisutools {} {
 ############################################################################
    global profilspc
    global caption
-   global colorspc
+   global colorspc spcaudace
 
    #- 060317
    #set profilspc(initialfile) $profilspc(object)
+   if { $spcaudace(display_real)==0 } {
+      .spc.g element create line1 -symbol none -xdata {0 1} -ydata {0 1} -smooth natural
+   } elseif { $spcaudace(display_real)==1 } {
+      .spc.g element create line1 -symbol none -xdata {0 1} -ydata {0 1} -smooth step
+   }
 
-   .spc.g element create line1 -symbol none -xdata {0 1} -ydata {0 1} -smooth natural
    .spc.g axis configure x2 y2 -hide no
    .spc.g element configure line1 -color $colorspc(plotbackground)
    set lx [.spc.g axis limits x]
@@ -546,7 +554,12 @@ proc spc_loadmore { args } {
 	    .spc.g axis configure x -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
 	    .spc.g axis configure y -min $ymin -max $ymax
 	}
-	.spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor
+      if { $spcaudace(display_real)==0 } {
+         .spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor 
+      } elseif { $spcaudace(display_real)==1 } {
+         .spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth step -color $lineColor 
+      }
+      #.spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth step -color $lineColor
 
 	#--- Traitement du résultat :
 	::console::affiche_resultat "Nom du profil affiché de couleur $lineColor : $lineName\nEffacement avec : spc_gdelete $lineName\n"
@@ -751,7 +764,11 @@ proc pvisu { } {
    #-- Ajoute à la liste des profils tracés le profil chargé avec spc_load (pvisu) s'appelle line1 :
 
    #-- Trace le profil :
-   .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+   if { $spcaudace(display_real)==0 } {
+      .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+   } elseif { $spcaudace(display_real)==1 } {
+      .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth step
+   }
    if { [ llength $spcaudace(gloaded) ] == 0 } {
        .spc.g element configure line1 -color $colorspc(profile)
        lappend spcaudace(gloaded) "line1"
@@ -897,7 +914,12 @@ proc pvisu_050218 { } {
    .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
    set profilspc(yunit) $caption(spcaudace,gui,adu)
    .spc.g element delete line1
-   .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+   #.spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+   if { $spcaudace(display_real)==0 } {
+      .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+   } elseif { $spcaudace(display_real)==1 } {
+      .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth step
+   }
    .spc.g element configure line1 -color $colorspc(profile)
    .spc.g axis configure x2 y2 -hide no
    set lx [.spc.g axis limits x]
@@ -946,7 +968,7 @@ proc pvisu2 { args } {
    global printernames
    global caption
    global colorspc
-   global audace
+   global audace spcaudace
 
    set extsp "dat"
    set intensites [ lindex $args 0 ]
@@ -1009,7 +1031,12 @@ proc pvisu2 { args } {
    .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
    set profilspc(yunit) $caption(spcaudace,gui,adu)
    .spc.g element delete line1
-   .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+
+   if { $spcaudace(display_real)==0 } {
+      .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
+   } elseif { $spcaudace(display_real)==1 } {
+      .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth step
+   }
    .spc.g element configure line1 -color $colorspc(profile)
    .spc.g axis configure x2 y2 -hide no
    set lx [.spc.g axis limits x]
