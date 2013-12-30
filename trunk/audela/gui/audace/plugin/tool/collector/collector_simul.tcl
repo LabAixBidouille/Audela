@@ -274,7 +274,7 @@
       dict set dicokwd TEMP      {TEMP %s float {Air temperature} Celsius}
       dict set dicokwd TEMPROSE  {TEMPROSE %s float {Dew temperature} Celsius}
       dict set dicokwd WINDDIR   {WINDDIR %s float {Wind direction (0=S 90=W 180=N 270=E)} deg}
-      dict set dicokwd WINDSP    {WINDSP %s float {Windspeed} {m/s}}
+      dict set dicokwd WINDSP    {WINDSP %s float {Windspeed} {km/h}}
 
       set kwd_list [dict keys $dicokwd]
       if {$kwd eq " "} {return $kwd_list}
