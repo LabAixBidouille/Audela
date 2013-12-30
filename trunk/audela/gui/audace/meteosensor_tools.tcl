@@ -2475,8 +2475,8 @@ proc readSentinelFile { {fileName ""} } {
    set horodate [mc_date2jd [list $DateYear $DateMonth $DateDay $DateHour $DateMin $DateSec]]
 
    set HumidityUnits "%"
-   set WindSpeedGust [format %0.1f [expr { $WindSpeedGust*1000/3600 }]]
-   set WindSpeedGustUnits "m/s"
+   set WindSpeedGust [format %0.1f $WindSpeedGust]
+   set WindSpeedGustUnits "km/s"
    set WinDirection [expr { $WinDirection+180 } ]
    set WinDirection [expr { int(fmod($WinDirection,360)) } ]
 
