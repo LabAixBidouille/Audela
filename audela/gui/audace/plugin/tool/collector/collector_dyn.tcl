@@ -290,6 +290,7 @@
       set private(temperature)          $audace(meteo,obs,temperature)
       set private(humidity)             $audace(meteo,obs,humidity)
       set private(pressure)             $audace(meteo,obs,pressure)
+
       if {[info exists ::station_meteo::widget(temprose)]} {
          set private(temprose) $::station_meteo::widget(temprose)
          set private(windsp)   $::station_meteo::widget(windsp)
