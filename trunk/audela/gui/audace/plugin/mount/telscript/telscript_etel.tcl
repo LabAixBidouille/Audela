@@ -608,8 +608,8 @@ proc loop { } {
       if {$telscript($telname,motion_next)!="correction"} {
          if {$telscript($telname,focus_controler)=="combit"} {
       	   if {$telscript($telname,combit2)!="simu2"} {
-					combit $telscript($telname,combit2) 4 0
-					combit $telscript($telname,combit2) 3 1	            
+					combit $telscript($telname,combitnum2) 3 0 ; # sélectionne le sens 1 de mise au point
+					combit $telscript($telname,combitnum2) 4 1 ; # sélecteur actif raquette physique déconnectée le moteur tourne dans le sens 1
 				}
          } else {
 		      if {$telscript($telname,comarduino0)!="simu2"} {
@@ -625,8 +625,8 @@ proc loop { } {
       if {$telscript($telname,motion_next)!="correction"} {
          if {$telscript($telname,focus_controler)=="combit"} {
       	   if {$telscript($telname,combit2)!="simu2"} {
-					combit $telscript($telname,combit2) 4 1
-					combit $telscript($telname,combit2) 3 1	            
+					combit $telscript($telname,combitnum2) 3 1 ; # sélectionne le sens 2 de mise au point
+					combit $telscript($telname,combitnum2) 4 1 ; # sélecteur actif raquette physique déconnectée le moteur tourne dans le sens 2
 				}
          } else {
 		      if {$telscript($telname,comarduino0)!="simu2"} {
@@ -642,7 +642,7 @@ proc loop { } {
       if {$telscript($telname,motion_next)=="correction"} {
          if {$telscript($telname,focus_controler)=="combit"} {
       	   if {$telscript($telname,combit2)!="simu2"} {
-					combit $telscript($telname,combit2) 3 0
+					combit $telscript($telname,combitnum2) 4 0 ; # sélecteur inactif raquette physique reconnectée le moteur s'arrête.
 				}
          } else {
 		      if {$telscript($telname,comarduino0)!="simu2"} {
