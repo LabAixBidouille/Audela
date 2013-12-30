@@ -41,7 +41,9 @@ proc spc_linear { args } {
      ::console::affiche_resultat "Continuum sauvé sous $audace(rep_images)/${fichier}_cont$conf(extension,defaut)\n"
      return ${fichier}_cont
    } else {
-     ::console::affiche_erreur "Usage : spc_linear profil_de_raies_fits ?largeur de raie?\n\n"
+     # ::console::affiche_erreur "Usage : spc_linear profil_de_raies_fits ?largeur de raie?\n\n"
+     # ::console::affiche_erreur "Usage : spc_linear profil_de_raies_fits largeur_du_filtre(pixels)\[default=20\] ?pourcentage_des_valeurs_retenues\[default=0.95\]?\n\n"
+      ::console::affiche_erreur "Usage : spc_linear profil_de_raies_fits largeur_du_filtre(pixels)\[default=20\]\n"
    }
 }
 ##########################################################
@@ -71,8 +73,8 @@ proc spc_smooth { args } {
 	   set infichier [ lindex $args 0 ]
 	   set sigma [ lindex $args 1 ]
        } else {
-	   ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage (0.9)?\n\n"
-	   return 0
+          ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?largeur sigma de la gaussienne (pixels) \[default=0.9\]?\n"
+	   return ""
        }
 
        set fichier [ file rootname $infichier ]
@@ -87,7 +89,7 @@ proc spc_smooth { args } {
        ::console::affiche_resultat "Spectre adoucis sauvé sous $audace(rep_images)/${fichier}_smo$conf(extension,defaut)\n"
        return ${fichier}_smo
    } else {
-       ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?pourcentage (0.9)?\n\n"
+       ::console::affiche_erreur "Usage : spc_smooth nom_fichier ?largeur sigma de la gaussienne (pixels) \[default=0.9\]?\n"
    }
 }
 ##########################################################
@@ -122,8 +124,8 @@ proc spc_smooth2 { args } {
 	   set force [ lindex $args 1 ]
 	   set back_threshold [ lindex $args 2 ]
        } else {
-           ::console::affiche_erreur "Usage : spc_smooth2 profil_de_raies_fits ?force (1-6)? ?back_threshold (0-1)?\n\n"
-	   return 0
+           ::console::affiche_erreur "Usage : spc_smooth2 profil_de_raies_fits ?force (1-6)? ?largeur_du_filtre(pixels) \[default=0.8\]?\n"
+	   return ""
        }
 
        #--- Calcul de l'adoucissement :
@@ -168,15 +170,15 @@ proc spc_bigsmooth { args } {
 	   set infichier [ file rootname [ lindex $args 0 ] ]
 	   set sigma [ lindex $args 1 ]
        } else {
-           ::console::affiche_erreur "Usage : spc_bigsmooth profil_de_raies_fits ?coefficient?\n\n"
-	   return 0
+           ::console::affiche_erreur "Usage : spc_bigsmooth profil_de_raies_fits ?largeur sigma de la gaussienne (pixels) \[default=20\]?\n"
+	   return ""
        }
        set file_out [ spc_smooth $infichier 20 ]
        file rename -force "$audace(rep_images)/$file_out$conf(extension,defaut)" "$audace(rep_images)/${infichier}_bsmo$conf(extension,defaut)"
        ::console::affiche_resultat "Fichier très adoucis sauvé sous ${infichier}_bsmo$conf(extension,defaut)\n"
        return ${infichier}_bsmo
    } else {
-       ::console::affiche_erreur "Usage : spc_bigsmooth profil_de_raies_fits ?coefficient?\n\n"
+       ::console::affiche_erreur "Usage : spc_bigsmooth profil_de_raies_fits ?largeur sigma de la gaussienne (pixels) \[default=20\]?\n"
    }
 }
 ##########################################################
@@ -224,7 +226,7 @@ proc spc_bigsmooth2 { args } {
        ::console::affiche_resultat "Fichier très adoucis sauvé sous ${infichier}_bsmo$conf(extension,defaut)\n"
        return ${infichier}_bsmo
    } else {
-       ::console::affiche_erreur "Usage : spc_bigsmooth2 profil_de_raies_fits ?back_threshold?\n\n"
+       ::console::affiche_erreur "Usage : spc_bigsmooth2 profil_de_raies_fits ?largeur_du_filtre(pixels) \[default=0.8\]?\n"
    }
 }
 ##########################################################
@@ -237,13 +239,13 @@ proc spc_bigsmooth2 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 14-10-2006
-# Date modification : 14-10-2006
+# Date modification : 28-10-2013
 # Arguments : profil.fit à rééchantillonner, profil_modele.fit modèle d'échantilonnage
 # Algo : spline cubique appliqué au contenu d'un fichier fits
 # Bug : a la premiere execution "# x vector "x" must be monotonically increasing"
 ####################################################################
 
-proc spc_smooth0 { args } {
+proc spc_smospline { args } {
     global conf
     global audace
 
@@ -348,7 +350,7 @@ proc spc_smooth3 { args } {
 	    set largeur [ lindex $args 1 ]
 	    set ordre_filtre [ lindex $args 3 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_smooth3 nom_profil_raies ?largeur_filtre? ?ordre_filtrage?\n"
+	    ::console::affiche_erreur "Usage: spc_smooth3 nom_profil_raies ?largeur filtre (pixels)? ?degré polynome?\n"
 	    return 0
 	}
 
@@ -818,7 +820,8 @@ proc spc_smoothsg { args } {
 	    set demi_largeur [ expr int(0.5*[ lindex $args 1 ]) ]
 	    set degre [ lindex $args 2 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre? ?degre_filtrage (2,1,3)]?\n\n"
+	    # ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre (pixels)? ?degre polynome (2,1,3)]?\n\n"
+	    ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre (pixels)? ?degre polynome (2,3,4)?\n"
 	    return ""
 	}
 
