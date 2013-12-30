@@ -1919,7 +1919,11 @@ proc spc_autoresolution { args } {
       set listeresol [ list ]
       foreach raie $liste_raies {
          set lambdaraie [ lindex $raie 0 ]
-         lappend listeresol [ list $lambdaraie [ spc_resolution $lampecalibree $lambdaraie ] ]
+         if { $lambdaraie<=$crval1 } {
+            continue
+         } else {
+            lappend listeresol [ list $lambdaraie [ spc_resolution $lampecalibree $lambdaraie ] ]
+         }
       }
 
       #--- Determine la resolution maximale accessible :
