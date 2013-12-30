@@ -649,10 +649,13 @@ proc spc_rmcosmics { args } {
             lappend zones [ list $lambdadeb $lambdafin ]
          }
          ::console::affiche_resultat "Zones à cicatriser : $zones\n"
-         #set leszones [ lindex $zones 0 ]
-         #spc_scar "$filename" $leszones
+         ##set leszones [ lindex $zones 0 ]
+         ##spc_scar "$filename" $leszones
          set zones [ linsert $zones 0 "$filename" ]
+         ::console::affiche_resultat "Commande : spc_scar $zones\n"
          set spectre_cic [ spc_scar $zones ]
+         #set lesargs [ list "$filename" $zones ]
+         #set spectre_cic [ spc_scar "$lesargs" ]
       } else {
          ::console::affiche_resultat "Aucune zone à cicatriser trouvée.\n"
          set spectre_cic "$filename"
