@@ -101,6 +101,10 @@ set spcaudace(sitesurveys) "http://wsdiscovery.free.fr/astronomie/research/"
 set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 
+#--- Options d'affichage :
+#-- Affichage en mode escalier, sans lissage spline de BLT :
+set spcaudace(display_real) 0
+
 
 #--- Options prédéfinies dans les pipelines :
 # set spcaudace(methsel) "moy"
