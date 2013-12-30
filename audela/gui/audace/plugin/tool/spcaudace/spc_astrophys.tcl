@@ -2521,13 +2521,22 @@ proc spc_ew4 { args } {
 
 
    #--- Formatage des résultats :
-   set l_fin [ expr 0.01*round($xfin*100) ]
-   set l_deb [ expr 0.01*round($xdeb*100) ]
-   set delta_l [ expr 0.01*round($deltal*100) ]
-   set ew_short [ expr 0.01*round($ew*100) ]
-   set sigma_ew [ expr 0.01*round($sigma*100) ]
-   set snr_short [ expr round($snr) ]
-   set jd_short [ expr 0.001*round($jd*1000) ]
+   #set l_fin [ expr 0.01*round($xfin*100) ]
+   #set l_deb [ expr 0.01*round($xdeb*100) ]
+   #set delta_l [ expr 0.01*round($deltal*100) ]
+   #set ew_short [ expr 0.01*round($ew*100) ]
+   #set sigma_ew [ expr 0.01*round($sigma*100) ]
+   #set snr_short [ expr round($snr) ]
+   #set jd_short [ expr 0.001*round($jd*1000) ]
+
+   set l_fin [ format "%4.2f" $xfin ]
+   set l_deb [ format "%4.2f" $xdeb ]
+   set delta_l [ format "%4.2f" $deltal ]
+   set ew_short [ format "%3.3f" $ew ]
+   set sigma_ew [ format "%2.3f" $sigma ]
+   set snr_short [ format "%4.0f" [ expr round($snr) ] ]
+   set jd_short [ format "%7.4f" $jd ]
+
    set ew_large "EW($delta_l=$l_deb-$l_fin)=$ew_short\ A."
    set lamesure [ list $ew_short $sigma_ew $snr_short $jd_short $ew_large ]
 
