@@ -371,7 +371,7 @@ proc ::station_meteo::refreshMeteo { } {
    }
 
    #--   Elimine les unites
-   set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "m/s" "" "Pa" ""]
+   set entities [list "\{" "" "\}" "" "°C" "" "%" "" "°" "" "km/h" "" "Pa" ""]
    set data [string map $entities [lrange $result 1 end]]
 
    ::station_meteo::getValues $data
@@ -403,7 +403,7 @@ proc ::station_meteo::onChangeMeteo { {do ""} } {
       ::console::disp "Start reading $widget(sensorName)\n"
 
       #--   Demarre la mise a jour
-      refreshMeteo
+      ::station_meteo::refreshMeteo
 
    } elseif {$do eq "stop"} {
 
@@ -501,7 +501,7 @@ proc ::station_meteo::configCycle { w } {
 
 #---------------------------------------------------------------------------
 #  configState
-#     configure l'etatdu nom du fichier et de son chemin
+#     configure l'etat du nom du fichier et de son chemin
 #  parameter : state
 #  return nothing
 #---------------------------------------------------------------------------
