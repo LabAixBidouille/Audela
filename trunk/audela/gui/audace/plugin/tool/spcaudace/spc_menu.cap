@@ -103,6 +103,8 @@ set caption(spcaudace,gui,spc_ajustpoints_w)                "Fitting continuum w
 set caption(spcaudace,gui,spc_cfwhmbinning_w)               "Setup manually coefficient that multiply binning FWHM"
 set caption(spcaudace,gui,spc_hbinning_w)                   "Setup manually binning height"
 set caption(spcaudace,gui,spc_select)                       "Crop a spectrum with two wavelengths"
+set caption(spcaudace,gui,spc_displaymode_real)             "Display lines profiles in real mode (steps)"
+set caption(spcaudace,gui,spc_displaymode_spline)           "Display lines profiles in spline mode (smoothed)"
 
 #--- Menu Mesures ---#
 set caption(spcaudace,gui,spc_mesures)                      "Measures"
@@ -288,6 +290,8 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_ajustpoints_w)             "Ajustement du continuum avec des points choisis"
    set caption(spcaudace,gui,spc_cfwhmbinning_w)            "Régler manuellement le coéfficient multiplicateur de la FWHM de binning"
    set caption(spcaudace,gui,spc_hbinning_w)                "Régler manuellement la hauteur de binning"
+   set caption(spcaudace,gui,spc_displaymode_real)          "Affiche les profils de raies en mode réél (escaliers)"
+   set caption(spcaudace,gui,spc_displaymode_spline)        "Affiche les profils de raies en mode lissé"
 
 
    #--- Menu Mesures ---#
