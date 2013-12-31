@@ -1324,6 +1324,14 @@ proc psf_toolbox { visuNo } {
             label $errors.arretlab    -text "$caption(audace,psf_toolbox_erreurs)" 
 
             grid $errors.arret  $errors.nberror $errors.arretlab -sticky news
+            
+         label $conf.c3 -text "" -width 5
+         set confidence [frame $conf.confidence -borderwidth 0 -cursor arrow -relief groove]
+         grid $conf.c3 $confidence -sticky news
+            
+            label $confidence.radl1 -text "$caption(audace,psf_toolbox_Confidence)" 
+            entry $confidence.radv1 -textvariable private(psf_toolbox,$visuNo,globale,confidence) -relief sunken -width 5
+            grid $confidence.radl1 $confidence.radv1 -sticky news
 
       }
 
@@ -1707,13 +1715,19 @@ proc psf_toolbox { visuNo } {
       set private(psf_toolbox,$visuNo,psf,intensity) [format "%.2f" [lindex $r 10] ]
       set private(psf_toolbox,$visuNo,psf,sky)       [format "%.2f" [lindex $r 11] ]
       set private(psf_toolbox,$visuNo,psf,err_sky)   "-"
-      set private(psf_toolbox,$visuNo,psf,snint)     [format "%.2f" [lindex $r 13] ]
+
+      set err [catch {set private(psf_toolbox,$visuNo,psf,snint)     [format "%.2f" [lindex $r 13] ]} msg]
+      if {$err} { set private(psf_toolbox,$visuNo,psf,snint) nan }
+
       set private(psf_toolbox,$visuNo,psf,radius)    [format "%d" [lindex $r 14] ]
+
       if {[lindex $r 15] == 0} {
          set private(psf_toolbox,$visuNo,psf,err_psf)   "-"
       } else {
          set private(psf_toolbox,$visuNo,psf,err_psf)   [format "%s" [lindex $r 15] ]
       }
+      if {$private(psf_toolbox,$visuNo,psf,snint)==nan} { set private(psf_toolbox,$visuNo,psf,err_psf) "snint" }
+      if {$private(psf_toolbox,$visuNo,psf,flux)<0} { set private(psf_toolbox,$visuNo,psf,err_psf) "negative flux" }
    }
 
    #------------------------------------------------------------
@@ -1795,6 +1809,181 @@ proc psf_toolbox { visuNo } {
 
       return 
    }
+
+
+
+
+
+   proc calcule_solution { visuNo } {
+
+      global private
+      global private_graph
+      global caption
+
+      set sky "" 
+      set flux "" 
+      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+         if {[info exists private_graph($radius,sky)]} {
+            lappend sky [list $radius $private_graph($radius,sky)]
+            lappend flux [list $radius $private_graph($radius,flux)]
+         }
+      }
+      set sky [lsort -index 1  -real -increasing $sky]
+      set n [expr [llength $sky]/2]
+      set zsky [lrange $sky 0 $n]
+      set data ""
+      foreach v $zsky {
+         lappend data [lindex $v 1]
+      }
+      set err [ catch {
+         set mean [::math::statistics::mean $data]
+         set stdev [::math::statistics::stdev $data]
+      } msg ]
+      
+      if { $err } {
+         set err [ catch { ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n" } msg2 ]
+         if { $err } {
+            gren_erreur "$caption(audace,psf_toolbox_message3) (Err msg: $msg)\n"
+         }
+         return
+      }
+      
+      set limit [expr $mean + 3*$stdev]
+      
+      set list_radius ""
+      foreach v $sky {
+         if {[lindex $v 1]<$limit} {
+            lappend list_radius [lindex $v 0]
+         }
+      }
+      
+      # on calcule les moyennes et erreurs 
+
+      foreach key [get_fields_current_psf] {
+
+         if {$key in [list  "err_xsm" "err_ysm" "err_flux" "err_sky" "radius"]} {continue}
+         set data ""
+         foreach radius $list_radius {
+            if {[info exists private_graph($radius,$key)]} {
+               lappend data $private_graph($radius,$key)
+            }
+         }
+         if {$key == "err_psf"} {
+            if {[llength $data]>0} {
+               set private(psf_toolbox,$visuNo,psf,err_psf) "-"
+            } else {
+               set private(psf_toolbox,$visuNo,psf,err_psf) "Globale no data"
+            }
+            continue
+         }
+#if {$key=="flux"} {set ::bddimages::data $data}
+         set err [ catch {
+            set max   [::math::statistics::max $data]
+            set mean  [::math::statistics::mean $data]
+            set stdev [::math::statistics::stdev $data]
+         } msg ]
+
+         if { $err } {
+            ::console::affiche_erreur "determination de $key impossible\n"
+            set private(psf_toolbox,$visuNo,psf,$key) "-"
+            continue
+         }
+
+         switch $key {
+            "xsm" {
+               set private(psf_toolbox,$visuNo,psf,xsm)      [format "%.4f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_xsm)  [format "%.4f" [expr 3.0 * $stdev] ]
+            }
+            "ysm" {
+               set private(psf_toolbox,$visuNo,psf,ysm)      [format "%.4f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_ysm)  [format "%.4f" [expr 3.0 * $stdev] ]
+            }
+            "flux" {
+               set private(psf_toolbox,$visuNo,psf,flux)     [format "%.2f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_flux) [format "%.2f" [expr 3.0 * $stdev] ]
+            }
+            "sky" {
+               set private(psf_toolbox,$visuNo,psf,sky)      [format "%.2f" $mean]
+               set private(psf_toolbox,$visuNo,psf,err_sky)  [format "%.2f" [expr 3.0 * $stdev] ]
+            }
+            "fwhmx" - "fwhmy" - "fwhm" - "intensity" - "snint"  {
+               set private(psf_toolbox,$visuNo,psf,$key)     [format "%.2f" $mean]
+            }
+            "pixmax" {
+               set private(psf_toolbox,$visuNo,psf,$key)     [format "%d" [expr int($mean)] ]
+            }
+            "rdiff" {
+               set private(psf_toolbox,$visuNo,psf,$key)     [format "%.2f" [expr int($max)] ]
+            }
+         }
+      }
+
+      # Calcul du rayon ideal
+      set flux [lsort -index 0  -integer -increasing $flux]
+      foreach v $flux {
+         if {[lindex $v 1] > $private(psf_toolbox,$visuNo,psf,flux)} {
+            set private(psf_toolbox,$visuNo,psf,radius) [lindex $v 0]
+            break
+         }
+      }
+
+      return $list_radius
+   }
+
+   proc suppression_par_distance_solution { visuNo } {
+   
+      global private
+      global private_graph
+
+      set sky  "" 
+      set flux "" 
+      set xsm  "" 
+      set ysm  "" 
+      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+         if {[info exists private_graph($radius,sky)]} {
+            lappend sky  [list $radius [expr abs($private_graph($radius,sky)-$private(psf_toolbox,$visuNo,psf,sky))]]
+            lappend flux [list $radius [expr abs($private_graph($radius,flux)-$private(psf_toolbox,$visuNo,psf,flux))]]
+            lappend xsm [list $radius [expr abs($private_graph($radius,xsm)-$private(psf_toolbox,$visuNo,psf,xsm))]]
+            lappend ysm [list $radius [expr abs($private_graph($radius,ysm)-$private(psf_toolbox,$visuNo,psf,ysm))]]
+         }
+      }
+      set nb   [llength $sky]
+      set rm   [expr int($nb*(100.0 - $private(psf_toolbox,$visuNo,globale,confidence))/100.0)]
+      set sky  [lsort -index 1 -real -decreasing $sky]
+      set flux [lsort -index 1 -real -decreasing $flux]
+      set xsm  [lsort -index 1 -real -decreasing $xsm]
+      set ysm  [lsort -index 1 -real -decreasing $ysm]
+      set lkeys [list sky flux xsm ysm]
+
+      set lrm ""
+      for {set i 0} {$i <$rm} { } {
+         lappend lrm [lindex $sky  [list $i 0]]
+         lappend lrm [lindex $flux [list $i 0]]
+         lappend lrm [lindex $xsm  [list $i 0]]
+         lappend lrm [lindex $ysm  [list $i 0]]
+         incr i
+      }
+      set lrm2 ""
+      set cpt 0
+      foreach x $lrm {
+         if {$x in $lrm2} {continue}
+         lappend lrm2 $x
+         incr cpt
+         if {$cpt == $rm} {break}
+      }
+      foreach x $lrm2 {
+         foreach key [get_fields_current_psf] {
+            unset private_graph($x,$key)
+         }
+      }
+   
+      return
+   }
+
+
+
+
+
 
    #------------------------------------------------------------
    ## Fonction qui mesure le photocentre d'une source
@@ -1896,113 +2085,12 @@ proc psf_toolbox { visuNo } {
 
       # on cherche les meilleurs rayons
       # par critere sur le fond du ciel minimal
-
-      set sky "" 
-      set flux "" 
-      for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
-         if {[info exists private_graph($radius,sky)]} {
-            lappend sky [list $radius $private_graph($radius,sky)]
-            lappend flux [list $radius $private_graph($radius,flux)]
-         }
-      }
-      set sky [lsort -index 1  -real -increasing $sky]
-      set n [expr [llength $sky]/2]
-      set zsky [lrange $sky 0 $n]
-      set data ""
-      foreach v $zsky {
-         lappend data [lindex $v 1]
-      }
-      set err [ catch {
-         set mean [::math::statistics::mean $data]
-         set stdev [::math::statistics::stdev $data]
-      } msg ]
+      set list_radius [calcule_solution $visuNo]
       
-      if { $err } {
-         set err [ catch { ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n" } msg2 ]
-         if { $err } {
-            gren_erreur "$caption(audace,psf_toolbox_message3) (Err msg: $msg)\n"
-         }
-         return
-      }
+      # calcul des distances aux solutions de Flux
+      suppression_par_distance_solution $visuNo
       
-      set limit [expr $mean + 3*$stdev]
-      
-      set list_radius ""
-      foreach v $sky {
-         if {[lindex $v 1]<$limit} {
-            lappend list_radius [lindex $v 0]
-         }
-      }
-      
-      # on calcule les moyennes et erreurs 
-
-      foreach key [get_fields_current_psf] {
-
-         if {$key in [list  "err_xsm" "err_ysm" "err_flux" "err_sky" "radius"]} {continue}
-         set data ""
-         foreach radius $list_radius {
-            if {[info exists private_graph($radius,$key)]} {
-               lappend data $private_graph($radius,$key)
-            }
-         }
-         if {$key == "err_psf"} {
-            if {[llength $data]>0} {
-               set private(psf_toolbox,$visuNo,psf,err_psf) "-"
-            } else {
-               set private(psf_toolbox,$visuNo,psf,err_psf) "Globale no data"
-            }
-            continue
-         }
-
-         set err [ catch {
-            set max   [::math::statistics::max $data]
-            set mean  [::math::statistics::mean $data]
-            set stdev [::math::statistics::stdev $data]
-         } msg ]
-
-         if { $err } {
-            ::console::affiche_erreur "determination de $key impossible\n"
-            set private(psf_toolbox,$visuNo,psf,$key) "-"
-            continue
-         }
-
-         switch $key {
-            "xsm" {
-               set private(psf_toolbox,$visuNo,psf,xsm)      [format "%.4f" $mean]
-               set private(psf_toolbox,$visuNo,psf,err_xsm)  [format "%.4f" [expr 3.0 * $stdev] ]
-            }
-            "ysm" {
-               set private(psf_toolbox,$visuNo,psf,ysm)      [format "%.4f" $mean]
-               set private(psf_toolbox,$visuNo,psf,err_ysm)  [format "%.4f" [expr 3.0 * $stdev] ]
-            }
-            "flux" {
-               set private(psf_toolbox,$visuNo,psf,flux)     [format "%.2f" $mean]
-               set private(psf_toolbox,$visuNo,psf,err_flux) [format "%.2f" [expr 3.0 * $stdev] ]
-            }
-            "sky" {
-               set private(psf_toolbox,$visuNo,psf,sky)      [format "%.2f" $mean]
-               set private(psf_toolbox,$visuNo,psf,err_sky)  [format "%.2f" [expr 3.0 * $stdev] ]
-            }
-            "fwhmx" - "fwhmy" - "fwhm" - "intensity" - "snint"  {
-               set private(psf_toolbox,$visuNo,psf,$key)     [format "%.2f" $mean]
-            }
-            "pixmax" {
-               set private(psf_toolbox,$visuNo,psf,$key)     [format "%d" [expr int($mean)] ]
-            }
-            "rdiff" {
-               set private(psf_toolbox,$visuNo,psf,$key)     [format "%.2f" [expr int($max)] ]
-            }
-         }
-      }
-      
-      # Calcul du rayon ideal
-      set flux [lsort -index 0  -integer -increasing $flux]
-      foreach v $flux {
-         if {[lindex $v 1] > $private(psf_toolbox,$visuNo,psf,flux)} {
-            set private(psf_toolbox,$visuNo,psf,radius) [lindex $v 0]
-            break
-         }
-      }
+      set list_radius [calcule_solution $visuNo]
       
       # Mode GUI
       if {$private(psf_toolbox,$visuNo,gui)} {
@@ -2357,23 +2445,24 @@ proc psf_toolbox { visuNo } {
       global private
       global conf
 
-      set conf(psf_toolbox,$visuNo,radius)            $private(psf_toolbox,$visuNo,radius)         
-      set conf(psf_toolbox,$visuNo,radius,min)        $private(psf_toolbox,$visuNo,radius,min)     
-      set conf(psf_toolbox,$visuNo,radius,max)        $private(psf_toolbox,$visuNo,radius,max)     
-      set conf(psf_toolbox,$visuNo,globale,min)       $private(psf_toolbox,$visuNo,globale,min)    
-      set conf(psf_toolbox,$visuNo,globale,max)       $private(psf_toolbox,$visuNo,globale,max)    
-      set conf(psf_toolbox,$visuNo,saturation)        $private(psf_toolbox,$visuNo,saturation)     
-      set conf(psf_toolbox,$visuNo,threshold)         $private(psf_toolbox,$visuNo,threshold)      
-      set conf(psf_toolbox,$visuNo,globale)           $private(psf_toolbox,$visuNo,globale)        
-      set conf(psf_toolbox,$visuNo,ecretage)          $private(psf_toolbox,$visuNo,ecretage)       
-      set conf(psf_toolbox,$visuNo,methode)           $private(psf_toolbox,$visuNo,methode)        
-      set conf(psf_toolbox,$visuNo,precision)         $private(psf_toolbox,$visuNo,precision)      
-      set conf(psf_toolbox,$visuNo,photom,r1)         $private(psf_toolbox,$visuNo,photom,r1)      
-      set conf(psf_toolbox,$visuNo,photom,r2)         $private(psf_toolbox,$visuNo,photom,r2)      
-      set conf(psf_toolbox,$visuNo,photom,r3)         $private(psf_toolbox,$visuNo,photom,r3)      
-      set conf(psf_toolbox,$visuNo,marks,cercle)      $private(psf_toolbox,$visuNo,marks,cercle)   
-      set conf(psf_toolbox,$visuNo,globale,arret)     $private(psf_toolbox,$visuNo,globale,arret)  
-      set conf(psf_toolbox,$visuNo,globale,nberror)   $private(psf_toolbox,$visuNo,globale,nberror)
+      set conf(psf_toolbox,$visuNo,radius)             $private(psf_toolbox,$visuNo,radius)        
+      set conf(psf_toolbox,$visuNo,radius,min)         $private(psf_toolbox,$visuNo,radius,min)    
+      set conf(psf_toolbox,$visuNo,radius,max)         $private(psf_toolbox,$visuNo,radius,max)    
+      set conf(psf_toolbox,$visuNo,globale,min)        $private(psf_toolbox,$visuNo,globale,min)   
+      set conf(psf_toolbox,$visuNo,globale,max)        $private(psf_toolbox,$visuNo,globale,max)   
+      set conf(psf_toolbox,$visuNo,globale,confidence) $private(psf_toolbox,$visuNo,globale,confidence)    
+      set conf(psf_toolbox,$visuNo,saturation)         $private(psf_toolbox,$visuNo,saturation)     
+      set conf(psf_toolbox,$visuNo,threshold)          $private(psf_toolbox,$visuNo,threshold)      
+      set conf(psf_toolbox,$visuNo,globale)            $private(psf_toolbox,$visuNo,globale)        
+      set conf(psf_toolbox,$visuNo,ecretage)           $private(psf_toolbox,$visuNo,ecretage)       
+      set conf(psf_toolbox,$visuNo,methode)            $private(psf_toolbox,$visuNo,methode)        
+      set conf(psf_toolbox,$visuNo,precision)          $private(psf_toolbox,$visuNo,precision)      
+      set conf(psf_toolbox,$visuNo,photom,r1)          $private(psf_toolbox,$visuNo,photom,r1)      
+      set conf(psf_toolbox,$visuNo,photom,r2)          $private(psf_toolbox,$visuNo,photom,r2)      
+      set conf(psf_toolbox,$visuNo,photom,r3)          $private(psf_toolbox,$visuNo,photom,r3)      
+      set conf(psf_toolbox,$visuNo,marks,cercle)       $private(psf_toolbox,$visuNo,marks,cercle)   
+      set conf(psf_toolbox,$visuNo,globale,arret)      $private(psf_toolbox,$visuNo,globale,arret)  
+      set conf(psf_toolbox,$visuNo,globale,nberror)    $private(psf_toolbox,$visuNo,globale,nberror)
    }
 
    #------------------------------------------------------------
@@ -2392,23 +2481,24 @@ proc psf_toolbox { visuNo } {
       if { ! [ info exists conf(psf_toolbox,$visuNo,position)    ] } { set conf(psf_toolbox,$visuNo,position)    "+350+75" }
       if { ! [ info exists conf(psf_toolbox,$visuNo,modeRefresh) ] } { set conf(psf_toolbox,$visuNo,modeRefresh) "0" }
  
-      if { ! [ info exists conf(psf_toolbox,$visuNo,radius)          ] } { set private(psf_toolbox,$visuNo,radius)            15         } else { set private(psf_toolbox,$visuNo,radius)          $conf(psf_toolbox,$visuNo,radius)          }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,radius,min)      ] } { set private(psf_toolbox,$visuNo,radius,min)        1          } else { set private(psf_toolbox,$visuNo,radius,min)      $conf(psf_toolbox,$visuNo,radius,min)      }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,radius,max)      ] } { set private(psf_toolbox,$visuNo,radius,max)        300        } else { set private(psf_toolbox,$visuNo,radius,max)      $conf(psf_toolbox,$visuNo,radius,max)      }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,min)     ] } { set private(psf_toolbox,$visuNo,globale,min)       5          } else { set private(psf_toolbox,$visuNo,globale,min)     $conf(psf_toolbox,$visuNo,globale,min)     }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,max)     ] } { set private(psf_toolbox,$visuNo,globale,max)       40         } else { set private(psf_toolbox,$visuNo,globale,max)     $conf(psf_toolbox,$visuNo,globale,max)     }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,saturation)      ] } { set private(psf_toolbox,$visuNo,saturation)        65000      } else { set private(psf_toolbox,$visuNo,saturation)      $conf(psf_toolbox,$visuNo,saturation)      }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,threshold)       ] } { set private(psf_toolbox,$visuNo,threshold)         3          } else { set private(psf_toolbox,$visuNo,threshold)       $conf(psf_toolbox,$visuNo,threshold)       }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,globale)         ] } { set private(psf_toolbox,$visuNo,globale)           0          } else { set private(psf_toolbox,$visuNo,globale)         $conf(psf_toolbox,$visuNo,globale)         }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,ecretage)        ] } { set private(psf_toolbox,$visuNo,ecretage)          0          } else { set private(psf_toolbox,$visuNo,ecretage)        $conf(psf_toolbox,$visuNo,ecretage)        }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,methode)         ] } { set private(psf_toolbox,$visuNo,methode)           "fitgauss" } else { set private(psf_toolbox,$visuNo,methode)         $conf(psf_toolbox,$visuNo,methode)         }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,precision)       ] } { set private(psf_toolbox,$visuNo,precision)         high       } else { set private(psf_toolbox,$visuNo,precision)       $conf(psf_toolbox,$visuNo,precision)       }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r1)       ] } { set private(psf_toolbox,$visuNo,photom,r1)         1          } else { set private(psf_toolbox,$visuNo,photom,r1)       $conf(psf_toolbox,$visuNo,photom,r1)       }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r2)       ] } { set private(psf_toolbox,$visuNo,photom,r2)         2          } else { set private(psf_toolbox,$visuNo,photom,r2)       $conf(psf_toolbox,$visuNo,photom,r2)       }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r3)       ] } { set private(psf_toolbox,$visuNo,photom,r3)         2.6        } else { set private(psf_toolbox,$visuNo,photom,r3)       $conf(psf_toolbox,$visuNo,photom,r3)       }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,marks,cercle)    ] } { set private(psf_toolbox,$visuNo,marks,cercle)      1          } else { set private(psf_toolbox,$visuNo,marks,cercle)    $conf(psf_toolbox,$visuNo,marks,cercle)    }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,arret)   ] } { set private(psf_toolbox,$visuNo,globale,arret)     1          } else { set private(psf_toolbox,$visuNo,globale,arret)   $conf(psf_toolbox,$visuNo,globale,arret)   }
-      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,nberror) ] } { set private(psf_toolbox,$visuNo,globale,nberror)   3          } else { set private(psf_toolbox,$visuNo,globale,nberror) $conf(psf_toolbox,$visuNo,globale,nberror) }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,radius)             ] } { set private(psf_toolbox,$visuNo,radius)             15         } else { set private(psf_toolbox,$visuNo,radius)             $conf(psf_toolbox,$visuNo,radius)             }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,radius,min)         ] } { set private(psf_toolbox,$visuNo,radius,min)         1          } else { set private(psf_toolbox,$visuNo,radius,min)         $conf(psf_toolbox,$visuNo,radius,min)         }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,radius,max)         ] } { set private(psf_toolbox,$visuNo,radius,max)         300        } else { set private(psf_toolbox,$visuNo,radius,max)         $conf(psf_toolbox,$visuNo,radius,max)         }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,min)        ] } { set private(psf_toolbox,$visuNo,globale,min)        5          } else { set private(psf_toolbox,$visuNo,globale,min)        $conf(psf_toolbox,$visuNo,globale,min)        }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,max)        ] } { set private(psf_toolbox,$visuNo,globale,max)        40         } else { set private(psf_toolbox,$visuNo,globale,max)        $conf(psf_toolbox,$visuNo,globale,max)        }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,confidence) ] } { set private(psf_toolbox,$visuNo,globale,confidence) 90         } else { set private(psf_toolbox,$visuNo,globale,confidence) $conf(psf_toolbox,$visuNo,globale,confidence) }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,saturation)         ] } { set private(psf_toolbox,$visuNo,saturation)         65000      } else { set private(psf_toolbox,$visuNo,saturation)         $conf(psf_toolbox,$visuNo,saturation)         }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,threshold)          ] } { set private(psf_toolbox,$visuNo,threshold)          3          } else { set private(psf_toolbox,$visuNo,threshold)          $conf(psf_toolbox,$visuNo,threshold)          }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale)            ] } { set private(psf_toolbox,$visuNo,globale)            0          } else { set private(psf_toolbox,$visuNo,globale)            $conf(psf_toolbox,$visuNo,globale)            }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,ecretage)           ] } { set private(psf_toolbox,$visuNo,ecretage)           0          } else { set private(psf_toolbox,$visuNo,ecretage)           $conf(psf_toolbox,$visuNo,ecretage)           }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,methode)            ] } { set private(psf_toolbox,$visuNo,methode)            "fitgauss" } else { set private(psf_toolbox,$visuNo,methode)            $conf(psf_toolbox,$visuNo,methode)            }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,precision)          ] } { set private(psf_toolbox,$visuNo,precision)          high       } else { set private(psf_toolbox,$visuNo,precision)          $conf(psf_toolbox,$visuNo,precision)          }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r1)          ] } { set private(psf_toolbox,$visuNo,photom,r1)          1          } else { set private(psf_toolbox,$visuNo,photom,r1)          $conf(psf_toolbox,$visuNo,photom,r1)          }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r2)          ] } { set private(psf_toolbox,$visuNo,photom,r2)          2          } else { set private(psf_toolbox,$visuNo,photom,r2)          $conf(psf_toolbox,$visuNo,photom,r2)          }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,photom,r3)          ] } { set private(psf_toolbox,$visuNo,photom,r3)          2.6        } else { set private(psf_toolbox,$visuNo,photom,r3)          $conf(psf_toolbox,$visuNo,photom,r3)          }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,marks,cercle)       ] } { set private(psf_toolbox,$visuNo,marks,cercle)       1          } else { set private(psf_toolbox,$visuNo,marks,cercle)       $conf(psf_toolbox,$visuNo,marks,cercle)       }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,arret)      ] } { set private(psf_toolbox,$visuNo,globale,arret)      1          } else { set private(psf_toolbox,$visuNo,globale,arret)      $conf(psf_toolbox,$visuNo,globale,arret)      }
+      if { ! [ info exists conf(psf_toolbox,$visuNo,globale,nberror)    ] } { set private(psf_toolbox,$visuNo,globale,nberror)    3          } else { set private(psf_toolbox,$visuNo,globale,nberror)    $conf(psf_toolbox,$visuNo,globale,nberror)    }
 
       set private(psf_toolbox,$visuNo,hcanvas) [::confVisu::getCanvas $visuNo]
       foreach key [get_fields_current_psf] {
