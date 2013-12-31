@@ -2910,14 +2910,15 @@ proc spc_ewcourbe { args } {
    set legendex "Date (JD-2400000)"
    set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
    puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+   # puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err_ps.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
    close $file_id2
    if { $tcl_platform(os)=="Linux" } {
       set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
-      ::console::affiche_resultat "$answer\n"
+      ::console::affiche_resultat "Résultat Gnuplot (0=OK) : $answer\n"
    } else {
       #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
       set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
-      ::console::affiche_resultat "$answer\n"
+      ::console::affiche_resultat "Résultat Gnuplot (0=OK) : $answer\n"
    }
 
    #--- Affichage du graphe PNG :
@@ -2928,6 +2929,7 @@ proc spc_ewcourbe { args } {
    }
 
    #--- Traitement du résultat :
+   :console::affiche_resultat "Graphique EW=f(t) sauvé sous ew_courbe.png.\n"
    return "ew_courbe.png"
 }
 #*******************************************************************************#
@@ -3758,6 +3760,9 @@ proc spc_dynagraph { args } {
          set listemotsclef [ buf$audace(bufNo) getkwds ]
          if { [ lsearch $listemotsclef "OBJNAME" ] !=-1 } {
             set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]
+         }
+         if { [ regexp {(\w+\s?\w+)\s*} $objname match objnamef ] } {
+            set objname "$objnamef"            
          }
       }
 

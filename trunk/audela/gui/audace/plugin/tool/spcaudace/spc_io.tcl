@@ -76,7 +76,10 @@ proc spc_buildhtml { args } {
       if { $objname == "" } {
          set listemotsclef [ buf$audace(bufNo) getkwds ]
          if { [ lsearch $listemotsclef "OBJNAME" ] !=-1 } {
-            set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]
+            set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]     
+            if { [ regexp {(\w+\s?\w+)\s*} $objname match objnamef ] } {
+               set objname "$objnamef"
+            }
          }
       }
 
@@ -156,7 +159,7 @@ proc spc_buildhtml { args } {
    puts $file_id "</head>"
    puts $file_id "<body bgcolor=\"#ffffff\">"
    puts $file_id "<br>"
-   puts $file_id "<center><h1><span style=\"color: #00008B\">Chronological catalog of $objname spectra</span></h1><p>Updated: $day/$mounth/$year</p></center><br>"
+   puts $file_id "<center><h1><span style=\"color: #1e3eff\">Chronological catalog of $objname spectra</span></h1><p>Updated: $day/$mounth/$year</p></center><br>"
    puts $file_id "<center>"
    puts $file_id "<table border=\"0\" cellpadding=\"0\" cellspacing=\"10\">"
 
@@ -1809,21 +1812,21 @@ proc spc_fit2pngman { args } {
 
         #--- Prepare le script pour gnuplot
         set file_id [open "$audace(rep_images)/${spcfile}.gp" w+]
-        put $file_id "call \"$spcaudace(repgp)/gp_spc.cfg\" \"${spcfile}$spcaudace(extdat)\" \"$titre\" * * * * $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
+        puts $file_id "call \"$spcaudace(repgp)/gp_spc.cfg\" \"${spcfile}$spcaudace(extdat)\" \"$titre\" * * * * $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" "
         close $file_id
 
         #--- Execute Gnuplot pour l'export en png
         if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
-            ::console::affiche_resultat "$answer\n"
+            ::console::affiche_resultat "Reponse Gnuplot (0=OK) : $answer\n"
         } else {
             set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
-            ::console::affiche_resultat "$answer\n"
+            ::console::affiche_resultat "Reponse Gnuplot (0=OK) : $answer\n"
         }
         ::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
         return "${spcfile}.png"
    } else {
-       ::console::affiche_erreur "Usage: spc_fit2pngman fichier_fits titre légende_axeX légende_axeY intervalle_graduations\n\n"
+       ::console::affiche_erreur "Usage: spc_fit2pngman fichier_fits \"titre\" \"légende_axeX\" \"légende_axeY\" intervalle_graduations_verticales\n\n"
    }
 }
 ####################################################################
@@ -2128,10 +2131,10 @@ proc spc_fit2tnjpg { args } {
         #--- Détermine le chemin de l'executable Gnuplot selon le système d'exploitation :
         if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/${spcfile}.gp } ]
-            ::console::affiche_resultat "gnuplot résultat (1=OK) : $answer\n"
+            ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         } else {
             set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${spcfile}.gp } ]
-            ::console::affiche_resultat "gnuplot résultat (1=OK) : $answer\n"
+            ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         }
 
         #--- Effacement des fichiers de batch :
@@ -2595,10 +2598,10 @@ proc spc_multifit2pngopt { args } {
         set repdflt [ bm_goodrep ]
         if { $tcl_platform(platform)=="unix" } {
             set answer [ catch { exec gnuplot $audace(rep_images)/multiplot.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+           ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         } else {
             set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/multiplot.gp } ]
-            ::console::affiche_resultat "gnuplot résultat : $answer\n"
+           ::console::affiche_resultat "gnuplot résultat (0=OK) : $answer\n"
         }
         cd $repdflt
 
@@ -2635,9 +2638,9 @@ proc spc_multifit2pngdec { args } {
    #set coef_conv_gp 7.8
    #set yheight_graph 600
    #- Pour png :
-   set xpos 68
+   set xpos_png 68
    #- Pour ps :
-   #set xpos 60
+   #set xpos_ps 58
    set nbargs [ llength $args ]
 
    if { $nbargs==1 } {
@@ -2753,6 +2756,9 @@ spc_multifit2pngdec vertical_offset_between_profils lambda_begin lambda_end velo
          if { [ lsearch $listemotsclef "OBJNAME" ] !=-1 } {
             set objname [ lindex [ buf$audace(bufNo) getkwd "OBJNAME" ] 1 ]
          }
+         if { [ regexp {(\w+\s?\w+)\s*} $objname match objnamef ] } {
+            set objname "$objnamef"            
+         }
       }
 
       #-- Selection de la zone si des longueurs d'ondes sont données :
@@ -2827,10 +2833,6 @@ spc_multifit2pngdec vertical_offset_between_profils lambda_begin lambda_end velo
    set jd_deb [ format "%7.4f" [ expr [ lindex $listejd 0 ]+2400000. ] ]
    set jd_fin [ format "%7.4f" [ expr [ lindex $listejd [ expr $nbfiles-1 ] ]+2400000. ] ]
 
-   #regsub " " "$objname" "" objname
-   if { [ regexp {(\w+\s?\w+)\s*} $objname match objnamef ] } {
-      set objname "$objnamef"
-   }
 
    if { $objname == "" } {
       set titre "Time evolution from $jd_deb to $jd_fin"
@@ -2876,7 +2878,9 @@ spc_multifit2pngdec vertical_offset_between_profils lambda_begin lambda_end velo
    if { $ypos1<1 } { set ypos1 [ expr $ypos1+1. ] }
 
    # set file_idin [ open "$spcaudace(repgp)/gp_multiover_ps.cfg" r+ ]
+   # set xpos $xpos_ps
    set file_idin [ open "$spcaudace(repgp)/gp_multiover.cfg" r+ ]
+   set xpos $xpos_png
    set file_id [ open "$audace(rep_images)/gp_multiover.cfg" w+ ]
    fconfigure $file_id -translation crlf
    #-- Ajout d'une ligne en pointilles verticale :
