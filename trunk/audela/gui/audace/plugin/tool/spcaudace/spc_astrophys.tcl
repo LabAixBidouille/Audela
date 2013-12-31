@@ -2929,7 +2929,7 @@ proc spc_ewcourbe { args } {
    }
 
    #--- Traitement du résultat :
-   :console::affiche_resultat "Graphique EW=f(t) sauvé sous ew_courbe.png.\n"
+   ::console::affiche_resultat "Graphique EW=f(t) sauvé sous ew_courbe.png.\n"
    return "ew_courbe.png"
 }
 #*******************************************************************************#
