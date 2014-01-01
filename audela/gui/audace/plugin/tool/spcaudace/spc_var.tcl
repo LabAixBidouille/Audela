@@ -111,7 +111,8 @@ set spcaudace(display_real) 0
 set spcaudace(methsel) "serre"
 set spcaudace(methreg) "spc"
 set spcaudace(methsky) "med"
-set spcaudace(methbin) "horne"
+#set spcaudace(methbin) "horne"
+set spcaudace(methbin) "rober"
 
 
 #--- Options prédéfinies (par defaut addi, options=add, moy, med, sigmakappa) :

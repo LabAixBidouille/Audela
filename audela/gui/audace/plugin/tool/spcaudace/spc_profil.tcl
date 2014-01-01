@@ -1138,7 +1138,7 @@ buf$audace(bufNo) bitpix float
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de creation : 26-02-2006
-# Date de modification : 05-07-2006/07-06-19
+# Date de modification : 05-07-2006/2007-06-19/2014-01-01
 # Arguments : fichier fits du spectre spatial ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?
 ###############################################################
 
@@ -1154,19 +1154,19 @@ proc spc_profil { args } {
 	if { [llength $args] == 1 } {
 	    #--- Gestion avec options par défaut :
 	    set spectre2d [ file rootname [lindex $args 0] ]
-	    set methodefc "moy"
-	    set methodedetect "serre"
-	    set methodebin "add"
+	    set methodefc "$spcaudace(methsky)"
+	    set methodedetect "$spcaudace(methsel)"
+	    set methodebin "$spcaudace(methbin)"
 	} elseif { [llength $args] == 2 } {
 	    set spectre2d [ file rootname [lindex $args 0] ]
 	    set methodefc [ lindex $args 1 ]
-	    set methodedetect "serre"
-	    set methodebin "add"
+	    set methodedetect "$spcaudace(methsel)"
+	    set methodebin "$spcaudace(methbin)"
 	} elseif { [llength $args] == 3 } {
 	    set spectre2d [ file rootname [lindex $args 0] ]
 	    set methodefc [ lindex $args 1 ]
 	    set methodedetect [ lindex $args 2 ]
-	    set methodebin "add"
+	    set methodebin "$spcaudace(methbin)"
 	} elseif { [llength $args] == 4} {
 	    set spectre2d [ file rootname [lindex $args 0] ]
 	    set methodefc [ lindex $args 1 ]
@@ -1242,14 +1242,17 @@ proc spc_profil { args } {
 		}
 	    }
 
-#**** REVOIR application algo de Horne !! argument file=somme mediane des spectres 2D
             #--- Binning :
 	    buf$audace(bufNo) bitpix float
             if { $methodebin == "rober" } {
                buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
+               #-- J. G. Robertson, PASP 98, 1220-1231, November 1986, Version simpliflie sans rejection des pixels aberrants.
             } elseif { $methodebin == "horne" } {
                buf$audace(bufNo) imaseries "LOPT5 y1=3 y2=$ylargeur height=1 COSMIC_THRESHOLD=$spcaudace(hornethreshold)"
                #-- Horne, K. An optimal extraction algorithm for ccd spectroscopy. Pub. Astron. Soc. Pac. 98, 609, Jun (1986).
+               #-- buf1 load rr_lyrae-a--spectre2D-traite-1 ; buf1  imaseries "LOPT5 y1=613 y2=625 height=1 COSMIC_THRESHOLD=40 FILE=$audace(rep_images)/rr_lyrae-a--spectre2D-traite--smd6.fit"
+               #**** REVOIR application algo de Horne !! argument file=somme mediane des spectres 2D
+               #-- L'utilistion de FILE a peu d'effet. Le code de LOPT5 semble ne pas gerer la detection des cosmics. 20140101
 
             }
 	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
