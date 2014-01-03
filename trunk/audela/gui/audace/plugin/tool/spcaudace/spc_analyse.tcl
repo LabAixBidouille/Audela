@@ -1118,7 +1118,11 @@ proc spc_findbiglineslamp { args } {
       } elseif { $nbargs == 2 } {
 	 set filename [ lindex $args 0 ]
 	 set largeur [ expr int([ lindex $args 1 ]) ]
-      }
+      } else {
+         ::console::affiche_erreur "Usage: spc_findbiglineslamp nom_profil_de_raies type_raies ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
+         return ""
+      }    
+
       set nom_fich [ file rootname $filename ]
       ::console::affiche_resultat " nom fichier entree $filename largeur= $largeur \n"
       #set nom_fich [ spc_linearcal $nom_fich ]
@@ -1173,8 +1177,11 @@ proc spc_findbiglineslamp { args } {
       set nbunit "float"
       set nbunit1 "double"
       buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
-      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      #buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      #buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
+      buf$audace(bufNo) setkwd [ list "NAXIS" 2 int "" "" ]
       buf$audace(bufNo) setkwd [list "NAXIS1" $naxis1 int "" ""]
+      buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
       buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 $nbunit1 "" "Angstrom"]
       #-- Dispersion
       buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 $nbunit1 "" "Angstrom/pixel"]
@@ -1213,7 +1220,6 @@ proc spc_findbiglineslamp { args } {
       return $listmax
    } else {
       ::console::affiche_erreur "Usage: spc_findbiglineslamp nom_profil_de_raies type_raies ?largeur_raie_pixels ($spcaudace(largeur_raie_detect))?\n"
-
       return ""
    }
 }
