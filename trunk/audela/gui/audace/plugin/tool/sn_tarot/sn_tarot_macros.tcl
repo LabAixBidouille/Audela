@@ -614,7 +614,8 @@ proc ::sn_tarot::MPChecker { date ra dec {obscod 500} } {
    set dec [mc_angle2dms $dec 90 zero 1 auto list]
    #::console::affiche_resultat "<ra=$ra> <dec=$dec>\n"
    set radius 10
-   set url http://mpcapp1.cfa.harvard.edu/cgi-bin/mpcheck.cgi
+   # set url http://mpcapp1.cfa.harvard.edu/cgi-bin/mpcheck.cgi
+   set url http://scully.cfa.harvard.edu/cgi-bin/mpcheck.cgi
    set query [::http::formatQuery year $y month $m day $d which pos ra $ra decl $dec TextArea {} radius $radius limit 22 oc $obscod sort d mot m tmot t pdes u needed f ps n type p]
    #::console::affiche_resultat "< $query >\n"
 
