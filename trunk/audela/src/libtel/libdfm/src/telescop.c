@@ -84,7 +84,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
    unsigned short ip[4];
-   char ipstring[50],portstring[50],s[1024],ss[1024],ssusb[1024],ssres[1024];
+   char ipstring[50],portstring[50],s[1024];
    int k, kk, kdeb, nbp, klen,res;
    Tcl_DString dsptr;
 #if defined DFM_MOUCHARD
@@ -103,6 +103,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->type=0;
 	} else {
 		tel->type=1;
+		strcpy(tel->portcom,argv[2]);
 	}
 	/* --- decode IP  --- */
 	ip[0] = 127;
@@ -160,71 +161,16 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	fprintf(f,"PORT=%d\n",tel->port);
 	fclose(f);
 #endif
-	/* ============ */
-	/* === TCP  === */
-	/* ============ */
-	if (tel->type==0) {
-		/* --- open the port and record the channel name ---*/
-		sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
-		if (mytel_tcleval(tel,s)==1) {
-			strcpy(tel->msg,tel->interp->result);
-			return 1;
-		}
-		strcpy(tel->channel,tel->interp->result);
-		/* --- configuration of the TCP socket ---*/
-		sprintf(s,"fconfigure %s  -buffering none -blocking 0 -eofchar { } -buffersize 100000",tel->channel); mytel_tcleval(tel,s);
-		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	/* ================== */
+	/* === connection === */
+	/* ================== */
+	strcpy(tel->channel,"");
+	res=dfm_connection(tel);
+	if (res!=0) {
+		return res;
 	}
 	/* ============== */
-	/* === EXCOM  === */
-	/* ============== */
-	if (tel->type==1) {
-		/* --- transcode a port argument into comX or into /dev... */
-		strcpy(ss,argv[2]);
-		sprintf(s,"string range [string toupper %s] 0 2",ss);
-		Tcl_Eval(tel->interp,s);
-		strcpy(s,tel->interp->result);
-		if (strcmp(s,"COM")==0) {
-			sprintf(s,"string range [string toupper %s] 3 end",ss);
-			Tcl_Eval(tel->interp,s);
-			strcpy(s,tel->interp->result);
-			k=(int)atoi(s);
-			Tcl_Eval(tel->interp,"set ::tcl_platform(os)");
-			strcpy(s,tel->interp->result);
-			if (strcmp(s,"Linux")==0) {
-				sprintf(ss,"/dev/ttyS%d",k-1);
-				sprintf(ssusb,"/dev/ttyUSB%d",k-1);
-			}
-		}
-		/* --- open the port and record the channel name ---*/
-		sprintf(s,"open \"%s\" r+",ss);
-		if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
-			strcpy(ssres,tel->interp->result);
-			Tcl_Eval(tel->interp,"set ::tcl_platform(os)");
-			strcpy(ss,tel->interp->result);
-			if (strcmp(ss,"Linux")==0) {
-				/* if ttyS not found, we test ttyUSB */
-				sprintf(ss,"open \"%s\" r+",ssusb);
-				if (Tcl_Eval(tel->interp,ss)!=TCL_OK) {
-					strcpy(tel->msg,tel->interp->result);
-					return 1;
-				}
-			} else {
-				strcpy(tel->msg,ssres);
-				return 1;
-			}
-		}
-		strcpy(tel->channel,tel->interp->result);
-		/*
-		# 9600 : vitesse de transmission (bauds)
-		# 0 : 0 bit de parit�
-		# 8 : 8 bits de donn�es
-		# 1 : 1 bits de stop
-		*/
-		sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
-	}
-	/* ============== */
-	/* ===        === */
+	/* === inits  === */
 	/* ============== */
    sprintf(s,"after 350"); mytel_tcleval(tel,s);
    res=dfm_put(tel,"#22,2000.;"); /* J2000.0 display */
@@ -679,9 +625,9 @@ int mytel_tcleval(struct telprop *tel,char *ligne)
 int dfm_delete(struct telprop *tel)
 {
    char s[1024];
-	if (tel->type==1) {
-		/* --- Fermeture du port com ou tcp */
-		sprintf(s,"close %s ",tel->channel); mytel_tcleval(tel,s);
+	/* --- Fermeture du port com ou tcp */
+	if (strcmp(tel->channel,"")!=0) {
+		sprintf(s,"catch {close %s} ",tel->channel); mytel_tcleval(tel,s);
 	}
    return 0;
 }
@@ -691,7 +637,6 @@ int dfm_put(struct telprop *tel,char *cmd)
    char s[1024],ss[1024],c[]="\\%c";
 
 	if (tel->type==1) {
-		//sprintf(s,"regsub -all \\# \"%s\" \"\" a ; regsub -all , \"$a\" \"\\[format \\%c 0x0D\\]\" s ; regsub -all \\; \"$s\" \"\\[format \\%c 0x0D\\];\" a ; set a $a",cmd);
 		sprintf(s,"regsub -all \\# \"%s\" \"\" a ; regsub -all , \"$a\" \"[format %s 0x0D]\" s ; regsub -all \\; \"$s\" \"[format %s 0x0D];\" a ; set a $a",cmd,c,c);
 		if (mytel_tcleval(tel,s)==1) {
 			return 1;
@@ -732,6 +677,83 @@ int dfm_read(struct telprop *tel,char *res)
 /* ----------------- langage dfm   --------------------------*/
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
+
+int dfm_connection(struct telprop *tel)
+/*
+*
+*/
+{
+   char s[1024],ss[1024];
+   char ssusb[1024],ssres[1024];
+   int k;
+	dfm_delete(tel);
+	/* ============ */
+	/* === TCP  === */
+	/* ============ */
+	if (tel->type==0) {
+		strcpy(ss,tel->portcom);
+		/* --- open the port and record the channel name ---*/
+		sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
+		if (mytel_tcleval(tel,s)==1) {
+			strcpy(tel->msg,tel->interp->result);
+			return 1;
+		}
+		strcpy(tel->channel,tel->interp->result);
+		/* --- configuration of the TCP socket ---*/
+		//sprintf(s,"fconfigure %s  -buffering none -blocking 0 -eofchar { } -buffersize 100000",tel->channel); mytel_tcleval(tel,s);
+		sprintf(s,"fconfigure %s  -buffering none -blocking 0 -eofchar { } -buffersize 1000",tel->channel); mytel_tcleval(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+	}
+	/* ============== */
+	/* === EXCOM  === */
+	/* ============== */
+	if (tel->type==1) {
+		/* --- transcode a port argument into comX or into /dev... */
+		strcpy(ss,tel->portcom);
+		sprintf(s,"string range [string toupper %s] 0 2",ss);
+		Tcl_Eval(tel->interp,s);
+		strcpy(s,tel->interp->result);
+		if (strcmp(s,"COM")==0) {
+			sprintf(s,"string range [string toupper %s] 3 end",ss);
+			Tcl_Eval(tel->interp,s);
+			strcpy(s,tel->interp->result);
+			k=(int)atoi(s);
+			Tcl_Eval(tel->interp,"set ::tcl_platform(os)");
+			strcpy(s,tel->interp->result);
+			if (strcmp(s,"Linux")==0) {
+				sprintf(ss,"/dev/ttyS%d",k-1);
+				sprintf(ssusb,"/dev/ttyUSB%d",k-1);
+			}
+		}
+		/* --- open the port and record the channel name ---*/
+		sprintf(s,"open \"%s\" r+",ss);
+		if (Tcl_Eval(tel->interp,s)!=TCL_OK) {
+			strcpy(ssres,tel->interp->result);
+			Tcl_Eval(tel->interp,"set ::tcl_platform(os)");
+			strcpy(ss,tel->interp->result);
+			if (strcmp(ss,"Linux")==0) {
+				/* if ttyS not found, we test ttyUSB */
+				sprintf(ss,"open \"%s\" r+",ssusb);
+				if (Tcl_Eval(tel->interp,ss)!=TCL_OK) {
+					strcpy(tel->msg,tel->interp->result);
+					return 1;
+				}
+			} else {
+				strcpy(tel->msg,ssres);
+				return 1;
+			}
+		}
+		strcpy(tel->channel,tel->interp->result);
+		/*
+		# 9600 : vitesse de transmission (bauds)
+		# 0 : 0 bit de parity
+		# 8 : 8 bits de data
+		# 1 : 1 bits de stop
+		*/
+		sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
+	}
+   return 0;
+}
 
 int dfm_stat(struct telprop *tel,char *result,char *bits)
 /*

@@ -40,6 +40,7 @@ struct telprop {
    /* Ajoutez ici les variables necessaires a votre telescope */
    int tempo;
 	int type; /* =0:TCP/IP =1:EXCOM */
+   char portcom[100];
    char ip[50];
    char home0[60]; /* home used by tel1 home */
    char home[60]; /* home */
@@ -98,6 +99,7 @@ int mytel_set_format(struct telprop *tel,int longformatindex);
 int mytel_flush(struct telprop *tel);
 int mytel_tcleval(struct telprop *tel,char *ligne);
 
+int dfm_connection(struct telprop *tel);
 int dfm_put(struct telprop *tel,char *cmd);
 int dfm_read(struct telprop *tel,char *res);
 int dfm_delete(struct telprop *tel);
