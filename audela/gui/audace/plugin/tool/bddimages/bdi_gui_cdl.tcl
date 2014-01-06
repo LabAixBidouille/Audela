@@ -197,6 +197,8 @@ namespace eval bdi_gui_cdl {
             set f_starstar       [frame $onglets.nb.f_starstar]
             set f_classif        [frame $onglets.nb.f_classif]
             set f_results        [frame $onglets.nb.f_results]
+            set f_bigdata        [frame $onglets.nb.f_bigdata]
+            set f_develop        [frame $onglets.nb.f_develop]
 
             $onglets.nb add $f_data_reference -text "References"
             $onglets.nb add $f_data_science   -text "Sciences"
@@ -204,6 +206,8 @@ namespace eval bdi_gui_cdl {
             $onglets.nb add $f_starstar       -text "Variations"
             $onglets.nb add $f_classif        -text "Classification"
             $onglets.nb add $f_results        -text "Resultats"
+            $onglets.nb add $f_bigdata        -text "Big Data"
+            $onglets.nb add $f_develop        -text "Develop"
 
             #$onglets.nb select $f_data_reference
             ttk::notebook::enableTraversal $onglets.nb
@@ -423,9 +427,6 @@ namespace eval bdi_gui_cdl {
          set results [frame $f_starstar.starstar  -borderwidth 1 -relief groove]
          pack $results -in $f_starstar -expand yes -fill both
             
-              button $results.calc -text "Calcul" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::calcul_variation"
-              pack $results.calc -in $results -expand no -fill x
          
                   set cols [list 0 " " left ]
                   # Table
@@ -475,9 +476,7 @@ namespace eval bdi_gui_cdl {
             set photo [image create photo -file [ file join $audace(rep_plugin) tool bddimages images classification_spectrale.png ]]
             label $results.cs -image $photo -borderwidth 2 -width 850 -height 81
             pack $results.cs -in $results -side top -expand no 
-              button $results.calc -text "Calcul" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::calcul_classification"
-              pack $results.calc -in $results -expand no -fill x
+
             
             set cols [list 0 "Id"             left  \
                            0 "Name"           left  \
@@ -551,13 +550,10 @@ namespace eval bdi_gui_cdl {
             set block [frame $results.dirbasic  -borderwidth 0 -cursor arrow -relief groove]
             pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  label  $block.labtxt -text "Repertoire sortie TXT : " -borderwidth 1 -width 20
+                  label  $block.labtxt -text "Repertoire de sauvegarde : " -borderwidth 1 -width 20
                   entry  $block.valtxt -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_txt_dir
-                  label  $block.labxml -text "Repertoire IMCCE : " -borderwidth 1 -width 20
-                  entry  $block.valxml -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_imc_dir
 
                   grid $block.labtxt $block.valtxt -sticky news
-                  grid $block.labxml $block.valxml -sticky news
 
             #--- Onglet RAPPORT - Entetes
             set block [frame $results.uai_code  -borderwidth 0 -cursor arrow -relief groove]
@@ -627,6 +623,87 @@ namespace eval bdi_gui_cdl {
                   pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
 
+            set block [frame $results.actionsave  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  button $block.sauve_result -text "Sauver" -borderwidth 2 -takefocus 1 \
+                     -command "::bdi_gui_cdl::save_reports"
+                  pack   $block.sauve_result -side top -padx 3 -pady 3 -anchor c
+
+
+         # Big DATA
+         set center [frame $f_bigdata.frm  -borderwidth 1 -relief groove]
+         pack $center -in $f_bigdata -expand yes -fill both
+
+            set actions [frame $center.center  -borderwidth 0 -relief sunken]
+            pack $actions -in $center -expand no -fill y
+              
+
+              checkbutton $actions.check -variable ::bdi_tools_cdl::bigdata  -justify left \
+                -text "Fonctionnalitee pour reduire l'utilisation de la memoire"
+
+              label $actions.labcharge -text "Chargement"  -justify left
+              button $actions.charge_alavolee -text "A la volee" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::charge_cata_alavolee"
+              button $actions.stop -text "STOP" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::stop_charge_cata_alavolee"
+              button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::charge_cata_list"
+
+             grid $actions.check           -row 0 -column 0  -columnspan 3 -sticky news -ipadx 10 -ipady 10
+
+             grid $actions.labcharge       -row 1 -column 0 -sticky news -ipady 10
+             grid $actions.charge_alavolee -row 2 -column 0 -sticky news
+             grid $actions.stop            -row 3 -column 0 -sticky news
+             grid $actions.chargelist      -row 4 -column 0 -sticky news
+
+              label $actions.labcalc -text "Calculs"  -justify left
+              button $actions.magcst -text "Constante des Mag" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::calcul_const_mags"
+              button $actions.calcsci -text "Sources Science" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::calcul_science"
+              button $actions.calcrej -text "Sources Rejetes" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_tools_cdl::calcul_rejected"
+              button $actions.variation -text "Table de variations" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::calcul_variation"
+              button $actions.typspec -text "Type spectral" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::calcul_classification"
+
+             grid $actions.labcalc    -row 1 -column 1 -sticky news -ipady 10
+             grid $actions.magcst     -row 2 -column 1 -sticky news
+             grid $actions.calcsci    -row 3 -column 1 -sticky news
+             grid $actions.calcrej    -row 4 -column 1 -sticky news
+             grid $actions.variation  -row 5 -column 1 -sticky news
+             grid $actions.typspec    -row 6 -column 1 -sticky news
+
+              label $actions.labvoir -text "Affichage"  -justify left
+              button $actions.voir -text "Tables" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::affiche_data"
+
+             grid $actions.labvoir      -row 1 -column 2 -sticky news -ipady 10
+             grid $actions.voir         -row 2 -column 2 -sticky news
+
+
+
+         # Develop
+         set actions [frame $f_develop.frm  -borderwidth 1 -relief groove]
+         pack $actions -in $f_develop -expand yes -fill both
+
+
+              button $actions.ressource -text "Ressource les scripts" -borderwidth 2 -takefocus 1 \
+                 -command "::bddimages::ressource"
+              button $actions.relance -text "Relance la GUI" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::relance"
+              button $actions.clean -text "Efface le contenu de la console" -borderwidth 2 -takefocus 1 \
+                 -command "console::clear"
+              button $actions.testgui -text "Test GUI" -borderwidth 2 -takefocus 1 \
+                 -command "::bdi_gui_cdl::test_gui"
+
+
+             grid $actions.ressource    -row 1 -column 0 -sticky news
+             grid $actions.relance      -row 2 -column 0 -sticky news
+             grid $actions.clean        -row 3 -column 0 -sticky news
+             grid $actions.testgui      -row 4 -column 0 -sticky news
 
 
 
@@ -664,41 +741,12 @@ namespace eval bdi_gui_cdl {
          set actions [frame $center.actions  -borderwidth 4 -cursor arrow -relief groove]
          pack $actions  -in $center -anchor s -side top -expand 0 -fill y -padx 10 -pady 5
 
-              label $actions.labdev -text "Developpement"  -justify left
-              button $actions.ressource -text "Ressource" -borderwidth 2 -takefocus 1 \
-                 -command "::bddimages::ressource"
-              button $actions.relance -text "Relance" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::relance"
-              button $actions.clean -text "Clean" -borderwidth 2 -takefocus 1 \
-                 -command "console::clear"
-              button $actions.testgui -text "Test GUI" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::test_gui"
-
-              label $actions.labcharge -text "Chargement"  -justify left
-              button $actions.charge_alavolee -text "A la volee" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::charge_cata_alavolee"
-              button $actions.stop -text "STOP" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::stop_charge_cata_alavolee"
-              button $actions.chargelist -text "Charge LIST" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::charge_cata_list"
 
               label $actions.labgestion -text "Gestion"  -justify left
               button $actions.charge_gestion -text "Charge" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::charge_from_gestion"
               button $actions.sauve_gestion -text "Sauve" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::save_image_cata"
-
-              label $actions.labvoir -text "Affichage"  -justify left
-              button $actions.voir -text "Tables" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::affiche_data"
-
-              label $actions.labcalc -text "Calculs"  -justify left
-              button $actions.magcst -text "Const. Mag" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::calcul_const_mags"
-              button $actions.calcsci -text "Science" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::calcul_science"
-              button $actions.calcrej -text "Rejetes" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_tools_cdl::calcul_rejected"
 
               label $actions.labref -text "References"  -justify left
               button $actions.const_mag -text "Constantes" -borderwidth 2 -takefocus 1 \
@@ -714,40 +762,15 @@ namespace eval bdi_gui_cdl {
               button $actions.science_unset -text "Clean graph" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::unset_science_in_graph"
 
-              label $actions.labsauve -text "Sauvegarde"  -justify left
-              button $actions.sauve_result -text "Resultats" -borderwidth 2 -takefocus 1 \
-                 -command "::bdi_gui_cdl::save_reports"
-
-
-
               button $actions.fermer -text "Fermer" -borderwidth 2 -takefocus 1 \
                  -command "::bdi_gui_cdl::fermer"
               button $actions.aide -text "Aide" -borderwidth 2 -takefocus 1 \
                  -command "" -state disabled
 
 
-             grid $actions.labdev       -row 0 -column 0 -sticky news
-             grid $actions.ressource    -row 1 -column 0 -sticky news
-             grid $actions.relance      -row 2 -column 0 -sticky news
-             grid $actions.clean        -row 3 -column 0 -sticky news
-             grid $actions.testgui      -row 4 -column 0 -sticky news
-
-             grid $actions.labcharge       -row 0 -column 1 -sticky news
-             grid $actions.charge_alavolee -row 1 -column 1 -sticky news
-             grid $actions.stop            -row 2 -column 1 -sticky news
-             grid $actions.chargelist      -row 4 -column 1 -sticky news
-
              grid $actions.labgestion      -row 0 -column 2 -sticky news
              grid $actions.charge_gestion  -row 1 -column 2 -sticky news
              grid $actions.sauve_gestion   -row 2 -column 2 -sticky news
-
-             grid $actions.labvoir         -row 0 -column 3 -sticky news
-             grid $actions.voir            -row 1 -column 3 -sticky news
-
-             grid $actions.labcalc      -row 0 -column 5 -sticky news
-             grid $actions.magcst       -row 1 -column 5 -sticky news
-             grid $actions.calcsci      -row 2 -column 5 -sticky news
-             grid $actions.calcrej      -row 3 -column 5 -sticky news
 
              grid $actions.labref       -row 0 -column 6 -sticky news
              grid $actions.const_mag    -row 1 -column 6 -sticky news
@@ -757,9 +780,6 @@ namespace eval bdi_gui_cdl {
              grid $actions.labscience    -row 0 -column 8 -sticky news
              grid $actions.science_mag   -row 1 -column 8 -sticky news
              grid $actions.science_unset -row 2 -column 8 -sticky news
-
-             grid $actions.labsauve        -row 0 -column 9 -sticky news
-             grid $actions.sauve_result    -row 1 -column 9 -sticky news
 
              grid $actions.aide         -row 2 -column 10 -sticky news 
              grid $actions.fermer       -row 3 -column 10 -sticky news 
@@ -897,7 +917,21 @@ namespace eval bdi_gui_cdl {
    }
 
 
-
+   proc ::bdi_gui_cdl::calcule_tout { } {
+   
+      if {$::bdi_tools_cdl::bigdata==0} {
+         ::bdi_tools_cdl::charge_cata_list
+         ::bdi_tools_cdl::calcul_const_mags
+         ::bdi_tools_cdl::calcul_science
+         ::bdi_tools_cdl::calcul_rejected
+         ::bdi_gui_cdl::calcul_variation
+         ::bdi_gui_cdl::calcul_classification
+         if {[::plotxy::figure]} {
+            ::bdi_gui_cdl::graph_science_mag_popup_exec
+         }
+      }
+      
+   }
 
 
 
@@ -991,6 +1025,7 @@ namespace eval bdi_gui_cdl {
             incr ids
             if {$y != 1} {continue}
             set line [list $ids $name $::bdi_tools_cdl::table_values($name,sptype)]
+            gren_info "name class = $name\n"
             if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magB)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magB)   }
             if { ![info exists ::bdi_tools_cdl::table_mag($name,USNOA2_magR)  ] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,USNOA2_magR)   }
             if { ![info exists ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag)] } { lappend line "-99" } else { lappend line $::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) }
@@ -1045,6 +1080,7 @@ namespace eval bdi_gui_cdl {
          gren_info "$name to Science\n"
       }
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcule_tout
 
    }
 
@@ -1065,6 +1101,7 @@ namespace eval bdi_gui_cdl {
       }
       ::bdi_tools_cdl::add_to_ref $name $idps
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcule_tout
 
    }
 
@@ -1084,7 +1121,7 @@ namespace eval bdi_gui_cdl {
       }
       ::bdi_tools_cdl::add_to_ref $name $idps
       ::bdi_gui_cdl::affiche_data
-
+      ::bdi_gui_cdl::calcule_tout
    }
 
    #----------------------------------------------------------------------------
@@ -1101,6 +1138,7 @@ namespace eval bdi_gui_cdl {
          set ::bdi_tools_cdl::table_noms($name) 2
       }
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcule_tout
 
    }
 
@@ -1118,6 +1156,7 @@ namespace eval bdi_gui_cdl {
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcule_tout
    }
 
    #----------------------------------------------------------------------------
@@ -1134,6 +1173,7 @@ namespace eval bdi_gui_cdl {
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
+      ::bdi_gui_cdl::calcule_tout
    }
 
    #----------------------------------------------------------------------------
@@ -1150,7 +1190,7 @@ namespace eval bdi_gui_cdl {
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
-      ::bdi_gui_cdl::calcul_classification
+      ::bdi_gui_cdl::calcule_tout
    }
 
    #----------------------------------------------------------------------------
@@ -1168,7 +1208,7 @@ namespace eval bdi_gui_cdl {
          set ::bdi_tools_cdl::table_noms($name) 0
       }
       ::bdi_gui_cdl::affiche_data
-      ::bdi_gui_cdl::calcul_variation
+      ::bdi_gui_cdl::calcule_tout
    }
 
 
@@ -1463,6 +1503,17 @@ namespace eval bdi_gui_cdl {
    #----------------------------------------------------------------------------
    proc ::bdi_gui_cdl::graph_science_mag_popup {  } {
 
+      set ::bdi_gui_cdl::graph_science ""
+      foreach select [$::bdi_gui_cdl::data_science curselection] {
+         set ids [lindex [$::bdi_gui_cdl::data_science get $select] 0]
+         set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]
+         lappend ::bdi_gui_cdl::graph_science [list $ids $name]
+      }
+      ::bdi_gui_cdl::graph_science_mag_popup_exec
+   }
+
+   proc ::bdi_gui_cdl::graph_science_mag_popup_exec {  } {
+
       ::plotxy::clf 1
       ::plotxy::figure 1 
       ::plotxy::hold on 
@@ -1470,13 +1521,15 @@ namespace eval bdi_gui_cdl {
       ::plotxy::title "Courbe de lumiere des objets sciences\n Magnitudes absolues" 
       ::plotxy::xlabel "Time (jd)" 
       ::plotxy::ylabel "Mag" 
+      ::plotxy::ydir reverse
+      
       array unset x  
       array unset y
       set colors [list blue red green yellow grey black ]
       set cpt 0
-      foreach select [$::bdi_gui_cdl::data_science curselection] {
-         set ids [lindex [$::bdi_gui_cdl::data_science get $select] 0]
-         set name [lindex [$::bdi_gui_cdl::data_science get $select] 1]
+      foreach select $::bdi_gui_cdl::graph_science {
+         set ids   [lindex $select 0]
+         set name  [lindex $select 1]
          set color [lindex $colors $cpt]
          gren_info "Graph $name color : $color\n"
          incr cpt
@@ -1488,18 +1541,22 @@ namespace eval bdi_gui_cdl {
             if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)]} {continue}
             lappend x($ids)  $::bdi_tools_cdl::idcata_to_jdc($idcata)
             lappend y($ids)  $::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)
-            gren_info "($ids) ($x($ids)) ($y($ids)) \n"
+            if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,err_mag)]} {
+               lappend by($ids) 0
+            } else {
+               lappend by($ids) $::bdi_tools_cdl::table_science_mag($ids,$idcata,err_mag)
+            }
+            #gren_info "($ids) ($x($ids)) ($y($ids)) \n"
          }
 
-         set h [::plotxy::plot $x($ids) $y($ids) .]
+         set h [::plotxy::plot $x($ids) $y($ids) ro. 1.5 [list -ybars $by($ids)] ]
          plotxy::sethandler $h [list -color $color -linewidth 0]
 
       }
       
-      
-      
-      
    }
+
+
 
    #----------------------------------------------------------------------------
    ## Affiche un graphe representant les magnitudes differentielles des objets
@@ -1688,8 +1745,10 @@ namespace eval bdi_gui_cdl {
 
                $frm.popupTbl add command -label "Voir l'objet dans l'image" \
                    -command "::bdi_gui_cdl::table_voir" 
-               $frm.popupTbl add command -label "Mesurer" \
-                   -command "::bdi_gui_cdl::table_mesure" 
+               $frm.popupTbl add command -label "Mesurer Manuel" \
+                   -command "::bdi_gui_cdl::table_mesure_manuel" 
+               $frm.popupTbl add command -label "Mesurer Auto" \
+                   -command "::bdi_gui_cdl::table_mesure_auto" 
                $frm.popupTbl add command -label "Rejeter" \
                    -command "::bdi_gui_cdl::table_rejet" 
 
@@ -1710,7 +1769,12 @@ namespace eval bdi_gui_cdl {
                $::bdi_gui_cdl::data_source columnconfigure $pcol -sortmode real
             }
             
+      ::bdi_gui_cdl::table_popup_view 
+   }
+
+   proc ::bdi_gui_cdl::table_popup_view {  } {
    
+      set name [wm title $::bdi_gui_cdl::fentable]
       $::bdi_gui_cdl::data_source delete 0 end
 
       for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} {incr idcata} {
@@ -1747,7 +1811,6 @@ namespace eval bdi_gui_cdl {
       }
    }
 
-
    #----------------------------------------------------------------------------
    ## Affiche un rond dans l'image de la source a la date selectionnee
    #  \param void
@@ -1781,14 +1844,63 @@ namespace eval bdi_gui_cdl {
    # aux dates/images selectionnees
    #  \param void
    #----------------------------------------------------------------------------
-   proc ::bdi_gui_cdl::table_mesure {  } {
+   proc ::bdi_gui_cdl::table_mesure_manuel {  } {
 
       foreach select [$::bdi_gui_cdl::data_source curselection] {
          set ids [lindex [$::bdi_gui_cdl::data_source get $select] 0]
          set idcata [lindex [$::bdi_gui_cdl::data_source get $select] 1]
          lappend worklist [list $idcata $ids]
       }
+      set ::bdi_gui_gestion_source::variable_cloture 1
+
       ::bdi_gui_gestion_source::run $worklist
+      
+      vwait ::bdi_gui_gestion_source::variable_cloture
+      
+      ::bdi_tools_cdl::charge_from_gestion
+      ::bdi_gui_cdl::calcule_tout
+      if {[winfo exists $::bdi_gui_cdl::fentable]} {
+         ::bdi_gui_cdl::table_popup_view
+      }
+   }
+   
+   #----------------------------------------------------------------------------
+   ## Effectue une mesure de photocentre automatique sur la source 
+   # aux dates/images selectionnees
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::table_mesure_auto {  } {
+
+      global bddconf
+
+      set ::cata_gestion_gui::variable_cloture 1
+
+      ::cata_gestion_gui::psf_auto "popup_photom_table"
+      
+      vwait ::cata_gestion_gui::variable_cloture
+      
+      # sauvegarde les fichiers dans la base
+      foreach id_current_image $::cata_gestion_gui::worklist(list_id) {
+         set current_image [lindex $::tools_cata::img_list $id_current_image]
+         # Tabkey
+         set tabkey [::bddimages_liste::lget $current_image "tabkey"]
+         # Liste des sources
+         set listsources $::gui_cata::cata_list($id_current_image)
+         # Noms du fichier cata
+         set imgfilename [::bddimages_liste::lget $current_image filename]
+         set imgdirfilename [::bddimages_liste::lget $current_image dirfilename]
+         set f [file join $bddconf(dirtmp) [file rootname [file rootname $imgfilename]]]
+         set cataxml "${f}_cata.xml"
+
+         ::tools_cata::save_cata $listsources $tabkey $cataxml
+         
+      }
+
+      ::bdi_tools_cdl::charge_from_gestion
+      ::bdi_gui_cdl::calcule_tout
+      if {[winfo exists $::bdi_gui_cdl::fentable]} {
+         ::bdi_gui_cdl::table_popup_view
+      }
    }
    
    #----------------------------------------------------------------------------

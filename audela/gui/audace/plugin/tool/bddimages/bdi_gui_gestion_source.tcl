@@ -169,8 +169,9 @@ namespace eval bdi_gui_gestion_source {
          destroy .audace.plotxy1
       }
 
-
       destroy $::bdi_gui_gestion_source::fen
+      
+      set ::bdi_gui_gestion_source::variable_cloture 0
    }
 
 

@@ -2082,6 +2082,7 @@ namespace eval bddimages_recherche {
                #$::bddimages_recherche::This.frame6.result.tbl columnconfigure $j -align center
                # Recupere la valeur de la cellule i,j
                set val [$::bddimages_recherche::This.frame6.result.tbl getcells $i,$j]
+               #if {$j==13} {gren_info "$i => $val\n"}
                # Si valeur cellule = pattern alors premiere lettre seulement
                if {[regexp -nocase -- {(RAW|CORR|CATA|IMG|DARK|FLAT|OFFSET)} [ string trim $val ]]} {
                   $::bddimages_recherche::This.frame6.result.tbl cellconfigure $i,$j -text [ string range $val 0 0 ]

@@ -2012,6 +2012,10 @@ namespace eval cata_gestion_gui {
          if {$::cata_gestion_gui::psf_auto_gui_annul_activ == 1} {break}
          
          set s [lindex $sources $ids]
+         
+         #gren_info "idcata = $::tools_cata::id_current_image\n"
+         #gren_info "ids = $ids\n"
+         #gren_info "list_of_name = [::manage_source::list_of_name $s]\n"
                   
          set err [ catch {set err_psf [::bdi_tools_psf::get_psf_source s] } msg ]
          
@@ -2322,6 +2326,15 @@ namespace eval cata_gestion_gui {
             }
 
          }
+         "popup_photom_table" {
+            foreach select [$::bdi_gui_cdl::data_source curselection] {
+               set ids [expr [lindex [$::bdi_gui_cdl::data_source get $select] 0] -1]
+               set idcata [lindex [$::bdi_gui_cdl::data_source get $select] 1]
+               lappend ::cata_gestion_gui::worklist(list_id) $idcata
+               lappend ::cata_gestion_gui::worklist($idcata) $ids
+               incr nd_sources
+            }
+         }
 
 
       # fin du switch
@@ -2429,7 +2442,7 @@ namespace eval cata_gestion_gui {
       $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state disabled 
       ::cata_gestion_gui::psf_auto_go $type $nd_sources 
       $::gui_cata::fenpopuppsf.appli.boutons.fermer configure -state active
-      destroy $::gui_cata::fenpopuppsf
+      ::cata_gestion_gui::psf_auto_gui_fermer 
    }
 
    proc ::cata_gestion_gui::psf_auto_gui_annul {  } {
@@ -2439,6 +2452,7 @@ namespace eval cata_gestion_gui {
       
       psf_close_to_conf $::audace(visuNo)
       destroy $::gui_cata::fenpopuppsf
+      set ::cata_gestion_gui::variable_cloture 0
  
    }
  
