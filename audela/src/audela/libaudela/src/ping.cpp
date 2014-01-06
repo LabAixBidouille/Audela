@@ -182,7 +182,7 @@ int ping(char * hostName, int nbTry, int receivedTimeOut, char *result) {
     for(i= 0; i< nbTry && cr == false; i++ )  {
 
        dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData), 
-           NULL, ReplyBuffer, ReplySize, receivedTimeOut);
+           NULL, ReplyBuffer, ReplySize, 1000*receivedTimeOut);
        if (dwRetVal != 0) {
 
           switch (dwRetVal) {
@@ -240,13 +240,19 @@ int ping(char * hostName, int nbTry, int receivedTimeOut, char *result) {
   unsigned int addr=0;
   unsigned short seq_no = 0;
   int bread,datasize;
-  
-  
+  struct timeval timeout;  
+    
   if ((sockRaw = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
 	    {
-		sprintf(result,"create socket error %d", errno);
+		sprintf(result,"create socket error %d (verify the user be root)", errno);
 	  return false;
   }
+	//   
+	// Set the receive and send timeout values to receivedTimeOut seconds   
+	//   
+	timeout.tv_sec = receivedTimeOut;   
+	timeout.tv_usec = 0;   
+	setsockopt(sockRaw, SOL_SOCKET, SO_RCVTIMEO,&timeout, sizeof(struct timeval));   
 
   memset(&dest,0,sizeof(dest));
   hp = gethostbyname(hostName);
