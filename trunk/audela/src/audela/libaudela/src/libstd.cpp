@@ -251,7 +251,7 @@ int CmdPing(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    char result[256];
    int res,timeout=1;
    if (argc<2) {
-	   sprintf(s,"usage : %s IPAddress ?timeout?",argv[0]);
+	   sprintf(s,"usage : %s IPAddress ?timeout_sec?",argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
