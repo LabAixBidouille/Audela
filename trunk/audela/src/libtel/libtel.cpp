@@ -271,12 +271,24 @@ int cmdTelCreate(ClientData clientData, Tcl_Interp *interp, int argc, const char
       /* --- internal init ---*/
       if((err=tel_init_common(tel,argc,argv))!=0) {
          Tcl_SetResult(interp,"init error",TCL_VOLATILE);
+			// je supprime le thread du telescope
+			if ( strcmp(tel->telThreadId,"")!= 0 ) {
+				sprintf(s,"thread::release %s" , tel->telThreadId);
+				Tcl_Eval(interp,s);
+			}
+			// ---
          free(tel);
          return TCL_ERROR;
       }
       /* --- external init defined in the telescop.c file ---*/
       if((err=tel_init(tel,argc,(char**)argv))!=0) {
          Tcl_SetResult(interp,tel->msg,TCL_VOLATILE);
+			// je supprime le thread du telescope
+			if ( strcmp(tel->telThreadId,"")!= 0 ) {
+				sprintf(s,"thread::release %s" , tel->telThreadId);
+				Tcl_Eval(interp,s);
+			}
+			// ---
          free(tel);
          return TCL_ERROR;
       }
