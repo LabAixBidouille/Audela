@@ -314,6 +314,8 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
 	float x0,y0;
 	float *x,*y;
    
+   mrqmin_variable_TS mrqmin_TS = { 0, 0, NULL, NULL, NULL, NULL };
+   
    log = 0;
 
    dyda    = vector(1,MA);
@@ -364,7 +366,9 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
      Lancement des iterations generales
    */
    cpt=0;
-	for (n=1;n<=3;n++) {
+   /* n <= 1 : mode calcul rapide */
+   /* n <= 3 : mode high precision */
+	for (n=1;n<=1;n++) {
 
       k = 0;
 
@@ -372,7 +376,7 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
         Ajustement Initial
       */
       alamda = -1;
-      mrqmin2D(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda);
+      mrqmin2D_ThreadSafe(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda, &mrqmin_TS);
       cpt++;
 
       /*
@@ -394,7 +398,7 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
          k++;
 		   ochisq=chisq;
 
-         mrqmin2D(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda);
+         mrqmin2D_ThreadSafe(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda, &mrqmin_TS);
          cpt++;
 
 		   if (chisq > ochisq)
@@ -402,10 +406,12 @@ void fit_gauss2D (int npt, float **zs, float *a, float *uncertainties)
 		   else if (fabs(ochisq-chisq) < 0.001)
 			   itst++;
 
-		   if (itst < 4 && k < 30) continue;
+   /* itst < 3 : mode calcul rapide */
+   /* itst < 4 : mode high precision */
+		   if (itst < 3 && k < 30) continue;
 
 		   alamda=0.0;
-         mrqmin2D(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda);
+         mrqmin2D_ThreadSafe(x,y,z,sig,npt,a,ia,MA,covar,alpha,&chisq,fgauss1_2d,&alamda, &mrqmin_TS);
          cpt++;
 
          if (log) { 

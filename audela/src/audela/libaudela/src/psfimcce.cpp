@@ -22,6 +22,7 @@
 #include "cpixels.h"
 #include "psfimcce.h"
 #include <math.h>
+#include <mcheck.h>
 
 void CPixels::psfimcce_compute(int npt, double **z, double *p, float **residus, float **synthetic)
 {

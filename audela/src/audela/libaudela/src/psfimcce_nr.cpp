@@ -174,11 +174,11 @@ void mrqmin(float x[], float y[], float sig[], int ndata, float a[], int ia[],
 	void covsrt(float **covar, int ma, int ia[], int mfit);
 	void gaussj(float **a, int n, float **b, int m);
 	void mrqcof(float x[], float y[], float sig[], int ndata, float a[],
-		int ia[], int ma, float **alpha, float beta[], float *chisq,
-		void (*funcs)(float, float [], float *, float [], int));
+	int ia[], int ma, float **alpha, float beta[], float *chisq,
+	void (*funcs)(float, float [], float *, float [], int));
 	int j,k,l;
-	static int mfit;
-	static float ochisq,*atry,*beta,*da,**oneda;
+   static int mfit;
+   static float ochisq,*atry,*beta,*da,**oneda;
 
 	if (*alamda < 0.0) {
 		atry=vector(1,ma);
@@ -278,21 +278,86 @@ void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[]
 
 
 
-void mrqmin2D(float x[], float y[], float **z, float **sig, int ndata, float a[], int ia[],
+
+void mrqmin2D_ThreadSafe(float x[], float y[], float **z, float **sig, int ndata, float a[], int ia[],
 	int ma, float **covar, float **alpha, float *chisq,
-	void (*funcs)(float, float, float [], float *, float [], int), float *alamda)
+	void (*funcs)(float, float, float [], float *, float [], int), float *alamda, mrqmin_variable_TS *mrqmin_TS)
 {
 
 
 	void covsrt(float **covar, int ma, int ia[], int mfit);
 	void gaussj(float **a, int n, float **b, int m);
 	void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[],
-		int ia[], int ma, float **alpha, float beta[], float *chisq,
-		void (*funcs)(float, float, float [], float *, float [], int));
+	int ia[], int ma, float **alpha, float beta[], float *chisq,
+	void (*funcs)(float, float, float [], float *, float [], int));
 	int j,k,l;
+
+	if (*alamda < 0.0) {
+		(mrqmin_TS->atry)=vector(1,ma);
+		(mrqmin_TS->beta)=vector(1,ma);
+		(mrqmin_TS->da)=vector(1,ma);
+		for ((mrqmin_TS->mfit)=0,j=1;j<=ma;j++)
+			if (ia[j]) (mrqmin_TS->mfit)++;
+		(mrqmin_TS->oneda)=matrix(1,(mrqmin_TS->mfit),1,1);
+		*alamda=(float)0.001;
+		mrqcof2D(x,y,z,sig,ndata,a,ia,ma,alpha,(mrqmin_TS->beta),chisq,funcs);
+		(mrqmin_TS->ochisq)=(*chisq);
+		for (j=1;j<=ma;j++) (mrqmin_TS->atry)[j]=a[j];
+	}
+	for (j=1;j<=(mrqmin_TS->mfit);j++) {
+		for (k=1;k<=(mrqmin_TS->mfit);k++) covar[j][k]=alpha[j][k];
+		covar[j][j]=(float)(alpha[j][j]*(1.0+(*alamda)));
+		(mrqmin_TS->oneda)[j][1]=(mrqmin_TS->beta)[j];
+	}
+
+	gaussj(covar,(mrqmin_TS->mfit),(mrqmin_TS->oneda),1);
+	for (j=1;j<=(mrqmin_TS->mfit);j++) (mrqmin_TS->da)[j]=(mrqmin_TS->oneda)[j][1];
+	if (*alamda == 0.0) {
+		covsrt(covar,ma,ia,(mrqmin_TS->mfit));
+		covsrt(alpha,ma,ia,(mrqmin_TS->mfit));
+		free_matrix((mrqmin_TS->oneda),1,(mrqmin_TS->mfit),1,1);
+		free_vector((mrqmin_TS->da),1,ma);
+		free_vector((mrqmin_TS->beta),1,ma);
+		free_vector((mrqmin_TS->atry),1,ma);
+		return;
+	}
+
+	for (j=0,l=1;l<=ma;l++)
+		if (ia[l]) (mrqmin_TS->atry)[l]=a[l]+(mrqmin_TS->da)[++j];
+	mrqcof2D(x,y,z,sig,ndata,(mrqmin_TS->atry),ia,ma,covar,(mrqmin_TS->da),chisq,funcs);
+	if (*chisq < (mrqmin_TS->ochisq)) {
+		*alamda *= (float)0.1;
+		(mrqmin_TS->ochisq)=(*chisq);
+		for (j=1;j<=(mrqmin_TS->mfit);j++) {
+			for (k=1;k<=(mrqmin_TS->mfit);k++) alpha[j][k]=covar[j][k];
+			(mrqmin_TS->beta)[j]=(mrqmin_TS->da)[j];
+		}
+		for (l=1;l<=ma;l++) a[l]=(mrqmin_TS->atry)[l];
+	} else {
+		*alamda *= 10.0;
+		*chisq=(mrqmin_TS->ochisq);
+	}
+}
+
+
+
+
+
+void mrqmin2D(float x[], float y[], float **z, float **sig, int ndata, float a[], int ia[],
+	int ma, float **covar, float **alpha, float *chisq,
+	void (*funcs)(float, float, float [], float *, float [], int), float *alamda )
+{
+
+
+	void covsrt(float **covar, int ma, int ia[], int mfit);
+	void gaussj(float **a, int n, float **b, int m);
+	void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[],
+	int ia[], int ma, float **alpha, float beta[], float *chisq,
+	void (*funcs)(float, float, float [], float *, float [], int));
+	int j,k,l;
+
 	static int mfit;
 	static float ochisq,*atry,*beta,*da,**oneda;
-
 
 	if (*alamda < 0.0) {
 		atry=vector(1,ma);
