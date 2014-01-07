@@ -142,8 +142,12 @@ namespace eval bdi_tools_astroid {
       ::thread::send $threadName [list ::bddimages::ressource] msg
       if {$msg!=""} {puts "\[$threadId\] SETENV: bdi ressource : $msg"}
       
-      thread::send $threadName [list proc gren_info { l } { puts $l}]
-      thread::send $threadName [list proc gren_erreur { l } { puts $l}]
+#      thread::send $threadName [list proc gren_info { l } { puts $l}]
+#      thread::send $threadName [list proc gren_erreur { l } { puts $l}]
+
+# mode prod
+      thread::send $threadName [list proc gren_info { l } { }]
+      thread::send $threadName [list proc gren_erreur { l } { }]
    }
  
 
@@ -250,7 +254,7 @@ namespace eval bdi_tools_astroid {
          puts "\[$threadId\] SET_OWN_ENV: Connexion MYSQL echouee : $connectstatus\n"
       } else {
          set ::bdi_tools_config::ok_mysql_connect 1
-         puts "\[$threadId\] SET_OWN_ENV: Connexion MYSQL reussie : $connectstatus\n"
+#         puts "\[$threadId\] SET_OWN_ENV: Connexion MYSQL reussie : $connectstatus\n"
       }
 
       tsv::set dispo $threadId 1
@@ -286,7 +290,7 @@ namespace eval bdi_tools_astroid {
             set bufno [::buf::create]
             buf$bufno load $f
             ::bdi_tools_psf::get_psf_listsources ::tools_cata::current_listsources
-            puts "\[$threadId\] rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]"
+#            puts "\[$threadId\] rollup = [::manage_source::get_nb_sources_rollup $::tools_cata::current_listsources]"
             set idbddimg [::bddimages_liste::lget $::tools_cata::current_image "idbddimg"]
             set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
             # Noms du fichier cata
@@ -334,18 +338,18 @@ namespace eval bdi_tools_astroid {
       set ::bdi_tools_astroid::stop 0
 
       set tt0 [clock clicks -milliseconds]
-      gren_info "\n\n\n\n\n\n"
-      puts "\n\n\n\n\n\n"
+#      gren_info "\n\n\n\n\n\n"
+#      puts "\n\n\n\n\n\n"
       set nbexistthread [llength [thread::names]]
-      gren_info "*** $nbexistthread threads exists\n"
+#      gren_info "*** $nbexistthread threads exists\n"
       set threadId -1
       foreach threadName [thread::names] {
          set ::bdi_tools_astroid::tabthread(id,$threadId) $threadName
          set ::bdi_tools_astroid::tabthread(name,$threadName) $threadId
          incr threadId -1
       }
-      gren_info "* Existing threads: [::bdi_tools_astroid::get_list_threadId]\n"
-      gren_info "* I'm MASTER thread $::bdi_tools_astroid::tabthread(name,[thread::id])\n"
+#      gren_info "* Existing threads: [::bdi_tools_astroid::get_list_threadId]\n"
+#      gren_info "* I'm MASTER thread $::bdi_tools_astroid::tabthread(name,[thread::id])\n"
       
       # 
       # Create threads
@@ -359,7 +363,7 @@ namespace eval bdi_tools_astroid {
                
          set ::bdi_tools_astroid::tabthread(id,$threadId) $threadName
          set ::bdi_tools_astroid::tabthread(name,$threadName) $threadId
-         gren_info "**** Existing threads: [::bdi_tools_astroid::get_list_threadId]\n"
+#         gren_info "**** Existing threads: [::bdi_tools_astroid::get_list_threadId]\n"
          
          ::thread::send $threadName [list set threadId $threadId]
          ::bdi_tools_astroid::setenv $threadName $threadId
@@ -369,8 +373,8 @@ namespace eval bdi_tools_astroid {
          
          ::thread::send $threadName "::bdi_tools_astroid::set_own_env"
          
-         puts "\[$threadId\] Started thread"
-         gren_info "*** Started thread $threadId \n"
+#         puts "\[$threadId\] Started thread"
+#         gren_info "*** Started thread $threadId \n"
       }
 
       ::bdi_tools_astroid::get_dispo
@@ -379,7 +383,7 @@ namespace eval bdi_tools_astroid {
       # boucle de travail
       # 
 
-      gren_info "Nombre d'images a traiter : $::tools_cata::nb_img_list \n"
+#      gren_info "Nombre d'images a traiter : $::tools_cata::nb_img_list \n"
 
       set idcata 0
       foreach ::tools_cata::current_image $::tools_cata::img_list {
@@ -399,7 +403,7 @@ namespace eval bdi_tools_astroid {
          }
          if {$::bdi_tools_astroid::stop} {break}
 
-         gren_info "WORK $idcata\n"
+#         gren_info "WORK $idcata\n"
          set threadId $::bdi_tools_astroid::tabthread(name,$threadName)
          set ex [thread::exists $threadName]
          if {$ex} {
@@ -419,7 +423,7 @@ namespace eval bdi_tools_astroid {
       # 
 
       if {$::bdi_tools_astroid::stop!=2} {
-         puts "Dispo ?"
+#         puts "Dispo ?"
          set out 1
          while {$out} {
             set threadName [::bdi_tools_astroid::get_nb_dispo]
@@ -431,8 +435,8 @@ namespace eval bdi_tools_astroid {
          }
       }
 
-      puts  "Finish"
-      gren_info "Finish\n"
+#      puts  "Finish"
+#      gren_info "Finish\n"
 
       # 
       # detachement des threads
@@ -442,10 +446,10 @@ namespace eval bdi_tools_astroid {
       for {set threadId 1} {$threadId <= $::bdi_tools_astroid::nb_threads} {incr threadId} {
          set threadName $::bdi_tools_astroid::tabthread(id,$threadId)
          set ex [thread::exists $threadName]
-         puts "\[$threadId\] exist ? = [thread::exists $threadName]"
+#         puts "\[$threadId\] exist ? = [thread::exists $threadName]"
          if {$ex} {
             ::thread::release $threadName
-            puts "\[$threadId\] release"
+#            puts "\[$threadId\] release"
          }
       }
       }
@@ -453,10 +457,10 @@ namespace eval bdi_tools_astroid {
       # 
       # Fin
       # 
-      puts "*** That's all, folks!"
+#      puts "*** That's all, folks!"
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Traitement complet en $tt sec \n"
-      puts "Traitement complet en $tt sec \n"
+      gren_info "Traitement ASTROID complet en $tt sec \n"
+#      puts "Traitement complet en $tt sec \n"
 
       array unset ::bdi_tools_astroid::tabthread
       array unset ::bdi_tools_astroid::res
