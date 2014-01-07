@@ -938,10 +938,11 @@ proc grb_gcnc { args } {
    {"IAC " "IAC-80" 80} \
    {"IAC80" "IAC-80" 80} \
    {" INT " "INT" 250} \
+   {"IPTF" "P60" 150} \
    {"ISAS " "ISAS" 130} \
    {"IRSF " "IRSF" 140} \
    {"ISON-NM" "ISON-NM" 45} \
-   {"iTelescope T21" "iTelescope-T21" 43} \
+   {"ITELESCOPE T21" "iTelescope-T21" 43} \
    {"K-380" "K-380" 380} \
    {"KAIT" "KAIT" 76} \
    {"KANAZAWA" "Kanazawa" 30} \
@@ -972,6 +973,8 @@ proc grb_gcnc { args } {
    {"MIYAZAKI" "Miyazaki" 30} \
    {"MONDY" "SAYAN-1.5m" 150} \
    {" MOA " "MOA_61" 61} \
+   {"MOSFIRE" "Keck" 1000} \
+   {"NANSHAN" "Nanshan" 100} \
    {"NAYUTA" "NAYUTA" 200} \
    {"NORDIC" "NOT" 256} \
    {"NTT" "NTT" 358} \
@@ -986,6 +989,7 @@ proc grb_gcnc { args } {
    {"PI-OF-THE-SKY" "PI-OF-THE-SKY" 8.5} \
    {"RAPTOR" "RAPTOR" 40} \
    {"RATIR" "RATIR" 150} \
+   {"R-COP" "R-COP" 35} \
    {" REM " "REM" 60} \
    {"ROTSE" "ROTSE" 45} \
    {"RTT150" "RTT150" 150} \
@@ -1014,6 +1018,7 @@ proc grb_gcnc { args } {
    {"VERY LARGE TELESCOPE" "VLT" 820} \
    {"VLT" "VLT" 820} \
    {"WATCHER" "Watcher" 40} \
+   {"WEIHAI" "Weihai" 100} \
    {"WHT" "WHT" 420} \
    {"WIDGET" "WIDGET" 5} \
    {"WIYN" "WIYN" 350} \
