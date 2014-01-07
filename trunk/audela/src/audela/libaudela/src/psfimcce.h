@@ -38,7 +38,18 @@
 #define MA 7
 #define NB_PARAM 15
 
-static float sqrarg;
+struct mrqmin_variable_TS {
+   int mfit;
+   float ochisq; 
+   float *atry; 
+   float *beta;
+   float *da;
+   float **oneda;
+};
+
+typedef struct mrqmin_variable_TS mrqmin_variable_TS;
+
+
 #define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
 
 #if defined(__STDC__) || defined(ANSI) || defined(NRANSI) || defined (OS_WIN) /* ANSI */
@@ -79,6 +90,12 @@ void lfit(float x[], float y[], float sig[], int ndat, float a[], int ia[],
 void mrqmin2D(float x[], float y[], float **z, float **sig, int ndata, float a[],
 	int ia[], int ma, float **covar, float **alpha, float *chisq,
 	void (*funcs)(float, float, float [], float *, float [], int), float *alamda);
+
+void mrqmin2D_ThreadSafe(float x[], float y[], float **z, float **sig, int ndata, float a[],
+	int ia[], int ma, float **covar, float **alpha, float *chisq,
+	void (*funcs)(float, float, float [], float *, float [], int), float *alamda,
+   mrqmin_variable_TS *mrqmin_TS
+   );
 
 void mrqcof2D(float x[], float y[], float **z, float **sig, int ndata, float a[], int ia[],
 	int ma, float **alpha, float beta[], float *chisq,
