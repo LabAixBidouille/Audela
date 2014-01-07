@@ -52,7 +52,7 @@ proc grb_swift { args } {
    if {$methode=="update"} {
 
       file mkdir "$grbpath"
-      set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/"
+      set url0 "http://swift.gsfc.nasa.gov/archive/grb_table/tmp/"
       set lignes [grb_read_url_contents "$url0"]
       set f [open ${grbpath}/files.txt w]
       puts -nonewline $f $lignes
@@ -93,7 +93,7 @@ proc grb_swift { args } {
             }
          }
       }
-      set url0 "http://heasarc.nasa.gov/docs/swift/archive/grb_table/tmp/$fname"
+      set url0 "http://swift.gsfc.nasa.gov/archive/grb_table/tmp/$fname"
       set lignes [grb_read_url_contents "$url0"]
       set f [open ${grbpath}/raw.txt w]
       puts -nonewline $f $lignes
@@ -104,9 +104,13 @@ proc grb_swift { args } {
       set lignes [split $lignes \n]
       set nl [llength $lignes]
       set k 0
+      set ligne90s ""
       catch {unset grbs}
       for {set kl 1} {$kl<$nl} {incr kl} {
-         set ligne [split [lindex $lignes $kl] \t]
+         set a1 [lindex $lignes $kl]
+         regsub -all "\{" $a1 ( a2
+         regsub -all "\}" $a2 ) a1
+         set ligne [split $a1 \t]
          set grbname [lindex $ligne 0]
          if {[catch {expr [string trimleft [string range $grbname 0 5] 0]}]==1} {
             continue
@@ -117,27 +121,54 @@ proc grb_swift { args } {
          set dec [lindex $ligne 4]
          lappend grbs(dec) [string trim [mc_angle2deg $dec 90]]
          set res [lindex $ligne 2]
-         if {[catch {expr [string range $res 0 0]}]==0} {
+         if {[catch {expr [string range $res 0 2]}]==0} {
             set res Swift
-         }
-         if {[string range $res 0 5]=="Ground"} {
+         } elseif {[string range $res 0 5]=="Ground"} {
             set res Swift
          }
          lappend grbs(satellite) $res
 
-         set ra [lindex $ligne 22]
-         set dec [lindex $ligne 23]
+         set ra [lindex $ligne 23]
+         set dec [lindex $ligne 24]
          set redshift -1
          set obsoptic  0
          if {($ra!="n/a")} {
+            #::console::affiche_resultat "$grbname => [lindex $ligne 30]\n"
             set obsoptic 1
-            set res [lindex [lindex $ligne 29] 0] ; # redshift
-            if {[catch {expr [string trimleft $res 0]}]==0} {
-               set redshift $res
+            set obs [split [lindex $ligne 30] |]
+            set z 0
+            set nz 0
+            foreach ob $obs {
+               set res [lindex $ob 0] ; # redshift
+               #::console::affiche_resultat "$grbname res=$res z=$z\n"
+               if {[catch {expr [string trimleft $res 0]}]==0} {
+                  if {[string length $res]>=[string length $z]} {
+                     set z $res
+                  }
+               }
+            }
+            if {$z!="0"} {
+               set redshift $z
             }
          }
+         #::console::affiche_resultat "$grbname <$ra> <$dec> <$obsoptic> >>>>$redshift>>>>>\n"
          lappend grbs(obsoptic) $obsoptic
          lappend grbs(redshift) $redshift
+
+         set t90 [lindex $ligne 6] ; # BAT T90 [sec]
+         regsub -all "~" $t90 "" a1
+         regsub -all ">" $a1 "" a2
+         set t90 $a2
+         set fluence [lindex $ligne 7] ; # BAT Fluence (15-150 keV) [10^-7 erg/cm^2]
+         regsub -all "~" $fluence "" a1
+         regsub -all ">" $a1 "" a2
+         set fluence $a2
+         if {($t90!="n/a")&&($fluence!="n/a")&&($t90!="TBD")&&($fluence!="TBD")} {
+            set ra [lindex $grbs(ra) end]
+            set dec [lindex $grbs(dec) end]
+            #console::affiche_resultat "$grbname $ra $dec $redshift $t90 $fluence\n"
+            append ligne90s "[format "%9s %08.4f %+08.4f %+07.3f %8.3f %8.3e" $grbname $ra $dec $redshift $t90 $fluence]\n"
+         }
 
          set a [string range $grbname 0 1]
          set m [string range $grbname 2 3]
@@ -201,6 +232,10 @@ proc grb_swift { args } {
       puts -nonewline $f $lignes
       close $f
       ::console::affiche_resultat "GRB Swift file ${grbpath}/grboptic.txt\n"
+      set f [open ${grbpath}/t90_fluence.txt w]
+      puts -nonewline $f $ligne90s
+      close $f
+      ::console::affiche_resultat "GRB Swift file ${grbpath}/t90_fluence.txt\n"
 
    } elseif {$methode=="prompt_map"} {
 
