@@ -1,359 +1,721 @@
-# * Initial author : Fred Vachier <fv@imcce.fr>
-#   avec l aide et conseil de Alain KLOTZ <alain.klotz@free.fr>
-
+#
+#
+#
+#  Initial author : Fred Vachier <fv@imcce.fr>
+#   avec l aide et conseil d'Alain KLOTZ <alain.klotz@free.fr>
+#  Modifie/adapte par Jerome Berthier <berthier@imcce.fr>
+#
+#  Valide pour la AZ-EQ6 GT par Jerome Berthier <berthier@imcce.fr>
+#  Valide pour la NEQ3-2 Pro GOTO par Jerome Berthier <berthier@imcce.fr>
+#  Valide pour la HEQ5 Pro GOTO par Fred Vachier <fv@imcce.fr>
+#
 # source [file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]
+#
 
 namespace eval eqmod {
-
-
 
    variable home
    variable telno
 
+   # Parametres de la monture
+   variable tel_a1
+   variable tel_a2
+   variable tel_b1
+   variable tel_b2
+   variable tel_g1
+   variable tel_g2
 
+   variable tel_d1
+   variable tel_d2
+   variable tel_e1
+   variable tel_e2
+   variable tel_s1
+   variable tel_s2
 
+   # Active ou non le log
+   set ::eqmod::log 1
 
-   proc ::eqmod::ressource { } {
+   # Delai minimum necessaire entre 2 commandes (ms)
+   set ::eqmod::delay 15
 
-      global audace
+   # Defini la valeur limite de separation entre mouvements lent et rapide (deg/sec)
+   set ::eqmod::lowhigh_drift_limit 0.25
 
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src init.tcl]\""
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_move.tcl]\""
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]\""
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_tools.tcl]\""
+}
 
-   }
+# Ressource le projet
+proc ::eqmod::ressource { } {
 
-   proc ::eqmod::testcar { s } {
-      set good [list A B C D E F a b c d e f 0 1 2 3 4 5 6 7 8 9]
-      if {$s in $good} { 
-         return 1
-      } else {
-        return 0
-      }
-   }
+   global audace
 
-   proc ::eqmod::decode {s} {
-      ::console::affiche_erreur "decode s : ($s) \n" 
+   uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]\""
+   uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_control.tcl]\""
 
-#     set good [list A B C D E F a b c d e f 0 1 2 3 4 5 6 7 8 9]
-#     set n [string length $s]
-#     set ns ""
-#     for {set i 0} {$i<$n} {incr i} {
-#        set c [string range $s $i $i]
-#        if {$c in $good} { 
-#           append ns $c
-#        }
-#     }
-#     set s $ns
-#
-#
-      set n [string length [format %%0X -1]]
-      set sig [expr int(0x[string index $s 4])]
-      if {$sig<=7} { set sym 0 } else { set sym F }
-      set comp [string repeat $sym [expr $n-6]]
-      set i [expr int(0x${comp}[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ])]
+}
+
+# Conversion hexadecimal -> decimal
+# input: h code hexadecimal
+# return valeur decimale correspondante
+proc ::eqmod::decode { h } {
+
+   set i [string range $h 4 5][string range $h 2 3][string range $h 0 1]
+   set d [expr int(0x$i)]
+
+   if {$::eqmod::log} { ::console::affiche_erreur "decode (HEX) $h => (DEC) $d\n" }
+
+   return $d
+}
+
+# Conversion decimal -> hexadecimal
+# input: d valeur decimale
+# return code hexadecimal correspondant
+proc ::eqmod::encode { d } {
+
+   set s [string range [format %08X $d] end-5 end]
+   set h [string range $s 4 5][string range $s 2 3][string range $s 0 1]
+
+   if {$::eqmod::log} { ::console::affiche_erreur "encode (DEC) $d => (HEX) $h\n" }
+
+   return $h
+
+}
+
+# Calcul le temps sideral local a l'instant de l'appel
+# return t le temps sideral local en deg
+proc ::eqmod::get_lst {} {
    
-      #set i [ expr int(0x[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]00) / 256 ]
+   set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
+   set lst [mc_date2lst $now $::eqmod::home]
+   set t [expr ([lindex $lst 0] + [lindex $lst 1]/60.0 + [lindex $lst 2]/3600.0)*15.0]
 
-#      if {$i > 9024000} {set i [expr $i - 16777216]}
-#      if {$i < 0 } { 
-#         ::console::affiche_erreur "decode : $i \n" 
-#         set i [ expr 9024000 + $i]
-#         ::console::affiche_erreur "decode : $i negatif pour hex = $s\n" 
-#      }
-      ::console::affiche_erreur "decode : $s => $i\n" 
-      return $i
+   if {$::eqmod::log} { ::console::affiche_resultat "LST (deg / hms) : $t / $lst\n" }
+
+   return $t
+
+}
+
+# Direction E/W pointee, selon l'angle horaire: W (270o-360o) ou E (0o-180o)
+# input: h_deg angle horaire en deg.
+# return E | W
+proc ::eqmod::get_direction { h_deg } {
+
+   return [expr {($h_deg >= 0.0 && $h_deg < 180.0) ? "W" : "E"}]
+
+}
+
+# Calcul les coordonnees equatoriales a partir des coordonnees horaires
+# input: h_deg float angle horaire en deg
+# input: dec_deg gloat declinaison en deg [-pi/2 .. +pi/2]
+# return list coordonnees RA,DEC
+proc ::eqmod::coord_hour_to_equatorial { h_deg dec_deg } {
+
+   set t [::eqmod::get_lst]
+   set ra_deg [expr $t - $h_deg]
+   if {$ra_deg < 0.0} { set ra_deg [expr $ra_deg + 360.0] }
+   return [list $ra_deg $dec_deg]
+
+}
+
+# Calcul les coordonnees horaires a partir des coordonnees equatoriales
+# input: ra_deg float ascension droite en deg
+# input: dec_deg gloat declinaison en deg
+# return list coordonnees H,DEC
+proc ::eqmod::coord_equatorial_to_hour { ra_deg dec_deg } {
+
+   set t [::eqmod::get_lst]
+   set h_deg [expr $t - $ra_deg]
+   if {$h_deg < 0.0} { set h_deg [expr $h_deg + 360.0] }
+   return [list $h_deg $dec_deg]
+
+}
+
+# coordonnees celestes -> coordonnees monture
+# input: h_deg float angle horaire en deg
+# input: dec_deg float declinaison en deg
+# return list coordonnes monture
+proc ::eqmod::hour_to_mount { h_deg dec_deg } {
+
+   if {$::eqmod::log} { ::console::affiche_erreur "hour->mount input: $h_deg $dec_deg\n" }
+
+   set h_deg [expr 180.0 + $h_deg]
+   while {$h_deg > 360.0} {
+      set h_deg [expr $h_deg - 360.0]
    }
 
-   # decimal to hexadecimal
-   proc ::eqmod::encode {int} {
-      set s [ string range [ format %08X $int ] end-5 end ]
-      return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]
+   if {$h_deg == 360.0} { set h_deg 0.0 }
+   if {$dec_deg == 360.0} { set dec_deg 0.0 }
+
+   if {$::eqmod::log} { ::console::affiche_erreur "hour->mount result: $h_deg $dec_deg\n" }
+
+   return [list $h_deg $dec_deg]
+
+}
+
+# coordonnees monture -> coordonnees celestes
+# input: m1_deg float coordonnee monture 1 en deg
+# input: m2_deg float coordonnee monture 2 en deg
+# return list coordonnes horaires
+proc ::eqmod::mount_to_hour { m1_deg m2_deg } {
+
+   if {$::eqmod::log} { ::console::affiche_erreur "mount->hour input: $m1_deg $m2_deg\n" }
+
+   set m1_deg [expr 180.0 + $m1_deg]
+   while {$m1_deg > 360.0} {
+      set m1_deg [expr $m1_deg-360.0]
    }
 
-   proc ::eqmod::celestial_to_mount { h_deg dec_deg } {
+   if {$m1_deg == 360.0} { set m1_deg 0.0 }
+   if {$m2_deg == 360.0} { set m2_deg 0.0 }
 
-      set deg1 [expr $h_deg  ]
-      set deg2 [expr 180 - $dec_deg]
+   if {$m2_deg  > 90.0} { set m2_deg [expr 180.0-$m2_deg] }
 
-      return  [ list  $deg1 $deg2 ]
+   if {$::eqmod::log} { ::console::affiche_erreur "mount->hour result: $m1_deg $m2_deg\n" }
 
+   return [list $m1_deg $m2_deg]
+
+}
+
+# Defini les valeurs des commandes de la monture
+# return void
+proc ::eqmod::get_mount_command_values {} {
+
+   ::console::affiche_resultat "Get mount command values...\n"
+
+   set ::eqmod::tel_a1 [::eqmod::decode [tel$::eqmod::telno putread :a1]]
+   set ::eqmod::tel_a2 [::eqmod::decode [tel$::eqmod::telno putread :a2]]
+   set ::eqmod::tel_b1 [::eqmod::decode [tel$::eqmod::telno putread :b1]]
+   set ::eqmod::tel_b2 [::eqmod::decode [tel$::eqmod::telno putread :b2]]
+   set ::eqmod::tel_d1 [::eqmod::decode [tel$::eqmod::telno putread :d1]]
+   set ::eqmod::tel_d2 [::eqmod::decode [tel$::eqmod::telno putread :d2]]
+   set ::eqmod::tel_e1 [::eqmod::decode [tel$::eqmod::telno putread :e1]]
+   set ::eqmod::tel_e2 [::eqmod::decode [tel$::eqmod::telno putread :e2]]
+   set ::eqmod::tel_g1 [tel$::eqmod::telno putread :g1]
+   set ::eqmod::tel_g2 [tel$::eqmod::telno putread :g2]
+   set ::eqmod::tel_s1 [::eqmod::decode [tel$::eqmod::telno putread :s1]]
+   set ::eqmod::tel_s2 [::eqmod::decode [tel$::eqmod::telno putread :s2]]
+
+}
+
+# Affiche les valeurs des commandes de la monture
+# return void
+proc ::eqmod::display_mount_command_values {} {
+
+   ::console::affiche_resultat "Mount command values:\n"
+   if {[info exists ::eqmod::tel_a1]} {
+      ::console::affiche_resultat "(a1) = $::eqmod::tel_a1\n"
+      ::console::affiche_resultat "(a2) = $::eqmod::tel_a2\n"
+      ::console::affiche_resultat "(b1) = $::eqmod::tel_b1\n"
+      ::console::affiche_resultat "(b2) = $::eqmod::tel_b2\n"
+      ::console::affiche_resultat "(d1) = $::eqmod::tel_d1\n"
+      ::console::affiche_resultat "(d2) = $::eqmod::tel_d2\n"
+      ::console::affiche_resultat "(e1) = $::eqmod::tel_e1\n"
+      ::console::affiche_resultat "(e2) = $::eqmod::tel_e2\n"
+      ::console::affiche_resultat "(g1) = $::eqmod::tel_g1\n"
+      ::console::affiche_resultat "(g2) = $::eqmod::tel_g2\n"
+      ::console::affiche_resultat "(s1) = $::eqmod::tel_s1\n"
+      ::console::affiche_resultat "(s2) = $::eqmod::tel_s2\n"
+   } else {
+      ::console::affiche_erreur "Unknown values, initialize the mount\n"
    }
 
-   proc ::eqmod::mount_to_celestial { deg1 deg2 } {
+}
 
-      set h_deg [expr - $deg1 - 90 ]
-      set dec_deg [expr 180 - $deg2]
+# Initialisation de la monture
+# return 0
+proc ::eqmod::init_mount {} {
 
-      return  [ list  $h_deg $dec_deg ]
+   global confgene
+
+   # Initialisations
+   set ::eqmod::telno 1
+   set ::eqmod::home $confgene(posobs,observateur,gps)
+
+   # Defini les coordonnees de l'observateur
+   tel$::eqmod::telno home $::eqmod::home
+   
+   # Defini les valeurs des commandes de la monture
+   ::eqmod::get_mount_command_values
+
+   # Etat des moteurs
+   if {$::eqmod::log} { ::console::affiche_resultat "Moteurs = [tel$::eqmod::telno radec state]\n" }
+
+   return 0
+
+}
+
+# Defini les coordonnees de la monture a h, d
+# input: h_deg float angle horaire en deg
+# input: dec_deg float declinaison en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::init_mount_to_hour_coord { h_deg dec_deg } {
+
+   set r [::eqmod::hour_to_mount $h_deg $dec_deg]
+   set m1_deg [lindex $r 0]
+   set m2_deg [lindex $r 1]
+
+   set dec1 [expr int($::eqmod::tel_a1*$m1_deg/360.0)]
+   set hex1 [::eqmod::encode $dec1]
+
+   set dec2 [expr int($::eqmod::tel_a2*$m2_deg/360.0)]
+   set hex2 [::eqmod::encode $dec2]
+
+   if {$::eqmod::log} {
+      ::console::affiche_resultat "Axe 1 (HEX / DEC) : $hex1 / $dec1\n"
+      ::console::affiche_resultat "Axe 2 (HEX / DEC) : $hex2 / $dec2\n"
    }
 
-   proc ::eqmod::get_coord_decimal { p_de1 p_de2 } {
+   # Initialize encoders
+   tel$::eqmod::telno put :E1$hex1
+   tel$::eqmod::telno put :E2$hex2
 
-      upvar $p_de1 de1
-      upvar $p_de2 de2
+   return 0
 
-      set he1 [tel$::eqmod::telno putread :j1]
-      set de1 [::eqmod::decode $he1]
-      set he2 [tel$::eqmod::telno putread :j2]
-      set de2 [::eqmod::decode $he2]
+}
 
-      return 0
+# Defini les coordonnees de la monture a RA,DEC
+# input: ra_deg float ascension droite en deg
+# input: dec_deg float declinaison en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::init_mount_to_equatorial_coord { ra_deg dec_deg } {
+
+   set c [::eqmod::coord_equatorial_to_hour $ra_deg $dec_deg]
+   ::eqmod::init_mount_to_hour_coord [lindex $c 0] [lindex $c 1]
+
+   return 0
+
+}
+
+# Retourne l'etat d'un axe du telescope
+# input: axe int numero de l'axe (1|2)
+# return list type state status
+proc ::eqmod::get_mount_state { axe } {
+   
+   set slewing_state [tel$::eqmod::telno putread :f$axe]
+   set jog_type [string index $slewing_state 0]
+   set jog_state [string index $slewing_state 1]
+   set jog_status [string index $slewing_state 2]
+
+   return [list $jog_type $jog_state $jog_status]
+
+}
+
+# Retourne les coordonnees courantes du telescope
+# output: p_dec1 float coordonnee 1 decimale
+# output: p_dec2 float coordonnee 2 decimale
+# return 0
+proc ::eqmod::get_mount_coord { p_dec1 p_dec2 } {
+
+   upvar $p_dec1 dec1
+   upvar $p_dec2 dec2
+
+   set hex1 [tel$::eqmod::telno putread :j1]
+   after $::eqmod::delay
+   set hex2 [tel$::eqmod::telno putread :j2]
+
+   set dec1 [::eqmod::decode $hex1]
+   set dec2 [::eqmod::decode $hex2]
+
+   if {$::eqmod::log} {
+      ::console::affiche_resultat "Axe 1 (HEX / DEC) : $hex1 / $dec1\n"
+      ::console::affiche_resultat "Axe 2 (HEX / DEC) : $hex2 / $dec2\n"
    }
 
-   proc ::eqmod::get_coord_deg { p_h_deg p_dec_deg } {
+   return 0
 
-      upvar $p_h_deg h_deg
-      upvar $p_dec_deg dec_deg
+}
 
-      get_coord_decimal de1 de2
-      set h_deg [expr $de1 * 360. / 9024000. ]
-      set dec_deg [expr 180 - $de2 * 360. / 9024000.]
+# Retourne les coordonnees horaires courantes du telescope
+# output: p_h float angle horaire du telescope en deg
+# output: p_dec float declinaison du telescope en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::get_mount_hour_coord { p_h p_dec } {
 
-      return 0
-   }
+   upvar $p_h h_deg
+   upvar $p_dec dec_deg
 
-   proc ::eqmod::get_coord_hmsdms { p_h_hms p_dec_dms } {
+   ::eqmod::get_mount_coord m1 m2
 
-      upvar $p_h_hms h_hms
-      upvar $p_dec_dms dec_dms
+   set h_deg [expr $m1*360.0/$::eqmod::tel_a1]
+   set dec_deg [expr $m2*360.0/$::eqmod::tel_a2]
 
-      ::eqmod::get_coord_deg h_deg dec_deg
-      set h_hms   [mc_angle2hms $h_deg 360 zero 1 auto string]
-      set dec_dms [mc_angle2dms $dec_deg 90 zero 1 + string]
+   set m [::eqmod::mount_to_hour $h_deg $dec_deg]
+   set h_deg [lindex $m 0]
+   set dec_deg [lindex $m 1]
 
-      return 0
-   }
+   set dir [::eqmod::get_direction $h_deg]
+   set h [mc_angle2hms $h_deg 360 zero 1 auto string]
+   set d [mc_angle2dms $dec_deg 90 zero 1 + string]
 
-   # Demarrage du deplacement du telescope 
-   # en donnant une coordonnee Celeste
-   # h : agle horaire
-   # d : declinaison
+   if {$::eqmod::log} { ::console::affiche_resultat "H ; DEC (deg / hms) : $h_deg / $h ; $dec_deg / $d (direction: $dir)\n" }
 
-   proc ::eqmod::move_to_coord_celestial {  h_deg dec_deg } {
+   return 0
 
-      set r [::eqmod::celestial_to_mount $h_deg $dec_deg]
-      set hm [lindex $r 0]
-      set dm [lindex $r 1]
-      ::eqmod::move_to_coord_mount $hm $dm
-      return 0
-   }
+}
 
-   # Demarrage du deplacement du telescope 
-   # en donnant une coordonnees Monture
+# Retourne les coordonnees equatoriales courantes du telescope
+# output: p_ra float ascension droite en deg
+# output: p_dec float declinaison en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::get_mount_equatorial_coord { p_ra p_dec } {
 
-   proc ::eqmod::move_to_coord_mount { nxt_de1 nxt_de2 } {
+   upvar $p_ra ra_deg
+   upvar $p_dec dec_deg
 
-      set log 1
+   ::eqmod::get_mount_hour_coord h_deg dec_deg
+   set r [::eqmod::coord_hour_to_equatorial $h_deg $dec_deg]
 
-      get_coord_decimal de1 de2
-      if {$log} {::console::affiche_resultat "Position H actuelle : $de1\n"}
+   set ra_deg [lindex $r 0]
+   set dec_deg [lindex $r 1]
 
-      set nxt_de1 [expr int($nxt_de1/360.*9024000)]
-#      if {$nxt_de1 < 0 } { 
-#         if {$log} {::console::affiche_erreur "Position H suivante negative : $nxt_de1\n"} 
-#         set nxt_de1 [ expr 9024000 + $nxt_de1]
-#      }
-      if {$log} {::console::affiche_resultat "Position H suivante : $nxt_de1\n"}
-      set diff_de1 [expr $nxt_de1 - $de1]
-#      if {$diff_de1 >= 9024000}  {set diff_de1 [expr $diff_de1 - 9024000]}
-#      if {$diff_de1 <= -9024000} {set diff_de1 [expr $diff_de1 + 9024000]}
-      if {$log} {::console::affiche_resultat "Position H diff : $diff_de1\n"}
+   return 0
 
-      set nxt_de2 [expr int($nxt_de2/360.*9024000)]
-      if {$nxt_de2 < 0 } { 
-         if {$log} {::console::affiche_erreur "Position DEC suivante negative : $nxt_de2\n"} 
-         set nxt_de2 [ expr 9024000 + $nxt_de2]
+}
+
+# Affiche les coordonnees equatoriales au format sexagesimal 
+# input: ra_deg float ascension droite en deg
+# input: dec_deg float declinaison en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::display_radec_coord { ra_deg dec_deg } {
+
+   set ra  [mc_angle2hms $ra_deg 360 zero 1 auto string]
+   set dec [mc_angle2dms $dec_deg 90 zero 1 + string]
+
+   ::console::affiche_resultat "RA ; DEC (deg / hms) : $ra_deg / $ra ; $dec_deg / $dec\n"
+
+}
+
+# Deplacement du telescope aux coordonnees celestes RA,DEC
+# input: ra_deg float ascension droite en deg
+# input: dec_deg float declinaison en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::goto_equatorial_coord { ra_deg dec_deg } {
+
+   set c [::eqmod::coord_equatorial_to_hour $ra_deg $dec_deg]
+   ::eqmod::goto_hour_coord [lindex $c 0] [lindex $c 1]
+
+   return 0
+
+}
+
+# Deplacement du telescope aux coordonnees celestes h, dec
+# input: h_deg float angle horaire en deg
+# input: dec_deg float declinaison en deg [-pi/2 .. +pi/2]
+# return 0
+proc ::eqmod::goto_hour_coord { h_deg dec_deg } {
+
+   set r [::eqmod::hour_to_mount $h_deg $dec_deg]
+   ::eqmod::goto_mount_coord [lindex $r 0] [lindex $r 1]
+
+   return 0
+
+}
+
+# Deplacement du telescope aux coordonnees monture m1, m2
+# input: m1 float coordonnee monture 1 en deg
+# input: m2 float coordonnee monture 2 en deg
+# return 0 si le statut des axes est OK, 1 sinon
+proc ::eqmod::goto_mount_coord { m1 m2 } {
+
+   set pi [expr 2*asin(1.0)]
+   set debug 0
+
+   # Recupere les coordonnees horaires courantes du telescope
+   ::eqmod::get_mount_hour_coord h_deg dec_deg
+
+   # Direction courante du telescope, selon que l'on pointe vers un angle horaire W (270o-360o) ou E (0o-180o)
+   set direction_crte [::eqmod::get_direction $h_deg]
+   # Direction vers laquelle va pointer le telescope, selon que l'on pointe vers un angle horaire W (270o-360o) ou E (0o-180o)
+   set direction_nxt [::eqmod::get_direction $m1]
+
+   ::console::affiche_resultat "Coordonnees horaires a pointer: $m1 $m2 (direction: $direction_nxt)\n"
+   ::console::affiche_resultat "Coordonnees horaires actuelles du telescope (H,Dec): $h_deg $dec_deg (direction: $direction_crte)\n"
+
+   # Calcul du deplacement a effectuer sur l'axe horaire
+   # -- difference d'angle horaire (deg)
+   set diff_ha [expr ($m1 - $h_deg) - 180.0]
+   if {$diff_ha < -180.0} { set diff_ha [expr $diff_ha + 360.0] }
+   if {[expr $h_deg + $diff_ha] < 0.0} { set diff_ha [expr $diff_ha + 360.0] }
+   # -- traitement des cas particuliers
+   #set sinhd [expr sin($h_deg*$pi/180.0)]
+   #set sgn_sinhd 1.0
+   #if {$sinhd != 0.0} { set sgn_sinhd [expr $sinhd/abs($sinhd)] }
+   #set sinm1 [expr sin($m1*$pi/180.0)]
+   #set sgn_sinm1 1.0
+   #if {$sinm1 != 0.0} { set sgn_sinm1 [expr $sinm1/abs($sinm1)] }
+   #if {$m1 == 180.0}  { set sgn_sinm1 $sgn_sinhd }
+   #if {$sgn_sinm1 != $sgn_sinhd} {
+   #   set diff_ha [expr ($m1 - $h_deg) + $sgn_sinm1*360.0]
+   #}
+   # -- calcul du deplacement
+   set nxt_m1 [expr int($::eqmod::tel_a1*$diff_ha/360.0)]
+
+   ::console::affiche_resultat "Deplacement a effectuer axe 1: $nxt_m1 ($diff_ha)\n"
+
+   # Calcul du deplacement a effectuer sur l'axe de declinaison
+   # -- difference de declinaison (deg)
+   set diff_dec [expr $dec_deg - $m2]
+   # -- sens de la difference selon le quadrant
+   set diff_dec [expr {$direction_nxt == "E" ? [expr -$diff_dec] : $diff_dec}]
+   # -- si on franchi le meridien ... retournement en delta ou non
+   if {$direction_nxt != $direction_crte} {
+      set coef 1.0
+      if {$m1 == 0.0 || $h_deg == 0.0} { set coef 0.0 }
+      if {$direction_nxt == "E"} {
+         set diff_dec [expr ($dec_deg-90.0)*($coef+1.0) + $diff_dec*$coef]
+      } else {
+         set diff_dec [expr (90.0-$dec_deg)*($coef+1.0) + $diff_dec*$coef]
       }
-      if {$log} {::console::affiche_resultat "Position DEC suivante : $nxt_de2\n"}
-      set diff_de2 [expr $nxt_de2 - $de2]
-      if {$diff_de2 >= 9024000}  {set diff_de2 [expr $diff_de2 - 9024000]}
-      if {$diff_de2 <= -9024000} {set diff_de2 [expr $diff_de2 + 9024000]}
-      if {$log} {::console::affiche_resultat "Position DEC diff     : $diff_de2\n"}
+   }
+   # -- calcul du deplacement
+   set nxt_m2 [expr int($::eqmod::tel_a2*$diff_dec/360.0)]
 
+   ::console::affiche_resultat "Deplacement a effectuer axe 2: $nxt_m2 ($diff_dec)\n"
 
+   # Mouvement de l'axe 2
+   if {$nxt_m2 != 0} {
+      # Stop motor 2
+      tel$::eqmod::telno put :K2
+      after $::eqmod::delay
+      # Define motion type and sense
+      if {$nxt_m2 > 0} {
+         tel$::eqmod::telno put :G200
+         after $::eqmod::delay
+      } else {
+         set nxt_m2 [expr -$nxt_m2]
+         tel$::eqmod::telno put :G201
+         after $::eqmod::delay
+      }
+      # Define the next position increment to reach
+      set hex2 [::eqmod::encode $nxt_m2]
+      tel$::eqmod::telno put :H2$hex2
+      after $::eqmod::delay
+      # Start motion
+      ::console::affiche_resultat "Start slewing axis #2...\n"
+      tel$::eqmod::telno put :J2
+      after $::eqmod::delay
 
-      if {$diff_de2!=0} {
-         tel$::eqmod::telno put :K2
-         if {$diff_de2>0} {
-            tel$::eqmod::telno put :G200
+      if {$::eqmod::log} {
+         set err [catch {::eqmod::decode [tel$::eqmod::telno putread :i2]} i]
+         if {$err == 1} {
+            set i [tel$::eqmod::telno putread :g2]
+            set s [expr 360.0*$::eqmod::tel_g2*$::eqmod::tel_b2/$i/$::eqmod::tel_a2]
+            ::console::affiche_resultat "  Computed speedtrack from :g2 value = $s deg/sec\n"
          } else {
-            set diff_de2 [expr -$diff_de2]
-            tel$::eqmod::telno put :G201
+            set s [expr 360.0*$::eqmod::tel_g2*$::eqmod::tel_b2/$i/$::eqmod::tel_a2]
+            ::console::affiche_resultat "  Computed speedtrack = $s deg/sec\n"
          }
-         set he2 [::eqmod::encode $diff_de2]
-         tel$::eqmod::telno put :H2$he2
-         tel$::eqmod::telno put :J2
       }
+   }
 
-      if {$diff_de1!=0} {
-         tel$::eqmod::telno put :K1
-         if {$log} {::console::affiche_resultat "tel$::eqmod::telno put :K1\n"}
-         if {$diff_de1>0} {
-            tel$::eqmod::telno put :G100
-            if {$log} {::console::affiche_resultat "tel$::eqmod::telno put :G100\n"}
+   # Mouvement de l'axe 1
+   if {$nxt_m1 != 0} {
+      # Stop motor 1
+      tel$::eqmod::telno put :K1
+      after $::eqmod::delay
+      # Define motion type and sense
+      if {$nxt_m1 > 0} {
+         tel$::eqmod::telno put :G100
+         after $::eqmod::delay
+      } else {
+         set nxt_m1 [expr -$nxt_m1]
+         tel$::eqmod::telno put :G101
+         after $::eqmod::delay
+      }
+      # Define the next position increment to reach
+      set hex1 [::eqmod::encode $nxt_m1]
+      tel$::eqmod::telno put :H1$hex1
+      after $::eqmod::delay
+      # Start motion
+      ::console::affiche_resultat "Start slewing axis #1...\n"
+      tel$::eqmod::telno put :J1
+      after $::eqmod::delay
+
+      if {$::eqmod::log} {
+         set err [catch {::eqmod::decode [tel$::eqmod::telno putread :i1]} i]
+         if {$err == 1} {
+            set i [tel$::eqmod::telno putread :g1]
+            set s [expr 360.0*$::eqmod::tel_g1*$::eqmod::tel_b1/$i/$::eqmod::tel_a1]
+            ::console::affiche_resultat "  Computed speedtrack from :g1 value = $s deg/sec\n"
          } else {
-            set diff_de1 [expr -$diff_de1]
-            tel$::eqmod::telno put :G101
-            if {$log} {::console::affiche_resultat "tel$::eqmod::telno put :G101\n"}
+            set s [expr 360.0*$::eqmod::tel_g1*$::eqmod::tel_b1/$i/$::eqmod::tel_a1]
+            ::console::affiche_resultat "  Computed speedtrack = $s deg/sec\n"
          }
-         set he1 [::eqmod::encode $diff_de1]
-         tel$::eqmod::telno put :H1$he1
-         if {$log} {::console::affiche_resultat "tel$::eqmod::telno put :H1$he1\n"}
-         tel$::eqmod::telno put :J1
-         if {$log} {::console::affiche_resultat "tel$::eqmod::telno put :J1\n"}
       }
-      
-      # attente de l arret de l axe de declinaison
-      set che2sav 0
-      for {set j 0} {$j<1000} {incr j} {   
-         set che2 [tel$::eqmod::telno putread :j2]
-         if {$che2==$che2sav} {
-            gren_info "** Axe DEC semble ne plus bouger\n"
-            gren_info "   on verifie : "
-            after 10
-            set che2 [tel$::eqmod::telno putread :j2]
-            if {$che2==$che2sav} {
-               gren_info "Axe DEC ne bouge plus\n"
-               break
-            } else {
-               gren_info "Axe DEC  bouge encore un peu\n"
-            }
-         }
-         set che2sav $che2
-         after 10
-      }      
-
-      # attente de l arret de l axe horaire
-      set che1sav 0
-      for {set i 0} {$i<1000} {incr i} {   
-         set che1 [tel$::eqmod::telno putread :j1]
-         if {$che1==$che1sav} {
-            gren_info "** Axe RA semble ne plus bouger\n"
-            gren_info "   on verifie : "
-            after 10
-            set che1 [tel$::eqmod::telno putread :j1]
-            if {$che1==$che1sav} {
-               gren_info "Axe RA ne bouge plus\n"
-               break
-            } else {
-               gren_info "Axe RA  bouge encore un peu\n"
-            }
-         }
-         set che1sav $che1
-         after 10
-      }      
-      
-      
-      # 
-      gren_info "On sort $i $j\n"
-
    }
 
+   # Boucle d'attente de l'arret des axes
+   set motor1 1
+   set m1_log_state 1
+   set m1_log_type 1
+   set motor2 1
+   set m2_log_state 1
+   set m2_log_type 1
+   set ok 1
+   while {$ok == 1} {
+      # Get slewing state of motor 2
+      set m2_slewing_state [::eqmod::get_mount_state 2]
+      set m2_jog_type [lindex $m2_slewing_state 0]
+      set m2_jog_state [lindex $m2_slewing_state 1]
+      set m2_jog_status [lindex $m2_slewing_state 2]
+      if {$debug} { ::console::affiche_resultat "GOTO: $m2_jog_type $m2_jog_state $m2_jog_status\n" }
 
-   proc ::eqmod::get_mount { } {
+      if {$m2_jog_type == 1 || $m2_jog_type == 3} {
+         if {$::eqmod::log == 1 && $m2_log_type == 1} { ::console::affiche_erreur "Mvt axe 2 termine\n" }
+         set motor2 0
+         set m2_log_type 0
+      }
 
-      set he1 [tel$::eqmod::telno putread :j1]
-      set de1 [::eqmod::decode $he1]
-#      set h_deg [expr $de1 * 360. / 9024000. - 579.303829787234 ]
-      set h_deg [expr $de1 * 360. / 9024000. ]
+      if {$m2_jog_state == 0} {
+         if {$::eqmod::log == 1 && $m2_log_state == 1} { ::console::affiche_erreur "Axe 2 a l'arret\n" }
+         set motor2 0
+         set m2_log_state 0
+      }
 
-      set h  [mc_angle2hms $h_deg 360 zero 1 auto string]
+      after $::eqmod::delay
 
-      set he2 [tel$::eqmod::telno putread :j2]
-      set de2 [::eqmod::decode $he2]
-      set dec_deg [expr 180 - $de2 * 360. / 9024000.]
-      set dec  [mc_angle2dms $dec_deg 90 zero 1 + string]
+      # Get slewing state of motor 1
+      set m1_slewing_state [::eqmod::get_mount_state 1]
+      set m1_jog_type [lindex $m1_slewing_state 0]
+      set m1_jog_state [lindex $m1_slewing_state 1]
+      set m1_jog_status [lindex $m1_slewing_state 2]
 
+      if {$m1_jog_type == 1 || $m1_jog_type == 3} {
+         if {$::eqmod::log == 1 && $m1_log_type == 1} { ::console::affiche_erreur "Mvt axe 1 termine\n" }
+         set motor1 0
+         set m1_log_type 0
+      }
 
-      set r [::eqmod::coord_hour_to_equatorial $h_deg $dec_deg]
-      set ra_deg [lindex $r 0]
-      set ra  [mc_angle2hms $ra_deg 360 zero 1 auto string]
+      if {$m1_jog_state == 0} {
+         if {$::eqmod::log == 1 && $m1_log_state == 1} { ::console::affiche_erreur "Axe 1 a l'arret\n" }
+         set motor1 0
+         set m1_log_state 0
+      }
 
-      set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
-      set tsl [mc_date2lst $now $::eqmod::home]
-      set t "[lindex $tsl 0] h [lindex $tsl 1] m [format "%.1f" [lindex $tsl 2] ] s"
-
-      ::console::affiche_resultat "Axe 1 HEX : $he1\n"
-      ::console::affiche_resultat "Axe 1 DEC : $de1\n"
-      ::console::affiche_resultat "Axe 2 HEX : $he2\n"
-      ::console::affiche_resultat "Axe 2 DEC : $de2\n"
-      ::console::affiche_resultat "--\n"
-      ::console::affiche_resultat "H deg : $h_deg\n"
-      ::console::affiche_resultat "H hms : $h\n"
-      ::console::affiche_resultat "RA  deg : $ra_deg\n"
-      ::console::affiche_resultat "RA  hms : $ra\n"
-      ::console::affiche_resultat "Dec deg : $dec_deg\n"
-      ::console::affiche_resultat "Dec dms : $dec\n"
-      ::console::affiche_resultat "TSL hms : $t\n"
-
+      # Condition de sortie
+      if {$motor1 == 0 && $motor2 == 0} { set ok 0 }
    }
 
+   ::console::affiche_resultat "Ok, mouvements des axes termines avec le statut:\n"
+   ::console::affiche_resultat "  axe 1: [expr {$m1_jog_status == 1 ? "OK" : "PB"}] \n"
+   ::console::affiche_resultat "  axe 2: [expr {$m2_jog_status == 1 ? "OK" : "PB"}] \n"
 
+   return [expr {($m1_jog_status == 0 || $m2_jog_status == 0) ? 1 : 0}]
 
-   proc ::eqmod::set_coord_mount { hm dm } {
+}
 
+# Start the drift motion on one axe
+# input: speed float speedtrack in deg/sec
+# input: axe int axe on which to apply drift (1: hour (default) | 2: declinaison)
+# input: sense int increasing (0) or decreasing (1, default) motion
+# return 0
+proc ::eqmod::start_drift { speed {axe 1} {sense 1} } {
 
-      set de1 [expr int($hm/360.*9024000)]
-      set he1 [::eqmod::encode $de1]
-      set de2 [expr int($dm/360.*9024000)]
-      set he2 [::eqmod::encode $de2]
+   set debug 0
+   if {$::eqmod::log} { ::console::affiche_resultat "Speed = $speed deg/sec\n" }
 
-      ::console::affiche_resultat "Axe 1 HEX : $he1\n"
-      ::console::affiche_resultat "Axe 1 DEC : $de1\n"
-      ::console::affiche_resultat "Axe 2 HEX : $he2\n"
-      ::console::affiche_resultat "Axe 2 DEC : $de2\n"
+   # Command values
+   set a [expr {$axe == 1 ? $::eqmod::tel_a1 : $::eqmod::tel_a2}]
+   set b [expr {$axe == 1 ? $::eqmod::tel_b1 : $::eqmod::tel_b2}]
+   set g [expr {$axe == 1 ? $::eqmod::tel_g1 : $::eqmod::tel_g2}]
 
-      tel$::eqmod::telno put :E1$he1
-      tel$::eqmod::telno put :E2$he2
+   # Define speed motion
+   set fast_coef [expr {$speed <= $::eqmod::lowhigh_drift_limit ? 1 : $g}]
+   set drift_speed [expr int(360.0*$fast_coef*$b/$speed/$a)]
+   if {$::eqmod::log} { ::console::affiche_resultat "Drift speed = $drift_speed (fast coef = $fast_coef)\n" }
 
-      return 0
+   # Kill motor motion
+   tel$::eqmod::telno put :K$axe
+
+   # Wait for motor halt
+   set m_state [::eqmod::get_mount_state $axe]
+   while {[lindex $m_state 1] != 0} {
+      set m_state [::eqmod::get_mount_state $axe]
    }
 
-   proc ::eqmod::set_coord_celestial { h_deg dec_deg } {
-      
-      set r [::eqmod::celestial_to_mount $h_deg $dec_deg]
-      set hm [lindex $r 0]
-      set dm [lindex $r 1]
-      ::console::affiche_resultat "mount hm : $hm\n"
-      ::console::affiche_resultat "mount dm : $dm\n"
-      ::eqmod::set_coord_mount $hm $dm
-      return 0
+   # Define motion type (1: slow_infinite ou 3: fast_infinite)
+   set motion_type [expr {$speed <= $::eqmod::lowhigh_drift_limit ? 1 : 3}]
+   # Define motion sense (increasing motion)
+   set motion_sense $sense
+
+   if {$::eqmod::log} {
+      ::console::affiche_resultat "Define motion: :G$axe$motion_type$motion_sense\n"
+      ::console::affiche_resultat "Define drift speed: :I$axe[::eqmod::encode $drift_speed]\n"
    }
 
-   proc ::eqmod::coord_equatorial_to_hour { ra_deg dec_deg } {
+   # Set the drift speed
+   tel$::eqmod::telno put :G$axe$motion_type$motion_sense
+   after $::eqmod::delay
+   tel$::eqmod::telno put :I$axe[::eqmod::encode $drift_speed]
+   after $::eqmod::delay
 
-      set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
-      set tsl [mc_date2lst $now $::eqmod::home]
-      set t [expr ([lindex $tsl 0] + [lindex $tsl 1]/60. + [lindex $tsl 2]/3600.)*15.]
+   # Start jog
+   set t0 [clock clicks -milliseconds]
+   set j0 [::eqmod::decode [tel$::eqmod::telno putread :j$axe]]
+   tel$::eqmod::telno put :J$axe
+   after $::eqmod::delay
 
-      # H = TSL - RA
-      set h_deg [expr $t - $ra_deg ]
+   if {$::eqmod::log} {
+      set i [expr int(360.0*$fast_coef*$b/$speed/$a)]
+      set s [expr 360.0*$fast_coef*$b/$i/$a]
+      ::console::affiche_resultat "Required speedtrack = $s deg/sec\n"
 
-      set h    [mc_angle2hms $h_deg 360 zero 1 auto string]
-      set dec  [mc_angle2dms $dec_deg 90 zero 1 + string]
-      ::console::affiche_resultat "H = $h ; DEC = $dec \n"
-
-      return  [ list  $h_deg $dec_deg ]
-
+      set err [catch {::eqmod::decode [tel$::eqmod::telno putread :i$axe]} i]
+      if {$err == 1} {
+         set i [tel$::eqmod::telno putread :g$axe]
+         set s [expr 360.0*$fast_coef*$b/$i/$a]
+         ::console::affiche_resultat "Computed speedtrack from :g$axe value = $s deg/sec\n"
+      } else {
+         set s [expr 360.0*$fast_coef*$b/$i/$a]
+         ::console::affiche_resultat "Computed speedtrack = $s deg/sec\n"
+      }
    }
 
-   proc ::eqmod::coord_hour_to_equatorial { h_deg dec_deg } {
+   set ok 1
+   set i 0
+   while {$ok == 1} {
+      # Get slewing state of motor 2
+      set slewing_state [::eqmod::get_mount_state $axe]
+      set jog_type [lindex $slewing_state 0]
+      set jog_state [lindex $slewing_state 1]
+      set jog_status [lindex $slewing_state 2]
+      if {$debug} { ::console::affiche_resultat "DRIFTING $i: $jog_type $jog_state $jog_status\n" }
 
-      set now [clock format [clock seconds] -gmt 1 -format "%Y %m %d %H %M %S"]
-      set tsl [mc_date2lst $now $::eqmod::home]
-      set t [expr ([lindex $tsl 0] + [lindex $tsl 1]/60. + [lindex $tsl 2]/3600.)*15.]
-
-      # H = TSL - RA
-      set ra_deg [expr $t - $h_deg ]
-
-      set ra   [mc_angle2hms $ra_deg 360 zero 1 auto string]
-      set dec  [mc_angle2dms $dec_deg 90 zero 1 + string]
-      ::console::affiche_resultat "RA = $ra ; DEC = $dec \n"
-
-      return [ list $ra_deg $dec_deg ]
-
+      # Condition de sortie
+      set i [expr $i+1]
+      if {$i == 50} { set ok 0 }
    }
 
+   after 1000
+   ::eqmod::stop_drift $axe
+   
+   set t1 [clock clicks -milliseconds]
+   set j1 [::eqmod::decode [tel$::eqmod::telno putread :j$axe]]
+   set dt [expr ($t1-$t0)/1000.0]
+   set mes_speed [expr (($j0-$j1)*360.0/$a) / $dt]
+   ::console::affiche_resultat "Measured speedtrack = $mes_speed deg/sec ($dt sec) \n"
+
+   return 0
+
+}
+
+# Stop the drift motion on one axe
+# input: 
+#
+proc ::eqmod::stop_drift { axe } {
+
+   set debug 0
+
+   tel$::eqmod::telno put :K$axe
+   after $::eqmod::delay
+
+   # Wait for motor halt
+   set m_state [::eqmod::get_mount_state $axe]
+   if {$::eqmod::log} { ::console::affiche_resultat "STOPPING: [lindex $m_state 0] [lindex $m_state 1] [lindex $m_state 2]\n" }
+   while {[lindex $m_state 1] != 0} {
+      set m_state [::eqmod::get_mount_state $axe]
+      if {$debug} { ::console::affiche_resultat "STOPPING: [lindex $m_state 0] [lindex $m_state 1] [lindex $m_state 2]\n" }
+   }
+
+   return 0
+   
 }
