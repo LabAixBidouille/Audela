@@ -1005,10 +1005,10 @@ proc ::bdi_tools_astrometry::create_vartab { } {
             set res_ra  [format "%.4f" $res_ra ]
             set res_dec [format "%.4f" $res_dec]
          }
-         if { $err_xsm != ""} {
+         if { $err_xsm != "" && $err_xsm != "-" } {
             set err_xsm   [format  "%.4f" $err_xsm]
          }
-         if { $err_ysm != ""} {
+         if { $err_ysm != "" && $err_ysm != "-" } {
             set err_ysm   [format  "%.4f" $err_ysm]
          }
 
@@ -1074,10 +1074,10 @@ proc ::bdi_tools_astrometry::create_vartab { } {
             set res_ra  [format "%.4f" $res_ra ]
             set res_dec [format "%.4f" $res_dec]
          }
-         if { $err_xsm != ""} {
+         if { $err_xsm != "" && $err_xsm != "-" } {
             set err_xsm   [format  "%.4f" $err_xsm]
          }
-         if { $err_ysm != ""} {
+         if { $err_ysm != "" && $err_ysm != "-" } {
             set err_ysm   [format  "%.4f" $err_ysm]
          }
 
