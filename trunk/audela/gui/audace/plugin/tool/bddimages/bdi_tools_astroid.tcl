@@ -468,7 +468,11 @@ namespace eval bdi_tools_astroid {
    }
 
 
-
+   proc ::bdi_tools_astroid::recovery_audela { } {
+      
+      
+      
+   }
 
 
 
