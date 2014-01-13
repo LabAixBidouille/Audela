@@ -141,8 +141,9 @@ namespace eval bdi_gui_cdl {
       ::bdi_gui_cdl::clean_gui_photometry
       ::bdi_gui_cdl::affich_gestion
       ::bdi_tools_cdl::charge_from_gestion
+
+      ::bdi_gui_cdl::calcule_tout
       
-      ::bdi_tools_cdl::charge_cata_list
       ::bdi_gui_cdl::affiche_data
    }
 
@@ -926,6 +927,7 @@ namespace eval bdi_gui_cdl {
          ::bdi_tools_cdl::calcul_rejected
          ::bdi_gui_cdl::calcul_variation
          ::bdi_gui_cdl::calcul_classification
+         ::bdi_gui_cdl::affiche_data
          if {[::plotxy::figure]} {
             ::bdi_gui_cdl::graph_science_mag_popup_exec
          }
@@ -1745,6 +1747,8 @@ namespace eval bdi_gui_cdl {
 
                $frm.popupTbl add command -label "Voir l'objet dans l'image" \
                    -command "::bdi_gui_cdl::table_voir" 
+               $frm.popupTbl add command -label "Selection par le graphe" \
+                   -command "::bdi_gui_cdl::table_select_from_graph $name" 
                $frm.popupTbl add command -label "Mesurer Manuel" \
                    -command "::bdi_gui_cdl::table_mesure_manuel" 
                $frm.popupTbl add command -label "Mesurer Auto" \
@@ -1838,6 +1842,50 @@ namespace eval bdi_gui_cdl {
       affich_un_rond [lindex $radec 0] [lindex $radec 1] $color $width
       
    }
+   #----------------------------------------------------------------------------
+   ## selectionne dans la table les lignes qui ont ete selectionnee dans le graphe
+   #  \param void
+   #----------------------------------------------------------------------------
+   proc ::bdi_gui_cdl::table_select_from_graph { name } {
+
+      if {[::plotxy::figure] == 0 } {
+         gren_erreur "Pas de graphe actif\n"
+         return
+      }
+
+      set err [ catch {set rect [::plotxy::get_selected_region]} msg]
+      if {$err} {
+         return
+      }
+      set x1 [lindex $rect 0]
+      set x2 [lindex $rect 2]
+      set y1 [lindex $rect 1]
+      set y2 [lindex $rect 3]
+
+      if {$x1>$x2} {
+         set t $x1
+         set x1 $x2
+         set x2 $t
+      }
+      if {$y1>$y2} {
+         set t $y1
+         set y1 $y2
+         set y2 $t
+      }
+      set ids []
+      
+      for {set idcata 1} {$idcata <= $::tools_cata::nb_img_list} { incr idcata } {
+         if {![info exists ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)]} {continue}
+         set x  $::bdi_tools_cdl::idcata_to_jdc($idcata)
+         set y  [expr $::bdi_tools_cdl::table_science_mag($ids,$idcata,mag) - [lindex $::bdi_tools_cdl::table_data_source($name) 4] ]
+         
+         if {$x >= $x1 && $x < $x2 && $y > $y1 && $y < $y2 } {
+            #unset ::bdi_tools_cdl::table_science_mag($ids,$idcata,mag)
+            #gren_info "Suppression idcata = $idcata, midepoch = [mc_date2iso8601 $::bdi_tools_cdl::table_jdmidexpo($idcata)] name=$name \n"
+         }
+      }
+
+   }
 
    #----------------------------------------------------------------------------
    ## Effectue une mesure de photocentre manuelle sur la source 
@@ -1898,6 +1946,7 @@ namespace eval bdi_gui_cdl {
 
       ::bdi_tools_cdl::charge_from_gestion
       ::bdi_gui_cdl::calcule_tout
+      
       if {[winfo exists $::bdi_gui_cdl::fentable]} {
          ::bdi_gui_cdl::table_popup_view
       }
