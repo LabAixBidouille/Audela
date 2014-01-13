@@ -159,6 +159,7 @@ proc ::bdi_gui_config::GetInfo { subject } {
       dir_cata  { set msg $caption(bdi_gui_config,info_dircata) }
       dir_err   { set msg $caption(bdi_gui_config,info_direrr) }
       dir_log   { set msg $caption(bdi_gui_config,info_dirlog) }
+      dir_reports { set msg $caption(bdi_gui_config,info_dirreports) }
       dir_tmp   { set msg $caption(bdi_gui_config,info_dirtmp) }
       listlimit { set msg $caption(bdi_gui_config,info_listlimit) }
    }
@@ -575,6 +576,29 @@ proc ::bdi_gui_config::createDialog { } {
             button $xml.dir.dirlog.help -state active -relief groove -anchor c \
                     -text "$caption(bdi_gui_config,info)" -command { ::bdi_gui_config::GetInfo "dir_log" }
             pack $xml.dir.dirlog.help -in $xml.dir.dirlog -side left -anchor w -padx 1
+
+         #--- Cree un frame pour le repertoire tmp
+         frame $xml.dir.dirreports -borderwidth 0 -relief flat
+         pack $xml.dir.dirreports -in $xml.dir -anchor w -side top -expand 0 -fill both -padx 3 -pady 0
+   
+            #--- Cree un label
+            label $xml.dir.dirreports.lab -text "$caption(bdi_gui_config,dirreports)" -width $widthlab -anchor w -borderwidth 0 -relief flat
+            pack $xml.dir.dirreports.lab -in $xml.dir.dirreports -side left -anchor w -padx 1
+            #--- Cree une ligne d'entree pour la variable
+            entry $xml.dir.dirreports.dat -textvariable bddconf(dirreports) -borderwidth 1 -relief groove -width $widthentry -justify left
+            pack $xml.dir.dirreports.dat -in $xml.dir.dirreports -side left -anchor w -padx 1 -expand 1 -fill x
+            #--- Cree un bouton charger
+            button $xml.dir.dirreports.explore -text "..." -width 3 \
+               -command { 
+                  if {! [catch {::bdi_gui_config::getDir $bddconf(dirbase) "reports"} wdir]} {
+                     set bddconf(dirreports) $wdir
+                  }
+               }
+            pack $xml.dir.dirreports.explore -in $xml.dir.dirreports -side left -anchor c -fill x -padx 6
+            #--- Cree un bouton info
+            button $xml.dir.dirreports.help -state active -relief groove -anchor c \
+                    -text "$caption(bdi_gui_config,info)" -command { ::bdi_gui_config::GetInfo "dir_reports" }
+            pack $xml.dir.dirreports.help -in $xml.dir.dirreports -side left -anchor w -padx 1
 
          #--- Cree un frame pour le repertoire tmp
          frame $xml.dir.dirtmp -borderwidth 0 -relief flat

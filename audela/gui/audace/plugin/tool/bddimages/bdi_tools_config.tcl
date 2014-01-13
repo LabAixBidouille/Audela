@@ -22,7 +22,7 @@ namespace eval bdi_tools_config {
    package require bddimagesAdmin 1.0
 
    # @var Liste de tous les parametres de configuration sauves dans audace.ini
-   variable allparams [list dbname login pass server dirbase dirinco dirfits dircata direrr dirlog dirtmp limit intellilists default_config current_config]
+   variable allparams [list dbname login pass server dirbase dirinco dirfits dircata direrr dirlog dirreports dirtmp limit intellilists default_config current_config]
 
    # @var Liste des repertoires de travail de bddimages
    set bddimages_workdirs [list "cata" "fits" "incoming" "error" "log" "tmp"]
@@ -82,6 +82,7 @@ proc ::bdi_tools_config::load_config { name } {
    catch {file mkdir $bddconf(direrr)}
    catch {file mkdir $bddconf(dirlog)}
    catch {file mkdir $bddconf(dirtmp)}
+   catch {file mkdir $bddconf(dirreports)}
 
    #--- Defini les variables audace indispensables
    set audace(rep_images) $bddconf(dirtmp)
@@ -155,6 +156,7 @@ proc ::bdi_tools_config::checkOtherDir { base } {
             "errors"   { set bddconf(direrr)  [file join $base $d] }
             "log"      -
             "logs"     { set bddconf(dirlog)  [file join $base $d] }
+            "reports"  { set bddconf(dirreports)  [file join $base $d] }
             "tmp"      { set bddconf(dirtmp)  [file join $base $d] }
          }
       }

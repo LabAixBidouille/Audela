@@ -176,6 +176,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astrometry.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata_user.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cdl.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_reports.tcl ]\""
 
 
    #--- Chargement des fichiers gui
@@ -191,6 +192,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_set_ref_science.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_reports.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
 
@@ -415,6 +417,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
          button $This.fra5.but1 -borderwidth 2 -text $caption(bddimages_go,recherche) \
             -command "::bddimages_recherche::run $audace(base).bddimages_recherche"
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+     #--- Frame des services
+     frame $This.fra_reports -borderwidth 1 -relief groove
+     pack $This.fra_reports -side top -fill x
+
+        #--- Bouton d'ouverture de l'outil de recherche d images
+        button $This.fra_reports.but1 -borderwidth 2 -text $caption(bddimages_go,reports) \
+           -command "::bdi_gui_reports::run" -state active
+        pack $This.fra_reports.but1 -in $This.fra_reports -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
      #--- Frame des services
      frame $This.fra6 -borderwidth 1 -relief groove
