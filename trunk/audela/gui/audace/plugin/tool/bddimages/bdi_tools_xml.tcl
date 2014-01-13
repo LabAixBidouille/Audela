@@ -224,6 +224,9 @@ proc ::bdi_tools_xml::read_xml_config { file_config } {
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::log/text()}]} val] == 0 } { 
          set ::bdi_tools_xml::xmlConfig($id,dirlog) [::bdi_tools_xml::get_default_dir $val "bddimages/log"]
       }
+      if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::reports/text()}]} val] == 0 } { 
+         set ::bdi_tools_xml::xmlConfig($id,dirreports) [::bdi_tools_xml::get_default_dir $val "bddimages/reports"]
+      }
       if { [catch {::dom::node stringValue [::dom::selectNode $node {descendant::tmp/text()}]} val] == 0 } { 
          set ::bdi_tools_xml::xmlConfig($id,dirtmp) [::bdi_tools_xml::get_default_dir $val "bddimages/tmp"]
       }
@@ -281,6 +284,7 @@ proc ::bdi_tools_xml::load_config { name } {
    set err [catch {set bddconf(dircata) $::bdi_tools_xml::xmlConfig($id,dircata) }]
    set err [catch {set bddconf(direrr)  $::bdi_tools_xml::xmlConfig($id,direrr)  }]
    set err [catch {set bddconf(dirlog)  $::bdi_tools_xml::xmlConfig($id,dirlog)  }]
+   set err [catch {set bddconf(dirreports)  $::bdi_tools_xml::xmlConfig($id,dirreports)  }]
    set err [catch {set bddconf(dirtmp)  $::bdi_tools_xml::xmlConfig($id,dirtmp)  }]
    set err [catch {set bddconf(limit)   $::bdi_tools_xml::xmlConfig($id,limit)   }]
 
@@ -322,6 +326,7 @@ proc ::bdi_tools_xml::add_config { {name ""} } {
          "incoming" { set new_dirinco [file join $new_base $d] }
          "error"    { set new_direrr  [file join $new_base $d] }
          "log"      { set new_dirlog  [file join $new_base $d] }
+         "reports"  { set new_dirreports  [file join $new_base $d] }
          "tmp"      { set new_dirtmp  [file join $new_base $d] }
       }
    }
@@ -343,6 +348,7 @@ proc ::bdi_tools_xml::add_config { {name ""} } {
    set ::bdi_tools_xml::xmlConfig($new_id,dircata) $new_dircata  
    set ::bdi_tools_xml::xmlConfig($new_id,direrr)  $new_direrr
    set ::bdi_tools_xml::xmlConfig($new_id,dirlog)  $new_dirlog
+   set ::bdi_tools_xml::xmlConfig($new_id,dirreports)  $new_dirreports
    set ::bdi_tools_xml::xmlConfig($new_id,dirtmp)  $new_dirtmp
    set ::bdi_tools_xml::xmlConfig($new_id,limit)   "10" 
 
@@ -554,6 +560,15 @@ proc ::bdi_tools_xml::write_xml_config { file_config  } {
         if {[info exists ::bdi_tools_xml::xmlConfig($i,dirbase)]} {
            ::dom::document createTextNode $subsubnode $::bdi_tools_xml::xmlConfig($i,dirlog)
         }
+        # --- /config/bddimages/files/reports
+        set subsubnode [::dom::document createElement $subnode "reports"]
+        if {[info exists ::bdi_tools_xml::xmlConfig($i,dirbase)]} {
+           if {[info exists ::bdi_tools_xml::xmlConfig($i,dirreports)]} {
+              ::dom::document createTextNode $subsubnode $::bdi_tools_xml::xmlConfig($i,dirreports)
+           } else {
+              ::dom::document createTextNode $subsubnode ""
+           }
+        }
         # --- /config/bddimages/files/tmp
         set subsubnode [::dom::document createElement $subnode "tmp"]
         if {[info exists ::bdi_tools_xml::xmlConfig($i,dirbase)]} {
@@ -600,6 +615,7 @@ proc ::bdi_tools_xml::set_config { name } {
    set err [catch {set ::bdi_tools_xml::xmlConfig($id,dircata) $bddconf(dircata) }]
    set err [catch {set ::bdi_tools_xml::xmlConfig($id,direrr)  $bddconf(direrr)  }]
    set err [catch {set ::bdi_tools_xml::xmlConfig($id,dirlog)  $bddconf(dirlog)  }]
+   set err [catch {set ::bdi_tools_xml::xmlConfig($id,dirreports)  $bddconf(dirreports)  }]
    set err [catch {set ::bdi_tools_xml::xmlConfig($id,dirtmp)  $bddconf(dirtmp)  }]
    set err [catch {set ::bdi_tools_xml::xmlConfig($id,limit)   $bddconf(limit)   }]
 
