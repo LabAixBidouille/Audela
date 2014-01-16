@@ -548,14 +548,6 @@ namespace eval bdi_gui_cdl {
          set results [frame $f_results.data_reference  -borderwidth 1 -relief groove]
          pack $results -in $f_results -expand yes -fill both
 
-            set block [frame $results.dirbasic  -borderwidth 0 -cursor arrow -relief groove]
-            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  label  $block.labtxt -text "Repertoire de sauvegarde : " -borderwidth 1 -width 20
-                  entry  $block.valtxt -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_txt_dir
-
-                  grid $block.labtxt $block.valtxt -sticky news
-
             #--- Onglet RAPPORT - Entetes
             set block [frame $results.uai_code  -borderwidth 0 -cursor arrow -relief groove]
             pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -621,6 +613,21 @@ namespace eval bdi_gui_cdl {
                   pack   $block.lab -side left -padx 3 -pady 3 -anchor w
 
                   entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_instru
+                  pack   $block.val -side left -padx 3 -pady 3 -anchor w
+
+            set block [frame $results.labcom  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "Commentaire pour le rapport final : " -borderwidth 1 
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+           set block [frame $results.comment  -borderwidth 0 -cursor arrow -relief groove]
+            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  label  $block.lab -text "" -borderwidth 1 -width $wdth
+                  pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+
+                  entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_cdl::rapport_comment
                   pack   $block.val -side left -padx 3 -pady 3 -anchor w
 
 

@@ -1847,6 +1847,9 @@ namespace eval bdi_tools_cdl {
    #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::save_reports { } {
 
+
+
+     
       set tt0 [clock clicks -milliseconds]
       # Verfifie les repertoires
       
@@ -1945,6 +1948,34 @@ namespace eval bdi_tools_cdl {
       ::bdi_tools_cdl::create_report_txt
       ::bdi_tools_cdl::create_report_xml
 
+      # Commentaires
+      global bddconf
+      set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
+      set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$o != 2} {continue}
+
+         set obj $name
+         set dir [file join $bddconf(dirreports) $obj]
+         createdir_ifnot_exist $dir
+         
+         set dir [file join $dir $date]
+         createdir_ifnot_exist $dir
+
+         set part_objects ".Obj.$name"
+         set part_date    "DateObs.$date"
+         set file "${part_date}${part_objects}${part_batch}.readme.txt"
+         set file [file join $dir $file]
+
+         set chan [open $file w]
+         puts $chan "$::bdi_tools_cdl::rapport_comment"
+         close $chan
+
+      }
+
+
       array unset ::bdi_tools_cdl::results_table
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
@@ -1963,17 +1994,30 @@ namespace eval bdi_tools_cdl {
    #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::create_report_txt { } {
 
+      global bddconf
+
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
-      set part_date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+      set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
 
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
          if {$o != 2} {continue}
-         set part_objects $name
 
+         set obj $name
+         set dir [file join $bddconf(dirreports) $obj]
+         createdir_ifnot_exist $dir
+         
+         set dir [file join $dir $date]
+         createdir_ifnot_exist $dir
+         
+         set dir_photom_txt [file join $dir photom_txt]
+         createdir_ifnot_exist $dir_photom_txt
+
+         set part_objects ".Obj.$name"
+         set part_date    "DateObs.$date"
          set file "${part_date}${part_objects}${part_batch}.txt"
-         set file [file join $::bdi_tools_cdl::rapport_txt_dir $file]
+         set file [file join $dir_photom_txt $file]
          set chan [open $file w]
 
          puts $chan "#OBJECT      = $name"
@@ -2046,8 +2090,10 @@ namespace eval bdi_tools_cdl {
    #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::create_report_xml {  } {
 
+      global bddconf
+
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
-      set part_date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+      set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
 
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
@@ -2055,10 +2101,21 @@ namespace eval bdi_tools_cdl {
          incr ids
          if {$o != 2} {continue}
          set object $name
-         set part_objects $name
       
+         set obj $name
+         set dir [file join $bddconf(dirreports) $obj]
+         createdir_ifnot_exist $dir
+         
+         set dir [file join $dir $date]
+         createdir_ifnot_exist $dir
+         
+         set dir_photom_xml [file join $dir photom_xml]
+         createdir_ifnot_exist $dir_photom_xml
+
+         set part_objects ".Obj.$name"
+         set part_date    "DateObs.$date"
          set file "${part_date}${part_objects}${part_batch}.xml"
-         set file [file join $::bdi_tools_cdl::rapport_imc_dir $file]
+         set file [file join $dir_photom_xml $file]
 
          # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)
          ::votable::init "1.1" ""
