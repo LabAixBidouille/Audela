@@ -107,6 +107,11 @@ root> make distclean
 
 Si ne marche pas, installer tkimg1.4 a partir du gestionnaire de paquetage
 
+cd /usr/local/lib64/
+ln -s /usr/share/tcl/Img1.3 .
+ou
+ln -s /usr/share/tcl/Img1.4 .
+
 
 ==========
 7 Installer libmysqltcl
