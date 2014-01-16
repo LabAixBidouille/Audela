@@ -1692,7 +1692,7 @@ namespace eval tools_cata {
 
    proc ::tools_cata::skybotResolver { } {
 
-      set name $::tools_cata::coord
+      set name $::tools_cata::target
       set date $::tools_cata::current_image_date
       set uaicode [string trim $::tools_cata::uaicode]
 
