@@ -99,6 +99,12 @@ namespace eval bdi_gui_reports {
             lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)
             lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt)
             lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml)
+            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)
+            if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,comment)]} {
+               lappend line ""
+            } else {
+               lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,comment)
+            }
             
             
             $::bdi_tools_reports::data_reports insert end $line
@@ -116,6 +122,29 @@ namespace eval bdi_gui_reports {
 
 
 
+
+   proc ::bdi_gui_reports::get_submit_mpc { file } {
+      set file "DateObs.2013-09-12.Obj.2003_OP32.submitMPC.no.Batch.Audela_BDI_2014-01-16T16:54:27_CET.readme.txt"
+      set pos [expr [string last "submitMPC." $file] + 10 ]
+      set file [string range $file $pos end]
+      set pos [expr [string first "." $file] -1 ]
+      return [string range $file 0 $pos]
+   }
+
+   proc ::bdi_gui_reports::get_batch { file } {
+   
+      set ext  [file extension $file]
+      set posbeg [expr [string last "Batch" $file] + 6]
+      set posend [expr [string last $ext $file] -1]
+      set batch [string range $file $posbeg $posend]
+      set posreadme [string last readme $batch]
+      if {$posreadme == -1} {
+         return $batch
+      } else  {
+         return [string range $batch 0 [expr $posreadme-2]]
+      }
+      
+   }
 
 
 
@@ -161,22 +190,22 @@ namespace eval bdi_gui_reports {
                if {[file type $i]=="directory"} {
                   #gren_info "i = $i\n"
                   
-                  
-
                   # astrometrie TXT
                   set err [catch {set zliste [glob $i/*]} msg]
                   if {!$err} {
                      foreach j $zliste {
                         
                         set file [file tail $j]
-                        #gren_info "file = $file && [file tail $i]\n"
+                        gren_info "file = $file\n"
                         set ext  [file extension $file]
-
-                        set posbeg [expr [string last "Batch" $file] + 6]
-                        set posend [expr [string last $ext $file] -1]
-                        set batch [string range $file $posbeg $posend]
+                        set batch [::bdi_gui_reports::get_batch $file]
                         set tab($batch) 1
                         
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) "no"}
+                        if {$::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)!="yes"} {
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) [::bdi_gui_reports::get_submit_mpc $file]
+                        }
+
                         if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc) "-"}
                         if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt) "-"}
                         if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml) "-"}
@@ -186,34 +215,41 @@ namespace eval bdi_gui_reports {
                         if {$ext == ".mpc" && [file tail $i]=="astrom_mpc"} {
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,file) $j
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc) "Y"
-                           gren_info "list_reports($obj,$block,$batch,astrom,mpc) Y\n"
                         }
                         if {$ext == ".txt" && [file tail $i]=="astrom_txt"} {
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt,file) $j
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt) "Y"
-                           gren_info "list_reports($obj,$block,$batch,astrom,txt) Y\n"
                         }
                         if {$ext == ".xml" && [file tail $i]=="astrom_xml"} {
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml,file) $j
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml) "Y"
-                           gren_info "list_reports($obj,$block,$batch,astrom,xml) Y\n"
                         }
-                        if {$ext == ".xml" && [file tail $i]=="photom_txt"} {
+                        if {$ext == ".txt" && [file tail $i]=="photom_txt"} {
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt,file) $j
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt) "Y"
-                           gren_info "list_reports($obj,$block,$batch,photom,txt) Y\n"
                         }
                         if {$ext == ".xml" && [file tail $i]=="photom_xml"} {
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml,file) $j
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml) "Y"
-                           gren_info "list_reports($obj,$block,$batch,photom,xml) Y\n"
                         }
                         
                      }
                   } else {
-                     gren_erreur "$msg\n"
+                     #gren_erreur "$msg\n"
+                     
                   }
                   
+               } else {
+                  # Lecture des commentaires
+                  
+                  set batch [::bdi_gui_reports::get_batch [file tail $i]]
+                  set chan [open $i r]
+                  while {[gets $chan line] >= 0} {
+                     set ::bdi_tools_reports::list_reports($obj,$block,$batch,comment)  [string trim $line]
+                  }
+                  close $chan
+                  gren_info "comment = ::bdi_tools_reports::list_reports($obj,$block,$batch,comment)\n"
+                  gren_info "comment = $::bdi_tools_reports::list_reports($obj,$block,$batch,comment)\n"
                }
             }
             set ::bdi_tools_reports::list_reports($obj,$block,batch) ""
@@ -278,6 +314,7 @@ namespace eval bdi_gui_reports {
       set nb [llength $curselection]
       if {$nb !=1 } {
          tk_messageBox -message "Veuillez selectionner 1 seule entree" -type ok
+         return
       }
       
       foreach select $curselection {
@@ -347,6 +384,50 @@ namespace eval bdi_gui_reports {
    }
    
    
+   #------------------------------------------------------------
+   ## Effacement des entrees
+   #  @return void
+   #
+   proc ::bdi_gui_reports::delete_reports { } {
+
+      global  bddconf 
+      
+      if {![info exists ::bdi_gui_reports::selected_obj]} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      if {$::bdi_gui_reports::selected_obj==""} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      
+      set obj $::bdi_gui_reports::selected_obj
+      
+      
+      set curselection [$::bdi_tools_reports::data_reports curselection]
+      foreach select $curselection {
+
+         set block [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 1]
+         #gren_info "block = $block\n"
+         #gren_info "batch = $batch\n"
+         
+         set dir [file join $bddconf(dirreports) $obj $block]
+         #gren_info "dir = $dir batch = $batch\n"
+         set liste [globr $dir]
+         foreach file $liste {
+            set pos [string first $batch $file]
+            if {$pos !=-1} {
+               gren_info "Delete: $file\n"
+               set err [catch {file delete -force $file} msg]
+                if {$err} {gren_erreur $msg}
+            }
+         }
+      }
+      
+      ::bdi_gui_reports::charge
+      
+   }
    
    #------------------------------------------------------------
    ## Lancement de la GUI
@@ -440,12 +521,14 @@ namespace eval bdi_gui_reports {
      pack $reports -in $frm -expand yes -fill both
 
             set cols [list 0 "Date"        left  \
-                           0 "Batch"       right \
-                           0 "Astrom TXT"  right \
-                           0 "Astrom XML"  right \
-                           0 "Astrom MPC"  right \
-                           0 "Photom TXT"  right \
-                           0 "Photom XML"  right \
+                           0 "Batch"       left \
+                           0 "Astrom TXT"  left \
+                           0 "Astrom XML"  left \
+                           0 "Astrom MPC"  left \
+                           0 "Photom TXT"  left \
+                           0 "Photom XML"  left \
+                           0 "Sub MPC"     left \
+                           0 "Comment"     left \
                      ]
 
             # Table
@@ -485,18 +568,15 @@ namespace eval bdi_gui_reports {
 
                $reports.popupTbl add separator
  
-               $reports.popupTbl add command -label "Effacer Astrometrie" \
-                   -command "" 
-               
-               $reports.popupTbl add command -label "Effacer Photometrie" \
-                   -command "" 
-               
-               $reports.popupTbl add command -label "Effacer tout" \
-                   -command "" 
+               $reports.popupTbl add command -label "Effacer Entree" \
+                   -command "::bdi_gui_reports::delete_reports" 
                
                $reports.popupTbl add separator
 
                $reports.popupTbl add command -label "Soumettre au MPC" \
+                   -command "" 
+               
+               $reports.popupTbl add command -label "Flag MPC" \
                    -command "" 
                
  

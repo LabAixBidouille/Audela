@@ -2724,6 +2724,30 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       return "DateObs.$datemin"
    }
 
+   proc ::bdi_gui_astrometry::get_first_date_by_name { myname } {
+
+
+      set i 0
+      set l [array get ::bdi_tools_astrometry::listscience]
+      foreach {name y} $l {
+         if {$name != $myname} {continue}
+         set cata [::manage_source::name_cata $name]
+         if {$cata != "SKYBOT"} {continue}
+         foreach date $::bdi_tools_astrometry::listscience($name) {
+            incr i
+            set date [string range $date 0 9]
+            if {$i==1} { 
+               set datemin $date
+               continue
+            }
+            if {[string compare $datemin $date]==1} {
+               set datemin $date
+            }
+         }
+      }
+      return $datemin
+   }
+
    proc ::bdi_gui_astrometry::cut_object_name { name } {
       # ::bdi_gui_astrometry::cut_object_name SKYBOT_202421_2005_UQ513
       
@@ -2747,7 +2771,113 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       return $names
    }
 
+   proc ::bdi_gui_astrometry::get_objects_complete {  } {
+
+      set names ""
+      set l [array get ::bdi_tools_astrometry::listscience]
+      foreach {name y} $l {
+         set cata [::manage_source::name_cata $name]
+         if {$cata != "SKYBOT"} {continue}
+            gren_info "name = $name\n"
+            append names ".[::bdi_gui_astrometry::cut_object_name $name]"
+      }
+      return $names
+   }
+
+   proc ::bdi_gui_astrometry::list_objects {  } {
+
+      set names ""
+      set l [array get ::bdi_tools_astrometry::listscience]
+      foreach {name y} $l {
+         set cata [::manage_source::name_cata $name]
+         lappend names $name
+      }
+      return $names
+   }
+
+
+
+
    proc ::bdi_gui_astrometry::save_all_reports {  } {
+
+      global bddconf
+
+      gren_info "Sauvegarde de tous les rapports :\n"
+
+      # Recuperation des info pour construction des nom de fichier
+      set part_date    [::bdi_gui_astrometry::get_first_date]
+      set part_objects [::bdi_gui_astrometry::get_objects]
+      
+      if {$::bdi_tools_astrometry::rapport_mpc_submit==0} {
+         set part_submit ".submitMPC.no"
+      } else {
+         set part_submit ".submitMPC.yes"
+      }
+      set part_batch ".Batch.${::bdi_tools_astrometry::rapport_batch}"
+      
+
+      foreach obj [::bdi_gui_astrometry::list_objects] {
+      
+         set dir [file join $bddconf(dirreports) $obj]
+         createdir_ifnot_exist $dir
+
+         set date [::bdi_gui_astrometry::get_first_date_by_name $obj]
+
+         set dir [file join $dir $date]
+         createdir_ifnot_exist $dir
+
+         set dir_astrom_txt [file join $dir astrom_txt]
+         set dir_astrom_xml [file join $dir astrom_xml]
+         set dir_astrom_mpc [file join $dir astrom_mpc]
+
+         createdir_ifnot_exist $dir_astrom_txt
+         createdir_ifnot_exist $dir_astrom_xml
+         createdir_ifnot_exist $dir_astrom_mpc
+
+         set part_objects ".Obj.$obj"
+         set part_date "DateObs.$date"
+         # Sauvegarde du commentaire
+         set file "${part_date}${part_objects}${part_batch}.readme.txt"
+         set file [file join $dir $file]
+         set chan [open $file w]
+         puts $chan "Comments :"
+         puts $chan "$::bdi_gui_astrometry::rapport_comment"
+         close $chan
+         gren_info "Rapport MPC : $file\n"
+
+         # Sauvegarde des donnees MPC
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.mpc"
+         set file [file join $dir_astrom_mpc $file]
+         set chan [open $file w]
+         puts $chan "[$::bdi_gui_astrometry::rapport_mpc get 0.0 end]"
+         close $chan
+         gren_info "Rapport MPC : $file\n"
+         # Sauvegarde des donnees IMCCE
+         set file "${part_date}${part_objects}${part_batch}.txt"
+         set file [file join $dir_astrom_txt $file]
+         set chan [open $file w]
+         puts $chan "[$::bdi_gui_astrometry::rapport_txt get 0.0 end]"
+         close $chan
+         gren_info "Rapport IMCCE TXT: $file\n"
+         # Sauvegarde des donnees XML
+         set file "${part_date}${part_objects}${part_batch}.xml"
+         set file [file join $dir_astrom_xml $file]
+         set chan [open $file w]
+         puts $chan "$::bdi_gui_astrometry::rapport_xml"
+         close $chan
+         gren_info "Rapport IMCCE XML: $file\n"
+      
+      
+      }
+
+
+
+
+      return 0
+   }
+
+   proc ::bdi_gui_astrometry::save_all_reports_old {  } {
+
 
       gren_info "Sauvegarde de tous les rapports :\n"
 
@@ -3783,45 +3913,18 @@ unset ::bdi_gui_astrometry::omcvaruna_d
                pack $block.posyx -side top -anchor c -expand 0
 
          #--- Onglet RAPPORT - SAVE
-         set block [frame $save.dirmpc  -borderwidth 0 -cursor arrow -relief groove]
+         set block [frame $save.frm  -borderwidth 0 -cursor arrow -relief groove]
          pack $block  -in $save -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-               label  $block.lab -text "Repertoire MPC : " -borderwidth 1 -width 15
-               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+               label  $block.lab -text "Commentaire pour le rapport final : " -borderwidth 1 
+               pack   $block.lab -side top -padx 3 -pady 3 -anchor w
 
-               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_mpc_dir
-               pack   $block.val -side left -padx 3 -pady 3 -anchor w
-
-         set block [frame $save.dirimc  -borderwidth 0 -cursor arrow -relief groove]
-         pack $block  -in $save -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-               label  $block.lab -text "Repertoire IMCCE : " -borderwidth 1 -width 15
-               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
-
-               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_imc_dir
-               pack   $block.val -side left -padx 3 -pady 3 -anchor w
-
-         set block [frame $save.dirxml  -borderwidth 0 -cursor arrow -relief groove]
-         pack $block  -in $save -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-               label  $block.lab -text "Repertoire XML : " -borderwidth 1 -width 15
-               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
-
-               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_tools_astrometry::rapport_xml_dir
-               pack   $block.val -side left -padx 3 -pady 3 -anchor w
-
-         set block [frame $save.submit -borderwidth 0 -cursor arrow -relief groove]
-         pack $block -in $save -side top -expand 0 -padx 2 -pady 5
-
-               label  $block.lab -text "" -borderwidth 1 -width 15
-               pack   $block.lab -side left -padx 3 -pady 3 -anchor w
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_gui_astrometry::rapport_comment
+               pack   $block.val -side top -padx 3 -pady 3 -anchor w
 
                checkbutton $block.mpc -highlightthickness 0 -text " Le rapport MPC a ete soumis" \
                   -font $bddconf(font,arial_10_b) -variable ::bdi_tools_astrometry::rapport_mpc_submit
-               pack $block.mpc -in $block -side left -padx 5 -pady 2 -anchor w
-
-         set block [frame $save.save -borderwidth 0 -cursor arrow -relief groove]
-         pack $block -in $save -side top -expand 0 -padx 2 -pady 5
+               pack $block.mpc -in $block -side top -padx 5 -pady 2 -anchor w
 
                button $block.saveall -text "Sauver tous les rapports" -borderwidth 2 -takefocus 1 \
                        -command ::bdi_gui_astrometry::save_all_reports
