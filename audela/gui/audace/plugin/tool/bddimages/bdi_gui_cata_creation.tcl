@@ -2368,11 +2368,13 @@ return
                pack $gril -in $resolver -anchor c -side top -pady 10
 
                   label $gril.ldate    -text "$caption(gui_cata_creation,lepoch)"
+                  label $gril.ltarget  -text "$caption(gui_cata_creation,ltarget)"
                   label $gril.lcoord   -text "$caption(gui_cata_creation,lcoord)"
                   label $gril.lradius  -text "$caption(gui_cata_creation,lradius)"
                   label $gril.luaicode -text "$caption(gui_cata_creation,luaicode)"
 
                   entry $gril.edate -relief sunken -width 22 -textvariable ::tools_cata::current_image_date
+                  entry $gril.etarget -relief sunken -width 22 -textvariable ::tools_cata::target
                   entry $gril.ecoord -relief sunken -width 22 -textvariable ::tools_cata::coord
                   entry $gril.eradius -relief sunken -width 22 -textvariable ::tools_cata::radius
                   entry $gril.euaicode -relief sunken -width 22 -textvariable ::tools_cata::uaicode
@@ -2385,10 +2387,11 @@ return
                   button $gril.blank2 -borderwidth 0 -width 12 -relief solid -borderwidth 0 -state disabled
 
                grid $gril.ldate    $gril.edate    $gril.blank1    -sticky nsw -pady 1
-               grid $gril.lcoord   $gril.ecoord   $gril.resolve   -sticky nsw -pady 1
-               grid $gril.lradius  $gril.eradius  $gril.setcenter -sticky nsw -pady 1
+               grid $gril.ltarget  $gril.etarget  $gril.resolve   -sticky nsw -pady 1
+               grid $gril.lcoord   $gril.ecoord   $gril.setcenter -sticky nsw -pady 1
+               grid $gril.lradius  $gril.eradius  $gril.blank2    -sticky nsw -pady 1
                grid $gril.luaicode $gril.euaicode $gril.blank2    -sticky nsw -pady 1
-               grid configure $gril.ldate $gril.lcoord $gril.lradius $gril.luaicode -sticky nse
+               grid configure $gril.ldate $gril.ltarget $gril.lcoord $gril.lradius $gril.luaicode -sticky nse
                grid columnconfigure $gril 0 -pad 10
                grid columnconfigure $gril 2 -pad 5
 

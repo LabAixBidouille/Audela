@@ -228,20 +228,6 @@ namespace eval bddimages_liste_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    #--------------------------------------------------
    # fermer { }
    #--------------------------------------------------
@@ -264,19 +250,6 @@ namespace eval bddimages_liste_gui {
       destroy $This
       return
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -319,37 +292,6 @@ namespace eval bddimages_liste_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    #--------------------------------------------------
    #  get_list_combobox { }
    #--------------------------------------------------
@@ -368,19 +310,6 @@ namespace eval bddimages_liste_gui {
       global caption
       return [list "=" ">" "<" ">=" "<=" "!=" $caption(bddimages_liste,contient) $caption(bddimages_liste,notcontient)]
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -428,20 +357,6 @@ namespace eval bddimages_liste_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::bddimages_liste_gui::get_val_intellilist { intellilist val } {
    
       set y ""
@@ -454,17 +369,6 @@ namespace eval bddimages_liste_gui {
       }
       return $y
    }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -493,17 +397,6 @@ namespace eval bddimages_liste_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
    #--------------------------------------------------
    #  get_intellilist_by_name { }
    #--------------------------------------------------
@@ -520,16 +413,22 @@ namespace eval bddimages_liste_gui {
    #--------------------------------------------------
    proc ::bddimages_liste_gui::get_intellilist_by_name { name } {
    
-     global nbintellilist
-     global intellilisttotal
+      global nbintellilist
+      global intellilisttotal
    
-     set found 0
-     for {set i 1} {$i<=$nbintellilist} {incr i} {
-        set l $intellilisttotal($i)
-             
-        if { [get_val_intellilist $l "name"] eq "$name" } then { set found 1 ; break }
-     }
-     if { $found } { return $i } else { return -1 }
+      set found 0
+      for {set i 1} {$i<=$nbintellilist} {incr i} {
+         set l $intellilisttotal($i)
+         if { [get_val_intellilist $l "name"] eq "$name" } {
+            set found 1
+            break
+         }
+      }
+      if {$found} {
+         return $i
+      } else {
+         return -1
+      }
    }
 
    #--------------------------------------------------
@@ -1037,7 +936,7 @@ namespace eval bddimages_liste_gui {
       global nbintellilist
       global intellilisttotal
    
-      set idx [get_intellilist_by_name $form_req(name)]
+      set idx [::bddimages_liste_gui::get_intellilist_by_name $form_req(name)]
       if { $idx == -1 } {
          incr nbintellilist
          set idx $nbintellilist
@@ -2226,14 +2125,14 @@ namespace eval bddimages_liste_gui {
 
       if { $edit } {
          set editname $listname
-         set editid [get_intellilist_by_name $listname]
+         set editid [::bddimages_liste_gui::get_intellilist_by_name $listname]
          ::bddimages_liste_gui::load_intellilist $intellilisttotal($editid)
          ::bddimages_liste_gui::affiche_intellilist $intellilisttotal($editid)  
          ::bddimages_liste_gui::affich_form_req
          set indicereqinit [llength [get_val_intellilist $intellilisttotal($editid) "reqlist"]]
-         gren_info "\n ** indicereqinit= $indicereqinit\n"
-         gren_info "\n ** indicereq= $indicereq\n"
-         gren_info "\n ** list_req= [array get list_req]\n"
+         #gren_info "\n ** indicereqinit= $indicereqinit\n"
+         #gren_info "\n ** indicereq= $indicereq\n"
+         #gren_info "\n ** list_req= [array get list_req]\n"
          #set l $intellilisttotal($editid)
          #::console::affiche_resultat "edit : $edit\n"
          #::console::affiche_resultat "l : $l\n"
