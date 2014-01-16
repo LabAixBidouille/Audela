@@ -74,16 +74,280 @@ namespace eval bdi_gui_reports {
       set curselection [$::bdi_tools_reports::data_objects curselection]
       set nb [llength $curselection]
       gren_info "nb select = $nb\n"
+      if {$nb !=1 } {
+         tk_messageBox -message "Veuillez selectionner 1 seul objet" -type ok
+      }
+      
       foreach select $curselection {
          set obj [lindex [$::bdi_tools_reports::data_objects get $select] 0]
-         gren_info "Info sur l objet : $obj\n"      
+         gren_info "Info sur l objet : $obj\n"
+      }
+      set ::bdi_gui_reports::selected_obj $obj
+      
+      
+      $::bdi_tools_reports::data_reports delete 0 end
+
+      foreach block $::bdi_tools_reports::list_blocks($obj) {
+         
+         foreach batch $::bdi_tools_reports::list_reports($obj,$block,batch) {
+            set line ""
+            
+            lappend line $block
+            lappend line $batch
+            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt)
+            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml)
+            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)
+            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt)
+            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml)
+            
+            
+            $::bdi_tools_reports::data_reports insert end $line
+         }
       }
 
+
    }
+
+
    proc ::bdi_gui_reports::cmdButton1Click_data_reports { w args } {
 
    }
 
+
+
+
+
+
+
+   proc ::bdi_gui_reports::charge { } {
+      
+      global bddconf
+
+      set tt0 [clock clicks -milliseconds]
+      $::bdi_tools_reports::data_objects delete 0 end
+      
+      gren_info "Analyse du repertoire des Rapports : $bddconf(dirreports)\n"
+      set liste [glob $bddconf(dirreports)/*]
+      
+      # Recupere la liste des objets
+      set ::bdi_tools_reports::list_objects ""
+      foreach i $liste {
+         if {[file type $i]=="directory"} {
+            lappend ::bdi_tools_reports::list_objects [file tail $i]
+         }
+      }      
+
+      # Recupere la liste des nuits
+      array unset ::bdi_tools_reports::list_blocks 
+      foreach obj $::bdi_tools_reports::list_objects {
+         set dir [file join $bddconf(dirreports) $obj]
+         set liste [glob $dir/*]
+         foreach i $liste {
+            if {[file type $i]=="directory"} {
+               lappend ::bdi_tools_reports::list_blocks($obj) [file tail $i]
+            }
+         }
+      }      
+
+      # Recupere la liste des rapports
+      foreach obj $::bdi_tools_reports::list_objects {
+         foreach block $::bdi_tools_reports::list_blocks($obj) {
+            set ::bdi_tools_reports::list_reports($obj,$block,batch) ""
+            set dir [file join $bddconf(dirreports) $obj $block]
+            set err [catch {set liste [glob $dir/*]} msg]
+            if {$err} {continue}
+            array unset tab
+            foreach i $liste {
+               if {[file type $i]=="directory"} {
+                  #gren_info "i = $i\n"
+                  
+                  
+
+                  # astrometrie TXT
+                  set err [catch {set zliste [glob $i/*]} msg]
+                  if {!$err} {
+                     foreach j $zliste {
+                        
+                        set file [file tail $j]
+                        #gren_info "file = $file && [file tail $i]\n"
+                        set ext  [file extension $file]
+
+                        set posbeg [expr [string last "Batch" $file] + 6]
+                        set posend [expr [string last $ext $file] -1]
+                        set batch [string range $file $posbeg $posend]
+                        set tab($batch) 1
+                        
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc) "-"}
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt) "-"}
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml) "-"}
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt) "-"}
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml) "-"}
+
+                        if {$ext == ".mpc" && [file tail $i]=="astrom_mpc"} {
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,file) $j
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc) "Y"
+                           gren_info "list_reports($obj,$block,$batch,astrom,mpc) Y\n"
+                        }
+                        if {$ext == ".txt" && [file tail $i]=="astrom_txt"} {
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt,file) $j
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt) "Y"
+                           gren_info "list_reports($obj,$block,$batch,astrom,txt) Y\n"
+                        }
+                        if {$ext == ".xml" && [file tail $i]=="astrom_xml"} {
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml,file) $j
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml) "Y"
+                           gren_info "list_reports($obj,$block,$batch,astrom,xml) Y\n"
+                        }
+                        if {$ext == ".xml" && [file tail $i]=="photom_txt"} {
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt,file) $j
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt) "Y"
+                           gren_info "list_reports($obj,$block,$batch,photom,txt) Y\n"
+                        }
+                        if {$ext == ".xml" && [file tail $i]=="photom_xml"} {
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml,file) $j
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml) "Y"
+                           gren_info "list_reports($obj,$block,$batch,photom,xml) Y\n"
+                        }
+                        
+                     }
+                  } else {
+                     gren_erreur "$msg\n"
+                  }
+                  
+               }
+            }
+            set ::bdi_tools_reports::list_reports($obj,$block,batch) ""
+            foreach { x y } [array get tab] {
+               lappend ::bdi_tools_reports::list_reports($obj,$block,batch) $x
+            }
+         }
+      }
+
+      
+      # set ::bdi_tools_reports::data_objects
+      
+      # Fin de visualisation des donnees
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Chargement complet en $tt sec \n"
+      
+      ::bdi_gui_reports::affiche_data
+   }
+
+
+
+   #------------------------------------------------------------
+   ## Affichage des donnees dans la GUI
+   #  @return void
+   #
+   proc ::bdi_gui_reports::affiche_data { } {
+      
+      set tt0 [clock clicks -milliseconds]
+
+      $::bdi_tools_reports::data_objects delete 0 end
+      
+      foreach obj $::bdi_tools_reports::list_objects {
+         $::bdi_tools_reports::data_objects insert end $obj
+      }      
+      
+      # Fin de visualisation des donnees
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Affichage complet en $tt sec \n"
+      
+   }
+
+   proc ::bdi_gui_reports::close_reports2 {  } {
+      global conf bddconf 
+
+      set bddconf(geometry_reports2) [ wm geometry .reports2 ]
+      set conf(bddimages,geometry_reports2) $bddconf(geometry_reports2)
+      destroy .reports2
+      
+   }
+   #------------------------------------------------------------
+   ## Affichage des rapports dans une GUI
+   #  @return void
+   #
+   proc ::bdi_gui_reports::affiche_rapport { type } {
+
+      global conf bddconf 
+
+      gren_info "Obj = $::bdi_gui_reports::selected_obj\n"
+      set obj $::bdi_gui_reports::selected_obj
+      
+      set curselection [$::bdi_tools_reports::data_reports curselection]
+      set nb [llength $curselection]
+      if {$nb !=1 } {
+         tk_messageBox -message "Veuillez selectionner 1 seule entree" -type ok
+      }
+      
+      foreach select $curselection {
+         set block [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 1]
+      }
+      gren_info "block = $block\n"
+      gren_info "batch = $batch\n"
+      gren_info "type = $type\n"
+
+      if {$::bdi_tools_reports::list_reports($obj,$block,$batch,$type)=="-"} {
+         tk_messageBox -message "Le rapport n existe pas\n Obj = $obj\nbatch = $batch\ntype=$type\n" -type ok
+         return
+      }
+      set file $::bdi_tools_reports::list_reports($obj,$block,$batch,$type,file)
+      gren_info "file = $file\n"
+      
+      
+      
+      #--- Geometry
+      if { ! [ info exists conf(bddimages,geometry_reports2) ] } {
+         set conf(bddimages,geometry_reports2) "100x100+400+200"
+      }
+      set bddconf(geometry_reports2) $conf(bddimages,geometry_reports2)
+
+      #--- Declare la GUI
+      set fen .reports2
+      if { [ winfo exists .reports2 ] } {
+         wm withdraw .reports2
+         wm deiconify .reports2
+         return
+      }
+
+      #--- GUI
+      toplevel .reports2 -class Toplevel
+      wm geometry .reports2 $bddconf(geometry_reports2)
+      wm resizable .reports2 1 1
+      wm title .reports2 $file
+      wm protocol .reports2 WM_DELETE_WINDOW "::bdi_gui_reports::close_reports2"
+
+      set frm .reports2.appli
+
+      frame $frm  -cursor arrow -relief groove
+      pack $frm -in .reports2 -anchor s -side top -expand yes -fill both -padx 10 -pady 5
+
+      set rapport $frm.text
+      text $rapport -height 30 -width 80 \
+           -xscrollcommand "$rapport.xscroll set" \
+           -yscrollcommand "$rapport.yscroll set" \
+           -wrap none
+      pack $rapport -expand yes -fill both -padx 5 -pady 5
+
+      scrollbar $rapport.xscroll -orient horizontal -cursor arrow -command "$rapport xview"
+      pack $rapport.xscroll -side bottom -fill x
+
+      scrollbar $rapport.yscroll -orient vertical -cursor arrow -command "$rapport yview"
+      pack $rapport.yscroll -side right -fill y
+
+      $rapport delete 0.0 end
+
+      set chan [open $file r]
+
+      while {[gets $chan line] >= 0} {
+         $rapport insert end "$line\n"
+      }
+      close $chan
+   }
+   
+   
+   
    #------------------------------------------------------------
    ## Lancement de la GUI
    #  @return void
@@ -205,6 +469,38 @@ namespace eval bdi_gui_reports {
             # Pack la Table
             pack $::bdi_tools_reports::data_reports -in $reports -expand yes -fill both
 
+            # Popup
+            menu $reports.popupTbl -title "Actions"
+
+               $reports.popupTbl add command -label "Voir astrometrie TXT" \
+                   -command "::bdi_gui_reports::affiche_rapport astrom,txt" 
+               $reports.popupTbl add command -label "Voir astrometrie XML" \
+                   -command "::bdi_gui_reports::affiche_rapport astrom,xml" 
+               $reports.popupTbl add command -label "Voir astrometrie MPC" \
+                   -command "::bdi_gui_reports::affiche_rapport astrom,mpc" 
+               $reports.popupTbl add command -label "Voir photometrie TXT" \
+                   -command "::bdi_gui_reports::affiche_rapport photom,txt" 
+               $reports.popupTbl add command -label "Voir photometrie XML" \
+                   -command "::bdi_gui_reports::affiche_rapport photom,xml" 
+
+               $reports.popupTbl add separator
+ 
+               $reports.popupTbl add command -label "Effacer Astrometrie" \
+                   -command "" 
+               
+               $reports.popupTbl add command -label "Effacer Photometrie" \
+                   -command "" 
+               
+               $reports.popupTbl add command -label "Effacer tout" \
+                   -command "" 
+               
+               $reports.popupTbl add separator
+
+               $reports.popupTbl add command -label "Soumettre au MPC" \
+                   -command "" 
+               
+ 
+               
             # Binding
             bind $::bdi_tools_reports::data_reports <<ListboxSelect>> [ list ::bdi_gui_reports::cmdButton1Click_data_reports %W ]
             bind [$::bdi_tools_reports::data_reports bodypath] <ButtonPress-3> [ list tk_popup $reports.popupTbl %X %Y ]
@@ -227,6 +523,8 @@ namespace eval bdi_gui_reports {
      pack $actions -in $frm -expand no -fill none
 
 
+          button $actions.charge -text "Charge" -borderwidth 2 -takefocus 1 \
+             -command "::bdi_gui_reports::charge"
           button $actions.ressource -text "Ressource les scripts" -borderwidth 2 -takefocus 1 \
              -command "::bddimages::ressource"
           button $actions.relance -text "Relance la GUI" -borderwidth 2 -takefocus 1 \
@@ -235,36 +533,10 @@ namespace eval bdi_gui_reports {
              -command "console::clear"
 
 
-         grid $actions.ressource $actions.relance $actions.clean -sticky news
+         grid $actions.charge $actions.ressource $actions.relance $actions.clean -sticky news
 
-
-     ::bdi_gui_reports::affiche_data
 
    }
 
 
-
-   proc ::bdi_gui_reports::affiche_data { } {
-
-      global bddconf
-      
-      set tt0 [clock clicks -milliseconds]
-      $::bdi_tools_reports::data_objects delete 0 end
-      
-      gren_info "Analyse du repertoire des Rapports : $bddconf(dirreports)\n"
-      set liste [glob $bddconf(dirreports)/*]
-
-      foreach i $liste {
-         if {[file type $i]=="directory"} {
-            $::bdi_tools_reports::data_objects insert end [file tail $i]
-         }      
-      }      
-      
-      # set ::bdi_tools_reports::data_objects
-      
-      # Fin de visualisation des donnees
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Affichage complet en $tt sec \n"
-      
-   }
 
