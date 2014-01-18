@@ -248,7 +248,8 @@ char *getlogdate(char *buf, size_t size)
     return buf;
 }
 
-char log_file[1024];
+#define DEFAULT_LOG_FILE "/tmp/libgrabber.log"
+char log_file[2048];
 
 void webcam_log(int level, const char *fmt, ...)
 {
@@ -324,8 +325,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 
     // j'active les traces de libcam
 
-    strcpy( log_file, "/tmp/libgrabber.log" );
-    webcam_log( LOG_INFO, "Libgrabber library compiled on %s at", __DATE__, __TIME__ );
+    strcpy( log_file, DEFAULT_LOG_FILE );
+    webcam_log( LOG_INFO, "Libgrabber library compiled on %s at %s", __DATE__, __TIME__ );
     webcam_log( LOG_DEBUG,"cam_init begin ===============");
 
     strcpy(videomode, "vfw");
@@ -352,8 +353,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
                 strcpy(formatname, argv[kk + 1]);
             }
             if ( strcmp( argv[kk], "-debug_directory" ) == 0 ) {
-//                sprintf( log_file, "%s/libgrabber.log", argv[kk + 1] );
-                webcam_log( LOG_INFO, "%s : %s", argv[kk], argv[kk+1] );
+                sprintf( log_file, "%s/libgrabber.log", argv[kk + 1] );
+                rename(DEFAULT_LOG_FILE, log_file);
+                webcam_log( LOG_INFO, "%s : %s", argv[kk], argv[kk + 1] );
             }
             if (strcmp(argv[kk], "-videomode") == 0) {
                 strcpy(videomode, argv[kk + 1]);
