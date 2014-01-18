@@ -202,7 +202,7 @@ struct _PrivateParams {
 #define LOG_WARNING 2
 #define LOG_INFO    3
 #define LOG_DEBUG   4
-int webcam_debug_level = LOG_INFO;
+int webcam_debug_level = LOG_DEBUG;
 
 #include <time.h>
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
@@ -248,6 +248,8 @@ char *getlogdate(char *buf, size_t size)
     return buf;
 }
 
+char log_file[1024];
+
 void webcam_log(int level, const char *fmt, ...)
 {
    FILE *f;
@@ -258,7 +260,7 @@ void webcam_log(int level, const char *fmt, ...)
 
    if (level <= webcam_debug_level) {
       getlogdate(buf,100);
-      f = fopen("webcam.log","at+");
+      f = fopen( log_file, "a+" );
       switch (level) {
       case LOG_ERROR:
          fprintf(f,"%s - %s(%s) <ERROR> : ", buf, CAM_LIBNAME, CAM_LIBVER);
@@ -273,6 +275,7 @@ void webcam_log(int level, const char *fmt, ...)
          fprintf(f,"%s - %s(%s) <DEBUG> : ", buf, CAM_LIBNAME, CAM_LIBVER);
          break;
       }
+      fflush( f );
       vfprintf(f,fmt, mkr);
       fprintf(f,"\n");
       va_end(mkr);
@@ -314,111 +317,114 @@ void webcam_log(int level, const char *fmt, ...)
 */
 int cam_init(struct camprop *cam, int argc, char **argv)
 {
-   char formatname[128];
-   int  validFrame = -1;
-   char videomode [128];
-   int kk;
-   Tcl_Interp *interp;
+    char formatname[128];
+    int  validFrame = -1;
+    char videomode [128];
+    int kk;
 
-   interp = cam->interp;
+    // j'active les traces de libcam
 
-   webcam_log( LOG_DEBUG,"cam_init begin ===============");
-   // j'active les traces de libcam
+    strcpy( log_file, "/tmp/libgrabber.log" );
+    webcam_log( LOG_INFO, "Libgrabber library compiled on %s at", __DATE__, __TIME__ );
+    webcam_log( LOG_DEBUG,"cam_init begin ===============");
+
+    strcpy(videomode, "vfw");
+    strcpy(formatname, "SIF");
+    strcpy(formatname, "VGA");
+    cam->longuepose = 0;
+    cam->longueposelinkno = 0;
+    strcpy(cam->longueposelinkbit,"");
+    cam->longueposestart = 0;
+    cam->sensorColor = 1;
+    cam->videoStatusVarNamePtr[0] = 0;
+    cam->videoEndCaptureCommandPtr[0] = 0;
+    cam->capabilities.videoMode = 1;
+    cam->params = (PrivateParams*)malloc(sizeof(PrivateParams));
 
 
-   strcpy(videomode, "vfw");
-   strcpy(formatname, "SIF");
-   strcpy(formatname, "VGA");
-   cam->longuepose = 0;
-   cam->longueposelinkno = 0;
-   strcpy(cam->longueposelinkbit,"");
-   cam->longueposestart = 0;
-   cam->sensorColor = 1;
-   cam->videoStatusVarNamePtr[0] = 0;
-   cam->videoEndCaptureCommandPtr[0] = 0;
-   cam->capabilities.videoMode = 1;
-   cam->params = (PrivateParams*)malloc(sizeof(PrivateParams));
-
-   // je decode les options de cam::create
-   if (argc >= 5) {
-      for (kk = 3; kk < argc - 1; kk++) {
-         if (strcmp(argv[kk], "-channel") == 0) {
-            cam->driver = atoi(argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-format") == 0) {
-            strcpy(formatname, argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-videomode") == 0) {
-            strcpy(videomode, argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-longuepose") == 0) {
-            cam->longuepose = atoi(argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-longueposelinkno") == 0) {
-            cam->longueposelinkno = atoi(argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-longueposelinkbit") == 0) {
-            STRNCPY(cam->longueposelinkbit, argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-longueposestart") == 0) {
-            cam->longueposestart = atoi(argv[kk + 1]);
-         }
-         if (strcmp(argv[kk], "-validframe") == 0) {
-            validFrame = atoi(argv[kk + 1]);
-            if (validFrame < 0) {
-               sprintf(cam->msg,
-                      "-validFrame=%d invalid parameter, must be integer >= 0", validFrame);
-               webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
-               return 1;
+    // je decode les options de cam::create
+    if (argc >= 5) {
+        for (kk = 3; kk < argc - 1; kk++) {
+            if (strcmp(argv[kk], "-channel") == 0) {
+                cam->driver = atoi(argv[kk + 1]);
             }
-         }
-         if (strcmp(argv[kk], "-sensorcolor") == 0) {
-            if ( strcmp(argv[kk + 1],"0")==0 || strcmp(argv[kk + 1],"1")==0 ) {
-               cam->sensorColor = atoi(argv[kk + 1]);
-            } else {
-               //--- je renseigne le message d'erreur
-               strcpy(cam->msg, "-sensorcolor invalide parameter, must be : 1=color or 0=black and white");
-               webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
-               return 1;
+            if (strcmp(argv[kk], "-format") == 0) {
+                strcpy(formatname, argv[kk + 1]);
             }
-         }
-      }
-   }
+            if ( strcmp( argv[kk], "-debug_directory" ) == 0 ) {
+//                sprintf( log_file, "%s/libgrabber.log", argv[kk + 1] );
+                webcam_log( LOG_INFO, "%s : %s", argv[kk], argv[kk+1] );
+            }
+            if (strcmp(argv[kk], "-videomode") == 0) {
+                strcpy(videomode, argv[kk + 1]);
+            }
+            if (strcmp(argv[kk], "-longuepose") == 0) {
+                cam->longuepose = atoi(argv[kk + 1]);
+            }
+            if (strcmp(argv[kk], "-longueposelinkno") == 0) {
+                cam->longueposelinkno = atoi(argv[kk + 1]);
+            }
+            if (strcmp(argv[kk], "-longueposelinkbit") == 0) {
+                STRNCPY(cam->longueposelinkbit, argv[kk + 1]);
+            }
+            if (strcmp(argv[kk], "-longueposestart") == 0) {
+                cam->longueposestart = atoi(argv[kk + 1]);
+            }
+            if (strcmp(argv[kk], "-validframe") == 0) {
+                validFrame = atoi(argv[kk + 1]);
+                if (validFrame < 0) {
+                    sprintf(cam->msg,                      "-validFrame=%d invalid parameter, must be integer >= 0", validFrame);
+                    webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
+                    return 1;
+                }
+            }
+            if (strcmp(argv[kk], "-sensorcolor") == 0) {
+                if ( strcmp(argv[kk + 1],"0")==0 || strcmp(argv[kk + 1],"1")==0 ) {
+                    cam->sensorColor = atoi(argv[kk + 1]);
+                } else {
+                    //--- je renseigne le message d'erreur
+                    strcpy(cam->msg, "-sensorcolor invalide parameter, must be : 1=color or 0=black and white");
+                    webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
+                    return 1;
+                }
+            }
+        }
+    }
 
    // je charge le driver
 #if defined(OS_WIN)
    // WINDOWS :
-   if ( strcmp(videomode,"vfw") == 0 ) {
-      cam->params->capture = new CCaptureWinVfw();
-      cam->params->cropCapture = NULL;
-   }else {
+    if ( strcmp(videomode,"vfw") == 0 ) {
+        cam->params->capture = new CCaptureWinVfw();
+        cam->params->cropCapture = NULL;
+    } else {
 #ifdef LIBWEBCAM_WITH_DIRECTX
-      cam->params->capture = new CCaptureWinDirectx();
-      std::list<std::string> deviceList;
-      std::list<std::string>::iterator iterator;
-      BOOL result = ((CCaptureWinDirectx*) cam->params->capture)->getDeviceList(&deviceList, cam->msg);
-      if ( result == TRUE ) {
-         sprintf(cam->msg, "{ " );
-         for ( iterator =  deviceList.begin(); iterator != deviceList.end(); ++iterator ) {
-            char camName[256];
-            sprintf( camName, "{%s}", iterator->c_str() );
-            strcat( cam->msg, camName );
-         }
-         strcat( cam->msg, " }" );
-         deviceList.clear();
-         return 1;
-      } else {
-         return 1;
-      }
+        cam->params->capture = new CCaptureWinDirectx();
+        std::list<std::string> deviceList;
+        std::list<std::string>::iterator iterator;
+        BOOL result = ((CCaptureWinDirectx*) cam->params->capture)->getDeviceList(&deviceList, cam->msg);
+        if ( result == TRUE ) {
+            sprintf(cam->msg, "{ " );
+            for ( iterator =  deviceList.begin(); iterator != deviceList.end(); ++iterator ) {
+                char camName[256];
+                sprintf( camName, "{%s}", iterator->c_str() );
+                strcat( cam->msg, camName );
+            }
+            strcat( cam->msg, " }" );
+            deviceList.clear();
+            return 1;
+        } else {
+            return 1;
+        }
 #else // LIBWEBCAM_WITH_DIRECTX
-      strcpy(cam->msg, "directx is not available.");
-      webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
-      return 1;
+        strcpy(cam->msg, "directx is not available.");
+        webcam_log(LOG_DEBUG,"cam_init error: %s",cam->msg);
+        return 1;
 #endif // OS_WIN
-   }
+    }
 #else
    // LINUX
-   cam->params->capture = new CCaptureLinux(cam->portname);
+    cam->params->capture = new CCaptureLinux(cam->portname);
 #endif // ! OS_WIN
 
    if (cam->params->capture == NULL) {
@@ -663,8 +669,8 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
         return;
     }
 
-    webcam_log(LOG_DEBUG,"cam_read_ccd begin");
-    if (cam->longuepose == 1) {
+    webcam_log( LOG_DEBUG,"cam_read_ccd begin" );
+    if ( cam->longuepose == 1 ) {
         //long exposure
         int stop;
         if ( cam->longueposestart == 0 )
@@ -679,6 +685,11 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
     }
 
     result = cam->params->capture->grabFrame(cam->msg);
+    if ( result == FALSE ) {
+        webcam_log( LOG_ERROR, "cam_read_ccd error: %s", cam->msg );
+        return;
+    }
+
     cam_update_window(cam);
 
     if ( cam->sensorColor == 1 ) {
@@ -790,7 +801,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
         webcam_log(LOG_DEBUG,"cam_read_ccd end OK");
     }
     else {
-        webcam_log(LOG_DEBUG,"cam_read_ccd error: %s",cam->msg);
+        webcam_log( LOG_ERROR, "cam_read_ccd error: %s", cam->msg );
     }
 }
 

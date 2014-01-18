@@ -148,7 +148,10 @@ private :
 
     /* Conversion entre espaces de couleurs */
     void yuv420p_to_bgr24( unsigned char *yuv, unsigned char *rgb, int width, int height );
+    /* YUYV -> RVB */
     void yuv422_to_bgr24( unsigned char *yuv, unsigned char *bgr, int width, int height );
+    /* UYVY -> RVB */
+    void yuv422alt_to_bgr24( unsigned char *yuv, unsigned char *bgr, int width, int height );
     void rgb24_to_bgr24( unsigned char *rgb_s, unsigned char *rgb_d, int width, int height );
     void ng_color_yuv2rgb_init( void );
 
@@ -169,6 +172,7 @@ private :
     static const int FORMAT_RGB24 = 2;
     static const int FORMAT_YUV420 = 4;
     static const int FORMAT_BAYER_GRBG = 8;
+    static const int FORMAT_YUV422_ALT = 16;
 
     class local_v4l2_control_value {
         public:
