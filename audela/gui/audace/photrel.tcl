@@ -56,6 +56,68 @@
 #
 # =============================================================================
 
+# photrel_elem2ephem {2454506.376 0.514043} now 20 $audace(posobs,observateur,gps) [list  01h17m13.5s +74d51m20s J2000] 
+proc photrel_elem2ephem { List_elems_JDE_period Date_start nb_days {home ""} {List_coords ""}} {
+   global audace
+   set elems $List_elems_JDE_period
+   set jde0 [lindex $elems 0]
+   set p [lindex $elems 1]
+   set p2 [lindex $elems 2]
+   if {$p2==""} {
+      set p2 0
+   }
+   set jd1 [mc_date2jd $Date_start]
+   set jd2 [expr $jd1+$nb_days]
+   # JDmax = jde0 + p*E + p2*E*E
+   # recherche le E1 pour la date jd1
+   set a $p2
+   set b $p
+   set c [expr $jde0-$jd1]
+   if {$a!=0} {
+      set d [expr $b*$b-4*$a*$c]
+      set e1 [expr (-$b-sqrt($d))/(2.*$a)
+   } else {
+      set e1 [expr -1.*$c/$b]
+   }
+   set c [expr $jde0-$jd2]
+   if {$a!=0} {
+      set d [expr $b*$b-4*$a*$c]
+      set e2 [expr (-$b-sqrt($d))/(2.*$a)
+   } else {
+      set e2 [expr -1.*$c/$b]
+   }
+   set e1 [expr int(floor($e1))]
+   set e2 [expr int(ceil($e2))]   
+   if {$home==""} {
+      set home $audace(posobs,observateur,gps)
+   }
+   if {$List_coords!=""} {
+      lassign $List_coords Angle_Ra Angle_Dec Equinox
+      if {$Equinox==""} {
+         set Equinox J2000
+      }
+   }
+   for {set e $e1} {$e<=$e2} {incr e} {
+      set jdmax [expr $jde0 + $p*$e + $p2*$e*$e]
+      set elev_sun [lindex [mc_ephem {sun} [list $jdmax] [list ALTITUDE] -topo $home] 0]
+      if {$elev_sun>-20} {
+         continue
+      }
+      set elev 0
+      if {$List_coords!=""} {
+         set jd [mc_tt2bary $jdmax $Angle_Ra $Angle_Dec $Equinox $home]
+         set djd [expr $jd-$jdmax]
+         set jdmax [expr $jdmax-$djd]
+         set res [mc_radec2altaz $Angle_Ra $Angle_Dec $home $jdmax]
+         lassign $res az elev ha paral
+         if {$elev<20} {
+            continue
+         }
+      }
+      console::affiche_resultat "[string range [mc_date2iso8601 $jdmax] 0 end-4] [format %3d $e] [format %4.1f $elev] [format %4.1f $elev_sun]\n"      
+   }
+}
+ 
 # photrel_cat2con : Extract the center coordinates and the radius of a binary catalog of sources.
 # =============================================================================
 proc photrel_cat2con { args } {
