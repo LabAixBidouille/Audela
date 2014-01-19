@@ -202,7 +202,7 @@ struct _PrivateParams {
 #define LOG_WARNING 2
 #define LOG_INFO    3
 #define LOG_DEBUG   4
-int webcam_debug_level = LOG_DEBUG;
+int webcam_debug_level = LOG_INFO;
 
 #include <time.h>
 #include <sys/timeb.h>          /* ftime, struct timebuffer */
