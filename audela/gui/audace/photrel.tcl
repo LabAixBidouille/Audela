@@ -56,7 +56,7 @@
 #
 # =============================================================================
 
-# photrel_elem2ephem {2454506.376 0.514043} now 20 $audace(posobs,observateur,gps) [list  01h17m13.5s +74d51m20s J2000] 
+# photrel_elem2ephem {2454506.376 0.514043} now 20 $audace(posobs,observateur,gps) [list  01h17m13.5s +74d51m20s J2000]
 proc photrel_elem2ephem { List_elems_JDE_period Date_start nb_days {home ""} {List_coords ""}} {
    global audace
    set elems $List_elems_JDE_period
@@ -87,7 +87,7 @@ proc photrel_elem2ephem { List_elems_JDE_period Date_start nb_days {home ""} {Li
       set e2 [expr -1.*$c/$b]
    }
    set e1 [expr int(floor($e1))]
-   set e2 [expr int(ceil($e2))]   
+   set e2 [expr int(ceil($e2))]
    if {$home==""} {
       set home $audace(posobs,observateur,gps)
    }
@@ -114,10 +114,10 @@ proc photrel_elem2ephem { List_elems_JDE_period Date_start nb_days {home ""} {Li
             continue
          }
       }
-      console::affiche_resultat "[string range [mc_date2iso8601 $jdmax] 0 end-4] [format %3d $e] [format %4.1f $elev] [format %4.1f $elev_sun]\n"      
+      console::affiche_resultat "[string range [mc_date2iso8601 $jdmax] 0 end-4] [format %3d $e] [format %4.1f $elev] [format %4.1f $elev_sun]\n"
    }
 }
- 
+
 # photrel_cat2con : Extract the center coordinates and the radius of a binary catalog of sources.
 # =============================================================================
 proc photrel_cat2con { args } {
