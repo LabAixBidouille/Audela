@@ -167,6 +167,7 @@ namespace eval bdi_gui_cdl {
    proc ::bdi_gui_cdl::create_dialog { } {
 
       global audace
+      global bddconf
 
       set ::bdi_gui_cdl::fen .photometry
       if { [winfo exists $::bdi_gui_cdl::fen] } {
@@ -632,11 +633,21 @@ namespace eval bdi_gui_cdl {
 
 
             set block [frame $results.actionsave  -borderwidth 0 -cursor arrow -relief groove]
-            pack $block  -in $results -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+            pack $block  -in $results -anchor s -side top -expand 1 -padx 10 -pady 5
 
-                  button $block.sauve_result -text "Sauver" -borderwidth 2 -takefocus 1 \
+
+                  button $block.submit_result -text "Soumettre" -borderwidth 2 -takefocus 1 \
+                     -command "::bdi_gui_cdl::submit_reports"
+
+
+                  checkbutton $block.flag_submit -highlightthickness 0 -text " Le rapport a ete soumis  " \
+                     -font $bddconf(font,arial_10_b) -variable ::bdi_tools_cdl::reports_photom_submit
+
+
+                  button $block.sauve_result -text "Sauver tous les rapports" -borderwidth 2 -takefocus 1 \
                      -command "::bdi_gui_cdl::save_reports"
-                  pack   $block.sauve_result -side top -padx 3 -pady 3 -anchor c
+ 
+                  grid $block.submit_result  $block.flag_submit $block.sauve_result  -sticky news
 
 
          # Big DATA

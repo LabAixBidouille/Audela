@@ -2809,9 +2809,9 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       set part_objects [::bdi_gui_astrometry::get_objects]
       
       if {$::bdi_tools_astrometry::rapport_mpc_submit==0} {
-         set part_submit ".submitMPC.no"
+         set part_submit ".submit.no"
       } else {
-         set part_submit ".submitMPC.yes"
+         set part_submit ".submit.yes"
       }
       set part_batch ".Batch.${::bdi_tools_astrometry::rapport_batch}"
       
@@ -2836,8 +2836,21 @@ unset ::bdi_gui_astrometry::omcvaruna_d
 
          set part_objects ".Obj.$obj"
          set part_date "DateObs.$date"
+
+         # on efface tous les rapport qui pourraient exister et qui ont le meme batch
+         set liste [globr $dir]
+         foreach file $liste {
+            set pos [string first ${::bdi_tools_astrometry::rapport_batch} $file]
+            if {$pos !=-1} {
+               gren_info "Delete: $file\n"
+               set err [catch {file delete -force $file} msg]
+               if {$err} {gren_erreur $msg}
+            }
+         }
+         
+
          # Sauvegarde du commentaire
-         set file "${part_date}${part_objects}${part_batch}.readme.txt"
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.astrom.readme.txt"
          set file [file join $dir $file]
          set chan [open $file w]
          puts $chan "Comments :"
@@ -2853,14 +2866,14 @@ unset ::bdi_gui_astrometry::omcvaruna_d
          close $chan
          gren_info "Rapport MPC : $file\n"
          # Sauvegarde des donnees IMCCE
-         set file "${part_date}${part_objects}${part_batch}.txt"
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.txt"
          set file [file join $dir_astrom_txt $file]
          set chan [open $file w]
          puts $chan "[$::bdi_gui_astrometry::rapport_txt get 0.0 end]"
          close $chan
          gren_info "Rapport IMCCE TXT: $file\n"
          # Sauvegarde des donnees XML
-         set file "${part_date}${part_objects}${part_batch}.xml"
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.xml"
          set file [file join $dir_astrom_xml $file]
          set chan [open $file w]
          puts $chan "$::bdi_gui_astrometry::rapport_xml"
@@ -2885,9 +2898,9 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       set part_date    [::bdi_gui_astrometry::get_first_date]
       set part_objects [::bdi_gui_astrometry::get_objects]
       if {$::bdi_tools_astrometry::rapport_mpc_submit==0} {
-         set part_submit ".submitMPC.no"
+         set part_submit ".submit.no"
       } else {
-         set part_submit ".submitMPC.yes"
+         set part_submit ".submit.yes"
       }
       set part_batch ".Batch.${::bdi_tools_astrometry::rapport_batch}"
       
@@ -2899,14 +2912,14 @@ unset ::bdi_gui_astrometry::omcvaruna_d
       close $chan
       gren_info "Rapport MPC : $file\n"
       # Sauveagarde des donnees IMCCE
-      set file "${part_date}${part_objects}${part_batch}.txt"
+      set file "${part_date}${part_objects}${part_submit}${part_batch}.txt"
       set file [file join $::bdi_tools_astrometry::rapport_imc_dir $file]
       set chan [open $file w]
       puts $chan "[$::bdi_gui_astrometry::rapport_txt get 0.0 end]"
       close $chan
       gren_info "Rapport IMCCE TXT: $file\n"
       # Sauveagarde des donnees XML
-      set file "${part_date}${part_objects}${part_batch}.xml"
+      set file "${part_date}${part_objects}${part_submit}${part_batch}.xml"
       set file [file join $::bdi_tools_astrometry::rapport_xml_dir $file]
       set chan [open $file w]
       puts $chan "$::bdi_gui_astrometry::rapport_xml"

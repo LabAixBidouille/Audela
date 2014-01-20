@@ -52,8 +52,39 @@ proc ::bdi_gui_config::fermer { } {
 
    ::gui_cata_creation::closetoconf
    ::bdi_gui_config::recup_position
+   ::bdi_gui_config::closetoconf
+   
    destroy $This
 
+}
+
+proc ::bdi_gui_config::inittoconf { } {
+
+      global conf
+
+      if {! [info exists ::bdi_tools_astrometry::reports_astrom_mail] } {
+         if {[info exists conf(bddimages,astrometry,reports,mail)]} {
+            set ::bdi_tools_astrometry::reports_astrom_mail $conf(bddimages,astrometry,reports,mail)
+         } else {
+            set ::bdi_tools_astrometry::reports_astrom_mail ""
+         }
+      }
+      if {! [info exists ::bdi_tools_astrometry::reports_photom_mail] } {
+         if {[info exists conf(bddimages,photometry,reports,mail)]} {
+            set ::bdi_tools_astrometry::reports_photom_mail $conf(bddimages,photometry,reports,mail)
+         } else {
+            set ::bdi_tools_astrometry::reports_photom_mail ""
+         }
+      }
+
+}
+
+proc ::bdi_gui_config::closetoconf { } {
+
+      global conf
+   
+      set conf(bddimages,astrometry,reports,mail) $::bdi_tools_astrometry::reports_astrom_mail
+      set conf(bddimages,photometry,reports,mail) $::bdi_tools_astrometry::reports_photom_mail
 }
 
 #------------------------------------------------------------
@@ -272,6 +303,7 @@ proc ::bdi_gui_config::createDialog { } {
    set widthentry 30
 
    #--- Initialisation des parametres
+   ::bdi_gui_config::inittoconf
    ::gui_cata_creation::inittoconf 
    ::bdi_gui_astrometry::inittoconf
 
@@ -313,6 +345,10 @@ proc ::bdi_gui_config::createDialog { } {
       set astrom [frame $onglets.list.astrom]
       pack $astrom -in $onglets.list -expand yes -fill both 
       $onglets.list add $astrom -text "$caption(bdi_gui_config,tab_astrom)"
+
+      set reports [frame $onglets.list.reports]
+      pack $reports -in $onglets.list -expand yes -fill both 
+      $onglets.list add $reports -text "$caption(bdi_gui_config,tab_reports)"
 
       set others [frame $onglets.list.others]
       pack $others -in $onglets.list -expand yes -fill both 
@@ -875,6 +911,40 @@ proc ::bdi_gui_config::createDialog { } {
       grid $gril.lab5  $gril.val5 -sticky nse -pady 5
       grid $gril.lab3  $gril.val3 -sticky nse -pady 5
       grid $gril.lab4  $gril.val4 -sticky nse -pady 5
+      grid columnconfigure $gril 1 -pad 20
+
+   #----------------------------------------------------------------------------
+   #--- CONFIG Soumission des rapports
+   #----------------------------------------------------------------------------
+
+   #--- Cree un frame pour la liste des bddimages de l'utilisateur
+   frame $reports.conf -borderwidth 0 -relief groove
+   pack $reports.conf -in $reports -anchor w -side top -expand 0 -fill x -padx 10 -pady 10
+
+      #--- Cree un label pour le titre
+      label $reports.conf.reportsastrom -text "$caption(bdi_gui_config,titlereportsastrom)" -font $bddconf(font,arial_10_b)
+      pack $reports.conf.reportsastrom -in $reports.conf -side top -anchor c -padx 10 -pady 5
+
+      #--- Cree un frame pour le titre et le menu deroulant
+      set gril [frame $reports.conf.astrom -borderwidth 0 -relief solid]
+      pack $gril -in $reports.conf -anchor c -side top -expand 0 -padx 10 -pady 5
+
+         entry $gril.val1 -relief sunken -textvariable ::bdi_tools_astrometry::reports_astrom_mail -width 60
+
+      grid $gril.val1   -sticky nse -pady 5
+      grid columnconfigure $gril 1 -pad 20
+
+      #--- Cree un label pour le titre
+      label $reports.conf.reportsphotom -text "$caption(bdi_gui_config,titlereportsphotom)" -font $bddconf(font,arial_10_b)
+      pack $reports.conf.reportsphotom -in $reports.conf -side top -anchor c -padx 10 -pady 5
+
+      #--- Cree un frame pour le titre et le menu deroulant
+      set gril [frame $reports.conf.photom -borderwidth 0 -relief solid]
+      pack $gril -in $reports.conf -anchor c -side top -expand 0 -padx 10 -pady 5
+
+         entry $gril.val1 -relief sunken -textvariable ::bdi_tools_astrometry::reports_photom_mail -width 60
+
+      grid $gril.val1   -sticky nse -pady 5
       grid columnconfigure $gril 1 -pad 20
 
 
