@@ -367,8 +367,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          }
       }
    }
-	tel->ha_park=tel->coord_deg_ha0;
-	tel->dec_park=tel->coord_deg_dec0;
+	tel->park_adu_ha=tel->coord_adu_ha0;
+	tel->park_adu_dec=tel->coord_adu_dec0;
+	tel->park_deg_ha=tel->coord_deg_ha0;
+	tel->park_deg_dec=tel->coord_deg_dec0;
 
    // Init des positions moteurs
    sprintf(s,":j1"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j1);
@@ -1310,8 +1312,8 @@ int eqmod2_goto(struct telprop *tel)
 
 		// Etape4b : cas particulier du GOTO parking
 		if (tel->flag_gotoparking==1) {
-			adu_ha = tel->ha_park;
-			adu_dec = tel->dec_park;
+			adu_ha = tel->park_adu_ha;
+			adu_dec = tel->park_adu_dec;
 		}
 
 		// Etape 5: calcul du trajet a parcourir (en ADU)
