@@ -123,9 +123,11 @@ namespace eval bdi_gui_reports {
 
 
 
-   proc ::bdi_gui_reports::get_submit_mpc { file } {
-      set file "DateObs.2013-09-12.Obj.2003_OP32.submitMPC.no.Batch.Audela_BDI_2014-01-16T16:54:27_CET.readme.txt"
-      set pos [expr [string last "submitMPC." $file] + 10 ]
+   proc ::bdi_gui_reports::get_submit { file } {
+
+      set pos [string last "submit." $file]
+      if {$pos == -1} {return no}
+      set pos [expr $pos + 7 ]
       set file [string range $file $pos end]
       set pos [expr [string first "." $file] -1 ]
       return [string range $file 0 $pos]
@@ -133,16 +135,11 @@ namespace eval bdi_gui_reports {
 
    proc ::bdi_gui_reports::get_batch { file } {
    
-      set ext  [file extension $file]
-      set posbeg [expr [string last "Batch" $file] + 6]
-      set posend [expr [string last $ext $file] -1]
-      set batch [string range $file $posbeg $posend]
-      set posreadme [string last readme $batch]
-      if {$posreadme == -1} {
-         return $batch
-      } else  {
-         return [string range $batch 0 [expr $posreadme-2]]
-      }
+      set pos [expr [string last "Batch" $file] + 6]
+      set batch [string range $file $pos end]
+      set pos [expr [string first "." $batch] -1]
+      set batch [string range $batch 0 $pos]
+      return $batch
       
    }
 
@@ -201,9 +198,15 @@ namespace eval bdi_gui_reports {
                         set batch [::bdi_gui_reports::get_batch $file]
                         set tab($batch) 1
                         
-                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) "no"}
+                        if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,submit)]} {
+                           gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) not exist -> no\n"
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) "no"
+                        } else {
+                           gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) exist == $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)\n"
+                        }
                         if {$::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)!="yes"} {
-                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) [::bdi_gui_reports::get_submit_mpc $file]
+                           set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) [::bdi_gui_reports::get_submit $file]
+                           gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) <> yes -> $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)\n"
                         }
 
                         if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc) "-"}
@@ -430,6 +433,54 @@ namespace eval bdi_gui_reports {
    }
    
    #------------------------------------------------------------
+   ## Soumission au MPC
+   #  @return void
+   #
+   proc ::bdi_gui_reports::submit_reports { } {
+
+   }
+   
+   #------------------------------------------------------------
+   ## Flag du MPC
+   #  @return void
+   #
+   proc ::bdi_gui_reports::submit_flag { } {
+
+   }
+   
+   #------------------------------------------------------------
+   ## affiche dans la console le repertoire des donnees
+   #  @return void
+   #
+   proc ::bdi_gui_reports::get_workdir_reports { } {
+
+      global  bddconf 
+      
+      if {![info exists ::bdi_gui_reports::selected_obj]} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      if {$::bdi_gui_reports::selected_obj==""} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      
+      set obj $::bdi_gui_reports::selected_obj
+      
+      set curselection [$::bdi_tools_reports::data_reports curselection]
+      foreach select $curselection {
+
+         set block [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 1]
+         #gren_info "block = $block\n"
+         #gren_info "batch = $batch\n"
+         
+         set dir [file join $bddconf(dirreports) $obj $block]
+         gren_info "Repertoire de travail = $dir \n"
+      }
+   }
+   
+   #------------------------------------------------------------
    ## Lancement de la GUI
    #  @return void
    #
@@ -520,15 +571,15 @@ namespace eval bdi_gui_reports {
      set reports [frame $frm.reports  -borderwidth 1 -relief groove]
      pack $reports -in $frm -expand yes -fill both
 
-            set cols [list 0 "Date"        left  \
+            set cols [list 0 "1ere Date"   left  \
                            0 "Batch"       left \
-                           0 "Astrom TXT"  left \
-                           0 "Astrom XML"  left \
-                           0 "Astrom MPC"  left \
-                           0 "Photom TXT"  left \
-                           0 "Photom XML"  left \
-                           0 "Sub MPC"     left \
-                           0 "Comment"     left \
+                           0 "Astrom\n  TXT"  center \
+                           0 "Astrom\n  XML"  center \
+                           0 "Astrom\n  MPC"  center \
+                           0 "Photom\n  TXT"  center \
+                           0 "Photom\n  XML"  center \
+                           0 "Soumis"      center \
+                           0 "Commentaire" left \
                      ]
 
             # Table
@@ -568,16 +619,19 @@ namespace eval bdi_gui_reports {
 
                $reports.popupTbl add separator
  
+               $reports.popupTbl add command -label "Repertoire de travail" \
+                   -command "::bdi_gui_reports::get_workdir_reports" 
+               
                $reports.popupTbl add command -label "Effacer Entree" \
                    -command "::bdi_gui_reports::delete_reports" 
                
                $reports.popupTbl add separator
 
-               $reports.popupTbl add command -label "Soumettre au MPC" \
-                   -command "" 
+               $reports.popupTbl add command -label "Soumettre rapport" \
+                   -command "::bdi_gui_reports::submit_reports" 
                
-               $reports.popupTbl add command -label "Flag MPC" \
-                   -command "" 
+               $reports.popupTbl add command -label "Flag de soumission" \
+                   -command "::bdi_gui_reports::submit_flag" 
                
  
                
@@ -587,12 +641,12 @@ namespace eval bdi_gui_reports {
 
             # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
             #    Ascii
-            foreach ncol [list "Date" "Batch"] {
+            foreach ncol [list "1ere Date" "Batch"] {
                set pcol [expr int ([lsearch $cols $ncol]/3)]
                $::bdi_tools_reports::data_reports columnconfigure $pcol -sortmode ascii
             }
             #    Reel
-            foreach ncol [list "Astrom TXT" "Astrom XML" "Astrom MPC" "Photom TXT" "Photom XML"] {
+            foreach ncol [list "Astrom\n  TXT" "Astrom\n  XML" "Astrom\n  MPC" "Photom\n  TXT" "Photom\n  XML"] {
                set pcol [expr int ([lsearch $cols $ncol]/3)]
                $::bdi_tools_reports::data_reports columnconfigure $pcol -sortmode ascii
             }

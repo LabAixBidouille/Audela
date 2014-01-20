@@ -182,13 +182,6 @@ proc ::bdi_tools_astrometry::inittoconf { } {
          set ::bdi_tools_astrometry::rapport_cata ""
       }
    }
-   if {! [info exists ::bdi_tools_astrometry::rapport_desti] } {
-      if {[info exists conf(bddimages,astrometry,rapport,mpc_mail)]} {
-         set ::bdi_tools_astrometry::rapport_desti $conf(bddimages,astrometry,rapport,mpc_mail)
-      } else {
-         set ::bdi_tools_astrometry::rapport_desti "obs@cfa.harvard.edu"
-      }
-   }
    if {! [info exists ::bdi_tools_astrometry::rapport_mpc_dir] } {
       if {[info exists conf(bddimages,astrometry,rapport,mpc_dir)]} {
          set ::bdi_tools_astrometry::rapport_mpc_dir $conf(bddimages,astrometry,rapport,mpc_dir)
@@ -210,7 +203,14 @@ proc ::bdi_tools_astrometry::inittoconf { } {
          set ::bdi_tools_astrometry::rapport_xml_dir ""
       }
    }
-  set ::bdi_tools_astrometry::rapport_mpc_submit 0
+
+   if {[info exists conf(bddimages,astrometry,reports,mail)]} {
+      set ::bdi_tools_astrometry::rapport_desti $conf(bddimages,astrometry,reports,mail)
+   } else {
+      set ::bdi_tools_astrometry::rapport_desti ""
+   }
+
+   set ::bdi_tools_astrometry::rapport_mpc_submit 0
 }
 
 #----------------------------------------------------------------------------
@@ -587,6 +587,7 @@ proc ::bdi_tools_astrometry::extract_priam_results { file } {
 # @return void
 proc ::bdi_tools_astrometry::send_to_mpc { } {
 
+
    ::bdi_tools::sendmail::compose_with_thunderbird \
          $::bdi_tools_astrometry::rapport_desti \
          $::bdi_tools_astrometry::rapport_batch \
@@ -926,14 +927,6 @@ proc ::bdi_tools_astrometry::create_vartab { } {
    if {[info exists ::bdi_tools_astrometry::listscience]} {unset ::bdi_tools_astrometry::listscience}
    if {[info exists ::bdi_tools_astrometry::listdate]}    {unset ::bdi_tools_astrometry::listdate}
 
-# TESTASTROMETRY
-   catch {
-         array unset ::bdi_tools_astrometry::dxdy_name
-         array unset ::bdi_tools_astrometry::dxdy_date
-         array unset ::bdi_tools_astrometry::dxdy
-   }
-# TESTASTROMETRY
-
    set id_current_image 0
 
    foreach current_image $::tools_cata::img_list {
@@ -979,23 +972,6 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
          set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
 
-         if {$name == "WFIBC_117.403397+26.387455"} {
-            gren_info "res = $res_ra $res_dec \n"
-         }
-
-# TESTASTROMETRY
-         if {$name == "WFIBC_117.416265+26.453586" && $dateiso=="2013-01-06T22:52:15.000"} {
-            gren_erreur "ICI\n"
-            
-         }
-
-         set xsm [::bdi_tools_psf::get_val othf "xsm"]
-         set ysm [::bdi_tools_psf::get_val othf "ysm"]
-         set ::bdi_tools_astrometry::dxdy($name,$dateiso) [list  $xsm $ysm $err_xsm $err_ysm $res_ra $res_dec $ra $dec]
-         set ::bdi_tools_astrometry::dxdy_name($name) 1
-         set ::bdi_tools_astrometry::dxdy_date($dateiso) 1
-# TESTASTROMETRY
-
          if { $res_ra == "" || $res_dec == "" } {
             set rho     ""
             set res_ra  ""
@@ -1011,17 +987,19 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          if { $err_ysm != "" && $err_ysm != "-" } {
             set err_ysm   [format  "%.4f" $err_ysm]
          }
+         if { $mag != "" && $mag != "-" } {
+            set mag [format  "%.3f" $mag]
+         }
+         if { $err_mag != "" && $err_mag != "-" } {
+            set err_mag [format  "%.3f" $err_mag]
+         }
+
 
          set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] field $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhmx $fwhmy]
 
          lappend ::bdi_tools_astrometry::listref($name)     $dateiso
          lappend ::bdi_tools_astrometry::listdate($dateiso) $name
          set ::bdi_tools_astrometry::date_to_id($dateiso)   $id_current_image
-
-         if {$name == "WFIBC_117.403397+26.387455"} {
-            gren_info "xy = $xsm $ysm rho = $rho\n"
-         }
-
 
       }
 
@@ -1057,14 +1035,6 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          set fwhmx   [::bdi_tools_psf::get_val othf "fwhmx"]
          set fwhmy   [::bdi_tools_psf::get_val othf "fwhmy"]
 
-# TESTASTROMETRY
-         set xsm [::bdi_tools_psf::get_val othf "xsm"]
-         set ysm [::bdi_tools_psf::get_val othf "ysm"]
-         set ::bdi_tools_astrometry::dxdy($name,$dateiso) [list  $xsm $ysm $err_xsm $err_ysm $res_ra $res_dec $ra $dec]
-         set ::bdi_tools_astrometry::dxdy_name($name) 1
-         set ::bdi_tools_astrometry::dxdy_date($dateiso) 1
-# TESTASTROMETRY
-
          if { $res_ra == "" || $res_dec == "" } {
             set rho  ""
             set res_ra  ""
@@ -1079,6 +1049,12 @@ proc ::bdi_tools_astrometry::create_vartab { } {
          }
          if { $err_ysm != "" && $err_ysm != "-" } {
             set err_ysm   [format  "%.4f" $err_ysm]
+         }
+         if { $mag != "" && $mag != "-" } {
+            set mag [format  "%.3f" $mag]
+         }
+         if { $err_mag != "" && $err_mag != "-" } {
+            set err_mag [format  "%.3f" $err_mag]
          }
 
          set ::bdi_tools_astrometry::tabval($name,$dateiso) [list [expr $id + 1] "field" $ar $rho $res_ra $res_dec $ra $dec $mag $err_mag $err_xsm $err_ysm $fwhmx $fwhmy]
