@@ -659,7 +659,8 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	sprintf(ss,"{dead_delay_slew %f {s} {delay for a GOTO at the same place}} ",tel->dead_delay_slew); strcat(s,ss);
 	sprintf(ss,"{tempo %d {ms} {delay before to read a command}} ",tel->tempo); strcat(s,ss);
 	sprintf(ss,"{problem_motor %d {binary} {0=no pb 1=pb encoders}} ",tel->problem_motor); strcat(s,ss);
-	sprintf(ss,"{ha_park %f {deg} {motorRA Parking hour angle}} {dec_park %f {deg} {motorDEC Parking declination}} ",tel->ha_park,tel->dec_park); strcat(s,ss);
+	sprintf(ss,"{park_deg_ha %f {deg} {motorRA Parking hour angle}} {park_deg_dec %f {deg} {motorDEC Parking declination}} ",tel->park_deg_ha,tel->park_deg_dec); strcat(s,ss);
+	sprintf(ss,"{park_adu_ha %f {ADU} {motorRA Parking hour angle}} {park_adu_dec %f {ADU} {motorDEC Parking declination}} ",tel->park_adu_ha,tel->park_adu_dec); strcat(s,ss);
 	sprintf(ss,"{gotoblocking %d {binary} {default GOTO blocking 0|1=non_blocking|blocking}} ",tel->gotoblocking); strcat(s,ss);
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
@@ -673,7 +674,7 @@ int cmdTelGotoparking(ClientData clientData, Tcl_Interp *interp, int argc, char 
    struct telprop *tel;
    tel = (struct telprop *)clientData;   
 	tel->flag_gotoparking=1;
-	sprintf(s,"tel%d hadec goto {%f %f} -blocking 0",tel->telno,tel->ha_park,tel->dec_park);
+	sprintf(s,"tel%d hadec goto {%f %f} -blocking 0",tel->telno,tel->park_deg_ha,tel->park_deg_dec);
    Tcl_Eval(interp,s);
    strcpy(s,interp->result);
    Tcl_SetResult(interp,s,TCL_VOLATILE);

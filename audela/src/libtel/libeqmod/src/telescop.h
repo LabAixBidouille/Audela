@@ -119,8 +119,10 @@ struct telprop {
 	int gotodead_ms;
 	int gotoread_ms;
 	double dead_delay_slew; /* delai en secondes estime pour un slew sans bouger */
-	double ha_park;
-	double dec_park;
+	double park_adu_ha;
+	double park_adu_dec;
+	double park_deg_ha;
+	double park_deg_dec;
 	int gotoblocking;
 	double ha0;
 	int flag_gotoparking;
