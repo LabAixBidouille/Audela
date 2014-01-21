@@ -1847,19 +1847,15 @@ namespace eval bdi_tools_cdl {
    #----------------------------------------------------------------------------
    proc ::bdi_tools_cdl::save_reports { } {
 
-
+      global bddconf
 
      
       set tt0 [clock clicks -milliseconds]
       # Verfifie les repertoires
       
-      if {$::bdi_tools_cdl::rapport_txt_dir == ""} {
-         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie TXT"
-      }
-      if {$::bdi_tools_cdl::rapport_imc_dir == ""} {
-         return -code 1 "Veuillez entrer un nom de repertoire\ndans l'onglet \"Resultats\" :\nRepertoire de sortie IMCCE"
-      }
-
+      gren_info "::bdi_tools_cdl::rapport_txt_dir = $::bdi_tools_cdl::rapport_txt_dir\n"
+      gren_info "::bdi_tools_cdl::rapport_imc_dir = $::bdi_tools_cdl::rapport_imc_dir\n"
+   
       # Prepare les entetes
       set ::bdi_tools_cdl::rapport_batch [clock format [clock scan now] -format "Audela_BDI_%Y-%m-%dT%H:%M:%S_%Z"]
 
@@ -1943,6 +1939,29 @@ namespace eval bdi_tools_cdl {
 
       }
 
+      set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+      set ids 0
+      foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
+         incr ids
+         if {$o != 2} {continue}
+
+         set obj $name
+         set dir [file join $bddconf(dirreports) $obj]
+         set dir [file join $dir $date]
+
+         # on efface tous les rapport qui pourraient exister et qui ont le meme batch
+         set liste [globr $dir]
+         foreach file $liste {
+            set pos [string first ${::bdi_tools_cdl::rapport_batch} $file]
+            if {$pos !=-1} {
+               gren_info "Delete: $file\n"
+               set err [catch {file delete -force $file} msg]
+               if {$err} {gren_erreur $msg}
+            }
+         }
+      }
+
+
       # Enregistre les rapports
 
       ::bdi_tools_cdl::create_report_txt
@@ -1952,6 +1971,11 @@ namespace eval bdi_tools_cdl {
       global bddconf
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
       set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
+      if {$::bdi_tools_cdl::reports_photom_submit==0} {
+         set part_submit ".submit.no"
+      } else {
+         set part_submit ".submit.yes"
+      }
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
@@ -1966,7 +1990,7 @@ namespace eval bdi_tools_cdl {
 
          set part_objects ".Obj.$name"
          set part_date    "DateObs.$date"
-         set file "${part_date}${part_objects}${part_batch}.readme.txt"
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.readme.txt"
          set file [file join $dir $file]
 
          set chan [open $file w]
@@ -1999,6 +2023,13 @@ namespace eval bdi_tools_cdl {
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
       set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
 
+      if {$::bdi_tools_cdl::reports_photom_submit==0} {
+         set part_submit ".submit.no"
+      } else {
+         set part_submit ".submit.yes"
+      }
+
+
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
@@ -2016,7 +2047,7 @@ namespace eval bdi_tools_cdl {
 
          set part_objects ".Obj.$name"
          set part_date    "DateObs.$date"
-         set file "${part_date}${part_objects}${part_batch}.txt"
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.txt"
          set file [file join $dir_photom_txt $file]
          set chan [open $file w]
 
@@ -2095,6 +2126,12 @@ namespace eval bdi_tools_cdl {
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
       set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
 
+      if {$::bdi_tools_cdl::reports_photom_submit==0} {
+         set part_submit ".submit.no"
+      } else {
+         set part_submit ".submit.yes"
+      }
+
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
 
@@ -2114,7 +2151,7 @@ namespace eval bdi_tools_cdl {
 
          set part_objects ".Obj.$name"
          set part_date    "DateObs.$date"
-         set file "${part_date}${part_objects}${part_batch}.xml"
+         set file "${part_date}${part_objects}${part_submit}${part_batch}.xml"
          set file [file join $dir_photom_xml $file]
 
          # Init VOTable: defini la version et le prefix (mettre "" pour supprimer le prefixe)

@@ -636,18 +636,18 @@ namespace eval bdi_gui_cdl {
             pack $block  -in $results -anchor s -side top -expand 1 -padx 10 -pady 5
 
 
-                  button $block.submit_result -text "Soumettre" -borderwidth 2 -takefocus 1 \
-                     -command "::bdi_gui_cdl::submit_reports"
-
-
-                  checkbutton $block.flag_submit -highlightthickness 0 -text " Le rapport a ete soumis  " \
-                     -font $bddconf(font,arial_10_b) -variable ::bdi_tools_cdl::reports_photom_submit
+#                  button $block.submit_result -text "Soumettre" -borderwidth 2 -takefocus 1 \
+#                     -command "::bdi_gui_cdl::submit_reports"
+#
+#                  checkbutton $block.flag_submit -highlightthickness 0 -text " Le rapport a ete soumis  " \
+#                     -font $bddconf(font,arial_10_b) -variable ::bdi_tools_cdl::reports_photom_submit
 
 
                   button $block.sauve_result -text "Sauver tous les rapports" -borderwidth 2 -takefocus 1 \
                      -command "::bdi_gui_cdl::save_reports"
  
-                  grid $block.submit_result  $block.flag_submit $block.sauve_result  -sticky news
+#                  grid $block.submit_result  $block.flag_submit $block.sauve_result  -sticky news
+                  grid $block.sauve_result -sticky news
 
 
          # Big DATA
@@ -1337,6 +1337,7 @@ namespace eval bdi_gui_cdl {
          tk_messageBox -message "Erreur : $msg" -type ok
       }
    }
+
 
 
 
