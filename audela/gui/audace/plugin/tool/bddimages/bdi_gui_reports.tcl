@@ -71,6 +71,8 @@ namespace eval bdi_gui_reports {
    # On click
    proc ::bdi_gui_reports::cmdButton1Click_data_objects { w args } {
       
+      global bddconf
+      
       set curselection [$::bdi_tools_reports::data_objects curselection]
       set nb [llength $curselection]
       gren_info "nb select = $nb\n"
@@ -78,45 +80,91 @@ namespace eval bdi_gui_reports {
          tk_messageBox -message "Veuillez selectionner 1 seul objet" -type ok
       }
       
+      set cpt 0
+      foreach line [$::bdi_tools_reports::data_objects get 0 end] {
+         $::bdi_tools_reports::data_objects cellconfigure $cpt,0 -font $bddconf(font,arial_10)
+         incr cpt
+      }
+      
       foreach select $curselection {
+         $::bdi_tools_reports::data_objects cellconfigure $select,0 -font $bddconf(font,arial_10_b)
          set obj [lindex [$::bdi_tools_reports::data_objects get $select] 0]
          gren_info "Info sur l objet : $obj\n"
       }
       set ::bdi_gui_reports::selected_obj $obj
       
       
-      $::bdi_tools_reports::data_reports delete 0 end
+      $::bdi_tools_reports::data_firstdate delete 0 end
 
-      foreach block $::bdi_tools_reports::list_blocks($obj) {
+      foreach firstdate $::bdi_tools_reports::list_blocks($obj) {
          
-         foreach batch $::bdi_tools_reports::list_reports($obj,$block,batch) {
-            set line ""
-            
-            lappend line $block
-            lappend line $batch
-            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,txt)
-            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,xml)
-            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)
-            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,photom,txt)
-            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,photom,xml)
-            lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)
-            if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,comment)]} {
-               lappend line ""
-            } else {
-               lappend line $::bdi_tools_reports::list_reports($obj,$block,$batch,comment)
-            }
-            
-            
-            $::bdi_tools_reports::data_reports insert end $line
-         }
+         $::bdi_tools_reports::data_firstdate insert end $firstdate
+
       }
 
+      $::bdi_tools_reports::data_reports delete 0 end
 
    }
 
 
+
+   # On click
+   proc ::bdi_gui_reports::cmdButton1Click_data_firstdate { w args } {
+      
+      global bddconf
+      
+      gren_info "1Click : ($w) ($args)\n"
+      
+      set curselection [$::bdi_tools_reports::data_firstdate curselection]
+      set nb [llength $curselection]
+      gren_info "nb select = $nb\n"
+      if {$nb !=1 } {
+         tk_messageBox -message "Veuillez selectionner 1 seule date" -type ok
+      }
+      
+      set cpt 0
+      foreach line [$::bdi_tools_reports::data_firstdate get 0 end] {
+         $::bdi_tools_reports::data_firstdate cellconfigure $cpt,0 -font $bddconf(font,arial_10)
+         incr cpt
+      }
+      set select [lindex $curselection 0]
+      $::bdi_tools_reports::data_firstdate cellconfigure $select,0 -font $bddconf(font,arial_10_b)
+      set ::bdi_gui_reports::selected_firstdate [lindex [$::bdi_tools_reports::data_firstdate get $select] 0]
+
+      set obj       $::bdi_gui_reports::selected_obj
+      set firstdate $::bdi_gui_reports::selected_firstdate
+      
+      $::bdi_tools_reports::data_reports delete 0 end
+
+      foreach batch $::bdi_tools_reports::list_reports($obj,$firstdate,batch) {
+         set line ""
+         
+         lappend line $batch
+         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,txt)
+         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,xml)
+         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,mpc)
+         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,photom,txt)
+         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,photom,xml)
+         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,mpc,submit)
+         if {![info exists ::bdi_tools_reports::list_reports($obj,$firstdate,$batch,comment)]} {
+            lappend line ""
+         } else {
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,comment)
+         }
+         
+         
+         $::bdi_tools_reports::data_reports insert end $line
+      }
+      $::bdi_tools_reports::data_reports sortbycolumn 0 -decreasing
+      
+   }
+
+
+
+
    proc ::bdi_gui_reports::cmdButton1Click_data_reports { w args } {
 
+      gren_info "1Click : ($w) ($args)\n"
    }
 
 
@@ -133,6 +181,36 @@ namespace eval bdi_gui_reports {
       return [string range $file 0 $pos]
    }
 
+
+   proc ::bdi_gui_reports::switch_submit { file } {
+      
+      set pos [string last "submit." $file]
+      if {$pos == -1} {return -1}
+      
+      set deb  [string range $file 0 [expr $pos - 1]]
+      set last [string range $file [expr $pos + 7] end]
+      set pos [expr [string first "." $last] -1 ]
+      set flag [string range $last 0 $pos]
+      
+      set pos [expr [string first "." $last] ]
+      set last [string range $last $pos end]
+      
+      switch $flag {
+         "no" {
+            set newflag "yes"
+         }
+         "yes" {
+            set newflag "no"
+         }
+         default {
+            return -1
+         }
+      }
+      return "${deb}submit.${newflag}${last}"
+   }
+
+
+
    proc ::bdi_gui_reports::get_batch { file } {
    
       set pos [expr [string last "Batch" $file] + 6]
@@ -143,6 +221,14 @@ namespace eval bdi_gui_reports {
       
    }
 
+   proc ::bdi_gui_reports::get_uaicode { line char } {
+       
+      set pos [string last "IAU code" $line]
+      if {$pos == -1} {return -1}
+      set pos [expr [string last $char $line] +1]
+      set uaicode [string trim [string range $line $pos end]]
+      
+   }
 
 
    proc ::bdi_gui_reports::charge { } {
@@ -199,14 +285,14 @@ namespace eval bdi_gui_reports {
                         set tab($batch) 1
                         
                         if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,submit)]} {
-                           gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) not exist -> no\n"
+                           #gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) not exist -> no\n"
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) "no"
                         } else {
-                           gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) exist == $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)\n"
+                           #gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) exist == $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)\n"
                         }
                         if {$::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)!="yes"} {
                            set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit) [::bdi_gui_reports::get_submit $file]
-                           gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) <> yes -> $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)\n"
+                           #gren_info "list_reports($obj,$block,$batch,astrom,mpc,submit) <> yes -> $::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc,submit)\n"
                         }
 
                         if {![info exists ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc)]} {set ::bdi_tools_reports::list_reports($obj,$block,$batch,astrom,mpc) "-"}
@@ -282,11 +368,42 @@ namespace eval bdi_gui_reports {
       
       set tt0 [clock clicks -milliseconds]
 
-      $::bdi_tools_reports::data_objects delete 0 end
+      $::bdi_tools_reports::data_objects   delete 0 end
+      $::bdi_tools_reports::data_firstdate delete 0 end
+      $::bdi_tools_reports::data_reports   delete 0 end
       
+      set cpt 0
       foreach obj $::bdi_tools_reports::list_objects {
          $::bdi_tools_reports::data_objects insert end $obj
+         if {[info exists ::bdi_gui_reports::selected_obj]} {
+            if {$::bdi_gui_reports::selected_obj==$obj} {
+               $::bdi_tools_reports::data_objects  cellselection  set $cpt,0 $cpt,end
+            }
+         }
+         incr cpt
       }      
+      
+      if {[info exists ::bdi_gui_reports::selected_obj]} {
+
+         ::bdi_gui_reports::cmdButton1Click_data_objects ::bdi_tools_reports::data_objects
+      
+         if {[info exists ::bdi_gui_reports::selected_firstdate]} {
+         
+            set cpt 0
+            foreach firstdate [$::bdi_tools_reports::data_firstdate get 0 end] {
+               gren_info "line // $firstdate\n"
+               if  { $firstdate == $::bdi_gui_reports::selected_firstdate} {
+                  $::bdi_tools_reports::data_firstdate  cellselection  set $cpt,0 $cpt,end
+               }
+               incr cpt
+            }
+            ::bdi_gui_reports::cmdButton1Click_data_firstdate ::bdi_tools_reports::data_firstdate
+
+         }
+
+      }      
+
+
       
       # Fin de visualisation des donnees
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
@@ -320,19 +437,20 @@ namespace eval bdi_gui_reports {
          return
       }
       
+      set firstdate $::bdi_gui_reports::selected_firstdate
+      
       foreach select $curselection {
-         set block [lindex [$::bdi_tools_reports::data_reports get $select] 0]
-         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 1]
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 0]
       }
-      gren_info "block = $block\n"
+      gren_info "firstdate = $firstdate\n"
       gren_info "batch = $batch\n"
       gren_info "type = $type\n"
 
-      if {$::bdi_tools_reports::list_reports($obj,$block,$batch,$type)=="-"} {
-         tk_messageBox -message "Le rapport n existe pas\n Obj = $obj\nbatch = $batch\ntype=$type\n" -type ok
+      if {$::bdi_tools_reports::list_reports($obj,$firstdate,$batch,$type)=="-"} {
+         tk_messageBox -message "Le rapport $type n existe pas" -type ok
          return
       }
-      set file $::bdi_tools_reports::list_reports($obj,$block,$batch,$type,file)
+      set file $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,$type,file)
       gren_info "file = $file\n"
       
       
@@ -405,17 +523,17 @@ namespace eval bdi_gui_reports {
       }
       
       set obj $::bdi_gui_reports::selected_obj
-      
+      set firstdate $::bdi_gui_reports::selected_firstdate
       
       set curselection [$::bdi_tools_reports::data_reports curselection]
       foreach select $curselection {
 
-         set block [lindex [$::bdi_tools_reports::data_reports get $select] 0]
-         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 1]
-         #gren_info "block = $block\n"
+
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         #gren_info "block = $firstdate\n"
          #gren_info "batch = $batch\n"
          
-         set dir [file join $bddconf(dirreports) $obj $block]
+         set dir [file join $bddconf(dirreports) $obj $firstdate]
          #gren_info "dir = $dir batch = $batch\n"
          set liste [globr $dir]
          foreach file $liste {
@@ -426,19 +544,257 @@ namespace eval bdi_gui_reports {
                 if {$err} {gren_erreur $msg}
             }
          }
+
+         $::bdi_tools_reports::data_reports delete $select
+
       }
       
       ::bdi_gui_reports::charge
       
    }
+
+   proc ::bdi_gui_reports::build_mail { type batch file } {
+      
+      global conf
+      
+      switch $type {
+         "astrom_mpc" {
+            set desti $conf(bddimages,astrometry,reports,mail)
+            
+         }
+         "photom_txt" {
+            set desti $conf(bddimages,photometry,reports,mail)
+         }
+      }
+
+      set chan [open $file r]
+      set strl ""
+      while {[gets $chan line] >= 0} {
+         append strl "$line\n"
+      }
+      close $chan
+      puts $strl
+
+     ::bdi_tools::sendmail::compose_with_thunderbird $desti $batch $strl
+
+   }
    
    #------------------------------------------------------------
-   ## Soumission au MPC
+   ## Soumission quelconque
    #  @return void
    #
    proc ::bdi_gui_reports::submit_reports { } {
 
+
+      global conf
+      global bddconf
+      
+      if {![info exists ::bdi_gui_reports::selected_obj]} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      if {$::bdi_gui_reports::selected_obj==""} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      
+      set obj $::bdi_gui_reports::selected_obj
+      set firstdate $::bdi_gui_reports::selected_firstdate
+      
+      
+      set curselection [$::bdi_tools_reports::data_reports curselection]
+      foreach select $curselection {
+
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         set flag  [lindex [$::bdi_tools_reports::data_reports get $select] 6]
+         
+         #gren_info "firstdate = $firstdate\n"
+         #gren_info "batch = $batch\n"
+         #gren_info "flag  = $flag\n"
+         
+         switch $flag {
+            "no" {
+               set newflag "yes"
+            }
+            "yes" {
+               set newflag "no"
+            }
+            default {
+               set newflag "yes"
+            }
+         }
+         #gren_info "newflag  = $newflag\n"
+         
+         set file_astrom ""
+         set file_photom ""
+         set dir [file join $bddconf(dirreports) $obj $firstdate]
+         #gren_info "dir = $dir batch = $batch\n"
+         set liste [globr $dir]
+         set attachment ""
+         foreach file $liste {
+            set pos [string first $batch $file]
+            if {$pos !=-1} {
+               append attachment "file://${file},"
+
+               set ext  [file extension $file]
+               if {$ext == ".txt" && [string last "astrom_txt" $file]>0} { set file_astrom $file }
+               if {$ext == ".txt" && [string last "photom_txt" $file]>0} { set file_photom $file }
+            }
+         }
+         set uaicode -1
+
+         set body "Hi !\n"
+         append body "\n"
+         append body "You should find attached all files corresponding to the reduction of this set of observations.\n"
+         append body "A short header are present here :\n"
+         append body "\n"
+         
+         set type ""
+         
+         if {$file_astrom!=""} {
+            
+            append body "** ASTROMETRY REPORTS **\n"
+            append body "\n"
+
+            set chan [open $file_astrom r]
+            set cpt 0
+            while {[gets $chan line] >= 0} {
+               if {$uaicode == -1} {set uaicode [::bdi_gui_reports::get_uaicode $line ":"]}
+               if {$cpt >0} {append body "$line\n"}
+               incr cpt
+               if {$cpt >10} {break}
+            }
+            close $chan
+            
+            set type "ASTROM"
+            set to $conf(bddimages,astrometry,reports,mail)
+            
+         }
+            
+         if {$file_photom!=""} {
+        
+            append body "** PHOTOMETRY REPORTS **\n"
+            append body "\n"
+
+            set chan [open $file_photom r]
+            set cpt 0
+            while {[gets $chan line] >= 0} {
+               if {$uaicode == -1} {set uaicode [::bdi_gui_reports::get_uaicode $line "="]}
+               append body "$line\n"
+               incr cpt
+               if {$cpt >10} {break}
+            }
+            close $chan
+            
+            set type "PHOTOM"
+            set to $conf(bddimages,photometry,reports,mail)
+            
+         }
+         
+         set subject "\[OBSERVATION\]\[${type}\]\[$uaicode\]\[$firstdate\]\[$obj\] $batch"
+         
+         
+         if {$attachment != "" } {
+            set attachment [string range $attachment 0 end-1]
+            set attachment ",attachment='${attachment}'"
+         }
+         set err [catch {exec $::bdi_tools::sendmail::thunderbird --compose "to='${to}',subject='${subject}',body='${body}'${attachment}"} msg]
+         if {$err != 0} {
+            gren_erreur "ERROR: unable to launch thunderbird ($msg)"
+         }
+         
+      }
+   
+   
+   
+   
    }
+   #------------------------------------------------------------
+   ## Soumission au MPC
+   #  @return void
+   #
+   proc ::bdi_gui_reports::submit_reports_mpc { } {
+
+
+      global conf
+      global bddconf
+      
+      if {![info exists ::bdi_gui_reports::selected_obj]} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      if {$::bdi_gui_reports::selected_obj==""} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      
+      set obj $::bdi_gui_reports::selected_obj
+      set firstdate $::bdi_gui_reports::selected_firstdate
+      
+      
+      set curselection [$::bdi_tools_reports::data_reports curselection]
+      foreach select $curselection {
+
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         set flag  [lindex [$::bdi_tools_reports::data_reports get $select] 6]
+         
+         #gren_info "firstdate = $firstdate\n"
+         #gren_info "batch = $batch\n"
+         #gren_info "flag  = $flag\n"
+         
+         switch $flag {
+            "no" {
+               set newflag "yes"
+            }
+            "yes" {
+               set newflag "no"
+            }
+            default {
+               set newflag "yes"
+            }
+         }
+         #gren_info "newflag  = $newflag\n"
+         
+         set dir [file join $bddconf(dirreports) $obj $firstdate]
+         #gren_info "dir = $dir batch = $batch\n"
+         set liste [globr $dir]
+         foreach file $liste {
+            set pos [string first $batch $file]
+            if {$pos !=-1} {
+               #gren_info "file: $file\n"
+               set ext  [file extension $file]
+               if {$ext == ".mpc" && [string last "astrom_mpc" $file]>0} {
+                  gren_info "envoyer au mpc : $file\n"
+                  ::bdi_gui_reports::build_window $batch $file
+               }
+            }
+         }
+         
+         
+      }
+   
+   
+   
+   
+   }
+
+   #------------------------------------------------------------
+   ## Fenetre de clicouillage avant soumission par email
+   #  @return void
+   #
+   proc ::bdi_gui_reports::build_window { batch file} {
+   
+       set to      ""
+       set subject ""
+       set body    ""
+   
+       gren_info "Soumission MPC\n"
+       gren_info "to : $to\n"
+       gren_info "subject : $subject\n"
+       gren_info "body : $body\n"
+   }
+   
+   
    
    #------------------------------------------------------------
    ## Flag du MPC
@@ -446,6 +802,69 @@ namespace eval bdi_gui_reports {
    #
    proc ::bdi_gui_reports::submit_flag { } {
 
+      global bddconf
+      
+      if {![info exists ::bdi_gui_reports::selected_obj]} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      if {$::bdi_gui_reports::selected_obj==""} {
+         tk_messageBox -message "Veuillez selectionner un objet dans la liste haute" -type ok
+         return
+      }
+      
+      set obj $::bdi_gui_reports::selected_obj
+      set firstdate $::bdi_gui_reports::selected_firstdate
+      
+      
+      set curselection [$::bdi_tools_reports::data_reports curselection]
+      foreach select $curselection {
+
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         set flag  [lindex [$::bdi_tools_reports::data_reports get $select] 6]
+         
+         #gren_info "firstdate = $firstdate\n"
+         #gren_info "batch = $batch\n"
+         #gren_info "flag  = $flag\n"
+         
+         switch $flag {
+            "no" {
+               set newflag "yes"
+            }
+            "yes" {
+               set newflag "no"
+            }
+            default {
+               set newflag "yes"
+            }
+         }
+         #gren_info "newflag  = $newflag\n"
+         
+         set dir [file join $bddconf(dirreports) $obj $firstdate]
+         #gren_info "dir = $dir batch = $batch\n"
+         set liste [globr $dir]
+         foreach file $liste {
+            set pos [string first $batch $file]
+            if {$pos !=-1} {
+               #gren_info "file: $file\n"
+               set newfile [::bdi_gui_reports::switch_submit $file]
+               #gren_info "newfile: $newfile\n"
+               if {$newfile!=-1} {
+                  set err [catch {file rename -force $file $newfile} msg]
+                  if {$err} {gren_erreur $msg}
+               }
+            }
+         }
+         
+         
+         
+         
+         
+         $::bdi_tools_reports::data_reports cellconfigure $select,6 -text $newflag
+         
+      }
+      
+      #::bdi_gui_reports::charge
    }
    
    #------------------------------------------------------------
@@ -466,16 +885,16 @@ namespace eval bdi_gui_reports {
       }
       
       set obj $::bdi_gui_reports::selected_obj
+      set firstdate $::bdi_gui_reports::selected_firstdate
       
       set curselection [$::bdi_tools_reports::data_reports curselection]
       foreach select $curselection {
 
-         set block [lindex [$::bdi_tools_reports::data_reports get $select] 0]
-         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 1]
-         #gren_info "block = $block\n"
+         set batch [lindex [$::bdi_tools_reports::data_reports get $select] 0]
+         #gren_info "firstdate = $firstdate\n"
          #gren_info "batch = $batch\n"
          
-         set dir [file join $bddconf(dirreports) $obj $block]
+         set dir [file join $bddconf(dirreports) $obj $firstdate]
          gren_info "Repertoire de travail = $dir \n"
       }
    }
@@ -521,58 +940,92 @@ namespace eval bdi_gui_reports {
       pack $frm -in $::bdi_gui_reports::fen -anchor s -side top -expand yes -fill both -padx 10 -pady 5
 
 
+     set doubletable [frame $frm.doubletable  -borderwidth 1 -relief groove]
+     pack $doubletable -in $frm -expand yes -fill both
 
-     set objects [frame $frm.objects  -borderwidth 1 -relief groove]
-     pack $objects -in $frm -expand yes -fill both
 
-            set cols [list 0 "Name"    left  \
-                           0 "Astrom"  right \
-                           0 "Photom"  right \
-                           0 "MPC"     right \
-                     ]
+        set objects [frame $doubletable.objects  -borderwidth 1 -relief groove]
+        pack $objects -in $doubletable -expand yes -fill both -side left
 
-            # Table
-            set ::bdi_tools_reports::data_objects $objects.table
-            tablelist::tablelist $::bdi_tools_reports::data_objects \
-              -columns $cols \
-              -labelcommand tablelist::sortByColumn \
-              -xscrollcommand [ list $objects.hsb set ] \
-              -yscrollcommand [ list $objects.vsb set ] \
-              -selectmode extended \
-              -activestyle none \
-              -stripebackground "#e0e8f0" \
-              -showseparators 1
+               set cols [list 0 "Objet"    left  \
+                        ]
 
-            # Scrollbar
-            scrollbar $objects.hsb -orient horizontal -command [list $::bdi_tools_reports::data_objects xview]
-            pack $objects.hsb -in $objects -side bottom -fill x
-            scrollbar $objects.vsb -orient vertical -command [list $::bdi_tools_reports::data_objects yview]
-            pack $objects.vsb -in $objects -side right -fill y 
+               # Table
+               set ::bdi_tools_reports::data_objects $objects.table
+               tablelist::tablelist $::bdi_tools_reports::data_objects \
+                 -columns $cols \
+                 -labelcommand tablelist::sortByColumn \
+                 -xscrollcommand [ list $objects.hsb set ] \
+                 -yscrollcommand [ list $objects.vsb set ] \
+                 -selectmode extended \
+                 -activestyle none \
+                 -stripebackground "#e0e8f0" \
+                 -showseparators 1
 
-            # Pack la Table
-            pack $::bdi_tools_reports::data_objects -in $objects -expand yes -fill both
+               # Scrollbar
+               scrollbar $objects.hsb -orient horizontal -command [list $::bdi_tools_reports::data_objects xview]
+               pack $objects.hsb -in $objects -side bottom -fill x
+               scrollbar $objects.vsb -orient vertical -command [list $::bdi_tools_reports::data_objects yview]
+               pack $objects.vsb -in $objects -side right -fill y 
 
-            # Binding
-            bind $::bdi_tools_reports::data_objects <<ListboxSelect>> [ list ::bdi_gui_reports::cmdButton1Click_data_objects %W ]
-            bind [$::bdi_tools_reports::data_objects bodypath] <ButtonPress-3> [ list tk_popup $objects.popupTbl %X %Y ]
+               # Pack la Table
+               pack $::bdi_tools_reports::data_objects -in $objects -expand yes -fill both
 
-            # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
-            #    Ascii
-            foreach ncol [list "Name"] {
-               set pcol [expr int ([lsearch $cols $ncol]/3)]
-               $::bdi_tools_reports::data_objects columnconfigure $pcol -sortmode ascii
-            }
-            #    Reel
-            foreach ncol [list "Astrom" "Photom" "MPC"] {
-               set pcol [expr int ([lsearch $cols $ncol]/3)]
-               $::bdi_tools_reports::data_objects columnconfigure $pcol -sortmode ascii
-            }
+               # Binding
+               bind $::bdi_tools_reports::data_objects <<ListboxSelect>> [ list ::bdi_gui_reports::cmdButton1Click_data_objects %W ]
+               bind [$::bdi_tools_reports::data_objects bodypath] <ButtonPress-3> [ list tk_popup $objects.popupTbl %X %Y ]
+
+               # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
+               #    Ascii
+               foreach ncol [list "Objet"] {
+                  set pcol [expr int ([lsearch $cols $ncol]/3)]
+                  $::bdi_tools_reports::data_objects columnconfigure $pcol -sortmode ascii
+               }
+
+        set firstdate [frame $doubletable.firstdate  -borderwidth 1 -relief groove]
+        pack $firstdate -in $doubletable -expand yes -fill both -side left
+
+               set cols [list 0 "1ere Date"    left  \
+                        ]
+
+               # Table
+               set ::bdi_tools_reports::data_firstdate $firstdate.table
+               tablelist::tablelist $::bdi_tools_reports::data_firstdate \
+                 -columns $cols \
+                 -labelcommand tablelist::sortByColumn \
+                 -xscrollcommand [ list $firstdate.hsb set ] \
+                 -yscrollcommand [ list $firstdate.vsb set ] \
+                 -selectmode extended \
+                 -activestyle none \
+                 -stripebackground "#e0e8f0" \
+                 -showseparators 1
+
+               # Scrollbar
+               scrollbar $firstdate.hsb -orient horizontal -command [list $::bdi_tools_reports::data_firstdate xview]
+               pack $firstdate.hsb -in $firstdate -side bottom -fill x
+               scrollbar $firstdate.vsb -orient vertical -command [list $::bdi_tools_reports::data_firstdate yview]
+               pack $firstdate.vsb -in $firstdate -side right -fill y 
+
+               # Pack la Table
+               pack $::bdi_tools_reports::data_firstdate -in $firstdate -expand yes -fill both
+
+               # Binding
+               bind $::bdi_tools_reports::data_firstdate <<ListboxSelect>> [ list ::bdi_gui_reports::cmdButton1Click_data_firstdate %W ]
+               bind [$::bdi_tools_reports::data_firstdate bodypath] <ButtonPress-3> [ list tk_popup $firstdate.popupTbl %X %Y ]
+
+               # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
+               #    Ascii
+               foreach ncol [list "1ere Date"] {
+                  set pcol [expr int ([lsearch $cols $ncol]/3)]
+                  $::bdi_tools_reports::data_firstdate columnconfigure $pcol -sortmode ascii
+               }
+
+
 
      set reports [frame $frm.reports  -borderwidth 1 -relief groove]
      pack $reports -in $frm -expand yes -fill both
 
-            set cols [list 0 "1ere Date"   left  \
-                           0 "Batch"       left \
+            set cols [list 0 "Batch"       left \
                            0 "Astrom\n  TXT"  center \
                            0 "Astrom\n  XML"  center \
                            0 "Astrom\n  MPC"  center \
@@ -627,6 +1080,9 @@ namespace eval bdi_gui_reports {
                
                $reports.popupTbl add separator
 
+               $reports.popupTbl add command -label "Soumettre rapport MPC" \
+                   -command "::bdi_gui_reports::submit_reports_mpc" 
+               
                $reports.popupTbl add command -label "Soumettre rapport" \
                    -command "::bdi_gui_reports::submit_reports" 
                
@@ -641,7 +1097,7 @@ namespace eval bdi_gui_reports {
 
             # tri des colonnes (ascii|asciinocase|command|dictionary|integer|real)
             #    Ascii
-            foreach ncol [list "1ere Date" "Batch"] {
+            foreach ncol [list "Batch"] {
                set pcol [expr int ([lsearch $cols $ncol]/3)]
                $::bdi_tools_reports::data_reports columnconfigure $pcol -sortmode ascii
             }
