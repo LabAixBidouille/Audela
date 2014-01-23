@@ -363,6 +363,7 @@ proc ::eqmod_control::display_table_decimale_compil { } {
 
  proc test_eqmod { } {
 
+      gren_info "a1 = HEX [tel1 putread :a1] = DEC [tel1 decode [tel1 putread :a1]]\n"
       gren_info "a2 = HEX [tel1 putread :a2] = DEC [tel1 decode [tel1 putread :a2]]\n"
       gren_info "b1 = HEX [tel1 putread :b1] = DEC [tel1 decode [tel1 putread :b1]]\n"
       gren_info "b2 = HEX [tel1 putread :b2] = DEC [tel1 decode [tel1 putread :b2]]\n"
