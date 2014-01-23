@@ -61,7 +61,7 @@ proc ::eqmod::decode { h {algo 0} } {
 
    if {$algo == 0} {
       set i [string range $h 4 5][string range $h 2 3][string range $h 0 1]
-      set d [expr int(0x${i}00)/256]
+      set d [expr int(0x${i})]
    } else {
       set n [string length [format %0X -1]]
       set sig [expr int(0x[string index $h 4])]
