@@ -55,15 +55,24 @@ proc ::eqmod::ressource { } {
 
 # Conversion hexadecimal -> decimal
 # input: h code hexadecimal
+#        algo choix de l'algo de decodage (0|1)
 # return valeur decimale correspondante
-proc ::eqmod::decode { h } {
+proc ::eqmod::decode { h {algo 0} } {
 
-   set i [string range $h 4 5][string range $h 2 3][string range $h 0 1]
-   set d [expr int(0x$i)]
-
+   if {$algo == 0} {
+      set i [string range $h 4 5][string range $h 2 3][string range $h 0 1]
+      set d [expr int(0x$i)]
+   } else {
+      set n [string length [format %0X -1]]
+      set sig [expr int(0x[string index $h 4])]
+      set sym [expr {$sig<=7 ? 0 : F}]
+      set comp [string repeat $sym [expr $n-6]]
+      set d [expr int(0x${comp}[ string range $h 4 5 ][ string range $h 2 3 ][ string range $h 0 1 ])]
+   }
    if {$::eqmod::log} { ::console::affiche_erreur "decode (HEX) $h => (DEC) $d\n" }
 
    return $d
+
 }
 
 # Conversion decimal -> hexadecimal
@@ -94,12 +103,12 @@ proc ::eqmod::get_lst {} {
 
 }
 
-# Direction E/W pointee, selon l'angle horaire: W (270o-360o) ou E (0o-180o)
+# Direction E/W pointee, selon l'angle horaire: E (270o-360o) ou W (0o-180o)
 # input: h_deg angle horaire en deg.
 # return E | W
 proc ::eqmod::get_direction { h_deg } {
 
-   return [expr {($h_deg >= 0.0 && $h_deg < 180.0) ? "W" : "E"}]
+   return [expr {($h_deg > 0.0 && $h_deg < 180.0) ? "W" : "E"}]
 
 }
 
@@ -138,11 +147,10 @@ proc ::eqmod::hour_to_mount { h_deg dec_deg } {
    if {$::eqmod::log} { ::console::affiche_erreur "hour->mount input: $h_deg $dec_deg\n" }
 
    set h_deg [expr 180.0 + $h_deg]
-   while {$h_deg > 360.0} {
+   while {$h_deg >= 360.0} {
       set h_deg [expr $h_deg - 360.0]
    }
 
-   if {$h_deg == 360.0} { set h_deg 0.0 }
    if {$dec_deg == 360.0} { set dec_deg 0.0 }
 
    if {$::eqmod::log} { ::console::affiche_erreur "hour->mount result: $h_deg $dec_deg\n" }
@@ -159,12 +167,11 @@ proc ::eqmod::mount_to_hour { m1_deg m2_deg } {
 
    if {$::eqmod::log} { ::console::affiche_erreur "mount->hour input: $m1_deg $m2_deg\n" }
 
-   set m1_deg [expr 180.0 + $m1_deg]
-   while {$m1_deg > 360.0} {
-      set m1_deg [expr $m1_deg-360.0]
+   set m1_deg [expr $m1_deg + 180.0]
+   while {$m1_deg >= 360.0} {
+      set m1_deg [expr $m1_deg - 360.0]
    }
 
-   if {$m1_deg == 360.0} { set m1_deg 0.0 }
    if {$m2_deg == 360.0} { set m2_deg 0.0 }
 
    if {$m2_deg  > 90.0} { set m2_deg [expr 180.0-$m2_deg] }
@@ -419,22 +426,29 @@ proc ::eqmod::goto_mount_coord { m1 m2 } {
    set pi [expr 2*asin(1.0)]
    set debug 0
 
+   #
+   set r [::eqmod::mount_to_hour $m1 $m2]
+   set hm1 [lindex $r 0]
+   set hm2 [lindex $r 1]
+
    # Recupere les coordonnees horaires courantes du telescope
    ::eqmod::get_mount_hour_coord h_deg dec_deg
 
    # Direction courante du telescope, selon que l'on pointe vers un angle horaire W (270o-360o) ou E (0o-180o)
    set direction_crte [::eqmod::get_direction $h_deg]
    # Direction vers laquelle va pointer le telescope, selon que l'on pointe vers un angle horaire W (270o-360o) ou E (0o-180o)
-   set direction_nxt [::eqmod::get_direction $m1]
+   set direction_nxt [::eqmod::get_direction $hm1]
 
-   ::console::affiche_resultat "Coordonnees horaires a pointer: $m1 $m2 (direction: $direction_nxt)\n"
+   ::console::affiche_resultat "Coordonnees horaires a pointer: $hm1 $hm2 (direction: $direction_nxt)\n"
    ::console::affiche_resultat "Coordonnees horaires actuelles du telescope (H,Dec): $h_deg $dec_deg (direction: $direction_crte)\n"
 
    # Calcul du deplacement a effectuer sur l'axe horaire
    # -- difference d'angle horaire (deg)
-   set diff_ha [expr ($m1 - $h_deg) - 180.0]
+   set diff_ha [expr $hm1 - $h_deg]
+gren_erreur "diff_ha = $diff_ha :: $direction_nxt != $direction_crte \n"
    if {$diff_ha < -180.0} { set diff_ha [expr $diff_ha + 360.0] }
    if {[expr $h_deg + $diff_ha] < 0.0} { set diff_ha [expr $diff_ha + 360.0] }
+gren_erreur "  ==> diff_ha = $diff_ha\n"
    # -- traitement des cas particuliers
    #set sinhd [expr sin($h_deg*$pi/180.0)]
    #set sgn_sinhd 1.0
@@ -453,23 +467,26 @@ proc ::eqmod::goto_mount_coord { m1 m2 } {
 
    # Calcul du deplacement a effectuer sur l'axe de declinaison
    # -- difference de declinaison (deg)
-   set diff_dec [expr $dec_deg - $m2]
+   set diff_dec [expr $dec_deg - $hm2]
    # -- sens de la difference selon le quadrant
    set diff_dec [expr {$direction_nxt == "E" ? [expr -$diff_dec] : $diff_dec}]
+gren_erreur "diff_dec = $diff_dec :: $direction_nxt != $direction_crte \n"
    # -- si on franchi le meridien ... retournement en delta ou non
    if {$direction_nxt != $direction_crte} {
       set coef 1.0
-      if {$m1 == 0.0 || $h_deg == 0.0} { set coef 0.0 }
+      if {$hm1 == 0.0 || $h_deg == 0.0} { set coef 0.0 }
       if {$direction_nxt == "E"} {
          set diff_dec [expr ($dec_deg-90.0)*($coef+1.0) + $diff_dec*$coef]
       } else {
          set diff_dec [expr (90.0-$dec_deg)*($coef+1.0) + $diff_dec*$coef]
       }
    }
+gren_erreur "  ==> diff_dec = $diff_dec\n"
    # -- calcul du deplacement
    set nxt_m2 [expr int($::eqmod::tel_a2*$diff_dec/360.0)]
 
    ::console::affiche_resultat "Deplacement a effectuer axe 2: $nxt_m2 ($diff_dec)\n"
+#return 0
 
    # Mouvement de l'axe 2
    if {$nxt_m2 != 0} {
@@ -682,10 +699,9 @@ proc ::eqmod::start_drift { speed {axe 1} {sense 1} } {
 
       # Condition de sortie
       set i [expr $i+1]
-      if {$i == 50} { set ok 0 }
+      if {$i == 100} { set ok 0 }
    }
 
-   after 1000
    ::eqmod::stop_drift $axe
    
    set t1 [clock clicks -milliseconds]

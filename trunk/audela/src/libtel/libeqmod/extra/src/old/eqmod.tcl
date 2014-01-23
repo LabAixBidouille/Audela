@@ -17,10 +17,10 @@ namespace eval eqmod {
 
       global audace
 
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src init.tcl]\""
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_move.tcl]\""
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod.tcl]\""
-      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src eqmod_tools.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src old init.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src old eqmod_move.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src old eqmod.tcl]\""
+      uplevel #0 "source \"[file join $audace(rep_install) src libtel libeqmod extra src old eqmod_tools.tcl]\""
 
    }
 
