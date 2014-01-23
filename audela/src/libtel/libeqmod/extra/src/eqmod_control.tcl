@@ -13,6 +13,8 @@ namespace eval eqmod_control {
 #
 proc ::eqmod_control::init { } {
 
+   tel::create eqmod /dev/ttyUSB0
+
    ::eqmod::init_mount
    ::eqmod::init_mount_to_hour_coord 180 90
 
@@ -31,7 +33,7 @@ proc ::eqmod_control::park { } {
    ::console::affiche_erreur   "----------------------------------------------------------\n"
    
    # Goto
-   ::eqmod::goto_hour_coord 0 90
+   ::eqmod::goto_hour_coord 180 90
 
    # Attente de l'arret complet des axes
    set m1_state [::eqmod::get_mount_state 1]
@@ -170,10 +172,10 @@ proc ::eqmod_control::test5 { } {
 #
 proc ::eqmod_control::test6 { speed axe {sens 1} } {
 
-   set $d [expr {$sens == 0 ? "croissant" : "decroissant"}]
-   ::console::affiche_resultat "TEST 6: suivi quelconque axe $axe a la vitesse $speed (sens $d)\n"
+   set d [expr {$sens == 0 ? "croissant" : "decroissant"}]
+   ::console::affiche_resultat "TEST 6: suivi quelconque axe $axe a la vitesse x$speed (sens $d)\n"
 
-   ::eqmod::start_drift $speed $axe $sens
+   ::eqmod::start_drift [expr $speed*360.0/86164.0] $axe $sens
    ::eqmod::stop_drift $axe
 
 }
@@ -234,5 +236,77 @@ proc ::eqmod_control::get_star_coords { name } {
    set hdec [::eqmod::coord_equatorial_to_hour $ra_deg $dec_deg]
 
    return [list $ra_deg $dec_deg [lindex $hdec 0] [lindex $hdec 1]]
+
+}
+
+#
+#
+#
+proc ::eqmod_control::test_table_decimale { } {
+   
+   set v [::eqmod::decode FFFF7F] ; if {$v !=  8388607} { return -1}
+   set v [::eqmod::decode 000100] ; if {$v !=      256} { return -1}
+   set v [::eqmod::decode 100000] ; if {$v !=       16} { return -1}
+   set v [::eqmod::decode 0F0000] ; if {$v !=       15} { return -1}
+   set v [::eqmod::decode 010000] ; if {$v !=        1} { return -1}
+   set v [::eqmod::decode 000000] ; if {$v !=        0} { return -1}
+   set v [::eqmod::decode FFFFFF] ; if {$v !=       -1} { return -1}
+   set v [::eqmod::decode F1FFFF] ; if {$v !=      -15} { return -1}
+   set v [::eqmod::decode F0FFFF] ; if {$v !=      -16} { return -1}
+   set v [::eqmod::decode 00FFFF] ; if {$v !=     -256} { return -1}
+   set v [::eqmod::decode 000080] ; if {$v != -8388608} { return -1}
+   
+   set v [::eqmod::encode  8388607] ; if {$v != "FFFF7F"} { return -1}
+   set v [::eqmod::encode      256] ; if {$v != "000100"} { return -1}
+   set v [::eqmod::encode       16] ; if {$v != "100000"} { return -1}
+   set v [::eqmod::encode       15] ; if {$v != "0F0000"} { return -1}
+   set v [::eqmod::encode        1] ; if {$v != "010000"} { return -1}
+   set v [::eqmod::encode        0] ; if {$v != "000000"} { return -1}
+   set v [::eqmod::encode       -1] ; if {$v != "FFFFFF"} { return -1}
+   set v [::eqmod::encode      -15] ; if {$v != "F1FFFF"} { return -1}
+   set v [::eqmod::encode      -16] ; if {$v != "F0FFFF"} { return -1}
+   set v [::eqmod::encode     -256] ; if {$v != "00FFFF"} { return -1}
+   set v [::eqmod::encode -8388608] ; if {$v != "000080"} { return -1}
+
+   set v [::eqmod::encode      620] ; if {$v != "6C0200"} { return -1}
+   set v [::eqmod::decode   6C0200] ; if {$v !=      620} { return -1}
+
+   return 0   
+   
+}
+
+#
+#
+#
+proc ::eqmod_control::test_table_decimale_compil { } {
+
+   set v [tel1 decode FFFF7F] ; if {$v !=  8388607} { return -1}
+   set v [tel1 decode 000100] ; if {$v !=      256} { return -1}
+   set v [tel1 decode 100000] ; if {$v !=       16} { return -1}
+   set v [tel1 decode 0F0000] ; if {$v !=       15} { return -1}
+   set v [tel1 decode 010000] ; if {$v !=        1} { return -1}
+   set v [tel1 decode 000000] ; if {$v !=        0} { return -1}
+   set v [tel1 decode FFFFFF] ; if {$v !=       -1} { return -1}
+   set v [tel1 decode F1FFFF] ; if {$v !=      -15} { return -1}
+   set v [tel1 decode F0FFFF] ; if {$v !=      -16} { return -1}
+   set v [tel1 decode 00FFFF] ; if {$v !=     -256} { return -1}
+   set v [tel1 decode 000080] ; if {$v != -8388608} { return -1}
+   
+   set v [tel1 encode  8388607] ; if {$v != "FFFF7F"} { return -1}
+   set v [tel1 encode      256] ; if {$v != "000100"} { return -1}
+   set v [tel1 encode       16] ; if {$v != "100000"} { return -1}
+   set v [tel1 encode       15] ; if {$v != "0F0000"} { return -1}
+   set v [tel1 encode        1] ; if {$v != "010000"} { return -1}
+   set v [tel1 encode        0] ; if {$v != "000000"} { return -1}
+   set v [tel1 encode       -1] ; if {$v != "FFFFFF"} { return -1}
+   set v [tel1 encode      -15] ; if {$v != "F1FFFF"} { return -1}
+   set v [tel1 encode      -16] ; if {$v != "F0FFFF"} { return -1}
+   set v [tel1 encode     -256] ; if {$v != "00FFFF"} { return -1}
+   set v [tel1 encode -8388608] ; if {$v != "000080"} { return -1}
+   
+   set v [tel1 encode      620] ; if {$v != "6C0200"} { return -1}
+   set v [tel1 decode   6C0200] ; if {$v !=      620} { return -1}
+   
+   return 0   
 
 }
