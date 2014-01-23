@@ -179,16 +179,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -translation {binary binary} -blocking 0",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);
 
-	/*
-   // Transcoder l'hexadecimal de res en numerique signe
-   strcpy(s,"proc eqmod_decode {s} {return [ expr int(0x[ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]00) / 256 ]}");
-   mytel_tcleval(tel,s);
-
-   // Transcoder le numerique en res hexadecimal
-   strcpy(s,"proc eqmod_encode {int} {set s [ string range [ format %08X $int ] 2 end ];return [ string range $s 4 5 ][ string range $s 2 3 ][ string range $s 0 1 ]}");
-   mytel_tcleval(tel,s);
-	*/
-
    for (i=0;i<argc;i++) {
       if ( ! strcmp(argv[i],"-mouchard") ) {
          tel->mouchard = 1;
@@ -253,14 +243,12 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 		sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);   
 
-		sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decodeabs(tel,ss,&num);
 		if (num==0) { num=1 ; } ; // avoid division by zero
-		if (num<0) { num= num + (1<<24); }
 		tel->param_a1=num; // Microsteps per axis Revolution
 
-		sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decodeabs(tel,ss,&num);
 		if (num==0) { num=1 ; } ; // avoid division by zero
-		if (num<0) { num = num + (1<<24); }
 		tel->param_a2=num; // Microsteps per axis Revolution
 
 		sprintf(s,":b1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
@@ -310,7 +298,6 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	}
 
    // Facteur de conversion deg vers step: step = deg * tel->radec_position_conversion
-   //tel->radec_position_conversion = 1.0 * tel->param_a1 / 360.;
 	tel->adu4deg_ha=1.0 * tel->param_a1 / 360.;      // (ADU/deg)
 	tel->adu4deg_dec=1.0 * tel->param_a2 / 360.;     // (ADU/deg)
 
@@ -708,10 +695,17 @@ int eqmod_putread(struct telprop *tel,char *cmd,char *res)
    return 0;
 }
 
+int eqmod_decodeabs(struct telprop *tel,char *chars,int *num)
+{
+	eqmod_decode(tel,chars,num);
+	if (*num<0) { *num= *num + (1<<24); }
+   return 0;
+}
+
 int eqmod_decode(struct telprop *tel,char *chars,int *num)
 {
    char s[2048];
-   sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])",chars,chars,chars,chars);
+	sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])",chars,chars,chars,chars);
 	//sprintf(s,"expr int(0x[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ]00) / 256",chars,chars,chars);
    if (mytel_tcleval(tel,s)==1) {
       *num=0;

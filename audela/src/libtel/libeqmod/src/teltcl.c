@@ -281,7 +281,7 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             strcpy(ligne,interp->result);
             // - end of pointing model - //
             libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
-	    eqmod_hadec_match(tel);
+				eqmod_hadec_match(tel);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
             sprintf(ligne,"Usage: %s %s init {angle_ha angle_dec}",argv[0],argv[1]);
@@ -679,6 +679,57 @@ int cmdTelGotoparking(ClientData clientData, Tcl_Interp *interp, int argc, char 
    strcpy(s,interp->result);
    Tcl_SetResult(interp,s,TCL_VOLATILE);
    return TCL_OK;
+}
+
+/*
+ *   HaDec parking
+ */
+int cmdTelHaDecparking(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+	char s[100],ligne[200];
+	int tube_side;
+   double deg_ha,deg_dec,adu_ha,adu_dec;
+	struct telprop *tel;
+	char comment[]="Usage: %s %s {Angle_ha Angle_dec} Tube_Side(E|W)";
+	tel = (struct telprop*)clientData;
+	if (argc!=2) {
+		if (argc!=4) {
+			sprintf(s,comment,argv[0],argv[1]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		strcpy(ligne,argv[2]);
+		libtel_Getradec(interp,ligne,&deg_ha,&deg_dec);
+		strcpy(ligne,argv[3]);
+		if ((ligne[0]=='e')||(ligne[0]=='E')) {
+			tube_side=TUBE_EST;
+		} else {
+			tube_side=TUBE_OUEST;
+		}
+		if (tel->latitude >= 0.0 ) {
+			if (tube_side == TUBE_OUEST) {
+				adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			} else {
+				adu_ha  = tel->coord_adu_ha0  + ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			}
+		} else {
+			if (tube_side == TUBE_OUEST) {
+				adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 - 180 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 - ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			} else {
+				adu_ha  = tel->coord_adu_ha0  - ( deg_ha  - tel->coord_deg_ha0 ) * tel->adu4deg_ha ;
+				adu_dec = tel->coord_adu_dec0 + ( deg_dec - tel->coord_deg_dec0) * tel->adu4deg_dec ;
+			}
+		}
+		tel->park_deg_ha=deg_ha;
+		tel->park_deg_dec=deg_dec;
+		tel->park_adu_ha=adu_ha;
+		tel->park_adu_dec=adu_dec;
+	}
+	sprintf(s,"{%f %f deg} {%f %f ADU}",tel->park_deg_ha,tel->park_deg_dec,tel->park_adu_ha,tel->park_adu_dec);
+	Tcl_SetResult(interp,s,TCL_VOLATILE);
+	return TCL_OK;
 }
 
 /*
