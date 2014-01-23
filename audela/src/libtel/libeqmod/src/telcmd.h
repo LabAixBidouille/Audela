@@ -45,6 +45,7 @@ static struct cmditem cmdlist[] = {
    {"dead_delay_slew",(Tcl_CmdProc *)cmdTelDeadDelaySlew},\
    {"state",(Tcl_CmdProc *)cmdTelState},\
    {"readparams",(Tcl_CmdProc *)cmdTelReadparams},\
+   {"hadecparking",(Tcl_CmdProc *)cmdTelHaDecparking},\
    {"gotoparking",(Tcl_CmdProc *)cmdTelGotoparking},\
    {"gotoblocking",(Tcl_CmdProc *)cmdTelGotoblocking},\
    {NULL, NULL}
