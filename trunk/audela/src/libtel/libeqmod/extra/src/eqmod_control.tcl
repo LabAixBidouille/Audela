@@ -310,3 +310,104 @@ proc ::eqmod_control::test_table_decimale_compil { } {
    return 0   
 
 }
+
+#
+#
+#
+proc ::eqmod_control::test_mount_param { } {
+
+   gren_info "a1 = [tel1 putread :a1] == [tel1 decode [tel1 putread :a1]]\n"
+   gren_info "a2 = [tel1 putread :a2] == [tel1 decode [tel1 putread :a2]]\n"
+   gren_info "b1 = [tel1 putread :b1] == [tel1 decode [tel1 putread :b1]]\n"
+   gren_info "b2 = [tel1 putread :b2] == [tel1 decode [tel1 putread :b2]]\n"
+   gren_info "d1 = [tel1 putread :d1] == [tel1 decode [tel1 putread :d1]]\n"
+   gren_info "d2 = [tel1 putread :d2] == [tel1 decode [tel1 putread :d2]]\n"
+   gren_info "e1 = [tel1 putread :e1] == [tel1 decode [tel1 putread :e1]]\n"
+   gren_info "e2 = [tel1 putread :e2] == [tel1 decode [tel1 putread :e2]]\n"
+   gren_info "s1 = [tel1 putread :s1] == [tel1 decode [tel1 putread :s1]]\n"
+   gren_info "s2 = [tel1 putread :s2] == [tel1 decode [tel1 putread :s2]]\n"
+
+}
+
+proc ::eqmod_control::display_table_decimale { } {
+
+   gren_info "FFFF7F = [::eqmod::decode "FFFF7F"]\n"
+   gren_info "000100 = [::eqmod::decode "000100"]\n"
+   gren_info "100000 = [::eqmod::decode "100000"]\n"
+   gren_info "0F0000 = [::eqmod::decode "0F0000"]\n"
+   gren_info "010000 = [::eqmod::decode "010000"]\n"
+   gren_info "000000 = [::eqmod::decode "000000"]\n"
+   gren_info "FFFFFF = [::eqmod::decode "FFFFFF"]\n"
+   gren_info "F1FFFF = [::eqmod::decode "F1FFFF"]\n"
+   gren_info "F0FFFF = [::eqmod::decode "F0FFFF"]\n"
+   gren_info "00FFFF = [::eqmod::decode "00FFFF"]\n"
+   gren_info "000080 = [::eqmod::decode "000080"]\n"
+
+}
+
+proc ::eqmod_control::display_table_decimale_compil { } {
+
+   gren_info "FFFF7F = [tel1 decode "FFFF7F"]\n"
+   gren_info "000100 = [tel1 decode "000100"]\n"
+   gren_info "100000 = [tel1 decode "100000"]\n"
+   gren_info "0F0000 = [tel1 decode "0F0000"]\n"
+   gren_info "010000 = [tel1 decode "010000"]\n"
+   gren_info "000000 = [tel1 decode "000000"]\n"
+   gren_info "FFFFFF = [tel1 decode "FFFFFF"]\n"
+   gren_info "F1FFFF = [tel1 decode "F1FFFF"]\n"
+   gren_info "F0FFFF = [tel1 decode "F0FFFF"]\n"
+   gren_info "00FFFF = [tel1 decode "00FFFF"]\n"
+   gren_info "000080 = [tel1 decode "000080"]\n"
+
+}
+
+ proc test_eqmod { } {
+
+      gren_info "a2 = HEX [tel1 putread :a2] = DEC [tel1 decode [tel1 putread :a2]]\n"
+      gren_info "b1 = HEX [tel1 putread :b1] = DEC [tel1 decode [tel1 putread :b1]]\n"
+      gren_info "b2 = HEX [tel1 putread :b2] = DEC [tel1 decode [tel1 putread :b2]]\n"
+      gren_info "d1 = HEX [tel1 putread :d1] = DEC [tel1 decode [tel1 putread :d1]]\n"
+      gren_info "d2 = HEX [tel1 putread :d2] = DEC [tel1 decode [tel1 putread :d2]]\n"
+      gren_info "e1 = HEX [tel1 putread :e1] = DEC [tel1 decode [tel1 putread :e1]]\n"
+      gren_info "e2 = HEX [tel1 putread :e2] = DEC [tel1 decode [tel1 putread :e2]]\n"
+      gren_info "s1 = HEX [tel1 putread :s1] = DEC [tel1 decode [tel1 putread :s1]]\n"
+      gren_info "s2 = HEX [tel1 putread :s2] = DEC [tel1 decode [tel1 putread :s2]]\n"
+
+      set l { {  "FFFF7F"   8388607 } \
+              {  "000100"       256 } \
+              {  "100000"        16 } \
+              {  "0F0000"        15 } \
+              {  "010000"         1 } \
+              {  "000000"         0 } \
+              {  "FFFFFF"        -1 } \
+              {  "F1FFFF"       -15 } \
+              {  "F0FFFF"       -16 } \
+              {  "00FFFF"      -256 } \
+              {  "000080"  -8388608 } }
+
+      gren_erreur "HEX -> DEC\n"
+      foreach c $l {
+         set hex [lindex $c 0]
+         set dec [lindex $c 1]
+         set v [tel1 decode $hex]
+         if {$v != $dec} { 
+            gren_erreur "$hex => $v (doit etre $dec)\n"
+         } else {
+            gren_info "$hex => $v\n"
+         }
+      }
+
+      gren_erreur "DEC -> HEX\n"
+      foreach c $l {
+         set hex [lindex $c 0]
+         set dec [lindex $c 1]
+         set v [tel1 encode $dec]
+         if {$v != $hex} { 
+            gren_erreur "$dec => $v (doit etre $hex)\n"
+         } else {
+            gren_info "$dec => $v\n"
+         }
+
+      }
+
+   }
