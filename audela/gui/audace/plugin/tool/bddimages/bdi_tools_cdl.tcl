@@ -1971,11 +1971,15 @@ namespace eval bdi_tools_cdl {
       global bddconf
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
       set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
-      if {$::bdi_tools_cdl::reports_photom_submit==0} {
-         set part_submit ".submit.no"
-      } else {
-         set part_submit ".submit.yes"
-      }
+      
+      # soumission des rapports se fera dans la gestion des rapports
+      set part_submit ".submit.no"
+      # if {$::bdi_tools_cdl::reports_photom_submit==0} {
+      #    set part_submit ".submit.no"
+      # } else {
+      #    set part_submit ".submit.yes"
+      # }
+
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
          incr ids
@@ -2023,11 +2027,13 @@ namespace eval bdi_tools_cdl {
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
       set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
 
-      if {$::bdi_tools_cdl::reports_photom_submit==0} {
-         set part_submit ".submit.no"
-      } else {
-         set part_submit ".submit.yes"
-      }
+      # soumission des rapports se fera dans la gestion des rapports
+      set part_submit ".submit.no"
+      # if {$::bdi_tools_cdl::reports_photom_submit==0} {
+      #    set part_submit ".submit.no"
+      # } else {
+      #    set part_submit ".submit.yes"
+      # }
 
 
       set ids 0
@@ -2126,11 +2132,13 @@ namespace eval bdi_tools_cdl {
       set part_batch ".Batch.${::bdi_tools_cdl::rapport_batch}"
       set date    [string range $::bdi_tools_cdl::table_date(1) 0 9]
 
-      if {$::bdi_tools_cdl::reports_photom_submit==0} {
-         set part_submit ".submit.no"
-      } else {
-         set part_submit ".submit.yes"
-      }
+      # soumission des rapports se fera dans la gestion des rapports
+      set part_submit ".submit.no"
+      # if {$::bdi_tools_cdl::reports_photom_submit==0} {
+      #    set part_submit ".submit.no"
+      # } else {
+      #    set part_submit ".submit.yes"
+      # }
 
       set ids 0
       foreach {name o} [array get ::bdi_tools_cdl::table_noms] {
