@@ -75,9 +75,12 @@ namespace eval bdi_gui_reports {
       
       set curselection [$::bdi_tools_reports::data_objects curselection]
       set nb [llength $curselection]
-      gren_info "nb select = $nb\n"
-      if {$nb !=1 } {
+      #gren_info "nb select = $nb\n"
+
+      if {$nb == 0 } {return}
+      if {$nb > 1 } {
          tk_messageBox -message "Veuillez selectionner 1 seul objet" -type ok
+         return
       }
       
       set cpt 0
@@ -113,13 +116,14 @@ namespace eval bdi_gui_reports {
       
       global bddconf
       
-      gren_info "1Click : ($w) ($args)\n"
+      #gren_info "1Click : ($w) ($args)\n"
       
       set curselection [$::bdi_tools_reports::data_firstdate curselection]
       set nb [llength $curselection]
-      gren_info "nb select = $nb\n"
-      if {$nb !=1 } {
+      if {$nb == 0 } {return}
+      if {$nb > 1 } {
          tk_messageBox -message "Veuillez selectionner 1 seule date" -type ok
+         return
       }
       
       set cpt 0
@@ -164,7 +168,7 @@ namespace eval bdi_gui_reports {
 
    proc ::bdi_gui_reports::cmdButton1Click_data_reports { w args } {
 
-      gren_info "1Click : ($w) ($args)\n"
+      #gren_info "1Click : ($w) ($args)\n"
    }
 
 
@@ -236,10 +240,18 @@ namespace eval bdi_gui_reports {
       global bddconf
 
       set tt0 [clock clicks -milliseconds]
-      $::bdi_tools_reports::data_objects delete 0 end
+
+      $::bdi_tools_reports::data_objects   delete 0 end
+      $::bdi_tools_reports::data_firstdate delete 0 end
+      $::bdi_tools_reports::data_reports   delete 0 end
       
       gren_info "Analyse du repertoire des Rapports : $bddconf(dirreports)\n"
-      set liste [glob $bddconf(dirreports)/*]
+      set err [catch {set liste [glob $bddconf(dirreports)/*]} msg ]
+      
+      if {$err} {
+         gren_erreur "$msg\n"
+         return
+      }
       
       # Recupere la liste des objets
       set ::bdi_tools_reports::list_objects ""
