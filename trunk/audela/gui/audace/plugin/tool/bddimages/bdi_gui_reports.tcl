@@ -790,22 +790,6 @@ namespace eval bdi_gui_reports {
    
    }
 
-   #------------------------------------------------------------
-   ## Fenetre de clicouillage avant soumission par email
-   #  @return void
-   #
-   proc ::bdi_gui_reports::build_window { batch file} {
-   
-       set to      ""
-       set subject ""
-       set body    ""
-   
-       gren_info "Soumission MPC\n"
-       gren_info "to : $to\n"
-       gren_info "subject : $subject\n"
-       gren_info "body : $body\n"
-   }
-   
    
    
    #------------------------------------------------------------
@@ -1140,5 +1124,105 @@ namespace eval bdi_gui_reports {
 
    }
 
+   #------------------------------------------------------------
+   ## Fenetre de clicouillage avant soumission par email
+   #  @return void
+   #
+   proc ::bdi_gui_reports::build_window { batch file} {
+   
+      global audace caption color
+      global conf bddconf 
+      
+      set ::bdi_gui_reports::mpc_to      "obs@cfa.harvard.edu;$conf(bddimages,astrometry,reports,mail)"
+      set ::bdi_gui_reports::mpc_subject "\[OBSERVATION\]\[MPC\]$batch"
+   
+      gren_info "Soumission MPC\n"
+      gren_info "to : $::bdi_gui_reports::mpc_to\n"
+      gren_info "subject : $::bdi_gui_reports::mpc_subject\n"
 
+
+      set widthlab 30
+      set widthentry 30
+      set ::bdi_gui_reports::fen_mpc .mpc_reports
+      #--- Initialisation des parametres
+      ::bdi_gui_reports::inittoconf
+
+      #--- Geometry
+      if { ! [ info exists conf(bddimages,geometry_reports) ] } {
+         set conf(bddimages,geometry_reports) "+400+800"
+      }
+      set bddconf(geometry_reports) $conf(bddimages,geometry_reports)
+
+      #--- Declare la GUI
+      if { [ winfo exists $::bdi_gui_reports::fen_mpc ] } {
+         wm withdraw $::bdi_gui_reports::fen_mpc
+         wm deiconify $::bdi_gui_reports::fen_mpc
+         focus $::bdi_gui_reports::fen_mpc.buttons.but_fermer
+         return
+      }
+
+      #--- GUI
+      toplevel $::bdi_gui_reports::fen_mpc -class Toplevel
+      wm geometry $::bdi_gui_reports::fen_mpc $bddconf(geometry_reports)
+      wm resizable $::bdi_gui_reports::fen_mpc 1 1
+      wm title $::bdi_gui_reports::fen_mpc $caption(bddimages_go,reports)
+      wm protocol $::bdi_gui_reports::fen_mpc WM_DELETE_WINDOW { destroy $::bdi_gui_reports::fen_mpc }
+
+      set frm $::bdi_gui_reports::fen_mpc.appli
+      frame $frm  -cursor arrow -relief groove
+      pack $frm -in $::bdi_gui_reports::fen_mpc -anchor s -side top -expand yes -fill both -padx 10 -pady 5
+
+      set mpc $frm
+      set wdth 10
+      
+         #--- Onglet RAPPORT - MPC
+         set block [frame $mpc.exped  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Destinataire : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_gui_reports::mpc_to
+               pack   $block.val -side left -padx 3 -pady 1 -anchor w
+
+         set block [frame $mpc.subj  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Sujet : " -borderwidth 1 -width $wdth
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+
+               entry  $block.val -relief sunken -width 80 -textvariable ::bdi_gui_reports::mpc_subject
+               pack   $block.val -side left -padx 3 -pady 1 -anchor w
+
+         set ::bdi_gui_reports::rapport_mpc $mpc.text
+         text $::bdi_gui_reports::rapport_mpc -height 30 -width 80 \
+              -xscrollcommand "$::bdi_gui_reports::rapport_mpc.xscroll set" \
+              -yscrollcommand "$::bdi_gui_reports::rapport_mpc.yscroll set" \
+              -wrap none
+         pack $::bdi_gui_reports::rapport_mpc -expand yes -fill both -padx 5 -pady 5
+
+         scrollbar $::bdi_gui_reports::rapport_mpc.xscroll -orient horizontal -cursor arrow -command "$::bdi_gui_reports::rapport_mpc xview"
+         pack $::bdi_gui_reports::rapport_mpc.xscroll -side bottom -fill x
+
+         scrollbar $::bdi_gui_reports::rapport_mpc.yscroll -orient vertical -cursor arrow -command "$::bdi_gui_reports::rapport_mpc yview"
+         pack $::bdi_gui_reports::rapport_mpc.yscroll -side right -fill y
+
+         $::bdi_gui_reports::rapport_mpc delete 0.0 end
+
+         # Lecture du fichier mpc
+         set chan [open $file r]
+         set strl ""
+         while {[gets $chan line] >= 0} {
+            $::bdi_gui_reports::rapport_mpc insert end "$line\n"
+            # append strl "$line\n"
+         }
+         close $chan
+
+         set block [frame $mpc.pied  -borderwidth 0 -cursor arrow -relief groove]
+         pack $block  -in $mpc -side top -expand 0 -fill x -padx 2 -pady 5
+
+               label  $block.lab -text "Veuillez copier et coller les champs ci-dessus apres avoir cree un nouveau mail dans votre messagerie" -borderwidth 1 -font $bddconf(font,arial_10_b)
+               pack   $block.lab -side left -padx 3 -pady 1 -anchor w
+   }
+   
 
