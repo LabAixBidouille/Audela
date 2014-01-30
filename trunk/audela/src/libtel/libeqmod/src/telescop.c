@@ -257,10 +257,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		sprintf(s,":b2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 		tel->param_b2=num;
 
-		sprintf(s,":g1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		sprintf(s,":g1"); res=eqmod_putread(tel,s,ss); num=atoi(ss);
 		tel->param_g1=num;
 
-		sprintf(s,":g2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
+		sprintf(s,":g2"); res=eqmod_putread(tel,s,ss); num=atoi(ss);
 		tel->param_g2=num;
 
 		sprintf(s,":s1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
