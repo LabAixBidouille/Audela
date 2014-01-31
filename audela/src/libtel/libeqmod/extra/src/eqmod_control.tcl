@@ -13,7 +13,7 @@ namespace eval eqmod_control {
 #
 proc ::eqmod_control::init { } {
 
-   tel::create eqmod /dev/ttyUSB0
+   catch {tel::create eqmod /dev/ttyUSB0}
 
    ::eqmod::init_mount
    ::eqmod::init_mount_to_hour_coord 180 90

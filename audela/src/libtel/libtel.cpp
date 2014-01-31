@@ -1012,7 +1012,7 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          strcpy(outputEquinox,"NOW");
                   
          // je lis les parametres optionnels
-         for (k=3;k<=argc-1;k++) {
+         for (k=3;k<argc-2;k++) {
             if (strcmp(argv[k],"-equinox")==0) {
                // je recupere la valeur de l'equinoxe et je la convertis en majuscule systematiquement
                char tempEquinox[20];
