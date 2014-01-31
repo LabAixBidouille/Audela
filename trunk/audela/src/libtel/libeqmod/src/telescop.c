@@ -1218,7 +1218,7 @@ int eqmod2_move(struct telprop *tel, char direction)
 
 int eqmod2_goto(struct telprop *tel)
 {
-   char s[1024],ss[1024],axe;
+   char s[1024],ss[1024],axe,HAsense,DECsense;
    int res, k, nbcalc;
    double ha,lst,sec,dec;
    int h,m;
@@ -1340,17 +1340,19 @@ int eqmod2_goto(struct telprop *tel)
    // Etape 6: Pointage de la monture
 	tel->flag_gotoparking=0;
 
-	HA=(int)(dha);
-	DEC=(int)(ddec);
+	HA=(int)fabs(dha);
+	HAsense=(dha>=0)?'0':'1';
+	DEC=(int)fabs(ddec);
+	DECsense=(ddec>=0)?'0':'1';
    
    axe='1';
-   sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL);
+   sprintf(s,":G%c0%c",axe,HAsense); res=eqmod_putread(tel,s,NULL);
    eqmod_encode(tel,HA,ss);
    sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
    sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL);
 
    axe='2';
-   sprintf(s,":G%c0%c",axe,'0'); res=eqmod_putread(tel,s,NULL);
+   sprintf(s,":G%c0%c",axe,DECsense); res=eqmod_putread(tel,s,NULL);
    eqmod_encode(tel,DEC,ss);
    sprintf(s,":H%c%s",axe,ss); res=eqmod_putread(tel,s,NULL);
    sprintf(s,":J%c",axe); res=eqmod_putread(tel,s,NULL);
