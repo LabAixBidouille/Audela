@@ -575,9 +575,9 @@ int cmdTelReadparams(ClientData clientData, Tcl_Interp *interp, int argc, char *
    sprintf(sss,":f2"); res=eqmod_putread(tel,sss,ss); num=atoi(ss) ;tel->param_f2=num;
 	sprintf(ss,"{f2 %d {integers} {motorDEC slewing state 0|1|2|3|5|7=jog_slow+|stop+|jog_slow-|stop-|jog_fast+|jog_fast- 0|1=Stoped|Jogging 0|1=PB?|OK?}} ",tel->param_f1); strcat(s,ss);
 	//
-   sprintf(sss,":g1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+   sprintf(sss,":g1"); res=eqmod_putread(tel,sss,ss); num=atoi(ss);
 	sprintf(ss,"{g1 %d {integers} {motorRA fast tracking speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
-   sprintf(sss,":g2"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
+   sprintf(sss,":g2"); res=eqmod_putread(tel,sss,ss); num=atoi(ss);
 	sprintf(ss,"{g2 %d {integers} {motorDEC fast tracking speed multiplier (set with :G13x)} } ",num); strcat(s,ss);
 	//
    sprintf(sss,":h1"); res=eqmod_putread(tel,sss,ss); eqmod_decode(tel,ss,&num);
