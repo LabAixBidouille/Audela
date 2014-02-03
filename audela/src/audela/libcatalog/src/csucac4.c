@@ -75,6 +75,9 @@ int cmd_tcl_csucac4(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 			if(isGoodStarUcac4(&oneStar,&mySearchZoneUcac4)) {
 
+//				printf("%03d-%06d  %d %d %d %d\n",oneSetOfStar.indexDec,idOfStar,oneStar.errorOnUcacRaInMas + 128,oneStar.errorOnUcacDecInMas + 128,
+//						oneStar.errorOnRaProperMotionInOneTenthMasPerYear + 128,oneStar.errorOnDecProperMotionInOneTenthMasPerYear + 128);
+
 				Tcl_DStringAppend(&dsptr,"{ { UCAC4 { } {",-1);
 
 				sprintf(outputLogChar,"%03d-%06d %.8f %+.8f %.3f %.3f %.3f %d %d "
@@ -92,8 +95,8 @@ int cmd_tcl_csucac4(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 						oneStar.objectType,
 						oneStar.doubleStarFlag,
 
-						(double)oneStar.errorOnUcacRaInMas / DEG2MAS,
-						(double)oneStar.errorOnUcacDecInMas / DEG2MAS,
+						(double)(oneStar.errorOnUcacRaInMas + 128) / DEG2MAS,
+						(double)(oneStar.errorOnUcacDecInMas + 128) / DEG2MAS,
 						oneStar.numberOfCcdObservation,
 						oneStar.numberOfUsedCcdObservation,
 						oneStar.numberOfUsedCatalogsForProperMotion,
@@ -101,8 +104,8 @@ int cmd_tcl_csucac4(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 						(double)oneStar.centralEpochForMeanDecInCentiMas/ DEG2MAS / 100.,
 						(double)oneStar.raProperMotionInOneTenthMasPerYear / 10.,
 						(double)oneStar.decProperMotionInOneTenthMasPerYear / 10.,
-						(double)oneStar.errorOnRaProperMotionInOneTenthMasPerYear / 10.,
-						(double)oneStar.errorOnDecProperMotionInOneTenthMasPerYear / 10.,
+						(double)(oneStar.errorOnRaProperMotionInOneTenthMasPerYear + 128) / 10.,
+						(double)(oneStar.errorOnDecProperMotionInOneTenthMasPerYear + 128) / 10.,
 
 						oneStar.idFrom2Mass,
 						(double)oneStar.jMagnitude2MassInMilliMag / MAG2MILLIMAG,
