@@ -281,9 +281,9 @@ namespace eval ::atos_tools_avi {
 
       ::atos_tools_avi::avi1 seektoframe [expr $idframe - $::atos_tools::frame_begin ]
       #::atos_tools_avi::avi1 seekpercent $pc
-      
+
       set ::atos_tools::cur_idframe [expr int($idframe-1)]
-      
+
       ::atos_tools_avi::next_image
       #::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n"
 
@@ -466,7 +466,7 @@ namespace eval ::atos_tools_avi {
         if {[ file exists /dev/shm/pict.yuv422 ]} {
            ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
            visu$visuNo disp
-	   ::audace::autovisu $visuNo
+           ::audace::autovisu $visuNo
            file delete -force /dev/shm/pict.yuv422
 
            cleanmark
@@ -610,7 +610,7 @@ namespace eval ::atos_tools_avi {
             if {[file exists /dev/shm/pict.yuv422 ]} {
                 ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
                 visu$visuNo disp
-		::audace::autovisu $visuNo
+                ::audace::autovisu $visuNo
                 file delete -force /dev/shm/pict.yuv422
             } else {
                 ::console::affiche_erreur "Image inexistante \n"
@@ -681,7 +681,7 @@ namespace eval ::atos_tools_avi {
             if {[file exists /dev/shm/pict.yuv422 ]} {
                 ::avi::convert_shared_image $bufNo /dev/shm/pict.yuv422
                 visu$visuNo disp
-		::audace::autovisu $visuNo
+                ::audace::autovisu $visuNo
                 file delete -force /dev/shm/pict.yuv422
             } else {
                 ::console::affiche_erreur "Image inexistante \n"

@@ -680,7 +680,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfast,precedent)              "PREVIOUS"
    set caption(acqfast,suivant)                "NEXT"
-   set caption(acqfast,display)	               "SHOW"
+   set caption(acqfast,display)                "SHOW"
 
    set caption(acqfast,videomode)              "Video mode"
    set caption(acqfast,ffr)                    "FFR"
