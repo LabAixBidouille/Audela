@@ -109,9 +109,10 @@ proc ::astrocomputer::createPluginInstance { { in "" } { visuNo 1 } } {
    set astrocomputer(result)                       ""
 
    set astrocomputer(redshift)                     "3"
-   set astrocomputer(hubble)                       "71"
-   set astrocomputer(omegam)                       "0.27"
-   set astrocomputer(omegav)                       "0.73"
+   # --- Planck +Wmap + HighL + BAO
+   set astrocomputer(hubble)                       "67.80"
+   set astrocomputer(omegav)                       "0.692"
+   set astrocomputer(omegam)                       [expr 1.-$astrocomputer(omegav)]
 
    set astrocomputer(coordinp)                     "12 34 51.234 +34 10 10 J2000.0"
    set astrocomputer(siteinp)                      "$::audace(posobs,observateur,gps)"
