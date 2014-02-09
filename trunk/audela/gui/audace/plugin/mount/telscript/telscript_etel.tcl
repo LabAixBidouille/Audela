@@ -221,43 +221,43 @@ proc setup { } {
    }
    set telscript($telname,focus_controler) combit
    if {$telscript($telname,focus_controler)=="combit"} {
-	   # --- open the combit
-	   set telscript($telname,combitnum2) 4
-	   set err [catch {
-	      set telscript($telname,combit2) [open COM$telscript($telname,combitnum2) "RDWR"]
-	      fconfigure $telscript($telname,combit2) -mode "9600,n,8,1" -buffering none -blocking 0
-	      combit $telscript($telname,combitnum2) 3 0
-	      combit $telscript($telname,combitnum2) 4 0
-	      combit $telscript($telname,combitnum2) 7 0
-	   }  msg ]
-	   set telscript($telname,z3) "$err $msg"
-	   if {$err==1} {
-	      set telscript($telname,combit2) simu2
-	      set telscript($telname,combit_simu_direction) ""
-	   } else {
-	      catch {
-	         catch {exec espeak.exe -v fr "Focuss actif. commebitt."}
-	         after 500
-	      }
-	   }   
-	} else {
-	   # --- open the Arduino
-	   set telscript($telname,comarduinonum0) 5
-	   set err [catch {
-	      set telscript($telname,comarduino0) [open COM$telscript($telname,comarduinonum0) "RDWR"]
-	      fconfigure $telscript($telname,comarduino0) -mode "38400,n,8,1" -buffering none -blocking 0
-	   }  msg ]
-	   set telscript($telname,z2) "$err $msg"
-	   if {$err==1} {
-	      set telscript($telname,comarduino0) simu0
-	      set telscript($telname,combit_simu_direction) ""
-	   } else {
-	      catch {
-	         catch {exec espeak.exe -v fr "Focuss actif arduino."}
-	         after 500
-	      }
-	   }   
-	}
+      # --- open the combit
+      set telscript($telname,combitnum2) 4
+      set err [catch {
+         set telscript($telname,combit2) [open COM$telscript($telname,combitnum2) "RDWR"]
+         fconfigure $telscript($telname,combit2) -mode "9600,n,8,1" -buffering none -blocking 0
+         combit $telscript($telname,combitnum2) 3 0
+         combit $telscript($telname,combitnum2) 4 0
+         combit $telscript($telname,combitnum2) 7 0
+      }  msg ]
+      set telscript($telname,z3) "$err $msg"
+      if {$err==1} {
+         set telscript($telname,combit2) simu2
+         set telscript($telname,combit_simu_direction) ""
+      } else {
+         catch {
+            catch {exec espeak.exe -v fr "Focuss actif. commebitt."}
+            after 500
+         }
+      }
+   } else {
+      # --- open the Arduino
+      set telscript($telname,comarduinonum0) 5
+      set err [catch {
+         set telscript($telname,comarduino0) [open COM$telscript($telname,comarduinonum0) "RDWR"]
+         fconfigure $telscript($telname,comarduino0) -mode "38400,n,8,1" -buffering none -blocking 0
+      }  msg ]
+      set telscript($telname,z2) "$err $msg"
+      if {$err==1} {
+         set telscript($telname,comarduino0) simu0
+         set telscript($telname,combit_simu_direction) ""
+      } else {
+         catch {
+            catch {exec espeak.exe -v fr "Focuss actif arduino."}
+            after 500
+         }
+      }
+   }
    cd $pwd0
 
    after 1000
@@ -443,9 +443,9 @@ proc loop { } {
 
    # === Read the pad buttons
    get_pad_buttons
-	get_pad_focus
-	#espeak "$telscript($telname,action_next)"
-	
+   get_pad_focus
+   #espeak "$telscript($telname,action_next)"
+
    # === Process actions (actions are set by tel1 commands)
 
    if {$telscript($telname,action_next)=="motor_on"} {
@@ -551,7 +551,7 @@ proc loop { } {
    } elseif {$telscript($telname,action_next)=="hadec_goto"} {
 
       # --- Action = hadec_goto
-     
+
    } elseif {$telscript($telname,action_next)=="move_start"} {
 
       # --- Action = move_start
@@ -601,54 +601,54 @@ proc loop { } {
       }
       set telscript($telname,action_next) $telscript($telname,motor_prev)
       set telscript($telname,move_virtual_pad) ""
-      
+
    } elseif {$telscript($telname,action_next)=="focus_start +"} {
 
       # --- Action = focus_start +
       if {$telscript($telname,motion_next)!="correction"} {
          if {$telscript($telname,focus_controler)=="combit"} {
-      	   if {$telscript($telname,combit2)!="simu2"} {
-					combit $telscript($telname,combitnum2) 3 0 ; # sélectionne le sens 1 de mise au point
-					combit $telscript($telname,combitnum2) 4 1 ; # sélecteur actif raquette physique déconnectée le moteur tourne dans le sens 1
-				}
+            if {$telscript($telname,combit2)!="simu2"} {
+               combit $telscript($telname,combitnum2) 3 0 ; # sélectionne le sens 1 de mise au point
+               combit $telscript($telname,combitnum2) 4 1 ; # sélecteur actif raquette physique déconnectée le moteur tourne dans le sens 1
+            }
          } else {
-		      if {$telscript($telname,comarduino0)!="simu2"} {
-            	puts -nonewline $telscript($telname,comarduino0) "focus +\n"
-         	}
-         }         
+            if {$telscript($telname,comarduino0)!="simu2"} {
+               puts -nonewline $telscript($telname,comarduino0) "focus +\n"
+            }
+         }
       }
       set telscript($telname,motion_next) "correction"
-      
+
    } elseif {$telscript($telname,action_next)=="focus_start -"} {
 
       # --- Action = focus_start -
       if {$telscript($telname,motion_next)!="correction"} {
          if {$telscript($telname,focus_controler)=="combit"} {
-      	   if {$telscript($telname,combit2)!="simu2"} {
-					combit $telscript($telname,combitnum2) 3 1 ; # sélectionne le sens 2 de mise au point
-					combit $telscript($telname,combitnum2) 4 1 ; # sélecteur actif raquette physique déconnectée le moteur tourne dans le sens 2
-				}
+            if {$telscript($telname,combit2)!="simu2"} {
+               combit $telscript($telname,combitnum2) 3 1 ; # sélectionne le sens 2 de mise au point
+               combit $telscript($telname,combitnum2) 4 1 ; # sélecteur actif raquette physique déconnectée le moteur tourne dans le sens 2
+            }
          } else {
-		      if {$telscript($telname,comarduino0)!="simu2"} {
-            	puts -nonewline $telscript($telname,comarduino0) "focus -\n"
-         	}
-         }         
+            if {$telscript($telname,comarduino0)!="simu2"} {
+               puts -nonewline $telscript($telname,comarduino0) "focus -\n"
+            }
+         }
       }
       set telscript($telname,motion_next) "correction"
-      
+
    } elseif {$telscript($telname,action_next)=="focus_stop"} {
 
       # --- Action = focus_stop
       if {$telscript($telname,motion_next)=="correction"} {
          if {$telscript($telname,focus_controler)=="combit"} {
-      	   if {$telscript($telname,combit2)!="simu2"} {
-					combit $telscript($telname,combitnum2) 4 0 ; # sélecteur inactif raquette physique reconnectée le moteur s'arrête.
-				}
+            if {$telscript($telname,combit2)!="simu2"} {
+               combit $telscript($telname,combitnum2) 4 0 ; # sélecteur inactif raquette physique reconnectée le moteur s'arrête.
+            }
          } else {
-		      if {$telscript($telname,comarduino0)!="simu2"} {
-            	puts -nonewline $telscript($telname,comarduino0) "focus 0\n"
-         	}
-         }         
+            if {$telscript($telname,comarduino0)!="simu2"} {
+               puts -nonewline $telscript($telname,comarduino0) "focus 0\n"
+            }
+         }
       }
       set telscript($telname,action_next) $telscript($telname,motor_prev)
       set telscript($telname,move_virtual_foc) ""
@@ -839,14 +839,14 @@ proc get_pad_focus {} {
       # mesure de la variable d'état des bits de focus Arduino
       if {$telscript($telname,move_virtual_foc)!=""} {
          # utilisation raquette soft (boutons de l'interface graphique)
-         lassign $telscript($telname,move_virtual_foc) actif sens         
+         lassign $telscript($telname,move_virtual_foc) actif sens
          if {$telscript($telname,motion_next)!="correction"} {
             if {($actif=="1")}  {
-	            set telscript($telname,action_next) "focus_start $sens"
-   	         set telscript($telname,move_generator) 1
-	        	}
-      	} else {
-            if {($actif=="0")}  {	      	   
+               set telscript($telname,action_next) "focus_start $sens"
+               set telscript($telname,move_generator) 1
+            }
+         } else {
+            if {($actif=="0")}  {
                set telscript($telname,action_next) "focus_stop"
             }
          }

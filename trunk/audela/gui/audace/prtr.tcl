@@ -518,8 +518,8 @@ namespace eval ::prtr {
                   #--   rajout un bouton "..."
                   if {$child ne "hot_pixel_list"} {
                      incr col
-				         button $w.explore_$child -text "$::caption(prtr,parcourir)" \
-				            -width 2 -command "::prtr::getFileName $w $child"
+                     button $w.explore_$child -text "$::caption(prtr,parcourir)" \
+                        -width 2 -command "::prtr::getFileName $w $child"
                      grid $w.explore_$child -row $row -column $col -padx $d -pady 5
                   }
                }

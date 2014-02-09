@@ -35,8 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(robobs,configuration)      "Configuration"
    set caption(robobs,planification)      "Planification"
    set caption(robobs,acquisition)        "Acquisition"
-	set caption(robobs,resource)           "Source (pour debug)"
-   
+   set caption(robobs,resource)           "Source (pour debug)"
+
    set caption(robobs,start_script)       "Commence script"
    set caption(robobs,exit_script)        "Termine script"
 
