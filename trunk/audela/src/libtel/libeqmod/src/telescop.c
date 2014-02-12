@@ -354,6 +354,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          }
       }
    }
+	// --- add the half of the microstep dynamic to avoid negative ADU values
+	tel->coord_adu_ha0+=8388608;
+	tel->coord_adu_dec0+=8388608;
+
 	tel->park_adu_ha=tel->coord_adu_ha0;
 	tel->park_adu_dec=tel->coord_adu_dec0;
 	tel->park_deg_ha=tel->coord_deg_ha0;
@@ -363,7 +367,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,":j1"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j1);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j2);
 	if ( (j1==tel->param_d1)&&(j2==tel->param_d2) ) {
-      // On vient d'allumer la monture. Les deux positions sont sur 800000 hexa.
+      // On vient d'allumer la monture. Les deux positions sont sur 800000 hexa (=128)
       eqmod_encode(tel,(int)tel->coord_adu_ha0,ss);
       sprintf(s,":E1%s",ss); eqmod_putread(tel,s,ss);
       eqmod_encode(tel,(int)tel->coord_adu_dec0,ss);
@@ -372,14 +376,18 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,":j1"); eqmod_putread(tel,s,ss);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss);
 
-	tel->coord_adu_ha_max= 8388607; /* FFFF7F */
-	tel->coord_adu_ha_min=-8388608; /* 000080 */
-	tel->coord_adu_dec_max= 8388607; /* FFFF7F */
-	tel->coord_adu_dec_min=-8388608; /* 000080 */
+	//tel->coord_adu_ha_max= 8388607; /* FFFF7F */
+	//tel->coord_adu_ha_min=-8388608; /* 000080 */
+	//tel->coord_adu_dec_max= 8388607; /* FFFF7F */
+	//tel->coord_adu_dec_min=-8388608; /* 000080 */
+	tel->coord_adu_ha_max= 16777215; /* FFFFFF */
+	tel->coord_adu_ha_min=0; /* 000000 */
+	tel->coord_adu_dec_max= 16777215; /* FFFFFF */
+	tel->coord_adu_dec_min=0; /* 000000 */
 
 	// domaines de pointages pour les deux positions de tube
-	tel->coord_adu_ha_emin = -10.0*tel->adu4deg_ha;
-	tel->coord_adu_ha_wmax =  10.0*tel->adu4deg_ha;
+	tel->coord_adu_ha_emin = -30.0*tel->adu4deg_ha;
+	tel->coord_adu_ha_wmax =  30.0*tel->adu4deg_ha;
    tel->coord_deg_ha_wmin = tel->coord_deg_ha0 + (tel->coord_adu_ha_min  - tel->coord_adu_ha0) / tel->adu4deg_ha;
    tel->coord_deg_ha_wmax = tel->coord_deg_ha0 + (tel->coord_adu_ha_wmax - tel->coord_adu_ha0) / tel->adu4deg_ha;
    tel->coord_deg_ha_emin = tel->coord_deg_ha0 + (tel->coord_adu_ha_emin - tel->coord_adu_ha0) / tel->adu4deg_ha;
@@ -698,14 +706,14 @@ int eqmod_putread(struct telprop *tel,char *cmd,char *res)
 int eqmod_decodeabs(struct telprop *tel,char *chars,int *num)
 {
 	eqmod_decode(tel,chars,num);
-	if (*num<0) { *num= *num + (1<<24); }
+	//if (*num<0) { *num= *num + (1<<24); }
    return 0;
 }
 
 int eqmod_decode(struct telprop *tel,char *chars,int *num)
 {
    char s[2048];
-	sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])",chars,chars,chars,chars);
+	sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; set deci [expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])] ; if {$deci<0} { set deci [expr 16777216+$deci] } ; return $deci",chars,chars,chars,chars);
 	//sprintf(s,"expr int(0x[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ]00) / 256",chars,chars,chars);
    if (mytel_tcleval(tel,s)==1) {
       *num=0;
@@ -791,7 +799,7 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
 	} else {
 		pole_deg=-90;
 	}
-	pole_adu = pole_deg * tel->adu4deg_dec;
+	pole_adu = tel->coord_adu_dec0 + pole_deg * tel->adu4deg_dec;
 
 	if ( tel->coord_adu_dec <= pole_adu ) {
 		tel->tube_current_side=TUBE_OUEST;
