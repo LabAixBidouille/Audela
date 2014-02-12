@@ -770,7 +770,7 @@ int eqmod_positions12(struct telprop *tel,int *p1,int *p2)
 	} else {
 		pole_deg=-90;
 	}
-	pole_adu = tel->coord_adu_dec0 + pole_deg * tel->adu4deg_dec;
+	pole_adu = tel->coord_adu_dec0 + (pole_deg - tel->coord_deg_dec0) * tel->adu4deg_dec;
 
 	if ( tel->coord_adu_dec <= pole_adu ) {
 		tel->tube_current_side=TUBE_OUEST;
