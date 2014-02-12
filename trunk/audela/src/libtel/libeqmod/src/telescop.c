@@ -57,36 +57,6 @@ struct telini tel_ini[] = {
    },
 };
 
-/********************************************************/
-/* sate_move_radec                                      */
-/* ' ' : pas de mouvement                               */
-/* 'A' : mouvement demande en mode Temma (radec goto)   */
-/*                                                      */
-/********************************************************/
-char sate_move_radec;
-/*
-#define EQMOD_STATE_NOT_INITIALIZED 0   // On ne sait pas ou on en est
-#define EQMOD_STATE_HALT            1   // Init en cours, moteur pas alimente
-#define EQMOD_STATE_STOPPED         2   // Moteur alimente, a l'arret
-#define EQMOD_STATE_GOTO            3   // GOTO: goto
-#define EQMOD_STATE_TRACK           4   // TRACK: suivi permanent
-#define EQMOD_STATE_SLEW            5   // SLEW: deplacement manuel, qui interromp le suivi
-#define state2string(s) (s==EQMOD_STATE_NOT_INITIALIZED?"NOT_INITIALIZED":(s==EQMOD_STATE_HALT?"HALT":(s==EQMOD_STATE_STOPPED?"STOPPED":(s==EQMOD_STATE_GOTO?"GOTO":(s==EQMOD_STATE_TRACK?"TRACK":(s==EQMOD_STATE_SLEW?"SLEW":"NOT DEFINED"))))))
-
-#define AXE_RA   1
-#define AXE_DEC  2
-
-#define axe(c) (((toupper(c)=='N')||(toupper(c)=='S')) ? AXE_DEC : AXE_RA)
-#define dir(c) (((toupper(c)=='N')||(toupper(c)=='W')) ? 0 : 1)
-
-#define TUBE_OUEST   0
-#define TUBE_EST     1
-#define TubePos2string(s) ( s == TUBE_OUEST ? "W" : "E" )
-*/
-
-#define PRINTF printf
-//#define PRINTF(args,...)
-
 /* ========================================================= */
 /* ========================================================= */
 /* ===     Macro fonctions de pilotage du telescope      === */
@@ -243,11 +213,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		sprintf(s,":f1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 		sprintf(s,":f2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);   
 
-		sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decodeabs(tel,ss,&num);
+		sprintf(s,":a1"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 		if (num==0) { num=1 ; } ; // avoid division by zero
 		tel->param_a1=num; // Microsteps per axis Revolution
 
-		sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decodeabs(tel,ss,&num);
+		sprintf(s,":a2"); res=eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&num);
 		if (num==0) { num=1 ; } ; // avoid division by zero
 		tel->param_a2=num; // Microsteps per axis Revolution
 
@@ -293,8 +263,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->param_g2=16;
 		tel->param_s1=50133;
 		tel->param_s2=50133;
-		tel->param_d1=-8388608;
-		tel->param_d2=-8388608;
+		tel->param_d1=TOTAL_MICROSTEPS/2;
+		tel->param_d2=TOTAL_MICROSTEPS/2;
 	}
 
    // Facteur de conversion deg vers step: step = deg * tel->radec_position_conversion
@@ -355,8 +325,21 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       }
    }
 	// --- add the half of the microstep dynamic to avoid negative ADU values
-	tel->coord_adu_ha0+=8388608;
-	tel->coord_adu_dec0+=8388608;
+	// so we put the (HA=0h,DEC=0d) position at (8388608,8388608) ADUs:
+	tel->coord_adu_ha0+=TOTAL_MICROSTEPS/2;
+	tel->coord_adu_dec0+=TOTAL_MICROSTEPS/2;
+	// --- Be careful. 8388608 is the half range of the microsteps
+	// but it is also the value given by :j1 and :j2 when one turn on
+	// the power supply of the mount. This characteristic may cause a
+	// problem in a very special case: When the astronomer let the
+	// mount on (HA=0h,DEC=0d) and he restart the driver without 
+	// "turn off-turn on" it becomes impossible to the software to
+	// know if the mount is at position (HA=0h,DEC=0d) or in a another
+	// parking position before the mount turn off. To avoid this problem
+	// we add a very small quantity to shift the problem in a very
+	// improbable position:
+	tel->coord_adu_ha0+=-608;
+	tel->coord_adu_dec0+=-608;
 
 	tel->park_adu_ha=tel->coord_adu_ha0;
 	tel->park_adu_dec=tel->coord_adu_dec0;
@@ -367,7 +350,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,":j1"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j1);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss); eqmod_decode(tel,ss,&j2);
 	if ( (j1==tel->param_d1)&&(j2==tel->param_d2) ) {
-      // On vient d'allumer la monture. Les deux positions sont sur 800000 hexa (=128)
+      // On vient d'allumer la monture. Les deux positions sont sur 000080 hexa (=8388608)
       eqmod_encode(tel,(int)tel->coord_adu_ha0,ss);
       sprintf(s,":E1%s",ss); eqmod_putread(tel,s,ss);
       eqmod_encode(tel,(int)tel->coord_adu_dec0,ss);
@@ -376,24 +359,20 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,":j1"); eqmod_putread(tel,s,ss);
    sprintf(s,":j2"); eqmod_putread(tel,s,ss);
 
-	//tel->coord_adu_ha_max= 8388607; /* FFFF7F */
-	//tel->coord_adu_ha_min=-8388608; /* 000080 */
-	//tel->coord_adu_dec_max= 8388607; /* FFFF7F */
-	//tel->coord_adu_dec_min=-8388608; /* 000080 */
-	tel->coord_adu_ha_max= 16777215; /* FFFFFF */
+	// Limites physiques de pointages pour les deux positions de tube
+	tel->coord_adu_ha_max= TOTAL_MICROSTEPS-1; /* FFFFFF */
 	tel->coord_adu_ha_min=0; /* 000000 */
-	tel->coord_adu_dec_max= 16777215; /* FFFFFF */
+	tel->coord_adu_dec_max= TOTAL_MICROSTEPS-1; /* FFFFFF */
 	tel->coord_adu_dec_min=0; /* 000000 */
-
-	// domaines de pointages pour les deux positions de tube
-	tel->coord_adu_ha_emin = -30.0*tel->adu4deg_ha;
-	tel->coord_adu_ha_wmax =  30.0*tel->adu4deg_ha;
    tel->coord_deg_ha_wmin = tel->coord_deg_ha0 + (tel->coord_adu_ha_min  - tel->coord_adu_ha0) / tel->adu4deg_ha;
-   tel->coord_deg_ha_wmax = tel->coord_deg_ha0 + (tel->coord_adu_ha_wmax - tel->coord_adu_ha0) / tel->adu4deg_ha;
-   tel->coord_deg_ha_emin = tel->coord_deg_ha0 + (tel->coord_adu_ha_emin - tel->coord_adu_ha0) / tel->adu4deg_ha;
    tel->coord_deg_ha_emax = tel->coord_deg_ha0 + (tel->coord_adu_ha_max  - tel->coord_adu_ha0) / tel->adu4deg_ha;
+	// Limites de retournement de pointages pour les deux positions de tube
+	tel->coord_deg_ha_wmax =  30.0;
+	tel->coord_deg_ha_emin = -30.0;
+	tel->coord_adu_ha_wmax = tel->coord_adu_ha0 + (tel->coord_deg_ha_wmax - tel->coord_deg_ha0) * tel->adu4deg_ha;
+	tel->coord_adu_ha_emin = tel->coord_adu_ha0 + (tel->coord_deg_ha_emin - tel->coord_deg_ha0) * tel->adu4deg_ha;
 
-   tel->old_state = tel->state;
+	tel->old_state = tel->state;
    tel->state = EQMOD_STATE_HALT;
 
    // Mise en route de l'alimentation des moteurs
@@ -703,18 +682,10 @@ int eqmod_putread(struct telprop *tel,char *cmd,char *res)
    return 0;
 }
 
-int eqmod_decodeabs(struct telprop *tel,char *chars,int *num)
-{
-	eqmod_decode(tel,chars,num);
-	//if (*num<0) { *num= *num + (1<<24); }
-   return 0;
-}
-
 int eqmod_decode(struct telprop *tel,char *chars,int *num)
 {
    char s[2048];
-	sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; set deci [expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])] ; if {$deci<0} { set deci [expr 16777216+$deci] } ; return $deci",chars,chars,chars,chars);
-	//sprintf(s,"expr int(0x[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ]00) / 256",chars,chars,chars);
+	sprintf(s,"set n [string length [format %%0X -1]] ; set sig [expr int(0x[string index %s 4])] ; if {$sig<=7} { set sym 0 } else { set sym F } ; set comp [string repeat $sym [expr $n-6]] ; set deci [expr int(0x${comp}[ string range %s 4 5 ][ string range %s 2 3 ][ string range %s 0 1 ])] ; if {$deci<0} { set deci [expr 16777216+$deci] } ; expr $deci",chars,chars,chars,chars);
    if (mytel_tcleval(tel,s)==1) {
       *num=0;
       return 1;

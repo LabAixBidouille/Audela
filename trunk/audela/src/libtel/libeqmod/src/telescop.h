@@ -49,7 +49,8 @@ extern "C" {
 
 #define TUBE_OUEST   0
 #define TUBE_EST     1
-//#define TubePos2string(s) ( s == TUBE_OUEST ? "W" : "E" )
+
+#define TOTAL_MICROSTEPS 16777216
 
 #define PRINTF printf
 
@@ -155,7 +156,6 @@ int eqmod_put(struct telprop *tel,char *cmd);
 int eqmod_putread(struct telprop *tel,char *cmd, char *res);
 int eqmod_read(struct telprop *tel,char *res);
 int eqmod_delete(struct telprop *tel);
-int eqmod_decodeabs(struct telprop *tel,char *chars,int *num);
 int eqmod_decode(struct telprop *tel,char *chars,int *num);
 int eqmod_encode(struct telprop *tel,int num,char *chars);
 int eqmod_positions12(struct telprop *tel,int *p1,int *p2);

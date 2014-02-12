@@ -416,8 +416,7 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       }
       value-=360;
       value*=fabs(tel->adu4deg_ha);
-		tel->coord_adu_ha_emin = value;
-      //tel->stop_e_uc=(int)value;
+		tel->coord_adu_ha_emin = (int)value;
       sprintf(s,"mc_angle2deg %s",argv[3]); mytel_tcleval(tel,s);
       value=atof(tel->interp->result);
       if (value>270) {
@@ -426,15 +425,11 @@ int cmdTelLimits(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
          return TCL_ERROR;
       }
       value*=fabs(tel->adu4deg_ha);
-		tel->coord_adu_ha_wmax = value;
-      //tel->stop_w_uc=(int)value;
+		tel->coord_adu_ha_wmax = (int)value;
 		// ---
 		// mise à jour des domaines de pointages pour les deux positions de tube
-		tel->coord_deg_ha_wmin = tel->coord_deg_ha0 + (tel->coord_adu_ha_min  - tel->coord_adu_ha0) / tel->adu4deg_ha;
-		tel->coord_deg_ha_wmax = tel->coord_deg_ha0 + (tel->coord_adu_ha_wmax - tel->coord_adu_ha0) / tel->adu4deg_ha;
-		tel->coord_deg_ha_emin = tel->coord_deg_ha0 + (tel->coord_adu_ha_emin  - tel->coord_adu_ha0) / tel->adu4deg_ha;
-		tel->coord_deg_ha_emax = tel->coord_deg_ha0 + (tel->coord_adu_ha_max - tel->coord_adu_ha0) / tel->adu4deg_ha;
-
+		tel->coord_adu_ha_wmax = tel->coord_adu_ha0 + (tel->coord_deg_ha_wmax - tel->coord_deg_ha0) * tel->adu4deg_ha;
+		tel->coord_adu_ha_emin = tel->coord_adu_ha0 + (tel->coord_deg_ha_emin - tel->coord_deg_ha0) * tel->adu4deg_ha;
    }
    sprintf(s,"mc_angle2hms %.8f 360 zero 2 auto string",tel->coord_adu_ha_emin/fabs(tel->adu4deg_ha)); mytel_tcleval(tel,s);
    strcpy(le,tel->interp->result);
