@@ -310,7 +310,7 @@ namespace eval bdi_tools_astroid {
 #      buf1 load $monimage
 #      puts "\[$threadId\] [buf1 psfimcce {403 557 437 593}]"
       
-      after [expr 1000 + round(rand()*4000)] ; # on attend de 1 a 5 secondes
+#      after [expr 1000 + round(rand()*4000)] ; # on attend de 1 a 5 secondes
 #      after [expr round(rand()*400)] ; # on attend de 1 a 5 secondes
 #      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
 #      puts "\[$threadId\] end in $tt sec"
