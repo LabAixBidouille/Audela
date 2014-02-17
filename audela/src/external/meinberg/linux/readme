@@ -15,3 +15,14 @@ meinberg_gps close
 # aller dans le repertoire et faire 
 # make 
 # make install
+
+
+## 2013-02-18 carte meinberg fonctions : /srv/develop/audela/src/external/meinberg/src/meinbergtcl.c
+meinberg_gps open => recupere la version du driver, vérifie si l carte est présente dans le PC, ouvre la connection avec la carte
+meinberg_gps reset => clear capture buffer for meinberg
+meinberg_gps read  => on recupere le dernier evenement entres si dispo
+meinberg_gps close
+meinberg_gps status => renvoit version et info sat, date et synchro
+meinberg_gps fastread => voir la diff avec read !!!
+meinberg_gps time
+

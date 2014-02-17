@@ -858,10 +858,20 @@ meinberg_gps fastread
             sprintf(s,"%s No GPS device Meinberg",s);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             return TCL_ERROR;
-         }
+         } 
+         c = mbgdevio_get_version();
+         sprintf(s,"Status of meinber card:");
+         sprintf(s,"%s version = %d",s,c);
          
-         
-         sprintf(s,"Status of meinberg reste a faire !!");
+    
+         // affiche info exemple : Normal Operation, 9 sats in view, 8 sats used
+         show_ext_stat_info2( s, dh, &dev);
+         // affiche info exemple : Date&time: Mo, 2014-02-17  11:35:57.75 UTC+0h ; Status info: Antenna is connected ; Status info: Time is synchronized ; Status info: Receiver position has been verified ; 
+         show_time_and_status2( s, dh, &dev);
+         // affiche info exemple : Last sync: Mo, 2014-02-17  11:37:00.00 UTC ;
+         show_sync_time2( s, dh );
+
+         sprintf(s,"%s; Status of meinberg",s);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
@@ -930,7 +940,7 @@ meinberg_gps fastread
             Tcl_SetResult(interp,s,TCL_VOLATILE);
           }
 				
-          printf("Read %d events\n",j);
+          //printf("Read %d events\n",j);
 
           strcpy(s,"");
 
