@@ -26,3 +26,5 @@ meinberg_gps status => renvoit version et info sat, date et synchro
 meinberg_gps fastread => voir la diff avec read !!!
 meinberg_gps time
 
+l 682 meinbergtcl.c enlever les elseif et mettre des switch
+
