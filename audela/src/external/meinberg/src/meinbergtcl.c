@@ -662,6 +662,7 @@ meinberg_gps fastread
    char ws[200];
    // used in fastread
 	 int rc,j;
+    char save[150];
 
 
    strcpy(s,"");
@@ -696,6 +697,12 @@ meinberg_gps fastread
       }
       else if (strcmp(argv[1],"time")==0) {
          mode=7;
+      }
+      else if (strcmp(argv[1],"readstack")==0) {
+         mode=8;
+      }
+      else if (strcmp(argv[1],"read2dates")==0) {
+         mode=9;
       }
       if (mode==0) {
          sprintf(s,"Usage: %s open|read|close", argv[0]);
@@ -997,6 +1004,169 @@ meinberg_gps fastread
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_OK;
       }
+      /* --- readstack time meinberg ---*/
+      /* dans ce mode on va lire le buffer jusqu'a la derniere date et on renvoit toute la pile */
+      if (mode==8) {
+        if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_OK;
+         }
+         // on veut recuperer le dernier evenement entres si dispo
+         if ( _pcps_has_ucap( &dev ) ) {
+            PCPS_HR_TIME ucap_event;
+            // read all entries from capture buffer
+            date=0;
+         
+            for (;;) {
+               if ( PCPS_SUCCESS != mbg_get_ucap_entries( dh, &ucap_entries )) {
+                  sprintf(s,"Failed to read user capture buffer entries for meinberg");
+                  Tcl_SetResult(interp,s,TCL_VOLATILE);
+                  return TCL_OK;
+                  break;
+               }
+               if ( PCPS_SUCCESS != mbg_get_ucap_event( dh, &ucap_event )) {
+                  sprintf(s,"Failed to read user capture event for meinberg");
+                  Tcl_SetResult(interp,s,TCL_VOLATILE);
+                  return TCL_OK;
+                  break;
+               }
+
+               // If a user capture event has been read
+               // then it it removed from the clock's buffer.
+
+               // If no new capture event is available, the ucap.tstamp structure
+               // is set to 0.
+               // Alternatively, PCPS_UCAP_ENTRIES.used can be checked for the 
+               // number of events pending in the buffer.
+               if ( ucap_event.tstamp.sec == 0 ) // no new user capture event
+                    break;
+ 
+               // Format function taken from mbgutil.h
+               mbg_str_pcps_hr_tstamp_utc( ws, sizeof( ws ), &ucap_event );
+               
+               // format iso
+               for (k=6;k<=9;k++) { p[k-6]=ws[k];    }; p[k-6]='\0';
+               strcpy(year,p); 
+               for (k=3;k<=4;k++) { p[k-3]=ws[k]; } ; p[k-3]='\0';
+               strcpy(month,p);
+               for (k=0;k<=1;k++) { p[k]=ws[k]; } ; p[k]='\0';
+               strcpy(day,p);
+               for (k=12;k<=13;k++) { p[k-12]=ws[k]; } ; p[k-12]='\0';
+               strcpy(hour,p);
+               for (k=15;k<=16;k++) { p[k-15]=ws[k]; } ; p[k-15]='\0';
+               strcpy(minute,p);
+               for (k=18;k<=19;k++) { p[k-18]=ws[k]; } ; p[k-18]='\0';
+               strcpy(sec,p);
+               for (k=21;k<=23;k++) { p[k-21]=ws[k]; } ; p[k-21]='\0';
+               strcpy(msec,p);
+               for (k=24;k<=26;k++) { p[k-24]=ws[k]; } ; p[k-24]='\0';
+               strcpy(usec,p);
+               hd=atoi(hour);
+               sprintf(hour,"%2.2d",hd);
+               sprintf(DateGpst,"%s-%s-%sT%s:%s:%s.%s%s", year, month, day, hour, minute, sec, msec, usec );
+               
+               // envoit toutes les dates dans la pile de la carte
+               printf("%s\n", DateGpst);
+               date=1;
+            }
+            
+            if (date==0) {
+               sprintf(s,"No GPS date available");
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_OK;
+            } else {
+               sprintf(s,"%s",DateGpst);
+               printf("\n *** Last buf date : %s\n",DateGpst);
+               show_status2( s, dh, &dev);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_OK;
+            }
+         }
+      }
+
+       /* --- read2dates time meinberg ---*/
+      /* dans ce mode on va lire les deux dernières dates dans le buffer */
+      if (mode==9) {
+        if ( dh == MBG_INVALID_DEV_HANDLE ) {
+            sprintf(s,"%s No GPS device Meinberg",s);
+            Tcl_SetResult(interp,s,TCL_VOLATILE);
+            return TCL_OK;
+         }
+         // on veut recuperer le dernier evenement entres si dispo
+         if ( _pcps_has_ucap( &dev ) ) {
+            PCPS_HR_TIME ucap_event;
+            // read all entries from capture buffer
+            date=0;
+            strcpy(DateGpst,"");
+            for (;;) {
+               if ( PCPS_SUCCESS != mbg_get_ucap_entries( dh, &ucap_entries )) {
+                  sprintf(s,"Failed to read user capture buffer entries for meinberg");
+                  Tcl_SetResult(interp,s,TCL_VOLATILE);
+                  return TCL_OK;
+                  break;
+               }
+               if ( PCPS_SUCCESS != mbg_get_ucap_event( dh, &ucap_event )) {
+                  sprintf(s,"Failed to read user capture event for meinberg");
+                  Tcl_SetResult(interp,s,TCL_VOLATILE);
+                  return TCL_OK;
+                  break;
+               }
+
+               // If a user capture event has been read
+               // then it it removed from the clock's buffer.
+
+               // If no new capture event is available, the ucap.tstamp structure
+               // is set to 0.
+               // Alternatively, PCPS_UCAP_ENTRIES.used can be checked for the 
+               // number of events pending in the buffer.
+               if ( ucap_event.tstamp.sec == 0 ) // no new user capture event
+                    break;
+ 
+               // Format function taken from mbgutil.h
+               mbg_str_pcps_hr_tstamp_utc( ws, sizeof( ws ), &ucap_event );
+               
+               // format iso
+               for (k=6;k<=9;k++) { p[k-6]=ws[k];    }; p[k-6]='\0';
+               strcpy(year,p); 
+               for (k=3;k<=4;k++) { p[k-3]=ws[k]; } ; p[k-3]='\0';
+               strcpy(month,p);
+               for (k=0;k<=1;k++) { p[k]=ws[k]; } ; p[k]='\0';
+               strcpy(day,p);
+               for (k=12;k<=13;k++) { p[k-12]=ws[k]; } ; p[k-12]='\0';
+               strcpy(hour,p);
+               for (k=15;k<=16;k++) { p[k-15]=ws[k]; } ; p[k-15]='\0';
+               strcpy(minute,p);
+               for (k=18;k<=19;k++) { p[k-18]=ws[k]; } ; p[k-18]='\0';
+               strcpy(sec,p);
+               for (k=21;k<=23;k++) { p[k-21]=ws[k]; } ; p[k-21]='\0';
+               strcpy(msec,p);
+               for (k=24;k<=26;k++) { p[k-24]=ws[k]; } ; p[k-24]='\0';
+               strcpy(usec,p);
+               hd=atoi(hour);
+               sprintf(hour,"%2.2d",hd);
+               strcpy(save,DateGpst);
+               sprintf(DateGpst,"%s-%s-%sT%s:%s:%s.%s%s", year, month, day, hour, minute, sec, msec, usec );
+               // envoit toutes les dates dans la pile de la carte
+               // printf("%s\n", DateGpst);
+               date=1;
+            }
+            
+            if (date==0) {
+               sprintf(s,"No GPS date available");
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_OK;
+            } else {
+               sprintf(s,"%s ; %s",DateGpst,save);
+               //printf("\n *** Last buf date : %s\n",DateGpst);
+               show_status2( s, dh, &dev);
+               Tcl_SetResult(interp,s,TCL_VOLATILE);
+               return TCL_OK;
+            }
+         }
+      }
+
+      
 
    }
     
