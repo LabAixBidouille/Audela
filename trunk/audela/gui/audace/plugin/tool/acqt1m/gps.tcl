@@ -201,14 +201,15 @@ namespace eval ::gps {
       if {$pass_beg && $pass_end} {
 
          set diff [expr abs($date_jda_gps_end - $date_jda_gps_beg)*86400.0]
-         if {$diff<0.001} {
+
+         if {$diff<0.01} {
             set pass_beg 0
          } 
-         if {abs($diff - $exposure)<0.001} {
+         if {[expr abs($diff - $exposure)]<0.01} {
             set pass_beg 1
             set pass_end 1
          } 
-         if {abs($diff - $exposure)>0.001 && $diff>0.001} {
+         if {[expr abs($diff - $exposure)]>0.01 && $diff>0.01} {
             set pass_beg 0
             set pass_end 0
          }
@@ -220,8 +221,8 @@ namespace eval ::gps {
          set ::gps::flag 2
          set gpspc [format "%.3f" [ expr ($date_jda_gps_beg - $date_jda_pc_beg)*86400. ]]
          
-         # set exposure [format "%.6f" [ expr ($date_jda_gps_end - $date_jda_gps_beg)*86400. ]]
-         # gren_info "Expo = $exposure \n"
+         # set exposure [format "%.3f" [ expr ($date_jda_gps_end - $date_jda_gps_beg)*86400. ]]
+          gren_info "New Expo = [format "%.3f" [ expr ($date_jda_gps_end - $date_jda_gps_beg)*86400. ]] \n"
          # buf$bufNo setkwd [list EXPOSURE $exposure double  "New Exposure Time by GPS estimation" "second"]
       } 
 
