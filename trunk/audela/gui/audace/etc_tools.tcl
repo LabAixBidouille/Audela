@@ -92,10 +92,11 @@ proc etc_set_array_cameras { } {
    #   Em         == Electron multiplier (>1 if EMCCD, else =1)
 
    # --- Andor
-   array set cameras [list {Andor DW436}          {2048 2048 13.5e-6 13.5e-6 0.045 2.8   9.2 0.85 1}]
+   array set cameras [list {Andor DW436}          {2048 2048 13.5e-6 13.5e-6 0.045 2.8   9.2 0.85 1}] ; # measured on TAROT at 1MHz
    array set cameras [list {Andor Neo sCMOS}      {2560 2160  6.5e-6  6.5e-6 0.07  4.    1.4 0.57 1}]
    array set cameras [list {Andor Lucas R DL-604} {1004 1002  8e-6    8e-6   0.07  3.   18   0.65 1}]
    array set cameras [list {Andor iKon-L 936 Z-BV} {2048 2048 13.5e-6 13.5e-6 0.00013 2.8   2.9 0.9 1}] ; # 20s redout time
+   array set cameras [list {Andor DW936 BV}       {2048 2048 13.5e-6 13.5e-6 0.045 1.8   6.8 0.85 1}] ; # measured on Zadko at 1 MHz
 
    # --- Audine
    array set cameras [list {Audine Kaf401ME}      { 768  512  9e-6    9e-6   0.2   2.1  12   0.5  1}]
@@ -126,7 +127,7 @@ proc etc_set_array_cameras { } {
    array set cameras [list {Alta F42}             {2048 2048 13.5e-6 13.5e-6 1     1.5   9   0.85 1}]
    #
    array set cameras [list {Alta F16M}            {4096 4096  9e-6    9e-6   0.2   1.5   9   0.6  1}]
-   array set cameras [list {Alta F9000}           {3056 3056 12e-6   12e-6   0.6   1.5  30   0.6  1}]
+   array set cameras [list {Alta F9000}           {3056 3056 12e-6   12e-6   0.6   1.29 11   0.6  1}] ; # measured. readout time 1MHz -35°C
    array set cameras [list {Alta F4320}           {2048 2048 24e-6   24e-6   2     1.5  12   0.6  1}]
    array set cameras [list {Alta F6}              {1024 1024 24e-6   24e-6   0.5   1.5   8   0.6  1}]
    #
@@ -135,7 +136,7 @@ proc etc_set_array_cameras { } {
 
    # --- FLI
    array set cameras [list {ProLine PL09000}      {3056 3056 12e-6   12e-6   0.1   1.5  10   0.65 1}]
-   array set cameras [list {ProLine 16801}        {4096 4096  9e-6    9e-6   0.08  1.5   9   0.6  1}] ; # readout time 8 Mhz -35°C
+   array set cameras [list {ProLine 16801}        {4096 4096  9e-6    9e-6   0.08  1.5   9   0.6  1}] ; # readout time 8 MHz -35°C
    array set cameras [list {ProLine 16803}        {4096 4096  9e-6    9e-6   0.005 1.5  10   0.6  1}]
    array set cameras [list {ProLine 4301}         {2084 2084 24e-6   24e-6   0.4   1.5   8   0.6  1}]
    array set cameras [list {ProLine 50100}        {8176 6132  6e-6    6e-6   0.003 1.5  11.5 0.2  1}]
