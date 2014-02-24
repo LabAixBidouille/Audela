@@ -15,7 +15,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
    set index 0
    foreach fname $robobs(image,ffilenames) {
       buf$bufNo load $fname
-      set catastar [lindex buf$bufNo getkwd CATASTAR] 1]
+      set catastar [lindex [buf$bufNo getkwd CATASTAR] 1]
       if {$catastar>10} {
          incr index
          set fname "$robobs(conf,folders,rep_images,value)/tmp${index}$robobs(conf,fichier_image,extension,value)"      
@@ -28,7 +28,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
       photrel_wcs2cat tmp $ni append
       set objename [lindex [buf$bufNo getkwd OBJENAME] 1]
       set ra [lindex [buf$bufNo getkwd RA] 1]
-      set dec [lindex [buf$bufNo getkwd DEC] 1]		
+      set dec [lindex [buf$bufNo getkwd DEC] 1]
       ::robobs::log "Compute the light curve of $objename."
       photrel_cat2mes tmp $objename $ra $dec C
       # --- display results
