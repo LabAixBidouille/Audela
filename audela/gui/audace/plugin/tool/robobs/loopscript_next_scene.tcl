@@ -397,7 +397,7 @@ if {$skylight=="Night"} {
 					# --- valid==1
 					set valid 1
 					lassign $radec ra dec dra ddec
-					set dra 0
+					set dra $diurnal
 					set ddec 0
 					for {set k 1} {$k<=$robobs(conf_planif,asteroid_light_curve,nbimages)} {incr k} {         
 						lappend robobs(next_scene,images) [list [list name cdl_$name] [list exposure $robobs(conf_planif,asteroid_light_curve,exposure)] [list shutter_mode synchro] {filter_name C} [list comment "$name image $k / $robobs(conf_planif,asteroid_light_curve,nbimages)"] {simunaxis1 768} {simunaxis2 512} [list skylevel $skylevel] [list binx $robobs(conf_planif,asteroid_light_curve,binning)] [list biny $robobs(conf_planif,asteroid_light_curve,binning)] ]
