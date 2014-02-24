@@ -63,6 +63,7 @@ if {$robobs(next_scene,action)=="Science images"} {
 			update
 			after 1000
 			set radec [tel1 radec coord]
+         ::robobs::log "tel1 radec coord : $radec" 3
 			if {$radec==$radec0} {
 				set sortie 1
 				break
