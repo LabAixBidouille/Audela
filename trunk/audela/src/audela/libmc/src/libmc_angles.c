@@ -3439,6 +3439,7 @@ int mctcl_decode_angle(Tcl_Interp *interp, char *argv0,double *angledeg)
          strcpy(chiffres,"");
          for (kk=0,k=0;k<klen;k++) {
             car=text[k];
+            if (car=='E') { ksigne=1; }
             if ((car=='-')&&(ksigne==0)) { signe=-1.; ksigne=1; }
             if (((car<'0')||(car>'9'))&&(car!='E')&&(car!='.')&&(car!='-')&&(car!='+')) {
                if (kk!=0) {
