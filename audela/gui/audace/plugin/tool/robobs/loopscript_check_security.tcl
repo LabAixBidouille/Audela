@@ -145,6 +145,27 @@ proc robobs_tel_park {} {
 		::robobs::log "Start park the telescope" 3
 		after 5000
 	}
+	if {$robobs(conf,home,telescope_id,value)=="vtt2"} {
+		set hapark [mc_angle2deg 18h]
+		set decpark [mc_angle2deg 90d]
+	   set hadec [tel1 hadec coord]
+	   set ha [lindex $hadec 0]
+	   set dec [lindex $hadec 1]
+	   set sepangle [lindex [mc_anglesep [list $ha $dec $hapark $decpark]] 0]
+	   if {$sepangle>2} {	   
+		   ::robobs::log "Separation from park is $sepangle degrees." 3
+		   # --- goto hadec park
+		   ::robobs::log "tel1 hadec goto [list 18h 90d] -blocking 1" 3
+		   set t0 [clock seconds]
+		   if {$robobs(tel,name)=="simulation"} {
+		      after 3000
+		   } else {
+		      tel1 hadec goto [list $hapark $decpark] -blocking 1
+		   }
+		   set dt [expr [clock seconds]-$t0]
+		   ::robobs::log "Telescope slew park finished in $dt seconds" 3
+	   }		
+	}
 }
 
 proc robobs_dome_open {} {
