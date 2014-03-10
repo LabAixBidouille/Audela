@@ -45,8 +45,10 @@ namespace eval ::atos_tools_fits {
             $frm.status.v.status configure -text "Pas d'image"
             $frm.status.v.nbtotal configure -text 0
          }
+         gren_erreur "Chargement impossible...\n"
          return
       }
+      
 
       set ::atos_tools::cur_idframe 0
       set ::atos_tools::destdir ${destdir}
