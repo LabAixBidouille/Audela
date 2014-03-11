@@ -452,6 +452,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    int nb_pixel_x,nb_pixel_y;
    char slash[2];
    double magrlim,magblim;
+	int type_objet=1;
 
    /* --- intialisations ---*/
 #ifdef FILE_DOS
@@ -1313,17 +1314,47 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				rayony=(int)(5*fwhmy);
 				if (rayon2>rayonx) { rayonx = (int)rayon2; }
 				if (rayon2>rayony) { rayony = (int)rayon2; }
-				for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
-					if (kk0<0) { continue; }
-					if (kk0>=naxis1) { continue; }
-					for (kk1=k1-rayony;kk1<=k1+rayony;kk1++) {
-						if (kk1<0) { continue; }
-						if (kk1>=naxis2) { continue; }
-						dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
-						dvalue=f_pic*exp(-dvalue);
-						dvalue*=tt_flat_response(naxis1,naxis2,kk0,kk1,pseries->flat_type);
-						/*--- indice de x,y dans le pointeur image FITS ---*/
-						p_out->p[naxis1*kk1+kk0]+=(TT_PTYPE)dvalue;
+				if (type_objet==1) {
+					// --- imagery
+					for (kk0=k0-rayonx;kk0<=k0+rayonx;kk0++) {
+						if (kk0<0) { continue; }
+						if (kk0>=naxis1) { continue; }
+						for (kk1=k1-rayony;kk1<=k1+rayony;kk1++) {
+							if (kk1<0) { continue; }
+							if (kk1>=naxis2) { continue; }
+							dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
+							dvalue=f_pic*exp(-dvalue);
+							dvalue*=tt_flat_response(naxis1,naxis2,kk0,kk1,pseries->flat_type);
+							/*--- indice de x,y dans le pointeur image FITS ---*/
+							p_out->p[naxis1*kk1+kk0]+=(TT_PTYPE)dvalue;
+						}
+					}
+				} else {
+					// --- specra
+					int spec_l=20;
+					double spec_lambda;
+					double spec_response;
+					for (kk0=k0-rayonx;kk0<=k0+spec_l+rayonx;kk0++) {
+						if (kk0<0) { continue; }
+						if (kk0>=naxis1) { continue; }
+						spec_lambda=400.+500.*(kk0-k0)/spec_l;
+						spec_response=1.*exp(-(spec_lambda-600)*(spec_lambda-600)/200/200);
+						spec_response*=1-0.5*exp(-(spec_lambda-650)*(spec_lambda-650)/60/60);
+						for (kk1=k1-rayony;kk1<=k1+rayony;kk1++) {
+							if (kk1<0) { continue; }
+							if (kk1>=naxis2) { continue; }
+							if ((kk0-x)<0) {
+								dvalue=(kk0-x)*(kk0-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
+							} else if ((kk0-spec_l-x)>0) {
+								dvalue=(kk0-spec_l-x)*(kk0-spec_l-x)/2/sigx2+(kk1-y)*(kk1-y)/2/sigy2;
+							} else {
+								dvalue=(kk1-y)*(kk1-y)/2/sigy2;
+							}
+							dvalue=f_pic*exp(-dvalue)*spec_response;
+							dvalue*=tt_flat_response(naxis1,naxis2,kk0,kk1,pseries->flat_type);
+							/*--- indice de x,y dans le pointeur image FITS ---*/
+							p_out->p[naxis1*kk1+kk0]+=(TT_PTYPE)dvalue;
+						}
 					}
 				}
 			}
