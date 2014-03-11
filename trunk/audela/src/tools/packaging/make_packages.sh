@@ -54,7 +54,7 @@
 # Visiblement non necessaires : tclxml, tcllib, tclvfs.
 #-- Dependances Linux du paquet :
 #- Debian :
-depends_debian="libstdc++6, libgsl0ldbl, gnuplot-x11, libusb-0.1-4, tclvfs, libtk-img, tk8.5"
+depends_debian="libstdc++6, libgsl0ldbl, gnuplot-x11, libusb-0.1-4, tcl-vfs, libtk-img, tk8.5"
 # depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
 # depends_debian="libc6, libgcc1, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
 #- Ubuntu :
