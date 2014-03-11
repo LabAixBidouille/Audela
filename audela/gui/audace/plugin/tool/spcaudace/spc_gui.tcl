@@ -800,11 +800,13 @@ proc pvisu { } {
    #set echellex [expr int($len/($div_x*10))*10]
    #.spc.g axis configure x -stepsize $echellex
 
+   if { 1==0 } {
    set echellex [expr int($len/($div_x*10))*10]
    if { [expr $vx(end) < $vx(0) ] } {
        set echellex [expr $echellex * -1 ]
    }
    .spc.g axis configure x -stepsize $echellex
+   }
 
    #scrollbar .hors -command {.spc.g axis view x } -orient horizontal
    #.spc.g axis configure x -stepsize $echellex -scrollcommand { .hors set }
@@ -820,7 +822,9 @@ proc pvisu { } {
    #-- Meth 2 :
    #set echelley [ expr 10*int($vy(max)/($div_y*10)) ]
    #-- Meth 3 :
+   if { 1==0 } {
    set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]
+   }
    return ""
 }
 #****************************************************************#
