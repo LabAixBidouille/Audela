@@ -3230,7 +3230,7 @@ proc spc_divbrut { args } {
 
       #--- Fin du script :
       buf$audace(bufNo) bitpix float
-      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_div"
+      buf$audace(bufNo) save1d "$audace(rep_images)/${fichier}_div"
       buf$audace(bufNo) bitpix short
       ::console::affiche_resultat "Division des 2 profils sauvée sous ${fichier}_div$conf(extension,defaut)\n"
       return ${fichier}_div
