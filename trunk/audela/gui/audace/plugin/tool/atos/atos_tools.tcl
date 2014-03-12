@@ -26,8 +26,6 @@ namespace eval ::atos_tools {
    variable fits_dir
    variable fits_genericname
 
-   set nb_frames 0
-
    #
    # atos_tools::open_flux
    # ouvre un flux
@@ -43,8 +41,9 @@ namespace eval ::atos_tools {
       }
 
       catch {
-         $frm.status.v.status  configure -text "Loaded"
-         $frm.status.v.nbtotal configure -text $::atos_tools::nb_frames
+      
+         $frm.info_load.status  configure -text "Loaded"
+         $frm.info_load.nbtotal  configure -text "$::atos_tools::nb_frames frames"
       }
 
       set bufNo [ visu$visuNo buf ]

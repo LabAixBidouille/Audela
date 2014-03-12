@@ -18,7 +18,7 @@ namespace eval ::atos_tools_fits {
 
    proc ::atos_tools_fits::open_flux { visuNo frm } {
 
-      global audace panneau
+      global audace panneau caption
 
       set bufNo [ visu$visuNo buf ]
 
@@ -31,7 +31,7 @@ namespace eval ::atos_tools_fits {
       set sortie 0
       set idframe 1
       while {$sortie == 0} {
-         set filename [file join ${destdir} "${prefix}$idframe.fits"]
+         set filename [file join ${destdir} ${prefix}${idframe}${::conf(extension,defaut)}]
          if {![file exist $filename]} {
             break
          }
@@ -45,10 +45,12 @@ namespace eval ::atos_tools_fits {
             $frm.status.v.status configure -text "Pas d'image"
             $frm.status.v.nbtotal configure -text 0
          }
-         gren_erreur "Chargement impossible...\n"
+         ::console::affiche_erreur "$caption(atos_go,pasdimages)\n" 
+         tk_messageBox -message $caption(atos_go,pasdimages) -type ok
+         set ::atos_tools::nb_open_frames 0
+
          return
       }
-      
 
       set ::atos_tools::cur_idframe 0
       set ::atos_tools::destdir ${destdir}
@@ -203,7 +205,7 @@ namespace eval ::atos_tools_fits {
    proc ::atos_tools_fits::set_frame { visuNo idframe } {
 
       set ::atos_tools::cur_idframe $idframe
-      set filename [file join ${::atos_tools::destdir} "${::atos_tools::prefix}${::atos_tools::cur_idframe}.fits"]
+      set filename [file join ${::atos_tools::destdir} ${::atos_tools::prefix}${::atos_tools::cur_idframe}${::conf(extension,defaut)}]
       set bufNo [ visu$visuNo buf ]
 #      buf$bufNo load $filename
       loadima $filename

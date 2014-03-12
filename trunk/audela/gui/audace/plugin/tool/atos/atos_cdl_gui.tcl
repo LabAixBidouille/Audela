@@ -185,15 +185,15 @@ namespace eval ::atos_cdl_gui {
 
 
 
-
-
    #
    # Creation de l'interface graphique
    #
    proc ::atos_cdl_gui::createdialog { visuNo this } {
 
       package require Img
-
+      
+      psf_init $visuNo
+      
       global caption panneau atosconf color audace
 
       #--- Determination de la fenetre parente
@@ -324,7 +324,7 @@ namespace eval ::atos_cdl_gui {
 
 
 
-        if { $::atos_tools::traitement=="avi" }  { 
+        if { $::atos_tools::traitement=="avi" }  {
 
              #--- Cree un frame pour 
              frame $frm.open \
@@ -358,10 +358,16 @@ namespace eval ::atos_cdl_gui {
 
 
 
+        set info_load [frame $frm.info_load]
+        pack $info_load -in $frm -side top  -padx 1 -pady 1
 
+           #--- Cree un label pour le nb d image
+           label $info_load.status -font $atosconf(font,courier_10) -text ""
 
+           #--- Cree un label pour le nb d image
+           label $info_load.nbtotal -font $atosconf(font,courier_10) -text ""
 
-
+           grid $info_load.status $info_load.nbtotal
 
 
 
@@ -382,7 +388,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool atos img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::quick_prev_image $visuNo $frm"
+           -command "::atos_cdl_tools::quick_prev_image $visuNo $frm.onglets.nb.f_phot.photometrie"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -392,7 +398,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool atos img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::prev_image $visuNo $frm"
+           -command "::atos_cdl_tools::prev_image $visuNo $frm.onglets.nb.f_phot.photometrie"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -402,7 +408,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool atos img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::next_image $visuNo $frm"
+           -command "::atos_cdl_tools::next_image $visuNo $frm.onglets.nb.f_phot.photometrie"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -412,7 +418,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool atos img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::quick_next_image $visuNo $frm"
+           -command "::atos_cdl_tools::quick_next_image $visuNo $frm.onglets.nb.f_phot.photometrie"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -488,264 +494,374 @@ namespace eval ::atos_cdl_gui {
 
 
 
-  #--- infos photometrie
 
-          #--- Cree un frame 
-          frame $frm.tphotom -borderwidth 0 -cursor arrow
-          pack $frm.tphotom -in $frm -side top -anchor w
 
-          #---Titre
-          label $frm.tphotom.title -font $atosconf(font,arial_10_b) -text "Photometrie" 
-          pack  $frm.tphotom.title -in $frm.tphotom -side top -anchor w -ipady 10
 
+  #--- Onglets
+          
+          set onglets [frame $frm.onglets]
+          pack $onglets -in $frm
 
-          #--- Cree un frame 
-          frame $frm.photom -borderwidth 1 -relief raised -cursor arrow 
-          pack $frm.photom -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+             pack [ttk::notebook $onglets.nb] -expand yes -fill both 
+    #          set f1 [frame $onglets.nb.f1]
+             set f_phot [frame $onglets.nb.f_phot]
+             set f_psf  [frame $onglets.nb.f_psf]
+             set f_geom [frame $onglets.nb.f_geom]
+             set f_suiv [frame $onglets.nb.f_suiv]
 
-          #--- Cree un frame 
-          frame $frm.photom.values -borderwidth 0 -cursor arrow
-          pack $frm.photom.values -in $frm.photom -side top -expand 5
+    #         $onglets.nb add $f1 -text "Methode"
+             $onglets.nb add $f_phot -text "Photometrie"
+             $onglets.nb add $f_psf  -text "Select. PSF"
+             $onglets.nb add $f_geom -text "Change Geometrie"
+             $onglets.nb add $f_suiv -text "Suivi"
 
+             $onglets.nb select $f_phot
+             ttk::notebook::enableTraversal $onglets.nb
 
+    # onglets : photometrie
+    
+      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
 
+             set photometrie [frame $f_phot.photometrie]
+             pack $photometrie -in $f_phot
 
+      ::console::affiche_resultat "frm $frm => photometrie = $photometrie \n"
 
 
+                 #--- Cree un frame 
+                 frame $photometrie.photom -borderwidth 1 -relief raised -cursor arrow 
+                 pack $photometrie.photom -in $photometrie -side top -expand 0 -fill x -padx 1 -pady 1
 
-          #--- Cree un frame pour image
-          set image [frame $frm.photom.values.image -borderwidth 1]
-          pack $image -in $frm.photom.values -side left -padx 30 -pady 1
+                 #--- Cree un frame 
+                 frame $photometrie.photom.values -borderwidth 0 -cursor arrow
+                 pack $photometrie.photom.values -in $photometrie.photom -side top -expand 5
 
-              #--- Cree un frame
-              frame $image.t -borderwidth 0 -cursor arrow
-              pack  $image.t -in $image -side top -expand 5 -anchor w
 
-              #--- Cree un label
-              label $image.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "Image"
-              pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
+                 #--- Cree un frame pour image
+                 set image [frame $photometrie.photom.values.image -borderwidth 1]
+                 pack $image -in $photometrie.photom.values -side left -padx 30 -pady 1
 
-              button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_cdl_tools::select_fullimg $visuNo $image"
-              pack $image.t.select -in $image.t -side left -anchor e 
-                
-              #--- Cree un frame pour les info 
-              frame $image.v -borderwidth 0 -cursor arrow
-              pack  $image.v -in $image -side top
+                     #--- Cree un frame
+                     frame $image.t -borderwidth 0 -cursor arrow
+                     pack  $image.t -in $image -side top -expand 5 -anchor w
 
-              frame $image.v.l -borderwidth 0 -cursor arrow
-              pack  $image.v.l -in $image.v -side left
+                     #--- Cree un label
+                     label $image.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "Image"
+                     pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
 
-              frame $image.v.r -borderwidth 0 -cursor arrow
-              pack  $image.v.r -in $image.v -side right
+                     button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
+                                            -command "::atos_cdl_tools::select_fullimg $visuNo $image"
+                     pack $image.t.select -in $image.t -side left -anchor e 
 
+                     #--- Cree un frame pour les info 
+                     frame $image.v -borderwidth 0 -cursor arrow
+                     pack  $image.v -in $image -side top
 
-                 #---
-                 label $image.v.l.fenetre -font $atosconf(font,courier_10) -text "Fenetre"
-                 pack  $image.v.l.fenetre -in $image.v.l -side top -anchor w
-                 label $image.v.r.fenetre -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $image.v.r.fenetre -in $image.v.r -side top -anchor w
+                     frame $image.v.l -borderwidth 0 -cursor arrow
+                     pack  $image.v.l -in $image.v -side left
 
-                 #---
-                 label $image.v.l.intmin -font $atosconf(font,courier_10) -text "Intensite min"
-                 pack  $image.v.l.intmin -in $image.v.l -side top -anchor w
-                 label $image.v.r.intmin -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $image.v.r.intmin -in $image.v.r -side top -anchor w
+                     frame $image.v.r -borderwidth 0 -cursor arrow
+                     pack  $image.v.r -in $image.v -side right
 
-                 #---
-                 label $image.v.l.intmax -font $atosconf(font,courier_10) -text "Intensite max"
-                 pack  $image.v.l.intmax -in $image.v.l -side top -anchor w
-                 label $image.v.r.intmax -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $image.v.r.intmax -in $image.v.r -side top -anchor w
 
-                 #---
-                 label $image.v.l.intmoy -font $atosconf(font,courier_10) -text "Intensite moyenne"
-                 pack  $image.v.l.intmoy -in $image.v.l -side top -anchor w
-                 label $image.v.r.intmoy -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $image.v.r.intmoy -in $image.v.r -side top -anchor w
+                        #---
+                        label $image.v.l.fenetre -font $atosconf(font,courier_10) -text "Fenetre"
+                        pack  $image.v.l.fenetre -in $image.v.l -side top -anchor w
+                        label $image.v.r.fenetre -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $image.v.r.fenetre -in $image.v.r -side top -anchor w
 
-                 #---
-                 label $image.v.l.sigma -font $atosconf(font,courier_10) -text "Ecart-type"
-                 pack  $image.v.l.sigma -in $image.v.l -side top -anchor w
-                 label $image.v.r.sigma -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $image.v.r.sigma -in $image.v.r -side top -anchor w
+                        #---
+                        label $image.v.l.intmin -font $atosconf(font,courier_10) -text "Intensite min"
+                        pack  $image.v.l.intmin -in $image.v.l -side top -anchor w
+                        label $image.v.r.intmin -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $image.v.r.intmin -in $image.v.r -side top -anchor w
 
+                        #---
+                        label $image.v.l.intmax -font $atosconf(font,courier_10) -text "Intensite max"
+                        pack  $image.v.l.intmax -in $image.v.l -side top -anchor w
+                        label $image.v.r.intmax -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $image.v.r.intmax -in $image.v.r -side top -anchor w
 
+                        #---
+                        label $image.v.l.intmoy -font $atosconf(font,courier_10) -text "Intensite moyenne"
+                        pack  $image.v.l.intmoy -in $image.v.l -side top -anchor w
+                        label $image.v.r.intmoy -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $image.v.r.intmoy -in $image.v.r -side top -anchor w
+
+                        #---
+                        label $image.v.l.sigma -font $atosconf(font,courier_10) -text "Ecart-type"
+                        pack  $image.v.l.sigma -in $image.v.l -side top -anchor w
+                        label $image.v.r.sigma -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $image.v.r.sigma -in $image.v.r -side top -anchor w
 
 
-          #--- Cree un frame pour object
-          set object [frame $frm.photom.values.object -borderwidth 1]
-          pack $object -in $frm.photom.values -side left -padx 30 -pady 1
 
-              #--- Cree un frame
-              frame $object.t -borderwidth 0 -cursor arrow
-              pack  $object.t -in $object -side top -expand 5 -anchor w
 
-              #--- Cree un label
-              label $object.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "object"
-              pack  $object.t.titre -in $object.t -side left -anchor w -padx 30
+                 #--- Cree un frame pour object
+                 set object [frame $photometrie.photom.values.object -borderwidth 1]
+                 pack $object -in $photometrie.photom.values -side left -padx 30 -pady 1
+
+                     #--- Cree un frame
+                     frame $object.t -borderwidth 0 -cursor arrow
+                     pack  $object.t -in $object -side top -expand 5 -anchor w
+
+                     #--- Cree un label
+                     label $object.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "object"
+                     pack  $object.t.titre -in $object.t -side left -anchor w -padx 30
+
+                     button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
+                                            -command "::atos_cdl_tools::select_obj $visuNo $object"
+                     pack $object.t.select -in $object.t -side left -anchor e 
+
+                     #--- Cree un frame pour les info 
+                     frame $object.v -borderwidth 0 -cursor arrow
+                     pack  $object.v -in $object -side top
+
+                     frame $object.v.l -borderwidth 0 -cursor arrow
+                     pack  $object.v.l -in $object.v -side left
+
+                     frame $object.v.r -borderwidth 0 -cursor arrow
+                     pack  $object.v.r -in $object.v -side right
+
+
+                        #---
+                        label $object.v.l.position -font $atosconf(font,courier_10) -text "Position"
+                        pack  $object.v.l.position -in $object.v.l -side top -anchor w
+                        label $object.v.r.position -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.position -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.delta -font $atosconf(font,courier_10) -text "Delta"
+                        pack  $object.v.l.delta -in $object.v.l -side top -anchor w
+
+                        spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
+                           -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
+                           -command "::atos_cdl_tools::mesure_obj_avance $visuNo $photometrie" -width 5 
+                        pack  $object.v.r.delta -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.fint -font $atosconf(font,courier_10) -text "Flux integre"
+                        pack  $object.v.l.fint -in $object.v.l -side top -anchor w
+                        label $object.v.r.fint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.fint -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.fwhm -font $atosconf(font,courier_10) -text "Fwhm"
+                        pack  $object.v.l.fwhm -in $object.v.l -side top -anchor w
+                        label $object.v.r.fwhm -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.fwhm -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.pixmax -font $atosconf(font,courier_10) -text "Pixmax"
+                        pack  $object.v.l.pixmax -in $object.v.l -side top -anchor w
+                        label $object.v.r.pixmax -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.pixmax -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.intensite -font $atosconf(font,courier_10) -text "Intensite"
+                        pack  $object.v.l.intensite -in $object.v.l -side top -anchor w
+                        label $object.v.r.intensite -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.intensite -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.sigmafond -font $atosconf(font,courier_10) -text "Sigma fond"
+                        pack  $object.v.l.sigmafond -in $object.v.l -side top -anchor w
+                        label $object.v.r.sigmafond -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.sigmafond -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.snint -font $atosconf(font,courier_10) -text "S/B integre"
+                        pack  $object.v.l.snint -in $object.v.l -side top -anchor w
+                        label $object.v.r.snint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.snint -in $object.v.r -side top -anchor w
+
+                        #---
+                        label $object.v.l.snpx -font $atosconf(font,courier_10) -text "S/B pix"
+                        pack  $object.v.l.snpx -in $object.v.l -side top -anchor w
+                        label $object.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $object.v.r.snpx -in $object.v.r -side top -anchor w
+
+                        set but [frame $object.v.r.but -borderwidth 1]
+                        pack $but -in $object.v.r -side top 
+  
+                           button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::modif_obj $visuNo $object"
+                           button $but.verifier -text "Verifier" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::verif_obj $visuNo $object"
+
+                           grid $but.modifier $but.verifier 
+
+                 #--- Cree un frame pour reference
+                 set reference [frame $photometrie.photom.values.reference -borderwidth 1]
+                 pack $reference -in $photometrie.photom.values -side left -padx 30 -pady 1
+
+                     #--- Cree un frame
+                     frame $reference.t -borderwidth 0 -cursor arrow
+                     pack  $reference.t -in $reference -side top -expand 5 -anchor w
+
+                     #--- Cree un label
+                     label $reference.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "reference"
+                     pack  $reference.t.titre -in $reference.t -side left -anchor w -padx 30
+
+                     button $reference.t.select -text "Select" -borderwidth 1 -takefocus 1 \
+                                            -command "::atos_cdl_tools::select_ref $visuNo $reference"
+                     pack $reference.t.select -in $reference.t -side left -anchor e 
+
+                     #--- Cree un frame pour les info 
+                     frame $reference.v -borderwidth 0 -cursor arrow
+                     pack  $reference.v -in $reference -side top
+
+                     frame $reference.v.l -borderwidth 0 -cursor arrow
+                     pack  $reference.v.l -in $reference.v -side left
+
+                     frame $reference.v.r -borderwidth 0 -cursor arrow
+                     pack  $reference.v.r -in $reference.v -side right
+
+
+                        #---
+                        label $reference.v.l.position -font $atosconf(font,courier_10) -text "Position"
+                        pack  $reference.v.l.position -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.position -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.position -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.delta -font $atosconf(font,courier_10) -text "Delta"
+                        pack  $reference.v.l.delta -in $reference.v.l -side top -anchor w
+
+                        spinbox $reference.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
+                           -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
+                           -command "::atos_cdl_tools::mesure_ref_avance $visuNo $photometrie" -width 5 
+                        pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.fint -font $atosconf(font,courier_10) -text "Flux integre"
+                        pack  $reference.v.l.fint -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.fint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.fint -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.fwhm -font $atosconf(font,courier_10) -text "Fwhm"
+                        pack  $reference.v.l.fwhm -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.fwhm -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.fwhm -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.pixmax -font $atosconf(font,courier_10) -text "Pixmax"
+                        pack  $reference.v.l.pixmax -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.pixmax -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.pixmax -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.intensite -font $atosconf(font,courier_10) -text "Intensite"
+                        pack  $reference.v.l.intensite -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.intensite -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.intensite -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.sigmafond -font $atosconf(font,courier_10) -text "Sigma fond"
+                        pack  $reference.v.l.sigmafond -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.sigmafond -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.sigmafond -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.snint -font $atosconf(font,courier_10) -text "S/B integre"
+                        pack  $reference.v.l.snint -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.snint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.snint -in $reference.v.r -side top -anchor w
+
+                        #---
+                        label $reference.v.l.snpx -font $atosconf(font,courier_10) -text "S/B pix"
+                        pack  $reference.v.l.snpx -in $reference.v.l -side top -anchor w
+                        label $reference.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
+                        pack  $reference.v.r.snpx -in $reference.v.r -side top -anchor w
+
+                        set but [frame $reference.v.r.but -borderwidth 1]
+                        pack $but -in $reference.v.r -side top 
+  
+                           button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::modif_ref $visuNo $reference"
+                           button $but.verifier -text "Verifier" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::verif_ref $visuNo $reference"
+
+                           grid $but.modifier $but.verifier 
+
+    # onglets : psf
+    
+             set psf [frame $f_psf.photometrie]
+             pack $psf -in $f_psf
+
+                 psf_gui_methodes $visuNo $psf
+
+    # onglets : geometrie
+
+             set geometrie [frame $f_geom.geometrie]
+             pack $geometrie -in $f_geom
+ 
+                frame $geometrie.binning -borderwidth 0 -cursor arrow
+                pack  $geometrie.binning -in $geometrie -side top
+ 
+                   label $geometrie.binning.lab -font $atosconf(font,courier_10) -text "Binning"
+                   pack  $geometrie.binning.lab -in $geometrie.binning -side left -anchor w
+                   spinbox $geometrie.binning.val -font $atosconf(font,courier_10)  \
+                      -value [ list 1 2 3 4 ] \
+                      -command "" -width 5 -state disable
+                   pack  $geometrie.binning.val -in $geometrie.binning -side left -anchor w
+
+                frame $geometrie.sum -borderwidth 0 -cursor arrow
+                pack  $geometrie.sum -in $geometrie -side top
+ 
+                   label $geometrie.sum.lab -font $atosconf(font,courier_10) -text "Sommation"
+                   pack  $geometrie.sum.lab -in $geometrie.sum -side left -anchor w
+                   spinbox $geometrie.sum.val -font $atosconf(font,courier_10)  \
+                      -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
+                      -command "" -width 5 
+                   pack  $geometrie.sum.val -in $geometrie.sum -side left -anchor w
+
+                frame $geometrie.cosmic -borderwidth 0 -cursor arrow
+                pack  $geometrie.cosmic -in $geometrie -side top
+                   set ::atos_cdl_tools::uncosmic_check 0
+                   checkbutton $geometrie.cosmic.check -text "UnCosmic" -variable ::atos_cdl_tools::uncosmic_check -state disable
+                   pack  $geometrie.cosmic.check -in $geometrie.cosmic -side left -anchor w
+                   
+                frame $geometrie.buttons -borderwidth 0 -cursor arrow
+                pack  $geometrie.buttons -in $geometrie -side top
+
+                   button $geometrie.buttons.preview -state normal -text "Preview" -relief "raised" -width 8 -height 1\
+                                     -command "::atos_cdl_tools::preview $visuNo $geometrie" 
+                   pack  $geometrie.buttons.preview -in $geometrie.buttons -side left -anchor w
+                   button $geometrie.buttons.launch -state normal -text "Appliquer" \
+                                     -relief "raised" -width 8 -height 1\
+                                     -command "::atos_cdl_tools::compute_image $visuNo $geometrie" 
+                   pack  $geometrie.buttons.launch -in $geometrie.buttons -side left -anchor w
+                   
+                frame $geometrie.info -borderwidth 0 -cursor arrow
+                pack  $geometrie.info -in $geometrie -side top
+
+                   label $geometrie.info.lab -font $atosconf(font,courier_10) \
+                       -text "Activation du changement de geometrie\nIndice de debut : $::atos_cdl_tools::compute_image_first"
+                   
+    # onglets : suivi
+
+             set suivi [frame $f_suiv.geometrie]
+             pack $suivi -in $f_suiv
+ 
+                frame $suivi.methode -borderwidth 0 -cursor arrow
+                pack  $suivi.methode -in $suivi -side top
+
+                   label $suivi.methode.lab -text "Methode"
+                   pack  $suivi.methode.lab -in $suivi.methode -side left -anchor w
+
+                   spinbox $suivi.methode.val -font $atosconf(font,courier_10)  \
+                      -value [ list "Auto" "Interpolation" ] \
+                      -textvariable ::atos_cdl_tools::methode_suivi \
+                      -command "" 
+                   pack  $suivi.methode.val -in $suivi.methode -side left -anchor w
+ 
+ 
+ 
+   #--- Fin Onglets
 
-              button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_cdl_tools::select_obj $visuNo $object"
-              pack $object.t.select -in $object.t -side left -anchor e 
-                
-              #--- Cree un frame pour les info 
-              frame $object.v -borderwidth 0 -cursor arrow
-              pack  $object.v -in $object -side top
-
-              frame $object.v.l -borderwidth 0 -cursor arrow
-              pack  $object.v.l -in $object.v -side left
-
-              frame $object.v.r -borderwidth 0 -cursor arrow
-              pack  $object.v.r -in $object.v -side right
-
-
-                 #---
-                 label $object.v.l.position -font $atosconf(font,courier_10) -text "Position"
-                 pack  $object.v.l.position -in $object.v.l -side top -anchor w
-                 label $object.v.r.position -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.position -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.delta -font $atosconf(font,courier_10) -text "Delta"
-                 pack  $object.v.l.delta -in $object.v.l -side top -anchor w
-
-                 spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
-                    -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::atos_cdl_tools::mesure_obj_avance $visuNo $frm" -width 5 
-                 pack  $object.v.r.delta -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.fint -font $atosconf(font,courier_10) -text "Flux integre"
-                 pack  $object.v.l.fint -in $object.v.l -side top -anchor w
-                 label $object.v.r.fint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.fint -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.fwhm -font $atosconf(font,courier_10) -text "Fwhm"
-                 pack  $object.v.l.fwhm -in $object.v.l -side top -anchor w
-                 label $object.v.r.fwhm -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.fwhm -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.pixmax -font $atosconf(font,courier_10) -text "Pixmax"
-                 pack  $object.v.l.pixmax -in $object.v.l -side top -anchor w
-                 label $object.v.r.pixmax -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.pixmax -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.intensite -font $atosconf(font,courier_10) -text "Intensite"
-                 pack  $object.v.l.intensite -in $object.v.l -side top -anchor w
-                 label $object.v.r.intensite -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.intensite -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.sigmafond -font $atosconf(font,courier_10) -text "Sigma fond"
-                 pack  $object.v.l.sigmafond -in $object.v.l -side top -anchor w
-                 label $object.v.r.sigmafond -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.sigmafond -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.snint -font $atosconf(font,courier_10) -text "S/B integre"
-                 pack  $object.v.l.snint -in $object.v.l -side top -anchor w
-                 label $object.v.r.snint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.snint -in $object.v.r -side top -anchor w
-
-                 #---
-                 label $object.v.l.snpx -font $atosconf(font,courier_10) -text "S/B pix"
-                 pack  $object.v.l.snpx -in $object.v.l -side top -anchor w
-                 label $object.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $object.v.r.snpx -in $object.v.r -side top -anchor w
-
-
-
-
-          #--- Cree un frame pour reference
-          set reference [frame $frm.photom.values.reference -borderwidth 1]
-          pack $reference -in $frm.photom.values -side left -padx 30 -pady 1
-
-              #--- Cree un frame
-              frame $reference.t -borderwidth 0 -cursor arrow
-              pack  $reference.t -in $reference -side top -expand 5 -anchor w
-
-              #--- Cree un label
-              label $reference.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "reference"
-              pack  $reference.t.titre -in $reference.t -side left -anchor w -padx 30
-
-              button $reference.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_cdl_tools::select_ref $visuNo $reference"
-              pack $reference.t.select -in $reference.t -side left -anchor e 
-                
-              #--- Cree un frame pour les info 
-              frame $reference.v -borderwidth 0 -cursor arrow
-              pack  $reference.v -in $reference -side top
-
-              frame $reference.v.l -borderwidth 0 -cursor arrow
-              pack  $reference.v.l -in $reference.v -side left
-
-              frame $reference.v.r -borderwidth 0 -cursor arrow
-              pack  $reference.v.r -in $reference.v -side right
-
-
-                 #---
-                 label $reference.v.l.position -font $atosconf(font,courier_10) -text "Position"
-                 pack  $reference.v.l.position -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.position -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.position -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.delta -font $atosconf(font,courier_10) -text "Delta"
-                 pack  $reference.v.l.delta -in $reference.v.l -side top -anchor w
-
-                 spinbox $reference.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
-                    -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::atos_cdl_tools::mesure_ref_avance $visuNo $frm" -width 5 
-                 pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.fint -font $atosconf(font,courier_10) -text "Flux integre"
-                 pack  $reference.v.l.fint -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.fint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.fint -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.fwhm -font $atosconf(font,courier_10) -text "Fwhm"
-                 pack  $reference.v.l.fwhm -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.fwhm -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.fwhm -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.pixmax -font $atosconf(font,courier_10) -text "Pixmax"
-                 pack  $reference.v.l.pixmax -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.pixmax -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.pixmax -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.intensite -font $atosconf(font,courier_10) -text "Intensite"
-                 pack  $reference.v.l.intensite -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.intensite -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.intensite -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.sigmafond -font $atosconf(font,courier_10) -text "Sigma fond"
-                 pack  $reference.v.l.sigmafond -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.sigmafond -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.sigmafond -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.snint -font $atosconf(font,courier_10) -text "S/B integre"
-                 pack  $reference.v.l.snint -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.snint -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.snint -in $reference.v.r -side top -anchor w
-
-                 #---
-                 label $reference.v.l.snpx -font $atosconf(font,courier_10) -text "S/B pix"
-                 pack  $reference.v.l.snpx -in $reference.v.l -side top -anchor w
-                 label $reference.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
-                 pack  $reference.v.r.snpx -in $reference.v.r -side top -anchor w
-
-
-   #---
+
         #--- Cree un frame pour  les boutons d action 
         frame $frm.action \
               -borderwidth 1 -relief raised -cursor arrow
@@ -755,6 +871,9 @@ namespace eval ::atos_cdl_gui {
 
            image create photo .start -format PNG -file [ file join $audace(rep_plugin) tool atos img start.png ]
            image create photo .stop  -format PNG -file [ file join $audace(rep_plugin) tool atos img stop.png ]
+           image create photo .graph -format PNG -file [ file join $audace(rep_plugin) tool atos img cdl.png ]
+           image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool atos img save.png ]
+
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
@@ -764,7 +883,14 @@ namespace eval ::atos_cdl_gui {
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
-           image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool atos img save.png ]
+           button $frm.action.graph -image .graph\
+              -borderwidth 2 -width 48 -height 48 -compound center \
+              -command "::atos_cdl_tools::graph $visuNo $frm"
+           pack $frm.action.graph \
+              -in $frm.action \
+              -side left -anchor w \
+              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_cdl_tools::save $visuNo $frm"

@@ -326,7 +326,8 @@ namespace eval ::atos_ocr_tools {
 
 
       }
-
+      # L ocr n est pas active
+      return -1
    }
 
 
@@ -349,10 +350,10 @@ namespace eval ::atos_ocr_tools {
 
       set idframe $::atos_tools::cur_idframe
 
-      ::console::affiche_resultat "$idframe - "
-      ::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,verif) . "
-      ::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,ocr) . "
-      ::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,interpol) \n"
+      #::console::affiche_resultat "$idframe - "
+      #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,verif) . "
+      #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,ocr) . "
+      #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,interpol) \n"
 
       $frm.infofrm.v.nbimage configure -text $::atos_tools::nb_frames
 
@@ -519,6 +520,7 @@ namespace eval ::atos_ocr_tools {
       set s   [$frm.datation.values.datetime.s.val get]
       set ms  [$frm.datation.values.datetime.ms.val get]
 
+
       if { [verif_yeardigit $y] } {
           tk_messageBox -message "Veuillez entrer une année valide\n ex : 2012" -type ok
           return
@@ -554,7 +556,7 @@ namespace eval ::atos_ocr_tools {
       set s   [return_2digit $s]
       set ms  [return_3digit $ms]
 
-      ::console::affiche_resultat "$y-$m-${d}T$h:$min:$s.$ms\n"
+      ::console::affiche_resultat "(idfrm=$::atos_tools::cur_idframe) $y-$m-${d}T$h:$min:$s.$ms\n"
       $frm.datation.values.datetime.y.val   delete 0 end
       $frm.datation.values.datetime.y.val   insert 0 $y
 
@@ -608,6 +610,18 @@ namespace eval ::atos_ocr_tools {
    }
 
    proc ::atos_ocr_tools::open_flux { visuNo frm } {
+      
+      # vidage memoire
+      array unset timing
+      $frm.datation.values.datetime.y.val   delete 0 end
+      $frm.datation.values.datetime.m.val   delete 0 end
+      $frm.datation.values.datetime.d.val   delete 0 end
+      $frm.datation.values.datetime.h.val   delete 0 end
+      $frm.datation.values.datetime.min.val delete 0 end
+      $frm.datation.values.datetime.s.val   delete 0 end
+      $frm.datation.values.datetime.ms.val  delete 0 end
+      
+      # Ouverture du Flux
       ::atos_tools::open_flux $visuNo $frm
       for  {set x 1} {$x<=$::atos_tools::nb_open_frames} {incr x} {
          set ::atos_ocr_tools::timing($x,verif) 0
@@ -621,15 +635,26 @@ namespace eval ::atos_ocr_tools {
 
    }
 
+   proc ::atos_ocr_tools::start_next_image { visuNo frm } {
 
+      # desactivation
+      if {$::atos_ocr_tools::active_ocr == "1" \
+          && [ $frm.datation.values.setup.t.selectbox cget -relief] == "sunken"} {
 
+          ::atos_tools::next_image $visuNo
 
+      } else {
 
+          incr ::atos_tools::cur_idframe
+          
+      }
+   }
 
 
    proc ::atos_ocr_tools::start { visuNo frm } {
 
    # Extraction OCR
+      set log 0
 
       gren_info "Extraction des OCR ...\n"
 
@@ -640,6 +665,10 @@ namespace eval ::atos_ocr_tools {
           return
       }
 
+
+      set tt0 [clock clicks -milliseconds]
+
+
       set cpt 0
       $frm.action.start configure -image .stop
       $frm.action.start configure -relief sunken
@@ -649,31 +678,49 @@ namespace eval ::atos_ocr_tools {
       set ::atos_ocr_tools::nbocr 0
       set ::atos_ocr_tools::nbinterp 0
 
+      ::console::affiche_resultat "Vidage memoire\n"
+      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+            set ::atos_ocr_tools::timing($idframe,jd) ""
+      }
+
+      ::console::affiche_resultat "Analyse des dates verifiees\n"
+      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+         if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
+            set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
+            set ::atos_ocr_tools::timing($idframe,interpol) 0
+            ::console::affiche_resultat "$idframe -> $::atos_ocr_tools::timing($idframe,dateiso)\n"
+         }
+      }
+
+
+      ::console::affiche_resultat "Debut analyse\n"
       while {$::atos_ocr_tools::sortie == 0} {
 
          update
          getinfofrm $visuNo $frm
          set idframe $::atos_tools::cur_idframe
-         #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
+         #::console::affiche_resultat "$idframe : \[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
 
          if {$idframe == $::atos_tools::frame_end} {
             set ::atos_ocr_tools::sortie 1
-            gren_info "Ok, last frame ($::atos_tools::frame_end)\n"
+            if {$log} { gren_info "Ok, last frame ($::atos_tools::frame_end)\n"}
          }
 
          set pass "no"
 
          set ::atos_tools::scrollbar $idframe
 
-     # Verifié
+     # Verifie
 
          if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
             #::console::affiche_resultat "verif: $idframe => $::atos_ocr_tools::timing($idframe,dateiso)\n"
             # calcul jd
-            set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
+     #       set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
             #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] V\n"
-
-            ::atos_tools::next_image $visuNo
+     #       set ::atos_ocr_tools::timing($idframe,interpol) 0
+            
+            ::atos_ocr_tools::start_next_image $visuNo $frm
+            #::atos_tools::next_image $visuNo
             set pass "ok"
          }
 
@@ -730,7 +777,10 @@ namespace eval ::atos_ocr_tools {
                   set ::atos_ocr_tools::timing($idframe,ocr) 1
                   set ::atos_ocr_tools::timing($idframe,interpol) 0
                   #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] O\n"
-                  ::atos_tools::next_image $visuNo
+
+                  ::atos_ocr_tools::start_next_image $visuNo $frm
+                  #::atos_tools::next_image $visuNo
+
                   set pass "ok"
                }
             } 
@@ -743,19 +793,29 @@ namespace eval ::atos_ocr_tools {
             set ::atos_ocr_tools::timing($idframe,ocr) 0
             incr ::atos_ocr_tools::nbinterp
             #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] I\n"
-            ::atos_tools::next_image $visuNo
+
+            ::atos_ocr_tools::start_next_image $visuNo $frm
+            #::atos_tools::next_image $visuNo
+            
          }
 
       }
+      set tt1 [clock clicks -milliseconds]
+      set tt [format "%.3f" [expr ($tt1 - $tt0)/1000.]]
+      gren_info "traitement en $tt secondes\n"
+
 
       set idframefin $idframe
 
 # Verification des OCR
 
-      gren_info "Verification des OCR ...\n"
+      gren_info "Verification des OCR : "
 
       set ::atos_ocr_tools::sortie 0
-
+      
+      set cpt
+      set cptbad  0
+      
       set idframe $idframedebut
       while {$::atos_ocr_tools::sortie == 0} {
 
@@ -767,7 +827,7 @@ namespace eval ::atos_ocr_tools {
 
          if {$::atos_ocr_tools::timing($idframe,ocr) == 1} {
 
-           # OK on interpole !
+           # OK on interpole ! pour verifier la difference avec l ocr
 
             set idfrmav [ get_idfrmav $idframe 2]
             set idfrmap [ get_idfrmap $idframe 1]
@@ -790,28 +850,41 @@ namespace eval ::atos_ocr_tools {
                ::console::affiche_erreur "Warning! ($idframe) $::atos_ocr_tools::timing($idframe,dateiso)\n"
                set ::atos_ocr_tools::timing($idframe,ocr) 0
                set ::atos_ocr_tools::timing($idframe,interpol) 1
-            }
+               incr cptbad
+            } 
+            incr cpt
 
          }
          incr idframe
       }
+      gren_info "total ocr = $cpt, nb warning = $cptbad \n"
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
+      set tt1 [clock clicks -milliseconds]
+      gren_info "traitement en $tt secondes\n"
 
 # interpolation des dates
 
-      gren_info "Interpolation des dates\n"
-
+      gren_info "Interpolation des dates...\n"
 
       set ::atos_ocr_tools::sortie 0
 
       set idframe $idframedebut
+      incr idframe -1 
+      
       while {$::atos_ocr_tools::sortie == 0} {
+         incr idframe
+         set ::atos_tools::scrollbar $idframe
 
          update
-         #::console::affiche_resultat "."
+         if {$log} { ::console::affiche_resultat "idframe = $idframe : "}
          if {$idframe == $idframefin} {
             set ::atos_ocr_tools::sortie 1
          }
-
+         if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
+            if {$log} { ::console::affiche_resultat "verif : date = $::atos_ocr_tools::timing($idframe,dateiso)\n"}
+            continue
+         }
          if {$::atos_ocr_tools::timing($idframe,interpol) == 1} {
 
             set idfrmav [ get_idfrmav $idframe 2]
@@ -819,11 +892,13 @@ namespace eval ::atos_ocr_tools {
             #::console::affiche_resultat "$idfrmav < $idfrmap"
             if { $idfrmav == -1 } {
                # il faut interpoler par 2 a droite
+               if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a droite : "}
                set idfrmav $idfrmap
                set idfrmap [ get_idfrmap $idfrmap 2]
             }
             if { $idfrmap == -1 } {
                # il faut interpoler par 2 a gauche
+               if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a gauche : "}
                set idfrmap $idfrmav
                set idfrmav [ get_idfrmav $idfrmav 2]
             }
@@ -831,6 +906,8 @@ namespace eval ::atos_ocr_tools {
                set idfrmav [ get_idfrmap 0 1]
                set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
             }
+            if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
+
             #::console::affiche_resultat "I : $idframe ($idfrmav<$idfrmap)  "
             set jdav $::atos_ocr_tools::timing($idfrmav,jd)
             set jdap $::atos_ocr_tools::timing($idfrmap,jd)
@@ -842,9 +919,9 @@ namespace eval ::atos_ocr_tools {
             set dateiso [mc_date2iso8601 $jd]
             set ::atos_ocr_tools::timing($idframe,jd) $jd
             set ::atos_ocr_tools::timing($idframe,dateiso) $dateiso
+            if {$log} { ::console::affiche_resultat "date = $::atos_ocr_tools::timing($idframe,dateiso)\n"}
 
          }
-         incr idframe
 
       }
 
@@ -936,6 +1013,14 @@ namespace eval ::atos_ocr_tools {
       $frm.action.start configure -image .start
       $frm.action.start configure -relief raised
       $frm.action.start configure -command "::atos_ocr_tools::start $visuNo $frm"
+
+      ::atos_tools::set_frame $visuNo $idframedebut
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
+      gren_info "traitement en $tt secondes\n"
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "traitement total en $tt secondes\n"
+
       ::console::affiche_resultat "Fin\n"
 
       update
@@ -948,7 +1033,79 @@ namespace eval ::atos_ocr_tools {
 
 
 
+   proc ::atos_ocr_tools::graph { visuNo frm } {
+      set log 0
+      ::plotxy::clf 1
+      ::plotxy::figure 1 
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "Courbe du temps" 
+      ::plotxy::xlabel "Time (jd)" 
+      ::plotxy::ylabel "id frame" 
+      set x ""
+      set y ""
+      set x_verif    ""
+      set x_ocr      ""
+      set x_interpol ""
+      set y_verif    ""
+      set y_ocr      ""
+      set y_interpol ""
 
+      set origine 9999999
+      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+            catch {  
+               set jd $::atos_ocr_tools::timing($idframe,jd)              
+               if {$jd != "" && $jd < $origine} {set origine $jd}      
+            }
+      }
+      if {$log} { ::console::affiche_resultat "Origine temporelle : $origine\n"}
+      set origine [expr int($origine)]
+      ::console::affiche_resultat "Origine temporelle : $origine\n"
+      
+         for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+             
+            if {$::atos_ocr_tools::timing($idframe,jd) == ""} { continue}
+
+            if {$log} {         
+               catch {  ::console::affiche_erreur "idframe = $idframe "    }
+               catch {  ::console::affiche_erreur "dateiso = $::atos_ocr_tools::timing($idframe,dateiso) "    }
+               catch {  ::console::affiche_erreur "jd = $::atos_ocr_tools::timing($idframe,jd) "              }
+               catch {  ::console::affiche_erreur "verif = $::atos_ocr_tools::timing($idframe,verif) "        }
+               catch {  ::console::affiche_erreur "ocr = $::atos_ocr_tools::timing($idframe,ocr) "            }
+               catch {  ::console::affiche_erreur "interpol = $::atos_ocr_tools::timing($idframe,interpol) "  }
+               catch {  ::console::affiche_erreur "diff = $::atos_ocr_tools::timing($idframe,diff)\n"         }
+            }
+            catch { 
+                    set t [expr $::atos_ocr_tools::timing($idframe,jd) - $origine]
+                    lappend x $t
+                    lappend y $idframe
+                    if {$::atos_ocr_tools::timing($idframe,verif)   == 1} { 
+                       if {$log} { ::console::affiche_erreur "yep $t $idframe\n"}
+                       lappend x_verif    $t
+                       lappend y_verif    $idframe 
+                    }
+                    if {$::atos_ocr_tools::timing($idframe,ocr)     == 1} {
+                       lappend x_ocr      $t
+                       lappend y_ocr      $idframe
+                       }
+                    if {$::atos_ocr_tools::timing($idframe,interpol)== 1} {
+                       lappend x_interpol $t
+                       lappend y_interpol $idframe
+                    }
+                  }
+            #break
+         }
+      
+         set h4 [::plotxy::plot $x_interpol $y_interpol ro. 2 ]
+         plotxy::sethandler $h4 [list -color white -linewidth 0]
+         set h3 [::plotxy::plot $x_ocr $y_ocr ro. 5  ]
+         plotxy::sethandler $h3 [list -color orange -linewidth 0]
+         set h2 [::plotxy::plot $x_verif $y_verif ro. 7 ]
+         plotxy::sethandler $h2 [list -color green -linewidth 0]
+         set h1 [::plotxy::plot $x $y ro. 10 ]
+         plotxy::sethandler $h1 [list -color black -linewidth 1]
+
+   }
 
 
 

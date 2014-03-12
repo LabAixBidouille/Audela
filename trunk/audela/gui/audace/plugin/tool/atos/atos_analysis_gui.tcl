@@ -2325,6 +2325,7 @@ catch {
       set me  [lindex $datetmp 1]
       set se  [lindex $datetmp 2]
 
+
       # incertitude imm et em
       set ad ""
       set ar ""
@@ -2354,6 +2355,9 @@ catch {
          set hd  [lindex $datetmp 0]
          set md  [lindex $datetmp 1]
          set sd  [lindex $datetmp 2]
+         
+          #if {[string index $hd 0]==0} { set hd [string index $hd 1] } 
+          #if {[string index $md 0]==0} { set md [string index $md 1] } 
    
          # emersion
          set datetmp [lindex [split $::atos_analysis_gui::date_emersion_sol "T"] 1]
@@ -2361,6 +2365,9 @@ catch {
          set hr  [lindex $datetmp 0]
          set mr  [lindex $datetmp 1]
          set sr  [lindex $datetmp 2]
+
+          #if {[string index $hr 0]==0} { set hr [string index $hr 1] } 
+          #if {[string index $mr 0]==0} { set mr [string index $mr 1] } 
 
          # incertitude imm et em
          set ad  $::atos_analysis_gui::im_t_diff
@@ -2370,11 +2377,18 @@ catch {
          # mid evenement
          set midevent [mc_date2iso8601 [expr ([mc_date2jd $::atos_analysis_gui::date_emersion_sol]+[mc_date2jd $::atos_analysis_gui::date_immersion_sol])/2.0] ]
 
+
+      ::console::affiche_resultat  "Event : $he $me $se \n"
+      ::console::affiche_resultat  "D : $hd $md $sd \n"
+      ::console::affiche_resultat  "R : $hr $mr $sr \n"
+
       }
 
 # Ecriture du rapport
 
       set chan [open $file w]
+      ::console::affiche_resultat  "Enregistrement du fichier = [file tail $file] \n"
+      
 
       puts $chan "                   ASTEROIDAL OCCULTATION - REPORT FORM               "
       puts $chan "                                                                      "
@@ -2420,7 +2434,7 @@ catch {
       if {$hs==""||$ms==""||$ss==""} {
          puts $chan [format "    S  - %2s %2s %s    -      -         :" "HH" "MM" "SS.SS"]
       } else {
-         puts $chan [format "    S  - %2d %2d %s   -      -         :" $hs $ms $ss]
+         puts $chan [format "    S  - %2s %2s %s   -      -         :" $hs $ms $ss]
       }
 
       if {$::atos_analysis_gui::result == "POSITIVE"} {
@@ -2428,12 +2442,12 @@ catch {
          if {$hd == "" || $md == "" || $sd == "" || $ad == "" || $int == ""} {
             puts $chan [format "    D  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
          } else {
-            puts $chan [format "    D  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
+            puts $chan [format "    D  - %2s %2s %s   -     %.3f      :  Video integration %.3f s" $hd $md $sd $ad $int]
          }
          if {$hr == "" || $mr == "" || $sr == "" || $ar == "" || $int == ""} {
             puts $chan [format "    R  - %2s %2s %s    -     %s      :  Video integration %s s" "HH" "MM" "SS.SS" "SS.SS" "SS.SS"]
          } else {
-            puts $chan [format "    R  - %2d %2d %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
+            puts $chan [format "    R  - %2s %2s %s   -     %.3f      :  Video integration %.3f s" $hr $mr $sr $ar $int]
          }
          puts $chan "       -                -      -         :"
       } else {
@@ -2444,7 +2458,8 @@ catch {
       if {$he==""||$me==""||$se==""} {
          puts $chan [format "    E  - %2s %2s %s    -      -         :" "HH" "MM" "SS.SS"]
       } else {
-         puts $chan [format "    E  - %2d %2d %s   -      -         :" $he $me $se]
+         
+         puts $chan [format "    E  - %2s %2s %s   -      -         :" $he $me $se]
       }
       
       puts $chan ""
@@ -2607,6 +2622,9 @@ catch {
             set pass "no"
          }
       }
+      
+      ::console::affiche_resultat "position : $::atos_analysis_gui::occ_pos\n"
+      
       if {$pass=="no"} {
          tk_messageBox -message "Veuillez entrer des valeurs valides pour les champs objet, date et localisation" -type ok
          return
@@ -2626,6 +2644,7 @@ catch {
       set text1 [split $textraw1 ";"]
       set text5 [split $textraw5 ";"]
       
+         ::console::affiche_erreur "CMD MIRIADE=$cmd1\n"
       set nbl [llength $text1]
       if {$nbl == 1} {
          set res [tk_messageBox -message "L'appel aux ephemerides a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
@@ -2657,7 +2676,8 @@ catch {
       foreach t $text1 {
          if { [regexp {.*(\d+) h +(\d+) m +(\d+)\.(\d+) s (.+?).* (\d+) d +(\d+) ' +(\d+)\.(\d+) " +(.+?).* ([-+]?\d*\.?\d*) m.*} $t str loh lom los loms lowe lad lam las lams lans alt] } {
             # "
-            set ::atos_analysis_gui::longitude [format "%s %02d %02d %02d.%03d" $lowe $loh $lom $los $loms ]
+            gren_info "Longitude = $lowe $loh $lom $los $loms \n"
+            set ::atos_analysis_gui::longitude [format "%s %02dh%02dm%02d.%03ds" $lowe $loh $lom $los $loms ]
             
             # cas particulier des nombre 001
             if {[ string index $lams 0]=="0"} {
@@ -2669,7 +2689,7 @@ catch {
             
             set lams [expr int($lams)]
             gren_info "Latitude = $lans $lad $lam $las $lams \n"
-            set ::atos_analysis_gui::latitude  [format "%s %02d %02d %02d.%03d" $lans $lad $lam $las $lams ]
+            set ::atos_analysis_gui::latitude  [format "%s %02dd%02dm%02d.%03ds" $lans $lad $lam $las $lams ]
             set ::atos_analysis_gui::altitude  $alt
          }      
       }
