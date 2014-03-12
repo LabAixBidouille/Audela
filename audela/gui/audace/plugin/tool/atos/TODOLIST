@@ -1,9 +1,15 @@
 TODOLIST
 
-- faire les captions de l outil calcul
-- faire un bouton log pour les fichiers intermediaire de la partie calcul
+- Analyse : Verifier ephem
+- Analyse : calcul Immersion/Emersion
+            Ajouter un bouton VALIDER en dessous des resultats qui aura pour effet de 
+            mettre la date  obtenue comme reference.
+- Analyse : Popup de fin de calcul
+- Analyse : Coder le calcul Immersion/Emersion en C
+
+- Faire les captions de l outil calcul
+- Faire un bouton log pour les fichiers intermediaire de la partie calcul
 - Finir l outil verif
 - Faire le traitement des Flats et des Darks.
-- passer le code de calcul en C
 - debugger le pb de chargement du flux video sous linux
 - faire un rapport sous forme XML

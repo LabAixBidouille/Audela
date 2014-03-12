@@ -240,21 +240,6 @@ namespace eval ::atos_cdl_tools {
 
 
 
-   #
-   # Stop les mesures photometriques
-   #
-   proc ::atos_cdl_tools::stop { } {
-
-      if { $::atos_tools::traitement=="fits" } {
-         ::atos_cdl_tools_fits::stop
-      }
-
-      if { $::atos_tools::traitement=="avi" }  {
-         ::atos_cdl_tools::stop
-      }
-
-   }
-
 
 
 
@@ -775,7 +760,9 @@ namespace eval ::atos_cdl_tools {
 
        cleanmark
        ::atos_tools::next_image $visuNo
-
+       
+      ::console::affiche_resultat "frm = $frm \n"
+       
        set statebutton [ $frm.photom.values.object.t.select cget -relief]
        if { $statebutton=="sunken" } {
           set delta [ $frm.photom.values.object.v.r.delta get]
@@ -827,13 +814,32 @@ namespace eval ::atos_cdl_tools {
    #
    # Lance les mesures photometriques
    #
-   proc ::atos_cdl_tools::start { visuNo frm } {
+   proc ::atos_cdl_tools::start { visuNo frmbase } {
 
+      set frm_info_load $frmbase.info_load
+      set frm_start $frmbase.action.start
+      set photometrie $frmbase.onglets.nb.f_phot.photometrie
+
+      if { [$frm_info_load.status cget -text ] != "Loaded"} { 
+         gren_erreur "Aucune Video\n"
+         return 
+      }
+
+      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
+      ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
+      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
+      ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
+      ::console::affiche_resultat "methode_suivi  = $::atos_cdl_tools::methode_suivi \n"
+      
       set ::atos_cdl_tools::sortie 0
       set cpt 0
-      $frm.action.start configure -image .stop
-      $frm.action.start configure -relief sunken
-      $frm.action.start configure -command " ::atos_cdl_tools::stop"
+      $frm_start configure -image .stop
+      $frm_start configure -relief sunken
+      $frm_start configure -command " ::atos_cdl_tools::stop $visuNo $frmbase"
+
+      ::atos_cdl_tools::suivi_init
+      
 
       while {$::atos_cdl_tools::sortie == 0} {
 
@@ -845,80 +851,90 @@ namespace eval ::atos_cdl_tools {
 
          cleanmark
 
-         set statebutton [ $frm.photom.values.object.t.select cget -relief]
+         set statebutton [ $photometrie.photom.values.object.t.select cget -relief]
          if { $statebutton == "sunken" } {
-            set delta [ $frm.photom.values.object.v.r.delta get]
-            set status [::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta]
+            set delta [ $photometrie.photom.values.object.v.r.delta get]
+
+            set r [suivi_get_pos obj]
+            set x [lindex $r 0]
+            set y [lindex $r 1]
+
+            set status [::atos_cdl_tools::mesure_obj $x $y $visuNo $photometrie.photom.values.object $delta]
             if {$status == -1} {
-               ::atos_cdl_tools::stop
+               ::atos_cdl_tools::stop $visuNo $frmbase
             }
          }
 
-         set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+         set statebutton [ $photometrie.photom.values.reference.t.select cget -relief]
          if { $statebutton == "sunken" } {
-            set delta [ $frm.photom.values.reference.v.r.delta get]
-            set status [::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta]
+            set delta [ $photometrie.photom.values.reference.v.r.delta get]
+
+            set r [suivi_get_pos ref]
+            set x [lindex $r 0]
+            set y [lindex $r 1]
+
+            set status [::atos_cdl_tools::mesure_ref $x $y $visuNo $photometrie.photom.values.reference $delta]
             if {$status == -1} {
-               ::atos_cdl_tools::stop
+               ::atos_cdl_tools::stop $visuNo $frmbase
             }
          }
 
-         set statebutton [ $frm.photom.values.image.t.select cget -relief]
+         set statebutton [ $photometrie.photom.values.image.t.select cget -relief]
          if { $statebutton == "sunken" } {
-            ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+            ::atos_cdl_tools::get_fullimg $visuNo $photometrie.photom.values.image
          }
 
          set ::atos_cdl_tools::mesure($idframe,mesure_obj) 1
 
          # mesure objet
-         set ::atos_cdl_tools::mesure($idframe,obj_delta)     [$frm.photom.values.object.v.r.delta     get]
-         set ::atos_cdl_tools::mesure($idframe,obj_fint)      [$frm.photom.values.object.v.r.fint      cget -text]
-         set ::atos_cdl_tools::mesure($idframe,obj_pixmax)    [$frm.photom.values.object.v.r.pixmax    cget -text]
-         set ::atos_cdl_tools::mesure($idframe,obj_intensite) [$frm.photom.values.object.v.r.intensite cget -text]
-         set ::atos_cdl_tools::mesure($idframe,obj_sigmafond) [$frm.photom.values.object.v.r.sigmafond cget -text]
-         set ::atos_cdl_tools::mesure($idframe,obj_snint)     [$frm.photom.values.object.v.r.snint     cget -text]
-         set ::atos_cdl_tools::mesure($idframe,obj_snpx)      [$frm.photom.values.object.v.r.snpx      cget -text]
+         set ::atos_cdl_tools::mesure($idframe,obj_delta)     [$photometrie.photom.values.object.v.r.delta     get]
+         set ::atos_cdl_tools::mesure($idframe,obj_fint)      [$photometrie.photom.values.object.v.r.fint      cget -text]
+         set ::atos_cdl_tools::mesure($idframe,obj_pixmax)    [$photometrie.photom.values.object.v.r.pixmax    cget -text]
+         set ::atos_cdl_tools::mesure($idframe,obj_intensite) [$photometrie.photom.values.object.v.r.intensite cget -text]
+         set ::atos_cdl_tools::mesure($idframe,obj_sigmafond) [$photometrie.photom.values.object.v.r.sigmafond cget -text]
+         set ::atos_cdl_tools::mesure($idframe,obj_snint)     [$photometrie.photom.values.object.v.r.snint     cget -text]
+         set ::atos_cdl_tools::mesure($idframe,obj_snpx)      [$photometrie.photom.values.object.v.r.snpx      cget -text]
 
-         set position  [$frm.photom.values.object.v.r.position  cget -text]
+         set position  [$photometrie.photom.values.object.v.r.position  cget -text]
          set poslist [split $position "/"]
          set ::atos_cdl_tools::mesure($idframe,obj_xpos) [lindex $poslist 0]
          set ::atos_cdl_tools::mesure($idframe,obj_ypos) [lindex $poslist 1]
          if {$::atos_cdl_tools::mesure($idframe,obj_ypos)==""} { set ::atos_cdl_tools::mesure($idframe,obj_ypos) "?" }
 
-         set fwhm      [$frm.photom.values.object.v.r.fwhm cget -text]
+         set fwhm      [$photometrie.photom.values.object.v.r.fwhm cget -text]
          set fwhmlist [split $fwhm "/"]
          set ::atos_cdl_tools::mesure($idframe,obj_xfwhm) [lindex $fwhmlist 0]
          set ::atos_cdl_tools::mesure($idframe,obj_yfwhm) [lindex $fwhmlist 1]
          if {$::atos_cdl_tools::mesure($idframe,obj_yfwhm)==""} {set ::atos_cdl_tools::mesure($idframe,obj_yfwhm) "?" }
 
          # mesure reference
-         set ::atos_cdl_tools::mesure($idframe,ref_delta)     [$frm.photom.values.reference.v.r.delta     get]
-         set ::atos_cdl_tools::mesure($idframe,ref_fint)      [$frm.photom.values.reference.v.r.fint      cget -text]
-         set ::atos_cdl_tools::mesure($idframe,ref_pixmax)    [$frm.photom.values.reference.v.r.pixmax    cget -text]
-         set ::atos_cdl_tools::mesure($idframe,ref_intensite) [$frm.photom.values.reference.v.r.intensite cget -text]
-         set ::atos_cdl_tools::mesure($idframe,ref_sigmafond) [$frm.photom.values.reference.v.r.sigmafond cget -text]
-         set ::atos_cdl_tools::mesure($idframe,ref_snint)     [$frm.photom.values.reference.v.r.snint     cget -text]
-         set ::atos_cdl_tools::mesure($idframe,ref_snpx)      [$frm.photom.values.reference.v.r.snpx      cget -text]
+         set ::atos_cdl_tools::mesure($idframe,ref_delta)     [$photometrie.photom.values.reference.v.r.delta     get]
+         set ::atos_cdl_tools::mesure($idframe,ref_fint)      [$photometrie.photom.values.reference.v.r.fint      cget -text]
+         set ::atos_cdl_tools::mesure($idframe,ref_pixmax)    [$photometrie.photom.values.reference.v.r.pixmax    cget -text]
+         set ::atos_cdl_tools::mesure($idframe,ref_intensite) [$photometrie.photom.values.reference.v.r.intensite cget -text]
+         set ::atos_cdl_tools::mesure($idframe,ref_sigmafond) [$photometrie.photom.values.reference.v.r.sigmafond cget -text]
+         set ::atos_cdl_tools::mesure($idframe,ref_snint)     [$photometrie.photom.values.reference.v.r.snint     cget -text]
+         set ::atos_cdl_tools::mesure($idframe,ref_snpx)      [$photometrie.photom.values.reference.v.r.snpx      cget -text]
 
-         set position  [$frm.photom.values.reference.v.r.position  cget -text]
+         set position  [$photometrie.photom.values.reference.v.r.position  cget -text]
          set poslist [split $position "/"]
          set ::atos_cdl_tools::mesure($idframe,ref_xpos) [lindex $poslist 0]
          set ::atos_cdl_tools::mesure($idframe,ref_ypos) [lindex $poslist 1]
          if {$::atos_cdl_tools::mesure($idframe,ref_ypos)==""} { set ::atos_cdl_tools::mesure($idframe,ref_ypos) "?" }
 
-         set fwhm      [$frm.photom.values.reference.v.r.fwhm cget -text]
+         set fwhm      [$photometrie.photom.values.reference.v.r.fwhm cget -text]
          set fwhmlist [split $fwhm "/"]
          set ::atos_cdl_tools::mesure($idframe,ref_xfwhm) [lindex $fwhmlist 0]
          set ::atos_cdl_tools::mesure($idframe,ref_yfwhm) [lindex $fwhmlist 1]
          if {$::atos_cdl_tools::mesure($idframe,ref_yfwhm)==""} {set ::atos_cdl_tools::mesure($idframe,ref_yfwhm) "?" }
 
          # mesure image
-         set ::atos_cdl_tools::mesure($idframe,img_intmin)  [$frm.photom.values.image.v.r.intmin  cget -text]
-         set ::atos_cdl_tools::mesure($idframe,img_intmax)  [$frm.photom.values.image.v.r.intmax  cget -text]
-         set ::atos_cdl_tools::mesure($idframe,img_intmoy)  [$frm.photom.values.image.v.r.intmoy  cget -text]
-         set ::atos_cdl_tools::mesure($idframe,img_sigma)   [$frm.photom.values.image.v.r.sigma   cget -text]
+         set ::atos_cdl_tools::mesure($idframe,img_intmin)  [$photometrie.photom.values.image.v.r.intmin  cget -text]
+         set ::atos_cdl_tools::mesure($idframe,img_intmax)  [$photometrie.photom.values.image.v.r.intmax  cget -text]
+         set ::atos_cdl_tools::mesure($idframe,img_intmoy)  [$photometrie.photom.values.image.v.r.intmoy  cget -text]
+         set ::atos_cdl_tools::mesure($idframe,img_sigma)   [$photometrie.photom.values.image.v.r.sigma   cget -text]
 
-         set fenetre  [$frm.photom.values.image.v.r.fenetre  cget -text]
+         set fenetre  [$photometrie.photom.values.image.v.r.fenetre  cget -text]
          set fenetrelist [split $fenetre "x"]
          set ::atos_cdl_tools::mesure($idframe,img_xsize) [lindex $fenetrelist 0]
          set ::atos_cdl_tools::mesure($idframe,img_ysize) [lindex $fenetrelist 1]
@@ -928,9 +944,9 @@ namespace eval ::atos_cdl_tools {
          ::atos_tools::next_image $visuNo
       }
 
-      $frm.action.start configure -image .start
-      $frm.action.start configure -relief raised
-      $frm.action.start configure -command "::atos_cdl_tools::start $visuNo $frm"
+      $frm_start configure -image .start
+      $frm_start configure -relief raised
+      $frm_start configure -command "::atos_cdl_tools::start $visuNo $frmbase"
 
    }
 
@@ -943,12 +959,255 @@ namespace eval ::atos_cdl_tools {
    #
    # Stop les mesures photometriques
    #
-   proc ::atos_cdl_tools::stop {  } {
+   proc ::atos_cdl_tools::stop { visuNo frm } {
 
       ::console::affiche_resultat "-- stop \n"
+
+      if {$::atos_cdl_tools::sortie==1} {
+         $frm.action.start configure -image .start
+         $frm.action.start configure -relief raised
+         $frm.action.start configure -command "::atos_cdl_tools::start $visuNo $frm"
+      }
+
       set ::atos_cdl_tools::sortie 1
+      
+   }
+
+
+   #
+   #
+   proc ::atos_cdl_tools::preview { visuNo geometrie  } {
+
+      ::console::affiche_resultat "-- preview \n"
+      ::console::affiche_resultat "geometrie = $geometrie\n"
+      set bin [$geometrie.binning.val get]
+      set sum [$geometrie.sum.val get]
+
+      ::console::affiche_resultat "Binning= $bin \n"
+      ::console::affiche_resultat "Bloc de $sum images \n"
+      ::console::affiche_resultat "uncosmic_check = $::atos_cdl_tools::uncosmic_check \n"
+      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
+      ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
+      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
+      ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
+      
+      set bufNo [::confVisu::getBufNo $visuNo]
+      
+      buf$bufNo save atos_preview_tmp_1.fit
+      for {set i 2} {$i <= $sum} {incr i} {
+         ::console::affiche_resultat "Next : "
+         ::atos_tools::next_image $visuNo
+         ::console::affiche_resultat "cur_idframe = $::atos_tools::cur_idframe\n"
+         buf$bufNo save atos_preview_tmp_$i.fit
+      }
+      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      
+      buf$bufNo clear
+      loadima atos_preview_tmp_1.fit
+      for {set i 2} {$i <= $sum} {incr i} {
+         buf$bufNo add atos_preview_tmp_$i.fit 0
+      }
+      buf$bufNo save atos_preview_tmp_0.fit
+      loadima atos_preview_tmp_0.fit
+      
+   }
+
+   #
+   #
+   proc ::atos_cdl_tools::compute_image { visuNo geometrie } {
+
+      global caption atosconf
+
+      ::console::affiche_resultat "-- compute_image \n"
+      ::console::affiche_resultat "geometrie = $geometrie\n"
+      set relief [$geometrie.buttons.launch cget -relief]
+      ::console::affiche_resultat "relief = $relief\n"
+      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
+      ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
+      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
+      ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
+      
+      if {$relief=="raised"} {
+         $geometrie.buttons.launch configure -relief sunken
+         # on applique
+         set ::atos_cdl_tools::compute_image_first $::atos_tools::cur_idframe
+         pack  $geometrie.info.lab -in $geometrie.info
+         
+      } else {
+         $geometrie.buttons.launch configure -relief raised
+         set ::atos_cdl_tools::compute_image_first ""
+         pack forget $geometrie.info.lab
+      }
+      
+   }
+
+
+
+   proc ::atos_cdl_tools::suivi_init {  } {
+
+      switch $::atos_cdl_tools::methode_suivi {
+         "Auto" - default {
+         }
+         "Interpolation" {
+
+            gren_info "Init de la Methode d'Interpolation\n"
+            ::console::affiche_resultat "Vidage memoire\n"
+            array unset ::atos_cdl_tools::interpol
+
+            ::console::affiche_resultat "Analyse des positions verifiees\n"
+            set cpt 0
+            for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+               if {[info exists ::atos_ocr_tools::mesure($idframe,obj,verif)]} {
+                  if {$::atos_ocr_tools::mesure($idframe,obj,verif) == 1} {
+                     set ::atos_cdl_tools::interpol($idframe,obj,x) $::atos_cdl_tools::mesure($idframe,obj_xpos)
+                     set ::atos_cdl_tools::interpol($idframe,obj,y) $::atos_cdl_tools::mesure($idframe,obj_ypos)
+                     ::console::affiche_resultat "$idframe -> $::atos_cdl_tools::mesure($idframe,obj_xpos) / $::atos_cdl_tools::mesure($idframe,obj_ypos) \n"
+                     incr cpt
+                  }
+               } else {
+                  set ::atos_ocr_tools::mesure($idframe,obj,verif) 0
+               }
+            }
+            if {$cpt<2} {
+               gren_erreur "il faut avoir verifie la position de l objet sur 2 images minimum\n"
+            }
+
+         }
+      }
 
    }
+
+
+
+   proc ::atos_cdl_tools::suivi_get_pos { type } {
+      
+      set log 1
+      
+      if {$type == "obj"} {
+      } else {
+      }
+      
+      switch $::atos_cdl_tools::methode_suivi {
+         "Auto" - default {
+            gren_info "Methode Auto pour $type\n"
+            switch $type {
+               "obj" {
+                  return [list $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)]
+               }
+               "ref" {
+                  return [list $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y)]
+               }
+               default {
+                  return -code -1 "Mauvais type"
+               }
+            }
+         }
+         "Interpolation" {
+            gren_info "Methode Interpolation pour $type\n"
+            switch $type {
+               "obj" {
+                  if {$::atos_ocr_tools::mesure($idframe,obj,verif) == 1} {
+                     return [list $::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_ypos)]
+                  }
+                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::cur_idframe obj]
+                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::cur_idframe obj]
+                  ::console::affiche_resultat "$idfrmav < $idfrmap"
+                  if { $idfrmav == -1 } {
+                     # il faut interpoler par 2 a droite
+                     if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a droite : "}
+                     set idfrmav $idfrmap
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmap $idfrmap obj]
+                  }
+                  if { $idfrmap == -1 } {
+                     # il faut interpoler par 2 a gauche
+                     if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a gauche : "}
+                     set idfrmap $idfrmav
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $idfrmav obj]
+                  }
+                  if { $idfrmav == -1 || $idfrmap == -1 } {
+                     if {$log} { ::console::affiche_erreur "mmm !"}
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap 0 obj]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] obj]
+                  }
+                  if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
+                  
+               
+               }
+               "ref" {
+               }
+               default {
+                  return -code -1 "Mauvais type"
+               }
+            }
+
+         }
+      }
+
+   }
+
+   proc ::atos_cdl_tools::verif_obj { visuNo object } {
+
+      #::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      #::console::affiche_resultat "obj(x)    = $::atos_cdl_tools::obj(x)    \n"
+      #::console::affiche_resultat "obj(y)    = $::atos_cdl_tools::obj(y)    \n"
+      
+      # pos X
+      if {[info exists ::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_xpos)]} {
+         #::console::affiche_resultat "obj_xpos    = $::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_xpos)    \n"
+      } else {
+         set ::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_cdl_tools::obj(x)
+      }
+
+      # pos Y
+      if {[info exists ::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_ypos)]} {
+         #::console::affiche_resultat "obj_ypos    = $::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_ypos)    \n"
+      } else {
+         set ::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_ypos) $::atos_cdl_tools::obj(y)
+      }
+      
+      # status verif
+      set ::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj,verif) 1
+      
+      gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_xpos) / $::atos_ocr_tools::mesure($::atos_tools::cur_idframe,obj_ypos)\n"
+   }
+
+   proc ::atos_cdl_tools::modif_obj { visuNo object } {
+
+   }
+
+   proc ::atos_cdl_tools::get_idfrmav { idframe type } {
+
+       set stop 0
+       set id $idframe
+       while {$stop == 0} {
+          incr id -1
+          if {$id == 0} { return -1 }
+          if {$::atos_ocr_tools::mesure($id,$type,verif) == 1} {
+             return $id
+          }
+       }
+       return -1
+   }
+
+
+
+
+   proc ::atos_cdl_tools::get_idfrmap { idframe type } {
+
+       set stop 0
+       set id $idframe
+       while {$stop == 0} {
+          incr id
+          if {$id > $::atos_tools::nb_frames} { break }
+          if {$::atos_ocr_tools::mesure($id,$type,verif) == 1} {
+             return $id
+          }
+       }
+       return -1
+   }
+
 
 
 

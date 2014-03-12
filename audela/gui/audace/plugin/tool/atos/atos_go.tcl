@@ -101,6 +101,7 @@ proc ::atos::initPlugin { tkbase } {
 proc ::atos::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace caption conf panneau
 
+
    #--- Chargement des fichiers auxiliaires
    ::atos::ressource
 
@@ -110,7 +111,6 @@ proc ::atos::createPluginInstance { { in "" } { visuNo 1 } } {
 
    set panneau(atos,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
    set panneau(atos,$visuNo,camNo)   [::confCam::getCamNo $panneau(atos,$visuNo,camItem)]
-
 
    #--- Recuperation de la derniere configuration de l'outil
    ::atos::chargerVariable $visuNo
@@ -133,6 +133,7 @@ proc ::atos::createPluginInstance { { in "" } { visuNo 1 } } {
 #    ressource l ensemble des scripts
 #------------------------------------------------------------
 proc ::atos::ressource {  } {
+
    global audace
 
    #--- Chargement des captions
@@ -160,6 +161,7 @@ proc ::atos::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos test.tcl                ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
+
 }
 
 #------------------------------------------------------------
@@ -191,6 +193,13 @@ proc ::atos::deletePluginInstance { visuNo } {
 #------------------------------------------------------------
 proc ::atos::startTool { { visuNo 1 } } {
    global panneau
+   global caption
+
+   # Verification de la precision
+   if { $::tcl_precision < "17" } {
+      tk_messageBox -message $caption(atos_go,precision) -type ok
+      return
+   }
 
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(atos,keywordConfigName) ] } { set ::conf(atos,keywordConfigName) "default" }
@@ -341,7 +350,7 @@ proc ::atos::BuildIF { visuNo } {
             image create photo .ressource -format PNG -file [ file join $audace(rep_plugin) tool atos img ressource_mini.png ]
             button $This.fradev.ressource -image .ressource\
                -borderwidth 2 -width 10 -height 10 -compound center \
-               -command "::atos::ressource"
+               -command "console::clear ; ::atos::ressource"
             pack $This.fradev.ressource \
                -in $This.fradev \
                -side left -anchor w \

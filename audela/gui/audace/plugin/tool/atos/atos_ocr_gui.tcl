@@ -175,6 +175,7 @@ namespace eval ::atos_ocr_gui {
    #
    proc ::atos_ocr_gui::closeWindow { this visuNo } {
 
+      ::plotxy::clf 1
       ::atos_ocr_gui::widgetToConf $visuNo
       
       destroy $this
@@ -793,6 +794,8 @@ namespace eval ::atos_ocr_gui {
 
            image create photo .start -format PNG -file [ file join $audace(rep_plugin) tool atos img start.png ]
            image create photo .stop  -format PNG -file [ file join $audace(rep_plugin) tool atos img stop.png ]
+           image create photo .graph -format PNG -file [ file join $audace(rep_plugin) tool atos img cdl.png ]
+           image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool atos img save.png ]
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
@@ -802,7 +805,14 @@ namespace eval ::atos_ocr_gui {
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
-           image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool atos img save.png ]
+           button $frm.action.graph -image .graph\
+              -borderwidth 2 -width 48 -height 48 -compound center \
+              -command "::atos_ocr_tools::graph $visuNo $frm"
+           pack $frm.action.graph \
+              -in $frm.action \
+              -side left -anchor w \
+              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_ocr_tools::save $visuNo $frm"

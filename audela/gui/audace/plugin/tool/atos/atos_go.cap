@@ -21,6 +21,7 @@ set caption(atos_go,acqvideolinux)         "A.T.O.S."
 set caption(atos_go,help_titre)            "Help for this Tool"
 set caption(atos_go,help_titre1)           "Help for the Tool:"
 
+set caption(atos_go,precision)             "You have to change the internal precision in Configuration Menu -> Number of Decimals"
 set caption(atos_go,setup)                 "Plugin Setup"
 set caption(atos_go,acquisition)           "Acquisition of a video"
 set caption(atos_go,extraction)            "Extraction in fits images"
@@ -30,6 +31,8 @@ set caption(atos_go,verif)                 "Checking avi"
 set caption(atos_go,time)                  "Time Extraction"
 set caption(atos_go,cdl)                   "Ligth Curve"
 set caption(atos_go,analysis)              "Analysis"
+
+set caption(atos_go,pasdimages)            "No images\nVerify directory and root file\n and verify extension in Cionfiguration -> Image filename"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
