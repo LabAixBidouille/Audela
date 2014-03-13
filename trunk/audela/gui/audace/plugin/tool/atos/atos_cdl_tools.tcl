@@ -272,27 +272,20 @@ namespace eval ::atos_cdl_tools {
       set ::atos_cdl_tools::delta [ $frm_source.delta get]
       set statebutton [ $select cget -relief]
       if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $::atos_cdl_tools::delta
+
+         switch $type {
+            "object" {
+               ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $::atos_cdl_tools::delta
+            }
+            "reference" {
+               ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $::atos_cdl_tools::delta
+            }
+         }
+
       }
 
    }
 
-   #
-   #
-   #
-   proc ::atos_cdl_tools::mesure_ref_avance { visuNo } {
-
-      cleanmark
-      set photometrie   $::atos_gui::frame(photometrie)
-      set select $::atos_gui::frame(reference,buttons).select
-      
-      set ::atos_cdl_tools::delta [ $photometrie.photom.values.reference.v.r.delta get]
-      set statebutton [ $photometrie.photom.values.reference.t.select cget -relief]
-      if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $photometrie.photom.values.reference $::atos_cdl_tools::delta
-      }
-
-   }
 
 
 
@@ -487,20 +480,23 @@ namespace eval ::atos_cdl_tools {
    #
    #
    #
-   proc ::atos_cdl_tools::select_fullimg { visuNo this } {
+   proc ::atos_cdl_tools::select_fullimg { visuNo } {
 
       global color
 
-      set statebutton [ $this.t.select cget -relief]
+      set frm_image        $::atos_gui::frame(image,values) 
+      set select_image $::atos_gui::frame(image,buttons).select
+
+      set statebutton [ $select_image cget -relief]
 
       # desactivation
       if {$statebutton=="sunken"} {
-         $this.v.r.fenetre configure -text   "?"
-         $this.v.r.intmin  configure -text   "?"
-         $this.v.r.intmax  configure -text   "?"
-         $this.v.r.intmoy  configure -text   "?"
-         $this.v.r.sigma   configure -text   "?"
-         $this.t.select    configure -relief raised
+         $frm_image.fenetre configure -text   "?"
+         $frm_image.intmin  configure -text   "?"
+         $frm_image.intmax  configure -text   "?"
+         $frm_image.intmoy  configure -text   "?"
+         $frm_image.sigma   configure -text   "?"
+         $select_image configure -relief raised
          return
       }
 
@@ -513,16 +509,16 @@ namespace eval ::atos_cdl_tools {
 
          # Affichage de la taille de la fenetre
          if {$rect==""} {
-            $this.v.r.fenetre configure -text "Error" -fg $color(red)
+            $frm_image.fenetre configure -text "Error" -fg $color(red)
             set ::atos_photom::rect_img ""
          } else {
             set taillex [expr [lindex $rect 2] - [lindex $rect 0] ]
             set tailley [expr [lindex $rect 3] - [lindex $rect 1] ]
-            $this.v.r.fenetre configure -text "${taillex}x${tailley}" -fg $color(blue)
+            $frm_image.fenetre configure -text "${taillex}x${tailley}" -fg $color(blue)
             set ::atos_photom::rect_img $rect
          }
          ::atos_cdl_tools::get_fullimg $visuNo
-         $this.t.select  configure -relief sunken
+         $select_image  configure -relief sunken
          return
 
       }
@@ -759,7 +755,7 @@ namespace eval ::atos_cdl_tools {
          set delta [ $frm_reference.delta get]
          ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $delta
       }
-      set statebutton [ $select_image.t.select cget -relief]
+      set statebutton [ $select_image cget -relief]
       if { $statebutton=="sunken" } {
       ::atos_cdl_tools::get_fullimg $visuNo
       }
@@ -959,7 +955,7 @@ namespace eval ::atos_cdl_tools {
          set ::atos_cdl_tools::mesure($idframe,img_intmoy)  [$frm_image.intmoy  cget -text]
          set ::atos_cdl_tools::mesure($idframe,img_sigma)   [$frm_image.sigma   cget -text]
 
-         set fenetre  [$frm_reference.fenetre  cget -text]
+         set fenetre  [$frm_image.fenetre cget -text]
          set fenetrelist [split $fenetre "x"]
          set ::atos_cdl_tools::mesure($idframe,img_xsize) [lindex $fenetrelist 0]
          set ::atos_cdl_tools::mesure($idframe,img_ysize) [lindex $fenetrelist 1]
@@ -986,6 +982,10 @@ namespace eval ::atos_cdl_tools {
          ::console::affiche_resultat "cur_idframe = $::atos_tools::cur_idframe\n"
 
          ::atos_cdl_tools::read_sum $visuNo $sum
+
+         #set ::atos_tools::cur_idframe $idsav
+         #set ::atos_tools::scrollbar $idsav 
+
       }     
       
    }
@@ -1014,14 +1014,14 @@ namespace eval ::atos_cdl_tools {
       set bufNo [::confVisu::getBufNo $visuNo]
       
       buf$bufNo save atos_preview_tmp_1.fit
-
+      
       for {set i 2} {$i <= $sum} {incr i} {
          ::console::affiche_resultat "Next : "
          ::atos_tools::next_image $visuNo novisu
          ::console::affiche_resultat "cur_idframe = $::atos_tools::cur_idframe\n"
          buf$bufNo save atos_preview_tmp_$i.fit
       }
-      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      ::console::affiche_resultat "read_sum cur_idframe = $::atos_tools::cur_idframe    \n"
       
       buf$bufNo load atos_preview_tmp_1.fit
       for {set i 2} {$i <= $sum} {incr i} {
@@ -1029,14 +1029,20 @@ namespace eval ::atos_cdl_tools {
       }
       buf$bufNo save atos_preview_tmp_0.fit
       loadima atos_preview_tmp_0.fit
-
+      
+      incr ::atos_tools::cur_idframe 
+      incr ::atos_tools::scrollbar 
+      
    }
    #
    #
-   proc ::atos_cdl_tools::preview { visuNo geometrie  } {
+   proc ::atos_cdl_tools::preview { visuNo } {
+
+      set geometrie $::atos_gui::frame(geometrie)
 
       ::console::affiche_resultat "-- preview \n"
       ::console::affiche_resultat "geometrie = $geometrie\n"
+
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]
 
@@ -1051,14 +1057,18 @@ namespace eval ::atos_cdl_tools {
       
       ::atos_cdl_tools::read_sum $visuNo $sum
       
+      
+      
    }
 
    #
    #
-   proc ::atos_cdl_tools::compute_image { visuNo geometrie } {
+   proc ::atos_cdl_tools::compute_image { visuNo } {
 
       global caption atosconf
-
+      
+      set geometrie $::atos_gui::frame(geometrie)
+      
       ::console::affiche_resultat "-- compute_image \n"
       ::console::affiche_resultat "geometrie = $geometrie\n"
       set relief [$geometrie.buttons.launch cget -relief]
@@ -1073,11 +1083,13 @@ namespace eval ::atos_cdl_tools {
          $geometrie.buttons.launch configure -relief sunken
          # on applique
          set ::atos_cdl_tools::compute_image_first $::atos_tools::cur_idframe
+         $geometrie.info.lab configure -text "Activation du changement de geometrie\nIndice de debut : $::atos_cdl_tools::compute_image_first"
          pack  $geometrie.info.lab -in $geometrie.info
          
       } else {
          $geometrie.buttons.launch configure -relief raised
          set ::atos_cdl_tools::compute_image_first ""
+         $geometrie.info.lab configure -text ""
          pack forget $geometrie.info.lab
       }
       
@@ -1299,26 +1311,39 @@ namespace eval ::atos_cdl_tools {
       set cpt 0
       for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
 
-            if {! [info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
-               return
-            }
-            if {$::atos_cdl_tools::mesure($idframe,$type,verif) == 1} { 
+            if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
 
-               lappend x_verif $::atos_ocr_tools::timing($idframe,jd)
-               lappend y_verif $::atos_cdl_tools::mesure($idframe,obj_fint)
-               lappend x $::atos_ocr_tools::timing($idframe,jd)
-               lappend y $::atos_cdl_tools::mesure($idframe,obj_fint)
-               continue
-            } else {
-               if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
-                   && [info exists ::atos_cdl_tools::mesure($idframe,obj_fint)]} {
-                   
-                  lappend x_interpol $::atos_ocr_tools::timing($idframe,jd)
-                  lappend y_interpol $::atos_cdl_tools::mesure($idframe,obj_fint)
+               if {$::atos_cdl_tools::mesure($idframe,$type,verif) == 1} { 
+
+                  lappend x_verif $::atos_ocr_tools::timing($idframe,jd)
+                  lappend y_verif $::atos_cdl_tools::mesure($idframe,obj_fint)
                   lappend x $::atos_ocr_tools::timing($idframe,jd)
                   lappend y $::atos_cdl_tools::mesure($idframe,obj_fint)
                   continue
+
+               } else {
+
+                  if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
+                      && [info exists ::atos_cdl_tools::mesure($idframe,obj_fint)]} {
+
+                     lappend x_interpol $::atos_ocr_tools::timing($idframe,jd)
+                     lappend y_interpol $::atos_cdl_tools::mesure($idframe,obj_fint)
+                     lappend x $::atos_ocr_tools::timing($idframe,jd)
+                     lappend y $::atos_cdl_tools::mesure($idframe,obj_fint)
+                     continue
+                  }
                }
+
+            } else {
+
+                  if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
+                      && [info exists ::atos_cdl_tools::mesure($idframe,obj_fint)]} {
+
+                     lappend x $::atos_ocr_tools::timing($idframe,jd)
+                     lappend y $::atos_cdl_tools::mesure($idframe,obj_fint)
+                     continue
+                  }
+
             }
 
       }
@@ -1332,9 +1357,26 @@ namespace eval ::atos_cdl_tools {
 
    }
 
+
+   proc ::atos_cdl_tools::get_xy_pos { idframe type } {
+
+      switch $type {
+         "object" {
+            set xpos $::atos_cdl_tools::mesure($idframe,obj_xpos)
+            set ypos $::atos_cdl_tools::mesure($idframe,obj_ypos)
+         }
+         "reference" {
+            set xpos $::atos_cdl_tools::mesure($idframe,ref_xpos)
+            set ypos $::atos_cdl_tools::mesure($idframe,ref_ypos)
+         }
+      }
+
+   }
+
    proc ::atos_cdl_tools::graph_xy { visuNo type } {
    
       set log 0
+
 
       ::plotxy::clf 1
       ::plotxy::figure 1
@@ -1350,32 +1392,61 @@ namespace eval ::atos_cdl_tools {
       set x_interpol ""
       set y_verif    ""
       set y_interpol ""
+
  
       set cpt 0
       for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
 
-            
-            if {$::atos_cdl_tools::mesure($idframe,$type,verif) == 1} { 
+            if {[info exists ::atos_cdl_tools::mesure($idframe,obj_xpos)] \
+                && [info exists ::atos_cdl_tools::mesure($idframe,obj_ypos)]} {
 
-               lappend x_verif $::atos_cdl_tools::mesure($idframe,obj_xpos)
-               lappend y_verif $::atos_cdl_tools::mesure($idframe,obj_ypos)
-               lappend x $::atos_cdl_tools::mesure($idframe,obj_xpos)
-               lappend y $::atos_cdl_tools::mesure($idframe,obj_ypos)
-               continue
-            } else {
-               if {[info exists ::atos_cdl_tools::mesure($idframe,obj_xpos)] \
-                   && [info exists ::atos_cdl_tools::mesure($idframe,obj_ypos)]} {
-
-                  lappend x_interpol $::atos_cdl_tools::mesure($idframe,obj_xpos)
-                  lappend y_interpol $::atos_cdl_tools::mesure($idframe,obj_ypos)
-                  lappend x $::atos_cdl_tools::mesure($idframe,obj_xpos)
-                  lappend y $::atos_cdl_tools::mesure($idframe,obj_ypos)
-                  continue
+               switch $type {
+                  "object" {
+                     set xpos $::atos_cdl_tools::mesure($idframe,obj_xpos)
+                     set ypos $::atos_cdl_tools::mesure($idframe,obj_ypos)
+                  }
+                  "reference" {
+                     set xpos $::atos_cdl_tools::mesure($idframe,ref_xpos)
+                     set ypos $::atos_cdl_tools::mesure($idframe,ref_ypos)
+                  }
+                  default {
+                     gren_erreur "ici\n"
+                  }
                }
+               
+            } else {
+               continue
             }
 
+
+            if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
+            
+               if {$::atos_cdl_tools::mesure($idframe,$type,verif) == 1} { 
+
+                  lappend x_verif $xpos
+                  lappend y_verif $ypos
+                  lappend x $xpos
+                  lappend y $ypos
+                  continue
+
+               } else {
+
+                  lappend x_interpol $xpos
+                  lappend y_interpol $ypos
+                  lappend x $xpos
+                  lappend y $ypos
+                  continue
+
+               }
+
+            } else {
+
+               lappend x $xpos
+               lappend y $ypos
+               continue
+
+            }
       }
-      gren_info $x_verif
       set h2 [::plotxy::plot $x_verif $y_verif ro. 10 ]
       plotxy::sethandler $h2 [list -color green -linewidth 0]
       set h3 [::plotxy::plot $x_interpol $y_interpol ro. 5 ]
