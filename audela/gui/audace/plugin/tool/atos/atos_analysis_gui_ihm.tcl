@@ -124,7 +124,7 @@
                   label $titrecontxt.l -text "Contexte : " -font $atosconf(font,courier_10_b)
                   pack  $titrecontxt.l -side left -anchor e
 
-             #--- Cree un frame pour le chargement d'un fichier
+             #--- Cree un frame pour l'objet occulteur
              set object [frame $projet.object -borderwidth 0 -cursor arrow -relief groove]
              pack $object -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -136,7 +136,7 @@
                   entry $object.v -textvariable ::atos_analysis_gui::occ_obj_name -width 30
                   pack $object.v -side left -padx 3 -pady 1 -fill x -expand 1
 
-             #--- Cree un frame pour le chargement d'un fichier
+             #--- Cree un frame pour la date
              set date [frame $projet.date -borderwidth 0 -cursor arrow -relief groove]
              pack $date -in $projet -anchor s -side top -expand 0 -fill x -padx 30 -pady 5
 
@@ -144,11 +144,11 @@
                   label $date.l -text "Date : "
                   pack  $date.l -side left -anchor e
 
-                  #--- Cree un label pour le chemin de l'AVI
+                  #--- Cree d'une entree pour saisir la date
                   entry $date.v -textvariable ::atos_analysis_gui::occ_date -width 30
                   pack $date.v -side left -padx 3 -pady 1 -fill x
 
-             #--- Cree un frame pour le chargement d'un fichier
+             #--- Cree un frame pour la position de l'observateur
              set observatoire [frame $projet.observatoire -borderwidth 0 -cursor arrow -relief groove]
              pack $observatoire -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -172,9 +172,10 @@
              set check [frame $projet.check -borderwidth 0 -cursor arrow -relief groove]
              pack $check -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-                  button $check.but_miriade -text "Check avec Miriade" -borderwidth 2 \
+                  button $check.but_miriade -text "Valider avec Miriade" -borderwidth 2 \
                         -command "::atos_analysis_gui::miriade"
                   pack $check.but_miriade -side left -anchor c
+                  DynamicHelp::add $check.but_miriade -text "(necessite une connexion Internet)."
 
                   #--- Cree un label
                   label $check.l1 -text "RA J2000: "
@@ -195,7 +196,29 @@
                   button $check.but_aladin -text "Aladin" -borderwidth 2 \
                         -command "::atos_analysis_gui::sendAladinScript"
                   pack $check.but_aladin -side right -anchor c
+                  DynamicHelp::add $check.but_aladin -text "Envoyer dans Aladin via SAMP."
 
+             #--- Cree un frame pour les boutons d'action
+             set buttons1 [frame $projet.buttons1 -borderwidth 1 -cursor arrow -relief flat]
+             pack $buttons1 -in $projet -anchor c -side top -expand 0 -padx 10 -pady 5
+
+                  #--- Creation du bouton open
+                  button $buttons1.but_gen -width 15 \
+                     -text "Gerer" -borderwidth 2 \
+                     -command "::atos_analysis_gui::generer $visuNo"
+                  pack $buttons1.but_gen \
+                     -side right -anchor c \
+                     -padx 10 -pady 5 -ipadx 3 -ipady 3 -expand 0 -fill x
+                  DynamicHelp::add $buttons1.but_gen -text "Creation d'un nouveau projet.\nDefinir l'objet occultateur, la date,\nle lieu et valider avec Miriade."
+
+                  #--- Creation du bouton open
+                  button $buttons1.but_new -width 15 \
+                     -text "Nouveau" -borderwidth 2 \
+                     -command "::atos_analysis_gui::reinitialise"
+                  pack $buttons1.but_new \
+                     -side right -anchor c \
+                     -padx 10 -pady 5 -ipadx 3 -ipady 3 -expand 0 -fill x
+                  DynamicHelp::add $buttons1.but_new -text "Creation d'un nouveau projet (efface tous les champs)."
 
              #--- Cree un frame pour le chargement d'un fichier
              set titrefich [frame $projet.titrefich -borderwidth 1 -cursor arrow -relief raised]
@@ -205,43 +228,7 @@
                   label $titrefich.l -text "Fichiers et Repertoires : " -font $atosconf(font,courier_10_b)
                   pack  $titrefich.l -side left -anchor e
 
-             #--- Cree un frame pour le chargement d'un fichier
-             set buttons [frame $projet.buttons -borderwidth 0 -cursor arrow -relief groove]
-             pack $buttons -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Creation du bouton open
-                  button $buttons.but_gen \
-                     -text "Gerer" -borderwidth 2 \
-                     -command "::atos_analysis_gui::generer $visuNo"
-                  pack $buttons.but_gen \
-                     -side right -anchor e \
-                     -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-
-                  #--- Creation du bouton open
-                  button $buttons.but_load \
-                     -text "Charger" -borderwidth 2 \
-                     -command "::atos_analysis_gui::load_atos_file"
-                  pack $buttons.but_load \
-                     -side right -anchor e \
-                     -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-
-                  #--- Creation du bouton open
-                  button $buttons.but_open \
-                     -text "Parcourir" -borderwidth 2 \
-                     -command "::atos_analysis_gui::select_atos_file $visuNo $f0"
-                  pack $buttons.but_open \
-                     -side right -anchor e \
-                     -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-
-                  #--- Creation du bouton open
-                  button $buttons.but_new \
-                     -text "Nouveau" -borderwidth 2 \
-                     -command "::atos_analysis_gui::reinitialise"
-                  pack $buttons.but_new \
-                     -side right -anchor e \
-                     -padx 3 -pady 3 -ipadx 3 -ipady 3 -expand 0
-
-             #--- Cree un frame pour le chargement d'un fichier
+             #--- Cree un frame pour le nom du fichier projet
              set file [frame $projet.file -borderwidth 0 -cursor arrow -relief groove]
              pack $file -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -253,7 +240,7 @@
                   entry $file.v -textvariable ::atos_analysis_gui::prj_file_short -width 30
                   pack $file.v -side left -padx 3 -pady 1 -fill x -expand 1
 
-             #--- Cree un frame pour le chargement d'un fichier
+             #--- Cree un frame pour le repertoire du fichier projet
              set dir [frame $projet.dir -borderwidth 0 -cursor arrow -relief groove]
              pack $dir -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -265,6 +252,27 @@
                   entry $dir.v -textvariable ::atos_analysis_gui::prj_dir -width 10
                   pack $dir.v -side left -padx 3 -pady 1 -fill x -expand 1
 
+             #--- Cree un frame pour les boutons d'action
+             set buttons2 [frame $projet.buttons2 -borderwidth 0 -cursor arrow -relief groove]
+             pack $buttons2 -in $projet -anchor s -side top -expand 0 -padx 10 -pady 5
+
+                  #--- Creation du bouton open
+                  button $buttons2.but_load -width 15 \
+                     -text "Charger" -borderwidth 2 \
+                     -command "::atos_analysis_gui::load_atos_file"
+                  pack $buttons2.but_load \
+                     -side right -anchor e \
+                     -padx 10 -pady 5 -ipadx 3 -ipady 3 -expand 0
+                  DynamicHelp::add $buttons2.but_load -text "Recharge le projet."
+
+                  #--- Creation du bouton open
+                  button $buttons2.but_open -width 15 \
+                     -text "Parcourir" -borderwidth 2 \
+                     -command "::atos_analysis_gui::select_atos_file $visuNo $f0"
+                  pack $buttons2.but_open \
+                     -side right -anchor e \
+                     -padx 10 -pady 5 -ipadx 3 -ipady 3 -expand 0
+                  DynamicHelp::add $buttons2.but_open -text "Ouvrir un projet ATOS existant a partir d'un fichier."
 
 #---
 
