@@ -912,7 +912,7 @@ namespace eval ::atos_cdl_tools {
 
             set status [::atos_cdl_tools::mesure_obj $x $y $visuNo $delta]
             if {$status == -1} {
-               ::atos_cdl_tools::stop $visuNo
+                ::atos_cdl_tools::stop $visuNo
             }
          }
 
@@ -993,6 +993,9 @@ namespace eval ::atos_cdl_tools {
 
          if {$sum>1} {::atos_tools::next_image $visuNo}
 
+         if {$::atos_cdl_tools::sortie == 1} {
+            ::atos_cdl_tools::start_next_image $visuNo $sum $bin
+         }
       }
 
       $frm_start configure -image .start
