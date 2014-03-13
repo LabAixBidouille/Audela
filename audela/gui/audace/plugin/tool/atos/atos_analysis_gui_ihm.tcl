@@ -88,9 +88,9 @@
 
             $onglets.nb add $f0  -text "Projet"
             $onglets.nb add $f1  -text "Ephemerides"
+            $onglets.nb add $f4  -text "Parametres"
             $onglets.nb add $f2  -text "Corrections"
             $onglets.nb add $f3  -text "Evenements"
-            $onglets.nb add $f4  -text "Parametres"
             $onglets.nb add $f6  -text "Immersion"
             $onglets.nb add $f7  -text "Emersion"
             $onglets.nb add $f8  -text "Info 1/3"
@@ -204,7 +204,7 @@
 
                   #--- Creation du bouton open
                   button $buttons1.but_gen -width 15 \
-                     -text "Gerer" -borderwidth 2 \
+                     -text "Creer" -borderwidth 2 \
                      -command "::atos_analysis_gui::generer $visuNo"
                   pack $buttons1.but_gen \
                      -side right -anchor c \
@@ -213,7 +213,7 @@
 
                   #--- Creation du bouton open
                   button $buttons1.but_new -width 15 \
-                     -text "Nouveau" -borderwidth 2 \
+                     -text "Reset" -borderwidth 2 \
                      -command "::atos_analysis_gui::reinitialise"
                   pack $buttons1.but_new \
                      -side right -anchor c \
@@ -258,7 +258,7 @@
 
                   #--- Creation du bouton open
                   button $buttons2.but_load -width 15 \
-                     -text "Charger" -borderwidth 2 \
+                     -text "Recharger" -borderwidth 2 \
                      -command "::atos_analysis_gui::load_atos_file"
                   pack $buttons2.but_load \
                      -side right -anchor e \
@@ -567,6 +567,184 @@
                             pack $magv.v1 -side left -fill x
 
 
+
+
+
+#---
+
+
+#--- ONGLET : Parametres
+
+
+#---
+
+
+        #--- Cree un frame pour afficher le contenu de l onglet
+        set parametres [frame $f4.frm -borderwidth 0 -cursor arrow -relief groove]
+        pack $parametres -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titreobj [frame $parametres.titreobj -borderwidth 1 -cursor arrow -relief raised]
+             pack $titreobj -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $titreobj.l -text "Objet occulteur : " -font $atosconf(font,courier_10_b)
+                  pack  $titreobj.l -side left -anchor e
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set distance [frame $parametres.distance -borderwidth 0 -cursor arrow -relief groove]
+             pack $distance -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $distance.l1 -text "Distance (UA) : " -width 25
+                  pack  $distance.l1 -side left -anchor e
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $distance.v1 -textvariable ::atos_analysis_gui::dist -width 10
+                  pack $distance.v1 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set vitesse [frame $parametres.vitesse -borderwidth 0 -cursor arrow -relief groove]
+             pack $vitesse -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $vitesse.l2 -text "Vitesse tangentielle (km/s) : " -width 25
+                  pack  $vitesse.l2 -side left -anchor e
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $vitesse.v2 -textvariable ::atos_analysis_gui::vn -width 10
+                  pack $vitesse.v2 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set diam [frame $parametres.diam -borderwidth 0 -cursor arrow -relief groove]
+             pack $diam -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $diam.l3 -text "Diametre de la bande (km) : " -width 25
+                  pack  $diam.l3 -side left -anchor e
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $diam.v3 -textvariable ::atos_analysis_gui::width -width 10
+                  pack $diam.v3 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titreetoile [frame $parametres.titreetoile -borderwidth 1 -cursor arrow -relief raised]
+             pack $titreetoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $titreetoile.l -text "Etoile : " -font $atosconf(font,courier_10_b)
+                  pack  $titreetoile.l -side left -anchor e
+
+                  button $titreetoile.but_aladin -text "Aladin" -borderwidth 2 \
+                        -command "::atos_analysis_gui::sendAladinScript"
+                  pack $titreetoile.but_aladin -side right -anchor c
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set nometoile [frame $parametres.nometoile -borderwidth 0 -cursor arrow -relief groove]
+             pack $nometoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $nometoile.l1 -text "Designation : "
+                  pack  $nometoile.l1 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $nometoile.v1 -textvariable ::atos_analysis_gui::occ_star_name -width 30
+                  pack $nometoile.v1 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set couleuretoile [frame $parametres.couleuretoile -borderwidth 0 -cursor arrow -relief groove]
+             pack $couleuretoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $couleuretoile.l1 -text "Mag B : "
+                  pack  $couleuretoile.l1 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $couleuretoile.v1 -textvariable ::atos_analysis_gui::occ_star_B -width 10
+                  pack $couleuretoile.v1 -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $couleuretoile.l2 -text "Mag V : "
+                  pack  $couleuretoile.l2 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $couleuretoile.v2 -textvariable ::atos_analysis_gui::occ_star_V -width 10
+                  pack $couleuretoile.v2 -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $couleuretoile.l3 -text "Mag K : "
+                  pack  $couleuretoile.l3 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $couleuretoile.v3 -textvariable ::atos_analysis_gui::occ_star_K -width 10
+                  pack $couleuretoile.v3 -side left -padx 3 -pady 1 -fill x
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set tailleetoile [frame $parametres.tailleetoile -borderwidth 0 -cursor arrow -relief groove]
+             pack $tailleetoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  button $tailleetoile.but_reload -image .reload -borderwidth 2 \
+                        -command "::atos_analysis_gui::calcul_taille_etoile $tailleetoile"
+                  pack $tailleetoile.but_reload -side left -anchor c
+
+                  #--- Cree un label
+                  label $tailleetoile.l1 -text "Taille (mas) : "
+                  pack  $tailleetoile.l1 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $tailleetoile.v1 -textvariable ::atos_analysis_gui::occ_star_size_mas -width 10
+                  pack $tailleetoile.v1 -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $tailleetoile.l2 -text "Taille (km) : "
+                  pack  $tailleetoile.l2 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $tailleetoile.v2 -textvariable ::atos_analysis_gui::occ_star_size_km -width 10
+                  pack $tailleetoile.v2 -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set titrecapteur [frame $parametres.titrecapteur -borderwidth 1 -cursor arrow -relief raised]
+             pack $titrecapteur -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 10 -ipady 5
+
+                  #--- Cree un label
+                  label $titrecapteur.l -text "Capteur : " -font $atosconf(font,courier_10_b)
+                  pack  $titrecapteur.l -side left -anchor e
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set wvlngth [frame $parametres.wvlngth -borderwidth 0 -cursor arrow -relief groove]
+             pack $wvlngth -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $wvlngth.l -text "Longueur d'onde (mum) : " -width 25
+                  pack  $wvlngth.l -side left -anchor e
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $wvlngth.v -textvariable ::atos_analysis_gui::wvlngth -width 10
+                  pack $wvlngth.v -side left -padx 3 -pady 1 -fill x
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set dlambda [frame $parametres.dlambda -borderwidth 0 -cursor arrow -relief groove]
+             pack $dlambda -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $dlambda.l -text "Bande passante (mum) : " -width 25
+                  pack  $dlambda.l -side left -anchor e
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  entry $dlambda.v -textvariable ::atos_analysis_gui::dlambda -width 10
+                  pack $dlambda.v -side left -padx 3 -pady 1 -fill x
+
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set irep [frame $parametres.irep -borderwidth 0 -cursor arrow -relief groove]
+             pack $irep -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  checkbutton $irep.v -variable ::atos_analysis_tools::irep -text "Reponse instrumentale"
+                  pack $irep.v -side left -padx 3 -pady 1 -fill x
 
 
 
@@ -1163,183 +1341,6 @@
                        pack  $events.e7.dendv -in $events.e7 -side left -anchor e
 
 
-
-
-#---
-
-
-#--- ONGLET : Parametres
-
-
-#---
-
-
-        #--- Cree un frame pour afficher le contenu de l onglet
-        set parametres [frame $f4.frm -borderwidth 0 -cursor arrow -relief groove]
-        pack $parametres -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set titreobj [frame $parametres.titreobj -borderwidth 1 -cursor arrow -relief raised]
-             pack $titreobj -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $titreobj.l -text "Objet occulteur : " -font $atosconf(font,courier_10_b)
-                  pack  $titreobj.l -side left -anchor e
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set distance [frame $parametres.distance -borderwidth 0 -cursor arrow -relief groove]
-             pack $distance -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $distance.l1 -text "Distance (UA) : " -width 25
-                  pack  $distance.l1 -side left -anchor e
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $distance.v1 -textvariable ::atos_analysis_gui::dist -width 10
-                  pack $distance.v1 -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set vitesse [frame $parametres.vitesse -borderwidth 0 -cursor arrow -relief groove]
-             pack $vitesse -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $vitesse.l2 -text "Vitesse tangentielle (km/s) : " -width 25
-                  pack  $vitesse.l2 -side left -anchor e
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $vitesse.v2 -textvariable ::atos_analysis_gui::vn -width 10
-                  pack $vitesse.v2 -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set diam [frame $parametres.diam -borderwidth 0 -cursor arrow -relief groove]
-             pack $diam -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $diam.l3 -text "Diametre de la bande (km) : " -width 25
-                  pack  $diam.l3 -side left -anchor e
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $diam.v3 -textvariable ::atos_analysis_gui::width -width 10
-                  pack $diam.v3 -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set titreetoile [frame $parametres.titreetoile -borderwidth 1 -cursor arrow -relief raised]
-             pack $titreetoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $titreetoile.l -text "Etoile : " -font $atosconf(font,courier_10_b)
-                  pack  $titreetoile.l -side left -anchor e
-
-                  button $titreetoile.but_aladin -text "Aladin" -borderwidth 2 \
-                        -command "::atos_analysis_gui::sendAladinScript"
-                  pack $titreetoile.but_aladin -side right -anchor c
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set nometoile [frame $parametres.nometoile -borderwidth 0 -cursor arrow -relief groove]
-             pack $nometoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $nometoile.l1 -text "Designation : "
-                  pack  $nometoile.l1 -side left -anchor e
-
-                  #--- Cree un entry
-                  entry $nometoile.v1 -textvariable ::atos_analysis_gui::occ_star_name -width 30
-                  pack $nometoile.v1 -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set couleuretoile [frame $parametres.couleuretoile -borderwidth 0 -cursor arrow -relief groove]
-             pack $couleuretoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $couleuretoile.l1 -text "Mag B : "
-                  pack  $couleuretoile.l1 -side left -anchor e
-
-                  #--- Cree un entry
-                  entry $couleuretoile.v1 -textvariable ::atos_analysis_gui::occ_star_B -width 10
-                  pack $couleuretoile.v1 -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un label
-                  label $couleuretoile.l2 -text "Mag V : "
-                  pack  $couleuretoile.l2 -side left -anchor e
-
-                  #--- Cree un entry
-                  entry $couleuretoile.v2 -textvariable ::atos_analysis_gui::occ_star_V -width 10
-                  pack $couleuretoile.v2 -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un label
-                  label $couleuretoile.l3 -text "Mag K : "
-                  pack  $couleuretoile.l3 -side left -anchor e
-
-                  #--- Cree un entry
-                  entry $couleuretoile.v3 -textvariable ::atos_analysis_gui::occ_star_K -width 10
-                  pack $couleuretoile.v3 -side left -padx 3 -pady 1 -fill x
-
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set tailleetoile [frame $parametres.tailleetoile -borderwidth 0 -cursor arrow -relief groove]
-             pack $tailleetoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  button $tailleetoile.but_reload -image .reload -borderwidth 2 \
-                        -command "::atos_analysis_gui::calcul_taille_etoile $tailleetoile"
-                  pack $tailleetoile.but_reload -side left -anchor c
-
-                  #--- Cree un label
-                  label $tailleetoile.l1 -text "Taille (mas) : "
-                  pack  $tailleetoile.l1 -side left -anchor e
-
-                  #--- Cree un entry
-                  entry $tailleetoile.v1 -textvariable ::atos_analysis_gui::occ_star_size_mas -width 10
-                  pack $tailleetoile.v1 -side left -padx 3 -pady 1 -fill x
-
-                  #--- Cree un label
-                  label $tailleetoile.l2 -text "Taille (km) : "
-                  pack  $tailleetoile.l2 -side left -anchor e
-
-                  #--- Cree un entry
-                  entry $tailleetoile.v2 -textvariable ::atos_analysis_gui::occ_star_size_km -width 10
-                  pack $tailleetoile.v2 -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set titrecapteur [frame $parametres.titrecapteur -borderwidth 1 -cursor arrow -relief raised]
-             pack $titrecapteur -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 10 -ipady 5
-
-                  #--- Cree un label
-                  label $titrecapteur.l -text "Capteur : " -font $atosconf(font,courier_10_b)
-                  pack  $titrecapteur.l -side left -anchor e
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set wvlngth [frame $parametres.wvlngth -borderwidth 0 -cursor arrow -relief groove]
-             pack $wvlngth -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $wvlngth.l -text "Longueur d'onde (mum) : " -width 25
-                  pack  $wvlngth.l -side left -anchor e
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $wvlngth.v -textvariable ::atos_analysis_gui::wvlngth -width 10
-                  pack $wvlngth.v -side left -padx 3 -pady 1 -fill x
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set dlambda [frame $parametres.dlambda -borderwidth 0 -cursor arrow -relief groove]
-             pack $dlambda -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label
-                  label $dlambda.l -text "Bande passante (mum) : " -width 25
-                  pack  $dlambda.l -side left -anchor e
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  entry $dlambda.v -textvariable ::atos_analysis_gui::dlambda -width 10
-                  pack $dlambda.v -side left -padx 3 -pady 1 -fill x
-
-
-             #--- Cree un frame pour le chargement d'un fichier
-             set irep [frame $parametres.irep -borderwidth 0 -cursor arrow -relief groove]
-             pack $irep -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
-
-                  #--- Cree un label pour le chemin de l'AVI
-                  checkbutton $irep.v -variable ::atos_analysis_tools::irep -text "Reponse instrumentale"
-                  pack $irep.v -side left -padx 3 -pady 1 -fill x
 
 
 
