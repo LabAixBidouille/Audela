@@ -659,7 +659,7 @@ namespace eval ::atos_cdl_gui {
 
                         spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                            -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                           -command "::atos_cdl_tools::mesure_obj_avance $visuNo" -width 5 
+                           -command "::atos_cdl_tools::mesure_source_avance $visuNo object" -width 5 
                         pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
                         #---
@@ -753,7 +753,7 @@ namespace eval ::atos_cdl_gui {
 
                         spinbox $reference.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                            -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                           -command "::atos_cdl_tools::mesure_ref_avance $visuNo $photometrie" -width 5 
+                           -command "::atos_cdl_tools::mesure_source_avance $visuNo reference" -width 5 
                         pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
 
                         #---
@@ -835,6 +835,7 @@ namespace eval ::atos_cdl_gui {
 
                 frame $geometrie.cosmic -borderwidth 0 -cursor arrow
                 pack  $geometrie.cosmic -in $geometrie -side top
+
                    set ::atos_cdl_tools::uncosmic_check 0
                    checkbutton $geometrie.cosmic.check -text "UnCosmic" -variable ::atos_cdl_tools::uncosmic_check -state disable
                    pack  $geometrie.cosmic.check -in $geometrie.cosmic -side left -anchor w
@@ -843,13 +844,13 @@ namespace eval ::atos_cdl_gui {
                 pack  $geometrie.buttons -in $geometrie -side top
 
                    button $geometrie.buttons.preview -state normal -text "Preview" -relief "raised" -width 8 -height 1\
-                                     -command "::atos_cdl_tools::preview $visuNo $geometrie" 
+                                     -command "::atos_cdl_tools::preview $visuNo" 
                    pack  $geometrie.buttons.preview -in $geometrie.buttons -side left -anchor w
                    button $geometrie.buttons.launch -state normal -text "Appliquer" \
                                      -relief "raised" -width 8 -height 1\
-                                     -command "::atos_cdl_tools::compute_image $visuNo $geometrie" 
+                                     -command "::atos_cdl_tools::compute_image $visuNo" 
                    pack  $geometrie.buttons.launch -in $geometrie.buttons -side left -anchor w
-                   
+                                                         
                 frame $geometrie.info -borderwidth 0 -cursor arrow
                 pack  $geometrie.info -in $geometrie -side top
 
@@ -893,7 +894,7 @@ namespace eval ::atos_cdl_gui {
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::start $visuNo $frm"
+              -command "::atos_cdl_tools::start $visuNo"
            pack $frm.action.start \
               -in $frm.action \
               -side left -anchor w \
@@ -904,7 +905,7 @@ namespace eval ::atos_cdl_gui {
 
            button $frm.action.graph_xy_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_xy $visuNo $frm obj"
+              -command "::atos_cdl_tools::graph_xy $visuNo obj"
            pack $frm.action.graph_xy_obj \
               -in $frm.action \
               -side left -anchor w \
@@ -913,7 +914,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.graph_xy_ref -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_xy $visuNo $frm ref"
+              -command "::atos_cdl_tools::graph_xy $visuNo ref"
            pack $frm.action.graph_xy_ref \
               -in $frm.action \
               -side left -anchor w \
@@ -922,7 +923,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.graph_flux_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_flux $visuNo $frm obj"
+              -command "::atos_cdl_tools::graph_flux $visuNo obj"
            pack $frm.action.graph_flux_obj \
               -in $frm.action \
               -side left -anchor w \
@@ -931,7 +932,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.graph_flux_ref -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_flux $visuNo $frm ref"
+              -command "::atos_cdl_tools::graph_flux $visuNo ref"
            pack $frm.action.graph_flux_ref \
               -in $frm.action \
               -side left -anchor w \
@@ -940,7 +941,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::save $visuNo $frm"
+              -command "::atos_cdl_tools::save $visuNo"
            pack $frm.action.save \
               -in $frm.action \
               -side left -anchor w \
