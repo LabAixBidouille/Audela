@@ -389,7 +389,7 @@ namespace eval ::atos_cdl_gui {
            -label "" -orient horizontal \
            -state disabled
         pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-        bind $frm.scrollbar <ButtonRelease> "::atos_cdl_tools::move_scroll $visuNo $frm"
+        bind $frm.scrollbar <ButtonRelease> "::atos_cdl_tools::move_scroll $visuNo"
 
         set ::atos_gui::frame(scrollbar) $frm.scrollbar
 
