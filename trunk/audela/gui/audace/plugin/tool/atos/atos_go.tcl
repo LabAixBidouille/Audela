@@ -159,6 +159,7 @@ proc ::atos::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_gui.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_gui_ihm.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos test.tcl                ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_gui.tcl            ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
 

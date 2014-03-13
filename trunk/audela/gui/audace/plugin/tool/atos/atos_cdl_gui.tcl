@@ -233,14 +233,12 @@ namespace eval ::atos_cdl_gui {
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::atos_cdl_gui::confToWidget $visuNo
 
-      #--- Retourne l'item de la camera associee a la visu
-      set frm $this.frm_atos_cdl_gui
-      set frmbbar $this.frm_atos_cdl_gui_bar
-
       if { $::atos_tools::traitement=="fits" } { set titre $caption(atos_cdl_gui,titre_fits) }
       if { $::atos_tools::traitement=="avi" }  { set titre $caption(atos_cdl_gui,titre_avi) }
 
-
+      #--- frame general
+      set frm $this.frm_atos_cdl_gui
+      set ::atos_gui::frame(base) $frm
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -272,7 +270,7 @@ namespace eval ::atos_cdl_gui {
                     #--- Creation du bouton open
                     button $frm.form.butopen.open \
                        -text "open" -borderwidth 2 \
-                       -command "::atos_cdl_tools::open_flux $visuNo $frm"
+                       -command "::atos_cdl_tools::open_flux $visuNo"
                     pack $frm.form.butopen.open \
                        -in $frm.form.butopen -side left -anchor e \
                        -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -301,6 +299,8 @@ namespace eval ::atos_cdl_gui {
                     #--- Cree un frame pour afficher les valeurs
                     set inparam [frame $frm.form.field.v -borderwidth 0]
                     pack $inparam -in $frm.form.field -side left -expand 0 -fill x
+
+                    set ::atos_gui::frame(open,fields) $inparam
 
                       #--- Cree un label pour le repetoire destination
                       entry $inparam.destdir -fg $color(blue) -width 40
@@ -345,7 +345,7 @@ namespace eval ::atos_cdl_gui {
              #--- Creation du bouton open
              button $frm.open.but_open \
                 -text "open" -borderwidth 2 \
-                -command "::atos_cdl_tools::open_flux $visuNo $frm"
+                -command "::atos_cdl_tools::open_flux $visuNo"
              pack $frm.open.but_open \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -378,6 +378,7 @@ namespace eval ::atos_cdl_gui {
 
            grid $info_load.status $info_load.nbtotal
 
+        set ::atos_gui::frame(info_load) $info_load
 
 
 
@@ -389,6 +390,8 @@ namespace eval ::atos_cdl_gui {
            -state disabled
         pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
+        set ::atos_gui::frame(scrollbar) $frm.scrollbar
+
         #--- Cree un frame pour afficher
         set btnav [frame $frm.btnav -borderwidth 0]
         pack $btnav -in $frm -side top
@@ -397,7 +400,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool atos img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::quick_prev_image $visuNo $frm.onglets.nb.f_phot.photometrie"
+           -command "::atos_cdl_tools::quick_prev_image $visuNo"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -407,7 +410,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool atos img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::prev_image $visuNo $frm.onglets.nb.f_phot.photometrie"
+           -command "::atos_cdl_tools::prev_image $visuNo"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -417,7 +420,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool atos img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::next_image $visuNo $frm.onglets.nb.f_phot.photometrie"
+           -command "::atos_cdl_tools::next_image $visuNo"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -427,7 +430,7 @@ namespace eval ::atos_cdl_gui {
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool atos img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_cdl_tools::quick_next_image $visuNo $frm.onglets.nb.f_phot.photometrie"
+           -command "::atos_cdl_tools::quick_next_image $visuNo"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -468,9 +471,10 @@ namespace eval ::atos_cdl_gui {
                 #entry $frm.datemin -fg $color(blue) -relief sunken
                 #pack $frm.datemin -in $frm.pos.min -side top -pady 1 -anchor w
                 #--- Cree un label pour
-                entry $frm.posmin -fg $color(blue) -relief sunken
-                pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
+                entry $frm.pos.min.val -fg $color(blue) -relief sunken
+                pack $frm.pos.min.val -in $frm.pos.min -side top -pady 1 -anchor w
 
+                set ::atos_gui::frame(posmin) $frm.pos.min.val
 
              #--- Cree un frame pour afficher
              frame $frm.pos.max -borderwidth 0
@@ -480,8 +484,10 @@ namespace eval ::atos_cdl_gui {
                 #entry $frm.datemax -fg $color(blue) -relief sunken
                 #pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
                 #--- Cree un label pour
-                entry $frm.posmax -fg $color(blue) -relief sunken
-                pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
+                entry $frm.pos.max.val -fg $color(blue) -relief sunken
+                pack $frm.pos.max.val -in $frm.pos.max -side top -pady 1 -anchor w
+
+                set ::atos_gui::frame(posmax) $frm.pos.max.val
 
              #--- Creation du bouton setmax
              button $frm.pos.crop \
@@ -532,9 +538,8 @@ namespace eval ::atos_cdl_gui {
              set photometrie [frame $f_phot.photometrie]
              pack $photometrie -in $f_phot
 
-      ::console::affiche_resultat "frm $frm => photometrie = $photometrie \n"
-
-
+             set ::atos_gui::frame(photometrie) $photometrie
+             
                  #--- Cree un frame 
                  frame $photometrie.photom -borderwidth 1 -relief raised -cursor arrow 
                  pack $photometrie.photom -in $photometrie -side top -expand 0 -fill x -padx 1 -pady 1
@@ -557,8 +562,10 @@ namespace eval ::atos_cdl_gui {
                      pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
 
                      button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                            -command "::atos_cdl_tools::select_fullimg $visuNo $image"
+                                            -command "::atos_cdl_tools::select_fullimg $visuNo"
                      pack $image.t.select -in $image.t -side left -anchor e 
+
+                     set ::atos_gui::frame(image,buttons) $image.t
 
                      #--- Cree un frame pour les info 
                      frame $image.v -borderwidth 0 -cursor arrow
@@ -570,6 +577,7 @@ namespace eval ::atos_cdl_gui {
                      frame $image.v.r -borderwidth 0 -cursor arrow
                      pack  $image.v.r -in $image.v -side right
 
+                     set ::atos_gui::frame(image,values) $image.v.r
 
                         #---
                         label $image.v.l.fenetre -font $atosconf(font,courier_10) -text "Fenetre"
@@ -608,17 +616,24 @@ namespace eval ::atos_cdl_gui {
                  set object [frame $photometrie.photom.values.object -borderwidth 1]
                  pack $object -in $photometrie.photom.values -side left -padx 30 -pady 1
 
-                     #--- Cree un frame
-                     frame $object.t -borderwidth 0 -cursor arrow
-                     pack  $object.t -in $object -side top -expand 5 -anchor w
-
                      #--- Cree un label
-                     label $object.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "object"
-                     pack  $object.t.titre -in $object.t -side left -anchor w -padx 30
+                     label $object.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "object"
+                     pack  $object.titre -in $object -side top -anchor w -padx 30
 
-                     button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                            -command "::atos_cdl_tools::select_obj $visuNo $object"
-                     pack $object.t.select -in $object.t -side left -anchor e 
+
+                     set but [frame $object.but -borderwidth 1]
+                     pack $but -in $object -side top 
+  
+                           button $but.select -text "Select" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::select_source $visuNo object"
+                           button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::modif_source $visuNo object"
+                           button $but.verifier -text "Valider" -borderwidth 1 -takefocus 1 \
+                                                  -command "::atos_cdl_tools::verif_source $visuNo object"
+
+                           grid $but.select $but.modifier $but.verifier 
+
+                     set ::atos_gui::frame(object,buttons) $but
 
                      #--- Cree un frame pour les info 
                      frame $object.v -borderwidth 0 -cursor arrow
@@ -630,6 +645,7 @@ namespace eval ::atos_cdl_gui {
                      frame $object.v.r -borderwidth 0 -cursor arrow
                      pack  $object.v.r -in $object.v -side right
 
+                     set ::atos_gui::frame(object,values) $object.v.r
 
                         #---
                         label $object.v.l.position -font $atosconf(font,courier_10) -text "Position"
@@ -643,7 +659,7 @@ namespace eval ::atos_cdl_gui {
 
                         spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                            -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                           -command "::atos_cdl_tools::mesure_obj_avance $visuNo $photometrie" -width 5 
+                           -command "::atos_cdl_tools::mesure_obj_avance $visuNo" -width 5 
                         pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
                         #---
@@ -688,31 +704,30 @@ namespace eval ::atos_cdl_gui {
                         label $object.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
                         pack  $object.v.r.snpx -in $object.v.r -side top -anchor w
 
-                        set but [frame $object.v.r.but -borderwidth 1]
-                        pack $but -in $object.v.r -side top 
-  
-                           button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
-                                                  -command "::atos_cdl_tools::modif_obj $visuNo $object"
-                           button $but.verifier -text "Verifier" -borderwidth 1 -takefocus 1 \
-                                                  -command "::atos_cdl_tools::verif_obj $visuNo $object"
-
-                           grid $but.modifier $but.verifier 
 
                  #--- Cree un frame pour reference
                  set reference [frame $photometrie.photom.values.reference -borderwidth 1]
                  pack $reference -in $photometrie.photom.values -side left -padx 30 -pady 1
 
-                     #--- Cree un frame
-                     frame $reference.t -borderwidth 0 -cursor arrow
-                     pack  $reference.t -in $reference -side top -expand 5 -anchor w
-
                      #--- Cree un label
-                     label $reference.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "reference"
-                     pack  $reference.t.titre -in $reference.t -side left -anchor w -padx 30
+                     label $reference.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "reference"
+                     pack  $reference.titre -in $reference -side top -anchor w -padx 30
 
-                     button $reference.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                            -command "::atos_cdl_tools::select_ref $visuNo $reference"
-                     pack $reference.t.select -in $reference.t -side left -anchor e 
+                     set but [frame $reference.but -borderwidth 1]
+                     
+                     pack $but -in $reference -side top 
+  
+                        button $but.select -text "Select" -borderwidth 1 -takefocus 1 \
+                                               -command "::atos_cdl_tools::select_source $visuNo reference"
+                        button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
+                                               -command "::atos_cdl_tools::modif_source $visuNo reference"
+                        button $but.verifier -text "Verifier" -borderwidth 1 -takefocus 1 \
+                                               -command "::atos_cdl_tools::verif_source $visuNo reference"
+
+                        grid $but.select $but.modifier $but.verifier 
+
+                     set ::atos_gui::frame(reference,buttons) $but
+
 
                      #--- Cree un frame pour les info 
                      frame $reference.v -borderwidth 0 -cursor arrow
@@ -723,7 +738,8 @@ namespace eval ::atos_cdl_gui {
 
                      frame $reference.v.r -borderwidth 0 -cursor arrow
                      pack  $reference.v.r -in $reference.v -side right
-
+  
+                     set ::atos_gui::frame(reference,values) $reference.v.r
 
                         #---
                         label $reference.v.l.position -font $atosconf(font,courier_10) -text "Position"
@@ -782,19 +798,10 @@ namespace eval ::atos_cdl_gui {
                         label $reference.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
                         pack  $reference.v.r.snpx -in $reference.v.r -side top -anchor w
 
-                        set but [frame $reference.v.r.but -borderwidth 1]
-                        pack $but -in $reference.v.r -side top 
-  
-                           button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
-                                                  -command "::atos_cdl_tools::modif_ref $visuNo $reference"
-                           button $but.verifier -text "Verifier" -borderwidth 1 -takefocus 1 \
-                                                  -command "::atos_cdl_tools::verif_ref $visuNo $reference"
-
-                           grid $but.modifier $but.verifier 
 
     # onglets : psf
     
-             set psf [frame $f_psf.photometrie]
+             set psf [frame $f_psf.psf]
              pack $psf -in $f_psf
 
                  psf_gui_methodes $visuNo $psf
@@ -803,6 +810,8 @@ namespace eval ::atos_cdl_gui {
 
              set geometrie [frame $f_geom.geometrie]
              pack $geometrie -in $f_geom
+
+             set ::atos_gui::frame(geometrie) $geometrie
  
                 frame $geometrie.binning -borderwidth 0 -cursor arrow
                 pack  $geometrie.binning -in $geometrie -side top
@@ -889,6 +898,9 @@ namespace eval ::atos_cdl_gui {
               -in $frm.action \
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+           set ::atos_gui::frame(buttons,start) $frm.action.start
+
 
            button $frm.action.graph_xy_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \

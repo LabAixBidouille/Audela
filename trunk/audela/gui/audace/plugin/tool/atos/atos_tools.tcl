@@ -30,20 +30,22 @@ namespace eval ::atos_tools {
    # atos_tools::open_flux
    # ouvre un flux
    #
-   proc ::atos_tools::open_flux { visuNo frm } {
+   proc ::atos_tools::open_flux { visuNo } {
 
+      set scrollbar $::atos_gui::frame(scrollbar)
+       
       if { $::atos_tools::traitement=="fits" } {
-         ::atos_tools_fits::open_flux $visuNo $frm
+         ::atos_tools_fits::open_flux $visuNo
       }
 
       if { $::atos_tools::traitement=="avi" }  {
-         ::atos_tools_avi::open_flux $visuNo $frm
+         ::atos_tools_avi::open_flux $visuNo
       }
 
       catch {
       
-         $frm.info_load.status  configure -text "Loaded"
-         $frm.info_load.nbtotal  configure -text "$::atos_tools::nb_frames frames"
+         $::atos_gui::frame(info_load).status   configure -text "Loaded"
+         $::atos_gui::frame(info_load).nbtotal  configure -text "$::atos_tools::nb_frames frames"
       }
 
       set bufNo [ visu$visuNo buf ]
@@ -53,12 +55,12 @@ namespace eval ::atos_tools {
       }
 
       set ::atos_tools::scrollbar 1
-      $frm.scrollbar configure -from 1
-      $frm.scrollbar configure -to $::atos_tools::nb_frames
-      $frm.scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
-      $frm.scrollbar configure -command "::atos_tools::slide $visuNo"
-      $frm.scrollbar configure -state normal
-      $frm.scrollbar configure -variable ::atos_tools::scrollbar
+      $scrollbar configure -from 1
+      $scrollbar configure -to $::atos_tools::nb_frames
+      $scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
+      $scrollbar configure -command "::atos_tools::slide $visuNo"
+      $scrollbar configure -state normal
+      $scrollbar configure -variable ::atos_tools::scrollbar
 
    }
 
@@ -70,15 +72,15 @@ namespace eval ::atos_tools {
    # atos_tools::select
    # Selectionne le ou les fichiers a ouvrir
    #
-   proc ::atos_tools::select { visuNo frm } {
+   proc ::atos_tools::select { visuNo } {
 
       if { $::atos_tools::traitement=="fits" } {
-         ::atos_tools_fits::select $visuNo $frm
+         ::atos_tools_fits::select $visuNo
       }
 
       if { $::atos_tools::traitement=="avi" }  {
-         ::atos_tools_avi::select $visuNo $frm
-         ::atos_tools::open_flux $visuNo $frm
+         ::atos_tools_avi::select $visuNo
+         ::atos_tools::open_flux $visuNo
       }
 
    }
@@ -200,10 +202,12 @@ namespace eval ::atos_tools {
    #
    # selection du frame de debut
    #
-   proc ::atos_tools::setmin { frm } {
+   proc ::atos_tools::setmin { } {
 
-      $frm.posmin delete 0 end
-      $frm.posmin insert 0 [expr int($::atos_tools::cur_idframe)]
+      set posmin    $::atos_gui::frame(posmin)
+
+      $posmin delete 0 end
+      $posmin insert 0 [expr int($::atos_tools::cur_idframe)]
 
    }
 
@@ -212,18 +216,24 @@ namespace eval ::atos_tools {
    #
    proc ::atos_tools::setmax { frm } {
 
-      $frm.posmax delete 0 end
-      $frm.posmax insert 0 [expr int($::atos_tools::cur_idframe)]
+      set posmax    $::atos_gui::frame(posmax)
+
+      $posmax delete 0 end
+      $posmax insert 0 [expr int($::atos_tools::cur_idframe)]
 
    }
 
    #
    # redimensionne le flux entre la valeur min et max
    #
-   proc ::atos_tools::crop { visuNo frm } {
+   proc ::atos_tools::crop { visuNo } {
 
-      set fmin  [$frm.posmin get]
-      set fmax  [$frm.posmax get]
+      set scrollbar $::atos_gui::frame(scrollbar)
+      set posmin    $::atos_gui::frame(posmin)
+      set posmax    $::atos_gui::frame(posmax)
+
+      set fmin  [$posmin get]
+      set fmax  [$posmax get]
 
       if { $fmin == "" } {
          set fmin 1
@@ -241,9 +251,9 @@ namespace eval ::atos_tools {
       ::console::affiche_resultat "frame_end    $::atos_tools::frame_end   \n"
       ::console::affiche_resultat "nb_frames    $::atos_tools::nb_frames   \n"
 
-      $frm.scrollbar configure -from $fmin
-      $frm.scrollbar configure -to $fmax
-      $frm.scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
+      $scrollbar configure -from $fmin
+      $scrollbar configure -to $fmax
+      $scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
 
       ::atos_tools::set_frame $visuNo $fmin
 
@@ -258,7 +268,11 @@ namespace eval ::atos_tools {
    #
    # redimensionne le flux entre la valeur min et max
    #
-   proc ::atos_tools::uncrop { visuNo frm } {
+   proc ::atos_tools::uncrop { visuNo } {
+
+      set scrollbar $::atos_gui::frame(scrollbar)
+      set posmin    $::atos_gui::frame(posmin)
+      set posmax    $::atos_gui::frame(posmax)
 
       set fmin  1
       set fmax  $::atos_tools::nb_open_frames
@@ -268,13 +282,13 @@ namespace eval ::atos_tools {
       set ::atos_tools::frame_end   $fmax
       set ::atos_tools::cur_idframe $fmin
 
-      $frm.scrollbar configure -from $fmin
-      $frm.scrollbar configure -to $fmax
-      $frm.scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
-      $frm.posmin delete 0 end
-      $frm.posmin insert 0 ""
-      $frm.posmax delete 0 end
-      $frm.posmax insert 0 ""
+      $scrollbar configure -from $fmin
+      $scrollbar configure -to $fmax
+      $scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
+      $posmin delete 0 end
+      $posmin insert 0 ""
+      $posmax delete 0 end
+      $posmax insert 0 ""
 
       visu$visuNo disp
       set ::atos_tools::scrollbar $::atos_tools::cur_idframe

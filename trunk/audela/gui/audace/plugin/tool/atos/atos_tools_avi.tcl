@@ -74,7 +74,7 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::select { visuNo frm } {
+   proc ::atos_tools_avi::select { visuNo } {
 
       global audace panneau
 
@@ -83,7 +83,7 @@ namespace eval ::atos_tools_avi {
 
       #--- Ouvre la fenetre de choix des images
       set bufNo [ visu$visuNo buf ]
-      set ::atos_tools::avi_filename [ ::tkutil::box_load_avi $frm $audace(rep_images) $bufNo "1" ]
+      set ::atos_tools::avi_filename [ ::tkutil::box_load_avi $::atos_gui::frame(base) $audace(rep_images) $bufNo "1" ]
       $frm.open.avipath delete 0 end
       $frm.open.avipath insert 0 $::atos_tools::avi_filename
 
@@ -95,7 +95,7 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::open_flux { visuNo frm } {
+   proc ::atos_tools_avi::open_flux { visuNo } {
 
       global audace panneau
 
@@ -106,8 +106,8 @@ namespace eval ::atos_tools_avi {
       if {[::atos_tools_avi::avi1 status] != 0} {
          ::console::affiche_erreur "Echec du chargement de la video\n"
          catch {
-            $frm.status.v.status configure -text Error
-            $frm.status.v.nbtotal configure -text ?
+            $::atos_gui::frame(info_load).status   configure -text "Error"
+            $::atos_gui::frame(info_load).nbtotal  configure -text "?"
          }
          return
       }
@@ -394,10 +394,12 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::imagecount { frm } {
+   proc ::atos_tools_avi::imagecount {  } {
       global audace
 
-      $frm.imagecount delete 0 end
+      set imagecount $::atos_gui::frame(imagecount)
+      
+      $imagecount delete 0 end
       set fmin [ $frm.posmin get ]
       set fmax [ $frm.posmax get ]
       if { $fmin == "" } {
@@ -406,7 +408,7 @@ namespace eval ::atos_tools_avi {
       if { $fmax == "" } {
          set fmax $::atos_tools::nb_open_frames
       }
-      $frm.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
+      $imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
    }
 
@@ -450,9 +452,18 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::acq_display { visuNo frm } {
+   proc ::atos_tools_avi::acq_display { visuNo } {
 
         global audace
+        
+
+      set frm_image        $::atos_gui::frame(image,values) 
+      set frm_objet        $::atos_gui::frame(object,values) 
+      set frm_reference    $::atos_gui::frame(reference,values) 
+      set select_image     $::atos_gui::frame(image,buttons).select
+      set select_objet     $::atos_gui::frame(object,buttons).select
+      set select_reference $::atos_gui::frame(reference,buttons).select
+        
         set bufNo [ visu$visuNo buf ]
         set avipid ""
         set err [ catch {set avipid [exec sh -c "pgrep av4l-grab"]} msg ]
@@ -470,19 +481,19 @@ namespace eval ::atos_tools_avi {
            file delete -force /dev/shm/pict.yuv422
 
            cleanmark
-           set statebutton [ $frm.photom.values.object.t.select cget -relief]
+           set statebutton [ $select_objet cget -relief]
            if { $statebutton=="sunken" } {
-              set delta [ $frm.photom.values.object.v.r.delta get]
-              ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+              set delta [ $frm_objet.delta get]
+              ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $delta
            }
-           set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+           set statebutton [ $select_reference cget -relief]
            if { $statebutton=="sunken" } {
-              set delta [ $frm.photom.values.reference.v.r.delta get]
-              ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+              set delta [ $frm_reference.delta get]
+              ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $delta
            }
-           set statebutton [ $frm.photom.values.image.t.select cget -relief]
+           set statebutton [ $select_image cget -relief]
            if { $statebutton=="sunken" } {
-           ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+           ::atos_cdl_tools::get_fullimg $visuNo
            }
 
         }
@@ -496,7 +507,8 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::acq_getdevinfo { visuNo frm autoflag } {
+   proc ::atos_tools_avi::acq_getdevinfo { visuNo autoflag } {
+
         global audace
 
         set bufNo [ visu$visuNo buf ]
