@@ -32,10 +32,10 @@ namespace eval ::atos_cdl_tools {
 
       set ::atos_cdl_tools::delta 5
 
-      set ::atos_cdl_tools::x_obj_threshold 15
-      set ::atos_cdl_tools::y_obj_threshold 15
-      set ::atos_cdl_tools::x_ref_threshold 15
-      set ::atos_cdl_tools::y_ref_threshold 15
+      set ::atos_cdl_tools::x_obj_threshold 5
+      set ::atos_cdl_tools::y_obj_threshold 5
+      set ::atos_cdl_tools::x_ref_threshold 5
+      set ::atos_cdl_tools::y_ref_threshold 5
 
    }
 
