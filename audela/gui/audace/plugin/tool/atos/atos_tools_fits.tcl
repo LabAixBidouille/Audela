@@ -16,7 +16,7 @@ namespace eval ::atos_tools_fits {
 
 
 
-   proc ::atos_tools_fits::open_flux { visuNo frm } {
+   proc ::atos_tools_fits::open_flux { visuNo } {
 
       global audace panneau caption
 
@@ -25,8 +25,9 @@ namespace eval ::atos_tools_fits {
       buf$bufNo clear
       visu$visuNo clear
 
-      set destdir [ $frm.form.field.v.destdir get ]
-      set prefix  [ $frm.form.field.v.prefix get  ]
+      set destdir [ $::atos_gui::frame(open,fields).destdir get ]
+      set prefix  [ $::atos_gui::frame(open,fields).prefix get ]
+      set scrollbar $::atos_gui::frame(scrollbar)
 
       set sortie 0
       set idframe 1
@@ -42,8 +43,8 @@ namespace eval ::atos_tools_fits {
       
       if {$idframe == 0} {
          catch {
-            $frm.status.v.status configure -text "Pas d'image"
-            $frm.status.v.nbtotal configure -text 0
+            $::atos_gui::frame(info_load).status   configure -text "Pas d'image"
+            $::atos_gui::frame(info_load).nbtotal  configure -text "0"
          }
          ::console::affiche_erreur "$caption(atos_go,pasdimages)\n" 
          tk_messageBox -message $caption(atos_go,pasdimages) -type ok
@@ -60,24 +61,20 @@ namespace eval ::atos_tools_fits {
       set ::atos_tools::frame_begin 1
       set ::atos_tools::frame_end $idframe
 
-
-
       ::atos_tools_fits::next_image $visuNo
 
-      catch {
-         $frm.status.v.status  configure -text "Loaded"
-         $frm.status.v.nbtotal configure -text $::atos_tools::nb_frames
-      }
+      $::atos_gui::frame(info_load).status   configure -text "Loaded"
+      $::atos_gui::frame(info_load).nbtotal  configure -text $::atos_tools::nb_frames
 
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
       set ::atos_tools::scrollbar 1   
-      $frm.scrollbar configure -from 1
-      $frm.scrollbar configure -to $::atos_tools::nb_frames
-      $frm.scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
-      $frm.scrollbar configure -command "::atos_tools::slide $visuNo"
-      $frm.scrollbar configure -state normal
-      $frm.scrollbar configure -variable ::atos_tools::scrollbar
+      $scrollbar configure -from 1
+      $scrollbar configure -to $::atos_tools::nb_frames
+      $scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
+      $scrollbar configure -command "::atos_tools::slide $visuNo"
+      $scrollbar configure -state normal
+      $scrollbar configure -variable ::atos_tools::scrollbar
       return
    }
 
