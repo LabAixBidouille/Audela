@@ -137,10 +137,10 @@ namespace eval ::atos_tools {
    # atos_tools::next_image
    # Passe a l image suivante
    #
-   proc ::atos_tools::next_image { visuNo } {
+   proc ::atos_tools::next_image { visuNo {novisu ""}} {
 
       if { $::atos_tools::traitement=="fits" } {
-         ::atos_tools_fits::next_image $visuNo
+         ::atos_tools_fits::next_image $visuNo $novisu
       }
 
       if { $::atos_tools::traitement=="avi" }  {
