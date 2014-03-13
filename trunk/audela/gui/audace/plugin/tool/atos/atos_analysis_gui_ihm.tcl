@@ -268,7 +268,7 @@
                   #--- Creation du bouton open
                   button $buttons2.but_open -width 15 \
                      -text "Parcourir" -borderwidth 2 \
-                     -command "::atos_analysis_gui::select_atos_file $visuNo $f0"
+                     -command "::atos_analysis_gui::select_atos_file $visuNo $f0; ::atos_analysis_gui::load_atos_file"
                   pack $buttons2.but_open \
                      -side right -anchor e \
                      -padx 10 -pady 5 -ipadx 3 -ipady 3 -expand 0
@@ -547,7 +547,7 @@
                        pack $vn -in $paramdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Cree un label
-                            label $vn.l1 -text "Vitesse sur le plan tangent (km/s) : "
+                            label $vn.l1 -text "Vitesse apparente de l'ombre (km/s) : "
                             pack  $vn.l1 -side left -anchor e
 
                             #--- Cree un label pour le chemin de l'AVI
@@ -621,7 +621,7 @@
              pack $diam -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $diam.l3 -text "Diametre de la bande (km) : " -width 25
+                  label $diam.l3 -text "Largeur approx. de l'ombre (km) : " -width 25
                   pack  $diam.l3 -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI

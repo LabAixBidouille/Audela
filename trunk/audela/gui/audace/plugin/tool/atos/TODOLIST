@@ -1,6 +1,5 @@
 TODOLIST
 
-- Analyse : Verifier ephem
 - Analyse : calcul Immersion/Emersion
             Ajouter un bouton VALIDER en dessous des resultats qui aura pour effet de 
             mettre la date  obtenue comme reference.
