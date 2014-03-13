@@ -885,7 +885,7 @@ namespace eval ::atos_cdl_tools {
       
       while {$::atos_cdl_tools::sortie == 0} {
 
-         ::console::affiche_resultat "cur_idframe == $::atos_tools::cur_idframe\n"
+         #::console::affiche_resultat "cur_idframe == $::atos_tools::cur_idframe\n"
          #set ::atos_cdl_tools::sortie 1
          
          set idframe [expr $::atos_tools::cur_idframe +1]
@@ -894,7 +894,7 @@ namespace eval ::atos_cdl_tools {
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin
 
          
-         ::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
+         #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
          if {$idframe == $::atos_tools::nb_frames} {
             set ::atos_cdl_tools::sortie 1
          }
