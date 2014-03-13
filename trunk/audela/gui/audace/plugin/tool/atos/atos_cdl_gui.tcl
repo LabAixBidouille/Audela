@@ -389,6 +389,7 @@ namespace eval ::atos_cdl_gui {
            -label "" -orient horizontal \
            -state disabled
         pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+        bind $frm.scrollbar <ButtonRelease> "::atos_cdl_tools::move_scroll $visuNo $frm"
 
         set ::atos_gui::frame(scrollbar) $frm.scrollbar
 
@@ -659,7 +660,7 @@ namespace eval ::atos_cdl_gui {
 
                         spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                            -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                           -command "::atos_cdl_tools::mesure_source_avance $visuNo object" -width 5 
+                           -command "::atos_cdl_tools::mesure_source_spinbox $visuNo object" -width 5 
                         pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
                         #---
@@ -753,7 +754,7 @@ namespace eval ::atos_cdl_gui {
 
                         spinbox $reference.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                            -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                           -command "::atos_cdl_tools::mesure_source_avance $visuNo reference" -width 5 
+                           -command "::atos_cdl_tools::mesure_source_spinbox $visuNo reference" -width 5 
                         pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
 
                         #---
@@ -905,7 +906,7 @@ namespace eval ::atos_cdl_gui {
 
            button $frm.action.graph_xy_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_xy $visuNo obj"
+              -command "::atos_cdl_tools::graph_xy $visuNo object"
            pack $frm.action.graph_xy_obj \
               -in $frm.action \
               -side left -anchor w \
@@ -914,7 +915,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.graph_xy_ref -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_xy $visuNo ref"
+              -command "::atos_cdl_tools::graph_xy $visuNo reference"
            pack $frm.action.graph_xy_ref \
               -in $frm.action \
               -side left -anchor w \
@@ -923,7 +924,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.graph_flux_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_flux $visuNo obj"
+              -command "::atos_cdl_tools::graph_flux $visuNo object"
            pack $frm.action.graph_flux_obj \
               -in $frm.action \
               -side left -anchor w \
@@ -932,7 +933,7 @@ namespace eval ::atos_cdl_gui {
            
            button $frm.action.graph_flux_ref -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph_flux $visuNo ref"
+              -command "::atos_cdl_tools::graph_flux $visuNo reference"
            pack $frm.action.graph_flux_ref \
               -in $frm.action \
               -side left -anchor w \
