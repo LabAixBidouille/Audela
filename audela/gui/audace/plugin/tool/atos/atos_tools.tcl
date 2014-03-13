@@ -149,7 +149,9 @@ namespace eval ::atos_tools {
          ::atos_tools_avi::next_image
       }
 
-      visu$visuNo disp
+      if { $novisu=="" } {
+         visu$visuNo disp
+      }
       set ::atos_tools::scrollbar $::atos_tools::cur_idframe
 
    }
