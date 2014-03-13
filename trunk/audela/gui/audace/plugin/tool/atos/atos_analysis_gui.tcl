@@ -2622,9 +2622,9 @@ catch {
             set pass "no"
          }
       }
-      
-      ::console::affiche_resultat "position : $::atos_analysis_gui::occ_pos\n"
-      
+
+      #::console::affiche_resultat "position : $::atos_analysis_gui::occ_pos\n"
+
       if {$pass=="no"} {
          tk_messageBox -message "Veuillez entrer des valeurs valides pour les champs objet, date et localisation" -type ok
          return
@@ -2637,14 +2637,13 @@ catch {
      
       set cmd1 "vo_miriade_ephemcc \"$::atos_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::atos_analysis_gui::occ_pos\" \"INPOP\" 2 1 1 \"text\" \"--jd\" 0"
       set cmd5 "vo_miriade_ephemcc \"$::atos_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::atos_analysis_gui::occ_pos\" \"INPOP\" 2 5 1 \"text\" \"--jd,--rv\" 0"
-      #::console::affiche_resultat "CMD MIRIADE=$cmd1\n"
-      #::console::affiche_resultat "CMD MIRIADE=$cmd5\n"
+      #::console::affiche_resultat "CMD MIRIADE 1 = $cmd1\n"
+      #::console::affiche_resultat "CMD MIRIADE 5 = $cmd5\n"
       set textraw1 [vo_miriade_ephemcc "$::atos_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::atos_analysis_gui::occ_pos" "INPOP" 2 1 1 "text" "--jd" 0]
       set textraw5 [vo_miriade_ephemcc "$::atos_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::atos_analysis_gui::occ_pos" "INPOP" 2 5 1 "text" "--jd" 0]
       set text1 [split $textraw1 ";"]
       set text5 [split $textraw5 ";"]
       
-         ::console::affiche_erreur "CMD MIRIADE=$cmd1\n"
       set nbl [llength $text1]
       if {$nbl == 1} {
          set res [tk_messageBox -message "L'appel aux ephemerides a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
@@ -2675,8 +2674,7 @@ catch {
       # Recupere la position de l'observateur
       foreach t $text1 {
          if { [regexp {.*(\d+) h +(\d+) m +(\d+)\.(\d+) s (.+?).* (\d+) d +(\d+) ' +(\d+)\.(\d+) " +(.+?).* ([-+]?\d*\.?\d*) m.*} $t str loh lom los loms lowe lad lam las lams lans alt] } {
-            # "
-            gren_info "Longitude = $lowe $loh $lom $los $loms \n"
+            #gren_info "Longitude = $lowe $loh $lom $los $loms \n"
             set ::atos_analysis_gui::longitude [format "%s %02dh%02dm%02d.%03ds" $lowe $loh $lom $los $loms ]
             
             # cas particulier des nombre 001
@@ -2688,7 +2686,7 @@ catch {
             }
             
             set lams [expr int($lams)]
-            gren_info "Latitude = $lans $lad $lam $las $lams \n"
+            #gren_info "Latitude = $lans $lad $lam $las $lams \n"
             set ::atos_analysis_gui::latitude  [format "%s %02dd%02dm%02d.%03ds" $lans $lad $lam $las $lams ]
             set ::atos_analysis_gui::altitude  $alt
          }      
@@ -2727,7 +2725,7 @@ catch {
       #   ::console::affiche_resultat  "($cpt) $s_el\n"
       #   incr cpt
       #}
-      # on affecte les varaibles
+      # on affecte les variables
       set ::atos_analysis_gui::rajapp   [::atos_analysis_gui::good_sexa [lindex $line  2] [lindex $line  3] [lindex $line  4] 2]
       set ::atos_analysis_gui::decapp   [::atos_analysis_gui::good_sexa [lindex $line  5] [lindex $line  6] [lindex $line  7] 2]
       set ::atos_analysis_gui::dist     [format "%.5f" [lindex $line 8]]
@@ -2736,7 +2734,8 @@ catch {
       set ::atos_analysis_gui::elong    [lindex $line 11]
       set ::atos_analysis_gui::dracosd  [format "%.5f" [expr [lindex $line 12] * 60. ] ]
       set ::atos_analysis_gui::ddec     [format "%.5f" [expr [lindex $line 13] * 60. ] ]
-      set ::atos_analysis_gui::vn       [lindex $line 14]
+      set ang [expr tan((sqrt(pow($::atos_analysis_gui::dracosd,2) + pow($::atos_analysis_gui::ddec,2))/3600.0/3600.0)*3.1415926536/180.0)]
+      set ::atos_analysis_gui::vn       [format "%.5f" [expr $ang*$::atos_analysis_gui::dist*149597870.0]]
 
       # Interpretation appel format num 5
       set cpt 0
