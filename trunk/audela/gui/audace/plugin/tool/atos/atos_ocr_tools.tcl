@@ -20,16 +20,17 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::select_time { visuNo frm } {
+   proc ::atos_ocr_tools::select_time { visuNo } {
 
       global color
 
-      set statebutton [ $frm.datation.values.setup.t.selectbox cget -relief]
+      set setup $::atos_gui::frame(ocr_setup)
+      set statebutton [$setup.t.selectbox cget -relief]
 
       # desactivation
       if {$statebutton=="sunken"} {
-         $frm.datation.values.setup.t.selectbox configure -text "Select" -fg $color(black)
-         $frm.datation.values.setup.t.selectbox configure -relief raised
+         $setup.t.selectbox configure -text "Select" -fg $color(black)
+         $setup.t.selectbox configure -relief raised
          return
       }
 
@@ -46,11 +47,11 @@ namespace eval ::atos_ocr_tools {
          } else {
             set taillex [expr [lindex $rect 2] - [lindex $rect 0] ]
             set tailley [expr [lindex $rect 3] - [lindex $rect 1] ]
-            $frm.datation.values.setup.t.selectbox configure -text "${taillex}x${tailley}" -fg $color(blue)
+            $setup.t.selectbox configure -text "${taillex}x${tailley}" -fg $color(blue)
             set ::atos_photom::rect_img $rect
          }
-         $frm.datation.values.setup.t.selectbox configure -relief sunken
-         ::atos_ocr_tools::workimage $visuNo $frm
+         $setup.t.selectbox configure -relief sunken
+         ::atos_ocr_tools::workimage $visuNo
          return
       }
 
@@ -62,22 +63,24 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::select_ocr { visuNo frm } {
+   proc ::atos_ocr_tools::select_ocr { visuNo } {
 
       global color
+      set setup $::atos_gui::frame(ocr_setup)
+      set setunset $::atos_gui::frame(setunset)
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "0"} {
-         $frm.datation.values.setup.t.typespin  configure -state disabled
-         $frm.datation.values.setup.t.selectbox configure -state disabled
-         $frm.datation.values.setunset.t.ocr   configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-         $frm.datation.values.setunset.t.ocr   configure -state disabled
+         $setup.t.typespin  configure -state disabled
+         $setup.t.selectbox configure -state disabled
+         $setunset.t.ocr   configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
+         $setunset.t.ocr   configure -state disabled
          return
       } else {
-         $frm.datation.values.setup.t.typespin  configure -state normal
-         $frm.datation.values.setup.t.selectbox configure -state normal
-         $frm.datation.values.setunset.t.ocr    configure -state normal
-         ::atos_ocr_tools::workimage $visuNo $frm
+         $setup.t.typespin  configure -state normal
+         $setup.t.selectbox configure -state normal
+         $setunset.t.ocr    configure -state normal
+         ::atos_ocr_tools::workimage $visuNo
          return
       }
 
@@ -170,24 +173,28 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::test { visuNo frm } {
+   proc ::atos_ocr_tools::test { visuNo } {
 
    }
 
 
-   proc ::atos_ocr_tools::workimage { visuNo frm } {
+   proc ::atos_ocr_tools::workimage { visuNo } {
 
       global color
 
-      set statebutton [ $frm.datation.values.setup.t.selectbox cget -relief]
+      set setup $::atos_gui::frame(ocr_setup)
+      set datetime $::atos_gui::frame(datetime)
+      set setunset $::atos_gui::frame(setunset)
+
+      set statebutton [$setup.t.selectbox cget -relief]
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "1" && $statebutton == "sunken"} {
 
-          set box [$frm.datation.values.setup.t.typespin get]
+          set box [$setup.t.typespin get]
           #::console::affiche_resultat "box : $box \n"
 
-          #set rect [$frm.datation.values.setup.t.selectbox get]
+          #set rect [$setup.t.selectbox get]
           set rect $::atos_photom::rect_img
           #::console::affiche_resultat "rect : $rect \n"
 
@@ -227,15 +234,15 @@ namespace eval ::atos_ocr_tools {
 
           if {$err == 1} {
             gren_erreur "Failed to extract OCR: $msg \n"
-            $frm.datation.values.datetime.h.val   delete 0 end
-            $frm.datation.values.datetime.h.val   insert 0 "?"
-            $frm.datation.values.datetime.min.val delete 0 end
-            $frm.datation.values.datetime.min.val insert 0 "?"
-            $frm.datation.values.datetime.s.val   delete 0 end
-            $frm.datation.values.datetime.s.val   insert 0 "?"
-            $frm.datation.values.datetime.ms.val  delete 0 end
-            $frm.datation.values.datetime.ms.val  insert 0 "?"
-            $frm.datation.values.setunset.t.ocr   configure -bg $color(red) -fg $color(white)
+            $datetime.h.val   delete 0 end
+            $datetime.h.val   insert 0 "?"
+            $datetime.min.val delete 0 end
+            $datetime.min.val insert 0 "?"
+            $datetime.s.val   delete 0 end
+            $datetime.s.val   insert 0 "?"
+            $datetime.ms.val  delete 0 end
+            $datetime.ms.val  insert 0 "?"
+            $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
             return 0
           }
 
@@ -288,42 +295,31 @@ namespace eval ::atos_ocr_tools {
           if { $pass == "ok" } {
              #::console::affiche_resultat "OCR = $h:$min:$s.$ms \n"
 
-             $frm.datation.values.datetime.h.val   delete 0 end
-             $frm.datation.values.datetime.h.val   insert 0 $h
-
-             $frm.datation.values.datetime.min.val delete 0 end
-             $frm.datation.values.datetime.min.val insert 0 $min
-
-             $frm.datation.values.datetime.s.val   delete 0 end
-             $frm.datation.values.datetime.s.val   insert 0 $s
-
-             $frm.datation.values.datetime.ms.val  delete 0 end
-             $frm.datation.values.datetime.ms.val  insert 0 $ms
-
-             $frm.datation.values.setunset.t.ocr   configure -bg "#00891b" -fg $color(white)
+             $datetime.h.val   delete 0 end
+             $datetime.h.val   insert 0 $h
+             $datetime.min.val delete 0 end
+             $datetime.min.val insert 0 $min
+             $datetime.s.val   delete 0 end
+             $datetime.s.val   insert 0 $s
+             $datetime.ms.val  delete 0 end
+             $datetime.ms.val  insert 0 $ms
+             $setunset.t.ocr   configure -bg "#00891b" -fg $color(white)
              return 1
 
           } else {
              #::console::affiche_resultat "OCR Failed \n"
-             $frm.datation.values.datetime.h.val   delete 0 end
-             $frm.datation.values.datetime.h.val   insert 0 $h
-
-             $frm.datation.values.datetime.min.val delete 0 end
-             $frm.datation.values.datetime.min.val insert 0 $min
-
-             $frm.datation.values.datetime.s.val   delete 0 end
-             $frm.datation.values.datetime.s.val   insert 0 $s
-
-             $frm.datation.values.datetime.ms.val  delete 0 end
-             $frm.datation.values.datetime.ms.val  insert 0 $ms
-             $frm.datation.values.setunset.t.ocr   configure -bg $color(red) -fg $color(white)
+             $datetime.h.val   delete 0 end
+             $datetime.h.val   insert 0 $h
+             $datetime.min.val delete 0 end
+             $datetime.min.val insert 0 $min
+             $datetime.s.val   delete 0 end
+             $datetime.s.val   insert 0 $s
+             $datetime.ms.val  delete 0 end
+             $datetime.ms.val  insert 0 $ms
+             $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
 
              return 0
           }
-
-
-#         23_40_50  9_5  925
-
 
       }
       # L ocr n est pas active
@@ -336,19 +332,15 @@ namespace eval ::atos_ocr_tools {
 
 
 
-
-
-
-
-
-
-
-
-   proc ::atos_ocr_tools::getinfofrm { visuNo frm } {
+   proc ::atos_ocr_tools::getinfofrm { visuNo } {
 
       global color
 
       set idframe $::atos_tools::cur_idframe
+
+      set frm $::atos_gui::frame(base)
+      set datetime $::atos_gui::frame(datetime)
+      set setunset $::atos_gui::frame(setunset)
 
       #::console::affiche_resultat "$idframe - "
       #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,verif) . "
@@ -356,7 +348,6 @@ namespace eval ::atos_ocr_tools {
       #::console::affiche_resultat "$::atos_ocr_tools::timing($idframe,interpol) \n"
 
       $frm.infofrm.v.nbimage configure -text $::atos_tools::nb_frames
-
       $frm.infofrm.v.nbverif configure -text $::atos_ocr_tools::nbverif
 
       set p [format %2.1f [expr $::atos_ocr_tools::nbocr/($::atos_tools::nb_frames*1.0)*100.0]]
@@ -366,18 +357,18 @@ namespace eval ::atos_ocr_tools {
       $frm.infofrm.v.nbinterp configure -text "$::atos_ocr_tools::nbinterp ($p %)"
 
       if {$::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) == 1} {
-         $frm.datation.values.setunset.t.verif configure -bg "#00891b" -fg $color(white)
-         $frm.datation.values.setunset.t.verif configure -relief sunken
+         $setunset.t.verif configure -bg "#00891b" -fg $color(white)
+         $setunset.t.verif configure -relief sunken
       } else {
-         $frm.datation.values.setunset.t.verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-         $frm.datation.values.setunset.t.verif configure -relief raised
+         $setunset.t.verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
+         $setunset.t.verif configure -relief raised
       }
       if {$::atos_ocr_tools::timing($::atos_tools::cur_idframe,interpol) == 1} {
-         $frm.datation.values.setunset.t.interpol configure -bg "#00891b" -fg $color(white)
-         $frm.datation.values.setunset.t.interpol configure -relief sunken
+         $setunset.t.interpol configure -bg "#00891b" -fg $color(white)
+         $setunset.t.interpol configure -relief sunken
       } else {
-         $frm.datation.values.setunset.t.interpol configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-         $frm.datation.values.setunset.t.interpol configure -relief raised
+         $setunset.t.interpol configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
+         $setunset.t.interpol configure -relief raised
       }
 
       if {$::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) == 1 || $::atos_ocr_tools::timing($::atos_tools::cur_idframe,interpol) == 1} {
@@ -401,26 +392,20 @@ namespace eval ::atos_ocr_tools {
          set s   [return_2digit [lindex $poslist 0]]
          set ms  [lindex $poslist 1]
          #::console::affiche_resultat "$y-$m-${d}T$h:$min:$s.$ms\n"
-         $frm.datation.values.datetime.y.val   delete 0 end
-         $frm.datation.values.datetime.y.val   insert 0 $y
-   
-         $frm.datation.values.datetime.m.val delete 0 end
-         $frm.datation.values.datetime.m.val insert 0 $m
-   
-         $frm.datation.values.datetime.d.val   delete 0 end
-         $frm.datation.values.datetime.d.val   insert 0 $d
-   
-         $frm.datation.values.datetime.h.val   delete 0 end
-         $frm.datation.values.datetime.h.val   insert 0 $h
-   
-         $frm.datation.values.datetime.min.val delete 0 end
-         $frm.datation.values.datetime.min.val insert 0 $min
-   
-         $frm.datation.values.datetime.s.val   delete 0 end
-         $frm.datation.values.datetime.s.val   insert 0 $s
-   
-         $frm.datation.values.datetime.ms.val  delete 0 end
-         $frm.datation.values.datetime.ms.val  insert 0 $ms
+         $datetime.y.val   delete 0 end
+         $datetime.y.val   insert 0 $y
+         $datetime.m.val delete 0 end
+         $datetime.m.val insert 0 $m
+         $datetime.d.val   delete 0 end
+         $datetime.d.val   insert 0 $d
+         $datetime.h.val   delete 0 end
+         $datetime.h.val   insert 0 $h
+         $datetime.min.val delete 0 end
+         $datetime.min.val insert 0 $min
+         $datetime.s.val   delete 0 end
+         $datetime.s.val   insert 0 $s
+         $datetime.ms.val  delete 0 end
+         $datetime.ms.val  insert 0 $ms
 
       }
 
@@ -494,31 +479,33 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::verif { visuNo frm } {
+   proc ::atos_ocr_tools::verif { visuNo } {
 
       global color
 
+      set datetime $::atos_gui::frame(datetime)
+      set setunset $::atos_gui::frame(setunset)
 
-      set statebutton [ $frm.datation.values.setunset.t.verif cget -relief]
+      set statebutton [$setunset.t.verif cget -relief]
 
       # desactivation
       if {$statebutton == "sunken"} {
-         $frm.datation.values.setunset.t.verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-         $frm.datation.values.setunset.t.verif configure -relief raised
+         $setunset.t.verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
+         $setunset.t.verif configure -relief raised
          incr ::atos_ocr_tools::nbverif -1
          set ::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) 0
-         ::atos_ocr_tools::workimage $visuNo $frm
-         getinfofrm $visuNo $frm
+         ::atos_ocr_tools::workimage $visuNo
+         getinfofrm $visuNo
          return
       }
 
-      set y   [$frm.datation.values.datetime.y.val get]
-      set m   [$frm.datation.values.datetime.m.val get]
-      set d   [$frm.datation.values.datetime.d.val get]
-      set h   [$frm.datation.values.datetime.h.val get]
-      set min [$frm.datation.values.datetime.min.val get]
-      set s   [$frm.datation.values.datetime.s.val get]
-      set ms  [$frm.datation.values.datetime.ms.val get]
+      set y   [$datetime.y.val get]
+      set m   [$datetime.m.val get]
+      set d   [$datetime.d.val get]
+      set h   [$datetime.h.val get]
+      set min [$datetime.min.val get]
+      set s   [$datetime.s.val get]
+      set ms  [$datetime.ms.val get]
 
 
       if { [verif_yeardigit $y] } {
@@ -557,35 +544,28 @@ namespace eval ::atos_ocr_tools {
       set ms  [return_3digit $ms]
 
       ::console::affiche_resultat "(idfrm=$::atos_tools::cur_idframe) $y-$m-${d}T$h:$min:$s.$ms\n"
-      $frm.datation.values.datetime.y.val   delete 0 end
-      $frm.datation.values.datetime.y.val   insert 0 $y
-
-      $frm.datation.values.datetime.m.val delete 0 end
-      $frm.datation.values.datetime.m.val insert 0 $m
-
-      $frm.datation.values.datetime.d.val   delete 0 end
-      $frm.datation.values.datetime.d.val   insert 0 $d
-
-      $frm.datation.values.datetime.h.val   delete 0 end
-      $frm.datation.values.datetime.h.val   insert 0 $h
-
-      $frm.datation.values.datetime.min.val delete 0 end
-      $frm.datation.values.datetime.min.val insert 0 $min
-
-      $frm.datation.values.datetime.s.val   delete 0 end
-      $frm.datation.values.datetime.s.val   insert 0 $s
-
-      $frm.datation.values.datetime.ms.val  delete 0 end
-      $frm.datation.values.datetime.ms.val  insert 0 $ms
-
-      $frm.datation.values.setunset.t.verif configure -bg "#00891b" -fg $color(white)
-      $frm.datation.values.setunset.t.verif configure -relief sunken
+      $datetime.y.val   delete 0 end
+      $datetime.y.val   insert 0 $y
+      $datetime.m.val delete 0 end
+      $datetime.m.val insert 0 $m
+      $datetime.d.val   delete 0 end
+      $datetime.d.val   insert 0 $d
+      $datetime.h.val   delete 0 end
+      $datetime.h.val   insert 0 $h
+      $datetime.min.val delete 0 end
+      $datetime.min.val insert 0 $min
+      $datetime.s.val   delete 0 end
+      $datetime.s.val   insert 0 $s
+      $datetime.ms.val  delete 0 end
+      $datetime.ms.val  insert 0 $ms
+      $setunset.t.verif configure -bg "#00891b" -fg $color(white)
+      $setunset.t.verif configure -relief sunken
 
       incr ::atos_ocr_tools::nbverif
       set ::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) 1
       set ::atos_ocr_tools::timing($::atos_tools::cur_idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
       #tk_messageBox -message "$caption(bddimages_status,consoleErr3) $msg" -type ok
-      getinfofrm $visuNo $frm
+      getinfofrm $visuNo
 
    }
 
@@ -604,25 +584,27 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::select { visuNo frm } {
-      ::atos_tools::select $visuNo $frm
-      ::atos_ocr_tools::open_flux $visuNo $frm
+   proc ::atos_ocr_tools::select { visuNo } {
+      ::atos_tools::select $visuNo
+      ::atos_ocr_tools::open_flux $visuNo
    }
 
-   proc ::atos_ocr_tools::open_flux { visuNo frm } {
+   proc ::atos_ocr_tools::open_flux { visuNo } {
       
+      set datetime $::atos_gui::frame(datetime)
+
       # vidage memoire
       array unset timing
-      $frm.datation.values.datetime.y.val   delete 0 end
-      $frm.datation.values.datetime.m.val   delete 0 end
-      $frm.datation.values.datetime.d.val   delete 0 end
-      $frm.datation.values.datetime.h.val   delete 0 end
-      $frm.datation.values.datetime.min.val delete 0 end
-      $frm.datation.values.datetime.s.val   delete 0 end
-      $frm.datation.values.datetime.ms.val  delete 0 end
+      $datetime.y.val   delete 0 end
+      $datetime.m.val   delete 0 end
+      $datetime.d.val   delete 0 end
+      $datetime.h.val   delete 0 end
+      $datetime.min.val delete 0 end
+      $datetime.s.val   delete 0 end
+      $datetime.ms.val  delete 0 end
       
       # Ouverture du Flux
-      ::atos_tools::open_flux $visuNo $frm
+      ::atos_tools::open_flux $visuNo
       for  {set x 1} {$x<=$::atos_tools::nb_open_frames} {incr x} {
          set ::atos_ocr_tools::timing($x,verif) 0
          set ::atos_ocr_tools::timing($x,ocr) 0
@@ -635,11 +617,11 @@ namespace eval ::atos_ocr_tools {
 
    }
 
-   proc ::atos_ocr_tools::start_next_image { visuNo frm } {
+   proc ::atos_ocr_tools::start_next_image { visuNo } {
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "1" \
-          && [ $frm.datation.values.setup.t.selectbox cget -relief] == "sunken"} {
+          && [ $::atos_gui::frame(ocr_setup).t.selectbox cget -relief] == "sunken"} {
 
           ::atos_tools::next_image $visuNo
 
@@ -651,7 +633,7 @@ namespace eval ::atos_ocr_tools {
    }
 
 
-   proc ::atos_ocr_tools::start { visuNo frm } {
+   proc ::atos_ocr_tools::start { visuNo } {
 
    # Extraction OCR
       set log 0
@@ -660,19 +642,20 @@ namespace eval ::atos_ocr_tools {
 
       set idframedebut $::atos_tools::cur_idframe
 
+      set action $::atos_gui::frame(action)
+      set datetime $::atos_gui::frame(datetime)
+
       if { $::atos_ocr_tools::timing($idframedebut,verif) != 1 } {
           tk_messageBox -message "Veuillez commencer par une image verifiée" -type ok
           return
       }
 
-
       set tt0 [clock clicks -milliseconds]
 
-
       set cpt 0
-      $frm.action.start configure -image .stop
-      $frm.action.start configure -relief sunken
-      $frm.action.start configure -command " ::atos_ocr_tools::stop"
+      $action.start configure -image .stop
+      $action.start configure -relief sunken
+      $action.start configure -command " ::atos_ocr_tools::stop"
 
       set ::atos_ocr_tools::sortie 0
       set ::atos_ocr_tools::nbocr 0
@@ -697,7 +680,7 @@ namespace eval ::atos_ocr_tools {
       while {$::atos_ocr_tools::sortie == 0} {
 
          update
-         getinfofrm $visuNo $frm
+         getinfofrm $visuNo
          set idframe $::atos_tools::cur_idframe
          #::console::affiche_resultat "$idframe : \[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
 
@@ -719,7 +702,7 @@ namespace eval ::atos_ocr_tools {
             #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] V\n"
      #       set ::atos_ocr_tools::timing($idframe,interpol) 0
             
-            ::atos_ocr_tools::start_next_image $visuNo $frm
+            ::atos_ocr_tools::start_next_image $visuNo
             #::atos_tools::next_image $visuNo
             set pass "ok"
          }
@@ -727,17 +710,17 @@ namespace eval ::atos_ocr_tools {
       # OCR
 
          if {$pass == "no"} {
-            set res [::atos_ocr_tools::workimage $visuNo $frm]
+            set res [::atos_ocr_tools::workimage $visuNo]
             if {$res == 1} {
 
                # calcul iso
-               set y   [$frm.datation.values.datetime.y.val get]
-               set m   [$frm.datation.values.datetime.m.val get]
-               set d   [$frm.datation.values.datetime.d.val get]
-               set h   [$frm.datation.values.datetime.h.val get]
-               set min [$frm.datation.values.datetime.min.val get]
-               set s   [$frm.datation.values.datetime.s.val get]
-               set ms  [$frm.datation.values.datetime.ms.val get]
+               set y   [$datetime.y.val get]
+               set m   [$datetime.m.val get]
+               set d   [$datetime.d.val get]
+               set h   [$datetime.h.val get]
+               set min [$datetime.min.val get]
+               set s   [$datetime.s.val get]
+               set ms  [$datetime.ms.val get]
 
                set  pass "ok"
                if { [verif_yeardigit $y] } {
@@ -778,7 +761,7 @@ namespace eval ::atos_ocr_tools {
                   set ::atos_ocr_tools::timing($idframe,interpol) 0
                   #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] O\n"
 
-                  ::atos_ocr_tools::start_next_image $visuNo $frm
+                  ::atos_ocr_tools::start_next_image $visuNo
                   #::atos_tools::next_image $visuNo
 
                   set pass "ok"
@@ -794,7 +777,7 @@ namespace eval ::atos_ocr_tools {
             incr ::atos_ocr_tools::nbinterp
             #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] I\n"
 
-            ::atos_ocr_tools::start_next_image $visuNo $frm
+            ::atos_ocr_tools::start_next_image $visuNo
             #::atos_tools::next_image $visuNo
             
          }
@@ -1010,9 +993,9 @@ namespace eval ::atos_ocr_tools {
 #          }
 
 
-      $frm.action.start configure -image .start
-      $frm.action.start configure -relief raised
-      $frm.action.start configure -command "::atos_ocr_tools::start $visuNo $frm"
+      $action.start configure -image .start
+      $action.start configure -relief raised
+      $action.start configure -command "::atos_ocr_tools::start $visuNo"
 
       ::atos_tools::set_frame $visuNo $idframedebut
 
@@ -1033,7 +1016,7 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::graph { visuNo frm } {
+   proc ::atos_ocr_tools::graph { visuNo } {
       set log 0
       ::plotxy::clf 1
       ::plotxy::figure 1 
@@ -1182,7 +1165,7 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::save { visuNo frm } {
+   proc ::atos_ocr_tools::save { visuNo } {
 
 
       set filename [::atos_ocr_tools::get_filename_time]
@@ -1234,12 +1217,12 @@ namespace eval ::atos_ocr_tools {
    #
    # Passe a l image suivante
    #
-   proc ::atos_ocr_tools::next_image { visuNo frm } {
+   proc ::atos_ocr_tools::next_image { visuNo } {
 
       cleanmark
       ::atos_tools::next_image $visuNo
-      ::atos_ocr_tools::workimage $visuNo $frm
-      ::atos_ocr_tools::getinfofrm $visuNo $frm
+      ::atos_ocr_tools::workimage $visuNo
+      ::atos_ocr_tools::getinfofrm $visuNo
 
    }
 
@@ -1250,11 +1233,11 @@ namespace eval ::atos_ocr_tools {
    #
    # Passe a l image precedente
    #
-   proc ::atos_ocr_tools::prev_image { visuNo frm } {
+   proc ::atos_ocr_tools::prev_image { visuNo } {
 
       ::atos_tools::prev_image $visuNo
-      ::atos_ocr_tools::workimage $visuNo $frm
-      ::atos_ocr_tools::getinfofrm $visuNo $frm
+      ::atos_ocr_tools::workimage $visuNo
+      ::atos_ocr_tools::getinfofrm $visuNo
 
    }
 
@@ -1264,11 +1247,11 @@ namespace eval ::atos_ocr_tools {
    #
    # Passe a l image suivante
    #
-   proc ::atos_ocr_tools::quick_next_image { visuNo frm } {
+   proc ::atos_ocr_tools::quick_next_image { visuNo  } {
 
       ::atos_tools::quick_next_image $visuNo
-      ::atos_ocr_tools::workimage $visuNo $frm
-      ::atos_ocr_tools::getinfofrm $visuNo $frm
+      ::atos_ocr_tools::workimage $visuNo 
+      ::atos_ocr_tools::getinfofrm $visuNo
 
    }
 
@@ -1278,11 +1261,11 @@ namespace eval ::atos_ocr_tools {
    #
    # retour rapide
    #
-   proc ::atos_ocr_tools::quick_prev_image { visuNo frm } {
+   proc ::atos_ocr_tools::quick_prev_image { visuNo  } {
 
       ::atos_tools::quick_prev_image $visuNo
-      ::atos_ocr_tools::workimage $visuNo $frm
-      ::atos_ocr_tools::getinfofrm $visuNo $frm
+      ::atos_ocr_tools::workimage $visuNo 
+      ::atos_ocr_tools::getinfofrm $visuNo 
 
    }
 
@@ -1292,10 +1275,10 @@ namespace eval ::atos_ocr_tools {
    #
    #
    #
-   proc ::atos_ocr_tools::move_scroll { visuNo frm } {
+   proc ::atos_ocr_tools::move_scroll { visuNo  } {
 
-      ::atos_ocr_tools::workimage $visuNo $frm
-      ::atos_ocr_tools::getinfofrm $visuNo $frm
+      ::atos_ocr_tools::workimage $visuNo 
+      ::atos_ocr_tools::getinfofrm $visuNo 
    }
 
 
