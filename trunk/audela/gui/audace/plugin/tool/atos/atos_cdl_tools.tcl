@@ -905,7 +905,7 @@ namespace eval ::atos_cdl_tools {
          if { $statebutton == "sunken" } {
             set delta [ $frm_objet.delta get]
 
-            set r [::atos_cdl_tools::suivi_get_pos obj]
+            set r [::atos_cdl_tools::suivi_get_pos object]
             set x [lindex $r 0]
             set y [lindex $r 1]
 
@@ -919,7 +919,7 @@ namespace eval ::atos_cdl_tools {
          if { $statebutton == "sunken" } {
             set delta [ $frm_reference.delta get]
 
-            set r [::atos_cdl_tools::suivi_get_pos ref]
+            set r [::atos_cdl_tools::suivi_get_pos reference]
             set x [lindex $r 0]
             set y [lindex $r 1]
 
@@ -1149,7 +1149,7 @@ namespace eval ::atos_cdl_tools {
                      incr cpt
                   }
                } else {
-                  gren_info "$idframe = verif -> 0\n"
+                  #gren_info "$idframe = verif -> 0\n"
                   set ::atos_cdl_tools::mesure($idframe,object,verif) 0
                }
             }
@@ -1168,19 +1168,15 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::suivi_get_pos { type } {
       
       set log 0
-      
-      if {$type == "obj"} {
-      } else {
-      }
-      
+       
       switch $::atos_cdl_tools::methode_suivi {
          "Auto" - default {
             if {$log} { gren_info "Methode Auto pour $type\n"}
             switch $type {
-               "obj" {
+               "object" {
                   return [list $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)]
                }
-               "ref" {
+               "reference" {
                   return [list $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y)]
                }
                default {
@@ -1191,30 +1187,30 @@ namespace eval ::atos_cdl_tools {
          "Interpolation" {
             if {$log} { gren_info "Methode Interpolation pour $type\n"}
             switch $type {
-               "obj" {
+               "object" {
                   if {$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif) == 1} {
                      gren_info "Verifie\n"
                      return [list $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)]
                   }
-                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::cur_idframe obj]
-                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::cur_idframe obj]
+                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::cur_idframe object]
+                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::cur_idframe object]
                   if {$log} {::console::affiche_resultat "$idfrmav < $idfrmap"}
                   if { $idfrmav == -1 } {
                      # il faut interpoler par 2 a droite
                      if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a droite : "}
                      set idfrmav $idfrmap
-                     set idfrmap [ ::atos_cdl_tools::get_idfrmap $idfrmap obj]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmap $idfrmap object]
                   }
                   if { $idfrmap == -1 } {
                      # il faut interpoler par 2 a gauche
                      if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a gauche : "}
                      set idfrmap $idfrmav
-                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $idfrmav obj]
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $idfrmav object]
                   }
                   if { $idfrmav == -1 || $idfrmap == -1 } {
                      if {$log} { ::console::affiche_erreur "mmm !"}
-                     set idfrmav [ ::atos_cdl_tools::get_idfrmap 0 obj]
-                     set idfrmap [ ::atos_cdl_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] obj]
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap 0 object]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] object]
                   }
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
@@ -1224,7 +1220,7 @@ namespace eval ::atos_cdl_tools {
                   set yap $::atos_cdl_tools::mesure($idfrmap,obj_ypos)
 
                }
-               "ref" {
+               "reference" {
                }
                default {
                   gren_info "Default\n"
@@ -1427,6 +1423,8 @@ namespace eval ::atos_cdl_tools {
                continue
             }
          }
+         if {$jd=="?"} {continue}
+         if {$flux=="?"} {continue}
 
          if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
 
@@ -1457,12 +1455,18 @@ namespace eval ::atos_cdl_tools {
 
       }
 
-      set h2 [::plotxy::plot $x_verif $y_verif ro. 10 ]
-      plotxy::sethandler $h2 [list -color green -linewidth 0]
-      set h3 [::plotxy::plot $x_interpol $y_interpol ro. 5 ]
-      plotxy::sethandler $h3 [list -color blue -linewidth 0]
-      set h1 [::plotxy::plot $x $y ro. 1 ]
-      plotxy::sethandler $h1 [list -color black -linewidth 1]
+      if {[llength $x_verif]>0} {
+         set h2 [::plotxy::plot $x_verif $y_verif ro. 10 ]
+         plotxy::sethandler $h2 [list -color green -linewidth 0]
+      }
+      if {[llength $x_interpol]>0} {
+         set h3 [::plotxy::plot $x_interpol $y_interpol ro. 5 ]
+         plotxy::sethandler $h3 [list -color blue -linewidth 0]
+      }
+      if {[llength $x]>0} {
+         set h1 [::plotxy::plot $x $y ro. 1 ]
+         plotxy::sethandler $h1 [list -color black -linewidth 1]
+      }
 
    }
 
@@ -1511,7 +1515,6 @@ namespace eval ::atos_cdl_tools {
       set cpt 0
       for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
 
-
          switch $type {
             "object" {
                if {[info exists ::atos_cdl_tools::mesure($idframe,obj_xpos)] \
@@ -1532,6 +1535,8 @@ namespace eval ::atos_cdl_tools {
                continue
             }
          }
+         if {$xpos=="?"} {continue}
+         if {$ypos=="?"} {continue}
                
          if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
 
@@ -1562,15 +1567,28 @@ namespace eval ::atos_cdl_tools {
          }
             
       }
-      set h2 [::plotxy::plot $x_verif $y_verif ro. 10 ]
-      plotxy::sethandler $h2 [list -color green -linewidth 0]
-      set h3 [::plotxy::plot $x_interpol $y_interpol ro. 5 ]
-      plotxy::sethandler $h3 [list -color blue -linewidth 0]
-      set h1 [::plotxy::plot $x $y ro. 1 ]
-      plotxy::sethandler $h1 [list -color black -linewidth 1]
+      if {[llength $x_verif]>0} {
+         set h2 [::plotxy::plot $x_verif $y_verif ro. 10 ]
+         plotxy::sethandler $h2 [list -color green -linewidth 0]
+      }
+      if {[llength $x_interpol]>0} {
+         set h3 [::plotxy::plot $x_interpol $y_interpol ro. 5 ]
+         plotxy::sethandler $h3 [list -color blue -linewidth 0]
+      }
+      if {[llength $x]>0} {
+         set h1 [::plotxy::plot $x $y ro. 1 ]
+         plotxy::sethandler $h1 [list -color black -linewidth 1]
+      }
 
    }
 
+
+   proc ::atos_cdl_tools::move_scroll { visuNo } {
+
+      set scrollbar $::atos_gui::frame(scrollbar)
+      #::atos_ocr_tools::workimage $visuNo $frm
+      #::atos_ocr_tools::getinfofrm $visuNo $frm
+   }
 
 
 }
