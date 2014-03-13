@@ -241,6 +241,7 @@ namespace eval ::atos_ocr_gui {
 
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frm_atos_ocr_gui
+      set ::atos_gui::frame(base) $frm
 
       if { $::atos_tools::traitement=="fits" } { set titre $caption(atos_ocr_gui,titre_fits) }
       if { $::atos_tools::traitement=="avi" }  { set titre $caption(atos_ocr_gui,titre_avi) }
@@ -257,36 +258,28 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
-
         if { $::atos_tools::traitement=="fits" } { 
         
         
              #--- Cree un frame pour la gestion de fichier
-             frame $frm.form \
-                   -borderwidth 1 -relief raised -cursor arrow
-             pack $frm.form \
-                  -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+             frame $frm.form -borderwidth 1 -relief raised -cursor arrow
+             pack $frm.form -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
                #--- Cree un frame pour la gestion de fichier
-               frame $frm.form.butopen \
-                     -borderwidth 1 -cursor arrow
-               pack $frm.form.butopen \
-                    -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
+               frame $frm.form.butopen -borderwidth 1 -cursor arrow
+               pack $frm.form.butopen -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
 
                     #--- Creation du bouton open
                     button $frm.form.butopen.open \
                        -text "open" -borderwidth 2 \
-                       -command "::atos_ocr_tools::open_flux $visuNo $frm"
+                       -command "::atos_ocr_tools::open_flux $visuNo"
                     pack $frm.form.butopen.open \
                        -in $frm.form.butopen -side left -anchor e \
                        -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
                #--- Cree un frame pour la gestion de fichier
-               frame $frm.form.field \
-                     -borderwidth 1 -cursor arrow
-               pack $frm.form.field \
-                    -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
+               frame $frm.form.field -borderwidth 1 -cursor arrow
+               pack $frm.form.field -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
 
                     #--- Cree un frame pour afficher les intitules
                     set intitle [frame $frm.form.field.l -borderwidth 0]
@@ -306,6 +299,8 @@ namespace eval ::atos_ocr_gui {
                     #--- Cree un frame pour afficher les valeurs
                     set inparam [frame $frm.form.field.v -borderwidth 0]
                     pack $inparam -in $frm.form.field -side left -expand 0 -fill x
+
+                    set ::atos_gui::frame(open,fields) $inparam
 
                       #--- Cree un label pour le repetoire destination
                       entry $inparam.destdir -fg $color(blue) -width 40
@@ -350,7 +345,7 @@ namespace eval ::atos_ocr_gui {
              #--- Creation du bouton open
              button $frm.open.but_open \
                 -text "open" -borderwidth 2 \
-                -command "::atos_ocr_tools::open_flux $visuNo $frm"
+                -command "::atos_ocr_tools::open_flux $visuNo"
              pack $frm.open.but_open \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -358,7 +353,7 @@ namespace eval ::atos_ocr_gui {
              #--- Creation du bouton select
              button $frm.open.but_select \
                 -text "..." -borderwidth 2 -takefocus 1 \
-                -command "::atos_ocr_tools::select $visuNo $frm"
+                -command "::atos_ocr_tools::select $visuNo"
              pack $frm.open.but_select \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -370,6 +365,18 @@ namespace eval ::atos_ocr_gui {
         }
 
 
+        set info_load [frame $frm.info_load]
+        pack $info_load -in $frm -side top  -padx 1 -pady 1
+
+           #--- Cree un label pour le nb d image
+           label $info_load.status -font $atosconf(font,courier_10) -text ""
+
+           #--- Cree un label pour le nb d image
+           label $info_load.nbtotal -font $atosconf(font,courier_10) -text ""
+
+           grid $info_load.status $info_load.nbtotal
+
+        set ::atos_gui::frame(info_load) $info_load
 
 
 
@@ -379,6 +386,8 @@ namespace eval ::atos_ocr_gui {
            -state disabled
         pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
+        set ::atos_gui::frame(scrollbar) $frm.scrollbar
+
         #--- Cree un frame pour afficher
         set btnav [frame $frm.btnav -borderwidth 0]
         pack $btnav -in $frm -side top
@@ -387,7 +396,7 @@ namespace eval ::atos_ocr_gui {
         image create photo .arr -format PNG -file [ file join $audace(rep_plugin) tool atos img arr.png ]
         button $frm.qprevimage -image .arr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_ocr_tools::quick_prev_image $visuNo $frm"
+           -command "::atos_ocr_tools::quick_prev_image $visuNo"
         pack $frm.qprevimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -397,7 +406,7 @@ namespace eval ::atos_ocr_gui {
         image create photo .arn -format PNG -file [ file join $audace(rep_plugin) tool atos img arn.png ]
         button $frm.previmage -image .arn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_ocr_tools::prev_image $visuNo $frm"
+           -command "::atos_ocr_tools::prev_image $visuNo"
         pack $frm.previmage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -407,7 +416,7 @@ namespace eval ::atos_ocr_gui {
         image create photo .avn -format PNG -file [ file join $audace(rep_plugin) tool atos img avn.png ]
         button $frm.nextimage -image .avn\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_ocr_tools::next_image $visuNo $frm"
+           -command "::atos_ocr_tools::next_image $visuNo"
         pack $frm.nextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -417,7 +426,7 @@ namespace eval ::atos_ocr_gui {
         image create photo .avr -format PNG -file [ file join $audace(rep_plugin) tool atos img avr.png ]
         button $frm.qnextimage -image .avr\
            -borderwidth 2 -width 25 -height 25 -compound center \
-           -command "::atos_ocr_tools::quick_next_image $visuNo $frm"
+           -command "::atos_ocr_tools::quick_next_image $visuNo"
         pack $frm.qnextimage \
            -in $frm.btnav \
            -side left -anchor w \
@@ -435,7 +444,7 @@ namespace eval ::atos_ocr_gui {
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
                 -text "setmin" -borderwidth 2 \
-                -command "::atos_tools::setmin $frm"
+                -command "::atos_tools::setmin"
              pack $frm.pos.setmin \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -444,7 +453,7 @@ namespace eval ::atos_ocr_gui {
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
                 -text "setmax" -borderwidth 2 \
-                -command "::atos_tools::setmax $frm"
+                -command "::atos_tools::setmax"
              pack $frm.pos.setmax \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -476,7 +485,7 @@ namespace eval ::atos_ocr_gui {
              #--- Creation du bouton setmax
              button $frm.pos.crop \
                 -text "crop" -borderwidth 2 \
-                -command "::atos_tools::crop $visuNo $frm "
+                -command "::atos_tools::crop $visuNo"
              pack $frm.pos.crop \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -485,7 +494,7 @@ namespace eval ::atos_ocr_gui {
              #--- Creation du bouton setmax
              button $frm.pos.uncrop \
                 -text "uncrop" -borderwidth 2 \
-                -command "::atos_tools::uncrop $visuNo $frm"
+                -command "::atos_tools::uncrop $visuNo"
              pack $frm.pos.uncrop \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -522,13 +531,15 @@ namespace eval ::atos_ocr_gui {
           set ocr [frame $frm.datation.values.setup -borderwidth 1]
           pack $ocr -in $frm.datation.values -side top -padx 30 -pady 1
 
+          set ::atos_gui::frame(ocr_setup) $ocr
+
               #--- Cree un frame
               frame $ocr.t -borderwidth 0 -cursor arrow
               pack  $ocr.t -in $ocr -side left -expand 5 -anchor w
 
               checkbutton $ocr.t.check -highlightthickness 0 -text "OCR" \
                           -variable ::atos_ocr_tools::active_ocr \
-                          -command "::atos_ocr_tools::select_ocr $visuNo $frm" \
+                          -command "::atos_ocr_tools::select_ocr $visuNo" \
                          
               pack $ocr.t.check -in $ocr.t -side left -padx 5 -pady 0
 
@@ -549,12 +560,14 @@ namespace eval ::atos_ocr_gui {
 
               #--- Cree un bouton
               button $ocr.t.selectbox -text "Select" -borderwidth 1 -takefocus 1 \
-                    -command "::atos_ocr_tools::select_time $visuNo $frm" -state disabled
+                    -command "::atos_ocr_tools::select_time $visuNo" -state disabled
               pack $ocr.t.selectbox -in $ocr.t -side left -anchor e 
 
           #--- Cree un frame pour activation/desactivation ocr
           set datetime [frame $frm.datation.values.datetime -borderwidth 1]
           pack $datetime -in $frm.datation.values -side top -padx 30 -pady 1
+
+          set ::atos_gui::frame(datetime) $datetime
 
               #--- Cree un frame
               frame $datetime.y -borderwidth 0 -cursor arrow 
@@ -709,12 +722,11 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
-
-
           #--- Cree un frame pour activation/desactivation ocr
           set setunset [frame $frm.datation.values.setunset -borderwidth 1]
           pack $setunset -in $frm.datation.values -side top -padx 30 -pady 1
+
+          set ::atos_gui::frame(setunset) $setunset
 
               #--- Cree un frame
               frame $setunset.t -borderwidth 0 -cursor arrow
@@ -722,7 +734,7 @@ namespace eval ::atos_ocr_gui {
 
               #--- Cree un bouton
               button $setunset.t.verif -text "Verifié" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_ocr_tools::verif $visuNo $frm"
+                                     -command "::atos_ocr_tools::verif $visuNo"
               pack $setunset.t.verif -in $setunset.t -side left -anchor e 
 
               #--- Cree un bouton
@@ -786,11 +798,10 @@ namespace eval ::atos_ocr_gui {
    #---
 
         #--- Cree un frame pour  les boutons d action 
-        frame $frm.action \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.action \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        set action [frame $frm.action -borderwidth 1 -relief raised -cursor arrow]
+        pack $frm.action -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
+        set ::atos_gui::frame(action) $action
 
            image create photo .start -format PNG -file [ file join $audace(rep_plugin) tool atos img start.png ]
            image create photo .stop  -format PNG -file [ file join $audace(rep_plugin) tool atos img stop.png ]
@@ -799,7 +810,7 @@ namespace eval ::atos_ocr_gui {
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_ocr_tools::start $visuNo $frm"
+              -command "::atos_ocr_tools::start $visuNo"
            pack $frm.action.start \
               -in $frm.action \
               -side left -anchor w \
@@ -807,7 +818,7 @@ namespace eval ::atos_ocr_gui {
 
            button $frm.action.graph -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_ocr_tools::graph $visuNo $frm"
+              -command "::atos_ocr_tools::graph $visuNo"
            pack $frm.action.graph \
               -in $frm.action \
               -side left -anchor w \
@@ -815,7 +826,7 @@ namespace eval ::atos_ocr_gui {
 
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_ocr_tools::save $visuNo $frm"
+              -command "::atos_ocr_tools::save $visuNo"
            pack $frm.action.save \
               -in $frm.action \
               -side left -anchor w \
@@ -847,17 +858,12 @@ namespace eval ::atos_ocr_gui {
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
 
-      bind $frm.scrollbar <ButtonRelease> "::atos_ocr_tools::move_scroll $visuNo $frm"
+      bind $frm.scrollbar <ButtonRelease> "::atos_ocr_tools::move_scroll $visuNo"
 
 
    }
    
-   
 
-
-
-
-   
    
 
 }

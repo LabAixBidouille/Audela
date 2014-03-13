@@ -58,6 +58,13 @@
       image create photo .reload    -format PNG -file [ file join $audace(rep_plugin) tool atos img reload.png ]
       image create photo .view      -format PNG -file [ file join $audace(rep_plugin) tool atos img view.png ]
 
+      #--- Initialisations par defaut
+      #------ saut d'integration d'une image = 10ms + 0.04/2
+      set ::atos_analysis_gui::time_offset 0.03
+      #------Nb images a supprimer en debut de courbe
+      set ::atos_analysis_gui::raw_integ_offset 1
+      #------ Regroupe les images par bloc de 
+      set ::atos_analysis_gui::raw_integ_nb_img 1
 
       #--- Premier FRAME
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -2651,7 +2658,7 @@
                        pack $bande -in $recap -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
-                            label $bande.l1 -text "Taille de la bande : " -width 30
+                            label $bande.l1 -text "Diametre equivalent du corps occulteur : " -width 30
                             pack  $bande.l1 -side left
 
                             #--- Cree un label
