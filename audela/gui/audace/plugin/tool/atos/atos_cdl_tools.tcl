@@ -71,7 +71,7 @@ namespace eval ::atos_cdl_tools {
                    set dateiso [string trim [lindex $tab 2] " "]
                    set ::atos_ocr_tools::timing($id,dateiso) $dateiso
                    set ::atos_ocr_tools::timing($id,jd) $jd
-                   gren_info "$id -> $jd\n"
+                   #gren_info "$id -> $jd\n"
                 }
                 incr cpt
             }
@@ -1142,10 +1142,10 @@ namespace eval ::atos_cdl_tools {
             for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
                if {[info exists ::atos_cdl_tools::mesure($idframe,object,verif)]} {
                   if {$::atos_cdl_tools::mesure($idframe,object,verif) == 1} {
-                     ::console::affiche_resultat "$idframe -> "
+                     #::console::affiche_resultat "$idframe -> "
                      set ::atos_cdl_tools::interpol($idframe,object,x) $::atos_cdl_tools::mesure($idframe,obj_xpos)
                      set ::atos_cdl_tools::interpol($idframe,object,y) $::atos_cdl_tools::mesure($idframe,obj_ypos)
-                     ::console::affiche_resultat "$::atos_cdl_tools::mesure($idframe,obj_xpos) / $::atos_cdl_tools::mesure($idframe,obj_ypos) \n"
+                     #::console::affiche_resultat "$::atos_cdl_tools::mesure($idframe,obj_xpos) / $::atos_cdl_tools::mesure($idframe,obj_ypos) \n"
                      incr cpt
                   }
                } else {
