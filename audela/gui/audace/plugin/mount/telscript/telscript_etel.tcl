@@ -1004,10 +1004,10 @@ proc start_shift_lent { direction } {
          etel_execute_command_x_s $axe 26 1 0 0 84
       }
       if { $sens == 1  } {
-         if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 85
+         if { $vhr < 0  } {
+            etel_execute_command_x_s $axe 26 1 0 0 82
          }
-         if { $vhl >= 0  } {
+         if { $vhr >= 0  } {
             etel_execute_command_x_s $axe 26 1 0 0 83
          }
       }
@@ -1018,10 +1018,10 @@ proc start_shift_lent { direction } {
       }
       if { $sens == 0  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 84
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 84
+            etel_execute_command_x_s $axe 26 1 0 0 82
          }
       }
    }
@@ -1031,10 +1031,10 @@ proc start_shift_lent { direction } {
       }
       if { $sens == 1  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 83
+            etel_execute_command_x_s $axe 26 1 0 0 85
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 83
          }
       }
    }
@@ -1228,67 +1228,65 @@ proc set_pos_adus { } {
 
 
 # ################################################################################
-# ### proc save_x (obsolete car plante les controleurs) => voir proc save_params
+# ### proc save_x_stop_controlers => voir proc save_params a utiliser avant
 # ################################################################################
-proc save_x { {stop 0 } } {
+proc save_x_stop_controlers { {stop 0 } } {
    global telscript
    # --- Set useful variables
    set telname $telscript(def,telname)
-   if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
-      etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_az)
-      etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_az)
-      etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_az))]
-      etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_az))]
-      etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_az0)
-      etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_elev)
-      etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_elev)
-      etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_elev))]
-      etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_elev))]
-      etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_elev0)
-   }
-   if {$telscript($telname,mount_type)=="azelevrot"} {
-      etel_set_register_s 2 X 26 0 $telscript($telname,adu4deg4sec_rot)
-      etel_set_register_s 2 X 27 0 $telscript($telname,adu4deg4sec_rot)
-      etel_set_register_s 2 X 28 0 [expr abs($telscript($telname,adu4deg_rot))]
-      etel_set_register_s 2 X 29 0 [expr abs($telscript($telname,adu4deg_rot))]
-      etel_set_register_s 2 X 62 0 $telscript($telname,coord_app_adu_rot0)
-   }
-   if {$telscript($telname,mount_type)=="hadec"} {
-      etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_ha)
-      etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_ha)
-      etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_ha))]
-      etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_ha))]
-      etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_ha0)
-      etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_dec)
-      etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_dec)
-      etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_dec))]
-      etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
-      etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
+   if {1==0} {
+      if {($telscript($telname,mount_type)=="azelevrot")||($telscript($telname,mount_type)=="azelev")} {
+         etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_az)
+         etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_az)
+         etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_az))]
+         etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_az))]
+         etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_az0)
+         etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_elev)
+         etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_elev)
+         etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_elev))]
+         etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_elev))]
+         etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_elev0)
+      }
+      if {$telscript($telname,mount_type)=="azelevrot"} {
+         etel_set_register_s 2 X 26 0 $telscript($telname,adu4deg4sec_rot)
+         etel_set_register_s 2 X 27 0 $telscript($telname,adu4deg4sec_rot)
+         etel_set_register_s 2 X 28 0 [expr abs($telscript($telname,adu4deg_rot))]
+         etel_set_register_s 2 X 29 0 [expr abs($telscript($telname,adu4deg_rot))]
+         etel_set_register_s 2 X 62 0 $telscript($telname,coord_app_adu_rot0)
+      }
+      if {$telscript($telname,mount_type)=="hadec"} {
+         etel_set_register_s 0 X 26 0 $telscript($telname,adu4deg4sec_ha)
+         etel_set_register_s 0 X 27 0 $telscript($telname,adu4deg4sec_ha)
+         etel_set_register_s 0 X 28 0 [expr abs($telscript($telname,adu4deg_ha))]
+         etel_set_register_s 0 X 29 0 [expr abs($telscript($telname,adu4deg_ha))]
+         etel_set_register_s 0 X 62 0 $telscript($telname,coord_app_adu_ha0)
+         etel_set_register_s 1 X 26 0 $telscript($telname,adu4deg4sec_dec)
+         etel_set_register_s 1 X 27 0 $telscript($telname,adu4deg4sec_dec)
+         etel_set_register_s 1 X 28 0 [expr abs($telscript($telname,adu4deg_dec))]
+         etel_set_register_s 1 X 29 0 [expr abs($telscript($telname,adu4deg_dec))]
+         etel_set_register_s 1 X 62 0 $telscript($telname,coord_app_adu_dec0)
+      }
    }
    # --- 119 arrete les moteurs. On ne peut pas s'en affranchir sinon on tue les setting de l'axe 0
-   # ---  48 effectue la sauvegarde
    # ---  79 envoie un reset errors au controleur
    etel_execute_command_x_s 0 119 0
-   etel_execute_command_x_s 0 48 2 0 0 2 0 0 6000
    after 1000
    etel_execute_command_x_s 0 79 0
-   after 100
+   after 1000
    etel_execute_command_x_s 1 119 0
-   etel_execute_command_x_s 1 48 2 0 0 2 0 0 6000
    after 1000
    etel_execute_command_x_s 1 79 0
-   after 100
+   after 1000
    if {$telscript($telname,mount_type)=="azelevrot"} {
       etel_execute_command_x_s 2 119 0
-      etel_execute_command_x_s 2 48 2 0 0 2 0 0 6000
       after 1000
       etel_execute_command_x_s 2 79 0
-      after 100
+      after 1000
    }
 }
 
 # ################################################################################
-# ### proc save_params (remplace save_x)
+# ### proc save_params (remplace save_x_stop_controlers)
 # ################################################################################
 proc save_params { } {
    global telscript
@@ -2991,6 +2989,20 @@ proc telscript_gui { } {
                $base.f.fgetreg2.but_save configure -state active
             }
          pack $base.f.fgetreg2.but_save -side left -anchor center -padx 3 -pady 3
+         button $base.f.fgetreg2.but_exit \
+            -text "exit controleurs" -borderwidth 2 \
+            -command {
+               global telscript
+               set telname $telscript(def,telname)
+               set base $telscript(def,base)
+               $base.f.fgetreg2.but_exit configure -state disabled
+               set texte "save_x_stop_controlers"
+               tel1 loopeval "$texte"
+               after 400
+               set res [tel1 loopresult]
+               $base.f.fgetreg2.but_exit configure -state active
+            }
+         pack $base.f.fgetreg2.but_exit -side left -anchor center -padx 3 -pady 3
       pack $base.f.fgetreg2 -fill none -pady 0
    pack $base.f -fill both
 
