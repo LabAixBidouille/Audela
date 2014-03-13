@@ -1629,7 +1629,7 @@ namespace eval ::atos_analysis_gui {
    proc ::atos_analysis_gui::generer { visuNo } {
 
       if {![info exists ::atos_analysis_gui::occ_obj]} {
-         tk_messageBox -message "Veuillez entrer le nom d'un objet occulteur" -type ok
+         tk_messageBox -message "Veuillez entrer le nom d'un objet occulteur 0" -type ok
          return
       }
       if {![info exists ::atos_analysis_gui::occ_date]} {
@@ -1641,11 +1641,11 @@ namespace eval ::atos_analysis_gui {
          return
       }
       if {![info exists ::atos_analysis_gui::occ_pos_type]} {
-         tk_messageBox -message "Veuillez selectionner un type de position de l'observateur. 'Code UAI' ou 'Lon Lat Alt'" -type ok
+         tk_messageBox -message "Veuillez selectionner un type de position de l'observateur. 'Code UAI' ou 'Lon (deg, <0 vers l'Est) Lat (deg) Alt (m)'" -type ok
          return
       }
       if {$::atos_analysis_gui::occ_obj==""} {
-         tk_messageBox -message "Veuillez entrer le nom d'un objet occulteur" -type ok
+         tk_messageBox -message "Veuillez saisir les informations du Contexte et valider avec Miriade." -type ok
          return
       }
       if {$::atos_analysis_gui::occ_date==""} {
@@ -1736,8 +1736,8 @@ namespace eval ::atos_analysis_gui {
       set a2 [file exists $::atos_analysis_gui::prj_dir]
       
       set msg "Creation du projet.\n"
-      if {$a1 == 0} {set msg "${msg}Le fichier projet sera créé.\n"}
-      if {$a2 == 0} {set msg "${msg}Le repertoire projet sera créé.\n"}
+      if {$a1 == 0} {set msg "${msg}  Le fichier projet a été créé.\n"}
+      if {$a2 == 0} {set msg "${msg}  Le repertoire projet a été créé.\n"}
       if {$a1 == 1 && $a2 == 1} {return}
       
       set res [tk_messageBox -message $msg -type yesno]
