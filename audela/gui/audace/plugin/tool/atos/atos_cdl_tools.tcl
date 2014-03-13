@@ -884,7 +884,8 @@ namespace eval ::atos_cdl_tools {
       ::console::affiche_resultat "start  cur_idframe == $::atos_tools::cur_idframe\n"
       
       while {$::atos_cdl_tools::sortie == 0} {
-
+         
+         update
          #::console::affiche_resultat "cur_idframe == $::atos_tools::cur_idframe\n"
          #set ::atos_cdl_tools::sortie 1
          
