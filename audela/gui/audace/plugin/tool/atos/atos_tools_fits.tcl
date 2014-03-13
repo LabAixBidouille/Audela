@@ -147,13 +147,13 @@ namespace eval ::atos_tools_fits {
 
 
 
-   proc ::atos_tools_fits::next_image { visuNo } {
+   proc ::atos_tools_fits::next_image { visuNo {novisu ""}} {
 
       incr idframe [expr $::atos_tools::cur_idframe + 1]
       if { $idframe > $::atos_tools::nb_frames } {
         set idframe $::atos_tools::nb_frames
       }
-      ::atos_tools_fits::set_frame $visuNo $idframe
+      ::atos_tools_fits::set_frame $visuNo $idframe $novisu
 
    }
 
@@ -202,13 +202,18 @@ namespace eval ::atos_tools_fits {
 
 
 
-   proc ::atos_tools_fits::set_frame { visuNo idframe } {
+   proc ::atos_tools_fits::set_frame { visuNo idframe {novisu ""} } {
 
       set ::atos_tools::cur_idframe $idframe
       set filename [file join ${::atos_tools::destdir} ${::atos_tools::prefix}${::atos_tools::cur_idframe}${::conf(extension,defaut)}]
       set bufNo [ visu$visuNo buf ]
-#      buf$bufNo load $filename
-      loadima $filename
+
+      if {$novisu == "novisu"} {
+         buf$bufNo load $filename
+      } else {
+         loadima $filename
+      }
+      
    }
 
 

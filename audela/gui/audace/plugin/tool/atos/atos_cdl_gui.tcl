@@ -185,6 +185,15 @@ namespace eval ::atos_cdl_gui {
 
 
 
+
+
+
+
+
+
+
+
+
    #
    # Creation de l'interface graphique
    #
@@ -193,7 +202,7 @@ namespace eval ::atos_cdl_gui {
       package require Img
       
       psf_init $visuNo
-      
+      set ::atos_cdl_tools::compute_image_first ""
       global caption panneau atosconf color audace
 
       #--- Determination de la fenetre parente
@@ -520,8 +529,6 @@ namespace eval ::atos_cdl_gui {
 
     # onglets : photometrie
     
-      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
-
              set photometrie [frame $f_phot.photometrie]
              pack $photometrie -in $f_phot
 
@@ -883,14 +890,42 @@ namespace eval ::atos_cdl_gui {
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
-           button $frm.action.graph -image .graph\
+           button $frm.action.graph_xy_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
-              -command "::atos_cdl_tools::graph $visuNo $frm"
-           pack $frm.action.graph \
+              -command "::atos_cdl_tools::graph_xy $visuNo $frm obj"
+           pack $frm.action.graph_xy_obj \
               -in $frm.action \
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
-
+           DynamicHelp::add $frm.action.graph_xy_obj -text "Graphe XY Objet"
+           
+           button $frm.action.graph_xy_ref -image .graph\
+              -borderwidth 2 -width 48 -height 48 -compound center \
+              -command "::atos_cdl_tools::graph_xy $visuNo $frm ref"
+           pack $frm.action.graph_xy_ref \
+              -in $frm.action \
+              -side left -anchor w \
+              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.graph_xy_ref -text "Graphe XY Reference"
+           
+           button $frm.action.graph_flux_obj -image .graph\
+              -borderwidth 2 -width 48 -height 48 -compound center \
+              -command "::atos_cdl_tools::graph_flux $visuNo $frm obj"
+           pack $frm.action.graph_flux_obj \
+              -in $frm.action \
+              -side left -anchor w \
+              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.graph_flux_obj -text "Graphe Flux Objet"
+           
+           button $frm.action.graph_flux_ref -image .graph\
+              -borderwidth 2 -width 48 -height 48 -compound center \
+              -command "::atos_cdl_tools::graph_flux $visuNo $frm ref"
+           pack $frm.action.graph_flux_ref \
+              -in $frm.action \
+              -side left -anchor w \
+              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.graph_flux_ref -text "Graphe Flux Reference"
+           
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_cdl_tools::save $visuNo $frm"
