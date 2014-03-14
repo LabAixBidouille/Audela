@@ -368,6 +368,8 @@ namespace eval ::atos_ocr_gui {
         set info_load [frame $frm.info_load]
         pack $info_load -in $frm -side top  -padx 1 -pady 1
 
+        set ::atos_gui::frame(info_load) $info_load
+
            #--- Cree un label pour le nb d image
            label $info_load.status -font $atosconf(font,courier_10) -text ""
 
@@ -375,9 +377,6 @@ namespace eval ::atos_ocr_gui {
            label $info_load.nbtotal -font $atosconf(font,courier_10) -text ""
 
            grid $info_load.status $info_load.nbtotal
-
-        set ::atos_gui::frame(info_load) $info_load
-
 
 
         #--- Creation de la barre de defilement

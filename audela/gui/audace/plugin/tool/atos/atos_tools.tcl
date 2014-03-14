@@ -43,15 +43,14 @@ namespace eval ::atos_tools {
       }
 
       catch {
-      
-         $::atos_gui::frame(info_load).status   configure -text "Loaded"
-         $::atos_gui::frame(info_load).nbtotal  configure -text "$::atos_tools::nb_frames frames"
+         $::atos_gui::frame(info_load).status  configure -text "Loaded"
+         $::atos_gui::frame(info_load).nbtotal configure -text "$::atos_tools::nb_frames frames"
       }
 
       set bufNo [ visu$visuNo buf ]
       if { [buf$bufNo imageready] == 1 } {
-            set autocuts [buf$bufNo autocuts]
-            visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+         set autocuts [buf$bufNo autocuts]
+         visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
       }
 
       set ::atos_tools::scrollbar 1
@@ -206,7 +205,7 @@ namespace eval ::atos_tools {
    #
    proc ::atos_tools::setmin { } {
 
-      set posmin    $::atos_gui::frame(posmin)
+      set posmin $::atos_gui::frame(posmin)
 
       $posmin delete 0 end
       $posmin insert 0 [expr int($::atos_tools::cur_idframe)]
@@ -216,9 +215,9 @@ namespace eval ::atos_tools {
    #
    # selection du frame de fin
    #
-   proc ::atos_tools::setmax { frm } {
+   proc ::atos_tools::setmax { } {
 
-      set posmax    $::atos_gui::frame(posmax)
+      set posmax $::atos_gui::frame(posmax)
 
       $posmax delete 0 end
       $posmax insert 0 [expr int($::atos_tools::cur_idframe)]

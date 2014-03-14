@@ -11,10 +11,6 @@
 namespace eval ::atos_extraction {
 
 
-
-
-
-
    #
    # Chargement des captions
    #
@@ -29,8 +25,6 @@ namespace eval ::atos_extraction {
 
 
 
-
-
    #
    # Initialisation des variables de configuration
    #
@@ -38,14 +32,12 @@ namespace eval ::atos_extraction {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                           { set ::atos::parametres(atos,$visuNo,messages)                           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }                      { set ::atos::parametres(atos,$visuNo,save_file_log)                      "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }                   { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)                   "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] }           { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }              { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                 { set ::atos::parametres(atos,$visuNo,messages)                 "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }            { set ::atos::parametres(atos,$visuNo,save_file_log)            "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }         { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)         "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] } { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }    { set ::atos::parametres(atos,$visuNo,verifier_index_depart)    "1" }
    }
-
-
 
 
 
@@ -57,18 +49,15 @@ namespace eval ::atos_extraction {
       global panneau
 
       #--- confToWidget
-      set ::atos_extraction::panneau(atos,$visuNo,messages)                   $::atos::parametres(atos,$visuNo,messages)
-      set ::atos_extraction::panneau(atos,$visuNo,save_file_log)              $::atos::parametres(atos,$visuNo,save_file_log)
-      set ::atos_extraction::panneau(atos,$visuNo,alarme_fin_serie)           $::atos::parametres(atos,$visuNo,alarme_fin_serie)
-      set ::atos_extraction::panneau(atos,$visuNo,verifier_ecraser_fichier)   $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
-      set ::atos_extraction::panneau(atos,$visuNo,verifier_index_depart)      $::atos::parametres(atos,$visuNo,verifier_index_depart)
+      set ::atos_extraction::panneau(atos,$visuNo,messages)                 $::atos::parametres(atos,$visuNo,messages)
+      set ::atos_extraction::panneau(atos,$visuNo,save_file_log)            $::atos::parametres(atos,$visuNo,save_file_log)
+      set ::atos_extraction::panneau(atos,$visuNo,alarme_fin_serie)         $::atos::parametres(atos,$visuNo,alarme_fin_serie)
+      set ::atos_extraction::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
+      set ::atos_extraction::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
 
       set ::atos_tools::traitement "avi"
 
    }
-
-
-
 
 
    #
@@ -79,9 +68,6 @@ namespace eval ::atos_extraction {
       global panneau
 
    }
-
-
-
 
 
 
@@ -100,8 +86,6 @@ namespace eval ::atos_extraction {
 
 
 
-
-
    #
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
@@ -109,9 +93,6 @@ namespace eval ::atos_extraction {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::atos::getPluginType ] ] \
          [ ::atos::getPluginDirectory ] atos_extraction.htm
    }
-
-
-
 
 
 
@@ -123,13 +104,6 @@ namespace eval ::atos_extraction {
       ::atos_extraction::widgetToConf $visuNo
       destroy $this
    }
-
-
-
-
-
-
-
 
 
 
@@ -171,27 +145,24 @@ namespace eval ::atos_extraction {
 
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frm_atos_extraction
+      set ::atos_gui::frame(base) $frm
 
-
-      #--- Cree un frame pour afficher le status de la base
+      #--- Cree un frame pour afficher la gui
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
         #--- Cree un label pour le titre
-        label $frm.titre -font $atosconf(font,arial_14_b) \
-              -text "$caption(atos_extraction,titre)"
-        pack $frm.titre \
-             -in $frm -side top -padx 3 -pady 3
+        label $frm.titre -font $atosconf(font,arial_14_b) -text "$caption(atos_extraction,titre)"
+        pack $frm.titre -in $frm -side top -padx 3 -pady 3
 
         #--- Cree un frame pour 
-        frame $frm.open \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.open \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        frame $frm.open -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.open -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+
         #--- Creation du bouton open
         button $frm.open.but_open \
            -text "$caption(atos_extraction,ouvrir)" -borderwidth 2 \
-           -command "::atos_tools::open_flux $visuNo $frm"
+           -command "::atos_tools::open_flux $visuNo"
         pack $frm.open.but_open \
            -side left -anchor e \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -199,7 +170,7 @@ namespace eval ::atos_extraction {
         #--- Creation du bouton select
         button $frm.open.but_select \
            -text "..." -borderwidth 2 -takefocus 1 \
-           -command "::atos_tools::select $visuNo $frm"
+           -command "::atos_tools::select $visuNo"
         pack $frm.open.but_select \
            -side left -anchor e \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -213,6 +184,8 @@ namespace eval ::atos_extraction {
            -label "" -orient horizontal \
            -state disabled
         pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
+
+        set ::atos_gui::frame(scrollbar) $frm.scrollbar
 
         #--- Cree un frame pour afficher
         set btnav [frame $frm.btnav -borderwidth 0]
@@ -258,19 +231,14 @@ namespace eval ::atos_extraction {
            -side left -anchor w \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
-
           #--- Affichage positions
-          frame $frm.pos \
-                -borderwidth 1 -relief raised -cursor arrow
-          pack $frm.pos \
-               -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
+          frame $frm.pos -borderwidth 1 -relief raised -cursor arrow
+          pack $frm.pos -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
                 -text "$caption(atos_extraction,setmin)" -borderwidth 2 \
-                -command "::atos_tools::setmin $frm"
+                -command "::atos_tools::setmin"
              pack $frm.pos.setmin \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -279,7 +247,7 @@ namespace eval ::atos_extraction {
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
                 -text "$caption(atos_extraction,setmax)" -borderwidth 2 \
-                -command "::atos_tools::setmax $frm"
+                -command "::atos_tools::setmax"
              pack $frm.pos.setmax \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -295,93 +263,85 @@ namespace eval ::atos_extraction {
                 #--- Cree un label pour
                 entry $frm.posmin -fg $color(blue) -relief sunken
                 pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
+                set ::atos_gui::frame(posmin) $frm.posmin
 
+             #--- Cree un frame pour afficher
+             frame $frm.pos.max -borderwidth 0
+             pack $frm.pos.max -in $frm.pos -side left
 
-          #--- Cree un frame pour afficher
-          frame $frm.pos.max -borderwidth 0
-          pack $frm.pos.max -in $frm.pos -side left
-
-             #--- Cree un label pour
-             #entry $frm.datemax -fg $color(blue) -relief sunken
-             #pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
-             #--- Cree un label pour
-             entry $frm.posmax -fg $color(blue) -relief sunken
-             pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
-
-
-
-
+               #--- Cree un label pour
+               #entry $frm.datemax -fg $color(blue) -relief sunken
+               #pack $frm.datemax -in $frm.pos.max -side top -pady 1 -anchor w
+               #--- Cree un label pour
+               entry $frm.posmax -fg $color(blue) -relief sunken
+               pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
+               set ::atos_gui::frame(posmax) $frm.posmax
 
           #--- Cree un frame pour afficher
           frame $frm.count -borderwidth 0
-          pack $frm.count -in $frm -side top
+          pack $frm.count -in $frm -side top -pady 10 -ipadx 5 -ipady 5
 
              #--- Cree un label
              label $frm.labnbimg -font $atosconf(font,courier_10) -padx 3 \
                    -text "$caption(atos_extraction,nbimg)"
              pack $frm.labnbimg -in $frm.count -side left -pady 1 -anchor w
+
              #--- Cree un entry
-             entry $frm.imagecount -fg $color(blue) -relief sunken
+             entry $frm.imagecount -fg $color(blue) -relief sunken -width 10
              pack $frm.imagecount -in $frm.count -side left -pady 1 -anchor w
+             set ::atos_gui::frame(imagecount) $frm.imagecount
+
              #--- Cree un button
              button $frm.doimagecount \
               -text "$caption(atos_extraction,calcul)" -borderwidth 2 \
-              -command "::atos_tools_avi::imagecount $frm" 
-             pack $frm.doimagecount -in $frm.count -side left -pady 1 -anchor w
+              -command "::atos_tools_avi::imagecount" 
+             pack $frm.doimagecount -in $frm.count -side left -padx 3 -pady 1 -anchor w
 
           #--- Cree un frame pour 
-          frame $frm.status -borderwidth 0 -cursor arrow
-          pack $frm.status -in $frm -side top -expand 0
-
-          #--- Cree un frame pour afficher les intitules
-          set intitle [frame $frm.status.l -borderwidth 0]
-          pack $intitle -in $frm.status -side left
-
-            #--- Cree un label pour le status
-            label $intitle.status -font $atosconf(font,courier_10) -text "$caption(atos_extraction,statut)"
-            pack $intitle.status -in $intitle -side top -anchor w
-
-            #--- Cree un label pour le nb d image
-            label $intitle.nbtotal -font $atosconf(font,courier_10) -text "$caption(atos_extraction,nbtotal)"
-            pack $intitle.nbtotal -in $intitle -side top -anchor w
-
-
-          #--- Cree un frame pour afficher les valeurs
-          set inparam [frame $frm.status.v -borderwidth 0]
-          pack $inparam -in $frm.status -side left -expand 0 -fill x
-
-            #--- Cree un label pour le 
-            label $inparam.status -font $atosconf(font,courier_10) -fg $color(blue) -text "-"
-            pack  $inparam.status -in $inparam -side top -anchor w
-
-            #--- Cree un label pour le 
-            label $inparam.nbtotal -font $atosconf(font,courier_10) -fg $color(blue) -text "-"
-            pack  $inparam.nbtotal -in $inparam -side top -anchor w
-
-
-
-
+          #frame $frm.status -borderwidth 0 -cursor arrow
+          #pack $frm.status -in $frm -side top -expand 0
+          #
+          ##--- Cree un frame pour afficher les intitules
+          #set intitle [frame $frm.status.l -borderwidth 0]
+          #pack $intitle -in $frm.status -side left
+          #
+          #  #--- Cree un label pour le status
+          #  label $intitle.status -font $atosconf(font,courier_10) -text "$caption(atos_extraction,statut)"
+          #  pack $intitle.status -in $intitle -side top -anchor w
+          #
+          #  #--- Cree un label pour le nb d image
+          #  label $intitle.nbtotal -font $atosconf(font,courier_10) -text "$caption(atos_extraction,nbtotal)"
+          #  pack $intitle.nbtotal -in $intitle -side top -anchor w
+          #
+          ##--- Cree un frame pour afficher les valeurs
+          #set inparam [frame $frm.status.v -borderwidth 0]
+          #pack $inparam -in $frm.status -side left -expand 0 -fill x
+          #
+          #  #--- Cree un label pour le 
+          #  label $inparam.status -font $atosconf(font,courier_10) -fg $color(blue) -text "-"
+          #  pack  $inparam.status -in $inparam -side top -anchor w
+          #
+          #  #--- Cree un label pour le 
+          #  label $inparam.nbtotal -font $atosconf(font,courier_10) -fg $color(blue) -text "-"
+          #  pack  $inparam.nbtotal -in $inparam -side top -anchor w
 
         #--- Cree un frame pour 
-        frame $frm.form \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.form \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        frame $frm.form -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.form -in $frm -side top -expand 0 -fill x -padx 10 -pady 10 -ipadx 5 -ipady 5
 
           #--- Cree un frame pour afficher les intitules
           set intitle [frame $frm.form.l -borderwidth 0]
           pack $intitle -in $frm.form -side left
 
-            #--- Cree un label pour le status
+            #--- Cree un label pour le repertoire
             label $intitle.destdir -font $atosconf(font,courier_10) -padx 3 \
                   -text "$caption(atos_extraction,destdir)"
             pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
 
-            #--- Cree un label pour le nb d image
+            #--- Cree un label pour le prefix
             label $intitle.prefix -font $atosconf(font,courier_10) \
                   -text "$caption(atos_extraction,prefix)"
             pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
-
 
           #--- Cree un frame pour afficher les valeurs
           set inparam [frame $frm.form.v -borderwidth 0]
@@ -389,11 +349,11 @@ namespace eval ::atos_extraction {
 
             #--- Cree un label pour le repetoire destination
             entry $inparam.destdir -fg $color(blue)
-            pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
+            pack $inparam.destdir -in $inparam -side top -padx 3 -pady 1 -anchor w
 
             #--- Cree un label pour le prefixe
             entry $inparam.prefix  -fg $color(blue)
-            pack $inparam.prefix -in $inparam -side top -pady 1 -anchor w
+            pack $inparam.prefix -in $inparam -side top -padx 3 -pady 1 -anchor w
 
           #--- Cree un frame pour afficher les extras
           set inbutton [frame $frm.form.e -borderwidth 0]
@@ -410,17 +370,13 @@ namespace eval ::atos_extraction {
                   -text ""
             pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
-
-   #---
         #--- Cree un frame pour  les boutons d action 
-        frame $frm.action \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.action \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        frame $frm.action -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.action -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
            button $frm.action.extract \
               -text "$caption(atos_extraction,extract)" -borderwidth 2 \
-              -command " ::atos_extraction::extract $visuNo $frm "
+              -command " ::atos_extraction::extract $visuNo"
            pack $frm.action.extract -in $frm.action \
               -side left -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -441,47 +397,41 @@ namespace eval ::atos_extraction {
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
-
-
-
    }
 
 
 
-
-
-
-   proc ::atos_extraction::extract { visuNo frm } {
+   proc ::atos_extraction::extract { visuNo } {
       global audace caption
 
+      set frm $::atos_gui::frame(base)
       set bufNo [ visu$visuNo buf ]
 
-      set fmin    [ $frm.posmin get ]
-      set fmax    [ $frm.posmax get ]
-      set destdir [ $frm.form.v.destdir get ]
-      set prefix  [ $frm.form.v.prefix get ]
-      set i 0
-      set cpt 1
-      if { $fmin == "" } {
-         set fmin 1
-      }
-      if { $fmax == "" } {
-         set fmax $::atos_tools::nb_open_frames
-      }
-      #::console::affiche_resultat "fmin=$fmin\n"
-      #::console::affiche_resultat "fmax=$fmax\n"
-
-
+      set fmin [ $frm.posmin get ]
+      set fmax [ $frm.posmax get ]
+      if { $fmin == "" } { set fmin 1 }
+      if { $fmax == "" } { set fmax $::atos_tools::nb_open_frames }
       ::atos_tools_avi::set_frame $fmin
+
+      set destdir [ $frm.form.v.destdir get ]
+      if { $destdir == "" } {
+         tk_messageBox -message "$caption(atos_extraction,errordir)" -type ok
+         return -1
+      }
+
+      set prefix [ $frm.form.v.prefix get ]
+      if { $prefix == "" } {
+         set prefix "i_"
+         ::console::affiche_resultat "$caption(atos_extraction,warnprefix) $prefix\n"
+      }
+
+      ::console::affiche_resultat "$caption(atos_extraction,encours) $fmin - $fmax ..."
+
+      set cpt 1
       for {set i $fmin} {$i <= $fmax} {incr i} {
          set ::atos_tools::scrollbar $::atos_tools::cur_idframe
          visu$visuNo disp
-         #::console::affiche_resultat "$i / [expr $fmax-$fmin+1]\n"
-         ::console::affiche_resultat ""
-         
          set path "$destdir/$prefix$cpt"
-         #::console::affiche_resultat "path : $path\n"
          buf$bufNo save $path fits
          ::atos_tools_avi::next_image
          incr cpt
@@ -489,19 +439,6 @@ namespace eval ::atos_extraction {
       visu$visuNo disp
       tk_messageBox -message "$caption(atos_extraction,extractfin)" -type ok
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
