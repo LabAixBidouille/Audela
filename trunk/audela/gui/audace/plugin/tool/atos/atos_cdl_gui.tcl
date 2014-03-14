@@ -864,9 +864,9 @@ namespace eval ::atos_cdl_gui {
              pack $suivi -in $f_suiv
  
                 frame $suivi.methode -borderwidth 0 -cursor arrow
-                pack  $suivi.methode -in $suivi -side top
+                pack  $suivi.methode -in $suivi -side top -pady 10
 
-                   label $suivi.methode.lab -text "Methode"
+                   label $suivi.methode.lab -text "Methode "
                    pack  $suivi.methode.lab -in $suivi.methode -side left -anchor w
 
                    spinbox $suivi.methode.val -font $atosconf(font,courier_10)  \
@@ -874,8 +874,45 @@ namespace eval ::atos_cdl_gui {
                       -textvariable ::atos_cdl_tools::methode_suivi \
                       -command "" 
                    pack  $suivi.methode.val -in $suivi.methode -side left -anchor w
- 
- 
+
+                frame $suivi.threshold -borderwidth 0 -cursor arrow
+                pack  $suivi.threshold -in $suivi -side top -pady 20
+
+                set spinvalues [list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30]
+
+                  frame $suivi.threshold.target -borderwidth 0 -cursor arrow
+                  pack  $suivi.threshold.target -in $suivi.threshold -side top -pady 5
+
+                     label $suivi.threshold.target.lab -text "Threshold target (x y) = " -width 20
+                     pack  $suivi.threshold.target.lab -in $suivi.threshold.target -side left -anchor e
+                     spinbox $suivi.threshold.target.valx -font $atosconf(font,courier_10)  \
+                        -value $spinvalues -width 3 \
+                        -textvariable ::atos_cdl_tools::x_obj_threshold \
+                        -command "" 
+                     pack  $suivi.threshold.target.valx -in $suivi.threshold.target -side left -anchor w
+                     spinbox $suivi.threshold.target.valy -font $atosconf(font,courier_10)  \
+                        -value $spinvalues -width 3 \
+                        -textvariable ::atos_cdl_tools::y_obj_threshold \
+                        -command "" 
+                     pack  $suivi.threshold.target.valy -in $suivi.threshold.target -side left -anchor w
+
+                  frame $suivi.threshold.ref -borderwidth 0 -cursor arrow
+                  pack  $suivi.threshold.ref -in $suivi.threshold -side top -pady 5
+
+                   label $suivi.threshold.ref.lab -text "Threshold reference (x y) = " -width 20
+                   pack  $suivi.threshold.ref.lab -in $suivi.threshold.ref -side left -anchor e
+                   spinbox $suivi.threshold.ref.valx -font $atosconf(font,courier_10)  \
+                      -value $spinvalues -width 3 \
+                      -textvariable ::atos_cdl_tools::x_ref_threshold \
+                      -command "" 
+                   pack  $suivi.threshold.ref.valx -in $suivi.threshold.ref -side left -anchor w
+#                   $suivi.threshold.ref.valx set $::atos_cdl_tools::x_ref_threshold
+                   spinbox $suivi.threshold.ref.valy -font $atosconf(font,courier_10)  \
+                      -value $spinvalues -width 3 \
+                      -textvariable ::atos_cdl_tools::y_ref_threshold \
+                      -command "" 
+                   pack  $suivi.threshold.ref.valy -in $suivi.threshold.ref -side left -anchor w
+
  
    #--- Fin Onglets
 
