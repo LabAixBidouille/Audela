@@ -17,28 +17,54 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-   set caption(atos_extraction,titre)               "Extraction Video AVI"
+set caption(atos_extraction,titre)               "Extraction Video AVI"
 
-   set caption(atos_extraction,aide)                "Aide"
-   set caption(atos_extraction,fermer)              "Fermer"
-   set caption(atos_extraction,ouvrir)              "Ouvrir"
-   
-   set caption(atos_extraction,setmin)              "Marq. debut"
-   set caption(atos_extraction,setmax)              "Marq. fin"
-   set caption(atos_extraction,nbimg)               "Nombre d'images a extraire : "
-   set caption(atos_extraction,calcul)              "Calcul"
-   
-   set caption(atos_extraction,statut)              "Statut"
-   set caption(atos_extraction,nbtotal)             "Nb total d'images"
-   
-   set caption(atos_extraction,destdir)             "Repertoire destination"
-   set caption(atos_extraction,prefix)              "Prefixe des fichiers"
-   set caption(atos_extraction,extract)             "Extraction"
-   set caption(atos_extraction,extractfin)          "Extraction Terminee"
+set caption(atos_extraction,aide)                "Help"
+set caption(atos_extraction,fermer)              "Close"
+set caption(atos_extraction,ouvrir)              "Open"
+
+set caption(atos_extraction,setmin)              "Start tag"
+set caption(atos_extraction,setmax)              "End tag"
+set caption(atos_extraction,nbimg)               "Number of images to extract = "
+set caption(atos_extraction,calcul)              "Compute"
+
+set caption(atos_extraction,statut)              "Status"
+set caption(atos_extraction,nbtotal)             "Nb total of images"
+
+set caption(atos_extraction,destdir)             "Destination pathname"
+set caption(atos_extraction,prefix)              "Filename prefix"
+set caption(atos_extraction,extract)             "Extraction"
+set caption(atos_extraction,encours)             "Extraction of the sequence of images"
+set caption(atos_extraction,extractfin)          "Extraction ended"
+
+set caption(atos_extraction,errordir)            "Error: enter a destination pathname"
+set caption(atos_extraction,warnprefix)          "Default prefix filename: "
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(atos_extraction,titre)            "Extraction Video AVI"
+
+   set caption(atos_extraction,aide)             "Aide"
+   set caption(atos_extraction,fermer)           "Fermer"
+   set caption(atos_extraction,ouvrir)           "Ouvrir"
+   
+   set caption(atos_extraction,setmin)           "Marq. debut"
+   set caption(atos_extraction,setmax)           "Marq. fin"
+   set caption(atos_extraction,nbimg)            "Nombre d'images a extraire = "
+   set caption(atos_extraction,calcul)           "Calcul"
+   
+   set caption(atos_extraction,statut)           "Statut"
+   set caption(atos_extraction,nbtotal)          "Nb total d'images"
+   
+   set caption(atos_extraction,destdir)          "Repertoire destination"
+   set caption(atos_extraction,prefix)           "Prefixe des fichiers"
+   set caption(atos_extraction,extract)          "Extraction"
+   set caption(atos_extraction,encours)          "Extraction de la sequence d'images"
+   set caption(atos_extraction,extractfin)       "Extraction terminee"
+
+   set caption(atos_extraction,errordir)         "Erreur: veuillez specifier un repertoire de destination"
+   set caption(atos_extraction,warnprefix)       "Prefixe des fichiers par defaut : "
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

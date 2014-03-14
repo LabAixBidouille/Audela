@@ -78,12 +78,14 @@ namespace eval ::atos_tools_avi {
 
       global audace panneau
 
+      set frm $::atos_gui::frame(base)
+
       #--- Fenetre parent
       set fenetre [::confVisu::getBase $visuNo]
 
       #--- Ouvre la fenetre de choix des images
       set bufNo [ visu$visuNo buf ]
-      set ::atos_tools::avi_filename [ ::tkutil::box_load_avi $::atos_gui::frame(base) $audace(rep_images) $bufNo "1" ]
+      set ::atos_tools::avi_filename [ ::tkutil::box_load_avi $frm $audace(rep_images) $bufNo "1" ]
       $frm.open.avipath delete 0 end
       $frm.open.avipath insert 0 $::atos_tools::avi_filename
 
@@ -297,28 +299,12 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
-
-
-
-
-
-
-
-
 #   proc ::atos_tools_avi::avi_seek { visuNo arg } {
 #      ::console::affiche_resultat "% : [expr $arg / 100.0 ]"
 #      ::atos_tools::avi1 seekpercent [expr $arg / 100.0 ]
 #      ::atos_tools::avi1 next
 #      visu$visuNo disp
 #   }
-
-
-
-
-
-
 
 
 
@@ -337,15 +323,6 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
-
-
-
-
-
-
-
    proc ::atos_tools_avi::setmin { This } {
 
       if { ! [info exists ::atos_tools::cur_idframe] } {
@@ -357,16 +334,6 @@ namespace eval ::atos_tools_avi {
       $This.posmin insert 0 $::atos_tools::cur_idframe
       catch { $This.imagecount delete 0 end }
    }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -385,23 +352,17 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
-
-
-
-
-
-
-
    proc ::atos_tools_avi::imagecount {  } {
       global audace
 
-      set imagecount $::atos_gui::frame(imagecount)
       
+      set posmin $::atos_gui::frame(posmin)
+      set posmax $::atos_gui::frame(posmax)
+      set imagecount $::atos_gui::frame(imagecount)
+
       $imagecount delete 0 end
-      set fmin [ $frm.posmin get ]
-      set fmax [ $frm.posmax get ]
+      set fmin [$posmin get]
+      set fmax [$posmax get]
       if { $fmin == "" } {
          set fmin 1
       }
@@ -411,30 +372,6 @@ namespace eval ::atos_tools_avi {
       $imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
