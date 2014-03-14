@@ -878,7 +878,7 @@ proc ::bddimages_cdl::mesure_methode3b { f commundatejj dateiso datejd delta id}
     }
 
 
-proc ::bddimages_cdl::affich_un_rond { x y color radius } {
+proc ::bddimages_cdl::affich_un_rond { x y color radius {width 1} } {
 
    global audace
 
@@ -888,7 +888,7 @@ proc ::bddimages_cdl::affich_un_rond { x y color radius } {
        set y [lindex $can_xy 1]
        # gren_info "XY =  $x $y \n"
             
-       set width 1           
+                
        #--- Dessine l'objet selectionne en vert dans l'image
        $audace(hCanvas) create oval [ expr $x - $radius ] [ expr $y - $radius ] [ expr $x + $radius ] [ expr $y + $radius ] \
            -outline $color -tags cadres -width $width
