@@ -1093,7 +1093,10 @@ namespace eval ::atos_cdl_tools {
       }
       
       incr ::atos_tools::cur_idframe -1
-      
+
+      ::console::affiche_resultat "ref_threshold (x y) = $::atos_cdl_tools::x_ref_threshold $::atos_cdl_tools::y_ref_threshold\n"
+      ::console::affiche_resultat "obj_threshold (x y) = $::atos_cdl_tools::x_obj_threshold $::atos_cdl_tools::y_obj_threshold\n"
+
       while {$::atos_cdl_tools::sortie == 0} {
          
          update
@@ -1197,9 +1200,9 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::stop { visuNo } {
 
       ::console::affiche_resultat "-- stop \n"
-      set frm_start     $::atos_gui::frame(buttons,start)
+      set frm_start $::atos_gui::frame(buttons,start)
 
-      if {$::atos_cdl_tools::sortie==1} {
+      if {$::atos_cdl_tools::sortie == 1} {
          $frm_start configure -image .start
          $frm_start configure -relief raised
          $frm_start configure -command "::atos_cdl_tools::start $visuNo"

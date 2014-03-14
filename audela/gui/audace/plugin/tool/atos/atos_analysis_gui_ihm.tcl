@@ -628,7 +628,7 @@
              pack $diam -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $diam.l3 -text "Largeur approx. de l'ombre (km) : " -width 25
+                  label $diam.l3 -text "Diametre approx. de l'objet (km) : " -width 25
                   pack  $diam.l3 -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
