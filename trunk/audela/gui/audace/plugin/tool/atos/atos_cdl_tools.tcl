@@ -178,9 +178,11 @@ namespace eval ::atos_cdl_tools {
 
 
       set sortie 0
-      set idframe 1
+      set idframe 0
       set cpt 0
       while {$sortie == 0} {
+
+         incr idframe
 
          if {$idframe == $::atos_tools::nb_frames} {
             set sortie 1
@@ -188,6 +190,37 @@ namespace eval ::atos_cdl_tools {
 
          if { [info exists ::atos_cdl_tools::mesure($idframe,mesure_obj)] && $::atos_cdl_tools::mesure($idframe,mesure_obj) == 1 } {
             set reste [expr $::atos_tools::nb_frames-$idframe]
+
+            if {![info exists ::atos_ocr_tools::timing($idframe,jd)           ] } { gren_info "no jd)           \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,dateiso)      ] } { gren_info "no dateiso)      \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_fint)     ] } { gren_info "no $idframe obj_fint)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_pixmax)   ] } { gren_info "no obj_pixmax)   \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_intensite)] } { gren_info "no obj_intensite)\n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_sigmafond)] } { gren_info "no obj_sigmafond)\n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_snint)    ] } { gren_info "no obj_snint)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_snpx)     ] } { gren_info "no obj_snpx)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_delta)    ] } { gren_info "no obj_delta)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_xpos)     ] } { gren_info "no obj_xpos)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_ypos)     ] } { gren_info "no obj_ypos)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_xfwhm)    ] } { gren_info "no obj_xfwhm)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,obj_yfwhm)    ] } { gren_info "no obj_yfwhm)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_fint)     ] } { gren_info "no ref_fint)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_pixmax)   ] } { gren_info "no ref_pixmax)   \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_intensite)] } { gren_info "no ref_intensite)\n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_sigmafond)] } { gren_info "no ref_sigmafond)\n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_snint)    ] } { gren_info "no ref_snint)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_snpx)     ] } { gren_info "no ref_snpx)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_delta)    ] } { gren_info "no ref_delta)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_xpos)     ] } { gren_info "no ref_xpos)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_ypos)     ] } { gren_info "no ref_ypos)     \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_xfwhm)    ] } { gren_info "no ref_xfwhm)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,ref_yfwhm)    ] } { gren_info "no ref_yfwhm)    \n" ; continue }
+            if {![info exists ::atos_ocr_tools::timing($idframe,img_intmin)   ] } { set ::atos_ocr_tools::timing($idframe,img_intmin) 0 }
+            if {![info exists ::atos_ocr_tools::timing($idframe,img_intmax)   ] } { set ::atos_ocr_tools::timing($idframe,img_intmax) 0 }
+            if {![info exists ::atos_ocr_tools::timing($idframe,img_intmoy)   ] } { set ::atos_ocr_tools::timing($idframe,img_intmoy) 0 }
+            if {![info exists ::atos_ocr_tools::timing($idframe,img_sigma)    ] } { set ::atos_ocr_tools::timing($idframe,img_sigma)  0 }
+            if {![info exists ::atos_ocr_tools::timing($idframe,img_xsize)    ] } { set ::atos_ocr_tools::timing($idframe,img_xsize)  0 }
+            if {![info exists ::atos_ocr_tools::timing($idframe,img_ysize)    ] } { set ::atos_ocr_tools::timing($idframe,img_ysize)  0 }
 
             set line "$idframe,"
             append line "$::atos_ocr_tools::timing($idframe,jd)           ,"
@@ -199,10 +232,10 @@ namespace eval ::atos_cdl_tools {
             append line "$::atos_cdl_tools::mesure($idframe,obj_snint)    ,"
             append line "$::atos_cdl_tools::mesure($idframe,obj_snpx)     ,"
             append line "$::atos_cdl_tools::mesure($idframe,obj_delta)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_xpos),"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_ypos),"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_xfwhm),"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_yfwhm),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_xpos)     ,"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_ypos)     ,"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_xfwhm)    ,"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_yfwhm)    ,"
             append line "$::atos_cdl_tools::mesure($idframe,ref_fint)     ,"
             append line "$::atos_cdl_tools::mesure($idframe,ref_pixmax)   ,"
             append line "$::atos_cdl_tools::mesure($idframe,ref_intensite),"
@@ -210,23 +243,22 @@ namespace eval ::atos_cdl_tools {
             append line "$::atos_cdl_tools::mesure($idframe,ref_snint)    ,"
             append line "$::atos_cdl_tools::mesure($idframe,ref_snpx)     ,"
             append line "$::atos_cdl_tools::mesure($idframe,ref_delta)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_xpos),"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_ypos),"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_xfwhm),"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_yfwhm),"
-            append line "$::atos_cdl_tools::mesure($idframe,img_intmin) ,"
-            append line "$::atos_cdl_tools::mesure($idframe,img_intmax),"
-            append line "$::atos_cdl_tools::mesure($idframe,img_intmoy),"
-            append line "$::atos_cdl_tools::mesure($idframe,img_sigma) ,"
-            append line "$::atos_cdl_tools::mesure($idframe,img_xsize),"
-            append line "$::atos_cdl_tools::mesure($idframe,img_ysize)"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_xpos)     ,"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_ypos)     ,"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_xfwhm)    ,"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_yfwhm)    ,"
+            append line "$::atos_cdl_tools::mesure($idframe,img_intmin)   ,"
+            append line "$::atos_cdl_tools::mesure($idframe,img_intmax)   ," 
+            append line "$::atos_cdl_tools::mesure($idframe,img_intmoy)   ," 
+            append line "$::atos_cdl_tools::mesure($idframe,img_sigma)    ," 
+            append line "$::atos_cdl_tools::mesure($idframe,img_xsize)    ,"
+            append line "$::atos_cdl_tools::mesure($idframe,img_ysize)    "
 
 
             puts $f1 $line
             incr cpt
          }
 
-         incr idframe
       }
 
       close $f1
@@ -317,7 +349,7 @@ namespace eval ::atos_cdl_tools {
          $reference.sigmafond configure -text "?" -fg $color(blue)
          $reference.snint     configure -text "?" -fg $color(blue)
          $reference.snpx      configure -text "?" -fg $color(blue)
-         return
+         return -1
       }
 
       set xsm         [lindex $valeurs 0]
@@ -333,6 +365,20 @@ namespace eval ::atos_cdl_tools {
       set snint       [lindex $valeurs 10]
       set snpx        [lindex $valeurs 11]
       set delta       [lindex $valeurs 12]
+
+      set lost_ref 0
+      if {[expr abs($xsm_save - $xsm)] <= $::atos_cdl_tools::x_ref_threshold} {
+         set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm]
+      } else {
+         set lost_ref 1
+         set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm_save]
+      }
+      if {[expr abs($ysm_save - $ysm)] <= $::atos_cdl_tools::y_ref_threshold} {
+         set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm]
+      } else {
+         set lost_ref 1
+         set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm_save]
+      }
 
       set visupos       "[format "%4.2f" $xsm] / [format "%4.2f" $ysm]"
       set visudelta     [format "%5.2f" $delta]
@@ -353,26 +399,11 @@ namespace eval ::atos_cdl_tools {
       $reference.snint        configure -text "$visusnint"     -fg $color(blue)
       $reference.snpx         configure -text "$visusnpx"      -fg $color(blue)
 
-      set lost_ref 0
-      if {[expr abs($xsm_save - $xsm)] <= $::atos_cdl_tools::x_ref_threshold} {
-         set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm]
-      } else {
-         set lost_ref 1
-         set ::atos_cdl_tools::ref(x) [format "%4.2f" $xsm_save]
-      }
-      if {[expr abs($ysm_save - $ysm)] <= $::atos_cdl_tools::y_ref_threshold} {
-         set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm]
-      } else {
-         set lost_ref 1
-         set ::atos_cdl_tools::ref(y) [format "%4.2f" $ysm_save]
-      }
-
       ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::ref(x) + 1] [expr $::atos_cdl_tools::ref(y) - 1] red $delta
 
-      if {$lost_ref == 1} {
-         return -1
-      } else {
-         return 0
+      switch $::atos_cdl_tools::methode_suivi {
+         "Auto" - default { if {$lost_ref == 1} { return -1 } else { return 0 } }
+         "Interpolation" { return 0 }
       }
 
    }
@@ -386,7 +417,6 @@ namespace eval ::atos_cdl_tools {
       global color
 
       set objet $::atos_gui::frame(object,values)
-
       set err 0
       set bufNo [ ::confVisu::getBufNo $visuNo ]
 
@@ -407,7 +437,7 @@ namespace eval ::atos_cdl_tools {
          $objet.sigmafond configure -text "?" -fg $color(blue)
          $objet.snint     configure -text "?" -fg $color(blue)
          $objet.snpx      configure -text "?" -fg $color(blue)
-         return
+         return -1
       }
 
       set xsm         [lindex $valeurs 0]
@@ -439,11 +469,6 @@ namespace eval ::atos_cdl_tools {
          set ::atos_cdl_tools::obj(y) [format "%4.2f" $ysm_save]
       }
 
-
-
-
-
-
       set visupos       "[format "%4.2f" $::atos_cdl_tools::obj(x)] / [format "%4.2f" $::atos_cdl_tools::obj(y)]"
       set visudelta     [format "%5.2f" $delta]
       set visufint      [format "%5.2f" $fluxintegre]
@@ -463,30 +488,14 @@ namespace eval ::atos_cdl_tools {
       $objet.snint        configure -text "$visusnint"     -fg $color(blue)
       $objet.snpx         configure -text "$visusnpx"      -fg $color(blue)
 
-      #gren_info "visupos $visupos ::  $visufint \n"
-      #gren_info "obj $::atos_cdl_tools::obj(x) / $::atos_cdl_tools::obj(y) \n"
-      #gren_info "sm $xsm / $ysm \n"
-      #gren_info "save $xsm_save / $ysm_save \n"
       ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::obj(x) + 1] [expr $::atos_cdl_tools::obj(y) - 1] green $delta
 
+      # op ternaire :: set a [expr { $::atos_cdl_tools::methode_suivi =="Auto" ? 1 : 0 } ]
+
       switch $::atos_cdl_tools::methode_suivi {
-         "Auto" - default {
-
-            if {$lost_obj == 1} {
-               return -1
-            } else {
-               return 0
-            }
-
-         }
-         "Interpolation" {
-
-               return 0
-
-         }
+         "Auto" - default { if {$lost_obj == 1} { return -1 } else { return 0 } }
+         "Interpolation" { return 0 }
       }
-
-
 
    }
 
@@ -684,6 +693,7 @@ namespace eval ::atos_cdl_tools {
 
       
       set objet  $::atos_gui::frame(object,values) 
+      set reference  $::atos_gui::frame(reference,values) 
       set frm_source $::atos_gui::frame($type,values) 
       set delta      [ $frm_source.delta get]
       set verif      $::atos_gui::frame($type,buttons).verifier
@@ -717,6 +727,23 @@ namespace eval ::atos_cdl_tools {
                   ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) + 1] [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos) - 1] green $delta 3
                }
                "reference" {
+               
+                  gren_info "verif = 1 : xy av : $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y)\n"
+                  gren_info "verif = 1 : xy av : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)\n"
+
+
+                  set ::atos_cdl_tools::ref(x) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos)
+                  set ::atos_cdl_tools::ref(y) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)
+
+                  $reference.position    configure -text  "$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)"    -fg $color(blue)
+                  $reference.fint        configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_fint)    -fg $color(blue)
+                  $reference.fwhm        configure -text  "$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xfwhm) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_yfwhm)"    -fg $color(blue)
+                  $reference.pixmax      configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_pixmax)    -fg $color(blue)
+                  $reference.intensite   configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_intensite)    -fg $color(blue)
+                  $reference.sigmafond   configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_sigmafond)    -fg $color(blue)
+                  $reference.snint       configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_snint)     -fg $color(blue)
+                  $reference.snpx        configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_snpx)    -fg $color(blue)
+               
                   ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) + 1] [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos) - 1] red $delta 3
                }
             }
@@ -881,6 +908,68 @@ namespace eval ::atos_cdl_tools {
    }
 
 
+   proc ::atos_cdl_tools::set_mesure_source_from_gui { idframe type } {
+
+
+      switch $type {
+         "object" {
+
+            set frm_objet        $::atos_gui::frame(object,values) 
+
+            # mesure objet
+            set ::atos_cdl_tools::mesure($idframe,mesure_obj) 1
+            set ::atos_cdl_tools::mesure($idframe,obj_delta)     [$frm_objet.delta     get]
+            set ::atos_cdl_tools::mesure($idframe,obj_fint)      [$frm_objet.fint      cget -text]
+            set ::atos_cdl_tools::mesure($idframe,obj_pixmax)    [$frm_objet.pixmax    cget -text]
+            set ::atos_cdl_tools::mesure($idframe,obj_intensite) [$frm_objet.intensite cget -text]
+            set ::atos_cdl_tools::mesure($idframe,obj_sigmafond) [$frm_objet.sigmafond cget -text]
+            set ::atos_cdl_tools::mesure($idframe,obj_snint)     [$frm_objet.snint     cget -text]
+            set ::atos_cdl_tools::mesure($idframe,obj_snpx)      [$frm_objet.snpx      cget -text]
+
+            set position  [$frm_objet.position  cget -text]
+            set poslist [split $position "/"]
+            set ::atos_cdl_tools::mesure($idframe,obj_xpos) [lindex $poslist 0]
+            set ::atos_cdl_tools::mesure($idframe,obj_ypos) [lindex $poslist 1]
+            if {$::atos_cdl_tools::mesure($idframe,obj_ypos)==""} { set ::atos_cdl_tools::mesure($idframe,obj_ypos) "?" }
+
+            set fwhm      [$frm_objet.fwhm cget -text]
+            set fwhmlist [split $fwhm "/"]
+            set ::atos_cdl_tools::mesure($idframe,obj_xfwhm) [lindex $fwhmlist 0]
+            set ::atos_cdl_tools::mesure($idframe,obj_yfwhm) [lindex $fwhmlist 1]
+            if {$::atos_cdl_tools::mesure($idframe,obj_yfwhm)==""} {set ::atos_cdl_tools::mesure($idframe,obj_yfwhm) "?" }
+
+         }
+
+         "reference" {
+
+            set frm_reference    $::atos_gui::frame(reference,values) 
+
+            # mesure reference
+            set ::atos_cdl_tools::mesure($idframe,ref_delta)     [$frm_reference.delta     get]
+            set ::atos_cdl_tools::mesure($idframe,ref_fint)      [$frm_reference.fint      cget -text]
+            set ::atos_cdl_tools::mesure($idframe,ref_pixmax)    [$frm_reference.pixmax    cget -text]
+            set ::atos_cdl_tools::mesure($idframe,ref_intensite) [$frm_reference.intensite cget -text]
+            set ::atos_cdl_tools::mesure($idframe,ref_sigmafond) [$frm_reference.sigmafond cget -text]
+            set ::atos_cdl_tools::mesure($idframe,ref_snint)     [$frm_reference.snint     cget -text]
+            set ::atos_cdl_tools::mesure($idframe,ref_snpx)      [$frm_reference.snpx      cget -text]
+
+            set position  [$frm_reference.position  cget -text]
+            set poslist [split $position "/"]
+            set ::atos_cdl_tools::mesure($idframe,ref_xpos) [lindex $poslist 0]
+            set ::atos_cdl_tools::mesure($idframe,ref_ypos) [lindex $poslist 1]
+            if {$::atos_cdl_tools::mesure($idframe,ref_ypos)==""} { set ::atos_cdl_tools::mesure($idframe,ref_ypos) "?" }
+
+            set fwhm      [$frm_reference.fwhm cget -text]
+            set fwhmlist [split $fwhm "/"]
+            set ::atos_cdl_tools::mesure($idframe,ref_xfwhm) [lindex $fwhmlist 0]
+            set ::atos_cdl_tools::mesure($idframe,ref_yfwhm) [lindex $fwhmlist 1]
+            if {$::atos_cdl_tools::mesure($idframe,ref_yfwhm)==""} {set ::atos_cdl_tools::mesure($idframe,ref_yfwhm) "?" }
+
+         }
+      }
+
+   }
+
    proc ::atos_cdl_tools::set_mesure_from_gui { idframe } {
 
       set frm_image        $::atos_gui::frame(image,values) 
@@ -999,12 +1088,11 @@ namespace eval ::atos_cdl_tools {
 
       set err [catch {::atos_cdl_tools::suivi_init} msg]
       if {$err} {
+         gren_erreur "Erreur : $msg\n"
          set ::atos_cdl_tools::sortie 1
       }
       
-      ::console::affiche_resultat "start beg cur_idframe == $::atos_tools::cur_idframe\n"
       incr ::atos_tools::cur_idframe -1
-      ::console::affiche_resultat "start  cur_idframe == $::atos_tools::cur_idframe\n"
       
       while {$::atos_cdl_tools::sortie == 0} {
          
@@ -1027,6 +1115,7 @@ namespace eval ::atos_cdl_tools {
          cleanmark
 
          set statebutton [ $select_objet cget -relief]
+
          if { $statebutton == "sunken" } {
             set delta [ $frm_objet.delta get]
 
@@ -1036,6 +1125,7 @@ namespace eval ::atos_cdl_tools {
 
             set status [::atos_cdl_tools::mesure_obj $x $y $visuNo $delta]
             if {$status == -1} {
+                gren_erreur "Arret calcul de l objet\n"
                 ::atos_cdl_tools::stop $visuNo
             }
          }
@@ -1050,6 +1140,7 @@ namespace eval ::atos_cdl_tools {
 
             set status [::atos_cdl_tools::mesure_ref $x $y $visuNo $delta]
             if {$status == -1} {
+                gren_erreur "Arret calcul de la reference\n"
                ::atos_cdl_tools::stop $visuNo 
             }
          }
@@ -1218,26 +1309,54 @@ namespace eval ::atos_cdl_tools {
          "Interpolation" {
 
             gren_info "Init de la Methode d'Interpolation\n"
+
             ::console::affiche_resultat "Vidage memoire\n"
             array unset ::atos_cdl_tools::interpol
 
             ::console::affiche_resultat "Analyse des positions verifiees\n"
-            set cpt 0
+
+            set cpt_obj 0
+            set cpt_ref 0
+
             for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+
+               set pass "no"
                if {[info exists ::atos_cdl_tools::mesure($idframe,object,verif)]} {
                   if {$::atos_cdl_tools::mesure($idframe,object,verif) == 1} {
-                     #::console::affiche_resultat "$idframe -> "
-                     set ::atos_cdl_tools::interpol($idframe,object,x) $::atos_cdl_tools::mesure($idframe,obj_xpos)
-                     set ::atos_cdl_tools::interpol($idframe,object,y) $::atos_cdl_tools::mesure($idframe,obj_ypos)
-                     #::console::affiche_resultat "$::atos_cdl_tools::mesure($idframe,obj_xpos) / $::atos_cdl_tools::mesure($idframe,obj_ypos) \n"
-                     incr cpt
+                     set pass "yes"
                   }
+               }
+               if {$pass == "yes"} {
+                  set ::atos_cdl_tools::interpol($idframe,object,x) $::atos_cdl_tools::mesure($idframe,obj_xpos)
+                  set ::atos_cdl_tools::interpol($idframe,object,y) $::atos_cdl_tools::mesure($idframe,obj_ypos)
+                  incr cpt_obj
                } else {
-                  #gren_info "$idframe = verif -> 0\n"
                   set ::atos_cdl_tools::mesure($idframe,object,verif) 0
                }
+
+               set pass "no"
+               if {[info exists ::atos_cdl_tools::mesure($idframe,reference,verif)]} {
+                  if {$::atos_cdl_tools::mesure($idframe,reference,verif) == 1} {
+                     set pass "yes"
+                  }
+               }
+               if {$pass == "yes"} {
+                  set ::atos_cdl_tools::interpol($idframe,reference,x) $::atos_cdl_tools::mesure($idframe,ref_xpos)
+                  set ::atos_cdl_tools::interpol($idframe,reference,y) $::atos_cdl_tools::mesure($idframe,ref_ypos)
+                  incr cpt_ref
+               } else {
+                  set ::atos_cdl_tools::mesure($idframe,reference,verif) 0
+               }
+
+
             }
-            if {$cpt<2} {
+            set statebutton [ $::atos_gui::frame(object,buttons).select cget -relief]
+            if {$cpt_obj<2 && $statebutton=="sunken"} {
+               gren_erreur "il faut avoir verifie la position de l objet sur 2 images minimum\n"
+               return -code -1
+            }
+            set statebutton [ $::atos_gui::frame(reference,buttons).select cget -relief]
+            if {$cpt_ref<2 && $statebutton=="sunken"} {
                gren_erreur "il faut avoir verifie la position de l objet sur 2 images minimum\n"
                return -code -1
             }
@@ -1254,6 +1373,7 @@ namespace eval ::atos_cdl_tools {
       set log 0
        
       switch $::atos_cdl_tools::methode_suivi {
+
          "Auto" - default {
             if {$log} { gren_info "Methode Auto pour $type\n"}
             switch $type {
@@ -1269,11 +1389,15 @@ namespace eval ::atos_cdl_tools {
             }
          }
          "Interpolation" {
+
             if {$log} { gren_info "Methode Interpolation pour $type\n"}
+
             switch $type {
+
                "object" {
+
                   if {$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif) == 1} {
-                     gren_info "Verifie\n"
+                     #gren_info "Verifie\n"
                      return [list $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)]
                   }
                   set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::cur_idframe object]
@@ -1305,6 +1429,39 @@ namespace eval ::atos_cdl_tools {
 
                }
                "reference" {
+
+                  if {$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif) == 1} {
+                     #gren_info "Verifie\n"
+                     return [list $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)]
+                  }
+                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::cur_idframe reference]
+                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::cur_idframe reference]
+                  if {$log} {::console::affiche_resultat "$idfrmav < $idfrmap"}
+                  if { $idfrmav == -1 } {
+                     # il faut interpoler par 2 a droite
+                     if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a droite : "}
+                     set idfrmav $idfrmap
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmap $idfrmap reference]
+                  }
+                  if { $idfrmap == -1 } {
+                     # il faut interpoler par 2 a gauche
+                     if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a gauche : "}
+                     set idfrmap $idfrmav
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $idfrmav reference]
+                  }
+                  if { $idfrmav == -1 || $idfrmap == -1 } {
+                     if {$log} { ::console::affiche_erreur "mmm !"}
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap 0 reference]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] reference]
+                  }
+                  if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
+
+                  set xav $::atos_cdl_tools::mesure($idfrmav,ref_xpos)
+                  set xap $::atos_cdl_tools::mesure($idfrmap,ref_xpos)
+                  set yav $::atos_cdl_tools::mesure($idfrmav,ref_ypos)
+                  set yap $::atos_cdl_tools::mesure($idfrmap,ref_ypos)
+
+
                }
                default {
                   gren_info "Default\n"
@@ -1336,6 +1493,24 @@ namespace eval ::atos_cdl_tools {
       #::console::affiche_resultat "obj(y)    = $::atos_cdl_tools::obj(y)    \n"
       set verif $::atos_gui::frame($type,buttons).verifier
 
+      set pass "no"
+      if {[info exists ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif)]} {
+         if {$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif) == 1 } {
+            set pass "yes"
+         }
+      }
+
+      if { $pass == "yes" } {
+         set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif) 0
+         $verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
+      } else {
+         ::atos_cdl_tools::set_mesure_source_from_gui $::atos_tools::cur_idframe $type
+         set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif) 1
+         $verif configure -bg "#00891b" -fg $color(white)
+      }
+      
+      return
+
       switch $type {
          "object" {
 
@@ -1343,39 +1518,23 @@ namespace eval ::atos_cdl_tools {
              if {[info exists ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos)] && \
                  [info exists ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)] } {
 
-                ::console::affiche_resultat "obj_xpos = $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos)    \n"
-                ::console::affiche_resultat "obj_ypos = $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)    \n"
+                #::console::affiche_resultat "obj_xpos = $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos)    \n"
+                #::console::affiche_resultat "obj_ypos = $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)    \n"
 
              } else {
                 set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_cdl_tools::obj(x)
                 set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos) $::atos_cdl_tools::obj(y)
              }
 
-             # status verif
-             #gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif)\n"
-             if {[info exists ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif)]} {
-
-                if {$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif) == 1 } {
-                   set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif) 0
-                   gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif)\n"
-                   $verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-                   return
-                } else {
-        
-                   ::atos_cdl_tools::set_mesure_from_gui $::atos_tools::cur_idframe
-                   set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif) 1
-                   gren_info "Verif Object ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)\n"
-                   $verif configure -bg "#00891b" -fg $color(white)
-                   return
-                }
-
+             if { $pass == "yes" } {
+                set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif) 0
+                gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif)\n"
+                $verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
              } else {
-
                 ::atos_cdl_tools::set_mesure_from_gui $::atos_tools::cur_idframe
                 set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,object,verif) 1
                 gren_info "Verif Object ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)\n"
                 $verif configure -bg "#00891b" -fg $color(white)
-                return             
              }
          }
          "reference" {
@@ -1394,20 +1553,22 @@ namespace eval ::atos_cdl_tools {
 
              # status verif
              #gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif)\n"
-             if {$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif) == 1 } {
-                set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif) 0
-                #gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif)\n"
+             if { $pass == "yes" } {
+                set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif) 0
+                gren_info "Verif point ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif)\n"
                 $verif configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-                return
              } else {
-                set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,reference,verif) 1
+                set ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif) 1
                 gren_info "Verif Reference ($::atos_tools::cur_idframe) : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)\n"
                 $verif configure -bg "#00891b" -fg $color(white)
-                return
              }
+             
          }
 
       }
+
+
+
       
 
 

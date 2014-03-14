@@ -722,7 +722,7 @@ namespace eval ::atos_cdl_gui {
                                                -command "::atos_cdl_tools::select_source $visuNo reference"
                         button $but.modifier -text "Modifier" -borderwidth 1 -takefocus 1 \
                                                -command "::atos_cdl_tools::modif_source $visuNo reference"
-                        button $but.verifier -text "Verifier" -borderwidth 1 -takefocus 1 \
+                        button $but.verifier -text "Valider" -borderwidth 1 -takefocus 1 \
                                                -command "::atos_cdl_tools::verif_source $visuNo reference"
 
                         grid $but.select $but.modifier $but.verifier 
