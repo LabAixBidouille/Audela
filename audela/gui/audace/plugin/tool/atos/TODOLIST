@@ -1,4 +1,11 @@
 TODOLIST
+- Analyse : probleme de calcul de l emersion lorsque corrigee d une reference
+            il faut surement multi la normalisation par 10000 ADU.
+
+- Analyse rapport : il faut garder le remplissage des champs depuis la derniere fois. 
+                     arret d audela compris
+
+- Analyse rapport : il faut les coord lat et lon en degres.
 
 - Analyse : calcul Immersion/Emersion
             Ajouter un bouton VALIDER en dessous des resultats qui aura pour effet de 
