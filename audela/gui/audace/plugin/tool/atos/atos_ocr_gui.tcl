@@ -521,46 +521,61 @@ namespace eval ::atos_ocr_gui {
           pack $frm.datation.values -in $frm.datation -side top -expand 5
 
 
-
-
-
-
-
           #--- Cree un frame pour activation/desactivation ocr
           set ocr [frame $frm.datation.values.setup -borderwidth 1]
           pack $ocr -in $frm.datation.values -side top -padx 30 -pady 1
 
           set ::atos_gui::frame(ocr_setup) $ocr
 
+              #--- Cree un frame l'activation de l'OCR
+              frame $ocr.check -borderwidth 0 -cursor arrow
+              pack  $ocr.check -in $ocr -side left -expand 0 -anchor w -padx 10
+
+                 checkbutton $ocr.check.but -highlightthickness 0 -text "OCR" \
+                             -variable ::atos_ocr_tools::active_ocr \
+                             -command "::atos_ocr_tools::select_ocr $visuNo" 
+                 pack $ocr.check.but -in $ocr.check -side left -padx 1 -pady 2
+
+              #--- Cree un frame pour le type d'incrustateur
+              frame $ocr.incrust -borderwidth 0 -cursor arrow
+              pack  $ocr.incrust -in $ocr -side left -expand 0 -anchor w -padx 10
+
+                 #--- Cree un label
+                 label $ocr.incrust.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
+                       -text "Type d'incrustateur : "
+                 pack  $ocr.incrust.lab -in $ocr.incrust -side left -anchor w -padx 1 -pady 2
+
+                 #--- Cree un spinbox
+                 spinbox $ocr.incrust.spin -font $atosconf(font,courier_10) -fg $color(blue) \
+                         -value [ list "Black Box" "TIM-10 small font" "TIM-10 big font" "IOTA-VTI"] -width 10 -state readonly
+                 pack  $ocr.incrust.spin -in $ocr.incrust -side left -anchor w 
+
               #--- Cree un frame
-              frame $ocr.t -borderwidth 0 -cursor arrow
-              pack  $ocr.t -in $ocr -side left -expand 5 -anchor w
+              frame $ocr.msfield -borderwidth 0 -cursor arrow
+              pack  $ocr.msfield -in $ocr -side left -expand 0 -anchor w -padx 5
 
-              checkbutton $ocr.t.check -highlightthickness 0 -text "OCR" \
-                          -variable ::atos_ocr_tools::active_ocr \
-                          -command "::atos_ocr_tools::select_ocr $visuNo" \
-                         
-              pack $ocr.t.check -in $ocr.t -side left -padx 5 -pady 0
+                 #--- Label
+                 label $ocr.msfield.lab -text "Field ms:"
+                 pack $ocr.msfield.lab -in $ocr.msfield -side left -padx 0 -expand 0
 
-              #--- Cree un label
-              label $ocr.t.typelab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
-                    -text "Type d'incrustateur : "
-              pack  $ocr.t.typelab -in $ocr.t -side left -anchor w -padx 30
+                 #--- Entry
+                 spinbox $ocr.msfield.spin -font $atosconf(font,courier_10) -fg $color(blue) \
+                         -value [ list 1 2] -width 2 -state readonly 
+                 pack $ocr.msfield.spin -in $ocr.msfield -side top -padx 0 -expand 0
 
-              #--- Cree un spinbox
-              spinbox $ocr.t.typespin -font $atosconf(font,courier_10) -fg $color(blue) \
-                    -value [ list "Black Box" "TIM-10 small font" "TIM-10 big font" "IOTA-VTI"] -width 10  -state disabled
-              pack  $ocr.t.typespin -in $ocr.t -side left -anchor w
+              #--- Cree un frame pour le selecteur du champ date
+              frame $ocr.selectdate -borderwidth 0 -cursor arrow
+              pack  $ocr.selectdate -in $ocr -side left -expand 0 -anchor w -padx 10
 
-              #--- Cree un label
-              label $ocr.t.selectboxlab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
-                    -text "Champ date :"
-              pack  $ocr.t.selectboxlab -in $ocr.t -side left -anchor w -padx 30
+                 #--- Cree un label
+                 label $ocr.selectdate.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
+                       -text "Champ date (h:m:s ms \[ms\]):"
+                 pack  $ocr.selectdate.lab -in $ocr.selectdate -side left -anchor w -padx 1 -pady 2
 
-              #--- Cree un bouton
-              button $ocr.t.selectbox -text "Select" -borderwidth 1 -takefocus 1 \
-                    -command "::atos_ocr_tools::select_time $visuNo" -state disabled
-              pack $ocr.t.selectbox -in $ocr.t -side left -anchor e 
+                 #--- Cree un bouton
+                 button $ocr.selectdate.box -text "Select" -borderwidth 1 -takefocus 1 \
+                        -command "::atos_ocr_tools::select_time $visuNo" -state disabled
+                 pack $ocr.selectdate.box -in $ocr.selectdate -side left -anchor e 
 
           #--- Cree un frame pour activation/desactivation ocr
           set datetime [frame $frm.datation.values.datetime -borderwidth 1]
@@ -579,7 +594,6 @@ namespace eval ::atos_ocr_gui {
                  #--- Label du nom de la configuration de l'en-tete FITS
                  entry $datetime.y.val -takefocus 0 -justify left -width 5 -takefocus 1
                  pack $datetime.y.val -in $datetime.y -side top -padx 0 -expand 0
-
 
               #--- Cree un frame
               frame $datetime.a1 -borderwidth 0 -cursor arrow
@@ -700,10 +714,10 @@ namespace eval ::atos_ocr_gui {
               frame $datetime.a6 -borderwidth 0 -cursor arrow
               pack  $datetime.a6 -in $datetime -side left -expand 0 -anchor w
 
-                 #--- Label de l'en-tete FITS
+                 #--- Label
                  label $datetime.a6.lab -text ""
                  pack $datetime.a6.lab -in $datetime.a6 -side top -padx 0 -expand 0
-                 #--- Label de l'en-tete FITS
+                 #--- Entry
                  label $datetime.a6.lab2 -text "."
                  pack $datetime.a6.lab2 -in $datetime.a6 -side top -padx 0 -expand 0
 
@@ -711,15 +725,13 @@ namespace eval ::atos_ocr_gui {
               frame $datetime.ms -borderwidth 0 -cursor arrow
               pack  $datetime.ms -in $datetime -side left -expand 0 -anchor w
 
-                 #--- Label de l'en-tete FITS
+                 #--- Label 
                  label $datetime.ms.lab -text "ms"
                  pack $datetime.ms.lab -in $datetime.ms -side top -padx 0 -expand 0
 
-                 #--- Label du nom de la configuration de l'en-tete FITS
+                 #--- Entry
                  entry $datetime.ms.val  -takefocus 0 -justify left -width 5 -takefocus 1
                  pack $datetime.ms.val -in $datetime.ms -side top -padx 0 -expand 0
-
-
 
           #--- Cree un frame pour activation/desactivation ocr
           set setunset [frame $frm.datation.values.setunset -borderwidth 1]
@@ -858,7 +870,6 @@ namespace eval ::atos_ocr_gui {
 
 
       bind $frm.scrollbar <ButtonRelease> "::atos_ocr_tools::move_scroll $visuNo"
-
 
    }
    
