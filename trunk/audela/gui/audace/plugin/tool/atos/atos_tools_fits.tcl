@@ -43,8 +43,8 @@ namespace eval ::atos_tools_fits {
       
       if {$idframe == 0} {
          catch {
-            $::atos_gui::frame(info_load).status   configure -text "Pas d'image"
-            $::atos_gui::frame(info_load).nbtotal  configure -text "0"
+            $::atos_gui::frame(info_load).status  configure -text "Pas d'image"
+            $::atos_gui::frame(info_load).nbtotal configure -text "0"
          }
          ::console::affiche_erreur "$caption(atos_go,pasdimages)\n" 
          tk_messageBox -message $caption(atos_go,pasdimages) -type ok

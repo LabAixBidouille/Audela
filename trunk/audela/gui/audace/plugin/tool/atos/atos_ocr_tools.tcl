@@ -25,18 +25,17 @@ namespace eval ::atos_ocr_tools {
       global color
 
       set setup $::atos_gui::frame(ocr_setup)
-      set statebutton [$setup.t.selectbox cget -relief]
+      set statebutton [$setup.selectdate.box cget -relief]
 
       # desactivation
-      if {$statebutton=="sunken"} {
-         $setup.t.selectbox configure -text "Select" -fg $color(black)
-         $setup.t.selectbox configure -relief raised
+      if {$statebutton == "sunken"} {
+         $setup.selectdate.box configure -text "Select" -fg $color(black)
+         $setup.selectdate.box configure -relief raised
          return
       }
 
-
       # activation
-      if {$statebutton=="raised"} {
+      if {$statebutton == "raised"} {
 
          # Recuperation du Rectangle de l image
          set rect [ ::confVisu::getBox $visuNo ]
@@ -47,18 +46,15 @@ namespace eval ::atos_ocr_tools {
          } else {
             set taillex [expr [lindex $rect 2] - [lindex $rect 0] ]
             set tailley [expr [lindex $rect 3] - [lindex $rect 1] ]
-            $setup.t.selectbox configure -text "${taillex}x${tailley}" -fg $color(blue)
+            $setup.selectdate.box configure -text "${taillex}x${tailley}" -fg $color(blue)
             set ::atos_photom::rect_img $rect
          }
-         $setup.t.selectbox configure -relief sunken
+         $setup.selectdate.box configure -relief sunken
          ::atos_ocr_tools::workimage $visuNo
          return
       }
 
    }
-
-
-
 
 
 
@@ -71,14 +67,14 @@ namespace eval ::atos_ocr_tools {
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "0"} {
-         $setup.t.typespin  configure -state disabled
-         $setup.t.selectbox configure -state disabled
-         $setunset.t.ocr   configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
-         $setunset.t.ocr   configure -state disabled
+         $setup.incrust.spin configure -state disabled
+         $setup.selectdate.box configure -state disabled
+         $setunset.t.ocr configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
+         $setunset.t.ocr configure -state disabled
          return
       } else {
-         $setup.t.typespin  configure -state normal
-         $setup.t.selectbox configure -state normal
+         $setup.incrust.spin  configure -state normal
+         $setup.selectdate.box configure -state normal
          $setunset.t.ocr    configure -state normal
          ::atos_ocr_tools::workimage $visuNo
          return
@@ -88,7 +84,7 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::ocr_bbox { err msg } {
+   proc ::atos_ocr_tools::ocr_bbox { msg } {
 
       # avec deux points comme separateur
       #::console::affiche_resultat "** avec deux points comme separateur \n"
@@ -132,33 +128,45 @@ namespace eval ::atos_ocr_tools {
    }
 
 
-   proc ::atos_ocr_tools::ocr_tim10_small_font { err msg } {
+   proc ::atos_ocr_tools::ocr_tim10_small_font { msg } {
 
       ::console::affiche_erreur "Tim 10 small_font n est pas encore supporté \n"
-      ::console::affiche_resultat "err = $err \n"
       ::console::affiche_resultat "msg = $msg \n"
       return [list "no" "XX" "XX" "XX" "XXX"]
    }
 
 
-   proc ::atos_ocr_tools::ocr_tim10_big_font { } {
+   proc ::atos_ocr_tools::ocr_tim10_big_font { msg } {
 
       ::console::affiche_erreur "Tim 10 big_font n est pas encore supporté \n"
-      ::console::affiche_resultat "err = $err \n"
       ::console::affiche_resultat "msg = $msg \n"
       return [list "no" "XX" "XX" "XX" "XXX"]
    }
 
 
-   proc ::atos_ocr_tools::ocr_iota_vti { err msg } {
+   proc ::atos_ocr_tools::ocr_iota_vti { msg_even msg_odd } {
 
-      # avec deux points comme separateur
-      set poslist [split $msg " "]
-      set t   [split [lindex $poslist 0] ":"]
-      set h   [lindex $t 0]
-      set min [lindex $t 1]
-      set s   [lindex $t 2]
-      set ms  [lindex $poslist 1]
+      set setup $::atos_gui::frame(ocr_setup)
+      set field [$setup.msfield.spin get]
+
+      if {$field == 1} {
+         # Recuperation de l'heure depuis l'image paire
+         set poslist [split [regexp -inline -all -- {\S+} $msg_even] " "]
+         set t   [split [lindex $poslist 0] ":"]
+         set h   [lindex $t 0]
+         set min [lindex $t 1]
+         set s   [lindex $t 2]
+         set ms  [scan [lindex $poslist 1] "%d"]
+      } else {
+         # Recuperation de l'heure depuis l'image impaire
+         set poslist [split [regexp -inline -all -- {\S+} $msg_odd] " "]
+         set t   [split [lindex $poslist 0] ":"]
+         set h   [lindex $t 0]
+         set min [lindex $t 1]
+         set s   [lindex $t 2]
+         set ms  [scan [lindex $poslist 1] "%d"]
+      }
+      set ms [::tcl::mathfunc::round [expr [format "%d" $ms]/10.0]]
 
       set pass "ok"
 
@@ -168,6 +176,7 @@ namespace eval ::atos_ocr_tools {
       if { $ms<0 || $ms>999 || $ms=="" } {set pass "no"}
 
       return [list $pass $h $min $s $ms]
+
    }
 
 
@@ -186,17 +195,13 @@ namespace eval ::atos_ocr_tools {
       set datetime $::atos_gui::frame(datetime)
       set setunset $::atos_gui::frame(setunset)
 
-      set statebutton [$setup.t.selectbox cget -relief]
+      set statebutton [$setup.selectdate.box cget -relief]
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "1" && $statebutton == "sunken"} {
 
-          set box [$setup.t.typespin get]
-          #::console::affiche_resultat "box : $box \n"
-
-          #set rect [$setup.t.selectbox get]
+          set box [$setup.incrust.spin get]
           set rect $::atos_photom::rect_img
-          #::console::affiche_resultat "rect : $rect \n"
 
           if { [info exists $rect] } {
              return 0
@@ -213,7 +218,6 @@ namespace eval ::atos_ocr_tools {
 
           # buf1 save ocr.png
           set stat [buf$bufNo stat]
-          gren_info "stat = $stat \n"
           buf$bufNo savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0]
 
           switch $box {
@@ -225,7 +229,15 @@ namespace eval ::atos_ocr_tools {
                set err [catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8]} msg]
              }
              "IOTA-VTI" {
-               set err [catch {set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr.jpg]} msg]
+               set err [catch {
+                  set result [exec convert ocr.jpg -roll +0+0 -sample 100%x50% -resize 100%x200% ocr_even.jpg]
+                  set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr_even.jpg]
+               } msg_even]
+               set err [catch {
+                  set result [exec convert ocr.jpg -roll +0+1 -sample 100%x50% -resize 100%x200% ocr_odd.jpg]
+                  set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr_odd.jpg]
+               } msg_odd]
+               set msg "\n$msg_even\n$msg_odd"
              }
              default {
                set err [catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9: -f UTF8]} msg]
@@ -233,7 +245,7 @@ namespace eval ::atos_ocr_tools {
           }
 
           if {$err == 1} {
-            gren_erreur "Failed to extract OCR: $msg \n"
+            ::console::affiche_erreur "Failed to extract OCR: $msg \n"
             $datetime.h.val   delete 0 end
             $datetime.h.val   insert 0 "?"
             $datetime.min.val delete 0 end
@@ -248,23 +260,21 @@ namespace eval ::atos_ocr_tools {
 
           switch $box {
              "Black Box" {
-               set hms [::atos_ocr_tools::ocr_bbox $err $msg]
+               set hms [::atos_ocr_tools::ocr_bbox $msg]
              }
              "TIM-10 small font" {
-               set hms [::atos_ocr_tools::ocr_tim10_small_font $err $msg]
+               set hms [::atos_ocr_tools::ocr_tim10_small_font $msg]
              }
              "TIM-10 big font" {
-               set hms [::atos_ocr_tools::ocr_tim10_big_font $err $msg]
+               set hms [::atos_ocr_tools::ocr_tim10_big_font $msg]
              }
              "IOTA-VTI" {
-               set hms [::atos_ocr_tools::ocr_iota_vti $err $msg]
+               set hms [::atos_ocr_tools::ocr_iota_vti $msg_even $msg_odd]
              }
              default {
                set hms [list "no" "XX" "XX" "XX" "XXX"]
              }
           }
-
-          gren_info "OCR result: $hms" 
 
           set pass [lindex $hms 0]
           set h   [return_2digit [lindex $hms 1]]
@@ -293,7 +303,6 @@ namespace eval ::atos_ocr_tools {
 
           # affichage des resultats
           if { $pass == "ok" } {
-             #::console::affiche_resultat "OCR = $h:$min:$s.$ms \n"
 
              $datetime.h.val   delete 0 end
              $datetime.h.val   insert 0 $h
@@ -307,7 +316,8 @@ namespace eval ::atos_ocr_tools {
              return 1
 
           } else {
-             #::console::affiche_resultat "OCR Failed \n"
+
+             ::console::affiche_erreur "OCR failed: $pass $h $min $s $ms\n"
              $datetime.h.val   delete 0 end
              $datetime.h.val   insert 0 $h
              $datetime.min.val delete 0 end
@@ -317,8 +327,8 @@ namespace eval ::atos_ocr_tools {
              $datetime.ms.val  delete 0 end
              $datetime.ms.val  insert 0 $ms
              $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
-
              return 0
+
           }
 
       }
@@ -543,7 +553,8 @@ namespace eval ::atos_ocr_tools {
       set s   [return_2digit $s]
       set ms  [return_3digit $ms]
 
-      ::console::affiche_resultat "(idfrm=$::atos_tools::cur_idframe) $y-$m-${d}T$h:$min:$s.$ms\n"
+      ::console::affiche_resultat "Date verifiee: (idfrm=$::atos_tools::cur_idframe) $y-$m-${d}T$h:$min:$s.$ms\n"
+
       $datetime.y.val   delete 0 end
       $datetime.y.val   insert 0 $y
       $datetime.m.val delete 0 end
@@ -621,7 +632,7 @@ namespace eval ::atos_ocr_tools {
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "1" \
-          && [ $::atos_gui::frame(ocr_setup).t.selectbox cget -relief] == "sunken"} {
+          && [ $::atos_gui::frame(ocr_setup).selectdate.box cget -relief] == "sunken"} {
 
           ::atos_tools::next_image $visuNo
 
@@ -638,7 +649,7 @@ namespace eval ::atos_ocr_tools {
    # Extraction OCR
       set log 0
 
-      gren_info "Extraction des OCR ...\n"
+      ::console::affiche_resultat "Extraction des OCR ...\n"
 
       set idframedebut $::atos_tools::cur_idframe
 
@@ -675,7 +686,6 @@ namespace eval ::atos_ocr_tools {
          }
       }
 
-
       ::console::affiche_resultat "Debut analyse\n"
       while {$::atos_ocr_tools::sortie == 0} {
 
@@ -686,7 +696,7 @@ namespace eval ::atos_ocr_tools {
 
          if {$idframe == $::atos_tools::frame_end} {
             set ::atos_ocr_tools::sortie 1
-            if {$log} { gren_info "Ok, last frame ($::atos_tools::frame_end)\n"}
+            if {$log} { ::console::affiche_resultat "Ok, last frame ($::atos_tools::frame_end)\n"}
          }
 
          set pass "no"
@@ -785,14 +795,14 @@ namespace eval ::atos_ocr_tools {
       }
       set tt1 [clock clicks -milliseconds]
       set tt [format "%.3f" [expr ($tt1 - $tt0)/1000.]]
-      gren_info "traitement en $tt secondes\n"
+      ::console::affiche_resultat "Traitement en $tt secondes\n"
 
 
       set idframefin $idframe
 
 # Verification des OCR
 
-      gren_info "Verification des OCR : "
+      ::console::affiche_resultat "Verification des OCR : "
 
       set ::atos_ocr_tools::sortie 0
       
@@ -810,25 +820,23 @@ namespace eval ::atos_ocr_tools {
 
          if {$::atos_ocr_tools::timing($idframe,ocr) == 1} {
 
-           # OK on interpole ! pour verifier la difference avec l ocr
+            # OK on interpole ! pour verifier la difference avec l ocr
 
             set idfrmav [ get_idfrmav $idframe 2]
             set idfrmap [ get_idfrmap $idframe 1]
-            #::console::affiche_resultat "$idfrmav < $idfrmap"
             if { $idfrmav == -1 || $idfrmap == -1 } {
                set idfrmav [ get_idfrmap 0 1]
                set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
             }
-            #::console::affiche_resultat "VO : $idframe ($idfrmav<$idfrmap)  "
 
             set jdav $::atos_ocr_tools::timing($idfrmav,jd)
             set jdap $::atos_ocr_tools::timing($idfrmap,jd)
+#::console::affiche_erreur "$jdav $jdap $idfrmap $idfrmav $idframe \n"
 
             set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
-            set jd [ format "%6.10f" $jd]
+            set jd [format "%6.10f" $jd]
 
-            set diff [ expr   abs(($::atos_ocr_tools::timing($idframe,jd) - $jd ) * 86400.0) ]
-            #::console::affiche_resultat "diff = $diff\n"
+            set diff [expr abs(($::atos_ocr_tools::timing($idframe,jd) - $jd ) * 86400.0)]
             if { $diff > 0.5 } {
                ::console::affiche_erreur "Warning! ($idframe) $::atos_ocr_tools::timing($idframe,dateiso)\n"
                set ::atos_ocr_tools::timing($idframe,ocr) 0
@@ -840,15 +848,15 @@ namespace eval ::atos_ocr_tools {
          }
          incr idframe
       }
-      gren_info "total ocr = $cpt, nb warning = $cptbad \n"
+      ::console::affiche_resultat "Total ocr = $cpt, nb warning = $cptbad \n"
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
       set tt1 [clock clicks -milliseconds]
-      gren_info "traitement en $tt secondes\n"
+      ::console::affiche_resultat "Traitement en $tt secondes\n"
 
 # interpolation des dates
 
-      gren_info "Interpolation des dates...\n"
+      ::console::affiche_resultat "Interpolation des dates...\n"
 
       set ::atos_ocr_tools::sortie 0
 
@@ -1000,9 +1008,9 @@ namespace eval ::atos_ocr_tools {
       ::atos_tools::set_frame $visuNo $idframedebut
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
-      gren_info "traitement en $tt secondes\n"
+      ::console::affiche_resultat "Traitement en $tt secondes\n"
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "traitement total en $tt secondes\n"
+      ::console::affiche_resultat "Traitement total en $tt secondes\n"
 
       ::console::affiche_resultat "Fin\n"
 
@@ -1153,7 +1161,7 @@ namespace eval ::atos_ocr_tools {
       if { $::atos_tools::traitement=="avi" }  {
          set filename $::atos_tools::avi_filename
          if { ! [file exists $filename] } {
-         ::console::affiche_erreur "Charger une video ...\n"
+         ::console::affiche_erreur "Fichier AVI introuvable!\n"
          }
       }
 
@@ -1170,7 +1178,7 @@ namespace eval ::atos_ocr_tools {
 
       set filename [::atos_ocr_tools::get_filename_time]
 
-      ::console::affiche_resultat "Sauvegarde dans ${filename} ..."
+      ::console::affiche_resultat "Sauvegarde dans ${filename} ...\n"
       set f1 [open $filename "w"]
       puts $f1 "# ** atos - Audela - Linux  * "
       puts $f1 "#FPS = 25"
@@ -1205,7 +1213,7 @@ namespace eval ::atos_ocr_tools {
       }
 
       close $f1
-      ::console::affiche_resultat "nb frame save = $idframe   .. Fin  ..\n"
+      ::console::affiche_resultat "nb frames sauvees = $idframe\n.. Fin  ..\n"
 
 
    }
