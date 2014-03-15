@@ -193,34 +193,34 @@ namespace eval ::atos_cdl_tools {
 
             if {![info exists ::atos_ocr_tools::timing($idframe,jd)           ] } { gren_info "no jd)           \n" ; continue }
             if {![info exists ::atos_ocr_tools::timing($idframe,dateiso)      ] } { gren_info "no dateiso)      \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_fint)     ] } { gren_info "no $idframe obj_fint)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_pixmax)   ] } { gren_info "no obj_pixmax)   \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_intensite)] } { gren_info "no obj_intensite)\n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_sigmafond)] } { gren_info "no obj_sigmafond)\n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_snint)    ] } { gren_info "no obj_snint)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_snpx)     ] } { gren_info "no obj_snpx)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_delta)    ] } { gren_info "no obj_delta)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_xpos)     ] } { gren_info "no obj_xpos)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_ypos)     ] } { gren_info "no obj_ypos)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_xfwhm)    ] } { gren_info "no obj_xfwhm)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,obj_yfwhm)    ] } { gren_info "no obj_yfwhm)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_fint)     ] } { gren_info "no ref_fint)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_pixmax)   ] } { gren_info "no ref_pixmax)   \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_intensite)] } { gren_info "no ref_intensite)\n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_sigmafond)] } { gren_info "no ref_sigmafond)\n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_snint)    ] } { gren_info "no ref_snint)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_snpx)     ] } { gren_info "no ref_snpx)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_delta)    ] } { gren_info "no ref_delta)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_xpos)     ] } { gren_info "no ref_xpos)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_ypos)     ] } { gren_info "no ref_ypos)     \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_xfwhm)    ] } { gren_info "no ref_xfwhm)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,ref_yfwhm)    ] } { gren_info "no ref_yfwhm)    \n" ; continue }
-            if {![info exists ::atos_ocr_tools::timing($idframe,img_intmin)   ] } { set ::atos_ocr_tools::timing($idframe,img_intmin) 0 }
-            if {![info exists ::atos_ocr_tools::timing($idframe,img_intmax)   ] } { set ::atos_ocr_tools::timing($idframe,img_intmax) 0 }
-            if {![info exists ::atos_ocr_tools::timing($idframe,img_intmoy)   ] } { set ::atos_ocr_tools::timing($idframe,img_intmoy) 0 }
-            if {![info exists ::atos_ocr_tools::timing($idframe,img_sigma)    ] } { set ::atos_ocr_tools::timing($idframe,img_sigma)  0 }
-            if {![info exists ::atos_ocr_tools::timing($idframe,img_xsize)    ] } { set ::atos_ocr_tools::timing($idframe,img_xsize)  0 }
-            if {![info exists ::atos_ocr_tools::timing($idframe,img_ysize)    ] } { set ::atos_ocr_tools::timing($idframe,img_ysize)  0 }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_fint)     ] } { gren_info "no $idframe obj_fint)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_pixmax)   ] } { gren_info "no obj_pixmax)   \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_intensite)] } { gren_info "no obj_intensite)\n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_sigmafond)] } { gren_info "no obj_sigmafond)\n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_snint)    ] } { gren_info "no obj_snint)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_snpx)     ] } { gren_info "no obj_snpx)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_delta)    ] } { gren_info "no obj_delta)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_xpos)     ] } { gren_info "no obj_xpos)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_ypos)     ] } { gren_info "no obj_ypos)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_xfwhm)    ] } { gren_info "no obj_xfwhm)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,obj_yfwhm)    ] } { gren_info "no obj_yfwhm)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_fint)     ] } { gren_info "no ref_fint)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_pixmax)   ] } { gren_info "no ref_pixmax)   \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_intensite)] } { gren_info "no ref_intensite)\n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_sigmafond)] } { gren_info "no ref_sigmafond)\n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_snint)    ] } { gren_info "no ref_snint)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_snpx)     ] } { gren_info "no ref_snpx)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_delta)    ] } { gren_info "no ref_delta)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_xpos)     ] } { gren_info "no ref_xpos)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_ypos)     ] } { gren_info "no ref_ypos)     \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_xfwhm)    ] } { gren_info "no ref_xfwhm)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,ref_yfwhm)    ] } { gren_info "no ref_yfwhm)    \n" ; continue }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,img_intmin)   ] } { set ::atos_cdl_tools::mesure($idframe,img_intmin) 0 }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,img_intmax)   ] } { set ::atos_cdl_tools::mesure($idframe,img_intmax) 0 }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,img_intmoy)   ] } { set ::atos_cdl_tools::mesure($idframe,img_intmoy) 0 }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,img_sigma)    ] } { set ::atos_cdl_tools::mesure($idframe,img_sigma)  0 }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,img_xsize)    ] } { set ::atos_cdl_tools::mesure($idframe,img_xsize)  0 }
+            if {![info exists ::atos_cdl_tools::mesure($idframe,img_ysize)    ] } { set ::atos_cdl_tools::mesure($idframe,img_ysize)  0 }
 
             set line "$idframe,"
             append line "$::atos_ocr_tools::timing($idframe,jd)           ,"
@@ -1724,6 +1724,95 @@ namespace eval ::atos_cdl_tools {
 
 
 
+
+   proc ::atos_cdl_tools::graph_flux_norm { visuNo } {
+
+      set log 0
+
+      ::plotxy::clf 1
+      ::plotxy::figure 1
+      ::plotxy::hold on 
+      ::plotxy::position {0 0 600 400}
+      ::plotxy::title "Courbe du temps pour $type" 
+      ::plotxy::xlabel "Time (jd)" 
+      ::plotxy::ylabel "id frame" 
+
+      set x ""
+      set y ""
+      set x_verif    ""
+      set x_interpol ""
+      set y_verif    ""
+      set y_interpol ""
+ 
+      set cpt 0
+      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+
+         set jd   $::atos_ocr_tools::timing($idframe,jd)
+
+         if {$jd == ""} {set jd $idframe}
+
+         # object 
+               if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
+                   && [info exists ::atos_cdl_tools::mesure($idframe,obj_fint)]} {
+
+                  set fluxo $::atos_cdl_tools::mesure($idframe,obj_fint)
+
+               } else { continue }
+
+         # reference 
+               if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
+                   && [info exists ::atos_cdl_tools::mesure($idframe,ref_fint)]} {
+
+                  set fluxr $::atos_cdl_tools::mesure($idframe,ref_fint)
+
+               } else { continue }
+
+         if {$jd=="?"} {continue}
+         if {$flux=="?"} {continue}
+
+         if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
+
+            if {$::atos_cdl_tools::mesure($idframe,$type,verif) == 1} {
+
+               lappend x_verif $jd  
+               lappend y_verif $flux
+               lappend x $jd  
+               lappend y $flux
+               continue
+
+            } else {
+
+               lappend x_interpol $jd  
+               lappend y_interpol $flux
+               lappend x $jd  
+               lappend y $flux
+               continue
+            }
+
+         } else {
+
+            lappend x $jd  
+            lappend y $flux
+            continue
+
+         }
+
+      }
+
+      if {[llength $x_verif]>0} {
+         set h2 [::plotxy::plot $x_verif $y_verif ro. 2 ]
+         plotxy::sethandler $h2 [list -color green -linewidth 0]
+      }
+      if {[llength $x_interpol]>0} {
+         set h3 [::plotxy::plot $x_interpol $y_interpol ro. 1 ]
+         plotxy::sethandler $h3 [list -color blue -linewidth 0]
+      }
+      if {[llength $x]>0} {
+         set h1 [::plotxy::plot $x $y ro. 1 ]
+         plotxy::sethandler $h1 [list -color black -linewidth 1]
+      }
+
+   }
 
 
 
