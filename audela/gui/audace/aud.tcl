@@ -53,6 +53,8 @@ source photrel.tcl
 source fly.tcl
 source grb_tools.tcl
 source speckle_tools.tcl
+source focas.tcl
+source alpy600_tools.tcl
 
 namespace eval ::audace {
 
