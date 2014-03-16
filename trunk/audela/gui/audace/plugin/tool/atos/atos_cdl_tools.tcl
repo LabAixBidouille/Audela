@@ -1168,13 +1168,13 @@ namespace eval ::atos_cdl_tools {
       #::console::affiche_resultat "sn start cur_idframe = $::atos_tools::cur_idframe\n"
       set geometrie     $::atos_gui::frame(geometrie)
 
-      ::atos_tools::next_image $visuNo novisu
-
  
       if {$sum==1&&$bin==1} {
+         ::atos_tools::next_image $visuNo
          return
       }
       if {$sum>1} {
+         ::atos_tools::next_image $visuNo novisu
          #::console::affiche_resultat "sn cur_idframe $sum = $::atos_tools::cur_idframe\n"
          set idsav  $::atos_tools::cur_idframe
          ::atos_cdl_tools::read_sum $visuNo $sum
@@ -1228,12 +1228,12 @@ namespace eval ::atos_cdl_tools {
       }
       buf$bufNo save atos_preview_tmp_0.fit
       loadima atos_preview_tmp_0.fit
-      
+
       incr ::atos_tools::cur_idframe [expr -$sum+1]
       incr ::atos_tools::scrollbar [expr -$sum+1]
 
       #::console::affiche_resultat "read_sum end cur_idframe = $::atos_tools::cur_idframe\n"
-      
+
    }
    #
    #
