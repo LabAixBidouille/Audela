@@ -31,8 +31,6 @@ namespace eval ::atos_cdl_gui {
 
 
 
-
-
    #
    # Initialisation des variables de configuration
    #
@@ -47,12 +45,6 @@ namespace eval ::atos_cdl_gui {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }    { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
 
    }
-
-
-
-
-
-
 
 
 
@@ -81,15 +73,6 @@ namespace eval ::atos_cdl_gui {
 
 
 
-
-
-
-
-
-
-
-
-
    #
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
@@ -105,14 +88,6 @@ namespace eval ::atos_cdl_gui {
 
 
 
-
-
-
-
-
-
-
-
    #
    # Cree la fenetre de configuration de l'affichage des messages sur la Console
    # et de l'enregistrement des dates dans le fichier log
@@ -120,21 +95,10 @@ namespace eval ::atos_cdl_gui {
    proc ::atos_cdl_gui::run { visuNo frm } {
 
       global audace panneau
-
       set panneau(atos,$visuNo,atos_cdl_gui) $frm
-
       createdialog $visuNo $frm
 
    }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -154,40 +118,15 @@ namespace eval ::atos_cdl_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
    #
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc ::atos_cdl_gui::closeWindow { this visuNo } {
 
       ::atos_cdl_gui::widgetToConf $visuNo
-
       destroy $this
+
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -325,12 +264,7 @@ namespace eval ::atos_cdl_gui {
                             -text ""
                       pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
-        
-        
         }
-
-
-
 
 
         if { $::atos_tools::traitement=="avi" }  {
@@ -364,7 +298,6 @@ namespace eval ::atos_cdl_gui {
              pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         }
-
 
 
         set info_load [frame $frm.info_load]
@@ -559,7 +492,7 @@ namespace eval ::atos_cdl_gui {
                      pack  $image.t -in $image -side top -expand 5 -anchor w
 
                      #--- Cree un label
-                     label $image.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b)  -text "Image"
+                     label $image.t.titre -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) -text "Image"
                      pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
 
                      button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
@@ -862,7 +795,9 @@ namespace eval ::atos_cdl_gui {
 
              set suivi [frame $f_suiv.geometrie]
              pack $suivi -in $f_suiv
- 
+
+             set ::atos_gui::frame(suivi) $suivi
+
                 frame $suivi.methode -borderwidth 0 -cursor arrow
                 pack  $suivi.methode -in $suivi -side top -pady 10
 
@@ -870,48 +805,47 @@ namespace eval ::atos_cdl_gui {
                    pack  $suivi.methode.lab -in $suivi.methode -side left -anchor w
 
                    spinbox $suivi.methode.val -font $atosconf(font,courier_10)  \
-                      -value [ list "Auto" "Interpolation" ] \
+                      -value [ list "Auto" "Interpolation" ] -state readonly \
                       -textvariable ::atos_cdl_tools::methode_suivi \
-                      -command "" 
-                   pack  $suivi.methode.val -in $suivi.methode -side left -anchor w
+                      -command "::atos_cdl_gui::options_suivi" 
+                   pack $suivi.methode.val -in $suivi.methode -side left -anchor w
 
                 frame $suivi.threshold -borderwidth 0 -cursor arrow
-                pack  $suivi.threshold -in $suivi -side top -pady 20
+                pack $suivi.threshold -in $suivi -side top -pady 20
 
                 set spinvalues [list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30]
 
-                  frame $suivi.threshold.target -borderwidth 0 -cursor arrow
-                  pack  $suivi.threshold.target -in $suivi.threshold -side top -pady 5
+                  frame $suivi.threshold.obj -borderwidth 0 -cursor arrow
+                  pack  $suivi.threshold.obj -in $suivi.threshold -side top -pady 5
 
-                     label $suivi.threshold.target.lab -text "Threshold target (x y) = " -width 20
-                     pack  $suivi.threshold.target.lab -in $suivi.threshold.target -side left -anchor e
-                     spinbox $suivi.threshold.target.valx -font $atosconf(font,courier_10)  \
+                     label $suivi.threshold.obj.lab -text "Threshold on target (x y) " -width 22 -anchor e
+                     pack  $suivi.threshold.obj.lab -in $suivi.threshold.obj -side left -anchor e
+                     spinbox $suivi.threshold.obj.valx -font $atosconf(font,courier_10)  \
                         -value $spinvalues -width 3 \
                         -textvariable ::atos_cdl_tools::x_obj_threshold \
                         -command "" 
-                     pack  $suivi.threshold.target.valx -in $suivi.threshold.target -side left -anchor w
-                     spinbox $suivi.threshold.target.valy -font $atosconf(font,courier_10)  \
+                     pack  $suivi.threshold.obj.valx -in $suivi.threshold.obj -side left -anchor w
+                     spinbox $suivi.threshold.obj.valy -font $atosconf(font,courier_10)  \
                         -value $spinvalues -width 3 \
                         -textvariable ::atos_cdl_tools::y_obj_threshold \
                         -command "" 
-                     pack  $suivi.threshold.target.valy -in $suivi.threshold.target -side left -anchor w
+                     pack  $suivi.threshold.obj.valy -in $suivi.threshold.obj -side left -anchor w
 
                   frame $suivi.threshold.ref -borderwidth 0 -cursor arrow
                   pack  $suivi.threshold.ref -in $suivi.threshold -side top -pady 5
 
-                   label $suivi.threshold.ref.lab -text "Threshold reference (x y) = " -width 20
-                   pack  $suivi.threshold.ref.lab -in $suivi.threshold.ref -side left -anchor e
-                   spinbox $suivi.threshold.ref.valx -font $atosconf(font,courier_10)  \
-                      -value $spinvalues -width 3 \
-                      -textvariable ::atos_cdl_tools::x_ref_threshold \
-                      -command "" 
-                   pack  $suivi.threshold.ref.valx -in $suivi.threshold.ref -side left -anchor w
-#                   $suivi.threshold.ref.valx set $::atos_cdl_tools::x_ref_threshold
-                   spinbox $suivi.threshold.ref.valy -font $atosconf(font,courier_10)  \
-                      -value $spinvalues -width 3 \
-                      -textvariable ::atos_cdl_tools::y_ref_threshold \
-                      -command "" 
-                   pack  $suivi.threshold.ref.valy -in $suivi.threshold.ref -side left -anchor w
+                     label $suivi.threshold.ref.lab -text "Threshold on reference (x y) " -width 22 -anchor e
+                     pack  $suivi.threshold.ref.lab -in $suivi.threshold.ref -side left -anchor e
+                     spinbox $suivi.threshold.ref.valx -font $atosconf(font,courier_10)  \
+                         -value $spinvalues -width 3 \
+                         -textvariable ::atos_cdl_tools::x_ref_threshold \
+                         -command "" 
+                     pack  $suivi.threshold.ref.valx -in $suivi.threshold.ref -side left -anchor w
+                     spinbox $suivi.threshold.ref.valy -font $atosconf(font,courier_10)  \
+                         -value $spinvalues -width 3 \
+                         -textvariable ::atos_cdl_tools::y_ref_threshold \
+                         -command "" 
+                     pack  $suivi.threshold.ref.valy -in $suivi.threshold.ref -side left -anchor w
 
  
    #--- Fin Onglets
@@ -923,12 +857,10 @@ namespace eval ::atos_cdl_gui {
         pack $frm.action \
              -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-
            image create photo .start -format PNG -file [ file join $audace(rep_plugin) tool atos img start.png ]
            image create photo .stop  -format PNG -file [ file join $audace(rep_plugin) tool atos img stop.png ]
            image create photo .graph -format PNG -file [ file join $audace(rep_plugin) tool atos img cdl.png ]
            image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool atos img save.png ]
-
 
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
@@ -939,7 +871,6 @@ namespace eval ::atos_cdl_gui {
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
            set ::atos_gui::frame(buttons,start) $frm.action.start
-
 
            button $frm.action.graph_xy_obj -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
@@ -1001,9 +932,28 @@ namespace eval ::atos_cdl_gui {
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
+
+      # Init.
+      #set suivi $::atos_gui::frame(suivi)
+      #$suivi.threshold.obj.valx set $::atos_cdl_tools::x_obj_threshold
+      #$suivi.threshold.obj.valy set $::atos_cdl_tools::y_obj_threshold
+      #$suivi.threshold.ref.valx set $::atos_cdl_tools::x_ref_threshold
+      #$suivi.threshold.ref.valy set $::atos_cdl_tools::y_ref_threshold
+
    }
 
 
+   proc options_suivi {} {
+
+      set suivi $::atos_gui::frame(suivi)
+
+      if {$::atos_cdl_tools::methode_suivi == "Auto"} {
+         pack $suivi.threshold -in $suivi -side top -pady 20
+      } else {
+         pack forget $suivi.threshold
+      }
+
+   }
 
 
 }
