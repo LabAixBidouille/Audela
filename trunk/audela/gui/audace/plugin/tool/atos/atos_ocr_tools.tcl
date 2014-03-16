@@ -144,29 +144,51 @@ namespace eval ::atos_ocr_tools {
    }
 
 
+   #
+   # Decodage de l'OCR des IOTA-VTI. Le milieu de pose est la plus petite des deux valeurs de ms
+   # (c.f.: http://www.poyntsource.com/New/IOTAVTI.htm PART THREE)
+   # 
    proc ::atos_ocr_tools::ocr_iota_vti { msg_even msg_odd } {
 
-      set setup $::atos_gui::frame(ocr_setup)
-      set field [$setup.msfield.spin get]
+      set log 0
 
-      if {$field == 1} {
-         # Recuperation de l'heure depuis l'image paire
-         set poslist [split [regexp -inline -all -- {\S+} $msg_even] " "]
-         set t   [split [lindex $poslist 0] ":"]
-         set h   [lindex $t 0]
-         set min [lindex $t 1]
-         set s   [lindex $t 2]
-         set ms  [scan [lindex $poslist 1] "%d"]
+      # Recuperation de l'heure depuis l'image paire
+      set poslist [split [regexp -inline -all -- {\S+} $msg_even] " "]
+      set t    [split [lindex $poslist 0] ":"]
+      set hp   [scan [lindex $t 0] "%d"]
+      set minp [scan [lindex $t 1] "%d"]
+      set sp   [scan [lindex $t 2] "%d"]
+      set msp  [scan [lindex $poslist 1] "%d"]
+      if {$log == 1} { ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: " }
+      set hdp  [expr $hp + $minp/60.0 + ($sp+$msp/10000.0)/3600.0]
+
+      # Recuperation de l'heure depuis l'image impaire
+      set poslist [split [regexp -inline -all -- {\S+} $msg_odd] " "]
+      set t    [split [lindex $poslist 0] ":"]
+      set hi   [scan [lindex $t 0] "%d"]
+      set mini [scan [lindex $t 1] "%d"]
+      set si   [scan [lindex $t 2] "%d"]
+      set msi  [scan [lindex $poslist 1] "%d"]
+      if {$log == 1} { ::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: " }
+      set hdi  [expr $hi + $mini/60.0 + ($si+$msi/10000.0)/3600.0]
+
+      # L'heure la plus petite est le milieu de pose
+      if {$hdp > $hdi} {
+         set hevent $hdi
       } else {
-         # Recuperation de l'heure depuis l'image impaire
-         set poslist [split [regexp -inline -all -- {\S+} $msg_odd] " "]
-         set t   [split [lindex $poslist 0] ":"]
-         set h   [lindex $t 0]
-         set min [lindex $t 1]
-         set s   [lindex $t 2]
-         set ms  [scan [lindex $poslist 1] "%d"]
+         if {$hdp < 12.0 && $hdi > 12.0} {
+            set hevent $hdi
+         } else {
+            set hevent $hdp
+         }
       }
-      set ms [::tcl::mathfunc::round [expr [format "%d" $ms]/10.0]]
+      set hms [mc_angle2hms [expr $hevent*15.0]]
+      set h [lindex $hms 0]
+      set min [lindex $hms 1]
+      set ss [split [format "%.3f" [lindex $hms 2]] "."]
+      set s [lindex $ss 0]
+      set ms [lindex $ss 1]
+      if {$log == 1} { ::console::affiche_resultat " => $hevent -> $h $min $s $ms\n" }
 
       set pass "ok"
 
@@ -230,11 +252,11 @@ namespace eval ::atos_ocr_tools {
              }
              "IOTA-VTI" {
                set err [catch {
-                  set result [exec convert ocr.jpg -roll +0+0 -sample 100%x50% -resize 100%x200% ocr_even.jpg]
+                  set result [exec convert ocr.jpg -roll +0+0 -sample 100%x50% -resize 100%x200% -sharpen 1.0x1.0 ocr_even.jpg]
                   set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr_even.jpg]
                } msg_even]
                set err [catch {
-                  set result [exec convert ocr.jpg -roll +0+1 -sample 100%x50% -resize 100%x200% ocr_odd.jpg]
+                  set result [exec convert ocr.jpg -roll +0+1 -sample 100%x50% -resize 100%x200% -sharpen 1.0x1.0 ocr_odd.jpg]
                   set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr_odd.jpg]
                } msg_odd]
                set msg "\n$msg_even\n$msg_odd"
@@ -245,6 +267,7 @@ namespace eval ::atos_ocr_tools {
           }
 
           if {$err == 1} {
+
             ::console::affiche_erreur "Failed to extract OCR: $msg \n"
             $datetime.h.val   delete 0 end
             $datetime.h.val   insert 0 "?"
@@ -256,6 +279,7 @@ namespace eval ::atos_ocr_tools {
             $datetime.ms.val  insert 0 "?"
             $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
             return 0
+
           }
 
           switch $box {
@@ -317,7 +341,7 @@ namespace eval ::atos_ocr_tools {
 
           } else {
 
-             ::console::affiche_erreur "OCR failed: $pass $h $min $s $ms\n"
+             ::console::affiche_erreur "OCR failed: frame: $::atos_tools::cur_idframe ; ocr: $pass $h $min $s $ms\n"
              $datetime.h.val   delete 0 end
              $datetime.h.val   insert 0 $h
              $datetime.min.val delete 0 end
@@ -553,12 +577,12 @@ namespace eval ::atos_ocr_tools {
       set s   [return_2digit $s]
       set ms  [return_3digit $ms]
 
-      ::console::affiche_resultat "Date verifiee: (idfrm=$::atos_tools::cur_idframe) $y-$m-${d}T$h:$min:$s.$ms\n"
+      ::console::affiche_resultat "Date verifiee: frame: $::atos_tools::cur_idframe ; date: $y-$m-${d}T$h:$min:$s.$ms\n"
 
       $datetime.y.val   delete 0 end
       $datetime.y.val   insert 0 $y
-      $datetime.m.val delete 0 end
-      $datetime.m.val insert 0 $m
+      $datetime.m.val   delete 0 end
+      $datetime.m.val   insert 0 $m
       $datetime.d.val   delete 0 end
       $datetime.d.val   insert 0 $d
       $datetime.h.val   delete 0 end
@@ -802,7 +826,7 @@ namespace eval ::atos_ocr_tools {
 
 # Verification des OCR
 
-      ::console::affiche_resultat "Verification des OCR : "
+      ::console::affiche_resultat "Verification des OCR :\n"
 
       set ::atos_ocr_tools::sortie 0
       
@@ -822,23 +846,23 @@ namespace eval ::atos_ocr_tools {
 
             # OK on interpole ! pour verifier la difference avec l ocr
 
-            set idfrmav [ get_idfrmav $idframe 2]
-            set idfrmap [ get_idfrmap $idframe 1]
+            set idfrmap [ ::atos_ocr_tools::get_idfrmap $idframe 1]
+            set idfrmav [ ::atos_ocr_tools::get_idfrmav $idframe 2]
+
             if { $idfrmav == -1 || $idfrmap == -1 } {
-               set idfrmav [ get_idfrmap 0 1]
-               set idfrmap [ get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
+               set idfrmav [::atos_ocr_tools::get_idfrmap 0 1]
+               set idfrmap [::atos_ocr_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
             }
 
             set jdav $::atos_ocr_tools::timing($idfrmav,jd)
             set jdap $::atos_ocr_tools::timing($idfrmap,jd)
-#::console::affiche_erreur "$jdav $jdap $idfrmap $idfrmav $idframe \n"
 
             set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
             set jd [format "%6.10f" $jd]
 
             set diff [expr abs(($::atos_ocr_tools::timing($idframe,jd) - $jd ) * 86400.0)]
             if { $diff > 0.5 } {
-               ::console::affiche_erreur "Warning! ($idframe) $::atos_ocr_tools::timing($idframe,dateiso)\n"
+               ::console::affiche_erreur "Warning! frame: $idframe ; date: $::atos_ocr_tools::timing($idframe,dateiso)\n"
                set ::atos_ocr_tools::timing($idframe,ocr) 0
                set ::atos_ocr_tools::timing($idframe,interpol) 1
                incr cptbad
