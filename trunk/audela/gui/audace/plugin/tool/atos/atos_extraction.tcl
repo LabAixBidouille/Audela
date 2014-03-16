@@ -441,6 +441,97 @@ namespace eval ::atos_extraction {
    }
 
 
+
+   #
+   # ::atos_extraction::test_avi_1
+   #
+   # Procedure de test de deplacement aleatoire dans un fichier avi.
+   # Les fonctions testees sont : set_frame, next_image, prev_image
+   #
+   # Utilisation:
+   #  1. Ouvrir une video dans l'outil Extraction Video AVI
+   #  2. Dans la console, taper:
+   #      ::atos_extraction::test_avi_1 1
+   #     en supposant que 1 est le numero de visu courant.
+   #
+
+   proc ::atos_extraction::test_avi_1_getsample {bufNo} {
+             set key ""
+             set y 53
+             for {set x 300} {$x<=400} {incr x} {
+                 set v [lindex [buf$bufNo getpix "$x $y"] 1]
+                 set s [format %x [expr int($v)]]
+                 set key "$key$s"
+             }
+             return $key
+   }
+   
+   proc ::atos_extraction::test_avi_1 { visuNo } {
+         set bufNo [ visu$visuNo buf ]
+         
+         ::console::affiche_resultat "Indexation de la video...\n"
+         set fmin 1
+         set fmax $::atos_tools::nb_open_frames
+	 if {$fmax > 1000} {set fmax 1000}
+         ::atos_tools_avi::set_frame 1
+         set imagedict [dict create]
+         for {set i $fmin} {$i <= $fmax} {incr i} {
+             set key [::atos_extraction::test_avi_1_getsample $bufNo]
+             if {[dict exists $imagedict $key]} {
+                 ::console::affiche_resultat "Clef non unique,\n"
+                 ::console::affiche_resultat "augmentez la longueur de l echantillon dans test_avi_1_getsample.\n"
+                 return 1
+             }
+             dict set imagedict $key $i
+             ::atos_tools_avi::next_image
+         }
+
+         ::console::affiche_resultat "Parcours aleatoire...\n"
+         for {set i 0} {$i < $fmax} {incr i} {
+             set n [expr {int(rand()*($fmax))+1}]
+             ::console::affiche_resultat "test frame $n\n"
+             ::atos_tools_avi::set_frame $n
+             set key [::atos_extraction::test_avi_1_getsample $bufNo]
+             set m [dict get $imagedict $key]
+             if {$m !=$n} {
+                 ::console::affiche_resultat "Echec.\n"
+                 return 1
+             }
+
+             for {set j 0} {$j < 10} {incr j} {
+                 # direction : 0, 1
+                 set dir [expr {int(rand()*2)}]
+                 set len [expr {int(rand()*11)}]
+                 #::console::affiche_resultat "sequence dir=$dir len=$len\n"
+                 for {set k 0} {$k < $len} {incr k} {
+                     if {$dir == 0} {
+                         if {$n >= $fmax} {
+                             set n $fmax
+                         } else {
+                             ::atos_tools_avi::next_image
+                             incr n
+                         }
+                     } else {
+                         ::atos_tools_avi::prev_image
+                         incr n -1
+                         if {$n < 1} { set n 1 }
+                     }
+                     set key [::atos_extraction::test_avi_1_getsample $bufNo]
+                     set m [dict get $imagedict $key]
+                     if {$m !=$n} {
+                         ::console::affiche_resultat "Echec.\n"
+                         return 1
+                     }
+
+                 }
+             }
+             
+         }
+         
+         
+         ::console::affiche_resultat "Fini\n"
+   }
+   
 }
 
 
