@@ -547,21 +547,21 @@ namespace eval ::atos_ocr_gui {
 
                  #--- Cree un spinbox
                  spinbox $ocr.incrust.spin -font $atosconf(font,courier_10) -fg $color(blue) \
-                         -value [ list "Black Box" "TIM-10 small font" "TIM-10 big font" "IOTA-VTI"] -width 10 -state readonly
+                         -value [ list "IOTA-VTI" "TIM-10 small font" "TIM-10 big font" "Black Box"] -width 10 -state readonly
                  pack  $ocr.incrust.spin -in $ocr.incrust -side left -anchor w 
 
               #--- Cree un frame
-              frame $ocr.msfield -borderwidth 0 -cursor arrow
-              pack  $ocr.msfield -in $ocr -side left -expand 0 -anchor w -padx 5
-
-                 #--- Label
-                 label $ocr.msfield.lab -text "Field ms:"
-                 pack $ocr.msfield.lab -in $ocr.msfield -side left -padx 0 -expand 0
-
-                 #--- Entry
-                 spinbox $ocr.msfield.spin -font $atosconf(font,courier_10) -fg $color(blue) \
-                         -value [ list 1 2] -width 2 -state readonly 
-                 pack $ocr.msfield.spin -in $ocr.msfield -side top -padx 0 -expand 0
+              #frame $ocr.msfield -borderwidth 0 -cursor arrow
+              #pack  $ocr.msfield -in $ocr -side left -expand 0 -anchor w -padx 5
+              #
+              #   #--- Label
+              #   label $ocr.msfield.lab -text "Field ms:"
+              #   pack $ocr.msfield.lab -in $ocr.msfield -side left -padx 0 -expand 0
+              #
+              #   #--- Entry
+              #   spinbox $ocr.msfield.spin -font $atosconf(font,courier_10) -fg $color(blue) \
+              #           -value [ list 1 2] -width 2 -state readonly 
+              #   pack $ocr.msfield.spin -in $ocr.msfield -side top -padx 0 -expand 0
 
               #--- Cree un frame pour le selecteur du champ date
               frame $ocr.selectdate -borderwidth 0 -cursor arrow
