@@ -189,6 +189,7 @@ namespace eval ::atos_acq {
 
       #--- Retourne l'item de la camera associee a la visu
       set frm $this.frmacq
+      set ::atos_gui::frame(base) $frm
 
 
   #--- Cree un frame General
@@ -305,7 +306,7 @@ namespace eval ::atos_acq {
 
        set ::atos_acq::frmdevpath $devicepath
        pack forget $frm.cformin.ldev
-       ::atos_tools_avi::acq_getdevinfo $visuNo $frm $auto
+       ::atos_tools_avi::acq_getdevinfo $visuNo $auto
     }
 
 
@@ -635,9 +636,11 @@ namespace eval ::atos_acq {
               pack  $image.t.titre -in $image.t -side left -anchor w -padx 30
 
               button $image.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_cdl_tools::select_fullimg $visuNo $image"
+                                     -command "::atos_cdl_tools::select_fullimg $visuNo"
               pack $image.t.select -in $image.t -side left -anchor e
 
+              set ::atos_gui::frame(image,buttons) $image.t
+              
               #--- Cree un frame pour les info
               frame $image.v -borderwidth 0 -cursor arrow
               pack  $image.v -in $image -side top
@@ -648,6 +651,7 @@ namespace eval ::atos_acq {
               frame $image.v.r -borderwidth 0 -cursor arrow
               pack  $image.v.r -in $image.v -side right
 
+              set ::atos_gui::frame(image,values) $image.v.r
 
                  #---
                  label $image.v.l.fenetre -font $atosconf(font,courier_10) -text "Fenetre"
@@ -695,8 +699,10 @@ namespace eval ::atos_acq {
               pack  $object.t.titre -in $object.t -side left -anchor w -padx 30
 
               button $object.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_cdl_tools::select_obj $visuNo $object"
+                                     -command "::atos_cdl_tools::select_source $visuNo object"
               pack $object.t.select -in $object.t -side left -anchor e
+              
+              set ::atos_gui::frame(object,buttons) $object.t
 
               #--- Cree un frame pour les info
               frame $object.v -borderwidth 0 -cursor arrow
@@ -708,6 +714,7 @@ namespace eval ::atos_acq {
               frame $object.v.r -borderwidth 0 -cursor arrow
               pack  $object.v.r -in $object.v -side right
 
+              set ::atos_gui::frame(object,values) $object.v.r
 
                  #---
                  label $object.v.l.position -font $atosconf(font,courier_10) -text "Position"
@@ -782,8 +789,10 @@ namespace eval ::atos_acq {
               pack  $reference.t.titre -in $reference.t -side left -anchor w -padx 30
 
               button $reference.t.select -text "Select" -borderwidth 1 -takefocus 1 \
-                                     -command "::atos_cdl_tools::select_ref $visuNo $reference"
+                                     -command "::atos_cdl_tools::select_source $visuNo reference"
               pack $reference.t.select -in $reference.t -side left -anchor e
+              
+              set ::atos_gui::frame(reference,buttons) $reference.t
 
               #--- Cree un frame pour les info
               frame $reference.v -borderwidth 0 -cursor arrow
@@ -795,6 +804,7 @@ namespace eval ::atos_acq {
               frame $reference.v.r -borderwidth 0 -cursor arrow
               pack  $reference.v.r -in $reference.v -side right
 
+              set ::atos_gui::frame(reference,values) $reference.v.r
 
                  #---
                  label $reference.v.l.position -font $atosconf(font,courier_10) -text "Position"

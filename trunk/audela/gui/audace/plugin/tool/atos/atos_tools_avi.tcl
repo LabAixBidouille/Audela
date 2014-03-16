@@ -434,7 +434,7 @@ namespace eval ::atos_tools_avi {
            }
 
         }
-        after $::atos::parametres(atos,$visuNo,screen_refresh) " ::atos_tools_avi::acq_display $visuNo $frm"
+        after $::atos::parametres(atos,$visuNo,screen_refresh) " ::atos_tools_avi::acq_display $visuNo"
 
 
    }
@@ -447,6 +447,7 @@ namespace eval ::atos_tools_avi {
    proc ::atos_tools_avi::acq_getdevinfo { visuNo autoflag } {
 
         global audace
+        set frm $::atos_gui::frame(base)
 
         set bufNo [ visu$visuNo buf ]
         ::console::affiche_resultat "Get device info\n"
@@ -653,7 +654,7 @@ namespace eval ::atos_tools_avi {
        }
 
 
-        after 100 " ::atos_tools_avi::acq_display $visuNo $frm"
+        after 100 " ::atos_tools_avi::acq_display $visuNo"
 
    }
 
@@ -750,7 +751,7 @@ namespace eval ::atos_tools_avi {
         fconfigure $chan -blocking 0
         fileevent $chan readable [list ::atos_tools_avi::acq_grab_read_status $chan $frm]
 
-        after 100 " ::atos_tools_avi::acq_display $visuNo $frm"
+        after 100 " ::atos_tools_avi::acq_display $visuNo"
    }
 
 
