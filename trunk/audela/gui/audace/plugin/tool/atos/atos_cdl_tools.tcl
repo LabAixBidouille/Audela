@@ -40,7 +40,6 @@ namespace eval ::atos_cdl_tools {
    }
 
 
-
    #
    # Existance et chargement d un fichier time
    #
@@ -50,7 +49,6 @@ namespace eval ::atos_cdl_tools {
          set ::atos_ocr_tools::timing($x,jd)  ""
          set ::atos_ocr_tools::timing($x,dateiso) ""
       }
-
 
       set filename [::atos_ocr_tools::get_filename_time]
       if { [file exists $filename] } {
@@ -724,7 +722,7 @@ namespace eval ::atos_cdl_tools {
                   $objet.snint       configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_snint)     -fg $color(blue)
                   $objet.snpx        configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_snpx)    -fg $color(blue)
                   
-                  ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) + 1] [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos) - 1] green $delta 3
+                  ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) + 1] [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos) - 1] green $delta
                }
                "reference" {
                
@@ -735,16 +733,16 @@ namespace eval ::atos_cdl_tools {
                   set ::atos_cdl_tools::ref(x) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos)
                   set ::atos_cdl_tools::ref(y) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)
 
-                  $reference.position    configure -text  "$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)"    -fg $color(blue)
+                  $reference.position    configure -text  "$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)" -fg $color(blue)
                   $reference.fint        configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_fint)    -fg $color(blue)
-                  $reference.fwhm        configure -text  "$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xfwhm) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_yfwhm)"    -fg $color(blue)
+                  $reference.fwhm        configure -text  "$::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xfwhm) / $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_yfwhm)" -fg $color(blue)
                   $reference.pixmax      configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_pixmax)    -fg $color(blue)
                   $reference.intensite   configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_intensite)    -fg $color(blue)
                   $reference.sigmafond   configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_sigmafond)    -fg $color(blue)
                   $reference.snint       configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_snint)     -fg $color(blue)
                   $reference.snpx        configure -text  $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_snpx)    -fg $color(blue)
                
-                  ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) + 1] [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos) - 1] red $delta 3
+                  ::bddimages_cdl::affich_un_rond [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) + 1] [expr $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos) - 1] red $delta
                }
             }
 
@@ -1093,9 +1091,6 @@ namespace eval ::atos_cdl_tools {
       }
       
       incr ::atos_tools::cur_idframe -1
-
-      ::console::affiche_resultat "ref_threshold (x y) = $::atos_cdl_tools::x_ref_threshold $::atos_cdl_tools::y_ref_threshold\n"
-      ::console::affiche_resultat "obj_threshold (x y) = $::atos_cdl_tools::x_obj_threshold $::atos_cdl_tools::y_obj_threshold\n"
 
       while {$::atos_cdl_tools::sortie == 0} {
          
