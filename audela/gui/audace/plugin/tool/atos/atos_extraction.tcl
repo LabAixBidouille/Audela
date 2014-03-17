@@ -80,7 +80,7 @@ namespace eval ::atos_extraction {
      global audace panneau
 
       set panneau(atos,$visuNo,atos_extraction) $this
-      ::atos_extraction::createdialog $this $visuNo   
+      ::atos_extraction::createdialog $this $visuNo
 
    }
 
@@ -155,7 +155,7 @@ namespace eval ::atos_extraction {
         label $frm.titre -font $atosconf(font,arial_14_b) -text "$caption(atos_extraction,titre)"
         pack $frm.titre -in $frm -side top -padx 3 -pady 3
 
-        #--- Cree un frame pour 
+        #--- Cree un frame pour
         frame $frm.open -borderwidth 1 -relief raised -cursor arrow
         pack $frm.open -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
@@ -176,7 +176,7 @@ namespace eval ::atos_extraction {
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
         #--- Cree un label pour le chemin de l'AVI
-        entry $frm.open.avipath 
+        entry $frm.open.avipath
         pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         #--- Creation de la barre de defilement
@@ -294,10 +294,10 @@ namespace eval ::atos_extraction {
              #--- Cree un button
              button $frm.doimagecount \
               -text "$caption(atos_extraction,calcul)" -borderwidth 2 \
-              -command "::atos_tools_avi::imagecount" 
+              -command "::atos_tools_avi::imagecount"
              pack $frm.doimagecount -in $frm.count -side left -padx 3 -pady 1 -anchor w
 
-          #--- Cree un frame pour 
+          #--- Cree un frame pour
           #frame $frm.status -borderwidth 0 -cursor arrow
           #pack $frm.status -in $frm -side top -expand 0
           #
@@ -317,15 +317,15 @@ namespace eval ::atos_extraction {
           #set inparam [frame $frm.status.v -borderwidth 0]
           #pack $inparam -in $frm.status -side left -expand 0 -fill x
           #
-          #  #--- Cree un label pour le 
+          #  #--- Cree un label pour le
           #  label $inparam.status -font $atosconf(font,courier_10) -fg $color(blue) -text "-"
           #  pack  $inparam.status -in $inparam -side top -anchor w
           #
-          #  #--- Cree un label pour le 
+          #  #--- Cree un label pour le
           #  label $inparam.nbtotal -font $atosconf(font,courier_10) -fg $color(blue) -text "-"
           #  pack  $inparam.nbtotal -in $inparam -side top -anchor w
 
-        #--- Cree un frame pour 
+        #--- Cree un frame pour
         frame $frm.form -borderwidth 1 -relief raised -cursor arrow
         pack $frm.form -in $frm -side top -expand 0 -fill x -padx 10 -pady 10 -ipadx 5 -ipady 5
 
@@ -362,7 +362,7 @@ namespace eval ::atos_extraction {
             #--- Cree un button
             button $inbutton.chgdir \
              -text "..." -borderwidth 2 \
-             -command "::atos_tools::chgdir $inparam.destdir" 
+             -command "::atos_tools::chgdir $inparam.destdir"
             pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
 
             #--- Cree un label pour le nb d image
@@ -370,7 +370,7 @@ namespace eval ::atos_extraction {
                   -text ""
             pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
-        #--- Cree un frame pour  les boutons d action 
+        #--- Cree un frame pour  les boutons d action
         frame $frm.action -borderwidth 1 -relief raised -cursor arrow
         pack $frm.action -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
@@ -465,14 +465,14 @@ namespace eval ::atos_extraction {
              }
              return $key
    }
-   
+
    proc ::atos_extraction::test_avi_1 { visuNo } {
          set bufNo [ visu$visuNo buf ]
-         
+
          ::console::affiche_resultat "Indexation de la video...\n"
          set fmin 1
          set fmax $::atos_tools::nb_open_frames
-	 if {$fmax > 1000} {set fmax 1000}
+         if {$fmax > 1000} {set fmax 1000}
          ::atos_tools_avi::set_frame 1
          set imagedict [dict create]
          for {set i $fmin} {$i <= $fmax} {incr i} {
@@ -525,13 +525,13 @@ namespace eval ::atos_extraction {
 
                  }
              }
-             
+
          }
-         
-         
+
+
          ::console::affiche_resultat "Fini\n"
    }
-   
+
 }
 
 
