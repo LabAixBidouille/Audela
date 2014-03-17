@@ -195,6 +195,7 @@ proc ::atos::deletePluginInstance { visuNo } {
 proc ::atos::startTool { { visuNo 1 } } {
    global panneau
    global caption
+   global conf
 
    # Verification de la precision
    if { $::tcl_precision < "17" } {
@@ -216,7 +217,7 @@ proc ::atos::startTool { { visuNo 1 } } {
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::atos::stopTool { { visuNo 1 } } {
-   global panneau
+   global panneau conf
 
    #--- Je supprime la liste des mots clefs non modifiables
    ::keyword::setKeywordState $visuNo $::conf(atos,keywordConfigName) [ list ]
