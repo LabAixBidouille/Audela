@@ -1706,9 +1706,136 @@ proc focas_pairs2poly { pairs polydeg } {
       #plotxy::ylabel "Lambda o-c (Angstroms)"
       #plotxy::title "sigma = [format %.2f $sigma] Angstroms"
    } else {
-      set res [list $polydeg {} {} {}]
+      set polys [lindex $pairs 2]
+      set polydeg 1
+      set sigma 0
+      set dcoords { {0 0} {0 0} {0 0} }
+      set res [list $polydeg $polys $sigma $dcoords]
       # --- fit 2D TODO
    }
    return $res
-   
+}
+
+# --- TBC
+proc focas_pairs2wcs { pairs polydeg } {
+   set res [focas_pairs2poly $pairs $polydeg]
+   lassign $res polydeg polys sigma dcoords
+   set couples [lsort -real -decreasing -index 12 [lindex $pairs 1]]
+   set xs ""
+   set ys ""
+   set coord1s ""
+   set coord2s ""
+   set equinoxs ""
+   foreach couple $couples {
+      lappend xs [lindex $couple 0]
+      lappend ys [lindex $couple 1]
+      lappend coord1s [lindex [lindex $couple 2] 0]
+      lappend coord2s [lindex [lindex $couple 2] 1]
+      set equinox [lindex [lindex $couple 2] 2]
+      if {$equinox==""} {
+         set equinox J2000
+      }
+      lappend equinoxs $equinox
+   }
+   set x [lindex $xs 0]
+   set y [lindex $ys 0]
+   set CRPIX1 $x
+   set CRPIX2 $y
+   set ra [lindex $coord1s 0]
+   set dec [lindex $coord2s 0]
+   set equinox [lindex $equinoxs 0]
+   set CRVAL1 $ra
+   set CRVAL2 $dec
+   set EQUINOX $equinox
+   # --- TBC
+}
+
+# source $audace(rep_install)/gui/audace/focas.tcl ; focas_radec_cat2app 12h45m23s -6d25m32s J2000 now {GPS 5 E 43 1230} 1992.5 0 0 0 101325 290 40 550 
+proc focas_radec_cat2app { ra dec equinox date home {epoch ""} {mura_masyr 0} {mudec_masyr 0} {plx_mas 0} {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
+   if {$epoch==""} {
+      set epoch $date
+   }
+   set hip [list 1 0 [mc_angle2deg $ra] [mc_angle2deg $dec 90] $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+   set res [mc_hip2tel $hip $date $home $pressure_Pa $temperature_K ] ; #-humidity $humidity_percent -wavelength $wavelength_nm]
+   lassign $res ra dec ha az elev
+   return [list $ra $dec $ha $az $elev]
+}
+
+proc focas_wcs_radec2xy { ra dec equinox date home {epoch ""} {mura_masyr 0} {mudec_masyr 0} {plx_mas 0} {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
+   global audace
+   # --- on deplace ra et dec en coordonnées apparentes
+   set res [focas_radec_cat2app $ra $dec $equinox $date $home $epoch $mura_masyr $mudec_masyr $plx_mas $pressure_Pa $temperature_K $humidity_percent $wavelength_nm]
+   lassign $res ra dec ha az elev
+   set bufNo $audace(BufNo)
+   # --- on deplace CRVAL1 et CRVAL2 en coordonnées apparentes
+   set CRVAL1 [lindex [buf$bufNo getkwd CRVAL1] 1]
+   set CRVAL2 [lindex [buf$bufNo getkwd CRVAL2] 1]
+   set EQUINOX [lindex [buf$bufNo getkwd EQUINOX] 1]
+   # RADESYS='FK5     ' / Mean Place IAU 1984 system
+   # EQUINOX=2000.0 / System of equatorial coordinates
+   if {$EQUINOX==""} {
+      set EQUINOX J2000
+   }
+   set res [focas_radec_cat2app $CRVAL1 $CRVAL2 $EQUINOX $date $home $date 0 0 0 $pressure_Pa $temperature_K $humidity_percent $wavelength_nm]
+   lassign $res ra0 dec0 ha0 az0 elev0
+   set CRVAL1 $ra0
+   set CRVAL1 $dec0
+   # --- CRPIX = 1 pour le milieu du premier pixel (TBV)
+   set CRPIX1 [lindex [buf$bufNo getkwd CRPIX1] 1]
+   set CRPIX2 [lindex [buf$bufNo getkwd CRPIX2] 1]
+   set CDELT1 [lindex [buf$bufNo getkwd CDELT1] 1]
+   set CDELT2 [lindex [buf$bufNo getkwd CDELT2] 1]
+   set CROTA2 [lindex [buf$bufNo getkwd CROTA2] 1]
+   set CD001001 [expr $CDELT1*cos($CROTA2)]
+   set CD001002 [expr abs($CDELT2)*$CDELT1/fabs($CDELT1)*sin($CROTA2)]
+   set CD002001 [expr -fabs($CDELT1)*$CDELT2/fabs($CDELT2)*sin($CROTA2)]
+   set CD002002 [expr $CDELT2*cos($CROTA2)]
+   set H [expr sin(DEC)*sin(CRVAL2) + cos(DEC)*cos(CRVAL2)*cos(RA-CRVAL1)]
+   set dRA [expr cos(DEC)*sin(RA-CRVAL1) / H]
+   set dDEC [expr  ( sin(DEC)*cos(CRVAL2) - cos(DEC)*sin(CRVAL2)*cos(RA-CRVAL1) ) / H]
+   set det [expr CD002002*CD001001-CD001002*CD002001]
+   set x [expr (CRPIX1-0.5) - (CD001002*dDEC - CD002002*dRA) / det ]
+   set y [expr (CRPIX2-0.5) + (CD001001*dDEC - CD002001*dRA) / det ]
+   #return [list $x $y $ra $dec $ha $az $elev]
+   return [list $x $y]
+}
+
+proc focas_wcs_xy2radec { x y date home {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
+   global audace
+   set bufNo $audace(BufNo)
+   # --- on deplace CRVAL1 et CRVAL2 en coordonnées apparentes
+   set CRVAL1 [lindex [buf$bufNo getkwd CRVAL1] 1]
+   set CRVAL2 [lindex [buf$bufNo getkwd CRVAL2] 1]
+   set EQUINOX [lindex [buf$bufNo getkwd EQUINOX] 1]
+   # RADESYS='FK5     ' / Mean Place IAU 1984 system
+   # EQUINOX=2000.0 / System of equatorial coordinates
+   if {$EQUINOX==""} {
+      set EQUINOX J2000
+   }
+   set res [focas_radec_cat2app $CRVAL1 $CRVAL2 $EQUINOX $date $home $date 0 0 0 $pressure_Pa $temperature_K $humidity_percent $wavelength_nm]
+   lassign $res ra0 dec0 ha0 az0 elev0
+   set CRVAL1 $ra0
+   set CRVAL1 $dec0
+   # --- CRPIX = 1 pour le milieu du premier pixel (TBV)
+   set CRPIX1 [lindex [buf$bufNo getkwd CRPIX1] 1]
+   set CRPIX2 [lindex [buf$bufNo getkwd CRPIX2] 1]
+   set CDELT1 [lindex [buf$bufNo getkwd CDELT1] 1]
+   set CDELT2 [lindex [buf$bufNo getkwd CDELT2] 1]
+   set CROTA2 [lindex [buf$bufNo getkwd CROTA2] 1]
+   set CD001001 [expr $CDELT1*cos($CROTA2)]
+   set CD001002 [expr abs($CDELT2)*$CDELT1/fabs($CDELT1)*sin($CROTA2)]
+   set CD002001 [expr -fabs($CDELT1)*$CDELT2/fabs($CDELT2)*sin($CROTA2)]
+   set CD002002 [expr $CDELT2*cos($CROTA2)]
+   set dRA [expr $CD001001 * ($x-($CRPIX1-0.5)) + $CD001002 * ($y-($CRPIX2-0.5))]
+   set dDEC [expr $CD002001 * ($x-($CRPIX1-0.5)) + $CD002002 * ($y-($CRPIX2-0.5))]
+   set delta [expr cos($CRVAL2) - $dDEC*sin($CRVAL2)]
+   set gamma [expr sqrt( $dRA*$dRA + $delta*$delta )]
+   set RA [expr $CRVAL1 + atan ($dRA/$delta)]
+   set DEC [expr atan ( (sin($CRVAL2)+$dDEC*cos($CRVAL2)) / $gamma )]    
+   # --- on deplace ra et dec en coordonnées catalogue
+   set res [mc_tel2cat [list $RA $DEC] EQUATORIAL $date $home $pressure_Pa $temperature_K -humidity $humidity_percent -wavelength $wavelength_nm]
+   # --- coord J2000
+   lassign $res ra dec   
+   #return [list $ra $dec $RA $DEC]
+   return [list $ra $dec]
 }
