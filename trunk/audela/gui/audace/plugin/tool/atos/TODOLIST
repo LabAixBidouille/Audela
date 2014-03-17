@@ -1,6 +1,11 @@
 TODOLIST
+- Analyse : calcul des champs "Temps de pose sans temps mort" dans les calculs
+            d immersion et d emersion.
+
 - Analyse : probleme de calcul de l emersion lorsque corrigee d une reference
             il faut surement multi la normalisation par 10000 ADU.
+
+- OCR : bug en cas d OCR , rereduir la courbe de Jerome ou Benoit.
 
 - Analyse rapport : il faut garder le remplissage des champs depuis la derniere fois. 
                      arret d audela compris
@@ -10,7 +15,9 @@ TODOLIST
 - Analyse : calcul Immersion/Emersion
             Ajouter un bouton VALIDER en dessous des resultats qui aura pour effet de 
             mettre la date  obtenue comme reference.
+            
 - Analyse : Popup de fin de calcul
+
 - Analyse : Coder le calcul Immersion/Emersion en C
 
 - Faire les captions de l outil calcul

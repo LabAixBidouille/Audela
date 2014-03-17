@@ -176,6 +176,19 @@
                   entry $observatoire.v -textvariable ::atos_analysis_gui::occ_pos -width 30
                   pack $observatoire.v -side left -padx 3 -pady 1 -fill x
 
+             #--- Cree un frame pour le tag
+             set tag [frame $projet.tag -borderwidth 0 -cursor arrow -relief groove]
+             pack $tag -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
+
+                  #--- Cree un label
+                  label $tag.l -text "Tag : "
+                  pack  $tag.l -side left -anchor e
+
+                  #--- Cree un label
+                  entry $tag.v -textvariable ::atos_analysis_gui::occ_tag -width 30 \
+                     -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+                  pack $tag.v -side left -padx 3 -pady 1 -fill x
+
              set check [frame $projet.check -borderwidth 0 -cursor arrow -relief groove]
              pack $check -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
