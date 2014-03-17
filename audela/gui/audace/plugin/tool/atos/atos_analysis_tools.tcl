@@ -173,6 +173,7 @@ package require math::linearalgebra
             lappend medref $::atos_analysis_tools::cdl($k,ref_fint)
          }
          set medobj [::math::statistics::median $medobj]
+
          if {$::atos_analysis_gui::ref_corr} {
             set medref [::math::statistics::median $medref]
          }
