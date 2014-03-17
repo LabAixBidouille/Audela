@@ -2,7 +2,7 @@
 # Fichier : alpy600_tools.tcl
 # Description : Procs pour traiter rapidement en aveugle les spectres Alpy600
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: alpy600_tools 10295 2013-09-28 08:21:46Z alainklotz $
+# Mise à jour $Id$
 #
 # source $audace(rep_install)/gui/audace/alpy600_tools.tcl
 #

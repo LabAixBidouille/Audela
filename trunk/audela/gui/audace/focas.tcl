@@ -2,7 +2,7 @@
 # Fichier : focas.tcl
 # Description : Procs de reconnaissance de champ stellaire ou de raies spectrales
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: focas.tcl 10295 2013-09-28 08:21:46Z alainklotz $
+# Mise à jour $Id$
 #
 # source $audace(rep_install)/gui/audace/focas.tcl
 #
