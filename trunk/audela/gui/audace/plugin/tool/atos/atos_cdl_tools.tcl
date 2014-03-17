@@ -306,7 +306,6 @@ namespace eval ::atos_cdl_tools {
          switch $type {
             "object" {
                ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $::atos_cdl_tools::delta
-
             }
             "reference" {
                ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $::atos_cdl_tools::delta
@@ -512,7 +511,7 @@ namespace eval ::atos_cdl_tools {
 
       global color
 
-      set frm_image        $::atos_gui::frame(image,values) 
+      set frm_image $::atos_gui::frame(image,values) 
       set select_image $::atos_gui::frame(image,buttons).select
 
       set statebutton [ $select_image cget -relief]
@@ -527,7 +526,6 @@ namespace eval ::atos_cdl_tools {
          $select_image configure -relief raised
          return
       }
-
 
       # activation
       if {$statebutton=="raised"} {
@@ -569,8 +567,8 @@ namespace eval ::atos_cdl_tools {
          return
       }
 
-
       if {$::atos_photom::rect_img==""} {
+
          $image.fenetre configure -text "?"
          $image.intmin  configure -text "?"
          $image.intmax  configure -text "?"
@@ -580,15 +578,13 @@ namespace eval ::atos_cdl_tools {
       } else {
 
          set bufNo [ ::confVisu::getBufNo $visuNo ]
-
          set stat [buf$bufNo stat $::atos_photom::rect_img]
+         $image.intmin configure -text [format "%9.3f" [lindex $stat 3]]
+         $image.intmax configure -text [format "%9.3f" [lindex $stat 2]]
+         $image.intmoy configure -text [format "%9.3f" [lindex $stat 4]]
+         $image.sigma  configure -text [format "%7.3f" [lindex $stat 5]]
 
-         $image.intmin configure -text [lindex $stat 3]
-         $image.intmax configure -text [lindex $stat 2]
-         $image.intmoy configure -text [lindex $stat 4]
-         $image.sigma  configure -text [lindex $stat 5]
       }
-
 
    }
 
@@ -690,10 +686,10 @@ namespace eval ::atos_cdl_tools {
       global color
 
       
-      set objet  $::atos_gui::frame(object,values) 
+      set objet      $::atos_gui::frame(object,values) 
       set reference  $::atos_gui::frame(reference,values) 
       set frm_source $::atos_gui::frame($type,values) 
-      set delta      [ $frm_source.delta get]
+      set delta      [$frm_source.delta get]
       set verif      $::atos_gui::frame($type,buttons).verifier
 
       if {[info exists ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif)]} {
