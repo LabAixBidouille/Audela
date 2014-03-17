@@ -197,17 +197,17 @@ proc ::atos::startTool { { visuNo 1 } } {
    global caption
    global conf
 
-   # Verification de la precision
-   if { $::tcl_precision < "17" } {
-      tk_messageBox -message $caption(atos_go,precision) -type ok
-      return
-   }
-
    #--- On cree la variable de configuration des mots cles
    if { ! [ info exists ::conf(atos,keywordConfigName) ] } { set ::conf(atos,keywordConfigName) "default" }
 
    #--- Je selectionne les mots cles selon les exigences de l'outil
    ::atos::configToolKeywords $visuNo
+
+   # Verification de la precision
+   if { $::tcl_precision < "17" } {
+      tk_messageBox -message $caption(atos_go,precision) -type ok
+      return
+   }
 
    pack $panneau(atos,$visuNo,This) -side left -fill y
 }
