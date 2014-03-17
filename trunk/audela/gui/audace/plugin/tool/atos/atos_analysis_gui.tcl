@@ -719,7 +719,7 @@ namespace eval ::atos_analysis_gui {
          ::atos_analysis_tools::correction_refetoile
       }
       
-      # cree la courbe Rouges pour retrouver les paquets 
+      # cree la courbe Rouges pour retrouver les paquets
       set ::atos_analysis_gui::x ""
       set ::atos_analysis_gui::y ""
 
