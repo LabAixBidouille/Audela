@@ -24,6 +24,7 @@ namespace eval ::atos_analysis_gui {
       set ::atos_analysis_gui::occ_pos_type   ""
       set ::atos_analysis_gui::occ_obj_name   ""
       set ::atos_analysis_gui::occ_obj_id     ""
+      set ::atos_analysis_gui::occ_tag        ""
       # 
       # Fichiers & Repertoires
       # 
@@ -1663,24 +1664,28 @@ namespace eval ::atos_analysis_gui {
       
       # 2010-06-05_80_Sappho_Lat+48.0001_Lon_+02.0001
 
-      # date
-      #set date [mc_date2jd $::atos_analysis_gui::occ_date ]
-      #set date [expr floor($date)+0.5]
-      #set date [mc_date2ymdhms $date]
-      #set y [lindex $date 0]
-      #set m [format "%0.2d" [lindex $date 1]]
-      #set d [format "%0.2d" [lindex $date 2]]
-      #set date "${y}-${m}-${d}"
-
-      set date $::atos_analysis_gui::occ_date
-      regsub -all {\-} $date {}   date
-      regsub -all { }  $date {_}  date
-      regsub -all {T}  $date {_}  date
-      regsub -all {:}  $date {}   date
-      set d [split $date "."]
-      set date [lindex $d 0]
-      #regsub -all {\.} $date {_}  date
-   
+      if {1==1} {
+         set date [mc_date2jd $::atos_analysis_gui::occ_date ]
+         set date [mc_date2ymdhms $date]
+         set y [lindex $date 0]
+         set m [format "%0.2d" [lindex $date 1]]
+         set d [format "%0.2d" [lindex $date 2]]
+         set h [format "%0.2d" [lindex $date 3]]
+         set m [format "%0.2d" [lindex $date 4]]
+         set s [format "%0.2d" [expr int([lindex $date 5])]]
+         set date "${y}${m}${d}_${h}${m}${s}"
+      } else {
+         set date $::atos_analysis_gui::occ_date
+         regsub -all {\-} $date {}   date
+         regsub -all { }  $date {_}  date
+         regsub -all {T}  $date {_}  date
+         regsub -all {:}  $date {}   date
+         set d [split $date "."]
+         set date [lindex $d 0]
+         #regsub -all {\.} $date {_}  date
+      }
+      
+      gren_info "Date = $date\n"
     
       #Type
       if {$::atos_analysis_gui::occ_pos_type=="Code UAI"} {
@@ -1716,12 +1721,18 @@ namespace eval ::atos_analysis_gui {
          #Tset pos [split $::atos_analysis_gui::occ_pos " "]
          #Tset longw [lindex $pos 0]
       }
+
+      if {$::atos_analysis_gui::occ_tag==""} {
+         set tag  ""
+      } else {
+         set tag "_$::atos_analysis_gui::occ_tag"
+      }
       
       # Nom de l objet
       set name [::atos_analysis_gui::cleanEntities $::atos_analysis_gui::occ_obj]
       
       # Construction du fichier
-      set filename "${date}_${name}_${pos}"
+      set filename "${date}_${name}_${pos}${tag}"
       #::console::affiche_resultat "FILENAME=$filename\n"
 
 
@@ -1918,6 +1929,7 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       if {![info exists ::atos_analysis_gui::occ_pos_type]} {set ::atos_analysis_gui::occ_pos_type ""}
       if {![info exists ::atos_analysis_gui::occ_obj_name]} {set ::atos_analysis_gui::occ_obj_name ""}
       if {![info exists ::atos_analysis_gui::occ_obj_id  ]} {set ::atos_analysis_gui::occ_obj_id   ""}
+      if {![info exists ::atos_analysis_gui::occ_tag     ]} {set ::atos_analysis_gui::occ_tag      ""}
       if {![info exists ::atos_analysis_gui::prj_file_short]} {set ::atos_analysis_gui::prj_file_short ""}
       if {![info exists ::atos_analysis_gui::prj_file      ]} {set ::atos_analysis_gui::prj_file       ""}
       if {![info exists ::atos_analysis_gui::prj_dir       ]} {set ::atos_analysis_gui::prj_dir        ""}
@@ -2073,6 +2085,7 @@ catch {
       puts $chan "set ::atos_analysis_gui::occ_pos_type   \"$::atos_analysis_gui::occ_pos_type\""
       puts $chan "set ::atos_analysis_gui::occ_obj_name   \"$::atos_analysis_gui::occ_obj_name\""
       puts $chan "set ::atos_analysis_gui::occ_obj_id     \"$::atos_analysis_gui::occ_obj_id\""
+      puts $chan "set ::atos_analysis_gui::occ_tag        \"$::atos_analysis_gui::occ_tag\""
 
       puts $chan "# "
       puts $chan "# Fichiers & Repertoires"
