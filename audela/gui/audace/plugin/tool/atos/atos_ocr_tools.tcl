@@ -836,6 +836,7 @@ namespace eval ::atos_ocr_tools {
       set idframe $idframedebut
       while {$::atos_ocr_tools::sortie == 0} {
 
+         set ::atos_tools::scrollbar $idframe
          update
          #::console::affiche_resultat "."
          if {$idframe == $idframefin} {
