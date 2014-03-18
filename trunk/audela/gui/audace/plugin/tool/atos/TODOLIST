@@ -7,6 +7,7 @@ TODOLIST
             il faut surement multi la normalisation par 10000 ADU.
 
 - OCR : bug en cas d OCR , rereduir la courbe de Jerome ou Benoit.
+        ajouter tk_msgbox si moins de 2 date verifiées.
 
 - Analyse rapport : il faut garder le remplissage des champs depuis la derniere fois. 
                      arret d audela compris
