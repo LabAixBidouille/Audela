@@ -136,6 +136,7 @@ proc setup { } {
    # --- Select the type of mount
    if {$telname=="t940"} {
       set telscript($telname,mount_type) azelevrot
+      set telscript($telname,mount_type) azelev
    }
    if {$telname=="rapido"} {
       set telscript($telname,mount_type) hadec
@@ -1018,10 +1019,10 @@ proc start_shift_lent { direction } {
       }
       if { $sens == 0  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 84
+            etel_execute_command_x_s $axe 26 1 0 0 82
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 84
          }
       }
    }
@@ -1031,10 +1032,10 @@ proc start_shift_lent { direction } {
       }
       if { $sens == 1  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 85
+            etel_execute_command_x_s $axe 26 1 0 0 83
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 83
+            etel_execute_command_x_s $axe 26 1 0 0 82
          }
       }
    }
