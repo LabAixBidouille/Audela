@@ -763,7 +763,8 @@
              pack $irep -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label pour le chemin de l'AVI
-                  checkbutton $irep.v -variable ::atos_analysis_tools::irep -text "Reponse instrumentale"
+                  checkbutton $irep.v -variable ::atos_analysis_tools::irep -text "Reponse instrumentale" \
+                          -state disabled
                   pack $irep.v -side left -padx 3 -pady 1 -fill x
 
 
@@ -986,6 +987,11 @@
                        #--- Cree un label pour le chemin de l'AVI
                        entry $offsettime.v -textvariable ::atos_analysis_gui::time_offset -width 5
                        pack  $offsettime.v -side left -padx 3 -pady 1
+
+                       #--- Cree un label pour le chemin de l'AVI
+                       button $offsettime.h -text "?" -width 1 \
+                             -command "::audace::showHelpPlugin tool atos atos.htm #extraction_heure"
+                       pack  $offsettime.h -side left -padx 3 -pady 1
 
              #--- Cree un frame pour le chargement d'un fichier
              set corr_ref_titre [frame $courbe.corr_ref_titre -borderwidth 1 -cursor arrow -relief raised]
