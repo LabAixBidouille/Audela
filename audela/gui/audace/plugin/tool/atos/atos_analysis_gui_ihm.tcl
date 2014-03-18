@@ -148,7 +148,7 @@
              pack $date -in $projet -anchor s -side top -expand 0 -fill x -padx 30 -pady 5
 
                   #--- Cree un label
-                  label $date.l -text "Date : "
+                  label $date.l -text "Date (ISO): "
                   pack  $date.l -side left -anchor e
 
                   #--- Cree d'une entree pour saisir la date
@@ -968,7 +968,7 @@
                   pack $expo -in $corrtemp -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                        #--- Cree un label
-                       label $expo.l -text "Temps d'exposition theorique : "
+                       label $expo.l -text "Temps d'exposition theorique (s) : "
                        pack  $expo.l -side left -anchor e
 
                        #--- Cree un label pour le chemin de l'AVI
@@ -980,7 +980,7 @@
                   pack $offsettime -in $corrtemp -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                        #--- Cree un label
-                       label $offsettime.l -text "Saut d'integration d'une image : "
+                       label $offsettime.l -text "Saut d'integration d'une image (s) : "
                        pack  $offsettime.l -side left -anchor e
 
                        #--- Cree un label pour le chemin de l'AVI
