@@ -654,6 +654,7 @@ namespace eval ::atos_ocr_tools {
       
       # Ouverture du Flux
       ::atos_tools::open_flux $visuNo
+      array unset ::atos_ocr_tools::timing
       for  {set x 1} {$x<=$::atos_tools::nb_open_frames} {incr x} {
          set ::atos_ocr_tools::timing($x,verif) 0
          set ::atos_ocr_tools::timing($x,ocr) 0
@@ -1256,7 +1257,7 @@ namespace eval ::atos_ocr_tools {
 
          incr idframe
 
-         if {$idframe == $::atos_tools::nb_frames} {
+         if {$idframe == $::atos_tools::nb_open_frames} {
             set sortie 1
          }
 
@@ -1350,7 +1351,7 @@ namespace eval ::atos_ocr_tools {
    proc ::atos_ocr_tools::move_scroll { visuNo  } {
       
       
-      gren_info "scroll on : $::atos_tools::scrollbar - [$::atos_gui::frame(scrollbar) get]\n"
+      #gren_info "scroll on : $::atos_tools::scrollbar - [$::atos_gui::frame(scrollbar) get] - $::atos_tools::cur_idframe\n"
       ::atos_ocr_tools::workimage $visuNo 
       ::atos_ocr_tools::getinfofrm $visuNo 
    }

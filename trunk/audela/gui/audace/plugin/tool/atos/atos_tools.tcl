@@ -192,7 +192,6 @@ namespace eval ::atos_tools {
       if { $::atos_tools::traitement=="avi" }  {
          ::atos_tools_avi::set_frame $idframe
       }
-
       visu$visuNo disp
       set ::atos_tools::scrollbar [expr int($::atos_tools::cur_idframe)]
    }
