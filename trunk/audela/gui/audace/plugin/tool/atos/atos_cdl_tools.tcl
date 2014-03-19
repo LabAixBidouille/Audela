@@ -182,7 +182,7 @@ namespace eval ::atos_cdl_tools {
 
          incr idframe
 
-         if {$idframe == $::atos_tools::nb_frames} {
+         if {$idframe == $::atos_tools::nb_open_frames} {
             set sortie 1
          }
 
@@ -702,8 +702,8 @@ namespace eval ::atos_cdl_tools {
             switch $type {
                "object" {
 
-                  gren_info "verif = 1 : xy av : $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)\n"
-                  gren_info "verif = 1 : xy av : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)\n"
+                  #gren_info "verif = 1 : xy av : $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)\n"
+                  #gren_info "verif = 1 : xy av : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_ypos)\n"
 
 
                   set ::atos_cdl_tools::obj(x) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,obj_xpos)
@@ -722,8 +722,8 @@ namespace eval ::atos_cdl_tools {
                }
                "reference" {
                
-                  gren_info "verif = 1 : xy av : $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y)\n"
-                  gren_info "verif = 1 : xy av : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)\n"
+                  #gren_info "verif = 1 : xy av : $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y)\n"
+                  #gren_info "verif = 1 : xy av : $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)\n"
 
 
                   set ::atos_cdl_tools::ref(x) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos)
@@ -757,9 +757,9 @@ namespace eval ::atos_cdl_tools {
       
       switch $type {
          "object" {
-            gren_info "xy av : $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)\n"
+            #gren_info "xy av : $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)\n"
             ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $delta
-            gren_info "xy ap : $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)\n"
+            #gren_info "xy ap : $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y)\n"
          }
          "reference" {
             ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $delta
@@ -1043,6 +1043,8 @@ namespace eval ::atos_cdl_tools {
 
       set log 1
       
+      set tt0 [clock clicks -milliseconds]
+
       set frm_info_load $::atos_gui::frame(info_load)
       set frm_start     $::atos_gui::frame(buttons,start)
       set photometrie   $::atos_gui::frame(photometrie)
@@ -1086,23 +1088,28 @@ namespace eval ::atos_cdl_tools {
          set ::atos_cdl_tools::sortie 1
       }
       
-      incr ::atos_tools::cur_idframe -1
+      set ::atos_tools::cur_idframe [expr $::atos_tools::frame_begin - 1]
+        # ::console::affiche_resultat "deb cur_idframe == $::atos_tools::cur_idframe\n"
 
       while {$::atos_cdl_tools::sortie == 0} {
          
          update
-         #::console::affiche_resultat "cur_idframe == $::atos_tools::cur_idframe\n"
          #set ::atos_cdl_tools::sortie 1
          
          set idframe [expr $::atos_tools::cur_idframe +1]
-         if {$idframe > $::atos_tools::nb_frames} {break}
+
+         #::console::affiche_resultat "av cur_idframe == $::atos_tools::cur_idframe\n"
+
+         if {$idframe > $::atos_tools::frame_end} {break}
          
+         #::console::affiche_resultat "cur_idframe == $::atos_tools::cur_idframe\n"
+
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin
 
          #::console::affiche_resultat "start1 cur_idframe = $::atos_tools::cur_idframe\n"
          
          #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
-         if {$idframe == $::atos_tools::nb_frames} {
+         if {$idframe == $::atos_tools::frame_end} {
             set ::atos_cdl_tools::sortie 1
          }
 
@@ -1155,6 +1162,11 @@ namespace eval ::atos_cdl_tools {
       $frm_start configure -image .start
       $frm_start configure -relief raised
       $frm_start configure -command "::atos_cdl_tools::start $visuNo"
+
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      ::console::affiche_resultat "Traitement total en $tt secondes\n"
+
+      tk_messageBox -message "Photometrie terminée en $tt secondes" -type ok
 
    }
 
@@ -1307,12 +1319,14 @@ namespace eval ::atos_cdl_tools {
             ::console::affiche_resultat "Vidage memoire\n"
             array unset ::atos_cdl_tools::interpol
 
-            ::console::affiche_resultat "Analyse des positions verifiees\n"
+            ::console::affiche_resultat "Analyse des positions verifiees "
 
             set cpt_obj 0
             set cpt_ref 0
 
-            for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+            for {set idframe $::atos_tools::frame_begin} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+
+               set ::atos_tools::scrollbar $idframe 
 
                set pass "no"
                if {[info exists ::atos_cdl_tools::mesure($idframe,object,verif)]} {
@@ -1344,6 +1358,8 @@ namespace eval ::atos_cdl_tools {
 
 
             }
+            ::console::affiche_resultat "termine \n"
+            
             set statebutton [ $::atos_gui::frame(object,buttons).select cget -relief]
             if {$cpt_obj<2 && $statebutton=="sunken"} {
                gren_erreur "il faut avoir verifie la position de l objet sur 2 images minimum\n"
@@ -1367,18 +1383,6 @@ namespace eval ::atos_cdl_tools {
       set log 0
 
 
-      set ::atos_tools::frame_min $::atos_tools::cur_idframe
-      
-      set posmax $::atos_gui::frame(posmax)
-      set fmax [$posmax get]
-      if {$fmax==""} {
-         set ::atos_tools::frame_max [expr $::atos_tools::nb_frames + 1]
-      } else {
-         set ::atos_tools::frame_max $fmax
-      }
-      
-
-       
       switch $::atos_cdl_tools::methode_suivi {
 
          "Auto" - default {
@@ -1424,8 +1428,8 @@ namespace eval ::atos_cdl_tools {
                   }
                   if { $idfrmav == -1 || $idfrmap == -1 } {
                      if {$log} { ::console::affiche_erreur "mmm !"}
-                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_min object]
-                     set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_max object]
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_begin object]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_end   object]
                   }
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
@@ -1441,8 +1445,8 @@ namespace eval ::atos_cdl_tools {
                      #gren_info "Verifie\n"
                      return [list $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)]
                   }
-                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::cur_idframe reference]
-                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::cur_idframe reference]
+                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_begin reference]
+                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_end   reference]
                   if {$log} {::console::affiche_resultat "$idfrmav < $idfrmap"}
                   if { $idfrmav == -1 } {
                      # il faut interpoler par 2 a droite
@@ -1458,8 +1462,8 @@ namespace eval ::atos_cdl_tools {
                   }
                   if { $idfrmav == -1 || $idfrmap == -1 } {
                      if {$log} { ::console::affiche_erreur "mmm !"}
-                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_min reference]
-                     set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_max reference]
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_begin reference]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_end   reference]
                   }
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
@@ -1587,7 +1591,7 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::modif_source { visuNo type } {
 
       global color
-
+      cleanmark
       switch $type {
          "object" {
             set frm_source $::atos_gui::frame(object,values) 
@@ -1608,7 +1612,7 @@ namespace eval ::atos_cdl_tools {
 
       # le bouton valider doit etre actif "vert"
       gren_info "validbutton = $validbutton \n"
-      if {validbutton=="raised"} { return }
+      #if {$validbutton=="raised"} { return }
       
       
       set err [ catch {set rect  [ ::confVisu::getBox $visuNo ]} msg ]
@@ -1676,7 +1680,7 @@ namespace eval ::atos_cdl_tools {
        set id $idframe
        while {$stop == 0} {
           incr id
-          if {$id > $::atos_tools::frame_max} { break }
+          if {$id > $::atos_tools::frame_end} { break }
           if {$::atos_cdl_tools::mesure($id,$type,verif) == 1} {
              return $id
           }
@@ -1992,7 +1996,13 @@ namespace eval ::atos_cdl_tools {
 
    proc ::atos_cdl_tools::move_scroll { visuNo } {
 
+      cleanmark
+
       set scrollbar $::atos_gui::frame(scrollbar)
+      catch { ::atos_cdl_tools::set_gui_source $visuNo "object" }
+      catch { ::atos_cdl_tools::set_gui_source $visuNo "reference" }
+      
+      
       #::atos_ocr_tools::workimage $visuNo $frm
       #::atos_ocr_tools::getinfofrm $visuNo $frm
    }
