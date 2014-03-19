@@ -195,7 +195,6 @@ namespace eval ::atos_tools {
 
       visu$visuNo disp
       set ::atos_tools::scrollbar [expr int($::atos_tools::cur_idframe)]
-
    }
 
 

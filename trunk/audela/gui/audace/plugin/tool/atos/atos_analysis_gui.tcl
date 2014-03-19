@@ -1122,6 +1122,7 @@ namespace eval ::atos_analysis_gui {
       
          # Mode immersion
          set ::atos_analysis_tools::mode -1
+         set type "Immersion"
 
          # 
          # on a 5 secondes dans lesquelles on va mesurer l instant
@@ -1234,8 +1235,9 @@ namespace eval ::atos_analysis_gui {
       
       if {$e==1} {
       
-         # Mode immersion
+         # Mode Emersion
          set ::atos_analysis_tools::mode 1
+         set type "Emersion"
 
          # 
          # on a 5 secondes dans lesquelles on va mesurer l instant
@@ -1362,6 +1364,8 @@ namespace eval ::atos_analysis_gui {
       .audace.atos_analysis.frm_atos_analysis_gui.onglets.nb.f6.frm.calcul.blockcentre.but_calc configure -image .calc
       .audace.atos_analysis.frm_atos_analysis_gui.onglets.nb.f7.frm.calcul.blockcentre.but_calc configure -image .calc
       set ::atos_analysis_gui::but_calcul "Calcul"
+
+       tk_messageBox -message "Calcul $type terminé" -type ok
 
       ::atos_analysis_gui::affiche_graphe
       
