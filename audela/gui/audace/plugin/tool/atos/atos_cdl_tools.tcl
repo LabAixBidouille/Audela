@@ -52,7 +52,7 @@ namespace eval ::atos_cdl_tools {
 
       set filename [::atos_ocr_tools::get_filename_time]
       if { [file exists $filename] } {
-         set reponse [tk_messageBox -message "Un fichier 'time' a été trouvé\nVoulez vous l'associer ?" -type yesno]
+         set reponse [tk_messageBox -message "Un fichier 'time' a ete trouve\nVoulez vous l'associer ?" -type yesno]
          if { $reponse == "yes"} {
             set f [open $filename "r"]
             set cpt 0
@@ -1365,6 +1365,19 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::suivi_get_pos { type } {
       
       set log 0
+
+
+      set ::atos_tools::frame_min $::atos_tools::cur_idframe
+      
+      set posmax $::atos_gui::frame(posmax)
+      set fmax [$posmax get]
+      if {$fmax==""} {
+         set ::atos_tools::frame_max [expr $::atos_tools::nb_frames + 1]
+      } else {
+         set ::atos_tools::frame_max $fmax
+      }
+      
+
        
       switch $::atos_cdl_tools::methode_suivi {
 
@@ -1411,8 +1424,8 @@ namespace eval ::atos_cdl_tools {
                   }
                   if { $idfrmav == -1 || $idfrmap == -1 } {
                      if {$log} { ::console::affiche_erreur "mmm !"}
-                     set idfrmav [ ::atos_cdl_tools::get_idfrmap 0 object]
-                     set idfrmap [ ::atos_cdl_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] object]
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_min object]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_max object]
                   }
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
@@ -1445,8 +1458,8 @@ namespace eval ::atos_cdl_tools {
                   }
                   if { $idfrmav == -1 || $idfrmap == -1 } {
                      if {$log} { ::console::affiche_erreur "mmm !"}
-                     set idfrmav [ ::atos_cdl_tools::get_idfrmap 0 reference]
-                     set idfrmap [ ::atos_cdl_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] reference]
+                     set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_min reference]
+                     set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_max reference]
                   }
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
@@ -1573,7 +1586,69 @@ namespace eval ::atos_cdl_tools {
 
    proc ::atos_cdl_tools::modif_source { visuNo type } {
 
-   }
+      global color
+
+      switch $type {
+         "object" {
+            set frm_source $::atos_gui::frame(object,values) 
+            set select $::atos_gui::frame(object,buttons).select
+            set valid $::atos_gui::frame(object,buttons).verifier
+         }
+         "reference" {
+            set frm_source $::atos_gui::frame(reference,values) 
+            set valid $::atos_gui::frame(reference,buttons).verifier
+         }
+      }
+
+      set selectbutton [ $select cget -relief]
+      set validbutton  [ $valid cget -bg]
+
+      # le bouton select doit etre actif "coch�"
+      if {$selectbutton=="raised"} { return }
+
+      # le bouton valider doit etre actif "vert"
+      gren_info "validbutton = $validbutton \n"
+      if {validbutton=="raised"} { return }
+      
+      
+      set err [ catch {set rect  [ ::confVisu::getBox $visuNo ]} msg ]
+
+      if {$err>0 || $rect ==""} {
+         ::console::affiche_erreur "$msg\n"
+         ::console::affiche_erreur "      * * * *\n"
+         ::console::affiche_erreur "Selectionnez un cadre dans l'image\n"
+         ::console::affiche_erreur "      * * * *\n"
+         $frm_source.position configure -text "Selectionnez un cadre" -fg $color(red)
+         return
+      }
+
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set err [ catch {set valeurs  [::atos_photom::select_obj $rect $bufNo]} msg ]
+
+      if {$err>0} {
+         ::console::affiche_erreur "$msg\n"
+         ::console::affiche_erreur "      * * * *\n"
+         ::console::affiche_erreur "Mesure Photometrique impossible\n"
+         ::console::affiche_erreur "      * * * *\n"
+         $frm_source.position configure -text "Error" -fg $color(red)
+         return
+      }
+
+      set xsm [lindex $valeurs 0]
+      set ysm [lindex $valeurs 1]
+
+      $frm_source.delta delete 0 end
+      $frm_source.delta insert 0 $::atos_cdl_tools::delta
+
+      switch $type {
+         "object" {
+            ::atos_cdl_tools::mesure_obj $xsm $ysm $visuNo $::atos_cdl_tools::delta
+         }
+         "reference" {
+            ::atos_cdl_tools::mesure_ref $xsm $ysm $visuNo $::atos_cdl_tools::delta
+         }
+      }
+   }  ; # Fin proc
 
 
 
@@ -1601,7 +1676,7 @@ namespace eval ::atos_cdl_tools {
        set id $idframe
        while {$stop == 0} {
           incr id
-          if {$id > $::atos_tools::nb_frames} { break }
+          if {$id > $::atos_tools::frame_max} { break }
           if {$::atos_cdl_tools::mesure($id,$type,verif) == 1} {
              return $id
           }

@@ -129,10 +129,17 @@ package require math::linearalgebra
 
 
    proc ::atos_analysis_tools::correction_refetoile { } {
+      set medobj ""
+      for {set i 1} {$i<=$::atos_analysis_tools::raw_nbframe} {incr i} {
+         lappend medobj $::atos_analysis_tools::finalcdl($i,obj_fint)
+      }
+      set medobj [::math::statistics::median $medobj]
+      gre_info "Valeur du flux median de l objet : $medobj\n"
 
+      gre_info "Normalisation de la courbe par une etoile de reference\n"
       for {set i 1} {$i<=$::atos_analysis_tools::raw_nbframe} {incr i} {
          if {![info exists ::atos_analysis_tools::finalcdl($i,ref_fint)]} {continue}
-         set ::atos_analysis_tools::finalcdl($i,obj_fint) [expr $::atos_analysis_tools::finalcdl($i,obj_fint) / $::atos_analysis_tools::finalcdl($i,ref_fint)]
+         set ::atos_analysis_tools::finalcdl($i,obj_fint) [expr $::atos_analysis_tools::finalcdl($i,obj_fint) / $::atos_analysis_tools::finalcdl($i,ref_fint) * $medobj]
       }
 
    }

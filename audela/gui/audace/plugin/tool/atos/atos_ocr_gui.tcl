@@ -469,6 +469,8 @@ namespace eval ::atos_ocr_gui {
                 entry $frm.posmin -fg $color(blue) -relief sunken
                 pack $frm.posmin -in $frm.pos.min -side top -pady 1 -anchor w
 
+                set ::atos_gui::frame(posmin) $frm.posmin
+
 
              #--- Cree un frame pour afficher
              frame $frm.pos.max -borderwidth 0
@@ -480,6 +482,8 @@ namespace eval ::atos_ocr_gui {
                 #--- Cree un label pour
                 entry $frm.posmax -fg $color(blue) -relief sunken
                 pack $frm.posmax -in $frm.pos.max -side top -pady 1 -anchor w
+
+                set ::atos_gui::frame(posmax) $frm.posmax
 
              #--- Creation du bouton setmax
              button $frm.pos.crop \
@@ -826,6 +830,8 @@ namespace eval ::atos_ocr_gui {
               -in $frm.action \
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+
+           set ::atos_gui::frame(buttons,start) $frm.action.start
 
            button $frm.action.graph -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
