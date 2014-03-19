@@ -1,5 +1,7 @@
 TODOLIST
 
+ca devrait etre reglé mais pas testé par manque de temps
+
 - cdl : faire les boutons "modifier"
 - OCR : bug en cas d OCR , rereduire la courbe de Jerome ou Benoit.
         ajouter tk_msgbox si moins de 2 date verifiées.
@@ -11,7 +13,7 @@ TODOLIST
 
 
 
-
+todo continue ...
 
 
 

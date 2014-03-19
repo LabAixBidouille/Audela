@@ -266,6 +266,8 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::set_frame { idframe } {
 
+#      gren_info "$::atos_tools::cur_idframe $::atos_tools::frame_end $::atos_tools::frame_begin\n"
+
       set nbf [expr  $::atos_tools::nb_open_frames * 1.0]
 
       if {$idframe > $::atos_tools::frame_end} {
@@ -281,7 +283,7 @@ namespace eval ::atos_tools_avi {
 
       #::console::affiche_resultat "set_frame idframe = $idframe ; pc = $pc\n"
 
-      ::atos_tools_avi::avi1 seektoframe [expr $idframe - $::atos_tools::frame_begin ]
+      ::atos_tools_avi::avi1 seektoframe [expr $idframe -1 ]
       #::atos_tools_avi::avi1 seekpercent $pc
 
       set ::atos_tools::cur_idframe [expr int($idframe-1)]
