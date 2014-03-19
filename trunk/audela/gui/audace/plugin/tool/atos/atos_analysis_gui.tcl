@@ -1028,6 +1028,8 @@ namespace eval ::atos_analysis_gui {
          return
       }
 
+      set tt0 [clock clicks -milliseconds]
+
       # On averti qu on va commencer le calcul       
       # BOUTTONS CALCUL -> mode WAIT
       .audace.atos_analysis.frm_atos_analysis_gui.onglets.nb.f6.frm.calcul.blockcentre.but_calc configure -image .stop
@@ -1365,7 +1367,10 @@ namespace eval ::atos_analysis_gui {
       .audace.atos_analysis.frm_atos_analysis_gui.onglets.nb.f7.frm.calcul.blockcentre.but_calc configure -image .calc
       set ::atos_analysis_gui::but_calcul "Calcul"
 
-       tk_messageBox -message "Calcul $type terminé" -type ok
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      ::console::affiche_resultat "Traitement total en $tt secondes\n"
+
+       tk_messageBox -message "Calcul $type terminé en $tt secondes" -type ok
 
       ::atos_analysis_gui::affiche_graphe
       
