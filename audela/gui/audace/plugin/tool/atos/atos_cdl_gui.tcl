@@ -287,7 +287,7 @@ namespace eval ::atos_cdl_gui {
              #--- Creation du bouton select
              button $frm.open.but_select \
                 -text "..." -borderwidth 2 -takefocus 1 \
-                -command "::atos_cdl_tools::select $visuNo $frm"
+                -command "::atos_cdl_tools::select $visuNo"
              pack $frm.open.but_select \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
