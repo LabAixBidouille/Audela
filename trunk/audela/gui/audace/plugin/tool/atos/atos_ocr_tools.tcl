@@ -159,7 +159,14 @@ namespace eval ::atos_ocr_tools {
       set minp [scan [lindex $t 1] "%d"]
       set sp   [scan [lindex $t 2] "%d"]
       set msp  [scan [lindex $poslist 1] "%d"]
+
       if {$log == 1} { ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: " }
+      
+      if { ! ( [string is double $hp] && [string is double $minp] \
+           && [string is double $sp] && [string is double $msp] ) } {
+         return [list "no" 0 0 0 0 ]     
+      }
+
       set hdp  [expr $hp + $minp/60.0 + ($sp+$msp/10000.0)/3600.0]
 
       # Recuperation de l'heure depuis l'image impaire
@@ -170,6 +177,12 @@ namespace eval ::atos_ocr_tools {
       set si   [scan [lindex $t 2] "%d"]
       set msi  [scan [lindex $poslist 1] "%d"]
       if {$log == 1} { ::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: " }
+
+      if { ! ( [string is double $hi] && [string is double $mini] \
+           && [string is double $si] && [string is double $msi] ) } {
+         return [list "no" 0 0 0 0 ]     
+      }
+
       set hdi  [expr $hi + $mini/60.0 + ($si+$msi/10000.0)/3600.0]
 
       # L'heure la plus petite est le milieu de pose
@@ -638,6 +651,11 @@ namespace eval ::atos_ocr_tools {
       ::atos_ocr_tools::open_flux $visuNo
    }
 
+
+
+
+
+
    proc ::atos_ocr_tools::open_flux { visuNo } {
       
       set datetime $::atos_gui::frame(datetime)
@@ -690,7 +708,15 @@ namespace eval ::atos_ocr_tools {
 
       ::console::affiche_resultat "Extraction des OCR ...\n"
 
-      set ::atos_tools::frame_min $::atos_tools::cur_idframe
+      set idframebegin $::atos_tools::cur_idframe
+
+      set posmin $::atos_gui::frame(posmin)
+      set fmin [$posmin get]
+      if {$fmin==""} {
+         set ::atos_tools::frame_min 1
+      } else {
+         set ::atos_tools::frame_min $fmin
+      }
       
       set posmax $::atos_gui::frame(posmax)
       set fmax [$posmax get]
@@ -704,7 +730,7 @@ namespace eval ::atos_ocr_tools {
       set action $::atos_gui::frame(action)
       set datetime $::atos_gui::frame(datetime)
 
-      if { $::atos_ocr_tools::timing($::atos_tools::frame_min,verif) != 1 } {
+      if { $::atos_ocr_tools::timing($idframebegin,verif) != 1 } {
           tk_messageBox -message "Veuillez commencer par une image verifiee" -type ok
           return
       }
@@ -720,10 +746,10 @@ namespace eval ::atos_ocr_tools {
       set ::atos_ocr_tools::nbocr 0
       set ::atos_ocr_tools::nbinterp 0
 
-      ::console::affiche_resultat "Vidage memoire\n"
-      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
-            set ::atos_ocr_tools::timing($idframe,jd) ""
-      }
+#      ::console::affiche_resultat "Vidage memoire\n"
+#      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+#            set ::atos_ocr_tools::timing($idframe,jd) ""
+#      }
 
       ::console::affiche_resultat "Analyse des dates verifiees\n"
       set cpt 0
@@ -862,7 +888,7 @@ namespace eval ::atos_ocr_tools {
       set cpt
       set cptbad  0
       
-      set idframe $::atos_tools::frame_min
+      set idframe $idframebegin
       while {$::atos_ocr_tools::sortie == 0} {
 
          set ::atos_tools::scrollbar $idframe
@@ -872,15 +898,17 @@ namespace eval ::atos_ocr_tools {
             set ::atos_ocr_tools::sortie 1
          }
 
-         if {$::atos_ocr_tools::timing($idframe,ocr) == 1} {
+
+         if {$::atos_ocr_tools::timing($idframe,ocr) == 1 \
+          && $::atos_ocr_tools::timing($idframe,verif) != 1} {
 
             # OK on interpole ! pour verifier la difference avec l ocr
 
-            set idfrmap [ ::atos_ocr_tools::get_idfrmap $idframe 1]
+            set idfrmap [ ::atos_ocr_tools::get_idfrmap $idframe 2]
             set idfrmav [ ::atos_ocr_tools::get_idfrmav $idframe 2]
 
             if { $idfrmav == -1 || $idfrmap == -1 } {
-               set idfrmav [::atos_ocr_tools::get_idfrmap $::atos_tools::frame_min 1]
+               set idfrmav [::atos_ocr_tools::get_idfrmap $idframebegin 1]
                set idfrmap [::atos_ocr_tools::get_idfrmav $::atos_tools::frame_max 1]
             }
 
@@ -891,6 +919,9 @@ namespace eval ::atos_ocr_tools {
             }
             set jdav $::atos_ocr_tools::timing($idfrmav,jd)
             set jdap $::atos_ocr_tools::timing($idfrmap,jd)
+           
+            #gren_erreur "$idframe : $::atos_ocr_tools::timing($idframe,dateiso) \n"
+            #gren_erreur "$idframe jdav jdap : ($jdav) ($jdap) $idfrmav $idfrmap \n"
 
             set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
             set jd [format "%6.10f" $jd]
@@ -919,7 +950,7 @@ namespace eval ::atos_ocr_tools {
 
       set ::atos_ocr_tools::sortie 0
 
-      set idframe $::atos_tools::frame_min
+      set idframe $idframebegin
       incr idframe -1 
       
       while {$::atos_ocr_tools::sortie == 0} {
@@ -983,7 +1014,7 @@ namespace eval ::atos_ocr_tools {
 #          set y_avg 0
 #          set cpt 0
 #          set ::atos_ocr_tools::sortie 0
-#          set idframe $::atos_tools::frame_min
+#          set idframe $idframebegin
 #          while {$::atos_ocr_tools::sortie == 0} {
 #             if {$idframe == $idframefin} {
 #                set ::atos_ocr_tools::sortie 1
@@ -1007,7 +1038,7 @@ namespace eval ::atos_ocr_tools {
 #          set sum2 0
 #          set cpt 0
 #          set ::atos_ocr_tools::sortie 0
-#          set idframe $::atos_tools::frame_min
+#          set idframe $idframebegin
 #          while {$::atos_ocr_tools::sortie == 0} {
 #             if {$idframe == $idframefin} {
 #                set ::atos_ocr_tools::sortie 1
@@ -1029,7 +1060,7 @@ namespace eval ::atos_ocr_tools {
 #          ::console::affiche_resultat "Comparaison\n"
 #
 #          set ::atos_ocr_tools::sortie 0
-#          set idframe $::atos_tools::frame_min
+#          set idframe $idframebegin
 #          while {$::atos_ocr_tools::sortie == 0} {
 #             if {$idframe == $idframefin} {
 #                set ::atos_ocr_tools::sortie 1
@@ -1064,7 +1095,7 @@ namespace eval ::atos_ocr_tools {
       $action.start configure -relief raised
       $action.start configure -command "::atos_ocr_tools::start $visuNo"
 
-      ::atos_tools::set_frame $visuNo $::atos_tools::frame_min
+      ::atos_tools::set_frame $visuNo $idframefin
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
       ::console::affiche_resultat "Traitement en $tt secondes\n"
@@ -1072,6 +1103,9 @@ namespace eval ::atos_ocr_tools {
       ::console::affiche_resultat "Traitement total en $tt secondes\n"
 
       ::console::affiche_resultat "Fin\n"
+
+      tk_messageBox -message "Datation terminée en $tt secondes" -type ok
+      
 
       update
    }

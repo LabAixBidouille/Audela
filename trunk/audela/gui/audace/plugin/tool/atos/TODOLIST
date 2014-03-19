@@ -15,7 +15,11 @@ ca devrait etre reglé mais pas testé par manque de temps
 
 todo continue ...
 
-
+- CDL : si sommation d image alors calculer la moyenne temporelle entre chaque bloc
+        et faire un tk_msg pour dire que le resultat final doit etre sommé par la moyenne
+        obtenue /2.
+        ou faire le calcul directement si le bouton sommation est validé
+        
 - Open flux -> Cancel genere une erreur (variable nb_frames inconnue)
   a tester dans datation, extraction et photometrie
 

@@ -200,14 +200,15 @@ namespace eval ::atos_tools_avi {
    proc ::atos_tools_avi::next_image { } {
 
       #::console::affiche_resultat "\nnext_image deb : $::atos_tools::cur_idframe \n"
-      ::atos_tools_avi::avi1 next
       set ::atos_tools::cur_idframe [expr int($::atos_tools::cur_idframe + 1)]
       if { $::atos_tools::cur_idframe > $::atos_tools::frame_end } {
          set ::atos_tools::cur_idframe $::atos_tools::frame_end
+      } else {
+         ::atos_tools_avi::avi1 next
       }
       #::console::affiche_resultat "next_image fin : $::atos_tools::cur_idframe \n"
 
-      set nbf [expr  $::atos_tools::nb_open_frames * 1.0]
+      set nbf [expr  $::atos_tools::nb_frames * 1.0]
       set pc [expr ($::atos_tools::cur_idframe-1) / ($nbf+1.0) ]
       #::console::affiche_resultat "next_image idframe = $::atos_tools::cur_idframe ; pc = $pc\n"
 
