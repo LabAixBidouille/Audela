@@ -16,6 +16,10 @@ ca devrait etre reglé mais pas testé par manque de temps
 todo continue ...
 
 
+- Open flux -> Cancel genere une erreur (variable nb_frames inconnue)
+  a tester dans datation, extraction et photometrie
+
+- tester le CROP dans une liste d'images (et pas une video)
 
 - Analyse rapport : il faut garder le remplissage des champs dans la session audela. 
 
