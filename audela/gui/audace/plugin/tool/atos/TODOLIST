@@ -1,14 +1,6 @@
 TODOLIST
-
-ca devrait etre reglé mais pas testé par manque de temps
-
-- Analyse : Popup de fin de calcul
-- Analyse : calcul des champs "Temps de pose sans temps mort" dans les calculs
-            d immersion et d emersion.
-- Analyse : probleme de calcul de l emersion lorsque corrigee d une reference
-            il faut surement multi la normalisation par 10000 ADU.
-
-todo continue ...
+- CDL : a la lecture du fichier time demander a l utilisateur s il veut croper 
+        sur les donnees temporelles existantes
 
 - Analyse : correction des paquets d image : mettre 0 ne marche pas
 
