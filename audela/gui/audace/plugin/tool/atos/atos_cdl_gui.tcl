@@ -382,7 +382,7 @@ namespace eval ::atos_cdl_gui {
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
                 -text "setmin" -borderwidth 2 \
-                -command "::atos_tools::setmin $frm"
+                -command "::atos_tools::setmin"
              pack $frm.pos.setmin \
                 -in $frm.pos \
                 -side left -anchor w \
@@ -391,7 +391,7 @@ namespace eval ::atos_cdl_gui {
              #--- Creation du bouton setmax
              button $frm.pos.setmax \
                 -text "setmax" -borderwidth 2 \
-                -command "::atos_tools::setmax $frm"
+                -command "::atos_tools::setmax"
              pack $frm.pos.setmax \
                 -in $frm.pos \
                 -side left -anchor w \
