@@ -555,6 +555,8 @@ package require math::linearalgebra
       close $chan28
 
       #-----------------------------------------------------------------------------
+      
+      set tt0 [clock clicks -milliseconds]
 
       while { $::atos_analysis_tools::t0<=$::atos_analysis_tools::t0_max} {
 
@@ -739,7 +741,10 @@ package require math::linearalgebra
          set ::atos_analysis_tools::t0 [expr $::atos_analysis_tools::t0 + $::atos_analysis_tools::pas_heure]
 
          set ::atos_analysis_tools::percent [format "%.2f" [expr ($::atos_analysis_tools::t0-$::atos_analysis_tools::t0_min)/($::atos_analysis_tools::t0_max-$::atos_analysis_tools::t0_min)*100.0]]
-         ::console::affiche_resultat "$::atos_analysis_tools::percent ---------------------------------------------------\n"
+         set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+         set reste [expr $tt / $::atos_analysis_tools::percent * ( 100.0 - $::atos_analysis_tools::percent) / 60.0 ]
+         set reste [format "%.1f" $reste ]
+         ::console::affiche_resultat "$::atos_analysis_tools::percent % fini dans $reste min---------------------------------------------------\n"
 
          if {$::atos_analysis_tools::but_calcul=="Stop"} {return}
 

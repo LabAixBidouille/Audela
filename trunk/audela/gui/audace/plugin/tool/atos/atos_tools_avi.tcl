@@ -208,8 +208,8 @@ namespace eval ::atos_tools_avi {
       }
       #::console::affiche_resultat "next_image fin : $::atos_tools::cur_idframe \n"
 
-      set pc [expr ($::atos_tools::cur_idframe-1) / ($::atos_tools::nb_frames+1.0) ]
-      ::console::affiche_resultat "next_image idframe = $::atos_tools::cur_idframe ; pc = $pc\n"
+      #set pc [expr ($::atos_tools::cur_idframe-1) / ($::atos_tools::nb_frames+1.0) ]
+      #::console::affiche_resultat "next_image idframe = $::atos_tools::cur_idframe ; pc = $pc\n"
 
    }
 
@@ -279,9 +279,9 @@ namespace eval ::atos_tools_avi {
       }
 
       set ::atos_tools::cur_idframe [expr int($idframe)]
-      set pc [expr ($idframe-1) / ($nbf+1.0) ]
+      #set pc [expr ($idframe-1) / ($nbf+1.0) ]
 
-      ::console::affiche_resultat "set_frame idframe = $idframe ; pc = $pc\n"
+      #::console::affiche_resultat "set_frame idframe = $idframe ; pc = $pc\n"
 
       ::atos_tools_avi::avi1 seektoframe [expr $idframe -1 ]
       #::atos_tools_avi::avi1 seekpercent $pc
@@ -289,7 +289,7 @@ namespace eval ::atos_tools_avi {
       set ::atos_tools::cur_idframe [expr $idframe -1]
 
       ::atos_tools_avi::next_image
-      ::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n"
+      #::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n"
 
       set ::atos_tools::cur_idframe [expr int($idframe)]
       #::console::affiche_resultat "set_frame cur_idframe fin = $::atos_tools::cur_idframe\n"
