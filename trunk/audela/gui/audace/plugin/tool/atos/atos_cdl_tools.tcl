@@ -1088,7 +1088,8 @@ namespace eval ::atos_cdl_tools {
          set ::atos_cdl_tools::sortie 1
       }
       
-      set ::atos_tools::cur_idframe [expr $::atos_tools::frame_begin - 1]
+     # set ::atos_tools::cur_idframe [expr $::atos_tools::frame_begin - 1]
+      set ::atos_tools::cur_idframe [expr $::atos_tools::cur_idframe - 1]
         # ::console::affiche_resultat "deb cur_idframe == $::atos_tools::cur_idframe\n"
 
       while {$::atos_cdl_tools::sortie == 0} {
@@ -1106,7 +1107,7 @@ namespace eval ::atos_cdl_tools {
 
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin
 
-         #::console::affiche_resultat "start1 cur_idframe = $::atos_tools::cur_idframe\n"
+         ::console::affiche_resultat "start1 cur_idframe = $::atos_tools::cur_idframe - $idframe\n"
          
          #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
          if {$idframe == $::atos_tools::frame_end} {
@@ -1166,7 +1167,9 @@ namespace eval ::atos_cdl_tools {
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       ::console::affiche_resultat "Traitement total en $tt secondes\n"
 
-      tk_messageBox -message "Photometrie terminée en $tt secondes" -type ok
+      if {$idframe >= $::atos_tools::frame_end} {
+         tk_messageBox -message "Photometrie terminée en $tt secondes" -type ok
+      }
 
    }
 
@@ -1704,8 +1707,9 @@ namespace eval ::atos_cdl_tools {
       ::plotxy::hold on 
       ::plotxy::position {0 0 600 400}
       ::plotxy::title "Courbe du temps pour $type" 
-      ::plotxy::xlabel "Time (jd)" 
-      ::plotxy::ylabel "id frame" 
+      #::plotxy::xlabel "Time (jd)" 
+      ::plotxy::xlabel "id frame" 
+      ::plotxy::ylabel "Flux" 
 
       set x ""
       set y ""
@@ -1752,24 +1756,24 @@ namespace eval ::atos_cdl_tools {
 
             if {$::atos_cdl_tools::mesure($idframe,$type,verif) == 1} {
 
-               lappend x_verif $jd  
+               lappend x_verif $idframe  
                lappend y_verif $flux
-               lappend x $jd  
+               lappend x $idframe  
                lappend y $flux
                continue
 
             } else {
 
-               lappend x_interpol $jd  
+               lappend x_interpol $idframe  
                lappend y_interpol $flux
-               lappend x $jd  
+               lappend x $idframe  
                lappend y $flux
                continue
             }
 
          } else {
 
-            lappend x $jd  
+            lappend x $idframe  
             lappend y $flux
             continue
 
