@@ -423,6 +423,9 @@ namespace eval ::atos_cdl_tools {
       # Mesure le photocentre
       set err [ catch { set valeurs  [::atos_photom::mesure_obj $xsm $ysm $delta $bufNo] } msg ]
 
+      gren_info "mesure_obj: $::atos_tools::cur_idframe [lindex $valeurs 5] \n"
+      
+      
       if {$err>0} {
          ::console::affiche_erreur $msg
          $objet.position  configure -text "?" -fg $color(blue)
@@ -980,6 +983,8 @@ namespace eval ::atos_cdl_tools {
       set ::atos_cdl_tools::mesure($idframe,obj_snint)     [$frm_objet.snint     cget -text]
       set ::atos_cdl_tools::mesure($idframe,obj_snpx)      [$frm_objet.snpx      cget -text]
 
+      gren_info "set_mesure_from_gui: $idframe ::  $::atos_ocr_tools::timing($idframe,dateiso) ::  $::atos_cdl_tools::mesure($idframe,obj_fint)\n"
+
       set position  [$frm_objet.position  cget -text]
       set poslist [split $position "/"]
       set ::atos_cdl_tools::mesure($idframe,obj_xpos) [lindex $poslist 0]
@@ -1089,11 +1094,12 @@ namespace eval ::atos_cdl_tools {
       }
       
      # set ::atos_tools::cur_idframe [expr $::atos_tools::frame_begin - 1]
-      set ::atos_tools::cur_idframe [expr $::atos_tools::cur_idframe - 1]
+     # set ::atos_tools::cur_idframe [expr $::atos_tools::cur_idframe - 1]
         # ::console::affiche_resultat "deb cur_idframe == $::atos_tools::cur_idframe\n"
 
       while {$::atos_cdl_tools::sortie == 0} {
          
+         ::console::affiche_resultat "---\n"
          update
          #set ::atos_cdl_tools::sortie 1
          
@@ -1107,6 +1113,7 @@ namespace eval ::atos_cdl_tools {
 
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin
 
+         
          ::console::affiche_resultat "start1 cur_idframe = $::atos_tools::cur_idframe - $idframe\n"
          
          #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
@@ -1116,9 +1123,8 @@ namespace eval ::atos_cdl_tools {
 
          cleanmark
 
-         set statebutton [ $select_objet cget -relief]
-
-         if { $statebutton == "sunken" } {
+         # Mesure de l objet
+         if { [ $select_objet cget -relief] == "sunken" } {
             set delta [ $frm_objet.delta get]
 
             set r [::atos_cdl_tools::suivi_get_pos object]
@@ -1132,8 +1138,8 @@ namespace eval ::atos_cdl_tools {
             }
          }
 
-         set statebutton [ $select_reference cget -relief]
-         if { $statebutton == "sunken" } {
+         # Mesure de la refernce
+         if { [ $select_reference cget -relief] == "sunken" } {
             set delta [ $frm_reference.delta get]
 
             set r [::atos_cdl_tools::suivi_get_pos reference]
@@ -1146,11 +1152,15 @@ namespace eval ::atos_cdl_tools {
                ::atos_cdl_tools::stop $visuNo 
             }
          }
-
-         set statebutton [ $select_image cget -relief]
-         if { $statebutton == "sunken" } {
+         
+         # Mesure de l image
+         if { [ $select_image cget -relief] == "sunken" } {
             ::atos_cdl_tools::get_fullimg $visuNo
          }
+         
+         # Mise a jour des mesures
+         
+         ::console::affiche_resultat "idframe passe a set_mesure_from_gui = $::atos_tools::cur_idframe - $idframe\n"
          ::atos_cdl_tools::set_mesure_from_gui $idframe
 
          if {$sum>1} {incr ::atos_tools::cur_idframe [expr $sum-1]}
@@ -1178,24 +1188,38 @@ namespace eval ::atos_cdl_tools {
 
       #::console::affiche_resultat "sn start cur_idframe = $::atos_tools::cur_idframe\n"
       set geometrie     $::atos_gui::frame(geometrie)
+      set relief [$geometrie.buttons.launch cget -relief]
 
  
-      if {$sum==1&&$bin==1} {
-         ::atos_tools::next_image $visuNo
-         return
-      }
-      if {$sum>1} {
-         ::atos_tools::next_image $visuNo novisu
-         #::console::affiche_resultat "sn cur_idframe $sum = $::atos_tools::cur_idframe\n"
-         set idsav  $::atos_tools::cur_idframe
-         ::atos_cdl_tools::read_sum $visuNo $sum
-         #::console::affiche_resultat "sn m cur_idframe $sum = $::atos_tools::cur_idframe\n"
+      if {$relief=="raised"} {
 
-         set ::atos_tools::cur_idframe $idsav
-         set ::atos_tools::scrollbar $idsav 
+         ::atos_tools::next_image $visuNo
+
+      } else {
+
+         if {$sum>1} {
+            ::atos_tools::next_image $visuNo novisu
+            #::console::affiche_resultat "sn cur_idframe $sum = $::atos_tools::cur_idframe\n"
+            set idsav  $::atos_tools::cur_idframe
+            ::atos_cdl_tools::read_sum $visuNo $sum
+            #::console::affiche_resultat "sn m cur_idframe $sum = $::atos_tools::cur_idframe\n"
+
+            set ::atos_tools::cur_idframe $idsav
+            set ::atos_tools::scrollbar $idsav 
+
+         }     
 
       }     
-      #::console::affiche_resultat "sn end cur_idframe = $::atos_tools::cur_idframe\n"
+      ::console::affiche_resultat "sn end cur_idframe = $::atos_tools::cur_idframe\n"
+      if { $::atos_tools::cur_idframe == 29044 } {
+         buf1 save aa44.fit
+      }
+      if { $::atos_tools::cur_idframe == 28923 } {
+         buf1 save 28923.fit
+      }
+      if { $::atos_tools::cur_idframe == 28924 } {
+         buf1 save 28924.fit
+      }
       
    }
 
