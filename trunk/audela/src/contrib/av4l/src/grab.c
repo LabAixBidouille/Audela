@@ -913,7 +913,7 @@ int video_open(struct video_context_s *vc, const char *path)
 
     if(1)
     {
-        // Resets the cropping rectangle.
+        // Try to reset the cropping rectangle.
 
         struct v4l2_cropcap cropcap;
         struct v4l2_crop crop;
@@ -921,42 +921,42 @@ int video_open(struct video_context_s *vc, const char *path)
 
         memset(&cropcap,0,sizeof(cropcap));
         cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        if( (rc = ioctl(vc->fd, VIDIOC_CROPCAP, &cropcap)) < 0 ) {
-            perror("VIDIOC_CROPCAP");
-            xabort();
-        }
+        if( (rc = ioctl(vc->fd, VIDIOC_CROPCAP, &cropcap)) >= 0 ) {
 
-        if(0) {
-            printf("CROPCAP\n");
-            printf(" %d %d %d %d\n", cropcap.bounds.left, cropcap.bounds.top,
-                    cropcap.bounds.width, cropcap.bounds.height);
-            printf(" %d %d %d %d\n", cropcap.defrect.left, cropcap.defrect.top,
-                    cropcap.defrect.width, cropcap.defrect.height);
-        }
+            if(0) {
+                printf("CROPCAP\n");
+                printf(" %d %d %d %d\n", cropcap.bounds.left, cropcap.bounds.top,
+                        cropcap.bounds.width, cropcap.bounds.height);
+                printf(" %d %d %d %d\n", cropcap.defrect.left, cropcap.defrect.top,
+                        cropcap.defrect.width, cropcap.defrect.height);
+            }
 
 
-        memset (&crop, 0, sizeof (crop));
-        crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+            memset (&crop, 0, sizeof (crop));
+            crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-        if (-1 == ioctl (vc->fd, VIDIOC_G_CROP, &crop)) {
-            if (errno == EINVAL) {
-                /* Ignore if cropping is not supported (EINVAL). */
+            if (-1 == ioctl (vc->fd, VIDIOC_G_CROP, &crop)) {
+                if (errno == EINVAL) {
+                    /* Ignore if cropping is not supported (EINVAL). */
+                } else {
+                    /* Ignore for other errors.
+                     * For instance kernel 3.4 returns ENOTTY (25) with Terratec Grabby */
+                    perror ("VIDIOC_G_CROP");
+                }
             } else {
-                /* Ignore for other errors.
-                 * For instance kernel 3.4 returns ENOTTY (25) with Terratec Grabby */
-                perror ("VIDIOC_G_CROP");
-            }
-        } else {
-            crop.c = cropcap.defrect;
+                crop.c = cropcap.defrect;
 
-            if (-1 == ioctl (vc->fd, VIDIOC_S_CROP, &crop)
-                    && errno != EINVAL) {
-                perror ("VIDIOC_S_CROP");
+                if (-1 == ioctl (vc->fd, VIDIOC_S_CROP, &crop)
+                        && errno != EINVAL) {
+                    perror ("VIDIOC_S_CROP");
+                }
             }
+
+        } else {
+            perror("VIDIOC_CROPCAP");
         }
 
     }
-
 
     strcpy(vc->path, path);
     
