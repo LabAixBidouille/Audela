@@ -21,7 +21,7 @@ build:
 			--disable-indevs --enable-indev=v4l2 \
 			--disable-protocols --enable-protocol=file \
 			--disable-encoders --enable-encoder=ffvhuff --enable-encoder=huffyuv --enable-encoder=rawvideo \
-			--disable-decoders --enable-decoder=ffvhuff --enable-decoder=huffyuv --enable-decoder=rawvideo \
+			--disable-decoders --enable-decoder=ffvhuff --enable-decoder=huffyuv --enable-decoder=rawvideo --enable-decoder=h264 \
 			--disable-muxers --enable-muxer=avi \
 			--disable-demuxers --enable-demuxer=avi \
 			--disable-bsfs \
