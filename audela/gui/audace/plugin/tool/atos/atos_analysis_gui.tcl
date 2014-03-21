@@ -1693,9 +1693,9 @@ namespace eval ::atos_analysis_gui {
          set date [lindex $d 0]
          #regsub -all {\.} $date {_}  date
       }
-      
+
       gren_info "Date = $date\n"
-    
+
       #Type
       if {$::atos_analysis_gui::occ_pos_type=="Code UAI"} {
          set pos  "UAI_$::atos_analysis_gui::occ_pos"
@@ -1736,14 +1736,12 @@ namespace eval ::atos_analysis_gui {
       } else {
          set tag "_$::atos_analysis_gui::occ_tag"
       }
-      
+
       # Nom de l objet
       set name [::atos_analysis_gui::cleanEntities $::atos_analysis_gui::occ_obj]
-      
+
       # Construction du fichier
       set filename "${date}_${name}_${pos}${tag}"
-      #::console::affiche_resultat "FILENAME=$filename\n"
-
 
       if { $::atos::parametres(atos,$visuNo,dir_prj)!="" } {
          set ::atos_analysis_gui::prj_dir [file join $::atos::parametres(atos,$visuNo,dir_prj) $filename]
@@ -1754,17 +1752,16 @@ namespace eval ::atos_analysis_gui {
 
       set a1 [file exists $::atos_analysis_gui::prj_file]
       set a2 [file exists $::atos_analysis_gui::prj_dir]
-      
-      set msg "Creation du projet.\n"
-      if {$a1 == 0} {set msg "${msg}  Le fichier projet a été créé.\n"}
-      if {$a2 == 0} {set msg "${msg}  Le repertoire projet a été créé.\n"}
+
+      set msg "Creation du projet :\n"
+      if {$a1 == 0} {set msg "${msg}  - le fichier projet va être créé.\n"}
+      if {$a2 == 0} {set msg "${msg}  - le repertoire projet va être créé.\n"}
       if {$a1 == 1 && $a2 == 1} {return}
       
       set res [tk_messageBox -message $msg -type yesno]
-      ::console::affiche_resultat "res=$res\n"
-      
+
       if {$res == "no"} {return}
-      
+
       set err [catch {file mkdir $::atos_analysis_gui::prj_dir} msg]
       if {$err} {
          ::console::affiche_erreur "Erreur creation du repertoire\n"
@@ -1772,28 +1769,16 @@ namespace eval ::atos_analysis_gui {
          ::console::affiche_erreur "ERR=$err\n"
          ::console::affiche_erreur "MSG=$msg\n"
       }
-      
+
       set err [catch {save_project} msg]
       if {$err} {
          ::console::affiche_erreur "Erreur sauvegarde du projet\n"
          ::console::affiche_erreur "ERR=$err\n"
          ::console::affiche_erreur "MSG=$msg\n"
       }
-      
+
       return
-   }   
-
-
-
-
-
-
-
-
-
-
-
-
+   }
 
 
 
