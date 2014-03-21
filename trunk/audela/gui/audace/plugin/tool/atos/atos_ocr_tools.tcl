@@ -261,7 +261,7 @@ namespace eval ::atos_ocr_tools {
              }
              "TIM-10 small font" -
              "TIM-10 big font" {
-               set err [catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8]} msg]
+               set err [catch {set result [exec gocr -C \"0-9\" -f UTF8 ocr.jpg]} msg]
              }
              "IOTA-VTI" {
                set err [catch {
@@ -275,7 +275,7 @@ namespace eval ::atos_ocr_tools {
                set msg "\n$msg_even\n$msg_odd"
              }
              default {
-               set err [catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9: -f UTF8]} msg]
+               set err [catch {set result [exec gocr -C \"0-9:\" -f UTF8 ocr.jpg]} msg]
              }
           }
 
@@ -737,7 +737,21 @@ namespace eval ::atos_ocr_tools {
 
       set tt0 [clock clicks -milliseconds]
 
+      ::console::affiche_resultat "Analyse des dates verifiees\n"
       set cpt 0
+      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+         if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
+            set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
+            set ::atos_ocr_tools::timing($idframe,interpol) 0
+            ::console::affiche_resultat "$idframe -> $::atos_ocr_tools::timing($idframe,dateiso)\n"
+            incr cpt
+         }
+      }
+      if {$cpt < 2} {
+         tk_messageBox -message "Vous devez VALIDER au moins deux dates dans le cas eventuel d'une interpolation. Idealement au debut et a la fin." -type ok
+         return
+      }
+
       $action.start configure -image .stop
       $action.start configure -relief sunken
       $action.start configure -command "::atos_ocr_tools::stop $visuNo"
@@ -750,20 +764,6 @@ namespace eval ::atos_ocr_tools {
 #      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
 #            set ::atos_ocr_tools::timing($idframe,jd) ""
 #      }
-
-      ::console::affiche_resultat "Analyse des dates verifiees\n"
-      set cpt 0
-      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
-         if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
-            set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
-            set ::atos_ocr_tools::timing($idframe,interpol) 0
-            ::console::affiche_resultat "$idframe -> $::atos_ocr_tools::timing($idframe,dateiso)\n"
-            incr cpt
-         }
-      }
-      if {$cpt <2} {
-         tk_messageBox -message "Vous devez VALIDER au moins deux dates dans le cas eventuel d'une interpolation\nIdealement 1 au debut et 1 a la fin." -type ok]
-      }
 
       ::console::affiche_resultat "Debut analyse\n"
       while {$::atos_ocr_tools::sortie == 0} {
@@ -885,7 +885,7 @@ namespace eval ::atos_ocr_tools {
 
       set ::atos_ocr_tools::sortie 0
       
-      set cpt
+      set cpt 0
       set cptbad  0
       
       set idframe $idframebegin
