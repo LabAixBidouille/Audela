@@ -4098,7 +4098,7 @@ proc spc_autofit2png { args } {
     global conf
     global audace
 
-    set labely "Relative intensity"
+    set labely "Relative flux"
 
     set nbargs [ llength $args ]
     if { $nbargs==2 || $nbargs==4 || $nbargs==6 || $nbargs==7 } {
@@ -4337,24 +4337,18 @@ proc spc_autofit2png { args } {
 
         #--- Fabrication du nom de fichier graphique (pas d'espace...) :
         set nom_objet_lower [ string tolower "$nom_objet" ]
-        if { [ regsub {(\s)} "$nom_objet_lower" "_" resul ] } {
+        if { [ regsub -all {(\s)} "$nom_objet_lower" "_" resul ] } {
             set nom_sans_espaces "$resul"
-            if { [ regsub {(\s)} "$nom_sans_espaces" "_" resul ] } {
-                set nom_sans_espaces "$resul"
-                if { [ regsub {(\s)} "$nom_sans_espaces" "_" resul ] } {
-                    set nom_sans_espaces "$resul"
-                }
-            }
         } else {
             set nom_sans_espaces "$nom_objet_lower"
         }
-        if { [ regexp {.+(\.[a-zA-Z]{3})} "$fileout" match extimg ] } {
+        #if { [ regexp {.+(\.[a-zA-Z]{3})} "$fileout" match extimg ] } 
+        if { [ file exists "$audace(rep_images)/$fileout" ] } {
            file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
            if { $flagjpeg=="jpeg" } { file rename -force "$audace(rep_images)/$fileout_jpg" "$audace(rep_images)/${nom_sans_espaces}_${datefile}.jpg" }
         } else {
-           set extimg ".png"
-           file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
-           if { $flagjpeg=="jpeg" } { file rename -force "$audace(rep_images)/$fileout_jpg" "$audace(rep_images)/${nom_sans_espaces}_${datefile}.jpg" }
+           ::console::affiche_erreur "Echec de l'exportation en PNG. Vérifiez l'absence d'espaces et d'accents dans les noms de fichiers et de répertoires.\n"
+           return 0
         }
 
         #--- Fin du script :
