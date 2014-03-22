@@ -1050,10 +1050,10 @@ namespace eval ::atos_cdl_tools {
       
       set tt0 [clock clicks -milliseconds]
 
-      set frm_info_load $::atos_gui::frame(info_load)
-      set frm_start     $::atos_gui::frame(buttons,start)
-      set photometrie   $::atos_gui::frame(photometrie)
-      set geometrie     $::atos_gui::frame(geometrie)
+      set frm_info_load    $::atos_gui::frame(info_load)
+      set frm_start        $::atos_gui::frame(buttons,start)
+      set photometrie      $::atos_gui::frame(photometrie)
+      set geometrie        $::atos_gui::frame(geometrie)
 
       set frm_image        $::atos_gui::frame(image,values) 
       set frm_objet        $::atos_gui::frame(object,values) 
@@ -1065,7 +1065,6 @@ namespace eval ::atos_cdl_tools {
 
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]
-
 
       if { [$frm_info_load.status cget -text ] != "Loaded"} { 
          gren_erreur "Aucune Video\n"
@@ -1113,7 +1112,6 @@ namespace eval ::atos_cdl_tools {
 
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin
 
-         
          ::console::affiche_resultat "start1 cur_idframe = $::atos_tools::cur_idframe - $idframe\n"
          
          #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
@@ -1187,7 +1185,7 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::start_next_image { visuNo sum bin } {
 
       #::console::affiche_resultat "sn start cur_idframe = $::atos_tools::cur_idframe\n"
-      set geometrie     $::atos_gui::frame(geometrie)
+      set geometrie $::atos_gui::frame(geometrie)
       set relief [$geometrie.buttons.launch cget -relief]
 
  
@@ -1244,6 +1242,8 @@ namespace eval ::atos_cdl_tools {
 
    proc ::atos_cdl_tools::read_sum { visuNo sum } {
 
+      global audace
+
       #::console::affiche_resultat "read_sum beg cur_idframe = $::atos_tools::cur_idframe\n"
       set bufNo [::confVisu::getBufNo $visuNo]
       
@@ -1261,8 +1261,10 @@ namespace eval ::atos_cdl_tools {
       for {set i 2} {$i <= $sum} {incr i} {
          buf$bufNo add atos_preview_tmp_$i.fit 0
       }
+
       buf$bufNo save atos_preview_tmp_0.fit
-      loadima atos_preview_tmp_0.fit
+
+      loadima [file join $audace(rep_travail) atos_preview_tmp_0.fit]
 
       incr ::atos_tools::cur_idframe [expr -$sum+1]
       incr ::atos_tools::scrollbar [expr -$sum+1]
@@ -1277,7 +1279,7 @@ namespace eval ::atos_cdl_tools {
       set geometrie $::atos_gui::frame(geometrie)
 
       ::console::affiche_resultat "-- preview \n"
-      ::console::affiche_resultat "geometrie = $geometrie\n"
+      #::console::affiche_resultat "geometrie = $geometrie\n"
 
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]

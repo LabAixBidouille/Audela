@@ -9,9 +9,6 @@ TODOLIST
         obtenue /2.
         ou faire le calcul directement si le bouton sommation est validé
         
-- Open flux -> Cancel genere une erreur (variable nb_frames inconnue)
-  a tester dans datation, extraction et photometrie
-
 - tester le CROP dans une liste d'images (et pas une video)
 
 - Analyse rapport : il faut garder le remplissage des champs dans la session audela. 
