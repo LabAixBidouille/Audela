@@ -14,8 +14,6 @@ namespace eval ::atos_tools_avi {
    variable avi1
 
 
-
-
    # ::atos_tools_avi::list_diff_shift
    # Retourne la liste test epurée de l intersection des deux listes
    proc ::atos_tools_avi::list_diff_shift { ref test }  {
@@ -129,9 +127,7 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
-# Verification d un fichier avi
+   # Verification d un fichier avi
    proc ::atos_tools_avi::verif { visuNo this } {
 
       global audace panneau
@@ -176,22 +172,11 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
-
-
-
-
    proc ::atos_tools_avi::get_nbimage { } {
-    return [::atos_tools_avi::avi1 get_nb_frames]
+      
+      return [::atos_tools_avi::avi1 get_nb_frames]
+   
    }
-
-
-
-
-
-
-
 
 
 
@@ -664,17 +649,20 @@ namespace eval ::atos_tools_avi {
 
 
    proc ::atos_tools_avi::format_seconds { n } {
-            set h [expr int($n / 3600)]
-            set n [expr $n - $h * 3600]
-            set m [expr int($n / 60)]
-            set s [expr $n - $m * 60]
-            return [format "%02d:%02d:%02d" $h $m $s]
+
+      set h [expr int($n / 3600)]
+      set n [expr $n - $h * 3600]
+      set m [expr int($n / 60)]
+      set s [expr $n - $m * 60]
+      return [format "%02d:%02d:%02d" $h $m $s]
+
    }
 
    proc ::atos_tools_avi::acq_grab_read_status {chan frm} {
+
       if {![eof $chan]} {
-        gets $chan line
-        if {[string equal -length 4 "tcl:" $line]} {
+         gets $chan line
+         if {[string equal -length 4 "tcl:" $line]} {
             set line [string range $line 4 end]
             set free_disk [lindex [lsearch -index 0 -inline $line free_disk] 1]
             $frm.infovideo.right.val.dispo configure -text $free_disk
@@ -686,16 +674,17 @@ namespace eval ::atos_tools_avi {
             $frm.infovideo.left.val.duree configure -text [format_seconds $duree]
             set restduree [lindex [lsearch -index 0 -inline $line duree_rest] 1]
             $frm.infovideo.right.val.restduree configure -text [format_seconds $restduree]
-        } else {
+         } else {
             if {[string equal -length 2 "W:" $line] || [string equal -length 2 "E:" $line]} {
-                ::console::affiche_erreur "$line\n"
+               ::console::affiche_erreur "$line\n"
             } else {
-                ::console::affiche_resultat "$line\n"
+               ::console::affiche_resultat "$line\n"
             }
-        }
+         }
       } else {
          close $chan
       }
+
    }
 
 
@@ -762,13 +751,6 @@ namespace eval ::atos_tools_avi {
 
 
 
-
-
-
-
-
-
-
    proc ::atos_tools_avi::acq_stop { this } {
         global audace
         set avipid ""
@@ -788,13 +770,4 @@ namespace eval ::atos_tools_avi {
         }
    }
 
-
-
-
-
-
-
-
-
 }
-

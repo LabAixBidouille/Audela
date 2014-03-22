@@ -647,8 +647,10 @@ namespace eval ::atos_ocr_tools {
 
 
    proc ::atos_ocr_tools::select { visuNo } {
+
       ::atos_tools::select $visuNo
       ::atos_ocr_tools::open_flux $visuNo
+
    }
 
 
@@ -669,19 +671,20 @@ namespace eval ::atos_ocr_tools {
       $datetime.min.val delete 0 end
       $datetime.s.val   delete 0 end
       $datetime.ms.val  delete 0 end
-      
+
       # Ouverture du Flux
       ::atos_tools::open_flux $visuNo
-      array unset ::atos_ocr_tools::timing
-      for  {set x 1} {$x<=$::atos_tools::nb_open_frames} {incr x} {
-         set ::atos_ocr_tools::timing($x,verif) 0
-         set ::atos_ocr_tools::timing($x,ocr) 0
-         set ::atos_ocr_tools::timing($x,interpol) 0
-         set ::atos_ocr_tools::timing($x,jd)  ""
-         set ::atos_ocr_tools::timing($x,diff)  ""
-         set ::atos_ocr_tools::timing($x,dateiso) ""
+      catch {
+         array unset ::atos_ocr_tools::timing
+         for  {set x 1} {$x<=$::atos_tools::nb_open_frames} {incr x} {
+            set ::atos_ocr_tools::timing($x,verif) 0
+            set ::atos_ocr_tools::timing($x,ocr) 0
+            set ::atos_ocr_tools::timing($x,interpol) 0
+            set ::atos_ocr_tools::timing($x,jd)  ""
+            set ::atos_ocr_tools::timing($x,diff)  ""
+            set ::atos_ocr_tools::timing($x,dateiso) ""
+         }
       }
-
 
    }
 

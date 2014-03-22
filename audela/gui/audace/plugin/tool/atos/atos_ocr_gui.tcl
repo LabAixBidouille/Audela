@@ -12,9 +12,6 @@
 namespace eval ::atos_ocr_gui {
 
 
-
-
-
    #
    # Chargement des captions
    #
@@ -26,8 +23,6 @@ namespace eval ::atos_ocr_gui {
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool atos atos_ocr_gui.cap ]
    }
-
-
 
 
 
@@ -46,13 +41,6 @@ namespace eval ::atos_ocr_gui {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }              { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
 
    }
-
-
-
-
-
-
-
 
 
 
@@ -86,15 +74,6 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
-
-
-
-
-
-
-
-
    #
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
@@ -103,14 +82,6 @@ namespace eval ::atos_ocr_gui {
       global panneau
 
    }
-
-
-
-
-
-
-
-
 
 
 
@@ -137,16 +108,6 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
-
-
-
-
-
-
-
-
-
    #
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
@@ -154,15 +115,6 @@ namespace eval ::atos_ocr_gui {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::atos::getPluginType ] ] \
          [ ::atos::getPluginDirectory ] atos_ocr_gui.htm
    }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -180,18 +132,6 @@ namespace eval ::atos_ocr_gui {
       
       destroy $this
    }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -257,10 +197,8 @@ namespace eval ::atos_ocr_gui {
              -in $frm -side top -padx 3 -pady 3
 
 
+        if { $::atos_tools::traitement == "fits" } { 
 
-        if { $::atos_tools::traitement=="fits" } { 
-        
-        
              #--- Cree un frame pour la gestion de fichier
              frame $frm.form -borderwidth 1 -relief raised -cursor arrow
              pack $frm.form -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
@@ -325,16 +263,12 @@ namespace eval ::atos_ocr_gui {
                             -text ""
                       pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
-        
-        
+
         }
 
 
 
-
-
-
-       if { $::atos_tools::traitement=="avi" }  { 
+       if { $::atos_tools::traitement == "avi" }  { 
 
              #--- Cree un frame pour 
              frame $frm.open \
