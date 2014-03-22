@@ -33,33 +33,33 @@ namespace eval ::atos_tools {
    proc ::atos_tools::open_flux { visuNo } {
 
       set scrollbar $::atos_gui::frame(scrollbar)
-       
-      if { $::atos_tools::traitement=="fits" } {
+
+      if { $::atos_tools::traitement == "fits" } {
          ::atos_tools_fits::open_flux $visuNo
       }
 
-      if { $::atos_tools::traitement=="avi" }  {
+      if { $::atos_tools::traitement == "avi" }  {
          ::atos_tools_avi::open_flux $visuNo
       }
 
       catch {
          $::atos_gui::frame(info_load).status  configure -text "Loaded"
          $::atos_gui::frame(info_load).nbtotal configure -text "$::atos_tools::nb_frames frames"
-      }
 
-      set bufNo [ visu$visuNo buf ]
-      if { [buf$bufNo imageready] == 1 } {
-         set autocuts [buf$bufNo autocuts]
-         visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+         set bufNo [ visu$visuNo buf ]
+         if { [buf$bufNo imageready] == 1 } {
+            set autocuts [buf$bufNo autocuts]
+            visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+         }
+   
+         set ::atos_tools::scrollbar 1
+         $scrollbar configure -from 1
+         $scrollbar configure -to $::atos_tools::nb_frames
+         $scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
+         $scrollbar configure -command "::atos_tools::slide $visuNo"
+         $scrollbar configure -state normal
+         $scrollbar configure -variable ::atos_tools::scrollbar
       }
-
-      set ::atos_tools::scrollbar 1
-      $scrollbar configure -from 1
-      $scrollbar configure -to $::atos_tools::nb_frames
-      $scrollbar configure -tickinterval [expr $::atos_tools::nb_frames / 5]
-      $scrollbar configure -command "::atos_tools::slide $visuNo"
-      $scrollbar configure -state normal
-      $scrollbar configure -variable ::atos_tools::scrollbar
 
    }
 
@@ -73,11 +73,7 @@ namespace eval ::atos_tools {
    #
    proc ::atos_tools::select { visuNo } {
 
-      if { $::atos_tools::traitement=="fits" } {
-         ::atos_tools_fits::select $visuNo
-      }
-
-      if { $::atos_tools::traitement=="avi" }  {
+      if { $::atos_tools::traitement == "avi" }  {
          ::atos_tools_avi::select $visuNo
          ::atos_tools::open_flux $visuNo
       }
@@ -261,9 +257,6 @@ namespace eval ::atos_tools {
 
 
 
-
-
-
    #
    # redimensionne le flux entre la valeur min et max
    #
@@ -296,16 +289,6 @@ namespace eval ::atos_tools {
 
 
 
-
-
-
-
-
-
-
-
-
-
    #
    # atos_tools::slide
    # mouvement de la barre d avancement
@@ -314,13 +297,6 @@ namespace eval ::atos_tools {
       #::console::affiche_resultat "idframe  : $idframe"
       ::atos_tools::set_frame $visuNo [expr int($idframe)]
    }
-
-
-
-
-
-
-
 
 
 
@@ -360,4 +336,3 @@ namespace eval ::atos_tools {
    }
 
 }
-

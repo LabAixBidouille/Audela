@@ -12,10 +12,6 @@
 namespace eval ::atos_tools_fits {
 
 
-
-
-
-
    proc ::atos_tools_fits::open_flux { visuNo } {
 
       global audace panneau caption
@@ -129,21 +125,6 @@ namespace eval ::atos_tools_fits {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::atos_tools_fits::next_image { visuNo {novisu ""}} {
 
       incr idframe [expr $::atos_tools::cur_idframe + 1]
@@ -190,15 +171,6 @@ namespace eval ::atos_tools_fits {
 
 
 
-
-
-
-
-
-
-
-
-
    proc ::atos_tools_fits::set_frame { visuNo idframe {novisu ""} } {
 
       set ::atos_tools::cur_idframe $idframe
@@ -219,27 +191,12 @@ namespace eval ::atos_tools_fits {
 
 
 
-
-
-
-
-
-
-
-
-
 #   proc ::atos_tools_fits::avi_seek { visuNo arg } {
 #      ::console::affiche_resultat "% : [expr $arg / 100.0 ]"
 #      ::atos_tools::avi1 seekpercent [expr $arg / 100.0 ]
 #      ::atos_tools::avi1 next
 #      visu$visuNo disp
 #   }
-
-
-
-
-
-
 
 
 
@@ -254,12 +211,6 @@ namespace eval ::atos_tools_fits {
 #      ::atos_tools::avi1 next
 #      visu$visuNo disp
 #   }
-
-
-
-
-
-
 
 
 
@@ -284,13 +235,6 @@ namespace eval ::atos_tools_fits {
 
 
 
-
-
-
-
-
-
-
    proc ::atos_tools_fits::setmax { This } {
 
       if { ! [info exists ::atos_tools::cur_idframe] } {
@@ -302,14 +246,6 @@ namespace eval ::atos_tools_fits {
       $This.posmax insert 0 $::atos_tools::cur_idframe
       catch { $This.imagecount delete 0 end }
    }
-
-
-
-
-
-
-
-
 
 
 
@@ -329,62 +265,6 @@ namespace eval ::atos_tools_fits {
       $This.imagecount insert 0 [ expr $fmax - $fmin + 1 ]
 
    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
