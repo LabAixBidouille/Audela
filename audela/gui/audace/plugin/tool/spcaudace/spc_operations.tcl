@@ -656,6 +656,13 @@ proc spc_rmcosmics { args } {
          set spectre_cic [ spc_scar $zones ]
          #set lesargs [ list "$filename" $zones ]
          #set spectre_cic [ spc_scar "$lesargs" ]
+         if { 1==0 } {
+            set chaine_commande "spc_calibren $lampe"
+            foreach elemt $liste_xi_lambdai {
+               append chaine_commande " $elemt"
+            }
+            set spcalibre [ eval [ format $chaine_commande ] ]
+         }
       } else {
          ::console::affiche_resultat "Aucune zone à cicatriser trouvée.\n"
          set spectre_cic "$filename"

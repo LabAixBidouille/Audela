@@ -792,21 +792,19 @@ proc pvisu { } {
 
    ### Bogue ICI
    #.spc.g element create "Profil spatial" -symbol none -xdata vx -ydata vy -smooth natural
-
+   if { 1==0 } {
    set div_x 10
    set div_y 5
    #set echellex [expr $len/10]
 
    #set echellex [expr int($len/($div_x*10))*10]
    #.spc.g axis configure x -stepsize $echellex
-
-   if { 1==0 } {
    set echellex [expr int($len/($div_x*10))*10]
    if { [expr $vx(end) < $vx(0) ] } {
        set echellex [expr $echellex * -1 ]
    }
    .spc.g axis configure x -stepsize $echellex
-   }
+   
 
    #scrollbar .hors -command {.spc.g axis view x } -orient horizontal
    #.spc.g axis configure x -stepsize $echellex -scrollcommand { .hors set }
@@ -822,7 +820,6 @@ proc pvisu { } {
    #-- Meth 2 :
    #set echelley [ expr 10*int($vy(max)/($div_y*10)) ]
    #-- Meth 3 :
-   if { 1==0 } {
    set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]
    }
    return ""
@@ -937,6 +934,7 @@ proc pvisu_050218 { } {
    vx set $pp
    vy set $yy
    ### Bogue ICI
+   if { 1==0 } {
    #.spc.g element create "Profil spatial" -symbol none -xdata vx -ydata vy -smooth natural
 
    set div_x 10
@@ -953,7 +951,7 @@ proc pvisu_050218 { } {
    ## Petit bug ICI
    set echelley [ expr 10*int($imax/($div_y*10)) ]
    .spc.g axis configure y -stepsize $echelley
-
+}
 }
 #****************************************************************#
 
@@ -1055,6 +1053,7 @@ proc pvisu2 { args } {
    vy set $yy
    ### Bogue ICI
    #.spc.g element create "Profil spatial" -symbol none -xdata vx -ydata vy -smooth natural
+   if { 1==0 } {
    set div_x 10
    set div_y 5
    #set echellex [expr $len/10]
@@ -1075,6 +1074,7 @@ proc pvisu2 { args } {
    #set echelley [ expr 10*int($vy(max)/($div_y*10)) ]
    #-- Meth 3 :
    set echelley [ expr 10*int(($vy(max)-$vy(min)/($div_y*10))) ]
+   }
 }
 #****************************************************************#
 

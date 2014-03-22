@@ -821,7 +821,7 @@ proc spc_smoothsg { args } {
 	    set degre [ lindex $args 2 ]
 	} else {
 	    # ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre (pixels)? ?degre polynome (2,1,3)]?\n\n"
-	    ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre (pixels)? ?degre polynome (2,3,4)?\n"
+           ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre (pixels)\[28\]? ?degre polynome (2,3,4)?\n"
 	    return ""
 	}
 
@@ -836,7 +836,7 @@ proc spc_smoothsg { args } {
 	::console::affiche_resultat "Profil de raies exporté sous ${fichier}_lings\n"
 	return "${fichier}_linsg"
     } else {
-	::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?[[?largeur_filtre?] ?ordre_filtrage (2,4)?]?\n\n"
+	::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?[[?largeur_filtre \[28\]?] ?ordre_filtrage (2,4)?]?\n\n"
     }
 }
 ####################################################################
