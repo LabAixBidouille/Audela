@@ -168,12 +168,11 @@ namespace eval ::atos_cdl_gui {
       if { $::atos_tools::traitement=="avi" }  { wm title $this $caption(atos_cdl_gui,bar_title_avi) }
       wm protocol $this WM_DELETE_WINDOW "::atos_cdl_gui::closeWindow $this $visuNo"
 
-
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::atos_cdl_gui::confToWidget $visuNo
 
-      if { $::atos_tools::traitement=="fits" } { set titre $caption(atos_cdl_gui,titre_fits) }
-      if { $::atos_tools::traitement=="avi" }  { set titre $caption(atos_cdl_gui,titre_avi) }
+      if { $::atos_tools::traitement == "fits" } { set titre $caption(atos_cdl_gui,titre_fits) }
+      if { $::atos_tools::traitement == "avi" }  { set titre $caption(atos_cdl_gui,titre_avi) }
 
       #--- frame general
       set frm $this.frm_atos_cdl_gui
@@ -189,11 +188,8 @@ namespace eval ::atos_cdl_gui {
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
+        if { $::atos_tools::traitement == "fits" } { 
 
-
-        if { $::atos_tools::traitement=="fits" } { 
-        
-        
              #--- Cree un frame pour la gestion de fichier
              frame $frm.form \
                    -borderwidth 1 -relief raised -cursor arrow
@@ -267,7 +263,7 @@ namespace eval ::atos_cdl_gui {
         }
 
 
-        if { $::atos_tools::traitement=="avi" }  {
+        if { $::atos_tools::traitement == "avi" }  {
 
              #--- Cree un frame pour 
              frame $frm.open \
@@ -931,14 +927,6 @@ namespace eval ::atos_cdl_gui {
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-
-      # Init.
-      #set suivi $::atos_gui::frame(suivi)
-      #$suivi.threshold.obj.valx set $::atos_cdl_tools::x_obj_threshold
-      #$suivi.threshold.obj.valy set $::atos_cdl_tools::y_obj_threshold
-      #$suivi.threshold.ref.valx set $::atos_cdl_tools::x_ref_threshold
-      #$suivi.threshold.ref.valy set $::atos_cdl_tools::y_ref_threshold
 
    }
 

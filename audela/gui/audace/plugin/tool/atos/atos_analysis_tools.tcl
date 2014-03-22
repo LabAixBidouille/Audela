@@ -8,20 +8,18 @@
 # Mise Ã  jour $Id$
 #
 
-
-
 namespace eval ::atos_analysis_tools {
 
-package require math::statistics
-package require math::special
-package require math::linearalgebra
+   package require math::statistics
+   package require math::special
+   package require math::linearalgebra
 
-      variable cols
-      variable cdl
-      variable nb
-      variable diravi
-      variable dirwork
-      variable filecsv
+   variable cols
+   variable cdl
+   variable nb
+   variable diravi
+   variable dirwork
+   variable filecsv
 
 
 
@@ -1418,42 +1416,77 @@ package require math::linearalgebra
 
 
    proc ::atos_analysis_tools::pi {} {return 3.1415926535897931}
-   proc ::atos_analysis_tools::ua {} {return 149598000.0}
+   proc ::atos_analysis_tools::ua {} {return 149597870.0}
 
 
 
 # Estime le diametre angulaire (mas) d'une etoile geante ou supergeante
 # a partir de ses magnitudes V (ou B) et K. Precision typique de 10 a 20 %
 
-   proc ::atos_analysis_tools::diametre_stellaire { B V K D } {
+   proc ::atos_analysis_tools::diametre_stellaire { B V K D {class 0} } {
 
 # Source: G.R. van Belle (1999), Predicting stellar angular size,
 # Publi. Astron. Soc. Pacific 111, 1515-1523.
+
+      if {$B == "" || $V == "" || $K == "" || $D == ""} { return 0 }
+
       set D [expr $D * [ua] ]
+      set mas2rad [expr [pi]/(180.0*3600.0*1000.0)]
 
-      set arcsec [expr [pi]/(3600.0*180.0)]
+      ::console::affiche_resultat  "V-K = [format "%.3f" [expr $V-$K]]\n"
+      ::console::affiche_resultat  "B-K = [format "%.3f" [expr $B-$K]]\n"
 
-      set A_V 0.6690
-      set B_V 0.2230
-      set A_B 0.6480
-      set B_B 0.2200
+      # Etoile de classe inconnue, on cherche a determiner la classe a partir des couleurs V-K et B-K
+      if {$class == 0} {
+         set VmK [expr $V-$K]
+         set BmK [expr $B-$K]
+         if {$VmK >= -0.4 && $VmK <=  1.5 && $BmK >= -0.6 && $BmK <=  2.0} { set class 1 }
+         if {$VmK >=  2.0 && $VmK <=  8.0 && $BmK >=  3.0 && $BmK <=  7.5} { set class 2 }
+         if {$VmK >=  5.5 && $VmK <= 13.0 && $BmK >=  9.0 && $BmK <= 16.0} { set class 3 }
+      }
 
-      set diam_V [expr $A_V + $B_V*($V-$K) -0.2*$V]
-      set diam_V [expr 10**($diam_V)]
+      switch $class {
+         2 {
+            # Coefficients pour les etoiles geantes et super-geantes (rms error V=12%, B=11%)
+            set A_V 0.669
+            set B_V 0.223
+            set A_B 0.648
+            set B_B 0.220
+         }
+         3 {
+            # Coefficients pour les etoiles variables (rms error V=26%, B=20%)
+            set A_V 0.789
+            set B_V 0.218
+            set A_B 0.840
+            set B_B 0.211
+         }
+         default {
+            # Coefficients pour les etoiles de la sequence principale (rms error V=2%, B=2%)
+            set A_V 0.500
+            set B_V 0.264
+            set A_B 0.500
+            set B_B 0.290
+         }
+      }
 
-      set diam_B [expr $A_B + $B_B*($B-$K) -0.2*$B]
-      set diam_B [expr 10**($diam_B)]
+      # Calcul de la taille angulaire a partir de la taille angulaire a magnitude zero
+      set angsize_V [expr 10**($A_V + $B_V*($V-$K) -0.2*$V)]
+      set angsize_B [expr 10**($A_B + $B_B*($B-$K) -0.2*$B)]
 
-      set diam_km_B [expr ($diam_B*$arcsec*$D)/1000.]
-      set diam_km_V [expr ($diam_V*$arcsec*$D)/1000.]
+      # Calcul du diametre equivalent en km
+      set diam_V [expr tan($angsize_V*$mas2rad) * $D]
+      set diam_B [expr tan($angsize_B*$mas2rad) * $D]
 
-      ::console::affiche_resultat  "Diametres deduits de B = $diam_B (mas) \n"
-      ::console::affiche_resultat  "Diametres deduits de V = $diam_V (mas) \n"
-      ::console::affiche_resultat  "Diametres deduits de B = $diam_km_B (km) \n"
-      ::console::affiche_resultat  "Diametres deduits de V = $diam_km_V (km) \n"
+      ::console::affiche_resultat  "Diametre angulaire  deduit de B = $angsize_B (mas) \n"
+      ::console::affiche_resultat  "Diametre angulaire  deduit de V = $angsize_V (mas) \n"
+      ::console::affiche_resultat  "Diametre equivalent deduit de B = $diam_B (km) \n"
+      ::console::affiche_resultat  "Diametre equivalent deduit de V = $diam_V (km) \n"
 
-      return [list $diam_V $diam_km_V]
+      return [list $angsize_V $diam_V $class]
    }
+
+
+
 
    proc ::atos_analysis_tools::test_diametre_stellaire {  } {
 

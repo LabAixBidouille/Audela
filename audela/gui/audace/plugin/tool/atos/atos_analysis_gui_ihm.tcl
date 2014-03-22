@@ -65,6 +65,8 @@
       set ::atos_analysis_gui::raw_integ_offset 1
       #------ Regroupe les images par bloc de 
       set ::atos_analysis_gui::raw_integ_nb_img 1
+      #------ Class d'etoile (seq. principale)
+      set ::atos_analysis_gui::occ_star_class 1
 
       #--- Premier FRAME
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -603,7 +605,6 @@
         set parametres [frame $f4.frm -borderwidth 0 -cursor arrow -relief groove]
         pack $parametres -in $f4 -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-
              #--- Cree un frame pour le chargement d'un fichier
              set titreobj [frame $parametres.titreobj -borderwidth 1 -cursor arrow -relief raised]
              pack $titreobj -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -669,8 +670,18 @@
                   pack  $nometoile.l1 -side left -anchor e
 
                   #--- Cree un entry
-                  entry $nometoile.v1 -textvariable ::atos_analysis_gui::occ_star_name -width 30
+                  entry $nometoile.v1 -textvariable ::atos_analysis_gui::occ_star_name -width 20
                   pack $nometoile.v1 -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree des radiobutons
+                  radiobutton $nometoile.r0 -text "Inconnue" -value 0 -variable ::atos_analysis_gui::occ_star_class -command ""
+                  pack $nometoile.r0 -side left -padx 1 -pady 1 -fill x
+                  radiobutton $nometoile.r1 -text "Seq. principale" -value 1 -variable ::atos_analysis_gui::occ_star_class -command ""
+                  pack $nometoile.r1 -side left -padx 1 -pady 1 -fill x
+                  radiobutton $nometoile.r2 -text "(super) Geante" -value 2 -variable ::atos_analysis_gui::occ_star_class -command ""
+                  pack $nometoile.r2 -side left -padx 1 -pady 1 -fill x
+                  radiobutton $nometoile.r3 -text "Variable" -value 3 -variable ::atos_analysis_gui::occ_star_class -command ""
+                  pack $nometoile.r3 -side left -padx 1 -pady 1 -fill x
 
              #--- Cree un frame pour le chargement d'un fichier
              set couleuretoile [frame $parametres.couleuretoile -borderwidth 0 -cursor arrow -relief groove]
@@ -706,24 +717,28 @@
              pack $tailleetoile -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   button $tailleetoile.but_reload -image .reload -borderwidth 2 \
-                        -command "::atos_analysis_gui::calcul_taille_etoile $tailleetoile"
+                        -command "::atos_analysis_gui::calcul_taille_etoile"
                   pack $tailleetoile.but_reload -side left -anchor c
 
                   #--- Cree un label
-                  label $tailleetoile.l1 -text "Taille (mas) : "
+                  label $tailleetoile.l1 -text "Diametre angulaire (mas) : "
                   pack  $tailleetoile.l1 -side left -anchor e
 
                   #--- Cree un entry
-                  entry $tailleetoile.v1 -textvariable ::atos_analysis_gui::occ_star_size_mas -width 10
+                  entry $tailleetoile.v1 -textvariable ::atos_analysis_gui::occ_star_size_mas -width 8 -state readonly
                   pack $tailleetoile.v1 -side left -padx 3 -pady 1 -fill x
 
                   #--- Cree un label
-                  label $tailleetoile.l2 -text "Taille (km) : "
+                  label $tailleetoile.l2 -text "Diametre equivalent (km) : "
                   pack  $tailleetoile.l2 -side left -anchor e
 
                   #--- Cree un entry
-                  entry $tailleetoile.v2 -textvariable ::atos_analysis_gui::occ_star_size_km -width 10
+                  entry $tailleetoile.v2 -textvariable ::atos_analysis_gui::occ_star_size_km -width 8 -state readonly
                   pack $tailleetoile.v2 -side left -padx 3 -pady 1 -fill x
+
+                  #--- Cree un label
+                  label $tailleetoile.c2 -text "(a la distance de l'objet)"
+                  pack  $tailleetoile.c2 -side left -anchor e
 
              #--- Cree un frame pour le chargement d'un fichier
              set titrecapteur [frame $parametres.titrecapteur -borderwidth 1 -cursor arrow -relief raised]
@@ -2752,6 +2767,7 @@
               button $buttons.but_fermer -text "Fermer" -borderwidth 2 \
                     -command "::atos_analysis_gui::closeWindow $this $visuNo"
               pack $buttons.but_fermer -side right -anchor e
+
 
 
    # Fin proc ::atos_analysis_gui::createdialog
