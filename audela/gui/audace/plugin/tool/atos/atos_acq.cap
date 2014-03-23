@@ -24,6 +24,7 @@ global caption langage
    set caption(atos_acq,prefixe_fichiers) "Prefixe des fichiers"
 
    set caption(atos_acq,btn_oneshot)      "Prend une image"
+   set caption(atos_acq,btn_acqcont)      "Acquisition continue"
    set caption(atos_acq,btn_start)        "Lance l'aquisition"
    set caption(atos_acq,btn_stop)         "Arrete l'aquisition"
 
