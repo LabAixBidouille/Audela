@@ -480,7 +480,7 @@ namespace eval ::atos_acq {
               -in $frm.btnav \
               -side left -anchor w \
               -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
-           DynamicHelp::add $frm.oneshot2 -text "$caption(atos_acq,btn_oneshot) TODO"
+           DynamicHelp::add $frm.oneshot2 -text "$caption(atos_acq,btn_acqcont)"
 
            #--- Creation du bouton start acquisition
            image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool atos img demarre.png ]
