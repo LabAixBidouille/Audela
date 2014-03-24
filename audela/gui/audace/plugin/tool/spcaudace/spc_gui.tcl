@@ -257,6 +257,9 @@ proc spc_winini { } {
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_sari) -command "::param_spc_audace_sari::run" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_satraite) -command "::param_spc_audace_satraite::run" -underline 0
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cmd) -command "bm_cmd" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_maximext) -command "bm_maximext" -underline 0
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_cleanfit) -command "bm_cleanfit" -underline 0

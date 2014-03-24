@@ -1027,6 +1027,11 @@ proc spc_calibreloifile { args } {
 
       buf$audace(bufNo) load "$audace(rep_images)/$fileref"
       set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+          set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      } else {
+         set crpix1 1
+      }
       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
           set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
       }
@@ -1070,9 +1075,8 @@ proc spc_calibreloifile { args } {
       #--- Initialisation des mots clefs du fichier fits de sortie
       # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
       #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
-     if { [ lsearch $listemotsclef "CRPIX1" ]==-1 } {
-        buf$audace(bufNo) setkwd [ list "CRPIX1" 1 double "Reference pixel" "pixel" ]
-      }
+      #if { [ lsearch $listemotsclef "CRPIX1" ]==-1 } 
+      buf$audace(bufNo) setkwd [ list "CRPIX1" $crpix1 double "Reference pixel" "pixel" ]
       #-- Longueur d'onde de départ
       if { [ lsearch $listemotsclef "CRVAL1" ]!=-1 } {
           buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
@@ -1621,31 +1625,45 @@ proc spc_loadneon { args } {
    global spcaudace
    global conf
 
-   if { [ llength $args ] == 2 } {
+   set nbargs [ llength $args ]
+   if { $nbargs==1 } {
+      set type_resolution [ lindex $args 0 ]
+      set num_visu 1
+   } elseif { $nbargs==2 } {
       set type_resolution [ lindex $args 0 ]
       set num_visu [ lindex $args 1 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_loadneon type_resolution(hr/br) numero_visu(1,2)\n"
+      ::console::affiche_erreur "Usage: spc_loadneon type_resolution(hr/br/sa) numero_visu(1,2)\n"
       return ""
+   }
+
+   #--- Creation d'une fenetre d'affichage si num_visu != 1 :
+   if { $nbargs==2 && $num_visu!=1 } {
+      set num_visu [ ::confVisu::create ]
    }
 
    #--- Affichage de l'image du neon de la bibliothèque de calibration :
    if { $type_resolution=="hr" } {
+      #-- Haute resolution :
       buf$num_visu load $spcaudace(rep_spccal)/Neon.jpg
       visu$num_visu zoom 1
       #::confVisu::setZoom 1 1
       ::confVisu::autovisu $num_visu
       visu$num_visu disp {251 -15}
-   }
-
-   #--- Affichage spécifique à la basse résolution :
-   if { $type_resolution=="br" } {
-      set num_newvisu [ ::confVisu::create ]
-      buf$num_newvisu load $spcaudace(rep_spccal)/neon_br.png
-      visu$num_newvisu zoom 1
-      #::confVisu::setZoom 1 1
-      ::confVisu::autovisu $num_newvisu
-      visu$num_newvisu disp {251 -15}
+   } elseif { $type_resolution=="br" } {
+      #-- Affichage spécifique à la basse résolution :
+      # set num_newvisu [ ::confVisu::create ]
+      buf$num_visu load $spcaudace(rep_spccal)/neon_br.png
+      visu$num_visu zoom 1
+      ::confVisu::autovisu $num_visu
+      visu$num_visu disp {251 -15}
+   } elseif { $type_resolution=="sa" } {
+      #-- Star Analyser :
+      # buf$num_visu load $spcaudace(rep_spccal)/a2v_br_chimie.png
+      buf$num_visu load $spcaudace(rep_spccal)/regulus_sa.png
+      visu$num_visu zoom 1
+      ::confVisu::autovisu $num_visu
+      visu$num_visu disp {251 -15}
    }
 }
 
