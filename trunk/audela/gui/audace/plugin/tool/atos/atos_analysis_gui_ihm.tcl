@@ -138,23 +138,23 @@
              pack $object -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $object.l -text "Objet occulteur : "
+                  label $object.l -text "Nom de l'objet occulteur : " -width 22 -anchor e
                   pack  $object.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
-                  entry $object.v -textvariable ::atos_analysis_gui::occ_obj_name -width 30
-                  pack $object.v -side left -padx 3 -pady 1 -fill x -expand 1
+                  entry $object.v -textvariable ::atos_analysis_gui::occ_obj_name -width 43
+                  pack $object.v -side left -padx 3 -pady 1 -fill x -expand 0
 
              #--- Cree un frame pour la date
              set date [frame $projet.date -borderwidth 0 -cursor arrow -relief groove]
-             pack $date -in $projet -anchor s -side top -expand 0 -fill x -padx 30 -pady 5
+             pack $date -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $date.l -text "Date (ISO): "
+                  label $date.l -text "Date (ISO): " -width 22 -anchor e
                   pack  $date.l -side left -anchor e
 
                   #--- Cree d'une entree pour saisir la date
-                  entry $date.v -textvariable ::atos_analysis_gui::occ_date -width 30
+                  entry $date.v -textvariable ::atos_analysis_gui::occ_date -width 20
                   pack $date.v -side left -padx 3 -pady 1 -fill x
 
              #--- Cree un frame pour la position de l'observateur
@@ -162,7 +162,7 @@
              pack $observatoire -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $observatoire.l -text "Position de l'observateur : "
+                  label $observatoire.l -text "Position de l'observateur : " -width 22 -anchor e
                   pack  $observatoire.l -side left -anchor e
 
                   #--- Cree une liste defilante
@@ -176,20 +176,20 @@
 
                   #--- Cree un label
                   entry $observatoire.v -textvariable ::atos_analysis_gui::occ_pos -width 30
-                  pack $observatoire.v -side left -padx 3 -pady 1 -fill x
+                  pack $observatoire.v -side left -padx 3 -pady 1 -fill x -expand 0
 
              #--- Cree un frame pour le tag
              set tag [frame $projet.tag -borderwidth 0 -cursor arrow -relief groove]
              pack $tag -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $tag.l -text "Tag : "
+                  label $tag.l -text "Tag : " -width 22 -anchor e
                   pack  $tag.l -side left -anchor e
 
                   #--- Cree un label
                   entry $tag.v -textvariable ::atos_analysis_gui::occ_tag -width 30 \
-                     -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
-                  pack $tag.v -side left -padx 3 -pady 1 -fill x
+                        -validate all -validatecommand { ::tkutil::validateString %W %V %P %s wordchar1 0 100 }
+                  pack $tag.v -side left -padx 3 -pady 1 -fill x -expand 0
 
              set check [frame $projet.check -borderwidth 0 -cursor arrow -relief groove]
              pack $check -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
@@ -201,7 +201,7 @@
 
                   #--- Cree un label
                   label $check.l1 -text "RA J2000: "
-                  pack  $check.l1 -side left -anchor c
+                  pack  $check.l1 -side left -anchor c -padx 5
 
                   #--- Cree un label
                   label $check.l2 -textvariable ::atos_analysis_gui::raj2000  -fg $color(blue)
@@ -209,7 +209,7 @@
 
                   #--- Cree un label
                   label $check.l3 -text "DEC J2000: "
-                  pack  $check.l3 -side left -anchor c
+                  pack  $check.l3 -side left -anchor c -padx 5
 
                   #--- Cree un label
                   label $check.l4 -textvariable ::atos_analysis_gui::decj2000  -fg $color(blue)
@@ -255,7 +255,7 @@
              pack $file -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $file.l -text "Fichier projet : "
+                  label $file.l -text "Fichier projet : " -width 20 -anchor e
                   pack  $file.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -267,7 +267,7 @@
              pack $dir -in $projet -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $dir.l -text "Repertoire de travail : "
+                  label $dir.l -text "Repertoire de travail : " -width 20 -anchor e
                   pack  $dir.l -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
