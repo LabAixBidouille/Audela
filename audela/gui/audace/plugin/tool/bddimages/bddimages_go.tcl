@@ -177,6 +177,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata_user.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cdl.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_reports.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_synchro.tcl ]\""
 
 
    #--- Chargement des fichiers gui
@@ -193,6 +194,7 @@ proc ::bddimages::ressource {  } {
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_status.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_verifcata.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_reports.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_synchro.tcl ]\""
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_sql.tcl ]\""
 
@@ -418,6 +420,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
             -command "::bddimages_recherche::run $audace(base).bddimages_recherche"
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
+      #--- Frame des services
+      frame $This.synchro -borderwidth 1 -relief groove
+      pack $This.synchro -side top -fill x
+
+         #--- Bouton d'ouverture de l'outil de recherche d images
+         button $This.synchro.but1 -borderwidth 2 -text "Synchro" \
+            -command "::bdi_gui_synchro::run"
+         pack $This.synchro.but1 -in $This.synchro -anchor center -fill both -pady 5 -ipadx 5 -ipady 3
+
      #--- Frame des services
      frame $This.fra_reports -borderwidth 1 -relief groove
      pack $This.fra_reports -side top -fill x
@@ -466,15 +477,6 @@ proc ::bddimages::bddimagesBuildIF { This } {
          button $This.clean.but1 -borderwidth 2 -text $caption(bddimages_go,cleanconsole) \
             -command { console::clear}
          pack $This.clean.but1 -in $This.clean -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
-
-      #--- Frame des services
-      frame $This.test -borderwidth 1 -relief groove
-      pack $This.test -side top -fill x
-
-         #--- Bouton d'ouverture de l'outil de recherche d images
-         button $This.test.but1 -borderwidth 2 -text "Test" \
-            -command "::bdi_gui_multithread::gui_test"
-         pack $This.test.but1 -in $This.test -anchor center -fill both -pady 5 -ipadx 5 -ipady 3
 
 
       #--- Mise a jour dynamique des couleurs

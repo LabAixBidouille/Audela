@@ -1,12 +1,11 @@
 #--------------------------------------------------
-# source tools_astroid.tcl
+# source bdi_gui_astroid.tcl
 #--------------------------------------------------
 #
 # Fichier        : bdi_gui_astroid.tcl
-# Description    : Environnement d analyse de la photometrie et astrometrie  
-#                  pour des images qui ont un cata
+# Description    : Environnement de creation de cata en mode multithread  
 # Auteur         : Frederic Vachier
-# Mise à jour $Id: tools_astroid.tcl 6858 2011-03-06 14:19:15Z fredvachier $
+# Mise à jour $Id: bdi_gui_astroid.tcl 6858 2011-03-06 14:19:15Z fredvachier $
 #
 namespace eval bdi_gui_astroid {
 
