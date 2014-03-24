@@ -242,11 +242,16 @@ proc spc_conform { args } {
       set nom_fich_model [ spc_rmedges $nom_fich_model 0. ]
       #--- Caracteristiques du profil modele:
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_model"
-   	#-- Renseigne sur les parametres de l'image :
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      #-- Renseigne sur les parametres de l'image :
       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-      set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+          set crpix1 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      } else {
+         set crpix1 1
+      }
       #::console::affiche_resultat "caractÃ©ristiques fichier modÃ¨le cdelt1= $cdelt1 naxis1= $naxis1 crval1= $crval1 \n"
       #buf$audace(bufNo) delkwds
       #buf$audace(bufNo) clear
@@ -254,10 +259,15 @@ proc spc_conform { args } {
       set nom_fich_input [ spc_rmedges $nom_fich_input 0. ]
       #--- Renseigne sur les parametres du 2 eme profil
       buf$audace(bufNo) load "$audace(rep_images)/$nom_fich_input"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
       set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
       set crval2 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
       set cdelt2 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-      set crpix2 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      if { [ lsearch $listemotsclef "CRPIX1" ] !=-1 } {
+          set crpix2 [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 1 ]
+      } else {
+         set crpix2 1
+      }
       #--- Calcul de l'intervalle de longueurs d'ondes commun aux 2 profils
       set lambdamin1 [ expr $crval1 + (1 - $crpix1) * $cdelt1 ]
       set lambdamin2 [ expr $crval2 + (1 - $crpix2) * $cdelt2 ]
@@ -4099,6 +4109,7 @@ proc spc_autofit2png { args } {
     global audace
 
     set labely "Relative flux"
+    set extimg ".png"
 
     set nbargs [ llength $args ]
     if { $nbargs==2 || $nbargs==4 || $nbargs==6 || $nbargs==7 } {

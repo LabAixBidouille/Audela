@@ -147,6 +147,8 @@ set caption(spcaudace,gui,spc_lampe2calibre_w)              "Spectral lamp calib
 set caption(spcaudace,gui,spc_traite2srinstrum_w)           "Incorporating calibration corrections to spectra (expert mode)"
 set caption(spcaudace,gui,spc_traitestellaire)              "2a) Stellar spectrum processing (simple mode)"
 set caption(spcaudace,gui,spc_traitenebula)                 "2b) Non stellar spectrum processing"
+set caption(spcaudace,gui,spc_sari)                         "Star Analyser: compute instrumental response"
+set caption(spcaudace,gui,spc_satraite)                     "Star Analyser: spectra processing"
 set caption(spcaudace,gui,spc_traite2scalibre_w)            "Incorporating calibration corrections (without RI) to spectra"
 # set caption(spcaudace,gui,spc_traitesimple2calibre_w)       "Prétraitement simple -> Calibration"
 # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)      "Prétraitement simple -> Réponse instrumentale"
@@ -334,6 +336,9 @@ if { [string compare $langage "french"] == "0" } {
    set caption(spcaudace,gui,spc_traite2srinstrum_w)        "Application des calibrations aux spectres (mode expert)"
    set caption(spcaudace,gui,spc_traitestellaire)           "2a) Réduction de spectres stellaires (mode simple)"
    set caption(spcaudace,gui,spc_traitenebula)              "2b) Réduction de spectres non stellaires"
+   set caption(spcaudace,gui,spc_sari)                      "Star Analyser : calcul de la réponse instrumentale"
+   set caption(spcaudace,gui,spc_satraite)                  "Star Analyser : réduction des spectres"
+
    set caption(spcaudace,gui,spc_traite2scalibre_w)         "Application des calibrations (sans RI) aux spectres"
   # set caption(spcaudace,gui,spc_traitesimple2calibre_w)    "Prétraitement simple -> Calibration"
   # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)   "Prétraitement simple -> Réponse instrumentale"

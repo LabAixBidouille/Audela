@@ -5634,3 +5634,697 @@ namespace eval ::param_spc_audace_traitenebula {
 }
 #****************************************************************************#
 
+
+
+########################################################################
+# Boîte graphique de saisie de s paramètres pour la metafonction spc_sari
+# Intitulé : Calcul de la réponse instrumentale
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2014
+# Date de modification : 23-03-2014
+# Utilisée par : spc_sari
+# Args :
+########################################################################
+
+namespace eval ::param_spc_audace_sari {
+
+   proc run { {positionxy 20+20} } {
+      global conf
+      global audace
+      global caption
+      global color
+
+      set liste_types_spectraux [ list "a0v" "a2v" "a5v" "b2iv" "b5ii" "b8v" ]
+
+      set liste_noms_generiques [ spc_nomsgeneriques ]
+
+      if { [ string length [ info commands .param_spc_audace_sari.* ] ] != "0" } {
+         destroy .param_spc_audace_sari
+      }
+
+       #-- Options prédéfinies (déclarées dans procédure GO) :
+       #set methreg "spc"
+       #set methsky "med"
+       #set methsel "serre"
+       #set methbin "rober"
+       #set methsmo "n"
+       #set methejbad "n"
+       #set methejtilt "n"
+       #set rmfpretrait "o"
+      set audace(param_spc_audace,sari,config,offset) "none"
+
+
+      # === Variables d'environnement
+      # backpad : #F0F0FF
+      set audace(param_spc_audace,sari,color,textkey) $color(blue_pad)
+      set audace(param_spc_audace,sari,color,backpad) #ECE9D8
+      set audace(param_spc_audace,sari,color,backdisp) $color(white)
+      set audace(param_spc_audace,sari,color,textdisp) #FF0000
+      set audace(param_spc_audace,sari,font,c12b) [ list {Arial} 10 bold ]
+      set audace(param_spc_audace,sari,font,c10b) [ list {Arial} 10 bold ]
+
+      # === Met en place l'interface graphique
+
+      #--- Cree la fenetre .param_spc_audace_sari de niveau le plus haut
+      toplevel .param_spc_audace_sari -class Toplevel -bg $audace(param_spc_audace,sari,color,backpad)
+      #wm geometry .param_spc_audace_sari 450x558+10+10
+      #wm geometry .param_spc_audace_sari 486x506+146-25
+      wm geometry .param_spc_audace_sari 486x244+146-25
+      wm resizable .param_spc_audace_sari 1 1
+      wm title .param_spc_audace_sari $caption(spcaudace,metaboxes,sari,titre)
+      wm protocol .param_spc_audace_sari WM_DELETE_WINDOW "::param_spc_audace_sari::annuler"
+
+      #--- Create the title
+      #--- Cree le titre
+      label .param_spc_audace_sari.title \
+	      -font [ list {Arial} 16 bold ] -text $caption(spcaudace,metaboxes,sari,titre2) \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey)
+      pack .param_spc_audace_sari.title \
+	      -in .param_spc_audace_sari -fill x -side top -pady 15
+
+      # --- Boutons du bas
+      frame .param_spc_audace_sari.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,sari,color,backpad)
+      #-- Bouton Annuler
+      button .param_spc_audace_sari.stop_button  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,stop_button)" \
+	      -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) \
+	      -command {::param_spc_audace_sari::annuler}
+      pack  .param_spc_audace_sari.stop_button -in .param_spc_audace_sari.buttons -side left -fill none -padx 3 -pady 3
+      #-- Bouton OK
+      button .param_spc_audace_sari.return_button  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,return_button)" \
+	      -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) \
+	      -command {::param_spc_audace_sari::go}
+      pack  .param_spc_audace_sari.return_button -in .param_spc_audace_sari.buttons -side right -fill none -padx 3 -pady 3
+      pack .param_spc_audace_sari.buttons -in .param_spc_audace_sari -fill x -pady 0 -padx 0 -anchor s -side bottom
+
+      #--- Label + Entry pour brut
+      frame .param_spc_audace_sari.brut -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad)
+      label .param_spc_audace_sari.brut.label  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,config,brut) " -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief flat
+      pack  .param_spc_audace_sari.brut.label -in .param_spc_audace_sari.brut -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_sari.brut.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -command { set audace(param_spc_audace,sari,config,brut) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_sari.brut.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_sari.brut.entry  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -textvariable audace(param_spc_audace,sari,config,brut) -bg $audace(param_spc_audace,sari,color,backdisp) \
+	      -fg $audace(param_spc_audace,sari,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_sari.brut.entry -in .param_spc_audace_sari.brut -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_sari.brut.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,sari,config,brut) \
+         -font $audace(param_spc_audace,sari,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_sari.brut.combobox -in .param_spc_audace_sari.brut -side right -fill none
+      pack .param_spc_audace_sari.brut -in .param_spc_audace_sari -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour noir
+      frame .param_spc_audace_sari.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad)
+      label .param_spc_audace_sari.noir.label  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,config,noir) " -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief flat
+      pack  .param_spc_audace_sari.noir.label -in .param_spc_audace_sari.noir -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_sari.noir.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -command { set audace(param_spc_audace,sari,config,noir) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_sari.noir.explore -side left -padx 7 -pady 3 -ipady 0
+
+      entry  .param_spc_audace_sari.noir.entry  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -textvariable audace(param_spc_audace,sari,config,noir) -bg $audace(param_spc_audace,sari,color,backdisp) \
+	      -fg $audace(param_spc_audace,sari,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_sari.noir.entry -in .param_spc_audace_sari.noir -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_sari.noir.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,sari,config,noir) \
+         -font $audace(param_spc_audace,sari,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_sari.noir.combobox -in .param_spc_audace_sari.noir -side right -fill none
+
+      pack .param_spc_audace_sari.noir -in .param_spc_audace_sari -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour plu
+      frame .param_spc_audace_sari.plu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad)
+      label .param_spc_audace_sari.plu.label  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,config,plu) " -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief flat
+      pack  .param_spc_audace_sari.plu.label -in .param_spc_audace_sari.plu -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_sari.plu.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -command { set audace(param_spc_audace,sari,config,plu) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_sari.plu.explore -side left -padx 7 -pady 3 -ipady 0
+
+      entry  .param_spc_audace_sari.plu.entry  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -textvariable audace(param_spc_audace,sari,config,plu) -bg $audace(param_spc_audace,sari,color,backdisp) \
+	      -fg $audace(param_spc_audace,sari,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_sari.plu.entry -in .param_spc_audace_sari.plu -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_sari.plu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,sari,config,plu) \
+         -font $audace(param_spc_audace,sari,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_sari.plu.combobox -in .param_spc_audace_sari.plu -side right -fill none
+
+      pack .param_spc_audace_sari.plu -in .param_spc_audace_sari -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour noirplu
+      frame .param_spc_audace_sari.noirplu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad)
+      label .param_spc_audace_sari.noirplu.label  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,config,noirplu) " -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief flat
+      pack  .param_spc_audace_sari.noirplu.label -in .param_spc_audace_sari.noirplu -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_sari.noirplu.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -command { set audace(param_spc_audace,sari,config,noirplu) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_sari.noirplu.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_sari.noirplu.entry  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -textvariable audace(param_spc_audace,sari,config,noirplu) -bg $audace(param_spc_audace,sari,color,backdisp) \
+	      -fg $audace(param_spc_audace,sari,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_sari.noirplu.entry -in .param_spc_audace_sari.noirplu -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_sari.noirplu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,sari,config,noirplu) \
+         -font $audace(param_spc_audace,sari,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_sari.noirplu.combobox -in .param_spc_audace_sari.noirplu -side right -fill none
+      pack .param_spc_audace_sari.noirplu -in .param_spc_audace_sari -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour offset
+      frame .param_spc_audace_sari.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad)
+      label .param_spc_audace_sari.offset.label  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,config,offset) " -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief flat
+      pack  .param_spc_audace_sari.offset.label -in .param_spc_audace_sari.offset -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_sari.offset.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,sari,config,offset) \
+         -font $audace(param_spc_audace,sari,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_sari.offset.combobox -in .param_spc_audace_sari.offset -side right -fill none
+      #pack .param_spc_audace_sari.offset -in .param_spc_audace_sari -fill none -pady 1 -padx 12
+      pack .param_spc_audace_sari.offset -in .param_spc_audace_sari -fill x -pady 1 -padx 12
+
+
+
+      #--- Label + Entry pour types_spectraux
+      #-- Partie Label
+      frame .param_spc_audace_sari.types_spectraux -borderwidth 0 -relief flat -bg $audace(param_spc_audace,sari,color,backpad)
+      label .param_spc_audace_sari.types_spectraux.label  \
+	      -font $audace(param_spc_audace,sari,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,sari,config,types_spectraux) " -bg $audace(param_spc_audace,sari,color,backpad) \
+	      -fg $audace(param_spc_audace,sari,color,textkey) -relief flat
+      pack  .param_spc_audace_sari.types_spectraux.label -in .param_spc_audace_sari.types_spectraux -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_sari.types_spectraux.combobox \
+         -width 7          \
+         -height [ llength $liste_types_spectraux ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,sari,config,type_spectral) \
+         -values $liste_types_spectraux
+      pack  .param_spc_audace_sari.types_spectraux.combobox -in .param_spc_audace_sari.types_spectraux -side right -fill none
+      pack .param_spc_audace_sari.types_spectraux -in .param_spc_audace_sari -fill x -pady 1 -padx 12
+
+  }
+
+
+  proc go {} {
+      global audace conf spcaudace
+      global caption
+
+      #-- Options prédéfinies :
+      # set methreg "$spcaudace(methreg)"
+      ::param_spc_audace_sari::recup_conf
+      set brut $audace(param_spc_audace,sari,config,brut)
+      set noir $audace(param_spc_audace,sari,config,noir)
+      set plu $audace(param_spc_audace,sari,config,plu)
+      set noirplu $audace(param_spc_audace,sari,config,noirplu)
+      set offset $audace(param_spc_audace,sari,config,offset)
+      set type_spectral $audace(param_spc_audace,sari,config,type_spectral)
+      if { $offset=="" } {
+	  set offset "none"
+      }
+      set listeargs [ list $brut $noir $plu $noirplu $offset $type_spectral ]
+
+
+
+      #--- Lancement de la fonction spcaudace :
+      #-- Si tous les champs sont /= "" on execute le calcul :
+      if { [ spc_testguiargs $listeargs ] == 1 } {
+         set fileout [ spc_sari $brut $noir $plu $noirplu $offset $type_spectral ]
+         destroy .param_spc_audace_sari
+         return $fileout
+      }
+  }
+
+  proc annuler {} {
+      global audace
+      global caption
+      ::param_spc_audace_sari::recup_conf
+      destroy .param_spc_audace_sari
+  }
+
+
+  proc recup_conf {} {
+      global conf
+      global audace
+
+      if { [ winfo exists .param_spc_audace_sari ] } {
+	  #--- Enregistre la position de la fenetre
+	  set geom [ wm geometry .param_spc_audace_sari ]
+	  set deb [ expr 1+[string first + $geom ] ]
+	  set fin [ string length $geom ]
+	  set conf(param_spc_audace,position) "[ string range $geom $deb $fin ]"
+      }
+  }
+}
+#****************************************************************************#
+
+
+
+########################################################################
+# Boîte graphique de saisie de s paramètres pour la metafonction spc_satraite
+# Intitulé : Réduction spectrale de spectres stellaires
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 23-03-2014
+# Date de modification : 23-03-2014
+# Utilisée par : spc_satraite
+# Args :
+########################################################################
+
+namespace eval ::param_spc_audace_satraite {
+
+   proc run { {positionxy 20+20} } {
+      global conf
+      global audace
+      global caption
+      global color
+
+      set liste_methsky [ list "" "med" "moy" "moy2" "sup" "inf" "back" "none" ]
+
+      set liste_noms_generiques [ spc_nomsgeneriques ]
+
+      if { [ string length [ info commands .param_spc_audace_satraite.* ] ] != "0" } {
+         destroy .param_spc_audace_satraite
+      }
+
+       #-- Options prédéfinies (déclarées dans procédure GO) :
+       #set methreg "spc"
+       #set methsky "med"
+       #set methsel "serre"
+       #set methbin "rober"
+       #set methsmo "n"
+       #set methejbad "n"
+       #set methejtilt "n"
+       #set rmfpretrait "o"
+      set audace(param_spc_audace,satraite,config,methsky) ""
+      set audace(param_spc_audace,satraite,config,offset) "none"
+
+      # === Variables d'environnement
+      # backpad : #F0F0FF
+      set audace(param_spc_audace,satraite,color,textkey) $color(blue_pad)
+      set audace(param_spc_audace,satraite,color,backpad) #ECE9D8
+      set audace(param_spc_audace,satraite,color,backdisp) $color(white)
+      set audace(param_spc_audace,satraite,color,textdisp) #FF0000
+      set audace(param_spc_audace,satraite,font,c12b) [ list {Arial} 10 bold ]
+      set audace(param_spc_audace,satraite,font,c10b) [ list {Arial} 10 bold ]
+
+      # === Met en place l'interface graphique
+
+      #--- Cree la fenetre .param_spc_audace_satraite de niveau le plus haut
+      toplevel .param_spc_audace_satraite -class Toplevel -bg $audace(param_spc_audace,satraite,color,backpad)
+      #wm geometry .param_spc_audace_satraite 450x558+10+10
+      #wm geometry .param_spc_audace_satraite 486x506+146-25
+      wm geometry .param_spc_audace_satraite 486x372+146-25
+      wm resizable .param_spc_audace_satraite 1 1
+      wm title .param_spc_audace_satraite $caption(spcaudace,metaboxes,satraite,titre)
+      wm protocol .param_spc_audace_satraite WM_DELETE_WINDOW "::param_spc_audace_satraite::annuler"
+
+      #--- Create the title
+      #--- Cree le titre
+      label .param_spc_audace_satraite.title \
+	      -font [ list {Arial} 16 bold ] -text $caption(spcaudace,metaboxes,satraite,titre2) \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey)
+      pack .param_spc_audace_satraite.title \
+	      -in .param_spc_audace_satraite -fill x -side top -pady 15
+
+      # --- Boutons du bas
+      frame .param_spc_audace_satraite.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,satraite,color,backpad)
+      #-- Bouton Annuler
+      button .param_spc_audace_satraite.stop_button  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,stop_button)" \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) \
+	      -command {::param_spc_audace_satraite::annuler}
+      pack  .param_spc_audace_satraite.stop_button -in .param_spc_audace_satraite.buttons -side left -fill none -padx 3 -pady 3
+      #-- Bouton OK
+      button .param_spc_audace_satraite.return_button  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,return_button)" \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) \
+	      -command {::param_spc_audace_satraite::go}
+      pack  .param_spc_audace_satraite.return_button -in .param_spc_audace_satraite.buttons -side right -fill none -padx 3 -pady 3
+      pack .param_spc_audace_satraite.buttons -in .param_spc_audace_satraite -fill x -pady 0 -padx 0 -anchor s -side bottom
+
+      #--- Label + Entry pour brut
+      frame .param_spc_audace_satraite.brut -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.brut.label  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,config,brut) " -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat
+      pack  .param_spc_audace_satraite.brut.label -in .param_spc_audace_satraite.brut -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_satraite.brut.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -command { set audace(param_spc_audace,satraite,config,brut) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_satraite.brut.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_satraite.brut.entry  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -textvariable audace(param_spc_audace,satraite,config,brut) -bg $audace(param_spc_audace,satraite,color,backdisp) \
+	      -fg $audace(param_spc_audace,satraite,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_satraite.brut.entry -in .param_spc_audace_satraite.brut -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_satraite.brut.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,satraite,config,brut) \
+         -font $audace(param_spc_audace,satraite,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_satraite.brut.combobox -in .param_spc_audace_satraite.brut -side right -fill none
+      pack .param_spc_audace_satraite.brut -in .param_spc_audace_satraite -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour noir
+      frame .param_spc_audace_satraite.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.noir.label  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,config,noir) " -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat
+      pack  .param_spc_audace_satraite.noir.label -in .param_spc_audace_satraite.noir -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_satraite.noir.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -command { set audace(param_spc_audace,satraite,config,noir) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_satraite.noir.explore -side left -padx 7 -pady 3 -ipady 0
+
+      entry  .param_spc_audace_satraite.noir.entry  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -textvariable audace(param_spc_audace,satraite,config,noir) -bg $audace(param_spc_audace,satraite,color,backdisp) \
+	      -fg $audace(param_spc_audace,satraite,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_satraite.noir.entry -in .param_spc_audace_satraite.noir -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_satraite.noir.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,satraite,config,noir) \
+         -font $audace(param_spc_audace,satraite,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_satraite.noir.combobox -in .param_spc_audace_satraite.noir -side right -fill none
+
+      pack .param_spc_audace_satraite.noir -in .param_spc_audace_satraite -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour plu
+      frame .param_spc_audace_satraite.plu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.plu.label  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,config,plu) " -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat
+      pack  .param_spc_audace_satraite.plu.label -in .param_spc_audace_satraite.plu -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_satraite.plu.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -command { set audace(param_spc_audace,satraite,config,plu) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_satraite.plu.explore -side left -padx 7 -pady 3 -ipady 0
+
+      entry  .param_spc_audace_satraite.plu.entry  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -textvariable audace(param_spc_audace,satraite,config,plu) -bg $audace(param_spc_audace,satraite,color,backdisp) \
+	      -fg $audace(param_spc_audace,satraite,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_satraite.plu.entry -in .param_spc_audace_satraite.plu -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_satraite.plu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,satraite,config,plu) \
+         -font $audace(param_spc_audace,satraite,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_satraite.plu.combobox -in .param_spc_audace_satraite.plu -side right -fill none
+
+      pack .param_spc_audace_satraite.plu -in .param_spc_audace_satraite -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour noirplu
+      frame .param_spc_audace_satraite.noirplu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.noirplu.label  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,config,noirplu) " -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat
+      pack  .param_spc_audace_satraite.noirplu.label -in .param_spc_audace_satraite.noirplu -side left -fill none
+      if { 1==0 } {
+      button .param_spc_audace_satraite.noirplu.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -command { set audace(param_spc_audace,satraite,config,noirplu) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_satraite.noirplu.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_satraite.noirplu.entry  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -textvariable audace(param_spc_audace,satraite,config,noirplu) -bg $audace(param_spc_audace,satraite,color,backdisp) \
+	      -fg $audace(param_spc_audace,satraite,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_satraite.noirplu.entry -in .param_spc_audace_satraite.noirplu -side left -fill none
+      }
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_satraite.noirplu.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,satraite,config,noirplu) \
+         -font $audace(param_spc_audace,satraite,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_satraite.noirplu.combobox -in .param_spc_audace_satraite.noirplu -side right -fill none
+      pack .param_spc_audace_satraite.noirplu -in .param_spc_audace_satraite -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour offset
+      frame .param_spc_audace_satraite.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.offset.label  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,config,offset) " -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat
+      pack  .param_spc_audace_satraite.offset.label -in .param_spc_audace_satraite.offset -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_satraite.offset.combobox \
+         -width 25         \
+         -height [ llength $liste_noms_generiques ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 1       \
+         -textvariable audace(param_spc_audace,satraite,config,offset) \
+         -font $audace(param_spc_audace,satraite,font,c12b) \
+         -values $liste_noms_generiques
+      pack  .param_spc_audace_satraite.offset.combobox -in .param_spc_audace_satraite.offset -side right -fill none
+      #pack .param_spc_audace_satraite.offset -in .param_spc_audace_satraite -fill none -pady 1 -padx 12
+      pack .param_spc_audace_satraite.offset -in .param_spc_audace_satraite -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour spectre1b
+      frame .param_spc_audace_satraite.spectre1b -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.spectre1b.label -text "$caption(spcaudace,metaboxes,satraite,config,spectre1b)" -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat \
+	      -font $audace(param_spc_audace,satraite,font,c12b)
+      pack  .param_spc_audace_satraite.spectre1b.label -in .param_spc_audace_satraite.spectre1b -side left -fill none
+      button .param_spc_audace_satraite.spectre1b.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -command { set audace(param_spc_audace,satraite,config,spectre1b) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_satraite.spectre1b.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_satraite.spectre1b.entry  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -textvariable audace(param_spc_audace,satraite,config,spectre1b) -bg $audace(param_spc_audace,satraite,color,backdisp) \
+	      -fg $audace(param_spc_audace,satraite,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_satraite.spectre1b.entry -in .param_spc_audace_satraite.spectre1b -side left -fill none
+      pack .param_spc_audace_satraite.spectre1b -in .param_spc_audace_satraite -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour methsky
+      #-- Partie Label
+      frame .param_spc_audace_satraite.methsky -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad)
+      label .param_spc_audace_satraite.methsky.label  \
+	      -font $audace(param_spc_audace,satraite,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,satraite,config,methsky) " -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey) -relief flat
+      pack  .param_spc_audace_satraite.methsky.label -in .param_spc_audace_satraite.methsky -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_satraite.methsky.combobox \
+         -width 7          \
+         -height [ llength $liste_methsky ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,satraite,config,methsky) \
+         -values $liste_methsky
+      pack  .param_spc_audace_satraite.methsky.combobox -in .param_spc_audace_satraite.methsky -side right -fill none
+      pack .param_spc_audace_satraite.methsky -in .param_spc_audace_satraite -fill x -pady 1 -padx 12
+
+
+      #--- Message sur le nom de la reponse instrumentale :
+      label .param_spc_audace_satraite.message1 \
+	      -font [ list {Arial} 12 bold ] -text "$caption(spcaudace,metaboxes,satraite,nom_fileri) " \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,satraite,color,backpad) \
+	      -fg $audace(param_spc_audace,satraite,color,textkey)
+      pack .param_spc_audace_satraite.message1 \
+	      -in .param_spc_audace_satraite -fill x -side top -pady 15
+
+
+  }
+
+
+  proc go {} {
+      global audace conf spcaudace
+      global caption
+
+      #-- Options prédéfinies :
+      # set methreg "$spcaudace(methreg)"
+      ::param_spc_audace_satraite::recup_conf
+      set brut $audace(param_spc_audace,satraite,config,brut)
+      set noir $audace(param_spc_audace,satraite,config,noir)
+      set plu $audace(param_spc_audace,satraite,config,plu)
+      set noirplu $audace(param_spc_audace,satraite,config,noirplu)
+      set offset $audace(param_spc_audace,satraite,config,offset)
+      set spectre1b $audace(param_spc_audace,satraite,config,spectre1b)
+      set methsky $audace(param_spc_audace,satraite,config,methsky)
+      if { $offset=="" } {
+	  set offset "none"
+      }
+
+     if { "$methsky"=="" } {
+        set listeargs [ list $spectre1b $brut $noir $plu $noirplu $offset ]
+     } else {
+        set listeargs [ list $spectre1b $brut $noir $plu $noirplu $offset $methsky ]
+     }
+
+
+
+      #--- Lancement de la fonction spcaudace :
+      #-- Si tous les champs sont /= "" on execute le calcul :
+      if { [ spc_testguiargs $listeargs ] == 1 } {
+         if { "$methsky"=="" } {
+            set fileout [ spc_satraite $spectre1b $brut $noir $plu $noirplu $offset ]
+         } else {
+            set fileout [ spc_satraite $spectre1b $brut $noir $plu $noirplu $offset $methsky ]
+         }
+         destroy .param_spc_audace_satraite
+         return $fileout
+      }
+  }
+
+  proc annuler {} {
+      global audace
+      global caption
+      ::param_spc_audace_satraite::recup_conf
+      destroy .param_spc_audace_satraite
+  }
+
+
+  proc recup_conf {} {
+      global conf
+      global audace
+
+      if { [ winfo exists .param_spc_audace_satraite ] } {
+	  #--- Enregistre la position de la fenetre
+	  set geom [ wm geometry .param_spc_audace_satraite ]
+	  set deb [ expr 1+[string first + $geom ] ]
+	  set fin [ string length $geom ]
+	  set conf(param_spc_audace,position) "[ string range $geom $deb $fin ]"
+      }
+  }
+}
+#****************************************************************************#

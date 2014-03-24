@@ -148,7 +148,7 @@ set caption(spcaudace,metaboxes,traite2rinstrum,config,plu)             "Flat's 
 set caption(spcaudace,metaboxes,traite2rinstrum,config,noirplu)         "Flat's dark generic name"
 set caption(spcaudace,metaboxes,traite2rinstrum,config,offset)          "Offset's generic name"
 set caption(spcaudace,metaboxes,traite2rinstrum,config,lampe)           "2D calibration file's name or\ncalibrated lamp lines profile's name"
-#set caption(spcaudace,metaboxes,traite2rinstrum,config,lampe)           "Calibration lamp: 2D's filename\nor calibrated lines profile's name"
+#set caption(spcaudace,metaboxes,traite2rinstrum,config,lampe)          "Calibration lamp: 2D's filename\nor calibrated lines profile's name"
 set caption(spcaudace,metaboxes,traite2rinstrum,config,etoile_ref)      "Reference star's lines profil"
 set caption(spcaudace,metaboxes,traite2rinstrum,config,etoile_cat)      "Catalogue star's lines profil"
 set caption(spcaudace,metaboxes,traite2rinstrum,config,methmasters)     "Remove preprocessing images (y/n)"
@@ -236,6 +236,31 @@ set caption(spcaudace,metaboxes,traitenebula,config,methsky)            "Subsky 
 set caption(spcaudace,metaboxes,traitenebula,config,methbin)            "Raws binning method"
 set caption(spcaudace,metaboxes,traitenebula,config,smooth)             "Smoothing (y/n)"
 set caption(spcaudace,metaboxes,traitenebula,config,methmasters)        "Erase preprocessing masters (y/n)"
+
+set caption(spcaudace,metaboxes,sari,titre2)                            "Intrumental answer computation for SA"
+set caption(spcaudace,metaboxes,sari,titre)                             "SA smile!"
+set caption(spcaudace,metaboxes,sari,stop_button)                       "Cancel"
+set caption(spcaudace,metaboxes,sari,return_button)                     "OK"
+set caption(spcaudace,metaboxes,sari,config,brut)                       "Unprocessed files' generic name"
+set caption(spcaudace,metaboxes,sari,config,noir)                       "Dark's generic name"
+set caption(spcaudace,metaboxes,sari,config,plu)                        "Flat's generic name"
+set caption(spcaudace,metaboxes,sari,config,noirplu)                    "Flat's dark generic name"
+set caption(spcaudace,metaboxes,sari,config,offset)                     "Offset's generic name"
+set caption(spcaudace,metaboxes,sari,config,types_spectraux)            "Spectral type of the star"
+
+set caption(spcaudace,metaboxes,satraite,titre2)                        "Spectra processing for SA"
+set caption(spcaudace,metaboxes,satraite,titre)                         "SA process!"
+set caption(spcaudace,metaboxes,satraite,stop_button)                   "Cancel"
+set caption(spcaudace,metaboxes,satraite,return_button)                 "OK"
+set caption(spcaudace,metaboxes,satraite,config,brut)                   "Unprocessed files' generic name"
+set caption(spcaudace,metaboxes,satraite,config,noir)                   "Dark's generic name"
+set caption(spcaudace,metaboxes,satraite,config,plu)                    "Flat's generic name"
+set caption(spcaudace,metaboxes,satraite,config,noirplu)                "Flat's dark generic name"
+set caption(spcaudace,metaboxes,satraite,config,offset)                 "Offset's generic name"
+set caption(spcaudace,metaboxes,satraite,config,spectre1b)              "Name of the reference star 1b spectrum"
+set caption(spcaudace,metaboxes,satraite,config,methsky)                "Non stellar spectra: subsky method"
+set caption(spcaudace,metaboxes,satraite,nom_fileri)                    "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -482,6 +507,31 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "Adoucissement (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "Effacement des masters de prétraitement (o/n)"
 
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Calcul de la réponse instrumentale pour le SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA ri !"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Annuler"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Nom générique des spectres bruts"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Nom générique des noirs"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Nom générique des plu(s)"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Nom générique des noirs de plu"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Nom générique des offset(s)"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Type spectral de l'étoile"
+
+   set caption(spcaudace,metaboxes,satraite,titre2)                     "Réduction des spectres pour le SA"
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA traite !"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Annuler"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Nom générique des spectres bruts"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Nom générique des noirs"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Nom générique des plu(s)"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Nom générique des noirs de plu"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Nom générique des offset(s)"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Nom du spectre 1b de l'étoile de référence"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Spectres non stellaires : méthode \n de soustraction du fond de ciel"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Le nom du fichier de la réponse instrumentale\n dans le répertoire doit être :\n reponse_instrumentale-br.fit"
+
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -721,6 +771,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,methbin)         "# Méthode de binning des colonnes"
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "# Adoucissement (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "# Effacement des masters de prétraitement (o/n)"
+
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -962,6 +1036,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "# Adoucissement (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "# Effacement des masters de prétraitement (o/n)"
 
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
@@ -1201,6 +1299,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,methbin)         "# Méthode de binning des colonnes"
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "# Adoucissement (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "# Effacement des masters de prétraitement (o/n)"
+
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -1442,6 +1564,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "# Adoucissement (o/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "# Effacement des masters de prétraitement (o/n)"
 
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -1664,6 +1810,31 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,methbin)         "Raws binning method"
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "Smoothing (y/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "Erase preprocessing masters (y/n)"
+
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -1888,6 +2059,30 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "Smoothing (y/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "Erase preprocessing masters (y/n)"
 
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
+
+
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
 
@@ -2110,6 +2305,29 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,metaboxes,traitenebula,config,methbin)         "Raws binning method"
    set caption(spcaudace,metaboxes,traitenebula,config,smooth)          "Smoothing (y/n)"
    set caption(spcaudace,metaboxes,traitenebula,config,methmasters)     "Erase preprocessing masters (y/n)"
+
+   set caption(spcaudace,metaboxes,sari,titre2)                         "Intrumental answer computation for SA"
+   set caption(spcaudace,metaboxes,sari,titre)                          "SA smile!"
+   set caption(spcaudace,metaboxes,sari,stop_button)                    "Cancel"
+   set caption(spcaudace,metaboxes,sari,return_button)                  "OK"
+   set caption(spcaudace,metaboxes,sari,config,brut)                    "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,sari,config,noir)                    "Dark's generic name"
+   set caption(spcaudace,metaboxes,sari,config,plu)                     "Flat's generic name"
+   set caption(spcaudace,metaboxes,sari,config,noirplu)                 "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,sari,config,offset)                  "Offset's generic name"
+   set caption(spcaudace,metaboxes,sari,config,types_spectraux)         "Spectral type of the star"
+
+   set caption(spcaudace,metaboxes,satraite,titre)                      "SA process!"
+   set caption(spcaudace,metaboxes,satraite,stop_button)                "Cancel"
+   set caption(spcaudace,metaboxes,satraite,return_button)              "OK"
+   set caption(spcaudace,metaboxes,satraite,config,brut)                "Unprocessed files' generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noir)                "Dark's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,plu)                 "Flat's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,noirplu)             "Flat's dark generic name"
+   set caption(spcaudace,metaboxes,satraite,config,offset)              "Offset's generic name"
+   set caption(spcaudace,metaboxes,satraite,config,spectre1b)           "Name of the reference star 1b spectrum"
+   set caption(spcaudace,metaboxes,satraite,config,methsky)             "Non stellar spectra: subsky method"
+   set caption(spcaudace,metaboxes,satraite,nom_fileri)                 "Instrumental response's file name\n in the directory must be :\n reponse_instrumentale-br.fit"
 
 }
 
