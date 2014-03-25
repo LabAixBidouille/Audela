@@ -11,6 +11,10 @@
 namespace eval ::atos_tools_avi {
 
    variable avi1
+   variable log
+
+   set ::atos_tools_avi::log 0
+
 
    # ::atos_tools_avi::list_diff_shift
    # Retourne la liste test epurée de l intersection des deux listes
@@ -157,17 +161,20 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::next_image { } {
 
-      #::console::affiche_resultat "\nnext_image deb : $::atos_tools::cur_idframe \n"
+      if {$::atos_tools_avi::log} { ::console::affiche_resultat "\nnext_image deb : $::atos_tools::cur_idframe \n" }
+
       set ::atos_tools::cur_idframe [expr int($::atos_tools::cur_idframe + 1)]
       if { $::atos_tools::cur_idframe > $::atos_tools::frame_end } {
          set ::atos_tools::cur_idframe $::atos_tools::frame_end
       } else {
          ::atos_tools_avi::avi1 next
       }
-      #::console::affiche_resultat "next_image fin : $::atos_tools::cur_idframe \n"
 
-      #set pc [expr ($::atos_tools::cur_idframe-1) / ($::atos_tools::nb_frames+1.0) ]
-      #::console::affiche_resultat "next_image idframe = $::atos_tools::cur_idframe ; pc = $pc\n"
+      if {$::atos_tools_avi::log} {
+         ::console::affiche_resultat "next_image fin : $::atos_tools::cur_idframe \n"
+         set pc [expr ($::atos_tools::cur_idframe-1) / ($::atos_tools::nb_frames+1.0) ]
+         ::console::affiche_resultat "next_image idframe = $::atos_tools::cur_idframe ; pc = $pc\n"
+      }
 
    }
 
@@ -175,13 +182,15 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::prev_image { } {
 
-      #::console::affiche_resultat "\nprev_image av : $::atos_tools::cur_idframe \n "
+      if {$::atos_tools_avi::log} { ::console::affiche_resultat "\nprev_image av : $::atos_tools::cur_idframe \n " }
+
       set idframe [expr int($::atos_tools::cur_idframe - 1)]
       if { $idframe < $::atos_tools::frame_begin } {
          set idframe $::atos_tools::frame_begin
       }
       ::atos_tools_avi::set_frame $idframe
-      #::console::affiche_resultat "prev_image ap : $::atos_tools::cur_idframe \n"
+
+      if {$::atos_tools_avi::log} { ::console::affiche_resultat "prev_image ap : $::atos_tools::cur_idframe \n" }
 
    }
 
@@ -222,7 +231,7 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::set_frame { idframe } {
 
-      #::console::affiche_resultat "$::atos_tools::cur_idframe $::atos_tools::frame_end $::atos_tools::frame_begin\n"
+      if {$::atos_tools_avi::log} { ::console::affiche_resultat "$::atos_tools::cur_idframe $::atos_tools::frame_end $::atos_tools::frame_begin\n" }
 
       set nbf [expr  $::atos_tools::nb_open_frames * 1.0]
 
@@ -235,20 +244,20 @@ namespace eval ::atos_tools_avi {
       }
 
       set ::atos_tools::cur_idframe [expr int($idframe)]
-      #set pc [expr ($idframe-1) / ($nbf+1.0) ]
 
-      #::console::affiche_resultat "set_frame idframe = $idframe ; pc = $pc\n"
+      if {$::atos_tools_avi::log} {
+         set pc [expr ($idframe-1) / ($nbf+1.0) ]
+         ::console::affiche_resultat "set_frame idframe = $idframe ; pc = $pc\n"
+      }
 
       ::atos_tools_avi::avi1 seektoframe [expr $idframe -1 ]
-      #::atos_tools_avi::avi1 seekpercent $pc
-
       set ::atos_tools::cur_idframe [expr $idframe -1]
 
       ::atos_tools_avi::next_image
-      #::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n"
+      if {$::atos_tools_avi::log} { ::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n" }
 
       set ::atos_tools::cur_idframe [expr int($idframe)]
-      #::console::affiche_resultat "set_frame cur_idframe fin = $::atos_tools::cur_idframe\n"
+      if {$::atos_tools_avi::log} { ::console::affiche_resultat "set_frame cur_idframe fin = $::atos_tools::cur_idframe\n" }
 
    }
 
