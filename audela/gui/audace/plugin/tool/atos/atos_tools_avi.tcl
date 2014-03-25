@@ -407,12 +407,11 @@ namespace eval ::atos_tools_avi {
       ::console::affiche_resultat "Get device info\n"
 
       set dev $::atos_acq::frmdevpath
-      # set infodev $frm.tformin.periph.infodev
 
       if { [ string equal $dev ""] } {
-       set options "-0"
+         set options "-0"
       } else {
-       set options "-0 -i $dev"
+         set options "-0 -i $dev"
       }
 
       if { [ string equal $autoflag auto ] } {
