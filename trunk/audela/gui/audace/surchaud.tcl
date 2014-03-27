@@ -1622,6 +1622,144 @@ proc calibwcs {args} {
    }
 }
 
+proc calibwcs_new {args} {
+   set argc [llength $args]
+   if {$argc >= 5} {
+      #--- Chargement des arguments
+      set Angle_ra    [lindex $args 0]
+      set Angle_dec   [lindex $args 1]
+      set valpixsize1 [lindex $args 2]
+      set valpixsize2 [lindex $args 3]
+      set valfoclen   [lindex $args 4]
+      set cat_format ""
+      set cat_folder ""
+      if {$argc >= 7} {
+         set cat_format [lindex $args 5]
+         set cat_folder [lindex $args 6]
+      }
+      set del_tmp_files 1
+      set yes_visu 1
+      set add_sia 0
+      set maglim ""
+      if {$argc >= 9} {
+         for {set k 7} {$k<[expr $argc-1]} {incr k} {
+            set key [lindex $args $k]
+            if {$key=="-del_tmp_files"} {
+               set del_tmp_files [lindex $args [expr $k+1]]
+            }
+            if {$key=="-yes_visu"} {
+               set yes_visu [lindex $args [expr $k+1]]
+            }
+            if {$key=="-maglimit"} {
+               set maglim [lindex $args [expr $k+1]]
+               set maglim "\"magrlim=$maglim\" \"magblim=$maglim\""
+            }
+            if {$key=="-add_sia"} {
+               set add_sia 1
+            }
+         }
+      }
+
+      set pi [expr 4*atan(1.)]
+      set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
+      set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
+
+      if {$Angle_ra=="*"} {
+         set Angle_ra [lindex [buf$::audace(bufNo) getkwd RA] 1]
+      }
+      if {$Angle_dec=="*"} {
+         set Angle_dec [lindex [buf$::audace(bufNo) getkwd DEC] 1]
+      }
+      if {$valpixsize1=="*"} {
+         set valpixsize1 [lindex [buf$::audace(bufNo) getkwd PIXSIZE1] 1]
+      }
+      if {$valpixsize2=="*"} {
+         set valpixsize2 [lindex [buf$::audace(bufNo) getkwd PIXSIZE2] 1]
+      }
+      if {$valfoclen=="*"} {
+         set valfoclen [lindex [buf$::audace(bufNo) getkwd FOCLEN] 1]
+      }
+
+      #--- check les catalogues
+      if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
+         set comment "This catalog ($cat_format) is not valid. It must be only USNO or MICROCAT!"
+         error $comment
+      }
+      if {[file exists $cat_folder]==1} {
+         if {[string toupper $cat_format] eq "USNO"} {
+            set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
+            set fics [glob -nocomplain [file join $cat_folder "*.ACC"]]
+            if {[llength $fics]<24} {
+               error $comment
+            }
+            set fics [glob -nocomplain [file join $cat_folder "*.CAT"]]
+            if {[llength $fics]<24} {
+               error $comment
+            }
+         } elseif {[string toupper $cat_format] eq "MICROCAT"} {
+            set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
+            set fics [glob -nocomplain -dir [file join $cat_folder usno] -type f *.ACC]
+            if {[llength $fics]<24} {
+               error $comment
+            }
+            set fics [glob -nocomplain -dir [file join $cat_folder tyc] -type f *.ACC]
+            if {[llength $fics]<24} {
+               error $comment
+            }
+         }
+      } else {
+         set comment "Path to the catalog does not exists:\n$cat_folder\n"
+         error $comment
+      }
+
+      #--- Construction des parametres WCS
+      if {($cat_format!="")} {
+         if {[string toupper $cat_format]=="USNO"} {
+            set Cat_format USNOA2
+         } else {
+            set Cat_format [string toupper $cat_format]
+         }
+         set star0s [focas_buf2stars $::audace(bufNo) $Cat_format] 
+         set cata0s [focas_db2catas $Cat_format c:/d/usno]
+         set couples [focas_catastars2pairs $star0s $cata0s $Cat_format 3 35]
+         set wcs [wcs_focaspairs2wcs $couples 1]
+         wcs_wcs2buf $wcs $::audace(bufNo)
+         set wcs [wcs_buf2wcs $::audace(bufNo)]
+         set wcs [wcs_update_optic $wcs]
+         wcs_wcs2buf $wcs $::audace(bufNo)
+         if {$del_tmp_files==1} {
+            ::astrometry::delete_lst
+            ::astrometry::delete_dummy
+         }
+         #---
+      }
+      #---
+      if {$yes_visu==1} {
+         ::audace::autovisu $::audace(visuNo)
+      }
+      if {$add_sia==1} {
+         set_poly_sia $::audace(bufNo)
+      }
+      set res [buf$::audace(bufNo) getkwd WCSMATCH]
+      set catastar [lindex $res 1]
+      buf$::audace(bufNo) setkwd [list CATASTAR [string trim [lindex $res 1]] [string trim [lindex $res 2]] [string trim [lindex $res 3]] [string trim [lindex $res 4]]]
+      return $catastar
+   } else {
+      set line "Usage: \n"
+      append line "calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder\n"
+      append line "# ou en utilisant les mots cles du header de l image :\n"
+      append line "calibwcs * * * * * USNO|MICROCAT cat_folder \n"
+      append line "# Parametres optionels :\n"
+      append line "# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)\n"
+      append line "# -del_tmp_files 0 : garde tous les fichiers temporaires\n"
+      append line "# -yes_visu 0        : ne visualise pas l image a la fin du traitement\n"
+      append line "# -yes_visu 1        : visualise l image a la fin du traitement (par defaut)\n"
+      append line "# -maglimit 10       : magnitude limite des etoiles du catalogue (par default aucune limite)\n"
+      append line "# -add_sia             : Ajoute les champs SIA a une image\n"
+      error $line
+   }
+}
+
 proc calibwcs2 {args} {
    if {[llength $args] >= 5} {
       set in [lindex $args 0]
