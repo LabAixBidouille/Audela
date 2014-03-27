@@ -1056,34 +1056,21 @@ proc wcs_cd2cdelt { CD1_1 CD1_2 CD2_1 CD2_2 } {
 #  WCS structure -> update FOCLEN or PIXSIZE1, PIXSIZE2 keywords
 # -----------------------------------------------------------------
 proc wcs_update_optic { wcs {pixsize1_mu ""} {pixsize2_mu ""} {foclen_m ""} } {
-   lassign [wcs_getkwd $wcs {pi dr CDELT1 CDELT2}] pi dr CDELT1 CDELT2 PIXSIZE1 PIXSIZE2 FOCLEN
-   if {($PIXSIZE1!="")&&($pixsize1_mu=="")} {
-      set pixsize1_mu $PISIZE1
+   lassign [wcs_getkwd $wcs {pi dr CDELT1 CDELT2 PIXSIZE1 PIXSIZE2 FOCLEN}] pi dr CDELT1 CDELT2 PIXSIZE1 PIXSIZE2 FOCLEN
+   set mult 1e-6
+   if {($PIXSIZE1!="")&&($PIXSIZE2!="")&&($pixsize1_mu=="")&&($pixsize2_mu=="")&&($foclen_m=="")} {
+      set pixsize1_mu $PIXSIZE1
+      set pixsize2_mu $PIXSIZE2
+      set foclen1_m [expr $pixsize1_mu*$mult/(2.*tan(abs($CDELT1)*$pi/180/2))]
+      set foclen2_m [expr $pixsize2_mu*$mult/(2.*tan(abs($CDELT2)*$pi/180/2))]
+      set foclen_m [expr ($foclen1_m+$foclen2_m)/2.]
    }
-   if {($PIXSIZE2!="")&&($pixsize2_mu=="")} {
-      set pixsize2_mu $PISIZE2
-   }
-   if {($FOCLEN!="")&&($foclen_m=="")} {
+   if {($FOCLEN!="")&&($pixsize1_mu!="")&&($pixsize2_mu!="")&&($foclen_m=="")} {
       set foclen_m $FOCLEN
+      set pixsize1_mu [expr $foclen_m/$mult*(2.*tan(abs($CDELT1)*$pi/180/2))]
+      set pixsize2_mu [expr $foclen_m/$mult*(2.*tan(abs($CDELT2)*$pi/180/2))]
    }
-   set valid 0
    if {($pixsize1_mu!="")&&($pixsize2_mu!="")&&($foclen_m!="")} {
-      set valid 1
-   } elseif {($CDELT1!="")&&($CDELT2!="")} {
-      if {($pixsize1_mu!="")&&($pixsize2_mu!="")&&($foclen_m=="")} {
-         set valid 1
-         set mult 1e-6
-         set foclen1_m [expr $pixsize1_mu*$mult/(2.*tan(abs($CDELT1)*$pi/180/2))]
-         set foclen2_m [expr $pixsize2_mu*$mult/(2.*tan(abs($CDELT2)*$pi/180/2))]
-         set foclen_m [expr ($foclen1_m+$foclen2_m)/2.]
-      } elseif {($pixsize1_mu=="")&&($pixsize2_mu=="")&&($foclen_m!="")} {
-         set valid 1
-         set mult 1e-6
-         set pixsize1_mu [expr $foclen_m/$mult*(2.*tan(abs($CDELT1)*$pi/180/2))]
-         set pixsize2_mu [expr $foclen_m/$mult*(2.*tan(abs($CDELT2)*$pi/180/2))]
-      }
-   }
-   if {$valid==1} {
       set wcs [wcs_setkwd $wcs [list FOCLEN $foclen_m float "Equivalent focal length" "m"]]
       set wcs [wcs_setkwd $wcs [list PIXSIZE1 $pixsize1_mu float "X Pixel size after binning" "um"]]   
       set wcs [wcs_setkwd $wcs [list PIXSIZE2 $pixsize2_mu float "Y Pixel size after binning" "um"]]   

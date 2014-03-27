@@ -1659,25 +1659,35 @@ proc calibwcs_new {args} {
             }
          }
       }
-
+      
       set pi [expr 4*atan(1.)]
       set naxis1 [lindex [buf$::audace(bufNo) getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$::audace(bufNo) getkwd NAXIS2] 1]
 
+      set valid 0
       if {$Angle_ra=="*"} {
          set Angle_ra [lindex [buf$::audace(bufNo) getkwd RA] 1]
+         incr valid
       }
       if {$Angle_dec=="*"} {
          set Angle_dec [lindex [buf$::audace(bufNo) getkwd DEC] 1]
+         incr valid
       }
       if {$valpixsize1=="*"} {
          set valpixsize1 [lindex [buf$::audace(bufNo) getkwd PIXSIZE1] 1]
+         incr valid
       }
       if {$valpixsize2=="*"} {
          set valpixsize2 [lindex [buf$::audace(bufNo) getkwd PIXSIZE2] 1]
+         incr valid
       }
       if {$valfoclen=="*"} {
          set valfoclen [lindex [buf$::audace(bufNo) getkwd FOCLEN] 1]
+         incr valid
+      }
+      if {$valid!=5} {
+         set wcs [wcs_optic2wcs [expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen 0]
+         wcs_wcs2buf $wcs $::audace(bufNo)
       }
 
       #--- check les catalogues
