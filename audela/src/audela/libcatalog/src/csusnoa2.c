@@ -26,7 +26,9 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	starUsno* arrayOfStars;
 	const indexTableUsno* allAccFiles;
 	Tcl_DString dsptr;
-
+FILE *f;
+f=fopen("c:/d/a/usno2a.log","wt");
+fclose(f);
 	/* Decode inputs */
 	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMax)) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
@@ -105,6 +107,7 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 					return (TCL_ERROR);
 				}
 			}
+
 		}
 
 		fclose(inputStream);
@@ -150,10 +153,12 @@ int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inpu
 	/* Move to this position */
 	fseek(inputStream,oneAccFile->arrayOfPosition[indexOfRA] * sizeof(starUsno),SEEK_SET);
 	/* Read the amount of stars */
+	/*
 	if(fread(arrayOfStars,sizeof(starUsno),oneAccFile->numberOfStars[indexOfRA],inputStream) !=  oneAccFile->numberOfStars[indexOfRA]) {
 		sprintf(outputLogChar,"can not read %d (starUsno)\n",oneAccFile->numberOfStars[indexOfRA]);
 		return (1);
 	}
+	*/
 
 	position = oneAccFile->arrayOfPosition[indexOfRA];
 	zoneId   = indexOfCatalog * CATLOG_DISTANCE_TO_POLE_WIDTH_IN_DECI_DEGREE;
@@ -161,6 +166,19 @@ int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inpu
 	/* Loop over stars and filter them */
 	for(indexOfStar = 0; indexOfStar < oneAccFile->numberOfStars[indexOfRA]; indexOfStar++) {
 
+		/* Read the stars */
+		if(fread(&arrayOfStars[indexOfStar].ra,sizeof(int),1,inputStream) !=  1) {
+			sprintf(outputLogChar,"can not read %d (starUsno)\n",oneAccFile->numberOfStars[indexOfRA]);
+			return (1);
+		}
+		if(fread(&arrayOfStars[indexOfStar].spd,sizeof(int),1,inputStream) !=  1) {
+			sprintf(outputLogChar,"can not read %d (starUsno)\n",oneAccFile->numberOfStars[indexOfRA]);
+			return (1);
+		}
+		if(fread(&arrayOfStars[indexOfStar].mags,sizeof(int),1,inputStream) !=  1) {
+			sprintf(outputLogChar,"can not read %d (starUsno)\n",oneAccFile->numberOfStars[indexOfRA]);
+			return (1);
+		}
 		theStar  = arrayOfStars[indexOfStar];
 		raInCas  = convertBig2LittleEndianForInteger(theStar.ra);
 		position++;
@@ -188,7 +206,6 @@ int processOneZoneUsnoCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const inpu
 		qflag              = usnoa2GetUsnoQflag(magnitudes);
 		field              = usnoa2GetUsnoField(magnitudes);
 		sprintf(theId,OUTPUT_ID_FORMAT,zoneId,position);
-
 		sprintf(tclString,"{ { USNOA2 { } {%s %f %f %d %d %d %.2f %.2f} } } ",theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
 		Tcl_DStringAppend(dsptr,tclString,-1);
 	}
@@ -217,12 +234,12 @@ int processOneZoneUsnoNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const i
 	double blueMagnitudeInMag;
 	starUsno theStar;
 	char tclString[1024];
-
 	const searchZoneRaSpdCas* const subSearchZone = &(mySearchZoneUsnoa2->subSearchZone);
 	const magnitudeBoxDeciMag* const magnitudeBox = &(mySearchZoneUsnoa2->magnitudeBox);
 
 	/* Move to this position */
 	fseek(inputStream,oneAccFile->arrayOfPosition[indexOfRA] * sizeof(starUsno),SEEK_SET);
+
 	/* Read the amount of stars */
 	if(fread(arrayOfStars,sizeof(starUsno),oneAccFile->numberOfStars[indexOfRA],inputStream) !=  oneAccFile->numberOfStars[indexOfRA]) {
 		sprintf(outputLogChar,"can not read %d (starUsno)\n",oneAccFile->numberOfStars[indexOfRA]);
@@ -262,7 +279,6 @@ int processOneZoneUsnoNotCentredOnZeroRA(Tcl_DString* const dsptr, FILE* const i
 		qflag              = usnoa2GetUsnoQflag(magnitudes);
 		field              = usnoa2GetUsnoField(magnitudes);
 		sprintf(theId,OUTPUT_ID_FORMAT,zoneId,position);
-
 		sprintf(tclString,"{ { USNOA2 { } {%s %f %f %d %d %d %.2f %.2f} } } ",
 				theId,raInDeg,decInDeg,theSign,qflag,field,blueMagnitudeInMag,redMagnitudeInMag);
 		Tcl_DStringAppend(dsptr,tclString,-1);
@@ -379,7 +395,6 @@ double usnoa2GetUsnoBleueMagnitudeInDeciMag(const int magL)
 	char buf[11];
 	char buf2[4];
 	double TT_EPS_DOUBLE = 2.225073858507203e-308;
-
 	sprintf(buf,"%010ld",labs(magL));
 	strncpy(buf2,buf+4,3); *(buf2+3)='\0';
 	mag = (double)atof(buf2);
@@ -412,7 +427,7 @@ double usnoa2GetUsnoRedMagnitudeInDeciMag(const int magL)
 	sprintf(buf,"%010ld",labs(magL));
 	strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
 	mag = (double)atof(buf2);
-	if (mag==999.0)
+	if (atoi(buf2)==999)
 	{
 		strncpy(buf2,buf+4,3); *(buf2+3) = '\0';
 		mag = (double)atof(buf2);
@@ -522,6 +537,15 @@ const searchZoneUsnoa2 findSearchZoneUsnoa2(const double raInDeg,const double de
 
 	mySearchZoneUsnoa2.indexOfFirstRightAscensionZone    = (int) (mySearchZoneUsnoa2.subSearchZone.raStartInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
 	mySearchZoneUsnoa2.indexOfLastRightAscensionZone     = (int) (mySearchZoneUsnoa2.subSearchZone.raEndInCas / (ACC_FILE_RA_ZONE_WIDTH_IN_DEGREE * DEG2CAS));
+
+	/* debut ajout AK */
+	if(mySearchZoneUsnoa2.indexOfFirstRightAscensionZone >= ACC_FILE_NUMBER_OF_LINES) {
+		mySearchZoneUsnoa2.indexOfFirstRightAscensionZone = ACC_FILE_NUMBER_OF_LINES - 1;
+	}
+	if(mySearchZoneUsnoa2.indexOfLastRightAscensionZone >= ACC_FILE_NUMBER_OF_LINES) {
+		mySearchZoneUsnoa2.indexOfLastRightAscensionZone = ACC_FILE_NUMBER_OF_LINES - 1;
+	}
+	/* fin ajout AK */
 
 	if(DEBUG) {
 		printf("mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone   = %d\n",mySearchZoneUsnoa2.indexOfFirstDistanceToPoleZone);

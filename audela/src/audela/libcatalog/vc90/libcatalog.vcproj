@@ -21,6 +21,7 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -43,7 +44,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\src;&quot;C:\Documents and Settings\Administrateur\Bureau\audela-code\audela\src\external\tcl\tcl\include&quot;;..\..\..\include;..\..\..\external\include\win"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBCATALOG_EXPORTS;USE_TCL_STUBS;_CRT_SECURE_NO_WARNINGS"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
