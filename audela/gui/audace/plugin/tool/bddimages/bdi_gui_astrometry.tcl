@@ -2726,13 +2726,12 @@ unset ::bdi_gui_astrometry::omcvaruna_d
 
    proc ::bdi_gui_astrometry::get_first_date_by_name { myname } {
 
-
+      set datemin ""
       set i 0
       set l [array get ::bdi_tools_astrometry::listscience]
       foreach {name y} $l {
          if {$name != $myname} {continue}
          set cata [::manage_source::name_cata $name]
-         if {$cata != "SKYBOT"} {continue}
          foreach date $::bdi_tools_astrometry::listscience($name) {
             incr i
             set date [string range $date 0 9]
