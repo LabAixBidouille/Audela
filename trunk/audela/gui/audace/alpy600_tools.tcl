@@ -44,7 +44,7 @@ proc alpy600_cam_create { } {
    # --- Lance la Atik 314L
    ::confCam::run ; # ouvre le fenetre de choix des cameras
    ::confCam::selectNotebook A atik ; # selectionne l'onglet Atik
-   after 100
+   after 100 
    catch {::confCam::stopItem A} ; # deconnecte la caméra existante si necessaire
    set ::confCam::private(currentCamItem) A ; # on va choisir la camera A
    set conf(atik,A,device) 0 ; # device ATIK n° 0
@@ -68,7 +68,7 @@ proc alpy600_cam_create { } {
    set ::atik::private(B,temp) $temp_spectro
    set ::atik::private(B,foncobtu) Synchro
    set ::atik::private(B,mirh) 0
-   set ::atik::private(B,mirv) 0
+   set ::atik::private(B,mirv) 0   
    ::confCam::ok
    ::confVisu::selectTool 2 ::acqfc
    ::console::affiche_resultat "Camera spectro (cam2) = [cam2 name] (cooler check at $temp_spectro °C)\n"
@@ -92,7 +92,7 @@ proc alpy600_cam_acqdark { camera exp bin nbimages {generic_name ""} } {
       error "exp must been a real number"
    }
    if {([catch {expr $bin}]==1)} {
-      error "bin must been an integer number >0"
+      error "bin must been an integer number >0" 
    }
    if {$generic_name==""} {
       set generic_name dark_${camera}_${exp}s_${bin}x${bin}-
@@ -116,7 +116,7 @@ proc alpy600_cam_acqdark { camera exp bin nbimages {generic_name ""} } {
    ::acqfc::stopAcquisition $visuNo
    set sortie 0
    while {$sortie==0} {
-      set camtimer [cam$camNo timer]
+      set camtimer [cam$camNo timer] 
       if {$camtimer=="-1"} {
          set sortie 1
          break
@@ -132,7 +132,7 @@ proc alpy600_cam_acqdark { camera exp bin nbimages {generic_name ""} } {
       set sortie 0
       while {$sortie==0} {
          after 500
-         set timer2 [cam$camNo timer]
+         set timer2 [cam$camNo timer] 
          if {$timer2=="-1"} {
             set sortie 1
             break
@@ -171,20 +171,20 @@ proc alpy600_cam_acq { camera exp bin {exp_field 0} {bin_field 4} } {
       error "exp must been a real number"
    }
    if {([catch {expr $bin}]==1)} {
-      error "bin must been an integer number >0"
+      error "bin must been an integer number >0" 
    }
    if {$camera=="spectro"} {
       if {([catch {expr $exp_field}]==1)} {
          error "exp_field must been a real number (=0 if no field acquisition)"
       }
       if {([catch {expr $bin_field}]==1)} {
-         error "bin_field must been an integer number >0"
+         error "bin_field must been an integer number >0" 
       }
    }
    ::acqfc::stopAcquisition $visuNo
    set sortie 0
    while {$sortie==0} {
-      set camtimer [cam$camNo timer]
+      set camtimer [cam$camNo timer] 
       if {$camtimer=="-1"} {
          set sortie 1
          break
@@ -195,7 +195,7 @@ proc alpy600_cam_acq { camera exp bin {exp_field 0} {bin_field 4} } {
       ::acqfc::stopAcquisition 1
       set sortie 0
       while {$sortie==0} {
-         set camtimer [cam1 timer]
+         set camtimer [cam1 timer] 
          if {$camtimer=="-1"} {
             set sortie 1
             break
@@ -211,7 +211,7 @@ proc alpy600_cam_acq { camera exp bin {exp_field 0} {bin_field 4} } {
    set sortie 0
    while {$sortie==0} {
       after 500
-      set camtimer [cam$camNo timer]
+      set camtimer [cam$camNo timer] 
       if {$camtimer=="-1"} {
          set sortie 1
          break
@@ -225,7 +225,7 @@ proc alpy600_cam_acq { camera exp bin {exp_field 0} {bin_field 4} } {
          cam$fcamNo acq
          set fsortie 0
          while {$fsortie==0} {
-            set fcamtimer [cam$fcamNo timer]
+            set fcamtimer [cam$fcamNo timer] 
             if {$fcamtimer=="-1"} {
                set fsortie 1
                break
@@ -326,7 +326,7 @@ proc alpy600_spec_buf2spec { bufNo specNo y1 y2} {
          set valt [expr $valt+$val]
       }
       lappend spec($specNo,bin) $x
-      lappend spec($specNo,flu) $valt
+      lappend spec($specNo,flu) $valt      
    }
 }
 
@@ -357,7 +357,7 @@ proc alpy600_spec_info { {specNo ""} } {
    return ""
 }
 
-proc alpy600_spec_plot { specNo {symbol b-} {grandeurx ""} {grandeury ""} } {
+proc alpy600_spec_plot { specNo {symbol bo-} {grandeurx ""} {grandeury ""} } {
    global spec
    if {$grandeurx==""} {
       set grandeurx [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo x] 0]
@@ -370,7 +370,7 @@ proc alpy600_spec_plot { specNo {symbol b-} {grandeurx ""} {grandeury ""} } {
    # console::affiche_resultat "res=$res\n"
    set xs $spec($specNo,$symbx)
    set ys $spec($specNo,$symby)
-   lassign $spec($specNo,$symbx,UID) grandeur site medium unite
+   lassign $spec($specNo,$symbx,UID) grandeur site medium unite   
    set res [lsort -real $xs]
    set xmin [lindex $res 0]
    set xmax [lindex $res end]
@@ -397,10 +397,17 @@ proc alpy600_spec_plot { specNo {symbol b-} {grandeurx ""} {grandeury ""} } {
    set ys $yys
    set xlabel [alpy600_spec_tools_getlabel $spec($specNo,$symbx,UID)]
    set ylabel [alpy600_spec_tools_getlabel $spec($specNo,$symby,UID)]
-   ::plotxy::plot $xs $ys $symbol
+   set maxixy [wm maxsize .]
+   set maxix [expr [lindex $maxixy 0]-20]
+   ::plotxy::plotbackground #FFFFFF
+   set h [::plotxy::plot $xs $ys $symbol 1]
+   #console::affiche_resultat "h=$h\n"
    ::plotxy::xlabel $xlabel
    ::plotxy::ylabel $ylabel
    ::plotxy::title " "
+   ::plotxy::position [list 10 10 $maxix 400]
+   ::plotxy::bgcolor #FFFFFF
+   update
 }
 
 proc alpy600_spec_save { specNo filename } {
@@ -496,7 +503,7 @@ proc alpy600_spec_calib_info { startype } {
 proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} } {
    global spec
    global audace
-   set star0s [focas_image2stars $filename alpy600]
+   set star0s [focas_image2stars $filename alpy600] 
    set cata0s [focas_db2catas alpy600 ""]
    set couples [focas_catastars2pairs $star0s $cata0s alpy600 2 20]
    lassign $couples couplefull_header couplefulls best_transform
@@ -535,13 +542,13 @@ proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} } {
    set spec($specNo,wv2,UID) {wv2 topo air ang}
    set spec($specNo,wv2) ""
    for {set x 1} {$x<=$naxis1} {incr x} {
-      set wvl [focas_tools_polyval $polycoefs [expr $x-0.5]]
+      set wv1 [focas_tools_polyval $polycoefs [expr $x-0.5]]
       #::console::affiche_resultat " focas_tools_polyval $polycoefs [expr $x-0.5]\n"
-      lappend spec($specNo,wv1) $wvl
+      lappend spec($specNo,wv1) $wv1
       set wvl [focas_tools_polyval $polycoefs $x]
       lappend spec($specNo,wvl) $wvl
-      set wvl [focas_tools_polyval $polycoefs [expr $x+0.5]]
-      lappend spec($specNo,wv2) $wvl
+      set wv2 [focas_tools_polyval $polycoefs [expr $x+0.5]]
+      lappend spec($specNo,wv2) $wv2
    }
 }
 
@@ -573,6 +580,37 @@ proc alpy600_spec_offset { specNo1 cste} {
 proc alpy600_spec_mult { specNo1 cste} {
    alpy600_spec_tools_ope1 $specNo1 * $cste
    return ""
+}
+
+proc alpy600_spec_stat { specNo1 {grandeurx ""} {x1 4000} {x2 8000} {grandeury ""} } {
+   global spec
+   if {$grandeurx==""} {
+      set grandeurx [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo1 x] 0]
+   }
+   set res [alpy600_spec_tools_spec2symbolx $specNo1 $grandeurx]
+   lassign $res symbx
+   set xs $spec($specNo1,$symbx)
+   set nx [llength $xs]
+   if {$grandeury==""} {
+      set grandeury [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo1 y] 0]
+   }
+   set res [alpy600_spec_tools_spec2symbolx $specNo1 $grandeury]
+   lassign $res symby
+   set ys $spec($specNo1,$symby)
+   set samples ""
+   for {set kx 0} {$kx<$nx} {incr kx} {
+      set x [lindex $xs $kx]
+      if {$x<$x1} { continue }
+      if {$x>$x2} { continue }
+      set y [lindex $ys $kx]
+      lappend samples $y
+   }
+   set maxi [::math::statistics::max $samples]
+   set mini [::math::statistics::min $samples]
+   set mean [::math::statistics::mean $samples]
+   set std [::math::statistics::stdev $samples]
+   set median [::math::statistics::median $samples]
+   return [list $mini $maxi $mean $std $median]
 }
 
 proc alpy600_spec_atmosphere_trans { specNo airmass altitude_m Aerosol_Optical_Depth} {
@@ -741,7 +779,7 @@ proc alpy600_spec_calib2spec { specNo starname } {
             set wl1 $wl2
          }
          set wl2 [expr $wl0+$dwl/2.]
-         set f [expr $ftotal/$ntotal]
+         set f [expr $ftotal/$ntotal] 
          lappend wl1s $wl1
          lappend wl2s $wl2
          lappend fls $f
@@ -760,7 +798,7 @@ proc alpy600_spec_calib2spec { specNo starname } {
    lassign $res symbx1
    set wv1s $spec($specNo,$symbx1)
    set nw [llength $spec($specNo,$symbx1)]
-   lassign $spec($specNo,$symbx1,UID) grandeur site medium unite
+   lassign $spec($specNo,$symbx1,UID) grandeur site medium unite   
    set res [alpy600_spec_tools_spec2symbolx $specNo wv2]
    # verifier res ...
    lassign $res symbx2
@@ -858,7 +896,7 @@ proc alpy600_spec_flux2lines { specNo } {
    set binx 1
    set biny 1
    set naxis1 [llength $ys]
-   # === Detection en aveugle des raies et calcul de l'abscisse precise en pixels
+   # === Detection en aveugle des raies et calcul de l'abscisse precise en pixels 
    # --- calcul du seuil par rapport au bruit
    set std [::math::statistics::stdev [lrange $ys 0 20]]
    set seuil1 [expr 10*$std]
@@ -881,12 +919,12 @@ proc alpy600_spec_flux2lines { specNo } {
    set value4 [lindex $ys 3]
    for {set kx 4} {$kx<=[expr $naxis1-2]} {incr kx} {
       set value5 [lindex $ys $kx]
-      if {$value3>$seuil} {
+      if {$value3>$seuil} {   
          set slope12 [expr $value2-$value1]
          set slope23 [expr $value3-$value2]
          set slope34 [expr $value4-$value3]
          set slope45 [expr $value5-$value4]
-         if {($slope12>0)&&($slope23>0)&&($slope34<0)&&($slope45<0)} {
+         if {($slope12>0)&&($slope23>0)&&($slope34<0)&&($slope45<0)} { 
             set total 0.
             set total [expr $total+($value1-$mini)*($kx-3)]
             set total [expr $total+($value2-$mini)*($kx-2)]
@@ -1233,7 +1271,7 @@ proc alpy600_spec_tools_ph2erg { specNo1 } {
    return ""
 }
 
-proc alpy600_spec_continuum_fit { specNo1 {apodisation 0.00005} {threshold 0} {dpix 10} } {
+proc alpy600_spec_continuum_fit { specNo1 {apodisation 0.00005} {threshold 0} {dpix 15} } {
    global spec
    set res [alpy600_spec_tools_spec2symbolxy $specNo1 wvl flu]
    lassign $res symbx1 symby1
@@ -1242,45 +1280,53 @@ proc alpy600_spec_continuum_fit { specNo1 {apodisation 0.00005} {threshold 0} {d
    set y1s $spec($specNo1,$symby1)
    set n [llength $x1s]
    # verifier res ...
-   if {$threshold==0} {
-      set std [::math::statistics::stdev [lrange $y1s end-25 end-5]]
-      set threshold [expr 20*$std]
-   }
+   # points d'amers = zone reputées pour avoir un continuum a la resolution de l'alpy600
+   # 
+   set amerangs {{3500 2} {3700 2} {3800 2} {3820 2} {3867 2} {3928 2} {4024 2} {4043 2} {4191 20} {4244 20} {4429 20} {4710 20} {5032 20} {5500 20} {5700 100} {6000 20} {6200 20} {6400 20} {6725 20} {6840 20} {7100 20} {7350 20} {7555 20} {8100 20} {8240 20} }
    set amerxs ""
    set amerys ""
    lappend amerxs 0
    lappend amerys 0
    lappend amerdys 1
-   set ys ""
-   for {set k 0} {$k<$n} {incr k $dpix} {
+   set k0 0
+   set n1 [expr $n-1]
+   foreach amerang $amerangs {
+      lassign $amerang wvl dwv
+      set wv11 [expr $wvl-$dwv/2.]
+      set wv22 [expr $wvl+$dwv/2.]
+      for {set k $k0} {$k<$n1} {incr k} {
+         set wv1 [lindex $x1s $k]
+         set wv2 [lindex $x1s [expr $k+1]]
+         if {($wv1<=$wv11)&&($wv2>$wv11)} {
+            set k0 $k
+            break
+         }
+      }
       set k1 $k
-      set k2 [expr $k+$dpix]
-      if {$k2>=$n} {
-         set k2 [expr $n-1]
+      for {set k $k0} {$k<$n1} {incr k} {
+         set wv1 [lindex $x1s $k]
+         set wv2 [lindex $x1s [expr $k+1]]
+         if {($wv1<=$wv22)&&($wv2>$wv22)} {
+            break
+         }
       }
+      set k2 $k
       set sample [lrange $y1s $k1 $k2]
-      set std [::math::statistics::stdev $sample]
-      if {$std>$threshold} {
-         continue
-      }
       set lambda [lindex $x1s [expr ($k1+$k2)/2]]
-      set median [lindex [lsort -real $sample] [expr int(floor(0.7*$dpix))]]
-      if {$median=={}} {
-         set median 0
-      }
+      set median [lindex [lsort -real -increasing $sample] [expr int(floor(0.8*[llength $sample]))]]
       lappend amerxs $lambda
       lappend amerys $median
       lappend amerdys 1
    }
+
    lappend amerxs [expr 1.5*$lambda]
    lappend amerys 0
    lappend amerdys 1
    set yfit1s [ak_fitspline $amerxs $amerys $apodisation $amerdys $x1s]
    set spec($specNo1,$symby1) [lindex $yfit1s 1]
-   #return [list $amerxs $amerys $amerdys $x1s]
-   #lassign $res amerxs amerys amerdys x1s
-   #plotxy::plot $amerxs $amerys r+
+   #plotxy::plot $amerxs $amerys ro: 2
    #plotxy::hold on
+   #tk_messageBox -message "Amer response"
    return ""
 }
 
@@ -1307,13 +1353,13 @@ proc alpy600_spec_tools_gaussian { v } {
       ::plotxy::title $v
       tk_messageBox
    }
-   return $residu
+	return $residu
 }
 
 # ###########################################################################
 # ### Tool spectrum unit functions (used by spectrum functions)
 # ###########################################################################
-#
+# 
 # ###########################################################################
 
 proc alpy600_spec_tools_get_grandeurs { specNo } {
@@ -1466,7 +1512,7 @@ proc alpy600_spec_tools_get_uid_sites { } {
 
 proc alpy600_spec_tools_get_uid_mediums { } {
    set uidmediums ""
-   # --- pour les calibrations en longueur d'onde
+   # --- pour les calibrations en longueur d'onde   
    #                   uid  description
    lappend uidmediums {air  "in air"}
    lappend uidmediums {vac  "in vacuum"}
@@ -1489,18 +1535,18 @@ proc alpy600_spec_tools_get_uid_units { } {
    lappend uidunits {esch  erg/s/cm2/Hz            "spectral flux density"}
    lappend uidunits {escm  erg/s/cm2/µm            "spectral flux density"}
    lappend uidunits {psch  photon/s/cm2/Hz         "spectral flux density"}
-
+   
    lappend uidunits {adub  ADU/bin                 "spectral energy"}
    lappend uidunits {adua  ADU/A                   "spectral energy"}
    lappend uidunits {asca  ADU/s/cm2/A             "spectral flux density"}
    lappend uidunits {pesca photo-eletron/s/cm2/A   "spectral flux density"}
    lappend uidunits {psca  photon/s/cm2/A          "spectral flux density"}
-
+   
    lappend uidunits {esca  erg/s/cm2/A             "spectral flux density"}
    lappend uidunits {pep   photo-electron/photon   "quantum efficiency"}
-
+   
    lappend uidunits {no    ""                      ""}
-
+   
    return $uidunits
 }
 
