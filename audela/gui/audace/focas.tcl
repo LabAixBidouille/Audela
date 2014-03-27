@@ -30,7 +30,7 @@
 # 2nd element: A list of matched stars as described above:
 # xs,ys are Sextractor coordinates in the image.
 # coordc are the J2000 coordinates in the catalog
-# idc is the ID of star in the catalog
+# idc is the ID of the star in the catalog
 # xc,yc are projected coordc according the roughly WCS of the image.
 # fluxs is the flux of the star in the image
 # fluxc is the flux of the star in the catalog
@@ -47,8 +47,10 @@
 # Note that this transform is based only on the three best
 # stars matched.
 #
-# It remains to analyze the 2nd list to compute the accurate WCS
-# (not done in the script).
+# It remains to analyze the 2nd list to compute the accurate WCS.
+# The following command update the WCS keywords in the buffer 1:
+#
+# wcs_wcs2buf [wcs_focaspairs2wcs $couples 1] 1
 #
 # N.B. It is possible to split the function focas_imagedb2pairs
 # into three basic operations giving the same result:
@@ -85,6 +87,14 @@
 # set star0s [focas_image2stars c1] 
 # set star1s [focas_image2stars c2] 
 # set couples [focas_catastars2pairs $star0s $star1s "" 1 20]
+#
+# star0s and star1s are lists described as:
+# x,y are cartesian coordinates
+# flux is the flux of the star
+# fwhm is the FWHM of the star
+# coord are the J2000 coordinates in the catalog
+# id is the ID of the star 
+# flags is Sextractor like flag (not used)
 #
 # ===================================================================
 # Format of star lists returned by focas_image2stars and focas_db2catas
@@ -304,7 +314,9 @@ proc focas_tools_plot_points { stars catas } {
    set nc [llength $catas]
    for {set k1 0} {$k1<$nc} {incr k1} {
       lassign [lindex $catas $k1] x1 y1 f1
-      plotxy::plot $x1 $y1 "xr" 15
+      set rayon [expr 1+int(8*log10($f1))]
+      #console::affiche_resultat "$x1 $y1 **===> f1=$f1 r=$rayon\n"
+      plotxy::plot $x1 $y1 "or" $rayon
       plotxy::hold on
    }
    plotxy::xlabel "columns (pixels)"
@@ -576,7 +588,7 @@ proc focas_simulation2catastars { type {transform_star2cata "" } } {
       lassign $abc a b c
       lassign $def d e f
    }
-   console::affiche_resultat "Transform = $transform_star2cata\n"
+   #console::affiche_resultat "Transform = $transform_star2cata\n"
    set simunaxis1 1024
    set simunaxis2 1024
    buf$bufno new CLASS_GRAY $simunaxis1 $simunaxis2 FORMAT_SHORT COMPRESS_NONE
@@ -639,13 +651,24 @@ proc focas_simulation2catastars { type {transform_star2cata "" } } {
          
 # type = "" for 2D classical images of the sky (calibrated WCS)
 # type = alpy600 for 1D calibration spectrum
-# focas_image2stars cc 
+# focas_image2stars cc
 proc focas_image2stars { filename {type ""} } {
 
    global audace
    set bufno $audace(bufNo)
    set fichier [ file join $audace(rep_images) $filename ]
    buf$::audace(bufNo) load $fichier
+   set res [focas_buf2stars $bufno $type]
+   buf$::audace(bufNo) load $fichier
+   return $res
+}
+   
+# type = "" for 2D classical images of the sky (calibrated WCS)
+# type = alpy600 for 1D calibration spectrum
+# focas_buf2stars 1 
+proc focas_buf2stars { bufno {type ""} } {
+
+   global audace
    
    if {$type=="alpy600"} {
    
@@ -865,6 +888,11 @@ proc focas_image2stars { filename {type ""} } {
       # =========================================================================
       # === extraction d'une liste de toutes les sources de l'image en ordre d'eclat decroissant
       # =========================================================================
+       # teste si WCS present
+      set err [catch {wcs_buf2wcs $::audace(bufNo)} wcs]
+      if {$err==1} {
+         set wcs ""
+      }
       set ext $::conf(extension,defaut)
       # --- Remplacement de "$::audace(rep_images)" par "." dans "mypath" - Cela permet a
       # --- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
@@ -939,11 +967,8 @@ proc focas_image2stars { filename {type ""} } {
          set fwhm [lindex $ligne $kfwhm_image]
          set flags [lindex $ligne $kflags]
          incr id
-         set err [catch {
-            buf$::audace(bufNo) xy2radec [list $x $y]
-         } msg]
-         if {$err==0} {
-            lassign $msg ra dec
+         if {$wcs!=""} {
+            lassign [wcs_p2radec $wcs $x $y] ra dec
          } else {
             set ra 0
             set dec 0
@@ -955,7 +980,6 @@ proc focas_image2stars { filename {type ""} } {
       #::console::affiche_resultat "$nstar0s stars found by sextractor\n"
    }
    
-   buf$::audace(bufNo) load $fichier
    return $star0s
    
 }
@@ -972,7 +996,7 @@ proc focas_db2catas { catatype catapath } {
       # on construit une liste de type x y flux avec les etoiles du catalogue en magnitudes croissantes
       # =========================================================================
 
-      # === Liste (x,lambda) des raies reconnues dans le profile 
+      # === Liste (x,lambda) des raies reconnues dans le profile (bin 1x1)
       set pics ""
       #             pix     adus/s    A      comment
       lappend pics " 774.94      3 3809.456 {Ar}"
@@ -1022,29 +1046,27 @@ proc focas_db2catas { catatype catapath } {
       # =========================================================================
       # === recupere ra dec radius filtre de l'image
       # =========================================================================
-      # tester si WCS present
-      set err [catch {set radec [buf$bufno xy2radec [list 1 1]]} msg ]
-      if {$err==0} {
-         set wcs 1
-         #::console::affiche_resultat "wcs keywords found\n"
-      } else {
-         set wcs 0
-         error "wcs keywords not found"
+      # teste si WCS present
+      set err [catch {wcs_buf2wcs $bufno} wcs]
+      if {$err==1} {
+         error "$wcs"
       }
+      #wcs_dispkwd $wcs "" public
       set naxis1 [buf$bufno getpixelswidth]
       set naxis2 [buf$bufno getpixelsheight]
       set xc [expr $naxis1/2.]
       set yc [expr $naxis2/2.]
-      set radec [buf$bufno xy2radec [list $xc $yc]]
+      set radec [wcs_p2radec $wcs $xc $yc]
       lassign $radec ra0 dec0
       set corners [list [list 0 0] [list $naxis1 0] [list 0 $naxis2] [list $naxis1 $naxis2]]
       set sepangles ""
       foreach corner $corners {
          set xc [lindex $corner 0]
          set yc [lindex $corner 1]
-         set radec [buf$bufno xy2radec [list $xc $yc]]
+         set radec [wcs_p2radec $wcs $xc $yc]
          lassign $radec ra dec
          set sepangle [lindex [mc_sepangle $ra0 $dec0 $ra $dec] 0]
+         #::console::affiche_resultat "$ra0 $dec0 $ra $dec ==> $sepangle\n"
          lappend sepangles $sepangle
       }
       set radius [expr 60.*[lindex [lsort -real -decreasing $sepangles] 0] ]
@@ -1059,7 +1081,7 @@ proc focas_db2catas { catatype catapath } {
       # =========================================================================
       # On limite le nombre d'etoiles en adapatant la magnitude limite
       set nstarlim 50 ; # nombre d'etoiles limites pour la liste de sortie
-      load libcatalog
+      load libcatalog[info sharedlibextension]
       set filtre [string toupper $filtre]
       set Catalog [string toupper $catalog]
       set catalog [string tolower $catalog]
@@ -1068,10 +1090,24 @@ proc focas_db2catas { catatype catapath } {
       set nstar0s -1
       set nstars 0
       while { ($nstars<$nstarlim) } {
+         #console::affiche_resultat "ETAPE 1\ncs${catalog} $path $ra0 $dec0 $radius $mag_faint $mag_bright"
          set command "cs${catalog} $path $ra0 $dec0 $radius $mag_faint $mag_bright"
          set res [eval $command]
-         #::console::affiche_resultat "res=$res\n"
          lassign $res infos stars
+         # ------
+         # foreach star $stars {
+            # set res [lindex [lindex $star 0] 2]
+            # if {$catalog=="usnoa2"} {   
+               # set magb [lindex $res 6]
+               # set magr [lindex $res 7]
+               # if {($magb==0.10)&&($magr==0.10)} {
+                  # continue
+               # }
+               # lappend star0s $star
+            # }
+         # }
+         # set stars $star0s
+         # ------
          set nstars [llength $stars]
          #::console::affiche_resultat "mag_faint=$mag_faint nstars=$nstars nstar0s=$nstar0s\n"
          if {($mag_faint>20)&&($nstars==$nstar0s)} {
@@ -1081,6 +1117,7 @@ proc focas_db2catas { catatype catapath } {
          set mag_faint [expr $mag_faint + 1]
       }
       #::console::affiche_resultat "EXIT mag_faint=$mag_faint nstars=$nstars\n"
+      #::console::affiche_resultat "EXIT res=$res\n"
 
       # =========================================================================
       # on construit une liste de type ra dec mag avec les etoiles du catalogue en magnitudes croissantes
@@ -1093,19 +1130,42 @@ proc focas_db2catas { catatype catapath } {
             set id [lindex $res 0]
             set ra [lindex $res 1]
             set dec [lindex $res 2]
+            set equinox J2000
             set magb [lindex $res 6]
             set magr [lindex $res 7]
+            if {($magb==0.10)&&($magr==0.10)} {
+               continue
+            }
             if     {$filtre=="R"} { set mag $magr 
             } elseif {$filtre=="B"} { set mag $magb
             } elseif {$filtre=="V"} { set mag $magr 
             } else { set mag $magr
             }
+            lappend ls [list $ra $dec $mag $id]
+         }
+         if {$catalog=="tycho2"} {   
+            set id [lindex $res 1]-[lindex $res 2]-[lindex $res 3]
+            set ra [lindex $res 5]
+            set dec [lindex $res 6]
+            set equinox J2000
+            set mura_masyr [lindex $res 7]
+            set mudec_masyr [lindex $res 8]
+            set epoch [lindex $res 13]
+            set plx_mas 0
+            set magb [lindex $res 20]
+            set magv [lindex $res 22]
+            if     {$filtre=="R"} { set mag $magv
+            } elseif {$filtre=="B"} { set mag $magb
+            } elseif {$filtre=="V"} { set mag $magv 
+            } else { set mag $magv
+            }
+            lappend ls [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
          }
          if {$mag>$magmax} {
             set magmax $mag
          }
-         lappend ls [list $ra $dec $mag $id]
       }
+      # --- trie pes etoiles en brillance decroissante
       set stars [lsort -real -increasing -index 2 $ls]
 
       # =========================================================================
@@ -1113,14 +1173,14 @@ proc focas_db2catas { catatype catapath } {
       # =========================================================================
       set ls ""
       foreach star $stars {
-         lassign $star ra dec mag id
-         set xy [buf$bufno radec2xy [list $ra $dec]]
+         lassign $star ra dec mag id equinox epoch mura_masyr mudec_masyr plx_mas
+         set xy [wcs_radec2p $wcs $ra $dec]
          lassign $xy x y
          if {($x<0)||($x>$naxis1)||($y<0)||($y>$naxis2)} {
             continue
          }
          set flux [expr pow(10,-0.4*($mag-$magmax))]
-         #::console::affiche_resultat "mag=$mag magmax=$magmax flux=$flux\n"
+         #::console::affiche_resultat "$x $y ==> mag=$mag magmax=$magmax flux=$flux\n"
          lappend ls [list $x $y $flux 2 [list $ra $dec] $id 0]
       }
       set cata0s [lsort -real -decreasing -index 2 $ls]
@@ -1146,6 +1206,7 @@ proc focas_catastars2pairs { star0s cata0s type {delta 1.} {nmax 50} {flux_crite
       set dimension 2
    }
    set verbose 0
+   # --- trie en flux decroissant
    set star0s [lsort -decreasing -real -index 2 $star0s]
    set cata0s [lsort -decreasing -real -index 2 $cata0s]
    
@@ -1716,126 +1777,3 @@ proc focas_pairs2poly { pairs polydeg } {
    return $res
 }
 
-# --- TBC
-proc focas_pairs2wcs { pairs polydeg } {
-   set res [focas_pairs2poly $pairs $polydeg]
-   lassign $res polydeg polys sigma dcoords
-   set couples [lsort -real -decreasing -index 12 [lindex $pairs 1]]
-   set xs ""
-   set ys ""
-   set coord1s ""
-   set coord2s ""
-   set equinoxs ""
-   foreach couple $couples {
-      lappend xs [lindex $couple 0]
-      lappend ys [lindex $couple 1]
-      lappend coord1s [lindex [lindex $couple 2] 0]
-      lappend coord2s [lindex [lindex $couple 2] 1]
-      set equinox [lindex [lindex $couple 2] 2]
-      if {$equinox==""} {
-         set equinox J2000
-      }
-      lappend equinoxs $equinox
-   }
-   set x [lindex $xs 0]
-   set y [lindex $ys 0]
-   set CRPIX1 $x
-   set CRPIX2 $y
-   set ra [lindex $coord1s 0]
-   set dec [lindex $coord2s 0]
-   set equinox [lindex $equinoxs 0]
-   set CRVAL1 $ra
-   set CRVAL2 $dec
-   set EQUINOX $equinox
-   # --- TBC
-}
-
-# source $audace(rep_install)/gui/audace/focas.tcl ; focas_radec_cat2app 12h45m23s -6d25m32s J2000 now {GPS 5 E 43 1230} 1992.5 0 0 0 101325 290 40 550 
-proc focas_radec_cat2app { ra dec equinox date home {epoch ""} {mura_masyr 0} {mudec_masyr 0} {plx_mas 0} {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
-   if {$epoch==""} {
-      set epoch $date
-   }
-   set hip [list 1 0 [mc_angle2deg $ra] [mc_angle2deg $dec 90] $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
-   set res [mc_hip2tel $hip $date $home $pressure_Pa $temperature_K ] ; #-humidity $humidity_percent -wavelength $wavelength_nm]
-   lassign $res ra dec ha az elev
-   return [list $ra $dec $ha $az $elev]
-}
-
-proc focas_wcs_radec2xy { ra dec equinox date home {epoch ""} {mura_masyr 0} {mudec_masyr 0} {plx_mas 0} {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
-   global audace
-   # --- on deplace ra et dec en coordonnées apparentes
-   set res [focas_radec_cat2app $ra $dec $equinox $date $home $epoch $mura_masyr $mudec_masyr $plx_mas $pressure_Pa $temperature_K $humidity_percent $wavelength_nm]
-   lassign $res ra dec ha az elev
-   set bufNo $audace(BufNo)
-   # --- on deplace CRVAL1 et CRVAL2 en coordonnées apparentes
-   set CRVAL1 [lindex [buf$bufNo getkwd CRVAL1] 1]
-   set CRVAL2 [lindex [buf$bufNo getkwd CRVAL2] 1]
-   set EQUINOX [lindex [buf$bufNo getkwd EQUINOX] 1]
-   # RADESYS='FK5     ' / Mean Place IAU 1984 system
-   # EQUINOX=2000.0 / System of equatorial coordinates
-   if {$EQUINOX==""} {
-      set EQUINOX J2000
-   }
-   set res [focas_radec_cat2app $CRVAL1 $CRVAL2 $EQUINOX $date $home $date 0 0 0 $pressure_Pa $temperature_K $humidity_percent $wavelength_nm]
-   lassign $res ra0 dec0 ha0 az0 elev0
-   set CRVAL1 $ra0
-   set CRVAL1 $dec0
-   # --- CRPIX = 1 pour le milieu du premier pixel (TBV)
-   set CRPIX1 [lindex [buf$bufNo getkwd CRPIX1] 1]
-   set CRPIX2 [lindex [buf$bufNo getkwd CRPIX2] 1]
-   set CDELT1 [lindex [buf$bufNo getkwd CDELT1] 1]
-   set CDELT2 [lindex [buf$bufNo getkwd CDELT2] 1]
-   set CROTA2 [lindex [buf$bufNo getkwd CROTA2] 1]
-   set CD001001 [expr $CDELT1*cos($CROTA2)]
-   set CD001002 [expr abs($CDELT2)*$CDELT1/fabs($CDELT1)*sin($CROTA2)]
-   set CD002001 [expr -fabs($CDELT1)*$CDELT2/fabs($CDELT2)*sin($CROTA2)]
-   set CD002002 [expr $CDELT2*cos($CROTA2)]
-   set H [expr sin(DEC)*sin(CRVAL2) + cos(DEC)*cos(CRVAL2)*cos(RA-CRVAL1)]
-   set dRA [expr cos(DEC)*sin(RA-CRVAL1) / H]
-   set dDEC [expr  ( sin(DEC)*cos(CRVAL2) - cos(DEC)*sin(CRVAL2)*cos(RA-CRVAL1) ) / H]
-   set det [expr CD002002*CD001001-CD001002*CD002001]
-   set x [expr (CRPIX1-0.5) - (CD001002*dDEC - CD002002*dRA) / det ]
-   set y [expr (CRPIX2-0.5) + (CD001001*dDEC - CD002001*dRA) / det ]
-   #return [list $x $y $ra $dec $ha $az $elev]
-   return [list $x $y]
-}
-
-proc focas_wcs_xy2radec { x y date home {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
-   global audace
-   set bufNo $audace(BufNo)
-   # --- on deplace CRVAL1 et CRVAL2 en coordonnées apparentes
-   set CRVAL1 [lindex [buf$bufNo getkwd CRVAL1] 1]
-   set CRVAL2 [lindex [buf$bufNo getkwd CRVAL2] 1]
-   set EQUINOX [lindex [buf$bufNo getkwd EQUINOX] 1]
-   # RADESYS='FK5     ' / Mean Place IAU 1984 system
-   # EQUINOX=2000.0 / System of equatorial coordinates
-   if {$EQUINOX==""} {
-      set EQUINOX J2000
-   }
-   set res [focas_radec_cat2app $CRVAL1 $CRVAL2 $EQUINOX $date $home $date 0 0 0 $pressure_Pa $temperature_K $humidity_percent $wavelength_nm]
-   lassign $res ra0 dec0 ha0 az0 elev0
-   set CRVAL1 $ra0
-   set CRVAL1 $dec0
-   # --- CRPIX = 1 pour le milieu du premier pixel (TBV)
-   set CRPIX1 [lindex [buf$bufNo getkwd CRPIX1] 1]
-   set CRPIX2 [lindex [buf$bufNo getkwd CRPIX2] 1]
-   set CDELT1 [lindex [buf$bufNo getkwd CDELT1] 1]
-   set CDELT2 [lindex [buf$bufNo getkwd CDELT2] 1]
-   set CROTA2 [lindex [buf$bufNo getkwd CROTA2] 1]
-   set CD001001 [expr $CDELT1*cos($CROTA2)]
-   set CD001002 [expr abs($CDELT2)*$CDELT1/fabs($CDELT1)*sin($CROTA2)]
-   set CD002001 [expr -fabs($CDELT1)*$CDELT2/fabs($CDELT2)*sin($CROTA2)]
-   set CD002002 [expr $CDELT2*cos($CROTA2)]
-   set dRA [expr $CD001001 * ($x-($CRPIX1-0.5)) + $CD001002 * ($y-($CRPIX2-0.5))]
-   set dDEC [expr $CD002001 * ($x-($CRPIX1-0.5)) + $CD002002 * ($y-($CRPIX2-0.5))]
-   set delta [expr cos($CRVAL2) - $dDEC*sin($CRVAL2)]
-   set gamma [expr sqrt( $dRA*$dRA + $delta*$delta )]
-   set RA [expr $CRVAL1 + atan ($dRA/$delta)]
-   set DEC [expr atan ( (sin($CRVAL2)+$dDEC*cos($CRVAL2)) / $gamma )]    
-   # --- on deplace ra et dec en coordonnées catalogue
-   set res [mc_tel2cat [list $RA $DEC] EQUATORIAL $date $home $pressure_Pa $temperature_K -humidity $humidity_percent -wavelength $wavelength_nm]
-   # --- coord J2000
-   lassign $res ra dec   
-   #return [list $ra $dec $RA $DEC]
-   return [list $ra $dec]
-}
