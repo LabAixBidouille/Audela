@@ -55,6 +55,7 @@ source grb_tools.tcl
 source speckle_tools.tcl
 source focas.tcl
 source alpy600_tools.tcl
+source wcs_tools.tcl
 
 namespace eval ::audace {
 
