@@ -99,7 +99,6 @@ namespace eval ::atos_analysis_gui {
       set ::atos_analysis_gui::width               ""
       set ::atos_analysis_gui::occ_star_name       ""
       set ::atos_analysis_gui::occ_star_class      1
-      $nometoile.r$::atos_analysis_gui::occ_star_class select
       set ::atos_analysis_gui::occ_star_B          ""
       set ::atos_analysis_gui::occ_star_V          ""
       set ::atos_analysis_gui::occ_star_K          ""
@@ -2621,20 +2620,22 @@ catch {
       set cmd5 "vo_miriade_ephemcc \"$::atos_analysis_gui::occ_obj_name\" \"\" $jd 1 \"1d\" \"UTC\" \"$::atos_analysis_gui::occ_pos\" \"INPOP\" 2 5 1 \"text\" \"--jd,--rv\" 0"
       #::console::affiche_resultat "CMD MIRIADE 1 = $cmd1\n"
       #::console::affiche_resultat "CMD MIRIADE 5 = $cmd5\n"
+
       set textraw1 [vo_miriade_ephemcc "$::atos_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::atos_analysis_gui::occ_pos" "INPOP" 2 1 1 "text" "--jd" 0]
-      set textraw5 [vo_miriade_ephemcc "$::atos_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::atos_analysis_gui::occ_pos" "INPOP" 2 5 1 "text" "--jd" 0]
       set text1 [split $textraw1 ";"]
+
+      set textraw5 [vo_miriade_ephemcc "$::atos_analysis_gui::occ_obj_name" "" $jd 1 "1d" "UTC" "$::atos_analysis_gui::occ_pos" "INPOP" 2 5 1 "text" "--jd" 0]
       set text5 [split $textraw5 ";"]
       
       set nbl [llength $text1]
       if {$nbl == 1} {
-         set res [tk_messageBox -message "L'appel aux ephemerides a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
+         set res [tk_messageBox -message "L'appel au serveur d'ephemerides Miriade a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
          ::console::affiche_erreur "CMD MIRIADE=$cmd1\n"
          return      
       }
       set nbl [llength $text5]
       if {$nbl == 1} {
-         set res [tk_messageBox -message "L'appel aux ephemerides a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
+         set res [tk_messageBox -message "L'appel au serveur d'ephemerides Miriade a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
          ::console::affiche_erreur "CMD MIRIADE=$cmd5\n"
          return      
       }
