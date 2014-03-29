@@ -24,7 +24,7 @@
 #
 # The WCS keywords are defined in:
 # Calabretta & Greisen (2002) A&A 395, 1077
-# 
+#
 # The middle of the first pixel is (1,1) in the FITS stansdard.
 # This is the same case for Sextractor and AudeLA.
 #
@@ -37,7 +37,7 @@
 # WCS structure is a list of FITS header keywords as:
 # {CRPIX1 212 float {X pole along NAXIS1} pix} {CRPIX2 270 float {Y pole along NAXIS2} pix} ...
 #
-# The elements of the list have the same definition than 
+# The elements of the list have the same definition than
 # result of "buf1 getkwd":
 # element 1 : FITS keyword
 # element 2 : Value
@@ -45,7 +45,7 @@
 # element 4 : comment
 # element 5 : unit
 #
-# Amongst the WCS structure one can find type=private for 
+# Amongst the WCS structure one can find type=private for
 # internal variables used for coordinate computation. Only
 # non private type keywords have to be recorded in the
 # FITS header at the end of the process (cf. wcs_wcs2buf).
@@ -235,7 +235,7 @@ proc wcs_setkwd { wcs kwd_descr } {
 }
 
 # =================================================================
-# WCS structure -> Display kwd values 
+# WCS structure -> Display kwd values
 # type = all public private
 # -----------------------------------------------------------------
 proc wcs_dispkwd { wcs {kwds ""} {type all} } {
@@ -299,7 +299,7 @@ proc wcs_buf2wcs { {bufNo 1} } {
    # -- coordinates
    set CRPIX1  [lindex [buf$bufNo getkwd CRPIX1] 1]
    if {$CRPIX1==""} { error "Keyword CRPIX1 not found in the FITS header" }
-   set CRPIX2  [lindex [buf$bufNo getkwd CRPIX2] 1]   
+   set CRPIX2  [lindex [buf$bufNo getkwd CRPIX2] 1]
    if {$CRPIX2==""} { error "Keyword CRPIX2 not found in the FITS header" }
    set CRVAL1  [lindex [buf$bufNo getkwd CRVAL1] 1]
    if {$CRVAL1==""} { error "Keyword CRVAL1 not found in the FITS header" }
@@ -376,7 +376,7 @@ proc wcs_buf2wcs { {bufNo 1} } {
 proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""} } {
    #set res [focas_pairs2poly $pairs $polydeg]
    #lassign $res polydeg polys sigma dcoords
-   
+
    # === determine le centre optique s'il n'a pas été précisé
    # --- on recherche le lieu du centre optique
    set pair [lindex $pairs 1]
@@ -451,7 +451,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
       set k3 ""
       for { set r32lim 0.9 } {$r32lim>=0} { set r32lim [expr $r32lim-0.1] } {
          foreach ortho $orthos {
-            lassign $ortho k cosa d3 
+            lassign $ortho k cosa d3
             set r32 [expr $d3/$d2]
             if {($r32>0.5)} {
                set k3 $k
@@ -488,7 +488,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
          set dec $dec_cat
          lappend coords [list $x $y $ra $dec]
       }
-      
+
       # === extrait les trois etoiles
       set pi [expr 4*atan(1)]
       set coord [lindex $coords 0]
@@ -530,7 +530,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
          set ra $rar2
          set sindec $sindec2
          set cosdec $cosdec2
-         set phi21 [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ] 
+         set phi21 [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ]
          set theta21 [expr asin( $sindec*$sindecp + $cosdec*$cosdecp*cos($ra-$rap)) ]
          set rth [expr 1./tan($theta21)]
          set x21 [expr  $rth*sin($phi21)]
@@ -545,7 +545,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
          set ra $rar3
          set sindec $sindec3
          set cosdec $cosdec3
-         set phi31 [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ] 
+         set phi31 [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ]
          set theta31 [expr asin( $sindec*$sindecp + $cosdec*$cosdecp*cos($ra-$rap)) ]
          set rth [expr 1./tan($theta31)]
          set x31 [expr  $rth*sin($phi31)]
@@ -601,10 +601,10 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
          set CD2_1 [expr $sm21*180/$pi]
          set CD2_2 [expr $sm22*180/$pi]
          lassign [wcs_cd2cdelt $CD1_1 $CD1_2 $CD2_1 $CD2_2] CDELT1 CDELT2 CROTA2
-         set CRPIX1 $xp 
-         set CRPIX2 $yp 
-         set CRVAL1 [expr $rap*180/$pi] 
-         set CRVAL2 [expr $decp*180/$pi] 
+         set CRPIX1 $xp
+         set CRPIX2 $yp
+         set CRVAL1 [expr $rap*180/$pi]
+         set CRVAL2 [expr $decp*180/$pi]
          set EQUINOX $equinox
          set RADESYS FK5
          set wcs [wcs_builder $CRPIX1 $CRPIX2 $CRVAL1 $CRVAL2 $EQUINOX $RADESYS $CDELT1 $CDELT2 $CROTA2 $CD1_1 $CD1_2 $CD2_1 $CD2_2]
@@ -676,7 +676,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
       set pi [expr 4*atan(1)]
       # Ref : Calabretta & Greisen (2002) A&A 395, 1077
       set phip $pi
-      set kbadstars "" 
+      set kbadstars ""
       set stepmax 2
       for {set step 0} {$step<=$stepmax} {incr step} {
          if {$step==0} {
@@ -717,7 +717,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
             set sindec [expr sin($decr)]
             set cosdec [expr cos($decr)]
             set ra $rar
-            set phi [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ] 
+            set phi [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ]
             set theta [expr asin( $sindec*$sindecp + $cosdec*$cosdecp*cos($ra-$rap)) ]
             set rth [expr 1./tan($theta)]
             set x [expr  $rth*sin($phi)]
@@ -757,10 +757,10 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
          set CD2_1 [expr $sm21*180/$pi]
          set CD2_2 [expr $sm22*180/$pi]
          lassign [wcs_cd2cdelt $CD1_1 $CD1_2 $CD2_1 $CD2_2] CDELT1 CDELT2 CROTA2
-         set CRPIX1 $xp 
-         set CRPIX2 $yp 
-         set CRVAL1 [expr $rap*180/$pi] 
-         set CRVAL2 [expr $decp*180/$pi] 
+         set CRPIX1 $xp
+         set CRPIX2 $yp
+         set CRVAL1 [expr $rap*180/$pi]
+         set CRVAL2 [expr $decp*180/$pi]
          set EQUINOX $equinox
          set RADESYS FK5
          set wcs [wcs_builder $CRPIX1 $CRPIX2 $CRVAL1 $CRVAL2 $EQUINOX $RADESYS $CDELT1 $CDELT2 $CROTA2 $CD1_1 $CD1_2 $CD2_1 $CD2_2]
@@ -813,7 +813,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
       # ref http://fits.gsfc.nasa.gov/registry/tpvwcs/tpv.html
       # The TPV projection is evaluated as follows.
       #
-      # 1. Compute the first order standard coordinates xi and eta from the linear part 
+      # 1. Compute the first order standard coordinates xi and eta from the linear part
       #    of the solution stored in CRPIX and the CD matrix.
       #
       #       xi = CD1_1 * (x - CRPIX1) + CD1_2 * (y - CRPIX2)
@@ -824,11 +824,11 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
       #      xi' = f_xi (xi, eta)
       #     eta' = f_eta (xi, eta)
       #
-      # 3. Apply the tangent plane projection to xi' and eta' as described in Calabretta and Greisen . 
-      #    The reference tangent point given by the CRVAL values lead to the final RA and DEC in degrees. 
-      #    Note that the units of xi, eta, f_xi, and f_eta are also degrees. 
-      #      
-      # The distortion functions shown as f_xi and f_eta above are defined as follows where 
+      # 3. Apply the tangent plane projection to xi' and eta' as described in Calabretta and Greisen .
+      #    The reference tangent point given by the CRVAL values lead to the final RA and DEC in degrees.
+      #    Note that the units of xi, eta, f_xi, and f_eta are also degrees.
+      #
+      # The distortion functions shown as f_xi and f_eta above are defined as follows where
       # the variable r is sqrt(xi^2+eta^2). In this convention there are only odd powers of r.
       #
       # xi' = PV1_0 + PV1_1 * xi + PV1_2 * eta + PV1_3 * r +
@@ -853,27 +853,27 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
       #     PV2_31 * eta^7 + PV2_32 * eta^6 * xi + PV2_33 * eta^5 * xi^2 + PV2_34 * eta^4 * xi^3 +
       #     PV2_35 * eta^3 * xi^4 + PV2_36 * eta^2 * xi^5 + PV2_37 * eta * xi^6 + PV2_38 * xi^7 + PV2_39 * r^7
       #
-      # Note that missing PV keywords default to 0 except for PV1_1 and PV2_1 which default to 1. 
-      # With these defaults if there are no PV keywords the transformation is the identity 
-      # and the TPV WCS is equivalent to the standard TAN projection. 
-      # Also the defaults mean that the provider need only include the coefficients to the order desired. 
+      # Note that missing PV keywords default to 0 except for PV1_1 and PV2_1 which default to 1.
+      # With these defaults if there are no PV keywords the transformation is the identity
+      # and the TPV WCS is equivalent to the standard TAN projection.
+      # Also the defaults mean that the provider need only include the coefficients to the order desired.
       # Similarly, the function may use only terms in powers of r which then mimics the standard ZPN projection.
       #
       # This convention only defines coefficients up to 39 corresponding to a maximum polynomial order of 7.
       #
-      # To implement the inverse transformation requires inverting the distortion functions. 
-      # But using a standard iterative numerical inversion based on the first derivative of the functions 
-      # is not difficult. The derivatives of these functions are straightforward to express and evaluate. 
+      # To implement the inverse transformation requires inverting the distortion functions.
+      # But using a standard iterative numerical inversion based on the first derivative of the functions
+      # is not difficult. The derivatives of these functions are straightforward to express and evaluate.
       set vecXip ""
       set vecEtap ""
       set matX ""
       set vecW ""
-      if {($nc<10)&&($polydeg>1)} { 
-         set polydeg 1 
-      } elseif {($nc<15)&&($polydeg>2)} { 
-         set polydeg 2 
+      if {($nc<10)&&($polydeg>1)} {
+         set polydeg 1
+      } elseif {($nc<15)&&($polydeg>2)} {
+         set polydeg 2
       } else {
-         set polydeg 2 
+         set polydeg 2
       }
       if {$polydeg>1} {
          for {set kc 0} {$kc<$nc} {incr kc} {
@@ -888,7 +888,7 @@ proc wcs_focaspairs2wcs { pairs polydeg {xoptc ""} {yoptc ""} {date ""} {home ""
             set sindec [expr sin($decr)]
             set cosdec [expr cos($decr)]
             set ra $rar
-            set phi [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ] 
+            set phi [expr $phip + atan2( -$cosdec*sin($ra-$rap) , $sindec*$cosdecp-$cosdec*$sindecp*cos($ra-$rap) ) ]
             set theta [expr asin( $sindec*$sindecp + $cosdec*$cosdecp*cos($ra-$rap)) ]
             set rth [expr 1./tan($theta)]
             set x [expr  $rth*sin($phi)*180./$pi] ; # deg
@@ -1072,8 +1072,8 @@ proc wcs_update_optic { wcs {pixsize1_mu ""} {pixsize2_mu ""} {foclen_m ""} } {
    }
    if {($pixsize1_mu!="")&&($pixsize2_mu!="")&&($foclen_m!="")} {
       set wcs [wcs_setkwd $wcs [list FOCLEN $foclen_m float "Equivalent focal length" "m"]]
-      set wcs [wcs_setkwd $wcs [list PIXSIZE1 $pixsize1_mu float "X Pixel size after binning" "um"]]   
-      set wcs [wcs_setkwd $wcs [list PIXSIZE2 $pixsize2_mu float "Y Pixel size after binning" "um"]]   
+      set wcs [wcs_setkwd $wcs [list PIXSIZE1 $pixsize1_mu float "X Pixel size after binning" "um"]]
+      set wcs [wcs_setkwd $wcs [list PIXSIZE2 $pixsize2_mu float "Y Pixel size after binning" "um"]]
    }
    return $wcs
 }
@@ -1095,7 +1095,7 @@ proc wcs_matrice2x2_determinant { m } {
 # =================================================================
 # radec catalog -> radec apparent
 # -----------------------------------------------------------------
-# source $audace(rep_install)/gui/audace/wcs_tools.tcl ; wcs_radec_cat2app 12h45m23s -6d25m32s J2000 now {GPS 5 E 43 1230} 1992.5 0 0 0 101325 290 40 550 
+# source $audace(rep_install)/gui/audace/wcs_tools.tcl ; wcs_radec_cat2app 12h45m23s -6d25m32s J2000 now {GPS 5 E 43 1230} 1992.5 0 0 0 101325 290 40 550
 proc wcs_radec_cat2app { ra dec equinox date home {epoch ""} {mura_masyr 0} {mudec_masyr 0} {plx_mas 0} {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
    if {$epoch==""} {
       set epoch $date
@@ -1109,7 +1109,7 @@ proc wcs_radec_cat2app { ra dec equinox date home {epoch ""} {mura_masyr 0} {mud
 # =================================================================
 # radec apparent -> radec catalog
 # -----------------------------------------------------------------
-# source $audace(rep_install)/gui/audace/wcs_tools.tcl ; wcs_radec_app2cat 12h45m23s -6d25m32s now {GPS 5 E 43 1230} 101325 290 40 550 
+# source $audace(rep_install)/gui/audace/wcs_tools.tcl ; wcs_radec_app2cat 12h45m23s -6d25m32s now {GPS 5 E 43 1230} 101325 290 40 550
 proc wcs_radec_app2cat { ra dec date home {pressure_Pa 101325} {temperature_K 290} {humidity_percent 40} {wavelength_nm 550} } {
    # --- on deplace ra et dec en coordonnées catalogue
    set res [mc_tel2cat [list $ra $dec] EQUATORIAL $date $home $pressure_Pa $temperature_K -humidity $humidity_percent -wavelength $wavelength_nm]
@@ -1227,7 +1227,7 @@ proc wcs_radec2p { wcs ra dec } {
    # m12*x2 = m12*m21 *pr1 + m12*m22 *pr2
    # ---
    # m22*x1 - m12*x2 = (m22*m11 - m12*m21) * pr1
-   set pr1 [expr ($sm22*$x1 - $sm12*$x2) / ($sm22*$sm11 - $sm12*$sm21) ] 
+   set pr1 [expr ($sm22*$x1 - $sm12*$x2) / ($sm22*$sm11 - $sm12*$sm21) ]
    set pr2 [expr ($sm21*$x1 - $sm11*$x2) / ($sm21*$sm12 - $sm11*$sm22) ]
    set p1 [expr $pr1+$r1]
    set p2 [expr $pr2+$r2]
@@ -1345,3 +1345,4 @@ proc wcs_plot_catalog { wcs bufNo naxis1 naxis2 catalog path mag_faint } {
    plotxy::xlabel "columns (pixels)"
    plotxy::ylabel "lines (pixels)"
 }
+
