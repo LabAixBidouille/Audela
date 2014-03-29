@@ -289,8 +289,8 @@
 
                   #--- Creation du bouton open
                   button $buttons2.but_open -width 15 \
-                     -text "Parcourir" -borderwidth 2 \
-                     -command "::atos_analysis_gui::select_atos_file $visuNo $f0; ::atos_analysis_gui::load_atos_file"
+                     -text "Charger" -borderwidth 2 \
+                     -command "::atos_analysis_gui::select_atos_file $visuNo $f0; ::atos_analysis_gui::load_atos_file no_msg"
                   pack $buttons2.but_open \
                      -side right -anchor e \
                      -padx 10 -pady 5 -ipadx 3 -ipady 3 -expand 0
@@ -618,7 +618,7 @@
              pack $distance -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $distance.l1 -text "Distance (UA) : " -width 25
+                  label $distance.l1 -text "Distance (UA) : " -width 25 -anchor e
                   pack  $distance.l1 -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -630,7 +630,7 @@
              pack $vitesse -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $vitesse.l2 -text "Vitesse tangentielle (km/s) : " -width 25
+                  label $vitesse.l2 -text "Vitesse tangentielle (km/s) : " -width 25 -anchor e
                   pack  $vitesse.l2 -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -642,7 +642,7 @@
              pack $diam -in $parametres -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                   #--- Cree un label
-                  label $diam.l3 -text "Diametre approx. de l'objet (km) : " -width 25
+                  label $diam.l3 -text "Diametre approx. de l'objet (km) : " -width 25 -anchor e
                   pack  $diam.l3 -side left -anchor e
 
                   #--- Cree un label pour le chemin de l'AVI
@@ -739,6 +739,18 @@
                   #--- Cree un label
                   label $tailleetoile.c2 -text "(a la distance de l'objet)"
                   pack  $tailleetoile.c2 -side left -anchor e
+
+             #--- Cree un frame pour le chargement d'un fichier
+             set dureeoccult [frame $parametres.dureeoccult -borderwidth 0 -cursor arrow -relief groove]
+             pack $dureeoccult -in $parametres -anchor s -side top -expand 0 -fill x -padx 35 -pady 5
+
+                  #--- Cree un label
+                  label $dureeoccult.l1 -text "Estimation de la duree de l'extinction de l'etoile (s) = "
+                  pack  $dureeoccult.l1 -side left -anchor e
+
+                  #--- Cree un entry
+                  entry $dureeoccult.v1 -textvariable ::atos_analysis_gui::occ_star_extinction -width 8 -state readonly
+                  pack $dureeoccult.v1 -side left -padx 3 -pady 1 -fill x
 
              #--- Cree un frame pour le chargement d'un fichier
              set titrecapteur [frame $parametres.titrecapteur -borderwidth 1 -cursor arrow -relief raised]

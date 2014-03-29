@@ -96,24 +96,24 @@ namespace eval ::atos_analysis_gui {
       # 
       # Parametres
       # 
-      set ::atos_analysis_gui::width             ""
-      set ::atos_analysis_gui::occ_star_name     ""
-      set ::atos_analysis_gui::occ_star_class    1
-      gren_info "R = $::atos_analysis_gui::occ_star_class\n"
+      set ::atos_analysis_gui::width               ""
+      set ::atos_analysis_gui::occ_star_name       ""
+      set ::atos_analysis_gui::occ_star_class      1
       $nometoile.r$::atos_analysis_gui::occ_star_class select
-      set ::atos_analysis_gui::occ_star_B        ""
-      set ::atos_analysis_gui::occ_star_V        ""
-      set ::atos_analysis_gui::occ_star_K        ""
-      set ::atos_analysis_gui::occ_star_size_mas ""
-      set ::atos_analysis_gui::occ_star_size_km  ""
-      set ::atos_analysis_gui::wvlngth           ""
-      set ::atos_analysis_gui::dlambda           ""
-      set ::atos_analysis_tools::irep            ""
-      set ::atos_analysis_gui::nheure            ""
-      set ::atos_analysis_gui::pas_heure         ""
-      set ::atos_analysis_tools::corr_exposure   ""
-      set ::atos_analysis_gui::date_begin_obs    ""
-      set ::atos_analysis_gui::date_end_obs      ""
+      set ::atos_analysis_gui::occ_star_B          ""
+      set ::atos_analysis_gui::occ_star_V          ""
+      set ::atos_analysis_gui::occ_star_K          ""
+      set ::atos_analysis_gui::occ_star_size_mas   ""
+      set ::atos_analysis_gui::occ_star_size_km    ""
+      set ::atos_analysis_gui::occ_star_extinction ""
+      set ::atos_analysis_gui::wvlngth             ""
+      set ::atos_analysis_gui::dlambda             ""
+      set ::atos_analysis_tools::irep              ""
+      set ::atos_analysis_gui::nheure              ""
+      set ::atos_analysis_gui::pas_heure           ""
+      set ::atos_analysis_tools::corr_exposure     ""
+      set ::atos_analysis_gui::date_begin_obs      ""
+      set ::atos_analysis_gui::date_end_obs        ""
       # 
       # Immersion & Emersion
       # 
@@ -1775,44 +1775,26 @@ namespace eval ::atos_analysis_gui {
    #
    # Charge du fichier projet
    #
-   proc ::atos_analysis_gui::load_atos_file { } {
+   proc ::atos_analysis_gui::load_atos_file { {no_msg 0} } {
 
-
-      set pass "yes"
       if {![info exists ::atos_analysis_gui::prj_file]} {
-         set pass "no"
+         if {$no_msg == 0} { tk_messageBox -message "Veuillez selectionner un fichier" -type ok }
+         return -code 0 "no"
       } else {
-         if  {$::atos_analysis_gui::prj_file==""} {
-            set pass "no"
+         if {$::atos_analysis_gui::prj_file == ""} {
+            if {$no_msg == 0} { tk_messageBox -message "Aucun fichier selectionne" -type ok }
+            return -code 0 "no"
          }
       }
-      if {$pass=="no"} {
-         tk_messageBox -message "Veuillez selectionner un fichier" -type ok
-         return
-      }
 
-
-
-
-      set a1 [file exists $::atos_analysis_gui::prj_file]
-      if {$a1 == 0} {
-         set res [tk_messageBox -message "Le fichier n'existe pas !" -type yes]
+      if {[file exists $::atos_analysis_gui::prj_file] == 0} {
+         tk_messageBox -message "Le fichier n'existe pas !" -type yes
          return -code 0 "no"
       }
       
       source $::atos_analysis_gui::prj_file
-   }   
 
-
-
-
-
-
-
-
-
-
-
+   }
 
 
 
@@ -1826,17 +1808,16 @@ namespace eval ::atos_analysis_gui {
 
       set fenetre [::confVisu::getBase $visuNo]
       set bufNo [ visu$visuNo buf ]
-      set ::atos_analysis_gui::prj_file [ ::tkutil::box_load_atos $frm $::atos::parametres(atos,$visuNo,dir_prj) $bufNo "1" ]
-      set ::atos_analysis_gui::prj_file_short [file tail $::atos_analysis_gui::prj_file]
-      set ::atos_analysis_gui::prj_dir        [file dirname $::atos_analysis_gui::prj_file]
+      
+      set loaded_file [ ::tkutil::box_load_atos $frm $::atos::parametres(atos,$visuNo,dir_prj) $bufNo "1" ]
+
+      if {$loaded_file != ""} {
+         set ::atos_analysis_gui::prj_file $loaded_file
+         set ::atos_analysis_gui::prj_file_short [file tail $::atos_analysis_gui::prj_file]
+         set ::atos_analysis_gui::prj_dir        [file dirname $::atos_analysis_gui::prj_file]
+      }
 
    }   
-
-
-
-
-
-
 
 
 
@@ -1975,6 +1956,7 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       if {![info exists ::atos_analysis_gui::occ_star_K                ]} {set ::atos_analysis_gui::occ_star_K                 ""}
       if {![info exists ::atos_analysis_gui::occ_star_size_mas         ]} {set ::atos_analysis_gui::occ_star_size_mas          ""}
       if {![info exists ::atos_analysis_gui::occ_star_size_km          ]} {set ::atos_analysis_gui::occ_star_size_km           ""}
+      if {![info exists ::atos_analysis_gui::occ_star_extinction       ]} {set ::atos_analysis_gui::occ_star_extinction        ""}
       if {![info exists ::atos_analysis_gui::wvlngth                   ]} {set ::atos_analysis_gui::wvlngth                    ""}
       if {![info exists ::atos_analysis_gui::dlambda                   ]} {set ::atos_analysis_gui::dlambda                    ""}
       if {![info exists ::atos_analysis_tools::irep                    ]} {set ::atos_analysis_tools::irep                     ""}
@@ -2144,22 +2126,23 @@ catch {
       puts $chan "# "
       puts $chan "# Parametres"
       puts $chan "# "
-      puts $chan "set ::atos_analysis_gui::width             \"$::atos_analysis_gui::width\""
-      puts $chan "set ::atos_analysis_gui::occ_star_name     \"$::atos_analysis_gui::occ_star_name\""
-      puts $chan "set ::atos_analysis_gui::occ_star_class    \"$::atos_analysis_gui::occ_star_class\""
-      puts $chan "set ::atos_analysis_gui::occ_star_B        \"$::atos_analysis_gui::occ_star_B\""
-      puts $chan "set ::atos_analysis_gui::occ_star_V        \"$::atos_analysis_gui::occ_star_V\""
-      puts $chan "set ::atos_analysis_gui::occ_star_K        \"$::atos_analysis_gui::occ_star_K\""
-      puts $chan "set ::atos_analysis_gui::occ_star_size_mas \"$::atos_analysis_gui::occ_star_size_mas\""
-      puts $chan "set ::atos_analysis_gui::occ_star_size_km  \"$::atos_analysis_gui::occ_star_size_km\""
-      puts $chan "set ::atos_analysis_gui::wvlngth           \"$::atos_analysis_gui::wvlngth\""
-      puts $chan "set ::atos_analysis_gui::dlambda           \"$::atos_analysis_gui::dlambda\""
-      puts $chan "set ::atos_analysis_tools::irep            \"$::atos_analysis_tools::irep\""
-      puts $chan "set ::atos_analysis_gui::nheure            \"$::atos_analysis_gui::nheure\""
-      puts $chan "set ::atos_analysis_gui::pas_heure         \"$::atos_analysis_gui::pas_heure\""
-      puts $chan "set ::atos_analysis_tools::corr_exposure   \"$::atos_analysis_tools::corr_exposure\""
-      puts $chan "set ::atos_analysis_gui::date_begin_obs    \"$::atos_analysis_gui::date_begin_obs\""
-      puts $chan "set ::atos_analysis_gui::date_end_obs      \"$::atos_analysis_gui::date_end_obs\""
+      puts $chan "set ::atos_analysis_gui::width               \"$::atos_analysis_gui::width\""
+      puts $chan "set ::atos_analysis_gui::occ_star_name       \"$::atos_analysis_gui::occ_star_name\""
+      puts $chan "set ::atos_analysis_gui::occ_star_class      \"$::atos_analysis_gui::occ_star_class\""
+      puts $chan "set ::atos_analysis_gui::occ_star_B          \"$::atos_analysis_gui::occ_star_B\""
+      puts $chan "set ::atos_analysis_gui::occ_star_V          \"$::atos_analysis_gui::occ_star_V\""
+      puts $chan "set ::atos_analysis_gui::occ_star_K          \"$::atos_analysis_gui::occ_star_K\""
+      puts $chan "set ::atos_analysis_gui::occ_star_size_mas   \"$::atos_analysis_gui::occ_star_size_mas\""
+      puts $chan "set ::atos_analysis_gui::occ_star_size_km    \"$::atos_analysis_gui::occ_star_size_km\""
+      puts $chan "set ::atos_analysis_gui::occ_star_extinction \"$::atos_analysis_gui::occ_star_extinction\""
+      puts $chan "set ::atos_analysis_gui::wvlngth             \"$::atos_analysis_gui::wvlngth\""
+      puts $chan "set ::atos_analysis_gui::dlambda             \"$::atos_analysis_gui::dlambda\""
+      puts $chan "set ::atos_analysis_tools::irep              \"$::atos_analysis_tools::irep\""
+      puts $chan "set ::atos_analysis_gui::nheure              \"$::atos_analysis_gui::nheure\""
+      puts $chan "set ::atos_analysis_gui::pas_heure           \"$::atos_analysis_gui::pas_heure\""
+      puts $chan "set ::atos_analysis_tools::corr_exposure     \"$::atos_analysis_tools::corr_exposure\""
+      puts $chan "set ::atos_analysis_gui::date_begin_obs      \"$::atos_analysis_gui::date_begin_obs\""
+      puts $chan "set ::atos_analysis_gui::date_end_obs        \"$::atos_analysis_gui::date_end_obs\""
 
       puts $chan "# "
       puts $chan "# Immersion & Emersion"
@@ -2533,10 +2516,17 @@ catch {
       if {$res != 0} {
          set ::atos_analysis_gui::occ_star_size_mas [format "%.3f" [lindex $res 0]]
          set ::atos_analysis_gui::occ_star_size_km  [format "%.4f" [lindex $res 1]]
+         if {$::atos_analysis_gui::vn != 0 && $::atos_analysis_gui::vn != ""} {
+            set ::atos_analysis_gui::occ_star_extinction [format "%.4f" [expr [lindex $res 1]/$::atos_analysis_gui::vn]]
+         } else {
+            set ::atos_analysis_gui::occ_star_extinction ""
+            ::console::affiche_erreur "Calcul de la duree d'extinction de l'etoile impossible: vitesse de l'ombre nulle ou inconnue.\n"
+         }
          set ::atos_analysis_gui::occ_star_class [lindex $res 2]
       } else {
-         set ::atos_analysis_gui::occ_star_size_mas ""
-         set ::atos_analysis_gui::occ_star_size_km  ""
+         set ::atos_analysis_gui::occ_star_size_mas   ""
+         set ::atos_analysis_gui::occ_star_size_km    ""
+         set ::atos_analysis_gui::occ_star_extinction ""
       }
 
    }   
@@ -2768,12 +2758,6 @@ catch {
 
 
 
-
-
-
-
-
-
    proc ::atos_analysis_gui::sendAladinScript { } {
 
       # Verif
@@ -2803,8 +2787,6 @@ catch {
          tk_messageBox -message "Veuillez entrer des valeurs valides pour les champs RA,Dec,date et localisation" -type ok
          return
       }
-
-
 
       # Get parameters
       
@@ -2840,21 +2822,4 @@ catch {
    
    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
