@@ -2,7 +2,7 @@
 # Fichier : wcs_tools.tcl
 # Description : Procs de manipulation des mots clé WCS et transformation de coordonnées
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: wcs_tools.tcl 10295 2013-09-28 08:21:46Z alainklotz $
+# Mise à jour $Id$
 #
 # source $audace(rep_install)/gui/audace/wcs_tools.tcl
 #
