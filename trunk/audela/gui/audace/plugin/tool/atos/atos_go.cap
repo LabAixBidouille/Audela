@@ -32,7 +32,7 @@ set caption(atos_go,time)                  "Time Extraction"
 set caption(atos_go,cdl)                   "Ligth Curve"
 set caption(atos_go,analysis)              "Analysis"
 
-set caption(atos_go,pasdimages)            "No images\nVerify directory and root file\n and verify extension in Configuration -> Image filename"
+set caption(atos_go,pasdimages)            "No images\nVerify the path and prefix of files and verify the image extension in Configuration -> Image filename"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -51,6 +51,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_go,time)               "Extraction de l'heure"
    set caption(atos_go,cdl)                "Courbe de lumière"
    set caption(atos_go,analysis)           "Analyse"
+
+   set caption(atos_go,pasdimages)         "Pas d'images\nVerifier le repertoire et le prefixe des fichiers et verifier l'extension des images dans Configuration -> Fichier image"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {

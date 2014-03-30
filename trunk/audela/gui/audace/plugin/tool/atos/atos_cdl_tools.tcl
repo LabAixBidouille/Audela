@@ -35,10 +35,10 @@ namespace eval ::atos_cdl_tools {
 
       set ::atos_cdl_tools::delta 5
 
-      set ::atos_cdl_tools::x_obj_threshold 5
-      set ::atos_cdl_tools::y_obj_threshold 5
-      set ::atos_cdl_tools::x_ref_threshold 5
-      set ::atos_cdl_tools::y_ref_threshold 5
+      set ::atos_cdl_tools::x_obj_threshold 6
+      set ::atos_cdl_tools::y_obj_threshold 6
+      set ::atos_cdl_tools::x_ref_threshold 6
+      set ::atos_cdl_tools::y_ref_threshold 6
 
    }
 
@@ -47,6 +47,11 @@ namespace eval ::atos_cdl_tools {
    # Existance et chargement d un fichier time
    #
    proc ::atos_cdl_tools::file_time_exist {  } {
+
+      if {![info exists ::atos_tools::nb_open_frames] || $::atos_tools::nb_open_frames == 0} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       for  {set x 1} {$x<=$::atos_tools::nb_open_frames} {incr x} {
          set ::atos_ocr_tools::timing($x,jd)  ""
@@ -113,15 +118,19 @@ namespace eval ::atos_cdl_tools {
    #
    proc ::atos_cdl_tools::save { visuNo } {
 
+      if {![info exists ::atos_tools::nb_open_frames] || $::atos_tools::nb_open_frames == 0} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
-      if { $::atos_tools::traitement=="fits" } {
+      if { $::atos_tools::traitement == "fits" } {
          set filename [file join ${::atos_tools::destdir} "${::atos_tools::prefix}"]
       }
 
-      if { $::atos_tools::traitement=="avi" }  {
+      if { $::atos_tools::traitement == "avi" }  {
          set filename $::atos_tools::avi_filename
-         if { ! [file exists $filename] } {
-         ::console::affiche_erreur "Charger une video ...\n"
+         if {![file exists $filename]} {
+            ::console::affiche_erreur "Veuillez charger une video ...\n"
          }
       }
 
@@ -264,7 +273,6 @@ namespace eval ::atos_cdl_tools {
 
       close $f1
       ::console::affiche_resultat "nb frame save = $cpt   .. Fin  ..\n"
-
 
    }
 
@@ -485,10 +493,6 @@ namespace eval ::atos_cdl_tools {
       }
 
    }
-
-
-
-
 
 
 
@@ -1514,11 +1518,16 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::verif_source { visuNo type } {
 
       global color
-      
-      #::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
-      #::console::affiche_resultat "obj(x)    = $::atos_cdl_tools::obj(x)    \n"
-      #::console::affiche_resultat "obj(y)    = $::atos_cdl_tools::obj(y)    \n"
       set verif $::atos_gui::frame($type,buttons).verifier
+      
+      #::console::affiche_resultat "cur_idframe = $::atos_tools::cur_idframe    \n"
+      #::console::affiche_resultat "obj(x)      = $::atos_cdl_tools::obj(x)    \n"
+      #::console::affiche_resultat "obj(y)      = $::atos_cdl_tools::obj(y)    \n"
+
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       set pass "no"
       if {[info exists ::atos_cdl_tools::mesure($::atos_tools::cur_idframe,$type,verif)]} {
@@ -1593,11 +1602,6 @@ namespace eval ::atos_cdl_tools {
          }
 
       }
-
-
-
-      
-
 
    }
 
@@ -1708,12 +1712,12 @@ namespace eval ::atos_cdl_tools {
 
 
 
-
-
-
    proc ::atos_cdl_tools::graph_flux { visuNo type } {
 
-      set log 0
+      if {![info exists ::atos_tools::frame_end]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       ::plotxy::clf 1
       ::plotxy::figure 1
@@ -1814,7 +1818,10 @@ namespace eval ::atos_cdl_tools {
 
    proc ::atos_cdl_tools::graph_flux_norm { visuNo } {
 
-      set log 0
+      if {![info exists ::atos_tools::frame_end]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       ::plotxy::clf 1
       ::plotxy::figure 1
@@ -1905,24 +1912,12 @@ namespace eval ::atos_cdl_tools {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    proc ::atos_cdl_tools::graph_xy { visuNo type } {
    
-      set log 0
+      if {![info exists ::atos_tools::frame_end]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       ::plotxy::clf 1
       ::plotxy::figure 1

@@ -42,7 +42,7 @@ namespace eval ::atos_tools_fits {
             $::atos_gui::frame(info_load).status  configure -text "Pas d'image"
             $::atos_gui::frame(info_load).nbtotal configure -text "0"
          }
-         ::console::affiche_erreur "$caption(atos_go,pasdimages)\n" 
+         #::console::affiche_erreur "$caption(atos_go,pasdimages)\n" 
          tk_messageBox -message $caption(atos_go,pasdimages) -type ok
          set ::atos_tools::nb_open_frames 0
 
@@ -173,8 +173,18 @@ namespace eval ::atos_tools_fits {
 
    proc ::atos_tools_fits::set_frame { visuNo idframe {novisu ""} } {
 
+      if {![info exists ::atos_tools::destdir] || [info exists ::atos_tools::prefix]} {
+         # Rien a faire, pas d'image chargee
+         return
+      }
+
+      set filename [file join ${::atos_tools::destdir} ${::atos_tools::prefix}${cur_idframe}${::conf(extension,defaut)}]
+      if {![file exists $filename]} {
+         ::console::affiche_erreur "Image inconnue"
+         return
+      }
+
       set ::atos_tools::cur_idframe $idframe
-      set filename [file join ${::atos_tools::destdir} ${::atos_tools::prefix}${::atos_tools::cur_idframe}${::conf(extension,defaut)}]
       set bufNo [ visu$visuNo buf ]
 
       if {$novisu == "novisu"} {
@@ -221,7 +231,7 @@ namespace eval ::atos_tools_fits {
    proc ::atos_tools_fits::setmin { This } {
 
       if { ! [info exists ::atos_tools::cur_idframe] } {
-          tk_messageBox -message "Veuillez charger une video" -type ok
+          #tk_messageBox -message "Veuillez charger une video" -type ok
           return
       }
 
@@ -238,7 +248,7 @@ namespace eval ::atos_tools_fits {
    proc ::atos_tools_fits::setmax { This } {
 
       if { ! [info exists ::atos_tools::cur_idframe] } {
-          tk_messageBox -message "Veuillez charger une video" -type ok
+          #tk_messageBox -message "Veuillez charger une video" -type ok
           return
       }
 
@@ -253,6 +263,7 @@ namespace eval ::atos_tools_fits {
 
    proc ::atos_tools_fits::imagecount { This } {
       global audace
+
       $This.imagecount delete 0 end
       set fmin [ $This.posmin get ]
       set fmax [ $This.posmax get ]

@@ -161,6 +161,11 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::next_image { } {
 
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
       if {$::atos_tools_avi::log} { ::console::affiche_resultat "\nnext_image deb : $::atos_tools::cur_idframe \n" }
 
       set ::atos_tools::cur_idframe [expr int($::atos_tools::cur_idframe + 1)]
@@ -181,6 +186,11 @@ namespace eval ::atos_tools_avi {
 
 
    proc ::atos_tools_avi::prev_image { } {
+
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       if {$::atos_tools_avi::log} { ::console::affiche_resultat "\nprev_image av : $::atos_tools::cur_idframe \n " }
 
@@ -233,7 +243,7 @@ namespace eval ::atos_tools_avi {
 
       if {$::atos_tools_avi::log} { ::console::affiche_resultat "$::atos_tools::cur_idframe $::atos_tools::frame_end $::atos_tools::frame_begin\n" }
 
-      set nbf [expr  $::atos_tools::nb_open_frames * 1.0]
+      set nbf [expr $::atos_tools::nb_open_frames * 1.0]
 
       if {$idframe > $::atos_tools::frame_end} {
          set idframe $::atos_tools::frame_end
@@ -251,6 +261,7 @@ namespace eval ::atos_tools_avi {
       }
 
       ::atos_tools_avi::avi1 seektoframe [expr $idframe -1 ]
+
       set ::atos_tools::cur_idframe [expr $idframe -1]
 
       ::atos_tools_avi::next_image
