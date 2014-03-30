@@ -59,11 +59,12 @@ namespace eval ::atos_tools_fits {
 
       ::atos_tools_fits::next_image $visuNo
 
-      $::atos_gui::frame(info_load).status   configure -text "Loaded"
-      $::atos_gui::frame(info_load).nbtotal  configure -text $::atos_tools::nb_frames
+      $::atos_gui::frame(info_load).status  configure -text "Loaded"
+      $::atos_gui::frame(info_load).nbtotal configure -text $::atos_tools::nb_frames
 
       set autocuts [buf$bufNo autocuts]
       visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
+     
       set ::atos_tools::scrollbar 1   
       $scrollbar configure -from 1
       $scrollbar configure -to $::atos_tools::nb_frames
@@ -173,12 +174,13 @@ namespace eval ::atos_tools_fits {
 
    proc ::atos_tools_fits::set_frame { visuNo idframe {novisu ""} } {
 
-      if {![info exists ::atos_tools::destdir] || [info exists ::atos_tools::prefix]} {
+      if {![info exists ::atos_tools::destdir] || ![info exists ::atos_tools::prefix]} {
          # Rien a faire, pas d'image chargee
+         ::console::affiche_resultat "::atos_tools_fits::set_frame -> no image\n"
          return
       }
 
-      set filename [file join ${::atos_tools::destdir} ${::atos_tools::prefix}${cur_idframe}${::conf(extension,defaut)}]
+      set filename [file join ${::atos_tools::destdir} ${::atos_tools::prefix}${idframe}${::conf(extension,defaut)}]
       if {![file exists $filename]} {
          ::console::affiche_erreur "Image inconnue"
          return

@@ -57,7 +57,6 @@ namespace eval ::atos_ocr_tools {
 
 
 
-
    proc ::atos_ocr_tools::select_ocr { visuNo } {
 
       global color
@@ -126,6 +125,7 @@ namespace eval ::atos_ocr_tools {
       return [list $pass $h $min $s $ms]
    }
 
+   
 
    proc ::atos_ocr_tools::ocr_tim10_small_font { msg } {
 
@@ -134,6 +134,7 @@ namespace eval ::atos_ocr_tools {
       return [list "no" "XX" "XX" "XX" "XXX"]
    }
 
+   
 
    proc ::atos_ocr_tools::ocr_tim10_big_font { msg } {
 
@@ -141,6 +142,7 @@ namespace eval ::atos_ocr_tools {
       ::console::affiche_resultat "msg = $msg \n"
       return [list "no" "XX" "XX" "XX" "XXX"]
    }
+
 
 
    #
@@ -215,15 +217,44 @@ namespace eval ::atos_ocr_tools {
 
 
 
+   proc ::atos_ocr_tools::deinterlace { img } {
+
+      set img_ocr [image create photo -file $img]
+      set tx [image width $img_ocr]
+      set ty [image height $img_ocr]
+
+      # Cree un cache de l'image
+      set img_cache [image create photo -width $tx -height $ty]
+   
+      # Image paire
+      set img_even_name "ocr_even.jpg"
+      set img_even [image create photo -width $tx -height $ty]
+      $img_cache copy $img_ocr -subsample 1 2 -from 0 0
+      $img_even copy $img_cache -zoom 1 2
+      $img_even write $img_even_name -format "jpeg -quality 90 -optimize"
+      
+      # Image impaire
+      set img_odd_name "ocr_odd.jpg"
+      set img_odd [image create photo -width $tx -height $ty]
+      $img_cache copy $img_ocr -subsample 1 2 -from 0 1
+      $img_odd copy $img_cache -zoom 1 2
+      $img_odd write $img_odd_name -format "jpeg -quality 90 -optimize"
+
+      return [list $img_even_name $img_odd_name]
+
+   }
+
+   
 
    proc ::atos_ocr_tools::test { visuNo } {
 
    }
 
 
+
    proc ::atos_ocr_tools::workimage { visuNo } {
 
-      global color
+      global panneau color
 
       set setup    $::atos_gui::frame(ocr_setup)
       set datetime $::atos_gui::frame(datetime)
@@ -255,26 +286,34 @@ namespace eval ::atos_ocr_tools {
           buf$bufNo savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0]
 
           switch $box {
-             "Black Box" {
-               set err [catch {set result [exec jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8]} msg]
+             "KIWI-OSD" {
+               set err [catch {
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi) ocr.jpg"]
+               } msg]
              }
              "TIM-10 small font" -
              "TIM-10 big font" {
-               set err [catch {set result [exec gocr -C \"0-9\" -f UTF8 ocr.jpg]} msg]
+               set err [catch {
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) ocr.jpg"]
+               } msg]
              }
              "IOTA-VTI" {
+               # Deentrelace l'image
+               set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
+               # Extrait l'OCR de l'image paire
                set err [catch {
-                  set result [exec convert ocr.jpg -roll +0+0 -sample 100%x50% -resize 100%x200% -sharpen 1.0x1.0 ocr_even.jpg]
-                  set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr_even.jpg]
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 0]"]
                } msg_even]
+               # Extrait l'OCR de l'image impaire
                set err [catch {
-                  set result [exec convert ocr.jpg -roll +0+1 -sample 100%x50% -resize 100%x200% -sharpen 1.0x1.0 ocr_odd.jpg]
-                  set result [exec gocr -d 6 -C \"0-9:\" -f UTF8 ocr_odd.jpg]
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 1]"]
                } msg_odd]
                set msg "\n$msg_even\n$msg_odd"
              }
              default {
-               set err [catch {set result [exec gocr -C \"0-9:\" -f UTF8 ocr.jpg]} msg]
+               set err [catch {
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_default) ocr.jpg"]
+               } msg]
              }
           }
 

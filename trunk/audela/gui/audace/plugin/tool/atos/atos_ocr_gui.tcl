@@ -485,7 +485,7 @@ namespace eval ::atos_ocr_gui {
 
                  #--- Cree un spinbox
                  spinbox $ocr.incrust.spin -font $atosconf(font,courier_10) -fg $color(blue) \
-                         -value [ list "IOTA-VTI" "TIM-10 small font" "TIM-10 big font" "Black Box"] -width 10 -state readonly
+                         -value [ list "IOTA-VTI" "TIM-10 small font" "TIM-10 big font" "KIWI-OSD"] -width 10 -state readonly
                  pack  $ocr.incrust.spin -in $ocr.incrust -side left -anchor w 
 
               #--- Cree un frame

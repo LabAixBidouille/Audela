@@ -38,12 +38,10 @@ namespace eval ::atos_setup {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,free_space) ] }               { set ::atos::parametres(atos,$visuNo,free_space)               "500" }
       if { ! [ info exists ::atos::parametres(atos,$visuNo,dir_prj) ] }                  { set ::atos::parametres(atos,$visuNo,dir_prj)                  "" }
 
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_vti) ] } { set ::atos::parametres(atos,$visuNo,exec_convert_vti) "convert -sample 100%x50% -resize 100%x200% -sharpen 1.0x1.0" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti) ] }     { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_tim) ] } { set ::atos::parametres(atos,$visuNo,exec_convert_tim) "convert -sharpen 1.0x1.0" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim) ] }     { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_bb)  ] } { set ::atos::parametres(atos,$visuNo,exec_convert_bb)  "" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_bb)  ] }     { set ::atos::parametres(atos,$visuNo,exec_ocr_bb)      "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_default) ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_default)  "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)      "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)      "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)    ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
    }
 
    #
@@ -262,25 +260,6 @@ namespace eval ::atos_setup {
                label $f0.frame3.dir_prj.frm.lab -text "$caption(atos_setup,dir_prj)"
                pack $f0.frame3.dir_prj.frm.lab -side right -padx 5 -pady 0
 
-         #--- Frame pour l'en-tete FITS
-         frame $f0.frame3.en-tete -borderwidth 0
-         pack $f0.frame3.en-tete -side top -fill both -expand 1 -padx 5 -pady 5
-
-            #--- Label de l'en-tete FITS
-            label $f0.frame3.en-tete.lab -text $caption(atos_setup,en-tete_fits)
-            pack $f0.frame3.en-tete.lab -side left -padx 6
-
-            #--- Bouton d'acces aux mots cles
-            button $f0.frame3.en-tete.but -text $caption(atos_setup,mots_cles) \
-               -command "::keyword::run $visuNo ::conf(atos,keywordConfigName)"
-            pack $f0.frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
-
-            #--- Label du nom de la configuration de l'en-tete FITS
-            entry $f0.frame3.en-tete.labNom \
-               -state readonly -takefocus 0 -textvariable ::conf(atos,keywordConfigName) -justify center
-            pack $f0.frame3.en-tete.labNom -side left -padx 6
-
-
          #--- Frame pour le commentaire 1
          frame $f0.frame3.frame4 -borderwidth 0
          pack $f0.frame3.frame4 -side top -fill both -expand 1 -padx 5 -pady 2
@@ -357,16 +336,21 @@ namespace eval ::atos_setup {
          frame $f1.frame3.ocr -borderwidth 0
          pack $f1.frame3.ocr -side top -fill both -expand 1
 
+            frame $f1.frame3.ocr.def -borderwidth 0
+            pack $f1.frame3.ocr.def -side top -pady 5
+               button $f1.frame3.ocr.def.but -text "test" -borderwidth 1 -command "" -state disabled
+               pack $f1.frame3.ocr.def.but -side right -padx 5 -pady 0 -ipadx 10
+               entry $f1.frame3.ocr.def.value -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_default)
+               pack $f1.frame3.ocr.def.value -side right -padx 1 -pady 1
+               label $f1.frame3.ocr.def.lab -text "Default:" -anchor e -width 8
+               pack $f1.frame3.ocr.def.lab -side right -padx 5 -pady 2
+
             frame $f1.frame3.ocr.vti -borderwidth 0
             pack $f1.frame3.ocr.vti -side top -pady 5
                button $f1.frame3.ocr.vti.but -text "test" -borderwidth 1 -command "" -state disabled
                pack $f1.frame3.ocr.vti.but -side right -padx 5 -pady 0 -ipadx 10
-               frame $f1.frame3.ocr.vti.value -borderwidth 0
-               pack $f1.frame3.ocr.vti.value -side right 
-                  entry $f1.frame3.ocr.vti.value.c -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_vti)
-                  pack $f1.frame3.ocr.vti.value.c -side top -padx 1 -pady 1
-                  entry $f1.frame3.ocr.vti.value.o -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_vti)
-                  pack $f1.frame3.ocr.vti.value.o -side top -padx 1 -pady 1
+               entry $f1.frame3.ocr.vti.value -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_vti)
+               pack $f1.frame3.ocr.vti.value -side right -padx 1 -pady 1
                label $f1.frame3.ocr.vti.lab -text "IOTA-VTI:" -anchor e -width 8
                pack $f1.frame3.ocr.vti.lab -side right -padx 5 -pady 2
 
@@ -374,27 +358,19 @@ namespace eval ::atos_setup {
             pack $f1.frame3.ocr.tim -side top -pady 5
                button $f1.frame3.ocr.tim.but -text "test" -borderwidth 1 -command "" -state disabled
                pack $f1.frame3.ocr.tim.but -side right -padx 5 -pady 0 -ipadx 10
-               frame $f1.frame3.ocr.tim.value -borderwidth 0
-               pack $f1.frame3.ocr.tim.value -side right 
-                  entry $f1.frame3.ocr.tim.value.c -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_tim)
-                  pack $f1.frame3.ocr.tim.value.c -side top -padx 1 -pady 1
-                  entry $f1.frame3.ocr.tim.value.o -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_tim)
-                  pack $f1.frame3.ocr.tim.value.o -side top -padx 1 -pady 1
+               entry $f1.frame3.ocr.tim.value -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_tim)
+               pack $f1.frame3.ocr.tim.value -side right -padx 1 -pady 1
                label $f1.frame3.ocr.tim.lab -text "TIM-10:" -anchor e -width 8
                pack $f1.frame3.ocr.tim.lab -side right -padx 5 -pady 2
 
-            frame $f1.frame3.ocr.bb -borderwidth 0
-            pack $f1.frame3.ocr.bb -side top -pady 5
-               button $f1.frame3.ocr.bb.but -text "test" -borderwidth 1 -command "" -state disabled
-               pack $f1.frame3.ocr.bb.but -side right -padx 5 -pady 0 -ipadx 10
-               frame $f1.frame3.ocr.bb.value -borderwidth 0
-               pack $f1.frame3.ocr.bb.value -side right 
-                  entry $f1.frame3.ocr.bb.value.c -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_bb)
-                  pack $f1.frame3.ocr.bb.value.c -side top -padx 1 -pady 1
-                  entry $f1.frame3.ocr.bb.value.o -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_bb)
-                  pack $f1.frame3.ocr.bb.value.o -side top -padx 1 -pady 1
-               label $f1.frame3.ocr.bb.lab -text "Blackbox:" -anchor e -width 8
-               pack $f1.frame3.ocr.bb.lab -side right -padx 5 -pady 2
+            frame $f1.frame3.ocr.kiwi -borderwidth 0
+            pack $f1.frame3.ocr.kiwi -side top -pady 5
+               button $f1.frame3.ocr.kiwi.but -text "test" -borderwidth 1 -command "" -state disabled
+               pack $f1.frame3.ocr.kiwi.but -side right -padx 5 -pady 0 -ipadx 10
+               entry $f1.frame3.ocr.kiwi.value -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)
+               pack $f1.frame3.ocr.kiwi.value -side right -padx 1 -pady 1
+               label $f1.frame3.ocr.kiwi.lab -text "Kiwi-OSD:" -anchor e -width 8
+               pack $f1.frame3.ocr.kiwi.lab -side right -padx 5 -pady 2
 
       #--- Frame pour l'onglet DEMO
       frame $f2.frame3 -borderwidth 1 -relief raise
