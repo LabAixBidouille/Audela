@@ -1626,7 +1626,7 @@ namespace eval ::atos_analysis_gui {
    proc ::atos_analysis_gui::generer { visuNo } {
 
       if {![info exists ::atos_analysis_gui::occ_obj]} {
-         tk_messageBox -message "Veuillez entrer le nom d'un objet occulteur 0" -type ok
+         tk_messageBox -message "Veuillez entrer le nom d'un objet occulteur" -type ok
          return
       }
       if {![info exists ::atos_analysis_gui::occ_date]} {
@@ -2629,13 +2629,13 @@ catch {
       
       set nbl [llength $text1]
       if {$nbl == 1} {
-         set res [tk_messageBox -message "L'appel au serveur d'ephemerides Miriade a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
+         set res [tk_messageBox -message "L'appel au serveur d'ephemerides Miriade a echouer.\nVerifier le nom de l'objet.\nLa commande est affichee dans la console" -type ok]
          ::console::affiche_erreur "CMD MIRIADE=$cmd1\n"
          return      
       }
       set nbl [llength $text5]
       if {$nbl == 1} {
-         set res [tk_messageBox -message "L'appel au serveur d'ephemerides Miriade a echouer.\nVerifier le nom de l'objet.\nLa commande s'affiche dans la console" -type ok]
+         set res [tk_messageBox -message "L'appel au serveur d'ephemerides Miriade a echouer.\nVerifier le nom de l'objet.\nLa commande est affichee dans la console" -type ok]
          ::console::affiche_erreur "CMD MIRIADE=$cmd5\n"
          return      
       }
@@ -2647,12 +2647,16 @@ catch {
          puts $chan $line
       }
       close $chan
+
       set file [file join $::atos_analysis_gui::prj_dir "miriade.5"]
       set chan [open $file w]
       foreach line $text5 {
          puts $chan $line
       }
       close $chan
+
+      # Analyse les retours de Miriade a la recherche d'une erreur
+
 
       # Recupere la position de l'observateur
       foreach t $text1 {

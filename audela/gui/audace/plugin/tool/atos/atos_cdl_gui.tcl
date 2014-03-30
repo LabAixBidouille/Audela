@@ -191,30 +191,24 @@ namespace eval ::atos_cdl_gui {
         if { $::atos_tools::traitement == "fits" } { 
 
              #--- Cree un frame pour la gestion de fichier
-             frame $frm.form \
-                   -borderwidth 1 -relief raised -cursor arrow
-             pack $frm.form \
-                  -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+             frame $frm.form -borderwidth 1 -relief raised -cursor arrow
+             pack $frm.form -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
                #--- Cree un frame pour la gestion de fichier
-               frame $frm.form.butopen \
-                     -borderwidth 1 -cursor arrow
-               pack $frm.form.butopen \
-                    -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
+               frame $frm.form.butopen -borderwidth 1 -cursor arrow
+               pack $frm.form.butopen -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
 
                     #--- Creation du bouton open
                     button $frm.form.butopen.open \
-                       -text "open" -borderwidth 2 \
+                       -text "Open" -borderwidth 2 \
                        -command "::atos_cdl_tools::open_flux $visuNo"
                     pack $frm.form.butopen.open \
                        -in $frm.form.butopen -side left -anchor e \
                        -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
                #--- Cree un frame pour la gestion de fichier
-               frame $frm.form.field \
-                     -borderwidth 1 -cursor arrow
-               pack $frm.form.field \
-                    -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
+               frame $frm.form.field -borderwidth 1 -cursor arrow
+               pack $frm.form.field -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
 
                     #--- Cree un frame pour afficher les intitules
                     set intitle [frame $frm.form.field.l -borderwidth 0]
@@ -222,7 +216,7 @@ namespace eval ::atos_cdl_gui {
 
                       #--- Cree un label pour
                       label $intitle.destdir -font $atosconf(font,courier_10) -padx 3 \
-                            -text "repertoire des images"
+                            -text "Repertoire des images"
                       pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
 
                       #--- Cree un label pour
@@ -271,7 +265,6 @@ namespace eval ::atos_cdl_gui {
              pack $frm.open \
                   -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-
              #--- Creation du bouton open
              button $frm.open.but_open \
                 -text "open" -borderwidth 2 \
@@ -287,7 +280,6 @@ namespace eval ::atos_cdl_gui {
              pack $frm.open.but_select \
                 -side left -anchor e \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
 
              #--- Cree un label pour le chemin de l'AVI
              entry $frm.open.avipath 

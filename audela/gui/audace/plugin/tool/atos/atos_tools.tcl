@@ -17,7 +17,6 @@ namespace eval ::atos_tools {
    variable frame_begin
    variable frame_end
 
-
    variable scrollbar
 
    variable traitement
@@ -65,8 +64,6 @@ namespace eval ::atos_tools {
 
 
 
-
-
    #
    # atos_tools::select
    # Selectionne le ou les fichiers a ouvrir
@@ -82,19 +79,22 @@ namespace eval ::atos_tools {
 
 
 
-
-
    #
    # atos_tools::quick_prev_image
    # Retour Rapide
    #
    proc ::atos_tools::quick_prev_image { visuNo } {
 
-      if { $::atos_tools::traitement=="fits" } {
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
+      if { $::atos_tools::traitement == "fits" } {
          ::atos_tools_fits::quick_prev_image $visuNo
       }
 
-      if { $::atos_tools::traitement=="avi" }  {
+      if { $::atos_tools::traitement == "avi" }  {
          ::atos_tools_avi::quick_prev_image
       }
 
@@ -106,18 +106,22 @@ namespace eval ::atos_tools {
 
 
 
-
    #
    # atos_tools::quick_next_image
    # avance rapide
    #
    proc ::atos_tools::quick_next_image { visuNo } {
 
-      if { $::atos_tools::traitement=="fits" } {
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
+      if { $::atos_tools::traitement == "fits" } {
          ::atos_tools_fits::quick_next_image $visuNo
       }
 
-      if { $::atos_tools::traitement=="avi" }  {
+      if { $::atos_tools::traitement == "avi" }  {
          ::atos_tools_avi::quick_next_image
       }
 
@@ -129,28 +133,32 @@ namespace eval ::atos_tools {
 
 
 
-
    #
    # atos_tools::next_image
    # Passe a l image suivante
    #
    proc ::atos_tools::next_image { visuNo {novisu ""}} {
 
-      if { $::atos_tools::traitement=="fits" } {
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
+      if { $::atos_tools::traitement == "fits" } {
          ::atos_tools_fits::next_image $visuNo $novisu
       }
 
-      if { $::atos_tools::traitement=="avi" }  {
+      if { $::atos_tools::traitement == "avi" }  {
          ::atos_tools_avi::next_image
       }
 
-      if { $novisu=="" } {
+      if { $novisu == "" } {
          visu$visuNo disp
       }
+
       set ::atos_tools::scrollbar $::atos_tools::cur_idframe
 
    }
-
 
 
 
@@ -160,6 +168,11 @@ namespace eval ::atos_tools {
    # Passe a l image precedente
    #
    proc ::atos_tools::prev_image { visuNo } {
+
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       if { $::atos_tools::traitement=="fits" } {
          ::atos_tools_fits::prev_image $visuNo
@@ -201,8 +214,10 @@ namespace eval ::atos_tools {
 
       set posmin $::atos_gui::frame(posmin)
 
-      $posmin delete 0 end
-      $posmin insert 0 [expr int($::atos_tools::cur_idframe)]
+      if {[info exists ::atos_tools::cur_idframe]} {
+         $posmin delete 0 end
+         $posmin insert 0 [expr int($::atos_tools::cur_idframe)]
+      }
 
    }
 
@@ -213,8 +228,10 @@ namespace eval ::atos_tools {
 
       set posmax $::atos_gui::frame(posmax)
 
-      $posmax delete 0 end
-      $posmax insert 0 [expr int($::atos_tools::cur_idframe)]
+      if {[info exists ::atos_tools::cur_idframe]} {
+         $posmax delete 0 end
+         $posmax insert 0 [expr int($::atos_tools::cur_idframe)]
+      }
 
    }
 
@@ -223,28 +240,31 @@ namespace eval ::atos_tools {
    #
    proc ::atos_tools::crop { visuNo } {
 
+      if {![info exists ::atos_tools::nb_open_frames]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
       set scrollbar $::atos_gui::frame(scrollbar)
       set posmin    $::atos_gui::frame(posmin)
       set posmax    $::atos_gui::frame(posmax)
 
-      set fmin  [$posmin get]
-      set fmax  [$posmax get]
+      set fmin [$posmin get]
+      set fmax [$posmax get]
 
-      if { $fmin == "" } {
-         set fmin 1
-      }
-      if { $fmax == "" } {
-         set fmax $::atos_tools::nb_open_frames
-      }
+      if { $fmin == "" } { set fmin 1 }
+      if { $fmax == "" } { set fmax $::atos_tools::nb_open_frames }
+
       set ::atos_tools::nb_frames   [expr int($fmax-$fmin+1)]
       set ::atos_tools::frame_begin $fmin
       set ::atos_tools::frame_end   $fmax
       set ::atos_tools::cur_idframe $fmin
-      ::console::affiche_resultat "CROP! \n"
-      ::console::affiche_resultat "cur_idframe  $::atos_tools::cur_idframe \n"
-      ::console::affiche_resultat "frame_begin  $::atos_tools::frame_begin \n"
-      ::console::affiche_resultat "frame_end    $::atos_tools::frame_end   \n"
-      ::console::affiche_resultat "nb_frames    $::atos_tools::nb_frames   \n"
+
+      #::console::affiche_resultat "CROP! \n"
+      #::console::affiche_resultat "cur_idframe  $::atos_tools::cur_idframe \n"
+      #::console::affiche_resultat "frame_begin  $::atos_tools::frame_begin \n"
+      #::console::affiche_resultat "frame_end    $::atos_tools::frame_end   \n"
+      #::console::affiche_resultat "nb_frames    $::atos_tools::nb_frames   \n"
 
       $scrollbar configure -from $fmin
       $scrollbar configure -to $fmax
@@ -262,12 +282,17 @@ namespace eval ::atos_tools {
    #
    proc ::atos_tools::uncrop { visuNo } {
 
+      if {![info exists ::atos_tools::nb_open_frames]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
       set scrollbar $::atos_gui::frame(scrollbar)
       set posmin    $::atos_gui::frame(posmin)
       set posmax    $::atos_gui::frame(posmax)
 
-      set fmin  1
-      set fmax  $::atos_tools::nb_open_frames
+      set fmin 1
+      set fmax $::atos_tools::nb_open_frames
 
       set ::atos_tools::nb_frames   [expr int($fmax-$fmin+1)]
       set ::atos_tools::frame_begin $fmin
@@ -284,6 +309,7 @@ namespace eval ::atos_tools {
 
       visu$visuNo disp
       set ::atos_tools::scrollbar $::atos_tools::cur_idframe
+
    }
 
 
@@ -294,8 +320,9 @@ namespace eval ::atos_tools {
    # mouvement de la barre d avancement
    #
    proc ::atos_tools::slide { visuNo idframe } {
-      #::console::affiche_resultat "idframe  : $idframe"
+
       ::atos_tools::set_frame $visuNo [expr int($idframe)]
+
    }
 
 
@@ -327,8 +354,6 @@ namespace eval ::atos_tools {
       if { $numerror == "1" } {
          set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
       }
-
-      ::console::affiche_resultat $audace(rep_images)
 
       $This delete 0 end
       $This insert 0 $filename
