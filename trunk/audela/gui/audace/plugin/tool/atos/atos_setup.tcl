@@ -28,16 +28,22 @@ namespace eval ::atos_setup {
    proc ::atos_setup::initToConf { visuNo } {
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                   { set ::atos::parametres(atos,$visuNo,messages)                  "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }              { set ::atos::parametres(atos,$visuNo,save_file_log)             "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }           { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)          "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] }   { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)  "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }      { set ::atos::parametres(atos,$visuNo,verifier_index_depart)     "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,mode_debug) ] }                 { set ::atos::parametres(atos,$visuNo,mode_debug)                "0" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,screen_refresh) ] }             { set ::atos::parametres(atos,$visuNo,screen_refresh)            "1000" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr) ] }                   { set ::atos::parametres(atos,$visuNo,exec_ocr)                  "jpegtopnm ocr.jpg | gocr -C 0-9 -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,free_space) ] }                 { set ::atos::parametres(atos,$visuNo,free_space)                "500" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,dir_prj) ] }                    { set ::atos::parametres(atos,$visuNo,dir_prj)                   "" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                 { set ::atos::parametres(atos,$visuNo,messages)                 "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }            { set ::atos::parametres(atos,$visuNo,save_file_log)            "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }         { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)         "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] } { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }    { set ::atos::parametres(atos,$visuNo,verifier_index_depart)    "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,mode_debug) ] }               { set ::atos::parametres(atos,$visuNo,mode_debug)               "0" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,screen_refresh) ] }           { set ::atos::parametres(atos,$visuNo,screen_refresh)           "1000" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,free_space) ] }               { set ::atos::parametres(atos,$visuNo,free_space)               "500" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,dir_prj) ] }                  { set ::atos::parametres(atos,$visuNo,dir_prj)                  "" }
+
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_vti) ] } { set ::atos::parametres(atos,$visuNo,exec_convert_vti) "convert -sample 100%x50% -resize 100%x200% -sharpen 1.0x1.0" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti) ] }     { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_tim) ] } { set ::atos::parametres(atos,$visuNo,exec_convert_tim) "convert -sharpen 1.0x1.0" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim) ] }     { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_bb)  ] } { set ::atos::parametres(atos,$visuNo,exec_convert_bb)  "" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_bb)  ] }     { set ::atos::parametres(atos,$visuNo,exec_ocr_bb)      "gocr -d 6 -C \"0-9:\" -f UTF8" }
    }
 
    #
@@ -206,8 +212,6 @@ namespace eval ::atos_setup {
          set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
       }
 
-      ::console::affiche_resultat $audace(rep_images)
-
       $This delete 0 end
       $This insert 0 $filename
 
@@ -219,125 +223,182 @@ namespace eval ::atos_setup {
    #
    proc ::atos_setup::fillConfigPage { frm visuNo } {
 
-      global caption panneau
+      global caption panneau atosconf
 
       #--- Retourne l'item de la camera associee a la visu
       set camItem [ ::confVisu::getCamItem $visuNo ]
       set frms $panneau(atos,$visuNo,atos_setup)
 
-      #--- Frame pour les commentaires
-      frame $frms.frame3 -borderwidth 1 -relief raise
+      #--- Cree des onglets
+      set onglets [frame $frms.onglets -borderwidth 0 -cursor arrow -relief groove]
+      pack $onglets -in $frms -side top -expand 0 -fill x -fill y -padx 10 -pady 5
 
-         #--- Frame pour l'en-tete FITS
-         frame $frms.frame3.en-tete -borderwidth 0
+         pack [ttk::notebook $onglets.nb]
+         set f0  [frame $onglets.nb.f0]
+         set f1  [frame $onglets.nb.f1]
+         set f2  [frame $onglets.nb.f2]
 
-            #--- Label de l'en-tete FITS
-            label $frms.frame3.en-tete.lab -text $caption(atos_setup,en-tete_fits)
-            pack $frms.frame3.en-tete.lab -side left -padx 6
+         $onglets.nb add $f0  -text "Preferences"
+         $onglets.nb add $f1  -text "OCR"
+         $onglets.nb add $f2  -text "Demo"
+         $onglets.nb select $f0
+         ttk::notebook::enableTraversal $onglets.nb
 
-            #--- Bouton d'acces aux mots cles
-            button $frms.frame3.en-tete.but -text $caption(atos_setup,mots_cles) \
-               -command "::keyword::run $visuNo ::conf(atos,keywordConfigName)"
-            pack $frms.frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
-
-            #--- Label du nom de la configuration de l'en-tete FITS
-            entry $frms.frame3.en-tete.labNom \
-               -state readonly -takefocus 0 -textvariable ::conf(atos,keywordConfigName) -justify center
-            pack $frms.frame3.en-tete.labNom -side left -padx 6
-
-         pack $frms.frame3.en-tete -side top -fill both -expand 1
-
-         #--- Frame pour le commentaire 1
-         frame $frms.frame3.frame4 -borderwidth 0
-
-            #--- Cree le checkbutton pour le commentaire 1
-            frame $frms.frame3.frame4.frame8 -borderwidth 0
-               checkbutton $frms.frame3.frame4.frame8.check1 -highlightthickness 0 \
-                  -text "$caption(atos_setup,texte1)" -variable ::atos::parametres(atos,$visuNo,messages)
-               pack $frms.frame3.frame4.frame8.check1 -side right -padx 5 -pady 0
-            pack $frms.frame3.frame4.frame8 -side left
-
-         pack $frms.frame3.frame4 -side top -fill both -expand 1
-
-         #--- Frame pour le commentaire 4 : verifier_ecraser_fichier
-         frame $frms.frame3.frame7 -borderwidth 0
-
-            #--- Cree le checkbutton pour le commentaire 4
-            frame $frms.frame3.frame7.frame12 -borderwidth 0
-               checkbutton $frms.frame3.frame7.frame12.check3 -highlightthickness 0 \
-                  -text "$caption(atos_setup,texte4)" -variable ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
-               pack $frms.frame3.frame7.frame12.check3 -side right -padx 5 -pady 0
-            pack $frms.frame3.frame7.frame12 -side left
-
-         pack $frms.frame3.frame7 -side top -fill both -expand 1
-
-         #--- Frame pour le commentaire 5 : mode_debug
-         frame $frms.frame3.frame9 -borderwidth 0
-
-            #--- Cree le checkbutton pour le commentaire 5
-            frame $frms.frame3.frame9.frame12 -borderwidth 0
-               checkbutton $frms.frame3.frame9.frame12.check3 -highlightthickness 0 \
-                  -text "$caption(atos_setup,texte6)" -variable ::atos::parametres(atos,$visuNo,mode_debug)
-               pack $frms.frame3.frame9.frame12.check3 -side right -padx 5 -pady 0
-            pack $frms.frame3.frame9.frame12 -side left
-
-         pack $frms.frame3.frame9 -side top -fill both -expand 1
-
-         #--- Frame pour le : screen_refresh
-         frame $frms.frame3.screen_refresh -borderwidth 0
-
-            frame $frms.frame3.screen_refresh.frm -borderwidth 0
-               entry $frms.frame3.screen_refresh.frm.value -width 5 -textvariable ::atos::parametres(atos,$visuNo,screen_refresh)
-               pack $frms.frame3.screen_refresh.frm.value -side right -padx 5 -pady 0
-               label $frms.frame3.screen_refresh.frm.lab -text "$caption(atos_setup,screen_refresh)"
-               pack $frms.frame3.screen_refresh.frm.lab -side right -padx 5 -pady 0
-
-            pack $frms.frame3.screen_refresh.frm -side left
-
-         pack $frms.frame3.screen_refresh -side top -fill both -expand 1
-
-         #--- Frame pour le : exec_ocr
-         frame $frms.frame3.ocr -borderwidth 0
-
-            frame $frms.frame3.ocr.frm -borderwidth 0
-               button $frms.frame3.ocr.frm.but -text "test" -borderwidth 1 -command ""
-               pack $frms.frame3.ocr.frm.but -side right -padx 5 -pady 0 -ipadx 10
-               entry $frms.frame3.ocr.frm.value -width 40 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr)
-               pack $frms.frame3.ocr.frm.value -side right -padx 5 -pady 0
-               label $frms.frame3.ocr.frm.lab -text "$caption(atos_setup,exec_ocr)"
-               pack $frms.frame3.ocr.frm.lab -side right -padx 5 -pady 0
-
-            pack $frms.frame3.ocr.frm -side left
-
-         pack $frms.frame3.ocr -side top -fill both -expand 1
-
-         #--- Frame pour le : free_space
-         frame $frms.frame3.free_space -borderwidth 0
-
-            frame $frms.frame3.free_space.frm -borderwidth 0
-               entry $frms.frame3.free_space.frm.value -width 5 -textvariable ::atos::parametres(atos,$visuNo,free_space)
-               pack $frms.frame3.free_space.frm.value -side right -padx 5 -pady 0
-               label $frms.frame3.free_space.frm.lab -text "$caption(atos_setup,free_space)"
-               pack $frms.frame3.free_space.frm.lab -side right -padx 5 -pady 0
-
-            pack $frms.frame3.free_space.frm -side left
-
-         pack $frms.frame3.free_space -side top -fill both -expand 1
+      #--- Frame pour l'onglet preferences
+      frame $f0.frame3 -borderwidth 1 -relief raise
+      pack $f0.frame3 -side top -fill both -expand 1
 
          #--- Frame pour le : repertoire projet
-         frame $frms.frame3.dir_prj -borderwidth 0
+         frame $f0.frame3.dir_prj -borderwidth 0
+         pack $f0.frame3.dir_prj -side top -fill both -expand 1 -padx 5 -pady 5
 
-            frame $frms.frame3.dir_prj.frm -borderwidth 0
-               entry $frms.frame3.dir_prj.frm.value -width 40 -textvariable ::atos::parametres(atos,$visuNo,dir_prj)
-               pack $frms.frame3.dir_prj.frm.value -side right -padx 5 -pady 0
-               button $frms.frame3.dir_prj.frm.but -text "..." -borderwidth 1 -command "::atos_setup::chgdir $frms.frame3.dir_prj.frm.value"
-               pack $frms.frame3.dir_prj.frm.but -side right -padx 2 -pady 0
-               label $frms.frame3.dir_prj.frm.lab -text "$caption(atos_setup,dir_prj)"
-               pack $frms.frame3.dir_prj.frm.lab -side right -padx 5 -pady 0
+            frame $f0.frame3.dir_prj.frm -borderwidth 0
+            pack $f0.frame3.dir_prj.frm -side left
 
-            pack $frms.frame3.dir_prj.frm -side left
+               button $f0.frame3.dir_prj.frm.but -text "..." -borderwidth 1 -command "::atos_setup::chgdir $frms.frame3.dir_prj.frm.value"
+               pack $f0.frame3.dir_prj.frm.but -side right -padx 2 -pady 0
+               entry $f0.frame3.dir_prj.frm.value -width 40 -textvariable ::atos::parametres(atos,$visuNo,dir_prj)
+               pack $f0.frame3.dir_prj.frm.value -side right -padx 5 -pady 0
+               label $f0.frame3.dir_prj.frm.lab -text "$caption(atos_setup,dir_prj)"
+               pack $f0.frame3.dir_prj.frm.lab -side right -padx 5 -pady 0
 
-         pack $frms.frame3.dir_prj -side top -fill both -expand 1
+         #--- Frame pour l'en-tete FITS
+         frame $f0.frame3.en-tete -borderwidth 0
+         pack $f0.frame3.en-tete -side top -fill both -expand 1 -padx 5 -pady 5
+
+            #--- Label de l'en-tete FITS
+            label $f0.frame3.en-tete.lab -text $caption(atos_setup,en-tete_fits)
+            pack $f0.frame3.en-tete.lab -side left -padx 6
+
+            #--- Bouton d'acces aux mots cles
+            button $f0.frame3.en-tete.but -text $caption(atos_setup,mots_cles) \
+               -command "::keyword::run $visuNo ::conf(atos,keywordConfigName)"
+            pack $f0.frame3.en-tete.but -side left -padx 6 -pady 10 -ipadx 20
+
+            #--- Label du nom de la configuration de l'en-tete FITS
+            entry $f0.frame3.en-tete.labNom \
+               -state readonly -takefocus 0 -textvariable ::conf(atos,keywordConfigName) -justify center
+            pack $f0.frame3.en-tete.labNom -side left -padx 6
+
+
+         #--- Frame pour le commentaire 1
+         frame $f0.frame3.frame4 -borderwidth 0
+         pack $f0.frame3.frame4 -side top -fill both -expand 1 -padx 5 -pady 2
+
+            #--- Cree le checkbutton pour le commentaire 1
+            frame $f0.frame3.frame4.frame8 -borderwidth 0
+               checkbutton $f0.frame3.frame4.frame8.check1 -highlightthickness 0 \
+                  -text "$caption(atos_setup,texte1)" -variable ::atos::parametres(atos,$visuNo,messages)
+               pack $f0.frame3.frame4.frame8.check1 -side right -padx 5 -pady 0
+            pack $f0.frame3.frame4.frame8 -side left
+
+
+         #--- Frame pour le commentaire 4 : verifier_ecraser_fichier
+         frame $f0.frame3.frame7 -borderwidth 0
+         pack $f0.frame3.frame7 -side top -fill both -expand 1 -padx 5 -pady 2
+
+            #--- Cree le checkbutton pour le commentaire 4
+            frame $f0.frame3.frame7.frame12 -borderwidth 0
+               checkbutton $f0.frame3.frame7.frame12.check3 -highlightthickness 0 \
+                  -text "$caption(atos_setup,texte4)" -variable ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
+               pack $f0.frame3.frame7.frame12.check3 -side right -padx 5 -pady 0
+            pack $f0.frame3.frame7.frame12 -side left
+
+
+         #--- Frame pour le commentaire 5 : mode_debug
+         frame $f0.frame3.frame9 -borderwidth 0
+         pack $f0.frame3.frame9 -side top -fill both -expand 1 -padx 5 -pady 2
+
+            #--- Cree le checkbutton pour le commentaire 5
+            frame $f0.frame3.frame9.frame12 -borderwidth 0
+               checkbutton $f0.frame3.frame9.frame12.check3 -highlightthickness 0 \
+                  -text "$caption(atos_setup,texte6)" -variable ::atos::parametres(atos,$visuNo,mode_debug)
+               pack $f0.frame3.frame9.frame12.check3 -side right -padx 5 -pady 0
+            pack $f0.frame3.frame9.frame12 -side left
+
+
+         #--- Frame pour le : screen_refresh
+         frame $f0.frame3.screen_refresh -borderwidth 0
+         pack $f0.frame3.screen_refresh -side top -fill both -expand 1 -padx 5 -pady 5
+
+            frame $f0.frame3.screen_refresh.frm -borderwidth 0
+            pack $f0.frame3.screen_refresh.frm -side left
+
+               label $f0.frame3.screen_refresh.frm.unit -text "ms"
+               pack $f0.frame3.screen_refresh.frm.unit -side right -padx 1 -pady 0
+               entry $f0.frame3.screen_refresh.frm.value -width 5 -textvariable ::atos::parametres(atos,$visuNo,screen_refresh)
+               pack $f0.frame3.screen_refresh.frm.value -side right -padx 5 -pady 0
+               label $f0.frame3.screen_refresh.frm.lab -text "$caption(atos_setup,screen_refresh)"
+               pack $f0.frame3.screen_refresh.frm.lab -side right -padx 5 -pady 0
+
+         #--- Frame pour le : free_space
+         frame $f0.frame3.free_space -borderwidth 0
+         pack $f0.frame3.free_space -side top -fill both -expand 1 -padx 5 -pady 5
+
+            frame $f0.frame3.free_space.frm -borderwidth 0
+            pack $f0.frame3.free_space.frm -side left
+
+               label $f0.frame3.free_space.frm.unit -text "Mo"
+               pack $f0.frame3.free_space.frm.unit -side right -padx 1 -pady 0
+               entry $f0.frame3.free_space.frm.value -width 5 -textvariable ::atos::parametres(atos,$visuNo,free_space)
+               pack $f0.frame3.free_space.frm.value -side right -padx 5 -pady 0
+               label $f0.frame3.free_space.frm.lab -text "$caption(atos_setup,free_space)"
+               pack $f0.frame3.free_space.frm.lab -side right -padx 5 -pady 0
+
+      #--- Frame pour l'onglet OCR
+      frame $f1.frame3 -borderwidth 1 -relief raise
+      pack $f1.frame3 -side top -fill both -expand 1
+
+         #--- Frame pour la label
+         label $f1.frame3.lab -text "$caption(atos_setup,exec_ocr)"
+         pack $f1.frame3.lab -side top -padx 5 -pady 10
+
+         #--- Frame pour le : exec_ocr
+         frame $f1.frame3.ocr -borderwidth 0
+         pack $f1.frame3.ocr -side top -fill both -expand 1
+
+            frame $f1.frame3.ocr.vti -borderwidth 0
+            pack $f1.frame3.ocr.vti -side top -pady 5
+               button $f1.frame3.ocr.vti.but -text "test" -borderwidth 1 -command "" -state disabled
+               pack $f1.frame3.ocr.vti.but -side right -padx 5 -pady 0 -ipadx 10
+               frame $f1.frame3.ocr.vti.value -borderwidth 0
+               pack $f1.frame3.ocr.vti.value -side right 
+                  entry $f1.frame3.ocr.vti.value.c -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_vti)
+                  pack $f1.frame3.ocr.vti.value.c -side top -padx 1 -pady 1
+                  entry $f1.frame3.ocr.vti.value.o -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_vti)
+                  pack $f1.frame3.ocr.vti.value.o -side top -padx 1 -pady 1
+               label $f1.frame3.ocr.vti.lab -text "IOTA-VTI:" -anchor e -width 8
+               pack $f1.frame3.ocr.vti.lab -side right -padx 5 -pady 2
+
+            frame $f1.frame3.ocr.tim -borderwidth 0
+            pack $f1.frame3.ocr.tim -side top -pady 5
+               button $f1.frame3.ocr.tim.but -text "test" -borderwidth 1 -command "" -state disabled
+               pack $f1.frame3.ocr.tim.but -side right -padx 5 -pady 0 -ipadx 10
+               frame $f1.frame3.ocr.tim.value -borderwidth 0
+               pack $f1.frame3.ocr.tim.value -side right 
+                  entry $f1.frame3.ocr.tim.value.c -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_tim)
+                  pack $f1.frame3.ocr.tim.value.c -side top -padx 1 -pady 1
+                  entry $f1.frame3.ocr.tim.value.o -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_tim)
+                  pack $f1.frame3.ocr.tim.value.o -side top -padx 1 -pady 1
+               label $f1.frame3.ocr.tim.lab -text "TIM-10:" -anchor e -width 8
+               pack $f1.frame3.ocr.tim.lab -side right -padx 5 -pady 2
+
+            frame $f1.frame3.ocr.bb -borderwidth 0
+            pack $f1.frame3.ocr.bb -side top -pady 5
+               button $f1.frame3.ocr.bb.but -text "test" -borderwidth 1 -command "" -state disabled
+               pack $f1.frame3.ocr.bb.but -side right -padx 5 -pady 0 -ipadx 10
+               frame $f1.frame3.ocr.bb.value -borderwidth 0
+               pack $f1.frame3.ocr.bb.value -side right 
+                  entry $f1.frame3.ocr.bb.value.c -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_bb)
+                  pack $f1.frame3.ocr.bb.value.c -side top -padx 1 -pady 1
+                  entry $f1.frame3.ocr.bb.value.o -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_bb)
+                  pack $f1.frame3.ocr.bb.value.o -side top -padx 1 -pady 1
+               label $f1.frame3.ocr.bb.lab -text "Blackbox:" -anchor e -width 8
+               pack $f1.frame3.ocr.bb.lab -side right -padx 5 -pady 2
+
+      #--- Frame pour l'onglet DEMO
+      frame $f2.frame3 -borderwidth 1 -relief raise
+      pack $f2.frame3 -side top -fill both -expand 1
 
          #--- Frame pour le : repertoire projet
 #         frame $frms.frame3.demo -borderwidth 0
@@ -351,8 +412,6 @@ namespace eval ::atos_setup {
 #
 #         pack $frms.frame3.demo -side top -fill both -expand 1
 
-      # --
-      pack $frms.frame3 -side top -fill both -expand 1
    }
 
 }

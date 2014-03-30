@@ -366,8 +366,7 @@ namespace eval ::atos_extraction {
             pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
 
             #--- Cree un label pour le nb d image
-            label $inbutton.blank -font $atosconf(font,courier_10) \
-                  -text ""
+            label $inbutton.blank -font $atosconf(font,courier_10) -text ""
             pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
         #--- Cree un frame pour  les boutons d action

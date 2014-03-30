@@ -351,6 +351,7 @@ namespace eval ::atos_tools {
       set rep "$audace(rep_images)"
 
       set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $This ]" } msg ]
+
       if { $numerror == "1" } {
          set filename "[ ::cwdWindow::tkplus_chooseDir "[pwd]" $title $This ]"
       }

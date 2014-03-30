@@ -72,12 +72,13 @@
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-        #--- Cree un label pour le titre
-        label $frm.titre -font $atosconf(font,arial_14_b) \
+         #--- Cree un label pour le titre
+         label $frm.titre -font $atosconf(font,arial_14_b) \
               -text "Analyse de la Courbe de lumiere"
-        pack $frm.titre \
+         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
+         #--- Cree des onglets
          set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
          pack $onglets -in $frm -side top -expand 0 -fill x -padx 10 -pady 5
 
@@ -108,8 +109,6 @@
             $onglets.nb add $f11 -text "Rapport"
             $onglets.nb select $f0
             ttk::notebook::enableTraversal $onglets.nb
-
-
 
 
 #---

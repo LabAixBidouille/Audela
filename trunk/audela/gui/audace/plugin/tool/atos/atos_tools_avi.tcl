@@ -241,7 +241,14 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::set_frame { idframe } {
 
-      if {$::atos_tools_avi::log} { ::console::affiche_resultat "$::atos_tools::cur_idframe $::atos_tools::frame_end $::atos_tools::frame_begin\n" }
+      if {![info exists ::atos_tools::nb_open_frames] || $::atos_tools::nb_open_frames == 0} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
+      if {$::atos_tools_avi::log} {
+         ::console::affiche_resultat "$::atos_tools::cur_idframe $::atos_tools::frame_end $::atos_tools::frame_begin\n"
+      }
 
       set nbf [expr $::atos_tools::nb_open_frames * 1.0]
 
@@ -265,10 +272,14 @@ namespace eval ::atos_tools_avi {
       set ::atos_tools::cur_idframe [expr $idframe -1]
 
       ::atos_tools_avi::next_image
-      if {$::atos_tools_avi::log} { ::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n" }
+      if {$::atos_tools_avi::log} {
+         ::console::affiche_resultat "set_frame next_image cur_idframe = $::atos_tools::cur_idframe\n"
+      }
 
       set ::atos_tools::cur_idframe [expr int($idframe)]
-      if {$::atos_tools_avi::log} { ::console::affiche_resultat "set_frame cur_idframe fin = $::atos_tools::cur_idframe\n" }
+      if {$::atos_tools_avi::log} {
+         ::console::affiche_resultat "set_frame cur_idframe fin = $::atos_tools::cur_idframe\n"
+      }
 
    }
 
