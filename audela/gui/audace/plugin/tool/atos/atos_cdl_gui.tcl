@@ -896,6 +896,15 @@ namespace eval ::atos_cdl_gui {
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
            DynamicHelp::add $frm.action.graph_flux_ref -text "Graphe Flux Reference"
            
+           button $frm.action.graph_flux_norm -image .graph\
+              -borderwidth 2 -width 48 -height 48 -compound center \
+              -command "::atos_cdl_tools::graph_flux $visuNo normal"
+           pack $frm.action.graph_flux_norm \
+              -in $frm.action \
+              -side left -anchor w \
+              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.graph_flux_norm -text "Graphe Flux Normalise"
+           
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_cdl_tools::save $visuNo"

@@ -1465,8 +1465,8 @@ namespace eval ::atos_cdl_tools {
                      #gren_info "Verifie\n"
                      return [list $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_xpos) $::atos_cdl_tools::mesure($::atos_tools::cur_idframe,ref_ypos)]
                   }
-                  set idfrmav [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_begin reference]
-                  set idfrmap [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_end   reference]
+                  set idfrmav [ ::atos_cdl_tools::get_idfrmav  $::atos_tools::cur_idframe reference]
+                  set idfrmap [ ::atos_cdl_tools::get_idfrmap  $::atos_tools::cur_idframe reference]
                   if {$log} {::console::affiche_resultat "$idfrmav < $idfrmap"}
                   if { $idfrmav == -1 } {
                      # il faut interpoler par 2 a droite
@@ -1620,6 +1620,7 @@ namespace eval ::atos_cdl_tools {
          }
          "reference" {
             set frm_source $::atos_gui::frame(reference,values) 
+            set select $::atos_gui::frame(reference,buttons).select
             set valid $::atos_gui::frame(reference,buttons).verifier
          }
       }
@@ -1760,6 +1761,18 @@ namespace eval ::atos_cdl_tools {
 
                } else { continue }
 
+            }
+            "normal" {
+               if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
+                   && [info exists ::atos_cdl_tools::mesure($idframe,obj_fint)]} {
+                  set fluxo $::atos_cdl_tools::mesure($idframe,obj_fint)
+               } else { continue }
+               if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
+                   && [info exists ::atos_cdl_tools::mesure($idframe,ref_fint)]} {
+                  set fluxr $::atos_cdl_tools::mesure($idframe,ref_fint)
+               } else { continue }
+               set flux [expr $fluxo/$fluxr * 1000]
+               
             }
             default {
                gren_erreur "ici $idframe $type\n"
