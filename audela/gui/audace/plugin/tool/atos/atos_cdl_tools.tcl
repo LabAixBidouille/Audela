@@ -11,7 +11,6 @@
 
 namespace eval ::atos_cdl_tools {
 
-
    variable obj
    variable ref
    variable delta
@@ -1035,8 +1034,6 @@ namespace eval ::atos_cdl_tools {
    #
    proc ::atos_cdl_tools::start { visuNo } {
 
-      set log 1
-      
       set tt0 [clock clicks -milliseconds]
 
       set frm_info_load    $::atos_gui::frame(info_load)
@@ -1060,15 +1057,17 @@ namespace eval ::atos_cdl_tools {
          return 
       }
 
-      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
-      ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
-      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
-      ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
-      ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
-      ::console::affiche_resultat "methode_suivi  = $::atos_cdl_tools::methode_suivi \n"
-      ::console::affiche_resultat "Binning= $bin \n"
-      ::console::affiche_resultat "Bloc de $sum images \n"
-      
+      if {$::atos_cdl_tools::log} {
+         ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
+         ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
+         ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+         ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
+         ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
+         ::console::affiche_resultat "methode_suivi  = $::atos_cdl_tools::methode_suivi \n"
+         ::console::affiche_resultat "Binning= $bin \n"
+         ::console::affiche_resultat "Bloc de $sum images \n"
+      }
+
       set ::atos_cdl_tools::sortie 0
       set cpt 0
       $frm_start configure -image .stop
@@ -1177,7 +1176,6 @@ namespace eval ::atos_cdl_tools {
       set geometrie $::atos_gui::frame(geometrie)
       set relief [$geometrie.buttons.launch cget -relief]
 
- 
       if {$relief=="raised"} {
 
          ::atos_tools::next_image $visuNo

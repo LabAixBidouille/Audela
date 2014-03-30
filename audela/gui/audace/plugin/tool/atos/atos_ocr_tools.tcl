@@ -19,7 +19,6 @@ namespace eval ::atos_ocr_tools {
    variable timing
 
 
-
    proc ::atos_ocr_tools::select_time { visuNo } {
 
       global color
@@ -383,6 +382,11 @@ namespace eval ::atos_ocr_tools {
 
       global color
 
+      if {![info exists ::atos_tools::nb_frames] || $::atos_tools::nb_frames == 0} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
       set idframe $::atos_tools::cur_idframe
 
       set frm $::atos_gui::frame(base)
@@ -456,69 +460,84 @@ namespace eval ::atos_ocr_tools {
 
       }
 
-
    }
 
 
 
    proc ::atos_ocr_tools::verif_2numdigit { x } {
-          set res [ regexp {[0-9]{1,2}} $x matched ]
-          if { ! $res } { return 1 }
-          if { $x != $matched } {return 1}
-          return 0
+
+      set res [ regexp {[0-9]{1,2}} $x matched ]
+      if { ! $res } { return 1 }
+      if { $x != $matched } {return 1}
+      return 0
+
    }
+
    proc ::atos_ocr_tools::verif_yeardigit { x } {
-          set res [ regexp {[1-2][0-9]{3}} $x matched ]
-          if { ! $res } { return 1 }
-          if { $x!=$matched } {return 1}
-          return 0
+
+      set res [ regexp {[1-2][0-9]{3}} $x matched ]
+      if { ! $res } { return 1 }
+      if { $x!=$matched } {return 1}
+      return 0
+
    }
+
    proc ::atos_ocr_tools::verif_hourdigit { x } {
-          set res [ regexp {[0-9]{1,2}} $x matched ]
-          if { ! $res } { return 1 }
-          if { $x!=$matched } {return 1}
-          if { $x<0 || $x>24 || $x=="" } {return 1}
-          return 0
+
+      set res [ regexp {[0-9]{1,2}} $x matched ]
+      if { ! $res } { return 1 }
+      if { $x!=$matched } {return 1}
+      if { $x<0 || $x>24 || $x=="" } {return 1}
+      return 0
+
    }
+
    proc ::atos_ocr_tools::verif_msdigit { x } {
-          set res [ regexp {[0-9]{1,3}} $x matched ]
-          if { ! $res } { return 1 }
-          if { $x != $matched } {return 1}
-          return 0
+
+      set res [ regexp {[0-9]{1,3}} $x matched ]
+      if { ! $res } { return 1 }
+      if { $x != $matched } {return 1}
+      return 0
+
    }
 
    proc ::atos_ocr_tools::return_2digit { x } {
-          set res [ regexp {[0-9]{2}} $x matched ]
-          if { $res } {
-             return $x
-          }
-          if { ! $res } {
-             if { $x==0 } {
-                return "00"
-             }
-             if { $x<10 } {
-                return "0$x"
-             }
-             return "XX"
-          }
+
+      set res [ regexp {[0-9]{2}} $x matched ]
+      if { $res } {
+         return $x
+      }
+      if { ! $res } {
+         if { $x==0 } {
+            return "00"
+         }
+         if { $x<10 } {
+            return "0$x"
+         }
+         return "XX"
+      }
+
    }
+
    proc ::atos_ocr_tools::return_3digit { x } {
-          set res [ regexp {[0-9]{3}} $x matched ]
-          if { $res } {
-             return $x
-          }
-          if { ! $res } {
-             if { $x==0 } {
-                return "000"
-             }
-             if { $x<10 } {
-                return "00$x"
-             }
-             if { $x<100 } {
-                return "0$x"
-             }
-             return "XXX"
-          }
+
+      set res [ regexp {[0-9]{3}} $x matched ]
+      if { $res } {
+         return $x
+      }
+      if { ! $res } {
+         if { $x==0 } {
+            return "000"
+         }
+         if { $x<10 } {
+            return "00$x"
+         }
+         if { $x<100 } {
+            return "0$x"
+         }
+         return "XXX"
+      }
+
    }
 
 
@@ -636,9 +655,7 @@ namespace eval ::atos_ocr_tools {
          $frm_start configure -command "::atos_ocr_tools::start $visuNo"
       }
 
-
       set ::atos_ocr_tools::sortie 1
-
 
    }
 
@@ -690,24 +707,25 @@ namespace eval ::atos_ocr_tools {
 
    proc ::atos_ocr_tools::start_next_image { visuNo } {
 
-      # desactivation
-      if {$::atos_ocr_tools::active_ocr == "1" \
-          && [ $::atos_gui::frame(ocr_setup).selectdate.box cget -relief] == "sunken"} {
-
-          ::atos_tools::next_image $visuNo
-
+      if {$::atos_ocr_tools::active_ocr == "1" && [ $::atos_gui::frame(ocr_setup).selectdate.box cget -relief] == "sunken"} {
+         ::atos_tools::next_image $visuNo
       } else {
-
-          incr ::atos_tools::cur_idframe
-          
+         incr ::atos_tools::cur_idframe
       }
+
    }
 
 
    proc ::atos_ocr_tools::start { visuNo } {
 
-   # Extraction OCR
       set log 0
+
+      if {![info exists ::atos_tools::nb_open_frame] || ![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
+   # Extraction OCR
 
       ::console::affiche_resultat "Extraction des OCR ...\n"
 
@@ -1121,6 +1139,12 @@ namespace eval ::atos_ocr_tools {
 
 
    proc ::atos_ocr_tools::graph { visuNo } {
+
+      if {![info exists ::atos_tools::frame_end]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
       set log 0
       ::plotxy::clf 1
       ::plotxy::figure 1 
@@ -1140,10 +1164,10 @@ namespace eval ::atos_ocr_tools {
 
       set origine 9999999
       for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
-            catch {  
-               set jd $::atos_ocr_tools::timing($idframe,jd)              
-               if {$jd != "" && $jd < $origine} {set origine $jd}      
-            }
+         catch {  
+            set jd $::atos_ocr_tools::timing($idframe,jd)              
+            if {$jd != "" && $jd < $origine} {set origine $jd}      
+         }
       }
       if {$log} { ::console::affiche_resultat "Origine temporelle : $origine\n"}
       set origine [expr int($origine)]
@@ -1277,6 +1301,10 @@ namespace eval ::atos_ocr_tools {
 
    proc ::atos_ocr_tools::save { visuNo } {
 
+      if {![info exists ::atos_tools::nb_open_frames] || $::atos_tools::nb_open_frames == 0} {
+         # Rien a faire car pas de video chargee
+         return
+      }
 
       set filename [::atos_ocr_tools::get_filename_time]
 
