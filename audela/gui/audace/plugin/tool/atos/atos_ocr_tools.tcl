@@ -217,6 +217,7 @@ namespace eval ::atos_ocr_tools {
 
 
 
+   # Deentrelace l'image img et cree les images paire et impaire
    proc ::atos_ocr_tools::deinterlace { img } {
 
       set img_ocr [image create photo -file $img]
@@ -293,8 +294,9 @@ namespace eval ::atos_ocr_tools {
              }
              "TIM-10 small font" -
              "TIM-10 big font" {
+               set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
                set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) ocr.jpg"]
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) [lindex $deint_ocr 0]"]
                } msg]
              }
              "IOTA-VTI" {
@@ -759,8 +761,9 @@ namespace eval ::atos_ocr_tools {
 
       set log 0
 
-      if {![info exists ::atos_tools::nb_open_frame] || ![info exists ::atos_tools::cur_idframe]} {
+      if {![info exists ::atos_tools::cur_idframe]} {
          # Rien a faire car pas de video chargee
+         ::console::affiche_erreur "::atos_ocr_tools::start -> no image\n"
          return
       }
 
@@ -780,12 +783,11 @@ namespace eval ::atos_ocr_tools {
       
       set posmax $::atos_gui::frame(posmax)
       set fmax [$posmax get]
-      if {$fmax==""} {
+      if {$fmax == ""} {
          set ::atos_tools::frame_max [expr $::atos_tools::nb_frames + 1]
       } else {
          set ::atos_tools::frame_max $fmax
       }
-      
 
       set action $::atos_gui::frame(action)
       set datetime $::atos_gui::frame(datetime)
