@@ -1,4 +1,24 @@
 TODOLIST
+
+- Acquisition : modifier la GUI pour pouvoir ajouter l'ocr
+
+- Analyse : ajouter le 2sigma dans les resultats
+
+- CDL : utiliser la mesure du photocentre de psf_tool_box
+
+- Analyse : Parcourir si annuler alors ca efface tout. 
+            il faut garder les infos precedentes
+
+- Analyse : appel a miriade si pas de reseau ajouter tk_msg
+
+- documentation 
+
+- CDL : faire different si sommation d images ou non
+
+- Datation : faire different start en fonction de l ocr ou interpolation
+
+- Datation : accelerer l interpolation ajouter "nobuf" en plus du "novisu"
+
 - CDL : a la lecture du fichier time demander a l utilisateur s il veut croper 
         sur les donnees temporelles existantes
 
