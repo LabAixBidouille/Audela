@@ -54,6 +54,11 @@ namespace eval ::atos_ocr {
       set ::atos_ocr::panneau(atos,$visuNo,alarme_fin_serie)         $::atos::parametres(atos,$visuNo,alarme_fin_serie)
       set ::atos_ocr::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
       set ::atos_ocr::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
+
+      set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_default)         $::atos::parametres(atos,$visuNo,exec_ocr_default)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti)             $::atos::parametres(atos,$visuNo,exec_ocr_vti)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim)             $::atos::parametres(atos,$visuNo,exec_ocr_tim)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi)            $::atos::parametres(atos,$visuNo,exec_ocr_kiwi)
    }
 
    #
@@ -219,9 +224,6 @@ namespace eval ::atos_ocr {
               -side left -anchor w \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
            DynamicHelp::add  $frm.traitement.avi.ico -text "Traitement direct de la video"
-
-
-
 
    #---
         #--- Cree un frame pour  les boutons d action 
