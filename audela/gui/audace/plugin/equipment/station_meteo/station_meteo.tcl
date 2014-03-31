@@ -85,7 +85,7 @@ proc ::station_meteo::getPluginHelp { } {
 #  return "weather_station"
 #------------------------------------------------------------
 proc ::station_meteo::getPluginType { } {
-   return "weather_station"
+   return "equipment"
 }
 
 #------------------------------------------------------------
