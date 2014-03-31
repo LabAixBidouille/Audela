@@ -122,7 +122,7 @@ namespace eval ::atos_ocr_tools {
 
       }
 
-      return [list $pass $h $min $s $ms]
+      return [list $pass [list "XXXX" "XX" "XX"] [list $h $min $s $ms]]
    }
 
    
@@ -131,16 +131,54 @@ namespace eval ::atos_ocr_tools {
 
       ::console::affiche_erreur "Tim 10 small_font n est pas encore supporté \n"
       ::console::affiche_resultat "msg = $msg \n"
-      return [list "no" "XX" "XX" "XX" "XXX"]
+      return [list "no" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
    }
 
    
 
-   proc ::atos_ocr_tools::ocr_tim10_big_font { msg } {
+   proc ::atos_ocr_tools::ocr_tim10 { msg } {
 
-      ::console::affiche_erreur "Tim 10 big_font n est pas encore supporté \n"
-      ::console::affiche_resultat "msg = $msg \n"
-      return [list "no" "XX" "XX" "XX" "XXX"]
+      # Recuperation des l'heure depuis l'image paire
+      set byy "20[string range $msg 0 1]"
+      set bmm [string range $msg 2 3]
+      set bdd [string range $msg 4 5]
+      set bh  [string range $msg 7 8]
+      set bm  [string range $msg 9 10]
+      set bs  [string range $msg 11 12]
+      set bms [string range $msg 15 17]
+      
+      gren_info "TIM-10 epoch = $byy $bmm $bdd $bh $bm $bs $bms\n"
+
+      set yy "XXXX"
+      if {[catch {regexp {[2][0][0-9][0-9]} $byy matched}]} {
+         if {$byy == $matched} {set yy $byy}
+      }
+      set mm "XX"
+      if {[catch {regexp {[0-9][0-9]} $bmm matched}] == 0} {
+         if {$bmm == $matched} {set mm $bmm}
+      }
+      set dd "XX"
+      if {[catch {regexp {[0-9][0-9]} $bdd matched}] == 0} {
+         if {$bdd == $matched} {set dd $bdd}
+      }
+      set h "XX"
+      if {[catch {regexp {[0-9][0-9]} $bh matched}] == 0} {
+         if {$bh == $matched} {set h $bh}
+      }
+      set m "XX"
+      if {[catch {regexp {[0-9][0-9]} $bm matched}] == 0} {
+         if {$bm == $matched} {set m $bm}
+      }
+      set s "XX"
+      if {[catch {regexp {[0-9][0-9]} $bs matched}] == 0} {
+         if {$bs == $matched} {set s $bs}
+      }
+      set ms "XXX"
+      if {[catch {regexp {[0-9][0-9]} $bms matched}] == 0} {
+         if {$bms == $matched} {set ms $bms}
+      }
+
+      return [list "ok" [list $yy $mm $dd] [list $h $m $s $ms]]
    }
 
 
@@ -164,7 +202,7 @@ namespace eval ::atos_ocr_tools {
       if {$log == 1} { ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: " }
       
       if { ! ( [string is double $hp] && [string is double $minp] \
-           && [string is double $sp] && [string is double $msp] ) } {
+            && [string is double $sp] && [string is double $msp] ) } {
          return [list "no" 0 0 0 0 ]     
       }
 
@@ -211,7 +249,7 @@ namespace eval ::atos_ocr_tools {
       if { $s<0 || $s>59 || $s=="" } {set pass "no"}
       if { $ms<0 || $ms>999 || $ms=="" } {set pass "no"}
 
-      return [list $pass $h $min $s $ms]
+      return [list $pass [list "XXXX" "XX" "XX"] [list $h $min $s $ms]]
 
    }
 
@@ -296,7 +334,10 @@ namespace eval ::atos_ocr_tools {
              "TIM-10 big font" {
                set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
                set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) [lindex $deint_ocr 0]"]
+                  set result [exec sh -c "convert [lindex $deint_ocr 1] -blur 0x0.4 -unsharp 0x15.0 [lindex $deint_ocr 1]"]
+               } msg]
+               set err [catch {
+                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) [lindex $deint_ocr 1]"]
                } msg]
              }
              "IOTA-VTI" {
@@ -337,27 +378,35 @@ namespace eval ::atos_ocr_tools {
 
           switch $box {
              "Black Box" {
-               set hms [::atos_ocr_tools::ocr_bbox $msg]
+               set ocr [::atos_ocr_tools::ocr_bbox $msg]
              }
-             "TIM-10 small font" {
-               set hms [::atos_ocr_tools::ocr_tim10_small_font $msg]
-             }
+             "TIM-10 small font" -
              "TIM-10 big font" {
-               set hms [::atos_ocr_tools::ocr_tim10_big_font $msg]
+               set ocr [::atos_ocr_tools::ocr_tim10 $msg]
              }
              "IOTA-VTI" {
-               set hms [::atos_ocr_tools::ocr_iota_vti $msg_even $msg_odd]
+               set ocr [::atos_ocr_tools::ocr_iota_vti $msg_even $msg_odd]
              }
              default {
-               set hms [list "no" "XX" "XX" "XX" "XXX"]
+               set ocr [list "no" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
              }
           }
 
-          set pass [lindex $hms 0]
-          set h   [return_2digit [lindex $hms 1]]
-          set min [return_2digit [lindex $hms 2]]
-          set s   [return_2digit [lindex $hms 3]]
-          set ms  [return_3digit [lindex $hms 4]]
+          set pass [lindex $ocr 0]
+
+          set date [lindex $ocr 1]
+          set yy [$datetime.y.val get]
+          if {[lindex $date 0] != "XXXX"} { set yy [return_4digit [lindex $date 0]] }
+          set mm [$datetime.m.val get]
+          if {[lindex $date 1] != "XX"}   { set mm [return_2digit [lindex $date 1]] }
+          set dd [$datetime.d.val get]
+          if {[lindex $date 2] != "XX"}   { set dd [return_2digit [lindex $date 2]] }
+
+          set hms [lindex $ocr 2]
+          set h   [return_2digit [lindex $hms 0]]
+          set min [return_2digit [lindex $hms 1]]
+          set s   [return_2digit [lindex $hms 2]]
+          set ms  [return_3digit [lindex $hms 3]]
 
           if { $pass == "ok" } {
 
@@ -381,6 +430,13 @@ namespace eval ::atos_ocr_tools {
           # affichage des resultats
           if { $pass == "ok" } {
 
+             $datetime.y.val   delete 0 end
+             $datetime.y.val   insert 0 $yy
+             $datetime.m.val   delete 0 end
+             $datetime.m.val   insert 0 $mm
+             $datetime.d.val   delete 0 end
+             $datetime.d.val   insert 0 $dd
+
              $datetime.h.val   delete 0 end
              $datetime.h.val   insert 0 $h
              $datetime.min.val delete 0 end
@@ -395,6 +451,14 @@ namespace eval ::atos_ocr_tools {
           } else {
 
              ::console::affiche_erreur "OCR failed: frame: $::atos_tools::cur_idframe ; ocr: $pass $h $min $s $ms\n"
+
+             $datetime.y.val   delete 0 end
+             $datetime.y.val   insert 0 $yy
+             $datetime.m.val   delete 0 end
+             $datetime.m.val   insert 0 $mm
+             $datetime.d.val   delete 0 end
+             $datetime.d.val   insert 0 $dd
+
              $datetime.h.val   delete 0 end
              $datetime.h.val   insert 0 $h
              $datetime.min.val delete 0 end
@@ -547,8 +611,7 @@ namespace eval ::atos_ocr_tools {
       set res [ regexp {[0-9]{2}} $x matched ]
       if { $res } {
          return $x
-      }
-      if { ! $res } {
+      } else {
          if { $x==0 } {
             return "00"
          }
@@ -565,8 +628,7 @@ namespace eval ::atos_ocr_tools {
       set res [ regexp {[0-9]{3}} $x matched ]
       if { $res } {
          return $x
-      }
-      if { ! $res } {
+      } else {
          if { $x==0 } {
             return "000"
          }
@@ -581,8 +643,28 @@ namespace eval ::atos_ocr_tools {
 
    }
 
+   proc ::atos_ocr_tools::return_4digit { x } {
 
+      set res [ regexp {[0-9]{4}} $x matched ]
+      if { $res } {
+         return $x
+      } else {
+         if { $x == 0 } {
+            return "0000"
+         }
+         if { $x < 10 } {
+            return "000$x"
+         }
+         if { $x < 100 } {
+            return "00$x"
+         }
+         if { $x < 1000 } {
+            return "0$x"
+         }
+         return "XXXX"
+      }
 
+   }
 
 
 
