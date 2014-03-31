@@ -38,10 +38,10 @@ namespace eval ::atos_setup {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,free_space) ] }               { set ::atos::parametres(atos,$visuNo,free_space)               "500" }
       if { ! [ info exists ::atos::parametres(atos,$visuNo,dir_prj) ] }                  { set ::atos::parametres(atos,$visuNo,dir_prj)                  "" }
 
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_default) ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_default)  "gocr -d 6 -C \"0-9:\" -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)      "gocr -d 6 -C \"0-9:\" -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)      "gocr -d 6 -C \"0-9:\" -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)    ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_default) ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_default) "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)     "gocr -d 6 -C \"0-9:\" -f UTF8" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)    ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)    "gocr -d 6 -C \"0-9:\" -f UTF8" }
    }
 
    #
