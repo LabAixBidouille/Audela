@@ -1729,10 +1729,10 @@ proc calibwcs_new {args} {
          } else {
             set Cat_format [string toupper $cat_format]
          }
-         console::affiche_resultat "[expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen\n"
+         #console::affiche_resultat "[expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen\n"
          set wcs [wcs_optic2wcs [expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen 0]
          wcs_wcs2buf $wcs $::audace(bufNo)
-         wcs_dispkwd $wcs "" public
+         #wcs_dispkwd $wcs "" public
          set star0s [focas_buf2stars $::audace(bufNo) $Cat_format] 
          set cata0s [focas_db2catas $Cat_format $cat_folder]
          set ns [llength $star0s]
