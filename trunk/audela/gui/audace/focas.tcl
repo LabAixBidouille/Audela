@@ -1141,7 +1141,8 @@ proc focas_db2catas { catatype catapath } {
             } elseif {$filtre=="V"} { set mag $magr 
             } else { set mag $magr
             }
-            lappend ls [list $ra $dec $mag $id]
+            set l [list $ra $dec $mag $id ]
+            lappend ls $l
          }
          if {$catalog=="tycho2"} {   
             set id [lindex $res 1]-[lindex $res 2]-[lindex $res 3]
@@ -1159,7 +1160,90 @@ proc focas_db2catas { catatype catapath } {
             } elseif {$filtre=="V"} { set mag $magv 
             } else { set mag $magv
             }
-            lappend ls [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+            set l [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+            #console::affiche_resultat "$l\n"
+            lappend ls $l
+         }
+         if {$catalog=="ucac2"} {   
+            set id [lindex $res 0]
+            set ra [lindex $res 1]
+            set dec [lindex $res 2]
+            set equinox J2000
+            set mura_masyr [lindex $res 12]
+            set mudec_masyr [lindex $res 13]
+            set epoch [lindex $res 13]
+            set plx_mas 0
+            set mag [lindex $res 19]
+            set l [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+            #console::affiche_resultat "$l\n"
+            lappend ls $l
+         }
+         if {$catalog=="ucac3"} {   
+            set id [lindex $res 0]
+            set ra [lindex $res 1]
+            set dec [lindex $res 2]
+            set equinox J2000
+            set mura_masyr [lindex $res 16]
+            set mudec_masyr [lindex $res 17]
+            set epoch [expr ([lindex $res 14]+[lindex $res 15])/2.]
+            set plx_mas 0
+            set mag [lindex $res 27]
+            if     {$filtre=="R"} { set mag [lindex $res 27]
+            } elseif {$filtre=="I"} { set mag [lindex $res 28]
+            } elseif {$filtre=="B"} { set mag [lindex $res 26]
+            } elseif {$filtre=="V"} { set mag [lindex $res 27]
+            } elseif {$filtre=="J"} { set mag [lindex $res 21]
+            } elseif {$filtre=="H"} { set mag [lindex $res 22]
+            } elseif {$filtre=="K"} { set mag [lindex $res 23]
+            } else { set mag [lindex $res 27]
+            }
+            set l [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+            #console::affiche_resultat "$l\n"
+            lappend ls $l
+         }
+         if {$catalog=="ucac4"} {   
+            set id [lindex $res 0]
+            set ra [lindex $res 1]
+            set dec [lindex $res 2]
+            set equinox J2000
+            set mura_masyr [lindex $res 15]
+            set mudec_masyr [lindex $res 16]
+            set epoch [expr ([lindex $res 13]+[lindex $res 14])/2.]
+            set plx_mas 0
+            set mag [lindex $res 4]
+            if     {$filtre=="R"} { set mag [lindex $res 32]
+            } elseif {$filtre=="I"} { set mag [lindex $res 33]
+            } elseif {$filtre=="B"} { set mag [lindex $res 26]
+            } elseif {$filtre=="V"} { set mag [lindex $res 30]
+            } elseif {$filtre=="J"} { set mag [lindex $res 20]
+            } elseif {$filtre=="H"} { set mag [lindex $res 21]
+            } elseif {$filtre=="K"} { set mag [lindex $res 22]
+            } else { set mag [lindex $res 32]
+            }
+            set l [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+            #console::affiche_resultat "$l\n"
+            lappend ls $l
+         }
+         if {$catalog=="nomad1"} {   
+            set id [lindex $res 0]
+            set ra [lindex $res 2]
+            set dec [lindex $res 3]
+            set equinox J2000
+            set mura_masyr [lindex $res 6]
+            set mudec_masyr [lindex $res 7]
+            set epoch [expr ([lindex $res 10]+[lindex $res 11])/2.]
+            set plx_mas 0
+            set magb [lindex $res 13]
+            set magv [lindex $res 14]
+            set magr [lindex $res 14]
+            if     {$filtre=="R"} { set mag $magr
+            } elseif {$filtre=="B"} { set mag $magb
+            } elseif {$filtre=="V"} { set mag $magv 
+            } else { set mag $magv
+            }
+            set l [list $ra $dec $mag $id $equinox $epoch $mura_masyr $mudec_masyr $plx_mas]
+            #console::affiche_resultat "$l\n"
+            lappend ls $l
          }
          if {$mag>$magmax} {
             set magmax $mag
