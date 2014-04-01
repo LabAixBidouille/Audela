@@ -1691,10 +1691,10 @@ proc calibwcs_new {args} {
       }
 
       #--- check les catalogues
-      if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
-         set comment "This catalog ($cat_format) is not valid. It must be only USNO or MICROCAT!"
-         error $comment
-      }
+      #if {[string toupper $cat_format] ni [list USNO MICROCAT]} {
+      #   set comment "This catalog ($cat_format) is not valid. It must be only USNO or MICROCAT!"
+      #   error $comment
+      #}
       if {[file exists $cat_folder]==1} {
          if {[string toupper $cat_format] eq "USNO"} {
             set comment "Path to the catalog does not contain the $cat_format catalog!\n$cat_folder"
@@ -1729,7 +1729,6 @@ proc calibwcs_new {args} {
          } else {
             set Cat_format [string toupper $cat_format]
          }
-         #console::affiche_resultat "[expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen\n"
          set wcs [wcs_optic2wcs [expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen 0]
          wcs_wcs2buf $wcs $::audace(bufNo)
          #wcs_dispkwd $wcs "" public
@@ -1740,11 +1739,16 @@ proc calibwcs_new {args} {
          if {($ns<3)||($nc<3)} {
             error "Not enough stars ($ns stars in the image, $nc stars in the catalog)\n"
          }
-         set couples [focas_catastars2pairs $star0s $cata0s $Cat_format 3 35]
-         set wcs [wcs_focaspairs2wcs $couples 1]
+         set couples [focas_catastars2pairs $star0s $cata0s $Cat_format 3.5 35]
+         set np [llength [lindex $couples 1]] 
+         if {($np<3)} {
+            error "$np stars matched is < 3 ($ns stars in the image, $nc stars in the catalog). impossible to compute WCS parameters.\n"
+         }
+         set wcs [wcs_focaspairs2wcs $couples 1 [expr $naxis1/2] [expr $naxis2/2]]
          wcs_wcs2buf $wcs $::audace(bufNo)
          set wcs [wcs_buf2wcs $::audace(bufNo)]
          set wcs [wcs_update_optic $wcs]
+         #wcs_dispkwd $wcs "" public
          wcs_wcs2buf $wcs $::audace(bufNo)
          if {$del_tmp_files==1} {
             ::astrometry::delete_lst
