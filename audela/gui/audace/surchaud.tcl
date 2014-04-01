@@ -1729,8 +1729,17 @@ proc calibwcs_new {args} {
          } else {
             set Cat_format [string toupper $cat_format]
          }
+         console::affiche_resultat "[expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen\n"
+         set wcs [wcs_optic2wcs [expr $naxis1/2] [expr $naxis2/2] $Angle_ra $Angle_dec $valpixsize1 $valpixsize2 $valfoclen 0]
+         wcs_wcs2buf $wcs $::audace(bufNo)
+         wcs_dispkwd $wcs "" public
          set star0s [focas_buf2stars $::audace(bufNo) $Cat_format] 
-         set cata0s [focas_db2catas $Cat_format c:/d/usno]
+         set cata0s [focas_db2catas $Cat_format $cat_folder]
+         set ns [llength $star0s]
+         set nc [llength $cata0s]
+         if {($ns<3)||($nc<3)} {
+            error "Not enough stars ($ns stars in the image, $nc stars in the catalog)\n"
+         }
          set couples [focas_catastars2pairs $star0s $cata0s $Cat_format 3 35]
          set wcs [wcs_focaspairs2wcs $couples 1]
          wcs_wcs2buf $wcs $::audace(bufNo)
