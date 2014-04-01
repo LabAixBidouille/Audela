@@ -26,9 +26,9 @@ int cmd_tcl_csusnoa2(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	starUsno* arrayOfStars;
 	const indexTableUsno* allAccFiles;
 	Tcl_DString dsptr;
-FILE *f;
-f=fopen("c:/d/a/usno2a.log","wt");
-fclose(f);
+//FILE *f;
+//f=fopen("c:/d/a/usno2a.log","wt");
+//fclose(f);
 	/* Decode inputs */
 	if(decodeInputs(outputLogChar, argc, argv, pathToCatalog, &ra, &dec, &radius, &magMin, &magMax)) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
