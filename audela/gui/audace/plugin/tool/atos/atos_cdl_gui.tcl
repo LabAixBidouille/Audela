@@ -793,7 +793,7 @@ namespace eval ::atos_cdl_gui {
                    pack  $suivi.methode.lab -in $suivi.methode -side left -anchor w
 
                    spinbox $suivi.methode.val -font $atosconf(font,courier_10)  \
-                      -value [ list "Auto" "Interpolation" ] -state readonly \
+                      -value [ list "Interpolation" "Auto" ] -state readonly \
                       -textvariable ::atos_cdl_tools::methode_suivi \
                       -command "::atos_cdl_gui::options_suivi" 
                    pack $suivi.methode.val -in $suivi.methode -side left -anchor w
