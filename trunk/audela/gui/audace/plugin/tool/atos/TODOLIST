@@ -3,9 +3,6 @@ TODOLIST
 
 - Analyse : correction des paquets d images : mettre 0 ne marche pas
 
-- CDL : a la lecture du fichier time demander a l utilisateur s il veut croper 
-        sur les donnees temporelles existantes
-
 - CDL : si sommation d image alors calculer la moyenne temporelle entre chaque bloc
         et faire un tk_msg pour dire que le resultat final doit etre sommé par la moyenne
         obtenue /2.

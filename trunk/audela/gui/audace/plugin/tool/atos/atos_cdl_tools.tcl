@@ -45,7 +45,7 @@ namespace eval ::atos_cdl_tools {
    #
    # Existance et chargement d un fichier time
    #
-   proc ::atos_cdl_tools::file_time_exist {  } {
+   proc ::atos_cdl_tools::file_time_exist { visuNo } {
 
       if {![info exists ::atos_tools::nb_open_frames] || $::atos_tools::nb_open_frames == 0} {
          # Rien a faire car pas de video chargee
@@ -63,6 +63,8 @@ namespace eval ::atos_cdl_tools {
          if { $reponse == "yes"} {
             set f [open $filename "r"]
             set cpt 0
+            set posmin 999999999999999
+            set posmax 0
             while {1} {
                 set line [gets $f]
                 if {[eof $f]} {
@@ -76,11 +78,28 @@ namespace eval ::atos_cdl_tools {
                    set dateiso [string trim [lindex $tab 2] " "]
                    set ::atos_ocr_tools::timing($id,dateiso) $dateiso
                    set ::atos_ocr_tools::timing($id,jd) $jd
+                   if {$id<$posmin} { set posmin $id }
+                   if {$id>$posmax} { set posmax $id }
+                   
                    #gren_info "$id -> $jd\n"
                 }
                 incr cpt
             }
             tk_messageBox -message "Fichier 'time' chargÃ©." -type ok
+
+            set reponse [tk_messageBox -message "Voulez vous ajuster la video sur les donnees datées ?" -type yesno]
+            if { $reponse == "yes"} {
+
+               $::atos_gui::frame(posmin) delete 0 end
+               $::atos_gui::frame(posmax) delete 0 end
+               
+               $::atos_gui::frame(posmin) insert 0 $posmin
+               $::atos_gui::frame(posmax) insert 0 $posmax
+               
+               ::atos_tools::crop $visuNo
+            }
+
+
          }
 
       }
@@ -97,7 +116,7 @@ namespace eval ::atos_cdl_tools {
       array unset ::atos_ocr_tools::timing
       array unset ::atos_cdl_tools::mesure
       ::atos_tools::open_flux $visuNo
-      ::atos_cdl_tools::file_time_exist
+      ::atos_cdl_tools::file_time_exist $visuNo
 
    }
 
@@ -107,7 +126,7 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::select { visuNo } {
 
       ::atos_tools::select $visuNo 
-      ::atos_cdl_tools::file_time_exist
+      ::atos_cdl_tools::file_time_exist $visuNo
 
    }
 
@@ -1767,7 +1786,8 @@ namespace eval ::atos_cdl_tools {
                } else { continue }
                if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
                    && [info exists ::atos_cdl_tools::mesure($idframe,ref_fint)]} {
-                  set fluxr $::atos_cdl_tools::mesure($idframe,ref_fint)
+                   if {$::atos_cdl_tools::mesure($idframe,ref_fint)=="?"} {continue}
+                  gren_info "fluxr = $fluxr\n"
                } else { continue }
                set flux [expr $fluxo/$fluxr * 1000]
                
