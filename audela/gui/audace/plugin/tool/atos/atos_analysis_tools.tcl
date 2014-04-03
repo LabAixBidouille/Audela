@@ -795,6 +795,22 @@ namespace eval ::atos_analysis_tools {
       set ::atos_analysis_tools::t_sup         [format "%.4f" $t_sup]
       set ::atos_analysis_tools::t_diff        [format "%.3f" [expr $t_sup-$t_inf] ]
 
+      set dchi2  4.0
+      set t_inf  1.e50
+      set t_sup -1.e50
+      foreach cols $::atos_analysis_tools::chi2_search {
+         set t0   [lindex $cols 0]
+         set chi2 [lindex $cols 1]
+         set nfit [lindex $cols 2]
+         if {$chi2 <= [expr $chi2_min+$dchi2]} {
+            if {$t0 <= $t_inf} { set t_inf $t0}
+            if {$t0 >= $t_sup} { set t_sup $t0}
+         }
+      }
+      set ::atos_analysis_tools::t_inf_2s      [format "%.4f" $t_inf]
+      set ::atos_analysis_tools::t_sup_2s      [format "%.4f" $t_sup]
+      set ::atos_analysis_tools::t_diff_2s     [format "%.3f" [expr $t_sup-$t_inf] ]
+
       set dchi2  9.0
       set t_inf  1.e50
       set t_sup -1.e50

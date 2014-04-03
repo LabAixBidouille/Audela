@@ -781,7 +781,7 @@ namespace eval ::atos_cdl_gui {
                    
     # onglets : suivi
 
-             set suivi [frame $f_suiv.geometrie]
+             set suivi [frame $f_suiv.suivi]
              pack $suivi -in $f_suiv
 
              set ::atos_gui::frame(suivi) $suivi

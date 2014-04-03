@@ -450,7 +450,7 @@ namespace eval ::atos_ocr_tools {
 
           } else {
 
-             ::console::affiche_erreur "OCR failed: frame: $::atos_tools::cur_idframe ; ocr: $pass $h $min $s $ms\n"
+             ::console::affiche_erreur "OCR failed: $pass $h $min $s $ms\n"
 
              $datetime.y.val   delete 0 end
              $datetime.y.val   insert 0 $yy

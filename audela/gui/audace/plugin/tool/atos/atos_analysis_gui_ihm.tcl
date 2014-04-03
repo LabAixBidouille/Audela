@@ -153,7 +153,7 @@
                   pack  $date.l -side left -anchor e
 
                   #--- Cree d'une entree pour saisir la date
-                  entry $date.v -textvariable ::atos_analysis_gui::occ_date -width 20
+                  entry $date.v -textvariable ::atos_analysis_gui::occ_date -width 22
                   pack $date.v -side left -padx 3 -pady 1 -fill x
 
              #--- Cree un frame pour la position de l'observateur
@@ -176,6 +176,7 @@
                   #--- Cree un label
                   entry $observatoire.v -textvariable ::atos_analysis_gui::occ_pos -width 30
                   pack $observatoire.v -side left -padx 3 -pady 1 -fill x -expand 0
+
 
              #--- Cree un frame pour le tag
              set tag [frame $projet.tag -borderwidth 0 -cursor arrow -relief groove]
@@ -214,10 +215,17 @@
                   label $check.l4 -textvariable ::atos_analysis_gui::decj2000  -fg $color(blue)
                   pack  $check.l4 -side left -anchor c
 
+
+
                   button $check.but_aladin -text "Aladin" -borderwidth 2 \
                         -command "::atos_analysis_gui::sendAladinScript"
                   pack $check.but_aladin -side right -anchor c
                   DynamicHelp::add $check.but_aladin -text "Envoyer dans Aladin via SAMP."
+
+                  button $check.map -text "Google Map" -borderwidth 2 \
+                        -command "::atos_analysis_gui::googlemaps"
+                  pack $check.map -side right -anchor c
+                  DynamicHelp::add $check.map -text "Voir la position dans google maps"
 
              #--- Cree un frame pour les boutons d'action
              set buttons1 [frame $projet.buttons1 -borderwidth 1 -cursor arrow -relief flat]
@@ -1475,6 +1483,10 @@
                        entry $t0_ref.v -textvariable ::atos_analysis_gui::date_immersion -width 30
                        pack $t0_ref.v -side left -padx 3 -pady 0 -fill x
 
+                       #--- Creation du bouton calcul
+                       button $t0_ref.but_reload -image .reload -borderwidth 2 \
+                             -command "::atos_analysis_gui::modif_href i"
+                       pack $t0_ref.but_reload -side left -anchor c
 
                   #--- Cree un frame pour le chargement d'un fichier
                   set nheure [frame $frmgauche.nheure -borderwidth 0 -cursor arrow -relief groove]
@@ -1586,13 +1598,9 @@
                             label $nfit_chi2_min.v -textvariable ::atos_analysis_gui::im_nfit_chi2_min
                             pack  $nfit_chi2_min.v -side left -anchor e
 
-                  #--- Cree un frame pour le chargement d'un fichier
-                  set frmdroit [frame $results.frmdroit -borderwidth 0 -cursor arrow -relief groove]
-                  pack $frmdroit -in $results -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-
                        #--- Cree un frame pour le chargement d'un fichier
-                       set t0_chi2_min [frame $frmdroit.t0_chi2_min -borderwidth 0 -cursor arrow -relief groove]
-                       pack $t0_chi2_min -in $frmdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+                       set t0_chi2_min [frame $frmgauche.t0_chi2_min -borderwidth 0 -cursor arrow -relief groove]
+                       pack $t0_chi2_min -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
                             label $t0_chi2_min.l -text "t0 normalise "
@@ -1601,6 +1609,10 @@
                             #--- Cree un label
                             label $t0_chi2_min.v -textvariable ::atos_analysis_gui::im_t0_chi2_min
                             pack  $t0_chi2_min.v -side left -anchor e
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set frmdroit [frame $results.frmdroit -borderwidth 0 -cursor arrow -relief groove]
+                  pack $frmdroit -in $results -anchor n -side left -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un frame pour le chargement d'un fichier
                        set tps_dchi2 [frame $frmdroit.tps_dchi2 -borderwidth 0 -cursor arrow -relief groove]
@@ -1634,6 +1646,38 @@
                             label $tps_dchi2.l4 -text " sec)"
                             pack  $tps_dchi2.l4 -side left -anchor e
 
+
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set tps_dchi2 [frame $frmdroit.tps_dchi2_2s -borderwidth 0 -cursor arrow -relief groove]
+                       pack $tps_dchi2 -in $frmdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $tps_dchi2.l1 -text "Intervalle 2 \u03C3 : "
+                            pack  $tps_dchi2.l1 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.v1 -textvariable ::atos_analysis_gui::im_t_inf_2s
+                            pack  $tps_dchi2.v1 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.l2 -text "<=>"
+                            pack  $tps_dchi2.l2 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.v2 -textvariable ::atos_analysis_gui::im_t_sup_2s
+                            pack  $tps_dchi2.v2 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.l3 -text "  ("
+                            pack  $tps_dchi2.l3 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.v3 -textvariable ::atos_analysis_gui::im_t_diff_2s
+                            pack  $tps_dchi2.v3 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.l4 -text " sec)"
+                            pack  $tps_dchi2.l4 -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
                        set tps_dchi2 [frame $frmdroit.tps_dchi2_3s -borderwidth 0 -cursor arrow -relief groove]
@@ -1707,7 +1751,7 @@
                        pack $graphe2 -in $graphel -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Creation du bouton select
-                            button $graphe2.view -image .view -compound center \
+                            button $graphe2.view -image .view -compound center -state disable \
                                -borderwidth 2 -takefocus 1 -command "::atos_analysis_gui::active_graphe $graphe l 2"
                             pack $graphe2.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
@@ -1865,6 +1909,10 @@
                        entry $t0_ref.v -textvariable ::atos_analysis_gui::date_emersion -width 30
                        pack $t0_ref.v -side left -padx 3 -pady 0 -fill x
 
+                       #--- Creation du bouton calcul
+                       button $t0_ref.but_reload -image .reload -borderwidth 2 \
+                             -command "::atos_analysis_gui::modif_href e"
+                       pack $t0_ref.but_reload -side left -anchor c
 
                   #--- Cree un frame pour le chargement d'un fichier
                   set nheure [frame $frmgauche.nheure -borderwidth 0 -cursor arrow -relief groove]
@@ -1977,13 +2025,9 @@
                             label $nfit_chi2_min.v -textvariable ::atos_analysis_gui::em_nfit_chi2_min
                             pack  $nfit_chi2_min.v -side left -anchor e
 
-                  #--- Cree un frame pour le chargement d'un fichier
-                  set frmdroit [frame $results.frmdroit -borderwidth 0 -cursor arrow -relief groove]
-                  pack $frmdroit -in $results -anchor s -side left -expand 0 -fill x -padx 10 -pady 5
-
                        #--- Cree un frame pour le chargement d'un fichier
-                       set t0_chi2_min [frame $frmdroit.t0_chi2_min -borderwidth 0 -cursor arrow -relief groove]
-                       pack $t0_chi2_min -in $frmdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+                       set t0_chi2_min [frame $frmgauche.t0_chi2_min -borderwidth 0 -cursor arrow -relief groove]
+                       pack $t0_chi2_min -in $frmgauche -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
 
                             #--- Cree un label
                             label $t0_chi2_min.l -text "t0 normalise "
@@ -1992,6 +2036,10 @@
                             #--- Cree un label
                             label $t0_chi2_min.v -textvariable ::atos_analysis_gui::em_t0_chi2_min
                             pack  $t0_chi2_min.v -side left -anchor e
+
+                  #--- Cree un frame pour le chargement d'un fichier
+                  set frmdroit [frame $results.frmdroit -borderwidth 0 -cursor arrow -relief groove]
+                  pack $frmdroit -in $results -anchor n -side left -expand 0 -fill x -padx 10 -pady 5
 
                        #--- Cree un frame pour le chargement d'un fichier
                        set tps_dchi2 [frame $frmdroit.tps_dchi2 -borderwidth 0 -cursor arrow -relief groove]
@@ -2025,6 +2073,37 @@
                             label $tps_dchi2.l4 -text " sec)"
                             pack  $tps_dchi2.l4 -side left -anchor e
 
+                       #--- Cree un frame pour le chargement d'un fichier
+                       set tps_dchi2 [frame $frmdroit.tps_dchi2_2s -borderwidth 0 -cursor arrow -relief groove]
+                       pack $tps_dchi2 -in $frmdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
+
+                            #--- Cree un label
+                            label $tps_dchi2.l1 -text "Intervalle 2 \u03C3 : "
+                            pack  $tps_dchi2.l1 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.v1 -textvariable ::atos_analysis_gui::em_t_inf_2s
+                            pack  $tps_dchi2.v1 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.l2 -text "<=>"
+                            pack  $tps_dchi2.l2 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.v2 -textvariable ::atos_analysis_gui::em_t_sup_2s
+                            pack  $tps_dchi2.v2 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.l3 -text "  ("
+                            pack  $tps_dchi2.l3 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.v3 -textvariable ::atos_analysis_gui::em_t_diff_2s
+                            pack  $tps_dchi2.v3 -side left -anchor e
+
+                            #--- Cree un label
+                            label $tps_dchi2.l4 -text " sec)"
+                            pack  $tps_dchi2.l4 -side left -anchor e
 
                        #--- Cree un frame pour le chargement d'un fichier
                        set tps_dchi2 [frame $frmdroit.tps_dchi2_3s -borderwidth 0 -cursor arrow -relief groove]
@@ -2101,7 +2180,7 @@
                        pack $graphe2 -in $graphel -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Creation du bouton select
-                            button $graphe2.view -image .view -compound center \
+                            button $graphe2.view -image .view -compound center -state disable \
                                -borderwidth 2 -takefocus 1 -command "::atos_analysis_gui::active_graphe $graphe l 2"
                             pack $graphe2.view -side left -anchor e -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
 
@@ -2651,7 +2730,7 @@
                             pack  $date_immersion_sol.l2 -side left -anchor e
 
                             #--- Cree un label
-                            label $date_immersion_sol.v2 -textvariable ::atos_analysis_gui::im_t_diff -fg $color(blue)
+                            label $date_immersion_sol.v2 -textvariable ::atos_analysis_gui::im_t_diff_2s -fg $color(blue)
                             pack  $date_immersion_sol.v2 -side left -anchor e
 
                             #--- Cree un label
@@ -2675,7 +2754,7 @@
                             pack  $date_emersion_sol.l2 -side left -anchor e
 
                             #--- Cree un label
-                            label $date_emersion_sol.v2 -textvariable ::atos_analysis_gui::em_t_diff -fg $color(blue)
+                            label $date_emersion_sol.v2 -textvariable ::atos_analysis_gui::em_t_diff_2s -fg $color(blue)
                             pack  $date_emersion_sol.v2 -side left -anchor e
 
                             #--- Cree un label

@@ -1,41 +1,27 @@
 TODOLIST
 
-- Acquisition : modifier la GUI pour pouvoir ajouter l'ocr
 
-- Analyse : ajouter le 2sigma dans les resultats
-
-- CDL : utiliser la mesure du photocentre de psf_tool_box
-
-- Analyse : Parcourir si annuler alors ca efface tout. 
-            il faut garder les infos precedentes
-
-- Analyse : appel a miriade si pas de reseau ajouter tk_msg
-
-- documentation 
-
-- CDL : faire different si sommation d images ou non
-
-- Datation : faire different start en fonction de l ocr ou interpolation
-
-- Datation : accelerer l interpolation ajouter "nobuf" en plus du "novisu"
+- Analyse : correction des paquets d images : mettre 0 ne marche pas
 
 - CDL : a la lecture du fichier time demander a l utilisateur s il veut croper 
         sur les donnees temporelles existantes
-
-- Analyse : correction des paquets d image : mettre 0 ne marche pas
 
 - CDL : si sommation d image alors calculer la moyenne temporelle entre chaque bloc
         et faire un tk_msg pour dire que le resultat final doit etre sommé par la moyenne
         obtenue /2.
         ou faire le calcul directement si le bouton sommation est validé
-        
+
+- documentation 
+
+- CDL : faire START different si sommation d images ou non
+
+- Datation : faire START different en fonction de l ocr ou interpolation
+
+- Datation : accelerer l interpolation ajouter "nobuf" en plus du "novisu"
+
 - Analyse rapport : il faut garder le remplissage des champs dans la session audela. 
 
-- Analyse rapport : il faut les coord lat et lon en degres.
-
-- Analyse : calcul Immersion/Emersion
-            Ajouter un bouton VALIDER en dessous des resultats qui aura pour effet de 
-            mettre la date obtenue comme reference.
+- CDL : utiliser la mesure du photocentre de psf_tool_box
             
 - Analyse : Coder le calcul Immersion/Emersion en C
 

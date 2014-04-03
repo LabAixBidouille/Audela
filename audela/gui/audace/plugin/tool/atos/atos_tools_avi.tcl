@@ -491,7 +491,7 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::acq_oneshot { visuNo frm } {
+   proc ::atos_tools_avi::acq_oneshot { visuNo } {
 
       global audace
 
@@ -541,26 +541,32 @@ namespace eval ::atos_tools_avi {
          }
       }
 
-      set statebutton [ $frm.photom.values.object.t.select cget -relief]
+      set statebutton [ $::atos_gui::frame(object,select) cget -relief]
       if { $statebutton=="sunken" } {
-         set delta [ $frm.photom.values.object.v.r.delta get]
-         ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+         set delta [ $::atos_gui::frame(object,delta) get]
+         ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $delta
       }
-      set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+      set statebutton [ $::atos_gui::frame(reference,select) cget -relief]
       if { $statebutton=="sunken" } {
-         set delta [ $frm.photom.values.reference.v.r.delta get]
-         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+         set delta [ $::atos_gui::frame(reference,delta) get]
+         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $delta
       }
-      set statebutton [ $frm.photom.values.image.t.select cget -relief]
+      set statebutton [ $::atos_gui::frame(image,select) cget -relief]
       if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+         ::atos_cdl_tools::get_fullimg $visuNo
       }
-
+      if {$::atos_ocr_tools::active_ocr} {
+         if {[$::atos_gui::frame(ocr,select) cget -relief]=="sunken" \
+          && [$::atos_gui::frame(ocr,select) cget -state]=="normal"} {
+            
+            ::atos_ocr_tools::workimage $visuNo
+         }
+      }
    }
 
 
 
-   proc ::atos_tools_avi::acq_oneshotcontinuous { visuNo frm } {
+   proc ::atos_tools_avi::acq_oneshotcontinuous { visuNo } {
 
       global audace
 
@@ -611,19 +617,26 @@ namespace eval ::atos_tools_avi {
          }
       }
 
-      set statebutton [ $frm.photom.values.object.t.select cget -relief]
+      set statebutton [ $::atos_gui::frame(object,select) cget -relief]
       if { $statebutton=="sunken" } {
-         set delta [ $frm.photom.values.object.v.r.delta get]
-         ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $frm.photom.values.object $delta
+         set delta [ $::atos_gui::frame(object,delta) get]
+         ::atos_cdl_tools::mesure_obj $::atos_cdl_tools::obj(x) $::atos_cdl_tools::obj(y) $visuNo $delta
       }
-      set statebutton [ $frm.photom.values.reference.t.select cget -relief]
+      set statebutton [ $::atos_gui::frame(reference,select) cget -relief]
       if { $statebutton=="sunken" } {
-         set delta [ $frm.photom.values.reference.v.r.delta get]
-         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $frm.photom.values.reference $delta
+         set delta [ $::atos_gui::frame(reference,delta) get]
+         ::atos_cdl_tools::mesure_ref $::atos_cdl_tools::ref(x) $::atos_cdl_tools::ref(y) $visuNo $delta
       }
-      set statebutton [ $frm.photom.values.image.t.select cget -relief]
+      set statebutton [ $::atos_gui::frame(image,select) cget -relief]
       if { $statebutton=="sunken" } {
-         ::atos_cdl_tools::get_fullimg $visuNo $frm.photom.values.image
+         ::atos_cdl_tools::get_fullimg $visuNo
+      }
+      if {$::atos_ocr_tools::active_ocr} {
+         if {[$::atos_gui::frame(ocr,select) cget -relief]=="sunken" \
+          && [$::atos_gui::frame(ocr,select) cget -state]=="normal"} {
+            
+            ::atos_ocr_tools::workimage $visuNo
+         }
       }
 
       after 100 " ::atos_tools_avi::acq_display $visuNo"
@@ -644,22 +657,22 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::acq_grab_read_status {chan frm} {
+   proc ::atos_tools_avi::acq_grab_read_status { chan } {
 
       if {![eof $chan]} {
          gets $chan line
          if {[string equal -length 4 "tcl:" $line]} {
             set line [string range $line 4 end]
             set free_disk [lindex [lsearch -index 0 -inline $line free_disk] 1]
-            $frm.infovideo.right.val.dispo configure -text $free_disk
+            $::atos_gui::frame(info,dispo) configure -text $free_disk
             set file_size [lindex [lsearch -index 0 -inline $line file_size_mb] 1]
-            $frm.infovideo.right.val.size configure -text $file_size
+            $::atos_gui::frame(info,size) configure -text $file_size
             set frame_count [lindex [lsearch -index 0 -inline $line frame_count] 1]
-            $frm.infovideo.left.val.nbi configure -text $frame_count
+            $::atos_gui::frame(info,nbi) configure -text $frame_count
             set duree [lindex [lsearch -index 0 -inline $line duree] 1]
-            $frm.infovideo.left.val.duree configure -text [format_seconds $duree]
+            $::atos_gui::frame(info,duree) configure -text [format_seconds $duree]
             set restduree [lindex [lsearch -index 0 -inline $line duree_rest] 1]
-            $frm.infovideo.right.val.restduree configure -text [format_seconds $restduree]
+            $::atos_gui::frame(info,restduree) configure -text [format_seconds $restduree]
          } else {
             if {[string equal -length 2 "W:" $line] || [string equal -length 2 "E:" $line]} {
                ::console::affiche_erreur "$line\n"
@@ -675,13 +688,13 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::acq_start { visuNo frm } {
+   proc ::atos_tools_avi::acq_start { visuNo } {
 
       global audace
 
       set dev $::atos_acq::frmdevpath
-      set destdir [$frm.form.v.destdir get]
-      set prefix  [$frm.form.v.prefix get]
+      set destdir [$::atos_gui::frame(dest,dir) get]
+      set prefix  [$::atos_gui::frame(dest,prefix) get]
 
       if { [acq_is_running] } {
          ::console::affiche_resultat "Acquisition en cours.\n"
@@ -724,7 +737,7 @@ namespace eval ::atos_tools_avi {
       }
 
       fconfigure $chan -blocking 0
-      fileevent $chan readable [list ::atos_tools_avi::acq_grab_read_status $chan $frm]
+      fileevent $chan readable [list ::atos_tools_avi::acq_grab_read_status $chan]
 
       after 100 " ::atos_tools_avi::acq_display $visuNo"
 
@@ -732,7 +745,7 @@ namespace eval ::atos_tools_avi {
 
 
 
-   proc ::atos_tools_avi::acq_stop { this } {
+   proc ::atos_tools_avi::acq_stop { } {
 
       global audace
       set avipid ""

@@ -123,6 +123,9 @@ namespace eval ::atos_analysis_gui {
       set ::atos_analysis_gui::im_t_inf           ""
       set ::atos_analysis_gui::im_t_sup           ""
       set ::atos_analysis_gui::im_t_diff          ""
+      set ::atos_analysis_gui::im_t_inf_2s        ""
+      set ::atos_analysis_gui::im_t_sup_2s        ""
+      set ::atos_analysis_gui::im_t_diff_2s       ""
       set ::atos_analysis_gui::im_t_inf_3s        ""
       set ::atos_analysis_gui::im_t_sup_3s        ""
       set ::atos_analysis_gui::im_t_diff_3s       ""
@@ -133,6 +136,9 @@ namespace eval ::atos_analysis_gui {
       set ::atos_analysis_gui::em_t_inf           ""
       set ::atos_analysis_gui::em_t_sup           ""
       set ::atos_analysis_gui::em_t_diff          ""
+      set ::atos_analysis_gui::em_t_inf_2s        ""
+      set ::atos_analysis_gui::em_t_sup_2s        ""
+      set ::atos_analysis_gui::em_t_diff_2s       ""
       set ::atos_analysis_gui::em_t_inf_3s        ""
       set ::atos_analysis_gui::em_t_sup_3s        ""
       set ::atos_analysis_gui::em_t_diff_3s       ""
@@ -1215,6 +1221,9 @@ namespace eval ::atos_analysis_gui {
          set ::atos_analysis_gui::im_t_inf         $::atos_analysis_tools::t_inf        
          set ::atos_analysis_gui::im_t_sup         $::atos_analysis_tools::t_sup        
          set ::atos_analysis_gui::im_t_diff        $::atos_analysis_tools::t_diff       
+         set ::atos_analysis_gui::im_t_inf_2s      $::atos_analysis_tools::t_inf_2s     
+         set ::atos_analysis_gui::im_t_sup_2s      $::atos_analysis_tools::t_sup_2s     
+         set ::atos_analysis_gui::im_t_diff_2s     $::atos_analysis_tools::t_diff_2s    
          set ::atos_analysis_gui::im_t_inf_3s      $::atos_analysis_tools::t_inf_3s     
          set ::atos_analysis_gui::im_t_sup_3s      $::atos_analysis_tools::t_sup_3s     
          set ::atos_analysis_gui::im_t_diff_3s     $::atos_analysis_tools::t_diff_3s    
@@ -1331,6 +1340,9 @@ namespace eval ::atos_analysis_gui {
          set ::atos_analysis_gui::em_t_inf         $::atos_analysis_tools::t_inf        
          set ::atos_analysis_gui::em_t_sup         $::atos_analysis_tools::t_sup        
          set ::atos_analysis_gui::em_t_diff        $::atos_analysis_tools::t_diff       
+         set ::atos_analysis_gui::em_t_inf_2s      $::atos_analysis_tools::t_inf_2s     
+         set ::atos_analysis_gui::em_t_sup_2s      $::atos_analysis_tools::t_sup_2s     
+         set ::atos_analysis_gui::em_t_diff_2s     $::atos_analysis_tools::t_diff_2s    
          set ::atos_analysis_gui::em_t_inf_3s      $::atos_analysis_tools::t_inf_3s     
          set ::atos_analysis_gui::em_t_sup_3s      $::atos_analysis_tools::t_sup_3s     
          set ::atos_analysis_gui::em_t_diff_3s     $::atos_analysis_tools::t_diff_3s    
@@ -1787,7 +1799,7 @@ namespace eval ::atos_analysis_gui {
       }
 
       if {[file exists $::atos_analysis_gui::prj_file] == 0} {
-         tk_messageBox -message "Le fichier n'existe pas !" -type yes
+         tk_messageBox -message "Le fichier n'existe pas !" -type ok
          return -code 0 "no"
       }
       
@@ -1971,6 +1983,9 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       if {![info exists ::atos_analysis_gui::im_t_inf                  ]} {set ::atos_analysis_gui::im_t_inf                   ""}
       if {![info exists ::atos_analysis_gui::im_t_sup                  ]} {set ::atos_analysis_gui::im_t_sup                   ""}
       if {![info exists ::atos_analysis_gui::im_t_diff                 ]} {set ::atos_analysis_gui::im_t_diff                  ""}
+      if {![info exists ::atos_analysis_gui::im_t_inf_2s               ]} {set ::atos_analysis_gui::im_t_inf_2s                ""}
+      if {![info exists ::atos_analysis_gui::im_t_sup_2s               ]} {set ::atos_analysis_gui::im_t_sup_2s                ""}
+      if {![info exists ::atos_analysis_gui::im_t_diff_2s              ]} {set ::atos_analysis_gui::im_t_diff_2s               ""}
       if {![info exists ::atos_analysis_gui::im_t_inf_3s               ]} {set ::atos_analysis_gui::im_t_inf_3s                ""}
       if {![info exists ::atos_analysis_gui::im_t_sup_3s               ]} {set ::atos_analysis_gui::im_t_sup_3s                ""}
       if {![info exists ::atos_analysis_gui::im_t_diff_3s              ]} {set ::atos_analysis_gui::im_t_diff_3s               ""}
@@ -1981,6 +1996,9 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       if {![info exists ::atos_analysis_gui::em_t_inf                  ]} {set ::atos_analysis_gui::em_t_inf                   ""}
       if {![info exists ::atos_analysis_gui::em_t_sup                  ]} {set ::atos_analysis_gui::em_t_sup                   ""}
       if {![info exists ::atos_analysis_gui::em_t_diff                 ]} {set ::atos_analysis_gui::em_t_diff                  ""}
+      if {![info exists ::atos_analysis_gui::em_t_inf_2s               ]} {set ::atos_analysis_gui::em_t_inf_2s                ""}
+      if {![info exists ::atos_analysis_gui::em_t_sup_2s               ]} {set ::atos_analysis_gui::em_t_sup_2s                ""}
+      if {![info exists ::atos_analysis_gui::em_t_diff_2s              ]} {set ::atos_analysis_gui::em_t_diff_2s               ""}
       if {![info exists ::atos_analysis_gui::em_t_inf_3s               ]} {set ::atos_analysis_gui::em_t_inf_3s                ""}
       if {![info exists ::atos_analysis_gui::em_t_sup_3s               ]} {set ::atos_analysis_gui::em_t_sup_3s                ""}
       if {![info exists ::atos_analysis_gui::em_t_diff_3s              ]} {set ::atos_analysis_gui::em_t_diff_3s               ""}
@@ -2153,6 +2171,9 @@ catch {
       puts $chan "set ::atos_analysis_gui::im_t_inf           \"$::atos_analysis_gui::im_t_inf\""
       puts $chan "set ::atos_analysis_gui::im_t_sup           \"$::atos_analysis_gui::im_t_sup\""
       puts $chan "set ::atos_analysis_gui::im_t_diff          \"$::atos_analysis_gui::im_t_diff\""
+      puts $chan "set ::atos_analysis_gui::im_t_inf_2s        \"$::atos_analysis_gui::im_t_inf_2s\""
+      puts $chan "set ::atos_analysis_gui::im_t_sup_2s        \"$::atos_analysis_gui::im_t_sup_2s\""
+      puts $chan "set ::atos_analysis_gui::im_t_diff_2s       \"$::atos_analysis_gui::im_t_diff_2s\""
       puts $chan "set ::atos_analysis_gui::im_t_inf_3s        \"$::atos_analysis_gui::im_t_inf_3s\""
       puts $chan "set ::atos_analysis_gui::im_t_sup_3s        \"$::atos_analysis_gui::im_t_sup_3s\""
       puts $chan "set ::atos_analysis_gui::im_t_diff_3s       \"$::atos_analysis_gui::im_t_diff_3s\""
@@ -2163,6 +2184,9 @@ catch {
       puts $chan "set ::atos_analysis_gui::em_t_inf           \"$::atos_analysis_gui::em_t_inf\""
       puts $chan "set ::atos_analysis_gui::em_t_sup           \"$::atos_analysis_gui::em_t_sup\""
       puts $chan "set ::atos_analysis_gui::em_t_diff          \"$::atos_analysis_gui::em_t_diff\""
+      puts $chan "set ::atos_analysis_gui::em_t_inf_2s        \"$::atos_analysis_gui::em_t_inf_2s\""
+      puts $chan "set ::atos_analysis_gui::em_t_sup_2s        \"$::atos_analysis_gui::em_t_sup_2s\""
+      puts $chan "set ::atos_analysis_gui::em_t_diff_2s       \"$::atos_analysis_gui::em_t_diff_2s\""
       puts $chan "set ::atos_analysis_gui::em_t_inf_3s        \"$::atos_analysis_gui::em_t_inf_3s\""
       puts $chan "set ::atos_analysis_gui::em_t_sup_3s        \"$::atos_analysis_gui::em_t_sup_3s\""
       puts $chan "set ::atos_analysis_gui::em_t_diff_3s       \"$::atos_analysis_gui::em_t_diff_3s\""
@@ -2348,8 +2372,8 @@ catch {
           #if {[string index $mr 0]==0} { set mr [string index $mr 1] } 
 
          # incertitude imm et em
-         set ad  $::atos_analysis_gui::im_t_diff
-         set ar  $::atos_analysis_gui::em_t_diff
+         set ad  $::atos_analysis_gui::im_t_diff_2s
+         set ar  $::atos_analysis_gui::em_t_diff_2s
          # duree integration
          set int $::atos_analysis_tools::corr_exposure
          # mid evenement
@@ -2555,7 +2579,9 @@ catch {
       set cpt 0
       set name ""
       foreach s_el $line {
-         if {$cpt>2} {append name $s_el}
+         gren_info "$cpt $s_el\n"
+         if {$cpt==3} {set name $s_el}
+         if {$cpt>3} {append name "_$s_el"}
          incr cpt
       }
       regsub -all { }  $name {_} name
@@ -2565,10 +2591,10 @@ catch {
       set ::atos_analysis_gui::occ_obj_type [lindex $line 1]     
       set ::atos_analysis_gui::occ_obj_id   [lindex $line 2]     
 
-      #::console::affiche_resultat  "obj = $::atos_analysis_gui::occ_obj \n"
-      #::console::affiche_resultat  "name = $::atos_analysis_gui::occ_obj_name \n"
-      #::console::affiche_resultat  "type = $::atos_analysis_gui::occ_obj_type \n"
-      #::console::affiche_resultat  "id = $::atos_analysis_gui::occ_obj_id \n"
+      ::console::affiche_resultat  "obj = $::atos_analysis_gui::occ_obj \n"
+      ::console::affiche_resultat  "name = $::atos_analysis_gui::occ_obj_name \n"
+      ::console::affiche_resultat  "type = $::atos_analysis_gui::occ_obj_type \n"
+      ::console::affiche_resultat  "id = $::atos_analysis_gui::occ_obj_id \n"
       ::console::affiche_resultat  "$::atos_analysis_gui::occ_obj_type $::atos_analysis_gui::occ_obj_id $::atos_analysis_gui::occ_obj_name \n"
 
    }
@@ -2661,8 +2687,24 @@ catch {
       # Recupere la position de l'observateur
       foreach t $text1 {
          if { [regexp {.*(\d+) h +(\d+) m +(\d+)\.(\d+) s (.+?).* (\d+) d +(\d+) ' +(\d+)\.(\d+) " +(.+?).* ([-+]?\d*\.?\d*) m.*} $t str loh lom los loms lowe lad lam las lams lans alt] } {
+            # "
             #gren_info "Longitude = $lowe $loh $lom $los $loms \n"
-            set ::atos_analysis_gui::longitude [format "%s %02dh%02dm%02d.%03ds" $lowe $loh $lom $los $loms ]
+            set lont [expr 15.0*($loh + $lom/60.0 + $los/3600.0 + $loms/3600000.0)]
+
+            if {$lowe=="E" || $lowe=="e"} {
+               set ::atos_analysis_gui::longitude_deg $lont
+            } else {
+               set ::atos_analysis_gui::longitude_deg [expr -$lont]
+            }
+
+            set lont [mc_angle2dms $lont]
+            set lod [lindex $lont 0]
+            set lom [lindex $lont 1]
+            set los [lindex $lont 2]
+            set ::atos_analysis_gui::longitude [format " %02dd %02dm %02.2fs (%s) " $lod $lom $los $lowe]
+
+            #set ::atos_analysis_gui::longitude [format "%s %02dh%02dm%02d.%03ds" $lowe $loh $lom $los $loms ]
+            #gren_info "Longitude = $::atos_analysis_gui::longitude\n"
             
             # cas particulier des nombre 001
             if {[ string index $lams 0]=="0"} {
@@ -2674,12 +2716,33 @@ catch {
             
             set lams [expr int($lams)]
             #gren_info "Latitude = $lans $lad $lam $las $lams \n"
-            set ::atos_analysis_gui::latitude  [format "%s %02dd%02dm%02d.%03ds" $lans $lad $lam $las $lams ]
-            set ::atos_analysis_gui::altitude  $alt
+            set latt [expr $lad + $lam/60.0 + $las/3600.0 + $lams/3600000.0]
+
+            if {$lans=="N" || $lans=="n"} {
+               set ::atos_analysis_gui::latitude_deg $latt
+            } else {
+               set ::atos_analysis_gui::latitude_deg [expr -$latt]
+            }
+
+            set latt [mc_angle2dms $latt]
+            set lad [lindex $latt 0]
+            set lam [lindex $latt 1]
+            set las [lindex $latt 2]
+
+            set ::atos_analysis_gui::latitude [format " %02dd %02dm %02.2fs (%s) " $lad $lam $las $lans]
+
+            #set ::atos_analysis_gui::latitude  [format "%s %02dd%02dm%02d.%03ds" $lans $lad $lam $las $lams ]
+
+            set ::atos_analysis_gui::altitude  [format "%.0f m" $alt]
+            
+            gren_info "Latitude  = $::atos_analysis_gui::latitude\n"
+            gren_info "Longitude = $::atos_analysis_gui::longitude\n"
+            gren_info "Altitude  = $::atos_analysis_gui::altitude\n"
          }      
       }
 
-      # Maj du nom de l asteroide      
+      # Maj du nom de l asteroide
+      set ::atos_analysis_gui::text1 $text1
       set ast [lindex $text1 2]
       if {$ast != ""} {
          ::atos_analysis_gui::set_object_name $ast
@@ -2825,6 +2888,37 @@ catch {
       # Broadcast script
       ::SampTools::broadcastAladinScript $script
    
+   }
+
+
+   proc ::atos_analysis_gui::modif_href { type } {
+   
+      if {$type == "i" } {
+         if {$::atos_analysis_gui::date_immersion_sol==""} {return}
+         set ::atos_analysis_gui::date_immersion $::atos_analysis_gui::date_immersion_sol
+         return
+      }
+      if {$type == "e" } {
+         if {$::atos_analysis_gui::date_emersion_sol==""} {return}
+         set ::atos_analysis_gui::date_emersion $::atos_analysis_gui::date_emersion_sol
+         return
+      }
+   
+   }
+
+
+   proc ::atos_analysis_gui::googlemaps {  } {
+      
+      global conf
+      
+      gren_info "latitude , Longitude = $::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg \n"
+      set url "http://maps.google.fr/maps?q=$::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg"
+      gren_info "url = $url\n"
+      
+      set answer [ catch { exec $conf(editsite_htm) $url & } ]
+      
+      gren_info "answer = $answer\n"
+      
    }
 
 }
