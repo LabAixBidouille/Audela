@@ -178,7 +178,7 @@ namespace eval ::atos_ocr_tools {
    # 
    proc ::atos_ocr_tools::ocr_iota_vti { msg_even msg_odd } {
 
-      set log 0
+      set log 1
 
       # Recuperation de l'heure depuis l'image paire
       set poslist [split [regexp -inline -all -- {\S+} $msg_even] " "]
@@ -192,7 +192,7 @@ namespace eval ::atos_ocr_tools {
       
       if { ! ( [string is double $hp] && [string is double $minp] \
             && [string is double $sp] && [string is double $msp] ) } {
-         return [list "no" 0 0 0 0 ]     
+         return [list "no" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
       }
 
       set hdp  [expr $hp + $minp/60.0 + ($sp+$msp/10000.0)/3600.0]
@@ -208,7 +208,7 @@ namespace eval ::atos_ocr_tools {
 
       if { ! ( [string is double $hi] && [string is double $mini] \
            && [string is double $si] && [string is double $msi] ) } {
-         return [list "no" 0 0 0 0 ]     
+         return [list "no" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
       }
 
       set hdi  [expr $hi + $mini/60.0 + ($si+$msi/10000.0)/3600.0]

@@ -1,7 +1,5 @@
 TODOLIST
 
-- BUG : ocr marche pas
-
 - Analyse : correction des paquets d images : mettre 0 ne marche pas
 
 - CDL : si sommation d image alors calculer la moyenne temporelle entre chaque bloc
