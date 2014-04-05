@@ -202,8 +202,8 @@ namespace eval ::atos_setup {
       set cwdWindow(rep_archives)    "2"
 
       set parent "$audace(base)"
-      set title "Choisir un repertoire des projets"
       set rep "$audace(rep_images)"
+      set title $caption(atos_setup,chgdir)
 
       set numerror [ catch { set filename "[ ::cwdWindow::tkplus_chooseDir "$rep" $title $This ]" } msg ]
       if { $numerror == "1" } {
@@ -225,20 +225,20 @@ namespace eval ::atos_setup {
 
       #--- Retourne l'item de la camera associee a la visu
       set camItem [ ::confVisu::getCamItem $visuNo ]
-      set frms $panneau(atos,$visuNo,atos_setup)
+      set frm $panneau(atos,$visuNo,atos_setup)
 
       #--- Cree des onglets
-      set onglets [frame $frms.onglets -borderwidth 0 -cursor arrow -relief groove]
-      pack $onglets -in $frms -side top -expand 0 -fill x -fill y -padx 10 -pady 5
+      set onglets [frame $frm.onglets -borderwidth 0 -cursor arrow -relief groove]
+      pack $onglets -in $frm -side top -expand 0 -fill x -fill y -padx 10 -pady 5
 
          pack [ttk::notebook $onglets.nb]
          set f0  [frame $onglets.nb.f0]
          set f1  [frame $onglets.nb.f1]
          set f2  [frame $onglets.nb.f2]
 
-         $onglets.nb add $f0  -text "Preferences"
-         $onglets.nb add $f1  -text "OCR"
-         $onglets.nb add $f2  -text "Demo"
+         $onglets.nb add $f0  -text $caption(atos_setup,preferences)
+         $onglets.nb add $f1  -text $caption(atos_setup,ocr)
+         #$onglets.nb add $f2  -text $caption(atos_setup,demo)
          $onglets.nb select $f0
          ttk::notebook::enableTraversal $onglets.nb
 
@@ -253,7 +253,7 @@ namespace eval ::atos_setup {
             frame $f0.frame3.dir_prj.frm -borderwidth 0
             pack $f0.frame3.dir_prj.frm -side left
 
-               button $f0.frame3.dir_prj.frm.but -text "..." -borderwidth 1 -command "::atos_setup::chgdir $frms.frame3.dir_prj.frm.value"
+               button $f0.frame3.dir_prj.frm.but -text "..." -borderwidth 1 -command "::atos_setup::chgdir $f0.frame3.dir_prj.frm.value"
                pack $f0.frame3.dir_prj.frm.but -side right -padx 2 -pady 0
                entry $f0.frame3.dir_prj.frm.value -width 40 -textvariable ::atos::parametres(atos,$visuNo,dir_prj)
                pack $f0.frame3.dir_prj.frm.value -side right -padx 5 -pady 0
@@ -373,20 +373,20 @@ namespace eval ::atos_setup {
                pack $f1.frame3.ocr.kiwi.lab -side right -padx 5 -pady 2
 
       #--- Frame pour l'onglet DEMO
-      frame $f2.frame3 -borderwidth 1 -relief raise
-      pack $f2.frame3 -side top -fill both -expand 1
-
-         #--- Frame pour le : repertoire projet
-#         frame $frms.frame3.demo -borderwidth 0
-#
-#            frame $frms.frame3.demo.frm -borderwidth 0
-#               button $frms.frame3.demo.frm.but -text "Télécharger" -borderwidth 1 -command "::atos_setup::demo $visuNo $frms.frame3.demo.frm.but"
-#               pack $frms.frame3.demo.frm.but -side right -padx 2 -pady 0
-#               label $frms.frame3.demo.frm.lab -text "Télécharger la demo : "
-#               pack $frms.frame3.demo.frm.lab -side right -padx 5 -pady 0
-#            pack $frms.frame3.demo.frm -side left
-#
-#         pack $frms.frame3.demo -side top -fill both -expand 1
+      #frame $f2.frame3 -borderwidth 1 -relief raise
+      #pack $f2.frame3 -side top -fill both -expand 1
+      #
+      #   #--- Frame pour le : repertoire projet
+      #   frame $f2.frame3.demo -borderwidth 0
+      #
+      #      frame $f2.frame3.demo.frm -borderwidth 0
+      #         button $f2.frame3.demo.frm.but -text "Télécharger" -borderwidth 1 -command "::atos_setup::demo $visuNo $f2.frame3.demo.frm.but"
+      #         pack $f2.frame3.demo.frm.but -side right -padx 2 -pady 0
+      #         label $f2.frame3.demo.frm.lab -text "Télécharger la demo : "
+      #         pack $f2.frame3.demo.frm.lab -side right -padx 5 -pady 0
+      #      pack $f2.frame3.demo.frm -side left
+      #
+      #   pack $f2.frame3.demo -side top -fill both -expand 1
 
    }
 
@@ -394,4 +394,3 @@ namespace eval ::atos_setup {
 
 #--- Initialisation au demarrage
 ::atos_setup::init
-
