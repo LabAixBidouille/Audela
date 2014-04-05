@@ -8,9 +8,7 @@
 # Mise à jour $Id$
 #
 
-
 namespace eval ::atos_cdl {
-
 
    #
    # atos_cdl::init
@@ -33,11 +31,11 @@ namespace eval ::atos_cdl {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                           { set ::atos::parametres(atos,$visuNo,messages)                           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }                      { set ::atos::parametres(atos,$visuNo,save_file_log)                      "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }                   { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)                   "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] }           { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }              { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                  { set ::atos::parametres(atos,$visuNo,messages)                 "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }             { set ::atos::parametres(atos,$visuNo,save_file_log)            "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }          { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)         "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] }  { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) "1" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }     { set ::atos::parametres(atos,$visuNo,verifier_index_depart)    "1" }
    }
 
    #
@@ -49,11 +47,11 @@ namespace eval ::atos_cdl {
       global panneau
 
       #--- confToWidget
-      set ::atos_cdl::panneau(atos,$visuNo,messages)                   $::atos::parametres(atos,$visuNo,messages)
-      set ::atos_cdl::panneau(atos,$visuNo,save_file_log)              $::atos::parametres(atos,$visuNo,save_file_log)
-      set ::atos_cdl::panneau(atos,$visuNo,alarme_fin_serie)           $::atos::parametres(atos,$visuNo,alarme_fin_serie)
-      set ::atos_cdl::panneau(atos,$visuNo,verifier_ecraser_fichier)   $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
-      set ::atos_cdl::panneau(atos,$visuNo,verifier_index_depart)      $::atos::parametres(atos,$visuNo,verifier_index_depart)
+      set ::atos_cdl::panneau(atos,$visuNo,messages)                 $::atos::parametres(atos,$visuNo,messages)
+      set ::atos_cdl::panneau(atos,$visuNo,save_file_log)            $::atos::parametres(atos,$visuNo,save_file_log)
+      set ::atos_cdl::panneau(atos,$visuNo,alarme_fin_serie)         $::atos::parametres(atos,$visuNo,alarme_fin_serie)
+      set ::atos_cdl::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
+      set ::atos_cdl::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
    }
 
    #
@@ -183,17 +181,12 @@ namespace eval ::atos_cdl {
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
         #--- Cree un label pour le titre
-        label $frm.titre -font $atosconf(font,arial_14_b) \
-              -text "$caption(atos_cdl,titre)"
-        pack $frm.titre \
-             -in $frm -side top -padx 3 -pady 3
-
+        label $frm.titre -font $atosconf(font,arial_14_b) -text "$caption(atos_cdl,titre)"
+        pack $frm.titre -in $frm -side top -padx 3 -pady 3
 
         #--- Cree un frame pour les 2 actions de traitement
         frame $frm.traitement -borderwidth 1 -relief raised -cursor arrow
         pack $frm.traitement -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-
 
         #--- Creation du traitement cdl par liste de fits
         frame $frm.traitement.fits -borderwidth 1 -relief raised -cursor arrow
@@ -204,63 +197,42 @@ namespace eval ::atos_cdl {
            button $frm.traitement.fits.ico -image .visu\
               -borderwidth 2 -width 130 -height 130 -compound center \
               -command "::atos_cdl::run_fits $this $visuNo $base"
-           pack $frm.traitement.fits.ico \
-              -in $frm.traitement.fits \
-              -side top -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add  $frm.traitement.fits.ico -text "Traitement par lot d'images"
-
+           pack $frm.traitement.fits.ico -in $frm.traitement.fits \
+              -side top -anchor w -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           DynamicHelp::add  $frm.traitement.fits.ico -text "$caption(atos_cdl,traite_img)"
 
         #--- Creation du traitement cdl par  avi
         frame $frm.traitement.avi -borderwidth 1 -relief raised -cursor arrow
         pack $frm.traitement.avi -in $frm.traitement -side right -expand 0 -fill x -padx 1 -pady 1
-
 
            #--- Creation du bouton
            image create photo .video -format PNG -file [ file join $audace(rep_plugin) tool atos img bouton_video.png ]
            button $frm.traitement.avi.ico -image .video\
               -borderwidth 2 -width 130 -height 130 -compound center \
               -command "::atos_cdl::run_avi $this $visuNo $base"
-           pack $frm.traitement.avi.ico \
-              -in $frm.traitement.avi \
-              -side left -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-           DynamicHelp::add  $frm.traitement.avi.ico -text "Traitement direct de la video"
+           pack $frm.traitement.avi.ico -in $frm.traitement.avi \
+              -side left -anchor w -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           DynamicHelp::add  $frm.traitement.avi.ico -text "$caption(atos_cdl,traite_video)"
 
-
-
-
-   #---
         #--- Cree un frame pour  les boutons d action 
-        frame $frm.action \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.action \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        frame $frm.action -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.action -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
            #--- Creation du bouton fermer
-           button $frm.action.fermer \
-              -text "$caption(atos_cdl,fermer)" -borderwidth 2 \
+           button $frm.action.fermer -text "$caption(atos_cdl,fermer)" -borderwidth 2 \
               -command "::atos_cdl::closeWindow $this $visuNo"
-           pack $frm.action.fermer -in $frm.action \
-              -side right -anchor e \
+           pack $frm.action.fermer -in $frm.action -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
-           button $frm.action.aide \
-              -text "$caption(atos_cdl,aide)" -borderwidth 2 \
+           button $frm.action.aide -text "$caption(atos_cdl,aide)" -borderwidth 2 \
               -command "::audace::showHelpPlugin tool atos atos_cdl.htm"
-           pack $frm.action.aide -in $frm.action \
-              -side right -anchor e \
+           pack $frm.action.aide -in $frm.action -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-
-
-
 
    }
 
 }
-
 
 #--- Initialisation au demarrage
 ::atos_cdl::init
