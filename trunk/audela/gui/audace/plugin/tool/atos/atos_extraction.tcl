@@ -10,7 +10,6 @@
 
 namespace eval ::atos_extraction {
 
-
    #
    # Chargement des captions
    #
@@ -58,6 +57,7 @@ namespace eval ::atos_extraction {
       set ::atos_tools::traitement "avi"
 
    }
+
 
 
    #
@@ -138,7 +138,6 @@ namespace eval ::atos_extraction {
       wm resizable $this 1 1
       wm title $this $caption(atos_extraction,titre)
       wm protocol $this WM_DELETE_WINDOW "::atos_extraction::closeWindow $this $visuNo"
-
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::atos_extraction::confToWidget $visuNo
