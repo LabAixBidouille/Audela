@@ -17,7 +17,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(atos_extraction,titre)               "Extraction Video AVI"
+set caption(atos_extraction,titre)               "ATOS - Video Extraction"
 
 set caption(atos_extraction,aide)                "Help"
 set caption(atos_extraction,fermer)              "Close"
@@ -43,7 +43,7 @@ set caption(atos_extraction,warnprefix)          "Default prefix filename: "
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(atos_extraction,titre)            "Extraction Video AVI"
+   set caption(atos_extraction,titre)            "ATOS - Extraction video"
 
    set caption(atos_extraction,aide)             "Aide"
    set caption(atos_extraction,fermer)           "Fermer"

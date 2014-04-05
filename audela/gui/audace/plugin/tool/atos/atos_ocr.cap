@@ -16,8 +16,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(atos_ocr,bar_title)           "atos - cdl"
-set caption(atos_ocr,main_title)          "acqvideolinux - Statut"
+set caption(atos_ocr,bar_title)           "ATOS - Time extraction"
+set caption(atos_ocr,main_title)          "acqvideolinux - Status"
 set caption(atos_ocr,titre)               "Datation des images"
 
 set caption(atos_ocr,label_bdd)           "Information du Serveur MySQL Local"
@@ -45,7 +45,7 @@ set caption(atos_ocr,mdprootsql)          "Veuillez saisir le mot de passe root 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(atos_ocr,bar_title)        "atos - ocr"
+   set caption(atos_ocr,bar_title)        "ATOS - Extraction du temps"
    set caption(atos_ocr,main_title)       "acqvideolinux - Statut"
    set caption(atos_ocr,titre)            "Datation des images"
 

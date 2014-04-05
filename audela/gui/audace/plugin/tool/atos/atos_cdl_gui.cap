@@ -16,8 +16,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(atos_cdl_gui,bar_title_fits)      "atos - cdl - fits"
-set caption(atos_cdl_gui,bar_title_avi)       "atos - cdl - avi"
+set caption(atos_cdl_gui,bar_title_fits)      "ATOS - LC fits"
+set caption(atos_cdl_gui,bar_title_avi)       "ATOS - LC avi"
 set caption(atos_cdl_gui,titre_fits)          "Courbe de lumiere d'un lot de fits"
 set caption(atos_cdl_gui,titre_avi)           "Courbe de lumiere d'une Video AVI"
 
@@ -46,10 +46,10 @@ set caption(atos_cdl_gui,mdprootsql)          "Veuillez saisir le mot de passe r
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(atos_cdl_gui,bar_title_fits)      "atos - cdl - fits"
-   set caption(atos_cdl_gui,bar_title_avi)       "atos - cdl - avi"
-   set caption(atos_cdl_gui,titre_fits)          "Courbe de lumiere d'un lot de fits"
-   set caption(atos_cdl_gui,titre_avi)           "Courbe de lumiere d'une Video AVI"
+   set caption(atos_cdl_gui,bar_title_fits)   "ATOS - CdL fits"
+   set caption(atos_cdl_gui,bar_title_avi)    "ATOS - CdL avi"
+   set caption(atos_cdl_gui,titre_fits)       "Courbe de lumiere d'un lot de fits"
+   set caption(atos_cdl_gui,titre_avi)        "Courbe de lumiere d'une Video AVI"
 
    set caption(atos_cdl_gui,label_bdd)        "Information du Serveur MySQL Local"
    set caption(atos_cdl_gui,label_connect)    "Connexion Serveur................"

@@ -48,7 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_go,test)               "Test mode debug"
    set caption(atos_go,ressource)          "Re-charge les scripts"
    set caption(atos_go,verif)              "Vérification de l'avi"
-   set caption(atos_go,time)               "Extraction de l'heure"
+   set caption(atos_go,time)               "Extraction du temps"
    set caption(atos_go,cdl)                "Courbe de lumière"
    set caption(atos_go,analysis)           "Analyse"
 

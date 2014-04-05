@@ -8,9 +8,7 @@
 # Mise Ã  jour $Id$
 #
 
-
 namespace eval ::atos_ocr_gui {
-
 
    #
    # Chargement des captions
@@ -26,7 +24,6 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
    #
    # Initialisation des variables de configuration
    #
@@ -34,15 +31,13 @@ namespace eval ::atos_ocr_gui {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,messages) ] }                           { set ::atos::parametres(atos,$visuNo,messages)                           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,save_file_log) ] }                      { set ::atos::parametres(atos,$visuNo,save_file_log)                      "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie) ] }                   { set ::atos::parametres(atos,$visuNo,alarme_fin_serie)                   "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] }           { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)           "1" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }              { set ::atos::parametres(atos,$visuNo,verifier_index_depart)              "1" }
+      if { ! [info exists ::atos::parametres(atos,$visuNo,messages)]}                 {set ::atos::parametres(atos,$visuNo,messages)                 "1"}
+      if { ! [info exists ::atos::parametres(atos,$visuNo,save_file_log)]}            {set ::atos::parametres(atos,$visuNo,save_file_log)            "1"}
+      if { ! [info exists ::atos::parametres(atos,$visuNo,alarme_fin_serie)]}         {set ::atos::parametres(atos,$visuNo,alarme_fin_serie)         "1"}
+      if { ! [info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)]} {set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) "1"}
+      if { ! [info exists ::atos::parametres(atos,$visuNo,verifier_index_depart)]}    {set ::atos::parametres(atos,$visuNo,verifier_index_depart)    "1"}
 
    }
-
-
 
 
 
@@ -55,11 +50,11 @@ namespace eval ::atos_ocr_gui {
       global panneau
 
       #--- confToWidget
-      set ::atos_ocr_gui::panneau(atos,$visuNo,messages)                   $::atos::parametres(atos,$visuNo,messages)
-      set ::atos_ocr_gui::panneau(atos,$visuNo,save_file_log)              $::atos::parametres(atos,$visuNo,save_file_log)
-      set ::atos_ocr_gui::panneau(atos,$visuNo,alarme_fin_serie)           $::atos::parametres(atos,$visuNo,alarme_fin_serie)
-      set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_ecraser_fichier)   $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
-      set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_index_depart)      $::atos::parametres(atos,$visuNo,verifier_index_depart)
+      set ::atos_ocr_gui::panneau(atos,$visuNo,messages)                 $::atos::parametres(atos,$visuNo,messages)
+      set ::atos_ocr_gui::panneau(atos,$visuNo,save_file_log)            $::atos::parametres(atos,$visuNo,save_file_log)
+      set ::atos_ocr_gui::panneau(atos,$visuNo,alarme_fin_serie)         $::atos::parametres(atos,$visuNo,alarme_fin_serie)
+      set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
+      set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
 
       set ::atos_photom::rect_img      ""
       set ::atos_ocr_tools::active_ocr 0
@@ -71,9 +66,6 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
-
-
    #
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
@@ -82,10 +74,6 @@ namespace eval ::atos_ocr_gui {
       global panneau
 
    }
-
-
-
-
 
 
 
@@ -104,10 +92,6 @@ namespace eval ::atos_ocr_gui {
 
 
 
-
-
-
-
    #
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
@@ -115,10 +99,6 @@ namespace eval ::atos_ocr_gui {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::atos::getPluginType ] ] \
          [ ::atos::getPluginDirectory ] atos_ocr_gui.htm
    }
-
-
-
-
 
 
 
@@ -132,11 +112,6 @@ namespace eval ::atos_ocr_gui {
       
       destroy $this
    }
-
-
-
-
-
 
 
 
@@ -170,11 +145,10 @@ namespace eval ::atos_ocr_gui {
       wm geometry $this +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
       wm resizable $this 1 1
 
-      if { $::atos_tools::traitement=="fits" } { wm title $this $caption(atos_ocr_gui,bar_title_fits) }
-      if { $::atos_tools::traitement=="avi" }  { wm title $this $caption(atos_ocr_gui,bar_title_avi) }
+      if { $::atos_tools::traitement == "fits" } { wm title $this $caption(atos_ocr_gui,bar_title_fits) }
+      if { $::atos_tools::traitement == "avi"  } { wm title $this $caption(atos_ocr_gui,bar_title_avi) }
 
       wm protocol $this WM_DELETE_WINDOW "::atos_ocr_gui::closeWindow $this $visuNo"
-
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::atos_ocr_gui::confToWidget $visuNo
@@ -183,8 +157,8 @@ namespace eval ::atos_ocr_gui {
       set frm $this.frm_atos_ocr_gui
       set ::atos_gui::frame(base) $frm
 
-      if { $::atos_tools::traitement=="fits" } { set titre $caption(atos_ocr_gui,titre_fits) }
-      if { $::atos_tools::traitement=="avi" }  { set titre $caption(atos_ocr_gui,titre_avi) }
+      if { $::atos_tools::traitement == "fits" } { set titre $caption(atos_ocr_gui,titre_fits) }
+      if { $::atos_tools::traitement == "avi"  } { set titre $caption(atos_ocr_gui,titre_avi) }
 
       #--- Cree un frame pour afficher le status de la base
       frame $frm -borderwidth 0 -cursor arrow -relief groove
@@ -196,108 +170,95 @@ namespace eval ::atos_ocr_gui {
         pack $frm.titre \
              -in $frm -side top -padx 3 -pady 3
 
-
         if { $::atos_tools::traitement == "fits" } { 
 
-             #--- Cree un frame pour la gestion de fichier
-             frame $frm.form -borderwidth 1 -relief raised -cursor arrow
-             pack $frm.form -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-               #--- Cree un frame pour la gestion de fichier
-               frame $frm.form.butopen -borderwidth 1 -cursor arrow
-               pack $frm.form.butopen -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
-
-                    #--- Creation du bouton open
-                    button $frm.form.butopen.open \
-                       -text "open" -borderwidth 2 \
-                       -command "::atos_ocr_tools::open_flux $visuNo"
-                    pack $frm.form.butopen.open \
-                       -in $frm.form.butopen -side left -anchor e \
-                       -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-               #--- Cree un frame pour la gestion de fichier
-               frame $frm.form.field -borderwidth 1 -cursor arrow
-               pack $frm.form.field -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
-
-                    #--- Cree un frame pour afficher les intitules
-                    set intitle [frame $frm.form.field.l -borderwidth 0]
-                    pack $intitle -in $frm.form.field -side left
-
-                      #--- Cree un label pour
-                      label $intitle.destdir -font $atosconf(font,courier_10) -padx 3 \
-                            -text "repertoire des images"
-                      pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-                      #--- Cree un label pour
-                      label $intitle.prefix -font $atosconf(font,courier_10) \
-                            -text "Prefixe du fichier"
-                      pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
-
-
-                    #--- Cree un frame pour afficher les valeurs
-                    set inparam [frame $frm.form.field.v -borderwidth 0]
-                    pack $inparam -in $frm.form.field -side left -expand 0 -fill x
-
-                    set ::atos_gui::frame(open,fields) $inparam
-
-                      #--- Cree un label pour le repetoire destination
-                      entry $inparam.destdir -fg $color(blue) -width 40
-                      pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
-
-                      #--- Cree un label pour le prefixe
-                      entry $inparam.prefix  -fg $color(blue)
-                      pack $inparam.prefix -in $inparam -side top -pady 1 -anchor w
-
-                    #--- Cree un frame pour afficher les extras
-                    set inbutton [frame $frm.form.field.e -borderwidth 0]
-                    pack $inbutton -in $frm.form.field -side left -expand 0 -fill x
-
-                      #--- Cree un button
-                      button $inbutton.chgdir \
-                       -text "..." -borderwidth 2 \
-                       -command "::atos_tools::chgdir $inparam.destdir" 
-                      pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
-
-                      #--- Cree un label pour le nb d image
-                      label $inbutton.blank -font $atosconf(font,courier_10) \
-                            -text ""
-                      pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
-
+          #--- Cree un frame pour la gestion de fichier
+          frame $frm.form -borderwidth 1 -relief raised -cursor arrow
+          pack $frm.form -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+    
+            #--- Cree un frame pour la gestion de fichier
+            frame $frm.form.butopen -borderwidth 1 -cursor arrow
+            pack $frm.form.butopen -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
+    
+               #--- Creation du bouton open
+               button $frm.form.butopen.open \
+                  -text "open" -borderwidth 2 \
+                  -command "::atos_ocr_tools::open_flux $visuNo"
+               pack $frm.form.butopen.open \
+                  -in $frm.form.butopen -side left -anchor e \
+                  -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+    
+            #--- Cree un frame pour la gestion de fichier
+            frame $frm.form.field -borderwidth 1 -cursor arrow
+            pack $frm.form.field -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
+    
+               #--- Cree un frame pour afficher les intitules
+               set intitle [frame $frm.form.field.l -borderwidth 0]
+               pack $intitle -in $frm.form.field -side left
+  
+                 #--- Cree un label pour
+                 label $intitle.destdir -font $atosconf(font,courier_10) -padx 3 \
+                       -text $caption(atos_ocr_gui,dir_images)
+                 pack $intitle.destdir -in $intitle -side top -padx 3 -pady 1 -anchor w
+  
+                 #--- Cree un label pour
+                 label $intitle.prefix -font $atosconf(font,courier_10) \
+                       -text $caption(atos_ocr_gui,prefix_images)
+                 pack $intitle.prefix -in $intitle -side top -padx 3 -pady 1 -anchor w
+    
+    
+               #--- Cree un frame pour afficher les valeurs
+               set inparam [frame $frm.form.field.v -borderwidth 0]
+               pack $inparam -in $frm.form.field -side left -expand 0 -fill x
+  
+               set ::atos_gui::frame(open,fields) $inparam
+  
+                 #--- Cree un label pour le repetoire destination
+                 entry $inparam.destdir -fg $color(blue) -width 40
+                 pack $inparam.destdir -in $inparam -side top -pady 1 -anchor w
+  
+                 #--- Cree un label pour le prefixe
+                 entry $inparam.prefix  -fg $color(blue)
+                 pack $inparam.prefix -in $inparam -side top -pady 1 -anchor w
+    
+               #--- Cree un frame pour afficher les extras
+               set inbutton [frame $frm.form.field.e -borderwidth 0]
+               pack $inbutton -in $frm.form.field -side left -expand 0 -fill x
+  
+                 #--- Cree un button
+                 button $inbutton.chgdir \
+                  -text "..." -borderwidth 2 \
+                  -command "::atos_tools::chgdir $inparam.destdir" 
+                 pack $inbutton.chgdir -in $inbutton -side top -pady 0 -anchor w
+  
+                 #--- Cree un label pour le nb d image
+                 label $inbutton.blank -font $atosconf(font,courier_10) -text ""
+                 pack $inbutton.blank -in $inbutton -side top -padx 3 -pady 1 -anchor w
 
         }
 
-
-
-       if { $::atos_tools::traitement == "avi" }  { 
-
-             #--- Cree un frame pour 
-             frame $frm.open \
-                   -borderwidth 1 -relief raised -cursor arrow
-             pack $frm.open \
-                  -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-             #--- Creation du bouton open
-             button $frm.open.but_open \
-                -text "open" -borderwidth 2 \
-                -command "::atos_ocr_tools::open_flux $visuNo"
-             pack $frm.open.but_open \
-                -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             #--- Creation du bouton select
-             button $frm.open.but_select \
-                -text "..." -borderwidth 2 -takefocus 1 \
-                -command "::atos_ocr_tools::select $visuNo"
-             pack $frm.open.but_select \
-                -side left -anchor e \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
-             #--- Cree un label pour le chemin de l'AVI
-             entry $frm.open.avipath 
-             pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
+        if { $::atos_tools::traitement == "avi" }  { 
+          #--- Cree un frame pour 
+          frame $frm.open -borderwidth 1 -relief raised -cursor arrow
+          pack $frm.open -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+ 
+          #--- Creation du bouton open
+          button $frm.open.but_open -text "open" -borderwidth 2 -command "::atos_ocr_tools::open_flux $visuNo"
+          pack $frm.open.but_open -side left -anchor e -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+ 
+          #--- Creation du bouton select
+          button $frm.open.but_select \
+             -text "..." -borderwidth 2 -takefocus 1 \
+             -command "::atos_ocr_tools::select $visuNo"
+          pack $frm.open.but_select \
+             -side left -anchor e \
+             -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+ 
+          #--- Cree un label pour le chemin de l'AVI
+          entry $frm.open.avipath 
+          pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
         }
-
 
         set info_load [frame $frm.info_load]
         pack $info_load -in $frm -side top  -padx 1 -pady 1
@@ -311,7 +272,6 @@ namespace eval ::atos_ocr_gui {
            label $info_load.nbtotal -font $atosconf(font,courier_10) -text ""
 
            grid $info_load.status $info_load.nbtotal
-
 
         #--- Creation de la barre de defilement
         scale $frm.scrollbar -from 0 -to 1 -length 600 -variable ::atos_tools::scrollbar \
@@ -365,14 +325,11 @@ namespace eval ::atos_ocr_gui {
            -side left -anchor w \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
-
           #--- Affichage positions
           frame $frm.pos \
                 -borderwidth 1 -relief raised -cursor arrow
           pack $frm.pos \
                -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
 
              #--- Creation du bouton setmin
              button $frm.pos.setmin \
@@ -405,7 +362,6 @@ namespace eval ::atos_ocr_gui {
 
                 set ::atos_gui::frame(posmin) $frm.posmin
 
-
              #--- Cree un frame pour afficher
              frame $frm.pos.max -borderwidth 0
              pack $frm.pos.max -in $frm.pos -side left
@@ -437,8 +393,6 @@ namespace eval ::atos_ocr_gui {
                 -side left -anchor w \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
-
   #--- infos datation
 
           #--- Cree un frame 
@@ -446,7 +400,7 @@ namespace eval ::atos_ocr_gui {
           pack $frm.tdatation -in $frm -side top -anchor w
 
           #---Titre
-          label $frm.tdatation.title -font $atosconf(font,arial_10_b) -text "Datation" 
+          label $frm.tdatation.title -font $atosconf(font,arial_10_b) -text $caption(atos_ocr_gui,datation)
           pack  $frm.tdatation.title -in $frm.tdatation -side top -anchor w -ipady 10
 
 
@@ -469,7 +423,7 @@ namespace eval ::atos_ocr_gui {
               frame $ocr.check -borderwidth 0 -cursor arrow
               pack  $ocr.check -in $ocr -side left -expand 0 -anchor w -padx 10
 
-                 checkbutton $ocr.check.but -highlightthickness 0 -text "OCR" \
+                 checkbutton $ocr.check.but -highlightthickness 0 -text $caption(atos_ocr_gui,ocr) \
                              -variable ::atos_ocr_tools::active_ocr \
                              -command "::atos_ocr_tools::select_ocr $visuNo" 
                  pack $ocr.check.but -in $ocr.check -side left -padx 1 -pady 2
@@ -480,26 +434,13 @@ namespace eval ::atos_ocr_gui {
 
                  #--- Cree un label
                  label $ocr.incrust.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
-                       -text "Type d'incrustateur : "
+                       -text $caption(atos_ocr_gui,type_incrustateur)
                  pack  $ocr.incrust.lab -in $ocr.incrust -side left -anchor w -padx 1 -pady 2
 
                  #--- Cree un spinbox
                  spinbox $ocr.incrust.spin -font $atosconf(font,courier_10) -fg $color(blue) \
-                         -value [ list "IOTA-VTI" "TIM-10 small font" "TIM-10 big font" "KIWI-OSD"] -width 10 -state readonly
+                         -value [list "IOTA-VTI" "TIM-10" "KIWI-OSD"] -width 10 -state readonly
                  pack  $ocr.incrust.spin -in $ocr.incrust -side left -anchor w 
-
-              #--- Cree un frame
-              #frame $ocr.msfield -borderwidth 0 -cursor arrow
-              #pack  $ocr.msfield -in $ocr -side left -expand 0 -anchor w -padx 5
-              #
-              #   #--- Label
-              #   label $ocr.msfield.lab -text "Field ms:"
-              #   pack $ocr.msfield.lab -in $ocr.msfield -side left -padx 0 -expand 0
-              #
-              #   #--- Entry
-              #   spinbox $ocr.msfield.spin -font $atosconf(font,courier_10) -fg $color(blue) \
-              #           -value [ list 1 2] -width 2 -state readonly 
-              #   pack $ocr.msfield.spin -in $ocr.msfield -side top -padx 0 -expand 0
 
               #--- Cree un frame pour le selecteur du champ date
               frame $ocr.selectdate -borderwidth 0 -cursor arrow
@@ -507,11 +448,11 @@ namespace eval ::atos_ocr_gui {
 
                  #--- Cree un label
                  label $ocr.selectdate.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
-                       -text "Champ date (h:m:s ms \[ms\]):"
+                       -text $caption(atos_ocr_gui,date_field)
                  pack  $ocr.selectdate.lab -in $ocr.selectdate -side left -anchor w -padx 1 -pady 2
 
                  #--- Cree un bouton
-                 button $ocr.selectdate.box -text "Select" -borderwidth 1 -takefocus 1 \
+                 button $ocr.selectdate.box -text $caption(atos_ocr_gui,select) -borderwidth 1 -takefocus 1 \
                         -command "::atos_ocr_tools::select_time $visuNo" -state disabled
                  pack $ocr.selectdate.box -in $ocr.selectdate -side left -anchor e 
 
@@ -682,46 +623,44 @@ namespace eval ::atos_ocr_gui {
               pack  $setunset.t -in $setunset -side left -expand 5 -anchor w
 
               #--- Cree un bouton
-              button $setunset.t.verif -text "Verifié" -borderwidth 1 -takefocus 1 \
+              button $setunset.t.verif -text $caption(atos_ocr_gui,ocr_verifie) -borderwidth 1 -takefocus 1 \
                                      -command "::atos_ocr_tools::verif $visuNo"
               pack $setunset.t.verif -in $setunset.t -side left -anchor e 
 
               #--- Cree un bouton
-              button $setunset.t.ocr -text "OCR" -borderwidth 1 -takefocus 1 \
+              button $setunset.t.ocr -text $caption(atos_ocr_gui,ocr) -borderwidth 1 -takefocus 1 \
                                      -command ""
               pack $setunset.t.ocr -in $setunset.t -side left -anchor c 
 
               #--- Cree un bouton
-              button $setunset.t.interpol -text "Interpolé" -borderwidth 1 -takefocus 1 \
+              button $setunset.t.interpol -text $caption(atos_ocr_gui,ocr_interpole) -borderwidth 1 -takefocus 1 \
                                      -command ""
               pack $setunset.t.interpol -in $setunset.t -side left -anchor w 
 
-
-
    #---
+
         #--- Cree un frame pour  les boutons d action 
         frame $frm.infofrm -borderwidth 1 -relief raised -cursor arrow
         pack $frm.infofrm -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
 
           #--- Cree un frame pour afficher les intitules
           set intitle [frame $frm.infofrm.l -borderwidth 0]
           pack $intitle -in $frm.infofrm -side left
 
             #--- Cree un label pour le status
-            label $intitle.nbimage -font $atosconf(font,courier_10) -text "Nb images"
+            label $intitle.nbimage -font $atosconf(font,courier_10) -text $caption(atos_ocr_gui,ocr_nb_img)
             pack $intitle.nbimage -in $intitle -side top -anchor w
 
             #--- Cree un label pour le nb d image
-            label $intitle.nbverif -font $atosconf(font,courier_10) -text "Nb verif"
+            label $intitle.nbverif -font $atosconf(font,courier_10) -text $caption(atos_ocr_gui,ocr_nb_verif)
             pack $intitle.nbverif -in $intitle -side top -anchor w
 
             #--- Cree un label pour le nb d image
-            label $intitle.nbocr -font $atosconf(font,courier_10) -text "Nb ocr"
+            label $intitle.nbocr -font $atosconf(font,courier_10) -text $caption(atos_ocr_gui,ocr_nb_ocr)
             pack $intitle.nbocr -in $intitle -side top -anchor w
 
             #--- Cree un label pour le nb d image
-            label $intitle.nbinterp -font $atosconf(font,courier_10) -text "Nb interpole"
+            label $intitle.nbinterp -font $atosconf(font,courier_10) -text $caption(atos_ocr_gui,ocr_nb_interpole)
             pack $intitle.nbinterp -in $intitle -side top -anchor w
 
           #--- Cree un frame pour afficher les valeurs
@@ -764,6 +703,7 @@ namespace eval ::atos_ocr_gui {
               -in $frm.action \
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.start -text $caption(atos_ocr_gui,start)
 
            set ::atos_gui::frame(buttons,start) $frm.action.start
 
@@ -774,6 +714,7 @@ namespace eval ::atos_ocr_gui {
               -in $frm.action \
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.graph -text $caption(atos_ocr_gui,graph)
 
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
@@ -782,15 +723,7 @@ namespace eval ::atos_ocr_gui {
               -in $frm.action \
               -side left -anchor w \
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
-
-#           image create photo .graph  -format PNG -file [ file join $audace(rep_plugin) tool atos img cdl.png ]
-#           button $frm.action.graph -image .graph\
-#              -borderwidth 2 -width 48 -height 48 -compound center \
-#              -command ""
-#           pack $frm.action.graph \
-#              -in $frm.action \
-#              -side left -anchor w \
-#              -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
+           DynamicHelp::add $frm.action.save -text $caption(atos_ocr_gui,save)
 
            #--- Creation du bouton fermer
            button $frm.action.fermer \
@@ -808,16 +741,11 @@ namespace eval ::atos_ocr_gui {
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-
       bind $frm.scrollbar <ButtonRelease> "::atos_ocr_tools::move_scroll $visuNo"
 
    }
    
-
-   
-
 }
-
 
 #--- Initialisation au demarrage
 ::atos_ocr_gui::init

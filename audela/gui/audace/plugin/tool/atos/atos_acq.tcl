@@ -292,7 +292,6 @@ namespace eval ::atos_acq {
       frame $frm -borderwidth 0 -cursor arrow -relief groove
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-
         #--- Cree un frame pour les boutons d action
 
         set btnav [frame $frm.btnav -borderwidth 3]
@@ -301,48 +300,48 @@ namespace eval ::atos_acq {
            #--- Creation du bouton one shot
            image create photo .oneshot -format PNG -file [ file join $audace(rep_plugin) tool atos img oneshot.png ]
            button $frm.oneshot -image .oneshot\
-              -borderwidth 2 -width 30 -height 30 -compound center \
+              -borderwidth 2 -width 32 -height 32 -compound center \
               -state disabled \
               -command "::atos_tools_avi::acq_oneshot $visuNo"
            pack $frm.oneshot \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
+              -padx 2 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.oneshot -text "$caption(atos_acq,btn_oneshot)"
 
            #--- Creation du bouton one shot perpetuel
-           image create photo .oneshot2 -format PNG -file [ file join $audace(rep_plugin) tool atos img oneshot.png ]
+           image create photo .oneshot2 -format PNG -file [ file join $audace(rep_plugin) tool atos img film.png ]
            button $frm.oneshot2 -image .oneshot2\
-              -borderwidth 2 -width 30 -height 30 -compound center \
+              -borderwidth 2 -width 32 -height 32 -compound center \
               -state disabled \
-              -command "::atos_tools_avi::acq_oneshotcontinuous $visuNo"
+              -command "$frm.oneshot configure -state disabled; $frm.oneshot2 configure -state normal; $frm.demarre configure -state disabled; ::atos_tools_avi::acq_oneshotcontinuous $visuNo"
            pack $frm.oneshot2 \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
+              -padx 2 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.oneshot2 -text "$caption(atos_acq,btn_acqcont)"
 
            #--- Creation du bouton start acquisition
-           image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool atos img demarre.png ]
+           image create photo .demarre -format PNG -file [ file join $audace(rep_plugin) tool atos img demarre2.png ]
            button $frm.demarre -image .demarre\
-              -borderwidth 2 -width 30 -height 30 -compound center \
+              -borderwidth 2 -width 32 -height 32 -compound center \
               -state disabled \
-              -command "::atos_tools_avi::acq_start $visuNo"
+              -command "$frm.oneshot configure -state disabled; $frm.oneshot2 configure -state disabled; $frm.demarre configure -state normal; ::atos_tools_avi::acq_start $visuNo"
            pack $frm.demarre \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
+              -padx 2 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.demarre -text "$caption(atos_acq,btn_start)"
 
            #--- Creation du bouton stop acquisition
            image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool atos img stop.png ]
            button $frm.stop -image .stop\
-              -borderwidth 2 -width 30 -height 30 -compound center \
-              -command "::atos_tools_avi::acq_stop"
+              -borderwidth 2 -width 32 -height 32 -compound center \
+              -command "::atos_tools_avi::acq_stop; $frm.oneshot configure -state active; $frm.oneshot2 configure -state active; $frm.demarre configure -state active"
            pack $frm.stop \
               -in $frm.btnav \
               -side left -anchor w \
-              -padx 1 -pady 1 -ipadx 1 -ipady 1 -expand 0
+              -padx 2 -pady 1 -ipadx 1 -ipady 1 -expand 0
            DynamicHelp::add $frm.stop -text "$caption(atos_acq,btn_stop)"
 
 
