@@ -336,6 +336,11 @@ namespace eval ::atos_tools_avi {
 
    proc ::atos_tools_avi::imagecount {  } {
 
+      if {![info exists ::atos_tools::nb_open_frames]} {
+         # Rien a faire car pas de video chargee
+         return
+      }
+
       set posmin $::atos_gui::frame(posmin)
       set posmax $::atos_gui::frame(posmax)
       set imagecount $::atos_gui::frame(imagecount)
