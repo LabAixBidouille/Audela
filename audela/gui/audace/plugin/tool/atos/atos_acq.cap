@@ -69,6 +69,12 @@ set caption(atos_acq,ssb_pix)             "S/N pixel"
 set caption(atos_acq,ocr)                 "OCR"
 set caption(atos_acq,type_incrust)        "Time inserter: "
 set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+set caption(atos_acq,binning)             "Binning"
+set caption(atos_acq,sommation)           "Summation"
+set caption(atos_acq,uncosmic)            "UnCosmic"
+set caption(atos_acq,preview)             "Preview"
+set caption(atos_acq,appliquer)           "Apply"
+set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -126,7 +132,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)              "OCR"
    set caption(atos_acq,type_incrust)     "Type d'incrustateur : "
    set caption(atos_acq,date_field)       "Champs date (h:m:s ms \[ms\]):"
-
    set caption(atos_acq,binning)          "Binning"
    set caption(atos_acq,sommation)        "Sommation"
    set caption(atos_acq,uncosmic)         "UnCosmic"
@@ -190,6 +195,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -247,6 +258,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -304,6 +321,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -361,6 +384,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -418,6 +447,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -475,6 +510,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -532,6 +573,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_acq,ocr)                 "OCR"
    set caption(atos_acq,type_incrust)        "Time inserter: "
    set caption(atos_acq,date_field)          "Date fields (h:m:s ms \[ms\]):"
+   set caption(atos_acq,binning)             "Binning"
+   set caption(atos_acq,sommation)           "Summation"
+   set caption(atos_acq,uncosmic)            "UnCosmic"
+   set caption(atos_acq,preview)             "Preview"
+   set caption(atos_acq,appliquer)           "Apply"
+   set caption(atos_acq,activer)             "Activates change of geometry\nStart index:"
 
 }
 
