@@ -178,7 +178,7 @@ namespace eval ::atos_ocr_tools {
    # 
    proc ::atos_ocr_tools::ocr_iota_vti { msg_even msg_odd } {
 
-      set log 1
+      set log 0
 
       # Recuperation de l'heure depuis l'image paire
       set poslist [split [regexp -inline -all -- {\S+} $msg_even] " "]
@@ -188,7 +188,7 @@ namespace eval ::atos_ocr_tools {
       set sp   [scan [lindex $t 2] "%d"]
       set msp  [scan [lindex $poslist 1] "%d"]
 
-      if {$log == 1} { ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: " }
+      if {$log == 1} { ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: \n" }
       
       if { ! ( [string is double $hp] && [string is double $minp] \
             && [string is double $sp] && [string is double $msp] ) } {
@@ -204,7 +204,7 @@ namespace eval ::atos_ocr_tools {
       set mini [scan [lindex $t 1] "%d"]
       set si   [scan [lindex $t 2] "%d"]
       set msi  [scan [lindex $poslist 1] "%d"]
-      if {$log == 1} { ::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: " }
+      if {$log == 1} { ::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: \n" }
 
       if { ! ( [string is double $hi] && [string is double $mini] \
            && [string is double $si] && [string is double $msi] ) } {
@@ -319,8 +319,7 @@ namespace eval ::atos_ocr_tools {
                   set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi) ocr.jpg"]
                } msg]
              }
-             "TIM-10 small font" -
-             "TIM-10 big font" {
+             "TIM-10" {
                set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
                set err [catch {
                   set result [exec sh -c "convert [lindex $deint_ocr 1] -blur 0x0.4 -unsharp 0x15.0 [lindex $deint_ocr 1]"]
@@ -369,8 +368,7 @@ namespace eval ::atos_ocr_tools {
              "Black Box" {
                set ocr [::atos_ocr_tools::ocr_bbox $msg]
              }
-             "TIM-10 small font" -
-             "TIM-10 big font" {
+             "TIM-10 {
                set ocr [::atos_ocr_tools::ocr_tim10 $msg]
              }
              "IOTA-VTI" {

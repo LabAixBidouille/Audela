@@ -16,28 +16,48 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-   set caption(atos_acq,titre)            "atos - Acquisition video"
-   set caption(atos_acq,aide)             "Aide"
-   set caption(atos_acq,fermer)           "Fermer"
-
-   set caption(atos_acq,rep_dest)         "Repertoire destination"
-   set caption(atos_acq,prefixe_fichiers) "Prefixe des fichiers"
-
-   set caption(atos_acq,btn_oneshot)      "Prend une image"
-   set caption(atos_acq,btn_acqcont)      "Acquisition continue"
-   set caption(atos_acq,btn_start)        "Lance l'aquisition"
-   set caption(atos_acq,btn_stop)         "Arrete l'aquisition"
-
-   set caption(atos_acq,info_video)       "Info Video"
-   set caption(atos_acq,info_fps)         "fps"
-   set caption(atos_acq,info_nbi)         "nb image"
-   set caption(atos_acq,info_duree)       "Duree"
-   set caption(atos_acq,info_size)        "taille fichier"
-   set caption(atos_acq,info_dispo)       "taille dispo"
-   set caption(atos_acq,info_restduree)   "Duree restante"
+set caption(atos_acq,titre)               "ATOS - Video Acquisition"
+set caption(atos_acq,aide)                "Help"
+set caption(atos_acq,fermer)              "Close"
+                                          
+set caption(atos_acq,rep_dest)            "Destination directory"
+set caption(atos_acq,prefixe_fichiers)    "Filename prefix"
+                                          
+set caption(atos_acq,btn_oneshot)         "One shot"
+set caption(atos_acq,btn_acqcont)         "Start acquisition"
+set caption(atos_acq,btn_start)           "Start and save acquisition"
+set caption(atos_acq,btn_stop)            "Stop aquisition"
+                                          
+set caption(atos_acq,info_video)          "Video info"
+set caption(atos_acq,info_fps)            "FPS"
+set caption(atos_acq,info_nbi)            "Nb image"
+set caption(atos_acq,info_duree)          "Duration"
+set caption(atos_acq,info_size)           "File size"
+set caption(atos_acq,info_dispo)          "Available size"
+set caption(atos_acq,info_restduree)      "Remaining duration"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(atos_acq,titre)            "ATOS - Acquisition video"
+   set caption(atos_acq,aide)             "Aide"
+   set caption(atos_acq,fermer)           "Fermer"
+
+   set caption(atos_acq,rep_dest)         "Répertoire destination"
+   set caption(atos_acq,prefixe_fichiers) "Préfixe des fichiers"
+
+   set caption(atos_acq,btn_oneshot)      "Prend une image"
+   set caption(atos_acq,btn_acqcont)      "Acquisition continue"
+   set caption(atos_acq,btn_start)        "Acquisition continue avec sauvegarde"
+   set caption(atos_acq,btn_stop)         "Arrête l'aquisition"
+
+   set caption(atos_acq,info_video)       "Info video"
+   set caption(atos_acq,info_fps)         "FPS"
+   set caption(atos_acq,info_nbi)         "Nb image"
+   set caption(atos_acq,info_duree)       "Durée"
+   set caption(atos_acq,info_size)        "Taille fichier"
+   set caption(atos_acq,info_dispo)       "Taille dispo"
+   set caption(atos_acq,info_restduree)   "Durée restante"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
