@@ -8,7 +8,6 @@
 # Mise Ã  jour $Id$
 #
 
-
 namespace eval ::atos_ocr_tools {
 
    variable sortie
@@ -17,6 +16,7 @@ namespace eval ::atos_ocr_tools {
    variable nbocr
    variable nbinterp
    variable timing
+
 
 
    proc ::atos_ocr_tools::select_time { visuNo } {
@@ -57,23 +57,37 @@ namespace eval ::atos_ocr_tools {
 
 
 
+   proc ::atos_ocr_tools::select_only_interpole { } {
+
+      set ocr $::atos_gui::frame(ocr_setup)
+
+      if {[$ocr.check.but cget -state] == "disabled"} {
+         $ocr.check.but configure -state active
+      } else {
+         $ocr.check.but configure -state disabled
+      }
+
+   }
+
+
+
    proc ::atos_ocr_tools::select_ocr { visuNo } {
 
       global color
-      set setup $::atos_gui::frame(ocr_setup)
+      set ocr $::atos_gui::frame(ocr_setup)
       set setunset $::atos_gui::frame(setunset)
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "0"} {
-         $setup.incrust.spin configure -state disabled
-         $setup.selectdate.box configure -state disabled
+         $ocr.incrust.spin configure -state disabled
+         $ocr.selectdate.box configure -state disabled
          $setunset.t.ocr configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
          $setunset.t.ocr configure -state disabled
          return
       } else {
-         $setup.incrust.spin  configure -state normal
-         $setup.selectdate.box configure -state normal
-         $setunset.t.ocr    configure -state normal
+         $ocr.incrust.spin configure -state normal
+         $ocr.selectdate.box configure -state normal
+         $setunset.t.ocr configure -state normal
          ::atos_ocr_tools::workimage $visuNo
          return
       }
@@ -287,186 +301,181 @@ namespace eval ::atos_ocr_tools {
       set setup    $::atos_gui::frame(ocr_setup)
       set datetime $::atos_gui::frame(datetime)
       set setunset $::atos_gui::frame(setunset)
-
       set statebutton [$setup.selectdate.box cget -relief]
 
-      # desactivation
-      if {$::atos_ocr_tools::active_ocr == "1" && $statebutton == "sunken"} {
+      if {$::atos_ocr_tools::active_ocr == "0" || $statebutton != "sunken"} {
+         # OCR non actif, return
+         return -1
+      }
 
-          set box [$setup.incrust.spin get]
-          set rect $::atos_photom::rect_img
+      # Extraction de la date a partir de l'OCR
+      set box [$setup.incrust.spin get]
+      set rect $::atos_photom::rect_img
 
-          if { [info exists $rect] } {
-             return 0
-          }
+      if { [info exists $rect] } {
+         return 0
+      }
 
-          set bufNo [ visu$visuNo buf ]
-          buf$bufNo window $rect
+      set bufNo [ visu$visuNo buf ]
+      buf$bufNo window $rect
 
-          set mx [::confVisu::getMirrorX $visuNo]
-          if { $mx == 1 } { buf$bufNo mirrorx }
+      set mx [::confVisu::getMirrorX $visuNo]
+      if { $mx == 1 } { buf$bufNo mirrorx }
 
-          set my [::confVisu::getMirrorY $visuNo]
-          if { $my == 1 } { buf$bufNo mirrory }
+      set my [::confVisu::getMirrorY $visuNo]
+      if { $my == 1 } { buf$bufNo mirrory }
 
-          # buf1 save ocr.png
-          set stat [buf$bufNo stat]
-          buf$bufNo savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0]
+      # buf1 save ocr.png
+      set stat [buf$bufNo stat]
+      buf$bufNo savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0]
 
-          switch $box {
-             "KIWI-OSD" {
-               set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi) ocr.jpg"]
-               } msg]
-             }
-             "TIM-10" {
-               set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
-               set err [catch {
-                  set result [exec sh -c "convert [lindex $deint_ocr 1] -blur 0x0.4 -unsharp 0x15.0 [lindex $deint_ocr 1]"]
-               } msg]
-               set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) [lindex $deint_ocr 1]"]
-               } msg]
-             }
-             "IOTA-VTI" {
-               # Deentrelace l'image
-               set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
-               # Extrait l'OCR de l'image paire
-               set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 0]"]
-               } msg_even]
-               # Extrait l'OCR de l'image impaire
-               set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 1]"]
-               } msg_odd]
-               set msg "\n$msg_even\n$msg_odd"
-             }
-             default {
-               set err [catch {
-                  set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_default) ocr.jpg"]
-               } msg]
-             }
-          }
+      switch $box {
+         "KIWI-OSD" {
+           set err [catch {
+              set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi) ocr.jpg"]
+           } msg]
+         }
+         "TIM-10" {
+           set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
+           set err [catch {
+              set result [exec sh -c "convert [lindex $deint_ocr 1] -blur 0x0.4 -unsharp 0x15.0 [lindex $deint_ocr 1]"]
+           } msg]
+           set err [catch {
+              set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) [lindex $deint_ocr 1]"]
+           } msg]
+         }
+         "IOTA-VTI" {
+           # Deentrelace l'image
+           set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
+           # Extrait l'OCR de l'image paire
+           set err [catch {
+              set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 0]"]
+           } msg_even]
+           # Extrait l'OCR de l'image impaire
+           set err [catch {
+              set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 1]"]
+           } msg_odd]
+           set msg "\n$msg_even\n$msg_odd"
+         }
+         default {
+           set err [catch {
+              set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_default) ocr.jpg"]
+           } msg]
+         }
+      }
 
-          if {$err == 1} {
+      if {$err == 1} {
 
-            ::console::affiche_erreur "Failed to extract OCR: $msg \n"
-            $datetime.h.val   delete 0 end
-            $datetime.h.val   insert 0 "?"
-            $datetime.min.val delete 0 end
-            $datetime.min.val insert 0 "?"
-            $datetime.s.val   delete 0 end
-            $datetime.s.val   insert 0 "?"
-            $datetime.ms.val  delete 0 end
-            $datetime.ms.val  insert 0 "?"
-            $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
-            return 0
-
-          }
-
-          switch $box {
-             "Black Box" {
-               set ocr [::atos_ocr_tools::ocr_bbox $msg]
-             }
-             "TIM-10 {
-               set ocr [::atos_ocr_tools::ocr_tim10 $msg]
-             }
-             "IOTA-VTI" {
-               set ocr [::atos_ocr_tools::ocr_iota_vti $msg_even $msg_odd]
-             }
-             default {
-               set ocr [list "no" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
-             }
-          }
-
-          set pass [lindex $ocr 0]
-
-          set date [lindex $ocr 1]
-          set yy [$datetime.y.val get]
-          if {[lindex $date 0] != "XXXX"} { set yy [return_4digit [lindex $date 0]] }
-          set mm [$datetime.m.val get]
-          if {[lindex $date 1] != "XX"}   { set mm [return_2digit [lindex $date 1]] }
-          set dd [$datetime.d.val get]
-          if {[lindex $date 2] != "XX"}   { set dd [return_2digit [lindex $date 2]] }
-
-          set hms [lindex $ocr 2]
-          set h   [return_2digit [lindex $hms 0]]
-          set min [return_2digit [lindex $hms 1]]
-          set s   [return_2digit [lindex $hms 2]]
-          set ms  [return_3digit [lindex $hms 3]]
-
-          if { $pass == "ok" } {
-
-             set err [ catch {
-
-                 regexp {[0-9][0-9]} $h matched
-                 if { $h != $matched } {set pass "no"}
-                 regexp {[0-9][0-9]} $min matched
-                 if { $min != $matched } {set pass "no"}
-                 regexp {[0-9][0-9]} $s matched
-                 if { $s != $matched } {set pass "no"}
-                 regexp {[0-9][0-9][0-9]} $ms matched
-                 if { $ms != $matched } {set pass "no"}
-
-             } msg ]
-
-             if { $err != 0 } {set pass "no"}
-
-          }
-
-          # affichage des resultats
-          if { $pass == "ok" } {
-
-             $datetime.y.val   delete 0 end
-             $datetime.y.val   insert 0 $yy
-             $datetime.m.val   delete 0 end
-             $datetime.m.val   insert 0 $mm
-             $datetime.d.val   delete 0 end
-             $datetime.d.val   insert 0 $dd
-
-             $datetime.h.val   delete 0 end
-             $datetime.h.val   insert 0 $h
-             $datetime.min.val delete 0 end
-             $datetime.min.val insert 0 $min
-             $datetime.s.val   delete 0 end
-             $datetime.s.val   insert 0 $s
-             $datetime.ms.val  delete 0 end
-             $datetime.ms.val  insert 0 $ms
-             $setunset.t.ocr   configure -bg "#00891b" -fg $color(white)
-             return 1
-
-          } else {
-
-             ::console::affiche_erreur "OCR failed: $pass $h $min $s $ms\n"
-
-             $datetime.y.val   delete 0 end
-             $datetime.y.val   insert 0 $yy
-             $datetime.m.val   delete 0 end
-             $datetime.m.val   insert 0 $mm
-             $datetime.d.val   delete 0 end
-             $datetime.d.val   insert 0 $dd
-
-             $datetime.h.val   delete 0 end
-             $datetime.h.val   insert 0 $h
-             $datetime.min.val delete 0 end
-             $datetime.min.val insert 0 $min
-             $datetime.s.val   delete 0 end
-             $datetime.s.val   insert 0 $s
-             $datetime.ms.val  delete 0 end
-             $datetime.ms.val  insert 0 $ms
-             $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
-             return 0
-
-          }
+        ::console::affiche_erreur "Failed to extract OCR: $msg \n"
+        $datetime.h.val   delete 0 end
+        $datetime.h.val   insert 0 "?"
+        $datetime.min.val delete 0 end
+        $datetime.min.val insert 0 "?"
+        $datetime.s.val   delete 0 end
+        $datetime.s.val   insert 0 "?"
+        $datetime.ms.val  delete 0 end
+        $datetime.ms.val  insert 0 "?"
+        $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
+        return 0
 
       }
-      # L ocr n est pas active
-      return -1
+
+      switch $box {
+         "Black Box" {
+           set ocr [::atos_ocr_tools::ocr_bbox $msg]
+         }
+         "TIM-10 {
+           set ocr [::atos_ocr_tools::ocr_tim10 $msg]
+         }
+         "IOTA-VTI" {
+           set ocr [::atos_ocr_tools::ocr_iota_vti $msg_even $msg_odd]
+         }
+         default {
+           set ocr [list "no" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
+         }
+      }
+
+      set pass [lindex $ocr 0]
+
+      set date [lindex $ocr 1]
+      set yy [$datetime.y.val get]
+      if {[lindex $date 0] != "XXXX"} { set yy [return_4digit [lindex $date 0]] }
+      set mm [$datetime.m.val get]
+      if {[lindex $date 1] != "XX"}   { set mm [return_2digit [lindex $date 1]] }
+      set dd [$datetime.d.val get]
+      if {[lindex $date 2] != "XX"}   { set dd [return_2digit [lindex $date 2]] }
+
+      set hms [lindex $ocr 2]
+      set h   [return_2digit [lindex $hms 0]]
+      set min [return_2digit [lindex $hms 1]]
+      set s   [return_2digit [lindex $hms 2]]
+      set ms  [return_3digit [lindex $hms 3]]
+
+      if { $pass == "ok" } {
+
+         set err [ catch {
+
+            regexp {[0-9][0-9]} $h matched
+            if { $h != $matched } {set pass "no"}
+            regexp {[0-9][0-9]} $min matched
+            if { $min != $matched } {set pass "no"}
+            regexp {[0-9][0-9]} $s matched
+            if { $s != $matched } {set pass "no"}
+            regexp {[0-9][0-9][0-9]} $ms matched
+            if { $ms != $matched } {set pass "no"}
+
+         } msg ]
+
+         if { $err != 0 } {set pass "no"}
+
+      }
+
+      # affichage des resultats
+      if { $pass == "ok" } {
+
+         $datetime.y.val   delete 0 end
+         $datetime.y.val   insert 0 $yy
+         $datetime.m.val   delete 0 end
+         $datetime.m.val   insert 0 $mm
+         $datetime.d.val   delete 0 end
+         $datetime.d.val   insert 0 $dd
+
+         $datetime.h.val   delete 0 end
+         $datetime.h.val   insert 0 $h
+         $datetime.min.val delete 0 end
+         $datetime.min.val insert 0 $min
+         $datetime.s.val   delete 0 end
+         $datetime.s.val   insert 0 $s
+         $datetime.ms.val  delete 0 end
+         $datetime.ms.val  insert 0 $ms
+         $setunset.t.ocr   configure -bg "#00891b" -fg $color(white)
+         return 1
+
+      } else {
+
+         ::console::affiche_erreur "OCR failed: $pass $h $min $s $ms\n"
+
+         $datetime.y.val   delete 0 end
+         $datetime.y.val   insert 0 $yy
+         $datetime.m.val   delete 0 end
+         $datetime.m.val   insert 0 $mm
+         $datetime.d.val   delete 0 end
+         $datetime.d.val   insert 0 $dd
+
+         $datetime.h.val   delete 0 end
+         $datetime.h.val   insert 0 $h
+         $datetime.min.val delete 0 end
+         $datetime.min.val insert 0 $min
+         $datetime.s.val   delete 0 end
+         $datetime.s.val   insert 0 $s
+         $datetime.ms.val  delete 0 end
+         $datetime.ms.val  insert 0 $ms
+         $setunset.t.ocr   configure -bg $color(red) -fg $color(white)
+         return 0
+
+      }
+  
    }
-
-
-
-
 
 
 
@@ -565,6 +574,8 @@ namespace eval ::atos_ocr_tools {
 
    }
 
+
+
    proc ::atos_ocr_tools::verif_yeardigit { x } {
 
       set res [ regexp {[1-2][0-9]{3}} $x matched ]
@@ -573,6 +584,8 @@ namespace eval ::atos_ocr_tools {
       return 0
 
    }
+
+
 
    proc ::atos_ocr_tools::verif_hourdigit { x } {
 
@@ -584,6 +597,8 @@ namespace eval ::atos_ocr_tools {
 
    }
 
+
+
    proc ::atos_ocr_tools::verif_msdigit { x } {
 
       set res [ regexp {[0-9]{1,3}} $x matched ]
@@ -592,6 +607,8 @@ namespace eval ::atos_ocr_tools {
       return 0
 
    }
+
+
 
    proc ::atos_ocr_tools::return_2digit { x } {
 
@@ -609,6 +626,8 @@ namespace eval ::atos_ocr_tools {
       }
 
    }
+
+
 
    proc ::atos_ocr_tools::return_3digit { x } {
 
@@ -629,6 +648,8 @@ namespace eval ::atos_ocr_tools {
       }
 
    }
+
+
 
    proc ::atos_ocr_tools::return_4digit { x } {
 
@@ -671,7 +692,7 @@ namespace eval ::atos_ocr_tools {
          incr ::atos_ocr_tools::nbverif -1
          set ::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) 0
          ::atos_ocr_tools::workimage $visuNo
-         getinfofrm $visuNo
+         ::atos_ocr_tools::getinfofrm $visuNo
          return
       }
 
@@ -742,13 +763,9 @@ namespace eval ::atos_ocr_tools {
       set ::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) 1
       set ::atos_ocr_tools::timing($::atos_tools::cur_idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
       #tk_messageBox -message "$caption(bddimages_status,consoleErr3) $msg" -type ok
-      getinfofrm $visuNo
+      ::atos_ocr_tools::getinfofrm $visuNo
 
    }
-
-
-
-
 
 
 
@@ -771,17 +788,12 @@ namespace eval ::atos_ocr_tools {
 
 
 
-
-
    proc ::atos_ocr_tools::select { visuNo } {
 
       ::atos_tools::select $visuNo
       ::atos_ocr_tools::open_flux $visuNo
 
    }
-
-
-
 
 
 
@@ -815,6 +827,8 @@ namespace eval ::atos_ocr_tools {
 
    }
 
+
+
    proc ::atos_ocr_tools::start_next_image { visuNo } {
 
       if {$::atos_ocr_tools::active_ocr == "1" && [ $::atos_gui::frame(ocr_setup).selectdate.box cget -relief] == "sunken"} {
@@ -826,9 +840,8 @@ namespace eval ::atos_ocr_tools {
    }
 
 
-   proc ::atos_ocr_tools::start { visuNo } {
 
-      set log 0
+   proc ::atos_ocr_tools::start { visuNo } {
 
       if {![info exists ::atos_tools::cur_idframe]} {
          # Rien a faire car pas de video chargee
@@ -836,15 +849,13 @@ namespace eval ::atos_ocr_tools {
          return
       }
 
-   # Extraction OCR
-
-      ::console::affiche_resultat "Extraction des OCR ...\n"
+      ::console::affiche_resultat "Extraction des dates ...\n"
 
       set idframebegin $::atos_tools::cur_idframe
 
       set posmin $::atos_gui::frame(posmin)
       set fmin [$posmin get]
-      if {$fmin==""} {
+      if {$fmin == ""} {
          set ::atos_tools::frame_min 1
       } else {
          set ::atos_tools::frame_min $fmin
@@ -874,10 +885,11 @@ namespace eval ::atos_ocr_tools {
          if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
             set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
             set ::atos_ocr_tools::timing($idframe,interpol) 0
-            ::console::affiche_resultat "$idframe -> $::atos_ocr_tools::timing($idframe,dateiso)\n"
+            ::console::affiche_resultat "  $idframe -> $::atos_ocr_tools::timing($idframe,dateiso)\n"
             incr cpt
          }
       }
+
       if {$cpt < 2} {
          tk_messageBox -message "Vous devez VALIDER au moins deux dates dans le cas eventuel d'une interpolation. Idealement au debut et a la fin." -type ok
          return
@@ -896,34 +908,69 @@ namespace eval ::atos_ocr_tools {
 #            set ::atos_ocr_tools::timing($idframe,jd) ""
 #      }
 
-      ::console::affiche_resultat "Debut analyse\n"
+
+      #if {$::atos_ocr_tools::active_only_interpole == 0} {
+      #
+      #
+      #   for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+      #      if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
+      #         set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
+      #         set ::atos_ocr_tools::timing($idframe,interpol) 0
+      #         ::console::affiche_resultat "  $idframe -> $::atos_ocr_tools::timing($idframe,dateiso)\n"
+      #         incr cpt
+      #      }
+      #   }
+      #
+      #
+      #
+      #         set jdai $::atos_ocr_tools::timing($idfrmav,jd)
+      #         set jdaf $::atos_ocr_tools::timing($idfrmap,jd)
+      #         
+      #         set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
+      #         set jd [ format "%6.10f" $jd]
+      #         #::console::affiche_resultat "JD=$jd"
+      #         set dateiso [mc_date2iso8601 $jd]
+      #         set ::atos_ocr_tools::timing($idframe,jd) $jd
+      #         set ::atos_ocr_tools::timing($idframe,dateiso) $dateiso
+      #
+      #
+      #
+      #
+      #   $action.start configure -image .start
+      #   $action.start configure -relief raised
+      #   $action.start configure -command "::atos_ocr_tools::start $visuNo"
+      #
+      #   set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      #   ::console::affiche_resultat "... extraction des dates par interpolation en $tt secondes\n"
+      #   ::console::affiche_resultat "Fin\n"
+      #   return
+      #
+      #}
+
+      
+
+      ::console::affiche_resultat "* Debut analyse\n"
+
       while {$::atos_ocr_tools::sortie == 0} {
 
-         update
-         getinfofrm $visuNo
+         ::atos_ocr_tools::getinfofrm $visuNo
          set idframe $::atos_tools::cur_idframe
+         update
+
          #::console::affiche_resultat "$idframe : \[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \]\n"
 
          if {$idframe == $::atos_tools::frame_end} {
             set ::atos_ocr_tools::sortie 1
-            if {$log} { ::console::affiche_resultat "Ok, last frame ($::atos_tools::frame_end)\n"}
+            #::console::affiche_resultat "Ok, last frame ($::atos_tools::frame_end)\n"
          }
-
-         set pass "no"
 
          set ::atos_tools::scrollbar $idframe
 
      # Verifie
 
+         set pass "no"
          if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
-            #::console::affiche_resultat "verif: $idframe => $::atos_ocr_tools::timing($idframe,dateiso)\n"
-            # calcul jd
-     #       set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
-            #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] V\n"
-     #       set ::atos_ocr_tools::timing($idframe,interpol) 0
-            
             ::atos_ocr_tools::start_next_image $visuNo
-            #::atos_tools::next_image $visuNo
             set pass "ok"
          }
 
@@ -942,30 +989,16 @@ namespace eval ::atos_ocr_tools {
                set s   [$datetime.s.val get]
                set ms  [$datetime.ms.val get]
 
-               set  pass "ok"
-               if { [verif_yeardigit $y] } {
-                  set  pass "no"
-               }
-               if { [verif_2numdigit $m] } {
-                  set  pass "no"
-               }
-               if { [verif_2numdigit $d] } {
-                  set  pass "no"
-               }
-               if { [verif_hourdigit $h] } {
-                  set  pass "no"
-               }
-               if { [verif_2numdigit $min] } {
-                  set  pass "no"
-               }
-               if { [verif_2numdigit $s] } {
-                  set  pass "no"
-               }
-               if { [verif_msdigit $ms] } {
-                  set  pass "no"
-               }
+               set pass "ok"
+               if { [verif_yeardigit $y]   } { set pass "no" }
+               if { [verif_2numdigit $m]   } { set pass "no" }
+               if { [verif_2numdigit $d]   } { set pass "no" }
+               if { [verif_hourdigit $h]   } { set pass "no" }
+               if { [verif_2numdigit $min] } { set pass "no" }
+               if { [verif_2numdigit $s]   } { set pass "no" }
+               if { [verif_msdigit $ms]    } { set pass "no" }
 
-               if { $pass == "ok" } {
+               if {$pass == "ok"} {
                   set m   [return_2digit $m]
                   set d   [return_2digit $d]
                   set h   [return_2digit $h]
@@ -976,13 +1009,11 @@ namespace eval ::atos_ocr_tools {
                   incr ::atos_ocr_tools::nbocr
                   set ::atos_ocr_tools::timing($idframe,dateiso) "$y-$m-${d}T$h:$min:$s.$ms"
                   set ::atos_ocr_tools::timing($idframe,jd) [mc_date2jd $::atos_ocr_tools::timing($idframe,dateiso)]
-
                   set ::atos_ocr_tools::timing($idframe,ocr) 1
                   set ::atos_ocr_tools::timing($idframe,interpol) 0
                   #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] O\n"
 
                   ::atos_ocr_tools::start_next_image $visuNo
-                  #::atos_tools::next_image $visuNo
 
                   set pass "ok"
                }
@@ -996,144 +1027,148 @@ namespace eval ::atos_ocr_tools {
             set ::atos_ocr_tools::timing($idframe,ocr) 0
             incr ::atos_ocr_tools::nbinterp
             #::console::affiche_resultat "\[$idframe / $::atos_tools::nb_frames / [expr $::atos_tools::nb_frames-$idframe] \] I\n"
-
             ::atos_ocr_tools::start_next_image $visuNo
-            #::atos_tools::next_image $visuNo
-            
          }
 
       }
+
       set tt1 [clock clicks -milliseconds]
       set tt [format "%.3f" [expr ($tt1 - $tt0)/1000.]]
-      ::console::affiche_resultat "Traitement en $tt secondes\n"
-
+      ::console::affiche_resultat "  ... analyse en $tt secondes\n"
 
       set idframefin $idframe
 
 # Verification des OCR
 
-      ::console::affiche_resultat "Verification des OCR :\n"
+      if {$::atos_ocr_tools::nbocr > 0} {
 
-      set ::atos_ocr_tools::sortie 0
-      
-      set cpt 0
-      set cptbad  0
-      
-      set idframe $idframebegin
-      while {$::atos_ocr_tools::sortie == 0} {
+         ::console::affiche_resultat "* Verification des OCR\n"
+   
+         set cpt 0
+         set cptbad 0
+         set ::atos_ocr_tools::sortie 0
+         set idframe $idframebegin
+   
+         while {$::atos_ocr_tools::sortie == 0} {
 
-         set ::atos_tools::scrollbar $idframe
-         update
-         #::console::affiche_resultat "."
-         if {$idframe == $idframefin} {
-            set ::atos_ocr_tools::sortie 1
-         }
-
-
-         if {$::atos_ocr_tools::timing($idframe,ocr) == 1 \
-          && $::atos_ocr_tools::timing($idframe,verif) != 1} {
-
-            # OK on interpole ! pour verifier la difference avec l ocr
-
-            set idfrmap [ ::atos_ocr_tools::get_idfrmap $idframe 2]
-            set idfrmav [ ::atos_ocr_tools::get_idfrmav $idframe 2]
-
-            if { $idfrmav == -1 || $idfrmap == -1 } {
-               set idfrmav [::atos_ocr_tools::get_idfrmap $idframebegin 1]
-               set idfrmap [::atos_ocr_tools::get_idfrmav $::atos_tools::frame_max 1]
+            set ::atos_tools::scrollbar $idframe
+            update
+   
+            if {$idframe == $idframefin} {
+               set ::atos_ocr_tools::sortie 1
             }
-
-            if { $idfrmav == -1 || $idfrmap == -1 } {
-               gren_erreur "Erreur verif OCR : $idfrmav $idfrmap \n"
-               gren_erreur "id current : $idframe \n"
-               gren_erreur "idfrmap 1 : [ ::atos_ocr_tools::get_idfrmap $idframe 1] \n"
+   
+            if {$::atos_ocr_tools::timing($idframe,ocr) == 1 && $::atos_ocr_tools::timing($idframe,verif) != 1} {
+   
+               # OK on interpole ! pour verifier la difference avec l ocr
+   
+               set idfrmap [ ::atos_ocr_tools::get_idfrmap $idframe 2]
+               set idfrmav [ ::atos_ocr_tools::get_idfrmav $idframe 2]
+   
+               if { $idfrmav == -1 || $idfrmap == -1 } {
+                  set idfrmav [::atos_ocr_tools::get_idfrmap $idframebegin 1]
+                  set idfrmap [::atos_ocr_tools::get_idfrmav $::atos_tools::frame_max 1]
+               }
+   
+               if { $idfrmav == -1 || $idfrmap == -1 } {
+                  gren_erreur "Erreur verif OCR : $idfrmav $idfrmap \n"
+                  gren_erreur "id current : $idframe \n"
+                  gren_erreur "idfrmap 1 : [ ::atos_ocr_tools::get_idfrmap $idframe 1] \n"
+               }
+               set jdav $::atos_ocr_tools::timing($idfrmav,jd)
+               set jdap $::atos_ocr_tools::timing($idfrmap,jd)
+              
+               #gren_erreur "$idframe : $::atos_ocr_tools::timing($idframe,dateiso) \n"
+               #gren_erreur "$idframe jdav jdap : ($jdav) ($jdap) $idfrmav $idfrmap \n"
+   
+               set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
+               set jd [format "%6.10f" $jd]
+   
+               set diff [expr abs(($::atos_ocr_tools::timing($idframe,jd) - $jd ) * 86400.0)]
+               if { $diff > 0.5 } {
+                  ::console::affiche_erreur "Warning! frame: $idframe ; date: $::atos_ocr_tools::timing($idframe,dateiso)\n"
+                  set ::atos_ocr_tools::timing($idframe,ocr) 0
+                  set ::atos_ocr_tools::timing($idframe,interpol) 1
+                  incr cptbad
+               } 
+               incr cpt
+   
             }
-            set jdav $::atos_ocr_tools::timing($idfrmav,jd)
-            set jdap $::atos_ocr_tools::timing($idfrmap,jd)
-           
-            #gren_erreur "$idframe : $::atos_ocr_tools::timing($idframe,dateiso) \n"
-            #gren_erreur "$idframe jdav jdap : ($jdav) ($jdap) $idfrmav $idfrmap \n"
-
-            set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
-            set jd [format "%6.10f" $jd]
-
-            set diff [expr abs(($::atos_ocr_tools::timing($idframe,jd) - $jd ) * 86400.0)]
-            if { $diff > 0.5 } {
-               ::console::affiche_erreur "Warning! frame: $idframe ; date: $::atos_ocr_tools::timing($idframe,dateiso)\n"
-               set ::atos_ocr_tools::timing($idframe,ocr) 0
-               set ::atos_ocr_tools::timing($idframe,interpol) 1
-               incr cptbad
-            } 
-            incr cpt
-
+            incr idframe
          }
-         incr idframe
+         ::console::affiche_resultat "Total ocr = $cpt, nb warning = $cptbad \n"
+   
+         set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
+         set tt1 [clock clicks -milliseconds]
+         ::console::affiche_resultat "  ... verification en $tt secondes\n"
+
       }
-      ::console::affiche_resultat "Total ocr = $cpt, nb warning = $cptbad \n"
-
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
-      set tt1 [clock clicks -milliseconds]
-      ::console::affiche_resultat "Traitement en $tt secondes\n"
 
 # interpolation des dates
 
-      ::console::affiche_resultat "Interpolation des dates...\n"
+      if {$::atos_ocr_tools::nbinterp > 0} {
 
-      set ::atos_ocr_tools::sortie 0
-
-      set idframe $idframebegin
-      incr idframe -1 
-      
-      while {$::atos_ocr_tools::sortie == 0} {
-         incr idframe
-         set ::atos_tools::scrollbar $idframe
-
-         update
-         if {$log} { ::console::affiche_resultat "idframe = $idframe : "}
-         if {$idframe == $idframefin} {
-            set ::atos_ocr_tools::sortie 1
-         }
-         if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
-            if {$log} { ::console::affiche_resultat "verif : date = $::atos_ocr_tools::timing($idframe,dateiso)\n"}
-            continue
-         }
-         if {$::atos_ocr_tools::timing($idframe,interpol) == 1} {
-
-            set idfrmav [ ::atos_ocr_tools::get_idfrmav $idframe 2]
-            set idfrmap [ ::atos_ocr_tools::get_idfrmap $idframe 2]
-            #::console::affiche_resultat "$idfrmav < $idfrmap"
-            if { $idfrmav == -1 } {
-               # il faut interpoler par 2 a droite
-               if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a droite : "}
-               set idfrmav $idfrmap
-               set idfrmap [ ::atos_ocr_tools::get_idfrmap $idfrmap 2]
+         ::console::affiche_resultat "* Interpolation des dates...\n"
+   
+         set ::atos_ocr_tools::sortie 0
+         set idframe [expr $idframebegin - 1]
+         
+         while {$::atos_ocr_tools::sortie == 0} {
+   
+            incr idframe
+            set ::atos_tools::scrollbar $idframe
+            update
+   
+            #::console::affiche_resultat "idframe = $idframe : "
+   
+            if {$idframe == $idframefin} {
+               set ::atos_ocr_tools::sortie 1
             }
-            if { $idfrmap == -1 } {
-               # il faut interpoler par 2 a gauche
-               if {$log} { ::console::affiche_resultat "il faut interpoler par 2 a gauche : "}
-               set idfrmap $idfrmav
-               set idfrmav [ ::atos_ocr_tools::get_idfrmav $idfrmav 2]
+   
+            if {$::atos_ocr_tools::timing($idframe,verif) == 1} {
+               #::console::affiche_resultat "verif : date = $::atos_ocr_tools::timing($idframe,dateiso)\n"
+               continue
             }
-            if { $idfrmav == -1 || $idfrmap == -1 } {
-               set idfrmav [ ::atos_ocr_tools::get_idfrmap 0 1]
-               set idfrmap [ ::atos_ocr_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
+   
+            if {$::atos_ocr_tools::timing($idframe,interpol) == 1} {
+               set idfrmav [::atos_ocr_tools::get_idfrmav $idframe 2]
+               set idfrmap [::atos_ocr_tools::get_idfrmap $idframe 2]
+               #::console::affiche_resultat "$idfrmav < $idfrmap"
+               if { $idfrmav == -1 } {
+                  # il faut interpoler par 2 a droite
+                  #::console::affiche_resultat "il faut interpoler par 2 a droite : "
+                  set idfrmav $idfrmap
+                  set idfrmap [::atos_ocr_tools::get_idfrmap $idfrmap 2]
+               }
+               if { $idfrmap == -1 } {
+                  # il faut interpoler par 2 a gauche
+                  #::console::affiche_resultat "il faut interpoler par 2 a gauche : "
+                  set idfrmap $idfrmav
+                  set idfrmav [::atos_ocr_tools::get_idfrmav $idfrmav 2]
+               }
+               if { $idfrmav == -1 || $idfrmap == -1 } {
+                  set idfrmav [::atos_ocr_tools::get_idfrmap 0 1]
+                  set idfrmap [::atos_ocr_tools::get_idfrmav [expr $::atos_tools::nb_frames + 1] 1]
+               }
+   
+               #::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "
+               #::console::affiche_resultat "I : $idframe ($idfrmav<$idfrmap)  "
+               set jdav $::atos_ocr_tools::timing($idfrmav,jd)
+               set jdap $::atos_ocr_tools::timing($idfrmap,jd)
+               set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
+               set jd [ format "%6.10f" $jd]
+               #::console::affiche_resultat "JD=$jd"
+               set dateiso [mc_date2iso8601 $jd]
+               set ::atos_ocr_tools::timing($idframe,jd) $jd
+               set ::atos_ocr_tools::timing($idframe,dateiso) $dateiso
+               #::console::affiche_resultat "date = $::atos_ocr_tools::timing($idframe,dateiso)\n"
             }
-            if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
-
-            #::console::affiche_resultat "I : $idframe ($idfrmav<$idfrmap)  "
-            set jdav $::atos_ocr_tools::timing($idfrmav,jd)
-            set jdap $::atos_ocr_tools::timing($idfrmap,jd)
-
-            set jd [expr $jdav+($jdap-$jdav)/($idfrmap-$idfrmav)*($idframe-$idfrmav)]
-            set jd [ format "%6.10f" $jd]
-
-            #::console::affiche_resultat "JD=$jd"
-            set dateiso [mc_date2iso8601 $jd]
-            set ::atos_ocr_tools::timing($idframe,jd) $jd
-            set ::atos_ocr_tools::timing($idframe,dateiso) $dateiso
-            if {$log} { ::console::affiche_resultat "date = $::atos_ocr_tools::timing($idframe,dateiso)\n"}
-
+   
          }
+
+         set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
+         set tt1 [clock clicks -milliseconds]
+         ::console::affiche_resultat "  ... interpolation en $tt secondes\n"
 
       }
 
@@ -1187,7 +1222,6 @@ namespace eval ::atos_ocr_tools {
 #
 #   #  comparaison
 #
-#
 #          ::console::affiche_resultat "Comparaison\n"
 #
 #          set ::atos_ocr_tools::sortie 0
@@ -1228,23 +1262,14 @@ namespace eval ::atos_ocr_tools {
 
       ::atos_tools::set_frame $visuNo $idframefin
 
-      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
-      ::console::affiche_resultat "Traitement en $tt secondes\n"
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      ::console::affiche_resultat "Traitement total en $tt secondes\n"
-
+      ::console::affiche_resultat "... extraction des dates en $tt secondes\n"
       ::console::affiche_resultat "Fin\n"
 
-      tk_messageBox -message "Datation terminée en $tt secondes" -type ok
-      
-
+      tk_messageBox -message "Extraction des dates terminée en $tt secondes" -type ok
       update
+
    }
-
-
-
-
-
 
 
 
@@ -1283,48 +1308,48 @@ namespace eval ::atos_ocr_tools {
       set origine [expr int($origine)]
       ::console::affiche_resultat "Origine temporelle : $origine\n"
       
-         for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
-             
-            if {$::atos_ocr_tools::timing($idframe,jd) == ""} { continue}
-
-            if {$log} {         
-               catch {  ::console::affiche_erreur "idframe = $idframe "    }
-               catch {  ::console::affiche_erreur "dateiso = $::atos_ocr_tools::timing($idframe,dateiso) "    }
-               catch {  ::console::affiche_erreur "jd = $::atos_ocr_tools::timing($idframe,jd) "              }
-               catch {  ::console::affiche_erreur "verif = $::atos_ocr_tools::timing($idframe,verif) "        }
-               catch {  ::console::affiche_erreur "ocr = $::atos_ocr_tools::timing($idframe,ocr) "            }
-               catch {  ::console::affiche_erreur "interpol = $::atos_ocr_tools::timing($idframe,interpol) "  }
-               catch {  ::console::affiche_erreur "diff = $::atos_ocr_tools::timing($idframe,diff)\n"         }
-            }
-            catch { 
-                    set t [expr $::atos_ocr_tools::timing($idframe,jd) - $origine]
-                    lappend x $t
-                    lappend y $idframe
-                    if {$::atos_ocr_tools::timing($idframe,verif)   == 1} { 
-                       if {$log} { ::console::affiche_erreur "yep $t $idframe\n"}
-                       lappend x_verif    $t
-                       lappend y_verif    $idframe 
-                    }
-                    if {$::atos_ocr_tools::timing($idframe,ocr)     == 1} {
-                       lappend x_ocr      $t
-                       lappend y_ocr      $idframe
-                       }
-                    if {$::atos_ocr_tools::timing($idframe,interpol)== 1} {
-                       lappend x_interpol $t
-                       lappend y_interpol $idframe
-                    }
-                  }
-            #break
+      for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
+          
+         if {$::atos_ocr_tools::timing($idframe,jd) == ""} { continue}
+ 
+         if {$log} {         
+            catch {  ::console::affiche_erreur "idframe = $idframe "    }
+            catch {  ::console::affiche_erreur "dateiso = $::atos_ocr_tools::timing($idframe,dateiso) "    }
+            catch {  ::console::affiche_erreur "jd = $::atos_ocr_tools::timing($idframe,jd) "              }
+            catch {  ::console::affiche_erreur "verif = $::atos_ocr_tools::timing($idframe,verif) "        }
+            catch {  ::console::affiche_erreur "ocr = $::atos_ocr_tools::timing($idframe,ocr) "            }
+            catch {  ::console::affiche_erreur "interpol = $::atos_ocr_tools::timing($idframe,interpol) "  }
+            catch {  ::console::affiche_erreur "diff = $::atos_ocr_tools::timing($idframe,diff)\n"         }
          }
-      
-         set h4 [::plotxy::plot $x_interpol $y_interpol ro. 2 ]
-         plotxy::sethandler $h4 [list -color white -linewidth 0]
-         set h3 [::plotxy::plot $x_ocr $y_ocr ro. 5  ]
-         plotxy::sethandler $h3 [list -color orange -linewidth 0]
-         set h2 [::plotxy::plot $x_verif $y_verif ro. 7 ]
-         plotxy::sethandler $h2 [list -color green -linewidth 0]
-         set h1 [::plotxy::plot $x $y ro. 10 ]
-         plotxy::sethandler $h1 [list -color black -linewidth 1]
+         catch { 
+            set t [expr $::atos_ocr_tools::timing($idframe,jd) - $origine]
+            lappend x $t
+            lappend y $idframe
+            if {$::atos_ocr_tools::timing($idframe,verif) == 1} { 
+               if {$log} { ::console::affiche_erreur "yep $t $idframe\n"}
+               lappend x_verif    $t
+               lappend y_verif    $idframe 
+            }
+            if {$::atos_ocr_tools::timing($idframe,ocr) == 1} {
+               lappend x_ocr      $t
+               lappend y_ocr      $idframe
+               }
+            if {$::atos_ocr_tools::timing($idframe,interpol) == 1} {
+               lappend x_interpol $t
+               lappend y_interpol $idframe
+            }
+         }
+         #break
+      }
+   
+      set h4 [::plotxy::plot $x_interpol $y_interpol ro. 2 ]
+      plotxy::sethandler $h4 [list -color white -linewidth 0]
+      set h3 [::plotxy::plot $x_ocr $y_ocr ro. 5  ]
+      plotxy::sethandler $h3 [list -color orange -linewidth 0]
+      set h2 [::plotxy::plot $x_verif $y_verif ro. 7 ]
+      plotxy::sethandler $h2 [list -color green -linewidth 0]
+      set h1 [::plotxy::plot $x $y ro. 10 ]
+      plotxy::sethandler $h1 [list -color black -linewidth 1]
 
    }
 
@@ -1332,57 +1357,47 @@ namespace eval ::atos_ocr_tools {
 
    proc ::atos_ocr_tools::get_idfrmav { idframe gtype } {
 
-       set stop 0
-       set id $idframe
-       while {$stop == 0} {
-          incr id -1
-          if {$id == 0} { return -1 }
-          if { $gtype == 1 } {
-             if {$::atos_ocr_tools::timing($id,verif) == 1} {
-                return $id
-             }
-          }
-          if { $gtype == 2 } {
-             if {$::atos_ocr_tools::timing($id,verif) == 1 || $::atos_ocr_tools::timing($id,ocr) == 1 } {
-                return $id
-             }
-          }
-       }
-       return -1
+      set stop 0
+      set id $idframe
+      while {$stop == 0} {
+         incr id -1
+         if {$id == 0} { return -1 }
+         if { $gtype == 1 } {
+            if {$::atos_ocr_tools::timing($id,verif) == 1} {
+               return $id
+            }
+         }
+         if { $gtype == 2 } {
+            if {$::atos_ocr_tools::timing($id,verif) == 1 || $::atos_ocr_tools::timing($id,ocr) == 1 } {
+               return $id
+            }
+         }
+      }
+      return -1
+
    }
-
-
-
-
-
-
 
 
 
    proc ::atos_ocr_tools::get_idfrmap { idframe gtype } {
 
-#       gren_info "Entre dans get_idfrmap\n"
-#       gren_info "idframe de depart = $idframe\n"
-#       gren_info "gtype = $gtype\n"
-
-       set stop 0
-       set id $idframe
-       while {$stop == 0} {
-          incr id
-#          gren_info "idframe = $id\n"
-          if {$id > $::atos_tools::frame_max} { break }
-          if { $gtype == 1 } {
-             if {$::atos_ocr_tools::timing($id,verif) == 1} {
-                return $id
-             }
-          }
-          if { $gtype == 2 } {
-             if {$::atos_ocr_tools::timing($id,verif) == 1 || $::atos_ocr_tools::timing($id,ocr) == 1 } {
-                return $id
-             }
-          }
-       }
-       return -1
+      set stop 0
+      set id $idframe
+      while {$stop == 0} {
+         incr id
+         if {$id > $::atos_tools::frame_max} { break }
+         if { $gtype == 1 } {
+            if {$::atos_ocr_tools::timing($id,verif) == 1} {
+               return $id
+            }
+         }
+         if { $gtype == 2 } {
+            if {$::atos_ocr_tools::timing($id,verif) == 1 || $::atos_ocr_tools::timing($id,ocr) == 1 } {
+               return $id
+            }
+         }
+      }
+      return -1
 
    }
 
@@ -1404,8 +1419,6 @@ namespace eval ::atos_ocr_tools {
       return "${filename}.time"
 
    }
-
-
 
 
 
@@ -1442,8 +1455,6 @@ namespace eval ::atos_ocr_tools {
 
          append line [ format %6.10f $::atos_ocr_tools::timing($idframe,jd)] "  ,"
 #         append line "$::atos_ocr_tools::timing($idframe,diff)     ,"
-
-
          append line "$::atos_ocr_tools::timing($idframe,dateiso)     ,"
          append line "$::atos_ocr_tools::timing($idframe,verif)     ,"
          append line "$::atos_ocr_tools::timing($idframe,ocr)     ,"
@@ -1455,10 +1466,7 @@ namespace eval ::atos_ocr_tools {
       close $f1
       ::console::affiche_resultat "nb frames sauvees = $idframe\n.. Fin  ..\n"
 
-
    }
-
-
 
 
 
@@ -1476,8 +1484,6 @@ namespace eval ::atos_ocr_tools {
 
 
 
-
-
    #
    # Passe a l image precedente
    #
@@ -1488,7 +1494,6 @@ namespace eval ::atos_ocr_tools {
       ::atos_ocr_tools::getinfofrm $visuNo
 
    }
-
 
 
 
@@ -1505,7 +1510,6 @@ namespace eval ::atos_ocr_tools {
 
 
 
-
    #
    # retour rapide
    #
@@ -1519,7 +1523,6 @@ namespace eval ::atos_ocr_tools {
 
 
 
-
    #
    #
    #
@@ -1530,8 +1533,6 @@ namespace eval ::atos_ocr_tools {
       ::atos_ocr_tools::workimage $visuNo 
       ::atos_ocr_tools::getinfofrm $visuNo 
    }
-
-
 
 # Fin du namespace
 }

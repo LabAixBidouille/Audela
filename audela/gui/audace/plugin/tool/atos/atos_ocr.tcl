@@ -8,9 +8,7 @@
 # Mise à jour $Id$
 #
 
-
 namespace eval ::atos_ocr {
-
 
    #
    # atos_ocr::init
@@ -24,6 +22,8 @@ namespace eval ::atos_ocr {
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool atos atos_ocr.cap ]
    }
+
+
 
    #
    # atos_ocr::initToConf
@@ -39,6 +39,8 @@ namespace eval ::atos_ocr {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) ] } { set ::atos::parametres(atos,$visuNo,verifier_ecraser_fichier) "1" }
       if { ! [ info exists ::atos::parametres(atos,$visuNo,verifier_index_depart) ] }    { set ::atos::parametres(atos,$visuNo,verifier_index_depart)    "1" }
    }
+
+
 
    #
    # atos_ocr::confToWidget
@@ -61,6 +63,8 @@ namespace eval ::atos_ocr {
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi)            $::atos::parametres(atos,$visuNo,exec_ocr_kiwi)
    }
 
+
+
    #
    # atos_ocr::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
@@ -70,6 +74,7 @@ namespace eval ::atos_ocr {
       global panneau
 
    }
+
 
 
    #
@@ -89,6 +94,7 @@ namespace eval ::atos_ocr {
    }
 
 
+
    #
    # atos_ocr::showHelp
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
@@ -97,6 +103,7 @@ namespace eval ::atos_ocr {
       ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::atos::getPluginType ] ] \
          [ ::atos::getPluginDirectory ] atos_ocr.htm
    }
+
 
 
    #
@@ -108,6 +115,8 @@ namespace eval ::atos_ocr {
       ::atos_ocr::widgetToConf $visuNo
       destroy $this
    }
+
+
 
    #
    # atos_ocr::getLabel
@@ -128,12 +137,15 @@ namespace eval ::atos_ocr {
      ::atos_ocr::closeWindow $this $visuNo
    }
 
+
+
    proc ::atos_ocr::run_avi { this visuNo base } {
 
       set ::atos_tools::traitement "avi"
      ::atos_ocr_gui::run  $visuNo $base.atos_ocr_gui
      ::atos_ocr::closeWindow $this $visuNo
    }
+
 
 
    #
@@ -169,7 +181,6 @@ namespace eval ::atos_ocr {
       wm title $this $caption(atos_ocr,bar_title)
       wm protocol $this WM_DELETE_WINDOW "::atos_ocr::closeWindow $this $visuNo"
 
-
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::atos_ocr::confToWidget $visuNo
 
@@ -181,17 +192,12 @@ namespace eval ::atos_ocr {
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
         #--- Cree un label pour le titre
-        label $frm.titre -font $atosconf(font,arial_14_b) \
-              -text "$caption(atos_ocr,titre)"
-        pack $frm.titre \
-             -in $frm -side top -padx 3 -pady 3
-
+        label $frm.titre -font $atosconf(font,arial_14_b) -text "$caption(atos_ocr,titre)"
+        pack $frm.titre -in $frm -side top -padx 3 -pady 3
 
         #--- Cree un frame pour les 2 actions de traitement
         frame $frm.traitement -borderwidth 1 -relief raised -cursor arrow
         pack $frm.traitement -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-
 
         #--- Creation du traitement cdl par liste de fits
         frame $frm.traitement.fits -borderwidth 1 -relief raised -cursor arrow
@@ -199,60 +205,43 @@ namespace eval ::atos_ocr {
 
            #--- Creation du bouton
            image create photo .visu -format PNG -file [ file join $audace(rep_plugin) tool atos img bouton_visu.png ]
-           button $frm.traitement.fits.ico -image .visu\
-              -borderwidth 2 -width 130 -height 130 -compound center \
+           button $frm.traitement.fits.ico -image .visu -borderwidth 2 -width 130 -height 130 -compound center \
               -command "::atos_ocr::run_fits $this $visuNo $base"
-           pack $frm.traitement.fits.ico \
-              -in $frm.traitement.fits \
-              -side top -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           pack $frm.traitement.fits.ico -in $frm.traitement.fits \
+              -side top -anchor w -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
            DynamicHelp::add  $frm.traitement.fits.ico -text "Traitement par lot d'images"
-
 
         #--- Creation du traitement cdl par  avi
         frame $frm.traitement.avi -borderwidth 1 -relief raised -cursor arrow
         pack $frm.traitement.avi -in $frm.traitement -side right -expand 0 -fill x -padx 1 -pady 1
 
-
            #--- Creation du bouton
            image create photo .video -format PNG -file [ file join $audace(rep_plugin) tool atos img bouton_video.png ]
-           button $frm.traitement.avi.ico -image .video\
-              -borderwidth 2 -width 130 -height 130 -compound center \
+           button $frm.traitement.avi.ico -image .video -borderwidth 2 -width 130 -height 130 -compound center \
               -command "::atos_ocr::run_avi $this $visuNo $base"
-           pack $frm.traitement.avi.ico \
-              -in $frm.traitement.avi \
-              -side left -anchor w \
-              -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+           pack $frm.traitement.avi.ico -in $frm.traitement.avi \
+              -side left -anchor w -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
            DynamicHelp::add  $frm.traitement.avi.ico -text "Traitement direct de la video"
 
-   #---
         #--- Cree un frame pour  les boutons d action 
-        frame $frm.action \
-              -borderwidth 1 -relief raised -cursor arrow
-        pack $frm.action \
-             -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
+        frame $frm.action -borderwidth 1 -relief raised -cursor arrow
+        pack $frm.action -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
            #--- Creation du bouton fermer
-           button $frm.action.fermer \
-              -text "$caption(atos_ocr,fermer)" -borderwidth 2 \
+           button $frm.action.fermer -text "$caption(atos_ocr,fermer)" -borderwidth 2 \
               -command "::atos_ocr::closeWindow $this $visuNo"
-           pack $frm.action.fermer -in $frm.action \
-              -side right -anchor e \
+           pack $frm.action.fermer -in $frm.action -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
            #--- Creation du bouton aide
-           button $frm.action.aide \
-              -text "$caption(atos_ocr,aide)" -borderwidth 2 \
+           button $frm.action.aide -text "$caption(atos_ocr,aide)" -borderwidth 2 \
               -command "::audace::showHelpPlugin tool atos atos_ocr.htm"
-           pack $frm.action.aide -in $frm.action \
-              -side right -anchor e \
+           pack $frm.action.aide -in $frm.action -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
-
 
    }
 
 }
-
 
 #--- Initialisation au demarrage
 ::atos_ocr::init
