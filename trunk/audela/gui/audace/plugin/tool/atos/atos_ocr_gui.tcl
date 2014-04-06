@@ -56,11 +56,12 @@ namespace eval ::atos_ocr_gui {
       set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
       set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
 
-      set ::atos_photom::rect_img      ""
-      set ::atos_ocr_tools::active_ocr 0
-      set ::atos_ocr_tools::nbverif    0
-      set ::atos_ocr_tools::nbocr      0
-      set ::atos_ocr_tools::nbinterp   0
+      set ::atos_photom::rect_img                 ""
+      set ::atos_ocr_tools::active_only_interpole 0
+      set ::atos_ocr_tools::active_ocr            0
+      set ::atos_ocr_tools::nbverif               0
+      set ::atos_ocr_tools::nbocr                 0
+      set ::atos_ocr_tools::nbinterp              0
 
    }
 
@@ -165,10 +166,8 @@ namespace eval ::atos_ocr_gui {
       pack $frm -in $this -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
         #--- Cree un label pour le titre
-        label $frm.titre -font $atosconf(font,arial_14_b) \
-              -text "$titre"
-        pack $frm.titre \
-             -in $frm -side top -padx 3 -pady 3
+        label $frm.titre -font $atosconf(font,arial_14_b) -text "$titre"
+        pack $frm.titre -in $frm -side top -padx 3 -pady 3
 
         if { $::atos_tools::traitement == "fits" } { 
 
@@ -181,11 +180,9 @@ namespace eval ::atos_ocr_gui {
             pack $frm.form.butopen -in $frm.form -side left -expand 0 -fill x -padx 1 -pady 1
     
                #--- Creation du bouton open
-               button $frm.form.butopen.open \
-                  -text "open" -borderwidth 2 \
+               button $frm.form.butopen.open -text "open" -borderwidth 2 \
                   -command "::atos_ocr_tools::open_flux $visuNo"
-               pack $frm.form.butopen.open \
-                  -in $frm.form.butopen -side left -anchor e \
+               pack $frm.form.butopen.open -in $frm.form.butopen -side left -anchor e \
                   -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
     
             #--- Cree un frame pour la gestion de fichier
@@ -267,7 +264,6 @@ namespace eval ::atos_ocr_gui {
 
            #--- Cree un label pour le nb d image
            label $info_load.status -font $atosconf(font,courier_10) -text ""
-
            #--- Cree un label pour le nb d image
            label $info_load.nbtotal -font $atosconf(font,courier_10) -text ""
 
@@ -275,8 +271,7 @@ namespace eval ::atos_ocr_gui {
 
         #--- Creation de la barre de defilement
         scale $frm.scrollbar -from 0 -to 1 -length 600 -variable ::atos_tools::scrollbar \
-           -label "" -orient horizontal \
-           -state disabled
+           -label "" -orient horizontal -state disabled
         pack $frm.scrollbar -in $frm -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
         set ::atos_gui::frame(scrollbar) $frm.scrollbar
@@ -408,10 +403,19 @@ namespace eval ::atos_ocr_gui {
           frame $frm.datation -borderwidth 1 -relief raised -cursor arrow 
           pack $frm.datation -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
+          ##--- Cree un frame pour l'activation de l'interpolation
+          #frame $frm.datation.interpol -borderwidth 0 -cursor arrow
+          #pack  $frm.datation.interpol -in $frm.datation -side top -expand 1 -anchor w 
+          #
+          #   checkbutton $frm.datation.interpol.but -highlightthickness 0 -font $atosconf(font,courier_10_b) \
+          #               -text $caption(atos_ocr_gui,interpole) \
+          #               -variable ::atos_ocr_tools::active_only_interpole \
+          #               -command "::atos_ocr_tools::select_only_interpole" 
+          #   pack $frm.datation.interpol.but -in $frm.datation.interpol -side left -padx 30 -pady 2
+
           #--- Cree un frame 
           frame $frm.datation.values -borderwidth 0 -cursor arrow
-          pack $frm.datation.values -in $frm.datation -side top -expand 5
-
+          pack $frm.datation.values -in $frm.datation -side top -expand 1
 
           #--- Cree un frame pour activation/desactivation ocr
           set ocr [frame $frm.datation.values.setup -borderwidth 1]
@@ -433,7 +437,7 @@ namespace eval ::atos_ocr_gui {
               pack  $ocr.incrust -in $ocr -side left -expand 0 -anchor w -padx 10
 
                  #--- Cree un label
-                 label $ocr.incrust.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
+                 label $ocr.incrust.lab -font $atosconf(font,courier_10_b) \
                        -text $caption(atos_ocr_gui,type_incrustateur)
                  pack  $ocr.incrust.lab -in $ocr.incrust -side left -anchor w -padx 1 -pady 2
 

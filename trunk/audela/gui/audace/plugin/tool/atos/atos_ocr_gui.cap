@@ -38,6 +38,7 @@ set caption(atos_ocr_gui,graph)               "Displays timings correlation"
 set caption(atos_ocr_gui,save)                "Save extracted timings"
 set caption(atos_ocr_gui,datation)            "Timings"
 set caption(atos_ocr_gui,ocr)                 "OCR"
+set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version française **** **********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -64,6 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Sauve les dates extraites"
    set caption(atos_ocr_gui,datation)            "Datation"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Interpolation uniquement"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -90,6 +92,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -116,6 +119,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -142,6 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -168,6 +173,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -194,6 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version ukrainienne *************************
 } elseif { [ string compare $langage "ukrainian" ] == "0" } {
@@ -220,6 +227,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 # *************** Version russe *******************************
 } elseif { [ string compare $langage "russian" ] == "0" } {
@@ -246,6 +254,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(atos_ocr_gui,save)                "Save extracted timings"
    set caption(atos_ocr_gui,datation)            "Timings"
    set caption(atos_ocr_gui,ocr)                 "OCR"
+   set caption(atos_ocr_gui,interpole)           "Only interpolation"
 
 }
 
