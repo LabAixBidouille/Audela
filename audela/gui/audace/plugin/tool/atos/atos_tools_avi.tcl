@@ -418,6 +418,12 @@ namespace eval ::atos_tools_avi {
          if { $statebutton=="sunken" } {
          ::atos_cdl_tools::get_fullimg $visuNo
          }
+         if {$::atos_ocr_tools::active_ocr} {
+            if {[$::atos_gui::frame(ocr,select) cget -relief]=="sunken" \
+             && [$::atos_gui::frame(ocr,select) cget -state]=="normal"} {
+               ::atos_ocr_tools::workimage $visuNo
+            }
+         }
 
       }
       after $::atos::parametres(atos,$visuNo,screen_refresh) " ::atos_tools_avi::acq_display $visuNo"
@@ -595,6 +601,7 @@ namespace eval ::atos_tools_avi {
 
       #set err [ catch { exec sh -c "LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options 2>&1" } msg ]
       set err [ catch { set chan [open "|sh -c \"LD_LIBRARY_PATH=$audace(rep_install)/bin $audace(rep_install)/bin/av4l-grab $options > /dev/null 2>&1\"" r+] } msg ]
+
       if { $err != 0 } {
          ::console::affiche_erreur "Echec lors de l'appel a av4l-grab\n"
          ::console::affiche_erreur "Code d'erreur : $err\n"
@@ -640,7 +647,6 @@ namespace eval ::atos_tools_avi {
       if {$::atos_ocr_tools::active_ocr} {
          if {[$::atos_gui::frame(ocr,select) cget -relief]=="sunken" \
           && [$::atos_gui::frame(ocr,select) cget -state]=="normal"} {
-            
             ::atos_ocr_tools::workimage $visuNo
          }
       }

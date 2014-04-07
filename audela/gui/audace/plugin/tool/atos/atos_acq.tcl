@@ -59,7 +59,9 @@ namespace eval ::atos_acq {
       set ::atos_acq::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
       set ::atos_acq::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_default)         $::atos::parametres(atos,$visuNo,exec_ocr_default)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_convert_vti)         $::atos::parametres(atos,$visuNo,exec_convert_vti)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti)             $::atos::parametres(atos,$visuNo,exec_ocr_vti)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_convert_tim)         $::atos::parametres(atos,$visuNo,exec_convert_tim)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim)             $::atos::parametres(atos,$visuNo,exec_ocr_tim)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi)            $::atos::parametres(atos,$visuNo,exec_ocr_kiwi)
    }
@@ -351,7 +353,7 @@ namespace eval ::atos_acq {
            image create photo .stop -format PNG -file [ file join $audace(rep_plugin) tool atos img stop.png ]
            button $frm.stop -image .stop\
               -borderwidth 2 -width 32 -height 32 -compound center \
-              -command "::atos_tools_avi::acq_stop; $frm.oneshot configure -state active; $frm.oneshot2 configure -state active; $frm.demarre configure -state active"
+              -command "::atos_tools_avi::acq_stop; $frm.oneshot configure -state normal; $frm.oneshot2 configure -state normal; $frm.demarre configure -state normal"
            pack $frm.stop \
               -in $frm.btnav \
               -side left -anchor w \
@@ -918,7 +920,7 @@ namespace eval ::atos_acq {
              psf_gui_methodes $visuNo $psf
 
 
-    # onglets : psf
+    # onglets : ocr
     
          set ocr [frame $f_ocr.ocr]
          pack $ocr -in $f_ocr -expand 1 -fill y
