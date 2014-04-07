@@ -123,18 +123,22 @@ namespace eval ::atos_tools_fits {
 
 
 
-
-
-
    proc ::atos_tools_fits::next_image { visuNo {novisu ""}} {
 
-      incr idframe [expr $::atos_tools::cur_idframe + 1]
-      if { $idframe > $::atos_tools::nb_frames } {
-        set idframe $::atos_tools::nb_frames
+      if {![info exists ::atos_tools::cur_idframe]} {
+         # Rien a faire car pas de video chargee
+         ::console::affiche_erreur "Error: ::atos_tools_fits::next_image: pas de video (unknown cur_idframe)\n"
+         return
+      }
+
+      set idframe [expr $::atos_tools::cur_idframe + 1]
+      if { $idframe > $::atos_tools::frame_end } {
+        set idframe $::atos_tools::frame_end
       }
       ::atos_tools_fits::set_frame $visuNo $idframe $novisu
 
    }
+
 
 
    proc ::atos_tools_fits::prev_image { visuNo } {

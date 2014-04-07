@@ -11,10 +11,6 @@ TODOLIST
 
 - CDL : faire START different si sommation d images ou non
 
-- Datation : faire START different en fonction de l ocr ou interpolation
-
-- Datation : accelerer l interpolation ajouter "nobuf" en plus du "novisu"
-
 - Analyse rapport : il faut garder le remplissage des champs dans la session audela. 
 
 - CDL : utiliser la mesure du photocentre de psf_tool_box
