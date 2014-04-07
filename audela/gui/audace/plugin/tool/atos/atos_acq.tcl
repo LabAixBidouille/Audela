@@ -922,10 +922,9 @@ namespace eval ::atos_acq {
 
     # onglets : ocr
     
+         set ::atos_gui::frame(ocr_setup) $f_ocr
          set ocr [frame $f_ocr.ocr]
          pack $ocr -in $f_ocr -expand 1 -fill y
-
-          set ::atos_gui::frame(ocr_setup) $ocr
 
               #--- Cree un frame l'activation de l'OCR
               frame $ocr.check -borderwidth 0 -cursor arrow

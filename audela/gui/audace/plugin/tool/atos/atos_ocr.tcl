@@ -58,7 +58,9 @@ namespace eval ::atos_ocr {
       set ::atos_ocr::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
 
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_default)         $::atos::parametres(atos,$visuNo,exec_ocr_default)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_convert_vti)         $::atos::parametres(atos,$visuNo,exec_convert_vti)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti)             $::atos::parametres(atos,$visuNo,exec_ocr_vti)
+      set ::atos_ocr::panneau(atos,$visuNo,exec_convert_tim)         $::atos::parametres(atos,$visuNo,exec_convert_tim)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim)             $::atos::parametres(atos,$visuNo,exec_ocr_tim)
       set ::atos_ocr::panneau(atos,$visuNo,exec_ocr_kiwi)            $::atos::parametres(atos,$visuNo,exec_ocr_kiwi)
    }
@@ -83,8 +85,7 @@ namespace eval ::atos_ocr {
    # et de l'enregistrement des dates dans le fichier log
    #
    proc ::atos_ocr::run { visuNo this } {
-     global audace panneau
-
+      global audace panneau
 
       set panneau(atos,$visuNo,atos_ocr) $this
       #::confGenerique::run $visuNo "$panneau(atos,$visuNo,atos_ocr)" "::atos_ocr" -modal 1

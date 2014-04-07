@@ -16,6 +16,7 @@ namespace eval ::atos_ocr_tools {
    variable nbocr
    variable nbinterp
    variable timing
+   variable rect_img
 
 
 
@@ -24,12 +25,12 @@ namespace eval ::atos_ocr_tools {
       global color
 
       set setup $::atos_gui::frame(ocr_setup)
-      set statebutton [$setup.selectdate.box cget -relief]
+      set statebutton [$setup.ocr.selectdate.box cget -relief]
 
       # desactivation
       if {$statebutton == "sunken"} {
-         $setup.selectdate.box configure -text "Select" -fg $color(black)
-         $setup.selectdate.box configure -relief raised
+         $setup.ocr.selectdate.box configure -text "Select" -fg $color(black)
+         $setup.ocr.selectdate.box configure -relief raised
          return
       }
 
@@ -41,30 +42,16 @@ namespace eval ::atos_ocr_tools {
 
          # Affichage de la taille de la fenetre
          if {$rect == ""} {
-            set ::atos_photom::rect_img ""
+            set ::atos_ocr_tools::rect_img ""
          } else {
             set taillex [expr [lindex $rect 2] - [lindex $rect 0] ]
             set tailley [expr [lindex $rect 3] - [lindex $rect 1] ]
-            $setup.selectdate.box configure -text "${taillex}x${tailley}" -fg $color(blue)
-            set ::atos_photom::rect_img $rect
+            $setup.ocr.selectdate.box configure -text "${taillex}x${tailley}" -fg $color(blue)
+            set ::atos_ocr_tools::rect_img $rect
          }
-         $setup.selectdate.box configure -relief sunken
+         $setup.ocr.selectdate.box configure -relief sunken
          ::atos_ocr_tools::workimage $visuNo
          return
-      }
-
-   }
-
-
-
-   proc ::atos_ocr_tools::select_only_interpole { } {
-
-      set ocr $::atos_gui::frame(ocr_setup)
-
-      if {[$ocr.check.but cget -state] == "disabled"} {
-         $ocr.check.but configure -state active
-      } else {
-         $ocr.check.but configure -state disabled
       }
 
    }
@@ -79,14 +66,14 @@ namespace eval ::atos_ocr_tools {
 
       # desactivation
       if {$::atos_ocr_tools::active_ocr == "0"} {
-         $ocr.incrust.spin configure -state disabled
-         $ocr.selectdate.box configure -state disabled
+         $ocr.ocr.incrust.spin configure -state disabled
+         $ocr.ocr.selectdate.box configure -state disabled
          $setunset.t.ocr configure -bg $::audace(color,backColor) -fg $::audace(color,textColor)
          $setunset.t.ocr configure -state disabled
          return
       } else {
-         $ocr.incrust.spin configure -state normal
-         $ocr.selectdate.box configure -state normal
+         $ocr.ocr.incrust.spin configure -state normal
+         $ocr.ocr.selectdate.box configure -state normal
          $setunset.t.ocr configure -state normal
          ::atos_ocr_tools::workimage $visuNo
          return
@@ -96,7 +83,7 @@ namespace eval ::atos_ocr_tools {
 
 
 
-   proc ::atos_ocr_tools::ocr_bbox { msg } {
+   proc ::atos_ocr_tools::ocr_kiwi { msg } {
 
       # avec deux points comme separateur
       #::console::affiche_resultat "** avec deux points comme separateur \n"
@@ -177,10 +164,10 @@ namespace eval ::atos_ocr_tools {
       #set ms "XXX"
       #set err [catch {regexp {[0-9][0-9]} $bms matched} msg]
       #if {$msg == 1} { if {$bms == $matched} {set ms $bms} }
-
+      #
       #return [list "ok" [list $yy $mm $dd] [list $h $m $s $ms]]
 
-      ::console::affiche_resultat "OCR TIM-10 non pris en charge (lisibilite de la fonte non garantie)\n"
+      ::console::affiche_resultat "OCR TIM-10 non pris en charge (lisibilite de la fonte insuffisante)\n"
       return [list "ok" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
    }
 
@@ -201,7 +188,7 @@ namespace eval ::atos_ocr_tools {
       set minp [scan [lindex $t 1] "%d"]
       set sp   [scan [lindex $t 2] "%d"]
       set msp  [scan [lindex $poslist 1] "%d"]
-      ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: \n" 
+      #::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: \n" 
       
       if { ! ( [string is double $hp] && [string is double $minp] \
             && [string is double $sp] && [string is double $msp] ) } {
@@ -219,7 +206,7 @@ namespace eval ::atos_ocr_tools {
       set mini [scan [lindex $t 1] "%d"]
       set si   [scan [lindex $t 2] "%d"]
       set msi  [scan [lindex $poslist 1] "%d"]
-      ::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: \n"
+      #::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: \n"
 
       if { ! ( [string is double $hi] && [string is double $mini] \
            && [string is double $si] && [string is double $msi] ) } {
@@ -302,7 +289,7 @@ namespace eval ::atos_ocr_tools {
       set setup    $::atos_gui::frame(ocr_setup)
       set datetime $::atos_gui::frame(datetime)
       set setunset $::atos_gui::frame(setunset)
-      set statebutton [$setup.selectdate.box cget -relief]
+      set statebutton [$setup.ocr.selectdate.box cget -relief]
 
       if {$::atos_ocr_tools::active_ocr == "0" || $statebutton != "sunken"} {
          # OCR non actif, return
@@ -310,8 +297,8 @@ namespace eval ::atos_ocr_tools {
       }
 
       # Extraction de la date a partir de l'OCR
-      set box [$setup.incrust.spin get]
-      set rect $::atos_photom::rect_img
+      set box [$setup.ocr.incrust.spin get]
+      set rect $::atos_ocr_tools::rect_img
 
       if { [info exists $rect] } {
          return 0
@@ -345,7 +332,9 @@ namespace eval ::atos_ocr_tools {
          }
 
          "TIM-10" {
+           # Deentrelace l'image
            set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
+           # Extrait l'OCR de l'image impaire
            if {$::atos_ocr::panneau(atos,$visuNo,exec_convert_tim) != ""} {
              set err [catch {
                 set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_convert_tim) [lindex $deint_ocr 1] [lindex $deint_ocr 1]"]
@@ -406,7 +395,7 @@ namespace eval ::atos_ocr_tools {
 
       switch $box {
          "KIWI-OSD" {
-           set ocr [::atos_ocr_tools::ocr_bbox $msg]
+           set ocr [::atos_ocr_tools::ocr_kiwi $msg]
          }
          "TIM-10" {
            set ocr [::atos_ocr_tools::ocr_tim10 $msg]
@@ -856,7 +845,7 @@ namespace eval ::atos_ocr_tools {
 
    proc ::atos_ocr_tools::start_next_image { visuNo } {
 
-      if {$::atos_ocr_tools::active_ocr == "1" && [ $::atos_gui::frame(ocr_setup).selectdate.box cget -relief] == "sunken"} {
+      if {$::atos_ocr_tools::active_ocr == "1" && [ $::atos_gui::frame(ocr_setup).ocr.selectdate.box cget -relief] == "sunken"} {
          ::atos_tools::next_image $visuNo
       } else {
          incr ::atos_tools::cur_idframe
@@ -883,16 +872,20 @@ namespace eval ::atos_ocr_tools {
       } else {
          set ::atos_tools::frame_min $fmin
       }
+      $::atos_gui::frame(posmin) delete 0 10
+      $::atos_gui::frame(posmin) insert 0 $fmin
 
       # Derniere frame a analyser
       set fmax [$::atos_gui::frame(posmax) get]
       if {$fmax == ""} {
-         set ::atos_tools::frame_max [expr $::atos_tools::nb_frames + 1]
+         set ::atos_tools::frame_max $::atos_tools::frame_end
       } else {
          set ::atos_tools::frame_max $fmax
       }
-      
-::console::affiche_resultat "frame_min, frame_max, frame_end = $::atos_tools::frame_min, $::atos_tools::frame_max, $::atos_tools::frame_end\n"
+      $::atos_gui::frame(posmax) delete 0 10
+      $::atos_gui::frame(posmax) insert 0 $fmax
+
+      ::console::affiche_resultat "  ... extraction entre les frames $::atos_tools::frame_min et $::atos_tools::frame_max ($::atos_tools::nb_frames frames)\n"
 
       # La date de la premiere frame analyser doit etre verifiee
       if { $::atos_ocr_tools::timing($::atos_tools::cur_idframe,verif) != 1 } {
@@ -937,7 +930,7 @@ namespace eval ::atos_ocr_tools {
       set ::atos_ocr_tools::nbinterp 0
 
       # Demarre extraction des dates par interpolation ou OCR
-      if {$::atos_ocr_tools::active_only_interpole == 1} {
+      if {$::atos_ocr_tools::active_ocr == 0} {
 
          set idframefin [::atos_ocr_tools::start_interpole $first_verif $last_verif]
 
