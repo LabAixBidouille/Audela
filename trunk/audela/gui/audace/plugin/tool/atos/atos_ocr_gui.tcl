@@ -56,8 +56,8 @@ namespace eval ::atos_ocr_gui {
       set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_ecraser_fichier) $::atos::parametres(atos,$visuNo,verifier_ecraser_fichier)
       set ::atos_ocr_gui::panneau(atos,$visuNo,verifier_index_depart)    $::atos::parametres(atos,$visuNo,verifier_index_depart)
 
-      set ::atos_photom::rect_img                 ""
-      set ::atos_ocr_tools::active_only_interpole 0
+      set ::atos_ocr_tools::rect_img              ""
+      set ::atos_ocr_tools::datation_methode      ""
       set ::atos_ocr_tools::active_ocr            0
       set ::atos_ocr_tools::nbverif               0
       set ::atos_ocr_tools::nbocr                 0
@@ -398,67 +398,70 @@ namespace eval ::atos_ocr_gui {
           label $frm.tdatation.title -font $atosconf(font,arial_10_b) -text $caption(atos_ocr_gui,datation)
           pack  $frm.tdatation.title -in $frm.tdatation -side top -anchor w -ipady 10
 
-
-          #--- Cree un frame 
+          #--- Cree un frame pour la partie datation
           frame $frm.datation -borderwidth 1 -relief raised -cursor arrow 
           pack $frm.datation -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
-
-          #--- Cree un frame pour l'activation de l'interpolation
-          frame $frm.datation.interpol -borderwidth 0 -cursor arrow
-          pack  $frm.datation.interpol -in $frm.datation -side top -expand 1 -anchor w 
-          
-             checkbutton $frm.datation.interpol.but -highlightthickness 0 -font $atosconf(font,courier_10_b) \
-                         -text $caption(atos_ocr_gui,interpole) \
-                         -variable ::atos_ocr_tools::active_only_interpole \
-                         -command "::atos_ocr_tools::select_only_interpole" 
-             pack $frm.datation.interpol.but -in $frm.datation.interpol -side left -padx 30 -pady 2
 
           #--- Cree un frame 
           frame $frm.datation.values -borderwidth 0 -cursor arrow
           pack $frm.datation.values -in $frm.datation -side top -expand 1
 
-          #--- Cree un frame pour activation/desactivation ocr
-          set ocr [frame $frm.datation.values.setup -borderwidth 1]
+          #--- Cree un frame pour activation/desactivation interpolation / ocr
+          set ocr [frame $frm.datation.values.setup]
           pack $ocr -in $frm.datation.values -side top -padx 30 -pady 1
 
           set ::atos_gui::frame(ocr_setup) $ocr
 
-              #--- Cree un frame l'activation de l'OCR
-              frame $ocr.check -borderwidth 0 -cursor arrow
-              pack  $ocr.check -in $ocr -side left -expand 0 -anchor w -padx 10
+             #--- Cree un frame pour le choix interpolation
+             frame $ocr.interpole -borderwidth 0 -cursor arrow
+             pack  $ocr.interpole -in $ocr -side top -expand 0 -anchor w -padx 10
 
-                 checkbutton $ocr.check.but -highlightthickness 0 -text $caption(atos_ocr_gui,ocr) \
-                             -variable ::atos_ocr_tools::active_ocr \
-                             -command "::atos_ocr_tools::select_ocr $visuNo" 
-                 pack $ocr.check.but -in $ocr.check -side left -padx 1 -pady 2
+               radiobutton $ocr.interpole.but -font $atosconf(font,courier_10_b) -text $caption(atos_ocr_gui,interpole) \
+                           -value 0 -variable ::atos_ocr_tools::active_ocr -command "::atos_ocr_tools::select_ocr $visuNo" 
+               pack $ocr.interpole.but -in $ocr.interpole -side left -padx 1 -pady 2
 
-              #--- Cree un frame pour le type d'incrustateur
-              frame $ocr.incrust -borderwidth 0 -cursor arrow
-              pack  $ocr.incrust -in $ocr -side left -expand 0 -anchor w -padx 10
+             #--- Cree un frame pour le choix ocr
+             frame $ocr.ocr -borderwidth 0 -cursor arrow
+             pack  $ocr.ocr -in $ocr -side top -expand 0 -anchor w -padx 10
+
+               #--- Cree un frame l'activation de l'OCR
+               frame $ocr.ocr.check -borderwidth 0 -cursor arrow
+               pack  $ocr.ocr.check -in $ocr.ocr -side left -expand 0 -anchor w
+
+                  radiobutton $ocr.ocr.check.but -font $atosconf(font,courier_10_b) -text $caption(atos_ocr_gui,ocr) \
+                           -value 1 -variable ::atos_ocr_tools::active_ocr -command "::atos_ocr_tools::select_ocr $visuNo" 
+#                 checkbutton $ocr.ocr.check.but -highlightthickness 0 -text $caption(atos_ocr_gui,ocr) \
+#                             -variable ::atos_ocr_tools::active_ocr \
+#                             -command "::atos_ocr_tools::select_ocr $visuNo" 
+                  pack $ocr.ocr.check.but -in $ocr.ocr.check -side left -padx 1 -pady 2
+
+               #--- Cree un frame pour le type d'incrustateur
+               frame $ocr.ocr.incrust -borderwidth 0 -cursor arrow
+               pack  $ocr.ocr.incrust -in $ocr.ocr -side left -expand 0 -anchor w -padx 10
 
                  #--- Cree un label
-                 label $ocr.incrust.lab -font $atosconf(font,courier_10_b) \
+                 label $ocr.ocr.incrust.lab -font $atosconf(font,courier_10_b) \
                        -text $caption(atos_ocr_gui,type_incrustateur)
-                 pack  $ocr.incrust.lab -in $ocr.incrust -side left -anchor w -padx 1 -pady 2
+                 pack  $ocr.ocr.incrust.lab -in $ocr.ocr.incrust -side left -anchor w -padx 1 -pady 2
 
                  #--- Cree un spinbox
-                 spinbox $ocr.incrust.spin -font $atosconf(font,courier_10) -fg $color(blue) \
+                 spinbox $ocr.ocr.incrust.spin -font $atosconf(font,courier_10) -fg $color(blue) \
                          -value [list "IOTA-VTI" "TIM-10" "KIWI-OSD"] -width 10 -state readonly
-                 pack  $ocr.incrust.spin -in $ocr.incrust -side left -anchor w 
+                 pack  $ocr.ocr.incrust.spin -in $ocr.ocr.incrust -side left -anchor w 
 
-              #--- Cree un frame pour le selecteur du champ date
-              frame $ocr.selectdate -borderwidth 0 -cursor arrow
-              pack  $ocr.selectdate -in $ocr -side left -expand 0 -anchor w -padx 10
+               #--- Cree un frame pour le selecteur du champ date
+               frame $ocr.ocr.selectdate -borderwidth 0 -cursor arrow
+               pack  $ocr.ocr.selectdate -in $ocr.ocr -side left -expand 0 -anchor w -padx 10
 
                  #--- Cree un label
-                 label $ocr.selectdate.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
+                 label $ocr.ocr.selectdate.lab -font $atosconf(font,courier_10) -font $atosconf(font,courier_10_b) \
                        -text $caption(atos_ocr_gui,date_field)
-                 pack  $ocr.selectdate.lab -in $ocr.selectdate -side left -anchor w -padx 1 -pady 2
+                 pack  $ocr.ocr.selectdate.lab -in $ocr.ocr.selectdate -side left -anchor w -padx 1 -pady 2
 
                  #--- Cree un bouton
-                 button $ocr.selectdate.box -text $caption(atos_ocr_gui,select) -borderwidth 1 -takefocus 1 \
+                 button $ocr.ocr.selectdate.box -text $caption(atos_ocr_gui,select) -borderwidth 1 -takefocus 1 \
                         -command "::atos_ocr_tools::select_time $visuNo" -state disabled
-                 pack $ocr.selectdate.box -in $ocr.selectdate -side left -anchor e 
+                 pack $ocr.ocr.selectdate.box -in $ocr.ocr.selectdate -side left -anchor e 
 
           #--- Cree un frame pour activation/desactivation ocr
           set datetime [frame $frm.datation.values.datetime -borderwidth 1]
