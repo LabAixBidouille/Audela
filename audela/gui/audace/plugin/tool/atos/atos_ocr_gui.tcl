@@ -403,15 +403,15 @@ namespace eval ::atos_ocr_gui {
           frame $frm.datation -borderwidth 1 -relief raised -cursor arrow 
           pack $frm.datation -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-          ##--- Cree un frame pour l'activation de l'interpolation
-          #frame $frm.datation.interpol -borderwidth 0 -cursor arrow
-          #pack  $frm.datation.interpol -in $frm.datation -side top -expand 1 -anchor w 
-          #
-          #   checkbutton $frm.datation.interpol.but -highlightthickness 0 -font $atosconf(font,courier_10_b) \
-          #               -text $caption(atos_ocr_gui,interpole) \
-          #               -variable ::atos_ocr_tools::active_only_interpole \
-          #               -command "::atos_ocr_tools::select_only_interpole" 
-          #   pack $frm.datation.interpol.but -in $frm.datation.interpol -side left -padx 30 -pady 2
+          #--- Cree un frame pour l'activation de l'interpolation
+          frame $frm.datation.interpol -borderwidth 0 -cursor arrow
+          pack  $frm.datation.interpol -in $frm.datation -side top -expand 1 -anchor w 
+          
+             checkbutton $frm.datation.interpol.but -highlightthickness 0 -font $atosconf(font,courier_10_b) \
+                         -text $caption(atos_ocr_gui,interpole) \
+                         -variable ::atos_ocr_tools::active_only_interpole \
+                         -command "::atos_ocr_tools::select_only_interpole" 
+             pack $frm.datation.interpol.but -in $frm.datation.interpol -side left -padx 30 -pady 2
 
           #--- Cree un frame 
           frame $frm.datation.values -borderwidth 0 -cursor arrow

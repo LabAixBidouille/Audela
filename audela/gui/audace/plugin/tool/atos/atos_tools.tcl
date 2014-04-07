@@ -141,6 +141,7 @@ namespace eval ::atos_tools {
 
       if {![info exists ::atos_tools::cur_idframe]} {
          # Rien a faire car pas de video chargee
+         ::console::affiche_erreur "Error: ::atos_tools::next_image: pas de video (unknown cur_idframe)\n"
          return
       }
 
