@@ -201,7 +201,7 @@ namespace eval ::atos_ocr_tools {
       set minp [scan [lindex $t 1] "%d"]
       set sp   [scan [lindex $t 2] "%d"]
       set msp  [scan [lindex $poslist 1] "%d"]
-      #::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: \n" 
+      ::console::affiche_resultat "EVEN: $msg_even => $hp : $minp : $sp : $msp :: \n" 
       
       if { ! ( [string is double $hp] && [string is double $minp] \
             && [string is double $sp] && [string is double $msp] ) } {
@@ -219,7 +219,7 @@ namespace eval ::atos_ocr_tools {
       set mini [scan [lindex $t 1] "%d"]
       set si   [scan [lindex $t 2] "%d"]
       set msi  [scan [lindex $poslist 1] "%d"]
-      #::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: \n"
+      ::console::affiche_resultat "ODD: $msg_odd => $hi : $mini : $si : $msi :: \n"
 
       if { ! ( [string is double $hi] && [string is double $mini] \
            && [string is double $si] && [string is double $msi] ) } {
@@ -318,17 +318,23 @@ namespace eval ::atos_ocr_tools {
       }
 
       set bufNo [ visu$visuNo buf ]
-      buf$bufNo window $rect
+
+      set bf [::buf::create]
+      buf$bufNo copyto $bf
+
+      buf$bf window $rect
 
       set mx [::confVisu::getMirrorX $visuNo]
-      if { $mx == 1 } { buf$bufNo mirrorx }
+      if { $mx == 1 } { buf$bf mirrorx }
 
       set my [::confVisu::getMirrorY $visuNo]
-      if { $my == 1 } { buf$bufNo mirrory }
+      if { $my == 1 } { buf$bf mirrory }
 
       # buf1 save ocr.png
-      set stat [buf$bufNo stat]
-      buf$bufNo savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0]
+      set stat [buf$bf stat]
+      buf$bf savejpeg ocr.jpg 100 [lindex $stat 3] [lindex $stat 0]
+
+      buf::delete $bf
 
       switch $box {
 
@@ -340,9 +346,11 @@ namespace eval ::atos_ocr_tools {
 
          "TIM-10" {
            set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
-           #set err [catch {
-           #   set result [exec sh -c "convert [lindex $deint_ocr 1] -blur 0x0.4 -unsharp 0x15.0 [lindex $deint_ocr 1]"]
-           #} msg]
+           if {$::atos_ocr::panneau(atos,$visuNo,exec_convert_tim) != ""} {
+             set err [catch {
+                set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_convert_tim) [lindex $deint_ocr 1] [lindex $deint_ocr 1]"]
+             } msg]
+           }
            set err [catch {
               set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_tim) [lindex $deint_ocr 1]"]
            } msg]
@@ -352,10 +360,20 @@ namespace eval ::atos_ocr_tools {
            # Deentrelace l'image
            set deint_ocr [::atos_ocr_tools::deinterlace ocr.jpg]
            # Extrait l'OCR de l'image paire
+           if {$::atos_ocr::panneau(atos,$visuNo,exec_convert_vti) != ""} {
+             set err [catch {
+                set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_convert_vti) [lindex $deint_ocr 0] [lindex $deint_ocr 0]"]
+             } msg]
+           }
            set err [catch {
               set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 0]"]
            } msg_even]
            # Extrait l'OCR de l'image impaire
+           if {$::atos_ocr::panneau(atos,$visuNo,exec_convert_vti) != ""} {
+             set err [catch {
+                set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_convert_vti) [lindex $deint_ocr 1] [lindex $deint_ocr 1]"]
+             } msg]
+           }
            set err [catch {
               set result [exec sh -c "$::atos_ocr::panneau(atos,$visuNo,exec_ocr_vti) [lindex $deint_ocr 1]"]
            } msg_odd]

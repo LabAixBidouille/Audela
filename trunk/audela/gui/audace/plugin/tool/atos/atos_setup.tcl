@@ -39,9 +39,14 @@ namespace eval ::atos_setup {
       if { ! [ info exists ::atos::parametres(atos,$visuNo,dir_prj) ] }                  { set ::atos::parametres(atos,$visuNo,dir_prj)                  "" }
 
       if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_default) ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_default) "gocr -d 6 -C '0-9' -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)     "gocr -d 6 -C '0-9:' -c x -f UTF8" }
-      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)     "gocr -d 6 -C '0-9' -f UTF8" }
       if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)    ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_kiwi)    "gocr -d 6 -C '0-9' -f UTF8" }
+
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_tim) ]} { set ::atos::parametres(atos,$visuNo,exec_convert_tim) "convert -blur 0x0.4 -unsharp 0x15.0" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_tim)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_tim)     "gocr -d 6 -C '0-9' -f UTF8" }
+
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_convert_vti) ]} { set ::atos::parametres(atos,$visuNo,exec_convert_vti) "convert -sharpen 1.0x1.0" }
+      if { ! [ info exists ::atos::parametres(atos,$visuNo,exec_ocr_vti)     ]} { set ::atos::parametres(atos,$visuNo,exec_ocr_vti)     "gocr -d 6 -C '0-9:' -c x -f UTF8" }
+
    }
 
    #
@@ -349,8 +354,14 @@ namespace eval ::atos_setup {
             pack $f1.frame3.ocr.vti -side top -pady 5
                button $f1.frame3.ocr.vti.but -text "test" -borderwidth 1 -command "" -state disabled
                pack $f1.frame3.ocr.vti.but -side right -padx 5 -pady 0 -ipadx 10
-               entry $f1.frame3.ocr.vti.value -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_vti)
-               pack $f1.frame3.ocr.vti.value -side right -padx 1 -pady 1
+
+               frame $f1.frame3.ocr.vti.c -borderwidth 0
+               pack $f1.frame3.ocr.vti.c -side right -padx 5 -pady 0 
+                  entry $f1.frame3.ocr.vti.c.value1 -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_vti)
+                  pack $f1.frame3.ocr.vti.c.value1 -side top -padx 1 -pady 1
+                  entry $f1.frame3.ocr.vti.c.value2 -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_vti)
+                  pack $f1.frame3.ocr.vti.c.value2 -side top -padx 1 -pady 1
+
                label $f1.frame3.ocr.vti.lab -text "IOTA-VTI:" -anchor e -width 8
                pack $f1.frame3.ocr.vti.lab -side right -padx 5 -pady 2
 
@@ -358,8 +369,14 @@ namespace eval ::atos_setup {
             pack $f1.frame3.ocr.tim -side top -pady 5
                button $f1.frame3.ocr.tim.but -text "test" -borderwidth 1 -command "" -state disabled
                pack $f1.frame3.ocr.tim.but -side right -padx 5 -pady 0 -ipadx 10
-               entry $f1.frame3.ocr.tim.value -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_tim)
-               pack $f1.frame3.ocr.tim.value -side right -padx 1 -pady 1
+
+               frame $f1.frame3.ocr.tim.c -borderwidth 0
+               pack $f1.frame3.ocr.tim.c -side right -padx 5 -pady 0 
+                  entry $f1.frame3.ocr.tim.c.value1 -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_convert_tim)
+                  pack $f1.frame3.ocr.tim.c.value1 -side top -padx 1 -pady 1
+                  entry $f1.frame3.ocr.tim.c.value2 -width 50 -textvariable ::atos::parametres(atos,$visuNo,exec_ocr_tim)
+                  pack $f1.frame3.ocr.tim.c.value2 -side right -padx 1 -pady 1
+
                label $f1.frame3.ocr.tim.lab -text "TIM-10:" -anchor e -width 8
                pack $f1.frame3.ocr.tim.lab -side right -padx 5 -pady 2
 
