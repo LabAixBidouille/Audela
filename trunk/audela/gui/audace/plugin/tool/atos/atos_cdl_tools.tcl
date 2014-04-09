@@ -205,6 +205,9 @@ namespace eval ::atos_cdl_tools {
       puts $f1 $line
 
 
+      set relief [$::atos_gui::frame(geometrie).buttons.launch cget -relief]
+      set sum [$::atos_gui::frame(geometrie).sum.val get]
+
       set sortie 0
       set idframe 0
       set cpt 0
@@ -250,37 +253,62 @@ namespace eval ::atos_cdl_tools {
             if {![info exists ::atos_cdl_tools::mesure($idframe,img_xsize)    ] } { set ::atos_cdl_tools::mesure($idframe,img_xsize)  0 }
             if {![info exists ::atos_cdl_tools::mesure($idframe,img_ysize)    ] } { set ::atos_cdl_tools::mesure($idframe,img_ysize)  0 }
 
+
+            # Alors correction temporelle immediate liée a l addition de frame
+            if {$relief=="sunken" && $sum>1} {
+               #puts $f1 "\n  sum = $sum"
+               set tabdate ""
+               for {set i 1} {$i <= $sum} {incr i} {
+                  set idf [expr $idframe-1+$i]
+                  if {![info exists ::atos_ocr_tools::timing($idf,jd)] } { continue } 
+                  lappend tabdate $::atos_ocr_tools::timing($idf,jd)
+                  #puts $f1  "$idf :: $::atos_ocr_tools::timing($idf,jd) : $::atos_ocr_tools::timing($idf,dateiso)"
+               }
+               set jd [::math::statistics::mean $tabdate]
+               
+               # dmedf : duree moyenne entre 2 dates
+               #set jd [expr $jd + $::atos_ocr_tools::dmedf / 86400.0]
+               set dateiso [mc_date2iso8601 $jd]
+
+               #puts $f1  "sol : $jd : $dateiso"
+        } else {
+               set jd $::atos_ocr_tools::timing($idframe,jd)
+               set dateiso $::atos_ocr_tools::timing($idframe,dateiso)
+            }
+
+
+
             set line "$idframe,"
-            append line "$::atos_ocr_tools::timing($idframe,jd)           ,"
-            append line "$::atos_ocr_tools::timing($idframe,dateiso)      ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_fint)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_pixmax)   ,"
+            append line "$jd,"
+            append line "$dateiso,"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_fint),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_pixmax),"
             append line "$::atos_cdl_tools::mesure($idframe,obj_intensite),"
             append line "$::atos_cdl_tools::mesure($idframe,obj_sigmafond),"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_snint)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_snpx)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_delta)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_xpos)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_ypos)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_xfwhm)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,obj_yfwhm)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_fint)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_pixmax)   ,"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_snint),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_snpx),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_delta),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_xpos),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_ypos),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_xfwhm),"
+            append line "$::atos_cdl_tools::mesure($idframe,obj_yfwhm),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_fint),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_pixmax),"
             append line "$::atos_cdl_tools::mesure($idframe,ref_intensite),"
             append line "$::atos_cdl_tools::mesure($idframe,ref_sigmafond),"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_snint)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_snpx)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_delta)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_xpos)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_ypos)     ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_xfwhm)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,ref_yfwhm)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,img_intmin)   ,"
-            append line "$::atos_cdl_tools::mesure($idframe,img_intmax)   ," 
-            append line "$::atos_cdl_tools::mesure($idframe,img_intmoy)   ," 
-            append line "$::atos_cdl_tools::mesure($idframe,img_sigma)    ," 
-            append line "$::atos_cdl_tools::mesure($idframe,img_xsize)    ,"
-            append line "$::atos_cdl_tools::mesure($idframe,img_ysize)    "
+            append line "$::atos_cdl_tools::mesure($idframe,ref_snint),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_snpx),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_delta),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_xpos),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_ypos),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_xfwhm),"
+            append line "$::atos_cdl_tools::mesure($idframe,ref_yfwhm),"
+            append line "$::atos_cdl_tools::mesure($idframe,img_intmin),"
+            append line "$::atos_cdl_tools::mesure($idframe,img_intmax)," 
+            append line "$::atos_cdl_tools::mesure($idframe,img_intmoy)," 
+            append line "$::atos_cdl_tools::mesure($idframe,img_sigma)," 
+            append line "$::atos_cdl_tools::mesure($idframe,img_xsize),"
+            append line "$::atos_cdl_tools::mesure($idframe,img_ysize)"
 
 
             puts $f1 $line
@@ -1175,6 +1203,12 @@ namespace eval ::atos_cdl_tools {
          }
       }
 
+      #if {$relief=="sunken" && $sum>1} {
+         # dmedf : duree moyenne entre 2 dates
+         # tabdur : table des duree entre 2 dates
+      #   set ::atos_ocr_tools::dmedf [::math::statistics::mean $::atos_cdl_tools::tabdur ]
+      #}
+
       $frm_start configure -image .start
       $frm_start configure -relief raised
       $frm_start configure -command "::atos_cdl_tools::start $visuNo"
@@ -1216,16 +1250,6 @@ namespace eval ::atos_cdl_tools {
       }     
 
       if {$::atos_cdl_tools::log} { ::console::affiche_resultat "sn end cur_idframe = $::atos_tools::cur_idframe\n" }
-
-      if { $::atos_tools::cur_idframe == 29044 } {
-         buf1 save aa44.fit
-      }
-      if { $::atos_tools::cur_idframe == 28923 } {
-         buf1 save 28923.fit
-      }
-      if { $::atos_tools::cur_idframe == 28924 } {
-         buf1 save 28924.fit
-      }
       
    }
 
@@ -1251,10 +1275,10 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::read_sum { visuNo sum } {
 
       global audace
+      
 
       #::console::affiche_resultat "read_sum beg cur_idframe = $::atos_tools::cur_idframe\n"
       set bufNo [::confVisu::getBufNo $visuNo]
-      
       buf$bufNo save atos_preview_tmp_1.fit
       
       for {set i 2} {$i <= $sum} {incr i} {
@@ -1276,7 +1300,6 @@ namespace eval ::atos_cdl_tools {
 
       incr ::atos_tools::cur_idframe [expr -$sum+1]
       incr ::atos_tools::scrollbar [expr -$sum+1]
-
       #::console::affiche_resultat "read_sum end cur_idframe = $::atos_tools::cur_idframe\n"
 
    }
@@ -1468,6 +1491,17 @@ namespace eval ::atos_cdl_tools {
                      set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_begin object]
                      set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_end   object]
                   }
+                  if { $idfrmav == $idfrmap } {
+                     set idfrmav [::atos_cdl_tools::get_idfrmav  $idfrmav object]
+                     if { $idfrmav == $idfrmap || $idfrmav == -1 } {
+                        set idfrmav $idfrmap
+                        set idfrmap [::atos_cdl_tools::get_idfrmap  $idfrmap object]
+                        if { $idfrmap == $idfrmav || $idfrmap == -1 } {
+                           set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_begin object]
+                           set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_end   object]
+                        }
+                     }
+                  }
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
                   set xav $::atos_cdl_tools::mesure($idfrmav,obj_xpos)
@@ -1502,6 +1536,18 @@ namespace eval ::atos_cdl_tools {
                      set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_begin reference]
                      set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_end   reference]
                   }
+                  if { $idfrmav == $idfrmap } {
+                     set idfrmav [::atos_cdl_tools::get_idfrmav  $idfrmav reference]
+                     if { $idfrmav == $idfrmap || $idfrmav == -1 } {
+                        set idfrmav $idfrmap
+                        set idfrmap [::atos_cdl_tools::get_idfrmap  $idfrmap reference]
+                        if { $idfrmap == $idfrmav || $idfrmap == -1 } {
+                           set idfrmav [ ::atos_cdl_tools::get_idfrmap $::atos_tools::frame_begin reference]
+                           set idfrmap [ ::atos_cdl_tools::get_idfrmav $::atos_tools::frame_end   reference]
+                        }
+                     }
+                  }
+                  
                   if {$log} { ::console::affiche_resultat "interpol par $idfrmav << $idfrmap : "}
 
                   set xav $::atos_cdl_tools::mesure($idfrmav,ref_xpos)
@@ -1516,6 +1562,10 @@ namespace eval ::atos_cdl_tools {
                   return -code -1 "Mauvais type"
                }
             } ; # Fin Switch
+            
+            
+            gren_info "x= $xav+($xap-$xav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav) \n"
+            gren_info "y= $yav+($yap-$yav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav) \n"
             
             set x [format "%.3f" [expr $xav+($xap-$xav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav)]]
             set y [format "%.3f" [expr $yav+($yap-$yav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav)]]
@@ -1787,10 +1837,9 @@ namespace eval ::atos_cdl_tools {
                if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
                    && [info exists ::atos_cdl_tools::mesure($idframe,ref_fint)]} {
                    if {$::atos_cdl_tools::mesure($idframe,ref_fint)=="?"} {continue}
-                  gren_info "fluxr = $fluxr\n"
+                   set fluxr $::atos_cdl_tools::mesure($idframe,ref_fint)
                } else { continue }
                set flux [expr $fluxo/$fluxr * 1000]
-               
             }
             default {
                gren_erreur "ici $idframe $type\n"
@@ -1799,6 +1848,7 @@ namespace eval ::atos_cdl_tools {
          }
          if {$jd=="?"} {continue}
          if {$flux=="?"} {continue}
+         if {$flux<0} {continue}
 
          if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
 

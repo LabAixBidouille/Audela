@@ -697,6 +697,12 @@ namespace eval ::atos_cdl_gui {
                    label $geometrie.info.lab -font $atosconf(font,courier_10) \
                        -text "$caption(atos_cdl_gui,activer) $::atos_cdl_tools::compute_image_first"
 
+                frame $geometrie.corr -borderwidth 0 -cursor arrow
+                pack  $geometrie.corr -in $geometrie -side top
+
+                   label $geometrie.corr.lab -font $atosconf(font,courier_10) \
+                       -text ""
+
 
     # onglets : suivi
 
