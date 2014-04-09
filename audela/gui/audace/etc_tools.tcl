@@ -173,6 +173,11 @@ proc etc_set_array_cameras { } {
    array set cameras [list {GS-U3-60S6M ICX694}    { 2736  2192 4.54e-6   4.54e-6   0.82   0.23  10.54   0.73 1}] ; # WellDepth=14446 e-
    array set cameras [list {GS-U3-91S6M ICX814}    { 3376  2704 3.69e-6   3.69e-6   0.42   0.16   9.43   0.75 1}] ; # WellDepth=9996 e-
 
+   # --- Spectral instruments
+   array set cameras [list {Spectral Instruments 230-84 500KHz}  {4112 4096 15e-6 15e-6 0.01  1.5  7.0 0.92 1}]
+   array set cameras [list {Spectral Instruments 230-84 2MHz}    {4112 4096 15e-6 15e-6 0.01  1.5 14.7 0.92 1}]
+   array set cameras [list {Spectral Instruments 231-84 100KHz}  {4112 4096 15e-6 15e-6 0.0003  1.5  2.1 0.92 1}]
+   array set cameras [list {Spectral Instruments 231-84 1.5MHz}  {4112 4096 15e-6 15e-6 0.0003  1.5  9.7 0.92 1}]
 }
 
 proc etc_set_camera { {typecam ""} } {
