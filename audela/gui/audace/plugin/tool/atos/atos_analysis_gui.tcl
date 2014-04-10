@@ -2828,49 +2828,55 @@ catch {
 
 
 
+   proc ::atos_analysis_gui::googlemaps {  } {
+      
+      global conf
+      
+      if {(! [info exists ::atos_analysis_gui::latitude_deg]  || ! [info exists ::atos_analysis_gui::longitude_deg]) || 
+          ($::atos_analysis_gui::latitude_deg == "" || $::atos_analysis_gui::longitude_deg == "")} {
+         tk_messageBox -message "Veuillez valider le projet avec Miriade." -type ok
+         return
+      } else {
+         #::console::affiche_resultat "latitude , Longitude = $::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg \n"
+         set url "$::atos_analysis_gui::googleURI$::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg"
+      }
+
+      ::console::affiche_resultat "Google map URL: $url\n"
+      set answer [ catch { exec $conf(editsite_htm) $url & } ]
+
+   }
+
+
+
    proc ::atos_analysis_gui::sendAladinScript { } {
 
       # Verif
       set pass "yes"
-      if {![info exists ::atos_analysis_gui::raj2000]} {
+      if {![info exists ::atos_analysis_gui::raj2000] || $::atos_analysis_gui::raj2000 == ""} {
          set pass "no"
-      } else {
-         if  {$::atos_analysis_gui::raj2000==""} {
-            set pass "no"
-         }
       }
-      if {![info exists ::atos_analysis_gui::decj2000]} {
+      if {![info exists ::atos_analysis_gui::decj2000] || $::atos_analysis_gui::decj2000 == ""} {
          set pass "no"
-      } else {
-         if  {$::atos_analysis_gui::decj2000==""} {
-            set pass "no"
-         }
       }
-      if {![info exists ::atos_analysis_gui::jd]} {
+      if {![info exists ::atos_analysis_gui::jd] || $::atos_analysis_gui::jd == ""} {
          set pass "no"
-      } else {
-         if  {$::atos_analysis_gui::jd==""} {
-            set pass "no"
-         }
       }
-      if {$pass=="no"} {
-         tk_messageBox -message "Veuillez entrer des valeurs valides pour les champs RA,Dec,date et localisation" -type ok
+
+      if {$pass == "no"} {
+         tk_messageBox -message "Veuillez valider le projet avec Miriade." -type ok
          return
       }
 
       # Get parameters
-      
       set ra  [expr [mc_angle2deg $::atos_analysis_gui::raj2000] * 15.]
       set dec [mc_angle2deg $::atos_analysis_gui::decj2000]
       set radius 10
-
-
       set coord "$ra $dec"
       set radius_arcmin "${radius}arcmin"
       set radius_arcsec [concat [expr $radius * 60.0] "arcsec"]
       set date [mc_date2iso8601 $::atos_analysis_gui::jd]
 
-      if {$::atos_analysis_gui::occ_pos_type=="Code UAI"} {
+      if {$::atos_analysis_gui::occ_pos_type == "Code UAI"} {
          set uaicode  "$::atos_analysis_gui::occ_pos"
       } else {
          set uaicode  "500"
@@ -2878,7 +2884,6 @@ catch {
       
       # Request Skybot cone-search
       set skybotQuery "get SkyBoT.IMCCE($date,$uaicode,'Asteroids and Planets','$radius_arcsec')"
-
       # Draw a circle to mark the fov center
       set drawFovCenter "draw phot($ra,$dec,20.00arcsec)"
       # Draw USNO stars as triangles
@@ -2908,24 +2913,5 @@ catch {
    
    }
 
-
-
-   proc ::atos_analysis_gui::googlemaps {  } {
-      
-      global conf
-      
-      if {(! [info exists ::atos_analysis_gui::latitude_deg]  || ! [info exists ::atos_analysis_gui::longitude_deg]) || 
-          ($::atos_analysis_gui::latitude_deg == "" || $::atos_analysis_gui::longitude_deg == "")} {
-         ::console::affiche_erreur "googlemaps: pas de coordonnee geographique: veuillez valider le projet avant de visualiser la position de l'observateur\n"
-         return
-      } else {
-         #::console::affiche_resultat "latitude , Longitude = $::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg \n"
-         set url "$::atos_analysis_gui::googleURI$::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg"
-      }
-
-      ::console::affiche_resultat gren_info "Google map URL: $url\n"
-      set answer [ catch { exec $conf(editsite_htm) $url & } ]
-
-   }
 
 }
