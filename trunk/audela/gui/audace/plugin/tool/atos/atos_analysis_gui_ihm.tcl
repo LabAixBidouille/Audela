@@ -1024,7 +1024,7 @@
 
                        #--- Cree un label pour le chemin de l'AVI
                        button $offsettime.h -text "?" -width 1 \
-                             -command "::audace::showHelpPlugin tool atos atos.htm extraction_heure"
+                             -command "::audace::showHelpPlugin tool atos atos.htm correction_temporelle"
                        pack  $offsettime.h -side left -padx 3 -pady 1
 
              #--- Cree un frame pour le chargement d'un fichier
