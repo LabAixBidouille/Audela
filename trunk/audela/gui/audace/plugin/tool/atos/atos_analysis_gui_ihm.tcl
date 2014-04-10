@@ -57,6 +57,7 @@
       image create photo .emersion  -format PNG -file [ file join $audace(rep_plugin) tool atos img select_emersion.png ]
       image create photo .reload    -format PNG -file [ file join $audace(rep_plugin) tool atos img reload.png ]
       image create photo .view      -format PNG -file [ file join $audace(rep_plugin) tool atos img view.png ]
+      image create photo .minihelp  -format PNG -file [ file join $audace(rep_plugin) tool atos img b_help.png ]
 
       #--- Initialisations par defaut
       #------ saut d'integration d'une image = 10ms + 0.04/2
@@ -994,6 +995,11 @@
                   label $corrtemptitre.l -text "Correction temporelle : " -font $atosconf(font,courier_10_b)
                   pack  $corrtemptitre.l -side left -anchor e
 
+                  #--- Cree un label pour le chemin de l'AVI
+                  button $corrtemptitre.h -image .minihelp -compound center -relief flat\
+                        -command "::audace::showHelpPlugin tool atos atos.htm correction_temporelle"
+                  pack  $corrtemptitre.h -side left -padx 3 -pady 1
+
              #--- Cree un frame pour le chargement d'un fichier
              set corrtemp [frame $courbe.corrtemp]
              pack $corrtemp -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
@@ -1022,10 +1028,6 @@
                        entry $offsettime.v -textvariable ::atos_analysis_gui::time_offset -width 5
                        pack  $offsettime.v -side left -padx 3 -pady 1
 
-                       #--- Cree un label pour le chemin de l'AVI
-                       button $offsettime.h -text "?" -width 1 \
-                             -command "::audace::showHelpPlugin tool atos atos.htm correction_temporelle"
-                       pack  $offsettime.h -side left -padx 3 -pady 1
 
              #--- Cree un frame pour le chargement d'un fichier
              set corr_ref_titre [frame $courbe.corr_ref_titre -borderwidth 1 -cursor arrow -relief raised]
@@ -1038,6 +1040,11 @@
                   #--- Cree un label
                   label $corr_ref_titre.l -text "Correction par une etoile de reference : " -font $atosconf(font,courier_10_b)
                   pack  $corr_ref_titre.l -side left -anchor e
+
+                  #--- Cree un label pour le chemin de l'AVI
+                  button $corr_ref_titre.h -image .minihelp -compound center -relief flat\
+                        -command "::audace::showHelpPlugin tool atos atos.htm correction_reference"
+                  pack  $corr_ref_titre.h -side left -padx 3 -pady 1
 
              #--- Cree un frame pour le chargement d'un fichier
              set sauver [frame $courbe.sauver -borderwidth 0 -cursor arrow -relief groove]
