@@ -308,7 +308,7 @@ L'appuie du bouton <b>Extraction</b> lance le processus.
 
 
 <h2>
-    <a name="extraction_heure"/>
+    <a name="extraction_heure" id="extraction_heure"/>
     <img src="../img/time.png" alt="" align="middle" height="48" width="48" />
     Extraction de l'heure
     <br />
@@ -644,9 +644,20 @@ de l'occultation.
 <img src="../img/analyse_02_ephem.png"/>
 
 
+
+
+
+
+
+
+
 <h3>Parametres</h3>
 
 <img src="../img/analyse_03_params.png"/>
+
+
+
+
 
 <h4>Objet occulteur</h4>
 
@@ -655,15 +666,21 @@ l'appel a Miriade.
 
      <br/><br/>
 
+
+
+
+
 <h4>Etoile</h4>
 
 L'etoile par contre necessite d'aller chercher certaine information pour 
 calculer son diametre equivalent projete a la distance de l'asteroide. 
 
      <br/><br/>
+
 Entrer une designation suivant un catalogue choisi. 
 
      <br/><br/>
+
 Selectionner le type d'etoile s'il est connu.
 
      <br/><br/>
@@ -683,141 +700,8 @@ Non utilisé pour l'instant
 
      <br/><br/>
 
-<h3>Corrections</h3>
+<h4>A ajouter de l ancienne doc</h4>
 
-<img src="../img/capture-analyse-correct.png" alt="" height="649" width="817" />
-</p><p>La première étape de traitement de la courbe est de la corriger
-de tout ses
-artéfacts. Généralement, lorsque l'on utilise une caméra vidéo, un
-système d'insertion
-de la date dans les images et un grabber numériques pour numériser la
-courbe, des actions sont nécessaires avant de se dire qu'à une date
-donnée
-nous avons obtenu telle mesure. Un grabber enregistre à la cadence de
-25 images par secondes, alors
-que l'on peut faire des acquisitions de plusieurs secondes.
-</p><p>
-Au chargement de la courbe avec le bouton "Ouvrir" apparait une nouvelle fenêtre
-qui représente la courbe des mesures en fonction du temps. Le temps s'exprime en seconde
-et l'origine est le premier point de la courbe.
-</p><p>
- 
-<img src="../img/capture-analyse-corrections1.png" alt="" height="400" width="600" />
-</p><p>
-Dans l'exemple ci-dessus, on peut voir sur cette courbe des "paquets" de données.
-Comme on a utilisé une Watec 120N avec un grabber, nous avons nos 25 images par
-secondes, qui sont représentés par les points bleus. Chaque paquets montrent que
-nous avons utilisé le boitier d'intégration de la Watec en intégrant sur 8 images.
-Nous pouvons voir donc sur ce graphe que le grabber ne nous renvoie pas le même flux
-alors qu'il le devrait.
-</p><p>
-</p>
-<h4>Correction des paquets d'images</h4>
-La première correction à faire est de réunir ces paquets de 8 images en
-1 seule mesure.
-La seconde chose à faire est de déterminer le nombre d'images que nous
-devons supprimer au début de la courbe pour pouvoir réunir ces paquets
-de 8 images.
-<p>Dans la fenêtre de la courbe, le bouton gauche de la souris permet
-de définir le zoom.
-Choisir le zoom adéquat pour visualiser les paquets d'images à réunir
-et à supprimer. Avec le bouton du milieu de la souris, vous pouvez
-sélectionner les paquets.
-</p><p>Sélectionner les premiers blocs de points à supprimer puis
-aller dans l'onglet "Corrections" la fenêtre "Analyse de la courbe de
-lumière"
-et cliquer sur le bouton "Offset". Alors s'affiche le nombre de points
-qui seront supprimés.
-</p><p>
-Sélectionner les blocs d'images à réunir et cliquer sur "Paquet".  Alors s'affiche
-le nombre de points qui seront réunis.
-</p><p>
-Cliquer sur le bouton "View" pour visualiser l'effet sur la courbe.
-</p><p>
-<img src="../img/capture-analyse-corrections2.png" alt="" height="400" width="600" />
-</p><p>Les points rouges montrent le résultat de la médiane pour chaque
-point de chaque paquet. La courbe verte montre un seul point de mesure
-qui sera le résultat final que
-nous utiliserons ensuite. On voit que la datation de ce point
-correspond au premier
-point de chaque paquet. Ce qui ne représente pas forcement la réalité
-dans le cas
-de notre matériel, il faudra éventuellement procéder à la correction
-temporelle.
-</p><p>
-</p>
-<h4>Correction temporelle</h4>
-
-Il faut renseigner 2 champs, dont le premier représente le "Temps d'exposition théorique".
-<p>
-Dans notre exemple, nous avons une intégration de 8 images à 25 images par seconde.
-La cadence de 25 images par seconde fournit des images séparées entre elles de 0.04 secondes.
-Intégrer sur 8 images cela correspond a un temps d'exposition de 0.32 secondes.
-</p><p>
-Le second champ est le saut en temps qui permet de dater une image. La raison est
-que le système d'intégration de la date sur l'image fournit la date de l'image
-suivante. Imaginer qu'à l'instant où la camera intègre, l'image n'existe pas sur le disque,
-ni à travers le boitier d'incrustation GPS, il faut donc corriger de cet offset.
-Pour tous ceux qui utilisent des Watec + Boitier gps + Grabber, saisissez 0.03.
-</p><p>
-La correction à appliquer est de -(I/2 + 0.03) secondes, I étant le
-temps d'intégration. Les 0.03s viennent du fait que chaque trame est
-exposée pendant un temps I mais avec un décalage de 0.02s (donc il y a
-un 0.01s qui traine pour récupérer le temps central de cette double
-exposition décalée + les 0.02s pour le temps central de l'image en sortie).
-</p><p>
-Cette correction de -(I/2 + 0.03)s est à appliquer au temps central de
-la première image de chaque paquet (ici de 8 images pour 0.32s
-d'intégration, la caméra continuant avant la fin de la pose suivante à
-sortir des images à la cadence vidéo).
-</p><p>
-Pour toute information concernant ce sujet, je vous conseille les forums, et évidemment
-<a href="http://www.euraster.net">http://www.euraster.net</a> ou plus d'informations auprès d'Eric Frappa ou auprès de Gérard Dangl.
-</p><p>
-Le résultat obtenu (en cliquant sur "View" pour le visualiser), on peut voir
-la courbe verte décalée du bon timing. Nous avons donc une courbe parfaitement datée.
-</p><p>
-<img src="../img/capture-analyse-corrections3.png" alt="" height="400" width="600" />
-</p><p>
-</p>
-<h4>Correction par une étoile de référence</h4>
-
-Dans le cas où une étoile est visible dans l'image et qu'elle a été mesurée par
-l'outil de mesure photométrique, il est possible ici de corriger le flux de l'étoile
-occultée.
-<h4>Appliquer (les corrections)</h4>
-
-Il suffit de cliquer sur le bouton "Appliquer" pour sauvegarder la courbe. Le
-nouveau fichier aura comme terminaison _CORR.csv et on le retrouve dans l'onglet suivant.
-
-
-
-
-
-
-<p>
-</p><h3>Sélection des "Evènements"</h3>
-<p>
-<img src="../img/capture-analyse-evenmts.png" alt="" height="649" width="817" />
-</p><p>
-Avant de continuer il est impératif de charger la nouvelle courbe corrigée
-en cliquant sur le bouton "Ouvrir".
-A ce stade nous allons sélectionner chaque évènement de la courbe tel qu'ils sont
-dessinés en vert sur chaque bouton. En passant la souris sur les boutons, un petit
-descriptif de l'action à appliquer s'affiche.
-Pour les deux évènements finaux de la liste, il suffit de sélectionner au moins
-2 points autour de l'évènement (immersion ou émersion).
-
-
-
-
-
-
-
-</p><p>
-</p><h3>Derniers "Paramètres"</h3>
-<p>
-<img src="../img/capture-analyse-paramet.png" alt="" height="649" width="817" />
 </p><p>
 Dans cet onglet se trouve la liste des derniers paramètres nécessaires avant le
 calcul des évènements.
@@ -855,51 +739,308 @@ des temps morts.
 
 
 
+<h3>Corrections</h3>
+
+La première étape de traitement de la courbe est de la corriger
+de tout ses
+artéfacts. Généralement, lorsque l'on utilise une caméra vidéo, un
+système d'insertion
+de la date dans les images et un grabber numériques pour numériser la
+courbe, des actions sont nécessaires avant de se dire qu'à une date
+donnée
+nous avons obtenu une mesure. Un grabber enregistre à la cadence de
+25 images par secondes, alors
+que l'on peut faire des acquisitions de plusieurs secondes.
+
+     <br/><br/>
+
+<img src="../img/analyse_04_corrections.png"/>
+
+     <br/><br/>
+
+<h4>Ouvrir un fichier de mesure</h4>
+
+Au chargement de la courbe avec le bouton "Ouvrir" apparait une nouvelle fenêtre
+qui représente la courbe des mesures en fonction du temps. Le temps s'exprime en seconde
+et l'origine est le premier point de la courbe.
+
+     <br/><br/>
+
+
+
+
+<h4>Correction des paquets d'images</h4>
+
+Dans l'exemple ci-dessus, on peut voir sur cette courbe des "paquets" de données.
+Comme on a utilisé une Watec 120N avec un grabber, nous avons nos 25 images par
+secondes, qui sont représentés par les points bleus. Chaque paquets montrent que
+nous avons utilisé le boitier d'intégration de la Watec 120N+ en intégrant sur 8 images.
+Nous pouvons voir sur ce graphe des fluctuations de la photometrie sur les images du meme
+paquet. 
+
+     <br/><br/>
+
+<img src="../img/analyse_04_corrections_brut.png" />
+
+     <br/><br/>
+
+La première correction à faire est de réunir ces paquets de 8 images en
+1 seule mesure.
+La seconde chose à faire est de déterminer le nombre d'images que nous
+devons supprimer au début de la courbe pour pouvoir réunir ces paquets
+de 8 images.
+
+     <br/><br/>
+
+Dans la fenêtre de la courbe, le bouton gauche de la souris permet
+de définir le zoom.
+Choisir le zoom adéquat pour visualiser les paquets d'images à réunir
+et à supprimer. Avec le bouton du milieu de la souris, vous pouvez
+sélectionner les paquets.
+
+     <br/><br/>
+
+Sélectionner les premiers blocs de points à supprimer puis
+aller dans l'onglet <b>Corrections</b> la fenêtre "Analyse de la courbe de
+lumière"
+et cliquer sur le bouton <b>Offset</b>. Alors s'affiche le nombre de points
+qui seront supprimés.
+
+     <br/><br/>
+
+Sélectionner les blocs d'images à réunir et cliquer sur "Paquet".  Alors s'affiche
+le nombre de points qui seront réunis.
+
+     <br/><br/>
+
+Cliquer sur le bouton "View" pour visualiser l'effet sur la courbe.
+
+     <br/><br/>
+
+<img src="../img/analyse_04_corrections_parbloc.png" />
+
+     <br/><br/>
+
+Les points rouges montrent le résultat de la médiane pour chaque
+point de chaque paquet. La courbe verte montre un seul point de mesure
+qui sera le résultat final que
+nous utiliserons ensuite. On voit que la datation de ce point
+correspond au premier
+point de chaque paquet. Ce qui ne représente pas forcement la réalité
+dans le cas
+de notre matériel, il faudra éventuellement procéder à la correction
+temporelle.
+
+
+<a name="correction_temporelle" id="correction_temporelle"/>
+
+<h4>Correction temporelle</h4>
+
+Il faut renseigner 2 champs, dont le premier représente le "Temps d'exposition théorique".
+
+     <br/><br/>
+
+Dans notre exemple, nous avons une intégration de 8 images à 25 images par seconde.
+La cadence de 25 images par seconde fournit des images séparées entre elles de 0.04 secondes.
+Intégrer sur 8 images cela correspond a un temps d'exposition de 0.32 secondes.
+
+     <br/><br/>
+
+Le second champ est le saut en temps qui permet de dater une image. La raison est
+que le système d'intégration de la date sur l'image fournit la date de l'image
+suivante. Imaginer qu'à l'instant où la camera intègre, l'image n'existe pas sur le disque,
+ni à travers le boitier d'incrustation GPS, il faut donc corriger de cet offset.
+Pour tous ceux qui utilisent des Watec + Boitier gps + Grabber, saisissez 0.03.
+
+     <br/><br/>
+
+La correction à appliquer est de -(I/2 + 0.03) secondes, I étant le
+temps d'intégration. Les 0.03s viennent du fait que chaque trame est
+exposée pendant un temps I mais avec un décalage de 0.02s (donc il y a
+un 0.01s qui traine pour récupérer le temps central de cette double
+exposition décalée + les 0.02s pour le temps central de l'image en sortie).
+
+     <br/><br/>
+
+Cette correction de -(I/2 + 0.03)s est à appliquer au temps central de
+la première image de chaque paquet (ici de 8 images pour 0.32s
+d'intégration, la caméra continuant avant la fin de la pose suivante à
+sortir des images à la cadence vidéo).
+
+     <br/><br/>
+
+Pour toute information concernant ce sujet, je vous conseille les forums, et évidemment
+<a href="http://www.euraster.net">http://www.euraster.net</a> ou plus d'informations auprès d'Eric Frappa ou auprès de Gérard Dangl.
+
+     <br/><br/>
+
+Le résultat obtenu (en cliquant sur "View" pour le visualiser), on peut voir
+la courbe verte décalée du bon timing. Nous avons donc une courbe parfaitement datée.
+
+     <br/><br/>
+
+<img src="../img/analyse_04_corrections_totale.png" />
+
+     <br/><br/>
+
+Suivant la camera utilisé vous pouvez vous referer aux informations suivantes :
+
+     <br/><br/>
+
+<dl>
+    <dt>Watec 120N</dt>
+      <dd>
+Selon le mode appliqué, il faut regarder quel est le nombre d'images sommees.
+multiplié ce nombre par 0.04 sec pour avoir le temps d exposition teorique.
+      </dd>
+    <dt>Watec 902Hx</dt>
+      <dd>
+Pour ces cameras il n est pas necessaire de faire une correction temporelle.       
+      </dd>
+</dl>
+
+     <br/><br/>
+ <p style="color: #f00;">
+<b>Si lors de la mesure de la courbe de lumiere on a choisi la sommation d'images,
+une premiere correction a ete appliqué en moyennant les evenements sommés. 
+donc les parametres a prendre en compte pour le temps d'exposition theorique,
+doit etre choisi comme si on fesait qu'une seule image sans sommation.</b>
+</p>
+
+     <br/><br/>
+
+voir les liens suivant pour plus d'info : 
+
+     <br/><br/>
+
+http://www.dangl.at/exta/exta_e.htm
+     <br/>
+http://www.afanet.fr/RCE/PresentationsRCE2012/S2-0211-E.Frappa.pdf
+
+     <br/><br/>
+
+
+
+
+<h4>Correction par une etoile de reference</h4>
+
+Dans le cas où une étoile est visible dans l'image et qu'elle a été mesurée par
+l'outil de mesure photométrique, il est possible ici de corriger le flux de l'étoile
+occultée.
+
+
+
+
+
+
+<h4>Calcul de la courbe corrigee</h4>
+
+Il suffit de cliquer sur le bouton "Appliquer" pour sauvegarder la courbe. Le
+nouveau fichier aura comme terminaison _CORR.csv et on le retrouve dans l'onglet suivant.
 
 </p><p>
-</p><h3>Immersion</h3>
-<p>
-<img src="../img/capture-analyse-immersi.png" alt="" height="649" width="817" />
 </p><p>
+ 
+
+
+
+
+
+
+
+<p>
+</p><h3>Sélection des "Evènements"</h3>
+<p>
+<img src="../img/analyse_05_evenmts.png"/>
+</p><p>
+Avant de continuer il est impératif de charger la nouvelle courbe corrigée
+en cliquant sur le bouton "Ouvrir".
+A ce stade nous allons sélectionner chaque évènement de la courbe tel qu'ils sont
+dessinés en vert sur chaque bouton. En passant la souris sur les boutons, un petit
+descriptif de l'action à appliquer s'affiche.
+Pour les deux évènements finaux de la liste, il suffit de sélectionner au moins
+2 points autour de l'évènement (immersion ou émersion).
+
+
+
+
+
+
+
+
+
+
+
+<h3>Immersion</h3>
+
+<img src="../img/analyse_06_immersion.png"/>
+
+
 L'immersion est la disparition de l'étoile occultée. Les paramètres inscrits
 dans les zones blanches sont modifiables, même s'ils sont calculés au préalable.
-</p><p>
+
+     <br/><br/>
+
 - Le "Temps de pose" par exemple est obtenu par la datation des images et peut ne pas
 correspondre avec le temps de pose théorique. 
-</p><p>
+
+     <br/><br/>
+
 - La date de référence a été obtenue par sélection sur la courbe. Il est conseillé
 de faire le calcul une deuxième fois après avoir obtenu une première solution.
-</p><p>
+
+     <br/><br/>
+
 - Le nombre d'instant  et le pas de recherche exprime comment la solution va être
 explorée. Le bouton <img src="../img/reload.png" alt="" height="16" width="16" />
 permet de calculer la durée totale d'exploration autour de l'évènement.
-</p><p>
+
+     <br/><br/>
+
 - Une fois que tout est en place, c'est le moment de cliquer sur l'icône "Calcul".
 
-</p>
+     <br/><br/>
+
+
+
 <h4>Tout est dans le Chi2</h4>
 
 La solution s'exprime par la valeur du Chi2 minimale. C'est pourquoi
 un bon Chi2 est un Chi2 qui ne présente pas de doute sur la solution. Ou encore, il faut obtenir
 une jolie courbe qui présente un minimum global dont la forme est proche d'une parabole,
 comme dans l'exemple présenté ci-dessous.
-<p>
-<img src="../img/capture-analyse-chi2-bon.png" alt="" height="492" width="644" />
-</p><p>
+
+     <br/><br/>
+
+<img src="../img/analyse_06_immersion_chi2.png"/>
+
+     <br/><br/>
+
 Il peut arriver que le résultat du chi2 montre un ou des plateaux. A ce moment il faut
 essayer de bouger le système en changeant les valeurs de recherche, reprendre d'autres valeurs
 pour les plateaux, modifier le temps de référence, etc.
 Si rien n'y fait, et que vous obtenez un plateau minimal il ne reste plus qu'à choisir le temps
 milieu du plateau.
-</p><p>
+
+     <br/><br/>
+
+<img src="../img/analyse_06_immersion_cdl_ombre.png"/>
+
+     <br/><br/>
+
+Resultat final dans notre exemple.
+     <br/><br/>
 
 
 
 
-</p><p>
-</p><h3>Emersion</h3>
-<p>
-<img src="../img/capture-analyse-emersio.png" alt="" height="649" width="817" />
+
+<h3>Emersion</h3>
+
+<img src="../img/analyse_07_emersion.png" />
+
+     <br/><br/>
+
 C'est la même chose Comme pour l'immersion, ici on va calculer l'instant de réapparition de
 l'étoile.
 
@@ -907,24 +1048,27 @@ l'étoile.
 
 
 
-</p><p>
-</p><h3>Informations</h3>
-<p>
+<h3>Informations</h3>
+
 Les résultats étant obtenu, il ne reste plus qu'à écrire le rapport.
 Les 3 onglets suivants sont à remplir pour un rapport complet.
 Remplissez le maximum d'informations, c'est aussi pour vous et pour retrouver votre
 méthodologie au fil du temps.
-</p><p>
-<img src="../img/capture-analyse-info1.png" alt="" height="649" width="817" />
-</p><p>
 
-</p><p>
-<img src="../img/capture-analyse-info2.png" alt="" height="649" width="817" />
-</p><p>
+     <br/><br/>
 
-</p><p>
-<img src="../img/capture-analyse-info3.png" alt="" height="649" width="817" />
-</p><p>
+<img src="../img/analyse_08_info1.png"/>
+
+     <br/><br/>
+
+<img src="../img/analyse_08_info2.png"/>
+
+     <br/><br/>
+
+<img src="../img/analyse_08_info3.png"/>
+
+     <br/><br/>
+
 
 
 
@@ -932,7 +1076,7 @@ méthodologie au fil du temps.
 </p><p>
 </p><h3>Rapport</h3>
 <p>
-<img src="../img/capture-analyse-rapport.png" alt="" height="649" width="817" />
+<img src="../img/analyse_09_rapport.png" alt="" height="649" width="817" />
 </p><p>
 Le récapitulatif vous présente les principaux résultats obtenus.
 Vous obtenez la durée de l'évènement observé mais aussi une estimation de la taille
