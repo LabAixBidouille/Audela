@@ -16,13 +16,13 @@ Stephane Vaillant, Jerome Berthier
 Ce plugin va vous permettre de :
 <ul>
    <li> Analyser les mesures de photocentre avant l'acquisition qui permet
-   de trouver les meilleurs reglages de la camera avant de lancer l'acquisition<li>
-   <li> Faire l acquisition Video d'un occultation stellaire.<li>
-   <li> Dater chaque images<li>
-   <li> Mersurer la courbe de lumiere<li>
-   <li> Trouver la date des evenements<li>
-   <li> Construire le rapport PLANOCCULT<li>
-   <li> Gerer ses occultations<li>
+   de trouver les meilleurs reglages de la camera avant de lancer l'acquisition</li>
+   <li> Faire l acquisition Video d'un occultation stellaire.</li>
+   <li> Dater chaque images</li>
+   <li> Mersurer la courbe de lumiere</li>
+   <li> Trouver la date des evenements</li>
+   <li> Construire le rapport PLANOCCULT</li>
+   <li> Gerer ses occultations</li>
 </ul>
 
 </p><p>
@@ -49,7 +49,6 @@ Entrainez-vous et essayez de retrouver les résultats présentés.
 Telechargez la video d exemple a cette adresse : 
 <a href="http://www.imcce.fr/%7Evachier/occultation/demo/sapphoseg.00.avi">http://www.imcce.fr/~vachier/occultation/demo/sapphoseg.00.avi</a>
 </p><p>
-<a href="exemple.htm">voir l'exemple</a>
 
 
 
@@ -71,24 +70,33 @@ A chaque fois la bouée fera référence à cette page.
 <p>
 <img src="../img/conf_01_preferences.png" alt=""  />
 
-</p><p>
-- Le "Mode Debug" sert aux développeurs, cela permet d'ajouter quelques fonctionnalités comme ressourcer
+
+<dl>
+    <dt>Répertoire projet</dt>
+      <dd>C'est l'endroit où vous stockerez vos résultats d'occultations.</dd>
+
+    <dt>Mode Debug</dt>
+      <dd>
+Sert aux développeurs, cela permet d'ajouter quelques fonctionnalités comme ressourcer
 l'ensemble du plugin. Pour l'activer il suffit de cocher cette option, de cliquer sur OK, de quitter AudeLA, de sauvegarder
 la configuration d'AudeLA et enfin de relancer AudeLA.  
-</p><p>- Le "Délai d'affichage durant l'acquisition en millisecondes"
+      </dd>
+
+    <dt>Délai d'affichage</dt>
+      <dd>
 permet de visualiser la vidéo lors de l'acquisition. Le nombre
-représente
-la cadence d'affichage.
-</p><p>
-- La "Ligne de commande de l'OCR" permet la reconnaissance des caractères. Elle permet de récupérer la date
-inscrite sur les images. Elle nécessite d'installer les outils sous Linux par défaut :
-jpegtopnm et gocr. La ligne de commande telle qu'elle est écrite, fournit une chaine
-de caractères. Il est donc possible d'utiliser d'autres outils, il suffira de remplacer
-la commande.
-</p><p>
-- La gestion de la taille du disque évite de saturer un filesystem.
-</p><p>
-- Le "Répertoire projet" est l'endroit où vous stockerez  vos résultats d'occultations.
+représente la cadence d'affichage.
+      </dd>
+
+    <dt>Espace disque</dt>
+      <dd>
+La gestion de la taille du disque évite de saturer un filesystem.
+      </dd>
+
+</dl>
+
+
+
 
 
 
@@ -96,13 +104,29 @@ la commande.
 <img src="../img/conf_02_ocr.png" alt=""  />
 </p><p>
 
-</p><p>
+Les lignes de commandes de l'OCR permettent la reconnaissance des caractères. 
+Elle permet de récupérer la date inscrite sur les images. 
+Elle nécessite d'installer les outils sous Linux par défaut :
+gocr et ImageMagick. La ligne de commande telle qu'elle est écrite, fournit une chaine
+de caractères. Il est donc possible d'utiliser d'autres outils, il suffira de remplacer
+la commande.
 
+<dl>
+    <dt>OCR par defaut</dt>
+      <dd></dd>
 
+    <dt>IOTA-VTI</dt>
+      <dd>La premiere commande permet de modifier l image; par exemple augmenter le contraste.
+      La deuxieme effectue l'OCR. </dd>
 
+    <dt>TIM-10</dt>
+      <dd>La premiere commande permet de modifier l image; par exemple augmenter le contraste.
+      La deuxieme effectue l'OCR. Pour l'instant ca ne marche pas</dd>
 
+    <dt>Kiwi-OSD</dt>
+      <dd></dd>
 
-
+</dl>
 
 
 
@@ -118,6 +142,25 @@ la commande.
 
 </p><h2><img src="../img/acquisition.png" alt="" align="middle" height="48" width="48" /> Acquisition d'une vidéo<br />
 </h2>
+Les boutons d'acquisition et de sauvegarde se trouvent en haut de la fenetre et sont toujours visibles.
+<dl>
+    <dt>OneShot</dt>
+      <dd>Prends une image</dd>
+    <dt>Acquisition Continue</dt>
+      <dd></dd>
+    <dt>Capture</dt>
+      <dd>Acquisition Continue avec sauvegarde</dd>
+    <dt>Stop</dt>
+      <dd>Arrete l'acquisition</dd>
+<dl>
+
+
+- </p><p></p><p>
+
+Vous devez choisir le bon peripherique de capture
+
+
+
 
 <p>Il faut choisir un répertoire de destination et un nom de fichier pour que l'appui sur le petit drapeau
 permette de démarrer l'acquisition.
