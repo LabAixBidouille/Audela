@@ -161,12 +161,12 @@ namespace eval ::atos_analysis_tools {
       if {[info exists ::atos_analysis_tools::medianecdl]} {unset ::atos_analysis_tools::medianecdl}
       if {[info exists ::atos_analysis_tools::finalcdl]} {unset ::atos_analysis_tools::finalcdl}
 
-      set i 1
+      set i 0
       set fin "no"
       while {$fin=="no"} {
 
          # on evite un nb d image de debut = offset
-         if { $i<$offset} {
+         if {$i < $offset} {
             incr i
             continue
          }

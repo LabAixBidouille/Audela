@@ -62,7 +62,7 @@
       #------ saut d'integration d'une image = 10ms + 0.04/2
       set ::atos_analysis_gui::time_offset 0.03
       #------Nb images a supprimer en debut de courbe
-      set ::atos_analysis_gui::raw_integ_offset 1
+      set ::atos_analysis_gui::raw_integ_offset 0
       #------ Regroupe les images par bloc de 
       set ::atos_analysis_gui::raw_integ_nb_img 1
       #------ Class d'etoile (seq. principale)
@@ -552,7 +552,7 @@
                        pack $dracosd -in $paramdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Cree un label
-                            label $dracosd.l1 -text "DRa.cos(Dec) ('/h) : "
+                            label $dracosd.l1 -text "DRa.cos(Dec) (\"/min) : "
                             pack  $dracosd.l1 -side left -anchor e
 
                             #--- Cree un label pour le chemin de l'AVI
@@ -564,7 +564,7 @@
                        pack $ddec -in $paramdroit -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
                             #--- Cree un label
-                            label $ddec.l1 -text "DDec ('/h) : "
+                            label $ddec.l1 -text "DDec (\"/min) : "
                             pack  $ddec.l1 -side left -anchor e
 
                             #--- Cree un label pour le chemin de l'AVI
@@ -935,7 +935,7 @@
              pack $corrtitre -in $courbe -anchor s -side top -expand 0 -fill x -padx 10 -pady 5 -ipady 5
 
                   #--- Cree un label pour le chemin de l'AVI
-                  checkbutton $corrtitre.v -variable ::atos_analysis_gui::int_corr
+                  checkbutton $corrtitre.v -variable ::atos_analysis_gui::int_corr -state disabled
                   pack $corrtitre.v -side left -padx 3 -pady 1 -fill x
 
                   #--- Cree un label
