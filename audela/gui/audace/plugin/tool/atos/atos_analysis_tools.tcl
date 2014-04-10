@@ -1516,6 +1516,7 @@ namespace eval ::atos_analysis_tools {
       ::atos_analysis_tools::diametre_stellaire $B $V $K $D
    }
 
+
 }
 
 # 2010-06-05T23:41:22.205
