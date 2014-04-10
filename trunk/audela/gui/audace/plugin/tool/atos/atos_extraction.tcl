@@ -158,25 +158,36 @@ namespace eval ::atos_extraction {
         frame $frm.open -borderwidth 1 -relief raised -cursor arrow
         pack $frm.open -in $frm -side top -expand 0 -fill x -padx 1 -pady 1
 
-        #--- Creation du bouton open
-        button $frm.open.but_open \
-           -text "$caption(atos_extraction,ouvrir)" -borderwidth 2 \
-           -command "::atos_tools::open_flux $visuNo"
-        pack $frm.open.but_open \
-           -side left -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+            #--- Creation du bouton open
+            button $frm.open.but_open \
+               -text "$caption(atos_extraction,ouvrir)" -borderwidth 2 \
+               -command "::atos_tools::open_flux $visuNo"
+            pack $frm.open.but_open \
+               -side left -anchor e \
+               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+    
+            #--- Creation du bouton select
+            button $frm.open.but_select \
+               -text "..." -borderwidth 2 -takefocus 1 \
+               -command "::atos_tools::select $visuNo"
+            pack $frm.open.but_select \
+               -side left -anchor e \
+               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+    
+            #--- Cree un label pour le chemin de l'AVI
+            entry $frm.open.avipath
+            pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
 
-        #--- Creation du bouton select
-        button $frm.open.but_select \
-           -text "..." -borderwidth 2 -takefocus 1 \
-           -command "::atos_tools::select $visuNo"
-        pack $frm.open.but_select \
-           -side left -anchor e \
-           -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+        set info_load [frame $frm.info_load]
+        pack $info_load -in $frm -side top  -padx 1 -pady 1
 
-        #--- Cree un label pour le chemin de l'AVI
-        entry $frm.open.avipath
-        pack $frm.open.avipath -side left -padx 3 -pady 1 -expand true -fill x
+           #--- Cree un label pour le nb d image
+           label $info_load.status -font $atosconf(font,courier_10) -text ""
+           #--- Cree un label pour le nb d image
+           label $info_load.nbtotal -font $atosconf(font,courier_10) -text ""
+           grid $info_load.status $info_load.nbtotal
+
+        set ::atos_gui::frame(info_load) $info_load
 
         #--- Creation de la barre de defilement
         scale $frm.scrollbar -from 0 -to 1 -length 600 -variable ::atos_tools::scrollbar \
