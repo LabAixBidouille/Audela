@@ -743,7 +743,7 @@ namespace eval ::atos_ocr_gui {
            #--- Creation du bouton aide
            button $frm.action.aide \
               -text "$caption(atos_ocr_gui,aide)" -borderwidth 2 \
-              -command "::audace::showHelpPlugin tool atos atos_ocr_gui.htm"
+              -command "::audace::showHelpPlugin tool atos atos.htm extraction_heure"
            pack $frm.action.aide -in $frm.action \
               -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0

@@ -307,12 +307,12 @@ L'appuie du bouton <b>Extraction</b> lance le processus.
 
 
 
-</p><h2><a name="extraction_heure">
-        <img src="../img/time.png" alt="" align="middle" height="48" width="48" />
-        Extraction de l'heure
-        <br />
-        </a>
-   </h2>
+<h2>
+    <a name="extraction_heure"/>
+    <img src="../img/time.png" alt="" align="middle" height="48" width="48" />
+    Extraction de l'heure
+    <br />
+</h2>
 
 On utilise avec cette fonctionnalité la possibilité de récupérer
 la date incrustée sur une image. A partir de maintenant on peut choisir
@@ -325,14 +325,33 @@ d'utiliser une vidéo AVI ou bien un lot d'images.
      <p>
      <br/>
 Il faut reperer la zone où se situe la date. En fonction du module d'incrustation
-les chiffres n ont pas la meme typographie. Pour une documentation plus detaillee
-voir a la fin du paragphe. <a>Ici</a>
+les chiffres n ont pas la meme typographie. 
+
+
+     <p><br/>
+Kiwi-OSD :
+     <img src="../img/ocr_kiwi.jpg" alt=""  />
+     <br/><br/></p>
+
+     <p><br/>
+TIM-10 :
+     <img src="../img/ocr_tim10.jpg" alt=""  />
+     <br/><br/></p>
+
+     <p><br/>
+IOTA VTI :
+     <img src="../img/ocr_vti.jpg" alt=""  />
+     <br/><br/></p>
+
+
+
      <br/><br/>
      </p>
 
      <img src="../img/datation_02_ocr.png" alt=""  />
      <p>
      <br/>
+
 On retrouve la partie chargement de la vidéo, la barre de défilement,
 les boutons de navigation ainsi
 que le crop pour se restreindre à une partie de la vidéo.
@@ -342,53 +361,65 @@ Caractères).
 pour que le traitement en appuyant sur l'icône "Démarrer" en bas a gauche, interpole toutes les dates.
 
      <br/><br/>
-     </p>
 
-
-
-On utilise avec cette fonctionnalité la possibilité de récupérer
-la date incrustée sur une image. A partir de maintenant on peut choisir
-d'utiliser une vidéo AVI ou bien un lot d'images.
-On retrouve la partie chargement de la vidéo, la barre de défilement,
-les boutons de navigation ainsi
-que le crop pour se restreindre à une partie de la vidéo.
-La datation peut se faire avec ou sans OCR (Reconnaissance Optique de
-Caractères).
-<p>Sans OCR (OCR n'est pas coché), il suffit de saisir à la main quelques dates et de cliquer sur "Vérifié",
-pour que le traitement en appuyant sur l'icône "Démarrer" en bas a gauche, interpole toutes les dates.
-
-</p><p>Avec OCR, il faut cocher la case OCR, choisir le type d'incrustateur, sélectionner la date
+Avec OCR, il faut cocher la case OCR, choisir le type d'incrustateur, sélectionner la date
 avec un cadre dans la "visu", puis cliquer sur "Select"
-comme on peut le voir sur l'image ci-dessous :
-</p><p>
-<img src="../img/capture-atos-visu.png" alt="" height="634" width="821" />
-</p><p>
-<img src="../img/capture-atos-time-avi.png" alt="" height="599" width="735" />
-</p><p>
+
+     <br/><br/>
+
 On peut alors voir qu'à cette étape que le bouton OCR se colore en vert. Cela signifie que la reconnaissance
 de caractères a fonctionné et qu'elle a retourné une chaine de caractères sensée représenter
 une date.
 
-</p><p>Avant de commencer le processus en cliquant sur l'icône
+     <br/><br/>
+
+Avant de commencer le processus en cliquant sur l'icône
 "Démarrer", il faut impérativement
-choisir 2 dates, les vérifier visuellement et manuellement. (une au
+choisir 2 dates au minimum, les vérifier visuellement et manuellement. (une au
 début de la vidéo et une à la fin), ensuite il faut se positionner au
 début de la vidéo sur une image qui a été vérifiée. Si tout est OK,
 vous pouvez cliquer sur l'icône "Démarrer". Cette action démarre
 l'extraction de la date. Si l'OCR ne fonctionne pas il sera coloré en
 rouge. Dans ce cas le bouton "Interpolé" sera coloré
 en vert.
-</p><p>Parfois les boutons "OCR" et "Interpolé" seront en vert. Dans ce cas, l'algorithme a trouvé une date
-valide, mais cette date présente un problème car il y a un écart trop grand. La valeur interpolée est donc choisie.
 
-</p><p>A la fin du processus, vous pouvez vérifier ce que l'algorithme
-a retenu. Eventuellement vous pouvez ajouter des points de vérification
+     <br/><br/>
+
+Parfois les boutons "OCR" et "Interpolé" seront en vert. 
+Dans ce cas, l'algorithme a trouvé une date
+valide, mais cette date présente un problème car il y a 
+un écart trop grand. La valeur interpolée est donc choisie.
+
+     <br/><br/>
+
+A la fin du processus, vous pouvez vérifier ce que l'algorithme
+a retenu en navigant dans l'image. 
+Eventuellement vous pouvez ajouter des points de vérification
 en cas de problème, puis relancer le processus.
-</p><p> Cette fonctionnalité se termine en enregistrant la datation dans un fichier *.time dans le même
+
+     <br/><br/>
+
+Cette fonctionnalité se termine en enregistrant la datation dans un fichier *.time dans le même
 répertoire que la vidéo, ou que les images FITS. Ce fichier sera réutilisé par la suite.
+
+     <br/><br/>
+
+     <br/><br/>
+     </p>
+
+
+
+
  
 
-</p><h2><img src="../img/photom.png" alt="" align="middle" height="48" width="48" /> Courbe de lumière</h2>Toujours
+<h2>
+    <a name="cdl"/>
+    <img src="../img/photom.png" alt="" align="middle" height="48" width="48" /> 
+    Courbe de lumière
+    <br />
+</h2>
+
+Toujours
 le même principe pour le chargement de la vidéo et pour la navigation.
 L'espace "Photométrie" permet de récupérer des informations sur la
 vidéo. Sur l'image, faire un cadre bien large en évitant de
@@ -398,10 +429,94 @@ le feriez pour ajuster une gaussienne. L'appui sur l'icône "Démarrer"
 lance l'analyse de la vidéo et fournit un fichier de relevés
 photométriques. En ayant auparavant généré le fichier .time, la
 photométrie sera en plus, datée à quelques millisecondes prés.
-<h2><img src="../img/cdl.png" alt="" align="middle" height="48" width="48" />Analyse</h2>
+     <br/><br/>
+
+     <img src="../img/cdl_01_visu.png" alt=""  />
+     <p>
+     <br/>
+Selection de la source occultee dans l image par un clic droit enfoncé dans la visu. 
+     <br/><br/>
+     </p>
+
+     <img src="../img/cdl_02_select.png" alt="Preparer l'extraction de la photometrie"  />
+     <p>
+     <br/>
+Pour chaque objet, reference, et image, l appuie sur le bouton <b>Selection</b> correspondant
+suppose qu'au prealable vous avez choisi un carré dans l image.
+     <br/><br/>
+Selectionner au minimum deux images et pour chacune d elles, il faut <b>Valider</b> la position.
+le bouton modifier permet de refaire la mesure photometrique dans une nouvelle selection tout 
+en validant la position.
+     <br/><br/>
+Vous pouvez a tout moment voir sur le graphe les positions validee, ou mesuree, dans le plan 
+du ccd ou dans sa courbe de lumiere. 
+     <br/><br/>
+Si l'etoile a tendance a bouger dans l'image, il ne faut pas hesiter a valider
+plusieurs points. Et en particulier proche des moments de disparition et reapparition
+de l'etoile.
+     <br/><br/>
+     </p>
+
+     <img src="../img/cdl_04_psf.png" alt=""  />
+     <p>
+     <br/>
+N'est pas encore actif, mais permettra de choisir la methode de mesure du 
+photocentre.
+     <br/><br/>
+     </p>
+
+     <img src="../img/cdl_05_geometrie.png" alt=""  />
+     <p>
+     <br/>
+Dans les cas ou l etoile occultee est trop peu visble dans l'image, on alors 
+proceder a une sommation d'image. 
+Pour ce faire, dans l'onglet <b>Geometrie</b> ajouter sur la ligne 
+<b>Sommation</b> l'increment d'image.
+     <br/><br/>
+Pour visualiser le resultat appuyer sur  <b>Preview</b>
+     <br/><br/>
+Puis lorsque le reglage est convenable appuyer sur <b>Appliquer</b>
+Ce qui aura pour effet de proceder a la sommation d image lors de 
+la prochaine mesure en appuyant sur le bouton <b>START</b>
+     <br/><br/>
+     </p>
+
+     <img src="../img/cdl_06_suivi.png" alt=""  />
+     <p>
+     <br/>
+Par defaut la methode utilisee est l'interpolation lineaire entre 2 points 
+verifies dans l'image. 
+     <br/><br/>
+     </p>
+
+     <img src="../img/cdl_03_courbephotom.png" alt=""  />
+     <p>
+     <br/>
+Pour lancer le calcul il faut revenir a la premiere image <b>Verifiee</b>.
+     <br/><br/>
+Appuyer sur le bouton <b>START</b> qui demarre la mesure de la courbe
+de lumiere.
+     <br/><br/>
+Appuyer ensuite sur le bouton <b>SAUVER</b> ce qui aura pour 
+effet de creer une fichier de mesure. A chaque appuie se cree un nouveau
+fichier avec un increment. Cela evite de perdre des donnees, mais il faut 
+regulierement nettoyer ce repertoire des fichiers de mesure. 
+     <br/><br/>
+Voici le resultat obtenu pour notre exercice.
+     <br/><br/>
+     </p>
 
 
 
+
+
+
+
+
+<h2>
+   <img src="../img/analyse.png" alt="" align="middle" height="48" width="48" />
+   Analyse
+</h2>
 
 
 
