@@ -457,7 +457,7 @@ de l'etoile.
      <br/><br/>
      </p>
 
-     <img src="../img/cdl_04_psf.png" alt=""  />
+     <img src="../img/cdl_03_psf.png" alt=""  />
      <p>
      <br/>
 N'est pas encore actif, mais permettra de choisir la methode de mesure du 
@@ -465,7 +465,7 @@ photocentre.
      <br/><br/>
      </p>
 
-     <img src="../img/cdl_05_geometrie.png" alt=""  />
+     <img src="../img/cdl_04_geometrie.png" alt=""  />
      <p>
      <br/>
 Dans les cas ou l etoile occultee est trop peu visble dans l'image, on alors 
@@ -481,7 +481,7 @@ la prochaine mesure en appuyant sur le bouton <b>START</b>
      <br/><br/>
      </p>
 
-     <img src="../img/cdl_06_suivi.png" alt=""  />
+     <img src="../img/cdl_05_suivi_interpole.png" alt=""  />
      <p>
      <br/>
 Par defaut la methode utilisee est l'interpolation lineaire entre 2 points 
@@ -489,7 +489,15 @@ verifies dans l'image.
      <br/><br/>
      </p>
 
-     <img src="../img/cdl_03_courbephotom.png" alt=""  />
+     <img src="../img/cdl_05_suivi_auto.png" alt=""  />
+     <p>
+     <br/>
+On peut choisir la methode <b>Auto</b>. Regler les parametres
+pour que le photocentre ne derive pas trop lorsque l'etoile est occultée.
+     <br/><br/>
+     </p>
+
+     <img src="../img/cdl_06_courbephotom.png" alt=""  />
      <p>
      <br/>
 Pour lancer le calcul il faut revenir a la premiere image <b>Verifiee</b>.
@@ -502,7 +510,7 @@ effet de creer une fichier de mesure. A chaque appuie se cree un nouveau
 fichier avec un increment. Cela evite de perdre des donnees, mais il faut 
 regulierement nettoyer ce repertoire des fichiers de mesure. 
      <br/><br/>
-Voici le resultat obtenu pour notre exercice.
+Ci-dessu le resultat obtenu pour notre exercice.
      <br/><br/>
      </p>
 
@@ -514,19 +522,29 @@ Voici le resultat obtenu pour notre exercice.
 
 
 <h2>
-   <img src="../img/analyse.png" alt="" align="middle" height="48" width="48" />
-   Analyse
+    <a name="analyse"/>
+    <img src="../img/analyse.png" alt="" align="middle" height="48" width="48" />
+    Analyse
+    <br />
 </h2>
 
 
 
 
-<p>
-<img src="../img/capture-analyse-projet.png" alt="" height="649" width="817" />
-</p><p>
-</p><h3>Projet<br />
-</h3>
+
+<img src="../img/analyse_01_projet.png" />
+
+<h3>Projet</h3>
+
+
 <h4>Contexte</h4>
+
+Un projet concerne
+une seule courbe faite à partir d'une seule station d'observation. Il faut donc faire autant
+de fichier projet que de station d'observation.
+
+     <br/><br/>
+
 - Avant toute chose, il faut se mettre dans le "contexte". Pour ce
 faire, il suffit
 d'entrer le nom de l'objet occulteur, au sens de Skybot. C'est à dire
@@ -538,52 +556,135 @@ et tous les outils développés par l'équipe OV de l'IMCCE, consultez la
 page :
 <a href="http://vo.imcce.fr">http://vo.imcce.fr</a>
 
-<p>
+     <br/><br/>
+
 - La "Date" doit être saisie sous au format ISO.
-</p><p>
+
+     <br/><br/>
+
 - La position de l'observateur peut être définie de deux manières, soit vous êtes
 sur un site UAI dont la référence existe, soit il faut entrer les coordonnées sous
 la forme : longitude (positif vers l'ouest), latitude (positif vers le nord) et
 altitude.
-</p><p>- Puis vous cliquez sur "Check avec Miriade", ce qui permet
+
+     <br/><br/>
+
+- La presence d'un tag facultatif pour nommer ce projet.
+
+     <br/><br/>
+
+- Puis vous cliquez sur "Check avec Miriade", ce qui permet
 d'obtenir l'éphéméride de l'objet pour la date. Il est nécessaire
 d'être connecté à internet pour cette action.
-</p><p>
+Le projet peut etre créé bien avant le jour de l'occultation et modifié a tout moment.
+
+     <br/><br/>
+
 - Sur la droite se trouve le bouton "Aladin", on le retrouvera plus tard dans l'onglet
 "Paramètres". Ce bouton permet d'envoyer des requêtes par SAMP.
 Il faut au préalable lancer Aladin. Après l'appui du bouton "Aladin" vous trouverez
 dans l'application Aladin, les plans du DSS et les catalogues stellaires sur la zone
 d'intérêt.
-</p><p>
-</p>
+
+     <br/><br/>
+
+- le bouton "Google Map", permet de verifier la position de l'observateur.
+Il est bien pratique pour reperer un bon coin.
+
+     <br/><br/>
+
+- le bouton <b>Creer</b>, va creer le nouveau projet.
+et une nouvelle entree apparait dans les champs 
+<b>Fichier projet</b> et <b>Repertoire de travail</b> 
+
+     <br/><br/>
+
+- le bouton <b>Reset</b>, effacera toute les entrees du projet.
+
+
+
+
+
+
 <h4>Fichiers et Répertoires</h4>
 
-- Le bouton "Parcourir" permet de naviguer dans les répertoires et de sélectionner
-un fichier dont l'extension est .atos
+- le bouton <b>Charger</b>, permet de parcourir et de choisir un projet existant.
+l'extention des fichiers projet est <b>.atos</b>
+
+     <br/><br/>
+
+- le bouton <b>ReCharger</b>, recharge toutes les données d'un projet sauver precedemment.
+par defaut recharge le projet en cours a partir de la sauvegarde.
+
+
+
+
+
+
+<h4>Boutons <b>Sauver</b></h4>
+
+A tout moment on peut sauver le projet en appuyant sur le bouton <b>Sauver</b> en bas
+a gauche. On peut recharger un projet sauvé auparavant par les boutons <b>Charger</b> et 
+<b>ReCharger</b>
+
+     <br/><br/>
+
+
+
+
+
+
+
+<h3>Ephémérides</h3>
+
 <p>
-- Le bouton "Charger" recharge toutes les données d'un projet. Un projet concerne
-une seule courbe faite à partir d'une seule station d'observation. Il faut donc faire autant
-de fichier projet que de station d'observation.
-</p><p>
-- Le bouton "Générer" va créer un répertoire et un fichier projet à partir de la
-date, du nom de l'objet occulteur et de la position de la station d'observation. Il sera donc unique pour
-une station d'observation donnée.
-
-
-
-
-
-
-</p><h3>Ephémérides</h3>
-<p>
-<img src="../img/capture-analyse-epheme.png" alt="" height="649" width="817" />
-</p><p>
-Dans cet onglet se trouve toutes les éphémérides de l'objet occulteur à la date
+Dans cet onglet se trouve les éphémérides de l'objet occulteur à la date
 de l'occultation.
-</p><p>
-</p><h3>Corrections<br />
-</h3>
-<p>
+</p>
+<img src="../img/analyse_02_ephem.png"/>
+
+
+<h3>Parametres</h3>
+
+<img src="../img/analyse_03_params.png"/>
+
+<h4>Objet occulteur</h4>
+
+Les informations concernant l'objet occulteur sont generalement obtenus apres 
+l'appel a Miriade.
+
+     <br/><br/>
+
+<h4>Etoile</h4>
+
+L'etoile par contre necessite d'aller chercher certaine information pour 
+calculer son diametre equivalent projete a la distance de l'asteroide. 
+
+     <br/><br/>
+Entrer une designation suivant un catalogue choisi. 
+
+     <br/><br/>
+Selectionner le type d'etoile s'il est connu.
+
+     <br/><br/>
+
+En s'aidant d'Aladin, et en allant chercher l'entree de cette etoile
+dans le catalogue NOMAD1, on obtient les informations requises, a savoir : 
+les magnitudes dans les filtres B, V, et K.
+
+     <br/><br/>
+
+Appuyer sur le bouton <b>Calcul</b>. Le resultat obtenu du diametre equivalent 
+est generalement entre une dixaine et une centaine de metres.
+
+<h4>Capteur</h4>
+
+Non utilisé pour l'instant
+
+     <br/><br/>
+
+<h3>Corrections</h3>
+
 <img src="../img/capture-analyse-correct.png" alt="" height="649" width="817" />
 </p><p>La première étape de traitement de la courbe est de la corriger
 de tout ses
