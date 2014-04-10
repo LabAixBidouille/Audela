@@ -1929,8 +1929,8 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       if {![info exists ::atos_analysis_gui::dhelio                    ]} {set ::atos_analysis_gui::dhelio                     ""}
       if {![info exists ::atos_analysis_gui::raw_filename_short        ]} {set ::atos_analysis_gui::raw_filename_short         ""}
       if {![info exists ::atos_analysis_gui::raw_filename              ]} {set ::atos_analysis_gui::raw_filename               ""}
-      if {![info exists ::atos_analysis_gui::raw_integ_offset          ]} {set ::atos_analysis_gui::raw_integ_offset           ""}
-      if {![info exists ::atos_analysis_gui::raw_integ_nb_img          ]} {set ::atos_analysis_gui::raw_integ_nb_img           ""}
+      if {![info exists ::atos_analysis_gui::raw_integ_offset          ]} {set ::atos_analysis_gui::raw_integ_offset           0}
+      if {![info exists ::atos_analysis_gui::raw_integ_nb_img          ]} {set ::atos_analysis_gui::raw_integ_nb_img           1}
       if {![info exists ::atos_analysis_gui::int_corr                  ]} {set ::atos_analysis_gui::int_corr                   ""}
       if {![info exists ::atos_analysis_gui::tps_corr                  ]} {set ::atos_analysis_gui::tps_corr                   ""}
       if {![info exists ::atos_analysis_gui::theo_expo                 ]} {set ::atos_analysis_gui::theo_expo                  ""}
@@ -2784,9 +2784,9 @@ catch {
       set ::atos_analysis_gui::magv     [lindex $line 9]
       set ::atos_analysis_gui::phase    [lindex $line 10]
       set ::atos_analysis_gui::elong    [lindex $line 11]
-      set ::atos_analysis_gui::dracosd  [format "%.5f" [expr [lindex $line 12] * 60. ] ]
-      set ::atos_analysis_gui::ddec     [format "%.5f" [expr [lindex $line 13] * 60. ] ]
-      set ang [expr tan((sqrt(pow($::atos_analysis_gui::dracosd,2) + pow($::atos_analysis_gui::ddec,2))/3600.0/3600.0)*3.1415926536/180.0)]
+      set ::atos_analysis_gui::dracosd  [format "%.5f" [lindex $line 12]]
+      set ::atos_analysis_gui::ddec     [format "%.5f" [lindex $line 13]]
+      set ang [expr tan((sqrt(pow($::atos_analysis_gui::dracosd,2) + pow($::atos_analysis_gui::ddec,2))/60.0/3600.0)*3.1415926536/180.0)]
       set ::atos_analysis_gui::vn       [format "%.5f" [expr $ang*$::atos_analysis_gui::dist*149597870.0]]
 
       # Interpretation appel format num 5
