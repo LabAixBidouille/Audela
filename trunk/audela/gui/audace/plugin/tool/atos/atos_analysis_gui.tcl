@@ -10,7 +10,9 @@
 
 namespace eval ::atos_analysis_gui {
 
+   variable googleURI
 
+   set googleURI "http://maps.google.fr/maps?q="
 
 
    proc ::atos_analysis_gui::reinitialise { } {
@@ -2907,18 +2909,23 @@ catch {
    }
 
 
+
    proc ::atos_analysis_gui::googlemaps {  } {
       
       global conf
       
-      gren_info "latitude , Longitude = $::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg \n"
-      set url "http://maps.google.fr/maps?q=$::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg"
-      gren_info "url = $url\n"
-      
+      if {(! [info exists ::atos_analysis_gui::latitude_deg]  || ! [info exists ::atos_analysis_gui::longitude_deg]) || 
+          ($::atos_analysis_gui::latitude_deg == "" || $::atos_analysis_gui::longitude_deg == "")} {
+         ::console::affiche_erreur "googlemaps: pas de coordonnee geographique: veuillez valider le projet avant de visualiser la position de l'observateur\n"
+         return
+      } else {
+         #::console::affiche_resultat "latitude , Longitude = $::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg \n"
+         set url "$::atos_analysis_gui::googleURI$::atos_analysis_gui::latitude_deg,$::atos_analysis_gui::longitude_deg"
+      }
+
+      ::console::affiche_resultat gren_info "Google map URL: $url\n"
       set answer [ catch { exec $conf(editsite_htm) $url & } ]
-      
-      gren_info "answer = $answer\n"
-      
+
    }
 
 }

@@ -132,43 +132,43 @@ namespace eval ::atos_ocr_tools {
    proc ::atos_ocr_tools::ocr_tim10 { msg } {
 
       # Recuperation des l'heure depuis l'image paire
-      #set byy "20[string range $msg 0 1]"
-      #set bmm [string range $msg 2 3]
-      #set bdd [string range $msg 4 5]
-      #set bh  [string range $msg 7 8]
-      #set bm  [string range $msg 9 10]
-      #set bs  [string range $msg 11 12]
-      #set bms [string range $msg 15 17]
-      #
-      #gren_info "TIM-10 epoch = $byy $bmm $bdd $bh $bm $bs $bms\n"
-      #
-      #set yy "XXXX"
-      #set err [catch {regexp {[2][0][0-9][0-9]} $byy matched} msg]
-      #if {$msg == 1} { if {$byy == $matched} {set yy $byy} }
-      #set mm "XX"
-      #set err [catch {regexp {[0-9][0-9]} $bmm matched} msg]
-      #if {$msg == 1} { if {$bmm == $matched} {set mm $bmm} }
-      #set dd "XX"
-      #set err [catch {regexp {[0-9][0-9]} $bdd matched} msg]
-      #if {$msg == 1} { if {$bdd == $matched} {set dd $bdd} }
-      #
-      #set h "XX"
-      #set err [catch {regexp {[0-9][0-9]} $bh matched} msg]
-      #if {$msg == 1} { if {$bh == $matched} {set h $bh} }
-      #set m "XX"
-      #set err [catch {regexp {[0-9][0-9]} $bm matched} msg]
-      #if {$msg == 1} { if {$bm == $matched} {set m $bm} }
-      #set s "XX"
-      #set err [catch {regexp {[0-9][0-9]} $bs matched} msg]
-      #if {$msg == 1} { if {$bs == $matched} {set s $bs} }
-      #set ms "XXX"
-      #set err [catch {regexp {[0-9][0-9]} $bms matched} msg]
-      #if {$msg == 1} { if {$bms == $matched} {set ms $bms} }
-      #
-      #return [list "ok" [list $yy $mm $dd] [list $h $m $s $ms]]
+      set byy "20[string range $msg 0 1]"
+      set bmm [string range $msg 2 3]
+      set bdd [string range $msg 4 5]
+      set bh  [string range $msg 7 8]
+      set bm  [string range $msg 9 10]
+      set bs  [string range $msg 11 12]
+      set bms [string range $msg 15 17]
+      
+      gren_info "TIM-10 epoch = $byy $bmm $bdd $bh $bm $bs $bms\n"
+      
+      set yy "XXXX"
+      set err [catch {regexp {[2][0][0-9][0-9]} $byy matched} msg]
+      if {$msg == 1} { if {$byy == $matched} {set yy $byy} }
+      set mm "XX"
+      set err [catch {regexp {[0-9][0-9]} $bmm matched} msg]
+      if {$msg == 1} { if {$bmm == $matched} {set mm $bmm} }
+      set dd "XX"
+      set err [catch {regexp {[0-9][0-9]} $bdd matched} msg]
+      if {$msg == 1} { if {$bdd == $matched} {set dd $bdd} }
+      
+      set h "XX"
+      set err [catch {regexp {[0-9][0-9]} $bh matched} msg]
+      if {$msg == 1} { if {$bh == $matched} {set h $bh} }
+      set m "XX"
+      set err [catch {regexp {[0-9][0-9]} $bm matched} msg]
+      if {$msg == 1} { if {$bm == $matched} {set m $bm} }
+      set s "XX"
+      set err [catch {regexp {[0-9][0-9]} $bs matched} msg]
+      if {$msg == 1} { if {$bs == $matched} {set s $bs} }
+      set ms "XXX"
+      set err [catch {regexp {[0-9][0-9][0-9]} $bms matched} msg]
+      if {$msg == 1} { if {$bms == $matched} {set ms $bms} }
+      
+      return [list "ok" [list $yy $mm $dd] [list $h $m $s $ms]]
 
-      ::console::affiche_resultat "OCR TIM-10 non pris en charge (lisibilite de la fonte insuffisante)\n"
-      return [list "ok" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
+#      ::console::affiche_resultat "OCR TIM-10 non pris en charge (lisibilite de la fonte insuffisante)\n"
+#      return [list "ok" [list "XXXX" "XX" "XX"] [list "XX" "XX" "XX" "XXX"]]
    }
 
 
