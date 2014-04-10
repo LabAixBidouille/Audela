@@ -4,11 +4,10 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><title>A.T.O.S.</title></head><body>
-<p class="date">Date de mise à jour : 27 octobre 2012</p>
+<p class="date">Date de mise à jour : 10 avril 2014</p>
 <h1>A.T.O.S. - Acquisition et Traitement pour les Occultations Stellaires</h1>
 <p>
-Auteurs : Frédéric Vachier (fv at imcce.fr),
-Stephane Vaillant, Jerome Berthier  
+Auteurs : Frédéric Vachier (fv at imcce.fr), Jerome Berthier, Stephane Vaillant
 </p><p>
 
 
@@ -197,7 +196,9 @@ occulteur. il faut donc 30 Go d espace disque de libre.
      <p>
      <br/>
 L'onglet <b>Photometrie</b>,
-Permet choisir les sources a mesurer dans l'image.
+Permet choisir les sources a mesurer dans l'image. Pour que cela soit pris 
+en compte, il faut 
+
 <dl>
     <dt>Image</dt>
       <dd>
@@ -205,14 +206,19 @@ Selectionner un zone dans l'image dans la visu par un clic droit enfoncé.
 La zone doit etre le plus large possible en evitant les zones de datation.      
       </dd>
     <dt>Objet</dt>
+      <dd>
 Selectionner l'etoile qui va etre occultee. 
 Ajuster la taille de la fenetre dans laquelle sera effectuee la mesure du photocentre.
-      <dd></dd>
+Verifier le bon reglage de votre camera pour ne pas saturer. Verifier le pixmax
+      </dd>
     <dt>Reference</dt>
+      <dd>
 Si une etoile de reference se presente alors selectionner l'etoile 
 qui ne va pas etre occultee.
 Ajuster la taille de la fenetre dans laquelle sera effectuee la mesure du photocentre.
-      <dd></dd>
+Verifier le bon reglage de votre camera pour ne pas saturer. Verifier le pixmax.
+A defaut trouver une autre etoile de reference si possible. 
+      </dd>
 </dl>
 
      <br/><br/>
@@ -224,7 +230,8 @@ Ajuster la taille de la fenetre dans laquelle sera effectuee la mesure du photoc
 N'est pas encore actif, bientot...
      <br/>
 L'onglet <b>PSF</b>,
-
+permettra de choisir la methode de calcul du photocentre. L'outil 
+peut etre teste en utilisant l outil PSFToolBox dans Audela.
      <br/><br/>
      </p>
 
@@ -232,27 +239,30 @@ L'onglet <b>PSF</b>,
      <p>
      <br/>
 L'onglet <b>OCR</b>,
-
+permet de verifier que l'OCR fonctionne. En cochant la case OCR,
+il faut choisir le type d'incrustateur utilise et selectionner dans 
+l'image la zone d'extraction de la date. Si l'OCR fonctionne 
+alors la date et parfois seulement l'heure, est ecrit dans les 
+champs correspondant. Le bouton OCR s allume en vert lorsque ca marche
+et en rouge en cas d'echec. 
+     <br/><br/>
+L'OCR va nous aider a dater precisement la video, quelques pourcentages 
+de reussite permettent une datation precise.
+Il faut parfois connaitre son boitier d'incrustation video et regler 
+la luminosite des chiffres ce qui augmentera le taux de reussite de l'OCR. 
      <br/><br/>
      </p>
-
      <img src="../img/acq_07_geometrie.png" alt=""  />
      <p>
      <br/>
 L'onglet <b>Geometrie</b>,
-
+est interessant seulement pour faire de la visualisation et son interet
+depend de la camera utilisee. Si par exemple c est une camera qui ne fournit 
+que du 25 images par seconde, en augmentant le nombre d'images sommees on peut visualiser
+le rendu par le bouton OneShot.
      <br/><br/>
-     </p>
 
 
-
-
-<p>Il faut choisir un répertoire de destination et un nom de fichier pour que l'appui sur le petit drapeau
-permette de démarrer l'acquisition.
-</p><p>Avant cela, le bouton "Prendre 1 image" affiche une image dans la visu.
-</p><p>Les informations vidéo ne sont pas encore renseignées.
-</p><p>Le cadre "Photométrie" récupère certaines statistiques sur l'image, l'objet qui nous intéresse et éventuellement
-un objet de référence. Pour cela dessiner un cadre dans l'image, et cliquez sur "Select".
  
 
 </p><p>
@@ -260,25 +270,40 @@ un objet de référence. Pour cela dessiner un cadre dans l'image, et cliquez sur 
 </h2>
 <p>
 L'extraction va convertir un fichier AVI en une multitude d'images FITS. Cette étape n'est pas nécessaire si
-vous utilisez les outils que propose ATOS, puisqu'il traite aussi bien un AVI qu'une liste d'images.
+vous utilisez les outils d' ATOS, puisqu'il traite aussi bien un AVI qu'une liste d'images FITS.
+     <br/><br/>
 
-</p><p>On commence par l'ouverture d'une vidéo en cliquant sur le bouton "...".
-</p><p>Ce qui a pour effet d'ouvrir une fenêtre de sélection des fichiers *.avi
-</p><p>L'appui sur le bouton "Ouvrir" de la fenêtre de sélection des
-fichiers a pour effet de charger la vidéo. Il n'est donc pas nécessaire
-d'appuyer sur le bouton "Ouvrir" de la fenêtre "Extraction Vidéo AVI".
-</p><p> Le bouton "Ouvrir" de la fenêtre "Extraction Vidéo AVI" ne sert que si l'on utilise un copier/coller du chemin du fichier AVI.
-</p><p>Une fois la vidéo chargée, vous avez à votre disposition une barre de défilement
-qui accède directement à n'importe quelle image du fichier AVI.
-</p><p>Les boutons "Avance" et "Retour" font des sauts image par image.
+
+     <img src="../img/extract_01.png" alt=""  />
+     <p>
+     <br/>
+Commencer par selectionner le fichier video en utilisant le bouton "..."
+<br/>
+Ce qui a pour effet d'ouvrir une fenêtre de sélection des fichiers *.avi
+<br/>
+Puis "Ouvir" le fichier.
+     <br/><br/>
+La barre de progression permet de naviguer dans l image.
+Les boutons "Avance" et "Retour" font des sauts image par image.
 Les boutons "Avance rapide" et "Retour rapide" font des sauts par bloc
 de 100 images.
-</p><p>Les boutons "Marquer le début" et "Marquer la fin" vont permettre de s'intéresser qu'à une partie de la vidéo.
- 
-</p><p>Le "Répertoire de destination" est l'endroit où seront stockés toutes les images FITS.
-</p><p>Le "Préfixe des fichiers" correspond au nom du fichier qui précèdera la numérotation.
-Il peut être par exemple "i". Ce qui aura pour conséquence de fournir les images : i1.fits, i2.fits, etc.
-</p><p>Le bouton "Extraction" démarre le processus et remplit le répertoire d'images FITS, jusqu'à la fin de la vidéo.
+     <br/><br/>
+Les boutons "Marquer le début" et "Marquer la fin" vont reduire la zone de traitement.
+Le bouton <b>Calcul</b> fait une estimation du nombre d'image a extraire. 
+     <br/><br/>
+Choisir le repertoire et le prefixe des fichiers.
+les noms de fichier crees seront formes comme tel : prefixe1.fit prefixe2.fit etc...
+     <br/><br/>
+L'appuie du bouton <b>Extraction</b> lance le processus.
+
+     <br/><br/>
+     </p>
+
+
+
+
+
+
 
 
 
@@ -288,6 +313,38 @@ Il peut être par exemple "i". Ce qui aura pour conséquence de fournir les images
         <br />
         </a>
    </h2>
+
+On utilise avec cette fonctionnalité la possibilité de récupérer
+la date incrustée sur une image. A partir de maintenant on peut choisir
+d'utiliser une vidéo AVI ou bien un lot d'images.
+
+     <br/><br/>
+
+
+     <img src="../img/datation_01_rectocr.png" alt=""  />
+     <p>
+     <br/>
+Il faut reperer la zone où se situe la date. En fonction du module d'incrustation
+les chiffres n ont pas la meme typographie. Pour une documentation plus detaillee
+voir a la fin du paragphe. <a>Ici</a>
+     <br/><br/>
+     </p>
+
+     <img src="../img/datation_02_ocr.png" alt=""  />
+     <p>
+     <br/>
+On retrouve la partie chargement de la vidéo, la barre de défilement,
+les boutons de navigation ainsi
+que le crop pour se restreindre à une partie de la vidéo.
+La datation peut se faire avec ou sans OCR (Reconnaissance Optique de
+Caractères).
+<p>Sans OCR (OCR n'est pas coché), il suffit de saisir à la main quelques dates et de cliquer sur "Vérifié",
+pour que le traitement en appuyant sur l'icône "Démarrer" en bas a gauche, interpole toutes les dates.
+
+     <br/><br/>
+     </p>
+
+
 
 On utilise avec cette fonctionnalité la possibilité de récupérer
 la date incrustée sur une image. A partir de maintenant on peut choisir
