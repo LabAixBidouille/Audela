@@ -167,10 +167,10 @@ namespace eval ::atos_cdl_tools {
          incr idfile
       }
 
-      ::console::affiche_resultat "Sauvegarde dans ${filename} ..."
+      ::console::affiche_resultat "Sauvegarde dans ${filename} ...\n"
       set f1 [open $filename "w"]
       puts $f1 "# ** atos - Audela - Linux  * "
-      puts $f1 "#FPS = 25"
+      puts $f1 "# FPS 25"
       set line "idframe,"
       append line "jd,"
       append line "dateiso,"
@@ -318,7 +318,7 @@ namespace eval ::atos_cdl_tools {
       }
 
       close $f1
-      ::console::affiche_resultat "nb frame save = $cpt   .. Fin  ..\n"
+      ::console::affiche_resultat "Nb of saved frames = $cpt\n.. Fin ..\n"
 
    }
 
@@ -1309,20 +1309,20 @@ namespace eval ::atos_cdl_tools {
 
       set geometrie $::atos_gui::frame(geometrie)
 
-      ::console::affiche_resultat "-- preview \n"
+      #::console::affiche_resultat "-- preview \n"
       #::console::affiche_resultat "geometrie = $geometrie\n"
 
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]
 
-      ::console::affiche_resultat "Binning= $bin \n"
-      ::console::affiche_resultat "Bloc de $sum images \n"
-      ::console::affiche_resultat "uncosmic_check = $::atos_cdl_tools::uncosmic_check \n"
-      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
-      ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
-      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
-      ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
-      ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
+      #::console::affiche_resultat "Binning= $bin \n"
+      #::console::affiche_resultat "Bloc de $sum images \n"
+      #::console::affiche_resultat "uncosmic_check = $::atos_cdl_tools::uncosmic_check \n"
+      #::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
+      #::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
+      #::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      #::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
+      #::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
       
       ::atos_cdl_tools::read_sum $visuNo $sum
       
@@ -1338,16 +1338,16 @@ namespace eval ::atos_cdl_tools {
       global caption atosconf
       
       set geometrie $::atos_gui::frame(geometrie)
-      
-      ::console::affiche_resultat "-- compute_image \n"
-      ::console::affiche_resultat "geometrie = $geometrie\n"
       set relief [$geometrie.buttons.launch cget -relief]
-      ::console::affiche_resultat "relief = $relief\n"
-      ::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
-      ::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
-      ::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
-      ::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
-      ::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
+
+      #::console::affiche_resultat "-- compute_image \n"
+      #::console::affiche_resultat "geometrie = $geometrie\n"
+      #::console::affiche_resultat "relief = $relief\n"
+      #::console::affiche_resultat "nb_frames      = $::atos_tools::nb_frames      \n"
+      #::console::affiche_resultat "nb_open_frames = $::atos_tools::nb_open_frames \n"
+      #::console::affiche_resultat "cur_idframe    = $::atos_tools::cur_idframe    \n"
+      #::console::affiche_resultat "frame_begin    = $::atos_tools::frame_begin    \n"
+      #::console::affiche_resultat "frame_end      = $::atos_tools::frame_end      \n"
       
       if {$relief=="raised"} {
          $geometrie.buttons.launch configure -relief sunken
@@ -1562,11 +1562,11 @@ namespace eval ::atos_cdl_tools {
                   return -code -1 "Mauvais type"
                }
             } ; # Fin Switch
-            
-            
-            gren_info "x= $xav+($xap-$xav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav) \n"
-            gren_info "y= $yav+($yap-$yav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav) \n"
-            
+
+
+            #gren_info "x= $xav+($xap-$xav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav) \n"
+            #gren_info "y= $yav+($yap-$yav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav) \n"
+
             set x [format "%.3f" [expr $xav+($xap-$xav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav)]]
             set y [format "%.3f" [expr $yav+($yap-$yav)/($idfrmap-$idfrmav)*($::atos_tools::cur_idframe-$idfrmav)]]
             if {$log} { ::console::affiche_resultat "(id=$::atos_tools::cur_idframe) interpol pos : $x / $y \n"}

@@ -62,11 +62,11 @@ namespace eval ::atos_analysis_gui {
       set ::atos_analysis_gui::raw_filename       ""
       set ::atos_analysis_gui::raw_integ_offset   0
       set ::atos_analysis_gui::raw_integ_nb_img   1
-      set ::atos_analysis_gui::int_corr           ""
-      set ::atos_analysis_gui::tps_corr           ""
-      set ::atos_analysis_gui::theo_expo          ""
-      set ::atos_analysis_gui::time_offset        ""
-      set ::atos_analysis_gui::ref_corr           ""
+      set ::atos_analysis_gui::int_corr           1
+      set ::atos_analysis_gui::tps_corr           0
+      set ::atos_analysis_gui::theo_expo          0
+      set ::atos_analysis_gui::time_offset        0.03
+      set ::atos_analysis_gui::ref_corr           0
       # 
       # Evenements
       # 
@@ -1931,11 +1931,11 @@ proc ::atos_analysis_gui::cleanEntities { chunk } {
       if {![info exists ::atos_analysis_gui::raw_filename              ]} {set ::atos_analysis_gui::raw_filename               ""}
       if {![info exists ::atos_analysis_gui::raw_integ_offset          ]} {set ::atos_analysis_gui::raw_integ_offset           0}
       if {![info exists ::atos_analysis_gui::raw_integ_nb_img          ]} {set ::atos_analysis_gui::raw_integ_nb_img           1}
-      if {![info exists ::atos_analysis_gui::int_corr                  ]} {set ::atos_analysis_gui::int_corr                   ""}
-      if {![info exists ::atos_analysis_gui::tps_corr                  ]} {set ::atos_analysis_gui::tps_corr                   ""}
-      if {![info exists ::atos_analysis_gui::theo_expo                 ]} {set ::atos_analysis_gui::theo_expo                  ""}
-      if {![info exists ::atos_analysis_gui::time_offset               ]} {set ::atos_analysis_gui::time_offset                ""}
-      if {![info exists ::atos_analysis_gui::ref_corr                  ]} {set ::atos_analysis_gui::ref_corr                   ""}
+      if {![info exists ::atos_analysis_gui::int_corr                  ]} {set ::atos_analysis_gui::int_corr                   1}
+      if {![info exists ::atos_analysis_gui::tps_corr                  ]} {set ::atos_analysis_gui::tps_corr                   0}
+      if {![info exists ::atos_analysis_gui::theo_expo                 ]} {set ::atos_analysis_gui::theo_expo                  0}
+      if {![info exists ::atos_analysis_gui::time_offset               ]} {set ::atos_analysis_gui::time_offset                0.03}
+      if {![info exists ::atos_analysis_gui::ref_corr                  ]} {set ::atos_analysis_gui::ref_corr                   0}
       if {![info exists ::atos_analysis_gui::corr_filename_short       ]} {set ::atos_analysis_gui::corr_filename_short        ""}
       if {![info exists ::atos_analysis_gui::corr_filename             ]} {set ::atos_analysis_gui::corr_filename              ""}
       if {![info exists ::atos_analysis_tools::id_p1                   ]} {set ::atos_analysis_tools::id_p1                    ""}
