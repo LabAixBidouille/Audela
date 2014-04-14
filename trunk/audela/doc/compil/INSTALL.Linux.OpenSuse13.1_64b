@@ -109,13 +109,22 @@ Si ne marche pas, installer tkimg1.4 a partir du gestionnaire de paquetage
 
 cd /usr/local/lib64/
 ln -s /usr/share/tcl/Img1.3 .
+
 ou
+cd /usr/local/lib64/
 ln -s /usr/share/tcl/Img1.4 .
+
+ou 
+user> cd /usr/local/lib64/
+user> ln -s /usr/lib64/tcl/Img1.4 .
+root> echo "/usr/lib64/tcl/Img1.4" >> /etc/ld.so.conf.d/audela.conf
+root> ldconfig
 
 
 ==========
 7 Installer libmysqltcl
 ==========
+prerequis : libmysqlclient-devel
 
 télécharger : http://www.xdobry.de/mysqltcl/mysqltcl-3.052.tar.gz
 et désarchiver dans /opt/tcl
