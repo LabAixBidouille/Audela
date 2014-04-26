@@ -1,9 +1,6 @@
-#
-# Fichier : scopedome_driver.tcl
-# Description : Procedures specifiques du plugin
-# Auteur : Raymond ZACHANTKE
-# Mise Ã  jour $Id$
-#
+#==============================================================
+# Procedures specifiques du plugin
+#==============================================================
 
 #---------------------------------------------------------------------------
 #  createProcess
@@ -84,6 +81,7 @@ proc ::scopedome::killCom { {windowName "ScopeDome LS"} } {
    if {$hwin ne ""} {
       $widget(comobj) Dispose
    }
+
    unset widget(comobj)
 }
 
@@ -108,14 +106,11 @@ proc ::scopedome::writeFileSystem { cycle } {
    variable widget
    global audace conf caption
 
-   #--   Arrete si demande
-   if {[info exists widget(connect)] == 1 && $widget(connect) ==0} {
-      #::scopedome::onChangeScope stop
+   #--   Arrete si demande ou si pas de tel ou pas de domNo
+   if {$widget(connectScope) ==0 || $audace(telNo) == 0 || $widget(domNo) ==0} {
+      ::scopedome::onChangeScope stop
       return
    }
-
-   #--   Arrete si pas de telescope ni de dome
-   if {$audace(telNo) == 0 || $widget(domNo) ==0} {return}
 
    #--
    set listNoCoords [list \
@@ -128,8 +123,6 @@ proc ::scopedome::writeFileSystem { cycle } {
    set decdms $audace(telescope,getdec)
 
    if {$rahms ni $listNoCoords} {
-
-      ::console::disp "OK"
 
       set radeg [mc_angle2deg $rahms]
       set decdeg [mc_angle2deg $decdms]
@@ -145,12 +138,7 @@ proc ::scopedome::writeFileSystem { cycle } {
       }
 
       #--   Write file "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
-      if {[info exists widget(filesystem)] !=0} {
-         set file $widget(filesystem)
-      } else {
-         set file "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
-      }
-      set fid [open $file w]
+      set fid [open $widget(filesystem) w]
       puts $fid "\[header\]"
       puts $fid "program_name = \"$conf(telescope)\""
       puts $fid "\[Telescope\]"
@@ -182,11 +170,12 @@ proc ::scopedome::onChangeScope { {action ""} } {
 
    if {$action eq "refresh"} {
       ::scopedome::writeFileSystem $cycle
+      #set widget(connectScope) 0
   } elseif {$action eq "stop" && [info exists widget(afterID)] == 1} {
       #--   Arrete l'ecriture du fichier
       after cancel "::scopedome::writeFileSystem $cycle"
       unset widget(afterID)
-      set widget(connect) 0
+      #set widget(connectScope) 0
    }
 }
 
@@ -199,7 +188,7 @@ proc ::scopedome::onChangeScope { {action ""} } {
 proc ::scopedome::cmd { type } {
    variable widget
 
-   set do $widget(${type}Param)
+   set do $widget(${type})
    set comobj $widget(comobj)
    set widget(propertyResult) ""
 
@@ -211,7 +200,7 @@ proc ::scopedome::cmd { type } {
                         $comobj Action $do ""
                      }
                   }
-         ascom    {  set value $widget(ascomValue)
+         switch   {  set value $widget(switchValue)
                      if {$do eq "Slaved"} {
                         #--   Ascom command Slaved (pas de toggle)
                         $comobj -set $do $value
@@ -220,7 +209,7 @@ proc ::scopedome::cmd { type } {
                         $comobj CommandString "$do $value"
                      }
                   }
-         ascom2   {  set value $widget(ascom3Value)
+         cmd      {  set value $widget(cmdValue)
                      #--   Verify input
                      if {$do in [list SlewToAzimuth SyncToAzimuth GoTo]} {
                         if {[string is double -strict $value] ==1 && \
@@ -238,7 +227,7 @@ proc ::scopedome::cmd { type } {
                         $comobj CommandString "$do $value"
                      }
                   }
-         property {  set widget(propertyResult) [::scopedome::readProperty $comobj $do] }
+         property {  set widget(propertyResult) [::scopedome::readProperty $comobj $do]}
       }
     } msg] == 1} {
       ::console::disp "$do : $msg\n"
@@ -270,7 +259,7 @@ proc ::scopedome::readProperty { comobj propertyName } {
    set listDeg [list Azimuth Dome_Scope_Ra Dome_Scope_Dec \
       Dome_Scope_Alt Dome_Scope_Az Wind_Direction]
 
-   #--   Format = Â°C
+   #--   Format = °C
    set listCelsius [list Dew_Point Temperature_In_Dome Temperature_Outside_Dome \
       Temperature_Humidity_Sensor Temperature_In_From_Weather_Station \
       Temperature_Out_From_Weather_Station]
@@ -298,10 +287,10 @@ proc ::scopedome::readProperty { comobj propertyName } {
       if {$result eq "0"} {
          set result "Scope not connected"
       } else {
-         set result [format "%.2f Â°" $result]
+         set result [format "%.2f °" $result]
       }
    } elseif {$propertyName in $listCelsius} {
-      set result [format "%.1f Â°C" $result]
+      set result [format "%.1f °C" $result]
    } elseif {$propertyName in $listVolt} {
       if {$result ==0} {
          set result ?
@@ -418,4 +407,3 @@ proc ::scopedome::writeScriptBat { }  {
    }
    file delete -force $cmdBat
 }
-

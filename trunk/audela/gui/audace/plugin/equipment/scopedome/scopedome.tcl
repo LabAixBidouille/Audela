@@ -2,7 +2,7 @@
 # Fichier : scopedome.tcl
 # Description : Gere un dome ASCOM
 # Auteur : Raymond ZACHANTKE
-# Mise à jour $Id$
+# Mise ï¿½our $Id$
 #
 
 #
@@ -117,9 +117,9 @@ proc ::scopedome::initPlugin { } {
    global conf
 
    #--- Initialise les variables conf
-   if { ! [ info exists conf(scopedome,fileName) ] }   { set conf(scopedome,fileName)   "ScopeDomeDriver.exe" }
+   if { ! [ info exists conf(scopedome,fileName) ] } { set conf(scopedome,fileName) "ScopeDomeDriver.exe" }
    if { ! [ info exists conf(scopedome,fileAccess) ] } { set conf(scopedome,fileAccess) "" }
-   if { ! [ info exists conf(scopedome,start) ] }      { set conf(scopedome,start)      "0" }
+   if { ! [ info exists conf(scopedome,start) ] } { set conf(scopedome,start) "0" }
 }
 
 #------------------------------------------------------------
@@ -131,12 +131,14 @@ proc ::scopedome::confToWidget { } {
    global conf
 
    #--- Recupere la configuration du driver
-   set widget(fileName)   $conf(scopedome,fileName)
+   set widget(fileName) $conf(scopedome,fileName)
    set widget(fileAccess) $conf(scopedome,fileAccess)
    set widget(filesystem) "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
    set widget(windowName) "ScopeDome LS" ; # nom de l'interface
 
+   set widget(connectScope) 0
    set widget(domNo) 0
+
    set widget(driverversion)  ""
 
    #--   Properties list
@@ -156,12 +158,12 @@ proc ::scopedome::confToWidget { } {
                               Analog_Input_Shutter Analog_Input_Main]
 
    #--   Ascom command list with boolean parameter (True|False)
-   set widget(ascomList)      [list Slaved Scope_Sync Wind_Sync Sky_Sync Weather_Protect]
-   set widget(ascomValueList) {On Off Toggle}
-   set widget(ascomValue)     [lindex $widget(ascomValueList) 0]
+   set widget(switchList)      [list Slaved Scope_Sync Wind_Sync Sky_Sync Weather_Protect]
+   set widget(switchValueList) {On Off Toggle}
+   set widget(switch)     [lindex $widget(switchValueList) 0]
 
    #--   Ascom command list with numerical parameter
-   set widget(ascom2List)    [list SlewToAzimuth SyncToAzimuth GoTo Enc_GoTo]
+   set widget(cmdList)    [list SlewToAzimuth SyncToAzimuth GoTo Enc_GoTo]
 
    #--   Ascom + Action list excluding :
    #--   Excluding configuration command : SetUpDialog SetPark Dispose FindHome
@@ -178,8 +180,8 @@ proc ::scopedome::confToWidget { } {
                                  Dome_Wait_1000ms Reset_Dome_Rotate_Encoder Stop]
 
    #--   Selectionne le premier de la liste
-   foreach f [list property ascom ascom2 action] {
-      set widget(${f}Param) [lindex $widget(${f}List) 0]
+   foreach f [list property switch cmd action] {
+      set widget(${f}) [lindex $widget(${f}List) 0]
    }
 }
 
@@ -234,14 +236,14 @@ proc ::scopedome::fillConfigPage { frm } {
       label $frm.frame2.labelVersion -text "$caption(scopedome,version)"
       grid $frm.frame2.labelVersion -row 2 -column 0 -padx 5 -pady 5 -sticky w
 
-      #--- N° de version
+      #--- NÂ° de version
       label $frm.frame2.version -justify left \
          -textvariable ::scopedome::widget(driverversion)
       grid  $frm.frame2.version -row 2 -column 1 -padx 5 -pady 5 -sticky w
 
       #--- Checkbutton pour le transfert des coordonnees du telescope
       checkbutton $frm.frame2.connect -text "$caption(scopedome,connectScope)" \
-            -highlightthickness 0 -variable ::scopedome::widget(connect)
+            -highlightthickness 0 -variable ::scopedome::widget(connectScope)
       grid $frm.frame2.connect -row 3 -column 0 -columnspan 2 -padx 5 -pady 5 -sticky w
 
       #--- Label des proprietes
@@ -253,21 +255,21 @@ proc ::scopedome::fillConfigPage { frm } {
       grid  $frm.frame2.labelPropertyResult -row 4 -column 2 -padx 5 -pady 5 -sticky w
 
       #--- Label des commandes ascom avec boolen
-      label $frm.frame2.labelAscom -text "$caption(scopedome,cmdswitch)"
-      grid  $frm.frame2.labelAscom -row 5 -column 0 -padx 5 -pady 5 -sticky w
-      ::scopedome::buildComboBox ascom 5 $state
-      ComboBox $frm.frame2.ascomvalue -width 5 -height 2 -relief sunken \
-         -borderwidth 1 -editable 0 -state $state -values $widget(ascomValueList) \
-         -textvariable ::scopedome::widget(ascomValue)
-      grid  $frm.frame2.ascomvalue -row 5 -column 2 -padx 5 -pady 5 -sticky w
+      label $frm.frame2.labelSwitch -text "$caption(scopedome,cmdswitch)"
+      grid  $frm.frame2.labelSwitch -row 5 -column 0 -padx 5 -pady 5 -sticky w
+      ::scopedome::buildComboBox switch 5 $state
+      ComboBox $frm.frame2.switchvalue -width 5 -height 2 -relief sunken \
+         -borderwidth 1 -editable 0 -state $state -values $widget(switchValueList) \
+         -textvariable ::scopedome::widget(switchValue)
+      grid  $frm.frame2.switchvalue -row 5 -column 2 -padx 5 -pady 5 -sticky w
 
       #--- Label des commandes ascom avec 1 parametre
-      label $frm.frame2.labelAscom2 -text "$caption(scopedome,cmddbl)"
-      grid  $frm.frame2.labelAscom2 -row 6 -column 0 -padx 5 -pady 5 -sticky w
-      ::scopedome::buildComboBox ascom2 6 $state
-      entry $frm.frame2.ascom2value -width 5 -justify right -state $state \
-         -textvariable ::scopedome::widget(ascom2Value)
-      grid  $frm.frame2.ascom2value -row 6 -column 2 -padx 5 -pady 5 -sticky w
+      label $frm.frame2.labelCmd -text "$caption(scopedome,cmddbl)"
+      grid  $frm.frame2.labelCmd -row 6 -column 0 -padx 5 -pady 5 -sticky w
+      ::scopedome::buildComboBox cmd 6 $state
+      entry $frm.frame2.cmdvalue -width 5 -justify right -state $state \
+         -textvariable ::scopedome::widget(cmdValue)
+      grid  $frm.frame2.cmdvalue -row 6 -column 2 -padx 5 -pady 5 -sticky w
 
       #--- Label des commandes avec Action
       label $frm.frame2.labelAction -text "$caption(scopedome,action)"
@@ -335,8 +337,8 @@ proc ::scopedome::createPlugin { } {
 
    #--   Initialise les variables widgets necessaires au lancement automatique
    if {$conf(scopedome,start) ==1} {
-      set widget(fileAccess) $conf(scopedome,fileAccess)
-      set widget(fileName) [file tail $widget(fileAccess)]
+      ::scopedome::confToWidget
+      set widget(frm) ".audace.confeqt.usr.onglet.fscopedome"
    }
 
    if {$widget(domNo) == 0} {
@@ -353,7 +355,7 @@ proc ::scopedome::createPlugin { } {
          ::scopedome::configStateComboBox normal
 
          #--   Lance le transfert des cordonnees du telescope
-         if {$widget(connect) ==1} {
+         if {$widget(connectScope) ==1} {
             ::scopedome::onChangeScope refresh
          } else {
             ::scopedome::onChangeScope stop
@@ -375,6 +377,9 @@ proc ::scopedome::deletePlugin { } {
 
       ::scopedome::killCom $widget(windowName)
 
+      #--   Remet a 0 l'indicateur
+      set widget(domNo) 0
+
       #--   Arrete le transfert des coordonnees du telescope
       ::scopedome::onChangeScope stop
 
@@ -383,9 +388,6 @@ proc ::scopedome::deletePlugin { } {
 
       #--   Inhibe les combobox
       ::scopedome::configStateComboBox disabled
-
-      #--   Remet a 0 l'indicateur
-      set widget(domNo) 0
    }
 }
 
@@ -429,7 +431,7 @@ proc ::scopedome::buildComboBox { type row state } {
    set frame $widget(frm).frame2.$type
 
    set height [llength $widget(${type}List)]
-   set widget(${type}Param) [lindex $widget(${type}List) 0]
+   #set widget(${type}) [lindex $widget(${type}List) 0]
    ComboBox $frame \
         -width 40 \
          -height $height \
@@ -437,7 +439,7 @@ proc ::scopedome::buildComboBox { type row state } {
          -borderwidth 1 \
          -editable 0 \
          -state $state \
-         -textvariable ::scopedome::widget(${type}Param) \
+         -textvariable ::scopedome::widget(${type}) \
          -values [lsort -dictionary $widget(${type}List)] \
          -modifycmd "::scopedome::cmd $type"
    grid $frame -row $row -column 1 -padx 5 -pady 5 -sticky w
@@ -453,16 +455,16 @@ proc ::scopedome::configStateComboBox { state } {
    variable widget
 
    #--   Disable les combobox
-   foreach child [list property ascom ascom2 action] {
+   foreach child [list property switch cmd action] {
       if {[winfo exists $widget(frm).frame2.$child] ==1} {
          $widget(frm).frame2.$child configure -state $state
       }
    }
-   if {[winfo exists $widget(frm).frame2.ascomvalue] ==1} {
-      $widget(frm).frame2.ascomvalue configure -state $state
+   if {[winfo exists $widget(frm).frame2.switchvalue] ==1} {
+      $widget(frm).frame2.switchvalue configure -state $state
    }
-   if {[winfo exists $widget(frm).frame2.ascom2value] ==1} {
-      $widget(frm).frame2.ascom2value configure -state $state
+   if {[winfo exists $widget(frm).frame2.cmdvalue] ==1} {
+      $widget(frm).frame2.cmdvalue configure -state $state
    }
 }
 
@@ -479,4 +481,5 @@ proc ::scopedome::errorBox { error } {
    tk_messageBox -parent $widget(frm).frame2 -title $caption(scopedome,warning) \
       -message "$caption(scopedome,$error)" -type ok -icon warning
 }
+
 
