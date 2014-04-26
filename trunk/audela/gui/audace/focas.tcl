@@ -652,13 +652,13 @@ proc focas_simulation2catastars { type {transform_star2cata "" } } {
 # type = "" for 2D classical images of the sky (calibrated WCS)
 # type = alpy600 for 1D calibration spectrum
 # focas_image2stars cc
-proc focas_image2stars { filename {type ""} } {
+proc focas_image2stars { filename {catatype ""} } {
 
    global audace
    set bufno $audace(bufNo)
    set fichier [ file join $audace(rep_images) $filename ]
    buf$::audace(bufNo) load $fichier
-   set res [focas_buf2stars $bufno $type]
+   set res [focas_buf2stars $bufno $catatype]
    buf$::audace(bufNo) load $fichier
    return $res
 }
@@ -666,16 +666,20 @@ proc focas_image2stars { filename {type ""} } {
 # type = "" for 2D classical images of the sky (calibrated WCS)
 # type = alpy600 for 1D calibration spectrum
 # focas_buf2stars 1 
-proc focas_buf2stars { bufno {type ""} } {
+proc focas_buf2stars { bufno {catatype ""} } {
 
    global audace
+   lassign $catatype type subtype
    
+   #::console::affiche_resultat " type=$type subtype=$subtype\n"
    if {$type=="alpy600"} {
    
       # =========================================================================
       # === extraction d'une liste de toutes les raies de l'image de calibration en ordre d'eclat decroissant
       # =========================================================================
 
+      set fichier [ file join $audace(rep_images) tmp.fit ]
+      buf$::audace(bufNo) save $fichier
       # === Detection en aveugle de la zone où se trouve le spectre
       set naxis1 [buf1 getpixelswidth]
       set naxis2 [buf1 getpixelsheight]
@@ -694,81 +698,108 @@ proc focas_buf2stars { bufno {type ""} } {
          set value0 $value
       }
       set n [llength $adus]
-      # --- calcul du seuil par rapport au bruit
-      set std [::math::statistics::stdev [lrange $dadus 10 60]]
-      set pente_seuil [expr 20*$std]
-      # --- recherche kx1 le debut du spectre
-      set kx1 0
-      for {set k 2} {$k<=$n} {incr k} {
-         set df [lindex $dadus $k]
-         if {$df>$pente_seuil} {
-            set kx1 $k
-            break
-         }
-      }
-      # --- recherche kxf1 la pente maximale du debut du spectre
-      set kxf1 0
-      set df0 [lindex $dadus [expr $kx1+0]]
-      set df1 [lindex $dadus [expr $kx1+1]]
-      for {set k [expr $kx1+2]} {$k<=$n} {incr k} {
-         set df2 [lindex $dadus $k]
-         set ddf01 [expr $df1-$df0]
-         set ddf12 [expr $df2-$df1]
-         if {($ddf01>0)&&($ddf12<=0)} {
-            set kxf1 $df1
-            break
-         }
-         set df0 $df1
-         set df1 $df2
-      }
-      # --- recherche kx2 la fin du spectre
-      set kx2 [expr $n-1]
-      for {set k [expr $n-2]} {$k>=0} {incr k -1} {
-         set df [lindex $dadus $k]
-         if {$df<-$pente_seuil} {
-            set kx2 $k
-            break
-         }
-      }
-      # --- recherche kxf2 la pente maximale de fin du spectre
-      set kxf2 0
-      set df0 [lindex $dadus [expr $kx2-1]]
-      set df1 [lindex $dadus [expr $kx2-2]]
-      for {set k [expr $kx2-3]} {$k>=0} {incr k -1} {
-         set df2 [lindex $dadus $k]
-         set ddf01 [expr $df1-$df0]
-         set ddf12 [expr $df2-$df1]
-         if {($ddf01<0)&&($ddf12>=0)} {
-            set kxf2 [expr -1*$df1]
-            break
-         }
-         set df0 $df1
-         set df1 $df2
-      }
-      # --- on compare kxf1 et kxf2 pour determiner qui est le bon coté
-      # c'est la plus petite valeur qui correspond au bon spectre
-      if {$kxf1<$kxf2} {
-         set kdeb $kx1
-         # --- on recherche kfin
-         set kfin $kdeb
-         for {set k [expr $kdeb+25]} {$k<=$naxis2} {incr k} {
+      
+      if {$subtype=="double_slit"} {
+         # --- calcul du seuil par rapport au bruit
+         set std [::math::statistics::stdev [lrange $dadus 10 60]]
+         set pente_seuil [expr 20*$std]
+         # --- recherche kx1 le debut du spectre
+         set kx1 0
+         for {set k 2} {$k<=$n} {incr k} {
             set df [lindex $dadus $k]
             if {$df>$pente_seuil} {
-               set kfin $k
+               set kx1 $k
                break
             }
          }
-      } else {
-         set kfin $kx2
-         # --- on recherche kdeb
-         for {set k [expr $kfin-25]} {$k>=0} {incr k -1} {
+         # --- recherche kxf1 la pente maximale du debut du spectre
+         set kxf1 0
+         set df0 [lindex $dadus [expr $kx1+0]]
+         set df1 [lindex $dadus [expr $kx1+1]]
+         for {set k [expr $kx1+2]} {$k<=$n} {incr k} {
+            set df2 [lindex $dadus $k]
+            set ddf01 [expr $df1-$df0]
+            set ddf12 [expr $df2-$df1]
+            if {($ddf01>0)&&($ddf12<=0)} {
+               set kxf1 $df1
+               break
+            }
+            set df0 $df1
+            set df1 $df2
+         }
+         # --- recherche kx2 la fin du spectre
+         set kx2 [expr $n-1]
+         for {set k [expr $n-2]} {$k>=0} {incr k -1} {
             set df [lindex $dadus $k]
             if {$df<-$pente_seuil} {
+               set kx2 $k
+               break
+            }
+         }
+         # --- recherche kxf2 la pente maximale de fin du spectre
+         set kxf2 0
+         set df0 [lindex $dadus [expr $kx2-1]]
+         set df1 [lindex $dadus [expr $kx2-2]]
+         for {set k [expr $kx2-3]} {$k>=0} {incr k -1} {
+            set df2 [lindex $dadus $k]
+            set ddf01 [expr $df1-$df0]
+            set ddf12 [expr $df2-$df1]
+            if {($ddf01<0)&&($ddf12>=0)} {
+               set kxf2 [expr -1*$df1]
+               break
+            }
+            set df0 $df1
+            set df1 $df2
+         }
+         # --- on compare kxf1 et kxf2 pour determiner qui est le bon coté
+         # c'est la plus petite valeur qui correspond au bon spectre
+         if {$kxf1<$kxf2} {
+            set kdeb $kx1
+            # --- on recherche kfin
+            set kfin $kdeb
+            for {set k [expr $kdeb+25]} {$k<=$naxis2} {incr k} {
+               set df [lindex $dadus $k]
+               if {$df>$pente_seuil} {
+                  set kfin $k
+                  break
+               }
+            }
+         } else {
+            set kfin $kx2
+            # --- on recherche kdeb
+            for {set k [expr $kfin-25]} {$k>=0} {incr k -1} {
+               set df [lindex $dadus $k]
+               if {$df<-$pente_seuil} {
+                  set kdeb $k
+                  break
+               }
+            }
+         }
+      } else {
+         # --- calcul du seuil par rapport au bruit
+         set std [::math::statistics::stdev [lrange $dadus 10 60]]
+         set pente_seuil [expr 20*$std]
+         # --- recherche kdeb le debut du spectre
+         for {set k 2} {$k<=$n} {incr k} {
+            set df [lindex $dadus $k]
+            if {$df>$pente_seuil} {
                set kdeb $k
                break
             }
          }
+         # --- recherche kfin la fin du spectre
+         for {set k [expr $n-2]} {$k>=$kdeb} {incr k -1} {
+            set df [lindex $dadus $k]
+            if {$df<[expr -1*$pente_seuil]} {
+               set kfin $k
+               break
+            }
+         }
+         set k [expr ($kdeb+$kfin)/2]
+         set kdeb [expr $k-30]
+         set kfin [expr $k+30]
       }
+      #::console::affiche_resultat "kdeb=$kdeb kfin=$kfin\n"
       # --- a present on sait que le bon spectre se trouve entre kdeb et kfin
 
       # === On va maintenant extraire le profil du spectre de calibration
@@ -787,6 +818,7 @@ proc focas_buf2stars { bufno {type ""} } {
       set dadus ""
       set mini 1e12
       set maxi -1e12
+      set lignes ""
       set value0 [lindex [buf1 getpix [list 1 1]] 1]
       for {set kx 1} {$kx<=$naxis1} {incr kx} {
          set value [lindex [buf1 getpix [list $kx 1]] 1]
@@ -797,8 +829,12 @@ proc focas_buf2stars { bufno {type ""} } {
          lappend dadus $dvalue   
          lappend adus $value
          set value0 $value
+         append lignes "$kx $value\n"
       }
       #plotxy::plot $xs $adus b
+      set f [open $audace(rep_images)/profile.txt w]
+      puts -nonewline $f $lignes
+      close $f
       # === Detection en aveugle des raies et calcul de l'abscisse precise en pixels 
       # --- calcul du seuil par rapport au bruit
       set std [::math::statistics::stdev [lrange $dadus 0 20]]
@@ -989,8 +1025,9 @@ proc focas_db2catas { catatype catapath } {
 
    global audace
    set bufno $audace(bufNo)
+   lassign $catatype type subtype
    
-   if {$catatype=="alpy600"} {
+   if {$type=="alpy600"} {
    
       # =========================================================================
       # on construit une liste de type x y flux avec les etoiles du catalogue en magnitudes croissantes
@@ -1025,9 +1062,11 @@ proc focas_db2catas { catatype catapath } {
       lappend pics "2345.90   2174 7503.869 {Ar}"
       lappend pics "2406.03   1272 7635.106 {Ar}"
       lappend pics "2553.84    257 7948.176 {Ar}"
-      lappend pics "2633.89    438 8115.311 {Ar}"
+      lappend pics "2583       295 8103.693 {Ar}"      
+      lappend pics "2633.89    438 8115.311 {Ar}"      
       lappend pics "2706.85    132 8264.522 {Ar}"
-
+      lappend pics "2781       264 8424.648 {Ar}"
+      
       set ls ""
       foreach pic $pics {
          set x [lindex $pic 0]
@@ -1278,12 +1317,14 @@ proc focas_db2catas { catatype catapath } {
 
 # flux_criterion = 1 pour tenir compte de l'ordre des flux star et cata
 # star0s et cata0s sont triés en flux décroissant
-proc focas_catastars2pairs { star0s cata0s type {delta 1.} {nmax 50} {flux_criterion 0} } {
+proc focas_catastars2pairs { star0s cata0s catatype {delta 1.} {nmax 50} {flux_criterion 0} } {
 
    global audace
    set bufno $audace(bufNo)
    set naxis1 [buf$bufno getpixelswidth]
    set naxis2 [buf$bufno getpixelsheight]
+   
+   lassign $catatype type subtype
    if {$type=="alpy600"} {
       set dimension 1
    } else {
@@ -1391,7 +1432,7 @@ proc focas_catastars2pairs { star0s cata0s type {delta 1.} {nmax 50} {flux_crite
    if {$nmini<=3} {
       # --- cas de trois stars ou trois catas (il ne peut pas y avoir de quartet)
       set nquartet_lim -1
-   } elseif {$nmini<=4} {
+   } elseif {$nmini<=5} {
       set nquartet_lim 1
    } else {
       # --- limite empirique du nombre de quartets trouves pour avoir le droit de voter
@@ -1620,7 +1661,7 @@ proc focas_catastars2pairs { star0s cata0s type {delta 1.} {nmax 50} {flux_crite
                   #console::affiche_resultat " Algo-acc nquartet=$nquartet\n"
                }
                #if {$nquartet>0} {
-               #   console::affiche_resultat "** kts=$kts TOTAL nquartet=$nquartet\n"
+               #   console::affiche_resultat "** kts=$kts TOTAL nquartet=$nquartet (nquartet_lim=$nquartet_lim)\n"
                #}
                #focas_tools_plot_points $stars $catas
                #focas_tools_plot_points_triangles $stars $catas $triplet_star $triplet_cata      
@@ -1713,23 +1754,30 @@ proc focas_catastars2pairs { star0s cata0s type {delta 1.} {nmax 50} {flux_crite
    # Calcule les appariements
    # =========================================================================
    set names [array names votes]
-   set couples ""
-   foreach name $names {
-      lassign $votes($name) obj0 obj1
-      lassign $obj0 obj0_k obj0_w obj0_n obj0_q
-      lassign $obj1 obj1_k obj1_w obj1_n obj1_q
-      if {$obj1_w==""} {
-         set obj1_w 1e-10
+   set rlims [list 2. 1.5 1.]
+   foreach rlim $rlims {
+      set couples ""
+      foreach name $names {
+         lassign $votes($name) obj0 obj1
+         lassign $obj0 obj0_k obj0_w obj0_n obj0_q
+         lassign $obj1 obj1_k obj1_w obj1_n obj1_q
+         if {$obj1_w==""} {
+            set obj1_w 1e-10
+         }
+         if {$obj1_w==0} {
+            set obj1_w 1e-10
+         }
+         set r [expr $obj0_w/$obj1_w]
+         if {$r>$rlim} {
+            #::console::affiche_resultat "couple ($name) = $obj0\n"
+            lappend couples [list $name $obj0_k $obj0_w $obj0_n $obj0_q]
+         }
       }
-      if {$obj1_w==0} {
-         set obj1_w 1e-10
-      }
-      set r [expr $obj0_w/$obj1_w]
-      if {$r>2.} {
-         #::console::affiche_resultat "couple ($name) = $obj0\n"
-         lappend couples [list $name $obj0_k $obj0_w $obj0_n $obj0_q]
+      if {[llength $couples]>=3} {
+         break
       }
    }
+   
    # --- enleve les doublons sur le cata
    #::console::affiche_resultat "couples = $couples\n"
    set couples [lsort -integer -decreasing -index 3 $couples]
