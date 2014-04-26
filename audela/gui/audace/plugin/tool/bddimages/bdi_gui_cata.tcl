@@ -710,7 +710,8 @@ namespace eval gui_cata {
 
    
    proc ::gui_cata::loadDSS { fichier_fits_dss ra dec fov_x_deg fov_y_deg naxis1 naxis2 crota2} {
-      set url "http://skyview.gsfc.nasa.gov/cgi-bin/runquery.pl"
+      #set url "http://skyview.gsfc.nasa.gov/cgi-bin/runquery.pl"
+      set url "http://skyview.gsfc.nasa.gov/current/cgi/runquery.pl"
       set sentence "Position=%s,%s&Size=%s,%s&Pixels=%s,%s&Rotation=%s&Survey=DSS&Scaling=Linear&Projection=Tan&Coordinates=J2000&Return=FITS"
       set query [ format $sentence [mc_angle2deg $ra] [mc_angle2deg $dec 90] $fov_x_deg $fov_y_deg $naxis1 $naxis2 $crota2 ]
       ::gui_cata::downloadURL "$url" "$query" $fichier_fits_dss

@@ -266,6 +266,7 @@ proc alpy600_cam_acq { camera exp bin {exp_field 0} {bin_field 4} } {
 # alpy600_spec_info
 # alpy600_spec_plot
 # alpy600_spec_save
+# alpy600_spec_save_ascii { specNo filename }
 # alpy600_spec_load
 # alpy600_spec_sub
 # alpy600_spec_add
@@ -307,6 +308,30 @@ proc alpy600_spec_list { } {
    return $specNos
 }
 
+proc alpy600_buf_where_is_yspec { bufNo } {
+   global spec
+   global audace
+   buf$bufNo save $audace(rep_images)/tmp0
+   set naxis1 [buf$bufNo getpixelswidth]
+   set naxis2 [buf$bufNo getpixelsheight]
+   buf1 imaseries "BINX x1=1 x2=$naxis1 height=20"
+   buf1 bitpix -32
+   set ymax -1
+   set valtmax 0
+   for {set y 1} {$y<=$naxis2} {incr y} {
+      set valt 0.
+      set x 1
+      set val [lindex [buf$bufNo getpix [list $x $y]] 1]
+      set valt [expr $valt+$val]
+      if {$valt>$valtmax} {
+         set ymax $y
+         set valtmax $valt
+      }
+   }
+   buf$bufNo load $audace(rep_images)/tmp0
+   return $ymax
+}
+
 proc alpy600_spec_buf2spec { bufNo specNo y1 y2} {
    global spec
    global audace
@@ -328,6 +353,8 @@ proc alpy600_spec_buf2spec { bufNo specNo y1 y2} {
       lappend spec($specNo,bin) $x
       lappend spec($specNo,flu) $valt
    }
+   set spec($specNo,header,date_obs) [buf$bufNo getkwd DATE-OBS]
+   set spec($specNo,header,exposure) [buf$bufNo getkwd EXPOSURE]
 }
 
 proc alpy600_spec_info { {specNo ""} } {
@@ -439,6 +466,70 @@ proc alpy600_spec_save { specNo filename } {
    close $f
 }
 
+proc alpy600_spec_save_ascii { specNo filename } {
+   global spec
+   global audace
+   set res [lsort [array names spec]]
+   set symb ""
+   set textes ""
+   set names ""
+   set headers ""
+   foreach re $res {
+      set reb [split $re ,]
+      lassign $reb no symbol attrib
+      if {$no==$specNo} {
+         set k1 [expr 1+[string first , $re]]
+         if {$k1==0} {
+            continue
+         }
+         set ree [string range $re $k1 end]
+         set rees [split $ree ,]
+         if {[llength $rees]==1} {
+            set reuid "${re},UID"
+            set err [catch {info exists spec($reuid)} msg]
+            if {$err==0} {
+               set n [llength $spec($re)]
+               lappend names [list $rees $n $re]
+            }
+         } else {
+            set key [lindex $rees 0]
+            if {$key=="header"} {
+               lappend headers $re
+            }
+         }
+      }
+   }
+   set lignes ""
+   set colno 1
+   foreach name $names {
+      lassign $name rees n re
+      append re ",UID"
+      set UID [string trim $spec($re)]
+      set label [alpy600_spec_tools_getlabel $UID]
+      append lignes "# COL$colno : $label \{${UID}\} \n"
+      incr colno
+   }
+   foreach header $headers {
+      lassign $spec($header) key val typ com uni
+      append lignes "# $key = $val / $com ($uni) \n"
+      incr colno
+   }
+   append lignes "# END\n"
+   for { set k 0 } {$k<$n} {incr k} {
+      foreach name $names {
+         lassign $name rees n re
+         set val [lindex $spec($re) $k]
+         append lignes "$val "
+      }
+      append lignes "\n"
+   }
+   set fic "$audace(rep_images)/${filename}.txt"
+   set f [open $fic w]
+   puts -nonewline $f $lignes
+   close $f
+   #return $names
+}
+
 proc alpy600_spec_load { specNo filename } {
    global spec
    global audace
@@ -499,25 +590,94 @@ proc alpy600_spec_calib_info { startype } {
    return $textes
 }
 
-
-proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} } {
+proc alpy600_spec_find_calib_wavelengths { filename {couples ""} {slit single_slit} } {
    global spec
    global audace
-   set star0s [focas_image2stars $filename alpy600]
-   set cata0s [focas_db2catas alpy600 ""]
-   set couples [focas_catastars2pairs $star0s $cata0s alpy600 2 20]
+   set catatype "alpy600 $slit"
+   set star0s [focas_image2stars $filename $catatype]
+   set f [open $audace(rep_images)/profile.txt r]
+   set lignes [split [read $f] \n]
+   close $f
+   set coefs ""
+   if {$couples!=""} {
+      set xs ""
+      set ys ""
+      foreach couple $couples {
+         lappend xs [lindex $couple 0]
+         lappend ys [lindex $couple 1]
+      }
+      set degree 3
+      set coefs [alpy600_spec_tools_polyfit $xs $ys $degree]
+   }
+   set pixpics ""
+   set ypics ""
+   foreach ligne $lignes {
+      if {[string length $ligne]<5} {
+         continue
+      }
+      set pix [lindex $ligne 0]
+      lappend pixpics $pix
+      lappend ypics [lindex $ligne 1]
+      if {$coefs==""} {
+         lappend lambdapics $pix
+      } else {
+         lappend lambdapics [alpy600_spec_tools_polyval $coefs $pix]
+      }
+   }
+   if {$coefs==""} {
+      catch {plotxy::clf}
+      plotxy::plot $lambdapics $ypics -ob 0
+      plotxy::xlabel "Bin (pixels)"
+      plotxy::ylabel "Intensity (ADU)"
+   } else {
+   }
+}
+
+proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} {slit single_slit} } {
+   global spec
+   global audace
+   set catatype "alpy600 $slit"
+   set star0s [focas_image2stars $filename $catatype]
+   set cata0s [focas_db2catas $catatype ""]
+   set couples [focas_catastars2pairs $star0s $cata0s $catatype 4 20]
    lassign $couples couplefull_header couplefulls best_transform
+   foreach couplefull [lsort -real -index 0 $couplefulls] {
+      ::console::affiche_resultat " $couplefull\n"
+   }
+   set res ""
    foreach couplefull $couplefulls {
       set x [lindex $couplefull 0]
       set x [expr $x+$bintrans]
       set couplefull [lreplace $couplefull 0 0 $x]
       lappend res $couplefull
    }
+   if {$res==""} {
+      ::console::affiche_resultat " ===== Observed lines\n"
+      set star0s [lrange $star0s 0 4]
+      foreach star0 $star0s {
+         set a [lindex $star0 0]
+         set a [expr ($a-1278.972085)*4.23+8115.311]
+         set i [lindex $star0 2]
+         set i [expr int($i/2.596)]
+         set x [lindex $star0 0]
+         set x [format %.3f [expr ($x+36)*2]]
+         ::console::affiche_resultat "$x [lrange $star0 1 end] --> $a  ($i)\n"
+      }
+      ::console::affiche_resultat " ===== Catalog lines\n"
+      set cata0s [lrange $cata0s 0 4]
+      foreach cata0 $cata0s {
+         set x [lindex $cata0 0]
+         set x [expr $x/2-36]
+         #::console::affiche_resultat " $x [lrange $cata0 1 end]\n"
+         ::console::affiche_resultat "$cata0\n"
+      }
+      error "No line matched"
+   }
    set couplefulls $res
    set couples [list $couplefull_header $couplefulls $best_transform]
    set polys [focas_pairs2poly $couples $polydeg]
    lassign $polys polydeg polycoefs sigma ominuscs
-   #::console::affiche_resultat " polys = $polys\n"
+   ::console::affiche_resultat " polys = $polys\n"
    if {[info exists spec($specNo)]==0} {
       error "Use alpy600_spec_create $specNo before"
    }
@@ -996,12 +1156,69 @@ proc alpy600_spec_flux2lines { specNo } {
 # ###########################################################################
 # ### Tool spectrum functions (used by spectrum functions)
 # ###########################################################################
+# alpy600_spec_tools_build.matrix {xvec degree}
+# alpy600_spec_tools_build.vector {xvec yvec degree}
+# alpy600_spec_tools_polyval { coefs x }
+# alpy600_spec_tools_polyfit {x y degree}
 # alpy600_spec_tools_spec2symbolx
 # alpy600_spec_tools_spec2symbolxy
 # alpy600_spec_tools_compatibility_xy
 # alpy600_spec_tools_ope1
 # alpy600_spec_tools_gaussian
 # ###########################################################################
+
+proc alpy600_spec_tools_build.matrix {xvec degree} {
+    set sums [llength $xvec]
+    for {set i 1} {$i <= 2*$degree} {incr i} {
+        set sum 0
+        foreach x $xvec {
+            set sum [expr {$sum + pow($x,$i)}] 
+        }
+        lappend sums $sum
+    }
+ 
+    set order [expr {$degree + 1}]
+    set A [math::linearalgebra::mkMatrix $order $order 0]
+    for {set i 0} {$i <= $degree} {incr i} {
+        set A [math::linearalgebra::setrow A $i [lrange $sums $i $i+$degree]]
+    }
+    return $A
+}
+ 
+proc alpy600_spec_tools_build.vector {xvec yvec degree} {
+    set sums [list]
+    for {set i 0} {$i <= $degree} {incr i} {
+        set sum 0
+        foreach x $xvec y $yvec {
+            set sum [expr {$sum + $y * pow($x,$i)}] 
+        }
+        lappend sums $sum
+    }
+ 
+    set x [math::linearalgebra::mkVector [expr {$degree + 1}] 0]
+    for {set i 0} {$i <= $degree} {incr i} {
+        set x [math::linearalgebra::setelem x $i [lindex $sums $i]]
+    }
+    return $x
+}
+
+proc alpy600_spec_tools_polyfit {x y degree} {
+   set A [alpy600_spec_tools_build.matrix $x $degree]
+   set b [alpy600_spec_tools_build.vector $x $y $degree]
+   # solve it
+   set coeffs [math::linearalgebra::solveGauss $A $b]
+   return $coeffs
+}
+
+proc alpy600_spec_tools_polyval { coefs x } {
+   set np [llength $coefs]
+   set lambda 0.
+   for {set kp 0} {$kp<$np} {incr kp} {
+      set l [expr [lindex $coefs $kp]*pow($x,$kp)]
+      set lambda [expr $lambda+$l]
+   }
+   return $lambda
+}
 
 proc alpy600_spec_tools_spec2symbolx { specNo grandeurx } {
    global spec
