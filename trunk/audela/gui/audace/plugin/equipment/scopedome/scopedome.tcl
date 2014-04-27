@@ -158,17 +158,19 @@ proc ::scopedome::confToWidget { } {
                               Analog_Input_Shutter Analog_Input_Main]
 
    #--   Ascom command list with boolean parameter (True|False)
-   set widget(switchList)      [list Slaved Scope_Sync Wind_Sync Sky_Sync Weather_Protect]
+   #--   suppression de Slaved (doublon avec Scope_Sync)
+   set widget(switchList)      [list Scope_Sync Wind_Sync Sky_Sync Weather_Protect]
    set widget(switchValueList) {On Off Toggle}
    set widget(switch)     [lindex $widget(switchValueList) 0]
 
    #--   Ascom command list with numerical parameter
-   set widget(cmdList)    [list SlewToAzimuth SyncToAzimuth GoTo Enc_GoTo]
+   #--   suppression de SlewToAzimuth (doublon avec GoTo)
+   set widget(cmdList)    [list SyncToAzimuth GoTo Enc_GoTo]
 
    #--   Ascom + Action list excluding :
-   #--   Excluding configuration command : SetUpDialog SetPark Dispose FindHome
+   #--   Excluding configuration command : SetUpDialog SetPark Dispose FindHome CloseShutter OpenShutter
    #  Dome_Find_Home Calibrate_Dome_Az_Encoder Calibrate_Dome_Inertia Reset_Dome_Az_Encoder Restore_Default
-   set widget(actionList)    [list AbortSlew CloseShutter OpenShutter Park \
+   set widget(actionList)    [list AbortSlew Park Stop\
                                  Rel_Scope_On Rel_Scope_Off Rel_CCD_On Rel_CCD_Off \
                                  Rel_Light_On Rel_Light_Off Rel_Fan_On Rel_Fan_Off \
                                  Rel_1_On Rel_1_Off Rel_2_On Rel_2_Off \
@@ -177,7 +179,7 @@ proc ::scopedome::confToWidget { } {
                                  Dome_Scope_Connect Dome_Scope_DisConnect \
                                  Shutter_1_Open Shutter_1_Close \
                                  Shutter_2_Open Shutter_2_Close \
-                                 Dome_Wait_1000ms Reset_Dome_Rotate_Encoder Stop]
+                                 Dome_Wait_1000ms Reset_Dome_Rotate_Encoder]
 
    #--   Selectionne le premier de la liste
    foreach f [list property switch cmd action] {
