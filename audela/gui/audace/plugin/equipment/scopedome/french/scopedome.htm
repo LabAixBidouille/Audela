@@ -3,10 +3,11 @@
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>ScopeDome</title></head><body>
-<p class="date">Date de mise &agrave; jour : 26 avril 2014</p>
+<p class="date">Date de mise &agrave; jour : 27 avril 2014</p>
 <h1>ScopeDome</h1>
-<p>Les informations sur le d&ocirc;me <img src="images/dome.gif" /> 
-les &eacute;quipements <img src="images/PlugAndPlay_With_Box.gif" />,<br/>
+<p>Les informations sur le d&ocirc;me <img src=
+"images/dome.gif" /> les &eacute;quipements <img src=
+"images/PlugAndPlay_With_Box.gif" />,<br />
 et le driver sont sur le site de <a href=
 "http://www.scopedome.com/en/default.aspx">ScopeDome</a>.<br />
 Jacek Pala, &agrave; contacter en anglais &agrave; l'adresse mail
@@ -23,8 +24,8 @@ comme il se doit.<br />
 Le driver <b>ScopeDome LS</b>, version sup&eacute;rieure &agrave;
 5.0, peut &ecirc;tre lanc&eacute;, lu, command&eacute; et
 arr&ecirc;t&eacute; par cette interface.<br />
-La configuration du driver devra &ecirc;tre r&eacute;alis&eacute;e
-en direct dans le driver.</p>
+La configuration du driver devra &ecirc;tre
+r&eacute;alis&eacute;e en direct dans le driver.</p>
 <p><img src="images/driver.gif" /></p>
 <h2>Usages de l'interface</h2>
 <h3>Lancement effectif du driver</h3>
@@ -63,29 +64,50 @@ regroup&eacute;es en 4 lots :</p>
 <table>
 <tr>
 <td>Titre de la ligne</td>
-<td>nom de la variable du S&eacute;lecteur</td>
-<td>Valeur num&eacute;rique</td>
+<td>Nom de la variable du s&eacute;lecteur</td>
+<td>Param&egrave;tre de la variable principale</td>
+<td>Valeur asssoci&eacute;e &agrave; la variable</td>
 </tr>
 <tr>
 <td><b>Valeur du senseur</b></td>
 <td>widget(property)</td>
+<td>Azimuth AtHome AtPark Connected ShutterStatus<br />
+Slaved Slewing Dome_Scope_Is_Connected<br />
+Dome_Scope_Ra Dome_Scope_Dec Dome_Scope_Alt Dome_Scope_Az<br />
+Temperature_In_Dome Temperature_Outside_Dome<br />
+Temperature_Humidity_Sensor Humidity_Humidity_Sensor<br />
+Shutter_Link_Strength Internal_Sensor_Observatory_Safe<br />
+Pressure Dew_Point<br />
+Internal_Sensor_Power_Failure Internal_Sensor_Free_Input<br />
+Internal_Sensor_Scope_At_Home Dome_Error<br />
+Analog_Input_Shutter Analog_Input_Main</td>
 <td>widget(propertyResult) : valeur lue</td>
 </tr>
 <tr>
 <td><b>Commande switch</b></td>
 <td>widget(switch)</td>
-<td>widget(switchValue) : valeur (enti&egrave;re) associ&eacute;e
-&agrave; la commande</td>
+<td>Scope_Sync Sky_Sync Wind_Sync Weather_Protect</td>
+<td>widget(switchValue) : valeur (enti&egrave;re)</td>
 </tr>
 <tr>
 <td><b>Commande+double</b></td>
 <td>widget(cmd)</td>
-<td>widget(cmdValue) :valeur (double) associ&eacute;e &agrave; la
-commande</td>
+<td>GoTo Enc_GoTo SyncToAzimuth</td>
+<td>widget(cmdValue) : valeur (double)</td>
 </tr>
 <tr>
 <td><b>Commande</b></td>
 <td>widget(action)</td>
+<td>Rel_Scope_On Rel_Scope_Off Rel_CCD_On Rel_CCD_Off<br />
+Rel_Light_On Rel_Light_Off Rel_Fan_On Rel_Fan_Off<br />
+Rel_1_On Rel_1_Off Rel_2_On Rel_2_Off<br />
+Rel_3_On Rel_3_Off Rel_4_On Rel_4_Off<br />
+Switch_All_On Switch_All_Off<br />
+Dome_Scope_Connect Dome_Scope_DisConnect<br />
+Shutter_1_Open Shutter_1_Close<br />
+Shutter_2_Open Shutter_2_Close<br />
+AbortSlew Park<br />
+Dome_Wait_1000ms Reset_Dome_Rotate_Encoder Stop</td>
 <td></td>
 </tr>
 </table>
