@@ -13,7 +13,6 @@
 #---------------------------------------------------------------------------
 proc ::scopedome::createProcess { path {windowName "ScopeDome LS"} } {
 
-   package require twapi 2.0
    package require tcom 3.9
 
    set progID "ASCOM.ScopeDomeUSBDome.DomeLS"
@@ -68,7 +67,7 @@ proc ::scopedome::activateWindow { windowName } {
    twapi::move_window $hwin 800 400 -sync
    twapi::set_focus $hwin
 
-   return hwin
+   return $hwin
 }
 
 #---------------------------------------------------------------------------
