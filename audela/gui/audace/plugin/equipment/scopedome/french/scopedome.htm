@@ -13,12 +13,16 @@ et le driver sont sur le site de <a href=
 Jacek Pala, &agrave; contacter en anglais &agrave; l'adresse mail
 <b>info@scopedome.com</b> peut fournir les r&eacute;ponses aux
 questions.</p>
-<p>Le driver, &eacute;crit en VBS, est <b>ASCOM compliant</b> et
-ne fonctionne que sous <b>Windows</b>.<br />
-Le driver dispose d'un mode <b>Config/Card/Card Type =
-Simulator</b> permettant de tester les fonctions sans
-d&eacute;bourser un sou pour le d&ocirc;me ou le mat&eacute;riel
-d'automatisation.</p>
+<p>Une vid&eacute;o est disponible sur <a href=
+"http://www.youtube.com/watch?v=2X9R81hymrI">YouTube</a></p>
+<p>Le driver, &eacute;crit en VBS, est <b>ASCOM compliant</b>
+(n&eacute;cessite ASCOM 6-SP1) et fonctionne uniquement sous
+<b>Windows</b>.<br />
+Le driver dispose d'un mode simulation permettant de tester les
+fonctions sans d&eacute;bourser un sou pour le d&ocirc;me ou le
+mat&eacute;riel d'automatisation. Le driver est <a href=
+"http://www.scopedome.com/en/download_program.aspx">ici</a> (CF
+ci-dessous Simulation).</p>
 <p>L'interface ScopeDome de AudeLA est &eacute;crite en tcltk
 comme il se doit.<br />
 Le driver <b>ScopeDome LS</b>, version sup&eacute;rieure &agrave;
@@ -33,18 +37,21 @@ r&eacute;alis&eacute;e en direct dans le driver.</p>
 Si le chemin est incorrect l'interface ne pourra pas &ecirc;tre
 lanc&eacute;e. Ces deux param&egrave;tres sont conserv&eacute;s
 en m&eacute;moire.</p>
+<p><img src="images/interface.gif" /></p>
 <p>Lors de l'appui sur le bouton <b>Appliquer</b> la version du
 driver est affich&eacute;e, le driver est lanc&eacute; et les
 commandes sont lib&eacute;r&eacute;es. Le driver peut aussi
 &ecirc;tre lanc&eacute; automatiquement au d&eacute;marrage
 d&egrave;s lors que le nom et le chemin sont corrects.</p>
+<p><img src="images/interface2.gif" /></p>
 <h3>Suivi du t&eacute;lescope</h3>
 <p>Le d&ocirc;me peut suivre les &eacute;volutions du
 t&eacute;lescope pilot&eacute; par une interface Aud'ACE : il
 suffit de cocher la case <b>Suivre le t&eacute;lescope</b> et les
 coordonn&eacute;es actuelles sont transmises au driver ScopeDome
 LS qui doit &ecirc;tre configur&eacute; correctement, onglet
-<b>Telescope</b> :<br /></p>
+<b>Telescope</b> :</p>
+<p><img src="images/suivi.gif" /></p>
 <ul>
 <li>Scope Scan Interval : fr&eacute;quence de
 refra&icirc;chissment (en secondes); rappel les
@@ -54,7 +61,8 @@ secondes,</li>
 <li>ScopeType : s&eacute;lection de FileSystem,</li>
 <li>chemin complet du fichier :
 C:\ScopeDome\ScopeDomeCurrentTelescopeStatus.txt (laisser
-inchang&eacute;).</li>
+inchang&eacute;) : c'est le chemin du fichier &eacute;crit pour
+communiquer les coordonn&eacute;es au d&ocirc;me.</li>
 </ul>
 <p>Il faut &eacute;galement activer le bouton <b>Scope Sync
 OFF</b> qui bascule en <b>Scope Sync ON</b>.</p>
@@ -87,7 +95,7 @@ Analog_Input_Shutter Analog_Input_Main</td>
 <td><b>Commande switch</b></td>
 <td>widget(switch)</td>
 <td>Scope_Sync Sky_Sync Wind_Sync Weather_Protect</td>
-<td>widget(switchValue) : valeur (enti&egrave;re)</td>
+<td>widget(switchValue) : { On | Off | Toggle }</td>
 </tr>
 <tr>
 <td><b>Commande+double</b></td>
@@ -123,6 +131,11 @@ set ::scopedome::widget(action) Rel_Scope_On ; ::scopedome::cmd action ; #-- act
 <p>L'appui sur le bouton <b>Arr&ecirc;ter</b> ou la fermeture
 d'Aud'ACE provoque la d&eacute;connection du driver et sa
 fermeture. Il est bon de v&eacute;rifier si la carte est en mode
-<b>StandBy</b> ou normal.</p>
+<b>StandBy</b> ou normal (la carte reste active en local).</p>
+<h2>Simulation</h2>
+<p>Normalement en l'absence de connection USB, le driver se met
+en mode <b>Simulator</b>. Si ce n'est pas le cas,
+s&eacute;lectionner ce mode dans <b>Config/Card/Card type</b></p>
+<p><img src="images/simulator.gif" /></p>
 </body>
 </html>
