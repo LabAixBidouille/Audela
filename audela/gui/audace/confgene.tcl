@@ -472,14 +472,14 @@ namespace eval ::confPosObs {
       #--- Taille de la fenetre pour les petits ecrans (AK)
       update
       set res [wm geometry $This]
-      console::affiche_resultat "res=$res This=$This\n"
+      #console::affiche_resultat "res=$res This=$This\n"
       regsub -all \\+ $res " " res2
       regsub -all x $res2 " " res
       lassign $res dimx dimy posx posy
       lassign [wm maxsize $This] maxx maxy
       #set maxy 680 ; # ligne pour tester
       set offy 50
-      console::affiche_resultat "dimy=$dimy  maxy-offy=[expr $maxy-$offy]\n"
+      #console::affiche_resultat "dimy=$dimy  maxy-offy=[expr $maxy-$offy]\n"
       if {$dimy>[expr $maxy-$offy]} {
          set dimy [expr $maxy-$offy]
          set posy $offy
