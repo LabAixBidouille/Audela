@@ -117,7 +117,7 @@ proc ::scopedome::initPlugin { } {
    global conf
 
    #--- Initialise les variables conf
-   if { ! [ info exists conf(scopedome,fileName) ] }   { set conf(scopedome,fileName)   "ScopeDomeDriver.exe" }
+   if { ! [ info exists conf(scopedome,fileName) ] }   { set conf(scopedome,fileName)   "ASCOM.ScopeDomeUSBDome.exe" }
    if { ! [ info exists conf(scopedome,fileAccess) ] } { set conf(scopedome,fileAccess) "" }
    if { ! [ info exists conf(scopedome,start) ] }      { set conf(scopedome,start)      "0" }
 }
@@ -325,6 +325,7 @@ proc ::scopedome::configurePlugin { } {
 
    #--- Memorise le chemin du driver
    set conf(scopedome,fileAccess) $widget(fileAccess)
+   set conf(scopedome,fileName) $widget(fileName)
 }
 
 #------------------------------------------------------------
