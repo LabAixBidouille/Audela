@@ -23,11 +23,13 @@
 # Procedures specifiques a ce plugin : cf scopedome_driver.tcl
 
 namespace eval scopedome {
+
    package provide scopedome 1.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] scopedome.cap ]
    source [ file join [file dirname [info script]] scopedome_driver.tcl ]
+
 }
 
 #------------------------------------------------------------
@@ -198,13 +200,15 @@ proc ::scopedome::fillConfigPage { frm } {
    variable widget
    global audace caption
 
+   package require twapi 2.0
+
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
 
-   if {[info exists widget(domNo)] ==0} {
-      ::scopedome::confToWidget
-      set state disabled
-   } else {
+   ::scopedome::confToWidget
+   catch { set hwin [twapi::find_windows -match glob -text "$widget(windowName)"]} msg
+   set state disabled
+   if {$hwin ne ""} {
       set state normal
    }
 
