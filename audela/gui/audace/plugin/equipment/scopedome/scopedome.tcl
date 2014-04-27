@@ -2,7 +2,7 @@
 # Fichier : scopedome.tcl
 # Description : Gere un dome ASCOM
 # Auteur : Raymond ZACHANTKE
-# Mise �our $Id$
+# Mise à jour $Id$
 #
 
 #
@@ -117,9 +117,9 @@ proc ::scopedome::initPlugin { } {
    global conf
 
    #--- Initialise les variables conf
-   if { ! [ info exists conf(scopedome,fileName) ] } { set conf(scopedome,fileName) "ScopeDomeDriver.exe" }
+   if { ! [ info exists conf(scopedome,fileName) ] }   { set conf(scopedome,fileName)   "ScopeDomeDriver.exe" }
    if { ! [ info exists conf(scopedome,fileAccess) ] } { set conf(scopedome,fileAccess) "" }
-   if { ! [ info exists conf(scopedome,start) ] } { set conf(scopedome,start) "0" }
+   if { ! [ info exists conf(scopedome,start) ] }      { set conf(scopedome,start)      "0" }
 }
 
 #------------------------------------------------------------
@@ -131,15 +131,15 @@ proc ::scopedome::confToWidget { } {
    global conf
 
    #--- Recupere la configuration du driver
-   set widget(fileName) $conf(scopedome,fileName)
+   set widget(fileName)   $conf(scopedome,fileName)
    set widget(fileAccess) $conf(scopedome,fileAccess)
    set widget(filesystem) "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
    set widget(windowName) "ScopeDome LS" ; # nom de l'interface
 
    set widget(connectScope) 0
-   set widget(domNo) 0
+   set widget(domNo)        0
 
-   set widget(driverversion)  ""
+   set widget(driverversion) ""
 
    #--   Properties list
    set widget(propertyList)   [list Azimuth AtHome AtPark Connected ShutterStatus \
@@ -161,7 +161,7 @@ proc ::scopedome::confToWidget { } {
    #--   suppression de Slaved (doublon avec Scope_Sync)
    set widget(switchList)      [list Scope_Sync Wind_Sync Sky_Sync Weather_Protect]
    set widget(switchValueList) {On Off Toggle}
-   set widget(switch)     [lindex $widget(switchValueList) 0]
+   set widget(switch)          [lindex $widget(switchValueList) 0]
 
    #--   Ascom command list with numerical parameter
    #--   suppression de SlewToAzimuth (doublon avec GoTo)
@@ -201,7 +201,7 @@ proc ::scopedome::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
 
-   if {[info exists widget(domNo)] ==0}   {
+   if {[info exists widget(domNo)] ==0} {
       ::scopedome::confToWidget
       set state disabled
    } else {
@@ -483,5 +483,4 @@ proc ::scopedome::errorBox { error } {
    tk_messageBox -parent $widget(frm).frame2 -title $caption(scopedome,warning) \
       -message "$caption(scopedome,$error)" -type ok -icon warning
 }
-
 
