@@ -1,6 +1,9 @@
-#==============================================================
-# Procedures specifiques du plugin
-#==============================================================
+#
+# Fichier : scopedome.tcl
+# Description : Procedures specifiques du plugin
+# Auteur : Raymond ZACHANTKE
+# Mise à jour $Id$
+#
 
 #---------------------------------------------------------------------------
 #  createProcess
@@ -407,3 +410,4 @@ proc ::scopedome::writeScriptBat { }  {
    }
    file delete -force $cmdBat
 }
+
