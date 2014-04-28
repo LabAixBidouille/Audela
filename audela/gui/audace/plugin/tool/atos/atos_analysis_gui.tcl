@@ -1295,7 +1295,7 @@ namespace eval ::atos_analysis_gui {
             set nheuresav $::atos_analysis_tools::nheure
             set ::atos_analysis_tools::nheure   1
             set ::atos_analysis_tools::t0_ref   $::atos_analysis_tools::t0_chi2_min
-            set ::atos_analysis_tools::t_milieu [expr $::atos_analysis_tools::t0_ref  + $::atos_analysis_tools::width/(2.0*$::atos_analysis_tools::vn)]
+            set ::atos_analysis_tools::t_milieu [expr $::atos_analysis_tools::t0_ref + $::atos_analysis_tools::width/(2.0*$::atos_analysis_tools::vn)]
             set ::atos_analysis_tools::t0_min   [expr $::atos_analysis_tools::t0_ref - $::atos_analysis_tools::pas_heure * $::atos_analysis_tools::nheure / 2.0]
             set ::atos_analysis_tools::t0_max   [expr $::atos_analysis_tools::t0_ref + $::atos_analysis_tools::pas_heure * $::atos_analysis_tools::nheure / 2.0]
             set ::atos_analysis_tools::t0       $::atos_analysis_tools::t0_min
