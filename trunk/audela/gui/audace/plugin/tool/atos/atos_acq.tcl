@@ -263,6 +263,7 @@ namespace eval ::atos_acq {
       # Init
       psf_init $visuNo
       set ::atos_cdl_tools::compute_image_first ""
+      set ::atos_cdl_tools::methode_suivi "Auto"
 
       set ::atos_acq::frmdevpath ?
       set ::atos_acq::frmdevmodel ?
@@ -776,7 +777,7 @@ namespace eval ::atos_acq {
 
                  spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                     -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::atos_cdl_tools::mesure_obj_avance $visuNo $phot" -width 5
+                    -command "::atos_cdl_tools::mesure_source_spinbox $visuNo object" -width 5
                  pack  $object.v.r.delta -in $object.v.r -side top -anchor w
                  set ::atos_gui::frame(object,delta) $object.v.r.delta
 
@@ -865,7 +866,7 @@ namespace eval ::atos_acq {
 
                  spinbox $reference.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
                     -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                    -command "::atos_cdl_tools::mesure_ref_avance $visuNo $phot" -width 5
+                    -command "::atos_cdl_tools::mesure_source_spinbox $visuNo reference" -width 5
                  pack  $reference.v.r.delta -in $reference.v.r -side top -anchor w
                  set ::atos_gui::frame(reference,delta) $reference.v.r.delta
 
