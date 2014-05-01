@@ -1637,6 +1637,18 @@ proc calibwcs_new {args} {
          set cat_format [lindex $args 5]
          set cat_folder [lindex $args 6]
       }
+      if {$argc >= 9} {
+         set delta [lindex $args 7]
+         set nmax [lindex $args 8]
+      } else {
+         set delta 3.5
+         set nmax 35
+      }
+      if {$argc >= 10} {
+         set flux_criterion [lindex $args 9]
+      } else {
+         set flux_criterion 0
+      }
       set del_tmp_files 1
       set yes_visu 1
       set add_sia 0
@@ -1739,7 +1751,7 @@ proc calibwcs_new {args} {
          if {($ns<3)||($nc<3)} {
             error "Not enough stars ($ns stars in the image, $nc stars in the catalog)\n"
          }
-         set couples [focas_catastars2pairs $star0s $cata0s $Cat_format 3.5 35]
+         set couples [focas_catastars2pairs $star0s $cata0s $Cat_format $delta $nmax $flux_criterion]
          set np [llength [lindex $couples 1]] 
          if {($np<3)} {
             error "$np stars matched is < 3 ($ns stars in the image, $nc stars in the catalog). impossible to compute WCS parameters.\n"
@@ -1769,9 +1781,9 @@ proc calibwcs_new {args} {
       return $catastar
    } else {
       set line "Usage: \n"
-      append line "calibwcs Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder\n"
+      append line "calibwcs_new Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?delta nmax? ?flux_criterion?\n"
       append line "# ou en utilisant les mots cles du header de l image :\n"
-      append line "calibwcs * * * * * USNO|MICROCAT cat_folder \n"
+      append line "calibwcs_new * * * * * USNO|MICROCAT cat_folder ?delta nmax? ?flux_criterion?\n"
       append line "# Parametres optionels :\n"
       append line "# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)\n"
       append line "# -del_tmp_files 0 : garde tous les fichiers temporaires\n"
