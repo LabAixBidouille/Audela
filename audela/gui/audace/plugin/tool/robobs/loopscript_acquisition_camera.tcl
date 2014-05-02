@@ -342,6 +342,12 @@ if {$robobs(next_scene,action)=="Science images"} {
 			::audace::autovisu $::audace(visuNo)
       }
       
+      # --- Complete the FITS header
+		::bddimages::ressource
+		::bddimagesAdmin::bdi_setcompat $bufNo
+      buf$bufNo setkwd [list "BDDIMAGES STATE" "RAW" "string" "RAW | CORR | CATA | ?" ""]
+      buf$bufNo setkwd [list "BDDIMAGES TYPE" "IMG" "string" "IMG | FLAT | DARK | OFFSET | ?" ""]
+		
       # --- Save the FITS file
       set date [mc_date2iso8601 [::audace::date_sys2ut]]
       set name IM_[string range $date 0 3][string range $date 5 6][string range $date 8 9]_[string range $date 11 12][string range $date 14 15][string range $date 17 18]_$object_name
