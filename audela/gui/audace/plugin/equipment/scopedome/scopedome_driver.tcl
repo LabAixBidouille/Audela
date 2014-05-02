@@ -28,7 +28,7 @@ proc ::scopedome::createProcess { path {windowName "ScopeDome LS"} } {
    #::scopedome::getSupportedActions $comobj
 
    #--   Identifie et active la fenetre ouverte
-   set hwin [::scopedome::activateWindow $windowName]
+   #set hwin [::scopedome::activateWindow $windowName]
    #set pid [twapi::get_window_process $hwin]
 
    return [list $comobj $connected]
@@ -51,7 +51,7 @@ proc ::scopedome::connect { comobj connect } {
 #---------------------------------------------------------------------------
 #  activateWindow
 #     get focus on the driver
-#  parameter : windowName (eg ScopeDome)
+#  parameter : windowName (eg ScopeDome LS)
 #  return : hwin
 #---------------------------------------------------------------------------
 proc ::scopedome::activateWindow { windowName } {
@@ -59,7 +59,7 @@ proc ::scopedome::activateWindow { windowName } {
    set hwin ""
    while {$hwin eq ""} {
       set hwin [twapi::find_windows -match glob -text "$windowName"]
-      after 200
+      after 500
    }
 
    twapi::show_window $hwin -sync -activate
@@ -73,18 +73,16 @@ proc ::scopedome::activateWindow { windowName } {
 #---------------------------------------------------------------------------
 #  killCom
 #     Close ScopeDome LS if it exists and kill com object
-#  parameter : window name of the driver
+#  parameter : none
 #  return : nothing
 #---------------------------------------------------------------------------
-proc ::scopedome::killCom { {windowName "ScopeDome LS"} } {
+proc ::scopedome::killCom { } {
    variable widget
 
-   set hwin [twapi::find_windows -match glob -text "$windowName"]
-   if {$hwin ne ""} {
-      $widget(comobj) Dispose
+   if {[info exists widget(comobj)] ==1} {
+      catch { $widget(comobj) Dispose }
+      unset widget(comobj)
    }
-
-   unset widget(comobj)
 }
 
 #---------------------------------------------------------------------------
@@ -231,6 +229,11 @@ proc ::scopedome::cmd { type } {
                   }
          property {  set widget(propertyResult) [::scopedome::readProperty $comobj $do]}
       }
+
+      #set value ""
+      #set res [$comobj -get CommandBool "Scope $value"]
+      #::console::disp "ici \"$res\"\n"
+
     } msg] == 1} {
       ::console::disp "$do : $msg\n"
    }

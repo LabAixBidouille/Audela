@@ -139,7 +139,7 @@ proc ::scopedome::confToWidget { } {
    set widget(windowName) "ScopeDome LS" ; # nom de l'interface
 
    set widget(connectScope) 0
-   set widget(domNo)        0
+   #set widget(domNo)        0
 
    set widget(driverversion) ""
 
@@ -206,10 +206,12 @@ proc ::scopedome::fillConfigPage { frm } {
    set widget(frm) $frm
 
    ::scopedome::confToWidget
-   catch { set hwin [twapi::find_windows -match glob -text "$widget(windowName)"]} msg
-   set state disabled
-   if {$hwin ne ""} {
+
+   set pid [twapi::get_process_ids -name $widget(fileName)]
+   if {$pid ne ""} {
       set state normal
+   } else {
+      set state disabled
    }
 
    #--- Frame des boutons de commande
@@ -348,7 +350,7 @@ proc ::scopedome::createPlugin { } {
       set widget(frm) ".audace.confeqt.usr.onglet.fscopedome"
    }
 
-   if {$widget(domNo) == 0} {
+   if {[info exists widget(domNo)] ==0 || $widget(domNo) == 0} {
 
       lassign [::scopedome::createProcess "$widget(fileAccess)" "$widget(windowName)"] \
          widget(comobj) widget(domNo)
@@ -382,7 +384,7 @@ proc ::scopedome::deletePlugin { } {
 
    if {$widget(domNo) ==1} {
 
-      ::scopedome::killCom $widget(windowName)
+      ::scopedome::killCom
 
       #--   Remet a 0 l'indicateur
       set widget(domNo) 0
@@ -432,7 +434,7 @@ proc ::scopedome::configDirname { this } {
 #  parameter : name, row and state
 #  return nothing
 #---------------------------------------------------------------------------
-proc ::scopedome::buildComboBox { type row state } {
+proc ::scopedome::buildComboBox { type row {state disabled} } {
    variable widget
 
    set frame $widget(frm).frame2.$type
