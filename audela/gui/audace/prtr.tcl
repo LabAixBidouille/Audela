@@ -1106,8 +1106,8 @@ namespace eval ::prtr {
          switch $parametre {
             x0       {set ::prtr::x0       $crpix1   ; #-- ROT REC2POL POL2REC}
             y0       {set ::prtr::y0       $crpix2   ; #-- ROT REC2POL POL2REC}
-            xcenter  {set ::prtr::xcenter  $crpix1   ; #-- RGRADIENT RADIAL}
-            ycenter  {set ::prtr::ycenter  $crpix2   ; #-- RGRADIENT RADIAL}
+            xcenter  {set ::prtr::xcenter  $crpix1   ; #-- RGRADIENT RADIAL NORMOFFSET NORMGAIN}
+            ycenter  {set ::prtr::ycenter  $crpix2   ; #-- RGRADIENT RADIAL NORMOFFSET NORMGAIN}
             default  {}
          }
       }
@@ -2021,11 +2021,11 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,log)"                 opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,noffset)"             fun NORMOFFSET
       dict set SERIES "$caption(audace,menu,noffset)"             hlp "$help(dir,docLibtt) ttus1-fr.htm NORMOFFSET"
-      dict set SERIES "$caption(audace,menu,noffset)"             par "normoffset_value 0."
+      dict set SERIES "$caption(audace,menu,noffset)"             par "normoffset_value 0. xcenter 1. ycenter 1. radius 2"
       dict set SERIES "$caption(audace,menu,noffset)"             opt "$options nullpixel 0."
       dict set SERIES "$caption(audace,menu,ngain)"               fun NORMGAIN
       dict set SERIES "$caption(audace,menu,ngain)"               hlp "$help(dir,docLibtt) ttus1-fr.htm NORMGAIN"
-      dict set SERIES "$caption(audace,menu,ngain)"               par "normgain_value 200."
+      dict set SERIES "$caption(audace,menu,ngain)"               par "normgain_value 200. xcenter 1. ycenter 1. radius 2"
       dict set SERIES "$caption(audace,menu,ngain)"               opt "$options nullpixel 0."
       #--   CLIP fonction artificielle inexistante dans IMA/SERIES
       dict set SERIES "$caption(audace,menu,clip)"                fun CLIP
@@ -2079,7 +2079,7 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,filtre_median)"       par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
       dict set SERIES "$caption(audace,menu,filtre_median)"       opt $options
       dict set SERIES "$caption(audace,menu,filtre_mean)"         fun "FILTER kernel_type=mean"
-      dict set SERIES "$caption(audace,menu,filtre_mean)"         hlp "$help(dir,docLibtt) ttus1-fr.htm FILTER"
+     dict set SERIES "$caption(audace,menu,filtre_mean)"         hlp "$help(dir,docLibtt) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         opt $options
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      fun "FILTER kernel_type=min"
@@ -2292,9 +2292,9 @@ namespace eval ::prtr {
       dict set Var   unsmearing        "double labelentry"           ;#UNSMEARING
       dict set Var   cosmic_threshold  "double labelentry"           ;#COSMIC
       dict set Var   sigma             "double labelentry"           ;#CONV RADIAL
-      dict set Var   radius            "double labelentry"           ;#RGRADIENT RADIAL
-      dict set Var   xcenter           "double labelentry"           ;#RGRADIENT RADIAL
-      dict set Var   ycenter           "double labelentry"           ;#RGRADIENT RADIAL
+      dict set Var   radius            "double labelentry"           ;#RGRADIENT RADIAL NORMGAIN NORMOFFSET
+      dict set Var   xcenter           "double labelentry"           ;#RGRADIENT RADIAL NORMGAIN NORMOFFSET
+      dict set Var   ycenter           "double labelentry"           ;#RGRADIENT RADIAL NORMGAIN NORMOFFSET
       dict set Var   power             "double labelentry"           ;#RADIAL
       dict set Var   x0                "double naxis1 labelentry"    ;#ROT REC2POL POL2REC
       dict set Var   y0                "double naxis2 labelentry"    ;#ROT REC2POL POL2REC
