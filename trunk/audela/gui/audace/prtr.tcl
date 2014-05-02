@@ -2079,7 +2079,7 @@ namespace eval ::prtr {
       dict set SERIES "$caption(audace,menu,filtre_median)"       par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
       dict set SERIES "$caption(audace,menu,filtre_median)"       opt $options
       dict set SERIES "$caption(audace,menu,filtre_mean)"         fun "FILTER kernel_type=mean"
-     dict set SERIES "$caption(audace,menu,filtre_mean)"         hlp "$help(dir,docLibtt) ttus1-fr.htm FILTER"
+      dict set SERIES "$caption(audace,menu,filtre_mean)"         hlp "$help(dir,docLibtt) ttus1-fr.htm FILTER"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         par "kernel_width 3 kernel_coef 0 threshold 0 type_threshold 0"
       dict set SERIES "$caption(audace,menu,filtre_mean)"         opt $options
       dict set SERIES "$caption(audace,menu,filtre_minimum)"      fun "FILTER kernel_type=min"
