@@ -852,12 +852,10 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			}
 			if (telthread->status==STATUS_RADEC_SLEWING) {
 				// motor on
-				/**/
 				if (telthread->mode==MODE_REEL) {
 					// --- start motors
 					mytel_motor_on(telthread);
 				}
-				/**/
 				telthread->status=STATUS_MOTOR_ON;
 				telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
 				telthread->speed_app_sim_adu_dec=0;
