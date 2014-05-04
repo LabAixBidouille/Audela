@@ -60,7 +60,7 @@ extern "C" {
 #define AXIS_ELEV 1
 #define AXIS_PARALLACTIC 2
 
-#define MOUCHARD
+//#define MOUCHARD
 //#define MOUCHARD_EVAL
 
 typedef struct {

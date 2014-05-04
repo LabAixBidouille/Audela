@@ -1624,10 +1624,19 @@ wm withdraw .
 focus -force $audace(Console)
 ::console::GiveFocus
 
-#--- On execute eventuellement un script audela/gui/perso.tcl au lancement de AudeLA
+#--- On execute eventuellement un script "MesDocuments"/perso.tcl au lancement de AudeLA
 #--- Cela permet a chacun de personnaliser l'initialisation de son interface graphique
-if {[file exists perso.tcl]==1} {
-   source perso.tcl
+if { $::tcl_platform(os) == "Linux" } {
+   set mesDocuments [ file join $::env(HOME) audela ]
+} else {
+   set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+   set mesDocuments [ file normalize [ file join $mesDocuments audela ] ]
+}
+if { ! [ file exists $mesDocuments ] } {
+   file mkdir $mesDocuments
+}
+if {[file exists [file join perso.tcl]]==1} {
+   source [file join perso.tcl]
 }
 
 #--- je charge une image ou un script si les parametres optionnels sont presents

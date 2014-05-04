@@ -523,7 +523,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 	telthread->tempo = 50;
 	telthread->sideral_sec_per_day=86164;
 	telthread->sideral_deg_per_sec=360./86164;
-// init home (important ici pour le calcul des positions initiales)
+	// init home (important ici pour le calcul des positions initiales)
 	strcpy(telthread->home,"GPS 1.7187 E 43.8740 220");
 	strcpy(telthread->home,"GPS 55.41 E -21.1995 991.9");
 	strcpy(telthread->home0,telthread->home);
@@ -558,7 +558,7 @@ int ThreadTel_Init(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		  strcpy(s,telthread->interp->result);
 		  if (strcmp(s,"Linux")==0) {
 			 // if ttyS not found, we test ttyUSB
-				strcpy(portnum,ssusb);
+			 strcpy(portnum,ssusb);
 			 sprintf(s,"open \"%s\" r+",ssusb);
 			 if (Tcl_Eval(telthread->interp,s)!=TCL_OK) {
 					sprintf(telthread->msg,"Problem to opening the COM ports %s and %s. %s",ss,ssusb,telthread->interp->result);
@@ -852,12 +852,12 @@ int ThreadTel_loop(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 			}
 			if (telthread->status==STATUS_RADEC_SLEWING) {
 				// motor on
-				/*
+				/**/
 				if (telthread->mode==MODE_REEL) {
 					// --- start motors
 					mytel_motor_on(telthread);
 				}
-				*/
+				/**/
 				telthread->status=STATUS_MOTOR_ON;
 				telthread->speed_app_sim_adu_ha=telthread->sideral_deg_per_sec;
 				telthread->speed_app_sim_adu_dec=0;
