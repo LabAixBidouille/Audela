@@ -343,7 +343,6 @@ if {$robobs(next_scene,action)=="Science images"} {
       }
       
       # --- Complete the FITS header
-		::bddimages::ressource
 		::bddimagesAdmin::bdi_setcompat $bufNo
       buf$bufNo setkwd [list "BDDIMAGES STATE" "RAW" "string" "RAW | CORR | CATA | ?" ""]
       buf$bufNo setkwd [list "BDDIMAGES TYPE" "IMG" "string" "IMG | FLAT | DARK | OFFSET | ?" ""]

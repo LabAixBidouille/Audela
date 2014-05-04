@@ -161,11 +161,11 @@ namespace eval robobs_config {
       frame $This.frame1 -borderwidth 0 -cursor arrow -relief groove
       pack $This.frame1 -in $This -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
 
-        #--- Cree un label pour le titre
-        label $This.frame1.titre \
-              -text "$caption(robobs_config,titre) : $item"
-        pack $This.frame1.titre \
-             -in $This.frame1 -side top -padx 3 -pady 3
+      #--- Cree un label pour le titre
+      label $This.frame1.titre \
+           -text "$caption(robobs_config,titre) : $item"
+      pack $This.frame1.titre \
+          -in $This.frame1 -side top -padx 3 -pady 3
       
       set kdescr 0
       foreach descr $robobs(conf,$item,descr) {
@@ -175,24 +175,24 @@ namespace eval robobs_config {
          #--- Cree un bouton de changement
          set commande "global robobs ; ::robobs_config::change $item $descr $ki $kdescr"
          button $This.frame$descr.but1 \
-              -font robobsconf(font,arial_12) \
+              -font $robobsconf(font,arial_8) \
               -text "$caption(robobs_config,but5)" -command $commande
          pack $This.frame$descr.but1 \
              -in $This.frame$descr -side left -padx 3 -pady 0
          #--- Cree un label pour le titre
          label $This.frame$descr.descr \
-              -text "$descr =" -font robobsconf(font,arial_12_b)
+              -text "$descr =" -font $robobsconf(font,arial_8_b)
          pack $This.frame$descr.descr \
              -in $This.frame$descr -side left -padx 3 -pady 0
          #--- Cree un label pour le titre
          label $This.frame$descr.val \
-              -text "$val" -font robobsconf(font,arial_12_b) -fg #0000FF
+              -text "$val" -font $robobsconf(font,arial_8_b) -fg #0000FF
          pack $This.frame$descr.val \
              -in $This.frame$descr -side left -padx 3 -pady 0
          #--- Cree un bouton d'aide
          set commande "global robobs ; ::robobs_config::infos $item $descr $ki $kdescr"
          button $This.frame$descr.but2 \
-              -font robobsconf(font,arial_12) \
+              -font $robobsconf(font,arial_8) \
               -text "$caption(robobs_config,but6)" -command $commande
          pack $This.frame$descr.but2 \
              -in $This.frame$descr -side right -padx 3 -pady 0
@@ -200,8 +200,8 @@ namespace eval robobs_config {
          pack $This.frame$descr -in $This -anchor s -side top -expand 0 -fill x -padx 10 -pady 0
          incr kdescr
       }
-             
-      #--- Cree un frame pour afficher le status de la base
+  
+      #--- Cree un frame pour afficher les deux boutons du bas
       frame $This.frame2 -borderwidth 0 -cursor arrow -relief groove
       pack $This.frame2 -in $This -anchor s -side top -expand 0 -fill x -padx 10 -pady 5
              
@@ -496,6 +496,10 @@ namespace eval robobs_config {
          set robobs(conf,$item,read) {"proc {lindex [::confOptic::getConfOptic A] 0}" "proc {lindex [::confOptic::getConfOptic A] 1}" "proc {lindex [::confOptic::getConfOptic A] 2}"}
          set robobs(conf,$item,change) "{::confOptic::run $audace(visuNo)} {::confOptic::run $audace(visuNo)} {::confOptic::run $audace(visuNo)}"
          set robobs(conf,$item,infos) "{Nom de la configuration optique} {Diametre d'ouverture de l'optique collectrice. La valeur doit etre exprimee en metres.} {Longueur focale equivalente au niveau du plan image de la camera}"
+			#
+			# ::keyword::run 1 ::conf(acqfc,keywordConfigName)
+			# set conf [lindex [::keyword::getConfigurationList] 0]
+			# ::keyword::getKeywords 1 $conf
 
       set item loopscripts
       lappend robobs(conf,items) "$item"

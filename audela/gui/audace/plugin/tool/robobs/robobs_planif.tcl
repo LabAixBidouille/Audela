@@ -1,12 +1,15 @@
-#--------------------------------------------------
+# --------------------------------------------------
 # source audace/plugin/tool/robobs/robobs_planif.tcl
-#--------------------------------------------------
+# --------------------------------------------------
 #
 # Fichier        : robobs_planif.tcl
 # Description    : planification de RobObs
 # Auteur         : Alain Klotz
 # Mise à jour $Id: robobs_planif.tcl 6795 2011-02-26 16:05:27Z michelpujol $
 #
+# --------------------------------------------------
+# robobs(planif,mode) : meridian vttrrlyr snresearch1 geostat1 asteroid_light_curve
+# --------------------------------------------------
 
 namespace eval robobs_planif {
 

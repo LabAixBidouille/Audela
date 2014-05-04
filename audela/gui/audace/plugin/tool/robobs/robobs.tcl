@@ -64,7 +64,11 @@ proc ::robobs::initPlugin { tkbase } {
    global robobsconf
    global robobs
 
+   set robobsconf(font,courier_8) "Courier 8 normal"
+   set robobsconf(font,arial_8) "{Arial} 8 normal"
+   set robobsconf(font,arial_8_b) "{Arial} 8 bold"
    set robobsconf(font,courier_10) "Courier 10 normal"
+   set robobsconf(font,arial_10) "{Arial} 10 normal"
    set robobsconf(font,arial_10_b) "{Arial} 10 bold"
    set robobsconf(font,arial_12)   "{Arial} 12 normal"
    set robobsconf(font,arial_12_b) "{Arial} 12 bold"
@@ -85,6 +89,8 @@ proc ::robobs::initPlugin { tkbase } {
       set robobsconf(webserver,cgi-bin) $cgi(root,cgi-bin)
       set robobsconf(webserver) 1
    }
+	
+	::bddimages::ressource
 
 }
 
