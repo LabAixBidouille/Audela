@@ -9,6 +9,7 @@
 #
 # --------------------------------------------------
 # robobs(planif,mode) : meridian vttrrlyr snresearch1 geostat1 asteroid_light_curve
+# robobs(conf,home,telescope_id,value) : makes_t60
 # --------------------------------------------------
 
 namespace eval robobs_planif {

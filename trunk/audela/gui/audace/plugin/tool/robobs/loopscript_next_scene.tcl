@@ -399,8 +399,13 @@ if {$skylight=="Night"} {
 					lassign $radec ra dec dra ddec
 					set dra $diurnal
 					set ddec 0
+               if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
+                  set filter_name R
+               } else {
+                  set filter_name C
+               }
 					for {set k 1} {$k<=$robobs(conf_planif,asteroid_light_curve,nbimages)} {incr k} {         
-						lappend robobs(next_scene,images) [list [list name cdl_$name] [list exposure $robobs(conf_planif,asteroid_light_curve,exposure)] [list shutter_mode synchro] {filter_name C} [list comment "$name image $k / $robobs(conf_planif,asteroid_light_curve,nbimages)"] {simunaxis1 768} {simunaxis2 512} [list skylevel $skylevel] [list binx $robobs(conf_planif,asteroid_light_curve,binning)] [list biny $robobs(conf_planif,asteroid_light_curve,binning)] ]
+						lappend robobs(next_scene,images) [list [list name cdl_$name] [list exposure $robobs(conf_planif,asteroid_light_curve,exposure)] [list shutter_mode synchro] [list filter_name $filter_name] [list comment "$name image $k / $robobs(conf_planif,asteroid_light_curve,nbimages)"] {simunaxis1 768} {simunaxis2 512} [list skylevel $skylevel] [list binx $robobs(conf_planif,asteroid_light_curve,binning)] [list biny $robobs(conf_planif,asteroid_light_curve,binning)] ]
 					}
 					set res [lindex $robobs(next_scene,images) end]
 					#::robobs::log "[lindex $res 4]"

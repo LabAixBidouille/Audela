@@ -135,15 +135,19 @@ namespace eval ::audace {
       #--- Chargement de la configuration
       loadSetup
 
+      #--- Répertoire Mes Documents (utile dans certains plugins)
+      if { $::tcl_platform(os) == "Linux" } {
+         set mesDocuments [ file join $::env(HOME) audela ]
+      } else {
+         set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
+         set mesDocuments [ file normalize [ file join $mesDocuments audela ] ]
+      }
+      set audace(rep_mesdocuments) $mesDocuments
+      
       #--- Creation du repertoire de travail
       set catchError [ catch {
          if { ! [ info exists conf(rep_travail) ] } {
-            if { $::tcl_platform(os) == "Linux" } {
-               set conf(rep_travail) [ file join $::env(HOME) audela ]
-            } else {
-               set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
-               set conf(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
-            }
+            set conf(rep_travail) $audace(rep_mesdocuments)
             if { ! [ file exists $conf(rep_travail) ] } {
                file mkdir $conf(rep_travail)
             }
@@ -152,12 +156,7 @@ namespace eval ::audace {
             if { ! [ file exists $conf(rep_travail) ] } {
                set errorFolder [ catch { file mkdir $conf(rep_travail) } ]
                if { $errorFolder != "0 " } {
-                  if { $::tcl_platform(os) == "Linux" } {
-                     set conf(rep_travail) [ file join $::env(HOME) audela ]
-                  } else {
-                     set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
-                     set conf(rep_travail) [ file normalize [ file join $mesDocuments audela ] ]
-                  }
+                  set conf(rep_travail) $audace(rep_mesdocuments)
                   ::console::affiche_erreur "Redirection to $conf(rep_travail)\n\n"
                }
                if { ! [ file exists $conf(rep_travail) ] } {
@@ -535,12 +534,7 @@ namespace eval ::audace {
       #--- Creation du repertoire des archives
       set catchError [ catch {
          if { ! [ info exists conf(rep_archives) ] } {
-            if { $::tcl_platform(os) == "Linux" } {
-               set repArchives [ file join $::env(HOME) audela ]
-            } else {
-               set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
-               set repArchives [ file normalize [ file join $mesDocuments audela ] ]
-            }
+            set repArchives $audace(rep_mesdocuments)
             set conf(rep_archives) [ file join $repArchives archives ]
          }
          if { ! [ file exists $conf(rep_archives) ] } {
@@ -1624,19 +1618,10 @@ wm withdraw .
 focus -force $audace(Console)
 ::console::GiveFocus
 
-#--- On execute eventuellement un script "MesDocuments"/perso.tcl au lancement de AudeLA
+#--- On execute eventuellement un script "MesDocuments/audela"/perso.tcl au lancement de AudeLA
 #--- Cela permet a chacun de personnaliser l'initialisation de son interface graphique
-if { $::tcl_platform(os) == "Linux" } {
-   set mesDocuments [ file join $::env(HOME) audela ]
-} else {
-   set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
-   set mesDocuments [ file normalize [ file join $mesDocuments audela ] ]
-}
-if { ! [ file exists $mesDocuments ] } {
-   file mkdir $mesDocuments
-}
-if {[file exists [file join perso.tcl]]==1} {
-   source [file join perso.tcl]
+if {[file exists [file join $audace(rep_mesdocuments) perso.tcl]]==1} {
+   source [file join $audace(rep_mesdocuments) perso.tcl]
 }
 
 #--- je charge une image ou un script si les parametres optionnels sont presents
