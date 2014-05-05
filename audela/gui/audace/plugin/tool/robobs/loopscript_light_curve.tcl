@@ -24,13 +24,40 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
    }
    set ni $index
    if {$ni>0} {
+      set objename [lindex [buf$bufNo getkwd OBJENAME] 1]
+      set photfiles [file join $robobs(conf,folders,rep_images,value) ${objename}]
+      set tmpfiles [file join $robobs(conf,folders,rep_images,value) tmp]
+      ::robobs::log "photfiles=$photfiles"
+      ::robobs::log "tmpfiles=$tmpfiles"
+      catch {
+         file copy -force -- ${photfiles}_mes.bin ${tmpfiles}_mes.bin 
+         file copy -force -- ${photfiles}_ref.bin ${tmpfiles}_ref.bin 
+         file copy -force -- ${photfiles}_zmg.bin ${tmpfiles}_zmg.bin 
+      }
       ::robobs::log "photrel_wcs2cat tmp $ni append"
       photrel_wcs2cat tmp $ni append
-      set objename [lindex [buf$bufNo getkwd OBJENAME] 1]
       set ra [lindex [buf$bufNo getkwd RA] 1]
       set dec [lindex [buf$bufNo getkwd DEC] 1]
-      ::robobs::log "Compute the light curve of $objename."
-      photrel_cat2mes tmp $objename $ra $dec C
+      set filter [string trim [lindex [buf$bufNo getkwd FILTER] 1]]
+      ::robobs::log "Compute the $filter light curve of $objename at coords [format %.5f $ra] [format %+.5f $dec]"
+      ::robobs::log "photrel_cat2mes tmp $objename $ra $dec $filter"
+      photrel_cat2mes tmp $objename $ra $dec $filter
+      set err [catch {
+         file copy -force -- ${tmpfiles}_mes.bin ${photfiles}_mes.bin 
+         file copy -force -- ${tmpfiles}_ref.bin ${photfiles}_ref.bin 
+         file copy -force -- ${tmpfiles}_zmg.bin ${photfiles}_zmg.bin 
+         file copy -force -- ${tmpfiles}_mes.txt ${photfiles}_mes.txt
+         file copy -force -- ${tmpfiles}_ref.txt ${photfiles}_ref.txt 
+         file copy -force -- ${tmpfiles}_zmg.txt ${photfiles}_zmg.txt 
+      } msg]
+      if {$err==1} {
+         ::robobs::log "$msg"
+      }
+      set err [catch {
+         file delete -force -- ${tmpfiles}_mes.bin
+         file delete -force -- ${tmpfiles}_ref.bin
+         file delete -force -- ${tmpfiles}_zmg.bin
+      } msg]
       # --- display results
       set f [open "$robobs(conf,folders,rep_images,value)/$objename.txt" r]
       set lignes [split [read $f] \n]
@@ -61,6 +88,7 @@ if {($robobs(planif,mode)=="asteroid_light_curve")&&($robobs(image,ffilenames)!=
          ::plotxy::ylabel "relative mag"
          ::plotxy::xlabel "JD UT"
          ::plotxy::title "$objename Light-curve"
+         ::robobs::log "[llength $jds] dates. Light curve $robobs(conf,folders,rep_images,value)/${objename}.gif"
          ::plotxy::writegif "$robobs(conf,folders,rep_images,value)/${objename}.gif"
       }
       

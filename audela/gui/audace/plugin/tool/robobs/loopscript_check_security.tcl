@@ -171,40 +171,36 @@ proc robobs_tel_park {} {
 proc robobs_dome_open {} {
 	global robobs
 	if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
-		set err [ catch {
-			set f [open com6 w+] ; # Arduino Mega 2560
-			fconfigure $f -mode 38400,n,8,1 -buffering none -blocking 0
-			after 1000
-			puts -nonewline $f "open\n"
-			after 100
-			set res [read -nonewline $f]
-			close $f
-		} msg ]
-		::robobs::log "Open the rolling roof." 3
-		if {$err==1} {
-			::robobs::log "Problem when opening the rolling roof: $msg" 3
-		}
-		after 1000
+      set res [roof get]
+      set k [lsearch -exact $res Roof_state]
+      if {$k!=-1} {
+         set state [lindex $res [expr $k+1]]
+         if {$state=="opened"} {
+            ::robobs::log "Roof already opened." 3
+         } else {
+            roof open
+            ::robobs::log "Open the rolling roof." 3
+            after 1000
+         }
+      }
 	}
 }
 
 proc robobs_dome_close {} {
 	global robobs
 	if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
-		set err [ catch {
-			set f [open com6 w+] ; # Arduino Mega 2560
-			fconfigure $f -mode 38400,n,8,1 -buffering none -blocking 0
-			after 1000
-			puts -nonewline $f "close\n"
-			after 100
-			set res [read -nonewline $f]
-			close $f
-		} msg ]
-		::robobs::log "Close the rolling roof." 3
-		if {$err==1} {
-			::robobs::log "Problem when closing the rolling roof: $msg" 3
-		}
-		after 1000
+      set res [roof get]
+      set k [lsearch -exact $res Roof_state]
+      if {$k!=-1} {
+         set state [lindex $res [expr $k+1]]
+         if {$state=="closed"} {
+            ::robobs::log "Roof already closed." 3
+         } else {
+            roof close
+            ::robobs::log "Close the rolling roof." 3
+            after 1000
+         }
+      }
 	}
 }
 

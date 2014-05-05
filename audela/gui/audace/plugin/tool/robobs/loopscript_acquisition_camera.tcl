@@ -162,7 +162,7 @@ if {$robobs(next_scene,action)=="Science images"} {
          if {$key=="name"} { set object_name $val }
          if {$key=="exposure"} { set exposure $val }
          if {$key=="shutter_mode"} { set shutter $val }
-         if {$key=="filter"} { set filter_name $val }
+         if {$key=="filter_name"} { set filter_name $val }
          if {$key=="binx"} { set binx $val }
          if {$key=="biny"} { set biny $val }
          if {$key=="comment"} { set comment $val }
