@@ -268,23 +268,21 @@ namespace eval bdi_tools_cdl {
                                            $USNOA2_magB  $USNOA2_magR  $UCAC4_im1_mag $UCAC4_im2_mag \
                                            $NOMAD1_magB  $NOMAD1_magV  $NOMAD1_magR   $NOMAD1_magJ \
                                            $NOMAD1_magH  $NOMAD1_magK  ] \
-                   ]
-                   
-            set  ::bdi_tools_cdl::table_mag($name,USNOA2_magB)   $USNOA2_magB
-            set  ::bdi_tools_cdl::table_mag($name,USNOA2_magR)   $USNOA2_magR
-            set  ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) $UCAC4_im1_mag
-            set  ::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag) $UCAC4_im2_mag
-            set  ::bdi_tools_cdl::table_mag($name,NOMAD1_magB)   $NOMAD1_magB
-            set  ::bdi_tools_cdl::table_mag($name,NOMAD1_magV)   $NOMAD1_magV
-            set  ::bdi_tools_cdl::table_mag($name,NOMAD1_magR)   $NOMAD1_magR
-            set  ::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)   $NOMAD1_magJ
-            set  ::bdi_tools_cdl::table_mag($name,NOMAD1_magH)   $NOMAD1_magH
-            set  ::bdi_tools_cdl::table_mag($name,NOMAD1_magK)   $NOMAD1_magK
-                   
-                   
-            set  ::bdi_tools_cdl::table_values($name,sptype)     [lindex $r 0]
-            set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
-            set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
+                  ]
+
+            set ::bdi_tools_cdl::table_mag($name,USNOA2_magB)   $USNOA2_magB
+            set ::bdi_tools_cdl::table_mag($name,USNOA2_magR)   $USNOA2_magR
+            set ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) $UCAC4_im1_mag
+            set ::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag) $UCAC4_im2_mag
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magB)   $NOMAD1_magB
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magV)   $NOMAD1_magV
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magR)   $NOMAD1_magR
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)   $NOMAD1_magJ
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magH)   $NOMAD1_magH
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magK)   $NOMAD1_magK
+
+            set ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
+            set ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
             #break
          }
 
@@ -360,6 +358,7 @@ namespace eval bdi_tools_cdl {
       array unset ::bdi_tools_cdl::table_othf
       array unset ::bdi_tools_cdl::table_star_exist
       array unset ::bdi_tools_cdl::idcata_to_jdc
+      array unset ::bdi_tools_cdl::table_jdmidexpo
       array unset ::bdi_tools_cdl::table_star_ids
 
       # array unset ::gui_cata::cata_list
@@ -390,8 +389,6 @@ namespace eval bdi_tools_cdl {
          } else {
             set ::bdi_tools_cdl::idcata_to_jdc($idcata) [expr [mc_date2jd $dateobs] + $exposure / 86400.0 / 2.0 - $jdc_orig]
          }
-                  
-
 
          # set ::gui_cata::cata_list($idcata) $::tools_cata::current_listsources
          
@@ -410,6 +407,7 @@ namespace eval bdi_tools_cdl {
                set ::bdi_tools_cdl::table_noms($name)   0
                set ::bdi_tools_cdl::table_nbcata($name) 1
             }
+            set ::bdi_tools_cdl::table_jdmidexpo($idcata) [expr [mc_date2jd $dateobs] + $midexpo]
             set ::bdi_tools_cdl::table_date($idcata) $dateobs
             set ::bdi_tools_cdl::table_othf($name,$idcata,othf) [::bdi_tools_psf::get_astroid_othf_from_source $s]
             set ::bdi_tools_cdl::table_star_exist($name,$idcata) 1
@@ -423,7 +421,6 @@ namespace eval bdi_tools_cdl {
                     gren_info "($idcata) $name as reference $flagphotom $cataphotom\n"   
                }
                "S" {
-                    
                     if {$::bdi_tools_cdl::table_noms($name) != 1 } {
                        set ::bdi_tools_cdl::table_noms($name) 2
                     }
@@ -469,10 +466,22 @@ namespace eval bdi_tools_cdl {
                                            $USNOA2_magB  $USNOA2_magR  $UCAC4_im1_mag $UCAC4_im2_mag \
                                            $NOMAD1_magB  $NOMAD1_magV  $NOMAD1_magR   $NOMAD1_magJ \
                                            $NOMAD1_magH  $NOMAD1_magK  ] \
-                   ]
-            set  ::bdi_tools_cdl::table_values($name,sptype)      [lindex $r 0]
-            set  ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
-            set  ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
+                  ]
+
+            set ::bdi_tools_cdl::table_mag($name,USNOA2_magB)   $USNOA2_magB
+            set ::bdi_tools_cdl::table_mag($name,USNOA2_magR)   $USNOA2_magR
+            set ::bdi_tools_cdl::table_mag($name,UCAC4_im1_mag) $UCAC4_im1_mag
+            set ::bdi_tools_cdl::table_mag($name,UCAC4_im2_mag) $UCAC4_im2_mag
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magB)   $NOMAD1_magB
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magV)   $NOMAD1_magV
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magR)   $NOMAD1_magR
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magJ)   $NOMAD1_magJ
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magH)   $NOMAD1_magH
+            set ::bdi_tools_cdl::table_mag($name,NOMAD1_magK)   $NOMAD1_magK
+
+            set ::bdi_tools_cdl::table_values($name,sptype)     [lindex $r 0]
+            set ::bdi_tools_cdl::table_values($name,sptype,cpt) [lindex $r 1]
+            set ::bdi_tools_cdl::table_values($name,sptype,sep) [lindex $r 2]
             #break
          }
 
@@ -482,7 +491,7 @@ namespace eval bdi_tools_cdl {
       ::bdi_tools_cdl::calc_nb_sources
 
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
-      gren_info "Chargement complet en $tt sec \n"
+      gren_info "Chargement a la volee complet en $tt sec \n"
 
       return
 
