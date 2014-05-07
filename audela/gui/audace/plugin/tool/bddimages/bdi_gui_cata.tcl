@@ -877,15 +877,15 @@ namespace eval gui_cata {
 #      set err [catch {
 
          set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-         if {$cataexist == 0} {
-            return -code 0 "NOCATA"
-         }
+#         if {$cataexist == 0} {
+#            return -code 0 "NOCATA"
+#         }
    
-         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"] == "1"} {
+#         if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"] == "1"} {
             ::gui_cata::load_cata
-         } else {
-            return -code 0 "NOCATA"
-         }
+#         } else {
+#            return -code 0 "NOCATA"
+#         }
    
          if { $::gui_cata::gui_img    } { affich_rond $::tools_cata::current_listsources IMG    $::gui_cata::color_img    $::gui_cata::size_img    }
          if { $::gui_cata::gui_usnoa2 } { affich_rond $::tools_cata::current_listsources USNOA2 $::gui_cata::color_usnoa2 $::gui_cata::size_usnoa2 }

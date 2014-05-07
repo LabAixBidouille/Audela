@@ -25,7 +25,7 @@ namespace eval bdi_tools_config {
    variable allparams [list dbname login pass server dirbase dirinco dirfits dircata direrr dirlog dirreports dirtmp limit intellilists default_config current_config]
 
    # @var Liste des repertoires de travail de bddimages
-   set bddimages_workdirs [list "cata" "fits" "incoming" "error" "log" "tmp"]
+   set bddimages_workdirs [list "cata" "fits" "incoming" "error" "log" "reports" "tmp"]
 
    # @var Etat de la connexion a la bdd
    variable ok_mysql_connect
@@ -149,15 +149,15 @@ proc ::bdi_tools_config::checkOtherDir { base } {
    foreach d $::bdi_tools_config::bddimages_workdirs {
       if {[file isdirectory [file join $base $d]]} { 
          switch $d {
-            "cata"     { set bddconf(dircata) [file join $base $d] }
-            "fits"     { set bddconf(dirfits) [file join $base $d] }
-            "incoming" { set bddconf(dirinco) [file join $base $d] }
+            "cata"     { set bddconf(dircata)    [file join $base $d] }
+            "fits"     { set bddconf(dirfits)    [file join $base $d] }
+            "incoming" { set bddconf(dirinco)    [file join $base $d] }
             "error"    -
-            "errors"   { set bddconf(direrr)  [file join $base $d] }
+            "errors"   { set bddconf(direrr)     [file join $base $d] }
             "log"      -
-            "logs"     { set bddconf(dirlog)  [file join $base $d] }
-            "reports"  { set bddconf(dirreports)  [file join $base $d] }
-            "tmp"      { set bddconf(dirtmp)  [file join $base $d] }
+            "logs"     { set bddconf(dirlog)     [file join $base $d] }
+            "reports"  { set bddconf(dirreports) [file join $base $d] }
+            "tmp"      { set bddconf(dirtmp)     [file join $base $d] }
          }
       }
    }

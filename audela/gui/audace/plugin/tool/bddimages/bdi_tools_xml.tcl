@@ -272,21 +272,21 @@ proc ::bdi_tools_xml::load_config { name } {
    set id [::bdi_tools_xml::get_id_from_name $name]
    
    # Defini les parametres de la config demandee
-   set err [catch {set bddconf(name)    $::bdi_tools_xml::xmlConfig($id,name)    }]
-   set err [catch {set bddconf(dbname)  $::bdi_tools_xml::xmlConfig($id,dbname)  }]
-   set err [catch {set bddconf(login)   $::bdi_tools_xml::xmlConfig($id,login)   }]
-   set err [catch {set bddconf(pass)    $::bdi_tools_xml::xmlConfig($id,pass)    }]
-   set err [catch {set bddconf(server)  $::bdi_tools_xml::xmlConfig($id,server)  }]
-   set err [catch {set bddconf(port)    $::bdi_tools_xml::xmlConfig($id,port)    }]
-   set err [catch {set bddconf(dirbase) $::bdi_tools_xml::xmlConfig($id,dirbase) }]
-   set err [catch {set bddconf(dirinco) $::bdi_tools_xml::xmlConfig($id,dirinco) }]
-   set err [catch {set bddconf(dirfits) $::bdi_tools_xml::xmlConfig($id,dirfits) }]
-   set err [catch {set bddconf(dircata) $::bdi_tools_xml::xmlConfig($id,dircata) }]
-   set err [catch {set bddconf(direrr)  $::bdi_tools_xml::xmlConfig($id,direrr)  }]
-   set err [catch {set bddconf(dirlog)  $::bdi_tools_xml::xmlConfig($id,dirlog)  }]
-   set err [catch {set bddconf(dirreports)  $::bdi_tools_xml::xmlConfig($id,dirreports)  }]
-   set err [catch {set bddconf(dirtmp)  $::bdi_tools_xml::xmlConfig($id,dirtmp)  }]
-   set err [catch {set bddconf(limit)   $::bdi_tools_xml::xmlConfig($id,limit)   }]
+   set err [catch {set bddconf(name)        $::bdi_tools_xml::xmlConfig($id,name)       }]
+   set err [catch {set bddconf(dbname)      $::bdi_tools_xml::xmlConfig($id,dbname)     }]
+   set err [catch {set bddconf(login)       $::bdi_tools_xml::xmlConfig($id,login)      }]
+   set err [catch {set bddconf(pass)        $::bdi_tools_xml::xmlConfig($id,pass)       }]
+   set err [catch {set bddconf(server)      $::bdi_tools_xml::xmlConfig($id,server)     }]
+   set err [catch {set bddconf(port)        $::bdi_tools_xml::xmlConfig($id,port)       }]
+   set err [catch {set bddconf(dirbase)     $::bdi_tools_xml::xmlConfig($id,dirbase)    }]
+   set err [catch {set bddconf(dirinco)     $::bdi_tools_xml::xmlConfig($id,dirinco)    }]
+   set err [catch {set bddconf(dirfits)     $::bdi_tools_xml::xmlConfig($id,dirfits)    }]
+   set err [catch {set bddconf(dircata)     $::bdi_tools_xml::xmlConfig($id,dircata)    }]
+   set err [catch {set bddconf(direrr)      $::bdi_tools_xml::xmlConfig($id,direrr)     }]
+   set err [catch {set bddconf(dirlog)      $::bdi_tools_xml::xmlConfig($id,dirlog)     }]
+   set err [catch {set bddconf(dirreports)  $::bdi_tools_xml::xmlConfig($id,dirreports) }]
+   set err [catch {set bddconf(dirtmp)      $::bdi_tools_xml::xmlConfig($id,dirtmp)     }]
+   set err [catch {set bddconf(limit)       $::bdi_tools_xml::xmlConfig($id,limit)      }]
 
    if {$err == 0} {
       set ::bdi_tools_xml::is_config_loaded 1
@@ -321,36 +321,36 @@ proc ::bdi_tools_xml::add_config { {name ""} } {
    set new_base [::bdi_tools_xml::get_default_dir "" $new_name]
    foreach d $::bdi_tools_config::bddimages_workdirs {
       switch $d {
-         "cata"     { set new_dircata [file join $new_base $d] }
-         "fits"     { set new_dirfits [file join $new_base $d] }
-         "incoming" { set new_dirinco [file join $new_base $d] }
-         "error"    { set new_direrr  [file join $new_base $d] }
-         "log"      { set new_dirlog  [file join $new_base $d] }
-         "reports"  { set new_dirreports  [file join $new_base $d] }
-         "tmp"      { set new_dirtmp  [file join $new_base $d] }
+         "cata"     { set new_dircata    [file join $new_base $d] }
+         "fits"     { set new_dirfits    [file join $new_base $d] }
+         "incoming" { set new_dirinco    [file join $new_base $d] }
+         "error"    { set new_direrr     [file join $new_base $d] }
+         "log"      { set new_dirlog     [file join $new_base $d] }
+         "reports"  { set new_dirreports [file join $new_base $d] }
+         "tmp"      { set new_dirtmp     [file join $new_base $d] }
       }
    }
 
    # Incremente le nombre de config
    set ::bdi_tools_xml::xmlConfigDef(nb_id) [expr $::bdi_tools_xml::xmlConfigDef(nb_id) + 1]
    # Defini le template de la nouvelle config
-   set ::bdi_tools_xml::xmlConfig($new_id,id)      $new_id 
-   set ::bdi_tools_xml::xmlConfig($new_id,default) "no"
-   set ::bdi_tools_xml::xmlConfig($new_id,name)    $new_name
-   set ::bdi_tools_xml::xmlConfig($new_id,dbname)  $new_name
-   set ::bdi_tools_xml::xmlConfig($new_id,login)   ""  
-   set ::bdi_tools_xml::xmlConfig($new_id,pass)    ""   
-   set ::bdi_tools_xml::xmlConfig($new_id,server)  ""   
-   set ::bdi_tools_xml::xmlConfig($new_id,port)    ""   
-   set ::bdi_tools_xml::xmlConfig($new_id,dirbase) $new_base
-   set ::bdi_tools_xml::xmlConfig($new_id,dirinco) $new_dirinco
-   set ::bdi_tools_xml::xmlConfig($new_id,dirfits) $new_dirfits
-   set ::bdi_tools_xml::xmlConfig($new_id,dircata) $new_dircata  
-   set ::bdi_tools_xml::xmlConfig($new_id,direrr)  $new_direrr
-   set ::bdi_tools_xml::xmlConfig($new_id,dirlog)  $new_dirlog
-   set ::bdi_tools_xml::xmlConfig($new_id,dirreports)  $new_dirreports
-   set ::bdi_tools_xml::xmlConfig($new_id,dirtmp)  $new_dirtmp
-   set ::bdi_tools_xml::xmlConfig($new_id,limit)   "10" 
+   set ::bdi_tools_xml::xmlConfig($new_id,id)         $new_id 
+   set ::bdi_tools_xml::xmlConfig($new_id,default)    "no"
+   set ::bdi_tools_xml::xmlConfig($new_id,name)       $new_name
+   set ::bdi_tools_xml::xmlConfig($new_id,dbname)     $new_name
+   set ::bdi_tools_xml::xmlConfig($new_id,login)      ""  
+   set ::bdi_tools_xml::xmlConfig($new_id,pass)       ""   
+   set ::bdi_tools_xml::xmlConfig($new_id,server)     ""   
+   set ::bdi_tools_xml::xmlConfig($new_id,port)       ""   
+   set ::bdi_tools_xml::xmlConfig($new_id,dirbase)    $new_base
+   set ::bdi_tools_xml::xmlConfig($new_id,dirinco)    $new_dirinco
+   set ::bdi_tools_xml::xmlConfig($new_id,dirfits)    $new_dirfits
+   set ::bdi_tools_xml::xmlConfig($new_id,dircata)    $new_dircata  
+   set ::bdi_tools_xml::xmlConfig($new_id,direrr)     $new_direrr
+   set ::bdi_tools_xml::xmlConfig($new_id,dirlog)     $new_dirlog
+   set ::bdi_tools_xml::xmlConfig($new_id,dirreports) $new_dirreports
+   set ::bdi_tools_xml::xmlConfig($new_id,dirtmp)     $new_dirtmp
+   set ::bdi_tools_xml::xmlConfig($new_id,limit)      "10" 
 
    # Met a jour la liste des config
    set new_config [list $new_id $new_name]

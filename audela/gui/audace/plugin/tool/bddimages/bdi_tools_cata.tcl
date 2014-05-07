@@ -147,6 +147,7 @@ namespace eval tools_cata {
    variable current_listsources
 
    variable use_skybot
+   variable use_skybotRosetta
 
    variable use_usnoa2
    variable use_tycho2
@@ -306,6 +307,13 @@ namespace eval tools_cata {
             set ::tools_cata::use_skybot 1
          }
       }
+      if {! [info exists ::tools_cata::use_skybotRosetta] } {
+         if {[info exists conf(bddimages,cata,use_skybotRosetta)]} {
+            set ::tools_cata::use_skybotRosetta $conf(bddimages,cata,use_skybotRosetta)
+         } else {
+            set ::tools_cata::use_skybotRosetta 0
+         }
+      }
 
       # Repertoires 
       if {! [info exists ::tools_cata::catalog_usnoa2] } {
@@ -383,8 +391,10 @@ namespace eval tools_cata {
       if {! [info exists ::tools_cata::catalog_skybot] } {
          if {[info exists conf(bddimages,catfolder,skybot)]} {
             set ::tools_cata::catalog_skybot $conf(bddimages,catfolder,skybot)
+            set ::tools_cata::catalog_skybotRosetta $conf(bddimages,catfolder,skybotRosetta)
          } else {
             set ::tools_cata::catalog_skybot "http://vo.imcce.fr/webservices/skybot/"
+            set ::tools_cata::catalog_skybotRosetta "http://vo.imcce.fr/webservices/skybotRosetta/"
          }
       }
 
@@ -476,7 +486,7 @@ namespace eval tools_cata {
 
       global conf
 
-       # Repertoires 
+      # Repertoires 
       set conf(bddimages,catfolder,usnoa2)              $::tools_cata::catalog_usnoa2 
       set conf(bddimages,catfolder,ucac2)               $::tools_cata::catalog_ucac2  
       set conf(bddimages,catfolder,ucac3)               $::tools_cata::catalog_ucac3  
@@ -499,7 +509,8 @@ namespace eval tools_cata {
       set conf(bddimages,cata,use_2mass)                $::tools_cata::use_2mass
       set conf(bddimages,cata,use_wfibc)                $::tools_cata::use_wfibc
       set conf(bddimages,cata,use_skybot)               $::tools_cata::use_skybot
-     # Autres utilitaires
+      set conf(bddimages,cata,use_skybotRosetta)        $::tools_cata::use_skybotRosetta
+      # Autres utilitaires
       set conf(bddimages,cata,keep_radec)               $::tools_cata::keep_radec
       set conf(bddimages,cata,create_cata)              $::tools_cata::create_cata
       set conf(bddimages,cata,delpv)                    $::tools_cata::delpv
@@ -947,17 +958,18 @@ namespace eval tools_cata {
          set ::tools_cata::nb_wfibc [::manage_source::get_nb_sources_by_cata $listsources WFIBC]
       }
 
-      if {$::tools_cata::use_skybot} {
-         set dateobs [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
-         set exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
+      if {$::tools_cata::use_skybot || $::tools_cata::use_skybotRosetta} {
+         set dateobs [lindex [::bddimages_liste::lget $tabkey DATE-OBS] 1]
+         set exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE] 1]
          set datejd [ mc_date2jd $dateobs ]
          set datejd [ expr $datejd + $exposure/86400.0/2.0 ]
          set dateiso [ mc_date2iso8601 $datejd ]
          set radius [format "%0.0f" [expr $radius*60.0] ]
-         set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE ] 1]
-         #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
-         set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code} skybot ]
-         set log 0; # log=2 pour activer ulog dans identification
+         set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]
+         set rosetta [expr {$::tools_cata::use_skybotRosetta == 1 ? 1 : 0}]
+         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+         set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code $rosetta} skybot ]
+         set log 2; # log=2 pour activer ulog dans identification
          set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
          set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::threshold_ident_pos_ast $::tools_cata::threshold_ident_mag_ast {} $log ] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]
@@ -1056,13 +1068,10 @@ namespace eval tools_cata {
       set tabkey [::bddimages_liste::lget $::tools_cata::current_image "tabkey"]
       set listsources $::tools_cata::current_listsources
 
-     gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
-     set listsources [ ::manage_source::delete_catalog $listsources "SKYBOT" ]
-     gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+      gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+      set listsources [ ::manage_source::delete_catalog $listsources "SKYBOT" ]
+      gren_info "rollup listsources = [::manage_source::get_nb_sources_rollup $listsources]\n"
 
-
-
-      
       set dateobs  [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
       set exposure [lindex [::bddimages_liste::lget $tabkey EXPOSURE   ] 1]
       set datejd   [ mc_date2jd $dateobs ]

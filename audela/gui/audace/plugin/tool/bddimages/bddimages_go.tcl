@@ -243,7 +243,6 @@ proc ::bddimages::ressource {  } {
 
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages utils astroid libastroid.tcl ]\""
 
-
 }
 
 #------------------------------------------------------------

@@ -1,6 +1,6 @@
 # -- Procedure 
 # radius   = rayon du FOV en arcsec
-proc get_skybot { dateobs ra dec radius uaicode } {
+proc get_skybot { dateobs ra dec radius uaicode {rosetta 0}} {
 
    global voconf
    global skybot_list
@@ -8,6 +8,7 @@ proc get_skybot { dateobs ra dec radius uaicode } {
 
    set log 0
 
+   set spaceOpt                    ""
    set voconf(date_image)          $dateobs
    set voconf(centre_ad_image)     $ra
    set voconf(centre_dec_image)    $dec
@@ -15,6 +16,12 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    set voconf(taille_champ_calcul) $radius
    set voconf(filter)              120
    set voconf(objfilter)           "110"
+
+   # Cas particulier: skybotRosetta
+   if {$rosetta > 0} {
+      set spaceOpt "Rosetta"
+      set voconf(observer) "rosetta"
+   }
 
    #"TAROT CHILI"  809 
    #"TAROT CALERN" 910 
@@ -25,31 +32,39 @@ proc get_skybot { dateobs ra dec radius uaicode } {
    # skybot epoch format : 2008-01-01 03:48:04
    set epoch [regsub {T} $voconf(date_image) " "]
    set epoch [regsub {\..*} $epoch ""]
-    # gren_info "    SKYBOT-STATUS for epoch $epoch \n"
-   set status [vo_skybotstatus "text" "$epoch"]
-     #gren_info "    MSG-SKYBOT-STATUS : <$status> \n"
+   gren_debug "SKYBOT-STATUS for epoch $epoch \n"
+   set status [vo_skybotstatus "text" "$epoch" $spaceOpt]
+   gren_debug "  MSG STATUS  : <$status> \n"
    if {[lindex $status 1] >= 1} then {
-    set stats [lindex $status 5]
-    set lines [split $stats ";"]
-    if { [llength $lines] == 2 } {
-     if {[string match -nocase "*uptodate*" "[lindex $lines 1]"]} { set uptodate 1 }
-    }
+     set stats [lindex $status 5]
+     set lines [split $stats ";"]
+     if { [llength $lines] == 2 } {
+       if {[string match -nocase "*uptodate*" "[lindex $lines 1]"]} {
+         set uptodate 1
+       }
+     }
    }
    if { ! $uptodate } {
       #gren_info "SKYBOT-STATUS not up to date"
       # TODO if not up to date skip image
    }
 
-   set skybot_answered 0
+   gren_debug "  UPTODATE  : $uptodate\n"
+
    set no_answer 0
-   while { ! $skybot_answered } {
+   set skybot_answered 0
+   while { $skybot_answered == 0 } {
    
       #gren_info  "[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%S -timezone :UTC]: Appel au conesearch"
       #gren_info "$voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) $voconf(observer)\n"
 
+      gren_debug "  SKYBOT-CONESEARCH: $voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) $voconf(taille_champ_calcul) \"votable\" \"object\" $voconf(observer) $voconf(filter) $voconf(objfilter) $spaceOpt \n"
+
       set err [ catch { vo_skybotconesearch $voconf(date_image) $voconf(centre_ad_image)   \
                                             $voconf(centre_dec_image) $voconf(taille_champ_calcul) \
-                                            "votable" "object" $voconf(observer) $voconf(filter) $voconf(objfilter) } msg ]
+                                            "votable" "object" $voconf(observer) $voconf(filter) $voconf(objfilter) $spaceOpt } msg ]
+
+      gren_debug "  SKYBOT-CONESEARCH MSG STATUS  : <msg> \n"
 
       if {$err} {
          gren_info "get_skybot: ERREUR 7"

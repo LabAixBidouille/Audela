@@ -486,7 +486,7 @@ namespace eval gui_cata_creation {
       set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
       set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
       set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
-      if {$scale_x=="" || $scale_y == ""} {
+      if {$scale_x == "" || $scale_y == ""} {
          set ::tools_cata::radius 20
       } else {
          set ::tools_cata::radius [::tools_cata::get_radius $naxis1 $naxis2 $scale_x $scale_y]
@@ -1976,6 +1976,8 @@ return
 
                checkbutton $cataconf.skybot_check -highlightthickness 0 -text "  SKYBOT" -variable ::tools_cata::use_skybot
                   entry $cataconf.skybot_dir -relief flat -borderwidth 1 -textvariable ::tools_cata::catalog_skybot -width 30 -state disabled
+               checkbutton $cataconf.skybotRosetta_check -highlightthickness 0 -text "  @Rosetta" -variable ::tools_cata::use_skybotRosetta
+
                checkbutton $cataconf.usnoa2_check -highlightthickness 0 -text "  USNO-A2" -variable ::tools_cata::use_usnoa2 -state disabled
                   entry $cataconf.usnoa2_dir -relief flat -textvariable ::tools_cata::catalog_usnoa2 -width 30 -state disabled
                checkbutton $cataconf.tycho2_check -highlightthickness 0 -text "  TYCHO-2" -variable ::tools_cata::use_tycho2
@@ -1998,7 +2000,7 @@ return
                   entry $cataconf.wfibc_dir -relief flat -textvariable ::tools_cata::catalog_wfibc -width 30 -state disabled
                frame $cataconf.blank -height 15
 
-            grid $cataconf.skybot_check  $cataconf.skybot_dir  -sticky nsw -pady 3
+            grid $cataconf.skybot_check  $cataconf.skybotRosetta_check -sticky nsw -pady 3
             grid $cataconf.blank
             grid $cataconf.usnoa2_check  $cataconf.usnoa2_dir  -sticky nsw -pady 3
             grid $cataconf.tycho2_check  $cataconf.tycho2_dir  -sticky nsw -pady 3
