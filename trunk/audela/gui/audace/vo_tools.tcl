@@ -311,7 +311,7 @@ proc vo_skybotconesearch { args } {
    set argc [llength $args]
    if {$argc >= 4} {
       # reception des arguments
-      set jd [mc_date2jd [lindex $args 0]]
+      set epoch [mc_date2jd [lindex $args 0]]
       set RA [mc_angle2deg [lindex $args 1]]
       set DEC [mc_angle2deg [lindex $args 2] 90]
       set radius [lindex $args 3]
@@ -325,49 +325,51 @@ proc vo_skybotconesearch { args } {
       if {$argc >= 8} { set filter [lindex $args 7] }
       set objfilter "110"
       if {$argc >= 9} { set objfilter [lindex $args 8] }
+      set spaceOpt ""
+      if {$argc >= 10} { set spaceOpt [lindex $args 9] }
 
       # The XML below is ripped straight from the generated request
-      variable skybot_xml
-      array set skybot_xml {
-        skybotconesearch {<?xml version="1.0" encoding="UTF-8"?>
+      set enveloppe "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <SOAP-ENV:Envelope
-    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:ns1="http://vo.imcce.fr/webservices/skybot"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
-    SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"
+    xmlns:ns1=\"http://vo.imcce.fr/webservices/skybot${spaceOpt}\"
+    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"
+    SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
   <SOAP-ENV:Header>
     <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>
     <ns1:skybotconesearch>
-      <inputArray xsi:type="ns1:skybotConeSearchRequest">
-        <epoch xsi:type="xsd:double">${epoch}</epoch>
-        <alpha xsi:type="xsd:double">${RA}</alpha>
-        <delta xsi:type="xsd:double">${DEC}</delta>
-        <radius xsi:type="xsd:string">$radius</radius>
-        <mime xsi:type="xsd:string">$mime</mime>
-        <output xsi:type="xsd:string">$out</output>
-        <observer xsi:type="xsd:string">$observer</observer>
-        <filter xsi:type="xsd:double">$filter</filter>
-        <objFilter xsi:type="xsd:string">$objfilter</objFilter>
+      <inputArray xsi:type=\"ns1:skybotConeSearchRequest\">
+        <epoch xsi:type=\"xsd:string\">${epoch}</epoch>
+        <alpha xsi:type=\"xsd:double\">${RA}</alpha>
+        <delta xsi:type=\"xsd:double\">${DEC}</delta>
+        <radius xsi:type=\"xsd:string\">$radius</radius>
+        <mime xsi:type=\"xsd:string\">$mime</mime>
+        <output xsi:type=\"xsd:string\">$out</output>
+        <observer xsi:type=\"xsd:string\">$observer</observer>
+        <filter xsi:type=\"xsd:double\">$filter</filter>
+        <objFilter xsi:type=\"xsd:string\">$objfilter</objFilter>
       </inputArray>
     </ns1:skybotconesearch>
   </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>}
-}
+</SOAP-ENV:Envelope>"
+
+      variable skybot_xml
+      array set skybot_xml [list skybotconesearch $enveloppe]
 
       # instance du client soap
       SOAP::create skybotconesearch \
-         -uri "http://vo.imcce.fr/webservices/skybot" \
-         -proxy "http://vo.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://vo.imcce.fr/webservices/skybot${spaceOpt}" \
+         -proxy "http://vo.imcce.fr/webservices/skybot${spaceOpt}/skybot.php" \
          -name "skybotconesearch" \
          -wrapProc vo_skybotXML \
-         -params { epoch double alpha double delta double radius string mime string output string observer string filter string objfilter string }
+         -params { epoch string alpha double delta double radius string mime string output string observer string filter string objfilter string }
 
       # invocation du web service
-      set erreur [ catch { skybotconesearch epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter objfilter $objfilter } response ]
+      set erreur [ catch { skybotconesearch epoch $epoch RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter objfilter $objfilter } response ]
 
       # recuperation des resultats
       set flag [lindex $response 1]
@@ -399,7 +401,7 @@ proc vo_skybotconesearch { args } {
 
    } else {
 
-      error "Usage: vo_skybot Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec) objFilter(bitmask e.g. 110)"
+      error "Usage: vo_skybot Epoch RA_J2000 DEC_J2000 Radius(arcsec) ?text|votable|html? ?object|basic|all? Observer Filter(arcsec) objFilter(bitmask e.g. 110) ?Rosetta?"
 
    }
 }
@@ -439,7 +441,7 @@ proc vo_skybotresolver { args } {
    set argc [llength $args]
    if {$argc >= 2} {
       # reception des arguments
-      set jd [mc_date2jd [lindex $args 0]]
+      set epoch [mc_date2jd [lindex $args 0]]
       set name [lindex $args 1]
       set mime "text"
       if {$argc >= 3} { set mime [lindex $args 2] }
@@ -447,45 +449,47 @@ proc vo_skybotresolver { args } {
       if {$argc >= 4} { set output [lindex $args 3] }
       set observer "500"
       if {$argc >= 5} { set observer [lindex $args 4] }
+      set spaceOpt ""
+      if {$argc >= 6} { set spaceOpt [lindex $args 5] }
 
       # The XML below is ripped straight from the generated request
-      variable skybot_xml
-      array set skybot_xml {
-        skybotresolver {<?xml version="1.0" encoding="UTF-8"?>
+      set enveloppe "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <SOAP-ENV:Envelope
-    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:ns1="http://vo.imcce.fr/webservices/skybot"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
-    SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"
+    xmlns:ns1=\"http://vo.imcce.fr/webservices/skybot${spaceOpt}\"
+    xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+    xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"
+    SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
   <SOAP-ENV:Header>
     <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>
     <ns1:skybotresolver>
-      <inputArray xsi:type="ns1:skybotResolverRequest">
-        <epoch xsi:type="xsd:double">$epoch</epoch>
-        <name xsi:type="xsd:string">$name</name>
-        <mime xsi:type="xsd:string">$mime</mime>
-        <output xsi:type="xsd:string">$output</output>
-        <observer xsi:type="xsd:string">$observer</observer>
+      <inputArray xsi:type=\"ns1:skybotResolverRequest\">
+        <epoch xsi:type=\"xsd:string\">$epoch</epoch>
+        <name xsi:type=\"xsd:string\">$name</name>
+        <mime xsi:type=\"xsd:string\">$mime</mime>
+        <output xsi:type=\"xsd:string\">$output</output>
+        <observer xsi:type=\"xsd:string\">$observer</observer>
       </inputArray>
     </ns1:skybotresolver>
   </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>}
-      }
+</SOAP-ENV:Envelope>"
+
+      variable skybot_xml
+      array set skybot_xml [list skybotresolver $enveloppe]
 
       # instance du client soap
       SOAP::create skybotresolver \
-         -uri "http://vo.imcce.fr/webservices/skybot" \
-         -proxy "http://vo.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://vo.imcce.fr/webservices/skybot${spaceOpt}" \
+         -proxy "http://vo.imcce.fr/webservices/skybot${spaceOpt}/skybot.php" \
          -name "skybotresolver" \
          -wrapProc vo_skybotXML \
-         -params { epoch double name string mime string output string observer string }
+         -params { epoch string name string mime string output string observer string }
 
       # invocation du web service
-      set erreur [ catch { skybotresolver epoch $jd name $name mime $mime output $output observer $observer } response ]
+      set erreur [ catch { skybotresolver epoch $epoch name $name mime $mime output $output observer $observer } response ]
 
       # recuperation des resultats
       set flag [lindex $response 1]
@@ -507,7 +511,7 @@ proc vo_skybotresolver { args } {
 
    } else {
 
-      error "Usage: vo_skybotresolver Epoch Name ?text|votable|html? ?object|basic|all? Observer"
+      error "Usage: vo_skybotresolver Epoch Name ?text|votable|html? ?object|basic|all? Observer ?Rosetta?"
 
    }
 }
@@ -553,34 +557,36 @@ proc vo_skybotstatus { args } {
       if {$argc >= 2} { set epoch [lindex $args 1] }
       set epoch [regsub {T} $epoch " "]
       set epoch [regsub {\..*} $epoch ""]
+      set spaceOpt ""
+      if {$argc >= 3} { set spaceOpt [lindex $args 2] }
 
       # The XML below is ripped straight from the generated request
-      variable skybot_xml
-      array set skybot_xml {
-        skybotstatus {<?xml version="1.0" encoding="UTF-8"?>
+      set enveloppe "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <SOAP-ENV:Envelope
-   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-   xmlns:ns1="http://vo.imcce.fr/webservices/skybot"
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
-   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+   xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"
+   xmlns:ns1=\"http://vo.imcce.fr/webservices/skybot${spaceOpt}\"
+   xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
+   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+   xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\"
+   SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
  <SOAP-ENV:Header>
   <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
  </SOAP-ENV:Header>
  <SOAP-ENV:Body>
   <ns1:skybotstatus>
-   <mime xsi:type="xsd:string">$mime</mime>
-   <epoch xsi:type="xsd:dateTime">$epoch</epoch>
+   <mime xsi:type=\"xsd:string\">$mime</mime>
+   <epoch xsi:type=\"xsd:dateTime\">$epoch</epoch>
   </ns1:skybotstatus>
  </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>}
-      }
+</SOAP-ENV:Envelope>"
+
+      variable skybot_xml
+      array set skybot_xml [list skybotstatus $enveloppe]
 
       # instance du client soap
       SOAP::create skybotstatus \
-         -uri "http://vo.imcce.fr/webservices/skybot" \
-         -proxy "http://vo.imcce.fr/webservices/skybot/skybot.php" \
+         -uri "http://vo.imcce.fr/webservices/skybot${spaceOpt}" \
+         -proxy "http://vo.imcce.fr/webservices/skybot${spaceOpt}/skybot.php" \
          -name "skybotstatus" \
          -wrapProc vo_skybotXML \
          -params { "mime" "string" "epoch" "string" }
@@ -610,7 +616,7 @@ proc vo_skybotstatus { args } {
 
    } else {
 
-      error "Usage: vo_skybotstatus ?text|votable|html? ?epoch?"
+      error "Usage: vo_skybotstatus ?text|votable|html? ?epoch? ?Rosetta?"
 
    }
 }
@@ -1029,7 +1035,7 @@ proc vo_miriade_ephemcc { args } {
       <inputArray xsi:type="ns1:ephemccRequest">
         <name xsi:type="xsd:string" >${name}</name>
         <type xsi:type="xsd:string" >${type}</type>
-        <epoch xsi:type="xsd:double" >${epoch}</epoch>
+        <epoch xsi:type="xsd:string" >${epoch}</epoch>
         <nbd xsi:type="xsd:integer">${nbd}</nbd>
         <step xsi:type="xsd:string" >${step}</step>
         <tscale xsi:type="xsd:string" >${tscale}</tscale>
@@ -1053,7 +1059,7 @@ proc vo_miriade_ephemcc { args } {
          -proxy "http://vo.imcce.fr/webservices/miriade/miriade.php" \
          -name "ephemcc" \
          -wrapProc vo_miriadeXML \
-         -params { name string type string epoch double nbd integer step string tscale string observer string theory string teph integer tcoor integer rplane integer mime string output string extrap integer}
+         -params { name string type string epoch string nbd integer step string tscale string observer string theory string teph integer tcoor integer rplane integer mime string output string extrap integer}
 
       # invocation du web service
       set erreur [ catch { ephemcc name $name type $type epoch $epoch nbd $nbd step $step tscale $tscale observer $observer theory $theory teph $teph tcoor $tcoor rplane $rplane mime $mime output $output extrap $extrap} response ]
