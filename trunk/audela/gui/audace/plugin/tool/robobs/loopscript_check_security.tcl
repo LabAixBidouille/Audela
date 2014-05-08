@@ -21,8 +21,9 @@ if {[info exists robobs(meteo,meteosensor,name)]==0} {
 	set err [catch {meteosensor_open $robobs(conf,meteostation,type,value) $robobs(conf,meteostation,port,value) $name $robobs(conf,meteostation,params,value)} msg ]
 	if {$err==0} {
 		set robobs(meteo,meteosensor,name) $name
+		::robobs::log "RobObs [info script] success for meteosensor_open: $msg" 3
 	} else {
-		::robobs::log "RobObs [info script] problem concerning meteosensor_open: $msg" 10
+		::robobs::log "RobObs [info script] problem concerning meteosensor_open: $msg" 3
 	}
 }
 
