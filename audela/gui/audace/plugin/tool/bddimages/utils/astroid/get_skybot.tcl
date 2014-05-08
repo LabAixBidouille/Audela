@@ -64,7 +64,7 @@ proc get_skybot { dateobs ra dec radius uaicode {rosetta 0}} {
                                             $voconf(centre_dec_image) $voconf(taille_champ_calcul) \
                                             "votable" "object" $voconf(observer) $voconf(filter) $voconf(objfilter) $spaceOpt } msg ]
 
-      gren_debug "  SKYBOT-CONESEARCH MSG STATUS  : <msg> \n"
+      gren_debug "  SKYBOT-CONESEARCH MSG STATUS  : <$msg> \n"
 
       if {$err} {
          gren_info "get_skybot: ERREUR 7"

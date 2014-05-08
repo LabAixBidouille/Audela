@@ -578,23 +578,24 @@ namespace eval tools_cata {
       set ::tools_cata::xcent    [expr $::tools_cata::naxis1/2.0]
       set ::tools_cata::ycent    [expr $::tools_cata::naxis2/2.0]
 
-      set ::tools_cata::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs  ] 1]]
+      set ::tools_cata::bddimages_wcs  [string trim [lindex [::bddimages_liste::lget $tabkey bddimages_wcs] 1]]
 
       set ::tools_cata::current_image_name $filename
       set ::tools_cata::current_image_date $date
 
-      gren_info "::tools_cata::file = $::tools_cata::file \n"
-      gren_info "date = $date \n"
-      gren_info "::tools_cata::bddimages_wcs = $::tools_cata::bddimages_wcs \n"
-      gren_info " = [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"] \n"
+      gren_debug "::tools_cata::file = $::tools_cata::file \n"
+      gren_debug "date = $date \n"
+      gren_debug "::tools_cata::bddimages_wcs = $::tools_cata::bddimages_wcs \n"
+
       set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-      if {$cataexist==0} {
-          gren_info "cata n existe pas\n"
+      gren_debug "cataexist = $cataexist\n"
+      if {$cataexist == 0} {
+          gren_info "Le cata n'existe pas\n"
       }
-      if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"]=="1"} {
-         gren_info "cata existe\n"
+      if {[::bddimages_liste::lget $::tools_cata::current_image "cataexist"] == "1"} {
+         gren_info "Le cata existe\n"
       } else {
-         gren_info "cata n existe t pas\n"
+         gren_info "Le cata n'existe pas\n"
       }
       
   }
@@ -967,9 +968,9 @@ namespace eval tools_cata {
          set radius [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]
          set rosetta [expr {$::tools_cata::use_skybotRosetta == 1 ? 1 : 0}]
-         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code\n"
+         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code $rosetta\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code $rosetta} skybot ]
-         set log 2; # log=2 pour activer ulog dans identification
+         set log 0; # log=2 pour activer ulog dans identification
          set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
          set listsources [ identification $listsources "IMG" $skybot "SKYBOT" $::tools_cata::threshold_ident_pos_ast $::tools_cata::threshold_ident_mag_ast {} $log ] 
          set ::tools_cata::nb_skybot [::manage_source::get_nb_sources_by_cata $listsources SKYBOT]

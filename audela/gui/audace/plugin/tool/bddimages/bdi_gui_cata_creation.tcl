@@ -23,6 +23,8 @@ namespace eval gui_cata_creation {
    variable default_conf_sex [file join $audace(rep_plugin) tool bddimages config config.sex]
    variable user_conf_sex [file join $audace(rep_home) bddimages_config.sex]
 
+   variable gui_sex_viewrejected
+
    #--- Chargement des captions
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_gui_cata_creation.cap ]\""
 
@@ -559,6 +561,9 @@ namespace eval gui_cata_creation {
 
       global audace
 
+      # Par defaut, affiche les sources rejetees par sextractor
+      set ::gui_cata_creation::gui_sex_viewrejected 1
+
       # Verifie que le fichier utilisateur de la config sextractor existe
       # s'il n'existe pas, copie depuis le fichier par defaut config/config.sex
       if { ! [file exists $::gui_cata_creation::user_conf_sex]} {
@@ -654,7 +659,12 @@ namespace eval gui_cata_creation {
                   incr cpt
                }
             }
-            affich_un_rond_xy $xi $yi $ci 3 2
+            if {$ci == "red"} {
+               if {$::gui_cata_creation::gui_sex_viewrejected == 1} { affich_un_rond_xy $xi $yi $ci 3 2 }
+            } else {
+               affich_un_rond_xy $xi $yi $ci 3 2
+            }
+
          }
          close $chan
 
@@ -2317,6 +2327,12 @@ return
 
             text $confsex.file
             pack $confsex.file -in $confsex -side top -padx 3 -pady 3 -anchor w
+
+            frame $confsex.options -borderwidth 0 -cursor arrow -relief groove
+            pack $confsex.options -in $confsex  -side top -anchor e -expand 0 -pady 5
+               checkbutton $confsex.options.viewrejected -highlightthickness 0 -text "Affiche les sources rejetees" \
+                  -variable ::gui_cata_creation::gui_sex_viewrejected -command ""
+               pack $confsex.options.viewrejected -in $confsex.options -side top -anchor w -expand 0
 
 
          #-----------------------------------------------------------------------
