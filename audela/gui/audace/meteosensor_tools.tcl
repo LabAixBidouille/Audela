@@ -2246,7 +2246,7 @@ proc sentinel_read { f name } {
 	set texte "Wind_valid $valid" ; lappend texte "Integer"
 	lappend textes $texte
    if {$valid<32767} {
-		console::affiche_resultat "\ndatas = $datas\n"
+		#console::affiche_resultat "\ndatas = $datas\n"
 		set valint [sentinel_valint 0 0 0 [lindex $datas 11] ]
       set dirwind [sentinel_dirwind $valint]
 		set texte "Integer_dirwind $valint" ; lappend texte "Integer"
