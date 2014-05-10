@@ -968,7 +968,7 @@ namespace eval tools_cata {
          set radius [format "%0.0f" [expr $radius*60.0] ]
          set iau_code [lindex [::bddimages_liste::lget $tabkey IAU_CODE] 1]
          set rosetta [expr {$::tools_cata::use_skybotRosetta == 1 ? 1 : 0}]
-         gren_info "get_skybot $dateiso $ra $dec $radius $iau_code $rosetta\n"
+         #gren_info "get_skybot $dateiso $ra $dec $radius $iau_code $rosetta\n"
          set err [ catch {get_skybot $dateiso $ra $dec $radius $iau_code $rosetta} skybot ]
          set log 0; # log=2 pour activer ulog dans identification
          set listsources [::manage_source::delete_catalog $listsources "SKYBOT"]
@@ -1037,15 +1037,12 @@ namespace eval tools_cata {
       set fxml [open $cataxml "w"]
       puts $fxml $votable
       close $fxml
-      #set fxml [open "/astrodata/Observations/Images/bddimages/bddimages_local/tmp/test.xml" "w"]
-      #puts $fxml $votable
-      #close $fxml
       
       # Insertion du cata dans bdi
       set err [ catch { insertion_solo $cataxml } msg ]
       gren_info "** INSERTION_SOLO = $err $msg\n"
       set cataexist [::bddimages_liste::lexist $::tools_cata::current_image "cataexist"]
-      if {$cataexist==0} {
+      if {$cataexist == 0} {
          set ::tools_cata::current_image [::bddimages_liste::ladd $::tools_cata::current_image "cataexist" 1]
       } else {
          set ::tools_cata::current_image [::bddimages_liste::lupdate $::tools_cata::current_image "cataexist" 1]
