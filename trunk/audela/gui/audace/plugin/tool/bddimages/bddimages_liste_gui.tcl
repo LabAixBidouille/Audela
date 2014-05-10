@@ -1635,7 +1635,8 @@ namespace eval bddimages_liste_gui {
          return
       }
       set nbresult [llength $resultcount]
-      if {$nbresult>0} {
+
+      if {$nbresult > 0} {
          set colvar [lindex $resultcount 0]
          set rowvar [lindex $resultcount 1]
          set nbcol  [llength $colvar]
@@ -1657,29 +1658,29 @@ namespace eval bddimages_liste_gui {
             foreach key $keys  {
                set pos [lsearch -index 0 $img $key]
                if {$pos != -1 } {
-                  set img [ lreplace $img $pos $pos [list $key $cata($idbddimg,$key)]]
+                  set img [lreplace $img $pos $pos [list $key $cata($idbddimg,$key)]]
                } else {
                   lappend img [list $key $cata($idbddimg,$key)]
                }
             }
          } else {
-            set pos [lsearch -index 0 $img cataexist]
-            if {$pos != -1 } {
-               set img [ lreplace $img $pos $pos [list cataexist 0]]
-            } else {
-               lappend img [list cataexist 0]
-            }
-            set pos [lsearch -index 0 $img cataloaded]
-            if {$pos != -1 } {
-               set img [ lreplace $img $pos $pos [list cataloaded 0]]
-            } else {
-               lappend img [list cataloaded 0]
-            }
-            
-            #lappend img [list cataexist 0]
-            #lappend img [list cataloaded 0]
-            
+            set cata($idbddimg,cataexist) 0
+            set cata($idbddimg,cataloaded) 0
          }
+
+         set pos [lsearch -index 0 $img cataexist]
+         if {$pos != -1 } {
+            set img [lreplace $img $pos $pos [list cataexist $cata($idbddimg,cataexist)]]
+         } else {
+            lappend img [list cataexist $cata($idbddimg,cataexist)]
+         }
+         set pos [lsearch -index 0 $img cataloaded]
+         if {$pos != -1 } {
+            set img [lreplace $img $pos $pos [list cataloaded $cata($idbddimg,cataloaded)]]
+         } else {
+            lappend img [list cataloaded $cata($idbddimg,cataloaded)]
+         }
+
          lappend result_img_list $img
          incr cpt
       }
@@ -1695,7 +1696,7 @@ namespace eval bddimages_liste_gui {
 
    proc ::bddimages_liste_gui::add_info_cata { img } {
 
-      if {[::bddimages_liste::lexist $img "idbddimg" ]==0} {
+      if {[::bddimages_liste::lexist $img "idbddimg" ] == 0} {
          return -code 1 "Champs idbddimg inexistant dans l image\n"
       } 
 
@@ -1744,7 +1745,9 @@ namespace eval bddimages_liste_gui {
          ::console::affiche_erreur "        msg = $msg\n"
          return
       }
-      if {$nbresult>0} {
+
+      if {$nbresult > 0} {
+
          set r [lindex [lindex $resultcount 1] 0]
          set idbddcata       [lindex $r 0] 
          set catafilename    [lindex $r 1] 
@@ -1758,13 +1761,13 @@ namespace eval bddimages_liste_gui {
          set img [::bddimages_liste::ladd $img catadirfilename  $catadirfilename] 
          set img [::bddimages_liste::ladd $img catasizefich     $catasizefich] 
          set img [::bddimages_liste::ladd $img catadatemodif    $catadatemodif] 
-       } else {
 
-            lappend img [list cataexist 0] 
-            lappend img [list cataloaded 0] 
-            
-         }
+      } else {
 
+         lappend img [list cataexist 0] 
+         lappend img [list cataloaded 0] 
+
+      }
 
       return $img
    }
