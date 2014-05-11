@@ -254,6 +254,7 @@ namespace eval robobs_acquisition {
       global caption
       global audace
       global robobsconf
+      global conf
       
       ::robobs::log "Enter in the acquisition loop"
       if {[::robobs_acquisition::signal_loop]!="Exit"} {
