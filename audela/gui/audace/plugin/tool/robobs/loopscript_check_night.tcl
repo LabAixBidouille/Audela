@@ -70,6 +70,12 @@ set robobs(private,nightdate) [string range $d 0 3][string range $d 5 6][string 
 
 ::robobs::log "$step : skylight=$skylight sunelev=$sunelev ($robobs(private,nightdate))" 0
 
+# --- Image folder
+set conf(rep_images,mode) manual 
+set conf(rep_images,subdir) [string range $robobs(private,nightdate) 2 end]
+set audace(rep_images) [file join $conf(rep_images) $conf(rep_images,subdir)]
+file mkdir $audace(rep_images)
+ 
 # === End of script
 ::robobs::log "$caption(robobs,exit_script) RobObs [info script]" 10
 return ""
