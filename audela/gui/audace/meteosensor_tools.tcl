@@ -138,27 +138,26 @@ proc meteosensor_open { type port name {parameters ""} } {
    return $name
 }
 
-
 proc meteosensor_list { } {
-	global audace
-	set array_names [array names audace]
-	set res ""
-	foreach array_name $array_names {
-		set keys [split $array_name ,]
-		set key1 [lindex $keys 0]
-		set key2 [lindex $keys 1]
-		set key3 [lindex $keys 3]
-		if {($key1=="meteosensor")&&($key2=="private")&&($key3=="typeu")} {
-			set name [lindex $keys 2]
-			set typeu $audace(meteosensor,private,$name,typeu)
-			set port "undefined"
-			if {[info exists audace(meteosensor,private,$name,portu)]==1} {
-				set port audace(meteosensor,private,$name,portu)
-			}
-			lappend res [list $name $typeu $port]
-		}
-	}
-	return $res
+   global audace
+   set array_names [array names audace]
+   set res ""
+   foreach array_name $array_names {
+      set keys [split $array_name ,]
+      set key1 [lindex $keys 0]
+      set key2 [lindex $keys 1]
+      set key3 [lindex $keys 3]
+      if {($key1=="meteosensor")&&($key2=="private")&&($key3=="typeu")} {
+         set name [lindex $keys 2]
+         set typeu $audace(meteosensor,private,$name,typeu)
+         set port "undefined"
+         if {[info exists audace(meteosensor,private,$name,portu)]==1} {
+            set port audace(meteosensor,private,$name,portu)
+         }
+         lappend res [list $name $typeu $port]
+      }
+   }
+   return $res
 }
 
 proc meteosensor_channel { name } {
@@ -291,17 +290,17 @@ proc meteosensor_close { name } {
       unset audace(meteosensor,private,$name,channel)
       unset audace(meteosensor,private,$name,typeu)
    }
-	catch {
-		set names [array names audace]
-		foreach name $names {
-			set keys [split $name ,]
-			set key1 [lindex $keys 0]
-			set key2 [lindex $keys 2]
-			if {($key1=="meteosensor")&&($key2==$name)} {
-				unset audace($name)
-			}
-		}
-	}
+   catch {
+      set names [array names audace]
+      foreach name $names {
+         set keys [split $name ,]
+         set key1 [lindex $keys 0]
+         set key2 [lindex $keys 2]
+         if {($key1=="meteosensor")&&($key2==$name)} {
+            unset audace($name)
+         }
+      }
+   }
 }
 
 proc meteosensor_convert_base { nombre basein baseout } {
@@ -1850,7 +1849,7 @@ proc sentinel_skymonitor_read { {filename ""} } {
          regsub -all %RH $unit "percent" a ; set unit $a
          set texte ""
          if {[string compare $key "TempSkyIR"]==0} {
-				set valraw [expr ($val*1000./762)]
+            set valraw [expr ($val*1000./762)]
             set valcor [format %.2f [expr ($valraw*$gain/1000.-$temp_ext)]]
             set texte "SkyTemp $valcor $unit"
             lappend textes $texte
@@ -2071,18 +2070,18 @@ proc sentinel_tensionV { valint } {
 
 # Conversion of a tension (tensionV) to a temperature expressed in Celsius (tempC):
 proc sentinel_tempC { tensionV } {
-	# From CC
+   # From CC
    set tempC [expr ($tensionV-1.375) / (0.0225)]
-	# From AK
-	set a 44.49
-	set b -61.19
+   # From AK
+   set a 44.49
+   set b -61.19
    set tempC [expr $a*$tensionV+$b]
    return $tempC
 }
 
 # Conversion of a tension (tensionV) to an infrared temperature expressed in Celsius (tempskyC):
 proc sentinel_tempskyC { tensionV } {
-	# - From CC
+   # - From CC
    set t1 -17
    set v1 [expr 1.2+1]
    set t2 23.12
@@ -2090,16 +2089,16 @@ proc sentinel_tempskyC { tensionV } {
    set asl [expr ($t2-$t1)/($v2-$v1)]
    set bsl [expr $t1-($asl*$v1)]
    set tempskyC [expr ($asl*$tensionV) + $bsl]
-	# From AK
-	set a 89.34
-	set b -87.10
+   # From AK
+   set a 89.34
+   set b -87.10
    set tempskyC [expr $a*$tensionV+$b]
    return $tempskyC
 }
 
 # Conversion of a tension (tensionV) to an sky temperature expressed in Celsius (tempIRC):
 proc sentinel_tempIRC { tensionV } {
-	# - From CC
+   # - From CC
    set B   3964
    set Ro  30000
    set R1  30000
@@ -2108,36 +2107,36 @@ proc sentinel_tempIRC { tensionV } {
    set Gain 1.9
    set vp [expr 2.806+0.5]
    set vm [expr 0.447+0.5]
-	return 0
+   return 0
    set A [ expr log( 1./$Ro * (((($vp-$vm)*$R1)/(($tensionV/$Gain)-$vm))-$R1)) ]
    set tempIRC [expr $B / ( $A + ($B/($T0+$ta)) ) - $ta ]
-	# From AK
-	set a 85.63
-	set b -63.38
+   # From AK
+   set a 85.63
+   set b -63.38
    set tempIRC [expr $a*$tensionV+$b]
    return $tempIRC
 }
 
 # Conversion of a tension (tensionV) to a humidity expressed in percents (humidity):
 proc sentinel_humidity { tensionV } {
-	# - From CC
+   # - From CC
    set gainRH 1.25 ; #  (gain ampli)
    set v1RH  4     ; #  (100% = 4V)
    set v0RH  0.8   ; #  (0% = 0.8V)
    set humidity [ expr ( $tensionV/$gainRH - $v0RH ) / ($v1RH - $v0RH) * 100]
-	# From AK sur CC
-	set a 101.01
-	set b -25.61
-	# From AK
-	set a 333.
-	set b -130
+   # From AK sur CC
+   set a 101.01
+   set b -25.61
+   # From AK
+   set a 333.
+   set b -130
    set humidity [expr $a*$tensionV+$b]
    return $humidity
 }
 
 # Conversion of a tension (tensionV) to a power level expressed in Volts ? (power):
 proc sentinel_power { tensionV } {
-	# From CC validated by AK
+   # From CC validated by AK
    set power [expr $tensionV*3*1.07]
    return $power
 }
@@ -2177,12 +2176,12 @@ proc sentinel_read { f name } {
    set decimals [lindex $res 1]
    set datas [lrange $decimals 2 end]
    #console::affiche_resultat "1B datas = $datas\n"
-	set ext_temp_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 1] [lindex $datas 0] ] ]
+   set ext_temp_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 1] [lindex $datas 0] ] ]
    set texte "Voltage_ext_temp [format %.3f $ext_temp_volt]" ; lappend texte "Volts"
    lappend textes $texte
    set ext_temp  [sentinel_tempC    [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 1] [lindex $datas 0] ] ] ]
    set power     [sentinel_power    [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 3] [lindex $datas 2] ] ] ]
-	set humidity_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 5] [lindex $datas 4] ] ]
+   set humidity_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 5] [lindex $datas 4] ] ]
    set texte "Voltage_humidity [format %.3f $humidity_volt]" ; lappend texte "Volts"
    lappend textes $texte
    set humidity  [sentinel_humidity [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 5] [lindex $datas 4] ] ] ]
@@ -2195,12 +2194,12 @@ proc sentinel_read { f name } {
    set date [mc_date2iso8601 [list $y $m $d $hh $mm $ss]]
    #console::affiche_resultat "Date = $date\n"
    set rain_temp [sentinel_tempC    [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 13] [lindex $datas 12] ] ] ]
-	set sky_temp_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 15] [lindex $datas 14] ] ]
+   set sky_temp_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 15] [lindex $datas 14] ] ]
    set texte "Voltage_sky_temp [format %.3f $sky_temp_volt]" ; lappend texte "Volts"
    lappend textes $texte
    set sky_temp  [sentinel_tempskyC [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 15] [lindex $datas 14] ] ] ]
-	## probleme de log negatif dans la conversion
-	set can_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 17] [lindex $datas 16] ] ]
+   ## probleme de log negatif dans la conversion
+   set can_volt [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 17] [lindex $datas 16] ] ]
    set texte "Voltage_can [format %.3f $can_volt]" ; lappend texte "Volts"
    lappend textes $texte
    set can_temp  [sentinel_tempIRC  [sentinel_tensionV [sentinel_valint 0 0 [lindex $datas 17] [lindex $datas 16] ] ] ]
@@ -2243,31 +2242,31 @@ proc sentinel_read { f name } {
    set decimals [lindex $res 1]
    set datas [lrange $decimals 2 end]
    set valid [sentinel_valint 0 0 [lindex $datas 2] [lindex $datas 1] ]
-	set texte "Wind_valid $valid" ; lappend texte "Integer"
-	lappend textes $texte
+   set texte "Wind_valid $valid" ; lappend texte "Integer"
+   lappend textes $texte
    if {$valid<32767} {
-		#console::affiche_resultat "\ndatas = $datas\n"
-		set valint [sentinel_valint 0 0 0 [lindex $datas 11] ]
+      #console::affiche_resultat "\ndatas = $datas\n"
+      set valint [sentinel_valint 0 0 0 [lindex $datas 11] ]
       set dirwind [sentinel_dirwind $valint]
-		set texte "Integer_dirwind $valint" ; lappend texte "Integer"
-		lappend textes $texte
-		set valint [sentinel_valint 0 0 [lindex $datas 13] [lindex $datas 12] ]
+      set texte "Integer_dirwind $valint" ; lappend texte "Integer"
+      lappend textes $texte
+      set valint [sentinel_valint 0 0 [lindex $datas 13] [lindex $datas 12] ]
       set speedms [sentinel_speedms $valint ]
-		set texte "Integer_speedwind $valint" ; lappend texte "Integer"
-		lappend textes $texte
+      set texte "Integer_speedwind $valint" ; lappend texte "Integer"
+      lappend textes $texte
    } else {
       # --- 33
       set res [sentinel_putget $f { 1D 02 33 }]
       set decimals [lindex $res 1]
       set datas [lrange $decimals 2 end]
-		set valint [sentinel_valint 0 0 [lindex $datas 1] [lindex $datas 0] ]		
+      set valint [sentinel_valint 0 0 [lindex $datas 1] [lindex $datas 0] ]
       set speed_raw $valint
-		set texte "Integer_speedwind $valint" ; lappend texte "Integer"
-		lappend textes $texte
-		set valint [sentinel_valint 0 0 [lindex $datas 3] [lindex $datas 2] ]
+      set texte "Integer_speedwind $valint" ; lappend texte "Integer"
+      lappend textes $texte
+      set valint [sentinel_valint 0 0 [lindex $datas 3] [lindex $datas 2] ]
       set dir_raw   $valint
-		set texte "Integer_dirwind $valint" ; lappend texte "Integer"
-		lappend textes $texte
+      set texte "Integer_dirwind $valint" ; lappend texte "Integer"
+      lappend textes $texte
       set Max_cd 15373
       set Min_Value [expr 4./20*$Max_cd]
       set Scale_speed 30.0 ; # (this is the maximum speed at 20mA in m/s)
@@ -2298,7 +2297,7 @@ proc sentinel_read { f name } {
    set light_freqdiv1 [sentinel_valint 0 0 0 [lindex $datas 5] ]
    #console::affiche_resultat "22 light_gain1 = $light_gain1\n"
    #console::affiche_resultat "22 light_freqdiv1 = $light_freqdiv1\n"
-	set ms 1000 ; # idealement il faut intergrer plusieurs dizaines de secondes la nuit
+   set ms 1000 ; # idealement il faut intergrer plusieurs dizaines de secondes la nuit
    after $ms
    set res [sentinel_putget $f { 1D 02 22 }]
    set decimals [lindex $res 1]
@@ -2308,25 +2307,25 @@ proc sentinel_read { f name } {
    set light_freqdiv2 [sentinel_valint 0 0 0 [lindex $datas 5] ]
    set valid 0
    if {($light_gain2==$light_gain1)&&($light_freqdiv2==$light_freqdiv1)} {
-		#console::affiche_resultat "($light_raw2 - $light_raw1) / ($ms/1000.) * $light_freqdiv1 / $light_gain1\n"
-		# -- nb ticks chaque 1/100 seconde
-		# gain = 1 10 100
-		# freqdiv = 1 2 10 100
+      #console::affiche_resultat "($light_raw2 - $light_raw1) / ($ms/1000.) * $light_freqdiv1 / $light_gain1\n"
+      # -- nb ticks chaque 1/100 seconde
+      # gain = 1 10 100
+      # freqdiv = 1 2 10 100
       set light_ticks [expr ($light_raw2 - $light_raw1) / ($ms/1000.) / (1. * $light_freqdiv1 / $light_gain1) ]
       set texte "light_ticks [format %.4f $light_ticks]" ; lappend texte "tick/100s"
       lappend textes $texte
-		if {$light_ticks>0} {
-			set dark_ticks 0.0025
-			if {$light_ticks<=$dark_ticks} {
-				set light_ticks [expr 1./$light_freqdiv1]
-			}
-			set logflux [expr log10( $light_ticks - $dark_ticks)]
-			if {$logflux>=-5} {
-				set mag0 12.4
-				set mag [expr $mag0 - 2.5*$logflux]
-				set valid 1
-			}
-		}
+      if {$light_ticks>0} {
+         set dark_ticks 0.0025
+         if {$light_ticks<=$dark_ticks} {
+            set light_ticks [expr 1./$light_freqdiv1]
+         }
+         set logflux [expr log10( $light_ticks - $dark_ticks)]
+         if {$logflux>=-5} {
+            set mag0 12.4
+            set mag [expr $mag0 - 2.5*$logflux]
+            set valid 1
+         }
+      }
    }
    if {$valid==1} {
       set texte "SkyBrightness [format %.2f $mag]" ; lappend texte "mag/arcsec2"
