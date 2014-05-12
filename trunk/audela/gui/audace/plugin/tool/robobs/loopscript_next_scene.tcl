@@ -91,7 +91,7 @@ proc obsconditions { coords home jd } {
 
 if {$skylight=="Night"} {
    
-   if {set robobs(meteo,global_check)=="OK"} {
+   if {$robobs(meteo,global_check)=="OK"} {
 
       if {$robobs(planif,mode)=="meridian"} {
          # === MERIDIAN
