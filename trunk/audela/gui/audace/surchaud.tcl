@@ -1391,20 +1391,23 @@ proc set_poly_sia { {bufno 1} } {
    set y [expr $naxis2 -1 ]
    set cpt [put_poly $cpt $x $y $bufno]
 
-   # 3eme ligne Y
-   set x 0
-   for {set y $ypas} {$y < $naxis2} {incr y $ypas} {
+   # 3eme ligne X -
+   set y [expr $naxis2 -1 ]
+   for {set x [expr $naxis1 -1 ]} {$x > 0} {set x [expr $x - $xpas]} {
       set cpt [put_poly $cpt $x $y $bufno]
    }
 
    # 4eme coin
-   set y [expr $naxis2 -1 ]
+   set x 0
+   set y [expr $naxis2 -1]
    set cpt [put_poly $cpt $x $y $bufno]
 
-   # 4eme ligne Y
-   for {set x $xpas} {$x < $naxis1} {incr x $xpas} {
+   # 4eme ligne Y -
+   set x 0
+   for {set y [expr $naxis2 -1]} {$y > 0} {set y [expr $y - $ypas]} {
       set cpt [put_poly $cpt $x $y $bufno]
    }
+
 }
 
 # Fonction de calibration automatique de l'image dans le buffer
