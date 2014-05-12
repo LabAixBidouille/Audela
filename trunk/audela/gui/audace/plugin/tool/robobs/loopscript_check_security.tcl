@@ -48,15 +48,6 @@ if {[info exists robobs(meteo,meteosensor,name)]==1} {
 		lappend keys [lindex $re 0]
 	}
 	# --- 
-	set key Humidity
-	set value_limit_max $robobs(conf,meteostation,humidity_limit_max,value)
-	set k [lsearch -exact $keys $key]
-	set value [lindex [lindex $res $k] 1]
-	if {$value>=$value_limit_max} { 
-		set robobs(meteo,global_check) PB
-		append robobs(meteo,global_comment) " (${key}: $value >= $value_limit_max)"
-	}
-	# --- 
 	set key SkyCover
 	set value_limit_max $robobs(conf,meteostation,cloud_limit_max,value)
 	set k [lsearch -exact $keys $key]
@@ -71,6 +62,25 @@ if {[info exists robobs(meteo,meteosensor,name)]==1} {
 		set robobs(meteo,global_check) PB
 		append robobs(meteo,global_comment) " (${key} = $value)"
 	}
+   set value_skycover $value
+	# --- 
+	set key Humidity
+	set value_limit_max $robobs(conf,meteostation,humidity_limit_max,value)
+	set k [lsearch -exact $keys $key]
+	set value [lindex [lindex $res $k] 1]
+	if {$value>=$value_limit_max} { 
+      if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
+         if {$value_skycover!="Clear"} {
+            # on peut depasser la limite d'humidité si le ciel est Clear
+            set robobs(meteo,global_check) PB
+            append robobs(meteo,global_comment) " (${key}: $value >= $value_limit_max)"
+         }
+      } else {
+         set robobs(meteo,global_check) PB
+         append robobs(meteo,global_comment) " (${key}: $value >= $value_limit_max)"
+      }
+	}
+   
 	# --- 
 	set key WindSpeed
 	set value_limit_max $robobs(conf,meteostation,wind_limit_max,value)
@@ -142,7 +152,7 @@ proc robobs_tel_park {} {
 	   }		
 	}
 	if {$robobs(conf,home,telescope_id,value)=="makes_t60"} {
-		telpark
+		telpark 1
 		::robobs::log "Start park the telescope" 3
 		after 5000
 	}
