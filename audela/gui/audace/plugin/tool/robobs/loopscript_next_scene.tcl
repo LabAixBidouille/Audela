@@ -81,10 +81,11 @@ proc obsconditions { coords home jd } {
    set index [expr int(floor(($jd-$jd0)*86400./$echt))]
    set ligne [lindex $lignes $index]
    set skylevel [lindex $ligne 12]
+   set moon_dist [lindex $ligne 14]
    if {$skylevel<$robobs(conf,skylight,skybrightness,value)} {
       set valid 0
    }
-   ::robobs::log "At [mc_date2iso8601 [lindex [lindex $lignes $index] 0]], skylevel=$skylevel, az=[format %.1f $az] elev=[format %.1f $elev] ha=[format %.1f $ha]"
+   ::robobs::log "At [mc_date2iso8601 [lindex [lindex $lignes $index] 0]], skylevel=$skylevel, az=[format %.1f $az] elev=[format %.1f $elev] ha=[format %.1f $ha] moon_dist=[format %.1f $moon_dist]"
    set skylevel [expr $skylevel-4.]
    return [list $valid $skylevel]
 }
