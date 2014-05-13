@@ -82,7 +82,7 @@ if {[info exists robobs(meteo,meteosensor,name)]==1} {
 	}
    
 	# --- 
-	set key WindSpeed
+	set key WinSpeed
 	set value_limit_max $robobs(conf,meteostation,wind_limit_max,value)
 	set k [lsearch -exact $keys $key]
 	set value [lindex [lindex $res $k] 1]
