@@ -146,16 +146,24 @@ proc affich_vecteur { ra dec dra ddec factor color } {
    $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "$color" -tags cadres -width 1.0 -arrow last
 }
 
-proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 3 } }  {
+proc affich_libcata { { cata "" } { limitmag -1 } { color "red" } { width 3 } }  {
 
    global audace 
 
    set listcatapossible "USNOA2 TYCHO2 UCAC2 UCAC3 UCAC4 PPMX PPMXL 2MASS WFIBC"
 
-   if { $cata == "usnoa2" && $limitmag == -1 && $color == "red" && $width == 3 } {
-      gren_erreur "USAGE : affich_libcata cata limitmag color width \n"
-      gren_erreur "DEFAULT : affich_libcata $cata $limitmag $color $width \n"
-      gren_erreur "CATA POSSIBLE : $listcatapossible\n"
+   if { $cata == "" } {
+      gren_erreur "USAGE : affich_libcata ?Catalogue? ?limitmag? ?color? ?width? \n"
+      gren_erreur "Catalogue possible : $listcatapossible\n"
+      gren_erreur "Exemple : \n"
+      gren_erreur "      affich_libcata USNOA2 -1 \n"
+      gren_erreur " Affiche l usno sans limitation en magnitude\n"
+      gren_erreur "\n"
+      gren_erreur "      affich_libcata TYCHO2 10 blue 6 \n"
+      gren_erreur " Affiche par des ronds bleus les etoiles du catalogue tycho dont la magnitude < 10 \n"
+      gren_erreur "\n"
+      gren_erreur "affich_libcata clean : Efface les ronds\n"
+      return
    }
 
    if { $cata == "clean" } {
