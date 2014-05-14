@@ -1784,16 +1784,20 @@ proc calibwcs_new {args} {
       return $catastar
    } else {
       set line "Usage: \n"
-      append line "calibwcs_new Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m USNO|MICROCAT cat_folder ?delta nmax? ?flux_criterion?\n"
+      append line "calibwcs_new Angle_ra Angle_dec pixsize1_mu pixsize2_mu foclen_m cat_name cat_folder ?delta nmax? ?flux_criterion?\n"
+      append line "\n"
       append line "# ou en utilisant les mots cles du header de l image :\n"
-      append line "calibwcs_new * * * * * USNO|MICROCAT cat_folder ?delta nmax? ?flux_criterion?\n"
+      append line "calibwcs_new * * * * * cat_name cat_folder ?delta nmax? ?flux_criterion?\n"
+      append line "\n"
+      append line "# Parametres catalogues :\n"
+      append line "# cat_name = USNO MICROCAT TYCHO2 UCAC4 \n"
+      append line "\n"
       append line "# Parametres optionels :\n"
       append line "# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)\n"
       append line "# -del_tmp_files 0 : garde tous les fichiers temporaires\n"
       append line "# -yes_visu 0        : ne visualise pas l image a la fin du traitement\n"
       append line "# -yes_visu 1        : visualise l image a la fin du traitement (par defaut)\n"
-      append line "# -maglimit 10       : magnitude limite des etoiles du catalogue (par default aucune limite)\n"
-      append line "# -add_sia             : Ajoute les champs SIA a une image\n"
+      append line "# -add_sia            : Ajoute les champs SIA a une image\n"
       error $line
    }
 }
