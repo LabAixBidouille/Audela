@@ -185,6 +185,10 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    set ::tools_cata::nb 0
    set cata [string toupper $cata]
 
+   set cmd          ""
+   set path         ""
+   set commonfields ""
+      
    if { $cata == "USNOA2" } {
       set cmd          csusnoa2
       set path         $::tools_cata::catalog_usnoa2
@@ -200,32 +204,43 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
       set path         $::tools_cata::catalog_ucac2
       set commonfields { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }
    }
-   if { $cata == "CSUCAC3" } {
+   if { $cata == "UCAC3" } {
       set cmd          csucac3
       set path         $::tools_cata::catalog_ucac3
       set commonfields { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }
    }
-   if { $cata == "CSUCAC4" } {
+   if { $cata == "UCAC4" } {
       set cmd          csucac4
       set path         $::tools_cata::catalog_ucac4
       set commonfields { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }
    }
-   if { $cata == "CSPPMX" } {
+   if { $cata == "PPMX" } {
       set cmd          csppmx
       set path         $::tools_cata::catalog_ppmx
       set commonfields { RAJ2000 DECJ2000 errDec Vmag ErrVmag }
    }
-   if { $cata == "CSPPMXL" } {
-      set cmd          csppmx
+   if { $cata == "PPMXL" } {
+      set cmd          csppmxl
       set path         $::tools_cata::catalog_ppmxl
       set commonfields { RAJ2000 DECJ2000 errDec magR1 0.5 }
    }
-   if { $cata == "cs2mass" } {
+   if { $cata == "2MASS" } {
+      set cmd          cs2mass
+      set path         $::tools_cata::catalog_2mass
+      set commonfields { ra_deg dec_deg err_dec jMag jMagError }
+   }
+   if { $cata == "wfibc" } {
       set cmd          cs2mass
       set path         $::tools_cata::catalog_2mass
       set commonfields { ra_deg dec_deg err_dec jMag jMagError }
    }
    
+   if { $cmd == "" } {
+      gren_erreur "Probleme $cata non reconnu\n"
+      gren_erreur "cata possible : USNOA2 TYCHO2 UCAC2 \n"
+      
+      return
+   }
    
    if { $limitmag == -1} {
       set listsources [$cmd $path $ra $dec $radius]
