@@ -245,25 +245,36 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    } else {
       set listsources [$cmd $path $ra $dec $radius $limitmag 0]
    }
-   gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
    set listsources [::manage_source::set_common_fields $listsources $cata $commonfields]
-   affich_rond $listsources $cata $color $width
-   
-   if { $cata == "usnoa2"} {
-         if { $limitmag == -1} {
-            set listsources [csusnoa2 $::tools_cata::catalog_tycho2 $ra $dec $radius]
-         } else {
-            set listsources [csusnoa2 $::tools_cata::catalog_tycho2 $ra $dec $radius $limitmag 0]
-         }
-         gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
-         set listsources [::manage_source::set_common_fields $listsources USNOA2 { RAdeg DEdeg 5.0 VT e_VT }]
-         set ::tools_cata::nb [::manage_source::get_nb_sources_by_cata $listsources USNOA2]
-         affich_rond $listsources USNOA2 $color $width
-   }
-   
-   
 
+   set cf [lindex $listsources 0]
+   set sources [lindex $listsources 1]
+   set newsources ""
    
+   foreach s $sources {
    
+      set lcf [lindex $s 0 1]
+      set ra  [lindex $lcf 0]
+      set dec [lindex $lcf 1]
+
+      set img0_radec [ list $ra $dec ]
+      set img0_xy [ buf$audace(bufNo) radec2xy $img0_radec ]
+      set can0_xy [ ::audace::picture2Canvas $img0_xy ]
+
+      set x [lindex $img0_xy 0]
+      set y [lindex $img0_xy 1]
+      
+      if { $x > 0 && $x<$naxis1 && $y>0 && $y < $naxis2} {
+         lappend newsources $s
+      } else {
+         continue
+      }
+
+       
+   }
+   set listsources [list $cf $newsources]
+   gren_info "nb sources = [::manage_source::get_nb_sources_rollup $listsources]\n"
+   affich_rond $listsources $cata $color $width
+
 }
 
