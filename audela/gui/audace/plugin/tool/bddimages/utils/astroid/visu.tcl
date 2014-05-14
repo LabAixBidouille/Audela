@@ -183,16 +183,69 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    gren_info "radius = $radius\n"
 
    set ::tools_cata::nb 0
+   set cata [string toupper $cata]
 
-   if { $cata == "tycho2"} {
+   if { $cata == "USNOA2" } {
+      set cmd          csusnoa2
+      set path         $::tools_cata::catalog_usnoa2
+      set commonfields { ra_deg dec_deg 5.0 magR 0.5 }
+   }
+   if { $cata == "TYCHO2" } {
+      set cmd          cstycho2
+      set path         $::tools_cata::catalog_tycho2
+      set commonfields { RAdeg DEdeg 5.0 VT e_VT }
+   }
+   if { $cata == "UCAC2" } {
+      set cmd          csucac2
+      set path         $::tools_cata::catalog_ucac2
+      set commonfields { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }
+   }
+   if { $cata == "CSUCAC3" } {
+      set cmd          csucac3
+      set path         $::tools_cata::catalog_ucac3
+      set commonfields { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }
+   }
+   if { $cata == "CSUCAC4" } {
+      set cmd          csucac4
+      set path         $::tools_cata::catalog_ucac4
+      set commonfields { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }
+   }
+   if { $cata == "CSPPMX" } {
+      set cmd          csppmx
+      set path         $::tools_cata::catalog_ppmx
+      set commonfields { RAJ2000 DECJ2000 errDec Vmag ErrVmag }
+   }
+   if { $cata == "CSPPMXL" } {
+      set cmd          csppmx
+      set path         $::tools_cata::catalog_ppmxl
+      set commonfields { RAJ2000 DECJ2000 errDec magR1 0.5 }
+   }
+   if { $cata == "cs2mass" } {
+      set cmd          cs2mass
+      set path         $::tools_cata::catalog_2mass
+      set commonfields { ra_deg dec_deg err_dec jMag jMagError }
+   }
+   
+   
+   if { $limitmag == -1} {
+      set listsources [$cmd $path $ra $dec $radius]
+   } else {
+      set listsources [$cmd $path $ra $dec $radius $limitmag 0]
+   }
+   gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
+   set listsources [::manage_source::set_common_fields $listsources $cata $commonfields]
+   affich_rond $listsources $cata $color $width
+   
+   if { $cata == "usnoa2"} {
          if { $limitmag == -1} {
-            set listsources [cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius]
+            set listsources [csusnoa2 $::tools_cata::catalog_tycho2 $ra $dec $radius]
          } else {
-            set listsources [cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius $limitmag 0]
+            set listsources [csusnoa2 $::tools_cata::catalog_tycho2 $ra $dec $radius $limitmag 0]
          }
-         set listsources [::manage_source::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5.0 VT e_VT }]
-         set ::tools_cata::nb [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
-         affich_rond $listsources TYCHO2 $color $width
+         gren_info "rollup = [::manage_source::get_nb_sources_rollup $listsources]\n"
+         set listsources [::manage_source::set_common_fields $listsources USNOA2 { RAdeg DEdeg 5.0 VT e_VT }]
+         set ::tools_cata::nb [::manage_source::get_nb_sources_by_cata $listsources USNOA2]
+         affich_rond $listsources USNOA2 $color $width
    }
    
    
