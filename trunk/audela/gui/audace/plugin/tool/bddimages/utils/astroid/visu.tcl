@@ -238,7 +238,6 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    if { $cmd == "" } {
       gren_erreur "Probleme $cata non reconnu\n"
       gren_erreur "cata possible : USNOA2 TYCHO2 UCAC2 \n"
-      
       return
    }
    
@@ -265,7 +264,6 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    
    
 
-   gren_info "nb = $::tools_cata::nb\n"
    
    
 }
