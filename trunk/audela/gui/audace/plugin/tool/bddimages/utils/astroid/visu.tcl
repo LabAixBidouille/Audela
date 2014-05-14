@@ -151,10 +151,6 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    global audace 
 
    set listcatapossible "USNOA2 TYCHO2 UCAC2 UCAC3 UCAC4 PPMX PPMXL 2MASS WFIBC"
-   gren_info "catalog = $cata\n"
-   gren_info "limitmag = $limitmag\n"
-   gren_info "color = $color\n"
-   gren_info "width = $width\n"
 
    if { $cata == "usnoa2" && $limitmag == -1 && $color == "red" && $width == 3 } {
       gren_erreur "USAGE : affich_libcata cata limitmag color width \n"
@@ -162,12 +158,16 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
       gren_erreur "CATA POSSIBLE : $listcatapossible\n"
    }
 
-   
    if { $cata == "clean" } {
       gren_info "cleanmark\n"
       cleanmark
       return
    }
+
+   gren_info "catalog = $cata\n"
+   gren_info "limitmag = $limitmag\n"
+   gren_info "color = $color\n"
+   gren_info "width = $width\n"
 
    set ra  [lindex [ buf$audace(bufNo) getkwd "CRVAL1"] 1]
    set dec [lindex [ buf$audace(bufNo) getkwd "CRVAL2"] 1]
