@@ -156,6 +156,8 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
    gren_info "width = $width\n"
    
    if { $cata == "clean" } {
+      gren_info "cleanmark\n"
+      cleanmark
       return
    }
 
