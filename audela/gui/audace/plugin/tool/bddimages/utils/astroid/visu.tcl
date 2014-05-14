@@ -146,7 +146,7 @@ proc affich_vecteur { ra dec dra ddec factor color } {
    $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "$color" -tags cadres -width 1.0 -arrow last
 }
 
-proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 3 } } {
+proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 3 } {} {
 
    global audace 
 
@@ -159,8 +159,8 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
       return
    }
 
-   set ra  [lindex [ buf$audace(bufNo) getkwd "RA"]  1]
-   set dec [lindex [ buf$audace(bufNo) getkwd "DEC"] 1]
+   set ra  [lindex [ buf$audace(bufNo) getkwd "CRVAL1"]  1]
+   set dec [lindex [ buf$audace(bufNo) getkwd "CRVAL2"] 1]
 
    set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
 
