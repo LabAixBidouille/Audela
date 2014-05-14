@@ -150,10 +150,18 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
 
    global audace 
 
+   set listcatapossible "USNOA2 TYCHO2 UCAC2 UCAC3 UCAC4 PPMX PPMXL 2MASS WFIBC"
    gren_info "catalog = $cata\n"
    gren_info "limitmag = $limitmag\n"
    gren_info "color = $color\n"
    gren_info "width = $width\n"
+
+   if { $cata == "usnoa2" && $limitmag == -1 && $color == "red" && $width == 3 } {
+      gren_erreur "USAGE : affich_libcata cata limitmag color width \n"
+      gren_erreur "DEFAULT : affich_libcata $cata $limitmag $color $width \n"
+      gren_erreur "CATA POSSIBLE : $listcatapossible\n"
+   }
+
    
    if { $cata == "clean" } {
       gren_info "cleanmark\n"
@@ -235,10 +243,9 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
       set path         $::tools_cata::catalog_wfibc
       set commonfields { RA_deg DEC_deg error_Delta magR error_magR }
    }
-   
    if { $cmd == "" } {
       gren_erreur "Probleme $cata non reconnu\n"
-      gren_erreur "cata possible : USNOA2 TYCHO2 UCAC2 UCAC3 UCAC4 PPMX PPMXL 2MASS WFIBC\n"
+      gren_erreur "cata possible : $listcatapossible\n"
       return
    }
    
