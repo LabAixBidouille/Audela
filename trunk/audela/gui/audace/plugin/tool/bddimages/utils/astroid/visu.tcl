@@ -145,3 +145,60 @@ proc affich_vecteur { ra dec dra ddec factor color } {
    #--- trace du repere
    $audace(hCanvas) create line [lindex $can0_xy 0] [lindex $can0_xy 1] [lindex $can1_xy 0] [lindex $can1_xy 1] -fill "$color" -tags cadres -width 1.0 -arrow last
 }
+
+proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 3 } } {
+
+   global audace 
+   cleanmark
+
+   gren_info "catalog = $cata\n"
+   gren_info "limitmag = $limitmag\n"
+   gren_info "color = $color\n"
+   gren_info "width = $width\n"
+   
+   if { $cata == "clean" } {
+      return
+   }
+
+   set ra  [lindex [ buf$audace(bufNo) getkwd "RA"]  1]
+   set dec [lindex [ buf$audace(bufNo) getkwd "DEC"] 1]
+
+   set tabkey [::bdi_tools_image::get_tabkey_from_buffer]
+
+   set naxis1 [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+   set naxis2 [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+   set scale_x [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+   set scale_y [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+
+   set lcd ""
+   lappend lcd [lindex [::bddimages_liste::lget $tabkey CD1_1] 1]
+   lappend lcd [lindex [::bddimages_liste::lget $tabkey CD1_2] 1]
+   lappend lcd [lindex [::bddimages_liste::lget $tabkey CD2_1] 1]
+   lappend lcd [lindex [::bddimages_liste::lget $tabkey CD2_2] 1]
+   set mscale [::math::statistics::max $lcd]
+   set radius [::tools_cata::get_radius $naxis1 $naxis2 $mscale $mscale]
+
+   gren_info "ra = $ra\n"
+   gren_info "dec = $dec\n"
+   gren_info "radius = $radius\n"
+
+   set ::tools_cata::nb 0
+
+   if { $cata == "tycho2"} {
+         if { $limitmag == -1} {
+            set listsources [cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius]
+         } else {
+            set listsources [cstycho2 $::tools_cata::catalog_tycho2 $ra $dec $radius $limitmag 0]
+         }
+         set listsources [::manage_source::set_common_fields $listsources TYCHO2 { RAdeg DEdeg 5.0 VT e_VT }]
+         set ::tools_cata::nb [::manage_source::get_nb_sources_by_cata $listsources TYCHO2]
+         affich_rond $listsources TYCHO2 $color $width
+   }
+   
+   
+
+   gren_info "nb = $::tools_cata::nb\n"
+   
+   
+}
+
