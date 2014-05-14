@@ -149,7 +149,6 @@ proc affich_vecteur { ra dec dra ddec factor color } {
 proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 3 } } {
 
    global audace 
-   cleanmark
 
    gren_info "catalog = $cata\n"
    gren_info "limitmag = $limitmag\n"
@@ -229,15 +228,15 @@ proc affich_libcata { { cata "usnoa2" } { limitmag -1 } { color "red" } { width 
       set path         $::tools_cata::catalog_2mass
       set commonfields { ra_deg dec_deg err_dec jMag jMagError }
    }
-   if { $cata == "wfibc" } {
-      set cmd          cs2mass
-      set path         $::tools_cata::catalog_2mass
-      set commonfields { ra_deg dec_deg err_dec jMag jMagError }
+   if { $cata == "WFIBC" } {
+      set cmd          cswfibc
+      set path         $::tools_cata::catalog_wfibc
+      set commonfields { RA_deg DEC_deg error_Delta magR error_magR }
    }
    
    if { $cmd == "" } {
       gren_erreur "Probleme $cata non reconnu\n"
-      gren_erreur "cata possible : USNOA2 TYCHO2 UCAC2 \n"
+      gren_erreur "cata possible : USNOA2 TYCHO2 UCAC2 UCAC3 UCAC4 PPMX PPMXL 2MASS WFIBC\n"
       return
    }
    
