@@ -375,7 +375,7 @@ namespace eval ::console {
             error "action must be open|close|put|get|putget"
          }
       } else {
-         error "Usage: console::client open|close|put args"
+         error "Usage: console::client open|close|put|get|putget args"
       }
    }
 
