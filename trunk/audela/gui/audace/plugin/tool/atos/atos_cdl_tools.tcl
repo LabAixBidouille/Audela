@@ -1763,7 +1763,7 @@ namespace eval ::atos_cdl_tools {
       if {$selectbutton=="raised"} { return }
 
       # le bouton valider doit etre actif "vert"
-      gren_info "validbutton = $validbutton \n"
+
       #if {$validbutton=="raised"} { return }
       
       
@@ -1960,7 +1960,7 @@ namespace eval ::atos_cdl_tools {
          plotxy::sethandler $h3 [list -color blue -linewidth 0]
       }
       if {[llength $x]>0} {
-         set h1 [::plotxy::plot $x $y ro. 1 ]
+         set h1 [::plotxy::plot $x $y ro. 2 ]
          plotxy::sethandler $h1 [list -color black -linewidth 1]
       }
 
