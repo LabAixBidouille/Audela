@@ -166,9 +166,11 @@ namespace eval ::atos_cdl_tools {
          }
          incr idfile
       }
+      set filefreemat "${racinefilename}${idd}.freemat.dat"
 
       ::console::affiche_resultat "Sauvegarde dans ${filename} ...\n"
       set f1 [open $filename "w"]
+      set f2 [open $filefreemat "w"]
       puts $f1 "# ** atos - Audela - Linux  * "
       puts $f1 "# FPS 25"
       set line "idframe,"
@@ -310,14 +312,20 @@ namespace eval ::atos_cdl_tools {
             append line "$::atos_cdl_tools::mesure($idframe,img_xsize),"
             append line "$::atos_cdl_tools::mesure($idframe,img_ysize)"
 
-
             puts $f1 $line
+            
+            # Pour freemat
+            if {$::atos_cdl_tools::mesure($idframe,obj_fint)>0 && $::atos_cdl_tools::mesure($idframe,ref_fint) > 0} {
+               puts $f2 "$idframe $::atos_cdl_tools::mesure($idframe,obj_fint) $::atos_cdl_tools::mesure($idframe,ref_fint)"
+            }
+            
             incr cpt
          }
 
       }
 
       close $f1
+      close $f2
       ::console::affiche_resultat "Nb of saved frames = $cpt\n.. Fin ..\n"
 
    }
@@ -889,7 +897,7 @@ namespace eval ::atos_cdl_tools {
          incr ::atos_tools::cur_idframe [expr $sum-1]
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin
       } else {
-         ::atos_tools::next_image $visuNo
+         ::atos_tools::next_image $visuNo 
       
       }
 
@@ -1081,12 +1089,13 @@ namespace eval ::atos_cdl_tools {
    #
    proc ::atos_cdl_tools::start { visuNo } {
 
-      set tt0 [clock clicks -milliseconds]
+      set bufNo [::confVisu::getBufNo $visuNo]
 
       set frm_info_load    $::atos_gui::frame(info_load)
       set frm_start        $::atos_gui::frame(buttons,start)
       set photometrie      $::atos_gui::frame(photometrie)
       set geometrie        $::atos_gui::frame(geometrie)
+      set correction       $::atos_gui::frame(correction)
 
       set frm_image        $::atos_gui::frame(image,values) 
       set frm_objet        $::atos_gui::frame(object,values) 
@@ -1095,6 +1104,7 @@ namespace eval ::atos_cdl_tools {
       set select_image     $::atos_gui::frame(image,buttons).select
       set select_objet     $::atos_gui::frame(object,buttons).select
       set select_reference $::atos_gui::frame(reference,buttons).select
+
 
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]
@@ -1121,6 +1131,42 @@ namespace eval ::atos_cdl_tools {
       $frm_start configure -relief sunken
       $frm_start configure -command " ::atos_cdl_tools::stop $visuNo"
 
+
+      set tt0 [clock clicks -milliseconds]
+
+      # Traitement des darks
+      set novisu 0
+      set okdark 0
+      if {$::atos_cdl_tools::usedark } {
+         set masterdark [$correction.dark_path get]
+         if {[file exists $masterdark]} {
+            set okdark 1
+            set novisu 1
+            loadima $masterdark
+            set stat [buf$bufNo stat]
+            set meandark [format "%.0f" [lindex $stat 4]]
+            gren_info "Correction par le Darks actif\n"
+            gren_info "file = $masterdark\n"
+            gren_info "meandark = $meandark\n"
+         }
+      }
+      # Traitement des flats
+      set okflat 0
+      if {$::atos_cdl_tools::useflat } {
+         set masterflat [$correction.flat_path get]
+         if {[file exists $masterflat]} {
+            set okflat 1
+            set novisu 1
+            loadima $masterflat
+            set stat [buf$bufNo stat]
+            set meanflat [format "%.0f" [lindex $stat 4]]
+            gren_info "Correction par le Flat actif\n"
+            gren_info "file = $masterflat\n"
+            gren_info "meanflat = $meanflat\n"
+         }
+      }
+
+
       set err [catch {::atos_cdl_tools::suivi_init} msg]
       if {$err} {
          gren_erreur "Erreur : $msg\n"
@@ -1130,6 +1176,7 @@ namespace eval ::atos_cdl_tools {
       #set ::atos_tools::cur_idframe [expr $::atos_tools::frame_begin - 1]
       #set ::atos_tools::cur_idframe [expr $::atos_tools::cur_idframe - 1]
       #::console::affiche_resultat "deb cur_idframe == $::atos_tools::cur_idframe\n"
+      set tt0 [clock clicks -milliseconds]
 
       while {$::atos_cdl_tools::sortie == 0} {
          
@@ -1145,7 +1192,20 @@ namespace eval ::atos_cdl_tools {
          
          #::console::affiche_resultat "cur_idframe == $::atos_tools::cur_idframe\n"
 
-         ::atos_cdl_tools::start_next_image $visuNo $sum $bin
+         ::atos_cdl_tools::start_next_image $visuNo $sum $bin $novisu
+         
+         if {$okdark} {
+            buf$bufNo sub $masterdark $meandark
+         }
+         if {$okflat} {
+            buf$bufNo div $masterflat $meanflat
+         }
+         if {$okflat||$okdark} {
+            # set stat [buf$bufNo stat]
+            # set seuilh [format "%.0f" [lindex $stat 0]]
+            # set seuilb [format "%.0f" [lindex $stat 1]]
+            visu$visuNo disp
+         }
 
          if {$::atos_cdl_tools::log} { ::console::affiche_resultat "start1 cur_idframe = $::atos_tools::cur_idframe - $idframe\n" }
          
@@ -1199,7 +1259,7 @@ namespace eval ::atos_cdl_tools {
          if {$sum>1} {incr ::atos_tools::cur_idframe [expr $sum-1]}
 
          if {$::atos_cdl_tools::sortie == 1} {
-            ::atos_cdl_tools::start_next_image $visuNo $sum $bin
+            ::atos_cdl_tools::start_next_image $visuNo $sum $bin $novisu
          }
       }
 
@@ -1223,16 +1283,20 @@ namespace eval ::atos_cdl_tools {
    }
 
 
-   proc ::atos_cdl_tools::start_next_image { visuNo sum bin } {
+   proc ::atos_cdl_tools::start_next_image { visuNo sum bin novisu } {
 
       #::console::affiche_resultat "sn start cur_idframe = $::atos_tools::cur_idframe\n"
       set geometrie $::atos_gui::frame(geometrie)
       set relief [$geometrie.buttons.launch cget -relief]
 
       if {$relief=="raised"} {
-
-         ::atos_tools::next_image $visuNo
-
+         
+         if {$novisu} {
+            ::atos_tools::next_image $visuNo novisu
+         } else {
+            ::atos_tools::next_image $visuNo
+         }
+         
       } else {
 
          if {$sum>1} {
@@ -1802,7 +1866,9 @@ namespace eval ::atos_cdl_tools {
       set x_interpol ""
       set y_verif    ""
       set y_interpol ""
- 
+      set tabfluxr   ""
+      
+      set cptnull 0
       set cpt 0
       for {set idframe 1} {$idframe <= $::atos_tools::frame_end} {incr idframe } {
 
@@ -1839,7 +1905,8 @@ namespace eval ::atos_cdl_tools {
                    if {$::atos_cdl_tools::mesure($idframe,ref_fint)=="?"} {continue}
                    set fluxr $::atos_cdl_tools::mesure($idframe,ref_fint)
                } else { continue }
-               set flux [expr $fluxo/$fluxr * 1000]
+               set flux [expr $fluxo/$fluxr]
+               lappend tabfluxr $fluxr
             }
             default {
                gren_erreur "ici $idframe $type\n"
@@ -1848,7 +1915,8 @@ namespace eval ::atos_cdl_tools {
          }
          if {$jd=="?"} {continue}
          if {$flux=="?"} {continue}
-         if {$flux<0} {continue}
+#         if {$flux<0} {continue}
+         if {$flux<=0} {incr cptnull}
 
          if {[info exists ::atos_cdl_tools::mesure($idframe,$type,verif)]} {
 
@@ -1878,7 +1946,11 @@ namespace eval ::atos_cdl_tools {
          }
 
       }
-
+      if { [llength $tabfluxr] > 0 } {
+         set meanr [::math::statistics::mean $tabfluxr]
+         set y [::math::statistics::map a $y {$a*$meanr}]
+      }
+      
       if {[llength $x_verif]>0} {
          set h2 [::plotxy::plot $x_verif $y_verif ro. 2 ]
          plotxy::sethandler $h2 [list -color green -linewidth 0]
@@ -1890,6 +1962,15 @@ namespace eval ::atos_cdl_tools {
       if {[llength $x]>0} {
          set h1 [::plotxy::plot $x $y ro. 1 ]
          plotxy::sethandler $h1 [list -color black -linewidth 1]
+      }
+
+      gren_info "nb mesure dont Flux NULL : $cptnull\n"
+      if {[llength $x]>0} {
+         set mean  [format "%.1f" [::math::statistics::mean $y] ]
+         set stdev [format "%.1f" [::math::statistics::stdev $y] ]
+         set sb    [format "%.1f" [ expr $mean / $stdev] ] 
+         gren_info "Flux $type : moyenne : $mean Ecart type : $stdev S/B : $sb\n"
+         ::plotxy::title "Courbe du temps pour $type\nFlux moyen : $mean Ecart type : $stdev S/B : $sb" 
       }
 
    }
@@ -1927,6 +2008,7 @@ namespace eval ::atos_cdl_tools {
          if {$jd == ""} {set jd $idframe}
 
          # object 
+
                if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
                    && [info exists ::atos_cdl_tools::mesure($idframe,obj_fint)]} {
 
@@ -1935,6 +2017,7 @@ namespace eval ::atos_cdl_tools {
                } else { continue }
 
          # reference 
+
                if {[info exists ::atos_ocr_tools::timing($idframe,jd)] \
                    && [info exists ::atos_cdl_tools::mesure($idframe,ref_fint)]} {
 
@@ -1985,6 +2068,14 @@ namespace eval ::atos_cdl_tools {
       if {[llength $x]>0} {
          set h1 [::plotxy::plot $x $y ro. 1 ]
          plotxy::sethandler $h1 [list -color black -linewidth 1]
+      }
+
+      if {[llength $x]>0} {
+         set mean  [::math::statistics::mean $y]
+         set stdev [::math::statistics::stdev $y]
+         set sb    [format "%.1f" [ expr $mean / $stdev] ] 
+         gren_info "Normal Flux : moyenne : $mean Ecart type : $stdev S/B : $sb\n"
+         ::plotxy::title "Courbe Normalisée du temps pour $type\nFlux Normal moyen : $mean Ecart type : $stdev S/B : $sb" 
       }
 
    }

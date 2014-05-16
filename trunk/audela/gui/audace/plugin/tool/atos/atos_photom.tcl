@@ -154,13 +154,14 @@ proc photom_methode { xsm ysm delta bufNo} {
       set fondmed     [lindex $valeurs 1]
       set fondmoy     [lindex $valeurs 2]
       set sigmafond   [lindex $valeurs 3]
+      set nbpix       [lindex $valeurs 4]
       set errflux 0
 
       set valeurs     [buf$bufNo stat [list $xs0 $ys0 $xs1 $ys1] ]
       set pixmax      [lindex $valeurs 2]
       set intensite   [expr $pixmax - $fondmed]
 
-      set snint       [expr $fluxintegre / $sigmafond]
+      set snint       [expr $fluxintegre / sqrt ($fluxintegre +  $nbpix * $fondmoy)]
       set snpx        [expr $intensite / $sigmafond]
 
       #::console::affiche_erreur "M3 r1 r2 r3 flux sigma = $r1 $r2 $r3 $flux $sigma\n"

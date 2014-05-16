@@ -58,7 +58,6 @@ namespace eval ::atos_tools_avi {
    }
 
 
-
    proc ::atos_tools_avi::select { visuNo } {
 
       global audace panneau

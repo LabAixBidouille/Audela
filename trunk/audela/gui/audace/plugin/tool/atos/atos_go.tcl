@@ -138,30 +138,33 @@ proc ::atos::ressource {  } {
 
    #--- Chargement des captions
    source [ file join $audace(rep_plugin) tool atos atos_go.cap ]
+   source [ file join $audace(rep_plugin) tool atos atos_flatdark.cap ]
 
    #--- Chargement des fichiers auxiliaires
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_acq.tcl            ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl.tcl            ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_tools.tcl      ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_gui.tcl        ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_extraction.tcl     ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_go.tcl             ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr_gui.tcl        ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr_tools.tcl      ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr.tcl            ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_photom.tcl         ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_setup.tcl          ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_tools.tcl          ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_tools_avi.tcl      ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_tools_fits.tcl     ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_verif.tcl          ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_tools.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_gui.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_acq.tcl              ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl.tcl              ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_tools.tcl        ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_cdl_gui.tcl          ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_extraction.tcl       ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_go.tcl               ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr_gui.tcl          ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr_tools.tcl        ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_ocr.tcl              ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_photom.tcl           ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_setup.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_tools.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_tools_avi.tcl        ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_tools_fits.tcl       ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_verif.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_tools.tcl   ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_gui.tcl     ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_analysis_gui_ihm.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos test.tcl                ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_gui.tcl            ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos test.tcl                  ]\"" 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_gui.tcl              ]\"" 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_flatdark.tcl         ]\"" 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool atos atos_flatdark_gui.tcl     ]\"" 
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bddimages_cdl.tcl    ]\""
 
 }
 
@@ -297,6 +300,22 @@ proc ::atos::BuildIF { visuNo } {
             -side top -anchor w \
             -expand 0
          DynamicHelp::add $This.fra1.extract -text $caption(atos_go,extraction)
+
+         if { $::atos::parametres(atos,$visuNo,mode_debug)==1 } {
+
+            #--- Creation du bouton
+            image create photo .flatdark -format PNG -file [ file join $audace(rep_plugin) tool atos img flatdark.png ]
+            button $This.fra1.flatdark -image .flatdark\
+               -borderwidth 2 -width 48 -height 48 -compound center \
+               -command "::atos_flatdark::run $visuNo $base.atos_flatdark"
+            pack $This.fra1.flatdark \
+               -in $This.fra1 \
+               -side top -anchor w \
+               -expand 0
+            DynamicHelp::add $This.fra1.flatdark -text $caption(atos_go,flatdark)
+
+         }
+
 
          #--- Creation du bouton
          image create photo .time -format PNG -file [ file join $audace(rep_plugin) tool atos img time.png ]

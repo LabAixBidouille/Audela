@@ -109,7 +109,151 @@ namespace eval ::atos_cdl_gui {
 
    }
 
+   #
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc ::atos_cdl_gui::correction_preview { visuNo } {
+      
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
+      set correction $::atos_gui::frame(correction)
+      
+      saveima tmp_cdl_img
+      
+      # Traitement des darks
+      set okdark 0
+      if {$::atos_cdl_tools::usedark } {
+         set masterdark [$correction.dark_path get]
+         if {[file exists $masterdark]} {
+            set okdark 1
+            loadima $masterdark
+            set stat [buf$bufNo stat]
+            set meandark [format "%.0f" [lindex $stat 4]]
+            gren_info "Correction par le Darks actif\n"
+            gren_info "file = $masterdark\n"
+            gren_info "meandark = $meandark\n"
+         }
+      }
+      # Traitement des flats
+      set okflat 0
+      if {$::atos_cdl_tools::useflat } {
+         set masterflat [$correction.flat_path get]
+         if {[file exists $masterflat]} {
+            set okflat 1
+            loadima $masterflat
+            set stat [buf$bufNo stat]
+            set meanflat [format "%.0f" [lindex $stat 4]]
+            gren_info "Correction par le Flat actif\n"
+            gren_info "file = $masterflat\n"
+            gren_info "meanflat = $meanflat\n"
+         }
+      }
 
+      loadima tmp_cdl_img
+      
+      if {$okdark} {
+         buf$bufNo sub $masterdark $meandark
+      }
+      if {$okflat} {
+         buf$bufNo div $masterflat $meanflat
+      }
+      if {$okflat||$okdark} {
+         visu$visuNo disp
+      } else {
+         gren_erreur "no preview"
+      }
+
+      file delete -force tmp_cdl_img   
+      
+   }
+
+
+   #
+   # Fonction appellee lors de l'appui sur le bouton '...'
+   # selectionne la video pour les flat ou les dark
+   #
+   proc ::atos_cdl_gui::select_file { visuNo type } {
+
+      global audace
+
+      set frm $::atos_gui::frame($type)
+      
+      set bufNo [ visu$visuNo buf ]
+      
+      if { $::atos_tools::traitement == "fits" } {
+         gren_erreur "TODO\n"
+      }
+      if { $::atos_tools::traitement == "avi" } {
+         set filename [ ::tkutil::box_load_avi $frm $audace(rep_images) $bufNo "1" ]
+      }
+      
+      $frm.path delete 0 end
+      $frm.path insert 0 $filename
+      
+      return 0
+   }
+
+   #
+   # Appuie sur le bouton Selection ... de USe Dark ou Flat
+   #
+   proc ::atos_cdl_gui::select_master { visuNo type } {
+
+      set bufNo [ visu$visuNo buf ]
+      set corr $::atos_gui::frame(correction)
+   
+      set master [::tkutil::box_load $::atos_gui::frame(base) [pwd] $bufNo "1"]
+      if {[file exists $master]} {
+         $corr.${type}_path delete 0 end
+         $corr.${type}_path insert 0 $master
+         gren_info "Use $master\n"
+      }
+
+
+   }
+   #
+   # Fonction appellee lors de l'appui sur le check button flat ou dark
+   #
+   proc ::atos_cdl_gui::usedf { visuNo type } {
+
+
+      set corr $::atos_gui::frame(correction)
+
+      gren_info "usedf $type $::atos_cdl_tools::useflat $::atos_cdl_tools::usedark\n"
+      
+      if {$type == "dark" && $::atos_cdl_tools::usedark } {
+         set masterdark [::atos_cdl_gui::get_filename_master $visuNo $type]
+         if {[file exists $masterdark]} {
+            gren_info "masterdark = $masterdark exists\n"
+         } else {
+            gren_erreur "masterdark = $masterdark doesnt exist\n"
+         }
+         #$corr.dark_path delete 0 end
+         #$corr.dark_path insert 0 $masterdark
+      }
+      
+   }
+
+   #
+   # Fournit le nom du fichier Master (Dark ou Flat) 
+   #
+   proc ::atos_cdl_gui::get_filename_master { visuNo df } {
+
+      set bufNo [::confVisu::getBufNo $visuNo]
+      set ext   [buf$bufNo extension]
+
+      if { $::atos_tools::traitement=="fits" } {
+         set filename [file join ${::atos_tools::destdir} "${::atos_tools::prefix}"]
+      }
+
+      if { $::atos_tools::traitement=="avi" }  {
+         set filename $::atos_tools::avi_filename
+         if { ! [file exists $filename] } {
+         ::console::affiche_erreur "Fichier AVI introuvable!\n"
+         }
+      }
+
+      return "${filename}.master.${df}${ext}"
+
+   }
 
    #
    # Creation de l'interface graphique
@@ -117,10 +261,11 @@ namespace eval ::atos_cdl_gui {
    proc ::atos_cdl_gui::createdialog { visuNo this } {
 
       package require Img
+
+      global caption panneau atosconf color audace
       
       psf_init $visuNo
       set ::atos_cdl_tools::compute_image_first ""
-      global caption panneau atosconf color audace
 
       #--- Determination de la fenetre parente
       if { $visuNo == "1" } {
@@ -363,11 +508,13 @@ namespace eval ::atos_cdl_gui {
              pack [ttk::notebook $onglets.nb] -expand yes -fill both 
              set f_phot [frame $onglets.nb.f_phot]
              set f_psf  [frame $onglets.nb.f_psf]
+             set f_corr [frame $onglets.nb.f_corr]
              set f_geom [frame $onglets.nb.f_geom]
              set f_suiv [frame $onglets.nb.f_suiv]
 
              $onglets.nb add $f_phot -text $caption(atos_cdl_gui,photometrie)
              $onglets.nb add $f_psf  -text $caption(atos_cdl_gui,psf)
+             $onglets.nb add $f_corr -text $caption(atos_cdl_gui,corr)
              $onglets.nb add $f_geom -text $caption(atos_cdl_gui,geometrie)
              $onglets.nb add $f_suiv -text $caption(atos_cdl_gui,suivi)
 
@@ -635,15 +782,42 @@ namespace eval ::atos_cdl_gui {
                         label $reference.v.r.snpx -font $atosconf(font,courier_10) -fg $color(blue) -text "?"
                         pack  $reference.v.r.snpx -in $reference.v.r -side top -anchor w
 
-
     # onglets : psf
 
-    
              set psf [frame $f_psf.psf]
              pack $psf -in $f_psf
 
                  psf_gui_methodes $visuNo $psf
 
+    # onglets : Correction
+ 
+             set corr [frame $f_corr.corr]
+             pack $corr -in $f_corr
+             set ::atos_gui::frame(correction) $corr
+
+                checkbutton $corr.flat_check -text $caption(atos_cdl_gui,useflat) \
+                    -variable ::atos_cdl_tools::useflat -state normal 
+
+                button $corr.flat_but_select -text "..." -borderwidth 2 -takefocus 1 \
+                   -command "::atos_cdl_gui::select_master $visuNo flat"
+
+                entry $corr.flat_path -width 90
+
+                checkbutton $corr.dark_check -text $caption(atos_cdl_gui,usedark) \
+                    -variable ::atos_cdl_tools::usedark -state normal 
+
+                button $corr.dark_but_select -text "..." -borderwidth 2 -takefocus 1 \
+                   -command "::atos_cdl_gui::select_master $visuNo dark"
+
+                entry $corr.dark_path -width 90
+
+                button $corr.preview -text "Preview" -borderwidth 2 -takefocus 1 \
+                   -command "::atos_cdl_gui::correction_preview $visuNo"
+
+
+                grid   $corr.flat_check $corr.flat_but_select $corr.flat_path -sticky nsw
+                grid   $corr.dark_check $corr.dark_but_select $corr.dark_path -sticky nsw
+                grid   $corr.preview    -columnspan 3 -sticky nsw
 
     # onglets : geometrie
 
