@@ -25,6 +25,7 @@ set caption(atos_go,precision)             "You have to change the internal prec
 set caption(atos_go,setup)                 "Plugin Setup"
 set caption(atos_go,acquisition)           "Acquisition of a video"
 set caption(atos_go,extraction)            "Extraction in fits images"
+set caption(atos_go,flatdark)              "Build Flat & Dark"
 set caption(atos_go,test)                  "Test debug mode"
 set caption(atos_go,ressource)             "Reload Scripts"
 set caption(atos_go,verif)                 "Checking avi"

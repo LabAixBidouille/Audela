@@ -42,15 +42,20 @@ namespace eval ::atos_tools {
       }
 
       catch {
+
          $::atos_gui::frame(info_load).status  configure -text "Loaded"
          $::atos_gui::frame(info_load).nbtotal configure -text "$::atos_tools::nb_frames frames"
+      }
+      catch {
 
          set bufNo [ visu$visuNo buf ]
          if { [buf$bufNo imageready] == 1 } {
             set autocuts [buf$bufNo autocuts]
             visu$visuNo disp [list [lindex $autocuts 0] [lindex $autocuts 1]]
          }
+      }
    
+      catch {
          set ::atos_tools::scrollbar 1
          $scrollbar configure -from 1
          $scrollbar configure -to $::atos_tools::nb_frames
