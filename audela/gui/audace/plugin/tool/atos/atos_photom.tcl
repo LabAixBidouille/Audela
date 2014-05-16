@@ -66,7 +66,7 @@ namespace eval ::atos_photom {
              set delta $deltax
           }
 
-         set valeurs  [photom_methode $xsm $ysm $delta $bufNo]
+         set valeurs  [photom_methode_obsolete $xsm $ysm $delta $bufNo]
          set xsm      [lindex $valeurs 0]
          set ysm      [lindex $valeurs 1]
       }
@@ -108,6 +108,41 @@ namespace eval ::atos_photom {
 
 
 proc photom_methode { xsm ysm delta bufNo} {
+
+
+      global private
+
+      set private(psf_toolbox,$::audace(visuNo),gui) 0
+
+      if {$private(psf_toolbox,$::audace(visuNo),globale)} {
+         PSF_globale $::audace(visuNo) $xsm $ysm
+      } else {
+         PSF_one_radius $::audace(visuNo) $xsm $ysm
+      }
+
+      set  xsm          $private(psf_toolbox,$::audace(visuNo),psf,xsm)      
+      set  ysm          $private(psf_toolbox,$::audace(visuNo),psf,ysm)
+      set  fwhmx        $private(psf_toolbox,$::audace(visuNo),psf,fwhmx)
+      set  fwhmy        $private(psf_toolbox,$::audace(visuNo),psf,fwhmy)
+      set  fwhm         $private(psf_toolbox,$::audace(visuNo),psf,fwhm)
+      set  fluxintegre  $private(psf_toolbox,$::audace(visuNo),psf,flux)     
+      set  errflux      $private(psf_toolbox,$::audace(visuNo),psf,err_flux) 
+      set  pixmax       $private(psf_toolbox,$::audace(visuNo),psf,pixmax)   
+      set  intensite    $private(psf_toolbox,$::audace(visuNo),psf,intensity)
+      set  sigmafond    $private(psf_toolbox,$::audace(visuNo),psf,err_sky)
+      set  snint        $private(psf_toolbox,$::audace(visuNo),psf,snint)
+      if {$sigmafond!=0&&[string is double $sigmafond] } {
+         set  snpx         [expr $intensite / $sigmafond]
+      } else {
+         set  snpx     0
+         set sigmafond 0
+      }
+      set  delta        $private(psf_toolbox,$::audace(visuNo),psf,radius)
+      
+      return [ list $xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
+   }
+
+proc photom_methode_obsolete { xsm ysm delta bufNo} {
 
       set xs0         [expr int($xsm - $delta)]
       set ys0         [expr int($ysm - $delta)]
@@ -171,7 +206,6 @@ proc photom_methode { xsm ysm delta bufNo} {
 
       return [ list $xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
    }
-
 
 
 }
