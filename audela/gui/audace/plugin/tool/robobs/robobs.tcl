@@ -90,7 +90,7 @@ proc ::robobs::initPlugin { tkbase } {
       set robobsconf(webserver) 1
    }
 	
-	::bddimages::ressource
+catch {	::bddimages::ressource }
 
 }
 
