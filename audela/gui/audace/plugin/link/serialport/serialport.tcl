@@ -475,7 +475,7 @@ proc ::serialport::searchPorts { } {
    }
 
    if { $::tcl_platform(os) == "Linux" } {
-   
+
       for { set k $kk } { $k < 20 } { incr k } {
          set errnum [ catch { open $port_com_usb$k r+ } msg ]
          if { $errnum == "0" } {
@@ -487,7 +487,7 @@ proc ::serialport::searchPorts { } {
       for { set k 0 } { $k < $long_com_usb } { incr k } {
          lappend private(portsList) "$port_com_usb[ lindex $comlist_usb $k ]"
       }
-      
+
       for { set k $kk } { $k < 5 } { incr k } {
          set errnum [ catch { open $port_com_ama$k r+ } msg ]
          if { $errnum == "0" } {
@@ -499,7 +499,7 @@ proc ::serialport::searchPorts { } {
       for { set k 0 } { $k < $long_com_ama } { incr k } {
          lappend private(portsList) "$port_com_ama[ lindex $comlist_ama $k ]"
       }
-      
+
    }
 }
 
@@ -543,6 +543,10 @@ proc ::serialport::getPorts { } {
    if { [ info exists private(portsList) ] == "0" } {
       ::serialport::searchPorts
    }
+
+   #--   Supprime un eventuel //./ devant le port COM
+   regsub -all {[./]} $private(portsList) "" private(portsList)
+
    return $private(portsList)
 }
 
