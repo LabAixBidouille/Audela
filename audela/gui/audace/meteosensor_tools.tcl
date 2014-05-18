@@ -2128,8 +2128,8 @@ proc sentinel_humidity { tensionV } {
    set a 101.01
    set b -25.61
    # From AK
-   set a 299.2
-   set b -114.64
+   set a 209.97
+   set b -74.49
    set humidity [expr $a*$tensionV+$b]
    return $humidity
 }
