@@ -106,51 +106,47 @@ proc ::scopedome::writeFileSystem { cycle } {
    variable widget
    global audace conf caption
 
-   #--   Arrete si demande ou si pas de tel ou pas de domNo
-   if {$widget(connectScope) ==0 || $audace(telNo) == 0 || $widget(domNo) ==0} {
-      ::scopedome::onChangeScope stop
-      return
-   }
+   if {$widget(connectScope) ==1 && $audace(telNo) == 1 && $widget(domNo) ==1} {
 
-   #--
-   set listNoCoords [list \
-      "$caption(telescope,astre_est)" \
-      "$caption(telescope,tel)" \
-      "$caption(telescope,pas_coord1)" \
-   ]
+      #--
+      set listNoCoords [list \
+         "$caption(telescope,astre_est)" \
+         "$caption(telescope,tel)" \
+         "$caption(telescope,pas_coord1)" \
+      ]
 
-   set rahms $audace(telescope,getra)
-   set decdms $audace(telescope,getdec)
+      set rahms $audace(telescope,getra)
+      set decdms $audace(telescope,getdec)
 
-   if {$rahms ni $listNoCoords} {
+      if {$rahms ni $listNoCoords} {
 
-      set radeg [mc_angle2deg $rahms]
-      set decdeg [mc_angle2deg $decdms]
-      set home $conf(posobs,observateur,gps)
-      set datetu [mc_date2iso8601 [::audace::date_sys2ut now]]
-      set date [mc_date2jd $datetu]
-      lassign [mc_radec2altaz $radeg $decdeg $home $date] azdeg altdeg
-      set azdeg [expr {fmod($azdeg+180,360)}]
-      if {$audace(telescope,goto) ==1} {
-         set slewing "true"
-      } else {
-         set slewing "false"
+         set radeg [mc_angle2deg $rahms]
+         set decdeg [mc_angle2deg $decdms]
+         set home $conf(posobs,observateur,gps)
+         set datetu [mc_date2iso8601 [::audace::date_sys2ut now]]
+         set date [mc_date2jd $datetu]
+         lassign [mc_radec2altaz $radeg $decdeg $home $date] azdeg altdeg
+         set azdeg [expr {fmod($azdeg+180,360)}]
+         if {$audace(telescope,goto) ==1} {
+            set slewing "true"
+         } else {
+            set slewing "false"
+         }
+
+         #--   Write file "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
+         set fid [open $widget(filesystem) w]
+         puts $fid "\[header\]"
+         puts $fid "program_name = \"$conf(telescope)\""
+         puts $fid "\[Telescope\]"
+         puts $fid "Alt=$altdeg"
+         puts $fid "Az=$azdeg"
+         puts $fid "Ra=$radeg"
+         puts $fid "Dec=$decdeg"
+         puts $fid "SideOfPier=1"
+         puts $fid "Slewing=$slewing"
+         puts $fid "AtPark=false"
+         catch {close $fid}
       }
-
-      #--   Write file "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
-      set fid [open $widget(filesystem) w]
-      puts $fid "\[header\]"
-      puts $fid "program_name = \"$conf(telescope)\""
-      puts $fid "\[Telescope\]"
-      puts $fid "Alt=$altdeg"
-      puts $fid "Az=$azdeg"
-      puts $fid "Ra=$radeg"
-      puts $fid "Dec=$decdeg"
-      puts $fid "SideOfPier=1"
-      puts $fid "Slewing=$slewing"
-      puts $fid "AtPark=false"
-      close $fid
-
    }
 
    set widget(afterID) [after $cycle "::scopedome::writeFileSystem $cycle"]
@@ -166,16 +162,14 @@ proc ::scopedome::writeFileSystem { cycle } {
 proc ::scopedome::onChangeScope { {action ""} } {
    variable widget
 
-   set cycle 1000 ;# ms
+   set cycle 5000 ;# ms
 
    if {$action eq "refresh"} {
       ::scopedome::writeFileSystem $cycle
-      #set widget(connectScope) 0
   } elseif {$action eq "stop" && [info exists widget(afterID)] == 1} {
       #--   Arrete l'ecriture du fichier
       after cancel "::scopedome::writeFileSystem $cycle"
       unset widget(afterID)
-      #set widget(connectScope) 0
    }
 }
 
