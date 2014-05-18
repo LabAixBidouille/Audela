@@ -544,9 +544,6 @@ proc ::serialport::getPorts { } {
       ::serialport::searchPorts
    }
 
-   #--   Supprime un eventuel //./ devant le port COM
-   regsub -all {[./]} $private(portsList) "" private(portsList)
-
    return $private(portsList)
 }
 
