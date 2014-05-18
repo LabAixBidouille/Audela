@@ -138,8 +138,7 @@ proc ::scopedome::confToWidget { } {
    set widget(filesystem) "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
    set widget(windowName) "ScopeDome LS" ; # nom de l'interface
 
-   set widget(connectScope) 0
-   #set widget(domNo)        0
+   set widget(connectScope) 1
 
    set widget(driverversion) ""
 
