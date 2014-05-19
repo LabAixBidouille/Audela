@@ -122,7 +122,7 @@ proc ::eqmod::confToWidget { } {
       if { [ catch { set private($varname) [ set conf($varname) ] } m ] } {
          ::console::affiche_resultat "$varname: $m"
          switch $varname {
-            eqmod,port        { set private($varname) "COM1" }
+            eqmod,port        { set private($varname) "//./COM1" }
             eqmod,tube_e_w    { set private($varname) "-west" }
             eqmod,initpos     { set private($varname) "south" }
             eqmod,limiteEst   { set private($varname) "2" }
