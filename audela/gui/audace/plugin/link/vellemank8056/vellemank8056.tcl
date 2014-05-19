@@ -78,7 +78,7 @@ proc ::vellemank8056::initPlugin { } {
    variable private
 
    #--- Je charge les variables d'environnement
-   if { ! [ info exists ::conf(vellemank8056,serialPort) ] } { set ::conf(vellemank8056,serialPort) "COM1" }
+   if { ! [ info exists ::conf(vellemank8056,serialPort) ] } { set ::conf(vellemank8056,serialPort) "//./COM1" }
 
    #--- j'initialise les variables privees
    set private(frm) ""
@@ -501,7 +501,7 @@ proc ::vellemank8056::getLinkIndex { linkLabel } {
 
    #--- je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
-   if { [string first "$private(genericName)-" $linkLabel]  == 0 } {
+   if { [string first "$private(genericName)-" $linkLabel] == 0 } {
       scan $linkLabel "$private(genericName)-%s" linkIndex
    }
    return $linkIndex

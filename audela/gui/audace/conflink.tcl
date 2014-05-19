@@ -179,8 +179,8 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 
    #--- Creation de la fenetre toplevel
    toplevel $private(frm)
-   wm geometry $private(frm) 580x420$private(position)
-   wm minsize $private(frm) 580 420
+   wm geometry $private(frm) 580x450$private(position)
+   wm minsize $private(frm) 580 450
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(conflink,config) $configurationTitle"
