@@ -20,7 +20,7 @@ proc ::confTel::init { } {
    if { ! [ info exists conf(raquette) ] }                 { set conf(raquette)                 "1" }
    if { ! [ info exists conf(telescope) ] }                { set conf(telescope)                "lx200" }
    if { ! [ info exists conf(telescope,start) ] }          { set conf(telescope,start)          "0" }
-   if { ! [ info exists conf(telescope,geometry) ] }       { set conf(telescope,geometry)       "540x500+15+0" }
+   if { ! [ info exists conf(telescope,geometry) ] }       { set conf(telescope,geometry)       "630x565+15+0" }
    if { ! [ info exists conf(telescope,model,fileName) ] } { set conf(telescope,model,fileName) "" }
    if { ! [ info exists conf(telescope,model,enabled) ]  } { set conf(telescope,model,enabled)  "" }
 
