@@ -38,7 +38,7 @@ test libcatalog_list_catalog { liste des catalogues } -constraints {
    return "$msg"
 } -cleanup {
 
-} -result "ppmxl ppmx tycho2 ucac2 ucac3 ucac4 2mass nomad1 usnoa2"
+} -result "ppmxl ppmx wfibc tycho2 ucac2 ucac3 ucac4 2mass nomad1 usnoa2"
 
 
 #-------------------------------------------------------------------------------
