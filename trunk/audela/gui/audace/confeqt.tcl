@@ -21,7 +21,7 @@ proc ::confEqt::init { } {
    source [ file join "$audace(rep_caption)" confeqt.cap ]
 
    #--- cree les variables dans conf(..) si elles n'existent pas
-   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "460x415+15+15" }
+   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "475x570+15+15" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
