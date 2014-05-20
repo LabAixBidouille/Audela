@@ -154,15 +154,13 @@ proc affich_libcata { { cata "" } { limitmag -1 } { color "red" } { width 3 } } 
 
    if { $cata == "" } {
       gren_erreur "USAGE : affich_libcata ?Catalogue? ?limitmag? ?color? ?width? \n"
-      gren_erreur "Catalogue possible : $listcatapossible\n"
-      gren_erreur "Exemple : \n"
-      gren_erreur "      affich_libcata USNOA2 -1 \n"
-      gren_erreur " Affiche l usno sans limitation en magnitude\n"
+      gren_erreur "Catalogues possibles : $listcatapossible\n"
+      gren_erreur "Parametres optionnels : ?limitmag? ?color? ?width? \n"
       gren_erreur "\n"
-      gren_erreur "      affich_libcata TYCHO2 10 blue 6 \n"
-      gren_erreur " Affiche par des ronds bleus les etoiles du catalogue tycho dont la magnitude < 10 \n"
-      gren_erreur "\n"
-      gren_erreur "affich_libcata clean : Efface les ronds\n"
+      gren_erreur "affich_libcata TYCHO2                     # Affiche les etoiles TYCHO2 dans l'image\n"
+      gren_erreur "affich_libcata 2MASS 10                  # Affiche les etoiles du catalogue 2MASS dont la magnitude < 10\n"
+      gren_erreur "affich_libcata USNOA2 -1 blue 1      # Affiche par des ronds bleus l USNOA2 sans limitation en magnitude\n"
+      gren_erreur "affich_libcata clean                          # Efface les ronds\n"
       return
    }
 
