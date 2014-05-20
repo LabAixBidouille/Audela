@@ -2560,8 +2560,28 @@ catch {
 
    proc ::atos_analysis_gui::good_sexa { d m s prec } {
 
-      set d [expr int($d)]
-      set m [expr int($m)]
+gren_info "$d $m $s $prec\n"
+
+     if {[string index $d 0] == "-"} {
+        if { [string index $d 1] == "0"} {
+           set d "-[string range $d 2 end]"
+        }
+     } elseif { [string index $d 0] == "0"} {
+           set d [string range $d 1 end]
+     
+     }
+     if { [string index $m 0] == "0"} {
+        set d [string range $m 1 end]
+     }
+     if { [string index $s 0] == "0"} {
+        set d [string range $s 1 end]
+     }
+     
+     
+gren_info "transf : $d $m $s $prec\n"
+
+      set d  [expr int($d)]
+      set m  [expr int($m)]
       set sa [expr int($s)]
       if {$prec==0} {
          return [format "%02d:%02d:%02d" $d $m $sa]
@@ -2745,7 +2765,7 @@ catch {
 
       # Maj du nom de l asteroide
       set ::atos_analysis_gui::text1 $text1
-      set ast [lindex $text1 2]
+      set ast [lindex $text1 1]
       if {$ast != ""} {
          ::atos_analysis_gui::set_object_name $ast
       } else {
