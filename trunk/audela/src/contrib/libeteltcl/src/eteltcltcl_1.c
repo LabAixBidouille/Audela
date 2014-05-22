@@ -424,6 +424,9 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 			if (etel.axis[k]!=AXIS_STATE_TO_BE_OPENED) {
 				continue;
 			}
+			if (etel.axis[k]!=AXIS_STATE_OPENED) {
+				continue;
+			}
 			etel.drv[k]=NULL;
 			/* create drive */
 			if (err = dsa_create_drive(&etel.drv[k])) {
