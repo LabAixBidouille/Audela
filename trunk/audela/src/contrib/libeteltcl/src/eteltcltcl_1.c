@@ -474,6 +474,7 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 					return TCL_ERROR;
 				}
 				/* Reset error */
+				/*
 				if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
 					sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
 					strcat(ligne,s);
@@ -482,7 +483,9 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 					Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 					return TCL_ERROR;
 				}
+				*/
 				/* power on */
+				/*
 				if (err = dsa_power_on_s(etel.drv[k], 10000)) {
 					sprintf(s,"Error axis=%d dsa_power_on_s error=%d",k,err);
 					strcat(ligne,s);
@@ -491,6 +494,7 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 					Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 					return TCL_ERROR;
 				}
+				*/
 				etel.axis[k]=AXIS_STATE_OPENED;
 				sprintf(s,"err=%d -axis %d -> etel.axisno %d} ",err,k,etel.axisno[k]);
 				strcat(ligne,s);
