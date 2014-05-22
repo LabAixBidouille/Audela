@@ -224,17 +224,29 @@ proc affich_libcata { { cata "" } { limitmag -1 } { color "red" } { width 3 } } 
    }
    if { $cata == "UCAC2" } {
       set cmd          csucac2
-      set path         $::tools_cata::catalog_ucac2
+      if {[info exists ::tools_cata::catalog_ucac2]} {
+         set path         $::tools_cata::catalog_ucac2
+      } else {
+         set path         $audace(rep_userCatalogUcac2)
+      }
       set commonfields { ra_deg dec_deg e_pos_deg U2Rmag_mag 0.5 }
    }
    if { $cata == "UCAC3" } {
       set cmd          csucac3
-      set path         $::tools_cata::catalog_ucac3
+      if {[info exists ::tools_cata::catalog_ucac3]} {
+         set path         $::tools_cata::catalog_ucac3
+      } else {
+         set path         $audace(rep_userCatalogUcac3)
+      }
       set commonfields { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }
    }
    if { $cata == "UCAC4" } {
       set cmd          csucac4
-      set path         $::tools_cata::catalog_ucac4
+      if {[info exists ::tools_cata::catalog_ucac4]} {
+         set path         $::tools_cata::catalog_ucac4
+      } else {
+         set path         $audace(rep_userCatalogUcac4)
+      }
       set commonfields { ra_deg dec_deg sigra_deg im2_mag sigmag_mag }
    }
    if { $cata == "PPMX" } {
