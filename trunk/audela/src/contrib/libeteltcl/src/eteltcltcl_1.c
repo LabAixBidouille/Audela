@@ -363,3 +363,95 @@ int Cmd_eteltcltcl_dsa_quick_stop_s(ClientData clientData, Tcl_Interp *interp, i
    Tcl_SetResult(interp,"",TCL_VOLATILE);
    return result;
 }
+
+int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/****************************************************************************/
+{
+   char s[200],ss[200];
+	int k,kk,kkk,err;
+   if(argc<3) {
+      sprintf(s,"Usage: %s ?-driver name? ?-axis axisno? ?-axis axisno? ...", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+#if defined(MOUCHARD)
+		FILE *f;
+		f=fopen("mouchard_etel.txt","wt");
+		fprintf(f,"Open the driver\n");
+		fclose(f);
+#endif
+		for (k=0;k<ETEL_NAXIS_MAXI;k++) {
+			etel.axis[k]=AXIS_STATE_CLOSED;
+			etel.drv[k]=NULL;
+		}
+		strcpy(etel.etel_driver,"DSTEB3");
+		if (argc >= 1) {
+			kkk=0;
+			for (kk = 0; kk < argc-1; kk++) {
+				if (strcmp(argv[kk], "-driver") == 0) {
+					strcpy(etel.etel_driver,argv[kk + 1]);
+				}
+				if (strcmp(argv[kk], "-axis") == 0) {
+					if (kkk<ETEL_NAXIS_MAXI) {
+						etel.axis[kkk]=AXIS_STATE_TO_BE_OPENED;
+						etel.axisno[kkk]=atoi(argv[kk + 1]);
+						kkk++;
+					}
+				}
+			}
+		}
+		/* --- */
+			k=3;
+			etel.axis[k]=AXIS_STATE_TO_BE_OPENED;
+			etel.axisno[k]=0;
+			/* create drive */
+			if (err = dsa_create_drive(&etel.drv[k])) {
+				sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
+			if (err = dsa_open_u(etel.drv[k],ss)) {
+				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			etel.axis[k]=AXIS_STATE_OPENED;
+
+		/* --- boucle de creation des axes ---*/
+		for (k=0;k<ETEL_NAXIS_MAXI;k++) {
+			if (etel.axis[k]!=AXIS_STATE_TO_BE_OPENED) {
+				continue;
+			}
+			etel.drv[k]=NULL;
+			/* create drive */
+			if (err = dsa_create_drive(&etel.drv[k])) {
+				sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
+			if (err = dsa_open_u(etel.drv[k],ss)) {
+				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			/* Reset error */
+			if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
+				sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			/* power on */
+			if (err = dsa_power_on_s(etel.drv[k], 10000)) {
+				sprintf(s,"Error axis=%d dsa_power_on_s error=%d",k,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			etel.axis[k]=AXIS_STATE_OPENED;
+		}
+   }
+   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   return TCL_OK;
+}
