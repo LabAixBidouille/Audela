@@ -444,7 +444,11 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 		sprintf(s,"{-axis %d -> etel.axisno %d} ",k,etel.axisno[k]);
 		strcat(ligne,s);
 		/* --- boucle de creation des axes ---*/
+		strcpy(s,"{ ");
+		strcat(ligne,s);
 		for (k=0;k<ETEL_NAXIS_MAXI;k++) {
+			sprintf(s,"{ k=%d etel.axis[%d]=%d ",k,k,etel.axis[k]);
+			strcat(ligne,s);
 			if (etel.axis[k]!=AXIS_STATE_TO_BE_OPENED) {
 				continue;
 			}
@@ -452,12 +456,16 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				continue;
 			}
 			etel.drv[k]=NULL;
+			strcpy(s,"create ");
+			strcat(ligne,s);
 			/* create drive */
 			if (err = dsa_create_drive(&etel.drv[k])) {
 				sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
+			sprintf(s,"err=%d open etb:%s:%d ",err,etel.etel_driver,etel.axisno[k]);
+			strcat(ligne,s);
 			sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
 			if (err = dsa_open_u(etel.drv[k],ss)) {
 				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
@@ -465,9 +473,13 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				return TCL_ERROR;
 			}
 			etel.axis[k]=AXIS_STATE_OPENED;
-			sprintf(s,"{-axis %d -> etel.axisno %d} ",k,etel.axisno[k]);
+			sprintf(s,"err=%d -axis %d -> etel.axisno %d} ",err,k,etel.axisno[k]);
+			strcat(ligne,s);
+			strcpy(s,"} ");
 			strcat(ligne,s);
 		}
+		strcpy(s,"} ");
+		strcat(ligne,s);
    }
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return TCL_OK;
