@@ -417,6 +417,12 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
+			/* Reset error */
+			if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
+				sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
 			etel.axis[k]=AXIS_STATE_OPENED;
 
 		/* --- boucle de creation des axes ---*/
