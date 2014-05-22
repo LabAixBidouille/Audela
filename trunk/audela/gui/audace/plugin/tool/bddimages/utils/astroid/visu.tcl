@@ -251,22 +251,38 @@ proc affich_libcata { { cata "" } { limitmag -1 } { color "red" } { width 3 } } 
    }
    if { $cata == "PPMX" } {
       set cmd          csppmx
-      set path         $::tools_cata::catalog_ppmx
+      if {[info exists ::tools_cata::catalog_ppmx]} {
+         set path         $::tools_cata::catalog_ppmx
+      } else {
+         set path         $audace(rep_userCatalogPpmx)
+      }
       set commonfields { RAJ2000 DECJ2000 errDec Vmag ErrVmag }
    }
    if { $cata == "PPMXL" } {
       set cmd          csppmxl
-      set path         $::tools_cata::catalog_ppmxl
+      if {[info exists ::tools_cata::catalog_ppmxl]} {
+         set path         $::tools_cata::catalog_ppmxl
+      } else {
+         set path         $audace(rep_userCatalogPpmxl)
+      }
       set commonfields { RAJ2000 DECJ2000 errDec magR1 0.5 }
    }
    if { $cata == "2MASS" } {
       set cmd          cs2mass
-      set path         $::tools_cata::catalog_2mass
+      if {[info exists ::tools_cata::catalog_2mass]} {
+         set path         $::tools_cata::catalog_2mass
+      } else {
+         set path         $audace(rep_userCatalog2mass)
+      }
       set commonfields { ra_deg dec_deg err_dec jMag jMagError }
    }
    if { $cata == "WFIBC" } {
       set cmd          cswfibc
-      set path         $::tools_cata::catalog_wfibc
+      if {[info exists ::tools_cata::catalog_wfibc]} {
+         set path         $::tools_cata::catalog_wfibc
+      } else {
+         set path         $audace(rep_userCatalogWFIBC)
+      }
       set commonfields { RA_deg DEC_deg error_Delta magR error_magR }
    }
    if { $cmd == "" } {
