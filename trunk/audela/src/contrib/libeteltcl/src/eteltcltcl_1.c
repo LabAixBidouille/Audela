@@ -449,10 +449,9 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 		for (k=0;k<ETEL_NAXIS_MAXI;k++) {
 			sprintf(s,"{ k=%d etel.axis[%d]=%d ",k,k,etel.axis[k]);
 			strcat(ligne,s);
-			if (etel.axis[k]!=AXIS_STATE_TO_BE_OPENED) {
-				continue;
-			}
-			if (etel.axis[k]!=AXIS_STATE_OPENED) {
+			if ((etel.axis[k]!=AXIS_STATE_TO_BE_OPENED)&&(etel.axis[k]!=AXIS_STATE_OPENED)) {
+				sprintf(s,"Do_not_connect} ");
+				strcat(ligne,s);
 				continue;
 			}
 			etel.drv[k]=NULL;
@@ -461,7 +460,10 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 			/* create drive */
 			if (err = dsa_create_drive(&etel.drv[k])) {
 				sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
+				strcat(ligne,s);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				sprintf(s,"} }");
+				strcat(ligne,s);
 				return TCL_ERROR;
 			}
 			sprintf(s,"err=%d open etb:%s:%d ",err,etel.etel_driver,etel.axisno[k]);
@@ -469,7 +471,10 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 			sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
 			if (err = dsa_open_u(etel.drv[k],ss)) {
 				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
+				strcat(ligne,s);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				sprintf(s,"} }");
+				strcat(ligne,s);
 				return TCL_ERROR;
 			}
 			etel.axis[k]=AXIS_STATE_OPENED;
