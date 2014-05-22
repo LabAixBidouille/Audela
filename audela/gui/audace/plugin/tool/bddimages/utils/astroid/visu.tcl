@@ -206,12 +206,20 @@ proc affich_libcata { { cata "" } { limitmag -1 } { color "red" } { width 3 } } 
       
    if { $cata == "USNOA2" } {
       set cmd          csusnoa2
-      set path         $::tools_cata::catalog_usnoa2
+      if {[info exists ::tools_cata::catalog_usnoa2]} {
+         set path         $::tools_cata::catalog_usnoa2
+      } else {
+         set path         $audace(rep_userCatalogUsnoa2)
+      }
       set commonfields { ra_deg dec_deg 5.0 magR 0.5 }
    }
    if { $cata == "TYCHO2" } {
       set cmd          cstycho2
-      set path         $::tools_cata::catalog_tycho2
+      if {[info exists ::tools_cata::catalog_tycho2]} {
+         set path         $::tools_cata::catalog_tycho2
+      } else {
+         set path         $audace(rep_userCatalogTycho2)
+      }
       set commonfields { RAdeg DEdeg 5.0 VT e_VT }
    }
    if { $cata == "UCAC2" } {
