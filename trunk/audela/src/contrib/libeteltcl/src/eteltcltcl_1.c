@@ -457,9 +457,9 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				if (err = dsa_create_drive(&etel.drv[k])) {
 					sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
 					strcat(ligne,s);
-					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					sprintf(s,"} }");
 					strcat(ligne,s);
+					Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 					return TCL_ERROR;
 				}
 				sprintf(s,"err=%d open etb:%s:%d ",err,etel.etel_driver,etel.axisno[k]);
@@ -468,27 +468,27 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				if (err = dsa_open_u(etel.drv[k],ss)) {
 					sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
 					strcat(ligne,s);
-					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					sprintf(s,"} }");
 					strcat(ligne,s);
+					Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 					return TCL_ERROR;
 				}
 				/* Reset error */
 				if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
 					sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
 					strcat(ligne,s);
-					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					sprintf(s,"} }");
 					strcat(ligne,s);
+					Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 					return TCL_ERROR;
 				}
 				/* power on */
 				if (err = dsa_power_on_s(etel.drv[k], 10000)) {
 					sprintf(s,"Error axis=%d dsa_power_on_s error=%d",k,err);
 					strcat(ligne,s);
-					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					sprintf(s,"} }");
 					strcat(ligne,s);
+					Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 					return TCL_ERROR;
 				}
 				etel.axis[k]=AXIS_STATE_OPENED;
