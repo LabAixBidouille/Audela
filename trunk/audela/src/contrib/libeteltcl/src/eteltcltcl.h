@@ -62,6 +62,8 @@ int Cmd_eteltcltcl_GetRegisterS(ClientData clientData, Tcl_Interp *interp, int a
 int Cmd_eteltcltcl_SetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_eteltcltcl_dsa_quick_stop_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_eteltcltcl_dsa_power_on_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_eteltcltcl_dsa_reset_error_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */

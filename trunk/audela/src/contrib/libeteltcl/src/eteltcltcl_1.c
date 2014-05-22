@@ -161,7 +161,7 @@ int Cmd_eteltcltcl_status(ClientData clientData, Tcl_Interp *interp, int argc, c
 /****************************************************************************/
 /****************************************************************************/
 {
-   char ligne[256],s[256];
+   char ligne[256],s[32767];
    int result = TCL_OK,err=0,k;
 	DSA_STATUS sta = {sizeof(DSA_STATUS)};
 	/* getting status */
@@ -175,8 +175,27 @@ int Cmd_eteltcltcl_status(ClientData clientData, Tcl_Interp *interp, int argc, c
 				Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
-			sprintf(ligne,"{%x %x} ", sta.raw.sw1, sta.raw.sw2);
-			strcat(s,ligne);
+			strcpy(ligne,"{"); strcat(s,ligne);
+			sprintf(ligne,"{raw.sw1 %d} ", sta.raw.sw1); strcat(s,ligne);
+			sprintf(ligne,"{raw.sw2 %d} ", sta.raw.sw2); strcat(s,ligne);
+			sprintf(ligne,"{drive.present %d} ", sta.drive.present); strcat(s,ligne);
+			sprintf(ligne,"{drive.moving %d} ", sta.drive.moving); strcat(s,ligne);
+			sprintf(ligne,"{drive.in_window %d} ", sta.drive.in_window); strcat(s,ligne);
+			sprintf(ligne,"{drive.sequence %d} ", sta.drive.sequence); strcat(s,ligne);
+			sprintf(ligne,"{drive.error %d} ", sta.drive.error); strcat(s,ligne);
+			sprintf(ligne,"{drive.trace %d} ", sta.drive.trace); strcat(s,ligne);
+			sprintf(ligne,"{drive.warning %d} ", sta.drive.warning); strcat(s,ligne);
+			sprintf(ligne,"{drive.breakpoint %d} ", sta.drive.breakpoint); strcat(s,ligne);
+			sprintf(ligne,"{drive.user %d} ", sta.drive.user); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.present %d} ", sta.dsmax.present); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.moving %d} ", sta.dsmax.moving); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.sequence %d} ", sta.dsmax.sequence); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.error %d} ", sta.dsmax.error); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.trace %d} ", sta.dsmax.trace); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.warning %d} ", sta.dsmax.warning); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.breakpoint %d} ", sta.dsmax.breakpoint); strcat(s,ligne);
+			sprintf(ligne,"{dsmax.user %d} ", sta.dsmax.user); strcat(s,ligne);
+			strcpy(ligne,"} "); strcat(s,ligne);
 		}
 	}
    Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -368,7 +387,8 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /****************************************************************************/
 /****************************************************************************/
 {
-   char s[200],ss[200];
+   char ligne[32767],s[256];
+   char ss[200];
 	int k,kk,kkk,err;
    if(argc<3) {
       sprintf(s,"Usage: %s ?-driver name? ?-axis axisno? ?-axis axisno? ...", argv[0]);
@@ -401,30 +421,28 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				}
 			}
 		}
-		/* --- */
-			k=3;
-			etel.axis[k]=AXIS_STATE_TO_BE_OPENED;
-			etel.axisno[k]=0;
-			/* create drive */
-			if (err = dsa_create_drive(&etel.drv[k])) {
-				sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-			sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
-			if (err = dsa_open_u(etel.drv[k],ss)) {
-				sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-			/* Reset error */
-			if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
-				sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-			etel.axis[k]=AXIS_STATE_OPENED;
-
+		strcpy(ligne,"");
+		sprintf(s,"{-driver %s} ",etel.etel_driver);
+		strcat(ligne,s);
+		/* --- AXE 3 = axis_0 Etel */
+		k=3;
+		etel.axis[k]=AXIS_STATE_TO_BE_OPENED;
+		etel.axisno[k]=0;
+		/* create drive */
+		if (err = dsa_create_drive(&etel.drv[k])) {
+			sprintf(s,"Error axis=%d dsa_create_drive error=%d",k,err);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		sprintf(ss,"etb:%s:%d",etel.etel_driver,etel.axisno[k]);
+		if (err = dsa_open_u(etel.drv[k],ss)) {
+			sprintf(s,"Error axis=%d dsa_open_u(%s) error=%d",etel.axisno[k],ss,err);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		etel.axis[k]=AXIS_STATE_OPENED;
+		sprintf(s,"{-axis %d -> etel.axisno %d} ",k,etel.axisno[k]);
+		strcat(ligne,s);
 		/* --- boucle de creation des axes ---*/
 		for (k=0;k<ETEL_NAXIS_MAXI;k++) {
 			if (etel.axis[k]!=AXIS_STATE_TO_BE_OPENED) {
@@ -446,21 +464,55 @@ int Cmd_eteltcltcl_open2(ClientData clientData, Tcl_Interp *interp, int argc, ch
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
-			/* Reset error */
-			if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
-				sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-			/* power on */
-			if (err = dsa_power_on_s(etel.drv[k], 10000)) {
-				sprintf(s,"Error axis=%d dsa_power_on_s error=%d",k,err);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
 			etel.axis[k]=AXIS_STATE_OPENED;
+			sprintf(s,"{-axis %d -> etel.axisno %d} ",k,etel.axisno[k]);
+			strcat(ligne,s);
 		}
    }
-   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return TCL_OK;
+}
+
+int Cmd_eteltcltcl_dsa_power_on_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/****************************************************************************/
+{
+   char ligne[256];
+   int result = TCL_OK,err=0,axisno;
+   if (argc<2) {
+   	sprintf(ligne,"usage: %s axisno",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   axisno=atoi(argv[1]);
+	if (err = dsa_power_on_s(etel.drv[axisno], 10000)) {
+		sprintf(ligne,"Error axis=%d dsa_power_on_s error=%d",axisno,err);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+	sprintf(ligne,"OK axis=%d dsa_power_on_s error=%d",axisno,err);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   return result;
+}
+
+int Cmd_eteltcltcl_dsa_reset_error_s(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/****************************************************************************/
+{
+   char ligne[256];
+   int result = TCL_OK,err=0,axisno;
+   if (argc<2) {
+   	sprintf(ligne,"usage: %s axisno",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   axisno=atoi(argv[1]);
+	if (err = dsa_reset_error_s(etel.drv[axisno], 10000)) {
+		sprintf(ligne,"Error axis=%d dsa_power_on_s error=%d",axisno,err);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+	sprintf(ligne,"OK axis=%d dsa_reset_error_s error=%d",axisno,err);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   return result;
 }
