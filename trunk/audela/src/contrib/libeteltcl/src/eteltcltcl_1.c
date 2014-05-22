@@ -101,17 +101,21 @@ int Cmd_eteltcltcl_open(ClientData clientData, Tcl_Interp *interp, int argc, cha
 				return TCL_ERROR;
 			}
 			/* Reset error */
+			/*
 			if (err = dsa_reset_error_s(etel.drv[k], 1000)) {
 				sprintf(s,"Error axis=%d dsa_reset_error_s error=%d",k,err);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
+			*/
 			/* power on */
+			/*
 			if (err = dsa_power_on_s(etel.drv[k], 10000)) {
 				sprintf(s,"Error axis=%d dsa_power_on_s error=%d",k,err);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
+			*/
 			etel.axis[k]=AXIS_STATE_OPENED;
 		}
    }
