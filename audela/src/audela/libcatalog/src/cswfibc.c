@@ -36,6 +36,7 @@ int cmd_tcl_cswfibc(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 	/* Read the accelerator file */
 	numberOfZones = (int)((RA_END - RA_START) / RA_STEP) + 1;
+
 	raZones       = readAcceleratorFileWfbic(pathToCatalog,numberOfZones);
 	if(raZones == NULL) {
 		Tcl_SetResult(interp,outputLogChar,TCL_VOLATILE);
@@ -255,9 +256,10 @@ raZone* const readAcceleratorFileWfbic(const char* const pathToCatalog, const in
 	/* Read the file */
 	sprintf(fileFullName,"%s%s",pathToCatalog,ACCELERATOR_TABLE);
 	inputStream = fopen(fileFullName,"rt");
-	if(raZones == NULL) {
+	if(inputStream == NULL) {
 		sprintf(outputLogChar,"File %s not found\n",fileFullName);
 		free(raZones);
+		printf("numberOfZones3 = %d\n",numberOfZones);
 		return (NULL);
 	}
 
