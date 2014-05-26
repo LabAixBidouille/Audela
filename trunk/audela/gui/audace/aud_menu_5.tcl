@@ -1841,9 +1841,14 @@ proc psf_toolbox { visuNo } {
       } msg ]
       
       if { $err } {
-         set err [ catch { ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n" } msg2 ]
+         set err [ catch { ::console::affiche_erreur "$caption(audace,psf_toolbox_message3)\n (Err msg: $msg)\n" } msg2 ]
          if { $err } {
             gren_erreur "$caption(audace,psf_toolbox_message3) (Err msg: $msg)\n"
+         }
+         set nbdata [llength $data]
+         gren_erreur "nb data = $nbdata\n"
+         for {set radius $private(psf_toolbox,$visuNo,globale,min)} {$radius <= $private(psf_toolbox,$visuNo,globale,max)} {incr radius} {
+            gren_erreur "$radius  Err  $private_graph($radius,err_psf) \n"
          }
          return
       }
