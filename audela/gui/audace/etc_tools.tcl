@@ -112,7 +112,7 @@ proc etc_set_array_cameras { } {
    array set cameras [list {STT-1603ME}           {1536 1024  9e-6    9e-6   0.1   2.3  15.0 0.75 1}]
    array set cameras [list {STT-3200ME}           {2184 1472  6.8e-6  6.8e-6 0.06  1.0  10.0 0.75 1}]
    #
-   array set cameras [list {STXL-11002}           {4008 2672  9e-6    9e-6   0.5   0.87 11   0.45 1}]
+   array set cameras [list {STXL-11002}           {4008 2672  9e-6    9e-6   0.07  0.80 12.0 0.45 1}] ; # measured Les Makes bin1x1 -20°C
    array set cameras [list {STXL-6303E}           {3072 2048  9e-6    9e-6   0.3   1.47 11   0.65 1}]
    #
    array set cameras [list {STX-16803}            {4096 4096  9e-6    9e-6   0.02  1.27 10   0.6  1}]
