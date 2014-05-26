@@ -123,3 +123,69 @@ namespace eval bdi_gui_synchro {
       ::bdi_tools_synchro::launch_socket
    }
 
+   proc ::bdi_gui_synchro::client {  } {
+      
+      destroy .synchro
+
+      set fen .synchroserv
+      set ::bdi_gui_astroid::fen $fen
+      if { [winfo exists $fen] } {
+         wm withdraw $fen
+         wm deiconify $fen
+         focus $fen
+         return
+      }
+      toplevel $fen -class Toplevel
+      set posx_config [ lindex [ split [ wm geometry $fen ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $fen ] "+" ] 2 ]
+      wm geometry $fen 800x500+165+55
+      wm resizable $fen 1 1
+      wm title $fen "Synchronisation Serveur Log"
+      wm protocol $fen WM_DELETE_WINDOW "destroy $fen"
+
+      set frm $fen.appli
+
+      frame $frm -borderwidth 0 -cursor arrow -relief groove
+      pack $frm -in $fen -anchor s -side top -expand 1 -fill both -padx 10 -pady 5
+
+      frame $frm.setup -borderwidth 0 -cursor arrow -relief groove
+      pack $frm.setup -in $frm -anchor w -side top 
+
+             entry $frm.setup.address -textvariable ::bdi_tools_synchro::address
+             pack $frm.setup.address -in $frm.setup -anchor w -side top 
+             
+      frame $frm.buttons -borderwidth 0 -cursor arrow -relief groove
+      pack $frm.buttons -in $frm -anchor w -side top 
+
+             button $frm.buttons.connect -state active -text "Connect" -relief "raised" \
+                -command "::bdi_tools_synchro::connect_to_socket"
+
+             button $frm.buttons.ping -state active -text "Ping" -relief "raised" \
+                -command "::bdi_tools_synchro::ping_socket"
+
+             button $frm.buttons.check -state active -text "Check" -relief "raised" \
+                -command "::bdi_tools_synchro::check_synchro"
+
+             pack $frm.buttons.connect -expand no -side left
+             pack $frm.buttons.ping    -expand no -side left
+             pack $frm.buttons.check   -expand no -side left
+
+
+
+      set ::bdi_tools_synchro::rapport $frm.text
+      text $::bdi_tools_synchro::rapport -height 30 -width 80 \
+           -xscrollcommand "$::bdi_tools_synchro::rapport.xscroll set" \
+           -yscrollcommand "$::bdi_tools_synchro::rapport.yscroll set" \
+           -wrap none
+      pack $::bdi_tools_synchro::rapport -expand yes -fill both -padx 5 -pady 5
+
+      scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
+      pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
+
+      scrollbar $::bdi_tools_synchro::rapport.yscroll -orient vertical -cursor arrow -command "$::bdi_tools_synchro::rapport yview"
+      pack $::bdi_tools_synchro::rapport.yscroll -side right -fill y
+
+      $::bdi_tools_synchro::rapport delete 0.0 end
+      
+      ::bdi_tools_synchro::connect_to_socket
+   }
