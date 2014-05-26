@@ -115,9 +115,17 @@ proc photom_methode { xsm ysm delta bufNo} {
       set private(psf_toolbox,$::audace(visuNo),gui) 0
 
       if {$private(psf_toolbox,$::audace(visuNo),globale)} {
-         PSF_globale $::audace(visuNo) $xsm $ysm
+      
+         set err [catch {PSF_globale $::audace(visuNo) $xsm $ysm} msg]
+         
       } else {
-         PSF_one_radius $::audace(visuNo) $xsm $ysm
+         set err [catch {PSF_one_radius $::audace(visuNo) $xsm $ysm} msg]
+      }
+
+      if {$err} {
+         gren_erreur "Erreur dans mesure de PSF (PSF ToolBox)\n"
+         gren_erreur "Err= $err\n"
+         gren_erreur "Msg= $msg\n"
       }
 
       set  xsm          $private(psf_toolbox,$::audace(visuNo),psf,xsm)      
@@ -125,9 +133,9 @@ proc photom_methode { xsm ysm delta bufNo} {
       set  fwhmx        $private(psf_toolbox,$::audace(visuNo),psf,fwhmx)
       set  fwhmy        $private(psf_toolbox,$::audace(visuNo),psf,fwhmy)
       set  fwhm         $private(psf_toolbox,$::audace(visuNo),psf,fwhm)
-      set  fluxintegre  $private(psf_toolbox,$::audace(visuNo),psf,flux)     
-      set  errflux      $private(psf_toolbox,$::audace(visuNo),psf,err_flux) 
-      set  pixmax       $private(psf_toolbox,$::audace(visuNo),psf,pixmax)   
+      set  fluxintegre  $private(psf_toolbox,$::audace(visuNo),psf,flux)
+      set  errflux      $private(psf_toolbox,$::audace(visuNo),psf,err_flux)
+      set  pixmax       $private(psf_toolbox,$::audace(visuNo),psf,pixmax)
       set  intensite    $private(psf_toolbox,$::audace(visuNo),psf,intensity)
       set  sigmafond    $private(psf_toolbox,$::audace(visuNo),psf,err_sky)
       set  snint        $private(psf_toolbox,$::audace(visuNo),psf,snint)
