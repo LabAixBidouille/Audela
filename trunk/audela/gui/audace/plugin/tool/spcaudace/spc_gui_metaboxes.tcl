@@ -4496,9 +4496,10 @@ namespace eval ::param_spc_audace_traitestellaire {
 
       #--- Cree la fenetre .param_spc_audace_traitestellaire de niveau le plus haut
       toplevel .param_spc_audace_traitestellaire -class Toplevel -bg $audace(param_spc_audace,traitestellaire,color,backpad)
-      #wm geometry .param_spc_audace_traitestellaire 450x558+10+10
-      #wm geometry .param_spc_audace_traitestellaire 486x506+146-25
-      wm geometry .param_spc_audace_traitestellaire 486x516+146-25
+      # wm geometry .param_spc_audace_traitestellaire 450x558+10+10
+      # wm geometry .param_spc_audace_traitestellaire 486x506+146-25
+      # wm geometry .param_spc_audace_traitestellaire 486x516+146-25
+      wm geometry .param_spc_audace_traitestellaire 539x516+146-25
       wm resizable .param_spc_audace_traitestellaire 1 1
       wm title .param_spc_audace_traitestellaire $caption(spcaudace,metaboxes,traitestellaire,titre)
       wm protocol .param_spc_audace_traitestellaire WM_DELETE_WINDOW "::param_spc_audace_traitestellaire::annuler"
@@ -5098,9 +5099,10 @@ namespace eval ::param_spc_audace_traitenebula {
 
       #--- Cree la fenetre .param_spc_audace_traitenebula de niveau le plus haut
       toplevel .param_spc_audace_traitenebula -class Toplevel -bg $audace(param_spc_audace,traitenebula,color,backpad)
-      #wm geometry .param_spc_audace_traitenebula 450x558+10+10
-      #wm geometry .param_spc_audace_traitenebula 486x562+191-20
-      wm geometry .param_spc_audace_traitenebula 522x562+191-20
+      # wm geometry .param_spc_audace_traitenebula 450x558+10+10
+      # wm geometry .param_spc_audace_traitenebula 486x562+191-20
+      # wm geometry .param_spc_audace_traitenebula 522x562+191-20
+      wm geometry .param_spc_audace_traitenebula 515x562+191-20
       wm resizable .param_spc_audace_traitenebula 1 1
       wm title .param_spc_audace_traitenebula $caption(spcaudace,metaboxes,traitenebula,titre)
       wm protocol .param_spc_audace_traitenebula WM_DELETE_WINDOW "::param_spc_audace_traitenebula::annuler"
