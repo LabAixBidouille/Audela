@@ -9,6 +9,8 @@
 #
 namespace eval bdi_tools_synchro {
 
+}
+
 
 
    proc ::bdi_tools_synchro::launch_socket {  } {
@@ -28,7 +30,7 @@ namespace eval bdi_tools_synchro {
         }
       } msg]
       if {$rc == 1} {
-        log server <exiting>\n***$msg
+        ::bdi_tools_synchro::log server <exiting>\n***$msg
         exit
       }
       set (server:host) server
@@ -41,8 +43,51 @@ namespace eval bdi_tools_synchro {
 
    }
 
+  proc ::bdi_tools_synchro::close_socket { { channel ""} } {
+  
+     if {$channel == ""} {set channel $::bdi_tools_synchro::channel}
+     log $channel "Socket Close "
+     set err [catch { close $channel } msg ]
+     if {$err} {
+        #puts "Fermeture Socket : $err $msg\n"
+     }
+     
+  }
 
-  proc server {channel host port} {
+
+
+
+
+
+  proc ::bdi_tools_synchro::reopen_socket { } {
+      ::bddimages::ressource
+      #gren_erreur "reopen_socket...\n"
+      close_socket
+      $::bdi_tools_synchro::rapport delete 0.0 end
+
+      ::bdi_tools_synchro::launch_socket
+  }
+
+
+
+
+   proc ::bdi_tools_synchro::connect_to_socket {  } {
+      
+      ::bddimages::ressource
+      $::bdi_tools_synchro::rapport delete 0.0 end
+      set host localhost
+      set port 6000
+      set rc [catch { set ::bdi_tools_synchro::channel [socket $host $port] } msg]
+      if {$rc == 1} { 
+         ::bdi_tools_synchro::log "" $msg
+         return 
+      } else {
+         ::bdi_tools_synchro::log $::bdi_tools_synchro::channel "Connection reussi sur $host :$port socket=$::bdi_tools_synchro::channel"
+         
+      }
+   }
+
+  proc ::bdi_tools_synchro::server {channel host port} {
     # save client info
     set ::($channel:host) $host
     set ::($channel:port) $port
@@ -89,7 +134,7 @@ namespace eval bdi_tools_synchro {
 
 
 
-  proc ::bdi_tools_synchro::I_receive_var { channel var } {
+  proc ::bdi_tools_synchro::I_receive_var { channel } {
      
       set err [catch { set line [::bdi_tools_synchro::getline $channel] } msg ]
       if {$err} {
@@ -99,7 +144,7 @@ namespace eval bdi_tools_synchro {
       return $line
   }
 
-  proc I_receive_var2 { channel var p_val } {
+  proc ::bdi_tools_synchro::I_receive_var2 { channel var p_val } {
      
       upvar $p_val val
 
@@ -120,16 +165,16 @@ namespace eval bdi_tools_synchro {
      
   }
 
-  proc I_send_var { channel var val } {
+  proc ::bdi_tools_synchro::I_send_var { channel var val} {
   
       puts $channel $var
       puts $channel $val
       flush $channel
-      puts "[clock seconds] $var => $val"
+      puts "[clock seconds] $var = $val"
 
   }
   
-  proc I_receive_file { channel p_tmpfile filesize } {
+  proc ::bdi_tools_synchro::I_receive_file { channel p_tmpfile filesize } {
   
       upvar $p_tmpfile tmpfile
 
@@ -143,7 +188,7 @@ namespace eval bdi_tools_synchro {
       gren_info "fin du telechargement\n"
   }
   
-  proc I_send_file { channel filename filesize } {
+  proc ::bdi_tools_synchro::I_send_file { channel filename filesize } {
   
       puts $channel "file"
       set fd [open $filename]
@@ -160,16 +205,18 @@ namespace eval bdi_tools_synchro {
 
 
 
-   proc input_server { channel } {
+   proc ::bdi_tools_synchro::input_server { channel } {
  
       global message
       global bddconf
+
 
       if {[eof $channel]} {
         # client closed -> log & close
         log $channel <closeda>
         catch { ::bdi_tools_synchro::close_socket $channel}
       } else {
+
 
          set err [catch { set var [getline $channel] } msg ]
          if {$err} {
@@ -185,14 +232,29 @@ namespace eval bdi_tools_synchro {
             }
          }
          
+         puts "[mc_date2iso8601 now] $var=$val " 
+ 
          switch $var {
+            "PING" {
+               set ::bdi_tools_synchro::tt0 [clock clicks -milliseconds]
+               array unset message
+               puts $channel "end"
+               puts $channel "end"
+               flush $channel
+               set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $::bdi_tools_synchro::tt0)/1000.]]
+               addlog "Ping receive in $tt sec"
+            }
+            "CHECK_SYNC_BDI" {
+               array unset message
+               set ::bdi_tools_synchro::tt0 [clock clicks -milliseconds]
+               
+            }
             "SYNC_BDI" {
                array unset message
                set ::bdi_tools_synchro::tt0 [clock clicks -milliseconds]
                gren_info "-----------------------------------\n"
             }
             "filename" {
-
                set message(filename) [I_receive_var channel $var]
                log $channel "File : $message(filename) Download..." ""
             }
@@ -246,7 +308,7 @@ namespace eval bdi_tools_synchro {
 
                set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $::bdi_tools_synchro::tt0)/1000.]]
                
-               addlog " Finish in $tt sec"
+               addlog "Finish in $tt sec"
 
             }
          }
@@ -255,46 +317,62 @@ namespace eval bdi_tools_synchro {
 
   # log
 
-  proc log { channel msg {cend ""} } {
+  proc ::bdi_tools_synchro::log { channel msg {cend ""} } {
   #      $::bdi_tools_synchro::rapport insert end "($::bdi_tools_synchro::host)::($::bdi_tools_synchro::port): $msg\n"
   #     puts "($::bdi_tools_synchro::host)::($::bdi_tools_synchro::port): $msg" 
   #    set entete "[mc_date2iso8601 now]\[$channel\]:"
+      set entete "[mc_date2iso8601 now]:"
+      $::bdi_tools_synchro::rapport insert end "$entete ${msg}${cend}"
+  #    puts "$entete $msg [fconfigure $channel -sockname]" 
+
+  }
+
+
+
+
+  proc ::bdi_tools_synchro::addlog { msg {cend ""} } {
       set entete "\n[mc_date2iso8601 now]:"
       $::bdi_tools_synchro::rapport insert end "$entete ${msg}${cend}"
-#      puts "$entete $msg [fconfigure $channel -sockname]" 
-
-  }
-  proc addlog { msg {cend ""} } {
-      $::bdi_tools_synchro::rapport insert end "${msg}${cend}"
-  }
-  proc close_socket { { channel ""} } {
-  
-     if {$channel == ""} {set channel $::bdi_tools_synchro::channel}
-     log $channel "Socket Close "
-     set err [catch { close $channel } msg ]
-     if {$err} {
-        #puts "Fermeture Socket : $err $msg\n"
-     }
-     
   }
 
-  proc reopen_socket { } {
-     ::bddimages::ressource
-     gren_erreur "reopen_socket...\n"
-     close_socket
-     $::bdi_tools_synchro::rapport delete 0.0 end
+
+
+
+  proc ::bdi_tools_synchro::ping_socket { } {
      
-     ::bdi_tools_synchro::launch_socket
-     
+      set ::bdi_tools_synchro::tt0 [clock clicks -milliseconds]
+      if {![info exists ::bdi_tools_synchro::channel]} {
+         addlog "Socket not connected"
+         return
+      }
+      ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel "PING" 0
+      set val [::bdi_tools_synchro::I_receive_var  $::bdi_tools_synchro::channel ]
+      if {$val=="end"} {
+         set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $::bdi_tools_synchro::tt0)/1000.]]
+         addlog "Ping finish $tt sec"
+      } else {
+         addlog "Ping Error in $tt sec"
+      }
   }
+
+
+
+  proc ::bdi_tools_synchro::check_synchro { } {
   
+      set ::bdi_tools_synchro::tt0 [clock clicks -milliseconds]
+      if {![info exists ::bdi_tools_synchro::channel]} {
+         addlog "Socket not connected"
+         return
+      }
+
+      ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel "SYNC_BDI" 0
+  
+  }
   # ===================
   # start
   # ===================
 
   # open socket
-
-}
 
 # Dump de la base ...
   #set res [exec mysqldump --user=$user --password=$pwd $database $table]
