@@ -3640,9 +3640,14 @@ proc spc_loadmh2o { args } {
         #-- Détermine la valeur du continuum :
         set icontinuum [ spc_icontinuum "$filename" ]
         #-- Applique au spectre de l'eau :
-        buf$audace(bufNo) load "$spcaudace(reptelluric)/$spcaudace(sp_eau)"
+        #- Corrige pb du repertoire d'install d'Audela avec des espaces... :
+        # buf$audace(bufNo) load "$spcaudace(reptelluric)/$spcaudace(sp_eau)"
+        file copy -force "$spcaudace(reptelluric)/$spcaudace(sp_eau)" "$audace(rep_images)/$spcaudace(sp_eau)"
+        buf$audace(bufNo) load "$audace(rep_images)/$spcaudace(sp_eau)"
+        #- Suite normale :
         buf$audace(bufNo) mult $icontinuum
         buf$audace(bufNo) save "$audace(rep_images)/eau_conti"
+        file delete -force "$audace(rep_images)/$spcaudace(sp_eau)"
 
         #--- Affichage des renseignements :
         spc_gdeleteall
