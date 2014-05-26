@@ -227,7 +227,7 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
    set audace(etc,param,local,Elev) 65
 
    set audace(etc,param,local,Tatm0,comment) "Zenith transmission of the atmosphere in the photometric band"
-   set audace(etc,param,local,Tatm0) 0.5
+   set audace(etc,param,local,Tatm0) [etc_params_set_Tatm0 300 0.10]
 
    set audace(etc,param,local,seeing,comment) "Fwhm of the seeing (arcsec)"
    set audace(etc,param,local,seeing) 3.0
@@ -278,6 +278,35 @@ proc etc_params_set_defaults { {band V} {moon_age 0} } {
    set audace(etc,param,ccd,Em) 1
 
    return ""
+}
+
+proc etc_params_set_Tatm0 { {altitude_m 300} {Aerosol_Optical_Depth 0.10} } {
+   global audace
+   set z 1.
+   set h [expr $altitude_m*1e-3]
+   set AOD $Aerosol_Optical_Depth ; # 0.07=hiver 0.21=ete : Aerosol Optical Depth (AOD)
+   set wvl $audace(etc,param,filter,l)
+   set convert_unit 1.
+   set lmu [expr 1.*$wvl*$convert_unit]
+   set n1n1 [expr 0.23465+(1.076e2/(146-1/$lmu/$lmu))+(0.93161/(41-1/$lmu/$lmu))]
+   set Ar [expr 9.4977e-3*pow($lmu,-4)*$n1n1*$n1n1*exp(-$h/7.996)]
+   set Tz [expr exp(-2*0.0168*exp(-15*abs($lmu-0.59)))]
+   set Ao [expr -2.5*log10($Tz)]
+   set Ao0 [expr 1.5*exp(-pow(($lmu-0.300)/0.012,2))]
+   set Ao1 [expr 0.03/(1+pow(($lmu-0.59)/0.07,2))]
+   set Ao2 [expr 0.011/(1+pow(($lmu-0.576)/0.006,2))]
+   set Ao3 [expr 0.009/(1+pow(($lmu-0.604)/0.01,2))]
+   set Ao4 [expr 0.01/(1+pow(($lmu-0.630)/0.013,2))]
+   set Ao5 [expr 0.0048/(1+pow(($lmu-0.531)/0.006,2))]
+   set Ao6 [expr 0.003/(1+pow(($lmu-0.545)/0.009,2))]
+   set Ao7 [expr 0.003/(1+pow(($lmu-0.564)/0.01,2))]
+   set Ao8 [expr 0.004/(1+pow(($lmu-0.572)/0.01,2))]
+   set Ao9 [expr 0.003/(1+pow(($lmu-0.506)/0.003,2))]
+   set Ao10 [expr 0.004/(1+pow(($lmu-0.477)/0.0025,2))]
+   set Ao [expr $Ao0+$Ao1+$Ao2+$Ao3+$Ao4+$Ao5+$Ao6+$Ao7+$Ao8+$Ao9+$Ao10]
+   set Aa [expr 2.5*log10( exp($AOD*pow($lmu/0.55,-1.3)))]
+   set AA [expr $Ar+$Ao+$Aa]
+   set TT [expr pow(10,-0.4*$AA*$z)]
 }
 
 proc etc_params_set_msky { {band V} {moon_age 0} } {
@@ -538,6 +567,9 @@ proc etc_modify_band { {band V} } {
    #---  calcul des cofficients L, Dl et Fm0
    etc_params_set_filter $band
 
+   #--- calcul de Tatm0
+   set audace(etc,param,local,Tatm0) [etc_params_set_Tatm0 300 0.10]
+   
    #---  calcul de msky
    etc_params_set_msky $band $audace(etc,param,local,moon_age)
 
