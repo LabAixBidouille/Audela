@@ -895,7 +895,7 @@ namespace eval ::atos_cdl_tools {
 
       if {$relief=="sunken"} {
          incr ::atos_tools::cur_idframe [expr $sum-1]
-         ::atos_cdl_tools::start_next_image $visuNo $sum $bin
+         ::atos_cdl_tools::start_next_image $visuNo $sum $bin 0
       } else {
          ::atos_tools::next_image $visuNo 
       
