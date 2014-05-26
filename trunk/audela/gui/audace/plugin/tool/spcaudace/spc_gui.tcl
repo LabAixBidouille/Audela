@@ -783,11 +783,42 @@ proc pvisu { } {
        .spc.g element configure line1 -color $colorspc(profile)
 
    }
+
+   #--- Axes droite et superieur :
+   .spc.g axis configure x2 y2 -hide yes
+   #-- Methode revue 2014 : ferme Audela !
+   if { 1==0 } {
+   .spc.g axis configure x2 y2 -hide no
+   #.spc.g axis configure x2 -min {} -max {}
+   #.spc.g axis configure y2 -min {} -max {}
+   set lx [.spc.g axis limits x]
+   set ly [.spc.g axis limits y]
+   #::console::affiche_erreur "limx=$lx ; limy=$ly\n"
+   .spc.g axis configure x2 -scrollmin [lindex $lx 0] -scrollmax [lindex $lx 1]
+   .spc.g axis configure y2 -scrollmin [lindex $ly 0] -scrollmax [lindex $ly 1]
+   # -> x2 major ticks can't be -2147483647
+   }
+
+   #-- Aucune adapatation d'echelle donc profil non affiche :
+   if { 1==0 } {
+   .spc.g axis configure x2 y2 -hide no
+   .spc.g element configure line1 -mapx x2 -mapy y2
+   #.spc.g marker configure myLine -mapx x2 -mapy y2
+   .spc.g grid configure -mapx x2 -mapy y2
+   }
+
+
+   #-- Methode old : axes x2 et y2 non maj lors de zoom
+   if { 1==0 } {
    .spc.g axis configure x2 y2 -hide no
    set lx [.spc.g axis limits x]
    set ly [.spc.g axis limits y]
    .spc.g axis configure x2 -min [lindex $lx 0] -max [lindex $lx 1]
    .spc.g axis configure y2 -min [lindex $ly 0] -max [lindex $ly 1]
+   }
+
+
+   #--- Fenetre generale :
    .spc.g configure -width 7.87i -height 5.51i
    .spc.g legend configure -hide yes
    pack .spc.g -in .spc
