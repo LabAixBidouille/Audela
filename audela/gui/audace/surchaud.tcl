@@ -1790,7 +1790,7 @@ proc calibwcs_new {args} {
       append line "calibwcs_new * * * * * cat_name cat_folder ?delta nmax? ?flux_criterion?\n"
       append line "\n"
       append line "# Parametres catalogues :\n"
-      append line "# cat_name = USNO MICROCAT TYCHO2 UCAC4 \n"
+      append line "# cat_name = USNOA2 MICROCAT TYCHO2 UCAC4 \n"
       append line "\n"
       append line "# Parametres optionels :\n"
       append line "# -del_tmp_files 1 : efface tous les fichiers temporaires (par defaut)\n"
