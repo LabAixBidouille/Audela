@@ -123,9 +123,21 @@ namespace eval bdi_gui_synchro {
       ::bdi_tools_synchro::launch_socket
    }
 
+
+
+
+
+
+
    proc ::bdi_gui_synchro::client {  } {
       
       destroy .synchro
+
+      set ::bdi_tools_synchro::param_check_nothing 1
+      set ::bdi_tools_synchro::param_check_maj_client 1
+      set ::bdi_tools_synchro::param_check_maj_server 1
+      set ::bdi_tools_synchro::param_check_exist 0
+
 
       set fen .synchroserv
       set ::bdi_gui_astroid::fen $fen
@@ -164,28 +176,168 @@ namespace eval bdi_gui_synchro {
                 -command "::bdi_tools_synchro::ping_socket"
 
              button $frm.buttons.check -state active -text "Check" -relief "raised" \
-                -command "::bdi_tools_synchro::check_synchro"
+                -command "::bdi_gui_synchro::check_synchro"
+
+             button $frm.buttons.synchro -state active -text "Synchro" -relief "raised" \
+                -command "::bdi_tools_synchro::launch_synchro"
 
              pack $frm.buttons.connect -expand no -side left
              pack $frm.buttons.ping    -expand no -side left
              pack $frm.buttons.check   -expand no -side left
+             pack $frm.buttons.synchro -expand no -side left
 
 
 
-      set ::bdi_tools_synchro::rapport $frm.text
-      text $::bdi_tools_synchro::rapport -height 30 -width 80 \
-           -xscrollcommand "$::bdi_tools_synchro::rapport.xscroll set" \
-           -yscrollcommand "$::bdi_tools_synchro::rapport.yscroll set" \
-           -wrap none
-      pack $::bdi_tools_synchro::rapport -expand yes -fill both -padx 5 -pady 5
+      set onglets [frame $frm.onglets]
+      pack $onglets -in $frm  -expand yes -fill both
 
-      scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
-      pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
 
-      scrollbar $::bdi_tools_synchro::rapport.yscroll -orient vertical -cursor arrow -command "$::bdi_tools_synchro::rapport yview"
-      pack $::bdi_tools_synchro::rapport.yscroll -side right -fill y
+            pack [ttk::notebook $onglets.nb] -expand yes -fill both 
+            set f_param [frame $onglets.nb.f_param]
+            set f_log   [frame $onglets.nb.f_log]
+            set f_liste [frame $onglets.nb.f_liste]
 
-      $::bdi_tools_synchro::rapport delete 0.0 end
-      
+            $onglets.nb add $f_param -text "Parametres"
+            $onglets.nb add $f_log   -text "Logs"
+            $onglets.nb add $f_liste -text "Liste"
+
+            ttk::notebook::enableTraversal $onglets.nb
+
+         set param [frame $f_param.frm  -borderwidth 1 -relief groove]
+         pack $param -in $f_param -expand yes -fill both
+         set ::bdi_tools_synchro::param_frame $param
+
+            checkbutton $param.nothing -highlightthickness 0 -text "Ne rien faire" \
+                        -variable ::bdi_tools_synchro::param_check_nothing \
+                        -command "::bdi_gui_synchro::param_check nothing"
+                        
+            checkbutton $param.maj_client -highlightthickness 0 -text "Mise a jour du client" \
+                        -variable ::bdi_tools_synchro::param_check_maj_client \
+                        -state disabled \
+                        -command "::bdi_gui_synchro::param_check maj_client"
+
+            checkbutton $param.maj_server -highlightthickness 0 -text "Mise a jour du serveur" \
+                        -variable ::bdi_tools_synchro::param_check_maj_server \
+                        -state disabled \
+                        -command "::bdi_gui_synchro::param_check maj_server"
+
+            checkbutton $param.exist -highlightthickness 0 -text "Si le fichier existe ne rien faire" \
+                        -variable ::bdi_tools_synchro::param_check_exist \
+                        -state disabled \
+                        -command "::bdi_gui_synchro::param_check exist"
+
+ 
+            grid $param.nothing      -sticky nsw 
+            grid $param.maj_client   -sticky nsw 
+            grid $param.maj_server   -sticky nsw  
+            grid $param.exist        -sticky nsw 
+
+         set logs [frame $f_log.frm  -borderwidth 1 -relief groove]
+         pack $logs -in $f_log -expand yes -fill both
+
+            set ::bdi_tools_synchro::rapport $logs.text
+            text $::bdi_tools_synchro::rapport -height 30 -width 80 \
+                 -xscrollcommand "$::bdi_tools_synchro::rapport.xscroll set" \
+                 -yscrollcommand "$::bdi_tools_synchro::rapport.yscroll set" \
+                 -wrap none
+            pack $::bdi_tools_synchro::rapport -expand yes -fill both -padx 5 -pady 5
+
+            scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
+            pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
+
+            scrollbar $::bdi_tools_synchro::rapport.yscroll -orient vertical -cursor arrow -command "$::bdi_tools_synchro::rapport yview"
+            pack $::bdi_tools_synchro::rapport.yscroll -side right -fill y
+
+            $::bdi_tools_synchro::rapport delete 0.0 end
+
+         set liste [frame $f_liste.frm  -borderwidth 1 -relief groove]
+         pack $liste -in $f_liste -expand yes -fill both
+
+            set cols [list 0 "Id"        left \
+                           0 "Status"    left \
+                           0 "Exist"     left \
+                           0 "Synchro"   left \
+                           0 "Date"      left \
+                           0 "Size (Mo)" left \
+                           0 "Filename"  left \
+                     ]
+            
+            set ::bdi_gui_synchro::liste $liste.tab
+            tablelist::tablelist $::bdi_gui_synchro::liste \
+               -columns $cols \
+               -labelcommand tablelist::sortByColumn \
+               -xscrollcommand [ list $liste.hsb set ] \
+               -yscrollcommand [ list $liste.vsb set ] \
+               -selectmode extended \
+               -activestyle none \
+               -stripebackground "#e0e8f0" \
+               -showseparators 1
+
+            #--- Scrollbars verticale et horizontale
+            scrollbar $liste.hsb -orient horizontal -command [list $::bdi_gui_synchro::liste xview]
+            pack $liste.hsb -in $liste -side bottom -fill x
+            scrollbar $liste.vsb -orient vertical -command [list $::bdi_gui_synchro::liste yview]
+            pack $liste.vsb -in $liste -side left -fill y
+
+            pack $::bdi_gui_synchro::liste -in $liste -expand yes -fill both
+            #--- Gestion des evenements
+            #bind [$tbl bodypath] <Control-Key-a> [ list ::cata_gestion_gui::selectall $tbl ]
+            #bind $tbl <<ListboxSelect>>          [ list ::cata_gestion_gui::cmdButton1Click %W ]
+            #bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
+            #bind [$tbl bodypath] <Key-u>         [ list ::cata_gestion_gui::unset_flag $tbl ]
+            
       ::bdi_tools_synchro::connect_to_socket
    }
+
+
+   proc ::bdi_gui_synchro::check_synchro {  } {
+
+      ::bdi_tools_synchro::check_synchro
+      ::bdi_tools_synchro::build_synchro mylist
+
+      set tt0 [clock clicks -milliseconds]
+      ::bdi_gui_synchro::affich_synchro mylist
+      set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
+      gren_info "Affichage de la tablelist en $tt sec\n"
+   }
+
+   proc ::bdi_gui_synchro::affich_synchro { p_mylist } {
+      upvar $p_mylist mylist
+      $::bdi_gui_synchro::liste delete 0 end
+
+      set nb_list [llength $mylist]
+      if {$nb_list>0} {
+         set cpt 0
+         foreach l $mylist {
+            set l [concat $cpt "TODO" $l]
+            $::bdi_gui_synchro::liste insert end $l
+            incr cpt
+         }
+      }
+   }
+
+
+
+
+   proc ::bdi_gui_synchro::param_check { but } {
+
+      set param $::bdi_tools_synchro::param_frame
+      set state_but [$param.$but cget -state]
+
+      gren_info "--\n"
+      gren_info "but = $but\n"
+      gren_info "param_check_nothing = $::bdi_tools_synchro::param_check_nothing\n"
+      gren_info "state_but = $state_but\n"
+   
+      if {$but=="nothing"&&$::bdi_tools_synchro::param_check_nothing==0} {
+         $param.maj_client configure -state normal
+         $param.maj_server configure -state normal
+         $param.exist configure -state normal
+      }
+      if {$but=="nothing"&&$::bdi_tools_synchro::param_check_nothing==1} {
+         $param.maj_client configure -state disabled
+         $param.maj_server configure -state disabled
+         $param.exist configure -state disabled
+      }
+   }
+
