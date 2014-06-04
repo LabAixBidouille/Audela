@@ -11,7 +11,7 @@ namespace eval bdi_tools_synchro {
 
       package require md5 
 
-      variable delay 50
+      variable delay 5
 }
 
 
@@ -138,7 +138,6 @@ namespace eval bdi_tools_synchro {
   proc ::bdi_tools_synchro::free_channel { channel } {
       set cpt 0
       while {[gets $channel]!=""} {
-      
          incr cpt
          if {$cpt > 100} {break}
       }
@@ -158,7 +157,6 @@ namespace eval bdi_tools_synchro {
      
       upvar $p_val val
 
-      after $::bdi_tools_synchro::delay
       
       set cpt 0
       set a 0
@@ -206,12 +204,10 @@ namespace eval bdi_tools_synchro {
 
   proc ::bdi_tools_synchro::I_send_var { channel var val} {
   
-      after $::bdi_tools_synchro::delay
       puts $channel $var
       puts $channel $val
       flush $channel
       puts "S: $var = $val"
-      after $::bdi_tools_synchro::delay
 
   }
   
@@ -231,8 +227,14 @@ namespace eval bdi_tools_synchro {
       puts "R: Binary file $tmpfile"
   }
   
-  proc ::bdi_tools_synchro::I_send_file { channel filename filesize } {
+  proc ::bdi_tools_synchro::I_send_file { channel filename filesize { file "" } } {
   
+      if {$file == "file"} { 
+         gren_info "** send file to server\n"
+         puts "** send file to server"
+         puts $channel "file" 
+      }
+
       puts "S: Binary file $filename"
       set fd [open $filename]
       fconfigure $fd  -translation binary
@@ -264,19 +266,31 @@ namespace eval bdi_tools_synchro {
 
          set err [catch { set var [getline $channel] } msg ]
          if {$err} {
+            puts "<error> $msg"
             log $channel "<error> $msg"
+            return
+         }
+
+         if {$var == ""} {
+            puts "var vide"
             return
          }
 
          if {$var != "file"} { 
             set err [catch { set val [getline $channel] } msg ]
             if {$err} {
-               log $channel "<error> $msg"
+               addlog "<error> $msg"
                return
             }
+            puts "[mc_date2iso8601 now] $var=$val"
+         } else {
+            puts "[mc_date2iso8601 now] ($var)" 
+            gren_info "demarrage du telechargement ?\n"
+            puts "[mc_date2iso8601 now] demarrage du telechargement ?" 
+            update
          }
-         
-         puts "[mc_date2iso8601 now] $var=$val " 
+
+
  
          switch $var {
             "PING" {
@@ -312,7 +326,7 @@ namespace eval bdi_tools_synchro {
             }
             "filename" {
                set message(filename) $val
-               log $channel "File : $message(filename) Download..." ""
+               addlog "File : $message(filename) Download..."
             }
             "md5" {
                set message(md5) $val
@@ -323,13 +337,23 @@ namespace eval bdi_tools_synchro {
             "filesize" {
                set message(filesize) $val
             }
-            "file" {
+            "exist" {
+               set message(exist) $val
+            }
+            "fileX" {
                set message(tmpfile) [file join $bddconf(dirtmp) "tmp.[pid].fits.gz"]
                set fd [open $message(tmpfile) w]
                fconfigure $fd -translation binary
                fconfigure $channel -translation binary  -blocking 0
                fcopy $channel $fd -size $message(filesize)
                close $fd
+            }
+            "file" {
+               puts "reception du fichier\n"
+               after 1000
+               ::bdi_tools_synchro::I_receive_file $channel message(tmpfile) $message(filesize)
+               #set message(tmpfile) [file join $bddconf(dirtmp) "tmp.[pid].fits.gz"]
+               puts "tmpfile: $message(tmpfile)\n"
             }
             "work" {
                
@@ -367,6 +391,14 @@ namespace eval bdi_tools_synchro {
 
                   gren_info "work      : $val \n"
 
+                  gren_info "File      : $message(filename) \n"
+                  gren_info "Filesize  : $message(filesize) \n"
+                  gren_info "Modifdate : $message(modifdate) \n"
+                  gren_info "Exist     : $message(exist) \n"
+                  gren_info "MD5       : $message(md5) \n"
+                  gren_info "tmpfile   : $message(tmpfile) \n"
+
+                  ::bdi_tools_synchro::I_send_var $channel status SUCCESS
 
 
                }
@@ -689,7 +721,6 @@ namespace eval bdi_tools_synchro {
       ::bdi_tools_synchro::get_table_images data
       
       set nb [llength $data]
-      gren_info "nb data : $nb\n"
 
       set filename [file join $bddconf(dirtmp) "table_images.dat"]
       set h [open $filename "w"]
@@ -915,17 +946,18 @@ namespace eval bdi_tools_synchro {
             gren_info "exist send\n"
 
             # Envoie du md5
-            set file [file join $bddconf(base) $filename]
-            set md5 [::md5::md5 -hex -file $file]
+            set file [file join $bddconf(dirbase) $filename]
+            #set md5 [::md5::md5 -hex -file $file]
+            set md5 "toto"
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel md5 $md5
             gren_info "md5 send\n"
 
             # Envoie du fichier
-            ::bdi_tools_synchro::I_send_file $::bdi_tools_synchro::channel $file $filesize
+            ::bdi_tools_synchro::I_send_file $::bdi_tools_synchro::channel $file $filesize "file"
             gren_info "file send\n"
 
             # Envoie de l action work
-            ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel work     1
+            ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel work 1
             gren_info "work send\n"
 
             # Reception du status
