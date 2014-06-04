@@ -107,6 +107,20 @@ namespace eval ::bdi_tools_status {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    # Backup d un fichier quelconque existant sur le disque
    # Copie du fichier dans incoming
    proc ::bdi_tools_status::backup_name { name } {
