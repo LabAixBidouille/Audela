@@ -932,10 +932,13 @@ proc grb_gcnc { args } {
    }
 
    set tels {\
+   {"AAO " "AAO_AS-32" 230} \
    {"ANU " "ANU_2.3m" 230} \
    {"APO " "ARC_3.5m" 350} \
    {" ARC " "ARC_3.5m" 350 } \
    {"AROMA" "AROMA" 30} \
+   {"AROMA-N " "AROMA" 30} \
+   {"AROMA-S " "AROMA" 30} \
    {"ART-" "ART-3" 35} \
    {"AZT-33IK" "AZT-33IK" 150} \
    {"BART " "BART" 25.4} \
@@ -970,6 +973,7 @@ proc grb_gcnc { args } {
    {"GORT " "GORT" 35} \
    {"GROND" "GROND" 220} \
    {"GTC" "GTC" 1040} \
+   {"HCT " "HCT" 1040} \
    {"IAC " "IAC-80" 80} \
    {"IAC80" "IAC-80" 80} \
    {" INT " "INT" 250} \
