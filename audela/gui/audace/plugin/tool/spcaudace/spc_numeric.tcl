@@ -1872,7 +1872,7 @@ proc spc_fac {n} {
 #
 # Auteur : Patrick LAILLY
 # Date creation : 23-01-2012
-# Date modification : 23-01-2012
+# Date modification : 10-06-2014
 # Cette procedure generalise les procedures d'ajustement d'un nuage de points par un polynôme de degré 3
 # on utilise ici un autre preconditionnement du systeme lineaire a resoudre rendant la programmation plus aisee
 # Arguments : liste abscisses, liste ordonnees, erreur, degre polynome
@@ -1962,7 +1962,7 @@ proc spc_ajustdegn { args } {
       # ::console::affiche_resultat "pour l'abscisse [ lindex $abscisses_rangees $k ] le residu (en ordonnee) vaut $r \n"
       ::console::affiche_resultat "[ lindex $ordonnees_rangees $k ] : $r \n"
    }
-   set RMS [ expr sqrt($RMS)/$n ]
+   set RMS [ expr sqrt($RMS/$n) ]
    ::console::affiche_resultat "RMS des residus : $RMS\n"
    #--- Determination des coefficients associes aux abscisses d'origine :
    set coefs [ list ]
