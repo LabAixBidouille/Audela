@@ -308,7 +308,33 @@ proc alpy600_spec_list { } {
    return $specNos
 }
 
-proc alpy600_buf_where_is_yspec { bufNo } {
+proc alpy600_buf_extract_fringes { bufNo } {
+   set res [alpy600_buf_where_is_yspec $bufNo 1000]
+   lassign $res ymax y1 y2
+   saveima tmp
+   convgauss 10
+   div tmp 1
+   set naxis1 [buf$bufNo getpixelswidth]
+   set naxis2 [buf$bufNo getpixelsheight]
+   set d 40
+   set yy1 [expr $y1-$d]
+   set yy2 [expr $y1+$d]
+   for {set y $yy1} {$y<=$yy2} {incr y} {
+      for {set x 1} {$x<=$naxis1} {incr x} {
+         buf$bufNo setpix [list $x $y] 1.0
+      }
+   }
+   set yy1 [expr $y2-$d]
+   set yy2 [expr $y2+$d]
+   for {set y $yy1} {$y<=$yy2} {incr y} {
+      for {set x 1} {$x<=$naxis1} {incr x} {
+         buf$bufNo setpix [list $x $y] 1.0
+      }
+   }
+   return $res
+}
+
+proc alpy600_buf_where_is_yspec { bufNo {dylim 60} } {
    global spec
    global audace
    buf$bufNo save $audace(rep_images)/tmp0
@@ -318,7 +344,10 @@ proc alpy600_buf_where_is_yspec { bufNo } {
    buf1 bitpix -32
    set ymax -1
    set valtmax 0
+   set ys ""
+   set vs ""
    for {set y 1} {$y<=$naxis2} {incr y} {
+      lappend ys $y
       set valt 0.
       set x 1
       set val [lindex [buf$bufNo getpix [list $x $y]] 1]
@@ -327,17 +356,66 @@ proc alpy600_buf_where_is_yspec { bufNo } {
          set ymax $y
          set valtmax $valt
       }
+      lappend vs $val
+   }
+   # --- met le fond à zero
+   set f1 [::math::statistics::median [lrange $vs 0 20]]
+   set f2 [::math::statistics::median [lrange $vs end-20 end]]
+   set f [expr ($f1+$f2)/2.]
+   set std1 [::math::statistics::stdev [lrange $vs 0 20]]
+   set std2 [::math::statistics::stdev [lrange $vs end-20 end]]
+   set std [expr ($std1+$std2)/2.]
+   set vss ""
+   for {set ky 0} {$ky<$naxis2} {incr ky} {
+      set val [expr [lindex $vs $ky]-$f]
+      lappend vss $val
+   }
+   set valtmax [expr $valtmax-$f]
+   set vs $vss
+   if {1==0} {
+      ::plotxy::hold off
+      ::plotxy::plot $ys $vs r.-
+   }   
+   # --- 
+   #set snr [expr 1.*$valtmax/$std]
+   #console::affiche_resultat "snr = $snr\n"
+   #console::affiche_resultat "valtmax=$valtmax f=$f\n"
+   # --- recherche le fond
+   set val0 [expr $valtmax/2.]
+   for {set y $ymax} {$y<$naxis2} {incr y} {
+      set val1 [lindex $vs $y]
+      set val2 [lindex $vs [expr $y+1]]
+      set dval [expr $val1-$val2]
+      #console::affiche_resultat "y=$y val1=$val1 val2=$val2 dval=$dval\n"
+      #if {($dval<0)&&($val2<$val0)} {}
+      if {([expr abs($dval)]<$std)&&($val2<$val0)} {
+         set y2 $y
+         break
+      }
+   }
+   for {set y $ymax} {$y>1} {incr y -1} {
+      set val1 [lindex $vs $y]
+      set val2 [lindex $vs [expr $y-1]]
+      set dval [expr $val1-$val2]
+      #if {($dval<0)&&($val2<$val0)} {}
+      if {([expr abs($dval)]<$std)&&($val2<$val0)} {
+         set y1 $y
+         break
+      }
    }
    buf$bufNo load $audace(rep_images)/tmp0
-   return $ymax
+   set dy [expr $y2-$y1]
+   if {$dy>$dylim} {
+      set ymax [expr int(($y1+$y2)/2)]
+      set y1 [expr int($ymax-$dylim/2)]
+      set y2 [expr int($ymax+$dylim/2)]
+   }
+   return [list $ymax $y1 $y2]
 }
 
 proc alpy600_spec_buf2spec { bufNo specNo y1 y2} {
    global spec
    global audace
-   if {[info exists spec($specNo)]==0} {
-      error "Use alpy600_spec_create $specNo before"
-   }
    set naxis1 [buf$bufNo getpixelswidth]
    set naxis2 [buf$bufNo getpixelsheight]
    alpy600_spec_delete $specNo
@@ -466,7 +544,7 @@ proc alpy600_spec_save { specNo filename } {
    close $f
 }
 
-proc alpy600_spec_save_ascii { specNo filename } {
+proc alpy600_spec_save_ascii { specNo filename {list_kwd_val_com_uni ""} } {
    global spec
    global audace
    set res [lsort [array names spec]]
@@ -512,7 +590,12 @@ proc alpy600_spec_save_ascii { specNo filename } {
    foreach header $headers {
       lassign $spec($header) key val typ com uni
       append lignes "# $key = $val / $com ($uni) \n"
-      incr colno
+   }
+   if {$list_kwd_val_com_uni!=""} {
+      foreach l $list_kwd_val_com_uni {
+         lassign $l key val com uni
+         append lignes "# $key = $val / $com ($uni)\n"
+      }
    }
    append lignes "# END\n"
    for { set k 0 } {$k<$n} {incr k} {
@@ -633,15 +716,178 @@ proc alpy600_spec_find_calib_wavelengths { filename {couples ""} {slit single_sl
    }
 }
 
-proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} {slit single_slit} } {
+proc alpy600_spec_bin2ang_for_neon { specNo {delta 4} {polydeg 4} {kappa 2} {display 0} } {
+   global spec
+   global audace
+   if {[info exists spec($specNo)]==0} {
+      error "Use alpy600_spec_create $specNo before"
+   }
+   set star0s [alpy600_spec_flux2lines $specNo]
+   set ns [llength $star0s]
+   if {$ns<2} {
+      error "Only $ns line found. Not enough for wavelength calibration."
+   }
+   set catatype "alpy600 single_slit"
+   set cata0s [focas_db2catas $catatype ""]
+   set nc [llength $cata0s]
+   if {$nc<2} {
+      error "Only $nc line in the catalog. Not enough for wavelength calibration."
+   }
+   set couples [focas_catastars2pairs $star0s $cata0s $catatype $delta 20]
+   lassign $couples couplefull_header couplefulls best_transform
+   set np [llength $couplefulls]
+   if {$np<2} {
+      error "$ns lines in the spectrum. $nc lines in the catalog. Only $np couple found. Not enough for wavelength calibration."
+   }
+   if {$display==1} {
+      ::console::affiche_resultat "== $couplefull_header\n"
+      foreach couplefull $couplefulls {
+         ::console::affiche_resultat " $couplefull\n"
+      }
+   }
+   set couplefulls [lsort -index 0 -real $couplefulls]
+   set couples [list $couplefull_header $couplefulls $best_transform]
+   set polys [focas_pairs2poly $couples $polydeg]
+   lassign $polys polydeg polycoefs sigma ominuscs
+   set ominusc_lim [expr $kappa*$sigma]
+   set couplefullnews ""
+   set ko 0
+   set ke 0
+   foreach ominusc $ominuscs {
+      set couplefull [lindex $couplefulls $ko]
+      set y [lindex $couplefull 2]
+      if {$display==1} {
+         ::console::affiche_resultat " ominusc = $ominusc ($ominusc_lim) y=$y\n"
+      }
+      if {[expr abs($ominusc)]<$ominusc_lim} {
+         lappend couplefullnews $couplefull
+      } else {
+         incr ke
+      }
+      incr ko
+   }
+   set couplefulls $couplefullnews
+   set couples [list $couplefull_header $couplefulls $best_transform]
+   set polys [focas_pairs2poly $couples $polydeg]
+   lassign $polys polydeg polycoefs sigma ominuscs
+   if {$display==1} {
+      ::console::affiche_resultat " polys = $polys\n"
+      ::console::affiche_resultat " ($ke lines deletes)\n"
+      set xs ""
+      set ys ""
+      set yts ""
+      set kt 0
+      foreach couplefull $couplefulls {
+         set x [lindex $couplefull 0]
+         set y [lindex $couplefull 2]
+         set yt [expr $y+[lindex $ominuscs $kt]]
+         lappend xs $x
+         lappend ys $y
+         lappend yts $yt
+      }
+      ::plotxy::hold off
+      ::plotxy::plot $xs $ys ro.
+      ::plotxy::hold on
+      ::plotxy::plot $xs $yts bo-
+   }
+   set res [alpy600_spec_tools_spec2symbolx $specNo wvl]
+   # verifier res ...
+   # lassign $res symbx
+   # set bufNo 1
+   # set naxis1 [buf$bufNo getpixelswidth]
+   # set naxis2 [buf$bufNo getpixelsheight]
+   set grandeurx [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo x] 0]
+   set grandeurx bin
+   set res [alpy600_spec_tools_spec2symbolx $specNo $grandeurx]
+   lassign $res symbx
+   set xs $spec($specNo,$symbx)
+   set nbin [llength $xs]
+   # if {$nwvl!=$naxis1} {
+      # error "Spectrum $specNo has $nwvl pixels and image has $naxis1 pixels"
+   # }
+   set spec($specNo,wv1,UID) {wv1 topo air ang}
+   set spec($specNo,wv1) ""
+   set spec($specNo,wvl,UID) {wvl topo air ang}
+   set spec($specNo,wvl) ""
+   set spec($specNo,wv2,UID) {wv2 topo air ang}
+   set spec($specNo,wv2) ""
+   for {set x 1} {$x<=$nbin} {incr x} {
+      set wv1 [focas_tools_polyval $polycoefs [expr $x-0.5]]
+      lappend spec($specNo,wv1) $wv1
+      set wvl [focas_tools_polyval $polycoefs $x]
+      lappend spec($specNo,wvl) $wvl
+      set wv2 [focas_tools_polyval $polycoefs [expr $x+0.5]]
+      lappend spec($specNo,wv2) $wv2
+   }
+   return [list $ns $nc $np $sigma]
+}
+
+proc alpy600_spec_bin2ang_from_neon { specNo specNeon } {
+   global spec
+   global audace
+   if {[info exists spec($specNo)]==0} {
+      error "Use alpy600_spec_create $specNo before"
+   }
+   if {[info exists spec($specNeon)]==0} {
+      error "Use alpy600_spec_create $specNeon before"
+   }
+   set grandeurx bin
+   set res [alpy600_spec_tools_spec2symbolx $specNo $grandeurx]
+   lassign $res symbx
+   set xs $spec($specNo,$symbx)
+   set nbin [llength $xs]
+   #
+   set grandeurx wvl
+   set res [alpy600_spec_tools_spec2symbolx $specNeon $grandeurx]
+   lassign $res symbx
+   set wvls $spec($specNeon,$symbx)
+   set nwvl [llength $wvls]
+   #
+   set grandeurx wv1
+   set res [alpy600_spec_tools_spec2symbolx $specNeon $grandeurx]
+   lassign $res symbx
+   set wv1s $spec($specNeon,$symbx)
+   set nwv1 [llength $wv1s]
+   #
+   set grandeurx wv2
+   set res [alpy600_spec_tools_spec2symbolx $specNeon $grandeurx]
+   lassign $res symbx
+   set wv2s $spec($specNeon,$symbx)
+   set nwv2 [llength $wv2s]
+   if {$nwvl!=$nbin} {
+      error "Spectrum $specNo has $nbin bins and spectrum $specNeon has $nwvl wavelengths"
+   }
+   set spec($specNo,wv1,UID) {wv1 topo air ang}
+   set spec($specNo,wv1) ""
+   set spec($specNo,wvl,UID) {wvl topo air ang}
+   set spec($specNo,wvl) ""
+   set spec($specNo,wv2,UID) {wv2 topo air ang}
+   set spec($specNo,wv2) ""
+   for {set x 0} {$x<$nbin} {incr x} {
+      set wv1 [lindex $spec($specNeon,wv1) $x]
+      lappend spec($specNo,wv1) $wv1
+      set wvl [lindex $spec($specNeon,wvl) $x]
+      lappend spec($specNo,wvl) $wvl
+      set wv2 [lindex $spec($specNeon,wv2) $x]
+      lappend spec($specNo,wv2) $wv2
+   }
+}
+
+proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} {slit single_slit} {kappa 2} } {
    global spec
    global audace
    set catatype "alpy600 $slit"
-   set star0s [focas_image2stars $filename $catatype]
+   if {$filename==""} {
+      set star0s [alpy600_spec_flux2lines $specNo]
+   } else {
+      set star0s [focas_image2stars $filename $catatype]
+   }
    set cata0s [focas_db2catas $catatype ""]
    set couples [focas_catastars2pairs $star0s $cata0s $catatype 4 20]
    lassign $couples couplefull_header couplefulls best_transform
-   foreach couplefull [lsort -real -index 0 $couplefulls] {
+   ::console::affiche_resultat "== $couplefull_header\n"
+   set couplefulls [lsort -index 0 -real $couplefulls]
+   foreach couplefull $couplefulls {
       ::console::affiche_resultat " $couplefull\n"
    }
    set res ""
@@ -677,7 +923,48 @@ proc alpy600_spec_bin2ang1 { specNo filename {polydeg 6} {bintrans 0} {slit sing
    set couples [list $couplefull_header $couplefulls $best_transform]
    set polys [focas_pairs2poly $couples $polydeg]
    lassign $polys polydeg polycoefs sigma ominuscs
+   set ominusc_lim [expr $kappa*$sigma]
+   set couplefullnews ""
+   set ko 0
+   set ke 0
+   foreach ominusc $ominuscs {
+      set couplefull [lindex $couplefulls $ko]
+      set y [lindex $couplefull 2]
+      #::console::affiche_resultat " ominusc = $ominusc ($ominusc_lim) y=$y\n"
+      if {[expr abs($ominusc)]<$ominusc_lim} {
+         lappend couplefullnews $couplefull
+      } else {
+         incr ke
+      }
+      incr ko
+   }
+   set couplefulls $couplefullnews
+   set couples [list $couplefull_header $couplefulls $best_transform]
+   set polys [focas_pairs2poly $couples $polydeg]
+   lassign $polys polydeg polycoefs sigma ominuscs
    ::console::affiche_resultat " polys = $polys\n"
+   ::console::affiche_resultat " ($ke lines deletes)\n"
+   if {1==1} {
+      set xs ""
+      set ys ""
+      set yts ""
+      set kt 0
+      foreach couplefull $couplefulls {
+         set x [lindex $couplefull 0]
+         set y [lindex $couplefull 2]
+         set yt [expr $y+[lindex $ominuscs $kt]]
+         lappend xs $x
+         lappend ys $y
+         lappend yts $yt
+      }
+      ::plotxy::hold off
+      ::plotxy::plot $xs $ys ro.
+      ::plotxy::hold on
+      ::plotxy::plot $xs $yts bo-
+      #tk_messageBox
+   }
+   
+   
    if {[info exists spec($specNo)]==0} {
       error "Use alpy600_spec_create $specNo before"
    }
@@ -773,10 +1060,83 @@ proc alpy600_spec_stat { specNo1 {grandeurx ""} {x1 4000} {x2 8000} {grandeury "
    return [list $mini $maxi $mean $std $median]
 }
 
+# normalise à norm_value sur la moyenne du flux entre x1 et x2
+proc alpy600_spec_ngain { specNo1 norm_value {grandeurx ""} {x1 4900} {x2 5100} {grandeury ""} } {
+   global spec
+   if {$grandeurx==""} {
+      set grandeurx [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo1 x] 0]
+   }
+   set res [alpy600_spec_tools_spec2symbolx $specNo1 $grandeurx]
+   lassign $res symbx
+   set xs $spec($specNo1,$symbx)
+   set nx [llength $xs]
+   if {$grandeury==""} {
+      set grandeury [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo1 y] 0]
+   }
+   set res [alpy600_spec_tools_spec2symbolx $specNo1 $grandeury]
+   lassign $res symby
+   set ys $spec($specNo1,$symby)
+   set samples ""
+   for {set kx 0} {$kx<$nx} {incr kx} {
+      set x [lindex $xs $kx]
+      if {$x<$x1} { continue }
+      if {$x>$x2} { continue }
+      set y [lindex $ys $kx]
+      lappend samples $y
+   }
+   set mean [::math::statistics::mean $samples]
+   set std [::math::statistics::stdev $samples]
+   set median [::math::statistics::median $samples]
+   set mult [expr 1.*$norm_value/$median]
+   set ynews ""
+   for {set kx 0} {$kx<$nx} {incr kx} {
+      set y [lindex $ys $kx]
+      lappend ynews [expr $y*$mult]
+   }
+   set spec($specNo1,$symby) $ynews
+   return $mult
+}
+
+proc alpy600_spec_integral { specNo } {
+   global spec
+   # 1 erg = 1e-7 J
+   # E = h*c/lambda
+   set h 6.62606957e-34 ; # J.s
+   set c 299792458 ; # m/s
+   set hc [expr $h*$c]
+   set res [alpy600_spec_tools_spec2symbolxy $specNo wvl flu]
+   lassign $res symbx1 symby1
+   lassign $spec($specNo,$symby1,UID) grandeur site medium unite
+   if {($unite!="esca")&&($unite!="psca")} {
+      error "Flux not in UID unit = esca or psca"
+   }
+   set x1s $spec($specNo,$symbx1)
+   set y1s $spec($specNo,$symby1)
+   set n [llength $x1s]
+   set res [alpy600_spec_tools_spec2symbolx $specNo wv1]
+   set x1_wv1s $spec($specNo,$res)
+   set res [alpy600_spec_tools_spec2symbolx $specNo wv2]
+   set x1_wv2s $spec($specNo,$res)
+   # verifier res ...
+   set finteg 0.
+   for {set k 0} {$k<$n} {incr k} {
+      set lambda [lindex $x1s $k]
+      if {($lambda<3500)||($lambda>9000)} {
+         continue
+      }
+      set l1 [lindex $x1_wv1s $k]
+      set l2 [lindex $x1_wv2s $k]
+      set dl [expr abs($l2-$l1)]
+      set f [lindex $y1s $k]
+      set finteg [expr $finteg+$f*$dl]
+   }
+   return $finteg
+}
+
 proc alpy600_spec_atmosphere_trans { specNo airmass altitude_m Aerosol_Optical_Depth} {
    # 0.07=hiver 0.21=ete : Aerosol Optical Depth (AOD)
    global spec
-   global audace
+   global audace   
    if {[info exists spec($specNo)]==0} {
       error "Use alpy600_spec_create $specNo before"
    }
@@ -1041,11 +1401,18 @@ proc alpy600_spec_ph2erg { specNo1 } {
 
 # ############# FIN Conversions d'unités de flux pour un spectre catalogue
 
-
-
 proc alpy600_spec_flux2lines { specNo } {
+   global xobs yobs
    global spec
-   set res [alpy600_spec_tools_spec2symbolxy $specNo wvl flu]
+   set grandeurx ""
+   set grandeury ""
+   if {$grandeurx==""} {
+      set grandeurx [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo x] 0]
+   }
+   if {$grandeury==""} {
+      set grandeury [lindex [alpy600_spec_tools_get_pertinent_grandeur $specNo y] 0]
+   }
+   set res [alpy600_spec_tools_spec2symbolxy $specNo $grandeurx $grandeury]
    lassign $res symbx symby
    set xs $spec($specNo,$symbx)
    set ys $spec($specNo,$symby)
@@ -1068,6 +1435,9 @@ proc alpy600_spec_flux2lines { specNo } {
    } else {
       set seuil $seuil2
    }
+   #console::affiche_resultat "seuil1 = $seuil1\n"
+   #console::affiche_resultat "seuil2 = $seuil2\n"
+   #console::affiche_resultat "seuil = $seuil\n"
    # --- algo de detection des pics
    set liste ""
    set liste2 ""
@@ -1077,7 +1447,7 @@ proc alpy600_spec_flux2lines { specNo } {
    set value2 [lindex $ys 1]
    set value3 [lindex $ys 2]
    set value4 [lindex $ys 3]
-   for {set kx 4} {$kx<=[expr $naxis1-2]} {incr kx} {
+   for {set kx 4} {$kx<=[expr $naxis1-4]} {incr kx} {
       set value5 [lindex $ys $kx]
       if {$value3>$seuil} {
          set slope12 [expr $value2-$value1]
@@ -1103,43 +1473,65 @@ proc alpy600_spec_flux2lines { specNo } {
                lappend xobs $kobs
                lappend yobs [lindex $ys $kobs]
             }
-            set x $pix
-            set sig 4
+            #console::affiche_resultat " x1=$x1 x2=$x2 yobs=$yobs\n"
+            set x0 $pix
+            set sig 1.5
             set fback [expr ([lindex $yobs 0]+[lindex $yobs end])/2.]
             set f [expr $value3 - $fback]
-            console::affiche_resultat " AVANT = [list $f $x $sig $fback]\n"
-            set res [gsl_multimin_fminimizer_nmsimplex alpy600_spec_tools_gaussian [list $f $x $sig $fback] 1e-2 100]
-            # set valeurs [ buf1 fitgauss $box ]
-            console::affiche_resultat "res=$res\n"
-            aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            set dif 0.
-            set intx [lindex $valeurs 0]
-            set xc [lindex $valeurs 1]
-            set fwhmx [lindex $valeurs 2]
-            set bgx [lindex $valeurs 3]
-            set inty [lindex $valeurs 4]
-            set yc [lindex $valeurs 5]
-            set fwhmy [lindex $valeurs 6]
-            set bgy [lindex $valeurs 7]
-            #
-            if {($fwhmx>2)&&($intx>$seuil)} {
-               set if0 [ expr $intx*$fwhmx*.601*sqrt(3.14159265) ]
-               #set lambda [polyval $polys $xc]
-               set lambda 0
-               append liste "[format %7.2f $xc] [format %6.0f [expr $intx/$exposure/$biny]] [format %.1f $lambda] [format %.1f $fwhmx]\n"
-               if {$lambda>3800} {
-                  append liste2 "[format %.1f $lambda] [format %6.0f [expr $intx/$exposure/$biny]] [format %7.2f $xc]\n"
+            set init_vector [list $f $x0 $sig $fback]
+            #console::affiche_resultat " AVANT = $init_vector\n"
+            set epsabs 1
+            set sortie 0
+            set ntrymax 5
+            set nitermax 100
+            set ktry 0
+            while {$sortie==0} {
+               set res [gsl_multimin_fminimizer_nmsimplex alpy600_spec_tools_gaussian $init_vector $epsabs $nitermax]
+               set last_vector [lindex $res 0]
+               set iters [split [lindex $res 1] \n]
+               set status [lindex [split [lindex $iters end-1] =] end]
+               set lastiter [lindex $iters end-2]
+               set nbiter [lindex $lastiter 2]
+               #console::affiche_resultat "==== ktry=$ktry epsabs=$epsabs\n"
+               #console::affiche_resultat "lastiter = $lastiter\n"
+               #console::affiche_resultat "status = $status\n"
+               #console::affiche_resultat "nbiter = $nbiter\n"
+               incr ktry
+               if {$status==0} {
+                  #console::affiche_resultat "nbiter = $nbiter && nitermax=$nitermax\n"
+                  if {$nbiter==1} {
+                     set epsabs [expr $epsabs*0.6] 
+                  } else {
+                     set sortie 1
+                  }
+               } else {
+                  if {$nbiter==$nitermax} {
+                     set epsabs [expr $epsabs*(2.+rand()/10.)] 
+                  }
                }
-               set x $xc
-               set y 1
-               set flux [format %6.0f [expr $intx/$exposure/$biny]]
-               set fluxerr 0
-               set background $mini
-               set fwhm $fwhmx
-               set flags 0
+               #console::affiche_resultat "ktry=$ktry ntrymax=$ntrymax\n"
+               if {$ktry>$ntrymax} {
+                  set sortie 2
+               }
+               #console::affiche_resultat "sortie = $sortie\n"
+            }
+            #console::affiche_resultat "===> lastiter = $lastiter\n"
+            set final_vector [lindex $res 0]
+            #console::affiche_resultat "APRES final_vector=$final_vector\n"
+            set x [lindex $final_vector 1]
+            set y 1
+            set intx [lindex $final_vector 0]
+            set flux [format %6.0f [expr $intx/$exposure/$biny]]
+            set fluxerr 0
+            set background [lindex $final_vector 3]
+            set fwhm [lindex $final_vector 2]
+            set flags 0
+            if {($fwhm>1)&&($intx>$seuil)&&([expr abs($x-$x0)]<2.5)} {
                incr id
+               set lambda 0
                lappend stars [list $x $y $flux $fwhm $lambda $id $flags]
             }
+            #tk_messageBox
          }
       }
       set value1 $value2
@@ -1149,7 +1541,7 @@ proc alpy600_spec_flux2lines { specNo } {
    }
    set star0s [lsort -decreasing -real -index 2 $stars]
    set nstar0s [llength $star0s]
-   ::console::affiche_resultat "$nstar0s calibration lines found\n"
+   #::console::affiche_resultat "$nstar0s calibration lines found\n"
    return $star0s
 }
 
@@ -1359,11 +1751,15 @@ proc alpy600_spec_tools_ope2 { specNo1 operation specNo2 {grandeury1 flu} {grand
    set y2s $spec($specNo2,$symby2)
    set n [llength $x1s]
    set ys ""
+   # --- case of same sampling
+   set sampling equal
    for {set k 0} {$k<$n} {incr k} {
       set x1 [lindex $x1s $k]
       set x2 [lindex $x2s $k]
       if {$x1!=$x2} {
-         error "Spectra $grandeurx1 are not the same"
+         set sampling not_equal
+         break
+         #error "Spectra $grandeurx1 are not the same"
       }
       set y1 [lindex $y1s $k]
       set y2 [lindex $y2s $k]
@@ -1375,6 +1771,96 @@ proc alpy600_spec_tools_ope2 { specNo1 operation specNo2 {grandeury1 flu} {grand
       }
       lappend ys $val
    }
+   # --- case of different sampling. resampling a la volée
+   if {$sampling=="not_equal"} {
+      set symbx1_wv1 [alpy600_spec_tools_spec2symbolx $specNo1 wv1]
+      set symbx1_wv2 [alpy600_spec_tools_spec2symbolx $specNo1 wv2]
+      set x1_wv1s $spec($specNo1,$symbx1_wv1)
+      set x1_wv2s $spec($specNo1,$symbx1_wv2)
+      set n1 [llength $x1_wv1s]
+      set symbx2_wv1 [alpy600_spec_tools_spec2symbolx $specNo2 wv1]
+      set symbx2_wv2 [alpy600_spec_tools_spec2symbolx $specNo2 wv2]
+      set x2_wv1s $spec($specNo2,$symbx2_wv1)
+      set x2_wv2s $spec($specNo2,$symbx2_wv2)
+      set n2 [llength $x2_wv1s]
+      for {set k1 0} {$k1<$n1} {incr k1} {
+         set x1_wv1 [lindex $x1_wv1s $k1]
+         set x1_wv2 [lindex $x1_wv2s $k1]
+         set y1 [lindex $y1s $k1]
+         set f ""
+         for {set k2 0} {$k2<$n2} {incr k2} {
+            set x2_wv1 [lindex $x2_wv1s $k2]
+            set x2_wv2 [lindex $x2_wv2s $k2]
+            set y2 [lindex $y2s $k2]
+            #
+            # x2      wv1---------------wv2
+            # x1                                wv1---------------wv2
+            #
+            # x2                        wv1---------------------------------wv2
+            # x1                                wv1---------------wv2
+            #
+            # x2                        wv1-----------wv2
+            #                                         wv1-----wv2     
+            #                                                 wv1-----wv2     
+            # x1                                wv1---------------wv2
+            #
+            # x2                                                          wv1---------------wv2
+            # x1                                wv1---------------wv2
+            if {$x2_wv2<$x1_wv1} {
+               continue
+            }
+            if {$x2_wv1>$x1_wv2} {
+               break
+            }
+            if {($x2_wv1<$x1_wv1)&&($x2_wv2>=$x1_wv2)} {
+               set f $y2
+               break
+            }
+            if {($x2_wv1<$x1_wv1)&&($x2_wv2<$x1_wv2)} {
+               set fwtot 0.
+               set wtot 0.
+               set sortie 0
+               set kk2 $k2
+               while {$sortie==0} {
+                  set x2_wv1 [lindex $x2_wv1s $kk2]
+                  set x2_wv2 [lindex $x2_wv2s $kk2]
+                  set y2 [lindex $y2s $kk2]
+                  if {($x2_wv1<$x1_wv1)} {
+                     set w [expr ($x2_wv2-$x1_wv1)/($x2_wv2-$x2_wv1)]
+                     set f $y2
+                  } elseif {($x2_wv2>=$x1_wv2)} {
+                     set w [expr ($x1_wv2-$x2_wv1)/($x2_wv2-$x2_wv1)]
+                     set f $y2
+                     set sortie 1
+                  } else {
+                     set w 1
+                     set f $y2
+                  }
+                  set fwtot [expr $fwtot+$f*$w]
+                  set wtot [expr $wtot+$w]
+                  incr kk2
+                  if {$kk2>=$n2} {
+                     set sortie 2
+                  }
+               }
+               set f [expr $fwtot/$wtot]
+               break
+            }
+         }
+         if {$f==""} {
+            set val 0.
+         } else {
+            set err [catch {
+               set val [expr 1. * $y1 $operation $y2]
+            } msg ]
+            if {($err==1)||($val=="Inf")||($val=="-Inf")||([expr abs($val)]>1e7)} {
+               set val 0.
+            }
+         }
+         lappend ys $val
+      }
+   }
+   #
    set spec($specNo1,$symby1) $ys
    return ""
 }
@@ -1556,19 +2042,19 @@ proc alpy600_spec_tools_gaussian { v } {
    set residu 0.
    set ycs ""
    for {set k 0} {$k<$n} {incr k} {
-      set x [expr $xobs $k]
-      set yo [expr $yobs $k]
-      set yc [expr $f * exp ( ($x-$xc)*($x-$xc)/2./$sig2) + $fback]
+      set x [lindex $xobs $k]
+      set yo [lindex $yobs $k]
+      set yc [expr $f * exp ( -($x-$xc)*($x-$xc)/2./$sig2) + $fback]
       lappend ycs $yc
       set residu [expr $residu + ($yo - $yc)*($yo - $yc) ]
    }
-   if {1==1} {
+   if {1==0} {
       ::plotxy::hold off
       ::plotxy::plot $xobs $yobs ro-
       ::plotxy::hold on
       ::plotxy::plot $xobs $ycs b-
       ::plotxy::title $v
-      tk_messageBox
+      #tk_messageBox
    }
    return $residu
 }
