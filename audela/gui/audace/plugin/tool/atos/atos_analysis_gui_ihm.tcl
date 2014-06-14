@@ -16,6 +16,8 @@
 
       ::atos_analysis_gui::init_faible
 
+      set ::atos_analysis_gui::int_corr 1
+
       #--- Determination de la fenetre parente
       if { $visuNo == "1" } {
          set base "$audace(base)"
