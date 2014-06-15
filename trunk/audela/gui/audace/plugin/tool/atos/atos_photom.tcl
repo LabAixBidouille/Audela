@@ -107,17 +107,14 @@ namespace eval ::atos_photom {
 
 
 
-proc photom_methode { xsm ysm delta bufNo} {
-
+   proc photom_methode { xsm ysm delta bufNo} {
 
       global private
 
       set private(psf_toolbox,$::audace(visuNo),gui) 0
 
       if {$private(psf_toolbox,$::audace(visuNo),globale)} {
-      
          set err [catch {PSF_globale $::audace(visuNo) $xsm $ysm} msg]
-         
       } else {
          set err [catch {PSF_one_radius $::audace(visuNo) $xsm $ysm} msg]
       }
@@ -128,7 +125,7 @@ proc photom_methode { xsm ysm delta bufNo} {
          gren_erreur "Msg= $msg\n"
       }
 
-      set  xsm          $private(psf_toolbox,$::audace(visuNo),psf,xsm)      
+      set  xsm          $private(psf_toolbox,$::audace(visuNo),psf,xsm)
       set  ysm          $private(psf_toolbox,$::audace(visuNo),psf,ysm)
       set  fwhmx        $private(psf_toolbox,$::audace(visuNo),psf,fwhmx)
       set  fwhmy        $private(psf_toolbox,$::audace(visuNo),psf,fwhmy)
@@ -139,18 +136,21 @@ proc photom_methode { xsm ysm delta bufNo} {
       set  intensite    $private(psf_toolbox,$::audace(visuNo),psf,intensity)
       set  sigmafond    $private(psf_toolbox,$::audace(visuNo),psf,err_sky)
       set  snint        $private(psf_toolbox,$::audace(visuNo),psf,snint)
-      if {$sigmafond!=0&&[string is double $sigmafond] } {
-         set  snpx         [expr $intensite / $sigmafond]
+      set  delta        $private(psf_toolbox,$::audace(visuNo),psf,radius)
+
+      if {$sigmafond != 0 && [string is double $sigmafond]} {
+         set  snpx [expr $intensite / $sigmafond]
       } else {
-         set  snpx     0
+         set snpx 0
          set sigmafond 0
       }
-      set  delta        $private(psf_toolbox,$::audace(visuNo),psf,radius)
       
       return [ list $xsm $ysm $fwhmx $fwhmy $fwhm $fluxintegre $errflux $pixmax $intensite $sigmafond $snint $snpx $delta] 
+
    }
 
-proc photom_methode_obsolete { xsm ysm delta bufNo} {
+
+   proc photom_methode_obsolete { xsm ysm delta bufNo} {
 
       set xs0         [expr int($xsm - $delta)]
       set ys0         [expr int($ysm - $delta)]
