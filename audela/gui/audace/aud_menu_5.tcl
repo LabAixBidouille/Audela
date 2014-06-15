@@ -1604,8 +1604,8 @@ proc psf_toolbox { visuNo } {
       }
       set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
 
-      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" $x ]
-      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" $y ]
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r 1] ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r 5] ]
       set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
       set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
       set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
@@ -1657,8 +1657,8 @@ proc psf_toolbox { visuNo } {
       }
       set npix [expr ($xs1 - $xs0 + 1) * ($ys1 - $ys0 + 1)]
 
-      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r  1] ]
-      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r  5] ]
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r 1] ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r 5] ]
       set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
       set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
       set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 2] ]
@@ -1702,21 +1702,21 @@ proc psf_toolbox { visuNo } {
       set ys1 [expr int($y + $private(psf_toolbox,$visuNo,radius))]
       set box [list $xs0 $ys0 $xs1 $ys1]
       set r [buf$bufNo psfimcce $box]
-      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r  0] ]
-      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r  1] ]
+      set private(psf_toolbox,$visuNo,psf,xsm)       [format "%.4f" [lindex $r 0] ]
+      set private(psf_toolbox,$visuNo,psf,ysm)       [format "%.4f" [lindex $r 1] ]
       set private(psf_toolbox,$visuNo,psf,err_xsm)   "-"
       set private(psf_toolbox,$visuNo,psf,err_ysm)   "-"
-      set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r  4] ]
-      set private(psf_toolbox,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r  5] ]
-      set private(psf_toolbox,$visuNo,psf,fwhm)      [format "%.2f" [lindex $r  6] ]
-      set private(psf_toolbox,$visuNo,psf,flux)      [format "%.1f" [lindex $r  7] ]
+      set private(psf_toolbox,$visuNo,psf,fwhmx)     [format "%.2f" [lindex $r 4] ]
+      set private(psf_toolbox,$visuNo,psf,fwhmy)     [format "%.2f" [lindex $r 5] ]
+      set private(psf_toolbox,$visuNo,psf,fwhm)      [format "%.2f" [lindex $r 6] ]
+      set private(psf_toolbox,$visuNo,psf,flux)      [format "%.1f" [lindex $r 7] ]
       set private(psf_toolbox,$visuNo,psf,err_flux)  "-"
-      set private(psf_toolbox,$visuNo,psf,pixmax)    [format "%d" [expr int([lindex $r  9])] ]
+      set private(psf_toolbox,$visuNo,psf,pixmax)    [format "%d" [expr int([lindex $r 9])] ]
       set private(psf_toolbox,$visuNo,psf,intensity) [format "%.2f" [lindex $r 10] ]
       set private(psf_toolbox,$visuNo,psf,sky)       [format "%.2f" [lindex $r 11] ]
       set private(psf_toolbox,$visuNo,psf,err_sky)   "-"
 
-      set err [catch {set private(psf_toolbox,$visuNo,psf,snint)     [format "%.2f" [lindex $r 13] ]} msg]
+      set err [catch {set private(psf_toolbox,$visuNo,psf,snint) [format "%.2f" [lindex $r 13] ]} msg]
       if {$err} { set private(psf_toolbox,$visuNo,psf,snint) nan }
 
       set private(psf_toolbox,$visuNo,psf,radius)    [format "%d" [lindex $r 14] ]
@@ -1724,7 +1724,7 @@ proc psf_toolbox { visuNo } {
       if {[lindex $r 15] == 0} {
          set private(psf_toolbox,$visuNo,psf,err_psf)   "-"
       } else {
-         set private(psf_toolbox,$visuNo,psf,err_psf)   [format "%s" [lindex $r 15] ]
+         set private(psf_toolbox,$visuNo,psf,err_psf) [format "%s" [lindex $r 15] ]
       }
       if {$private(psf_toolbox,$visuNo,psf,snint)==nan} { set private(psf_toolbox,$visuNo,psf,err_psf) "snint" }
       if {$private(psf_toolbox,$visuNo,psf,flux)<0} { set private(psf_toolbox,$visuNo,psf,err_psf) "negative flux" }
