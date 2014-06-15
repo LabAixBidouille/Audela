@@ -370,23 +370,13 @@ namespace eval ::atos_ocr_gui {
 
                 set ::atos_gui::frame(posmax) $frm.posmax
 
-             #--- Creation du bouton setmax
-             button $frm.pos.crop \
-                -text "crop" -borderwidth 2 \
-                -command "::atos_tools::crop $visuNo"
-             pack $frm.pos.crop \
-                -in $frm.pos \
-                -side left -anchor w \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+             #--- Creation du bouton setmin
+             button $frm.pos.crop -text "crop" -borderwidth 2 -command "::atos_tools::crop $visuNo"
+             pack $frm.pos.crop -in $frm.pos -side left -anchor w -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
              #--- Creation du bouton setmax
-             button $frm.pos.uncrop \
-                -text "uncrop" -borderwidth 2 \
-                -command "::atos_tools::uncrop $visuNo"
-             pack $frm.pos.uncrop \
-                -in $frm.pos \
-                -side left -anchor w \
-                -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
+             button $frm.pos.uncrop -text "uncrop" -borderwidth 2 -command "::atos_tools::uncrop $visuNo"
+             pack $frm.pos.uncrop -in $frm.pos -side left -anchor w -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
   #--- infos datation
 
@@ -703,6 +693,7 @@ namespace eval ::atos_ocr_gui {
            image create photo .graph -format PNG -file [ file join $audace(rep_plugin) tool atos img cdl.png ]
            image create photo .save  -format PNG -file [ file join $audace(rep_plugin) tool atos img save.png ]
 
+           #--- Creation du bouton start
            button $frm.action.start -image .start\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_ocr_tools::start $visuNo"
@@ -714,6 +705,7 @@ namespace eval ::atos_ocr_gui {
 
            set ::atos_gui::frame(buttons,start) $frm.action.start
 
+           #--- Creation du bouton graph
            button $frm.action.graph -image .graph\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_ocr_tools::graph $visuNo"
@@ -723,6 +715,7 @@ namespace eval ::atos_ocr_gui {
               -padx 0 -pady 0 -ipadx 0 -ipady 0 -expand 0
            DynamicHelp::add $frm.action.graph -text $caption(atos_ocr_gui,graph)
 
+           #--- Creation du bouton sauver
            button $frm.action.save -image .save\
               -borderwidth 2 -width 48 -height 48 -compound center \
               -command "::atos_ocr_tools::save $visuNo"

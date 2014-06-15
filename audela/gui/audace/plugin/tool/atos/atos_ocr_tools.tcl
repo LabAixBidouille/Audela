@@ -1379,40 +1379,43 @@ namespace eval ::atos_ocr_tools {
 
       set filename [::atos_ocr_tools::get_filename_time]
 
-      ::console::affiche_resultat "Sauvegarde dans ${filename} ...\n"
+      ::console::affiche_resultat "Saving timings from frame $::atos_tools::frame_begin to $::atos_tools::frame_end into ${filename}\n"
+
       set f1 [open $filename "w"]
       puts $f1 "# ** atos - Audela - Linux  * "
-      puts $f1 "#FPS = 25"
+      puts $f1 "# FPS = 25"
       set line "idframe, jd, dateiso, verif, ocr, interpol"
       puts $f1 $line
 
+      set cptframe 1
+      set idframe $::atos_tools::frame_begin
+
       set sortie 0
-      set idframe 0
-      set cpt 0
       while {$sortie == 0} {
 
-         incr idframe
-
-         if {$idframe == $::atos_tools::nb_open_frames} {
+         if {$idframe == $::atos_tools::frame_end} {
             set sortie 1
          }
 
-         set line "$idframe,"
+         if { ! [info exists ::atos_ocr_tools::timing($idframe,jd)] || $::atos_ocr_tools::timing($idframe,jd) == ""} {
+            continue
+         }
 
-         if { ! [info exists ::atos_ocr_tools::timing($idframe,jd)] ||  $::atos_ocr_tools::timing($idframe,jd) == ""} { continue }
-
-         append line [ format %6.10f $::atos_ocr_tools::timing($idframe,jd)] "  ,"
-#         append line "$::atos_ocr_tools::timing($idframe,diff)     ,"
-         append line "$::atos_ocr_tools::timing($idframe,dateiso)     ,"
-         append line "$::atos_ocr_tools::timing($idframe,verif)     ,"
-         append line "$::atos_ocr_tools::timing($idframe,ocr)     ,"
+         set line "$idframe, "
+         append line [format %6.10f $::atos_ocr_tools::timing($idframe,jd)] ", "
+         append line "$::atos_ocr_tools::timing($idframe,dateiso), "
+         append line "$::atos_ocr_tools::timing($idframe,verif), "
+         append line "$::atos_ocr_tools::timing($idframe,ocr), "
          append line "$::atos_ocr_tools::timing($idframe,interpol)"
-
          puts $f1 $line
+
+         incr cptframe
+         incr idframe
+
       }
 
       close $f1
-      ::console::affiche_resultat "nb frames sauvees = $idframe\n.. Fin  ..\n"
+      ::console::affiche_resultat "nb frames sauvees = $cptframe\n"
 
    }
 
