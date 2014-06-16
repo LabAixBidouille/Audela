@@ -486,13 +486,13 @@ namespace eval ::atos_cdl_gui {
 
                 set ::atos_gui::frame(posmax) $frm.pos.max.val
 
-             #--- Creation du bouton setmax
+             #--- Creation du bouton crop
              button $frm.pos.crop -text "crop" -borderwidth 2 \
                 -command "::atos_tools::crop $visuNo"
              pack $frm.pos.crop -in $frm.pos -side left -anchor w \
                 -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
 
-             #--- Creation du bouton setmax
+             #--- Creation du bouton uncrop
              button $frm.pos.uncrop -text "uncrop" -borderwidth 2 \
                 -command "::atos_tools::uncrop $visuNo"
              pack $frm.pos.uncrop -in $frm.pos -side left -anchor w \
