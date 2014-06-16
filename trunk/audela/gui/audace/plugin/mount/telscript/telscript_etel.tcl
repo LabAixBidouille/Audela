@@ -220,7 +220,7 @@ proc setup { } {
          after 500
       }
    }
-   set telscript($telname,focus_controler) combit
+   set telscript($telname,focus_controler) arduino
    if {$telscript($telname,focus_controler)=="combit"} {
       # --- open the combit
       set telscript($telname,combitnum2) 4
@@ -243,10 +243,10 @@ proc setup { } {
       }
    } else {
       # --- open the Arduino
-      set telscript($telname,comarduinonum0) 5
+      set telscript($telname,comarduinonum0) //./com13
       set err [catch {
-         set telscript($telname,comarduino0) [open COM$telscript($telname,comarduinonum0) "RDWR"]
-         fconfigure $telscript($telname,comarduino0) -mode "38400,n,8,1" -buffering none -blocking 0
+         set telscript($telname,comarduino0) [open COM$telscript($telname,comarduinonum0) w+]
+         fconfigure $telscript($telname,comarduino0) -mode "9600,n,8,1" -buffering none -blocking 0 -translation {binary binary}
       }  msg ]
       set telscript($telname,z2) "$err $msg"
       if {$err==1} {
@@ -254,7 +254,7 @@ proc setup { } {
          set telscript($telname,combit_simu_direction) ""
       } else {
          catch {
-            catch {exec espeak.exe -v fr "Focuss actif arduino."}
+            catch {exec espeak.exe -v fr "Raquette active arduino."}
             after 500
          }
       }
@@ -265,14 +265,14 @@ proc setup { } {
    # --- Open the ETEL connection
    load libeteltcl
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      # --- axe az=0 (etel=0)
-      # --- axe elev=1 (etel=2)
+      # --- axe az=0 (etel=2)
+      # --- axe elev=1 (etel=5)
       # --- axe rot=2 (etel=4)
-      set err [catch {etel_open -driver com1 -axis 0 -axis 5 -axis 4} msg]
+      set err [catch {etel_open -driver com1 -axis 2 -axis 5 -axis 4} msg]
       catch {exec espeak.exe -v fr "altaz avec rotation"}
    } elseif {$telscript($telname,mount_type)=="azelev"} {
       catch {exec espeak.exe -v fr "altaz sans rotation"}
-      set err [catch {etel_open -driver com1 -axis 0 -axis 5} msg]
+      set err [catch {etel_open -driver com1 -axis 2 -axis 5} msg]
    } elseif {$telscript($telname,mount_type)=="hadec"} {
       set err [catch {etel_open -driver com1 -axis 0 -axis 1} msg]
       catch {exec espeak.exe -v fr "équatorial"}
@@ -329,13 +329,16 @@ proc setup { } {
    }
 
    source $audace(rep_install)/gui/audace/plugin/mount/telscript/telscript_etel.tcl
-
+      
    if {$telscript($telname,simulation)==0} {
 
       # --- Lancement des routines controleurs
-      etel_execute_command_x_s 0 26 1 0 0 79
+      etel_execute_command_x_s 1 79 0
       etel_execute_command_x_s 1 26 1 0 0 79
+      etel_execute_command_x_s 0 79 0
+      etel_execute_command_x_s 0 26 1 0 0 79
       if {$telscript($telname,mount_type)=="azelevrot"} {
+         etel_execute_command_x_s 2 79 0
          etel_execute_command_x_s 2 26 1 0 0 79
       }
       load_params
@@ -614,7 +617,7 @@ proc loop { } {
             }
          } else {
             if {$telscript($telname,comarduino0)!="simu2"} {
-               puts -nonewline $telscript($telname,comarduino0) "focus +\n"
+               puts -nonewline $telscript($telname,comarduino0) "pad_focus+\n"
             }
          }
       }
@@ -631,7 +634,7 @@ proc loop { } {
             }
          } else {
             if {$telscript($telname,comarduino0)!="simu2"} {
-               puts -nonewline $telscript($telname,comarduino0) "focus -\n"
+               puts -nonewline $telscript($telname,comarduino0) "pad_focus-\n"
             }
          }
       }
@@ -647,7 +650,7 @@ proc loop { } {
             }
          } else {
             if {$telscript($telname,comarduino0)!="simu2"} {
-               puts -nonewline $telscript($telname,comarduino0) "focus 0\n"
+               puts -nonewline $telscript($telname,comarduino0) "pad_focus_stop\n"
             }
          }
       }
@@ -732,95 +735,229 @@ proc get_pad_buttons {} {
 
    if {($telscript($telname,motion_next)!="slewing")&&($telscript($telname,motion_next)!="slewing2")} {
 
-      #ajout des bits de changement de mode des vitesses de raquette en les dédoublant pour eviter les courants fugififs
-      set v1 "[combit $telscript($telname,combitnum1) 1]"
-      set v2 "[combit $telscript($telname,combitnum1) 6]"
-      set v3 "[combit $telscript($telname,combitnum1) 8]"
-      after 100
-      set v11 "[combit $telscript($telname,combitnum1) 1]"
-      set v21 "[combit $telscript($telname,combitnum1) 6]"
-      set v31 "[combit $telscript($telname,combitnum1) 8]"
-      set v1 [expr $v1+$v11]
-      set v2 [expr $v2+$v21]
-      set v3 [expr $v3+$v31]
-      set v $telscript($telname,speed_virtual_pad)
-      set telscript($telname,speed_virtual_pad) 0
-      if {($v1 == 2) || ($v==1) }  {
-         catch {espeak "raquette rapide."}
-         set telscript($telname,drift_move_rate) 1
-      }
-      if {$v2 == 2 || ($v==2) }  {
-         catch {espeak "raquette lente."}
-         set telscript($telname,drift_move_rate) 0.5
-      }
-      if {$v3 == 2 || ($v==3) }  {
-         catch {espeak "raquette spectro."}
-         set telscript($telname,drift_move_rate) 0.1
-      }
+      if {$telscript($telname,focus_controler)=="combit"} {
+         #ajout des bits de changement de mode des vitesses de raquette en les dédoublant pour eviter les courants fugififs
+         set v1 "[combit $telscript($telname,combitnum1) 1]"
+         set v2 "[combit $telscript($telname,combitnum1) 6]"
+         set v3 "[combit $telscript($telname,combitnum1) 8]"
+         after 100
+         set v11 "[combit $telscript($telname,combitnum1) 1]"
+         set v21 "[combit $telscript($telname,combitnum1) 6]"
+         set v31 "[combit $telscript($telname,combitnum1) 8]"
+         set v1 [expr $v1+$v11]
+         set v2 [expr $v2+$v21]
+         set v3 [expr $v3+$v31]
+         # mesure de la variable d'état des vitesses
+         set v $telscript($telname,speed_virtual_pad)
+         set telscript($telname,speed_virtual_pad) 0
+         if {($v1 == 2) || ($v==1) }  {
+            catch {espeak "raquette rapide."}
+            set telscript($telname,drift_move_rate) 1
+         }
+         if {$v2 == 2 || ($v==2) }  {
+            catch {espeak "raquette lente."}
+            set telscript($telname,drift_move_rate) 0.5
+         }
+         if {$v3 == 2 || ($v==3) }  {
+            catch {espeak "raquette spectro."}
+            set telscript($telname,drift_move_rate) 0.1
+         }
 
-      # mesure de la variable d'état des bits de rappel
-      if {$telscript($telname,move_virtual_pad)!=""} {
-         # utilisation raquette soft (boutons de l'interface graphique)
-         lassign $telscript($telname,move_virtual_pad) actif sens
-         set telscript($telname,speed_virtual_pad) ""
-         if {$telscript($telname,motion_next)!="correction"} {
-            if {($actif=="1")}  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) [string toupper $sens]
-               set telscript($telname,move_generator) 1
+         # mesure de la variable d'état des bits de rappel
+         if {$telscript($telname,move_virtual_pad)!=""} {
+            # utilisation raquette soft (boutons de l'interface graphique)
+            lassign $telscript($telname,move_virtual_pad) actif sens
+            set telscript($telname,speed_virtual_pad) ""
+            if {$telscript($telname,motion_next)!="correction"} {
+               if {($actif=="1")}  {
+                  set telscript($telname,action_next) "move_start"
+                  set telscript($telname,external_move_direction) [string toupper $sens]
+                  set telscript($telname,move_generator) 1
+               }
+            } else {
+               if {($actif=="0")}  {
+                  set telscript($telname,action_next) "move_stop"
+               }
             }
          } else {
-            if {($actif=="0")}  {
-               set telscript($telname,action_next) "move_stop"
+            # utilisation raquette physique (boutons combit)
+            if {$telscript($telname,motion_next)!="correction"} {
+               set rappel 0
+               set n "[combit $telscript($telname,combitnum0) 1]"
+               if {($n == 1) }  {
+                  set telscript($telname,action_next) "move_start"
+                  set telscript($telname,external_move_direction) N
+                  set telscript($telname,move_generator) 1
+               }
+               set s "[combit $telscript($telname,combitnum0) 9]"
+               if {($s == 1) }  {
+                  set telscript($telname,action_next) "move_start"
+                  set telscript($telname,external_move_direction) S
+                  set telscript($telname,move_generator) 1
+               }
+               set e "[combit $telscript($telname,combitnum0) 8]"
+               if {($e == 1) }  {
+                  set telscript($telname,action_next) "move_start"
+                  set telscript($telname,external_move_direction) E
+                  set telscript($telname,move_generator) 1
+               }
+               set o "[combit $telscript($telname,combitnum0) 6]"
+               if {($o == 1) }  {
+                  set telscript($telname,action_next) "move_start"
+                  set telscript($telname,external_move_direction) W
+                  set telscript($telname,move_generator) 1
+               }
+            } else {
+               # detecte la relache des bits de rappel (utilisation raquette soft)
+               set rappel 1
+               if {$telscript($telname,external_move_direction)=="N"} {
+                  set rappel "[combit $telscript($telname,combitnum0) 1]"
+               }
+               if {$telscript($telname,external_move_direction)=="S"} {
+                  set rappel "[combit $telscript($telname,combitnum0) 9]"
+               }
+               if {$telscript($telname,external_move_direction)=="E"} {
+                  set rappel "[combit $telscript($telname,combitnum0) 8]"
+               }
+               if {$telscript($telname,external_move_direction)=="W"} {
+                  set rappel "[combit $telscript($telname,combitnum0) 6]"
+               }
+               if {($rappel == 0)}  {
+                  set telscript($telname,action_next) "move_stop"
+               }
             }
          }
       } else {
-         # utilisation raquette physique (boutons combit)
-         if {$telscript($telname,motion_next)!="correction"} {
-            set rappel 0
-            set n "[combit $telscript($telname,combitnum0) 1]"
-            if {($n == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) N
-               set telscript($telname,move_generator) 1
+         puts -nonewline $telscript($telname,comarduino0) "read_digital_pins\n"
+         after 200
+         set res [read  -nonewline $telscript($telname,comarduino0)]
+
+         set code [lindex $res 0]
+         if {$code=="tel"} {
+            # --- mode telescope
+            set telscript($telname,pad,haut) [lindex $res 1]
+            set telscript($telname,pad,bas) [lindex $res 2]
+            set telscript($telname,pad,droite) [lindex $res 3]
+            set telscript($telname,pad,gauche) [lindex $res 4]
+            set telscript($telname,pad,rapide) [lindex $res 5]
+            set telscript($telname,pad,lente)  [lindex $res 6]
+            set telscript($telname,pad,spectro) [lindex $res 7]
+            set telscript($telname,pad,suivfich) [lindex $res  8] 
+            set telscript($telname,pad,suivant) [lindex $res 9]        
+            set telscript($telname,pad,focus_plus) [lindex $res 10]
+            set telscript($telname,pad,focus_moins) [lindex $res 11]
+            set telscript($telname,pad,pourcent)  [lindex $res 12]
+            set telscript($telname,pad,delta0) [lindex $res 13]
+            set telscript($telname,pad,pointer) [lindex $res 14]
+            
+            #CALCUL DES VITESSES ET ACCELERATION RAQUETTE
+            set telscript($telname,pad,pourcent_az)     $telscript($telname,pad,pourcent)
+            set telscript($telname,pad,pourcent_ht)    $telscript($telname,pad,pourcent)
+            
+            set telscript($telname,pad,v_rap) [expr $telscript($telname,pad,v_rap0)* $telscript($telname,pad,pourcent)/20]
+            set telscript($telname,pad,ac_rap) [expr $telscript($telname,pad,ac_rap0)* $telscript($telname,pad,pourcent)/20]
+            set telscript($telname,pad,v_rap) [expr round($telscript($telname,pad,v_rap)) ]
+            set telscript($telname,pad,ac_rap) [expr round($telscript($telname,pad,ac_rap)) ]
+            set telscript($telname,pad,vra) [expr 1000* $telscript($telname,pad,pourcent)/30]
+            set telscript($telname,pad,vrh)    [expr 12000* $telscript($telname,pad,pourcent)/30]
+            
+            # mesure de la variable d'état des vitesses
+            if {$telscript($telname,pad,rapide)==1}  {
+               catch {espeak "raquette rapide."}
+               set telscript($telname,drift_move_rate) 1
             }
-            set s "[combit $telscript($telname,combitnum0) 9]"
-            if {($s == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) S
-               set telscript($telname,move_generator) 1
+            if {$telscript($telname,pad,lente)==1}  {
+               catch {espeak "raquette lente."}
+               set telscript($telname,drift_move_rate) 0.5
             }
-            set e "[combit $telscript($telname,combitnum0) 8]"
-            if {($e == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) E
-               set telscript($telname,move_generator) 1
+            if {$telscript($telname,pad,spectro)==1}  {
+               catch {espeak "raquette spectro."}
+               set telscript($telname,drift_move_rate) 0.1
             }
-            set o "[combit $telscript($telname,combitnum0) 6]"
-            if {($o == 1) }  {
-               set telscript($telname,action_next) "move_start"
-               set telscript($telname,external_move_direction) W
-               set telscript($telname,move_generator) 1
+            
+            # mesure de la variable d'état des bits de rappel
+            if {$telscript($telname,move_virtual_pad)!=""} {
+               # utilisation raquette soft (boutons de l'interface graphique)
+               lassign $telscript($telname,move_virtual_pad) actif sens
+               set telscript($telname,speed_virtual_pad) ""
+               if {$telscript($telname,motion_next)!="correction"} {
+                  if {($actif=="1")}  {
+                     set telscript($telname,action_next) "move_start"
+                     set telscript($telname,external_move_direction) [string toupper $sens]
+                     set telscript($telname,move_generator) 1
+                  }
+               } else {
+                  if {($actif=="0")}  {
+                     set telscript($telname,action_next) "move_stop"
+                  }
+               }
+            } else {
+               # utilisation raquette physique (boutons arduino)
+               if {$telscript($telname,motion_next)!="correction"} {
+                  set rappel 0
+                  set n $telscript($telname,pad,haut)
+                  if {($n == 1) }  {
+                     set telscript($telname,action_next) "move_start"
+                     set telscript($telname,external_move_direction) N
+                     set telscript($telname,move_generator) 1
+                  }
+                  set s $telscript($telname,pad,bas)
+                  if {($s == 1) }  {
+                     set telscript($telname,action_next) "move_start"
+                     set telscript($telname,external_move_direction) S
+                     set telscript($telname,move_generator) 1
+                  }
+                  set e $telscript($telname,pad,gauche)
+                  if {($e == 1) }  {
+                     set telscript($telname,action_next) "move_start"
+                     set telscript($telname,external_move_direction) E
+                     set telscript($telname,move_generator) 1
+                  }
+                  set o $telscript($telname,pad,droite)
+                  if {($o == 1) }  {
+                     set telscript($telname,action_next) "move_start"
+                     set telscript($telname,external_move_direction) W
+                     set telscript($telname,move_generator) 1
+                  }
+               } else {
+                  # detecte l'appuis sur les boutons de focus
+                  if {$telscript($telname,pad,focus_plus)==1}  {
+                     gui_start_focus base.f.ffoc.fr2.but_w +
+                  }
+                  if {$telscript($telname,pad,focus_moins)==1}  {
+                     gui_start_focus base.f.ffoc.fr2.but_e -
+                  }
+                  # detecte la relache des bits de rappel (utilisation raquette soft)
+                  set rappel 1
+                  if {$telscript($telname,external_move_direction)=="N"} {
+                     set rappel $telscript($telname,pad,haut)
+                  }
+                  if {$telscript($telname,external_move_direction)=="S"} {
+                     set rappel $telscript($telname,pad,bas)
+                  }
+                  if {$telscript($telname,external_move_direction)=="E"} {
+                     set rappel $telscript($telname,pad,gauche)
+                  }
+                  if {$telscript($telname,external_move_direction)=="W"} {
+                     set rappel $telscript($telname,pad,droite)
+                  }
+                  if {($rappel == 0)}  {
+                     set telscript($telname,action_next) "move_stop"
+                  }
+               }
             }
-         } else {
-            # detecte la relache des bits de rappel (utilisation raquette soft)
-            set rappel 1
-            if {$telscript($telname,external_move_direction)=="N"} {
-               set rappel "[combit $telscript($telname,combitnum0) 1]"
-            }
-            if {$telscript($telname,external_move_direction)=="S"} {
-               set rappel "[combit $telscript($telname,combitnum0) 9]"
-            }
-            if {$telscript($telname,external_move_direction)=="E"} {
-               set rappel "[combit $telscript($telname,combitnum0) 8]"
-            }
-            if {$telscript($telname,external_move_direction)=="W"} {
-               set rappel "[combit $telscript($telname,combitnum0) 6]"
-            }
-            if {($rappel == 0)}  {
-               set telscript($telname,action_next) "move_stop"
-            }
-         }
+         } elseif {$code=="pas"} {
+            # --- mode passerelle
+            set telscript($telname,pad,hautp) [lindex $res 1]
+            set telscript($telname,pad,basp) [lindex $res 2]
+            set telscript($telname,pad,droitep) [lindex $res 3]
+            set telscript($telname,pad,gauchep) [lindex $res 4]
+            set telscript($telname,pad,coupdr) [lindex $res 5]
+            set telscript($telname,pad,coupg)  [lindex $res 6]
+            set telscript($telname,pad,focus_plus) [lindex $res 7]
+            set telscript($telname,pad,focus_moins) [lindex $res 8]
+            # detecte l'appuis sur les boutons de focus (TODO)
+         }  
       }
    }
 }
@@ -837,18 +974,17 @@ proc get_pad_focus {} {
    # --- Get useful variables
    set telname $telscript(def,telname)
    if {($telscript($telname,motion_next)!="slewing")&&($telscript($telname,motion_next)!="slewing2")} {
-      # mesure de la variable d'état des bits de focus Arduino
       if {$telscript($telname,move_virtual_foc)!=""} {
          # utilisation raquette soft (boutons de l'interface graphique)
          lassign $telscript($telname,move_virtual_foc) actif sens
          if {$telscript($telname,motion_next)!="correction"} {
             if {($actif=="1")}  {
-               set telscript($telname,action_next) "focus_start $sens"
+               set telscript($telname,action_next) "pad_focus$sens"
                set telscript($telname,move_generator) 1
             }
          } else {
             if {($actif=="0")}  {
-               set telscript($telname,action_next) "focus_stop"
+               set telscript($telname,action_next) "pad_focus_stop"
             }
          }
       }
@@ -1009,7 +1145,7 @@ proc start_shift_lent { direction } {
             etel_execute_command_x_s $axe 26 1 0 0 82
          }
          if { $vhr >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 83
+            etel_execute_command_x_s $axe 26 1 0 0 84
          }
       }
    }
@@ -1019,10 +1155,10 @@ proc start_shift_lent { direction } {
       }
       if { $sens == 0  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 84
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 84
+            etel_execute_command_x_s $axe 26 1 0 0 82
          }
       }
    }
@@ -1032,10 +1168,10 @@ proc start_shift_lent { direction } {
       }
       if { $sens == 1  } {
          if { $vhl < 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 83
+            etel_execute_command_x_s $axe 26 1 0 0 85
          }
          if { $vhl >= 0  } {
-            etel_execute_command_x_s $axe 26 1 0 0 82
+            etel_execute_command_x_s $axe 26 1 0 0 83
          }
       }
    }
@@ -1158,15 +1294,17 @@ proc set_speed_adus { } {
       }
    }
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      set vs $telscript($telname,adu4deg4sec_rot)
-      set vadu [expr round(-$app_drift_rot/$coef*$vs/1000.)]
-      set telscript($telname,speed_app_adu_rot) $vadu
-      set vadu [expr $vadu*$telscript($telname,speed_app_adu_mult)]
-      etel_set_register_s 2 X 13 0 [expr abs($vadu)]
-      if {$vadu>=0} {
-         etel_execute_command_x_s 2 26 1 0 0 72
-      } else {
-         etel_execute_command_x_s 2 26 1 0 0 71
+      if {1==0} {
+         set vs $telscript($telname,adu4deg4sec_rot)
+         set vadu [expr round(-$app_drift_rot/$coef*$vs/1000.)]
+         set telscript($telname,speed_app_adu_rot) $vadu
+         set vadu [expr $vadu*$telscript($telname,speed_app_adu_mult)]
+         etel_set_register_s 2 X 13 0 [expr abs($vadu)]
+         if {$vadu>=0} {
+            etel_execute_command_x_s 2 26 1 0 0 72
+         } else {
+            etel_execute_command_x_s 2 26 1 0 0 71
+         }
       }
    }
    if {$telscript($telname,mount_type)=="hadec"} {
@@ -1215,8 +1353,10 @@ proc set_pos_adus { } {
       etel_execute_command_x_s 1 26 1 0 0 73
    }
    if {$telscript($telname,mount_type)=="azelevrot"} {
-      #etel_set_register_s 2 X 21 0 [expr round($telscript($telname,goto_app_adu_rot))]
-      #etel_execute_command_x_s 2 26 1 0 0 73
+      if {1==0} {
+         etel_set_register_s 2 X 21 0 [expr round($telscript($telname,goto_app_adu_rot))]
+         etel_execute_command_x_s 2 26 1 0 0 73
+      }
    }
    if {$telscript($telname,mount_type)=="hadec"} {
       etel_set_register_s 0 X 21 0 [expr round($telscript($telname,goto_app_adu_ha))]
@@ -1313,8 +1453,6 @@ proc save_params { } {
       append lignes "set register_1_X_62 $telscript($telname,coord_app_adu_elev0) ; # position init (adu)\n"
       append lignes "set register_1_X_60 $telscript($telname,lim_min_elev) ; # limite inf adu\n"
       append lignes "set register_1_X_61 $telscript($telname,lim_max_elev) ; # limite inf adu\n"
-   }
-   if {$telscript($telname,mount_type)=="azelevrot"} {
       append lignes "# === axe rot\n"
       append lignes "set register_2_X_26 $telscript($telname,adu4deg4sec_rot) ; # vitesse coef (adu/(deg/s))\n"
       append lignes "set register_2_X_27 $telscript($telname,adu4deg4sec_rot)\n"
@@ -1342,6 +1480,9 @@ proc save_params { } {
       append lignes "set register_1_X_60 $telscript($telname,lim_min_dec) ; # limite inf adu\n"
       append lignes "set register_1_X_61 $telscript($telname,lim_max_dec) ; # limite inf adu\n"
    }
+   append lignes "# === offsets de delta0\n"
+   append lignes "set telscript($telname,pad,off-zero-az) $telscript($telname,off-zero-az); # offset delta0\n"
+   append lignes "set telscript($telname,pad,off-zero-ht) $telscript($telname,off-zero-ht); # offset delta0\n"
    package require registry
    set mesDocuments [ ::registry get "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders" Personal ]
    set rep_log [ file normalize [ file join $mesDocuments audela ] ]
@@ -1382,8 +1523,6 @@ proc load_params { } {
          set register_1_X_62 304766223 ; # position init (adu)
          set register_1_X_60 363742618  ; # limite inf adu
          set register_1_X_61 1635256918 ; # limite sup adu
-      }
-      if {$telscript($telname,mount_type)=="azelevrot"} {
          # --- rot
          set register_2_X_26 924300.0  ; # vitesse coef (adu/(deg/s))
          set register_2_X_27 924300.0  ; # vitesse coef (adu/(deg/s))
@@ -1407,6 +1546,9 @@ proc load_params { } {
          set register_1_X_60 0 ; # limite inf adu
          set register_1_X_61 0 ; # limite sup adu
       }
+      # --- offsets delta0
+      set telscript($telname,off-zero-az) $telscript($telname,pad,off-zero-az)
+      set telscript($telname,off-zero-ht) $telscript($telname,pad,off-zero-ht)
    } else {
       source $ficlog
    }
@@ -1428,8 +1570,6 @@ proc load_params { } {
       set telscript($telname,coord_app_deg_elev0) 0 ; # position init (deg)
       set telscript($telname,lim_min_elev)        $register_1_X_60 ; # limite inf adu
       set telscript($telname,lim_max_elev)        $register_1_X_61 ; # limite sup adu
-   }
-   if {$telscript($telname,mount_type)=="azelevrot"} {
       # --- rot
       set telscript($telname,adu4deg4sec_rot)    $register_2_X_26 ; # vitesse coef (adu/(deg/s))
       set telscript($telname,adu4deg_rot)        $register_2_X_28 ; # position coef (adu/deg)

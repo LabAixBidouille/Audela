@@ -17,7 +17,7 @@
 # ==========================================================================================
 # socket_client_send_gcn : to send a GCN-like packet to a server with a GCN connection
 # e.g. source audace/gcn_tools.tcl ; socket_client_send_gcn client_gcn 127.0.0.1 7001 {3 2008 07 07 23 45 21.123 123.4567 -46.4321 1.5 2 600}
-proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45 21.123 123.4567 -46.4321 1.5 2 600}} } {
+proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45 21.123 123.4567 -46.4321 1.5 2 600 0}} } {
    global audace
    global gcn
 
@@ -39,6 +39,7 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
       lappend data 1.5 ; # boite d'erreur (arcmin)
       lappend data 2 ; # nombre de neutrinos 1=unique mais intense
       lappend data 600. ; # duree d'integration (seconds)
+      lappend data 1 ; # flag follow_up
    }
    if {$data=="*"} {
       set now [mc_date2ymdhms now]
@@ -128,7 +129,14 @@ proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45
    set longs [lreplace $longs 11 11 $burst_error]
    set burst_integ_time [expr int([lindex $data 11]/4e-3)]
    set longs [lreplace $longs 14 14 $burst_integ_time]
-   # --- convert longs into the binary stream
+   if {$burst_pkt_type==901} {
+      set follow_up [lindex $data 12]
+      if {$follow_up==""} {
+         set follow_up 0
+      }
+      set longs [lreplace $longs 18 18 $follow_up]
+   }
+  # --- convert longs into the binary stream
    #::console::affiche_resultat "longs=<$longs>\n"
    set line [binary format I* $longs]
    #::console::affiche_resultat "line=<$line>\n"
