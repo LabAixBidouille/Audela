@@ -313,7 +313,9 @@ proc alpy600_buf_extract_fringes { bufNo } {
    lassign $res ymax y1 y2
    saveima tmp
    convgauss 10
-   div tmp 1
+   saveima tmp0
+   loadima tmp
+   div tmp0 1
    set naxis1 [buf$bufNo getpixelswidth]
    set naxis2 [buf$bufNo getpixelsheight]
    set d 40

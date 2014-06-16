@@ -298,6 +298,9 @@ proc photrel_wcs2cat { args } {
          set textes ""
          for {set kl 0} {$kl<$nl} {incr kl} {
             set ligne [lindex $lignes $kl]
+            if {([lindex $ligne 0]=="")||([string index [string trim $ligne] 0]=="#")} {
+               continue
+            }
             set x [lindex $ligne 6]
             set y [lindex $ligne 7]
             set radec [buf$::audace(bufNo) xy2radec [list $x $y]]

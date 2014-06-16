@@ -149,9 +149,9 @@ proc etc_set_array_cameras { } {
 
    # --- Atik
    array set cameras [list {Atik Titan}           {659 494   7.4e-6  7.4e-6   0.2   1.5   5   0.6  1}]
-   array set cameras [list {Atik 314E}            {1392 1040 4.65e-6 4.65e-6  0.2   1.5   3   0.6  1}]
+   array set cameras [list {Atik 314E}            {1392 1040 4.65e-6 4.65e-6  0.2   1.5   3   0.6  1}] 
    array set cameras [list {Atik 320E}            {1620 1220 4.40e-6 4.40e-6  0.2   1.5   3   0.6  1}]
-   array set cameras [list {Atik 314L+}           {1392 1040 6.45e-6 6.45e-6  0.2   1.5   4   0.6  1}]
+   array set cameras [list {Atik 314L+}           {1392 1040 6.45e-6 6.45e-6  0.0005 0.267  3.7   0.6  1}] ; # T=0°C http://www.dangl.at/ausruest/atik_314/atik_314_e.htm
    array set cameras [list {Atik 383L+}           {3362 2504 5.40e-6 5.40e-6  0.2   1.5   7   0.6  1}]
    array set cameras [list {Atik 420}             {1620 1220 4.40e-6 4.40e-6  0.1   1.5   4   0.6  1}]
    array set cameras [list {Atik 450}             {2448 2050 3.45e-6 3.45e-6  0.1   1.5   5   0.6  1}]

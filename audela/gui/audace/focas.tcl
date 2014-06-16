@@ -984,7 +984,7 @@ proc focas_buf2stars { bufno {catatype ""} } {
       set vignetting2 [expr $vignetting*$vignetting]
       set id 0
       foreach ligne $lignes {
-         if {[lindex $ligne 0]==""} {
+         if {([lindex $ligne 0]=="")||([string index [string trim $ligne] 0]=="#")} {
             continue
          }
          set x [lindex $ligne $kx]
@@ -1054,7 +1054,7 @@ proc focas_db2catas { catatype catapath } {
       lappend pics "1744.70     78 6143.06  {Ne}"
       lappend pics "1855.71    106 6402.248 {Ne}"
       lappend pics "1924.93     63 6562.8   {H}"
-      lappend pics "1975.05     93 6677.28  {Ar}"
+      #lappend pics "1975.05     93 6677.28  {Ar}"
       lappend pics "2101.96    699 6965.43  {Ar}"
       lappend pics "2147.70    362 7067.22  {Ar}"
       lappend pics "2239.97    134 7272.936 {Ar}"
@@ -1062,7 +1062,7 @@ proc focas_db2catas { catatype catapath } {
       lappend pics "2345.90   2174 7503.869 {Ar}"
       lappend pics "2406.03   1272 7635.106 {Ar}"
       lappend pics "2553.84    257 7948.176 {Ar}"
-      lappend pics "2583       295 8103.693 {Ar}"      
+      #lappend pics "2583       295 8103.693 {Ar}"      
       lappend pics "2633.89    438 8115.311 {Ar}"      
       lappend pics "2706.85    132 8264.522 {Ar}"
       lappend pics "2781       264 8424.648 {Ar}"

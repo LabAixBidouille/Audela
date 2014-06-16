@@ -1819,7 +1819,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    set exposure $exposure1
    set vignetting2 [expr $vignetting*$vignetting]
    foreach ligne $lignes {
-      if {[lindex $ligne 0]==""} {
+      if {([lindex $ligne 0]=="")||([string index [string trim $ligne] 0]=="#")} {
          continue
       }
       set x [lindex $ligne $kx]
@@ -1853,7 +1853,7 @@ proc photcal_extract { file_image_1 file_image_2 color1 color2 file_common {vign
    set stars ""
    set exposure $exposure2
    foreach ligne $lignes {
-      if {[lindex $ligne 0]==""} {
+      if {([lindex $ligne 0]=="")||([string index [string trim $ligne] 0]=="#")} {
          continue
       }
       set x [lindex $ligne $kx]
