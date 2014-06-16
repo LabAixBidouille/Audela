@@ -226,6 +226,23 @@ namespace eval ::atos_flatdark_gui {
 
                bind $frmdf.frm_scroll.scrollbar <ButtonRelease> "::atos_flatdark_gui::move_scroll $visuNo"
 
+            frame $frmdf.frm_crop
+
+               set fcrop [frame $frmdf.frm_crop.but]
+               set ::atos_gui::frame(crop) $fcrop
+
+                  button $fcrop.setmin -text "setmin" -borderwidth 2 -command "::atos_tools::setmin"
+                  button $fcrop.setmax -text "setmax" -borderwidth 2 -command "::atos_tools::setmax"
+                  entry  $fcrop.min    -fg $color(blue) -relief sunken -width 8
+                  entry  $fcrop.max    -fg $color(blue) -relief sunken -width 8
+                  button $fcrop.crop   -text "crop" -borderwidth 2 -command "::atos_tools::crop $visuNo"
+                  button $fcrop.uncrop -text "uncrop" -borderwidth 2 -command "::atos_tools::uncrop $visuNo"
+
+                  set ::atos_gui::frame(posmin) $fcrop.min
+                  set ::atos_gui::frame(posmax) $fcrop.max
+
+                  grid $fcrop.setmin $fcrop.setmax $fcrop.min $fcrop.max $fcrop.crop $fcrop.uncrop -sticky nsw -padx 2
+
             frame $frmdf.frm_info
                
                set info [frame $frmdf.frm_info.info]
@@ -262,8 +279,8 @@ namespace eval ::atos_flatdark_gui {
             grid $frmdf.path       -sticky nsw -row 1 -column 0 -padx 3
             grid $frmdf.but_select -sticky nsw -row 1 -column 1 -padx 3
             grid $frmdf.but_load   -sticky ""  -row 2 -columnspan 2 -pady 5
-
             grid $frmdf.frm_scroll -sticky nw  -row 3 -columnspan 2
+            grid $frmdf.frm_crop   -sticky ""  -row 4 -columnspan 2 -pady 3
             grid $frmdf.frm_info   -sticky nw  -row 4 -columnspan 2
             grid $frmdf.use_dark   -sticky nw  -row 5 -columnspan 2 -pady 5
 
@@ -466,6 +483,10 @@ namespace eval ::atos_flatdark_gui {
 
       if { $::atos_tools::traitement == "fits" } {
          gren_erreur "TODO\n"
+
+         #pack $::atos_gui::frame(scrollbar) -anchor center -fill none -ipadx 5 
+         #pack $::atos_gui::frame(crop)
+         #pack $::atos_gui::frame(info)
       }
 
       if { $::atos_tools::traitement == "avi" } {
