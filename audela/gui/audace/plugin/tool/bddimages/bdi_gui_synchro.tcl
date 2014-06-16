@@ -181,11 +181,16 @@ namespace eval bdi_gui_synchro {
              button $frm.buttons.synchro -state active -text "Synchro" -relief "raised" \
                 -command "::bdi_tools_synchro::launch_synchro"
 
+             button $frm.buttons.stop -state active -text "STOP" -relief "raised" \
+                -command "::bdi_tools_synchro::stop_synchro"
+
              pack $frm.buttons.connect -expand no -side left
              pack $frm.buttons.ping    -expand no -side left
              pack $frm.buttons.check   -expand no -side left
              pack $frm.buttons.synchro -expand no -side left
+             pack $frm.buttons.stop    -expand no -side left
 
+      set ::bdi_tools_synchro::buttons_synchro $frm.buttons.synchro
 
 
       set onglets [frame $frm.onglets]
@@ -340,4 +345,6 @@ namespace eval bdi_gui_synchro {
          $param.exist configure -state disabled
       }
    }
+
+
 
