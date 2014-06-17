@@ -107,13 +107,9 @@ namespace eval bdi_gui_synchro {
 
       set ::bdi_tools_synchro::rapport $frm.text
       text $::bdi_tools_synchro::rapport -height 30 -width 80 \
-           -xscrollcommand "$::bdi_tools_synchro::rapport.xscroll set" \
            -yscrollcommand "$::bdi_tools_synchro::rapport.yscroll set" \
            -wrap none
       pack $::bdi_tools_synchro::rapport -expand yes -fill both -padx 5 -pady 5
-
-      scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
-      pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
 
       scrollbar $::bdi_tools_synchro::rapport.yscroll -orient vertical -cursor arrow -command "$::bdi_tools_synchro::rapport yview"
       pack $::bdi_tools_synchro::rapport.yscroll -side right -fill y
@@ -251,9 +247,6 @@ namespace eval bdi_gui_synchro {
                  -yscrollcommand "$::bdi_tools_synchro::rapport.yscroll set" \
                  -wrap none
             pack $::bdi_tools_synchro::rapport -expand yes -fill both -padx 5 -pady 5
-
-#            scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
-#            pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
 
             scrollbar $::bdi_tools_synchro::rapport.yscroll -orient vertical -cursor arrow -command "$::bdi_tools_synchro::rapport yview"
             pack $::bdi_tools_synchro::rapport.yscroll -side right -fill y
