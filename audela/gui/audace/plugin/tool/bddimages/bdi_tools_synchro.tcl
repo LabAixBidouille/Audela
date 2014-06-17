@@ -183,7 +183,7 @@ namespace eval bdi_tools_synchro {
          incr cpt
       }
       
-      puts "? $a $b $c"
+      #puts "? $a $b $c"
       
       if {$a && $b && $c} {
          set rc [catch { set count [gets $channel line] } msg]
@@ -213,7 +213,7 @@ namespace eval bdi_tools_synchro {
       puts $channel $var
       puts $channel $val
       flush $channel
-      puts "S: $var = $val"
+      #puts "S: $var = $val"
 
   }
   
@@ -222,17 +222,17 @@ namespace eval bdi_tools_synchro {
       upvar $p_tmpfile tmpfile
       global bddconf
 
-      set flog [open "/tmp/synchro.receive.log" a]
-      puts $flog "I_receive_file"
-      close $flog
+      #set flog [open "/tmp/synchro.receive.log" a]
+      #puts $flog "I_receive_file"
+      #close $flog
 
-      set flog [open "/tmp/synchro.receive.log" a]
-      puts $flog "receive: Demarrage du telechargement"
+      #set flog [open "/tmp/synchro.receive.log" a]
+      #puts $flog "receive: Demarrage du telechargement"
 
       set tmpfile [file join $bddconf(dirtmp) "tmp.[pid].fits.gz"]
 
-      puts $flog "receive: tmpfile = $tmpfile"
-      close $flog
+      #puts $flog "receive: tmpfile = $tmpfile"
+      #close $flog
 
       set fd [open $tmpfile w]
       fconfigure $fd -translation binary
@@ -240,31 +240,31 @@ namespace eval bdi_tools_synchro {
       fcopy $channel $fd -size $filesize
       close $fd
       
-      gren_info "fin du telechargement\n"
-      puts "R: Binary file $tmpfile"
+      #gren_info "fin du telechargement\n"
+      #puts "R: Binary file $tmpfile"
 
-      set flog [open "/tmp/synchro.receive.log" a]
-      puts $flog "receive: end"
-      close $flog
+      #set flog [open "/tmp/synchro.receive.log" a]
+      #puts $flog "receive: end"
+      #close $flog
 
   }
   
   proc ::bdi_tools_synchro::I_send_file { channel filename filesize { file "" } } {
   
-      set flog [open "/tmp/synchro.send.log" a]
-      puts $flog "I_send_file"
+      #set flog [open "/tmp/synchro.send.log" a]
+      #puts $flog "I_send_file"
 
       if {$file == "file"} { 
-         puts $flog "send : var = file to server"
-         gren_info "** send file to server\n"
-         puts "** send file to server"
+         #puts $flog "send : var = file to server"
+         #gren_info "** send file to server\n"
+         #puts "** send file to server"
          puts $channel "file" 
          after 100
       }
 
-      puts $flog "send : filename = $filename"
+      #puts $flog "send : filename = $filename"
       
-      puts "S: Binary file $filename"
+      #puts "S: Binary file $filename"
       set fd [open $filename]
       fconfigure $fd  -translation binary
       fconfigure $channel  -translation binary
@@ -272,8 +272,8 @@ namespace eval bdi_tools_synchro {
       close $fd
       flush $channel
 
-      puts $flog "send : end"
-      close $flog
+      #puts $flog "send : end"
+      #close $flog
 
   }
 
@@ -406,9 +406,9 @@ namespace eval bdi_tools_synchro {
                update
                
                if {$message(synchro)=="S->C"} {
-                  gren_info "work      : $val \n"
+                  #gren_info "work      : $val \n"
 
-                  gren_info "File      : $message(filename) \n"
+                  #gren_info "File      : $message(filename) \n"
                   set dirfilename [file dirname $message(filename)]
                   set filename [file tail $message(filename)]
                   set sqlcmd "SELECT sizefich,datemodif FROM images WHERE filename='$filename' AND dirfilename='$dirfilename';"
@@ -423,8 +423,8 @@ namespace eval bdi_tools_synchro {
                   set filesize_sql [lindex $data 0]
                   set modifdate    [lindex $data 1]
                   
-                  puts "filesize_sql = $filesize_sql\n"
-                  puts "modifdate = $modifdate\n"
+                  #puts "filesize_sql = $filesize_sql\n"
+                  #puts "modifdate = $modifdate\n"
                   
                   set file [file join $bddconf(dirbase) $message(filename)]
                   
@@ -453,14 +453,14 @@ namespace eval bdi_tools_synchro {
                
                if {$message(synchro)=="C->S"} {
 
-                  gren_info "work      : $val \n"
+                  #gren_info "work      : $val \n"
 
-                  gren_info "File      : $message(filename) \n"
-                  gren_info "Filesize  : $message(filesize) \n"
-                  gren_info "Modifdate : $message(modifdate) \n"
-                  gren_info "Exist     : $message(exist) \n"
-                  gren_info "MD5       : $message(md5) \n"
-                  gren_info "tmpfile   : $message(tmpfile) \n"
+                  #gren_info "File      : $message(filename) \n"
+                  #gren_info "Filesize  : $message(filesize) \n"
+                  #gren_info "Modifdate : $message(modifdate) \n"
+                  #gren_info "Exist     : $message(exist) \n"
+                  #gren_info "MD5       : $message(md5) \n"
+                  #gren_info "tmpfile   : $message(tmpfile) \n"
 
                   set md5_r [::md5::md5 -hex -file $message(tmpfile)]
                   if {$message(md5) != $md5_r} {
@@ -491,16 +491,16 @@ namespace eval bdi_tools_synchro {
                   }
                   
                   if {[llength $data]==0} { 
-                     gren_info "data vide\n"
+                     #gren_info "data vide\n"
                      set exist 0
                   } else {
                   
                      catch { unset idbddimg }
                      set err [ catch { 
                                        set data [lindex $data 0]
-                                       gren_info "data = $data\n"
+                                       #gren_info "data = $data\n"
                                        set idbddimg [lindex $data 0] 
-                                       gren_info "idbddimg = $idbddimg\n"
+                                       #gren_info "idbddimg = $idbddimg\n"
                                      } msg ]
                      if {![info exists idbddimg]} {
                         set exist 0
@@ -547,40 +547,9 @@ namespace eval bdi_tools_synchro {
 
                   ::bdi_tools_synchro::I_send_var $channel status SUCCESS
 
-
                }
                
 
-               if {1==0} {
-                  after 1000
-                  addlog " Insert..." ""
-                  update
-                  after 1000
-                  gren_info "File      : $message(filename) \n"
-                  gren_info "MD5       : $message(md5) \n"
-                  gren_info "size      : $message(filesize) \n"
-                  gren_info "tmpfile   : [file tail $message(tmpfile)] \n"
-                  gren_info "modifdate : $message(modifdate) \n"
-
-                  # test filesize 
-
-                  # test MD5
-
-                  # copie du fichier tmp vers son nom de fichier
-
-                  # copie reussie ?
-
-                  # insertion dans la base
-
-                  # insertion dans la base reussi ?
-
-                  # modification du champ date
-
-                  # modification du champ date reussi ?
-                  puts $channel "end"
-                  puts $channel "end"
-               }
-               
                flush $channel
 
                set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $::bdi_tools_synchro::tt0)/1000.]]
@@ -955,13 +924,18 @@ namespace eval bdi_tools_synchro {
       }
       
 
-      set id 0
+      set id -1
 
       gren_info "NB img todo = [llength $mylist ]\n"
       
       foreach l $mylist {
-         
+
+         update
+         incr id
+
          set todo [$::bdi_gui_synchro::liste cellcget $id,1  -text]
+         
+         $::bdi_gui_synchro::liste see $id
          
          if {$todo!="TODO"} {
             continue
@@ -975,67 +949,67 @@ namespace eval bdi_tools_synchro {
          set filesize  [lindex $l 3 ]
          set filename  [lindex $l 4 ]
 
-         gren_info "flush\n"      
+         #gren_info "flush\n"      
          flush $::bdi_tools_synchro::channel
             
-         gren_info "id=$id  E=$exist Sy=$synchro D=$modifdate S=$filesize F=$filename\n"
+         #gren_info "id=$id  E=$exist Sy=$synchro D=$modifdate S=$filesize F=$filename\n"
          
          if {$synchro=="S->C"} {
 
-            gren_info "ok c est parti $synchro\n"
+            #gren_info "ok c est parti $synchro\n"
             catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text PENDING}
 
             # Envoie de l action sur le serveur
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel "SYNC_BDI" $synchro
-            gren_info "SYNC_BDI = $synchro\n"
+            #gren_info "SYNC_BDI = $synchro\n"
 
             # Reception du status
             ::bdi_tools_synchro::I_receive_var $::bdi_tools_synchro::channel status status
-            gren_info "Status = $status\n"
+            #gren_info "Status = $status\n"
 
             # Ok le serveur est dispo on passe en PROCESSING
             if {$status=="PENDING"} {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text PROCESSING}
             } else {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
             update
             
             # Envoie le nom du fichier
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel filename $filename
-            gren_info "filename send\n"
+            #gren_info "filename send\n"
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel work     1
-            gren_info "work send\n"
+            #gren_info "work send\n"
 
             ::bdi_tools_synchro::I_receive_var  $::bdi_tools_synchro::channel status status inf
-            gren_info "status       = $status \n"
+            #gren_info "status       = $status \n"
 
             if {$status!="FILEOK"} {
                addlog "Erreur : $status"
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
             # Reception 
             ::bdi_tools_synchro::I_receive_var  $::bdi_tools_synchro::channel md5 md5_r 
-            gren_info "md5       = $md5_r \n"
+            #gren_info "md5       = $md5_r \n"
             ::bdi_tools_synchro::I_receive_var  $::bdi_tools_synchro::channel filesize  filesize_r
-            gren_info "filesize  = $filesize $filesize_r\n"
+            #gren_info "filesize  = $filesize $filesize_r\n"
             ::bdi_tools_synchro::I_receive_var  $::bdi_tools_synchro::channel modifdate modifdate_r
-            gren_info "modifdate = $modifdate $modifdate_r\n"
+            #gren_info "modifdate = $modifdate $modifdate_r\n"
             
             if {$filesize!=$filesize_r} {
                gren_info "Erreur : Bad file size\n"
                addlog "Erreur : Bad file size"
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
             if {$modifdate!=$modifdate_r} {
                gren_info "Erreur : Bad modif date\n"
                addlog "Erreur : Bad modif date"
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
             catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text DOWNLOAD}
@@ -1044,24 +1018,24 @@ namespace eval bdi_tools_synchro {
             ::bdi_tools_synchro::I_receive_file $::bdi_tools_synchro::channel tmpfile $filesize
 
 
-            gren_info "tmpfile   = $tmpfile  \n"
+            #gren_info "tmpfile   = $tmpfile  \n"
             set md5 [::md5::md5 -hex -file $tmpfile]
 
             if {$md5 != $md5_r} {
                addlog "Erreur : Bad MD5"
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
             
             catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text INSERT}
             set newfile [file join $bddconf(dirtmp) [file tail $filename] ]
-            gren_info "newfile   = $newfile  \n"
+            #gren_info "newfile   = $newfile  \n"
             
             set err [catch {file rename -force $tmpfile $newfile} msg]
             if {$err} {
                addlog "Erreur : rename file : $msg"
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
             
             if {$exist} {
@@ -1076,7 +1050,7 @@ namespace eval bdi_tools_synchro {
                   addlog "sql = $sqlcmd"
                   addlog "msg = $msg"
                   catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-                  return
+                  if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
                }
                set data [lindex $data 0]
                set idbddimg [lindex $data 0]
@@ -1085,7 +1059,7 @@ namespace eval bdi_tools_synchro {
                if {$err} {
                   addlog "Erreur : bddimages_image_identification"
                   catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-                  return
+                  if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
                }
                set idbddimg     [lindex $ident 0]
                set fileimg      [lindex $ident 1]
@@ -1099,11 +1073,11 @@ namespace eval bdi_tools_synchro {
             
 
             set err [catch {set idbddimg [insertion_solo $newfile]} msg]
-            gren_erreur "idbddimg = $idbddimg\n"
+            #gren_erreur "idbddimg = $idbddimg\n"
             if {$err} {
                addlog "Erreur : insertion file : $msg"
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
             # modif la datemodif de $idbddimg
             set sqlcmd "UPDATE images SET datemodif='$modifdate' WHERE idbddimg=$idbddimg;"
@@ -1136,7 +1110,7 @@ namespace eval bdi_tools_synchro {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text PROCESSING}
             } else {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
             catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text UPLOAD}
@@ -1176,7 +1150,7 @@ namespace eval bdi_tools_synchro {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text UPLOADED}
             } else {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
             # Envoie de l action work
@@ -1192,12 +1166,10 @@ namespace eval bdi_tools_synchro {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg darkgreen -foreground white -text DONE}
             } else {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
-               return
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
          }
-         update
-         incr id
       }
       
 # Status : TODO  PENDING ERROR  PROCESSING DONE

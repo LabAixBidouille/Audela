@@ -137,6 +137,7 @@ namespace eval bdi_gui_synchro {
       set ::bdi_tools_synchro::param_check_maj_client 1
       set ::bdi_tools_synchro::param_check_maj_server 1
       set ::bdi_tools_synchro::param_check_exist 0
+      set ::bdi_tools_synchro::param_check_error 1
 
       set ::bdi_tools_synchro::address 192.168.0.60
       set fen .synchroserv
@@ -231,11 +232,16 @@ namespace eval bdi_gui_synchro {
                         -state disabled \
                         -command "::bdi_gui_synchro::param_check exist"
 
+            checkbutton $param.erreur -highlightthickness 0 -text "Continu la synchro si erreur" \
+                        -variable ::bdi_tools_synchro::param_check_error\
+                        -state normal 
+
  
             grid $param.nothing      -sticky nsw 
             grid $param.maj_client   -sticky nsw 
             grid $param.maj_server   -sticky nsw  
             grid $param.exist        -sticky nsw 
+            grid $param.erreur       -sticky nsw 
 
          set logs [frame $f_log.frm  -borderwidth 1 -relief groove]
          pack $logs -in $f_log -expand yes -fill both
