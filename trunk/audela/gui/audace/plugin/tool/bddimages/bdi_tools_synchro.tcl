@@ -439,7 +439,7 @@ namespace eval bdi_tools_synchro {
 
                   }
                   
-                  set md5 [::md5::md5 -hex -file $file]
+                  set md5 [::bdi_tools_synchro::get_md5 $file]
                   
                   ::bdi_tools_synchro::I_send_var  $channel md5       $md5
                   ::bdi_tools_synchro::I_send_var  $channel filesize  $filesize
@@ -458,7 +458,7 @@ namespace eval bdi_tools_synchro {
                   #gren_info "MD5       : $message(md5) \n"
                   #gren_info "tmpfile   : $message(tmpfile) \n"
 
-                  set md5_r [::md5::md5 -hex -file $message(tmpfile)]
+                  set md5_r [::bdi_tools_synchro::get_md5 $message(tmpfile)]
                   if {$message(md5) != $md5_r} {
                      addlog "Erreur : Bad MD5"
                      flush $channel
@@ -655,7 +655,7 @@ namespace eval bdi_tools_synchro {
       # file
       ::bdi_tools_synchro::I_receive_file $::bdi_tools_synchro::channel tmpfile $filesize
 
-      set md5receive [::md5::md5 -hex -file $tmpfile]
+      set md5receive [::bdi_tools_synchro::get_md5 $tmpfile]
       if {$md5receive!=$md5} {
          addlog "Error : bad file comparison."
          return
@@ -847,7 +847,7 @@ namespace eval bdi_tools_synchro {
       close $h
       ::bdi_tools::gzip $filename
       set filename "$filename.gz"
-      set md5      [::md5::md5 -hex -file $filename]
+      set md5      [::bdi_tools_synchro::get_md5 $filename]
       set filesize [file size $filename]
       
       return [list $md5 $filename $filesize]
@@ -932,6 +932,12 @@ namespace eval bdi_tools_synchro {
       
       foreach l $mylist {
 
+         if {$id != -1} {
+            set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt1)/1000.]]
+            catch  {$::bdi_gui_synchro::liste cellconfigure $id,7 -text $tt}
+         }
+         set tt1 [clock clicks -milliseconds]
+
          update
          incr id
 
@@ -973,6 +979,7 @@ namespace eval bdi_tools_synchro {
             if {$status=="PENDING"} {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text PROCESSING}
             } else {
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $status}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -988,7 +995,9 @@ namespace eval bdi_tools_synchro {
             #gren_info "status       = $status \n"
 
             if {$status!="FILEOK"} {
-               addlog "Erreur : $status"
+               set txt "Error : $status"
+               addlog $txt
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1002,14 +1011,16 @@ namespace eval bdi_tools_synchro {
             #gren_info "modifdate = $modifdate $modifdate_r\n"
             
             if {$filesize!=$filesize_r} {
-               gren_info "Erreur : Bad file size\n"
-               addlog "Erreur : Bad file size"
+               set txt "Error : Bad file size"
+               addlog $txt
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
             if {$modifdate!=$modifdate_r} {
-               gren_info "Erreur : Bad modif date\n"
-               addlog "Erreur : Bad modif date"
+               set txt "Error : Bad modif date"
+               addlog $txt
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1021,10 +1032,12 @@ namespace eval bdi_tools_synchro {
 
 
             #gren_info "tmpfile   = $tmpfile  \n"
-            set md5 [::md5::md5 -hex -file $tmpfile]
+            set md5 [::bdi_tools_synchro::get_md5 $tmpfile]
 
             if {$md5 != $md5_r} {
-               addlog "Erreur : Bad MD5"
+               set txt "Error : Bad MD5"
+               addlog $txt
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1035,7 +1048,9 @@ namespace eval bdi_tools_synchro {
             
             set err [catch {file rename -force $tmpfile $newfile} msg]
             if {$err} {
-               addlog "Erreur : rename file : $msg"
+               set txt "Error rename file : $msg"
+               addlog $txt
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1048,9 +1063,10 @@ namespace eval bdi_tools_synchro {
              
                set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
                if {$err} {
-                  addlog "Erreur : find idbddimg - err = $err"
+                  addlog "Error : find idbddimg - err = $err"
                   addlog "sql = $sqlcmd"
                   addlog "msg = $msg"
+                  catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $msg}
                   catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                   if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
                }
@@ -1059,7 +1075,9 @@ namespace eval bdi_tools_synchro {
             
                set err [catch {set ident [bddimages_image_identification $idbddimg]} msg ]
                if {$err} {
-                  addlog "Erreur : bddimages_image_identification"
+                  set txt "Error bddimages_image_identification : idbddimg = $idbddimg"
+                  addlog $txt
+                  catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                   catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                   if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
                }
@@ -1077,7 +1095,9 @@ namespace eval bdi_tools_synchro {
             set err [catch {set idbddimg [insertion_solo $newfile]} msg]
             #gren_erreur "idbddimg = $idbddimg\n"
             if {$err} {
-               addlog "Erreur : insertion file : $msg"
+               set txt ""Error insertion file : $msg""
+               addlog $txt
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $txt}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1088,6 +1108,8 @@ namespace eval bdi_tools_synchro {
                puts "ERROR: sql = $sqlcmd"
                puts "       err = $err"
                puts "       msg = $msg"
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $msg}
+               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
             catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg darkgreen -foreground white -text DONE}
@@ -1111,6 +1133,7 @@ namespace eval bdi_tools_synchro {
             if {$status=="PENDING"} {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text PROCESSING}
             } else {
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $status}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1135,7 +1158,7 @@ namespace eval bdi_tools_synchro {
 
             # Envoie du md5
             set file [file join $bddconf(dirbase) $filename]
-            set md5 [::md5::md5 -hex -file $file]
+            set md5 [::bdi_tools_synchro::get_md5 $file]
             # set md5 "toto"
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel md5 $md5
 #            gren_info "md5 send\n"
@@ -1151,6 +1174,7 @@ namespace eval bdi_tools_synchro {
             if {$status=="UPLOADED"} {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg white -foreground darkgreen -text UPLOADED}
             } else {
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $status}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
@@ -1167,11 +1191,16 @@ namespace eval bdi_tools_synchro {
             if {$status=="SUCCESS"} {
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg darkgreen -foreground white -text DONE}
             } else {
+               catch  {$::bdi_gui_synchro::liste cellconfigure $id,8 -text $status}
                catch  {$::bdi_gui_synchro::liste cellconfigure $id,1 -bg red -foreground white -text ERROR}
                if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
             }
 
          }
+
+
+
+
       }
       
 # Status : TODO  PENDING ERROR  PROCESSING DONE
@@ -1193,9 +1222,24 @@ namespace eval bdi_tools_synchro {
 
 
 
+   proc ::bdi_tools_synchro::get_md5 { file } {
+   
+      set methode 1
 
-
-
+      if {$methode == 0} { 
+         set md5 [::md5::md5 -hex -file $file]
+      } else {
+         set cmd "/usr/bin/md5sum $file"
+         set err [catch { eval exec $cmd } msg ]
+         if {$err} {
+           return -code -1 $msg
+         }
+         set md5 [split $msg " "]
+         set md5 [lindex $md5 0]
+         set md5 [string toupper $md5]
+      }
+      return $md5
+   }
 
   # ===================
   # start
