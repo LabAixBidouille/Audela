@@ -248,13 +248,12 @@ namespace eval bdi_gui_synchro {
 
             set ::bdi_tools_synchro::rapport $logs.text
             text $::bdi_tools_synchro::rapport -height 30 -width 80 \
-                 -xscrollcommand "$::bdi_tools_synchro::rapport.xscroll set" \
                  -yscrollcommand "$::bdi_tools_synchro::rapport.yscroll set" \
                  -wrap none
             pack $::bdi_tools_synchro::rapport -expand yes -fill both -padx 5 -pady 5
 
-            scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
-            pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
+#            scrollbar $::bdi_tools_synchro::rapport.xscroll -orient horizontal -cursor arrow -command "$::bdi_tools_synchro::rapport xview"
+#            pack $::bdi_tools_synchro::rapport.xscroll -side bottom -fill x
 
             scrollbar $::bdi_tools_synchro::rapport.yscroll -orient vertical -cursor arrow -command "$::bdi_tools_synchro::rapport yview"
             pack $::bdi_tools_synchro::rapport.yscroll -side right -fill y
@@ -277,7 +276,6 @@ namespace eval bdi_gui_synchro {
             tablelist::tablelist $::bdi_gui_synchro::liste \
                -columns $cols \
                -labelcommand tablelist::sortByColumn \
-               -xscrollcommand [ list $liste.hsb set ] \
                -yscrollcommand [ list $liste.vsb set ] \
                -selectmode extended \
                -activestyle none \
@@ -285,8 +283,6 @@ namespace eval bdi_gui_synchro {
                -showseparators 1
 
             #--- Scrollbars verticale et horizontale
-            scrollbar $liste.hsb -orient horizontal -command [list $::bdi_gui_synchro::liste xview]
-            pack $liste.hsb -in $liste -side bottom -fill x
             scrollbar $liste.vsb -orient vertical -command [list $::bdi_gui_synchro::liste yview]
             pack $liste.vsb -in $liste -side left -fill y
 

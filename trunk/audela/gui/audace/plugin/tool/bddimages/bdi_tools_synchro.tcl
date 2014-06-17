@@ -584,6 +584,7 @@ namespace eval bdi_tools_synchro {
       }
       
       $::bdi_tools_synchro::rapport insert end "$entete ${msg}${cend}"
+      $::bdi_tools_synchro::rapport see end
   }
 
 
