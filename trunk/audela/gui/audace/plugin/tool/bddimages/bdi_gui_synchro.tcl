@@ -138,7 +138,7 @@ namespace eval bdi_gui_synchro {
       set ::bdi_tools_synchro::param_check_maj_server 1
       set ::bdi_tools_synchro::param_check_exist 0
 
-
+      set ::bdi_tools_synchro::address 192.168.0.60
       set fen .synchroserv
       set ::bdi_gui_astroid::fen $fen
       if { [winfo exists $fen] } {
