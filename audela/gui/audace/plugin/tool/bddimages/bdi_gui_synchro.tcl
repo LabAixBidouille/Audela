@@ -263,6 +263,8 @@ namespace eval bdi_gui_synchro {
                            0 "Date"      left \
                            0 "Size (Mo)" left \
                            0 "Filename"  left \
+                           0 "Duration"  right \
+                           0 "ErrLog"    left \
                      ]
             
             set ::bdi_gui_synchro::liste $liste.tab
