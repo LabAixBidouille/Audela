@@ -11,7 +11,6 @@ namespace eval bdi_tools_synchro {
 
       package require md5 
 
-      variable delay 5
 }
 
 
@@ -179,7 +178,6 @@ namespace eval bdi_tools_synchro {
                return -code 1
             }
          }
-         after $::bdi_tools_synchro::delay
          incr cpt
       }
       
@@ -204,7 +202,6 @@ namespace eval bdi_tools_synchro {
          ::bdi_tools_synchro::free_channel $channel
          return -code 3
       }
-      after $::bdi_tools_synchro::delay
      
   }
 
@@ -259,7 +256,6 @@ namespace eval bdi_tools_synchro {
          #gren_info "** send file to server\n"
          #puts "** send file to server"
          puts $channel "file" 
-         after 100
       }
 
       #puts $flog "send : filename = $filename"
