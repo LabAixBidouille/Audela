@@ -364,7 +364,7 @@ namespace eval bdi_tools_synchro {
                set ::bdi_tools_synchro::tt0 [clock clicks -milliseconds]
                array unset message
                set message(synchro) $val
-               puts "R : $val"
+               #puts "R : $val"
                ::bdi_tools_synchro::I_send_var $channel status "PENDING"
             }
             "filename" {
@@ -554,7 +554,7 @@ namespace eval bdi_tools_synchro {
 
                set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $::bdi_tools_synchro::tt0)/1000.]]
                
-               addlog "Finish in $tt sec"
+               addlog "Finish in $tt sec" "" ""
 
             }
          }
@@ -576,8 +576,13 @@ namespace eval bdi_tools_synchro {
 
 
 
-  proc ::bdi_tools_synchro::addlog { msg {cend ""} } {
-      set entete "\n[mc_date2iso8601 now]:"
+  proc ::bdi_tools_synchro::addlog { msg {cend ""} {cbeg "\n"}} {
+      if {$cbeg == ""} {
+         set entete ""
+      } else {
+         set entete "${cbeg}[mc_date2iso8601 now]:"
+      }
+      
       $::bdi_tools_synchro::rapport insert end "$entete ${msg}${cend}"
   }
 
