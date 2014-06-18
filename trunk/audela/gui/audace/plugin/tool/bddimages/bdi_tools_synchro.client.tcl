@@ -811,8 +811,17 @@
             # fin transaction ave serveur
             
             if {$filesize!=$filesize_r} {
-               ::bdi_tools_synchro::set_error $id "Error : Bad file size on client $filesize != $filesize_r"
-               if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
+               switch $filetype {
+                  "FITS" {
+                     ::bdi_tools_synchro::set_error $id "Error : Bad file size on client $filesize != $filesize_r"
+                     if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
+                  }
+                  "CATA" {
+                  }
+                  default {
+                     set filesize != $filesize_r
+                  }
+               }
             }
             if {$modifdate!=$modifdate_r} {
                ::bdi_tools_synchro::set_error $id "Error : Bad modif date on client $modifdate != $modifdate_r"
