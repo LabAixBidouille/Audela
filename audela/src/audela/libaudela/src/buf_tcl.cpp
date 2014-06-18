@@ -5899,5 +5899,3 @@ int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    delete[] ligne;
    return retour;
 }
-
-
