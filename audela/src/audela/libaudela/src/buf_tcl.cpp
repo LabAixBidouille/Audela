@@ -102,6 +102,9 @@ int cmdFiberCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdPsfGaussian2D(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdPsfMoffatBetaMinus3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdHistogram(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdClipmin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
@@ -179,6 +182,9 @@ static struct cmditem cmdlist[] = {
    {(char*)"photom", (Tcl_CmdProc *)cmdPhotom},
    {(char*)"pointer", (Tcl_CmdProc *)cmdPointer},
    {(char*)"psfimcce", (Tcl_CmdProc *)cmdPsfImcce},
+   {(char*)"psfgaussian2d", (Tcl_CmdProc *)cmdPsfGaussian2D},
+   {(char*)"psfmoffat", (Tcl_CmdProc *)cmdPsfMoffat},
+   {(char*)"psfmoffatbetaminus3", (Tcl_CmdProc *)cmdPsfMoffatBetaMinus3},
    {(char*)"radec2xy", (Tcl_CmdProc *)cmdRadec2xy},
    {(char*)"rot", (Tcl_CmdProc *)cmdTtRot},
    {(char*)"save", (Tcl_CmdProc *)cmdLoadSave},
@@ -4949,6 +4955,69 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
 
 //==============================================================================
+/*
+ * Fit a gaussian 2D profile to fluxes.
+ *
+ * The inputs :
+ * 		1) x0 : the x coordinate of the center of the image
+ * 		2) y0 : the y coordinate of the center of the image
+ * 		3) minimal radius : the lower value for the radius
+ * 		4) maximal radius : the higher value for the radius
+ *
+ * If the input (4) is missing, this means that only one radius (3) is tested
+ *
+ * Note that the image has to be already loaded in the buffer
+ *
+ * Author : Yassine Damerdji
+ */
+int cmdPsfGaussian2D(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+
+
+	return TCL_OK;
+}
+
+/*
+ * Fit a Moffat profile to fluxes (Moffat, 1969, A&A, 3, 455)
+ *
+ * The inputs :
+ * 		1) x0 : the x coordinate of the center of the image
+ * 		2) y0 : the y coordinate of the center of the image
+ * 		3) minimal radius : the lower value for the radius
+ * 		4) maximal radius : the higher value for the radius
+ *
+ * If the input (4) is missing, this means that only one radius (3) is tested
+ *
+ * Note that the image has to be already loaded in the buffer
+ *
+ * Author : Yassine Damerdji
+ */
+int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+
+
+	return TCL_OK;
+}
+
+/*
+ * Fit a Moffat profile to fluxes (Moffat, 1969, A&A, 3, 455).
+ * For this method, the power parameter (beta) is fixed to -3
+ *
+ * The inputs :
+ * 		1) x0 : the x coordinate of the center of the image
+ * 		2) y0 : the y coordinate of the center of the image
+ * 		3) minimal radius : the lower value for the radius
+ * 		4) maximal radius : the higher value for the radius
+ *
+ * If the input (4) is missing, this means that only one radius (3) is tested
+ *
+ * Note that the image has to be already loaded in the buffer
+ *
+ * Author : Yassine Damerdji
+ */
+int cmdPsfMoffatBetaMinus3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+
+
+	return TCL_OK;
+}
 
 int cmdPsfImcce(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
