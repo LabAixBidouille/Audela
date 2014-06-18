@@ -136,6 +136,8 @@ namespace eval bdi_gui_synchro {
       set ::bdi_tools_synchro::param_check_error 1
 
       set ::bdi_tools_synchro::address 192.168.0.60
+      set ::bdi_tools_synchro::address localhost
+      
       set fen .synchroserv
       set ::bdi_gui_astroid::fen $fen
       if { [winfo exists $fen] } {
@@ -256,15 +258,17 @@ namespace eval bdi_gui_synchro {
          set liste [frame $f_liste.frm  -borderwidth 1 -relief groove]
          pack $liste -in $f_liste -expand yes -fill both
 
-            set cols [list 0 "Id"        left \
-                           0 "Status"    left \
-                           0 "Exist"     left \
-                           0 "Synchro"   left \
-                           0 "Date"      left \
-                           0 "Size (Mo)" left \
-                           0 "Filename"  left \
-                           0 "Duration"  right \
-                           0 "ErrLog"    left \
+# $cpt "TODO" "S->C" "FITS" $f_e $tab_server_f_m($f) $tab_server_f_s($f) $f "" ""
+            set cols [list 0  "Id"        right \
+                           15 "Status"    left \
+                           0  "Synchro"   left \
+                           0  "Type"      right \
+                           0  "Exist"     left \
+                           0  "Date"      left \
+                           0  "Size (o)"  right \
+                           0  "Filename"  left \
+                           8  "Duration"  right \
+                           30 "ErrLog"    left \
                      ]
             
             set ::bdi_gui_synchro::liste $liste.tab
@@ -281,37 +285,58 @@ namespace eval bdi_gui_synchro {
             scrollbar $liste.vsb -orient vertical -command [list $::bdi_gui_synchro::liste yview]
             pack $liste.vsb -in $liste -side left -fill y
 
+            menu $liste.popupTbl -title "Actions"
+            $liste.popupTbl add command -label "Voir le chemin dans la console" \
+                -command { ::bdi_gui_synchro::file_in_console }
+
+            bind [$::bdi_gui_synchro::liste bodypath] <ButtonPress-3> [ list tk_popup $liste.popupTbl %X %Y ]
+
             pack $::bdi_gui_synchro::liste -in $liste -expand yes -fill both
             #--- Gestion des evenements
             #bind [$tbl bodypath] <Control-Key-a> [ list ::cata_gestion_gui::selectall $tbl ]
             #bind $tbl <<ListboxSelect>>          [ list ::cata_gestion_gui::cmdButton1Click %W ]
             #bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
             #bind [$tbl bodypath] <Key-u>         [ list ::cata_gestion_gui::unset_flag $tbl ]
+            $::bdi_gui_synchro::liste columnconfigure 0 -sortmode dictionary
+            $::bdi_gui_synchro::liste columnconfigure 6 -sortmode dictionary
             
-      ::bdi_tools_synchro::connect_to_socket
+      #::bdi_tools_synchro::connect_to_socket
+   }
+
+
+   proc ::bdi_gui_synchro::file_in_console {  } {
+
+      global bddconf
+
+      foreach select [$::bdi_gui_synchro::liste curselection] {
+         set data [$::bdi_gui_synchro::liste get $select]
+         set id [lindex $data 0]
+         set file [lindex $data 7]
+         set file [file join $bddconf(dirbase) $file]
+         gren_info "set file $file\n"
+      }
+      gren_info "file exists \$file\n"
+      return
    }
 
 
    proc ::bdi_gui_synchro::check_synchro {  } {
 
       ::bdi_tools_synchro::check_synchro
-      ::bdi_tools_synchro::build_synchro mylist
 
       set tt0 [clock clicks -milliseconds]
-      ::bdi_gui_synchro::affich_synchro mylist
+      ::bdi_gui_synchro::affich_synchro
       set tt [format "%.3f" [expr ([clock clicks -milliseconds] - $tt0)/1000.]]
       gren_info "Affichage de la tablelist en $tt sec\n"
    }
 
-   proc ::bdi_gui_synchro::affich_synchro { p_mylist } {
-      upvar $p_mylist mylist
+   proc ::bdi_gui_synchro::affich_synchro { } {
+
       $::bdi_gui_synchro::liste delete 0 end
 
-      set nb_list [llength $mylist]
-      if {$nb_list>0} {
+      if {[llength $::bdi_tools_synchro::todolist]>0} {
          set cpt 0
-         foreach l $mylist {
-            set l [concat $cpt "TODO" $l]
+         foreach l $::bdi_tools_synchro::todolist {
             $::bdi_gui_synchro::liste insert end $l
             incr cpt
          }
