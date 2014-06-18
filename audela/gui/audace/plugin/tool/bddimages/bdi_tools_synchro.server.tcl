@@ -283,11 +283,24 @@
                   set filesize_disk [file size $file]
                   
                   if {$filesize_disk!=$filesize_sql} {
-                     set txt "Bad file size on serveur $filesize_disk!=$filesize_sql"
-                     addlog $txt
-                     ::bdi_tools_synchro::I_send_var $channel status $txt
-                     flush $channel
-                     return
+                     #set txt "Bad file size on serveur $filesize_disk!=$filesize_sql"
+                     #addlog $txt
+                     #::bdi_tools_synchro::I_send_var $channel status $txt
+                     #flush $channel
+                     #return
+                     
+                     # On corrige l erreur : 
+                     set sqlcmd "UPDATE catas SET sizefich=$filesize_disk WHERE dirfilename=$dirfilename AND filename=$filename;"
+                     set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
+                     if {$err} {
+                        set txt  "Erreur : UPDATE CATAS - correction sizefich - err = $err\nsql = $sqlcmd\nmsg = $msg"
+                        addlog $txt
+                        ::bdi_tools_synchro::I_send_var $channel status $txt
+                        flush $channel
+                        return
+                     }
+                     set filesize_sql $filesize_disk
+                     
                   }
 
                   set md5 [::bdi_tools_synchro::get_md5 $file]
