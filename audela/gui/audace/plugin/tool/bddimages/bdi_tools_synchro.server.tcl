@@ -290,7 +290,7 @@
                      #return
                      
                      # On corrige l erreur : 
-                     set sqlcmd "UPDATE catas SET sizefich=$filesize_disk WHERE dirfilename=$dirfilename AND filename=$filename;"
+                     set sqlcmd "UPDATE catas SET sizefich=$filesize_disk WHERE dirfilename='$dirfilename' AND filename='$filename';"
                      set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
                      if {$err} {
                         set txt  "Erreur : UPDATE CATAS - correction sizefich - err = $err\nsql = $sqlcmd\nmsg = $msg"
