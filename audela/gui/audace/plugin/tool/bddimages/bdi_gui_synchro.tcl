@@ -137,6 +137,7 @@ namespace eval bdi_gui_synchro {
 
       set ::bdi_tools_synchro::address 192.168.0.60
       set ::bdi_tools_synchro::address localhost
+      set ::bdi_tools_synchro::address 193.48.190.89
       
       set fen .synchroserv
       set ::bdi_gui_astroid::fen $fen
