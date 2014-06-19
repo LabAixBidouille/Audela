@@ -88,8 +88,8 @@
       set cmdfile [file join $dir cmdephem_${aster}.sh]
       set chan0 [open $cmdfile w]
 
-      set cmd "$::bdi_tools_astrometry::imcce_ephemcc asteroide -n $aster -j $filedate 1 -tp 1 -te 1 -tc 5 -uai 181 -d 1 -e utc --julien"
-      #set cmd "$::bdi_tools_astrometry::imcce_ephemcc asteroide -n $aster -j $filedate 1 -tp 1 -te 1 -tc 5 -d 1 -e utc --julien -g -0.413962962963 47.02666666666 680"
+      #set cmd "$::bdi_tools_astrometry::imcce_ephemcc asteroide -n $aster -j $filedate 1 -tp 1 -te 1 -tc 5 -uai 181 -d 1 -e utc --julien"
+      set cmd "$::bdi_tools_astrometry::imcce_ephemcc asteroide -n $aster -j $filedate 1 -tp 1 -te 1 -tc 5 -d 1 -e utc --julien -g -0.413962962963 47.02666666666 680"
       gren_info "cmd = $cmd\n"
       puts $chan0 "#!/bin/sh"
       puts $chan0 "LD_LIBRARY_PATH=$::bdi_tools_astrometry::locallib:$::bdi_tools_astrometry::ifortlib"
