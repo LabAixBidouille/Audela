@@ -333,27 +333,27 @@ namespace eval bdi_tools_synchro {
       }
 
       # correction d erreur de filesize
-      foreach line $data {
-         set dirfilename [lindex $line 0]
-         set filename    [lindex $line 1]
-         set size_sql    [lindex $line 2]
-         set file [file join $bddconf(dirbase) $dirfilename $filename]
-         set size_disk [file size $file]
-         if {$size_disk != $size_sql} {
-            set sqlcmd "UPDATE images SET sizefich=$size_disk WHERE dirfilename='$dirfilename' AND filename='$filename';"
-            set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
-            if {$err} {
-            }
-         }
-      }
+      #foreach line $data {
+      #   set dirfilename [lindex $line 0]
+      #   set filename    [lindex $line 1]
+      #   set size_sql    [lindex $line 2]
+      #   set file [file join $bddconf(dirbase) $dirfilename $filename]
+      #   set size_disk [file size $file]
+      #   if {$size_disk != $size_sql} {
+      #      set sqlcmd "UPDATE images SET sizefich=$size_disk WHERE dirfilename='$dirfilename' AND filename='$filename';"
+      #      set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
+      #      if {$err} {
+      #      }
+      #   }
+      #}
 
-      set filename [file join $bddconf(dirtmp) "table_fitscata.txt"]
-      set h [open $filename "w"]
-      foreach line $data {
-         
-         puts $h $line
-      }
-      close $h
+      #set filename [file join $bddconf(dirtmp) "table_fitscata.txt"]
+      #set h [open $filename "w"]
+      #foreach line $data {
+      #   
+      #   puts $h $line
+      #}
+      #close $h
       
       return 
    }
