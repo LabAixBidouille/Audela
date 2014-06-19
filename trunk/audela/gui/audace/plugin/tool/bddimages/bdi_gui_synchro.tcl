@@ -135,10 +135,18 @@ namespace eval bdi_gui_synchro {
       set ::bdi_tools_synchro::param_check_exist 0
       set ::bdi_tools_synchro::param_check_error 1
 
+      # maison
       set ::bdi_tools_synchro::address 192.168.0.60
+
+      # local
       set ::bdi_tools_synchro::address localhost
-      set ::bdi_tools_synchro::address 193.48.190.89
+
+      # 
+      set ::bdi_tools_synchro::address 193.48.190.
       
+      # metis
+      set ::bdi_tools_synchro::address 193.48.190.89
+
       set fen .synchroserv
       set ::bdi_gui_astroid::fen $fen
       if { [winfo exists $fen] } {

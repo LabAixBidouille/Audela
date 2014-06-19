@@ -8,16 +8,16 @@
 
 #      catch { console show }
 #      catch { wm protocol . WM_DELETE_WINDOW exit }
-      set port 6000 ;# 0 if no known free port
+
       set rc [catch {
-        set channel [socket -server server $port]
+        set channel [socket -server server $::bdi_tools_synchro::port]
         set ::bdi_tools_synchro::channel $channel
 
         #puts "$channel: [fconfigure $channel -sockname]"
 
-        if {$port == 0} {
-          set port [lindex [fconfigure $channel -sockname] end]
-          puts "--> server port: $port"
+        if {$::bdi_tools_synchro::port == 0} {
+          set ::bdi_tools_synchro::port [lindex [fconfigure $channel -sockname] end]
+          puts "--> server port: $::bdi_tools_synchro::port"
         }
       } msg]
       if {$rc == 1} {
@@ -25,7 +25,7 @@
         exit
       }
       set (server:host) server
-      set (server:port) $port
+      set (server:port) $::bdi_tools_synchro::port
 
 
       # enter event loop
