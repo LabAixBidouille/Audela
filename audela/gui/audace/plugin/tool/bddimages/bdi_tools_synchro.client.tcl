@@ -14,13 +14,12 @@
 
 
       set host $::bdi_tools_synchro::address
-      set port 6000
-      set rc [catch { set ::bdi_tools_synchro::channel [socket $host $port] } msg]
+      set rc [catch { set ::bdi_tools_synchro::channel [socket $host $::bdi_tools_synchro::port] } msg]
       if {$rc == 1} { 
          ::bdi_tools_synchro::log "" $msg
          return 
       } else {
-         ::bdi_tools_synchro::log $::bdi_tools_synchro::channel "Connection reussi sur $host :$port socket=$::bdi_tools_synchro::channel"
+         ::bdi_tools_synchro::log $::bdi_tools_synchro::channel "Connection reussi sur $host :$::bdi_tools_synchro::port socket=$::bdi_tools_synchro::channel"
          
       }
    }

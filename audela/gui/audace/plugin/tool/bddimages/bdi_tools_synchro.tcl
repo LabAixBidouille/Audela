@@ -11,6 +11,8 @@ namespace eval bdi_tools_synchro {
 
       package require md5 
 
+      variable port 80
+
 }
 
 
