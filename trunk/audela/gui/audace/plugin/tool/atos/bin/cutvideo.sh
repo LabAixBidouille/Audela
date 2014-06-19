@@ -10,8 +10,8 @@ start=$2
 end=$3
 
 if [ "x$start" == "x" -o "x$end" == "x" ]; then
-   ffmpeg -i $video -map 0:v -c:v huffyuv "${video%%.*}-huff.avi"
+   ffmpeg -i $video -map 0:v -c:v huffyuv "${video%%.*}-atos.avi"
 else
-   ffmpeg -ss $start -t $end -i $video -map 0:v -c:v huffyuv "${video%%.*}-huff-crop.avi"
+   ffmpeg -ss $start -t $end -i $video -map 0:v -c:v huffyuv "${video%%.*}-atos-crop.avi"
 fi
 
