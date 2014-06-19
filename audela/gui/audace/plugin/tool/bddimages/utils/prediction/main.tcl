@@ -59,12 +59,13 @@
       set chan1 [open $filedate w]
       set i 0
       foreach line $data {
-         gren_info "$line\n"
+         gren_info "\n"
          set aster [ suppr_zero [string trim [string range $line 0 4]] ]
          gren_info "aster = ($aster) \n"
         
          set datejd [ date2jd [ string range $line 15 31] ]
-         gren_info "dateiso = ([ mc_date2iso8601 datejd]) \n"
+         gren_info "dateiso = ([ mc_date2iso8601 $datejd]) $datejd \n"
+         
          
          puts $chan1 "$datejd"
          
@@ -76,9 +77,11 @@
          set dec [ string range $line 44 55]
          set dec [expr [mc_angle2deg $dec ] ]
          gren_info "dec = $dec \n"
+
+         set uai [ string range $line 77 79]
+         gren_info "uai = $uai \n"
          
-         
-         set mesure($i) [list $datejd $ra $dec]
+         set mesure($i) [list $datejd $ra $dec $uai]
          incr i
       }
       set nbdate $i
@@ -125,7 +128,13 @@
          continue
       }
 
+
+
       gren_info "OFFSET : \n"
+
+      set fileres [ file join $dir residus.csv]
+      set chan0 [open $fileres w]
+      puts $chan0 "jd,residux,residuy,uai"
       
       set offx ""
       set offy ""
@@ -133,14 +142,17 @@
       for {set i 0} {$i<$nbdate} {incr i} {
          
          set diffjdsec [expr abs([lindex $mesure($i) 0]-[lindex $ephem($i) 0])]
-         set diffra    [format "%.1f" [expr abs([lindex $mesure($i) 1]-[lindex $ephem($i) 1])*3600000.0] ]
-         set diffdec   [format "%.1f" [expr abs([lindex $mesure($i) 2]-[lindex $ephem($i) 2])*3600000.0] ]
+         set diffra    [format "%.1f" [expr ([lindex $mesure($i) 1]-[lindex $ephem($i) 1])*3600000.0] ]
+         set diffdec   [format "%.1f" [expr ([lindex $mesure($i) 2]-[lindex $ephem($i) 2])*3600000.0] ]
          lappend offx $diffra
          lappend offy $diffdec
          gren_info "$diffjdsec $diffra $diffdec\n"
          
+         puts $chan0 "[lindex $mesure($i) 0],$diffra,$diffdec,[lindex $mesure($i) 3]"
       }
       
+      close $chan0
+
       set moffx [format "%.0f" [ ::math::statistics::mean $offx ] ]
       set soffx [format "%.0f" [ ::math::statistics::stdev $offx] ]
       set moffy [format "%.0f" [ ::math::statistics::mean $offy ] ]
