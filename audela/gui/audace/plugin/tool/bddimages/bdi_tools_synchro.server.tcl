@@ -171,6 +171,66 @@
                #puts "R : $val"
                ::bdi_tools_synchro::I_send_var $channel status "PENDING"
             }
+            "CHECK_MATCH_FILE" {
+               
+               #$message(md5)
+               #$message(filetype)
+               #$message(filename)
+               #$message(filesize)
+               #$message(modifdate)
+               
+               set err [catch {::bdi_tools_synchro::info_file $message(filename) $message(filetype) } msg ]
+               if {$err} {
+                  ::bdi_tools_synchro::I_send_var $channel status "ERROR : $msg"
+                  flush $channel ; return
+               }
+               set flagsize      [lindex 0]
+               set filesize_sql  [lindex 1]
+               set filesize_disk [lindex 2]
+               set modifdate     [lindex 3]
+               set md5           [lindex 4]
+               
+               if {$flagsize=="DIFF"} {
+
+                  # le fichier sur le serveur n a pas la meme taille sur disque et dans la base
+                  ::bdi_tools_synchro::I_send_var $channel status "ERROR : Le fichier sur le serveur n a pas la meme taille sur disque et dans la base"
+                  flush $channel ; return
+
+                  # A Corriger ?
+                  # il suffit de mettre dans la base la valeur de la taille sur disque
+                  
+               }
+
+               if {$message(filesize)!=$filesize_disk} {
+                  ::bdi_tools_synchro::I_send_var $channel status "DIFFERENT"
+                  # ok le fichier est different donc on peut continuer la synchro
+                  flush $channel ; return
+               }
+               if {$message(md5)!=$md5} {
+                  ::bdi_tools_synchro::I_send_var $channel status "DIFFERENT"
+                  # ok le fichier est different donc on peut continuer la synchro
+                  flush $channel ; return
+               }
+               
+               # les fichiers sont strictements identiques
+
+               if {$message(modifdate) != $modifdate} {
+                  # mise a jour de la date de modification sur la base sql du serveur
+                  set err [catch { ::bdi_tools_synchro::set_modifdate $message(filename) $message(filetype) $message(modifdate) } msg]
+                  if {$err} {
+                     ::bdi_tools_synchro::I_send_var $channel status "ERROR : set modifdate : $msg"
+                     flush $channel ; return
+                  }
+
+                  ::bdi_tools_synchro::I_send_var $channel status "CORRECTED"
+                  flush $channel ; return
+
+               } else {
+                  ::bdi_tools_synchro::I_send_var $channel status "ERROR : Le fichier a l air identique pourquoi le corriger ?"
+                  flush $channel ; return
+               }
+               
+            }
             "filetype" {
                set message(filetype) $val
             }
@@ -501,6 +561,9 @@
          }
       }
    }
+
+
+
 
 
 

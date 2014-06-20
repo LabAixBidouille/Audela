@@ -116,50 +116,63 @@ namespace eval bdi_gui_reports {
       
       global bddconf
       
-      #gren_info "1Click : ($w) ($args)\n"
-      
-      set curselection [$::bdi_tools_reports::data_firstdate curselection]
-      set nb [llength $curselection]
-      if {$nb == 0 } {return}
-      if {$nb > 1 } {
-         tk_messageBox -message "Veuillez selectionner 1 seule date" -type ok
-         return
-      }
-      
-      set cpt 0
-      foreach line [$::bdi_tools_reports::data_firstdate get 0 end] {
-         $::bdi_tools_reports::data_firstdate cellconfigure $cpt,0 -font $bddconf(font,arial_10)
-         incr cpt
-      }
-      set select [lindex $curselection 0]
-      $::bdi_tools_reports::data_firstdate cellconfigure $select,0 -font $bddconf(font,arial_10_b)
-      set ::bdi_gui_reports::selected_firstdate [lindex [$::bdi_tools_reports::data_firstdate get $select] 0]
+      set objects $::bdi_gui_reports::fen.appli.buttons.objects
+      set dates   $::bdi_gui_reports::fen.appli.buttons.dates
 
-      set obj       $::bdi_gui_reports::selected_obj
-      set firstdate $::bdi_gui_reports::selected_firstdate
-      
-      $::bdi_tools_reports::data_reports delete 0 end
+      if {[$objects cget -relief] == "raised"} {
 
-      foreach batch $::bdi_tools_reports::list_reports($obj,$firstdate,batch) {
-         set line ""
-         
-         lappend line $batch
-         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,txt)
-         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,xml)
-         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,mpc)
-         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,photom,txt)
-         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,photom,xml)
-         lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,mpc,submit)
-         if {![info exists ::bdi_tools_reports::list_reports($obj,$firstdate,$batch,comment)]} {
-            lappend line ""
-         } else {
-            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,comment)
+         gren_info "choose dates\n"
+
+
+
+      } else {
+         gren_info "choose objects\n"
+         #gren_info "1Click : ($w) ($args)\n"
+
+         set curselection [$::bdi_tools_reports::data_firstdate curselection]
+         set nb [llength $curselection]
+         if {$nb == 0 } {return}
+         if {$nb > 1 } {
+            tk_messageBox -message "Veuillez selectionner 1 seule date" -type ok
+            return
          }
-         
-         
-         $::bdi_tools_reports::data_reports insert end $line
+
+         set cpt 0
+         foreach line [$::bdi_tools_reports::data_firstdate get 0 end] {
+            $::bdi_tools_reports::data_firstdate cellconfigure $cpt,0 -font $bddconf(font,arial_10)
+            incr cpt
+         }
+         set select [lindex $curselection 0]
+         $::bdi_tools_reports::data_firstdate cellconfigure $select,0 -font $bddconf(font,arial_10_b)
+         set ::bdi_gui_reports::selected_firstdate [lindex [$::bdi_tools_reports::data_firstdate get $select] 0]
+
+         set obj       $::bdi_gui_reports::selected_obj
+         set firstdate $::bdi_gui_reports::selected_firstdate
+
+         $::bdi_tools_reports::data_reports delete 0 end
+
+         foreach batch $::bdi_tools_reports::list_reports($obj,$firstdate,batch) {
+            set line ""
+
+            lappend line $batch
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,txt)
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,xml)
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,mpc)
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,photom,txt)
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,photom,xml)
+            lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,astrom,mpc,submit)
+            if {![info exists ::bdi_tools_reports::list_reports($obj,$firstdate,$batch,comment)]} {
+               lappend line ""
+            } else {
+               lappend line $::bdi_tools_reports::list_reports($obj,$firstdate,$batch,comment)
+            }
+
+
+            $::bdi_tools_reports::data_reports insert end $line
+         }
+         $::bdi_tools_reports::data_reports sortbycolumn 0 -decreasing
+
       }
-      $::bdi_tools_reports::data_reports sortbycolumn 0 -decreasing
       
    }
 
@@ -263,16 +276,21 @@ namespace eval bdi_gui_reports {
 
       # Recupere la liste des nuits
       array unset ::bdi_tools_reports::list_blocks 
+      set ::bdi_tools_reports::list_dates ""
       foreach obj $::bdi_tools_reports::list_objects {
          set dir [file join $bddconf(dirreports) $obj]
          set liste [glob $dir/*]
          foreach i $liste {
             if {[file type $i]=="directory"} {
                lappend ::bdi_tools_reports::list_blocks($obj) [file tail $i]
+               lappend ::bdi_tools_reports::list_dates [file tail $i]
             }
          }
-      }      
-
+      }
+      
+      # construit la liste des dates
+      set ::bdi_tools_reports::list_dates [lsort -dic -unique $::bdi_tools_reports::list_dates]
+       
       # Recupere la liste des rapports
       foreach obj $::bdi_tools_reports::list_objects {
          foreach block $::bdi_tools_reports::list_blocks($obj) {
@@ -383,37 +401,85 @@ namespace eval bdi_gui_reports {
       $::bdi_tools_reports::data_objects   delete 0 end
       $::bdi_tools_reports::data_firstdate delete 0 end
       $::bdi_tools_reports::data_reports   delete 0 end
-      
-      set cpt 0
-      foreach obj $::bdi_tools_reports::list_objects {
-         $::bdi_tools_reports::data_objects insert end $obj
-         if {[info exists ::bdi_gui_reports::selected_obj]} {
-            if {$::bdi_gui_reports::selected_obj==$obj} {
-               $::bdi_tools_reports::data_objects  cellselection  set $cpt,0 $cpt,end
-            }
-         }
-         incr cpt
-      }      
-      
-      if {[info exists ::bdi_gui_reports::selected_obj]} {
 
-         ::bdi_gui_reports::cmdButton1Click_data_objects ::bdi_tools_reports::data_objects
+      set objects $::bdi_gui_reports::fen.appli.buttons.objects
+      set dates   $::bdi_gui_reports::fen.appli.buttons.dates
+
+      if {[$objects cget -relief] == "raised"} {
       
-         if {[info exists ::bdi_gui_reports::selected_firstdate]} {
-         
-            set cpt 0
-            foreach firstdate [$::bdi_tools_reports::data_firstdate get 0 end] {
-               gren_info "line // $firstdate\n"
-               if  { $firstdate == $::bdi_gui_reports::selected_firstdate} {
+         gren_info "choose dates\n"
+
+         set cpt 0
+         foreach block $::bdi_tools_reports::list_dates {
+            $::bdi_tools_reports::data_firstdate insert end $block
+            if {[info exists ::bdi_gui_reports::selected_firstdate]} {
+               if {$::bdi_gui_reports::selected_firstdate==$block} {
                   $::bdi_tools_reports::data_firstdate  cellselection  set $cpt,0 $cpt,end
                }
-               incr cpt
             }
+            incr cpt
+         }      
+
+         if {[info exists ::bdi_gui_reports::selected_firstdate]} {
+
             ::bdi_gui_reports::cmdButton1Click_data_firstdate ::bdi_tools_reports::data_firstdate
+
+            if {[info exists ::bdi_gui_reports::selected_obj]} {
+
+               set cpt 0
+               foreach object [$::bdi_tools_reports::data_objects get 0 end] {
+                  gren_info "line // $object\n"
+                  if  { $object == $::bdi_gui_reports::selected_obj} {
+                     $::bdi_tools_reports::data_objects cellselection  set $cpt,0 $cpt,end
+                  }
+                  incr cpt
+               }
+               ::bdi_gui_reports::cmdButton1Click_data_objects ::bdi_tools_reports::data_objects
+
+            }
 
          }
 
-      }      
+
+      } else {
+
+         gren_info "choose objects\n"
+
+         set cpt 0
+         foreach obj $::bdi_tools_reports::list_objects {
+            $::bdi_tools_reports::data_objects insert end $obj
+            if {[info exists ::bdi_gui_reports::selected_obj]} {
+               if {$::bdi_gui_reports::selected_obj==$obj} {
+                  $::bdi_tools_reports::data_objects  cellselection  set $cpt,0 $cpt,end
+               }
+            }
+            incr cpt
+         }      
+
+         if {[info exists ::bdi_gui_reports::selected_obj]} {
+
+            ::bdi_gui_reports::cmdButton1Click_data_objects ::bdi_tools_reports::data_objects
+
+            if {[info exists ::bdi_gui_reports::selected_firstdate]} {
+
+               set cpt 0
+               foreach firstdate [$::bdi_tools_reports::data_firstdate get 0 end] {
+                  gren_info "line // $firstdate\n"
+                  if  { $firstdate == $::bdi_gui_reports::selected_firstdate} {
+                     $::bdi_tools_reports::data_firstdate cellselection  set $cpt,0 $cpt,end
+                  }
+                  incr cpt
+               }
+               ::bdi_gui_reports::cmdButton1Click_data_firstdate ::bdi_tools_reports::data_firstdate
+
+            }
+
+         }
+            
+      }
+
+
+      
 
 
       
@@ -422,6 +488,11 @@ namespace eval bdi_gui_reports {
       gren_info "Affichage complet en $tt sec \n"
       
    }
+
+
+
+
+
 
    proc ::bdi_gui_reports::close_reports2 {  } {
       global conf bddconf 
@@ -935,6 +1006,17 @@ namespace eval bdi_gui_reports {
       frame $frm  -cursor arrow -relief groove
       pack $frm -in $::bdi_gui_reports::fen -anchor s -side top -expand yes -fill both -padx 10 -pady 5
 
+     set buttons [frame $frm.buttons  -borderwidth 1 -relief groove]
+     pack $buttons -in $frm -expand yes -fill both
+     
+     
+         button $buttons.objects -state active -text "Objects" -relief "sunken" \
+            -command "::bdi_gui_reports::switch_buttons_list"
+         button $buttons.dates   -state active -text "Dates" -relief "raised" \
+            -command "::bdi_gui_reports::switch_buttons_list"
+         
+         grid $buttons.objects $buttons.dates
+     
 
      set doubletable [frame $frm.doubletable  -borderwidth 1 -relief groove]
      pack $doubletable -in $frm -expand yes -fill both
@@ -1122,6 +1204,25 @@ namespace eval bdi_gui_reports {
          grid $actions.charge $actions.ressource $actions.relance $actions.clean -sticky news
 
 
+   }
+
+   #------------------------------------------------------------
+   ## gere la selection du type de tri, objects our dates 
+   #  @return void
+   #
+   proc ::bdi_gui_reports::switch_buttons_list { } {
+      set objects $::bdi_gui_reports::fen.appli.buttons.objects
+      set dates   $::bdi_gui_reports::fen.appli.buttons.dates
+      if {[$objects cget -relief] == "sunken"} {
+         gren_info "choose dates\n"
+         $objects configure -relief "raised"
+         $dates   configure -relief "sunken"
+      } else {
+         gren_info "choose objects\n"
+         $objects configure -relief "sunken"
+         $dates   configure -relief "raised"
+      }
+      ::bdi_gui_reports::affiche_data
    }
 
    #------------------------------------------------------------
