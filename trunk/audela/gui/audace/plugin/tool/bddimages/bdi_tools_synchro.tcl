@@ -335,19 +335,19 @@ namespace eval bdi_tools_synchro {
       }
 
       # correction d erreur de filesize
-      foreach line $data {
-         set dirfilename [lindex $line 0]
-         set filename    [lindex $line 1]
-         set size_sql    [lindex $line 2]
-         set file [file join $bddconf(dirbase) $dirfilename $filename]
-         set size_disk [file size $file]
-         if {$size_disk != $size_sql} {
-            set sqlcmd "UPDATE images SET sizefich=$size_disk WHERE dirfilename='$dirfilename' AND filename='$filename';"
-            set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
-            if {$err} {
-            }
-         }
-      }
+      #foreach line $data {
+      #   set dirfilename [lindex $line 0]
+      #   set filename    [lindex $line 1]
+      #   set size_sql    [lindex $line 2]
+      #   set file [file join $bddconf(dirbase) $dirfilename $filename]
+      #   set size_disk [file size $file]
+      #   if {$size_disk != $size_sql} {
+      #      set sqlcmd "UPDATE images SET sizefich=$size_disk WHERE dirfilename='$dirfilename' AND filename='$filename';"
+      #      set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
+      #      if {$err} {
+      #      }
+      #   }
+      #}
 
       #set filename [file join $bddconf(dirtmp) "table_fitscata.txt"]
       #set h [open $filename "w"]
@@ -389,3 +389,82 @@ namespace eval bdi_tools_synchro {
       return $md5
    }
 
+
+
+
+
+   proc ::bdi_tools_synchro::info_file { file filetype } {
+
+      global bddconf
+
+      set dirfilename [file dirname $file]
+      set filename    [file tail    $file]
+      set file        [file join    $bddconf(dirbase) $file]
+
+      if {![file exists $file]} {
+         return -code 3 "Erreur : file not exist : $file"
+      }
+      set filesize_disk [file size $file]
+
+      switch $filetype {
+
+         "FITS" {
+            set sqlcmd "SELECT sizefich,datemodif FROM images WHERE filename='$filename' AND dirfilename='$dirfilename';"
+         }
+         "CATA" {
+            set sqlcmd "SELECT sizefich,datemodif FROM catas WHERE filename='$filename' AND dirfilename='$dirfilename';"
+         }
+         default {
+            return -code 1 "Unknown filetype"
+         }               
+
+      }
+
+      set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
+      if {$err} {
+         return -code 2 "Erreur : find sizefich & datemodif - err = $err\nsql = $sqlcmd\nmsg = $msg"
+      }
+      set data         [lindex $data 0]
+      set filesize_sql [lindex $data 0]
+      set modifdate    [lindex $data 1]
+
+      if {$filesize_disk!=$filesize_sql} {
+         set flagsize "DIFF"
+      } else {
+         set flagsize "OK"
+      }
+
+      set md5 [::bdi_tools_synchro::get_md5 $file]
+
+      return [list $flagsize $filesize_sql $filesize_disk $modifdate $md5]
+   }
+
+
+
+   proc ::bdi_tools_synchro::set_modifdate {  file filetype modifdate } {
+
+      global bddconf
+
+      set dirfilename [file dirname $file]
+      set filename    [file tail    $file]
+      set file        [file join    $bddconf(dirbase) $file]
+
+      switch $filetype {
+         "FITS" {
+            set sqlcmd "UPDATE images SET datemodif='$modifdate' WHERE filename='$filename' AND dirfilename='$dirfilename';"
+         }
+         "CATA" {
+            set sqlcmd "UPDATE catas SET datemodif='$modifdate' WHERE filename='$filename' AND dirfilename='$dirfilename';"
+         }
+         default {
+            return -code 1 "Unknown filetype"
+         }               
+      }
+
+      set err [catch {set data [::bddimages_sql::sql query $sqlcmd]} msg]
+      if {$err} {
+         return -code 2 "Erreur : UPDATE modifdate pour $filetype - err = $err\nsql = $sqlcmd\nmsg = $msg"
+      }
+
+      return
+   }

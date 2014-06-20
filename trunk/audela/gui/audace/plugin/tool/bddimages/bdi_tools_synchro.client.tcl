@@ -989,6 +989,26 @@
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel md5 $md5
 #            gren_info "md5 send\n"
 
+
+            ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel CHECK_MATCH_FILE 1
+            ::bdi_tools_synchro::I_receive_var $::bdi_tools_synchro::channel status status
+            
+            
+            switch $status {
+               "DIFFERENT" {
+                  
+                  
+               }
+               "CORRECTED" {
+                  
+                  continue
+               }
+               default {
+                  ::bdi_tools_synchro::set_error $id $status
+                  if {$::bdi_tools_synchro::param_check_error} { continue } else { return }
+               }
+            }
+
             # Envoie du fichier
             ::bdi_tools_synchro::I_send_file $::bdi_tools_synchro::channel $file $filesize "file"
 #            gren_info "file send\n"
