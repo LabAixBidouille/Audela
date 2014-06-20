@@ -179,7 +179,7 @@
                #$message(filesize)
                #$message(modifdate)
                
-               set err [catch {set r[::bdi_tools_synchro::info_file $message(filename) $message(filetype)] } msg ]
+               set err [catch {set r [::bdi_tools_synchro::info_file $message(filename) $message(filetype)] } msg ]
                if {$err} {
                   set txt "ERROR : $msg"
                   addlog $txt
