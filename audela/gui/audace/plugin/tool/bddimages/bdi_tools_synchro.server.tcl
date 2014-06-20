@@ -181,7 +181,9 @@
                
                set err [catch {::bdi_tools_synchro::info_file $message(filename) $message(filetype) } msg ]
                if {$err} {
-                  ::bdi_tools_synchro::I_send_var $channel status "ERROR : $msg"
+                  set txt "ERROR : $msg"
+                  addlog $txt
+                  ::bdi_tools_synchro::I_send_var $channel status $txt
                   flush $channel ; return
                }
                set flagsize      [lindex 0]
@@ -193,7 +195,9 @@
                if {$flagsize=="DIFF"} {
 
                   # le fichier sur le serveur n a pas la meme taille sur disque et dans la base
-                  ::bdi_tools_synchro::I_send_var $channel status "ERROR : Le fichier sur le serveur n a pas la meme taille sur disque et dans la base"
+                  set txt "ERROR : Le fichier sur le serveur n a pas la meme taille sur disque et dans la base"
+                  addlog $txt
+                  ::bdi_tools_synchro::I_send_var $channel status $txt
                   flush $channel ; return
 
                   # A Corriger ?
@@ -202,11 +206,13 @@
                }
 
                if {$message(filesize)!=$filesize_disk} {
+                  addlog  "DIFFERENT SIZE : : C:$message(filesize) SDisk: $filesize_disk File: $message(filename)"
                   ::bdi_tools_synchro::I_send_var $channel status "DIFFERENT"
                   # ok le fichier est different donc on peut continuer la synchro
                   flush $channel ; return
                }
                if {$message(md5)!=$md5} {
+                  addlog  "DIFFERENT MD5 File: $message(filename)"
                   ::bdi_tools_synchro::I_send_var $channel status "DIFFERENT"
                   # ok le fichier est different donc on peut continuer la synchro
                   flush $channel ; return
@@ -218,14 +224,17 @@
                   # mise a jour de la date de modification sur la base sql du serveur
                   set err [catch { ::bdi_tools_synchro::set_modifdate $message(filename) $message(filetype) $message(modifdate) } msg]
                   if {$err} {
+                     addlog "ERROR : set modifdate : $msg"
                      ::bdi_tools_synchro::I_send_var $channel status "ERROR : set modifdate : $msg"
                      flush $channel ; return
                   }
 
+                  addlog "CORRECTED"
                   ::bdi_tools_synchro::I_send_var $channel status "CORRECTED"
                   flush $channel ; return
 
                } else {
+                     addlog "ERROR : Le fichier a l air identique pourquoi le corriger ?"
                   ::bdi_tools_synchro::I_send_var $channel status "ERROR : Le fichier a l air identique pourquoi le corriger ?"
                   flush $channel ; return
                }

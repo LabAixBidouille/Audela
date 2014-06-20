@@ -617,6 +617,10 @@
             set bg darkgreen
             set fg white
          }
+         "CORRECTED" {
+            set bg darkgreen
+            set fg white
+         }
          default {
             set bg white
             set fg darkgreen
@@ -993,14 +997,13 @@
             ::bdi_tools_synchro::I_send_var $::bdi_tools_synchro::channel CHECK_MATCH_FILE 1
             ::bdi_tools_synchro::I_receive_var $::bdi_tools_synchro::channel status status
             
-            
             switch $status {
                "DIFFERENT" {
                   
                   
                }
                "CORRECTED" {
-                  
+                  ::bdi_tools_synchro::set_status $id "CORRECTED"
                   continue
                }
                default {
