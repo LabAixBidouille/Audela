@@ -179,18 +179,18 @@
                #$message(filesize)
                #$message(modifdate)
                
-               set err [catch {::bdi_tools_synchro::info_file $message(filename) $message(filetype) } msg ]
+               set err [catch {set r[::bdi_tools_synchro::info_file $message(filename) $message(filetype)] } msg ]
                if {$err} {
                   set txt "ERROR : $msg"
                   addlog $txt
                   ::bdi_tools_synchro::I_send_var $channel status $txt
                   flush $channel ; return
                }
-               set flagsize      [lindex 0]
-               set filesize_sql  [lindex 1]
-               set filesize_disk [lindex 2]
-               set modifdate     [lindex 3]
-               set md5           [lindex 4]
+               set flagsize      [lindex $r 0]
+               set filesize_sql  [lindex $r 1]
+               set filesize_disk [lindex $r 2]
+               set modifdate     [lindex $r 3]
+               set md5           [lindex $r 4]
                
                if {$flagsize=="DIFF"} {
 
@@ -206,7 +206,7 @@
                }
 
                if {$message(filesize)!=$filesize_disk} {
-                  addlog  "DIFFERENT SIZE : : C:$message(filesize) SDisk: $filesize_disk File: $message(filename)"
+                  addlog  "DIFFERENT SIZE : : C:$message(filesize) SDisk:$filesize_disk File: $message(filename)"
                   ::bdi_tools_synchro::I_send_var $channel status "DIFFERENT"
                   # ok le fichier est different donc on peut continuer la synchro
                   flush $channel ; return
