@@ -795,7 +795,7 @@ namespace eval ::atos_analysis_tools {
       set ::atos_analysis_tools::t_sup         [format "%.4f" $t_sup]
       set ::atos_analysis_tools::t_diff        [format "%.3f" [expr $t_sup-$t_inf] ]
 
-      set dchi2  4.0
+      set dchi2  2.0
       set t_inf  1.e50
       set t_sup -1.e50
       foreach cols $::atos_analysis_tools::chi2_search {
