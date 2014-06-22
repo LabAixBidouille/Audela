@@ -107,6 +107,14 @@ SOURCE=..\src\buf_tcl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\MinimisationAndLinearAlgebraicSystems.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\PsfFitter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\cam_tcl.cpp
 # End Source File
 # Begin Source File
@@ -272,6 +280,14 @@ SOURCE=..\src\libtt.h
 # Begin Source File
 
 SOURCE=..\src\palette.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\MinimisationAndLinearAlgebraicSystems.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\PsfFitter.h
 # End Source File
 # Begin Source File
 
