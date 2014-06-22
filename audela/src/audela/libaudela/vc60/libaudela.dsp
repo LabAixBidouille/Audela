@@ -283,6 +283,10 @@ SOURCE=..\src\palette.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\AllExceptions.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\MinimisationAndLinearAlgebraicSystems.h
 # End Source File
 # Begin Source File

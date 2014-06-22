@@ -857,6 +857,10 @@
 				>
 			</File>
             <File
+				RelativePath="..\src\AllExceptions.h"
+				>
+			</File>
+            <File
 				RelativePath="..\src\MinimisationAndLinearAlgebraicSystems.h"
 				>
 			</File>
