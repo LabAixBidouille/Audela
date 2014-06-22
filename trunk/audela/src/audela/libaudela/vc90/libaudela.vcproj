@@ -215,8 +215,52 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
-			<File
+            <File
 				RelativePath="..\src\buf_tcl.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src\MinimisationAndLinearAlgebraicSystems.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+            <File
+				RelativePath="..\src\PsfFitter.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -810,6 +854,14 @@
 			</File>
 			<File
 				RelativePath="..\src\jpegmemscr.h"
+				>
+			</File>
+            <File
+				RelativePath="..\src\MinimisationAndLinearAlgebraicSystems.h"
+				>
+			</File>
+            <File
+				RelativePath="..\src\PsfFitter.h"
 				>
 			</File>
 			<File
