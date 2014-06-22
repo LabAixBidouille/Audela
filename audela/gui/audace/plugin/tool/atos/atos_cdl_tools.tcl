@@ -349,8 +349,8 @@ namespace eval ::atos_cdl_tools {
          }
       }
       
-      set ::atos_cdl_tools::delta [ $frm_source.delta get]
-      set statebutton [ $select cget -relief]
+      set ::atos_cdl_tools::delta [$frm_source.delta get]
+      set statebutton [$select cget -relief]
       if { $statebutton=="sunken" } {
 
          switch $type {
@@ -893,7 +893,7 @@ namespace eval ::atos_cdl_tools {
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]
 
-      if {$relief=="sunken"} {
+      if {$relief == "sunken"} {
          incr ::atos_tools::cur_idframe [expr $sum-1]
          ::atos_cdl_tools::start_next_image $visuNo $sum $bin 0
       } else {
@@ -1105,7 +1105,6 @@ namespace eval ::atos_cdl_tools {
       set select_objet     $::atos_gui::frame(object,buttons).select
       set select_reference $::atos_gui::frame(reference,buttons).select
 
-
       set bin [$geometrie.binning.val get]
       set sum [$geometrie.sum.val get]
 
@@ -1150,6 +1149,7 @@ namespace eval ::atos_cdl_tools {
             gren_info "meandark = $meandark\n"
          }
       }
+
       # Traitement des flats
       set okflat 0
       if {$::atos_cdl_tools::useflat } {
@@ -1165,7 +1165,6 @@ namespace eval ::atos_cdl_tools {
             gren_info "meanflat = $meanflat\n"
          }
       }
-
 
       set err [catch {::atos_cdl_tools::suivi_init} msg]
       if {$err} {
@@ -1285,36 +1284,32 @@ namespace eval ::atos_cdl_tools {
 
    proc ::atos_cdl_tools::start_next_image { visuNo sum bin novisu } {
 
-      #::console::affiche_resultat "sn start cur_idframe = $::atos_tools::cur_idframe\n"
+      ::console::affiche_resultat "sn start cur_idframe = $::atos_tools::cur_idframe\n"
       set geometrie $::atos_gui::frame(geometrie)
       set relief [$geometrie.buttons.launch cget -relief]
 
       if {$relief=="raised"} {
-         
-         if {$novisu} {
-            ::atos_tools::next_image $visuNo novisu
-         } else {
-            ::atos_tools::next_image $visuNo
-         }
+
+         set optvisu [expr {$novisu == 1 ? "novisu" : ""}]
+         ::atos_tools::next_image $visuNo $optvisu
          
       } else {
 
-         if {$sum>1} {
+         if {$sum > 1} {
             ::atos_tools::next_image $visuNo novisu
             #::console::affiche_resultat "sn cur_idframe $sum = $::atos_tools::cur_idframe\n"
-            set idsav  $::atos_tools::cur_idframe
+            set idsav $::atos_tools::cur_idframe
+            #::console::affiche_resultat "sn cur_idframe after next_image = $::atos_tools::cur_idframe\n"
             ::atos_cdl_tools::read_sum $visuNo $sum
             #::console::affiche_resultat "sn m cur_idframe $sum = $::atos_tools::cur_idframe\n"
-
             set ::atos_tools::cur_idframe $idsav
             set ::atos_tools::scrollbar $idsav 
-
-         }     
+         }
 
       }     
 
       if {$::atos_cdl_tools::log} { ::console::affiche_resultat "sn end cur_idframe = $::atos_tools::cur_idframe\n" }
-      
+
    }
 
 
@@ -1339,7 +1334,6 @@ namespace eval ::atos_cdl_tools {
    proc ::atos_cdl_tools::read_sum { visuNo sum } {
 
       global audace
-      
 
       #::console::affiche_resultat "read_sum beg cur_idframe = $::atos_tools::cur_idframe\n"
       set bufNo [::confVisu::getBufNo $visuNo]

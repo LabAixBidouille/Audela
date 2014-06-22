@@ -642,7 +642,7 @@ namespace eval ::atos_cdl_gui {
                         pack  $object.v.l.delta -in $object.v.l -side top -anchor w
 
                         spinbox $object.v.r.delta -font $atosconf(font,courier_10) -fg $color(blue) \
-                           -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
+                           -from 1 -to 30 -increment 1 \
                            -command "::atos_cdl_tools::mesure_source_spinbox $visuNo object" -width 5 
                         pack  $object.v.r.delta -in $object.v.r -side top -anchor w
 
@@ -814,10 +814,9 @@ namespace eval ::atos_cdl_gui {
                 button $corr.preview -text "Preview" -borderwidth 2 -takefocus 1 \
                    -command "::atos_cdl_gui::correction_preview $visuNo"
 
-
-                grid   $corr.flat_check $corr.flat_but_select $corr.flat_path -sticky nsw
-                grid   $corr.dark_check $corr.dark_but_select $corr.dark_path -sticky nsw
-                grid   $corr.preview    -columnspan 3 -sticky nsw
+             grid   $corr.flat_check $corr.flat_but_select $corr.flat_path -sticky nsw
+             grid   $corr.dark_check $corr.dark_but_select $corr.dark_path -sticky nsw
+             grid   $corr.preview    -columnspan 3 -sticky nsw
 
     # onglets : geometrie
 
@@ -842,9 +841,8 @@ namespace eval ::atos_cdl_gui {
  
                    label $geometrie.sum.lab -font $atosconf(font,courier_10) -width 12 -anchor e -text $caption(atos_cdl_gui,sommation)
                    pack  $geometrie.sum.lab -in $geometrie.sum -side left  -padx 10 -pady 2
-                   spinbox $geometrie.sum.val -font $atosconf(font,courier_10)  \
-                      -value [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ] \
-                      -command "" -width 5 
+                   spinbox $geometrie.sum.val -font $atosconf(font,courier_10) -width 5 \
+                      -from 1 -to 30 -increment 1 -command ""
                    pack  $geometrie.sum.val -in $geometrie.sum -side left -anchor w
 
                 frame $geometrie.cosmic -borderwidth 0 -cursor arrow
@@ -893,7 +891,7 @@ namespace eval ::atos_cdl_gui {
                    pack  $suivi.methode.lab -in $suivi.methode -side left -anchor w
 
                    spinbox $suivi.methode.val -font $atosconf(font,courier_10)  \
-                      -value [ list "Interpolation" "Auto" ] -state readonly \
+                      -value [list "Interpolation" "Auto"] -state readonly \
                       -textvariable ::atos_cdl_tools::methode_suivi \
                       -command "::atos_cdl_gui::options_suivi" 
                    pack $suivi.methode.val -in $suivi.methode -side left -anchor w
@@ -901,20 +899,18 @@ namespace eval ::atos_cdl_gui {
                 frame $suivi.threshold -borderwidth 0 -cursor arrow
                 pack $suivi.threshold -in $suivi -side top -pady 20
 
-                set spinvalues [list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30]
-
                   frame $suivi.threshold.obj -borderwidth 0 -cursor arrow
                   pack  $suivi.threshold.obj -in $suivi.threshold -side top -pady 5
 
                      label $suivi.threshold.obj.lab -text $caption(atos_cdl_gui,threshold_target) -width 22 -anchor e
                      pack  $suivi.threshold.obj.lab -in $suivi.threshold.obj -side left -anchor e
-                     spinbox $suivi.threshold.obj.valx -font $atosconf(font,courier_10)  \
-                        -value $spinvalues -width 3 \
+                     spinbox $suivi.threshold.obj.valx -font $atosconf(font,courier_10) -width 3 \
+                        -from 1 -to 30 -increment 1 \
                         -textvariable ::atos_cdl_tools::x_obj_threshold \
                         -command "" 
                      pack  $suivi.threshold.obj.valx -in $suivi.threshold.obj -side left -anchor w
-                     spinbox $suivi.threshold.obj.valy -font $atosconf(font,courier_10)  \
-                        -value $spinvalues -width 3 \
+                     spinbox $suivi.threshold.obj.valy -font $atosconf(font,courier_10) -width 3 \
+                        -from 1 -to 30 -increment 1 \
                         -textvariable ::atos_cdl_tools::y_obj_threshold \
                         -command "" 
                      pack  $suivi.threshold.obj.valy -in $suivi.threshold.obj -side left -anchor w
@@ -924,18 +920,21 @@ namespace eval ::atos_cdl_gui {
 
                      label $suivi.threshold.ref.lab -text $caption(atos_cdl_gui,threshold_ref) -width 22 -anchor e
                      pack  $suivi.threshold.ref.lab -in $suivi.threshold.ref -side left -anchor e
-                     spinbox $suivi.threshold.ref.valx -font $atosconf(font,courier_10)  \
-                         -value $spinvalues -width 3 \
+                     spinbox $suivi.threshold.ref.valx -font $atosconf(font,courier_10) -width 3 \
+                         -from 1 -to 30 -increment 1 \
                          -textvariable ::atos_cdl_tools::x_ref_threshold \
                          -command "" 
                      pack  $suivi.threshold.ref.valx -in $suivi.threshold.ref -side left -anchor w
-                     spinbox $suivi.threshold.ref.valy -font $atosconf(font,courier_10)  \
-                         -value $spinvalues -width 3 \
+                     spinbox $suivi.threshold.ref.valy -font $atosconf(font,courier_10) -width 3 \
+                         -from 1 -to 30 -increment 1 \
                          -textvariable ::atos_cdl_tools::y_ref_threshold \
                          -command "" 
                      pack  $suivi.threshold.ref.valy -in $suivi.threshold.ref -side left -anchor w
 
- 
+                # Choix par defaut de la methode de suivi
+                ::atos_cdl_gui::options_suivi
+
+
    #--- Fin Onglets
 
 
