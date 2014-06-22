@@ -188,7 +188,7 @@ public:
    void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
    void GetPixels(TYPE_PIXELS* pixels);
    void GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane);
-   void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, long pixelsPtr);
+   void GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane plane, void* pixelsPtr);
    void GetPixelsPointer(TYPE_PIXELS **ppixels);
    void GetPixelsRgb( int x1,int y1,int x2, int y2,
             int mirrorX, int mirrorY, float *cuts,
