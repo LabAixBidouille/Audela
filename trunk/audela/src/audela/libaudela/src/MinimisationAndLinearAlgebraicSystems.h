@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "AllExceptions.h"
 
 #define RATIO_DIAGONAL_EXTRAMUM_LIMIT 1e-15
 
