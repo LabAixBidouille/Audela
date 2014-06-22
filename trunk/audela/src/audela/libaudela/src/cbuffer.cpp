@@ -58,7 +58,7 @@ CBuffer::CBuffer() : CDevice()
    pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE);
    pthread_mutex_init(&mutex, &mutexAttr);
 
-   /* Crée une chaine vide, pour éviter un pb potentiel sur le strlen(temporaryRawFileName) de FreeBuffer() */
+   /* Crï¿½e une chaine vide, pour ï¿½viter un pb potentiel sur le strlen(temporaryRawFileName) de FreeBuffer() */
    strcpy(temporaryRawFileName, "");
 
    // J'initialise les 3 attributes dynamique (keywords, p_ast, pix) 
@@ -1790,8 +1790,8 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
    this->pix = pixTemp;
 
    // j'ajoute les mots cles NAXIS
-   // attention: ne pas utiliser les parametres width et height passés en entrés de la fonctions
-   // car leur valeur dépend de la compression.
+   // attention: ne pas utiliser les parametres width et height passï¿½s en entrï¿½s de la fonctions
+   // car leur valeur dï¿½pend de la compression.
    if ( pix->getPixelClass() == CLASS_GRAY ) {
       int naxis = 2; 
       int naxis1 = pix->GetWidth();
@@ -2342,10 +2342,10 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (void*) imgPix);
 
       // Fin de protection acces concurrent au buffer
-      // Mais il semblerait qu'il y ait un problème d'accès concurrent à Libtt_main(TT_PTR_STATIMA)
+      // Mais il semblerait qu'il y ait un problï¿½me d'accï¿½s concurrent ï¿½ Libtt_main(TT_PTR_STATIMA)
       // quand le thread principal fait en meme temps une statistique
-      // donc je je libere le mutex à la fin de cette procedure pour limiter la 
-      // probabilté d'acces concurrent
+      // donc je je libere le mutex ï¿½ la fin de cette procedure pour limiter la 
+      // probabiltï¿½ d'acces concurrent
       pthread_mutex_unlock(&mutex);
 
       // ----------------------------------------------------
@@ -2363,7 +2363,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je calcule la qualite qualityMin à partir de mean, dsigma
+      // je calcule la qualite qualityMin ï¿½ partir de mean, dsigma
       //  et je recupere dbgmean pour le soustraire de l'image si le bias n'est pas fourni
       // ----------------------------------------------------
       int ttResult;
@@ -2393,7 +2393,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
       }
 
       // ----------------------------------------------------
-      // je soustrais le fond de ciel estimé si le bias n'a pas été déjà soustrait
+      // je soustrais le fond de ciel estimï¿½ si le bias n'a pas ï¿½tï¿½ dï¿½jï¿½ soustrait
       // ----------------------------------------------------
       if ( biasBuf == NULL && biasValue == 0 ) {
          for(j=0;j<height;j++) {
@@ -2443,7 +2443,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                pixelCount++;
             }
 
-            // je calcule le flux de l'étoile
+            // je calcule le flux de l'ï¿½toile
             flux += *imgPtr  ;
 
             // je cumule les flux de l'image courante pour le calcul du barycentre
@@ -2519,17 +2519,17 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
          }
       }
 
-      // je calcule le flux de l'etoile centrée sur starX,starY 
+      // je calcule le flux de l'etoile centrï¿½e sur starX,starY 
       // et dans une ellipse de demi axe  a=3*FwmhX et b=3*FwhmY
       {
          double a = *measuredFwhmX *3.0;  // demi grand axe de l'ellipse
          double b = *measuredFwhmY *3.0;  // demi petit axe de l'ellipse 
-         double a2 = a*a;                 // demi grand axe de l'ellipse au carré 
-         double b2 = b*b;                 // demi petit axe de l'ellipse au carré
+         double a2 = a*a;                 // demi grand axe de l'ellipse au carrï¿½ 
+         double b2 = b*b;                 // demi petit axe de l'ellipse au carrï¿½
          double x0 = *starX;              // x0 , y0 : centre de l'ellipse
          double y0 = *starY;
 
-         // je definis les  bornes de balaye des pixels (en valeur entière) 
+         // je definis les  bornes de balaye des pixels (en valeur entiï¿½re) 
          int imin = (int) (*starX  - a + 0.5);
          int imax = (int) (*starX  + a + 0.5);
          int jmin = (int) (*starY  - b + 0.5);
@@ -2548,7 +2548,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             for(int j=jmin;j<=jmax;j++) {
                imgOffset  = imgPix  + j * width;
                for(int i=imin;i<=imax;i++) {
-                  // je verifie si le pixel est à l'intérieur de l'ellipse 
+                  // je verifie si le pixel est ï¿½ l'intï¿½rieur de l'ellipse 
                   if ( ( ((double)i-x0)*((double)i-x0)/ a2 + ((double)j-y0)*((double)j-y0)/b2 ) <= 1.0 ) {
                      imgPtr  = imgOffset+i;
                      // j'ajoute le flux du pixel au flux 
@@ -2588,7 +2588,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
       // je traque le bug fantome
       if ( savedWidth != width || savedHeight != height ) {
-         throw CError( "starStatus : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+         throw CError( "starStatus : la taille a changï¿½. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
       }
  
 
@@ -2616,7 +2616,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
             sumBuf->GetKeywords()->Add("NAXIS2", &height,TINT, "","");
          } else {
             // je recupere l'image integree
-            sumBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) sumPix);
+            sumBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, sumPix);
          }
 
          if ( integratedImage == 2 ) {
@@ -2627,7 +2627,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                for(i=0;i<width;i++) {
                   imgPtr  = imgOffset+i;
                   sumPtr  = sumOffset+i;
-                  // je recupere l'intensité du pixel
+                  // je recupere l'intensitï¿½ du pixel
                   TYPE_PIXELS pixelValue = *imgPtr;
 
                   if ( originSumCounter == 1 ) {
@@ -2648,7 +2648,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                }
             }
          } else {
-            // j'ajoute l'image courante dans l'image intégrée
+            // j'ajoute l'image courante dans l'image intï¿½grï¿½e
             for(j=0;j<height;j++) {
                imgOffset  = imgPix  + j * width;
                sumOffset  = sumPix +  j * width;
@@ -2677,7 +2677,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
          // je traque le bug fantome
          if ( savedWidth != width || savedHeight != height ) {
-            throw CError( "integrated : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+            throw CError( "integrated : la taille a changï¿½. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
          }
     
          // ----------------------------------------------------
@@ -2775,12 +2775,12 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
                } else {
                   // je recupere le masque
-                  maskBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (long) maskPix);
+                  maskBuf->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, maskPix);
                }
 
                // je traque le bug fantome
                if ( savedWidth != width || savedHeight != height ) {
-                  throw CError( "sum : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+                  throw CError( "sum : la taille a changï¿½. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
                }
     
                // je calcule la position de la fibre si l'image integree a integree suffisamment d'images
@@ -2848,7 +2848,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                         }
 
                         if ( *fiberPtr > fiberMaxIntensity ) {
-                           // je mets à jour la nouvelle valeur max
+                           // je mets ï¿½ jour la nouvelle valeur max
                            fiberMaxIntensity = *fiberPtr;
                         }
                      }
@@ -2899,7 +2899,7 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
                   }
 
                   if ( fiberDetectionMode == 1 ) {
-                     // je proméne une gaussienne 
+                     // je promï¿½ne une gaussienne 
                      TYPE_PIXELS fwhm = (TYPE_PIXELS) maskRadius;
                      int radius =  8; 
                      TYPE_PIXELS threshin = 10;
@@ -2950,11 +2950,11 @@ void CBuffer::AstroFiberCentro(int x1, int y1, int x2, int y2,
 
                   // je traque le bug fantome
                   if ( savedWidth != width || savedHeight != height ) {
-                     throw CError( "findfiber : la taille a changé. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
+                     throw CError( "findfiber : la taille a changï¿½. (%d %d) => (%d %d) ", savedWidth, savedHeight, width, height);  
                   }
 
                   // ----------------------------------------------------
-                  // je verifie la qualite de l'image inversee à partir de mean, dsigma
+                  // je verifie la qualite de l'image inversee ï¿½ partir de mean, dsigma
                   // je calcule dsigma, dmaxi, dmini de la fenetre (x1,y1,x2,y2)
                   //   si dsigma < 10 , je retourne l'erreur LOW_SIGNAL
                   //   si (dmaxi-dmini) < 3*sqrt(dsigma) je retoune l'erreur NO_SIGNAL
@@ -3152,7 +3152,7 @@ void CBuffer::GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane)
 
 }
 
-void CBuffer::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane colorPlane, long pixelsPtr)
+void CBuffer::GetPixels(int x1, int y1, int x2, int y2, TPixelFormat pixelFormat, TColorPlane colorPlane, void* pixelsPtr)
 {
    try {
       pthread_mutex_lock(&mutex);
@@ -3555,7 +3555,7 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
       *bgsigma = (float)dbgsigma;
       *contrast = (float)dcontrast;
 
-      // si la statistique porte sur l'image entière, je mets a jour les mots cls de l'image
+      // si la statistique porte sur l'image entiï¿½re, je mets a jour les mots cls de l'image
       if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
          fLo = (float) dlocut;
          fHi = (float) dhicut;

@@ -1,7 +1,8 @@
 
 OUTPUT   = libaudela.so
 
-SRC = $(SRCDIR)/psfimcce_nr.cpp $(SRCDIR)/psfimcce_funcs.cpp $(SRCDIR)/psfimcce.cpp \
+SRC = $(SRCDIR)/MinimisationAndLinearAlgebraicSystems.cpp $(SRCDIR)/PsfFitter.cpp \
+      $(SRCDIR)/psfimcce_nr.cpp $(SRCDIR)/psfimcce_funcs.cpp $(SRCDIR)/psfimcce.cpp \
       $(SRCDIR)/buf_tcl.cpp $(SRCDIR)/cam_tcl.cpp $(SRCDIR)/cbuffer.cpp \
       $(SRCDIR)/cdevice.cpp $(SRCDIR)/cpool.cpp  $(SRCDIR)/setip.cpp \
       $(SRCDIR)/fitskw.cpp $(SRCDIR)/history.cpp $(SRCDIR)/ping.cpp \
