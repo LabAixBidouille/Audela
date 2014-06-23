@@ -403,9 +403,12 @@ void PsfFitter::findInitialSolution() {
  */
 double PsfFitter::refineSolution() {
 
+	// Find the minimum of chiSquare with a Levenberg-Marquardt minimisation
+	theLevenbergMarquardtSystemSolver->optimise();
 
+	const double chiSquare = theLevenbergMarquardtSystemSolver->getChiSquare();
 
-	return 0.;
+	return chiSquare;
 }
 
 /**
@@ -658,7 +661,6 @@ void Gaussian2DPsfFitter::fillWeightedDesignMatrix(double* const * const weighte
 	double exponentialEllipse;
 	double commonTerm;
 	double commenTermScaled;
-	double fittedFlux;
 	double subDerivative;
 
 	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
@@ -705,7 +707,7 @@ void Gaussian2DPsfFitter::fillWeightedDesignMatrix(double* const * const weighte
  */
 void Gaussian2DPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
 
-	if ((arrayOfParameters[SCALE_FACTOR_INDEX] < 0.) || (arrayOfParameters[SIGMA_X_INDEX] < 0.) || (arrayOfParameters[SIGMA_Y_INDEX] < 0.)) {
+	if ((arrayOfParameters[SCALE_FACTOR_INDEX] <= 0.) || (arrayOfParameters[SIGMA_X_INDEX] <= 0.) || (arrayOfParameters[SIGMA_Y_INDEX] <= 0.)) {
 
 		throw InvalidDataException("Bad array of parameters");
 	}
