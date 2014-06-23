@@ -122,6 +122,9 @@ proc ::scopedome::initPlugin { } {
    if { ! [ info exists conf(scopedome,fileName) ] }   { set conf(scopedome,fileName)   "ASCOM.ScopeDomeUSBDome.exe" }
    if { ! [ info exists conf(scopedome,fileAccess) ] } { set conf(scopedome,fileAccess) "" }
    if { ! [ info exists conf(scopedome,start) ] }      { set conf(scopedome,start)      "0" }
+   if { ! [ info exists conf(scopedome,windowName) ] } { set conf(scopedome,windowName) "ScopeDome LS"}
+   if { ! [ info exists conf(scopedome,connectScope) ] } { set conf(scopedome,connectScope) "1"}
+
 }
 
 #------------------------------------------------------------
@@ -133,12 +136,10 @@ proc ::scopedome::confToWidget { } {
    global conf
 
    #--- Recupere la configuration du driver
-   set widget(fileName)   $conf(scopedome,fileName)
-   set widget(fileAccess) $conf(scopedome,fileAccess)
+   set widget(scopedome,fileName)   $conf(scopedome,fileName)
+   set widget(scopedome,fileAccess) $conf(scopedome,fileAccess)
+   set widget(scopedome,windowName) $conf(scopedome,windowName) ; # nom de l'interface
    set widget(filesystem) "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
-   set widget(windowName) "ScopeDome LS" ; # nom de l'interface
-
-   set widget(connectScope) 1
 
    set widget(driverversion) ""
 
@@ -156,7 +157,14 @@ proc ::scopedome::confToWidget { } {
                               Internal_Sensor_Clouds Internal_Sensor_Rain \
                               Internal_Sensor_Power_Failure Internal_Sensor_Free_Input \
                               Internal_Sensor_Scope_At_Home Dome_Error \
-                              Analog_Input_Shutter Analog_Input_Main]
+                              Analog_Input_Shutter Analog_Input_Main \
+                              Rel_Scope_Get_State Rel_CCD_Get_State \
+                              Rel_Light_Get_State Rel_Fan_Get_State \
+                              Rel_REL_1_Get_State Rel_REL_2_Get_State \
+                              Rel_REL_3_Get_State Rel_REL_4_Get_State \
+                              Rel_Shutter_1_Open_Get_State Rel_Shutter_1_Close_Get_State \
+                              Rel_Shutter_2_Open_Get_State Rel_Shutter_2_Close_Get_State \
+                              Rel_Dome_CW_Get_State Rel_Dome_CCW_Get_State]
 
    #--   Ascom command list with boolean parameter (True|False)
    #--   suppression de Slaved (doublon avec Scope_Sync)
@@ -188,7 +196,6 @@ proc ::scopedome::confToWidget { } {
    }
 }
 
-
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du plugin
@@ -206,7 +213,7 @@ proc ::scopedome::fillConfigPage { frm } {
 
    ::scopedome::confToWidget
 
-   set pid [twapi::get_process_ids -name $widget(fileName)]
+   set pid [twapi::get_process_ids -name $widget(scopedome,fileName)]
    if {$pid ne ""} {
       set state normal
    } else {
@@ -222,7 +229,7 @@ proc ::scopedome::fillConfigPage { frm } {
 
       #--  Nom du fichier
       entry $frm.frame2.file -width 40 -justify right -state normal \
-         -textvariable ::scopedome::widget(fileName)
+         -textvariable ::scopedome::widget(scopedome,fileName)
       grid  $frm.frame2.file -row 0 -column 1 -padx 5 -pady 5 -sticky w
 
       #--- Label du chemin du driver
@@ -231,7 +238,7 @@ proc ::scopedome::fillConfigPage { frm } {
 
       #--  Chemin complet du driver
       entry $frm.frame2.access -width 40 -justify right -state normal \
-         -textvariable ::scopedome::widget(fileAccess)
+         -textvariable ::scopedome::widget(scopedome,fileAccess)
       grid  $frm.frame2.access -row 1 -column 1 -padx 5 -pady 5 -sticky w
 
       #--- Bouton pour definir chemin
@@ -250,7 +257,7 @@ proc ::scopedome::fillConfigPage { frm } {
 
       #--- Checkbutton pour le transfert des coordonnees du telescope
       checkbutton $frm.frame2.connect -text "$caption(scopedome,connectScope)" \
-            -highlightthickness 0 -variable ::scopedome::widget(connectScope)
+            -highlightthickness 0 -variable conf(scopedome,connectScope)
       grid $frm.frame2.connect -row 3 -column 0 -columnspan 2 -padx 5 -pady 5 -sticky w
 
       #--- Label des proprietes
@@ -307,7 +314,7 @@ proc ::scopedome::fillConfigPage { frm } {
 
          #--- Checkbutton demarrage automatique
          checkbutton $frm.frame3.start.chk -text "$caption(scopedome,creer_au_demarrage)" \
-            -highlightthickness 0 -variable conf(scopedome,start)
+           -highlightthickness 0 -variable conf(scopedome,start)
          pack $frm.frame3.start.chk -side top -padx 10 -pady 3 -expand 1
 
       pack $frm.frame3.start -side left -expand 1
@@ -328,9 +335,8 @@ proc ::scopedome::configurePlugin { } {
    variable widget
    global conf
 
-   #--- Memorise le chemin du driver
-   set conf(scopedome,fileAccess) $widget(fileAccess)
-   set conf(scopedome,fileName) $widget(fileName)
+   set conf(scopedome,fileName) $widget(scopedome,fileName)
+   set conf(scopedome,fileAccess) $widget(scopedome,fileAccess)
 }
 
 #------------------------------------------------------------
@@ -351,7 +357,7 @@ proc ::scopedome::createPlugin { } {
 
    if {[info exists widget(domNo)] ==0 || $widget(domNo) == 0} {
 
-      lassign [::scopedome::createProcess "$widget(fileAccess)" "$widget(windowName)"] \
+      lassign [::scopedome::createProcess "$conf(scopedome,fileAccess)" "$conf(scopedome,windowName)"] \
          widget(comobj) widget(domNo)
 
       if {$widget(comobj) ne ""} {
@@ -363,7 +369,7 @@ proc ::scopedome::createPlugin { } {
          ::scopedome::configStateComboBox normal
 
          #--   Lance le transfert des cordonnees du telescope
-         if {$widget(connectScope) ==1} {
+         if {$conf(scopedome,connectScope) ==1} {
             ::scopedome::onChangeScope refresh
          } else {
             ::scopedome::onChangeScope stop
@@ -417,7 +423,7 @@ proc ::scopedome::configDirname { this } {
       -initialdir "C:/" -parent $this]
 
    #--   verifie la presence du fichier
-   set file [file join $dirname $widget(fileName)]
+   set file [file join $dirname $widget(scopedome,fileName)]
 
    if {[file exists $file]} {
       set widget(fileAccess) "$file"
@@ -461,6 +467,10 @@ proc ::scopedome::buildComboBox { type row {state disabled} } {
 #---------------------------------------------------------------------------
 proc ::scopedome::configStateComboBox { state } {
    variable widget
+
+   if {[info exists widget(frm)] ==0} {
+      set widget(frm) ".audace.confeqt.usr.onglet.fscopedome"
+   }
 
    #--   Disable les combobox
    foreach child [list property switch cmd action] {

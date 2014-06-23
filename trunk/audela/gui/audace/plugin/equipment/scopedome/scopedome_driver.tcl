@@ -106,7 +106,7 @@ proc ::scopedome::writeFileSystem { cycle } {
    variable widget
    global audace conf caption
 
-   if {$widget(connectScope) ==1 && $audace(telNo) == 1 && $widget(domNo) ==1} {
+   if {$conf(scopedome,connectScope) ==1 && $audace(telNo) == 1 && $widget(domNo) ==1} {
 
       #--
       set listNoCoords [list \
@@ -117,7 +117,6 @@ proc ::scopedome::writeFileSystem { cycle } {
 
       set rahms $audace(telescope,getra)
       set decdms $audace(telescope,getdec)
-
       if {$rahms ni $listNoCoords} {
 
          set radeg [mc_angle2deg $rahms]
@@ -127,6 +126,7 @@ proc ::scopedome::writeFileSystem { cycle } {
          set date [mc_date2jd $datetu]
          lassign [mc_radec2altaz $radeg $decdeg $home $date] azdeg altdeg
          set azdeg [expr {fmod($azdeg+180,360)}]
+         set side [tel$telNo german]
          if {$audace(telescope,goto) ==1} {
             set slewing "true"
          } else {
@@ -210,9 +210,21 @@ proc ::scopedome::cmd { type } {
                            $value >= 0 && $value <= 360} {
                         } else {
                            ::scopedome::errorBox limite
-                           return
+                           set widget(ok) 0
+                           return $widget(ok)
                         }
                      }
+                     if {$do eq "Enc_GoTo"} {
+                        set azFinal [expr { 179.0+int($value)/3464 }]
+                     } else {
+                        set azFinal $value
+                     }
+                     set deltaMin 0.05
+                     set widget(propertyResult) [::scopedome::readProperty $comobj Azimuth]
+                     lassign $widget(propertyResult) az
+                     set delta [expr { abs($azFinal-$az) }]
+                     update
+
                      if {$do in [list SlewToAzimuth SyncToAzimuth]} {
                         #--   Ascom command
                         $comobj $do $value
@@ -220,14 +232,20 @@ proc ::scopedome::cmd { type } {
                         #--   Other command
                         $comobj CommandString "$do $value"
                      }
+
+                     #--   Suit le deplacement
+                     while {$delta >= $deltaMin} {
+                        after 2000
+                        set widget(propertyResult) [::scopedome::readProperty $comobj Azimuth]
+                        lassign $widget(propertyResult) az
+                        set delta [expr { abs($azFinal-$az) }]
+                        update
+                     }
+                     set widget(propertyResult) [::scopedome::readProperty $comobj Azimuth]
+                     return $widget(propertyResult)
                   }
          property {  set widget(propertyResult) [::scopedome::readProperty $comobj $do]}
       }
-
-      #set value ""
-      #set res [$comobj -get CommandBool "Scope $value"]
-      #::console::disp "ici \"$res\"\n"
-
     } msg] == 1} {
       ::console::disp "$do : $msg\n"
    }
@@ -265,11 +283,18 @@ proc ::scopedome::readProperty { comobj propertyName } {
 
    #--   Format = boolean
    set listBool [list AtHome AtPark Connected Dome_Error \
-      Dome_Scope_Is_Connected Slaved Slewing Cloud_Sensor_Rain]
+      Dome_Scope_Is_Connected Slaved Slewing Cloud_Sensor_Rain \
+      Rel_Scope_Get_State Rel_CCD_Get_State \
+      Rel_Light_Get_State Rel_Fan_Get_State \
+      Rel_REL_1_Get_State Rel_REL_2_Get_State \
+      Rel_REL_3_Get_State Rel_REL_4_Get_State \
+      Rel_Shutter_1_Open_Get_State Rel_Shutter_1_Close_Get_State \
+      Rel_Shutter_2_Open_Get_State Rel_Shutter_2_Close_Get_State \
+      Rel_Dome_CW_Get_State Rel_Dome_CCW_Get_State]
 
    #--   Format tristate {0|1|-1}
    set listTriState [list Internal_Sensor_Observatory_Safe \
-      Internal_Sensor_Power_Failure Internal_Sensor_Scope_At_Home \
+     Internal_Sensor_Power_Failure Internal_Sensor_Scope_At_Home \
       Internal_Sensor_Clouds Internal_Sensor_Rain Internal_Sensor_Free_Input \
       Cloud_Sensor_Day_Night Cloud_Sensor_Clear_Cloudy]
 
@@ -357,11 +382,11 @@ proc ::scopedome::getSupportedActions { comobj } {
    }
 
    #--    Debug
-   #set fid [open [file join "C:/" ScopeDome supportedActionsLS.txt] w]
-   #foreach cmd $supportedActions {
-   #   puts $fid $cmd
-   #}
-   #close $fid
+   set fid [open [file join "C:/" ScopeDome supportedActionsLS.txt] w]
+   foreach cmd $supportedActions {
+      puts $fid $cmd
+   }
+   close $fid
 
    return $supportedActions
 }
