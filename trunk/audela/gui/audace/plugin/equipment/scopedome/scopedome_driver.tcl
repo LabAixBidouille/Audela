@@ -105,8 +105,10 @@ proc ::scopedome::killCom { } {
 proc ::scopedome::writeFileSystem { cycle } {
    variable widget
    global audace conf caption
+   
+   set telNo $audace(telNo)
 
-   if {$conf(scopedome,connectScope) ==1 && $audace(telNo) == 1 && $widget(domNo) ==1} {
+   if {$conf(scopedome,connectScope) ==1 && $telNo == 1 && $widget(domNo) ==1} {
 
       #--
       set listNoCoords [list \
