@@ -11,8 +11,13 @@
 #include "cbuffer.h"
 
 #define GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS 7
+#define GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 6
 #define MOFFAT_PROFILE_NUMBER_OF_PARAMETERS 8
+#define MOFFAT_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 8
 #define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS 7
+#define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 7
+
+#define DEBUG true
 
 /**
  * Parent class for PSF parameters (container class)
@@ -89,7 +94,14 @@ public:
 /**
  * Parent class for fitting different kind of profiles
  */
-class PsfFitter : public MinimisationInterface, LinearAlgebraicSystemInterface {
+class PsfFitter : public LinearAlgebraicSystemInterface,NonLinearAlgebraicSystemInterface {
+
+private:
+	char logMessage[1024];
+	int numberOfParameterFit;
+	int numberOfParameterFitPreliminarySolution;
+	LinearAlgebraicSystemSolver* theLinearAlgebraicSystemSolver;
+	LevenbergMarquardtSystemSolver* theLevenbergMarquardtSystemSolver;
 
 protected:
 	static const int BACKGROUND_FLUX_INDEX = 0;
@@ -99,9 +111,7 @@ protected:
 	static const int THETA_INDEX           = 4;
 	static const int SIGMA_X_INDEX         = 5;
 	static const int SIGMA_Y_INDEX         = 6;
-	char logMessage[1024];
-	int numberOfParameterFit;
-	int bestRadius;
+	int     bestRadius;
 	int     numberOfPixelsMaximumRadius;
 	int     numberOfPixelsOneRadius;
 	int*    xPixelsMaximumRadius;
@@ -115,21 +125,20 @@ protected:
 	double* fluxErrors;
 	double* transformedFluxes;
 	double* transformedFluxErrors;
-	LinearAlgebraicSystemSolver* theLinearAlgebraicSystemSolver;
 
-	virtual double fitProfilePerRadius() = 0;
 	virtual void transformFluxesForPreliminarySolution() = 0;
 	void extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
 			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
 	void extractProcessingZone(const int theRadius);
+	double fitProfilePerRadius();
 	void findInitialSolution();
+	double refineSolution();
 	virtual void deduceInitialBackgroundFlux(const double minimumOfFluxes) = 0;
-	virtual void refineSolution() = 0;
-	virtual void decodeFitCoefficients() = 0;
+	virtual void decodeFitCoefficients(const double* const fitCoefficients) = 0;
 	const double findMinimumOfFluxes();
 
 public:
-	PsfFitter(const int inputNumberOfParameterFit);
+	PsfFitter(const int inputNumberOfParameterFit,const int inputNumberOfParameterFitPreliminarySolution);
 	virtual ~PsfFitter();
 	void fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
 			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
@@ -146,18 +155,19 @@ private:
 	PsfParameters* thePsfParameters;
 
 protected:
-	double fitProfilePerRadius();
 	void transformFluxesForPreliminarySolution();
 	void deduceInitialBackgroundFlux(const double minimumOfFluxes);
-	void decodeFitCoefficients();
-	void refineSolution();
+	void decodeFitCoefficients(const double* const fitCoefficients);
 
 public:
 	Gaussian2DPsfFitter();
 	virtual ~Gaussian2DPsfFitter();
 	PsfParameters* const getThePsfParameters() const;
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix);
-	double computeChiSquare(const double* const arrayOfParameters);
+	void fillArrayOfParameters(double* const arrayOfParameters);
+	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
+	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
+	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
 };
 
 /**
@@ -166,20 +176,22 @@ public:
 class MoffatPsfFitter : public PsfFitter {
 
 private:
+	static const int BETA_INDEX = 0;
 	MoffatPsfParameters* thePsfParameters;
 
 protected:
-	double fitProfilePerRadius();
 	void transformFluxesForPreliminarySolution();
 	void deduceInitialBackgroundFlux(const double minimumOfFluxes);
-	void decodeFitCoefficients();
-	void refineSolution();
+	void decodeFitCoefficients(const double* const fitCoefficients);
 
 public:
 	MoffatPsfFitter();
 	virtual ~MoffatPsfFitter();
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix);
-	double computeChiSquare(const double* const arrayOfParameters);
+	void fillArrayOfParameters(double* const arrayOfParameters);
+	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
+	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
+	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
 };
 
 /**
@@ -191,17 +203,18 @@ private:
 	PsfParameters* thePsfParameters;
 
 protected:
-	double fitProfilePerRadius();
 	void transformFluxesForPreliminarySolution();
 	void deduceInitialBackgroundFlux(const double minimumOfFluxes);
-	void decodeFitCoefficients();
-	void refineSolution();
+	void decodeFitCoefficients(const double* const fitCoefficients);
 
 public:
 	MoffatBetaMinus3PsfFitter();
 	virtual ~MoffatBetaMinus3PsfFitter();
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix);
-	double computeChiSquare(const double* const arrayOfParameters);
+	void fillArrayOfParameters(double* const arrayOfParameters);
+	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
+	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
+	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
 };
 
 #endif // __PSFFITTERH__

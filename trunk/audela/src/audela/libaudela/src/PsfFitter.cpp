@@ -8,23 +8,25 @@
 /**
  * Class constructor
  */
-PsfFitter::PsfFitter(const int inputNumberOfParameterFit):numberOfParameterFit(inputNumberOfParameterFit) {
+PsfFitter::PsfFitter(const int inputNumberOfParameterFit,const int inputNumberOfParameterFitPreliminarySolution) :
+numberOfParameterFit(inputNumberOfParameterFit), numberOfParameterFitPreliminarySolution(inputNumberOfParameterFitPreliminarySolution) {
 
-	xPixelsMaximumRadius           = NULL;
-	yPixelsMaximumRadius           = NULL;
-	fluxesMaximumRadius            = NULL;
-	fluxErrorsMaximumRadius        = NULL;
-	isUsedFlags                    = NULL;
-	xPixels                        = NULL;
-	yPixels                        = NULL;
-	fluxes                         = NULL;
-	fluxErrors                     = NULL;
-	transformedFluxes              = NULL;
-	transformedFluxErrors          = NULL;
-	numberOfPixelsMaximumRadius    = 0;
-	numberOfPixelsOneRadius        = 0;
-	bestRadius                     = -1;
-	theLinearAlgebraicSystemSolver = NULL;
+	xPixelsMaximumRadius              = NULL;
+	yPixelsMaximumRadius              = NULL;
+	fluxesMaximumRadius               = NULL;
+	fluxErrorsMaximumRadius           = NULL;
+	isUsedFlags                       = NULL;
+	xPixels                           = NULL;
+	yPixels                           = NULL;
+	fluxes                            = NULL;
+	fluxErrors                        = NULL;
+	transformedFluxes                 = NULL;
+	transformedFluxErrors             = NULL;
+	numberOfPixelsMaximumRadius       = 0;
+	numberOfPixelsOneRadius           = 0;
+	bestRadius                        = -1;
+	theLinearAlgebraicSystemSolver    = NULL;
+	theLevenbergMarquardtSystemSolver = NULL;
 }
 
 /**
@@ -92,6 +94,11 @@ PsfFitter::~PsfFitter() {
 		theLinearAlgebraicSystemSolver = NULL;
 	}
 
+	if(theLevenbergMarquardtSystemSolver != NULL) {
+		delete theLevenbergMarquardtSystemSolver;
+		theLevenbergMarquardtSystemSolver = NULL;
+	}
+
 	numberOfPixelsMaximumRadius = 0;
 	numberOfPixelsOneRadius     = 0;
 }
@@ -110,7 +117,8 @@ void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, con
 	/* Extract the processing zone for the maximum radius */
 	extractProcessingZoneMaximumRadius(theBufferImage, xCenter, yCenter, maximumRadius, saturationLimit, readOutNoise);
 
-	theLinearAlgebraicSystemSolver = new LinearAlgebraicSystemSolver(this,numberOfParameterFit,numberOfPixelsMaximumRadius);
+	theLinearAlgebraicSystemSolver    = new LinearAlgebraicSystemSolver(this,numberOfParameterFitPreliminarySolution,numberOfPixelsMaximumRadius);
+	theLevenbergMarquardtSystemSolver = new LevenbergMarquardtSystemSolver(this,numberOfParameterFit,numberOfPixelsMaximumRadius);
 
 	for(int theRadius = minimumRadius; theRadius <= maximumRadius; theRadius++) {
 
@@ -119,7 +127,7 @@ void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, con
 
 		try {
 			/* Fit the profile*/
-			reducedChiSquare         = fitProfilePerRadius();
+			reducedChiSquare     = fitProfilePerRadius();
 
 		} catch (ErrorException& theException) {
 			printf("Exception for radius = %d : %s\n",theRadius,theException.getTheMessage());
@@ -129,33 +137,6 @@ void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, con
 		if(bestReducedChiSquare  > reducedChiSquare) {
 			bestReducedChiSquare = reducedChiSquare;
 			bestRadius           = theRadius;
-		}
-	}
-}
-
-/**
- * Extract pixels needed for the fit
- */
-void PsfFitter::extractProcessingZone(const int theRadius) {
-
-	double distance;
-	const double squareRadius = theRadius * theRadius;
-
-	// We do not need to reset arrays, since we processing radii in ascending orders
-	for (int pixel = 0; pixel < numberOfPixelsMaximumRadius; pixel++) {
-
-		if(!isUsedFlags[pixel]) {
-
-			distance                                 = xPixelsMaximumRadius[pixel] * xPixelsMaximumRadius[pixel] +
-					yPixelsMaximumRadius[pixel] * yPixelsMaximumRadius[pixel];
-			if(distance                              < squareRadius) {
-				isUsedFlags[pixel]                   = true;
-				xPixels[numberOfPixelsOneRadius]     = xPixelsMaximumRadius[pixel];
-				yPixels[numberOfPixelsOneRadius]     = yPixelsMaximumRadius[pixel];
-				fluxes[numberOfPixelsOneRadius]      = fluxesMaximumRadius[pixel];
-				fluxErrors[numberOfPixelsOneRadius]  = fluxErrorsMaximumRadius[pixel];
-				numberOfPixelsOneRadius++;
-			}
 		}
 	}
 }
@@ -347,7 +328,8 @@ void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage
 			} else {
 				fluxErrorsMaximumRadius[counter] = sqrt(fluxesMaximumRadius[counter] + squareReadOutNoise); // Photon noise + read out noise
 			}
-			isUsedFlags[counter]          = false;
+			isUsedFlags[counter]                 = false;
+
 			counter++;
 		}
 	}
@@ -356,20 +338,91 @@ void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage
 }
 
 /**
+ * Extract pixels needed for the fit
+ */
+void PsfFitter::extractProcessingZone(const int theRadius) {
+
+	double distance;
+	const double squareRadius = theRadius * theRadius;
+
+	// We do not need to reset arrays, since we processing radii in ascending orders
+	for (int pixel = 0; pixel < numberOfPixelsMaximumRadius; pixel++) {
+
+		if(!isUsedFlags[pixel]) {
+
+			distance                                 = xPixelsMaximumRadius[pixel] * xPixelsMaximumRadius[pixel] +
+					yPixelsMaximumRadius[pixel] * yPixelsMaximumRadius[pixel];
+			if(distance                              < squareRadius) {
+				isUsedFlags[pixel]                   = true;
+				xPixels[numberOfPixelsOneRadius]     = xPixelsMaximumRadius[pixel];
+				yPixels[numberOfPixelsOneRadius]     = yPixelsMaximumRadius[pixel];
+				fluxes[numberOfPixelsOneRadius]      = fluxesMaximumRadius[pixel];
+				fluxErrors[numberOfPixelsOneRadius]  = fluxErrorsMaximumRadius[pixel];
+				numberOfPixelsOneRadius++;
+			}
+		}
+	}
+}
+
+/**
+ * Fit a PSF for a given pixel radius
+ */
+double PsfFitter::fitProfilePerRadius() {
+
+	/* Find the initial solution */
+	findInitialSolution();
+
+	/* Refine the initial solution */
+	const double unNormalisedChiSquare = refineSolution();
+
+	return unNormalisedChiSquare;
+}
+
+/**
+ * Find the PSF preliminary solution
+ */
+void PsfFitter::findInitialSolution() {
+
+	const double minimumOfFluxes     = findMinimumOfFluxes();
+
+	// The background flux
+	deduceInitialBackgroundFlux(minimumOfFluxes);
+
+	/* Transform fluxes for computing the preliminary solution */
+	transformFluxesForPreliminarySolution();
+
+	/* Solve the system to find the preliminary solution */
+	theLinearAlgebraicSystemSolver->solveSytem();
+
+	/* Decode the fit coefficients */
+	decodeFitCoefficients(theLinearAlgebraicSystemSolver->getArrayOfParameters());
+}
+
+/**
+ * Find the PSF refined solution
+ */
+double PsfFitter::refineSolution() {
+
+
+
+	return 0.;
+}
+
+/**
  * Compute the minimum of fluxes
  */
 const double PsfFitter::findMinimumOfFluxes() {
 
-	double minimumOfFLuxes = fluxes[0];
+	double minimumOfFluxes = fluxes[0];
 
 	for(int pixel = 1; pixel < numberOfPixelsOneRadius; pixel++) {
 
-		if(minimumOfFLuxes  > fluxes[pixel]){
-			minimumOfFLuxes = fluxes[pixel];
+		if(minimumOfFluxes  > fluxes[pixel]){
+			minimumOfFluxes = fluxes[pixel];
 		}
 	}
 
-	return minimumOfFLuxes;
+	return minimumOfFluxes;
 }
 
 /**
@@ -391,29 +444,9 @@ void PsfFitter::fillWeightedObservations(double* const weightedObservartions) {
 }
 
 /**
- * Find the Gaussian 2D PSF preliminary solution
- */
-void PsfFitter::findInitialSolution() {
-
-	const double minimumOfFluxes     = findMinimumOfFluxes();
-
-	// The background flux
-	deduceInitialBackgroundFlux(minimumOfFluxes);
-
-	/* Transform fluxes for computing the preliminary solution */
-	transformFluxesForPreliminarySolution();
-
-	/* Solve the system to find the preliminary solution */
-	theLinearAlgebraicSystemSolver->solveSytem();
-
-	/* Decode the fit coefficients */
-	decodeFitCoefficients();
-}
-
-/**
  * Class constructor
  */
-Gaussian2DPsfFitter::Gaussian2DPsfFitter() : PsfFitter(GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS) {
+Gaussian2DPsfFitter::Gaussian2DPsfFitter() : PsfFitter(GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS,GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION) {
 
 	thePsfParameters = new PsfParameters;
 }
@@ -423,7 +456,10 @@ Gaussian2DPsfFitter::Gaussian2DPsfFitter() : PsfFitter(GAUSSIAN_PROFILE_NUMBER_O
  */
 Gaussian2DPsfFitter::~Gaussian2DPsfFitter() {
 
-	delete thePsfParameters;
+	if(thePsfParameters != NULL) {
+		delete thePsfParameters;
+		thePsfParameters = NULL;
+	}
 }
 
 /*
@@ -431,17 +467,6 @@ Gaussian2DPsfFitter::~Gaussian2DPsfFitter() {
  */
 PsfParameters* const Gaussian2DPsfFitter::getThePsfParameters() const {
 	return thePsfParameters;
-}
-
-/**
- * Fit a PSF for a given pixel radius
- */
-double Gaussian2DPsfFitter::fitProfilePerRadius() {
-
-	// Find the initial solution
-	findInitialSolution();
-
-	return 0.;
 }
 
 /**
@@ -455,9 +480,7 @@ void Gaussian2DPsfFitter::deduceInitialBackgroundFlux(const double minimumOfFlux
 /**
  *  Decode the fit coefficients
  */
-void Gaussian2DPsfFitter::decodeFitCoefficients() {
-
-	const double* const fitCoefficients = theLinearAlgebraicSystemSolver->getFitCoefficients();
+void Gaussian2DPsfFitter::decodeFitCoefficients(const double* const fitCoefficients) {
 
 	const double coefficientA      = fitCoefficients[0];
 	const double coefficientB      = fitCoefficients[1];
@@ -493,7 +516,7 @@ void Gaussian2DPsfFitter::decodeFitCoefficients() {
 
 	const double squareSigmaX       = -0.5 / coefficientSquareX;
 	if (squareSigmaX                < 0.) {
-		// Defaul value
+		// Default value
 		thePsfParameters->setSigmaX(1.);
 	} else {
 		thePsfParameters->setSigmaX(sqrt(squareSigmaX));
@@ -501,7 +524,7 @@ void Gaussian2DPsfFitter::decodeFitCoefficients() {
 
 	const double squareSigmaY       = -0.5 / coefficientSquareY;
 	if (squareSigmaY                < 0.) {
-		// Defaul value
+		// Default value
 		thePsfParameters->setSigmaY(1.);
 	} else {
 		thePsfParameters->setSigmaY(sqrt(squareSigmaY));
@@ -511,6 +534,17 @@ void Gaussian2DPsfFitter::decodeFitCoefficients() {
 	scaleFactor                     = exp(scaleFactor);
 
 	thePsfParameters->setScaleFactor(scaleFactor);
+
+	if(DEBUG) {
+		printf("GAUSSIAN 2D PSF preliminary solution :\n");
+		printf("Background flux  = %.3f\n",thePsfParameters->getBackGroundFlux());
+		printf("Scale factor     = %.3f\n",thePsfParameters->getScaleFactor());
+		printf("PhotocenterX     = %.3f\n",thePsfParameters->getPhotoCenterX());
+		printf("PhotocenterY     = %.3f\n",thePsfParameters->getPhotoCenterY());
+		printf("Theta            = %.3f degrees\n",thePsfParameters->getTheta() * 180. / M_PI);
+		printf("SigmaX           = %.3f\n",thePsfParameters->getSigmaX());
+		printf("SigmaY           = %.3f\n",thePsfParameters->getSigmaY());
+	}
 }
 
 /**
@@ -535,7 +569,7 @@ void Gaussian2DPsfFitter::fillWeightedDesignMatrix(double* const * const weighte
 		/* The xPixel * yPixel term */
 		weightedDesignMatrix[1][pixel] = yPixels[pixel] * weightedDesignMatrix[3][pixel];
 
-		/* The xPixel * yPixel term */
+		/* The yPixel * yPixel term */
 		weightedDesignMatrix[2][pixel] = yPixels[pixel] * weightedDesignMatrix[4][pixel];
 	}
 }
@@ -558,21 +592,134 @@ void Gaussian2DPsfFitter::transformFluxesForPreliminarySolution() {
 	}
 }
 
-void Gaussian2DPsfFitter::refineSolution() {
-	//TODO
+/**
+ * Fill the array of parameters for the Levenberg-Marquardt minimisation
+ */
+void Gaussian2DPsfFitter::fillArrayOfParameters(double* const arrayOfParameters) {
+
+	arrayOfParameters[BACKGROUND_FLUX_INDEX] = thePsfParameters->getBackGroundFlux();
+	arrayOfParameters[SCALE_FACTOR_INDEX]    = thePsfParameters->getScaleFactor();
+	arrayOfParameters[PHOTOCENTER_X_INDEX]   = thePsfParameters->getPhotoCenterX();
+	arrayOfParameters[PHOTOCENTER_Y_INDEX]   = thePsfParameters->getPhotoCenterY();
+	arrayOfParameters[THETA_INDEX]           = thePsfParameters->getTheta();
+	arrayOfParameters[SIGMA_X_INDEX]         = thePsfParameters->getSigmaX();
+	arrayOfParameters[SIGMA_Y_INDEX]         = thePsfParameters->getSigmaY();
 }
 
-double Gaussian2DPsfFitter::computeChiSquare(const double* const arrayOfParameters) {
+/**
+ * Fill the weighted delta observations (observation - fit) / sigma for the Levenberg-Marquardt minimisation
+ */
+void Gaussian2DPsfFitter::fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) {
 
-	//TODO
+	const double cosTeta         = cos(arrayOfParameters[THETA_INDEX]);
+	const double sinTeta         = sin(arrayOfParameters[THETA_INDEX]);
+	const double twoSquareSigmaX = 2 * arrayOfParameters[SIGMA_X_INDEX] * arrayOfParameters[SIGMA_X_INDEX];
+	const double twoSquareSigmaY = 2 * arrayOfParameters[SIGMA_Y_INDEX] * arrayOfParameters[SIGMA_Y_INDEX];
+	double xPixelCentered;
+	double yPixelCentered;
+	double xPixelCenteredRotated;
+	double yPixelCenteredRotated;
+	double theEllipse;
+	double fittedFlux;
 
-	return 0.;
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+
+		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+		theEllipse            = xPixelCenteredRotated * xPixelCenteredRotated / twoSquareSigmaX + yPixelCenteredRotated * yPixelCenteredRotated / twoSquareSigmaY;
+
+		// The fitted flux can not be positive because we insure at every iteration that BACKGROUND_FLUX > 0. and SCALE_FACTOR > 0.
+		fittedFlux            = arrayOfParameters[BACKGROUND_FLUX_INDEX] + arrayOfParameters[SCALE_FACTOR_INDEX] * exp(-theEllipse);
+
+		theWeightedDeltaObservartions[kMes] = (fluxes[kMes] - fittedFlux) / fluxErrors[kMes];
+	}
+}
+
+/**
+ * Fill the weighted design matrix for the Levenberg-Marquardt minimisation
+ */
+void Gaussian2DPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) {
+
+	const double cosTeta         = cos(arrayOfParameters[THETA_INDEX]);
+	const double sinTeta         = sin(arrayOfParameters[THETA_INDEX]);
+	const double squareSigmaX    = arrayOfParameters[SIGMA_X_INDEX] * arrayOfParameters[SIGMA_X_INDEX];
+	const double squareSigmaY    = arrayOfParameters[SIGMA_Y_INDEX] * arrayOfParameters[SIGMA_Y_INDEX];
+	const double cubeSigmaX      = arrayOfParameters[SIGMA_X_INDEX] * squareSigmaX;
+	const double cubeSigmaY      = arrayOfParameters[SIGMA_Y_INDEX] * squareSigmaY;
+	const double twoSquareSigmaX = 2. * squareSigmaX;
+	const double twoSquareSigmaY = 2. * squareSigmaY;
+	double xPixelCentered;
+	double yPixelCentered;
+	double xPixelCenteredRotated;
+	double yPixelCenteredRotated;
+	double theEllipse;
+	double exponentialEllipse;
+	double commonTerm;
+	double commenTermScaled;
+	double fittedFlux;
+	double subDerivative;
+
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+
+		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+		theEllipse            = xPixelCenteredRotated * xPixelCenteredRotated / twoSquareSigmaX + yPixelCenteredRotated * yPixelCenteredRotated / twoSquareSigmaY;
+		exponentialEllipse    = exp(-theEllipse);
+		commonTerm            = exponentialEllipse / fluxErrors[kMes];
+		commenTermScaled      = arrayOfParameters[SCALE_FACTOR_INDEX] * commonTerm;
+
+		// Derivative with respect to the background flux is always one
+		weightedDesignMatrix[BACKGROUND_FLUX_INDEX][kMes] = 1. / fluxErrors[kMes];
+
+		// Derivative with respect to the scale factor
+		weightedDesignMatrix[SCALE_FACTOR_INDEX][kMes]    = commonTerm;
+
+		// Derivative with respect to x0
+		subDerivative                                     = -2 * xPixelCenteredRotated * cosTeta / twoSquareSigmaX - 2 * yPixelCenteredRotated * sinTeta / twoSquareSigmaY;
+		weightedDesignMatrix[PHOTOCENTER_X_INDEX][kMes]   = -commenTermScaled * subDerivative;
+
+		// Derivative with respect to y0
+		subDerivative                                     = +2 * xPixelCenteredRotated * sinTeta / twoSquareSigmaX - 2 * yPixelCenteredRotated * cosTeta / twoSquareSigmaY;
+		weightedDesignMatrix[PHOTOCENTER_Y_INDEX][kMes]   = -commenTermScaled * subDerivative;
+
+		// Derivative with respect to theta
+		subDerivative                                     = 2 * xPixelCenteredRotated * (-xPixelCentered * sinTeta - yPixelCentered * cosTeta) / twoSquareSigmaX + 2 * yPixelCenteredRotated * (xPixelCentered * cosTeta - yPixelCentered * sinTeta) / twoSquareSigmaY;
+		weightedDesignMatrix[THETA_INDEX][kMes]           = -commenTermScaled * subDerivative;
+
+		// Derivative with respect to sigmaX
+		subDerivative                                     = -xPixelCenteredRotated * xPixelCenteredRotated / cubeSigmaX;
+		weightedDesignMatrix[SIGMA_X_INDEX][kMes]         = -commenTermScaled * subDerivative;
+
+		// Derivative with respect to sigmaX
+		subDerivative                                     = -yPixelCenteredRotated * yPixelCenteredRotated / cubeSigmaY;
+		weightedDesignMatrix[SIGMA_Y_INDEX][kMes]         = -commenTermScaled * subDerivative;
+	}
+}
+
+/**
+ * Check the parameters of a given iteration
+ */
+void Gaussian2DPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
+
+	if ((arrayOfParameters[SCALE_FACTOR_INDEX] < 0.) || (arrayOfParameters[SIGMA_X_INDEX] < 0.) || (arrayOfParameters[SIGMA_Y_INDEX] < 0.)) {
+
+		throw InvalidDataException("Bad array of parameters");
+	}
+
+	// Saturate back ground flux to 0.
+	if (arrayOfParameters[BACKGROUND_FLUX_INDEX] < 0.) {
+		arrayOfParameters[BACKGROUND_FLUX_INDEX] = 0.;
+	}
 }
 
 /**
  * Class constructor
  */
-MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS) {
+MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,1) { //TODO
 
 	thePsfParameters = new MoffatPsfParameters;
 }
@@ -582,30 +729,16 @@ MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETE
  */
 MoffatPsfFitter::~MoffatPsfFitter() {
 
-	delete thePsfParameters;
-}
-
-double MoffatPsfFitter::fitProfilePerRadius() {
-
-	//TODO
-	return 0.;
-}
-
-void MoffatPsfFitter::refineSolution() {
-	//TODO
-}
-
-double MoffatPsfFitter::computeChiSquare(const double* const arrayOfParameters) {
-
-	//TODO
-
-	return 0.;
+	if(thePsfParameters != NULL) {
+		delete thePsfParameters;
+		thePsfParameters = NULL;
+	}
 }
 
 /**
  *  Decode the fit coefficients
  */
-void MoffatPsfFitter::decodeFitCoefficients() {
+void MoffatPsfFitter::decodeFitCoefficients(const double* const fitCoefficients) {
 	//TODO
 }
 
@@ -643,9 +776,45 @@ void MoffatPsfFitter::transformFluxesForPreliminarySolution() {
 }
 
 /**
+ * Fill the array of parameters for the Levenberg-Marquardt minimisation
+ */
+void MoffatPsfFitter::fillArrayOfParameters(double* const arrayOfParameters) {
+
+	arrayOfParameters[BACKGROUND_FLUX_INDEX] = thePsfParameters->getBackGroundFlux();
+	arrayOfParameters[SCALE_FACTOR_INDEX]    = thePsfParameters->getScaleFactor();
+	arrayOfParameters[PHOTOCENTER_X_INDEX]   = thePsfParameters->getPhotoCenterX();
+	arrayOfParameters[PHOTOCENTER_Y_INDEX]   = thePsfParameters->getPhotoCenterY();
+	arrayOfParameters[THETA_INDEX]           = thePsfParameters->getTheta();
+	arrayOfParameters[SIGMA_X_INDEX]         = thePsfParameters->getSigmaX();
+	arrayOfParameters[SIGMA_Y_INDEX]         = thePsfParameters->getSigmaY();
+	arrayOfParameters[BETA_INDEX]            = thePsfParameters->getBeta();
+}
+
+/**
+ * Fill the weighted delta observations (observation - fit) / sigma for the Levenberg-Marquardt minimisation
+ */
+void MoffatPsfFitter::fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) {
+	//TODO
+}
+
+/**
+ * Fill the weighted design matrix for the Levenberg-Marquardt minimisation
+ */
+void MoffatPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) {
+	//TODO
+}
+
+/**
+ * Check the parameters of a given iteration
+ */
+void MoffatPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
+	//TODO
+}
+
+/**
  * Class constructor
  */
-MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS) {
+MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS,1) { //TODO
 
 	thePsfParameters = new PsfParameters;
 }
@@ -655,30 +824,16 @@ MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_F
  */
 MoffatBetaMinus3PsfFitter:: ~MoffatBetaMinus3PsfFitter() {
 
-	delete thePsfParameters;
-}
-
-double MoffatBetaMinus3PsfFitter::fitProfilePerRadius() {
-
-	//TODO
-	return 0.;
-}
-
-void MoffatBetaMinus3PsfFitter::refineSolution() {
-	//TODO
-}
-
-double MoffatBetaMinus3PsfFitter::computeChiSquare(const double* const arrayOfParameters) {
-
-	//TODO
-
-	return 0.;
+	if(thePsfParameters != NULL) {
+		delete thePsfParameters;
+		thePsfParameters = NULL;
+	}
 }
 
 /**
  *  Decode the fit coefficients
  */
-void MoffatBetaMinus3PsfFitter::decodeFitCoefficients() {
+void MoffatBetaMinus3PsfFitter::decodeFitCoefficients(const double* const fitCoefficients) {
 	//TODO
 }
 
@@ -713,6 +868,41 @@ void MoffatBetaMinus3PsfFitter::transformFluxesForPreliminarySolution() {
 	//		/* We take the logarithm of fluxes */
 	//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
 	//	}
+}
+
+/**
+ * Fill the array of parameters for the Levenberg-Marquardt minimisation
+ */
+void MoffatBetaMinus3PsfFitter::fillArrayOfParameters(double* const arrayOfParameters) {
+
+	arrayOfParameters[BACKGROUND_FLUX_INDEX] = thePsfParameters->getBackGroundFlux();
+	arrayOfParameters[SCALE_FACTOR_INDEX]    = thePsfParameters->getScaleFactor();
+	arrayOfParameters[PHOTOCENTER_X_INDEX]   = thePsfParameters->getPhotoCenterX();
+	arrayOfParameters[PHOTOCENTER_Y_INDEX]   = thePsfParameters->getPhotoCenterY();
+	arrayOfParameters[THETA_INDEX]           = thePsfParameters->getTheta();
+	arrayOfParameters[SIGMA_X_INDEX]         = thePsfParameters->getSigmaX();
+	arrayOfParameters[SIGMA_Y_INDEX]         = thePsfParameters->getSigmaY();
+}
+
+/**
+ * Fill the weighted delta observations (observation - fit) / sigma for the Levenberg-Marquardt minimisation
+ */
+void MoffatBetaMinus3PsfFitter::fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) {
+	//TODO
+}
+
+/**
+ * Fill the weighted design matrix for the Levenberg-Marquardt minimisation
+ */
+void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) {
+	//TODO
+}
+
+/**
+ * Check the parameters of a given iteration
+ */
+void MoffatBetaMinus3PsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
+	//TODO
 }
 
 /**
