@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "AllExceptions.h"
 
 #define RATIO_DIAGONAL_EXTRAMUM_LIMIT 1e-15
@@ -49,6 +50,7 @@ public:
 class LinearAlgebraicSystemSolver {
 
 private:
+	char logMessage[1024];
 	LinearAlgebraicSystemInterface* theLinearAlgebraicSystem;
 	int numberOfFitParameters;
 	int maximumNumberOfMeasurements;
@@ -60,19 +62,17 @@ private:
 	double** choleskyMatrix;
 	double* intermediateArray;
 	double* fitCoefficients;
-	bool isMemoryInsufficient;
-	bool computationDiverges;
 	void computeCurvatureMatrix();
 	void computeProjectedObservations();
-	void isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal);
+	void decomposeCurvatureMatrix() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
+	void isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal) throw (BadlyConditionnedMatrixException);
 	void finishSolvingTheSystem();
 
 public:
-	LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem, const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements);
+	LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem,
+			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
 	virtual ~LinearAlgebraicSystemSolver();
-	void solveSytem();
-	void decomposeCurvatureMatrix();
-	bool isIsMemoryInsufficient() const;
+	void solveSytem() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
 	bool getComputationDiverges() const;
 	const double* const getFitCoefficients() const;
 };

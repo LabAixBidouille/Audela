@@ -99,6 +99,7 @@ protected:
 	static const int THETA_INDEX           = 4;
 	static const int SIGMA_X_INDEX         = 5;
 	static const int SIGMA_Y_INDEX         = 6;
+	char logMessage[1024];
 	int numberOfParameterFit;
 	int bestRadius;
 	int     numberOfPixelsMaximumRadius;
@@ -118,8 +119,8 @@ protected:
 
 	virtual double fitProfilePerRadius() = 0;
 	virtual void transformFluxesForPreliminarySolution() = 0;
-	int extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
-			const double saturationLimit, const double readOutNoise);
+	void extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
+			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
 	void extractProcessingZone(const int theRadius);
 	void findInitialSolution();
 	virtual void deduceInitialBackgroundFlux(const double minimumOfFluxes) = 0;
@@ -130,8 +131,8 @@ protected:
 public:
 	PsfFitter(const int inputNumberOfParameterFit);
 	virtual ~PsfFitter();
-	int fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
-			const double saturationLimit, const double readOutNoise);
+	void fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
+			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
 	const int getNumberOfMeasurements();
 	void fillWeightedObservations(double* const weightedObservartions);
 };

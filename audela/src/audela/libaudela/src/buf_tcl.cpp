@@ -5080,15 +5080,19 @@ int cmdPsfGaussian2D(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	// The image buffer
 	CBuffer* const theBufferImage = (CBuffer*) clientData;
 
-	// Create the profile fitter
-	Gaussian2DPsfFitter* const theGaussian2DProfileFitter = new Gaussian2DPsfFitter();
-	resultOfFunction = theGaussian2DProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
-	if(resultOfFunction) {
-		sprintf(outputLine,"Error in Gaussian profile fit");
+	// Create the PSF fitter
+	try {
+
+		Gaussian2DPsfFitter* const theGaussian2DProfileFitter = new Gaussian2DPsfFitter();
+		theGaussian2DProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+		delete theGaussian2DProfileFitter;
+
+	} catch (FatalException& theException) {
+
+		sprintf(outputLine,"%s",theException.getTheMessage());
 		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
-	delete theGaussian2DProfileFitter;
 
 	return TCL_OK;
 }
@@ -5130,15 +5134,19 @@ int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 	// The image buffer
 	CBuffer* const theBufferImage = (CBuffer*) clientData;
 
-	// Create the profile fitter
-	MoffatPsfFitter* const theMoffatProfileFitter = new MoffatPsfFitter();
-	resultOfFunction = theMoffatProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
-	if(resultOfFunction) {
-		sprintf(outputLine,"Error in Moffat profile fit");
+	// Create the PSF fitter
+	try {
+
+		MoffatPsfFitter* const theMoffatProfileFitter = new MoffatPsfFitter();
+		theMoffatProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+		delete theMoffatProfileFitter;
+
+	} catch (FatalException& theException) {
+
+		sprintf(outputLine,"%s",theException.getTheMessage());
 		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
-	delete theMoffatProfileFitter;
 
 	return TCL_OK;
 }
@@ -5181,15 +5189,19 @@ int cmdPsfMoffatBetaMinus3(ClientData clientData, Tcl_Interp *interp, int argc, 
 	// The image buffer
 	CBuffer* const theBufferImage = (CBuffer*) clientData;
 
-	// Create the profile fitter
-	MoffatBetaMinus3PsfFitter* const theMoffatBetaMinus3ProfileFitter = new MoffatBetaMinus3PsfFitter();
-	resultOfFunction = theMoffatBetaMinus3ProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
-	if(resultOfFunction) {
-		sprintf(outputLine,"Error in Moffat profile fit");
+	// Create the PSF fitter
+	try {
+
+		MoffatBetaMinus3PsfFitter* const theMoffatBetaMinus3ProfileFitter = new MoffatBetaMinus3PsfFitter();
+		theMoffatBetaMinus3ProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+		delete theMoffatBetaMinus3ProfileFitter;
+
+	} catch (FatalException& theException) {
+
+		sprintf(outputLine,"%s",theException.getTheMessage());
 		Tcl_SetResult(interp,outputLine,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
-	delete theMoffatBetaMinus3ProfileFitter;
 
 	return TCL_OK;
 }

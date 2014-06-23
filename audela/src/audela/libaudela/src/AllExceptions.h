@@ -111,4 +111,14 @@ public:
 	InvalidDataException(const char* inputMessage) : ErrorException(inputMessage) {}
 };
 
+class BadlyConditionnedMatrixException : public ErrorException {
+public:
+	BadlyConditionnedMatrixException(const char* inputMessage) : ErrorException(inputMessage) {}
+};
+
+class NonDefinitePositiveMatrixException : public ErrorException {
+public:
+	NonDefinitePositiveMatrixException(const char* inputMessage) : ErrorException(inputMessage) {}
+};
+
 #endif /* ALLEXCEPTIONS_H_ */
