@@ -429,6 +429,10 @@ bool LevenbergMarquardtSystemSolver::optimise() {
 	/* Compute the chiSquare */
 	chiSquare = computeChiSqure(weightedDeltaObservations);
 
+	if(DEBUG) {
+		printf("Initial solution chiSquare = %f\n",chiSquare);
+	}
+
 	int iterationCounter = 0;
 	convergenceCounter   = 0;
 	marquardtLambda      = 0.001;
@@ -493,6 +497,10 @@ bool LevenbergMarquardtSystemSolver::optimise() {
 		}
 
 		iterationCounter++;
+	}
+
+	if(DEBUG) {
+		printf("The minimisation took %d iterations => chiSquare = %f\n",iterationCounter,chiSquare);
 	}
 
 	return iterationCounter != MAXIMUM_NUMBER_OF_ITERATIONS;
@@ -613,12 +621,12 @@ void LevenbergMarquardtSystemSolver::computeDeltaParameters() {
 	}
 
 	// Compute the fit coeffcients
-	for (int indexOfRow = numberOfFitParameters; indexOfRow >= 0; indexOfRow--) {
+	for (int indexOfRow = numberOfFitParameters - 1; indexOfRow >= 0; indexOfRow--) {
 
-		theSum     = 0.;
-		k          = numberOfFitParameters - 1;
-		while (k   > indexOfRow) {
-			theSum    += choleskyMatrix[k][indexOfRow] * temporaryArrayOfParameters[k];
+		theSum      = 0.;
+		k           = numberOfFitParameters - 1;
+		while (k    > indexOfRow) {
+			theSum += choleskyMatrix[k][indexOfRow] * temporaryArrayOfParameters[k];
 			k--;
 		}
 		temporaryArrayOfParameters[indexOfRow] = (intermediateArray[indexOfRow] - theSum) / choleskyMatrix[indexOfRow][indexOfRow];

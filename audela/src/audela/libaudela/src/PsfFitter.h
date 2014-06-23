@@ -17,8 +17,6 @@
 #define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS 7
 #define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 7
 
-#define DEBUG true
-
 /**
  * Parent class for PSF parameters (container class)
  */

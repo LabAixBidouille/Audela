@@ -24,6 +24,8 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 #define NAN (*(const double *) __nan)
 #endif
 
+#define DEBUG true
+
 /**
  *Interface for linear algebraic systems
  */
