@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include <string.h>
 #include "AllExceptions.h"
 
@@ -19,17 +19,10 @@
 # define M_PI 3.14159265358979323846
 #endif
 
-/**
- * Interface for minimisation (Levenberg-Marquardt)
- */
-class MinimisationInterface {
-
-public:
-	MinimisationInterface() {};
-	virtual ~MinimisationInterface() {};
-	virtual double computeChiSquare(const double* const arrayOfParameters) = 0;
-
-};
+#ifndef NAN
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const double *) __nan)
+#endif
 
 /**
  *Interface for linear algebraic systems
@@ -45,36 +38,112 @@ public:
 };
 
 /**
- * Class to solve linear algebraic systems by Cholesky decomposition
+ *Interface for linear algebraic systems
  */
-class LinearAlgebraicSystemSolver {
+class NonLinearAlgebraicSystemInterface {
 
-private:
+public:
+	NonLinearAlgebraicSystemInterface() {};
+	virtual ~NonLinearAlgebraicSystemInterface() {};
+	virtual void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) = 0;
+	virtual void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) = 0;
+	virtual void fillArrayOfParameters(double* const arrayOfParameters) = 0;
+	virtual void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) = 0;
+	virtual const int getNumberOfMeasurements() = 0;
+};
+
+/**
+ * Class to solve algebraic systems by Cholesky decomposition
+ */
+class AlgebraicSystemSolver {
+
+protected:
 	char logMessage[1024];
-	LinearAlgebraicSystemInterface* theLinearAlgebraicSystem;
 	int numberOfFitParameters;
 	int maximumNumberOfMeasurements;
 	int numberOfMeasurements;
 	double** weightedDesignMatrix;
 	double** curvatureMatrix;
-	double* weightedObservations;
 	double* projectedObservations;
+	double* arrayOfParameters;
 	double** choleskyMatrix;
 	double* intermediateArray;
-	double* fitCoefficients;
 	void computeCurvatureMatrix();
-	void computeProjectedObservations();
-	void decomposeCurvatureMatrix() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
+	virtual void computeProjectedObservations() = 0;
+	void decomposeCurvatureMatrix(double** theCurvatureMatrix) throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
 	void isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal) throw (BadlyConditionnedMatrixException);
-	void finishSolvingTheSystem();
+	void finishSolvingTheSystem(double* const theFitCoefficients);
+
+public:
+	AlgebraicSystemSolver(const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
+	virtual ~AlgebraicSystemSolver();
+	const double* const getArrayOfParameters() const;
+};
+
+/**
+ * Class to solve linear algebraic systems by Cholesky decomposition
+ */
+class LinearAlgebraicSystemSolver : public AlgebraicSystemSolver {
+
+private:
+	LinearAlgebraicSystemInterface* theLinearAlgebraicSystem;
+	double* weightedObservations;
+
+protected:
+	void computeProjectedObservations();
 
 public:
 	LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem,
 			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
 	virtual ~LinearAlgebraicSystemSolver();
 	void solveSytem() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
-	bool getComputationDiverges() const;
-	const double* const getFitCoefficients() const;
+};
+
+/**
+ * Class to solve non linear algebraic systems using Levenberg-Marquardt algorithm
+ */
+class LevenbergMarquardtSystemSolver : public AlgebraicSystemSolver {
+
+private:
+	/** We need 3 successive convergences to stop iterating */
+	static const int NUMBER_OF_NEEDED_CONVERGENCE = 3;
+	/** The maximum number of allowed iterations */
+	static const int MAXIMUM_NUMBER_OF_ITERATIONS = 100;
+	/** The Marquardt scaling factor */
+	static const double MARQUARDT_SCALE           = 10.;
+	/** Needed to stop iterating */
+	static const double DELTA_CHI_SQUARE_LIMIT    = 1e-3;
+	/** Needed to stop iterating */
+	static const double CHI_SQUARE_TOLERENCE      = 1e-8;
+	/** Marquardt's factor */
+	double marquardtLambda;
+	/** True if we want to recompute the matrix of derivatives in a given iteration */
+	bool recomputeMatrix;
+	/** Counts the number of convergences */
+	int convergenceCounter;
+	/** The chiSquare of the fit */
+	double chiSquare;
+	NonLinearAlgebraicSystemInterface* theNonLinearAlgebraicSystem;
+	double** hessianMatrix;
+	double* weightedDeltaObservations;
+	double* temporaryWeightedDeltaObservations;
+	double* temporaryArrayOfParameters;
+	void prepareAlgebraicSystem();
+	double computeChiSqure(double* const theWeightedDeltaObservations);
+	void copyCurvatureMatrix();
+	void computeDeltaParameters();
+	void badStep();
+	void swapSolutionParameters();
+
+protected:
+	void computeProjectedObservations();
+
+public:
+	LevenbergMarquardtSystemSolver(NonLinearAlgebraicSystemInterface* const inputNonLinearAlgebraicSystem,
+			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
+	virtual ~LevenbergMarquardtSystemSolver();
+	bool optimise();
+	const double getChiSquare() const;
 };
 
 #endif // __MINIMISATIONANDLINEARALGEBRAICSYSTEMS__
