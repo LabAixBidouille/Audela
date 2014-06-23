@@ -10,74 +10,73 @@
  * Class constructor
  */
 LinearAlgebraicSystemSolver::LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem,
-		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) :
-		theLinearAlgebraicSystem(inputLinearAlgebraicSystem), numberOfFitParameters(inputNumberOfFitParameters), maximumNumberOfMeasurements(inputMaximumNumberOfMeasurements) {
+		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException) :
+		theLinearAlgebraicSystem(inputLinearAlgebraicSystem), numberOfFitParameters(inputNumberOfFitParameters),
+		maximumNumberOfMeasurements(inputMaximumNumberOfMeasurements) {
 
 	numberOfMeasurements = -1;
-	isMemoryInsufficient = false;
-	computationDiverges  = false;
 
 	weightedDesignMatrix     = new double*[numberOfFitParameters];
 	if(weightedDesignMatrix == NULL) {
-		isMemoryInsufficient = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double*) for weightedDesignMatrix\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	curvatureMatrix          = new double*[numberOfFitParameters];
 	if(curvatureMatrix      == NULL) {
-		isMemoryInsufficient = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double*) for curvatureMatrix\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	choleskyMatrix           = new double*[numberOfFitParameters];
 	if(choleskyMatrix       == NULL) {
-		isMemoryInsufficient = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double*) for choleskyMatrix\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	for(int kParameter = 0; kParameter < numberOfFitParameters; kParameter++) {
 
 		weightedDesignMatrix[kParameter]     = new double[maximumNumberOfMeasurements];
 		if(weightedDesignMatrix[kParameter] == NULL) {
-			isMemoryInsufficient             = true;
-			return;
+			sprintf(logMessage,"Error when allocating memory of %d (double) for choleskyMatrix[%d]\n",maximumNumberOfMeasurements,kParameter);
+			throw InsufficientMemoryException(logMessage);
 		}
 
 		curvatureMatrix[kParameter]          = new double[numberOfFitParameters];
 		if(curvatureMatrix[kParameter]      == NULL) {
-			isMemoryInsufficient             = true;
-			return;
+			sprintf(logMessage,"Error when allocating memory of %d (double) for curvatureMatrix[%d]\n",numberOfFitParameters,kParameter);
+			throw InsufficientMemoryException(logMessage);
 		}
 
 		choleskyMatrix[kParameter]           = new double[numberOfFitParameters];
 		if(choleskyMatrix[kParameter]       == NULL) {
-			isMemoryInsufficient             = true;
-			return;
+			sprintf(logMessage,"Error when allocating memory of %d (double) for choleskyMatrix[%d]\n",numberOfFitParameters,kParameter);
+			throw InsufficientMemoryException(logMessage);
 		}
 	}
 
 	weightedObservations      = new double[maximumNumberOfMeasurements];
 	if(weightedObservations  == NULL) {
-		isMemoryInsufficient  = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for weightedObservations\n",maximumNumberOfMeasurements);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	projectedObservations     = new double[numberOfFitParameters];
 	if(projectedObservations == NULL) {
-		isMemoryInsufficient  = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for projectedObservations\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	intermediateArray         = new double[numberOfFitParameters];
 	if(intermediateArray     == NULL) {
-		isMemoryInsufficient  = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for intermediateArray\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	fitCoefficients           = new double[numberOfFitParameters];
 	if(fitCoefficients       == NULL) {
-		isMemoryInsufficient  = true;
-		return;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for fitCoefficients\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
 	}
 }
 
@@ -144,7 +143,7 @@ LinearAlgebraicSystemSolver::~LinearAlgebraicSystemSolver() {
 /**
  * SOlve the algebraic system
  */
-void LinearAlgebraicSystemSolver::solveSytem() {
+void LinearAlgebraicSystemSolver::solveSytem() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException) {
 
 	/* Retrieve the number of measurements */
 	theLinearAlgebraicSystem->getNumberOfMeasurements();
@@ -160,9 +159,6 @@ void LinearAlgebraicSystemSolver::solveSytem() {
 
 	/* Decompose the curvature matrix by the Cholesky decomposition */
 	decomposeCurvatureMatrix();
-	if(computationDiverges) {
-		return;
-	}
 
 	/* Compute projectObservations = transpose(weightedDesignMatrix) * weightedObservations */
 	computeProjectedObservations();
@@ -214,7 +210,7 @@ void LinearAlgebraicSystemSolver::computeCurvatureMatrix() {
 /**
  * Decompose the curvature matrix using Cholesky decomposition
  */
-void LinearAlgebraicSystemSolver::decomposeCurvatureMatrix() {
+void LinearAlgebraicSystemSolver::decomposeCurvatureMatrix() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException) {
 
 	int j,k;
 	double theSum,theSquare;
@@ -250,13 +246,10 @@ void LinearAlgebraicSystemSolver::decomposeCurvatureMatrix() {
 
 			choleskyMatrix[kParameter][kParameter] = sqrt(theSquare);
 			isMatrixBadlyConditionned(choleskyMatrix[kParameter][kParameter],minimumOfDiagonal,maximumOfDiagonal);
-			if(computationDiverges) {
-				return;
-			}
 
 		} else {
-			computationDiverges    = true;
-			return;
+			sprintf(logMessage,"The curvature matrix is not definite positive\n");
+			throw NonDefinitePositiveMatrixException(logMessage);
 		}
 	}
 }
@@ -298,7 +291,8 @@ void LinearAlgebraicSystemSolver::finishSolvingTheSystem() {
 /**
  * Check for badly conditionned curvature matrix
  */
-void LinearAlgebraicSystemSolver::isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal) {
+void LinearAlgebraicSystemSolver::isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal)
+throw (BadlyConditionnedMatrixException) {
 
 	if(minimumOfDiagonal  > diagonalElement) {
 		minimumOfDiagonal = diagonalElement;
@@ -312,23 +306,9 @@ void LinearAlgebraicSystemSolver::isMatrixBadlyConditionned(const double diagona
 
 	if(ratioOfExtrema < RATIO_DIAGONAL_EXTRAMUM_LIMIT) {
 		/* The matrix is badly scaled : we consider it as singular */
-		computationDiverges = true;
+		sprintf(logMessage,"The ratio of diagonal elements = %f : the curvature matrix is badly conditionned\n",ratioOfExtrema);
+		throw BadlyConditionnedMatrixException(logMessage);
 	}
-}
-
-/**
- * Get the flag for insufficient memory
- */
-bool LinearAlgebraicSystemSolver::isIsMemoryInsufficient() const {
-	return isMemoryInsufficient;
-}
-
-/**
- * Get the flag for divergent computations
- */
-bool LinearAlgebraicSystemSolver::getComputationDiverges() const {
-
-	return computationDiverges;
 }
 
 /**

@@ -99,41 +99,38 @@ PsfFitter::~PsfFitter() {
 /**
  * Loop over radii to find the best fit
  */
-int PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
-		const double saturationLimit, const double readOutNoise) {
+void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
+		const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException) {
 
 	numberOfPixelsOneRadius     = 0;
 	double bestReducedChiSquare = 1e100;
 	bestRadius                  = -1;
-	double reducedChiSquare;
-	int resultOfFunction;
+	double reducedChiSquare     = NAN;
 
 	/* Extract the processing zone for the maximum radius */
-	resultOfFunction = extractProcessingZoneMaximumRadius(theBufferImage, xCenter, yCenter, maximumRadius, saturationLimit, readOutNoise);
-	if(resultOfFunction) {
-		return 1;
-	}
+	extractProcessingZoneMaximumRadius(theBufferImage, xCenter, yCenter, maximumRadius, saturationLimit, readOutNoise);
 
 	theLinearAlgebraicSystemSolver = new LinearAlgebraicSystemSolver(this,numberOfParameterFit,numberOfPixelsMaximumRadius);
-	if(theLinearAlgebraicSystemSolver->isIsMemoryInsufficient()) {
-		return 1;
-	}
 
 	for(int theRadius = minimumRadius; theRadius <= maximumRadius; theRadius++) {
 
 		/* Extract pixels needed for the fit */
 		extractProcessingZone(theRadius);
 
-		/* Fit the profile*/
-		reducedChiSquare         = fitProfilePerRadius();
+		try {
+			/* Fit the profile*/
+			reducedChiSquare         = fitProfilePerRadius();
+
+		} catch (ErrorException& theException) {
+			printf("Exception for radius = %d : %s\n",theRadius,theException.getTheMessage());
+			continue;
+		}
 
 		if(bestReducedChiSquare  > reducedChiSquare) {
 			bestReducedChiSquare = reducedChiSquare;
 			bestRadius           = theRadius;
 		}
 	}
-
-	return 0;
 }
 
 /**
@@ -166,8 +163,8 @@ void PsfFitter::extractProcessingZone(const int theRadius) {
 /**
  * Extract pixels needed for the fit
  */
-int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
-		const double saturationLimit, const double readOutNoise) {
+void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
+		const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException) {
 
 	const int naxis1 = theBufferImage->GetWidth();
 	const int naxis2 = theBufferImage->GetHeight();
@@ -179,8 +176,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 	}
 
 	int xPixelEnd    = xCenter + theRadius;
-	if (xPixelEnd   >= naxis1) {;
-	xPixelEnd    = naxis1 -1;
+	if (xPixelEnd   >= naxis1) {
+		xPixelEnd    = naxis1 -1;
 	}
 
 	int yPixelStart  = yCenter - theRadius;
@@ -200,8 +197,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 	// Get the sub image
 	TYPE_PIXELS* allPixels      = new TYPE_PIXELS[numberOfPixelsMaximumRadius];
 	if(allPixels               == NULL) {
-		printf("Error when allocating memory of %d (double) for allPixels\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (TYPE_PIXELS) for allPixels\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	theBufferImage->GetPixels(xPixelStart, yPixelStart, xPixelEnd, yPixelEnd, FORMAT_FLOAT, PLANE_GREY, allPixels);
@@ -210,15 +207,15 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 	xPixelsMaximumRadius        = new int[numberOfPixelsMaximumRadius];
 	if(xPixelsMaximumRadius    == NULL) {
 		delete[] allPixels;
-		printf("Error when allocating memory of %d (double) for xPixelsMaximumRadius\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for xPixelsMaximumRadius\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 	xPixels                     = new int[numberOfPixelsMaximumRadius];
 	if(xPixels                 == NULL) {
 		delete[] allPixels;
 		delete[] xPixelsMaximumRadius;
-		printf("Error when allocating memory of %d (double) for xPixels\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for xPixels\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	yPixelsMaximumRadius        = new int[numberOfPixelsMaximumRadius];
@@ -226,8 +223,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] allPixels;
 		delete[] xPixelsMaximumRadius;
 		delete[] xPixels;
-		printf("Error when allocating memory of %d (double) for yPixelsMaximumRadius\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for yPixelsMaximumRadius\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 	yPixels                     = new int[numberOfPixelsMaximumRadius];
 	if(yPixels                 == NULL) {
@@ -235,8 +232,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] xPixelsMaximumRadius;
 		delete[] xPixels;
 		delete[] yPixelsMaximumRadius;
-		printf("Error when allocating memory of %d (double) for yPixels\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for yPixels\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	fluxesMaximumRadius         = new double[numberOfPixelsMaximumRadius];
@@ -246,8 +243,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] xPixels;
 		delete[] yPixelsMaximumRadius;
 		delete[] yPixels;
-		printf("Error when allocating memory of %d (double) for fluxesMaximumRadius\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for fluxesMaximumRadius\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 	fluxes                      = new double[numberOfPixelsMaximumRadius];
 	if(fluxes                  == NULL) {
@@ -257,8 +254,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] yPixelsMaximumRadius;
 		delete[] yPixels;
 		delete[] fluxesMaximumRadius;
-		printf("Error when allocating memory of %d (double) for fluxes\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for fluxes\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 	transformedFluxes           = new double[numberOfPixelsMaximumRadius];
 	if(transformedFluxes       == NULL) {
@@ -269,8 +266,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] yPixels;
 		delete[] fluxesMaximumRadius;
 		delete[] fluxes;
-		printf("Error when allocating memory of %d (double) for transformedFluxes\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for transformedFluxes\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	fluxErrorsMaximumRadius     = new double[numberOfPixelsMaximumRadius];
@@ -283,8 +280,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] fluxesMaximumRadius;
 		delete[] fluxes;
 		delete[] transformedFluxes;
-		printf("Error when allocating memory of %d (double) for fluxErrorsMaximumRadius\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for fluxErrorsMaximumRadius\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 	fluxErrors                  = new double[numberOfPixelsMaximumRadius];
 	if(fluxErrors              == NULL) {
@@ -297,8 +294,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] fluxes;
 		delete[] transformedFluxes;
 		delete[] fluxErrorsMaximumRadius;
-		printf("Error when allocating memory of %d (double) for fluxErrors\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for fluxErrors\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 	transformedFluxErrors       = new double[numberOfPixelsMaximumRadius];
 	if(transformedFluxErrors   == NULL) {
@@ -312,8 +309,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] transformedFluxes;
 		delete[] fluxErrorsMaximumRadius;
 		delete[] fluxErrors;
-		printf("Error when allocating memory of %d (double) for transformedFluxErrors\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for transformedFluxErrors\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	isUsedFlags     = new bool[numberOfPixelsMaximumRadius];
@@ -329,8 +326,8 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 		delete[] fluxErrorsMaximumRadius;
 		delete[] fluxErrors;
 		delete[] transformedFluxErrors;
-		printf("Error when allocating memory of %d (double) for isUsedFlags\n",numberOfPixelsMaximumRadius);
-		return 1;
+		sprintf(logMessage,"Error when allocating memory of %d (double) for isUsedFlags\n",numberOfPixelsMaximumRadius);
+		throw InsufficientMemoryException(logMessage);
 	}
 
 	// Fill arrays
@@ -356,8 +353,6 @@ int PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage,
 	}
 
 	delete[] allPixels;
-
-	return 0;
 }
 
 /**
@@ -611,7 +606,7 @@ double MoffatPsfFitter::computeChiSquare(const double* const arrayOfParameters) 
  *  Decode the fit coefficients
  */
 void MoffatPsfFitter::decodeFitCoefficients() {
-//TODO
+	//TODO
 }
 
 /**
@@ -634,17 +629,17 @@ void MoffatPsfFitter::deduceInitialBackgroundFlux(const double minimumOfFluxes) 
  */
 void MoffatPsfFitter::transformFluxesForPreliminarySolution() {
 
-//	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
-//
-//		/* We subtract the background flux */
-//		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->backGroundFlux;
-//
-//		/* The error bars */
-//		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel];
-//
-//		/* We take the logarithm of fluxes */
-//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
-//	}
+	//	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
+	//
+	//		/* We subtract the background flux */
+	//		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->backGroundFlux;
+	//
+	//		/* The error bars */
+	//		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel];
+	//
+	//		/* We take the logarithm of fluxes */
+	//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
+	//	}
 }
 
 /**
@@ -684,7 +679,7 @@ double MoffatBetaMinus3PsfFitter::computeChiSquare(const double* const arrayOfPa
  *  Decode the fit coefficients
  */
 void MoffatBetaMinus3PsfFitter::decodeFitCoefficients() {
-//TODO
+	//TODO
 }
 
 /**
@@ -707,17 +702,17 @@ void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const w
  */
 void MoffatBetaMinus3PsfFitter::transformFluxesForPreliminarySolution() {
 
-//	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
-//
-//		/* We subtract the background flux */
-//		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->backGroundFlux;
-//
-//		/* The error bars */
-//		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel];
-//
-//		/* We take the logarithm of fluxes */
-//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
-//	}
+	//	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
+	//
+	//		/* We subtract the background flux */
+	//		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->backGroundFlux;
+	//
+	//		/* The error bars */
+	//		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel];
+	//
+	//		/* We take the logarithm of fluxes */
+	//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
+	//	}
 }
 
 /**
