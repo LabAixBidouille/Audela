@@ -150,6 +150,8 @@ void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, con
 	setTheBestSolution();
 	theLevenbergMarquardtSystemSolver->computeErrors();
 	setErrorsInThefinalSolution(theLevenbergMarquardtSystemSolver->getArrayOfParameterErrors());
+
+	updatePhotocenters(xCenter,yCenter);
 }
 
 /**
@@ -781,6 +783,15 @@ void Gaussian2DPsfFitter::setTheBestSolution() {
 }
 
 /**
+ * Add the initial shifts to the photocenter
+ */
+void Gaussian2DPsfFitter::updatePhotocenters(const int xCenter, const int yCenter) {
+
+	thePsfParameters->setPhotoCenterX(thePsfParameters->getPhotoCenterX() + xCenter);
+	thePsfParameters->setPhotoCenterY(thePsfParameters->getPhotoCenterY() + yCenter);
+}
+
+/**
  * Class constructor
  */
 MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,1) {
@@ -1091,6 +1102,15 @@ double MoffatPsfFitter::reduceChiSquare(const double unReducedChiSquare) {
  */
 void MoffatPsfFitter::setTheBestSolution() {
 	thePsfParameters->copy(theFinalPsfParameters);
+}
+
+/**
+ * Add the initial shifts to the photocenter
+ */
+void MoffatPsfFitter::updatePhotocenters(const int xCenter, const int yCenter) {
+
+	thePsfParameters->setPhotoCenterX(thePsfParameters->getPhotoCenterX() + xCenter);
+	thePsfParameters->setPhotoCenterY(thePsfParameters->getPhotoCenterY() + yCenter);
 }
 
 /**
@@ -1453,6 +1473,15 @@ double MoffatBetaMinus3PsfFitter::reduceChiSquare(const double unReducedChiSquar
  */
 void MoffatBetaMinus3PsfFitter::setTheBestSolution() {
 	thePsfParameters->copy(theFinalPsfParameters);
+}
+
+/**
+ * Add the initial shifts to the photocenter
+ */
+void MoffatBetaMinus3PsfFitter::updatePhotocenters(const int xCenter, const int yCenter) {
+
+	thePsfParameters->setPhotoCenterX(thePsfParameters->getPhotoCenterX() + xCenter);
+	thePsfParameters->setPhotoCenterY(thePsfParameters->getPhotoCenterY() + yCenter);
 }
 
 /**
