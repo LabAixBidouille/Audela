@@ -5085,6 +5085,23 @@ int cmdPsfGaussian2D(ClientData clientData, Tcl_Interp *interp, int argc, char *
 
 		Gaussian2DPsfFitter* const theGaussian2DProfileFitter = new Gaussian2DPsfFitter();
 		theGaussian2DProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+
+		// The results
+		PsfParameters* const thePsfParameters = theGaussian2DProfileFitter->getThePsfParameters();
+		char tclString[1024];
+		Tcl_DString dsptr;
+		Tcl_DStringInit(&dsptr);
+		sprintf(tclString,"{ {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} } ",
+				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
+				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
+				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),thePsfParameters->getSigmaY(),
+				thePsfParameters->getBackGroundFluxError(),thePsfParameters->getScaleFactorError(),
+				thePsfParameters->getPhotoCenterXError(),thePsfParameters->getPhotoCenterYError(),
+				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),thePsfParameters->getSigmaYError());
+		Tcl_DStringAppend(&dsptr,tclString,-1);
+		Tcl_DStringResult(interp,&dsptr);
+		Tcl_DStringFree(&dsptr);
+
 		delete theGaussian2DProfileFitter;
 
 	} catch (FatalException& theException) {
@@ -5139,6 +5156,25 @@ int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 
 		MoffatPsfFitter* const theMoffatProfileFitter = new MoffatPsfFitter();
 		theMoffatProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+
+		// The results
+		MoffatPsfParameters* const thePsfParameters = theMoffatProfileFitter->getThePsfParameters();
+		char tclString[1024];
+		Tcl_DString dsptr;
+		Tcl_DStringInit(&dsptr);
+		sprintf(tclString,"{ {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %+.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %.3f} } ",
+				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
+				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
+				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),
+				thePsfParameters->getSigmaY(),thePsfParameters->getBeta(),
+				thePsfParameters->getBackGroundFluxError(),thePsfParameters->getScaleFactorError(),
+				thePsfParameters->getPhotoCenterXError(),thePsfParameters->getPhotoCenterYError(),
+				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),
+				thePsfParameters->getSigmaYError(),thePsfParameters->getBetaError());
+		Tcl_DStringAppend(&dsptr,tclString,-1);
+		Tcl_DStringResult(interp,&dsptr);
+		Tcl_DStringFree(&dsptr);
+
 		delete theMoffatProfileFitter;
 
 	} catch (FatalException& theException) {
@@ -5194,6 +5230,23 @@ int cmdPsfMoffatBetaMinus3(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 		MoffatBetaMinus3PsfFitter* const theMoffatBetaMinus3ProfileFitter = new MoffatBetaMinus3PsfFitter();
 		theMoffatBetaMinus3ProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+
+		// The results
+		PsfParameters* const thePsfParameters = theMoffatBetaMinus3ProfileFitter->getThePsfParameters();
+		char tclString[1024];
+		Tcl_DString dsptr;
+		Tcl_DStringInit(&dsptr);
+		sprintf(tclString,"{ {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} } ",
+				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
+				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
+				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),thePsfParameters->getSigmaY(),
+				thePsfParameters->getBackGroundFluxError(),thePsfParameters->getScaleFactorError(),
+				thePsfParameters->getPhotoCenterXError(),thePsfParameters->getPhotoCenterYError(),
+				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),thePsfParameters->getSigmaYError());
+		Tcl_DStringAppend(&dsptr,tclString,-1);
+		Tcl_DStringResult(interp,&dsptr);
+		Tcl_DStringFree(&dsptr);
+
 		delete theMoffatBetaMinus3ProfileFitter;
 
 	} catch (FatalException& theException) {
