@@ -600,7 +600,10 @@ proc spc_piecewiselinearfilter { args } {
    global conf
    global audace spcaudace
    #global spc_audace(nul_pcent_intens)
-   set nul_pcent_intens .65
+   #- Depuis 8-10-2010
+   # set nul_pcent_intens .65
+   #- Depuis de 20140622 :
+   set nul_pcent_intens 0.25
 
 
    # regul_weight est le poids de régularisation
@@ -682,10 +685,10 @@ proc spc_piecewiselinearfilter { args } {
 
       #--- Supprimer l'appel a spc_findnul quand on est en mode manuel (appel qui n'a pas sa raison d'etre et qui provient du poids du passe :
       if { $mode=="auto" } {
-         #-- elimination des termes nuls au bord
+         #-- elimination des termes nuls au bord : spc_findnnul liste_intensites ?fraction de continuum (0.85)?
          set limits [ spc_findnnul $ordonneesorig ]
-         # i_inf est le N° (suivant la numerotation des listes Tcl) du premier element non nul
-         # i_sup est le N° (suivant la numerotation des listes Tcl) du dernier element non nul
+         # i_inf est le No (suivant la numerotation des listes Tcl) du premier element non nul
+         # i_sup est le No (suivant la numerotation des listes Tcl) du dernier element non nul
          set i_inf [ lindex $limits 0 ]
          set i_sup [ lindex $limits 1 ]
       } else {
@@ -722,8 +725,9 @@ proc spc_piecewiselinearfilter { args } {
       set regul_weight [ expr $regul_weight * $intens_moy / 600000. ]
 
       #-- ajustement de nechant pour minimiser les effets de bord et prolongement "accordingly" du profil
-      set nechant [ ajust_interv [ expr $nmilieu0-1 ] $nechant ]
-      # set ordmoyen [ lindex $ordonnees [ expr $nmilieu0 -1 ] ]
+      #- Court-circuit de ajust_interv pour gerer de plus petits intervalles $nechant (20140622) :
+      # set nechant [ ajust_interv [ expr $nmilieu0-1 ] $nechant ]
+      ## set ordmoyen [ lindex $ordonnees [ expr $nmilieu0 -1 ] ]
       set o1 [ lindex $ordonnees [ expr $nmilieu0 -1 ] ]
       set o2 [ lindex $ordonnees [ expr $nmilieu0 -2 ] ]
       set ordmoyen [ expr .5*( $o1+ $o2 ) ]
