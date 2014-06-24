@@ -627,7 +627,6 @@ void LevenbergMarquardtSystemSolver::computeErrors() {
 	} catch (InvalidDataException& theException) {
 
 		setDefaultErros();
-
 	}
 }
 

@@ -139,7 +139,7 @@ protected:
 	virtual double reduceChiSquare(const double unReducedChiSquare) = 0;
 	virtual void setTheBestSolution() = 0;
 	virtual void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors) = 0;
-	virtual void updatePhotocenters(const int xCenter, const int yCenter) = 0;
+	virtual void updatePhotocenter(const int xCenter, const int yCenter) = 0;
 	const double findMinimumOfFluxes();
 
 public:
@@ -168,7 +168,7 @@ protected:
 	double reduceChiSquare(const double unReducedChiSquare);
 	void setTheBestSolution();
 	void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors);
-	void updatePhotocenters(const int xCenter, const int yCenter);
+	void updatePhotocenter(const int xCenter, const int yCenter);
 
 public:
 	Gaussian2DPsfFitter();
@@ -199,7 +199,7 @@ protected:
 	double reduceChiSquare(const double unReducedChiSquare);
 	void setTheBestSolution();
 	void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors);
-	void updatePhotocenters(const int xCenter, const int yCenter);
+	void updatePhotocenter(const int xCenter, const int yCenter);
 
 public:
 	MoffatPsfFitter();
@@ -229,7 +229,7 @@ protected:
 	double reduceChiSquare(const double unReducedChiSquare);
 	void setTheBestSolution();
 	void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors);
-	void updatePhotocenters(const int xCenter, const int yCenter);
+	void updatePhotocenter(const int xCenter, const int yCenter);
 
 public:
 	MoffatBetaMinus3PsfFitter();
