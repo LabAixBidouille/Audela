@@ -80,8 +80,17 @@ regroup&eacute;es en 4 lots :</p>
 <td><b>Valeur du senseur</b></td>
 <td>widget(property)</td>
 <td>Azimuth AtHome AtPark Connected ShutterStatus<br />
+
 Slaved Slewing Dome_Scope_Is_Connected<br />
 Dome_Scope_Ra Dome_Scope_Dec Dome_Scope_Alt Dome_Scope_Az<br />
+
+Rel_Scope_Get_State Rel_CCD_Get_State<br />
+Rel_Light_Get_State Rel_Fan_Get_State<br />
+Rel_REL_1_Get_State Rel_REL_2_Get_State<br /> 
+Rel_REL_3_Get_State Rel_REL_4_Get_State<br />
+Rel_Shutter_1_Open_Get_State Rel_Shutter_1_Close_Get_State<br />
+Rel_Shutter_2_Open_Get_State Rel_Shutter_2_Close_Get_State<br />
+Rel_Dome_CW_Get_State Rel_Dome_CCW_Get_State<br />
 Temperature_In_Dome Temperature_Outside_Dome<br />
 Temperature_Humidity_Sensor Humidity_Humidity_Sensor<br />
 Shutter_Link_Strength Internal_Sensor_Observatory_Safe<br />
@@ -106,26 +115,30 @@ Analog_Input_Shutter Analog_Input_Main</td>
 <tr>
 <td><b>Commande</b></td>
 <td>widget(action)</td>
-<td>Rel_Scope_On Rel_Scope_Off Rel_CCD_On Rel_CCD_Off<br />
+<td>AbortSlew CloseShutter<br />
+Dome_Scope_Connect Dome_Scope_DisConnect<br />
+Dome_Wait_1000ms OpenShutter<br />
+Park Rel_Scope_On Rel_Scope_Off Rel_CCD_On Rel_CCD_Off<br />
 Rel_Light_On Rel_Light_Off Rel_Fan_On Rel_Fan_Off<br />
 Rel_1_On Rel_1_Off Rel_2_On Rel_2_Off<br />
 Rel_3_On Rel_3_Off Rel_4_On Rel_4_Off<br />
-Switch_All_On Switch_All_Off<br />
-Dome_Scope_Connect Dome_Scope_DisConnect<br />
+Reset_Dome_Rotate_Encoder Stop<br />
+Switch_All_On Switch_All_Off Stop<br />
 Shutter_1_Open Shutter_1_Close<br />
-Shutter_2_Open Shutter_2_Close<br />
-AbortSlew Park<br />
-Dome_Wait_1000ms Reset_Dome_Rotate_Encoder Stop</td>
+Shutter_2_Open Shutter_2_Close</td>
 <td></td>
 </tr>
 </table>
+<h3>Synchronisation du d&ocirc;me avec le t&eacute;lescope</h3>
+<p>Si la case <b>Suivre le t&eacute;lescope</b> est coch&eacute;e l'interface envoie les cordonn&eacute;es au d&ocirc;me. Il faut aussi activer la fonction <b>Use SideOfPier from Scope</b> dans l'onglet <b>Config/Telescope</b> du driver ScopeDome LS.</p> 
+<h3>Commandes</h3>
 <p>Une commande console ou un script permet de passer des
 commandes au driver, par exemple :</p>
 <pre>
-set ::scopedome::widget(property) Dome_Scope_Is_Connected ; ::scopedome::cmd property ; # $widget(propertyValue) contient la valeur
-set ::scopedome::widget(switchValue) On ; set ::scopedome::widget(switch) Scope_Sync ; ::scopedome::cmd switch ; #-- active le suivi du t&eacute;lescope par le d&ocirc;me
-set ::scopedome::widget(cmdValue) 245.5 ; set ::scopedome::widget(cmd) GoTo ; ::scopedome::cmd cmd ; #-- demande au d&ocirc;me d'aller en position azimuth 245&deg;30"
-set ::scopedome::widget(action) Rel_Scope_On ; ::scopedome::cmd action ; #-- active le relai permettant d'alimenter le t&eacute;lescope
+set ::scopedome::widget(scopedome,property) Dome_Scope_Is_Connected ; ::scopedome::cmd property ; # $widget(scopedome,propertyValue) contient la valeur
+set ::scopedome::widget(scopedome,switchValue) On ; set ::scopedome::widget(scopedome,switch) Scope_Sync ; ::scopedome::cmd switch ; #-- active le suivi du t&eacute;lescope par le d&ocirc;me
+set ::scopedome::widget(scopedome,cmdValue) 245.5 ; set ::scopedome::widget(scopedome,cmd) GoTo ; ::scopedome::cmd cmd ; #-- demande au d&ocirc;me d'aller en position azimuth 245&deg;30"
+set ::scopedome::widget(scopedome,action) Rel_Scope_On ; ::scopedome::cmd action ; #-- active le relai permettant d'alimenter le t&eacute;lescope
 </pre>
 <h3>Arr&ecirc;t du driver</h3>
 <p>L'appui sur le bouton <b>Arr&ecirc;ter</b> ou la fermeture
