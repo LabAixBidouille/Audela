@@ -105,6 +105,7 @@ private:
 	LevenbergMarquardtSystemSolver* theLevenbergMarquardtSystemSolver;
 
 protected:
+	static const double TWO_PI             = 2.*M_PI;
 	static const int BACKGROUND_FLUX_INDEX = 0;
 	static const int SCALE_FACTOR_INDEX    = 1;
 	static const int PHOTOCENTER_X_INDEX   = 2;
@@ -141,6 +142,7 @@ protected:
 	virtual void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors) = 0;
 	virtual void updatePhotocenter(const int xCenter, const int yCenter) = 0;
 	const double findMinimumOfFluxes();
+	void correctTheta(double& theta);
 
 public:
 	PsfFitter(const int inputNumberOfParameterFit,const int inputNumberOfParameterFitPreliminarySolution);
@@ -187,7 +189,7 @@ public:
 class MoffatPsfFitter : public PsfFitter {
 
 private:
-	static const int BETA_INDEX = 0;
+	static const int BETA_INDEX = 7;
 	MoffatPsfParameters* thePsfParameters;
 	MoffatPsfParameters* theFinalPsfParameters;
 

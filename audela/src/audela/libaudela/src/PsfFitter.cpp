@@ -123,6 +123,10 @@ int PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, cons
 
 	for(int theRadius = minimumRadius; theRadius <= maximumRadius; theRadius++) {
 
+		if(DEBUG) {
+			printf("Radius =  %d\n",theRadius);
+		}
+
 		/* Extract pixels needed for the fit */
 		extractProcessingZone(theRadius);
 
@@ -166,23 +170,23 @@ void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage
 
 	// Starts buy taking the rectangle
 	int xPixelStart  = xCenter - theRadius;
-	if (xPixelStart  < 0) {
-		xPixelStart  = 0;
+	if (xPixelStart  < 1) { // We are still starting counting from 1
+		xPixelStart  = 1;
 	}
 
 	int xPixelEnd    = xCenter + theRadius;
-	if (xPixelEnd   >= naxis1) {
-		xPixelEnd    = naxis1 -1;
+	if (xPixelEnd    > naxis1) {
+		xPixelEnd    = naxis1;
 	}
 
 	int yPixelStart  = yCenter - theRadius;
-	if (yPixelStart  < 0) {
-		yPixelStart  = 0;
+	if (yPixelStart  < 1) { // We are still starting counting from 1
+		yPixelStart  = 1;
 	}
 
 	int yPixelEnd    = yCenter + theRadius;
-	if (yPixelEnd   >= naxis2) {
-		yPixelEnd    = naxis2 - 1;
+	if (yPixelEnd    > naxis2) {
+		yPixelEnd    = naxis2;
 	}
 
 	const int numberOfColumns   = xPixelEnd - xPixelStart + 1;
@@ -196,7 +200,7 @@ void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage
 		throw InsufficientMemoryException(logMessage);
 	}
 
-	theBufferImage->GetPixels(xPixelStart, yPixelStart, xPixelEnd, yPixelEnd, FORMAT_FLOAT, PLANE_GREY, allPixels);
+	theBufferImage->GetPixels(xPixelStart - 1, yPixelStart - 1, xPixelEnd - 1, yPixelEnd - 1, FORMAT_FLOAT, PLANE_GREY, allPixels); // -1 because where are in C
 
 	// For the maximum radius, we select the rectangle instead of the circle
 	xPixelsMaximumRadius        = new int[numberOfPixelsMaximumRadius];
@@ -335,7 +339,7 @@ void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage
 
 			xPixelsMaximumRadius[counter]        = xPixel - xCenter;
 			yPixelsMaximumRadius[counter]        = yPixel - yCenter;
-			componentNumber                      = numberOfColumns * (yPixel - yPixelStart) + xPixel - xPixelStart;
+			componentNumber                      = numberOfRows * (yPixel - yPixelStart) + xPixel - xPixelStart;
 			fluxesMaximumRadius[counter]         = (double)(allPixels[componentNumber]);
 			if(fluxesMaximumRadius[counter]     >= saturationLimit) {
 				fluxErrorsMaximumRadius[counter] = 1e100;
@@ -461,6 +465,18 @@ void PsfFitter::fillWeightedObservations(double* const weightedObservartions) {
 }
 
 /**
+ * Correct theta modulo 2 * pi
+ */
+void PsfFitter::correctTheta(double& theta) {
+
+	int ratio = (int)(theta / TWO_PI);
+	if(theta  < 0.) {
+		ratio--;
+	}
+	theta    -= ratio * TWO_PI;
+}
+
+/**
  * Class constructor
  */
 Gaussian2DPsfFitter::Gaussian2DPsfFitter() : PsfFitter(GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS,GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION) {
@@ -560,6 +576,7 @@ void Gaussian2DPsfFitter::decodeFitCoefficients(const double* const fitCoefficie
 
 	if(DEBUG) {
 		printf("GAUSSIAN 2D PSF preliminary solution :\n");
+		printf("Number of pixels = %d\n",numberOfPixelsOneRadius);
 		printf("Background flux  = %.3f\n",thePsfParameters->getBackGroundFlux());
 		printf("Scale factor     = %.3f\n",thePsfParameters->getScaleFactor());
 		printf("PhotocenterX     = %.3f\n",thePsfParameters->getPhotoCenterX());
@@ -602,6 +619,11 @@ void Gaussian2DPsfFitter::fillWeightedDesignMatrix(double* const * const weighte
  */
 void Gaussian2DPsfFitter::transformFluxesForPreliminarySolution() {
 
+	double sumOfErrors  = 0.;
+	double prodOfErrors = 1.;
+	double sumOfFluxes  = 0.;
+	double prodOfFluxes = 1.;
+
 	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
 
 		/* We subtract the background flux */
@@ -612,6 +634,12 @@ void Gaussian2DPsfFitter::transformFluxesForPreliminarySolution() {
 
 		/* We take the logarithm of fluxes */
 		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
+
+		sumOfErrors  += transformedFluxErrors[pixel];
+		prodOfErrors *= transformedFluxErrors[pixel];
+
+		sumOfFluxes  += transformedFluxes[pixel];
+		prodOfFluxes *= transformedFluxes[pixel];
 	}
 }
 
@@ -736,6 +764,9 @@ void Gaussian2DPsfFitter::checkArrayOfParameters(double* const arrayOfParameters
 	if (arrayOfParameters[BACKGROUND_FLUX_INDEX] < 0.) {
 		arrayOfParameters[BACKGROUND_FLUX_INDEX] = 0.;
 	}
+
+	// Correct theta modulo 2 * pi
+	correctTheta(arrayOfParameters[THETA_INDEX]);
 }
 
 /**
@@ -806,7 +837,7 @@ void Gaussian2DPsfFitter::updatePhotocenter(const int xCenter, const int yCenter
 /**
  * Class constructor
  */
-MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,1) {
+MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,MOFFAT_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION) {
 
 	thePsfParameters      = new MoffatPsfParameters;
 	theFinalPsfParameters = new MoffatPsfParameters;
@@ -820,6 +851,11 @@ MoffatPsfFitter::~MoffatPsfFitter() {
 	if(thePsfParameters != NULL) {
 		delete thePsfParameters;
 		thePsfParameters = NULL;
+	}
+
+	if(theFinalPsfParameters != NULL) {
+		delete theFinalPsfParameters;
+		theFinalPsfParameters = NULL;
 	}
 }
 
@@ -876,6 +912,19 @@ void MoffatPsfFitter::decodeFitCoefficients(const double* const fitCoefficients)
 
 	const double scaleFactor = (1 + x0 * x0 / squareSigmaX + y0 * y0 / squareSigmaY) / c1;
 	thePsfParameters->setScaleFactor(scaleFactor);
+
+	if(DEBUG) {
+		printf("MOFFAT PSF preliminary solution :\n");
+		printf("Number of pixels = %d\n",numberOfPixelsOneRadius);
+		printf("Background flux  = %.3f\n",thePsfParameters->getBackGroundFlux());
+		printf("Scale factor     = %.3f\n",thePsfParameters->getScaleFactor());
+		printf("PhotocenterX     = %.3f\n",thePsfParameters->getPhotoCenterX());
+		printf("PhotocenterY     = %.3f\n",thePsfParameters->getPhotoCenterY());
+		printf("Theta            = %.3f degrees\n",thePsfParameters->getTheta() * 180. / M_PI);
+		printf("SigmaX           = %.3f\n",thePsfParameters->getSigmaX());
+		printf("SigmaY           = %.3f\n",thePsfParameters->getSigmaY());
+		printf("Beta             = %.3f\n",thePsfParameters->getBeta());
+	}
 }
 
 /**
@@ -1003,52 +1052,52 @@ void MoffatPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDes
 
 	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
 
-		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
-		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
-		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
-		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+		xPixelCentered                                    = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered                                    = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated                             = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated                             = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
 
-		xReduced                = xPixelCenteredRotated / arrayOfParameters[SIGMA_X_INDEX];
-		yReduced                = yPixelCenteredRotated / arrayOfParameters[SIGMA_Y_INDEX];
-		polynomialTerm          = 1. + xReduced * xReduced + yReduced * yReduced;
-		polynomialTermPowerBetaMinusOne     = pow(polynomialTerm,arrayOfParameters[BETA_INDEX] - 1.);
-		polynomialTermPowerBeta             = polynomialTermPowerBetaMinusOne * polynomialTerm;
-		betaPolynomialTermPowerBetaMinusOne = arrayOfParameters[BETA_INDEX] * polynomialTermPowerBetaMinusOne;
-		scaledBetaPolynomialTermPowerBetaMinusOneByError = arrayOfParameters[SCALE_FACTOR_INDEX] * betaPolynomialTermPowerBetaMinusOne / fluxErrors[kMes];
+		xReduced                                          = xPixelCenteredRotated / arrayOfParameters[SIGMA_X_INDEX];
+		yReduced                                          = yPixelCenteredRotated / arrayOfParameters[SIGMA_Y_INDEX];
+		polynomialTerm                                    = 1. + xReduced * xReduced + yReduced * yReduced;
+		polynomialTermPowerBetaMinusOne                   = pow(polynomialTerm,arrayOfParameters[BETA_INDEX] - 1.);
+		polynomialTermPowerBeta                           = polynomialTermPowerBetaMinusOne * polynomialTerm;
+		betaPolynomialTermPowerBetaMinusOne               = arrayOfParameters[BETA_INDEX] * polynomialTermPowerBetaMinusOne;
+		scaledBetaPolynomialTermPowerBetaMinusOneByError  = arrayOfParameters[SCALE_FACTOR_INDEX] * betaPolynomialTermPowerBetaMinusOne / fluxErrors[kMes];
 
 		// Derivative with respect to the background flux is always one
-		weightedDesignMatrix[0][kMes]   = 1. / fluxErrors[kMes];
+		weightedDesignMatrix[BACKGROUND_FLUX_INDEX][kMes] = 1. / fluxErrors[kMes];
 
 		// Derivative with respect to the scale
-		weightedDesignMatrix[1][kMes]   = polynomialTermPowerBeta / fluxErrors[kMes];
+		weightedDesignMatrix[SCALE_FACTOR_INDEX][kMes]    = polynomialTermPowerBeta / fluxErrors[kMes];
 
 		// Derivative with respect to x0
-		subDerivative1                 = -2 * cosTeta * xPixelCenteredRotated / sigmaXSquare;
-		subDerivative2                 = -2 * sinTeta * yPixelCenteredRotated / sigmaYSquare;
-		weightedDesignMatrix[2][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+		subDerivative1                                    = -2 * cosTeta * xPixelCenteredRotated / sigmaXSquare;
+		subDerivative2                                    = -2 * sinTeta * yPixelCenteredRotated / sigmaYSquare;
+		weightedDesignMatrix[PHOTOCENTER_X_INDEX][kMes]   = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
 
 		// Derivative with respect to y0
-		subDerivative1                 = +2 * sinTeta * xPixelCenteredRotated / sigmaXSquare;
-		subDerivative2                 = -2 * cosTeta * yPixelCenteredRotated / sigmaYSquare;
-		weightedDesignMatrix[3][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+		subDerivative1                                    = +2 * sinTeta * xPixelCenteredRotated / sigmaXSquare;
+		subDerivative2                                    = -2 * cosTeta * yPixelCenteredRotated / sigmaYSquare;
+		weightedDesignMatrix[PHOTOCENTER_Y_INDEX][kMes]   = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
 
-		// Derivative with respect to teta
-		subDerivative1                 = -sinTeta * xPixelCentered - cosTeta * yPixelCentered;
-		subDerivative1                 = +2 * xPixelCenteredRotated / sigmaXSquare * subDerivative1;
-		subDerivative2                 = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
-		subDerivative2                 = +2 * yPixelCenteredRotated / sigmaYSquare * subDerivative2;
-		weightedDesignMatrix[4][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+		// Derivative with respect to theta
+		subDerivative1                                    = -sinTeta * xPixelCentered - cosTeta * yPixelCentered;
+		subDerivative1                                    = +2 * xPixelCenteredRotated / sigmaXSquare * subDerivative1;
+		subDerivative2                                    = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		subDerivative2                                    = +2 * yPixelCenteredRotated / sigmaYSquare * subDerivative2;
+		weightedDesignMatrix[THETA_INDEX][kMes]           = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
 
 		// Derivative with respect to sigmaX
-		subDerivative                  = -2 * xPixelCenteredRotated * xPixelCenteredRotated / sigmaXCube;
-		weightedDesignMatrix[5][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
+		subDerivative                                     = -2 * xPixelCenteredRotated * xPixelCenteredRotated / sigmaXCube;
+		weightedDesignMatrix[SIGMA_X_INDEX][kMes]         = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
 
 		// Derivative with respect to sigmaY
-		subDerivative                  = -2 * yPixelCenteredRotated * yPixelCenteredRotated / sigmaYCube;
-		weightedDesignMatrix[6][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
+		subDerivative                                     = -2 * yPixelCenteredRotated * yPixelCenteredRotated / sigmaYCube;
+		weightedDesignMatrix[SIGMA_Y_INDEX][kMes]         = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
 
 		// Derivative with respect to beta
-		weightedDesignMatrix[7][kMes]  = arrayOfParameters[SCALE_FACTOR_INDEX] * polynomialTermPowerBeta * log(polynomialTerm) / fluxErrors[kMes];
+		weightedDesignMatrix[BETA_INDEX][kMes]            = arrayOfParameters[SCALE_FACTOR_INDEX] * polynomialTermPowerBeta * log(polynomialTerm) / fluxErrors[kMes];
 	}
 }
 
@@ -1067,6 +1116,9 @@ void MoffatPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) th
 	if (arrayOfParameters[BACKGROUND_FLUX_INDEX] < 0.) {
 		arrayOfParameters[BACKGROUND_FLUX_INDEX] = 0.;
 	}
+
+	// Correct theta modulo 2 * pi
+	correctTheta(arrayOfParameters[THETA_INDEX]);
 }
 
 /**
@@ -1082,6 +1134,18 @@ void MoffatPsfFitter::copyParamtersInTheFinalSolution(const double* const arrayO
 	theFinalPsfParameters->setSigmaX(arrayOfParameters[SIGMA_X_INDEX]);
 	theFinalPsfParameters->setSigmaY(arrayOfParameters[SIGMA_Y_INDEX]);
 	theFinalPsfParameters->setBeta(arrayOfParameters[BETA_INDEX]);
+
+	if(DEBUG) {
+		printf("MOFFAT PSF current best refined solution :\n");
+		printf("Background flux  = %.3f\n",theFinalPsfParameters->getBackGroundFlux());
+		printf("Scale factor     = %.3f\n",theFinalPsfParameters->getScaleFactor());
+		printf("PhotocenterX     = %.3f\n",theFinalPsfParameters->getPhotoCenterX());
+		printf("PhotocenterY     = %.3f\n",theFinalPsfParameters->getPhotoCenterY());
+		printf("Theta            = %.3f degrees\n",theFinalPsfParameters->getTheta() * 180. / M_PI);
+		printf("SigmaX           = %.3f\n",theFinalPsfParameters->getSigmaX());
+		printf("SigmaY           = %.3f\n",theFinalPsfParameters->getSigmaY());
+		printf("Beta             = %.3f\n",theFinalPsfParameters->getBeta());
+	}
 }
 
 /**
@@ -1128,7 +1192,7 @@ void MoffatPsfFitter::updatePhotocenter(const int xCenter, const int yCenter) {
 /**
  * Class constructor
  */
-MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS,1) {
+MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS,MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION) {
 
 	thePsfParameters      = new PsfParameters;
 	theFinalPsfParameters = new PsfParameters;
@@ -1142,6 +1206,11 @@ MoffatBetaMinus3PsfFitter:: ~MoffatBetaMinus3PsfFitter() {
 	if(thePsfParameters != NULL) {
 		delete thePsfParameters;
 		thePsfParameters = NULL;
+	}
+
+	if(theFinalPsfParameters != NULL) {
+		delete theFinalPsfParameters;
+		theFinalPsfParameters = NULL;
 	}
 }
 
@@ -1200,6 +1269,18 @@ void MoffatBetaMinus3PsfFitter::decodeFitCoefficients(const double* const fitCoe
 	}
 
 	thePsfParameters->setScaleFactor(scaleFactor);
+
+	if(DEBUG) {
+		printf("MOFFAT PSF preliminary solution :\n");
+		printf("Number of pixels = %d\n",numberOfPixelsOneRadius);
+		printf("Background flux  = %.3f\n",thePsfParameters->getBackGroundFlux());
+		printf("Scale factor     = %.3f\n",thePsfParameters->getScaleFactor());
+		printf("PhotocenterX     = %.3f\n",thePsfParameters->getPhotoCenterX());
+		printf("PhotocenterY     = %.3f\n",thePsfParameters->getPhotoCenterY());
+		printf("Theta            = %.3f degrees\n",thePsfParameters->getTheta() * 180. / M_PI);
+		printf("SigmaX           = %.3f\n",thePsfParameters->getSigmaX());
+		printf("SigmaY           = %.3f\n",thePsfParameters->getSigmaY());
+	}
 }
 
 /**
@@ -1440,6 +1521,9 @@ void MoffatBetaMinus3PsfFitter::checkArrayOfParameters(double* const arrayOfPara
 	if (arrayOfParameters[BACKGROUND_FLUX_INDEX] < 0.) {
 		arrayOfParameters[BACKGROUND_FLUX_INDEX] = 0.;
 	}
+
+	// Correct theta modulo 2 * pi
+	correctTheta(arrayOfParameters[THETA_INDEX]);
 }
 
 /**
@@ -1454,6 +1538,17 @@ void MoffatBetaMinus3PsfFitter::copyParamtersInTheFinalSolution(const double* co
 	theFinalPsfParameters->setTheta(arrayOfParameters[THETA_INDEX]);
 	theFinalPsfParameters->setSigmaX(arrayOfParameters[SIGMA_X_INDEX]);
 	theFinalPsfParameters->setSigmaY(arrayOfParameters[SIGMA_Y_INDEX]);
+
+	if(DEBUG) {
+		printf("MOFFAT (beta = -3) PSF current best refined solution :\n");
+		printf("Background flux  = %.3f\n",theFinalPsfParameters->getBackGroundFlux());
+		printf("Scale factor     = %.3f\n",theFinalPsfParameters->getScaleFactor());
+		printf("PhotocenterX     = %.3f\n",theFinalPsfParameters->getPhotoCenterX());
+		printf("PhotocenterY     = %.3f\n",theFinalPsfParameters->getPhotoCenterY());
+		printf("Theta            = %.3f degrees\n",theFinalPsfParameters->getTheta() * 180. / M_PI);
+		printf("SigmaX           = %.3f\n",theFinalPsfParameters->getSigmaX());
+		printf("SigmaY           = %.3f\n",theFinalPsfParameters->getSigmaY());
+	}
 }
 
 /**
