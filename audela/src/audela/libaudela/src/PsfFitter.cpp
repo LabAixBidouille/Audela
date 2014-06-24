@@ -150,7 +150,7 @@ int PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, cons
 	theLevenbergMarquardtSystemSolver->computeErrors();
 	setErrorsInThefinalSolution(theLevenbergMarquardtSystemSolver->getArrayOfParameterErrors());
 
-	updatePhotocenters(xCenter,yCenter);
+	updatePhotocenter(xCenter,yCenter);
 
 	return bestRadius;
 }
@@ -489,7 +489,7 @@ Gaussian2DPsfFitter::~Gaussian2DPsfFitter() {
  * Get the PSF parameters
  */
 PsfParameters* const Gaussian2DPsfFitter::getThePsfParameters() const {
-	return thePsfParameters;
+	return theFinalPsfParameters;
 }
 
 /**
@@ -750,6 +750,17 @@ void Gaussian2DPsfFitter::copyParamtersInTheFinalSolution(const double* const ar
 	theFinalPsfParameters->setTheta(arrayOfParameters[THETA_INDEX]);
 	theFinalPsfParameters->setSigmaX(arrayOfParameters[SIGMA_X_INDEX]);
 	theFinalPsfParameters->setSigmaY(arrayOfParameters[SIGMA_Y_INDEX]);
+
+	if(DEBUG) {
+		printf("GAUSSIAN PSF current best refined solution :\n");
+		printf("Background flux  = %.3f\n",theFinalPsfParameters->getBackGroundFlux());
+		printf("Scale factor     = %.3f\n",theFinalPsfParameters->getScaleFactor());
+		printf("PhotocenterX     = %.3f\n",theFinalPsfParameters->getPhotoCenterX());
+		printf("PhotocenterY     = %.3f\n",theFinalPsfParameters->getPhotoCenterY());
+		printf("Theta            = %.3f degrees\n",theFinalPsfParameters->getTheta() * 180. / M_PI);
+		printf("SigmaX           = %.3f\n",theFinalPsfParameters->getSigmaX());
+		printf("SigmaY           = %.3f\n",theFinalPsfParameters->getSigmaY());
+	}
 }
 
 /**
@@ -784,12 +795,12 @@ void Gaussian2DPsfFitter::setTheBestSolution() {
 }
 
 /**
- * Add the initial shifts to the photocenter
+ * Add the initial shifts to the photo-center
  */
-void Gaussian2DPsfFitter::updatePhotocenters(const int xCenter, const int yCenter) {
+void Gaussian2DPsfFitter::updatePhotocenter(const int xCenter, const int yCenter) {
 
-	thePsfParameters->setPhotoCenterX(thePsfParameters->getPhotoCenterX() + xCenter);
-	thePsfParameters->setPhotoCenterY(thePsfParameters->getPhotoCenterY() + yCenter);
+	theFinalPsfParameters->setPhotoCenterX(theFinalPsfParameters->getPhotoCenterX() + xCenter);
+	theFinalPsfParameters->setPhotoCenterY(theFinalPsfParameters->getPhotoCenterY() + yCenter);
 }
 
 /**
@@ -816,7 +827,7 @@ MoffatPsfFitter::~MoffatPsfFitter() {
  * Get the PSF parameters
  */
 MoffatPsfParameters* const MoffatPsfFitter::getThePsfParameters() const{
-	return thePsfParameters;
+	return theFinalPsfParameters;
 }
 
 /**
@@ -1106,12 +1117,12 @@ void MoffatPsfFitter::setTheBestSolution() {
 }
 
 /**
- * Add the initial shifts to the photocenter
+ * Add the initial shifts to the photo-center
  */
-void MoffatPsfFitter::updatePhotocenters(const int xCenter, const int yCenter) {
+void MoffatPsfFitter::updatePhotocenter(const int xCenter, const int yCenter) {
 
-	thePsfParameters->setPhotoCenterX(thePsfParameters->getPhotoCenterX() + xCenter);
-	thePsfParameters->setPhotoCenterY(thePsfParameters->getPhotoCenterY() + yCenter);
+	theFinalPsfParameters->setPhotoCenterX(theFinalPsfParameters->getPhotoCenterX() + xCenter);
+	theFinalPsfParameters->setPhotoCenterY(theFinalPsfParameters->getPhotoCenterY() + yCenter);
 }
 
 /**
@@ -1138,7 +1149,7 @@ MoffatBetaMinus3PsfFitter:: ~MoffatBetaMinus3PsfFitter() {
  * Get the PSF parameters
  */
 PsfParameters* const MoffatBetaMinus3PsfFitter::getThePsfParameters() const{
-	return thePsfParameters;
+	return theFinalPsfParameters;
 }
 
 /**
@@ -1477,12 +1488,12 @@ void MoffatBetaMinus3PsfFitter::setTheBestSolution() {
 }
 
 /**
- * Add the initial shifts to the photocenter
+ * Add the initial shifts to the photo-center
  */
-void MoffatBetaMinus3PsfFitter::updatePhotocenters(const int xCenter, const int yCenter) {
+void MoffatBetaMinus3PsfFitter::updatePhotocenter(const int xCenter, const int yCenter) {
 
-	thePsfParameters->setPhotoCenterX(thePsfParameters->getPhotoCenterX() + xCenter);
-	thePsfParameters->setPhotoCenterY(thePsfParameters->getPhotoCenterY() + yCenter);
+	theFinalPsfParameters->setPhotoCenterX(theFinalPsfParameters->getPhotoCenterX() + xCenter);
+	theFinalPsfParameters->setPhotoCenterY(theFinalPsfParameters->getPhotoCenterY() + yCenter);
 }
 
 /**
