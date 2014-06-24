@@ -783,7 +783,7 @@ void Gaussian2DPsfFitter::setTheBestSolution() {
 /**
  * Class constructor
  */
-MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,1) { //TODO
+MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,1) {
 
 	thePsfParameters      = new MoffatPsfParameters;
 	theFinalPsfParameters = new MoffatPsfParameters;
@@ -811,14 +811,72 @@ MoffatPsfParameters* const MoffatPsfFitter::getThePsfParameters() const{
  *  Decode the fit coefficients
  */
 void MoffatPsfFitter::decodeFitCoefficients(const double* const fitCoefficients) {
-	//TODO
+
+	// Theta = 0
+	thePsfParameters->setTheta(0.);
+	// Beta = -1
+	thePsfParameters->setBeta(-1.);
+
+	const double c1   = fitCoefficients[0];
+	const double c2   = fitCoefficients[1];
+	const double c3   = fitCoefficients[2];
+	const double c4   = fitCoefficients[3];
+	const double c5   = fitCoefficients[4];
+
+	double squareSigmaX;
+	if(c2             > 0.) {
+		squareSigmaX         = 1 / sqrt(c2);
+		const double sigmaX  = sqrt(squareSigmaX);
+		thePsfParameters->setSigmaX(sigmaX);
+	} else {
+		// Set a default value
+		squareSigmaX         = 1.;
+		thePsfParameters->setSigmaX(1.);
+	}
+
+	double squareSigmaY;
+	if(c4             > 0.) {
+		squareSigmaY        = 1 / sqrt(c4);
+		const double sigmaY = sqrt(squareSigmaY);
+		thePsfParameters->setSigmaY(sigmaY);
+	} else {
+		// Set a default value
+		squareSigmaY        = 1.;
+		thePsfParameters->setSigmaY(1.);
+	}
+
+	const double x0   = -c3 * squareSigmaX / 2;
+	const double y0   = -c5 * squareSigmaY / 2;
+
+	thePsfParameters->setPhotoCenterX(x0);
+	thePsfParameters->setPhotoCenterY(y0);
+
+	const double scaleFactor = (1 + x0 * x0 / squareSigmaX + y0 * y0 / squareSigmaY) / c1;
+	thePsfParameters->setScaleFactor(scaleFactor);
 }
 
 /**
  * Fill the weighted observations (transformedFluxes / transformedFluxErrors) to find the preliminary solution
  */
 void MoffatPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix) {
-	//TODO
+
+	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
+
+		/* The constant element term */
+		weightedDesignMatrix[0][pixel] = 1. / transformedFluxErrors[pixel];
+
+		/* The xPixel term */
+		weightedDesignMatrix[2][pixel] = xPixels[pixel] / transformedFluxErrors[pixel];
+
+		/* The xPixel^2 term */
+		weightedDesignMatrix[1][pixel] = xPixels[pixel] * weightedDesignMatrix[2][pixel];
+
+		/* The yPixel term */
+		weightedDesignMatrix[4][pixel] = yPixels[pixel] / transformedFluxErrors[pixel];
+
+		/* The yPixel * yPixel term */
+		weightedDesignMatrix[3][pixel] = yPixels[pixel] * weightedDesignMatrix[4][pixel];
+	}
 }
 
 /**
@@ -834,17 +892,17 @@ void MoffatPsfFitter::deduceInitialBackgroundFlux(const double minimumOfFluxes) 
  */
 void MoffatPsfFitter::transformFluxesForPreliminarySolution() {
 
-	//	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
-	//
-	//		/* We subtract the background flux */
-	//		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->backGroundFlux;
-	//
-	//		/* The error bars */
-	//		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel];
-	//
-	//		/* We take the logarithm of fluxes */
-	//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
-	//	}
+	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
+
+		/* We subtract the background flux */
+		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->getBackGroundFlux();
+
+		/* The error bars */
+		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel] / transformedFluxes[pixel];
+
+		/* We take the inverse of fluxes */
+		transformedFluxes[pixel]     = 1. / transformedFluxes[pixel];
+	}
 }
 
 /**
