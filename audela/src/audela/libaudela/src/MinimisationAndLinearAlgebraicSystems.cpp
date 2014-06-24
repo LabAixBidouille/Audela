@@ -32,6 +32,12 @@ numberOfFitParameters(inputNumberOfFitParameters),maximumNumberOfMeasurements(in
 		throw InsufficientMemoryException(logMessage);
 	}
 
+	inverseOfCholeskyMatrix     = new double*[numberOfFitParameters];
+	if(inverseOfCholeskyMatrix == NULL) {
+		sprintf(logMessage,"Error when allocating memory of %d (double*) for inverseOfCholeskyMatrix\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
+	}
+
 	for(int kParameter = 0; kParameter < numberOfFitParameters; kParameter++) {
 
 		weightedDesignMatrix[kParameter]     = new double[maximumNumberOfMeasurements];
@@ -49,6 +55,12 @@ numberOfFitParameters(inputNumberOfFitParameters),maximumNumberOfMeasurements(in
 		choleskyMatrix[kParameter]           = new double[numberOfFitParameters];
 		if(choleskyMatrix[kParameter]       == NULL) {
 			sprintf(logMessage,"Error when allocating memory of %d (double) for choleskyMatrix[%d]\n",numberOfFitParameters,kParameter);
+			throw InsufficientMemoryException(logMessage);
+		}
+
+		inverseOfCholeskyMatrix[kParameter]     = new double[numberOfFitParameters];
+		if(inverseOfCholeskyMatrix[kParameter] == NULL) {
+			sprintf(logMessage,"Error when allocating memory of %d (double) for inverseOfCholeskyMatrix[%d]\n",numberOfFitParameters,kParameter);
 			throw InsufficientMemoryException(logMessage);
 		}
 	}
@@ -89,10 +101,14 @@ AlgebraicSystemSolver::~AlgebraicSystemSolver() {
 			curvatureMatrix[kParameter] = NULL;
 		}
 
-		choleskyMatrix[kParameter]           = new double[numberOfFitParameters];
 		if(choleskyMatrix[kParameter]      != NULL) {
 			delete[] choleskyMatrix[kParameter];
 			choleskyMatrix[kParameter] = NULL;
+		}
+
+		if(inverseOfCholeskyMatrix[kParameter] != NULL) {
+			delete[] inverseOfCholeskyMatrix[kParameter];
+			inverseOfCholeskyMatrix[kParameter] = NULL;
 		}
 	}
 
@@ -109,6 +125,11 @@ AlgebraicSystemSolver::~AlgebraicSystemSolver() {
 	if(choleskyMatrix != NULL) {
 		delete[] choleskyMatrix;
 		choleskyMatrix = NULL;
+	}
+
+	if(inverseOfCholeskyMatrix != NULL) {
+		delete[] inverseOfCholeskyMatrix;
+		inverseOfCholeskyMatrix = NULL;
 	}
 
 	if(projectedObservations != NULL) {
@@ -263,11 +284,39 @@ const double* const AlgebraicSystemSolver::getArrayOfParameters() const {
 }
 
 /**
+ * Compute the inverse of the Cholesky matrix
+ */
+void AlgebraicSystemSolver::computeInverseOfCholeskyMatrix() {
+
+	double theSum;
+	int k;
+
+	for(int indexOfRow = 0; indexOfRow < numberOfFitParameters; indexOfRow++) {
+
+		inverseOfCholeskyMatrix[indexOfRow][indexOfRow] = 1. / choleskyMatrix[indexOfRow][indexOfRow];
+
+		for(int indexOfColumn = indexOfRow - 1; indexOfColumn >= 0; indexOfColumn--) {
+
+			theSum = 0.;
+			k      = indexOfColumn;
+
+			while(k < indexOfRow) {
+
+				theSum += choleskyMatrix[indexOfRow][k] * inverseOfCholeskyMatrix[k][indexOfColumn];
+				k++;
+			}
+
+			inverseOfCholeskyMatrix[indexOfRow][indexOfColumn] = -theSum / choleskyMatrix[indexOfRow][indexOfRow];
+		}
+	}
+}
+
+/**
  * Class constructor
  */
 LinearAlgebraicSystemSolver::LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem,
 		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException) :
-																										AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theLinearAlgebraicSystem(inputLinearAlgebraicSystem) {
+																																												AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theLinearAlgebraicSystem(inputLinearAlgebraicSystem) {
 
 	weightedObservations      = new double[maximumNumberOfMeasurements];
 	if(weightedObservations  == NULL) {
@@ -337,11 +386,17 @@ void LinearAlgebraicSystemSolver::computeProjectedObservations() {
  */
 LevenbergMarquardtSystemSolver::LevenbergMarquardtSystemSolver(NonLinearAlgebraicSystemInterface* const inputNonLinearAlgebraicSystem,
 		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException) :
-																										AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theNonLinearAlgebraicSystem(inputNonLinearAlgebraicSystem) {
+																																												AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theNonLinearAlgebraicSystem(inputNonLinearAlgebraicSystem) {
 
 	hessianMatrix          = new double*[numberOfFitParameters];
 	if(hessianMatrix      == NULL) {
 		sprintf(logMessage,"Error when allocating memory of %d (double*) for hessianMatrix\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
+	}
+
+	covarianceMatrix       = new double*[numberOfFitParameters];
+	if(covarianceMatrix  == NULL) {
+		sprintf(logMessage,"Error when allocating memory of %d (double*) for covarianceMatrix\n",numberOfFitParameters);
 		throw InsufficientMemoryException(logMessage);
 	}
 
@@ -350,6 +405,12 @@ LevenbergMarquardtSystemSolver::LevenbergMarquardtSystemSolver(NonLinearAlgebrai
 		hessianMatrix[kParameter]          = new double[numberOfFitParameters];
 		if(hessianMatrix[kParameter]      == NULL) {
 			sprintf(logMessage,"Error when allocating memory of %d (double) for hessianMatrix[%d]\n",numberOfFitParameters,kParameter);
+			throw InsufficientMemoryException(logMessage);
+		}
+
+		covarianceMatrix[kParameter]          = new double[numberOfFitParameters];
+		if(covarianceMatrix[kParameter]      == NULL) {
+			sprintf(logMessage,"Error when allocating memory of %d (double) for covarianceMatrix[%d]\n",numberOfFitParameters,kParameter);
 			throw InsufficientMemoryException(logMessage);
 		}
 	}
@@ -369,6 +430,12 @@ LevenbergMarquardtSystemSolver::LevenbergMarquardtSystemSolver(NonLinearAlgebrai
 	temporaryArrayOfParameters      = new double[numberOfFitParameters];
 	if(temporaryArrayOfParameters  == NULL) {
 		sprintf(logMessage,"Error when allocating memory of %d (double) for temporaryFitCoefficients\n",numberOfFitParameters);
+		throw InsufficientMemoryException(logMessage);
+	}
+
+	arrayOfParameterErrors      = new double[numberOfFitParameters];
+	if(arrayOfParameterErrors  == NULL) {
+		sprintf(logMessage,"Error when allocating memory of %d (double) for arrayOfParameterErrors\n",numberOfFitParameters);
 		throw InsufficientMemoryException(logMessage);
 	}
 
@@ -398,17 +465,32 @@ LevenbergMarquardtSystemSolver::~LevenbergMarquardtSystemSolver() {
 		temporaryArrayOfParameters = NULL;
 	}
 
+	if(arrayOfParameterErrors != NULL) {
+		delete[] arrayOfParameterErrors;
+		arrayOfParameterErrors = NULL;
+	}
+
 	for(int kParameter = 0; kParameter < numberOfFitParameters; kParameter++) {
 
 		if(hessianMatrix[kParameter]      != NULL) {
 			delete[] hessianMatrix[kParameter];
 			hessianMatrix[kParameter] = NULL;
 		}
+
+		if(covarianceMatrix[kParameter]      != NULL) {
+			delete[] covarianceMatrix[kParameter];
+			covarianceMatrix[kParameter] = NULL;
+		}
 	}
 
 	if(hessianMatrix != NULL) {
 		delete[] hessianMatrix;
 		hessianMatrix = NULL;
+	}
+
+	if(covarianceMatrix != NULL) {
+		delete[] covarianceMatrix;
+		covarianceMatrix = NULL;
 	}
 }
 
@@ -504,6 +586,110 @@ bool LevenbergMarquardtSystemSolver::optimise() {
 	}
 
 	return iterationCounter != MAXIMUM_NUMBER_OF_ITERATIONS;
+}
+
+/**
+ * Compute the errors for a given fit
+ */
+void LevenbergMarquardtSystemSolver::computeErrors() {
+
+	/* Fill arrayOfNumberOfMeasurements */
+	numberOfMeasurements = theNonLinearAlgebraicSystem->getNumberOfMeasurements();
+
+	/* Fill the array of parameters */
+	theNonLinearAlgebraicSystem->fillArrayOfParameters(arrayOfParameters);
+
+	/* Ask the model to fill the matrix of derivatives */
+	theNonLinearAlgebraicSystem->fillWeightedDesignMatrix(weightedDesignMatrix,arrayOfParameters);
+
+	/* Fill the curvature matrix */
+	computeCurvatureMatrix();
+
+	try {
+
+		// Compute the Cholesky decomposition of the curvature matrix
+		decomposeCurvatureMatrix(curvatureMatrix);
+
+		// Inverse the curvature matrix
+		invseCurvatureMatrix();
+
+		// Fill the array of errors
+		fillErrors();
+
+	} catch (BadlyConditionnedMatrixException& theException) {
+
+		setDefaultErros();
+
+	} catch (NonDefinitePositiveMatrixException& theException) {
+
+		setDefaultErros();
+
+	} catch (InvalidDataException& theException) {
+
+		setDefaultErros();
+
+	}
+}
+
+/**
+ * Inverse the curvature matrix to obtain the covariance matrix
+ */
+void LevenbergMarquardtSystemSolver::invseCurvatureMatrix() {
+
+	/* Compute the inverse of the matrix L */
+	computeInverseOfCholeskyMatrix();
+
+	/* No we compute transpose(inverseOfMatrixL) * inverseOfMatrixL */
+	double theSum;
+	int k;
+
+	for(int indexOfColumn1 = 0; indexOfColumn1 < numberOfFitParameters; indexOfColumn1++) {
+
+		for(int indexOfColumn2 = indexOfColumn1; indexOfColumn2 < numberOfFitParameters; indexOfColumn2++) {
+
+			theSum = 0.;
+			/* Since inverseOfMatrixL is also a lower triangular matrix, the sum starts at indexOfColumn2*/
+			k      = indexOfColumn2;
+
+			while(k < numberOfFitParameters) {
+
+				theSum += inverseOfCholeskyMatrix[k][indexOfColumn1] * inverseOfCholeskyMatrix[k][indexOfColumn2];
+				k++;
+			}
+
+			/* varianceCovarianceMatrix is symmetric */
+			covarianceMatrix[indexOfColumn1][indexOfColumn2] = theSum;
+			covarianceMatrix[indexOfColumn2][indexOfColumn1] = theSum;
+		}
+	}
+}
+
+/**
+ * Fill the errors with the diagonal elements of the covariance matrix
+ */
+void LevenbergMarquardtSystemSolver::fillErrors() throw (InvalidDataException) {
+
+	for(int kParameter = 0; kParameter < numberOfFitParameters; kParameter++) {
+
+		if(covarianceMatrix[kParameter][kParameter] >= 0.) {
+
+			arrayOfParameterErrors[kParameter] = sqrt(covarianceMatrix[kParameter][kParameter]);
+
+		} else {
+
+			throw InvalidDataException("Negative variance elements");
+		}
+	}
+}
+
+/**
+ * Fill the errors with a default value
+ */
+void LevenbergMarquardtSystemSolver::setDefaultErros() {
+
+	for(int kParameter = 0; kParameter < numberOfFitParameters; kParameter++) {
+		arrayOfParameterErrors[kParameter] = NAN;
+	}
 }
 
 /**
@@ -643,4 +829,12 @@ void LevenbergMarquardtSystemSolver::computeDeltaParameters() {
  */
 const double LevenbergMarquardtSystemSolver::getChiSquare() const {
 	return chiSquare;
+}
+
+/**
+ * Get the errors on parameters
+ */
+const double* const LevenbergMarquardtSystemSolver::getArrayOfParameterErrors() const {
+
+	return arrayOfParameterErrors;
 }

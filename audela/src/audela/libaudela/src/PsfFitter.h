@@ -69,6 +69,7 @@ public:
 	void setTheta(const double theta);
 	double getThetaError() const;
 	void setThetaError(const double thetaError);
+	void copy(PsfParameters* const anotherPsfParameters);
 };
 
 /**
@@ -77,6 +78,7 @@ public:
 class MoffatPsfParameters : public PsfParameters {
 
 private:
+	typedef PsfParameters super;
 	double beta;
 	double betaError;
 
@@ -87,6 +89,7 @@ public:
 	void setBeta(const double beta);
 	double getBetaError() const;
 	void setBetaError(const double betaError);
+	void copy(MoffatPsfParameters* const anotherPsfParameters);
 };
 
 /**
@@ -133,6 +136,10 @@ protected:
 	double refineSolution();
 	virtual void deduceInitialBackgroundFlux(const double minimumOfFluxes) = 0;
 	virtual void decodeFitCoefficients(const double* const fitCoefficients) = 0;
+	virtual void copyParamtersInTheFinalSolution(const double* const arrayOfParameters) = 0;
+	virtual double reduceChiSquare(const double unReducedChiSquare) = 0;
+	virtual void setTheBestSolution() = 0;
+	virtual void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors) = 0;
 	const double findMinimumOfFluxes();
 
 public:
@@ -151,11 +158,16 @@ class Gaussian2DPsfFitter : public PsfFitter {
 
 private:
 	PsfParameters* thePsfParameters;
+	PsfParameters* theFinalPsfParameters;
 
 protected:
 	void transformFluxesForPreliminarySolution();
 	void deduceInitialBackgroundFlux(const double minimumOfFluxes);
 	void decodeFitCoefficients(const double* const fitCoefficients);
+	void copyParamtersInTheFinalSolution(const double* const arrayOfParameters);
+	double reduceChiSquare(const double unReducedChiSquare);
+	void setTheBestSolution();
+	void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors);
 
 public:
 	Gaussian2DPsfFitter();
@@ -176,11 +188,16 @@ class MoffatPsfFitter : public PsfFitter {
 private:
 	static const int BETA_INDEX = 0;
 	MoffatPsfParameters* thePsfParameters;
+	MoffatPsfParameters* theFinalPsfParameters;
 
 protected:
 	void transformFluxesForPreliminarySolution();
 	void deduceInitialBackgroundFlux(const double minimumOfFluxes);
 	void decodeFitCoefficients(const double* const fitCoefficients);
+	void copyParamtersInTheFinalSolution(const double* const arrayOfParameters);
+	double reduceChiSquare(const double unReducedChiSquare);
+	void setTheBestSolution();
+	void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors);
 
 public:
 	MoffatPsfFitter();
@@ -199,11 +216,16 @@ class MoffatBetaMinus3PsfFitter : public PsfFitter {
 
 private:
 	PsfParameters* thePsfParameters;
+	PsfParameters* theFinalPsfParameters;
 
 protected:
 	void transformFluxesForPreliminarySolution();
 	void deduceInitialBackgroundFlux(const double minimumOfFluxes);
 	void decodeFitCoefficients(const double* const fitCoefficients);
+	void copyParamtersInTheFinalSolution(const double* const arrayOfParameters);
+	double reduceChiSquare(const double unReducedChiSquare);
+	void setTheBestSolution();
+	void setErrorsInThefinalSolution(const double* const arrayOfParameterErrors);
 
 public:
 	MoffatBetaMinus3PsfFitter();

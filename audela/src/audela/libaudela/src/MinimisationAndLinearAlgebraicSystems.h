@@ -69,12 +69,14 @@ protected:
 	double* projectedObservations;
 	double* arrayOfParameters;
 	double** choleskyMatrix;
+	double** inverseOfCholeskyMatrix;
 	double* intermediateArray;
 	void computeCurvatureMatrix();
 	virtual void computeProjectedObservations() = 0;
 	void decomposeCurvatureMatrix(double** theCurvatureMatrix) throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
 	void isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal) throw (BadlyConditionnedMatrixException);
 	void finishSolvingTheSystem(double* const theFitCoefficients);
+	void computeInverseOfCholeskyMatrix();
 
 public:
 	AlgebraicSystemSolver(const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
@@ -127,15 +129,20 @@ private:
 	double chiSquare;
 	NonLinearAlgebraicSystemInterface* theNonLinearAlgebraicSystem;
 	double** hessianMatrix;
+	double** covarianceMatrix;
 	double* weightedDeltaObservations;
 	double* temporaryWeightedDeltaObservations;
 	double* temporaryArrayOfParameters;
+	double* arrayOfParameterErrors;
 	void prepareAlgebraicSystem();
 	double computeChiSqure(double* const theWeightedDeltaObservations);
 	void copyCurvatureMatrix();
 	void computeDeltaParameters();
 	void badStep();
 	void swapSolutionParameters();
+	void setDefaultErros();
+	void fillErrors() throw (InvalidDataException);
+	void invseCurvatureMatrix();
 
 protected:
 	void computeProjectedObservations();
@@ -145,7 +152,9 @@ public:
 			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
 	virtual ~LevenbergMarquardtSystemSolver();
 	bool optimise();
+	void computeErrors();
 	const double getChiSquare() const;
+	const double* const getArrayOfParameterErrors() const;
 };
 
 #endif // __MINIMISATIONANDLINEARALGEBRAICSYSTEMS__
