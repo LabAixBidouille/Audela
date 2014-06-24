@@ -1042,17 +1042,17 @@ void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const w
  */
 void MoffatBetaMinus3PsfFitter::transformFluxesForPreliminarySolution() {
 
-	//	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
-	//
-	//		/* We subtract the background flux */
-	//		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->backGroundFlux;
-	//
-	//		/* The error bars */
-	//		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel];
-	//
-	//		/* We take the logarithm of fluxes */
-	//		transformedFluxes[pixel]     = log(transformedFluxes[pixel]);
-	//	}
+	for(int pixel = 0; pixel < numberOfPixelsOneRadius; pixel++) {
+
+		/* We subtract the background flux */
+		transformedFluxes[pixel]     = fluxes[pixel] - thePsfParameters->getBackGroundFlux();
+
+		/* The error bars */
+		transformedFluxErrors[pixel] = fluxErrors[pixel] / transformedFluxes[pixel] / transformedFluxes[pixel];
+
+		/* We take the inverse of fluxes */
+		transformedFluxes[pixel]     = 1. / transformedFluxes[pixel];
+	}
 }
 
 /**
