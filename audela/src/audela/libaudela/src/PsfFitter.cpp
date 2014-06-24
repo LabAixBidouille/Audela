@@ -924,7 +924,32 @@ void MoffatPsfFitter::fillArrayOfParameters(double* const arrayOfParameters) {
  * Fill the weighted delta observations (observation - fit) / sigma for the Levenberg-Marquardt minimisation
  */
 void MoffatPsfFitter::fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) {
-	//TODO
+
+	const double cosTeta = cos(arrayOfParameters[THETA_INDEX]);
+	const double sinTeta = sin(arrayOfParameters[THETA_INDEX]);
+	double xPixelCentered;
+	double yPixelCentered;
+	double xPixelCenteredRotated;
+	double yPixelCenteredRotated;
+	double xReduced;
+	double yReduced;
+	double polynomialTerm;
+	double fittedFlux;
+
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+
+		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+		xReduced              = xPixelCenteredRotated / arrayOfParameters[SIGMA_X_INDEX];
+		yReduced              = yPixelCenteredRotated / arrayOfParameters[SIGMA_Y_INDEX];
+		polynomialTerm        = 1. + xReduced * xReduced + yReduced * yReduced;
+		polynomialTerm        = pow(polynomialTerm,arrayOfParameters[BETA_INDEX]);
+		fittedFlux            = arrayOfParameters[BACKGROUND_FLUX_INDEX] + arrayOfParameters[SCALE_FACTOR_INDEX] * polynomialTerm;
+
+		theWeightedDeltaObservartions[kMes] = (fluxes[kMes] - fittedFlux) / fluxErrors[kMes];
+	}
 }
 
 /**
@@ -938,7 +963,17 @@ void MoffatPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDes
  * Check the parameters of a given iteration
  */
 void MoffatPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
-	//TODO
+
+	if ((arrayOfParameters[SCALE_FACTOR_INDEX] <= 0.) || (arrayOfParameters[SIGMA_X_INDEX] <= 0.) ||
+			(arrayOfParameters[SIGMA_Y_INDEX] <= 0.) || (arrayOfParameters[BETA_INDEX] >= 0.)) {
+
+		throw InvalidDataException("Bad array of parameters");
+	}
+
+	// Saturate back ground flux to 0.
+	if (arrayOfParameters[BACKGROUND_FLUX_INDEX] < 0.) {
+		arrayOfParameters[BACKGROUND_FLUX_INDEX] = 0.;
+	}
 }
 
 /**
@@ -991,7 +1026,7 @@ void MoffatPsfFitter::setTheBestSolution() {
 /**
  * Class constructor
  */
-MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS,1) { //TODO
+MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS,1) {
 
 	thePsfParameters      = new PsfParameters;
 	theFinalPsfParameters = new PsfParameters;
@@ -1087,7 +1122,17 @@ void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const w
  * Check the parameters of a given iteration
  */
 void MoffatBetaMinus3PsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
-	//TODO
+
+	if ((arrayOfParameters[SCALE_FACTOR_INDEX] <= 0.) || (arrayOfParameters[SIGMA_X_INDEX] <= 0.) ||
+			(arrayOfParameters[SIGMA_Y_INDEX] <= 0.)) {
+
+		throw InvalidDataException("Bad array of parameters");
+	}
+
+	// Saturate back ground flux to 0.
+	if (arrayOfParameters[BACKGROUND_FLUX_INDEX] < 0.) {
+		arrayOfParameters[BACKGROUND_FLUX_INDEX] = 0.;
+	}
 }
 
 /**
