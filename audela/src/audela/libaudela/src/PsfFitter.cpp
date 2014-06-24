@@ -24,7 +24,6 @@ numberOfParameterFit(inputNumberOfParameterFit), numberOfParameterFitPreliminary
 	transformedFluxErrors             = NULL;
 	numberOfPixelsMaximumRadius       = 0;
 	numberOfPixelsOneRadius           = 0;
-	bestRadius                        = -1;
 	theLinearAlgebraicSystemSolver    = NULL;
 	theLevenbergMarquardtSystemSolver = NULL;
 }
@@ -106,13 +105,13 @@ PsfFitter::~PsfFitter() {
 /**
  * Loop over radii to find the best fit
  */
-void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
+int PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
 		const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException) {
 
 	numberOfPixelsOneRadius         = 0;
 	int bestNumberOfPixelsOneRadius = -1;
 	double bestReducedChiSquare     = 1e100;
-	bestRadius                      = -1;
+	int bestRadius                  = -1;
 	double unReducedChiSquare       = NAN;
 	double reducedChiSquare;
 
@@ -152,6 +151,8 @@ void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, con
 	setErrorsInThefinalSolution(theLevenbergMarquardtSystemSolver->getArrayOfParameterErrors());
 
 	updatePhotocenters(xCenter,yCenter);
+
+	return bestRadius;
 }
 
 /**
