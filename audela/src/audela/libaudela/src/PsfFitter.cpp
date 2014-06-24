@@ -5,6 +5,8 @@
  */
 #include "PsfFitter.h"
 
+const double PsfFitter::TWO_PI        = 2.*M_PI;
+
 /**
  * Class constructor
  */

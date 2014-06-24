@@ -6,6 +6,17 @@
 
 #include "MinimisationAndLinearAlgebraicSystems.h"
 
+/** We need 3 successive convergences to stop iterating */
+const int LevenbergMarquardtSystemSolver::NUMBER_OF_NEEDED_CONVERGENCE = 3;
+/** The maximum number of allowed iterations */
+const int LevenbergMarquardtSystemSolver::MAXIMUM_NUMBER_OF_ITERATIONS = 100;
+/** The Marquardt scaling factor */
+const double LevenbergMarquardtSystemSolver::MARQUARDT_SCALE           = 10.;
+/** Needed to stop iterating */
+const double LevenbergMarquardtSystemSolver::DELTA_CHI_SQUARE_LIMIT    = 1e-3;
+/** Needed to stop iterating */
+const double LevenbergMarquardtSystemSolver::CHI_SQUARE_TOLERENCE      = 1e-8;
+
 /**
  * Class constructor
  */

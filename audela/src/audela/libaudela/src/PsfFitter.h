@@ -105,7 +105,7 @@ private:
 	LevenbergMarquardtSystemSolver* theLevenbergMarquardtSystemSolver;
 
 protected:
-	static const double TWO_PI             = 2.*M_PI;
+	static const double TWO_PI;
 	static const int BACKGROUND_FLUX_INDEX = 0;
 	static const int SCALE_FACTOR_INDEX    = 1;
 	static const int PHOTOCENTER_X_INDEX   = 2;
