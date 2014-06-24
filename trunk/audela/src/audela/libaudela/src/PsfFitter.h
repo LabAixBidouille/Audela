@@ -106,13 +106,13 @@ private:
 
 protected:
 	static const double TWO_PI;
-	static const int BACKGROUND_FLUX_INDEX = 0;
-	static const int SCALE_FACTOR_INDEX    = 1;
-	static const int PHOTOCENTER_X_INDEX   = 2;
-	static const int PHOTOCENTER_Y_INDEX   = 3;
-	static const int THETA_INDEX           = 4;
-	static const int SIGMA_X_INDEX         = 5;
-	static const int SIGMA_Y_INDEX         = 6;
+	static const int BACKGROUND_FLUX_INDEX;
+	static const int SCALE_FACTOR_INDEX;
+	static const int PHOTOCENTER_X_INDEX;
+	static const int PHOTOCENTER_Y_INDEX;
+	static const int THETA_INDEX;
+	static const int SIGMA_X_INDEX;
+	static const int SIGMA_Y_INDEX;
 	int     numberOfPixelsMaximumRadius;
 	int     numberOfPixelsOneRadius;
 	int*    xPixelsMaximumRadius;
@@ -189,7 +189,7 @@ public:
 class MoffatPsfFitter : public PsfFitter {
 
 private:
-	static const int BETA_INDEX = 7;
+	static const int BETA_INDEX;
 	MoffatPsfParameters* thePsfParameters;
 	MoffatPsfParameters* theFinalPsfParameters;
 
