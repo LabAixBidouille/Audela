@@ -110,15 +110,15 @@ class LevenbergMarquardtSystemSolver : public AlgebraicSystemSolver {
 
 private:
 	/** We need 3 successive convergences to stop iterating */
-	static const int NUMBER_OF_NEEDED_CONVERGENCE = 3;
+	static const int NUMBER_OF_NEEDED_CONVERGENCE;
 	/** The maximum number of allowed iterations */
-	static const int MAXIMUM_NUMBER_OF_ITERATIONS = 100;
+	static const int MAXIMUM_NUMBER_OF_ITERATIONS;
 	/** The Marquardt scaling factor */
-	static const double MARQUARDT_SCALE           = 10.;
+	static const double MARQUARDT_SCALE;
 	/** Needed to stop iterating */
-	static const double DELTA_CHI_SQUARE_LIMIT    = 1e-3;
+	static const double DELTA_CHI_SQUARE_LIMIT;
 	/** Needed to stop iterating */
-	static const double CHI_SQUARE_TOLERENCE      = 1e-8;
+	static const double CHI_SQUARE_TOLERENCE;
 	/** Marquardt's factor */
 	double marquardtLambda;
 	/** True if we want to recompute the matrix of derivatives in a given iteration */
