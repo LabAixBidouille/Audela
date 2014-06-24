@@ -205,7 +205,7 @@ void AlgebraicSystemSolver::decomposeCurvatureMatrix(double** theCurvatureMatrix
 			k++;
 		}
 
-		theSquare         = curvatureMatrix[kParameter][kParameter] - theSum;
+		theSquare         = theCurvatureMatrix[kParameter][kParameter] - theSum;
 
 		if(theSquare      > 0.) {
 
@@ -378,6 +378,8 @@ void LinearAlgebraicSystemSolver::computeProjectedObservations() {
 		}
 
 		projectedObservations[kParameter] = theSum;
+
+		//printf("projectedObservations[%d] = %f\n",kParameter,projectedObservations[kParameter]);
 	}
 }
 
@@ -611,7 +613,7 @@ void LevenbergMarquardtSystemSolver::computeErrors() {
 		decomposeCurvatureMatrix(curvatureMatrix);
 
 		// Inverse the curvature matrix
-		invseCurvatureMatrix();
+		inverseCurvatureMatrix();
 
 		// Fill the array of errors
 		fillErrors();
@@ -633,7 +635,7 @@ void LevenbergMarquardtSystemSolver::computeErrors() {
 /**
  * Inverse the curvature matrix to obtain the covariance matrix
  */
-void LevenbergMarquardtSystemSolver::invseCurvatureMatrix() {
+void LevenbergMarquardtSystemSolver::inverseCurvatureMatrix() {
 
 	/* Compute the inverse of the matrix L */
 	computeInverseOfCholeskyMatrix();
@@ -735,7 +737,7 @@ void LevenbergMarquardtSystemSolver::copyCurvatureMatrix() {
 
 		hessianMatrix[kParameter1][kParameter1] = onePlusLambda * curvatureMatrix[kParameter1][kParameter1];
 
-		for(int kParameter2 = kParameter1; kParameter2 < numberOfFitParameters; kParameter2++) {
+		for(int kParameter2 = kParameter1 + 1; kParameter2 < numberOfFitParameters; kParameter2++) {
 
 			hessianMatrix[kParameter1][kParameter2] = curvatureMatrix[kParameter1][kParameter2];
 			hessianMatrix[kParameter2][kParameter1] = curvatureMatrix[kParameter1][kParameter2];
@@ -789,33 +791,7 @@ void LevenbergMarquardtSystemSolver::badStep() {
  */
 void LevenbergMarquardtSystemSolver::computeDeltaParameters() {
 
-	double theSum;
-	int k;
-
-	// Fill intermediateSolution
-	for (int indexOfRow = 0; indexOfRow < numberOfFitParameters; indexOfRow++) {
-
-		theSum     = 0.;
-		k          = 1;
-		while (k   < indexOfRow) {
-			theSum += choleskyMatrix[indexOfRow][k] * intermediateArray[k];
-			k      = k + 1;
-		}
-
-		intermediateArray[indexOfRow] = (projectedObservations[indexOfRow] - theSum) / choleskyMatrix[indexOfRow][indexOfRow];
-	}
-
-	// Compute the fit coeffcients
-	for (int indexOfRow = numberOfFitParameters - 1; indexOfRow >= 0; indexOfRow--) {
-
-		theSum      = 0.;
-		k           = numberOfFitParameters - 1;
-		while (k    > indexOfRow) {
-			theSum += choleskyMatrix[k][indexOfRow] * temporaryArrayOfParameters[k];
-			k--;
-		}
-		temporaryArrayOfParameters[indexOfRow] = (intermediateArray[indexOfRow] - theSum) / choleskyMatrix[indexOfRow][indexOfRow];
-	}
+	finishSolvingTheSystem(temporaryArrayOfParameters);
 
 	// We find the delta fit paramters, so we add the fitCoefficients to have the complete parameters
 	for (int indexOfRow = 0; indexOfRow < numberOfFitParameters; indexOfRow++) {

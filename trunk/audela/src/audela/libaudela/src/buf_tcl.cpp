@@ -5091,7 +5091,7 @@ int cmdPsfGaussian2D(ClientData clientData, Tcl_Interp *interp, int argc, char *
 		char tclString[1024];
 		Tcl_DString dsptr;
 		Tcl_DStringInit(&dsptr);
-		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} %d ",
+		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} %d",
 				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
 				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
 				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),thePsfParameters->getSigmaY(),
@@ -5156,14 +5156,14 @@ int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 	try {
 
 		MoffatPsfFitter* const theMoffatProfileFitter = new MoffatPsfFitter();
-		theMoffatProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+		const int bestRadius = theMoffatProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
 
 		// The results
 		MoffatPsfParameters* const thePsfParameters = theMoffatProfileFitter->getThePsfParameters();
 		char tclString[1024];
 		Tcl_DString dsptr;
 		Tcl_DStringInit(&dsptr);
-		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f %+.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %.3f} %d ",
+		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f %+.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %.3f} %d",
 				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
 				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
 				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),
@@ -5171,7 +5171,7 @@ int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 				thePsfParameters->getBackGroundFluxError(),thePsfParameters->getScaleFactorError(),
 				thePsfParameters->getPhotoCenterXError(),thePsfParameters->getPhotoCenterYError(),
 				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),
-				thePsfParameters->getSigmaYError(),thePsfParameters->getBetaError());
+				thePsfParameters->getSigmaYError(),thePsfParameters->getBetaError(),bestRadius);
 		Tcl_DStringAppend(&dsptr,tclString,-1);
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
@@ -5230,20 +5230,20 @@ int cmdPsfMoffatBetaMinus3(ClientData clientData, Tcl_Interp *interp, int argc, 
 	try {
 
 		MoffatBetaMinus3PsfFitter* const theMoffatBetaMinus3ProfileFitter = new MoffatBetaMinus3PsfFitter();
-		theMoffatBetaMinus3ProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+		const int bestRadius = theMoffatBetaMinus3ProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
 
 		// The results
 		PsfParameters* const thePsfParameters = theMoffatBetaMinus3ProfileFitter->getThePsfParameters();
 		char tclString[1024];
 		Tcl_DString dsptr;
 		Tcl_DStringInit(&dsptr);
-		sprintf(tclString,"{ {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} } ",
+		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} %d",
 				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
 				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
 				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),thePsfParameters->getSigmaY(),
 				thePsfParameters->getBackGroundFluxError(),thePsfParameters->getScaleFactorError(),
 				thePsfParameters->getPhotoCenterXError(),thePsfParameters->getPhotoCenterYError(),
-				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),thePsfParameters->getSigmaYError());
+				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),thePsfParameters->getSigmaYError(),bestRadius);
 		Tcl_DStringAppend(&dsptr,tclString,-1);
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
