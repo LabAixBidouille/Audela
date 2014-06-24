@@ -118,27 +118,27 @@ proc spc_sari { args } {
    switch $type_etoile_ref {
       a0v {
          set profil_reference "a0v.fit"
-         file copy "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
+         file copy -force "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
       }
       a2v {
          set profil_reference "a2v.fit"
-         file copy "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
+         file copy -force "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
       }
       a5v {
          set profil_reference "a5v.fit"
-         file copy "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
+         file copy -force "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
       }
       b2iv {
          set profil_reference "2b2iv.fit"
-         file copy "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
+         file copy -force "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
       }
       b5ii {
          set profil_reference "2b5ii.fit"
-         file copy "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
+         file copy -force "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
       }
       b8v {
          set profil_reference "2b8v.fit"
-         file copy "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
+         file copy -force "$spcaudace(rep_spcbib)/$profil_reference" "$audace(rep_images)/$profil_reference"
       }
    }
    set reponse_instrumentale [ spc_rinstrum "$profil_select" "$profil_reference" ]
