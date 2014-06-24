@@ -109,10 +109,12 @@ PsfFitter::~PsfFitter() {
 void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
 		const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException) {
 
-	numberOfPixelsOneRadius     = 0;
-	double bestReducedChiSquare = 1e100;
-	bestRadius                  = -1;
-	double reducedChiSquare     = NAN;
+	numberOfPixelsOneRadius         = 0;
+	int bestNumberOfPixelsOneRadius = -1;
+	double bestReducedChiSquare     = 1e100;
+	bestRadius                      = -1;
+	double unReducedChiSquare       = NAN;
+	double reducedChiSquare;
 
 	/* Extract the processing zone for the maximum radius */
 	extractProcessingZoneMaximumRadius(theBufferImage, xCenter, yCenter, maximumRadius, saturationLimit, readOutNoise);
@@ -127,18 +129,27 @@ void PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, con
 
 		try {
 			/* Fit the profile*/
-			reducedChiSquare     = fitProfilePerRadius();
+			unReducedChiSquare     = fitProfilePerRadius();
+			reducedChiSquare       = reduceChiSquare(unReducedChiSquare);
 
 		} catch (ErrorException& theException) {
 			printf("Exception for radius = %d : %s\n",theRadius,theException.getTheMessage());
 			continue;
 		}
 
-		if(bestReducedChiSquare  > reducedChiSquare) {
-			bestReducedChiSquare = reducedChiSquare;
-			bestRadius           = theRadius;
+		if(bestReducedChiSquare         > reducedChiSquare) {
+			bestReducedChiSquare        = reducedChiSquare;
+			bestRadius                  = theRadius;
+			bestNumberOfPixelsOneRadius = numberOfPixelsOneRadius;
+			copyParamtersInTheFinalSolution(theLevenbergMarquardtSystemSolver->getArrayOfParameters());
 		}
 	}
+
+	/* Compute error for the best solution */
+	numberOfPixelsOneRadius             = bestNumberOfPixelsOneRadius;
+	setTheBestSolution();
+	theLevenbergMarquardtSystemSolver->computeErrors();
+	setErrorsInThefinalSolution(theLevenbergMarquardtSystemSolver->getArrayOfParameterErrors());
 }
 
 /**
@@ -451,7 +462,8 @@ void PsfFitter::fillWeightedObservations(double* const weightedObservartions) {
  */
 Gaussian2DPsfFitter::Gaussian2DPsfFitter() : PsfFitter(GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS,GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION) {
 
-	thePsfParameters = new PsfParameters;
+	thePsfParameters      = new PsfParameters;
+	theFinalPsfParameters = new PsfParameters;
 }
 
 /**
@@ -462,6 +474,11 @@ Gaussian2DPsfFitter::~Gaussian2DPsfFitter() {
 	if(thePsfParameters != NULL) {
 		delete thePsfParameters;
 		thePsfParameters = NULL;
+	}
+
+	if(theFinalPsfParameters != NULL) {
+		delete theFinalPsfParameters;
+		theFinalPsfParameters = NULL;
 	}
 }
 
@@ -719,11 +736,57 @@ void Gaussian2DPsfFitter::checkArrayOfParameters(double* const arrayOfParameters
 }
 
 /**
+ * Copy thePsfParameters in theFinalPsfParameters
+ */
+void Gaussian2DPsfFitter::copyParamtersInTheFinalSolution(const double* const arrayOfParameters) {
+
+	theFinalPsfParameters->setBackGroundFlux(arrayOfParameters[BACKGROUND_FLUX_INDEX]);
+	theFinalPsfParameters->setScaleFactor(arrayOfParameters[SCALE_FACTOR_INDEX]);
+	theFinalPsfParameters->setPhotoCenterX(arrayOfParameters[PHOTOCENTER_X_INDEX]);
+	theFinalPsfParameters->setPhotoCenterY(arrayOfParameters[PHOTOCENTER_Y_INDEX]);
+	theFinalPsfParameters->setTheta(arrayOfParameters[THETA_INDEX]);
+	theFinalPsfParameters->setSigmaX(arrayOfParameters[SIGMA_X_INDEX]);
+	theFinalPsfParameters->setSigmaY(arrayOfParameters[SIGMA_Y_INDEX]);
+}
+
+/**
+ * Copy arrayOfParameterErrors in theFinalPsfParameters
+ */
+void Gaussian2DPsfFitter::setErrorsInThefinalSolution(const double* const arrayOfParameterErrors) {
+
+	theFinalPsfParameters->setBackGroundFluxError(arrayOfParameterErrors[BACKGROUND_FLUX_INDEX]);
+	theFinalPsfParameters->setScaleFactorError(arrayOfParameterErrors[SCALE_FACTOR_INDEX]);
+	theFinalPsfParameters->setPhotoCenterXError(arrayOfParameterErrors[PHOTOCENTER_X_INDEX]);
+	theFinalPsfParameters->setPhotoCenterYError(arrayOfParameterErrors[PHOTOCENTER_Y_INDEX]);
+	theFinalPsfParameters->setThetaError(arrayOfParameterErrors[THETA_INDEX]);
+	theFinalPsfParameters->setSigmaXError(arrayOfParameterErrors[SIGMA_X_INDEX]);
+	theFinalPsfParameters->setSigmaYError(arrayOfParameterErrors[SIGMA_Y_INDEX]);
+}
+
+/**
+ * Divide the unReduced chiSquare by the degree of freedom
+ */
+double Gaussian2DPsfFitter::reduceChiSquare(const double unReducedChiSquare) {
+
+	const double reducedChiSquare = unReducedChiSquare / (numberOfPixelsOneRadius - GAUSSIAN_PROFILE_NUMBER_OF_PARAMETERS);
+
+	return reducedChiSquare;
+}
+
+/**
+ * Copy theFinalPsfParameters in thePsfParameters
+ */
+void Gaussian2DPsfFitter::setTheBestSolution() {
+	thePsfParameters->copy(theFinalPsfParameters);
+}
+
+/**
  * Class constructor
  */
 MoffatPsfFitter::MoffatPsfFitter() : PsfFitter(MOFFAT_PROFILE_NUMBER_OF_PARAMETERS,1) { //TODO
 
-	thePsfParameters = new MoffatPsfParameters;
+	thePsfParameters      = new MoffatPsfParameters;
+	theFinalPsfParameters = new MoffatPsfParameters;
 }
 
 /**
@@ -814,11 +877,59 @@ void MoffatPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) th
 }
 
 /**
+ * Copy thePsfParameters in theFinalPsfParameters
+ */
+void MoffatPsfFitter::copyParamtersInTheFinalSolution(const double* const arrayOfParameters) {
+
+	theFinalPsfParameters->setBackGroundFlux(arrayOfParameters[BACKGROUND_FLUX_INDEX]);
+	theFinalPsfParameters->setScaleFactor(arrayOfParameters[SCALE_FACTOR_INDEX]);
+	theFinalPsfParameters->setPhotoCenterX(arrayOfParameters[PHOTOCENTER_X_INDEX]);
+	theFinalPsfParameters->setPhotoCenterY(arrayOfParameters[PHOTOCENTER_Y_INDEX]);
+	theFinalPsfParameters->setTheta(arrayOfParameters[THETA_INDEX]);
+	theFinalPsfParameters->setSigmaX(arrayOfParameters[SIGMA_X_INDEX]);
+	theFinalPsfParameters->setSigmaY(arrayOfParameters[SIGMA_Y_INDEX]);
+	theFinalPsfParameters->setBeta(arrayOfParameters[BETA_INDEX]);
+}
+
+/**
+ * Copy arrayOfParameterErrors in theFinalPsfParameters
+ */
+void MoffatPsfFitter::setErrorsInThefinalSolution(const double* const arrayOfParameterErrors) {
+
+	theFinalPsfParameters->setBackGroundFluxError(arrayOfParameterErrors[BACKGROUND_FLUX_INDEX]);
+	theFinalPsfParameters->setScaleFactorError(arrayOfParameterErrors[SCALE_FACTOR_INDEX]);
+	theFinalPsfParameters->setPhotoCenterXError(arrayOfParameterErrors[PHOTOCENTER_X_INDEX]);
+	theFinalPsfParameters->setPhotoCenterYError(arrayOfParameterErrors[PHOTOCENTER_Y_INDEX]);
+	theFinalPsfParameters->setThetaError(arrayOfParameterErrors[THETA_INDEX]);
+	theFinalPsfParameters->setSigmaXError(arrayOfParameterErrors[SIGMA_X_INDEX]);
+	theFinalPsfParameters->setSigmaYError(arrayOfParameterErrors[SIGMA_Y_INDEX]);
+	theFinalPsfParameters->setBetaError(arrayOfParameterErrors[BETA_INDEX]);
+}
+
+/**
+ * Divide the unReduced chiSquare by the degree of freedom
+ */
+double MoffatPsfFitter::reduceChiSquare(const double unReducedChiSquare) {
+
+	const double reducedChiSquare = unReducedChiSquare / (numberOfPixelsOneRadius - MOFFAT_PROFILE_NUMBER_OF_PARAMETERS);
+
+	return reducedChiSquare;
+}
+
+/**
+ * Copy theFinalPsfParameters in thePsfParameters
+ */
+void MoffatPsfFitter::setTheBestSolution() {
+	thePsfParameters->copy(theFinalPsfParameters);
+}
+
+/**
  * Class constructor
  */
 MoffatBetaMinus3PsfFitter::MoffatBetaMinus3PsfFitter() : PsfFitter(MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS,1) { //TODO
 
-	thePsfParameters = new PsfParameters;
+	thePsfParameters      = new PsfParameters;
+	theFinalPsfParameters = new PsfParameters;
 }
 
 /**
@@ -908,6 +1019,51 @@ void MoffatBetaMinus3PsfFitter::checkArrayOfParameters(double* const arrayOfPara
 }
 
 /**
+ * Copy arrayOfParameters in theFinalPsfParameters
+ */
+void MoffatBetaMinus3PsfFitter::copyParamtersInTheFinalSolution(const double* const arrayOfParameters) {
+
+	theFinalPsfParameters->setBackGroundFlux(arrayOfParameters[BACKGROUND_FLUX_INDEX]);
+	theFinalPsfParameters->setScaleFactor(arrayOfParameters[SCALE_FACTOR_INDEX]);
+	theFinalPsfParameters->setPhotoCenterX(arrayOfParameters[PHOTOCENTER_X_INDEX]);
+	theFinalPsfParameters->setPhotoCenterY(arrayOfParameters[PHOTOCENTER_Y_INDEX]);
+	theFinalPsfParameters->setTheta(arrayOfParameters[THETA_INDEX]);
+	theFinalPsfParameters->setSigmaX(arrayOfParameters[SIGMA_X_INDEX]);
+	theFinalPsfParameters->setSigmaY(arrayOfParameters[SIGMA_Y_INDEX]);
+}
+
+/**
+ * Copy arrayOfParameterErrors in theFinalPsfParameters
+ */
+void MoffatBetaMinus3PsfFitter::setErrorsInThefinalSolution(const double* const arrayOfParameterErrors) {
+
+	theFinalPsfParameters->setBackGroundFluxError(arrayOfParameterErrors[BACKGROUND_FLUX_INDEX]);
+	theFinalPsfParameters->setScaleFactorError(arrayOfParameterErrors[SCALE_FACTOR_INDEX]);
+	theFinalPsfParameters->setPhotoCenterXError(arrayOfParameterErrors[PHOTOCENTER_X_INDEX]);
+	theFinalPsfParameters->setPhotoCenterYError(arrayOfParameterErrors[PHOTOCENTER_Y_INDEX]);
+	theFinalPsfParameters->setThetaError(arrayOfParameterErrors[THETA_INDEX]);
+	theFinalPsfParameters->setSigmaXError(arrayOfParameterErrors[SIGMA_X_INDEX]);
+	theFinalPsfParameters->setSigmaYError(arrayOfParameterErrors[SIGMA_Y_INDEX]);
+}
+
+/**
+ * Divide the unReduced chiSquare by the degree of freedom
+ */
+double MoffatBetaMinus3PsfFitter::reduceChiSquare(const double unReducedChiSquare) {
+
+	const double reducedChiSquare = unReducedChiSquare / (numberOfPixelsOneRadius - MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS);
+
+	return reducedChiSquare;
+}
+
+/**
+ * Copy theFinalPsfParameters in thePsfParameters
+ */
+void MoffatBetaMinus3PsfFitter::setTheBestSolution() {
+	thePsfParameters->copy(theFinalPsfParameters);
+}
+
+/**
  * Class constructor
  */
 PsfParameters::PsfParameters() {
@@ -932,6 +1088,20 @@ PsfParameters::PsfParameters() {
  * Class destructor
  */
 PsfParameters::~PsfParameters() {}
+
+/**
+ * Copy anotherPsfParameters in this
+ */
+void PsfParameters::copy(PsfParameters* const anotherPsfParameters) {
+
+	backGroundFlux      = anotherPsfParameters->backGroundFlux;
+	scaleFactor         = anotherPsfParameters->scaleFactor;
+	photoCenterX        = anotherPsfParameters->photoCenterX;
+	photoCenterY        = anotherPsfParameters->photoCenterY;
+	sigmaX              = anotherPsfParameters->sigmaX;
+	sigmaY              = anotherPsfParameters->sigmaY;
+	theta               = anotherPsfParameters->theta;
+}
 
 
 double PsfParameters::getBackGroundFlux() const {
@@ -1055,6 +1225,16 @@ MoffatPsfParameters::MoffatPsfParameters() {
 
 	beta      = NAN;
 	betaError = NAN;
+}
+
+/**
+ * Copy anotherPsfParameters in this
+ */
+void MoffatPsfParameters::copy(MoffatPsfParameters* const anotherPsfParameters) {
+
+	super::copy(anotherPsfParameters);
+
+	beta = anotherPsfParameters->beta;
 }
 
 /**
