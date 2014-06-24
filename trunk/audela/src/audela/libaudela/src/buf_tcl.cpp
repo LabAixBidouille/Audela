@@ -5084,20 +5084,21 @@ int cmdPsfGaussian2D(ClientData clientData, Tcl_Interp *interp, int argc, char *
 	try {
 
 		Gaussian2DPsfFitter* const theGaussian2DProfileFitter = new Gaussian2DPsfFitter();
-		theGaussian2DProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
+		const int bestRadius = theGaussian2DProfileFitter->fitProfile(theBufferImage,xCenter,yCenter,minimumRadius,maximumRadius,saturationLimit,readOutNoise);
 
 		// The results
 		PsfParameters* const thePsfParameters = theGaussian2DProfileFitter->getThePsfParameters();
 		char tclString[1024];
 		Tcl_DString dsptr;
 		Tcl_DStringInit(&dsptr);
-		sprintf(tclString,"{ {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} } ",
+		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f} %d ",
 				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
 				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
 				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),thePsfParameters->getSigmaY(),
 				thePsfParameters->getBackGroundFluxError(),thePsfParameters->getScaleFactorError(),
 				thePsfParameters->getPhotoCenterXError(),thePsfParameters->getPhotoCenterYError(),
-				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),thePsfParameters->getSigmaYError());
+				thePsfParameters->getThetaError(),thePsfParameters->getSigmaXError(),thePsfParameters->getSigmaYError(),
+				bestRadius);
 		Tcl_DStringAppend(&dsptr,tclString,-1);
 		Tcl_DStringResult(interp,&dsptr);
 		Tcl_DStringFree(&dsptr);
@@ -5162,7 +5163,7 @@ int cmdPsfMoffat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 		char tclString[1024];
 		Tcl_DString dsptr;
 		Tcl_DStringInit(&dsptr);
-		sprintf(tclString,"{ {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %+.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %.3f} } ",
+		sprintf(tclString,"{%.2f %.2f %.3f %.3f %.3f %.3f %.3f %+.3f} {%.2f %.2f %.3f %.3f %.3f %.3f %.3f %.3f} %d ",
 				thePsfParameters->getBackGroundFlux(),thePsfParameters->getScaleFactor(),
 				thePsfParameters->getPhotoCenterX(),thePsfParameters->getPhotoCenterY(),
 				thePsfParameters->getTheta(),thePsfParameters->getSigmaX(),

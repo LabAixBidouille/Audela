@@ -112,7 +112,6 @@ protected:
 	static const int THETA_INDEX           = 4;
 	static const int SIGMA_X_INDEX         = 5;
 	static const int SIGMA_Y_INDEX         = 6;
-	int     bestRadius;
 	int     numberOfPixelsMaximumRadius;
 	int     numberOfPixelsOneRadius;
 	int*    xPixelsMaximumRadius;
@@ -146,7 +145,7 @@ protected:
 public:
 	PsfFitter(const int inputNumberOfParameterFit,const int inputNumberOfParameterFitPreliminarySolution);
 	virtual ~PsfFitter();
-	void fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
+	int fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
 			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
 	const int getNumberOfMeasurements();
 	void fillWeightedObservations(double* const weightedObservartions);
