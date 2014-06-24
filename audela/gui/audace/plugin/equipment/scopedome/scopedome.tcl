@@ -139,7 +139,7 @@ proc ::scopedome::confToWidget { } {
    set widget(scopedome,fileName)   $conf(scopedome,fileName)
    set widget(scopedome,fileAccess) $conf(scopedome,fileAccess)
    set widget(scopedome,windowName) $conf(scopedome,windowName) ; # nom de l'interface
-   set widget(filesystem) "C:/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt"
+   set widget(filesystem) "C:/ScopeDome/CurrentTelescopeStatus.txt"
 
    set widget(driverversion) ""
 
@@ -177,9 +177,9 @@ proc ::scopedome::confToWidget { } {
    set widget(cmdList)    [list SyncToAzimuth GoTo Enc_GoTo]
 
    #--   Ascom + Action list excluding :
-   #--   Excluding configuration command : SetUpDialog SetPark Dispose FindHome CloseShutter OpenShutter
+   #--   Excluding configuration command : SetUpDialog SetPark Dispose FindHome
    #  Dome_Find_Home Calibrate_Dome_Az_Encoder Calibrate_Dome_Inertia Reset_Dome_Az_Encoder Restore_Default
-   set widget(actionList)    [list AbortSlew Park Stop\
+   set widget(actionList)    [list AbortSlew Park Stop CloseShutter OpenShutter \
                                  Rel_Scope_On Rel_Scope_Off Rel_CCD_On Rel_CCD_Off \
                                  Rel_Light_On Rel_Light_Off Rel_Fan_On Rel_Fan_Off \
                                  Rel_1_On Rel_1_Off Rel_2_On Rel_2_Off \

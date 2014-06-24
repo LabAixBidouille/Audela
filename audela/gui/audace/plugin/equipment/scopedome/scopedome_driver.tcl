@@ -87,7 +87,7 @@ proc ::scopedome::killCom { } {
 
 #---------------------------------------------------------------------------
 #  writeFileSystem
-#     write file :/ScopeDome/ScopeDomeCurrentTelescopeStatus.txt (< 3ms)
+#     write file :/ScopeDome/CurrentTelescopeStatus.txt (< 3ms)
 #     file structure :
 #     [header]
 #     telescop_name = "name"
@@ -105,7 +105,7 @@ proc ::scopedome::killCom { } {
 proc ::scopedome::writeFileSystem { cycle } {
    variable widget
    global audace conf caption
-   
+
    set telNo $audace(telNo)
 
    if {$conf(scopedome,connectScope) ==1 && $telNo == 1 && $widget(domNo) ==1} {
@@ -128,7 +128,7 @@ proc ::scopedome::writeFileSystem { cycle } {
          set date [mc_date2jd $datetu]
          lassign [mc_radec2altaz $radeg $decdeg $home $date] azdeg altdeg
          set azdeg [expr {fmod($azdeg+180,360)}]
-         set side [tel$telNo german]
+         set side [string map [list E 0 W 1] [tel$telNo german]]
          if {$audace(telescope,goto) ==1} {
             set slewing "true"
          } else {
@@ -144,7 +144,7 @@ proc ::scopedome::writeFileSystem { cycle } {
          puts $fid "Az=$azdeg"
          puts $fid "Ra=$radeg"
          puts $fid "Dec=$decdeg"
-         puts $fid "SideOfPier=1"
+         puts $fid "SideOfPier=$side"
          puts $fid "Slewing=$slewing"
          puts $fid "AtPark=false"
          catch {close $fid}
