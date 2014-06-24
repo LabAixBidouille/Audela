@@ -5,7 +5,15 @@
  */
 #include "PsfFitter.h"
 
-const double PsfFitter::TWO_PI        = 2.*M_PI;
+const double PsfFitter::TWO_PI             = 2.*M_PI;
+const int PsfFitter::BACKGROUND_FLUX_INDEX = 0;
+const int PsfFitter::SCALE_FACTOR_INDEX    = 1;
+const int PsfFitter::PHOTOCENTER_X_INDEX   = 2;
+const int PsfFitter::PHOTOCENTER_Y_INDEX   = 3;
+const int PsfFitter::THETA_INDEX           = 4;
+const int PsfFitter::SIGMA_X_INDEX         = 5;
+const int PsfFitter::SIGMA_Y_INDEX         = 6;
+const int MoffatPsfFitter::BETA_INDEX      = 7;
 
 /**
  * Class constructor
