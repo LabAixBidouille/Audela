@@ -15,7 +15,7 @@
 #define MOFFAT_PROFILE_NUMBER_OF_PARAMETERS 8
 #define MOFFAT_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 5
 #define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS 7
-#define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 7
+#define MOFFAT_BETA_FIXED_PROFILE_NUMBER_OF_PARAMETERS_PRELIMINARY_SOLUTION 25
 
 /**
  * Parent class for PSF parameters (container class)
@@ -238,5 +238,7 @@ public:
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
 	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
 };
+
+const double findMaximum(const double* const arrayOfDoubles, const int lengthOfArray);
 
 #endif // __PSFFITTERH__

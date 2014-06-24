@@ -956,7 +956,77 @@ void MoffatPsfFitter::fillWeightedDeltaObservations(double* const theWeightedDel
  * Fill the weighted design matrix for the Levenberg-Marquardt minimisation
  */
 void MoffatPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) {
-	//TODO
+
+	const double cosTeta      = cos(arrayOfParameters[THETA_INDEX]);
+	const double sinTeta      = sin(arrayOfParameters[THETA_INDEX]);
+	const double sigmaXSquare = arrayOfParameters[SIGMA_X_INDEX] * arrayOfParameters[SIGMA_X_INDEX];
+	const double sigmaXCube   = arrayOfParameters[SIGMA_X_INDEX] * sigmaXSquare;
+	const double sigmaYSquare = arrayOfParameters[SIGMA_Y_INDEX] * arrayOfParameters[SIGMA_Y_INDEX];
+	const double sigmaYCube   = arrayOfParameters[SIGMA_Y_INDEX] * sigmaYSquare;
+	double xPixelCentered;
+	double yPixelCentered;
+	double xPixelCenteredRotated;
+	double yPixelCenteredRotated;
+	double xReduced;
+	double yReduced;
+	double subDerivative;
+	double subDerivative1;
+	double subDerivative2;
+	double polynomialTerm;
+	double polynomialTermPowerBetaMinusOne;
+	double polynomialTermPowerBeta;
+	double betaPolynomialTermPowerBetaMinusOne;
+	double scaledBetaPolynomialTermPowerBetaMinusOneByError;
+
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+
+		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+
+		xReduced                = xPixelCenteredRotated / arrayOfParameters[SIGMA_X_INDEX];
+		yReduced                = yPixelCenteredRotated / arrayOfParameters[SIGMA_Y_INDEX];
+		polynomialTerm          = 1. + xReduced * xReduced + yReduced * yReduced;
+		polynomialTermPowerBetaMinusOne     = pow(polynomialTerm,arrayOfParameters[BETA_INDEX] - 1.);
+		polynomialTermPowerBeta             = polynomialTermPowerBetaMinusOne * polynomialTerm;
+		betaPolynomialTermPowerBetaMinusOne = arrayOfParameters[BETA_INDEX] * polynomialTermPowerBetaMinusOne;
+		scaledBetaPolynomialTermPowerBetaMinusOneByError = arrayOfParameters[SCALE_FACTOR_INDEX] * betaPolynomialTermPowerBetaMinusOne / fluxErrors[kMes];
+
+		// Derivative with respect to the background flux is always one
+		weightedDesignMatrix[0][kMes]   = 1. / fluxErrors[kMes];
+
+		// Derivative with respect to the scale
+		weightedDesignMatrix[1][kMes]   = polynomialTermPowerBeta / fluxErrors[kMes];
+
+		// Derivative with respect to x0
+		subDerivative1                 = -2 * cosTeta * xPixelCenteredRotated / sigmaXSquare;
+		subDerivative2                 = -2 * sinTeta * yPixelCenteredRotated / sigmaYSquare;
+		weightedDesignMatrix[2][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+
+		// Derivative with respect to y0
+		subDerivative1                 = +2 * sinTeta * xPixelCenteredRotated / sigmaXSquare;
+		subDerivative2                 = -2 * cosTeta * yPixelCenteredRotated / sigmaYSquare;
+		weightedDesignMatrix[3][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+
+		// Derivative with respect to teta
+		subDerivative1                 = -sinTeta * xPixelCentered - cosTeta * yPixelCentered;
+		subDerivative1                 = +2 * xPixelCenteredRotated / sigmaXSquare * subDerivative1;
+		subDerivative2                 = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		subDerivative2                 = +2 * yPixelCenteredRotated / sigmaYSquare * subDerivative2;
+		weightedDesignMatrix[4][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+
+		// Derivative with respect to sigmaX
+		subDerivative                  = -2 * xPixelCenteredRotated * xPixelCenteredRotated / sigmaXCube;
+		weightedDesignMatrix[5][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
+
+		// Derivative with respect to sigmaY
+		subDerivative                  = -2 * yPixelCenteredRotated * yPixelCenteredRotated / sigmaYCube;
+		weightedDesignMatrix[6][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
+
+		// Derivative with respect to beta
+		weightedDesignMatrix[7][kMes]  = arrayOfParameters[SCALE_FACTOR_INDEX] * polynomialTermPowerBeta * log(polynomialTerm) / fluxErrors[kMes];
+	}
 }
 
 /**
@@ -1054,7 +1124,67 @@ PsfParameters* const MoffatBetaMinus3PsfFitter::getThePsfParameters() const{
  *  Decode the fit coefficients
  */
 void MoffatBetaMinus3PsfFitter::decodeFitCoefficients(const double* const fitCoefficients) {
-	//TODO
+
+	// Default values
+	thePsfParameters->setTheta(0.);
+	thePsfParameters->setPhotoCenterX(0.);
+	thePsfParameters->setPhotoCenterY(0.);
+
+	double ratioOfTerms;
+
+	// X^2 and X^4 terms
+	const double x2Term       = fitCoefficients[2];
+	const double x4Term       = fitCoefficients[4];
+
+	// Y^2 and Y^4 terms
+	const double y2Term       = fitCoefficients[8];
+	const double y4Term       = fitCoefficients[10];
+
+	// To find an initial solution for alpha1 and alpha2, we assume beta1 = beta2 = 0
+	ratioOfTerms              = x4Term / x2Term;
+	if (ratioOfTerms          < 0.) {
+		// Default value
+		thePsfParameters->setSigmaX(1.);
+	} else {
+		const double alpha1   = sqrt(ratioOfTerms);
+		thePsfParameters->setSigmaX(1. / sqrt(alpha1));
+	}
+
+	ratioOfTerms              = y4Term / y2Term;
+	if (ratioOfTerms          < 0.) {
+		// Default value
+		thePsfParameters->setSigmaY(1.);
+	} else {
+		const double alpha2   = sqrt(ratioOfTerms);
+		thePsfParameters->setSigmaY(1. / sqrt(alpha2));
+	}
+
+	double scaleFactor;
+
+	if (fitCoefficients[0]    < 0.) {
+		scaleFactor           = 1. / findMaximum(transformedFluxes,numberOfPixelsOneRadius);
+	} else {
+		scaleFactor           = 1. / fitCoefficients[0];
+	}
+
+	thePsfParameters->setScaleFactor(scaleFactor);
+}
+
+/**
+ * Find the maximum of an array
+ */
+const double findMaximum(const double* const arrayOfDoubles, const int lengthOfArray) {
+
+	double theMaximum = arrayOfDoubles[0];
+
+	for(int index = 1; index < lengthOfArray; index++) {
+
+		if(theMaximum  < arrayOfDoubles[index]) {
+			theMaximum = arrayOfDoubles[index];
+		}
+	}
+
+	return theMaximum;
 }
 
 /**
@@ -1069,7 +1199,59 @@ void MoffatBetaMinus3PsfFitter::deduceInitialBackgroundFlux(const double minimum
  * Fill the weighted observations (transformedFluxes / transformedFluxErrors) to find the preliminary solution
  */
 void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix) {
-	//TODO
+
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+		// Constant term
+		weightedDesignMatrix[0][kMes]  = 1. / transformedFluxErrors[kMes];
+		// X term
+		weightedDesignMatrix[1][kMes]  = xPixels[kMes] / transformedFluxErrors[kMes];
+		// X^2 term
+		weightedDesignMatrix[2][kMes]  = xPixels[kMes] * weightedDesignMatrix[1][kMes];
+		// X^3 term
+		weightedDesignMatrix[3][kMes]  = xPixels[kMes] * weightedDesignMatrix[2][kMes];
+		// X^4 term
+		weightedDesignMatrix[4][kMes]  = xPixels[kMes] * weightedDesignMatrix[3][kMes];
+		// X^5 term
+		weightedDesignMatrix[5][kMes]  = xPixels[kMes] * weightedDesignMatrix[4][kMes];
+		// X^6 term
+		weightedDesignMatrix[6][kMes]  = xPixels[kMes] * weightedDesignMatrix[5][kMes];
+		// Y term
+		weightedDesignMatrix[7][kMes]  = yPixels[kMes] / transformedFluxErrors[kMes];
+		// Y^2 term
+		weightedDesignMatrix[8][kMes]  = yPixels[kMes] * weightedDesignMatrix[7][kMes];
+		// Y^3 term
+		weightedDesignMatrix[9][kMes]  = yPixels[kMes] * weightedDesignMatrix[8][kMes];
+		// Y^4 term
+		weightedDesignMatrix[10][kMes] = yPixels[kMes] * weightedDesignMatrix[9][kMes];
+		// Y^5 term
+		weightedDesignMatrix[11][kMes] = yPixels[kMes] * weightedDesignMatrix[10][kMes];
+		// Y^6 term
+		weightedDesignMatrix[12][kMes] = yPixels[kMes] * weightedDesignMatrix[11][kMes];
+		// XY term
+		weightedDesignMatrix[13][kMes] = yPixels[kMes] * weightedDesignMatrix[1][kMes];
+		// X^2Y
+		weightedDesignMatrix[14][kMes] = yPixels[kMes] * weightedDesignMatrix[2][kMes];
+		// X^3Y
+		weightedDesignMatrix[15][kMes] = yPixels[kMes] * weightedDesignMatrix[3][kMes];
+		// X^4Y
+		weightedDesignMatrix[16][kMes] = yPixels[kMes] * weightedDesignMatrix[4][kMes];
+		// XY^2
+		weightedDesignMatrix[17][kMes] = yPixels[kMes] * weightedDesignMatrix[13][kMes];
+		// XY^3
+		weightedDesignMatrix[18][kMes] = yPixels[kMes] * weightedDesignMatrix[17][kMes];
+		// XY^4
+		weightedDesignMatrix[19][kMes] = yPixels[kMes] * weightedDesignMatrix[18][kMes];
+		// X^2Y^2 term
+		weightedDesignMatrix[20][kMes] = yPixels[kMes] * weightedDesignMatrix[14][kMes];
+		// X^3Y^2 term
+		weightedDesignMatrix[21][kMes] = yPixels[kMes] * weightedDesignMatrix[15][kMes];
+		// X^4Y^2 term
+		weightedDesignMatrix[22][kMes] = yPixels[kMes] * weightedDesignMatrix[16][kMes];
+		// X^2Y^3 term
+		weightedDesignMatrix[23][kMes] = yPixels[kMes] * weightedDesignMatrix[20][kMes];
+		// X^2Y^4 term
+		weightedDesignMatrix[24][kMes] = yPixels[kMes] * weightedDesignMatrix[23][kMes];
+	}
 }
 
 /**
@@ -1108,14 +1290,107 @@ void MoffatBetaMinus3PsfFitter::fillArrayOfParameters(double* const arrayOfParam
  * Fill the weighted delta observations (observation - fit) / sigma for the Levenberg-Marquardt minimisation
  */
 void MoffatBetaMinus3PsfFitter::fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) {
-	//TODO
+
+	const double cosTeta = cos(arrayOfParameters[THETA_INDEX]);
+	const double sinTeta = sin(arrayOfParameters[THETA_INDEX]);
+	double xPixelCentered;
+	double yPixelCentered;
+	double xPixelCenteredRotated;
+	double yPixelCenteredRotated;
+	double xReduced;
+	double yReduced;
+	double polynomialTerm;
+	double fittedFlux;
+
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+
+		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+		xReduced              = xPixelCenteredRotated / arrayOfParameters[SIGMA_X_INDEX];
+		yReduced              = yPixelCenteredRotated / arrayOfParameters[SIGMA_Y_INDEX];
+		polynomialTerm        = 1. + xReduced * xReduced + yReduced * yReduced;
+		polynomialTerm        = polynomialTerm * polynomialTerm * polynomialTerm;
+		fittedFlux            = arrayOfParameters[BACKGROUND_FLUX_INDEX] + arrayOfParameters[SCALE_FACTOR_INDEX] / polynomialTerm;
+
+		theWeightedDeltaObservartions[kMes] = (fluxes[kMes] - fittedFlux) / fluxErrors[kMes];
+	}
 }
 
 /**
  * Fill the weighted design matrix for the Levenberg-Marquardt minimisation
  */
 void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) {
-	//TODO
+
+	const double cosTeta      = cos(arrayOfParameters[THETA_INDEX]);
+	const double sinTeta      = sin(arrayOfParameters[THETA_INDEX]);
+	const double sigmaXSquare = arrayOfParameters[SIGMA_X_INDEX] * arrayOfParameters[SIGMA_X_INDEX];
+	const double sigmaXCube   = arrayOfParameters[SIGMA_X_INDEX] * sigmaXSquare;
+	const double sigmaYSquare = arrayOfParameters[SIGMA_Y_INDEX] * arrayOfParameters[SIGMA_Y_INDEX];
+	const double sigmaYCube   = arrayOfParameters[SIGMA_Y_INDEX] * sigmaYSquare;
+	double xPixelCentered;
+	double yPixelCentered;
+	double xPixelCenteredRotated;
+	double yPixelCenteredRotated;
+	double xReduced;
+	double yReduced;
+	double subDerivative;
+	double subDerivative1;
+	double subDerivative2;
+	double polynomialTerm;
+	double polynomialTermPowerBetaMinusOne;
+	double polynomialTermPowerBeta;
+	double betaPolynomialTermPowerBetaMinusOne;
+	double scaledBetaPolynomialTermPowerBetaMinusOneByError;
+
+	for (int kMes = 0; kMes < numberOfPixelsOneRadius; kMes++) {
+
+		xPixelCentered        = xPixels[kMes] - arrayOfParameters[PHOTOCENTER_X_INDEX];
+		yPixelCentered        = yPixels[kMes] - arrayOfParameters[PHOTOCENTER_Y_INDEX];
+		xPixelCenteredRotated = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		yPixelCenteredRotated = sinTeta * xPixelCentered + cosTeta * yPixelCentered;
+
+		xReduced                            = xPixelCenteredRotated / arrayOfParameters[SIGMA_X_INDEX];
+		yReduced                            = yPixelCenteredRotated / arrayOfParameters[SIGMA_Y_INDEX];
+		polynomialTerm                      = 1. + xReduced * xReduced + yReduced * yReduced;
+		polynomialTermPowerBeta             = 1. / (polynomialTerm * polynomialTerm * polynomialTerm);
+		polynomialTermPowerBetaMinusOne     = polynomialTermPowerBeta / polynomialTerm;
+		betaPolynomialTermPowerBetaMinusOne = -3. * polynomialTermPowerBetaMinusOne;
+
+		scaledBetaPolynomialTermPowerBetaMinusOneByError = arrayOfParameters[SCALE_FACTOR_INDEX] * betaPolynomialTermPowerBetaMinusOne / fluxErrors[kMes];
+
+		// Derivative with respect to the background flux is always one
+		weightedDesignMatrix[0][kMes]   = 1. / fluxErrors[kMes];
+
+		// Derivative with respect to the scale
+		weightedDesignMatrix[1][kMes]   = polynomialTermPowerBeta / fluxErrors[kMes];
+
+		// Derivative with respect to x0
+		subDerivative1                 = -2 * cosTeta * xPixelCenteredRotated / sigmaXSquare;
+		subDerivative2                 = -2 * sinTeta * yPixelCenteredRotated / sigmaYSquare;
+		weightedDesignMatrix[2][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+
+		// Derivative with respect to y0
+		subDerivative1                 = +2 * sinTeta * xPixelCenteredRotated / sigmaXSquare;
+		subDerivative2                 = -2 * cosTeta * yPixelCenteredRotated / sigmaYSquare;
+		weightedDesignMatrix[3][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+
+		// Derivative with respect to teta
+		subDerivative1                 = -sinTeta * xPixelCentered - cosTeta * yPixelCentered;
+		subDerivative1                 = +2 * xPixelCenteredRotated / sigmaXSquare * subDerivative1;
+		subDerivative2                 = cosTeta * xPixelCentered - sinTeta * yPixelCentered;
+		subDerivative2                 = +2 * yPixelCenteredRotated / sigmaYSquare * subDerivative2;
+		weightedDesignMatrix[4][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * (subDerivative1 + subDerivative2);
+
+		// Derivative with respect to sigmaX
+		subDerivative                  = -2 * xPixelCenteredRotated * xPixelCenteredRotated / sigmaXCube;
+		weightedDesignMatrix[5][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
+
+		// Derivative with respect to sigmaY
+		subDerivative                  = -2 * yPixelCenteredRotated * yPixelCenteredRotated / sigmaYCube;
+		weightedDesignMatrix[6][kMes]  = scaledBetaPolynomialTermPowerBetaMinusOneByError * subDerivative;
+	}
 }
 
 /**
