@@ -800,6 +800,13 @@ MoffatPsfFitter::~MoffatPsfFitter() {
 	}
 }
 
+/*
+ * Get the PSF parameters
+ */
+MoffatPsfParameters* const MoffatPsfFitter::getThePsfParameters() const{
+	return thePsfParameters;
+}
+
 /**
  *  Decode the fit coefficients
  */
@@ -941,6 +948,13 @@ MoffatBetaMinus3PsfFitter:: ~MoffatBetaMinus3PsfFitter() {
 		delete thePsfParameters;
 		thePsfParameters = NULL;
 	}
+}
+
+/*
+ * Get the PSF parameters
+ */
+PsfParameters* const MoffatBetaMinus3PsfFitter::getThePsfParameters() const{
+	return thePsfParameters;
 }
 
 /**

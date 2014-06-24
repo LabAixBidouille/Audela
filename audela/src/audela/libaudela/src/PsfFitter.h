@@ -202,6 +202,7 @@ protected:
 public:
 	MoffatPsfFitter();
 	virtual ~MoffatPsfFitter();
+	MoffatPsfParameters* const getThePsfParameters() const;
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix);
 	void fillArrayOfParameters(double* const arrayOfParameters);
 	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
@@ -230,6 +231,7 @@ protected:
 public:
 	MoffatBetaMinus3PsfFitter();
 	virtual ~MoffatBetaMinus3PsfFitter();
+	PsfParameters* const getThePsfParameters() const;
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix);
 	void fillArrayOfParameters(double* const arrayOfParameters);
 	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
