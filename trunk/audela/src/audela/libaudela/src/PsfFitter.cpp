@@ -116,7 +116,7 @@ PsfFitter::~PsfFitter() {
  * Loop over radii to find the best fit
  */
 int PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
-		const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException) {
+		const double saturationLimit, const double readOutNoise) {
 
 	numberOfPixelsOneRadius         = 0;
 	int bestNumberOfPixelsOneRadius = -1;
@@ -173,7 +173,7 @@ int PsfFitter::fitProfile(CBuffer* const theBufferImage, const int xCenter, cons
  * Extract pixels needed for the fit
  */
 void PsfFitter::extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
-		const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException) {
+		const double saturationLimit, const double readOutNoise) {
 
 	const int naxis1 = theBufferImage->GetWidth();
 	const int naxis2 = theBufferImage->GetHeight();
@@ -763,7 +763,7 @@ void Gaussian2DPsfFitter::fillWeightedDesignMatrix(double* const * const weighte
 /**
  * Check the parameters of a given iteration
  */
-void Gaussian2DPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
+void Gaussian2DPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) {
 
 	if ((arrayOfParameters[SCALE_FACTOR_INDEX] <= 0.) || (arrayOfParameters[SIGMA_X_INDEX] <= 0.) || (arrayOfParameters[SIGMA_Y_INDEX] <= 0.)) {
 
@@ -1114,7 +1114,7 @@ void MoffatPsfFitter::fillWeightedDesignMatrix(double* const * const weightedDes
 /**
  * Check the parameters of a given iteration
  */
-void MoffatPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
+void MoffatPsfFitter::checkArrayOfParameters(double* const arrayOfParameters) {
 
 	if ((arrayOfParameters[SCALE_FACTOR_INDEX] <= 0.) || (arrayOfParameters[SIGMA_X_INDEX] <= 0.) ||
 			(arrayOfParameters[SIGMA_Y_INDEX] <= 0.) || (arrayOfParameters[BETA_INDEX] >= 0.)) {
@@ -1519,7 +1519,7 @@ void MoffatBetaMinus3PsfFitter::fillWeightedDesignMatrix(double* const * const w
 /**
  * Check the parameters of a given iteration
  */
-void MoffatBetaMinus3PsfFitter::checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) {
+void MoffatBetaMinus3PsfFitter::checkArrayOfParameters(double* const arrayOfParameters) {
 
 	if ((arrayOfParameters[SCALE_FACTOR_INDEX] <= 0.) || (arrayOfParameters[SIGMA_X_INDEX] <= 0.) ||
 			(arrayOfParameters[SIGMA_Y_INDEX] <= 0.)) {

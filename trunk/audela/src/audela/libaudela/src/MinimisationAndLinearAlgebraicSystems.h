@@ -50,7 +50,7 @@ public:
 	virtual void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters) = 0;
 	virtual void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters) = 0;
 	virtual void fillArrayOfParameters(double* const arrayOfParameters) = 0;
-	virtual void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException) = 0;
+	virtual void checkArrayOfParameters(double* const arrayOfParameters) = 0;
 	virtual const int getNumberOfMeasurements() = 0;
 };
 
@@ -73,13 +73,13 @@ protected:
 	double* intermediateArray;
 	void computeCurvatureMatrix();
 	virtual void computeProjectedObservations() = 0;
-	void decomposeCurvatureMatrix(double** theCurvatureMatrix) throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
-	void isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal) throw (BadlyConditionnedMatrixException);
+	void decomposeCurvatureMatrix(double** theCurvatureMatrix);
+	void isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal);
 	void finishSolvingTheSystem(double* const theFitCoefficients);
 	void computeInverseOfCholeskyMatrix();
 
 public:
-	AlgebraicSystemSolver(const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
+	AlgebraicSystemSolver(const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements);
 	virtual ~AlgebraicSystemSolver();
 	const double* const getArrayOfParameters() const;
 };
@@ -98,9 +98,9 @@ protected:
 
 public:
 	LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem,
-			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
+			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements);
 	virtual ~LinearAlgebraicSystemSolver();
-	void solveSytem() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException);
+	void solveSytem();
 };
 
 /**
@@ -141,7 +141,7 @@ private:
 	void badStep();
 	void swapSolutionParameters();
 	void setDefaultErros();
-	void fillErrors() throw (InvalidDataException);
+	void fillErrors();
 	void inverseCurvatureMatrix();
 
 protected:
@@ -149,7 +149,7 @@ protected:
 
 public:
 	LevenbergMarquardtSystemSolver(NonLinearAlgebraicSystemInterface* const inputNonLinearAlgebraicSystem,
-			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException);
+			const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements);
 	virtual ~LevenbergMarquardtSystemSolver();
 	bool optimise();
 	void computeErrors();

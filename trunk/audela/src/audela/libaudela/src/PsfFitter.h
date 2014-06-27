@@ -129,7 +129,7 @@ protected:
 
 	virtual void transformFluxesForPreliminarySolution() = 0;
 	void extractProcessingZoneMaximumRadius(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int theRadius,
-			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
+			const double saturationLimit, const double readOutNoise);
 	void extractProcessingZone(const int theRadius);
 	double fitProfilePerRadius();
 	void findInitialSolution();
@@ -148,7 +148,7 @@ public:
 	PsfFitter(const int inputNumberOfParameterFit,const int inputNumberOfParameterFitPreliminarySolution);
 	virtual ~PsfFitter();
 	int fitProfile(CBuffer* const theBufferImage, const int xCenter, const int yCenter, const int minimumRadius, const int maximumRadius,
-			const double saturationLimit, const double readOutNoise) throw (InsufficientMemoryException);
+			const double saturationLimit, const double readOutNoise);
 	const int getNumberOfMeasurements();
 	void fillWeightedObservations(double* const weightedObservartions);
 };
@@ -180,7 +180,7 @@ public:
 	void fillArrayOfParameters(double* const arrayOfParameters);
 	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
-	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
+	void checkArrayOfParameters(double* const arrayOfParameters);
 };
 
 /**
@@ -211,7 +211,7 @@ public:
 	void fillArrayOfParameters(double* const arrayOfParameters);
 	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
-	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
+	void checkArrayOfParameters(double* const arrayOfParameters);
 };
 
 /**
@@ -241,7 +241,7 @@ public:
 	void fillArrayOfParameters(double* const arrayOfParameters);
 	void fillWeightedDeltaObservations(double* const theWeightedDeltaObservartions, double* const arrayOfParameters);
 	void fillWeightedDesignMatrix(double* const * const weightedDesignMatrix, double* const arrayOfParameters);
-	void checkArrayOfParameters(double* const arrayOfParameters) throw (InvalidDataException);
+	void checkArrayOfParameters(double* const arrayOfParameters);
 };
 
 const double findMaximum(const double* const arrayOfDoubles, const int lengthOfArray);
