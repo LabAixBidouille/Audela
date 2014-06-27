@@ -20,7 +20,7 @@ const double LevenbergMarquardtSystemSolver::CHI_SQUARE_TOLERENCE      = 1e-8;
 /**
  * Class constructor
  */
-AlgebraicSystemSolver::AlgebraicSystemSolver(const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException) :
+AlgebraicSystemSolver::AlgebraicSystemSolver(const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) :
 numberOfFitParameters(inputNumberOfFitParameters),maximumNumberOfMeasurements(inputMaximumNumberOfMeasurements) {
 
 	numberOfMeasurements = -1;
@@ -186,7 +186,7 @@ void AlgebraicSystemSolver::computeCurvatureMatrix() {
 /**
  * Decompose the curvature matrix using Cholesky decomposition
  */
-void AlgebraicSystemSolver::decomposeCurvatureMatrix(double** theCurvatureMatrix) throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException) {
+void AlgebraicSystemSolver::decomposeCurvatureMatrix(double** theCurvatureMatrix) {
 
 	int j,k;
 	double theSum,theSquare;
@@ -267,8 +267,7 @@ void AlgebraicSystemSolver::finishSolvingTheSystem(double* const theFitCoefficie
 /**
  * Check for badly conditionned curvature matrix
  */
-void AlgebraicSystemSolver::isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal)
-throw (BadlyConditionnedMatrixException) {
+void AlgebraicSystemSolver::isMatrixBadlyConditionned(const double diagonalElement,double& minimumOfDiagonal,double& maximumOfDiagonal) {
 
 	if(minimumOfDiagonal  > diagonalElement) {
 		minimumOfDiagonal = diagonalElement;
@@ -326,8 +325,8 @@ void AlgebraicSystemSolver::computeInverseOfCholeskyMatrix() {
  * Class constructor
  */
 LinearAlgebraicSystemSolver::LinearAlgebraicSystemSolver(LinearAlgebraicSystemInterface* const inputLinearAlgebraicSystem,
-		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException) :
-																																												AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theLinearAlgebraicSystem(inputLinearAlgebraicSystem) {
+		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) :
+				AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theLinearAlgebraicSystem(inputLinearAlgebraicSystem) {
 
 	weightedObservations      = new double[maximumNumberOfMeasurements];
 	if(weightedObservations  == NULL) {
@@ -350,7 +349,7 @@ LinearAlgebraicSystemSolver::~LinearAlgebraicSystemSolver() {
 /**
  * Solve the algebraic system
  */
-void LinearAlgebraicSystemSolver::solveSytem() throw (BadlyConditionnedMatrixException,NonDefinitePositiveMatrixException) {
+void LinearAlgebraicSystemSolver::solveSytem() {
 
 	/* Retrieve the number of measurements */
 	numberOfMeasurements = theLinearAlgebraicSystem->getNumberOfMeasurements();
@@ -398,8 +397,8 @@ void LinearAlgebraicSystemSolver::computeProjectedObservations() {
  * Class constructor
  */
 LevenbergMarquardtSystemSolver::LevenbergMarquardtSystemSolver(NonLinearAlgebraicSystemInterface* const inputNonLinearAlgebraicSystem,
-		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) throw (InsufficientMemoryException) :
-																																												AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theNonLinearAlgebraicSystem(inputNonLinearAlgebraicSystem) {
+		const int inputNumberOfFitParameters, const int inputMaximumNumberOfMeasurements) :
+				AlgebraicSystemSolver(inputNumberOfFitParameters,inputMaximumNumberOfMeasurements), theNonLinearAlgebraicSystem(inputNonLinearAlgebraicSystem) {
 
 	hessianMatrix          = new double*[numberOfFitParameters];
 	if(hessianMatrix      == NULL) {
@@ -578,15 +577,15 @@ bool LevenbergMarquardtSystemSolver::optimise() {
 			}
 
 
-		} catch (BadlyConditionnedMatrixException& theException) {
+		} catch (BadlyConditionnedMatrixException&) {
 
 			badStep();
 
-		} catch (NonDefinitePositiveMatrixException& theException) {
+		} catch (NonDefinitePositiveMatrixException&) {
 
 			badStep();
 
-		} catch (InvalidDataException& theException) {
+		} catch (InvalidDataException&) {
 
 			badStep();
 		}
@@ -629,15 +628,15 @@ void LevenbergMarquardtSystemSolver::computeErrors() {
 		// Fill the array of errors
 		fillErrors();
 
-	} catch (BadlyConditionnedMatrixException& theException) {
+	} catch (BadlyConditionnedMatrixException&) {
 
 		setDefaultErros();
 
-	} catch (NonDefinitePositiveMatrixException& theException) {
+	} catch (NonDefinitePositiveMatrixException&) {
 
 		setDefaultErros();
 
-	} catch (InvalidDataException& theException) {
+	} catch (InvalidDataException&) {
 
 		setDefaultErros();
 	}
@@ -679,7 +678,7 @@ void LevenbergMarquardtSystemSolver::inverseCurvatureMatrix() {
 /**
  * Fill the errors with the diagonal elements of the covariance matrix
  */
-void LevenbergMarquardtSystemSolver::fillErrors() throw (InvalidDataException) {
+void LevenbergMarquardtSystemSolver::fillErrors() {
 
 	for(int kParameter = 0; kParameter < numberOfFitParameters; kParameter++) {
 
