@@ -482,22 +482,22 @@ proc spc_rmcosmics { args } {
    set nbargs [ llength $args ]
    if { $nbargs<=4 } {
       if { $nbargs==1 } {
-         set filename [ lindex $args 0 ]
+         set filename [ file rootname [ lindex $args 0 ] ]
          set imoy_part $spcaudace(cosmics_imin)
          set fwhm_max $spcaudace(cosmics_fwhm)
          set largeur $spcaudace(largeur_raie_detect)
       } elseif { $nbargs==2 } {
-         set filename [ lindex $args 0 ]
+         set filename [ file rootname [ lindex $args 0 ] ]
          set imoy_part [ lindex $args 1 ]
          set fwhm_max $spcaudace(cosmics_fwhm)
          set largeur $spcaudace(largeur_raie_detect)
       } elseif { $nbargs==3 } {
-         set filename [ lindex $args 0 ]
+         set filename [ file rootname [ lindex $args 0 ] ]
          set imoy_part [ lindex $args 1 ]
          set fwhm_max [ lindex $args 2 ]
          set largeur $spcaudace(largeur_raie_detect)
       } elseif { $nbargs==4 } {
-         set filename [ lindex $args 0 ]
+         set filename [ file rootname [ lindex $args 0 ] ]
          set imoy_part [ lindex $args 1 ]
          set fwhm_max [ lindex $args 2 ]
          set largeur [ expr int([ lindex $args 3 ]) ]
@@ -711,7 +711,7 @@ proc spc_scar { args } {
        set liste_coords [ lrange $args 1 [ llength $args ] ]
     } elseif { $nb_args==1 } {
        #-- Cas d'un appel depuis un script avec une liste contenant le total des argumetns :
-       set fichier [ lindex [ lindex $args 0 ] 0 ]
+       set fichier [ file rootname [ lindex [ lindex $args 0 ] 0 ] ]
        set element1 [ lindex [ lindex $args 0 ] 1 ]
        if { [ file exists "$audace(rep_images)/$fichier$conf(extension,defaut)" ] && $element1!="" } {
           set args [ lindex $args 0 ]
