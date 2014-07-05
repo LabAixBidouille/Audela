@@ -92,13 +92,13 @@ proc ::scopedome::killCom { } {
 #     [header]
 #     telescop_name = "name"
 #     [Telescope]
-#     Alt=5.6
-#     Az=340
-#     Ra=3.3
-#     Dec=4.5
-#     SideOfPier=1
-#     Slewing=false
-#     AtPark=true
+#     Alt=5.6        ; # degres
+#     Az=340         ; # degres
+#     Ra=3.3         ; # heures
+#     Dec=4.5        ; # degres
+#     SideOfPier=1   ; # {-1=unknown | 0=E | 1=W}
+#     Slewing=false  ; # { true | false }
+#     AtPark=true    ; # { true | false }
 #  parameter : cycle (ms)
 #  return : nothing
 #---------------------------------------------------------------------------
@@ -107,6 +107,10 @@ proc ::scopedome::writeFileSystem { cycle } {
    global audace conf caption
 
    set telNo $audace(telNo)
+   #--   Evite une erreur
+   if {$telNo == 0} {
+      return
+   }
 
    if {$conf(scopedome,connectScope) ==1 && $telNo == 1 && $widget(domNo) ==1} {
 
@@ -122,12 +126,13 @@ proc ::scopedome::writeFileSystem { cycle } {
       if {$rahms ni $listNoCoords} {
 
          set radeg [mc_angle2deg $rahms]
+         set rah [expr { $radeg/15 }]
          set decdeg [mc_angle2deg $decdms]
          set home $conf(posobs,observateur,gps)
          set datetu [mc_date2iso8601 [::audace::date_sys2ut now]]
          set date [mc_date2jd $datetu]
          lassign [mc_radec2altaz $radeg $decdeg $home $date] azdeg altdeg
-         set azdeg [expr {fmod($azdeg+180,360)}]
+         set azdeg [expr {fmod($azdeg+180,360)}] ; # le dome prend Az =0 pour le Nord
          set side [string map [list E 0 W 1] [tel$telNo german]]
          if {$audace(telescope,goto) ==1} {
             set slewing "true"
@@ -142,7 +147,7 @@ proc ::scopedome::writeFileSystem { cycle } {
          puts $fid "\[Telescope\]"
          puts $fid "Alt=$altdeg"
          puts $fid "Az=$azdeg"
-         puts $fid "Ra=$radeg"
+         puts $fid "Ra=$rah"
          puts $fid "Dec=$decdeg"
          puts $fid "SideOfPier=$side"
          puts $fid "Slewing=$slewing"
@@ -238,6 +243,7 @@ proc ::scopedome::cmd { type } {
                      #--   Suit le deplacement
                      while {$delta >= $deltaMin} {
                         after 2000
+                        set widget(property) "Azimuth"
                         set widget(propertyResult) [::scopedome::readProperty $comobj Azimuth]
                         lassign $widget(propertyResult) az
                         set delta [expr { abs($azFinal-$az) }]
@@ -248,7 +254,7 @@ proc ::scopedome::cmd { type } {
                   }
          property {  set widget(propertyResult) [::scopedome::readProperty $comobj $do]}
       }
-    } msg] == 1} {
+   } msg] == 1} {
       ::console::disp "$do : $msg\n"
    }
 }
@@ -392,6 +398,9 @@ proc ::scopedome::getSupportedActions { comobj } {
 
    return $supportedActions
 }
+
+
+#--   Non utilises - en reserve
 
 #---------------------------------------------------------------------------
 #  executeVBSScript
