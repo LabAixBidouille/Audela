@@ -164,7 +164,7 @@ proc ::scopedome::confToWidget { } {
                               Rel_REL_3_Get_State Rel_REL_4_Get_State \
                               Rel_Shutter_1_Open_Get_State Rel_Shutter_1_Close_Get_State \
                               Rel_Shutter_2_Open_Get_State Rel_Shutter_2_Close_Get_State \
-                              Rel_Dome_CW_Get_State Rel_Dome_CCW_Get_State]
+                              Rel_Dome_CW_Get_State Rel_Dome_CCW_Get_State Card_Power_Get_State]
 
    #--   Ascom command list with boolean parameter (True|False)
    #--   suppression de Slaved (doublon avec Scope_Sync)
@@ -188,7 +188,8 @@ proc ::scopedome::confToWidget { } {
                                  Dome_Scope_Connect Dome_Scope_DisConnect \
                                  Shutter_1_Open Shutter_1_Close \
                                  Shutter_2_Open Shutter_2_Close \
-                                 Dome_Wait_1000ms Reset_Dome_Rotate_Encoder]
+                                 Dome_Wait_1000ms Reset_Dome_Rotate_Encoder \
+                                 Card_Power_Off Card_Power_On ]
 
    #--   Selectionne le premier de la liste
    foreach f [list property switch cmd action] {
@@ -426,9 +427,9 @@ proc ::scopedome::configDirname { this } {
    set file [file join $dirname $widget(scopedome,fileName)]
 
    if {[file exists $file]} {
-      set widget(fileAccess) "$file"
+      set widget(scopedome,fileAccess) "$file"
    } else {
-      set widget(fileAccess) ""
+      set widget(scopedome,fileAccess) ""
       ::scopedome::errorBox error
    }
 }
