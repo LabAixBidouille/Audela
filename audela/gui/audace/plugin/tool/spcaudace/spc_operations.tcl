@@ -334,7 +334,7 @@ proc spc_anim { args } {
       set ymin [ lindex $args 5 ]
       set ymax [ lindex $args 6 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces ?delay_images(40) ?methode_normalisation(norma/rescale)?? ?lambda_min lambda_max ymin ymax???\n"
+      ::console::affiche_erreur "Usage: spc_anim nom_astre_sans_espaces ?delay_images(40) ?methode_normalisation(norma/rescale/none)?? ?lambda_min lambda_max ymin ymax???\n"
       return ""
    }
 
@@ -392,6 +392,14 @@ proc spc_anim { args } {
             spc_rescalecont "$fichier"
             file delete -force "$audace(rep_images)/$fichier"
          }
+      } elseif { "$meth_norma"=="none" } {
+         ::console::affiche_prompt "\nAucune normalisation/rescaling des spectres...\n"
+         set listefichiers [ lsort -dictionary [ glob -dir $audace(rep_images) -tail *_sel$conf(extension,defaut) ] ]
+         foreach fichier $listefichiers {
+            set nom_fichier [ file rootname $fichier ]
+            file copy -force "$audace(rep_images)/$fichier" "$audace(rep_images)/${nom_fichier}_norm$conf(extension,defaut)"
+            file delete -force "$audace(rep_images)/$fichier"
+         }
       }
    } else {
       ::console::affiche_prompt "\nNormalisation des spectres...\n"
@@ -436,10 +444,11 @@ proc spc_anim { args } {
 
    #--- Creation de la l'animation :
    ::console::affiche_prompt "\nCreation de l'animation...\n"
+   ::console::affiche_resultat "Commande : convert -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
    if { $tcl_platform(platform)=="unix" } {
       if { [ file exists /usr/bin/convert ] } {
          set answer [ catch { exec convert -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
-         ::console::affiche_resultat "$answer\n"
+         ::console::affiche_resultat "Résultat (0=OK) : $answer\n"
       } else {
          ::console::affiche_erreur "Vous devez installer le paquet d'ImageMagick et executer la commande :\n convert -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
          return ""
@@ -447,7 +456,7 @@ proc spc_anim { args } {
    } elseif { $tcl_platform(platform)=="windows" } {
       if { [ file exists $spcaudace(rep_spc)/plugins/imwin/convert.exe ] } {
          set answer [ catch { exec $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif } ]
-         ::console::affiche_resultat "$answer\n"
+         ::console::affiche_resultat "Résultat (0=OK) : $answer\n"
       } else {
          ::console::affiche_erreur "Vous devez installer l'archive d'ImageMagick Mini disponible sur le site d'Spcaudace et executer la commande DOS :\n $spcaudace(rep_spc)/plugins/imwin/convert.exe -delay $delay_images -loop 0 $audace(rep_images)/*.png $audace(rep_images)/${nom_astre}_anim.gif\n"
          return ""
