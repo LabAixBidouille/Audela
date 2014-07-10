@@ -2,10 +2,10 @@
 # Fichier : world_tools.tcl
 # Description : World map tools
 # Auteur : Alain KLOTZ
-# Mise à jour $Id: world_tools.tcl 8008 2012-01-04 16:53:50Z robertdelmas  $
+# Mise à jour $Id$
 #
 # source "$audace(rep_install)/gui/audace/world_tools.tcl"
-# 
+#
 # Read file "$audace(rep_install)/gui/audace/catalogues/world.dat"
 # Read file "$audace(rep_install)/gui/audace/catalogues/world.inx"
 #
@@ -18,6 +18,7 @@
 
 proc world_plotmap { {bufNo 1} {value 32767} } {
    global audace
+
    set lon1 0
    set lon2 360
    set lat1 -90
@@ -118,11 +119,12 @@ proc world_plotmap { {bufNo 1} {value 32767} } {
             set y1 $y2
          }
       }
-   }   
+   }
 }
 
 proc world_shiftmap { {bufNo 1} {dlon 0} } {
    global audace
+
    set lon1 0
    set lon2 360
    set lat1 -90
@@ -142,12 +144,13 @@ proc world_shiftmap { {bufNo 1} {dlon 0} } {
          set value $xa($x)
          buf$bufNo setpix [list $x $y] $value
       }
-   }   
+   }
 }
 
-# loadima map2 ; buf1 scale {2 2} 1; visu {1 0} ; world_jpegmap $audace(rep_images)/map2.jpg 1 0 ; loadima $audace(rep_images)/map2.jpg 
+# loadima map2 ; buf1 scale {2 2} 1; visu {1 0} ; world_jpegmap $audace(rep_images)/map2.jpg 1 0 ; loadima $audace(rep_images)/map2.jpg
 proc world_jpegmap { fullnamejpeg {bufNo 1} {dlon 0} } {
    global audace
+
    set p $audace(rep_images)
    set e [buf$bufNo extension]
    set cuts [visu1 cut]
@@ -184,3 +187,4 @@ proc world_jpegmap { fullnamejpeg {bufNo 1} {dlon 0} } {
    set quality 100
    fits2colorjpeg $p/r$e $p/g$e $p/b$e $fullnamejpeg $quality $locut $hicut $locut $hicut $locut $hicut
 }
+
