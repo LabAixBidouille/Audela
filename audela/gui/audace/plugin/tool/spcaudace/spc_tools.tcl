@@ -1,6 +1,66 @@
 # Mise a jour $Id$
 
 
+###############################################################################
+# Description : Reconstitue la date jjmmyyyy de prise de vue d'un fichier fits
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-01-2007
+# Date de mise a jour : 15-07-2014
+# Arguments : nom fichier fits
+###############################################################################
+
+proc spc_datefile { args } {
+   global audace
+   global conf
+
+   if { [llength $args] == 1 } {
+      set fichier [lindex $args 0]
+
+      #--- Capture la date de l'entete fits
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      set ladate [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
+      #-- Exemple de date : 2006-08-22T01:37:34.46
+
+      #-- Meth2 :
+      set ldate [ mc_date2ymdhms $ladate ]
+      set y [ lindex $ldate 0 ]
+      set mo [ lindex $ldate 1 ]
+      set d [ lindex $ldate 2 ]
+      set h [ lindex $ldate 3 ]
+      set mi [ lindex $ldate 4 ]
+      set s [ lindex $ldate 5 ]
+
+      #--- Gestion des valeurs <=9 :
+      if { [ expr $d/10. ] < 1. } {
+         set d "0$d"
+      }
+      if { $mo<10 } {
+         set mo "0$mo"
+      }
+
+      #--- Calcul de la fraction du jour a 3 decimales :
+      set smod [ expr $s/(3600*24.) ]
+      set mmod [ expr $mi/(60*24.) ]
+      set hmod [ expr $h/24. ]
+      #set dfrac [ expr int(round(1000*($hmod+$mmod+$smod))) ]
+      set dfr [ format "%0.4f" [ expr $hmod+$mmod+$smod ] ]
+      # set dfr2 [ expr int(1000*$dfr) ]
+      regexp {0\.([0-9][0-9][0-9][0-9])} $dfr match dfrac
+
+      #--- Concatenation :
+      set madate "$y$mo$d\_$dfrac"
+
+      #--- Affichage du resultat :
+      ::console::affiche_resultat "La date de prise de vue est : $madate\n"
+      return $madate
+   } else {
+      ::console::affiche_erreur "Usage:spc_datefile nom_fichier_fits.\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+
+
 ###########################################################################
 # Procedure pour changer un mot cle dans un header fits
 # entrees : nom du fichier fits a changer, nom du mot cle, nouvelle valeur
