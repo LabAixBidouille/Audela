@@ -160,6 +160,7 @@ proc ::bddimages::ressource {  } {
    #--- Chargement des fichiers tools
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
 
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_appariement.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astroid.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_calendar.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata.tcl ]\""
@@ -327,7 +328,7 @@ proc ::bddimages::handleBddState { } {
    }
 
    # Configure menubutton du choix des bdd
-   $This.fra1.but configure -bg $colorBtn
+   $This.fra1.menu configure -bg $colorBtn
 
 }
 
@@ -340,7 +341,7 @@ proc ::bddimages::load_config_frombutton { } {
    variable This
    global audace bddconf
 
-   if {[string compare $bddconf(current_config)  "?"] == 0} {
+   if {[string compare $bddconf(current_config) "?"] == 0} {
       ::bdi_gui_config::configuration $audace(base).bdi_gui_config
    } else {
       ::bdi_tools_config::load_config $bddconf(current_config)
@@ -380,10 +381,15 @@ proc ::bddimages::bddimagesBuildIF { This } {
       frame $This.fra1 -borderwidth 1 -relief groove
       pack $This.fra1 -side top -fill x
 
-         button $This.fra1.but -relief raised -borderwidth 2 \
-            -textvariable bddconf(current_config) \
-            -command "::bddimages::load_config_frombutton"
-         pack $This.fra1.but -in $This.fra1 -side top -padx 3 -pady 10 -ipadx 5 -ipady 2
+         #--- Cree un menu bouton pour choisir la bdd
+         menubutton $This.fra1.menu -relief raised -borderwidth 2 -textvariable bddconf(current_config) -menu $This.fra1.menu.list
+         pack $This.fra1.menu -in $This.fra1 -side top -padx 3 -pady 5 -ipadx 5 -ipady 2
+         set menuconfig [menu $This.fra1.menu.list -tearoff 1]
+         foreach myconf $bddconf(list_config) {
+            $menuconfig add radiobutton -label [lindex "$myconf" 1] -value [lindex "$myconf" 1] \
+               -variable bddconf(current_config) \
+               -command "::bddimages::load_config_frombutton"
+         }
 
       #--- Frame des services
       frame $This.fra2 -borderwidth 1 -relief groove
@@ -483,7 +489,7 @@ proc ::bddimages::bddimagesBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
       #--- Coloration du menubouton du choix de la bdd
-      $This.fra1.but configure -bg "#DD0000"
+      $This.fra1.menu configure -bg "#DD0000"
       #--- Desactive les boutons, qui seront actives apres chargement de la config
       $This.fra3.but1 configure -state disabled
       $This.fra4.but1 configure -state disabled
