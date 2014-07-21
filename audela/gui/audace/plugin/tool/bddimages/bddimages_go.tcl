@@ -160,7 +160,7 @@ proc ::bddimages::ressource {  } {
    #--- Chargement des fichiers tools
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools.tcl ]\""
 
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_appariement.tcl ]\""
+#   uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_appariement.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_astroid.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_calendar.tcl ]\""
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool bddimages bdi_tools_cata.tcl ]\""
