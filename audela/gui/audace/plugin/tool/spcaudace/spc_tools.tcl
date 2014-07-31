@@ -1,5 +1,58 @@
 # Mise a jour $Id$
 
+###############################################################################
+# Description : Calcule la fraction de jour et retourne une date JJ.jjj-mm-yyyy
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 28-08-2006
+# Date de mise a jour : 31-07-2014
+# Arguments : nom fichier fits
+###############################################################################
+
+proc spc_datefrac { args } {
+   global audace
+   global conf
+
+   if { [llength $args] == 1 } {
+      set fichier [lindex $args 0]
+
+      #--- CApture la date de l'entete fits
+      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+      set ladate [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
+      #-- Exemple de date : 2006-08-22T01:37:34.46
+
+      #--- Isole l'annee, le moi, le jour, l'heure, les minutes et les secondes
+      #-- Meth1 :
+      # regexp {([0-9][0-9][0-9][0-9])\-.} $ladate match y
+      # regexp {[0-9][0-9][0-9][0-9]\-([0-9][0-9])\-.} $ladate match mo
+      # regexp {[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-([0-9][0-9])T.} $ladate match d
+      # regexp {[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]T([0-9][0-9]).} $ladate match h
+      # regexp {[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]T[0-9][0-9]:([0-9][0-9]).} $ladate match mi
+      # regexp {[0-9][0-9][0-9][0-9]\-[0-9][0-9]\-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:([0-9][0-9]).} $ladate match s
+      #-- Meth2 :
+      set ldate [ mc_date2ymdhms $ladate ]
+      set y [ lindex $ldate 0 ]
+      set mo [ lindex $ldate 1 ]
+      set d [ lindex $ldate 2 ]
+      set h [ lindex $ldate 3 ]
+      set mi [ lindex $ldate 4 ]
+      set s [ lindex $ldate 5 ]
+
+      #--- Calcul la fraction de jour :
+      set dfrac [ expr $d+$h/24.0+$mi/1440.0+$s/86400.0 ]
+
+      #-- Ne tient compte que des 3 premieres decimales
+      # set cdfrac [ format "%2.3f" [ expr round($dfrac*1000.)/1000. ] ]
+      set cdfrac [ format "%2.4f" $dfrac ]
+
+      #--- Affichage du resultat :
+      ::console::affiche_resultat "La fraction de date est : $cdfrac/$mo/$y\n"
+      return "$cdfrac/$mo/$y"
+   } else {
+      ::console::affiche_erreur "Usage: spc_datefrac nom_fichier_fits.\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
 
 ###############################################################################
 # Description : Reconstitue la date jjmmyyyy de prise de vue d'un fichier fits

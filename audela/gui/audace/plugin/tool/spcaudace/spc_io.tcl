@@ -1894,7 +1894,7 @@ proc spc_fit2png { args } {
             set legendex "Wavelength (A)"
         }
 
-        set legendey "Relative intensity"
+        set legendey "Relative flux"
 
         spc_fits2dat $fichier
         #-- Retire l'extension .fit du nom du fichier
@@ -1977,7 +1977,7 @@ proc spc_fit2pngopt { args } {
             } else {
                 set legendex "Wavelength (A)"
             }
-            set legendey "Relative intensity"
+            set legendey "Relative flux"
         } elseif { [llength $args] == 4 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
@@ -2089,7 +2089,7 @@ proc spc_fit2tnjpg { args } {
             } else {
                 set legendex "Wavelength (A)"
             }
-            set legendey "Relative intensity"
+            set legendey "Relative flux"
         } elseif { [llength $args] == 4 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
@@ -2200,7 +2200,7 @@ proc spc_fit2pnglarge { args } {
             } else {
                 set legendex "Wavelength (A)"
             }
-            set legendey "Relative intensity"
+            set legendey "Relative flux"
         } elseif { [llength $args] == 4 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
@@ -2310,7 +2310,7 @@ proc spc_fit2pngvlarge { args } {
             } else {
                 set legendex "Wavelength (A)"
             }
-            set legendey "Relative intensity"
+            set legendey "Relative flux"
         } elseif { [llength $args] == 4 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
@@ -2850,7 +2850,7 @@ spc_multifit2pngdec vertical_offset_between_profils lambda_begin lambda_end velo
       set titre "Time evolution of $objname from $jd_deb to $jd_fin"
    }
    if { $offset==0. } {
-      set legendey "Relative intensity"
+      set legendey "Relative flux"
    } else {
       set legendey "Spectra shifted by $offset unit along intensity axis"
    }
@@ -3126,7 +3126,7 @@ proc spc_multifit2pngdec1 { args } {
       set titre "Time evolution of $objname from $jd_deb to $jd_fin"
    }
    if { $offset==0. } {
-      set legendey "Relative intensity"
+      set legendey "Relative flux"
    } else {
       set legendey "Spectra shifted by $offset unit along intensity axis"
    }
@@ -3260,7 +3260,7 @@ proc spc_fit2ps { args } {
         if { [llength $args] == 2 } {
             set fichier [ file rootname [ lindex $args 0 ] ]
             set titre [ lindex $args 1 ]
-            set legendey "Relative intensity"
+            set legendey "Relative flux"
             set legendex "Wavelength (\305)"
             #--- Détermination de xdeb et xfin :
             buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -4179,7 +4179,7 @@ proc spc_autofit2png { args } {
 
         #--- Détermination de la date de prise de vue : $cdfrac/$mo/$y
         if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
-           set ladate [ bm_datefrac $spectre ]
+           set ladate [ spc_datefrac $spectre ]
            #-- Impose 3 decimales a la fraction de jour :
            regexp {([0-9]+\.[0-9]+)/.+} $ladate match fracjour
            set fracjour [ format "%2.3f" $fracjour ]
@@ -4344,7 +4344,7 @@ proc spc_autofit2png { args } {
        }
 
         #--- Fabrication de la date du fichier :
-        set datefile [ bm_datefile $spectre ]
+        set datefile [ spc_datefile $spectre ]
 
         #--- Fabrication du nom de fichier graphique (pas d'espace...) :
         set nom_objet_lower [ string tolower "$nom_objet" ]
@@ -4388,7 +4388,7 @@ proc spc_autofit2pngps { args } {
     global audace
 
     set labelx "Wavelength (A)"
-    set labely "Relative intensity"
+    set labely "Relative flux"
 
     if { [ llength $args ]==2 || [llength $args ]==4 || [llength $args ]==6 } {
         if { [ llength $args ] == 2 } {
@@ -4440,7 +4440,7 @@ proc spc_autofit2pngps { args } {
 
         #--- Détermination de la date de prise de vue :
         if { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
-            set ladate [ bm_datefrac $spectre ]
+            set ladate [ spc_datefrac $spectre ]
         }
 
         #--- Détermination des paramètres d'exposition :
@@ -4500,7 +4500,7 @@ proc spc_autofit2pngps { args } {
         set fileout [ spc_fit2pngopt "$spectre" "$titre_graphique" "$labelx" "$labely" $xdeb $xfin $ydeb $yfin ]
 
         #--- Fabrication de la date du fichier :
-        set datefile [ bm_datefile $spectre ]
+        set datefile [ spc_datefile $spectre ]
 
         #--- Fabrication du nom de fichier graphique (pas d'espace...) :
         set nom_objet_lower [ string tolower "$nom_objet" ]

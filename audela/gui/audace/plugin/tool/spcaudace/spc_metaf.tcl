@@ -1951,7 +1951,7 @@ proc spc_traitestellaire { args } {
        file delete -force "$audace(rep_images)/${brut}-profil-final$conf(extension,defaut)"
 
       #-- Renomage du fichier final :
-      set datefile [ bm_datefile $profil_final ]
+      set datefile [ spc_datefile $profil_final ]
       file copy -force "$audace(rep_images)/$profil_final$conf(extension,defaut)" "$audace(rep_images)/_${brut}-${datefile}$conf(extension,defaut)"
       #file delete -force "$audace(rep_images)/$spectre_calo$conf(extension,defaut)"
       set profil_final_termine "_${brut}-${datefile}$conf(extension,defaut)"
@@ -2611,7 +2611,7 @@ proc spc_traiteseries { args } {
          #}
 
          #--- Renomage du fichier final :
-         set datefile [ bm_datefile $spectre_calo ]
+         set datefile [ spc_datefile $spectre_calo ]
          file copy -force "$audace(rep_images)/$spectre_calo$conf(extension,defaut)" "$audace(rep_images)/_${brut}-${datefile}$conf(extension,defaut)"
          file delete -force "$audace(rep_images)/$spectre_calo$conf(extension,defaut)"
 
