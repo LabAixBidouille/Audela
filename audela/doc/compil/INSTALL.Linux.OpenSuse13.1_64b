@@ -167,9 +167,13 @@ vérifier que la clé est bien prise en compte
 ==========
 se mettre (par exemple) dans le répertoire /srv/develop (façon ros)
 
-Télécharger Audela :
+Télécharger Audela (http://sourceforge.net/p/audela/code/HEAD/tree/) :
 
-user> svn checkout --username=USERNAMEsvn+ssh://fredvachier@svn.code.sf.net/p/audela/code/trunk/audela audela
+anonyme (read only): 
+user> svn checkout svn://svn.code.sf.net/p/audela/code/trunk/audela audela
+
+identifie (read/write):
+user> svn checkout svn+ssh://<USERNAME>@svn.code.sf.net/p/audela/code/trunk/audela audela
 
 
 
