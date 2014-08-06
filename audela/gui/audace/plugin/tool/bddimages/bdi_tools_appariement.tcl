@@ -247,6 +247,106 @@ proc ::bdi_tools_appariement::get_refcatadir { cata } {
 
 
 #------------------------------------------------------------
+## Affichage de la GUI de choix de la methode d'appariement et de ses parametres
+# @param frm id du frame dans lequel la GUI est packee
+# @return list_sources
+#
+   #{ 
+   # { 
+   #  { IMG   {list field crossmatch} {list fields}} 
+   #  { TYC2  {list field crossmatch} {list fields}}
+   #  { USNO2 {list field crossmatch} {list fields}}
+   # }
+   # {                                -> liste des sources
+   #  {                               -> 1 source
+   #   { IMG   {crossmatch} {fields}}  -> vue dans l image
+   #   { TYC2  {crossmatch} {fields}}  -> vue dans le catalogue
+   #   { USNO2 {crossmatch} {fields}}  -> vue dans le catalogue
+   #  }
+   # }
+   #}
+proc ::bdi_tools_appariement::get_cata { } {
+
+   global audace
+
+   if {$::bdi_tools_appariement::calibwcs_method == 0} {
+
+      set filenametmp [file join [pwd] ascii.txt]
+      if {![file exists $filenametmp]} {
+         return -1
+      }
+      set cmfields  [list ra dec poserr mag magerr]
+      set allfields [list id flag xpos ypos instr_mag err_mag flux_sex err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex minor_axis_sex position_angle_sex fwhm_sex flag_sex]
+      set list_fields [list [list "IMG" $cmfields $allfields] [list "USNOA2CALIB" $cmfields {}]]
+      set list_sources {}
+      set chan [open $filenametmp r]
+      set lineCount 0
+      set littab "no"
+      while {[gets $chan line] >= 0} {
+         incr lineCount
+         set zlist [split $line " "]
+         set xlist {}
+         foreach value $zlist {
+            if {$value!={}} {
+               set xlist [linsert $xlist end $value]
+            } 
+         }
+         set row {}
+         set cmval [list [lindex $xlist 8] [lindex $xlist 9] 5.0 [lindex $xlist 10] [lindex $xlist 12] ] 
+         if {[lindex $xlist 1]==1} {
+            lappend row [list "IMG" $cmval $xlist ]
+            lappend row [list "OVNI" $cmval {} ]
+         }
+         if {[lindex $xlist 1]==3} {
+            lappend row [list "IMG" $cmval $xlist ]
+            lappend row [list "USNOA2CALIB" $cmval {} ]
+         }
+         if {[llength $row] > 0} {
+            lappend list_sources $row
+         }
+      }
+      if {[catch {close $chan} err]} {
+         gren_erreur "::bdi_tools_appariement::get_cata: cannot close cata file ($filenametmp): <$err>"
+      }
+
+   } else {
+
+      set filenametmp [file join [pwd] catalog.cat]
+      if {![file exists $filenametmp]} {
+         return -1
+      }
+      set cmfields  [list ra dec poserr mag magerr]
+      set allfields [list id flag xpos ypos instr_mag err_mag flux_sex err_flux_sex ra dec calib_mag calib_mag_ss1 err_calib_mag_ss1 calib_mag_ss2 err_calib_mag_ss2 nb_neighbours radius background_sex x2_momentum_sex y2_momentum_sex xy_momentum_sex major_axis_sex minor_axis_sex position_angle_sex fwhm_sex flag_sex]
+      set list_fields [list [list "IMG" $cmfields $allfields] [list "USNOA2CALIB" $cmfields {}]]
+      set list_sources {}
+
+   # TODO
+#   1 NUMBER          Running object number
+#   2 FLUX_BEST       Best of FLUX_AUTO and FLUX_ISOCOR               [count]
+#   3 FLUXERR_BEST    RMS error for BEST flux                         [count]
+#   4 MAG_BEST        Best of MAG_AUTO and MAG_ISOCOR                 [mag]
+#   5 MAGERR_BEST     RMS error for MAG_BEST                          [mag]
+#   6 BACKGROUND      Background at centroid position                 [count]
+#   7 X_IMAGE         Object position along x                         [pixel]
+#   8 Y_IMAGE         Object position along y                         [pixel]
+#   9 X2_IMAGE        Variance along x                                [pixel**2]
+#  10 Y2_IMAGE        Variance along y                                [pixel**2]
+#  11 XY_IMAGE        Covariance between x and y                      [pixel**2]
+#  12 A_IMAGE         Profile RMS along major axis                    [pixel]
+#  13 B_IMAGE         Profile RMS along minor axis                    [pixel]
+#  14 THETA_IMAGE     Position angle (CCW/x)                          [deg]
+#  15 FWHM_IMAGE      FWHM assuming a gaussian core                   [pixel]
+#  16 FLAGS           Extraction flags
+#  17 CLASS_STAR      S/G classifier output
+
+
+   }
+   return [list $list_fields $list_sources]
+
+}
+
+
+#------------------------------------------------------------
 ## Retourne la commande calibwcs a executer pour effectuer l'appariement
 # @return string commande calibwcs a executer
 #
