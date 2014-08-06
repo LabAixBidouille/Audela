@@ -622,6 +622,8 @@ namespace eval gui_cata_creation {
 
       gren_info "Test Sextractor ...\n"
       cleanmark
+
+      # Defini la config utilisateur de sextractor
       ::gui_cata_creation::set_user_confsex
 
       # Commande calibwcs a exectuer fourni par la methode d'appariement
