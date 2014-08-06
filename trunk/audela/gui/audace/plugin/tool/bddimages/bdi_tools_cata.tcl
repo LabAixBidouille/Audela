@@ -210,7 +210,7 @@ namespace eval tools_cata {
    variable threshold_ident_pos_ast
    variable threshold_ident_mag_ast
 
-   
+
    proc ::tools_cata::inittoconf { } {
 
       global conf
@@ -1133,10 +1133,10 @@ namespace eval tools_cata {
       set foclen    $::tools_cata::foclen   
       set exposure  $::tools_cata::exposure 
 
-      set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS   ] 1]
-      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1     ] 1]
-      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2     ] 1]
-      set filename    [::bddimages_liste::lget $img filename   ]
+      set dateobs     [lindex [::bddimages_liste::lget $tabkey DATE-OBS] 1]
+      set naxis1      [lindex [::bddimages_liste::lget $tabkey NAXIS1] 1]
+      set naxis2      [lindex [::bddimages_liste::lget $tabkey NAXIS2] 1]
+      set filename    [::bddimages_liste::lget $img filename]
       set dirfilename [::bddimages_liste::lget $img dirfilename]
       set idbddimg    [::bddimages_liste::lget $img idbddimg]
       set file        [file join $bddconf(dirbase) $dirfilename $filename]
@@ -1144,22 +1144,26 @@ namespace eval tools_cata {
       set xcent [expr $naxis1/2.0]
       set ycent [expr $naxis2/2.0]
 
-      if {$::tools_cata::log} {
-         gren_info "PASS1: calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"
+      # Commande calibwcs a exectuer fourni par la methode d'appariement
+      set ::bdi_tools_appariement::calibwcs_args "$ra $dec $pixsize1 $pixsize2 $foclen"
+      set erreur [catch {set calibwcs_cmd [::bdi_tools_appariement::get_calibwcs_cmde]} msg]
+      if {$::tools_cata::log} { gren_info "PASS1: $calibwcs_cmd\n" }
+      #gren_info "PASS1: $calibwcs_cmd\n"
+      if {$erreur} {
+         return -code 1 "ERR = $erreur ($msg)"
       }
 
-      set erreur [catch {set nbstars [calibwcs $ra $dec $pixsize1 $pixsize2 $foclen USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
-
+      set erreur [catch {set nbstars [eval $calibwcs_cmd]} msg]
       if {$erreur} {
          if {[info exists nbstars]} {
             gren_info "existe"
             if {[string is integer -strict $nbstars]} {
-               return -code 1 "ERR NBSTARS=$nbstars ($msg)"
+               return -code 1 "ERR NBSTARS = $nbstars ($msg)"
             } else {
                return -code 1 "ERR = $erreur ($msg)"
             }
          } else {
-            gren_info "Erreur interne de calibwcs, voir l erreur de la libtt"
+            gren_info "Erreur interne de calibwcs, voir le log de la libtt"
             return -code 1 "ERR = $erreur ($msg)"
          }
       }
@@ -1172,10 +1176,17 @@ namespace eval tools_cata {
       }
 
       if {$::tools_cata::deuxpasses} {
-         if {$::tools_cata::log} {gren_info "PASS2: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
+         set ::bdi_tools_appariement::calibwcs_args "$ra $dec * * *"
+         set erreur [catch {set calibwcs_cmd [::bdi_tools_appariement::get_calibwcs_cmde]} msg]
+         if {$::tools_cata::log} { gren_debug "PASS2: $calibwcs_cmd\n" }
+         #gren_info "PASS2: $calibwcs_cmd\n"
          if {$erreur} {
-            return -code 2 "ERR NBSTARS=$nbstars ($msg)"
+            return -code 2 "ERR = $erreur ($msg)"
+         }
+
+         set erreur [catch {set nbstars [eval $calibwcs_cmd]} msg]
+         if {$erreur} {
+            return -code 2 "ERR NBSTARS = $nbstars ($msg)"
          }
 
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
@@ -1189,12 +1200,19 @@ namespace eval tools_cata {
       gren_info "nbstars/limit  = $nbstars / $::tools_cata::limit_nbstars_accepted \n"
 
       if { $::tools_cata::keep_radec==1 && $nbstars<$::tools_cata::limit_nbstars_accepted && [info exists ::tools_cata::ra_save] && [info exists ::tools_cata::dec_save] } {
+
          set ra  $::tools_cata::ra_save
          set dec $::tools_cata::dec_save
-         if {$::tools_cata::log} {gren_info "PASS3: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"}
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
+         set ::bdi_tools_appariement::calibwcs_args "$ra $dec * * *"
+         set erreur [catch {set calibwcs_cmd [::bdi_tools_appariement::get_calibwcs_cmde]} msg]
+         if {$::tools_cata::log} { gren_debug "PASS3: $calibwcs_cmd\n" }
+         #gren_info "PASS3: $calibwcs_cmd\n"
          if {$erreur} {
-            return -code 3 "ERR NBSTARS=$nbstars ($msg)"
+            return -code 3 "ERR = $erreur ($msg)"
+         }
+         set erreur [catch {set nbstars [eval $calibwcs_cmd]} msg]
+         if {$erreur} {
+            return -code 3 "ERR NBSTARS = $nbstars ($msg)"
          }
          set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
          set ra  [lindex $a 0]
@@ -1202,22 +1220,30 @@ namespace eval tools_cata {
          if {$::tools_cata::log} {
             gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"
          }
+
          if {$::tools_cata::deuxpasses} {
-            if {$::tools_cata::log} {gren_info "PASS4: calibwcs $ra $dec * * * USNO  $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0\n"
+            set ::bdi_tools_appariement::calibwcs_args "$ra $dec * * *"
+            set erreur [catch {set calibwcs_cmd [::bdi_tools_appariement::get_calibwcs_cmde]} msg]
+            if {$::tools_cata::log} { gren_debug "PASS4: $calibwcs_cmd\n" }
+            #gren_info "PASS4: $calibwcs_cmd\n"
+            if {$erreur} {
+               return -code 4 "ERR = $erreur ($msg)"
+            }
+            set erreur [catch {set nbstars [eval $calibwcs_cmd]} msg]
+            if {$erreur} {
+               return -code 4 "ERR NBSTARS = $nbstars ($msg)"
+            }
+            set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
+            set ra  [lindex $a 0]
+            set dec [lindex $a 1]
+            if {$::tools_cata::log} {
+               gren_info "RETRY nbstars : $nbstars | ra : [mc_angle2hms $ra 360 zero 1 auto string] | dec : [mc_angle2dms $dec 90 zero 1 + string]\n"
+            }
          }
-         set erreur [catch {set nbstars [calibwcs $ra $dec * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0]} msg]
-         if {$erreur} {
-            return -code 4 "ERR NBSTARS=$nbstars ($msg)"
-         }
-         set a [buf$::audace(bufNo) xy2radec [list $xcent $ycent]]
-         set ra  [lindex $a 0]
-         set dec [lindex $a 1]
-         if {$::tools_cata::log} {gren_info "nbstars ra dec : $nbstars [mc_angle2hms $ra 360 zero 1 auto string] [mc_angle2dms $dec 90 zero 1 + string]\n"}
-            gren_info "RETRY nbstars : $nbstars | ra : [mc_angle2hms $ra 360 zero 1 auto string] | dec : [mc_angle2dms $dec 90 zero 1 + string]\n"
-         }
+
       }
 
-      set ::tools_cata::nb_usnoa2 $nbstars
+      set ::tools_cata::nb_usnoa2 [expr {[info exists nbstars] ? $nbstars : 0}]
       set ::tools_cata::current_listsources [get_ascii_txt]
       set ::tools_cata::nb_img  [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources IMG   ]
       set ::tools_cata::nb_ovni [::manage_source::get_nb_sources_by_cata $::tools_cata::current_listsources OVNI  ]

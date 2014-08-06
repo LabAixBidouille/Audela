@@ -43,6 +43,8 @@ namespace eval gui_cata_creation {
       # Initialisation au niveau GUI cata
       ::gui_cata::inittoconf
       ::bdi_gui_psf::inittoconf
+      # Initialise la methode d'appariement
+      ::bdi_tools_appariement::inittoconf
 
    }
 
@@ -56,6 +58,7 @@ namespace eval gui_cata_creation {
 
       ::gui_cata::closetoconf
       ::bdi_gui_psf::closetoconf
+      ::bdi_tools_appariement::closetoconf
 
    }
 
@@ -276,6 +279,7 @@ namespace eval gui_cata_creation {
          set err [catch {::tools_cata::get_wcs} msg]
 
          if {$err == 0 } {
+
             set newimg [::bddimages_liste_gui::file_to_img $filename $dirfilename]
 
             set ::tools_cata::img_list [lreplace $::tools_cata::img_list [expr $::tools_cata::id_current_image -1] [expr $::tools_cata::id_current_image-1] $newimg]
@@ -620,12 +624,21 @@ namespace eval gui_cata_creation {
       cleanmark
       ::gui_cata_creation::set_user_confsex
 
-      # Calib WCS
-      set err [catch {calibwcs * * * * * USNO $::tools_cata::catalog_usnoa2 -del_tmp_files 0 -yes_visu 0} msg]
+      # Commande calibwcs a exectuer fourni par la methode d'appariement
+      set ::bdi_tools_appariement::calibwcs_args "* * * * *"
+      set err [catch {set calibwcs_cmd [::bdi_tools_appariement::get_calibwcs_cmde]} msg]
+      gren_info "PASS1: $calibwcs_cmd\n"
+      if {$err} {
+         gren_erreur "error: test_user_confsex: $err ($msg)\n"
+         return
+      }
+
+      set err [catch {set nbstars [eval $calibwcs_cmd]} msg]
+
       if {$err} {
          gren_erreur "  Error #$err -> $msg\n"
       } else {
-         gren_info "  Nb stars detected = $msg\n"
+         gren_info "  Nb stars detected = $nbstars\n"
 
          ## Lecture des sources depuis le fichier obs.lst
          #set chan [open "./obs.lst" "r"]
@@ -1968,13 +1981,18 @@ return
 
             pack [ttk::notebook $subonglets.list] -expand yes -fill both -padx 5 -pady 5
 
-            set conesearch [frame $subonglets.list.xml]
+            set conesearch [frame $subonglets.list.cs]
             pack $conesearch -in $subonglets.list -expand yes -fill both
             $subonglets.list add $conesearch -text "$caption(gui_cata_creation,conesearch)"
+
+            set appariement [frame $subonglets.list.app]
+            pack $appariement -in $subonglets.list -expand yes -fill both
+            $subonglets.list add $appariement -text "$caption(gui_cata_creation,appariement)"
 
             set affichage [frame $subonglets.list.cata]
             pack $affichage -in $subonglets.list -expand yes -fill both
             $subonglets.list add $affichage -text "$caption(gui_cata_creation,dispcata)"
+
 
             #--- Cree un frame pour la liste des cata
             label $conesearch.titre -text "$caption(gui_cata_creation,conesearchmsg)" -font $bddconf(font,arial_10_b)
@@ -1988,25 +2006,35 @@ return
                   entry $cataconf.skybot_dir -relief flat -borderwidth 1 -textvariable ::tools_cata::catalog_skybot -width 30 -state disabled
                checkbutton $cataconf.skybotRosetta_check -highlightthickness 0 -text "  @Rosetta" -variable ::tools_cata::use_skybotRosetta
 
-               checkbutton $cataconf.usnoa2_check -highlightthickness 0 -text "  USNO-A2" -variable ::tools_cata::use_usnoa2 -state disabled
+               checkbutton $cataconf.usnoa2_check -highlightthickness 0 -text "  USNO-A2" -variable ::tools_cata::use_usnoa2 -state disabled \
+                     -command {::bdi_tools_appariement::update_current_refcatalist usnoa2 $::tools_cata::use_usnoa2 $::tools_cata::catalog_usnoa2}
                   entry $cataconf.usnoa2_dir -relief flat -textvariable ::tools_cata::catalog_usnoa2 -width 30 -state disabled
-               checkbutton $cataconf.tycho2_check -highlightthickness 0 -text "  TYCHO-2" -variable ::tools_cata::use_tycho2
+               checkbutton $cataconf.tycho2_check -highlightthickness 0 -text "  TYCHO-2" -variable ::tools_cata::use_tycho2 \
+                     -command {::bdi_tools_appariement::update_current_refcatalist tycho2 $::tools_cata::use_tycho2 $::tools_cata::catalog_tycho2}
                   entry $cataconf.tycho2_dir -relief flat -textvariable ::tools_cata::catalog_tycho2 -width 30 -state disabled
-               checkbutton $cataconf.ucac2_check -highlightthickness 0 -text "  UCAC2" -variable ::tools_cata::use_ucac2
+               checkbutton $cataconf.ucac2_check -highlightthickness 0 -text "  UCAC2" -variable ::tools_cata::use_ucac2 \
+                     -command {::bdi_tools_appariement::update_current_refcatalist ucac2 $::tools_cata::use_ucac2 $::tools_cata::catalog_ucac2}
                   entry $cataconf.ucac2_dir -relief flat -textvariable ::tools_cata::catalog_ucac2 -width 30 -state disabled
-               checkbutton $cataconf.ucac3_check -highlightthickness 0 -text "  UCAC3" -variable ::tools_cata::use_ucac3
+               checkbutton $cataconf.ucac3_check -highlightthickness 0 -text "  UCAC3" -variable ::tools_cata::use_ucac3 \
+                     -command {::bdi_tools_appariement::update_current_refcatalist ucac3 $::tools_cata::use_ucac3 $::tools_cata::catalog_ucac3}
                   entry $cataconf.ucac3_dir -relief flat -textvariable ::tools_cata::catalog_ucac3 -width 30 -state disabled
-               checkbutton $cataconf.ucac4_check -highlightthickness 0 -text "  UCAC4" -variable ::tools_cata::use_ucac4
+               checkbutton $cataconf.ucac4_check -highlightthickness 0 -text "  UCAC4" -variable ::tools_cata::use_ucac4 \
+                     -command {::bdi_tools_appariement::update_current_refcatalist ucac4 $::tools_cata::use_ucac4 $::tools_cata::catalog_ucac4}
                   entry $cataconf.ucac4_dir -relief flat -textvariable ::tools_cata::catalog_ucac4 -width 30 -state disabled
-               checkbutton $cataconf.ppmx_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmx
+               checkbutton $cataconf.ppmx_check -highlightthickness 0 -text "  PPMX" -variable ::tools_cata::use_ppmx \
+                     -command {::bdi_tools_appariement::update_current_refcatalist ppmx $::tools_cata::use_ppmx $::tools_cata::catalog_ppmx}
                   entry $cataconf.ppmx_dir -relief flat -textvariable ::tools_cata::catalog_ppmx -width 30 -state disabled
-               checkbutton $cataconf.ppmxl_check -highlightthickness 0 -text "  PPMXL" -variable ::tools_cata::use_ppmxl
+               checkbutton $cataconf.ppmxl_check -highlightthickness 0 -text "  PPMXL" -variable ::tools_cata::use_ppmxl \
+                     -command {::bdi_tools_appariement::update_current_refcatalist ppmxl $::tools_cata::use_ppmxl $::tools_cata::catalog_ppmxl}
                   entry $cataconf.ppmxl_dir -relief flat -textvariable ::tools_cata::catalog_ppmxl -width 30 -state disabled
-               checkbutton $cataconf.nomad1_check -highlightthickness 0 -text "  NOMAD1" -variable ::tools_cata::use_nomad1
+               checkbutton $cataconf.nomad1_check -highlightthickness 0 -text "  NOMAD1" -variable ::tools_cata::use_nomad1 \
+                     -command {::bdi_tools_appariement::update_current_refcatalist nomad1 $::tools_cata::use_nomad1 $::tools_cata::catalog_nomad1}
                   entry $cataconf.nomad1_dir -relief flat -textvariable ::tools_cata::catalog_nomad1 -width 30 -state disabled
-               checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass
+               checkbutton $cataconf.twomass_check -highlightthickness 0 -text "  2MASS" -variable ::tools_cata::use_2mass \
+                     -command {::bdi_tools_appariement::update_current_refcatalist 2mass $::tools_cata::use_2mass $::tools_cata::catalog_2mass}
                   entry $cataconf.twomass_dir -relief flat -textvariable ::tools_cata::catalog_2mass -width 30 -state disabled
-               checkbutton $cataconf.wfibc_check -highlightthickness 0 -text "  WFIBC" -variable ::tools_cata::use_wfibc
+               checkbutton $cataconf.wfibc_check -highlightthickness 0 -text "  WFIBC" -variable ::tools_cata::use_wfibc \
+                     -command {::bdi_tools_appariement::update_current_refcatalist wfibc $::tools_cata::use_wfibc $::tools_cata::catalog_wfibc}
                   entry $cataconf.wfibc_dir -relief flat -textvariable ::tools_cata::catalog_wfibc -width 30 -state disabled
                frame $cataconf.blank -height 15
 
@@ -2023,6 +2051,16 @@ return
             grid $cataconf.twomass_check $cataconf.twomass_dir -sticky nsw -pady 3
             grid $cataconf.wfibc_check   $cataconf.wfibc_dir   -sticky nsw -pady 3
             grid columnconfigure $cataconf 0 -pad 30
+
+            #--- Cree un frame pour la liste des cata
+            label $appariement.titre -text "$caption(gui_cata_creation,appariementmsg)" -font $bddconf(font,arial_10_b)
+            pack $appariement.titre -in $appariement -side top -fill x -anchor c -pady 10
+
+            #--- Cree un frame pour les options d'appariement
+            set catappa [frame $appariement.conf -borderwidth 0 -relief groove]
+            pack $catappa -in $appariement -anchor c -side top -expand 0 -padx 10 -pady 5
+
+               ::bdi_tools_appariement::gui $catappa
 
             #--- Cree un frame pour la liste des cata
             set catafftitre [frame $affichage.titre -borderwidth 0 -relief groove]
