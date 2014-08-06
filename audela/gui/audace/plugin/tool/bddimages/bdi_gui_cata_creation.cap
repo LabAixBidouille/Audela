@@ -27,9 +27,11 @@ set caption(gui_cata_creation,develop)        "Develop"
 set caption(gui_cata_creation,analyse)        "Continuous analysis"
                                               
 set caption(gui_cata_creation,conesearch)     "Conesearch"
-set caption(gui_cata_creation,dispcata)       "Display"
 set caption(gui_cata_creation,conesearchmsg)  "Choose the reference catalogues to use to identify sources"
+set caption(gui_cata_creation,dispcata)       "Display"
 set caption(gui_cata_creation,dispcatamsg)    "Choose the colors to display catalogues, and the radius of the marks"
+set caption(gui_cata_creation,appariement)    "Cross-match"
+set caption(gui_cata_creation,appariementmsg) "Choose the cross-match method and their parameters"
 
 set caption(gui_cata_creation,paramcata)      "Define the parameters to create the CATA"
 set caption(gui_cata_creation,activelog)      "Activate log"
@@ -74,7 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gui_cata_creation,prec)           "Precedent"
    set caption(gui_cata_creation,next)           "Suivant"
    set caption(gui_cata_creation,create)         "Créer"
-                                                 
+
    set caption(gui_cata_creation,catalogue)      "Catalogues"
    set caption(gui_cata_creation,variables)      "Variables"
    set caption(gui_cata_creation,image)          "Image"
@@ -84,12 +86,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gui_cata_creation,manuel)         "Manuel"
    set caption(gui_cata_creation,develop)        "Develop"
    set caption(gui_cata_creation,analyse)        "Analyse continue"
-                                                 
+
    set caption(gui_cata_creation,conesearch)     "Identification"
-   set caption(gui_cata_creation,dispcata)       "Affichage"
    set caption(gui_cata_creation,conesearchmsg)  "Choisir les catalogues de référence\nà utiliser pour l'identification des sources"
+   set caption(gui_cata_creation,dispcata)       "Affichage"
    set caption(gui_cata_creation,dispcatamsg)    "Choisir les couleurs d'affichage des catalogues et la taille des ronds"
-                                                 
+   set caption(gui_cata_creation,appariement)    "Appariement"
+   set caption(gui_cata_creation,appariementmsg) "Choisir la methode d'appariement et ses paramètres"
+
    set caption(gui_cata_creation,paramcata)      "Définir les paramètres pour la creation des CATA"
    set caption(gui_cata_creation,activelog)      "Activation du log"
    set caption(gui_cata_creation,2passes)        "Faire 2 passes pour calibrer"
